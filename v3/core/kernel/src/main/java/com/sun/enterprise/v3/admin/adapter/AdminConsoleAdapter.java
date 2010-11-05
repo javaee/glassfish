@@ -246,11 +246,11 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
         try {
             if (!latch.await(100L, TimeUnit.SECONDS)) {
                 // todo : better error reporting.
-                log.severe("Cannot process admin console request in time");
+                logger.log(Level.SEVERE, "console.adapter.timeout");
                 return;
             }
         } catch (InterruptedException ex) {
-            log.severe("Cannot process admin console request");
+            logger.log(Level.SEVERE, "console.adapter.cannotProcess");
             return;
         }
         logRequest(req);
@@ -259,7 +259,8 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
                 handleResourceRequest(req, res);
             } catch (IOException ioe) {
                 if (log.isLoggable(Level.SEVERE)) {
-                    log.log(Level.SEVERE, "Unable to serve resource: {0}.  Cause: {1}", new Object[]{req.getRequestURI(), ioe.toString()});
+                    log.log(Level.SEVERE, "console.adapter.resourceError",
+                            new Object[]{req.getRequestURI(), ioe.toString()});
                 }
                 if (log.isLoggable(Level.FINE)) {
                     log.log(Level.FINE,
@@ -413,7 +414,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
             in = loader.getResourceAsStream(resourcePath);
             if (in == null) {
                 if (log.isLoggable(Level.WARNING)) {
-                    log.warning("Resource not found: " + resourcePath);
+                    logger.log(Level.WARNING, "console.adapter.resourceNotFound", resourcePath);
                 }
                 return;
             }
@@ -467,7 +468,8 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
             File parentFile = warFile.getParentFile();
             File currentDeployedDir = new File( parentFile,ADMIN_APP_NAME);
             if (!currentDeployedDir.exists()) {
-                logger.log(Level.WARNING, currentDeployedDir + " does not exist. Will not do backup for this.");
+                logger.log(Level.WARNING, "console.adapter.missingDeployDir", currentDeployedDir);
+                //logger.log(Level.WARNING, currentDeployedDir + " does not exist. Will not do backup for this.");
                 return true;
             }
             File backupDir = new File(parentFile, ADMIN_APP_NAME+".backup");
@@ -475,10 +477,10 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
                 return true;
 	    }
         } catch (Exception ex) {
-            logger.log(Level.SEVERE, "Exception in prepareRedeploy() " + ex.getMessage());
+            logger.log(Level.SEVERE,  ex.getMessage());
             //ex.printStackTrace();
         }
-        logger.log(Level.SEVERE, "Cannot backup previous version of __admingui ");
+        logger.log(Level.SEVERE, "console.adapter.cannotBackup");
         setStateMsg(AdapterState.APPLICATION_BACKUP_FALED);
         return true;
     }
@@ -912,10 +914,11 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
                     downloadedVersion = fList.get(0).fmri.getVersion().toString();
                 }
             } else {
-                log.log(Level.WARNING, "!!!! No information relating to update center.");
+                logger.log(Level.WARNING, "console.adapter.NoUpdateCenterInfo");
             }
         } catch (Exception ex) {
-            log.log(Level.WARNING, "!!!!! Cannot create Update Center Image for " + ipsRoot );
+
+            logger.log(Level.WARNING, "console.adapter.CannotCreateUC", ipsRoot);
             //ex.printStackTrace();
         }
     }
@@ -967,7 +970,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
                 }
             }, adminService);
         }catch(Exception ex){
-            log.log(Level.WARNING, "Cannot write property for AdminService in domain.xml; " + propName + ":" + propValue);
+            log.log(Level.WARNING, "console.adapter.propertyError", propName + ":" + propValue);
             //ex.printStackTrace();
         }
     }
@@ -1054,11 +1057,11 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
                 context.clean();
             }
             if (report.getActionExitCode() != ActionReport.ExitCode.SUCCESS) {
-                logger.log(Level.SEVERE, "Cannot undeploy current admin gui ", report.getFailureCause());
+                logger.log(Level.SEVERE, "console.adapter.cannotUndeploy", report.getFailureCause());
                 return false;
             }
         } catch (IOException ioe) {
-            logger.log(Level.SEVERE, "Exception while stopping and cleaning previous instance of admin GUI", ioe);
+            logger.log(Level.SEVERE, "console.adapter.errorStopping", ioe);
             return false;
         }
         return true;
