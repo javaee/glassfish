@@ -152,9 +152,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 
     private final CountDownLatch latch = new CountDownLatch(1);
 
-    @Inject
-    private Logger log;
-
+    
     @Inject
     ApplicationRegistry appRegistry;
 
@@ -175,6 +173,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
 
     AdminEndpointDecider epd;
 
+    private Logger logger = LogDomains.getLogger(AdminConsoleAdapter.class, LogDomains.CORE_LOGGER);
     private String statusHtml;
     private String initHtml;
 
@@ -258,12 +257,12 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
             try {
                 handleResourceRequest(req, res);
             } catch (IOException ioe) {
-                if (log.isLoggable(Level.SEVERE)) {
-                    log.log(Level.SEVERE, "console.adapter.resourceError",
+                if (logger.isLoggable(Level.SEVERE)) {
+                    logger.log(Level.SEVERE, "console.adapter.resourceError",
                             new Object[]{req.getRequestURI(), ioe.toString()});
                 }
-                if (log.isLoggable(Level.FINE)) {
-                    log.log(Level.FINE,
+                if (logger.isLoggable(Level.FINE)) {
+                    logger.log(Level.FINE,
                             ioe.toString(),
                             ioe);
                 }
@@ -394,8 +393,8 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
         } else if (resource.endsWith(".jpg")) {
             return "image/jpeg";
         } else {
-            if (log.isLoggable(Level.FINE)) {
-                log.fine("Unhandled content-type: " + resource);
+            if (logger.isLoggable(Level.FINE)) {
+                logger.fine("Unhandled content-type: " + resource);
             }
             return null;
         }
@@ -413,7 +412,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
         try {
             in = loader.getResourceAsStream(resourcePath);
             if (in == null) {
-                if (log.isLoggable(Level.WARNING)) {
+                if (logger.isLoggable(Level.WARNING)) {
                     logger.log(Level.WARNING, "console.adapter.resourceNotFound", resourcePath);
                 }
                 return;
@@ -536,7 +535,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
      */
     void setStateMsg(AdapterState msg) {
         stateMsg = msg;
-        log.log(Level.INFO, msg.toString());
+        logger.log(Level.INFO, msg.toString());
     }
 
     /**
@@ -563,9 +562,9 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     @Override
     public void event(@RestrictTo(EventTypes.SERVER_READY_NAME) Event event) {
         latch.countDown();
-        if (log != null) {
-            if (log.isLoggable(Level.FINE)) {
-                log.log(Level.FINE, "AdminConsoleAdapter is ready.");
+        if (logger != null) {
+            if (logger.isLoggable(Level.FINE)) {
+                logger.log(Level.FINE, "AdminConsoleAdapter is ready.");
             }
         }
     }
@@ -634,14 +633,14 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
             currentDeployedVersion = "";
         }
 
-        if (log.isLoggable(Level.FINE)){
-            log.log(Level.FINE, "GlassFish IPS Root: " + ipsRoot.getAbsolutePath());
-            log.log(Level.FINE, "Admin Console download location: " + warFile.getAbsolutePath());
-            log.log(Level.FINE, "Current Deployed version: " + currentDeployedVersion);
+        if (logger.isLoggable(Level.FINE)){
+            logger.log(Level.FINE, "GlassFish IPS Root: " + ipsRoot.getAbsolutePath());
+            logger.log(Level.FINE, "Admin Console download location: " + warFile.getAbsolutePath());
+            logger.log(Level.FINE, "Current Deployed version: " + currentDeployedVersion);
         }
 
         initState();
-        epd = new AdminEndpointDecider(serverConfig, log);
+        epd = new AdminEndpointDecider(serverConfig, logger);
         contextRoot = epd.getGuiContextRoot();
     }
 
@@ -685,14 +684,14 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
      *
      */
     private void logRequest(GrizzlyRequest req) {
-        if (log.isLoggable(Level.FINE)) {
-            log.fine("AdminConsoleAdapter's STATE IS: " + getStateMsg());
-            log.log(Level.FINE, "Current Thread: " + Thread.currentThread().getName());
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine("AdminConsoleAdapter's STATE IS: " + getStateMsg());
+            logger.log(Level.FINE, "Current Thread: " + Thread.currentThread().getName());
             Enumeration names = req.getParameterNames();
             while (names.hasMoreElements()) {
                 String name = (String) names.nextElement();
                 String values = Arrays.toString(req.getParameterValues(name));
-                log.fine("Parameter name: " + name + " values: " + values);
+                logger.fine("Parameter name: " + name + " values: " + values);
             }
         }
     }
@@ -723,7 +722,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
      *
      */
     private void startThread() {
-        new InstallerThread(ipsRoot, warFile, proxyHost, proxyPort, this, habitat, domain, env, contextRoot, log, epd.getGuiHosts()).start();
+        new InstallerThread(ipsRoot, warFile, proxyHost, proxyPort, this, habitat, domain, env, contextRoot, logger, epd.getGuiHosts()).start();
     }
 
     /**
@@ -970,7 +969,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
                 }
             }, adminService);
         }catch(Exception ex){
-            log.log(Level.WARNING, "console.adapter.propertyError", propName + ":" + propValue);
+            logger.log(Level.WARNING, "console.adapter.propertyError", propName + ":" + propValue);
             //ex.printStackTrace();
         }
     }
@@ -991,7 +990,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
                 }
             }
         } catch (Exception ex) {
-            log.log(Level.FINE, "!!!! Error, cannot update deployed version in domain.xml");
+            logger.log(Level.FINE, "!!!! Error, cannot update deployed version in domain.xml");
             //ex.printStackTrace();
         }
     }
