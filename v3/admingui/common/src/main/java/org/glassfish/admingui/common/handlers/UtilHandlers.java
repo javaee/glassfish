@@ -628,7 +628,7 @@ public class UtilHandlers {
     @Handler(id = "gf.resolveTokens",
     input = {
         @HandlerInput(name = "tokens", type = List.class, required = true),
-        @HandlerInput(name = "endpoint", type = String.class, required = true)},
+        @HandlerInput(name = "endPoint", type = String.class, required = true)},
     output = {
         @HandlerOutput(name = "resolvedTokens", type = List.class)})
     public static void resolveTokens(HandlerContext handlerCtx) {
