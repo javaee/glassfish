@@ -70,12 +70,12 @@
 </sun:property>
 
 
-<sun:property id="force" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.forceRedeploy}" helpText="$resource{i18n.deploy.forceRedeployHelp}">
-        <sun:checkbox id="force"  selected="#{pageSession.appClient['force']}" selectedValue="true" />
-</sun:property>
-
 <sun:property id="jw" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.JavaWebStart}" helpText="$resource{i18n.deploy.JavaWebStartHelp}">
 	<sun:checkbox id="jwt" label="$resource{i18n.common.Enabled}" selected="#{pageSession.appClient['PROPERTY-javaWebStartEnabled']}" selectedValue="true" />
+</sun:property>
+
+<sun:property id="force" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.forceRedeploy}" helpText="$resource{i18n.deploy.forceRedeployHelp}">
+        <sun:checkbox id="force"  selected="#{pageSession.appClient['force']}" selectedValue="true" />
 </sun:property>
 
 <sun:property id="descriptionProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.description}" helpText="$resource{i18n.deploy.descHelp}" >

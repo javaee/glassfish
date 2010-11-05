@@ -48,7 +48,7 @@
         setAttribute(key="fieldMap" value="ejb");
         createMap(result="#{pageSession.ejb}")
         mapPut(map="#{pageSession.deployMap}", key="ejb", value="#{pageSession.ejb}");
-        mapPut(map="#{pageSession.ejb}", key="convertToFalseList", value={ "enabled", "availabilityEnabled", "verify" ,"force" } );
+        mapPut(map="#{pageSession.ejb}", key="convertToFalseList", value={ "enabled", "availabilityEnabled", "verify" ,"force" "keepState",  "PROPERTY-preserveAppScopedResources"} );
      />
     <!afterCreate
         getClientId(component="$this{component}" clientId=>$page{ejbId});
@@ -85,6 +85,15 @@
 <sun:property id="force" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.forceRedeploy}" helpText="$resource{i18n.deploy.forceRedeployHelp}">
         <sun:checkbox id="force"  selected="#{pageSession.ejb['force']}" selectedValue="true" />
 </sun:property>
+
+<sun:property id="keepState" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.redeploy.keepState}" helpText="$resource{i18n.redeploy.keepStateHelp}">
+        <sun:checkbox id="keepState"  selected="#{pageSession.ejb['keepState']}" selectedValue="true" />
+</sun:property>
+
+<sun:property id="preserveAppScopedResources" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.redeploy.preserveAppScopedResources}" helpText="$resource{i18n.redeploy.preserveAppScopedResourcesHelp}">
+        <sun:checkbox id="preserveAppScopedResources"  selected="#{pageSession.ejb['PROPERTY-preserveAppScopedResources']}" selectedValue="true" />
+</sun:property>
+
 
 <sun:property id="librariesProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Libraries}" helpText="$resource{i18n.deploy.libraryHelp}" >
 	<sun:textField id="library" columns="$int{40}" maxLength="#{sessionScope.fieldLengths['maxLength.common.Libraries']}" text="#{pageSession.ejb['libraries']}" />

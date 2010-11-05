@@ -206,7 +206,6 @@ public class DeploymentHandler {
         @HandlerInput(name = "origPath", type = String.class, required = true),
         @HandlerInput(name = "deployMap", type = Map.class, required = true),
         @HandlerInput(name = "convertToFalse", type = List.class, required = true),
-        @HandlerInput(name = "appProps", type = List.class, required = true),
         @HandlerInput(name = "valueMap", type = Map.class, required = true)
     })
     public static void redeploy(HandlerContext handlerCtx) {
@@ -215,15 +214,6 @@ public class DeploymentHandler {
             String origPath = (String) handlerCtx.getInputValue("origPath");
             Map<String,String> deployMap = (Map) handlerCtx.getInputValue("deployMap");
             Map<String,String> valueMap = (Map) handlerCtx.getInputValue("valueMap");
-
-            //Map<String,String> appProps = (Map) handlerCtx.getInputValue("appProps");
-            List<Map<String, String>> obj =  (List) handlerCtx.getInputValue("appProps");
-            Map<String, String> appProps = new HashMap();
-            if (obj != null){
-                for(Map oneProp: obj){
-                    appProps.put((String)oneProp.get("name"), (String)oneProp.get("value"));
-                }
-            }
             List<String> convertToFalsList = (List<String>) handlerCtx.getInputValue("convertToFalse");
             if (convertToFalsList != null)
             for (String one : convertToFalsList) {
@@ -242,15 +232,11 @@ public class DeploymentHandler {
 
              String availabilityEnabled = valueMap.get("availabilityEnabled");
              if (availabilityEnabled != null){
-                 deploymentProps.setProperty("availabilityEnabled", availabilityEnabled);
+                deploymentProps.setAvailabilityEnabled(Boolean.parseBoolean(availabilityEnabled));
              }
-
-             Properties props = new Properties();
-             if (appProps != null){
-                 String jws = appProps.get("javaWebStartEnabled");
-                 if (jws != null){
-                     props.setProperty("javaWebStartEnabled", (jws.equals("true"))? "true" : "false");
-                 }
+             String keepState = deployMap.get("keepState");
+             if (keepState != null){
+                deploymentProps.setProperty("keepState", keepState);
              }
 
              deploymentProps.setForce(true);
@@ -261,12 +247,28 @@ public class DeploymentHandler {
              if ("osgi".equals(deployMap.get("type"))){
                  deploymentProps.setProperty("type", "osgi");
              }
-             props.setProperty(KEEP_SESSIONS, ""+deployMap.get("keepSessions"));
+             Properties props = new Properties();
+             _setProps(deployMap, props, "javaWebStartEnabled");
+             _setProps(deployMap, props, "keepSessions");
+             _setProps(deployMap, props, "preserveAppScopedResources");
              deploymentProps.setProperties(props);
-             
-             DeployUtil.invokeDeploymentFacility(null, deploymentProps, filePath, handlerCtx);
+
+             //deploy to the same target
+             List<String> targetList = DeployUtil.getApplicationTarget(appName, "application-ref");
+             String[] targetArray = null;
+             if ( ! targetList.isEmpty()){
+                 targetArray = (String[])targetList.toArray(new String[targetList.size()]);
+             }
+             DeployUtil.invokeDeploymentFacility( targetArray, deploymentProps, filePath, handlerCtx);
         } catch (Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);
+        }
+    }
+
+    private static void _setProps(Map deployMap, Properties props, String pName){
+        String str = (String) deployMap.get(pName);
+        if (str != null){
+            props.setProperty(pName, str);
         }
     }
 

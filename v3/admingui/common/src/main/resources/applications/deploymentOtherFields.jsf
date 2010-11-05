@@ -76,7 +76,6 @@
     <sun:checkbox id="availability" label="$resource{i18n.common.Enabled}" selected="#{pageSession.other['availabilityEnabled']}" selectedValue="true" />
 </sun:property>
 
-
 <sun:property id="precmplProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.precompile}" helpText="$resource{i18n.deploy.PrecompileHelp}">
 	<sun:checkbox id="precompileJSP" label="$resource{i18n.common.Enabled}" selected="#{pageSession.other['precompilejsp']}" selectedValue="true" />
 </sun:property>
@@ -85,13 +84,22 @@
         <sun:checkbox id="ver2" label="$resource{i18n.common.Enabled}" selected="#{pageSession.other['verify']}" selectedValue="true" />
 </sun:property>
 
+<sun:property id="osgi" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.osgiType}" helpText="$resource{i18n.deploy.osgiTypeHelp}">
+        <sun:checkbox id="osgi"  selected="#{pageSession.other['type']}" selectedValue="osgi" />
+</sun:property>
+
 <sun:property id="force" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.forceRedeploy}" helpText="$resource{i18n.deploy.forceRedeployHelp}">
         <sun:checkbox id="force"  selected="#{pageSession.other['force']}" selectedValue="true" />
 </sun:property>
 
-<sun:property id="osgi" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.osgiType}" helpText="$resource{i18n.deploy.osgiTypeHelp}">
-    <sun:checkbox id="osgi"  selected="#{pageSession.other['type']}" selectedValue="osgi" />
+<sun:property id="keepState" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.redeploy.keepState}" helpText="$resource{i18n.redeploy.keepStateHelp}">
+        <sun:checkbox id="force"  selected="#{pageSession.other['keepState']}" selectedValue="true" />
 </sun:property>
+
+<sun:property id="keepSessions" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.redeploy.keepSessions}" helpText="$resource{i18n.redeploy.keepSessionsHelp}">
+        <sun:checkbox id="force"  selected="#{pageSession.other['PROPERTY-keepSessions']}" selectedValue="true" />
+</sun:property>
+
 
 <sun:property id="librariesProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Libraries}" helpText="$resource{i18n.deploy.libraryHelp}" >
 	<sun:textField id="library" columns="$int{40}" maxLength="#{sessionScope.fieldLengths['maxLength.common.Libraries']}" text="#{pageSession.other['libraries']}" />

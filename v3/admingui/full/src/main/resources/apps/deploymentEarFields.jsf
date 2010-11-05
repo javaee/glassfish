@@ -87,12 +87,24 @@
         <sun:checkbox id="ver2" label="$resource{i18n.common.Enabled}" selected="#{pageSession.ear['verify']}" selectedValue="true" />
 </sun:property>
 
+<sun:property id="jw" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.JavaWebStart}" helpText="$resource{i18n.deploy.JavaWebStartHelp}">
+	<sun:checkbox id="jwc" label="$resource{i18n.common.Enabled}" selected="#{pageSession.ear['PROPERTY-javaWebStartEnabled']}" selectedValue="true" />
+</sun:property>
+
 <sun:property id="force" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.forceRedeploy}" helpText="$resource{i18n.deploy.forceRedeployHelp}">
         <sun:checkbox id="force"  selected="#{pageSession.ear['force']}" selectedValue="true" />
 </sun:property>
+        
+<sun:property id="keepSessions" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.redeploy.keepSessions}" helpText="$resource{i18n.redeploy.keepSessionsHelp}">
+        <sun:checkbox id="keepSessions"  selected="#{pageSession.ear['PROPERTY-keepSessions']}" selectedValue="true" />
+</sun:property>
 
-<sun:property id="jw" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.JavaWebStart}" helpText="$resource{i18n.deploy.JavaWebStartHelp}">
-	<sun:checkbox id="jwc" label="$resource{i18n.common.Enabled}" selected="#{pageSession.ear['PROPERTY-javaWebStartEnabled']}" selectedValue="true" />
+<sun:property id="keepState" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.redeploy.keepState}" helpText="$resource{i18n.redeploy.keepStateHelp}">
+        <sun:checkbox id="keepState"  selected="#{pageSession.ear['keepState']}" selectedValue="true" />
+</sun:property>
+
+<sun:property id="preserveAppScopedResources" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.redeploy.preserveAppScopedResources}" helpText="$resource{i18n.redeploy.preserveAppScopedResourcesHelp}">
+        <sun:checkbox id="preserveAppScopedResources"  selected="#{pageSession.ear['PROPERTY-preserveAppScopedResources']}" selectedValue="true" />
 </sun:property>
 
 
