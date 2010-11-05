@@ -51,8 +51,8 @@
     &testproperties;
     &reporting;
 
-    <!-- target name="all" depends="build,setup,deploy,run,add-cluster,run,redeploy,run,undeploy,unsetup,dev-report"/ -->
-    <target name="all" depends="build,setup,deploy,run,add-cluster,run,undeploy,unsetup,dev-report"/>
+    <!-- executed list of targets: build,setup,deploy,verify,add-cluster,verify,redeploy,verify,undeploy,unsetup,dev-report -->
+    <target name="all" depends="build,setup,run-test,unsetup,dev-report"/>
 
     <target name="setup" depends="init-common">
       <antcall target="clean-results"/>
@@ -69,6 +69,16 @@
       <antcall target="add-app-ref-for-target">
           <param name="cname" value="c1"/>
       </antcall>
+    </target>
+
+    <target name="run-test" depends="init-common">
+      <antcall target="deploy"/>
+      <antcall target="verify"/>
+      <antcall target="add-cluster"/>
+      <antcall target="verify"/>
+      <antcall target="redeploy"/>
+      <antcall target="verify"/>
+      <antcall target="undeploy"/>
     </target>
 
     <target name="redeploy" depends="init-common">
@@ -201,7 +211,7 @@
     </target>
 
     <target name="undeploy-or-redeploy" depends="init-common">
-        <echo message="undeploying application"/>
+        <echo message="${op}ing application"/>
         <java  fork="on"
               failonerror="true"
               classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/modules/gf-client.jar:${env.APS_HOME}/lib/reportbuilder.jar:${build.classes.dir}"
@@ -252,7 +262,7 @@
         </javac>
     </target>
 
-    <target name="run" depends="init-common">
+    <target name="verify" depends="init-common">
       <sleep seconds="10"/>
         <echo message="Verifying timeouts"/>
         <java  fork="on"
