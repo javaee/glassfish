@@ -134,9 +134,9 @@ public class InstallNodeCommand extends CLICommand {
 
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         if (installDir == null) {
-            installDir = baseRootValue.replaceAll("\\\\","/");
+//            installDir = baseRootValue.replaceAll("\\\\","/");
+            installDir = baseRootValue;
         }
-        
         for (String host: hosts) {
             sshLauncher.init(sshuser, host, sshport, sshpassword, sshkeyfile, sshkeypassphrase, logger);
             //String remoteDir = installLocation + "/glassfish3/glassfish";
@@ -168,7 +168,7 @@ public class InstallNodeCommand extends CLICommand {
                 sshLauncher.runCommand(unzipCommand, outStream);
                 logger.finer("Installed " + zip + " into " + host + ":" + installDir);
             } catch (IOException ioe){
-                logger.info (Strings.get("jar.failed", host));
+                logger.info (Strings.get("jar.failed", host, outStream.toString()));
                 throw new IOException (ioe);
             }
 
