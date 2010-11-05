@@ -57,6 +57,8 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 import com.sun.logging.LogDomains;
 import com.sun.jts.utils.LogFormatter;
+import com.sun.jts.utils.RecoveryHooks.FailureInducer;
+
 /**
  * This class manages information required for Delegated recovery. This class supports
  * multiple delegated recoveries at the same time. Functionality is alsomost same as
@@ -286,6 +288,7 @@ public class DelegatedRecoveryManager {
         // Go through and resync each transaction.  The transaction lock
         // for each transaction is obtained to avoid deadlocks during recovery.
         
+        FailureInducer.waitInRecovery();
         while (resyncList.hasMoreElements()) {
             
             TopCoordinator coord = (TopCoordinator)resyncList.nextElement();

@@ -47,6 +47,7 @@ import java.util.logging.Level;
 
 import com.sun.jts.CosTransactions.Configuration;
 import com.sun.jts.CosTransactions.RecoveryManager;
+import com.sun.jts.utils.RecoveryHooks.FailureInducer;
 
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.api.admin.ProcessEnvironment;
@@ -143,6 +144,15 @@ public class TransactionServiceProperties {
                             if (isValueSet(value)) {
                                 jtsProperties.put("pending-txn-cleanup-interval", value);
                             }
+                        } else if (name.equals("add-wait-point-during-recovery")) {
+                            if (isValueSet(value)) {
+                                try {
+                                    FailureInducer.setWaitPointRecovery(Integer.parseInt(value));
+                                } catch (Exception e) {
+                                    _logger.log(Level.WARNING, e.getMessage());
+                                }
+                            }
+
                         }
                     }
 
