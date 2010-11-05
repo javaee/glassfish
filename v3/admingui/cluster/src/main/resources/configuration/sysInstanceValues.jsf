@@ -85,13 +85,16 @@
                     gf.restRequest(endpoint="#{sessionScope.REST_URL}/servers/server/#{instance}/system-properties", method="get", result="#{requestScope.result}");
                     mapPut(map="#{requestScope.instanceMap}", key="instance", value="#{instance}");
                     mapPut(map="#{requestScope.instanceMap}", key="overrideValue", value="");
+                    mapPut(map="#{requestScope.instanceMap}", key="cluster", value="");
                     foreach(var="sysprop", list="#{requestScope.result.data.extraProperties.systemProperties}") {
                         if ("#{sysprop.name}=#{propName}") {
                             mapPut(map="#{requestScope.instanceMap}", key="overrideValue", value="#{sysprop.value}");
                         }
                     }
                     setAttribute(key="tmp" value="#{instance}");
-                    mapPut(map="#{requestScope.instanceMap}", key="cluster", value="#{requestScope.instanceMapping['$attribute{tmp}']}");
+                    if ("!empty #{requestScope.instanceMapping['$attribute{tmp}']}") {
+                        mapPut(map="#{requestScope.instanceMap}", key="cluster", value="#{requestScope.instanceMapping['$attribute{tmp}']}");
+                    }
                     listAdd(list="#{pageSession.tableList}", value="#{requestScope.instanceMap}");
                 }
             }
@@ -132,11 +135,12 @@
                 <ui:event type="afterCreate">
                     getClientId(component="$this{component}" clientId=>$page{propertyTableRowGroupId});
                 </ui:event>
-                <sun:tableColumn id="nameCol" headerText="$resource{i18n.instanceValues.colInstanceName}" sort="name" rowHeader="$boolean{false}">
+                <sun:tableColumn id="nameCol" headerText="$resource{i18n.instanceValues.colInstanceName}" sort="name" rowHeader="$boolean{false}" >
                     <sun:hyperlink id="saLink" url="/cluster/cluster/clusterInstanceEdit.jsf?clusterName=#{td.value.cluster}&instanceName=#{td.value.instance}"
                         rendered="#{!empty td.value.cluster}" text="#{td.value.instance}"/>
+                    <h:outputText rendered="#{empty td.value.cluster}" value="#{td.value.instance}"/>
                 </sun:tableColumn>
-                <sun:tableColumn id="clusterCol" headerText="$resource{i18n.instanceValues.colClusterName}" sort="value" rowHeader="$boolean{false}">
+                <sun:tableColumn id="clusterCol" headerText="$resource{i18n.instanceValues.colClusterName}" sort="value" rendered="#{!empty td.value.cluster}" rowHeader="$boolean{false}">
                     "#{td.value.cluster}
                 </sun:tableColumn>
                 <sun:tableColumn id="defValCol" headerText="$resource{i18n.systemProps.colDefaultValue}" sort="value" rowHeader="$boolean{false}">
