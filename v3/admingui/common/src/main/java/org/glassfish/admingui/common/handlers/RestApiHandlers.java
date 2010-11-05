@@ -66,7 +66,6 @@ public class RestApiHandlers {
     @Handler(id = "gf.getDefaultValues",
             input = {
                     @HandlerInput(name = "endpoint", type = String.class, required = true),
-                    @HandlerInput(name = "command", type = String.class),
                     @HandlerInput(name = "orig", type = Map.class)
             },
             output = {
@@ -75,10 +74,8 @@ public class RestApiHandlers {
     public static void getDefaultValues(HandlerContext handlerCtx) {
         try {
             String endpoint = (String) handlerCtx.getInputValue("endpoint");
-            String command = (String) handlerCtx.getInputValue("command");
             Map<String, String> orig = (Map) handlerCtx.getInputValue("orig");
-
-            Map<String, String> defaultValues = buildDefaultValueMap(endpoint, command);
+            Map<String, String> defaultValues = buildDefaultValueMap(endpoint);
 
             if (orig == null) {
                 handlerCtx.setOutputValue("valueMap", defaultValues);

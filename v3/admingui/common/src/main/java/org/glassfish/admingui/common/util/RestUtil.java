@@ -174,19 +174,15 @@ public class RestUtil {
         return parseResponse(response, handlerCtx, endpoint, attrs, quiet, throwException);
     }
 
-    public static Map<String, String> buildDefaultValueMap(String endpoint, String command) throws ParserConfigurationException, SAXException, IOException {
+    public static Map<String, String> buildDefaultValueMap(String endpoint) throws ParserConfigurationException, SAXException, IOException {
         Map<String, String> defaultValues = new HashMap<String, String>();
 
         RestResponse response = options(endpoint, "application/json");
         //System.out.println("=========== response.getResponse():\n " + response.getResponse());
         Map<String, Object> data = (Map<String, Object>)response.getResponse().get("data");
         List<Map<String, Object>> methods = null;
-        if (! GuiUtil.isEmpty(command) ){
-            methods = (List<Map<String, Object>>) data.get(command);
-        }else{
-            Map<String, Object> extraProperties = (Map<String, Object>) data.get("extraProperties");
-            methods = (List<Map<String, Object>>) extraProperties.get("methods");
-        }
+        Map<String, Object> extraProperties = (Map<String, Object>) data.get("extraProperties");
+        methods = (List<Map<String, Object>>) extraProperties.get("methods");
         for (Map<String, Object> method : methods) {
             if ("POST".equals(method.get("name"))) {
                 Map<String, Object> messageParameters = (Map<String, Object>) method.get("messageParameters");
