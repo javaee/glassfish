@@ -53,6 +53,14 @@ import org.jvnet.hk2.config.Configured;
 @Configured
 
 public interface RestConfig extends ConfigExtension {
+    
+    public static String  DEBUG = "debug";
+    public static String  INDENTLEVEL ="indentLevel";
+    public static String  SHOWHIDDENCOMMANDS ="showHiddenCommands";
+    public static String  WADLGENERATION ="wadlGeneration";
+    public static String  LOGRESPONSES ="logOutput";
+    public static String  LOGINPUTS ="logInput";
+    public static String  SHOWDEPRECATEDITEMS ="showDeprecatedItems";
 
     @Attribute(defaultValue = "false", dataType = Boolean.class)
     public String getDebug();
@@ -83,4 +91,9 @@ public interface RestConfig extends ConfigExtension {
     public String getLogInput();
 
     public void setLogInput(String logInput);
+    
+    @Attribute(defaultValue = "false", dataType = Boolean.class)
+    public String getShowDeprecatedItems();
+
+    public void setShowDeprecatedItems(String showDeprecatedItems);
 }

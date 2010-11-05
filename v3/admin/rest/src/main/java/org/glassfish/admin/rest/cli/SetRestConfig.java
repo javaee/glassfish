@@ -40,9 +40,7 @@
 package org.glassfish.admin.rest.cli;
 
 import org.glassfish.api.ActionReport;
-import org.glassfish.api.admin.*;
 import org.glassfish.api.Param;
-import org.glassfish.api.admin.config.ModelBinding;
 
 import com.sun.enterprise.config.serverbeans.Config;
 
@@ -56,8 +54,10 @@ import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 
 import java.beans.PropertyVetoException;
-import org.glassfish.admin.rest.LazyJerseyInit;
 import org.glassfish.admin.rest.RestConfig;
+import org.glassfish.api.admin.AdminCommand;
+import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.ServerEnvironment;
 
 /**
  * Remote asadmin command: set-rest-config
@@ -69,7 +69,7 @@ import org.glassfish.admin.rest.RestConfig;
  * @author Ludovic Champenois
  *
  */
-@Service(name = "_set-rest-config")
+@Service(name = "_set-rest-admin-config")
 @Scoped(PerLookup.class)
 public class SetRestConfig implements AdminCommand {
 
@@ -85,6 +85,8 @@ public class SetRestConfig implements AdminCommand {
     private String wadlGeneration;
     @Param(optional = true)
     private String showHiddenCommands;
+    @Param(optional = true)
+    private String showDeprecatedItems;
     @Param(optional = true)
     private String logOutput;
     @Param(optional = true)
@@ -146,6 +148,9 @@ public class SetRestConfig implements AdminCommand {
                     }
                     if (showHiddenCommands != null) {
                         param.setShowHiddenCommands(showHiddenCommands);
+                    }
+                    if (showDeprecatedItems != null) {
+                        param.setShowDeprecatedItems(showDeprecatedItems);
                     }
                     if (wadlGeneration != null) {
                         param.setWadlGeneration(wadlGeneration);

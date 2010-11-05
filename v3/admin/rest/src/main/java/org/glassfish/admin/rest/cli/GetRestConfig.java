@@ -40,7 +40,6 @@
 package org.glassfish.admin.rest.cli;
 
 import org.glassfish.api.ActionReport;
-import org.glassfish.api.admin.*;
 
 import com.sun.enterprise.config.serverbeans.Config;
 
@@ -51,6 +50,10 @@ import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.component.Habitat;
 
 import org.glassfish.admin.rest.RestConfig;
+import org.glassfish.api.admin.AdminCommand;
+import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.CommandLock;
+import org.glassfish.api.admin.ServerEnvironment;
 
 /**
  * Remote asadmin command: get-rest-config
@@ -62,7 +65,7 @@ import org.glassfish.admin.rest.RestConfig;
  * @author Ludovic Champenois
  *
  */
-@Service(name = "_get-rest-config")
+@Service(name = "_get-rest-admin-config")
 @Scoped(PerLookup.class)
 @CommandLock(CommandLock.LockType.NONE)
 public class GetRestConfig implements AdminCommand {
@@ -81,11 +84,12 @@ public class GetRestConfig implements AdminCommand {
 
 
         if (restConfig == null) {
-            report.setMessage("debug=false, indentLevel=-1, showHiddenCommands=false, wadlGeneration=false, logOutput=false, logInput=false");
+            report.setMessage("debug=false, indentLevel=-1, showHiddenCommands=false, wadlGeneration=false, logOutput=false, logInput=false, showDeprecatedItems=false");
 
             report.getTopMessagePart().addProperty("debug", "false");
             report.getTopMessagePart().addProperty("indentLevel", "-1");
             report.getTopMessagePart().addProperty("showHiddenCommands", "false");
+            report.getTopMessagePart().addProperty("showDeprecatedItems", "false");
             report.getTopMessagePart().addProperty("wadlGeneration", "" + "false");
             report.getTopMessagePart().addProperty("logOutput", "" + "false");
             report.getTopMessagePart().addProperty("logInput", "" + "false");
@@ -97,6 +101,7 @@ public class GetRestConfig implements AdminCommand {
             report.getTopMessagePart().addProperty("debug", restConfig.getDebug());
             report.getTopMessagePart().addProperty("indentLevel", restConfig.getIndentLevel());
             report.getTopMessagePart().addProperty("showHiddenCommands", restConfig.getShowHiddenCommands());
+            report.getTopMessagePart().addProperty("showDeprecatedItems", restConfig.getShowDeprecatedItems());
             report.getTopMessagePart().addProperty("wadlGeneration", restConfig.getWadlGeneration());
             report.getTopMessagePart().addProperty("logOutput", restConfig.getLogOutput());
             report.getTopMessagePart().addProperty("logInput", restConfig.getLogInput());
