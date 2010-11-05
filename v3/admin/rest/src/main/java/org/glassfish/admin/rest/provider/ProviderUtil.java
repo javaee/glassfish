@@ -356,14 +356,19 @@ public class ProviderUtil {
             }
 
         }
-
+        //hack-1 : support delete method for html
+        //hardcode "post" instead of commandMethod which chould be post or delete.
+        String webMethod="post";
+        if (commandMethod.equalsIgnoreCase("get")){
+             webMethod="get";
+        }
         if (!result.equals("")) {
             //set encType if file upload operation
             String encType = methodMetaData.isFileUploadOperation() ?
                 " enctype=\"multipart/form-data\"" : "" ;
             result = "<div><form action=\"" + uriInfo.getAbsolutePath().toString() +
-                "\" method=\"" + /*commandMethod*/"post\"" + encType + ">" +  //hack-1 : support delete method for html
-                "<dl>" + result;                       //hardcode "post" instead of commandMethod which chould be post or delete.
+                "\" method=\"" + webMethod+ "\"" + encType + ">" +  
+                "<dl>" + result;                       
 
             //hack-1 : support delete method for html
             //add hidden field

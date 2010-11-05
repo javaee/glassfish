@@ -121,7 +121,9 @@ public class TemplateExecCommand {
         mmd.put(commandMethod, methodMetaData);
         ResourceUtil.addMethodMetaData(ar, mmd);
 
-        return new ActionReportResult(ar, null, optionsResult);
+        ActionReportResult ret=  new ActionReportResult(ar, null, optionsResult);
+        ret.setCommandDisplayName(commandDisplayName);
+        return ret;
     }
 
     protected ActionReportResult executeCommand(ParameterMap data) {
@@ -129,6 +131,7 @@ public class TemplateExecCommand {
                 ResourceUtil.getResultType(requestHeaders));
         ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
         ActionReportResult results = new ActionReportResult(commandName, actionReport, options().getMetaData());
+        results.setCommandDisplayName(commandDisplayName);
 
         if (exitCode != ActionReport.ExitCode.FAILURE) {
             results.setStatusCode(200); /*200 - ok*/

@@ -61,7 +61,7 @@ import org.glassfish.admin.rest.CliFailureException;
 public class TemplateCommandGetResource extends TemplateExecCommand {
 
     public TemplateCommandGetResource(String resourceName, String commandName, String commandMethod, boolean b) {
-        super(resourceName, commandName, commandMethod, "", "", b);
+        super(resourceName, commandName, commandMethod, "GET", commandName, b);
         parameterType = Constants.QUERY_PARAMETER;
     }
 
@@ -76,6 +76,7 @@ public class TemplateCommandGetResource extends TemplateExecCommand {
         try {
             processCommandParams(data);
             addQueryString(((ContainerRequest) requestHeaders).getQueryParameters(), data);
+            purgeEmptyEntries(data);
             adjustParameters(data);
 
             return executeCommand(data);
