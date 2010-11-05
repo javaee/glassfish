@@ -106,6 +106,10 @@ public class TypeProxy<T extends Type> {
         return subTypeRefs;
     }
 
+    void addSubTypeRef(Type subType) {
+        subTypeRefs.add(subType);
+    }
+
     public Set<ClassModel> getImplementations() {
         return implementations;
     }
@@ -124,7 +128,12 @@ public class TypeProxy<T extends Type> {
 
                     @Override
                     public U next() {
-                        return itr.next().get();
+                        TypeProxy<U> next = itr.next();
+                        if (next!=null) {
+                            return next.get();
+                        } else {
+                            return null;
+                        }
                     }
 
                     @Override

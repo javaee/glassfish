@@ -55,7 +55,11 @@ public class TypeImpl extends AnnotatedElementImpl implements Type {
     public TypeImpl(String name, TypeProxy<Type> sink) {
         super(name);
         this.sink = sink;
-        this.sink.set(this);
+        try {
+            this.sink.set(this);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
