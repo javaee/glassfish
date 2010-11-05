@@ -43,7 +43,9 @@
 <ui:event type="initPage">
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
     if(!$session{supportCluster}) {
-        setPageSessionAttribute(key="configName" value="server-config");
+        if (!$pageSession{configName}) {
+            setPageSessionAttribute(key="configName" value="server-config");
+        }
     }
     getPluginIdFromViewId(viewId="#{facesContext.viewRoot.viewId}", pluginId="#{pluginId}");
 </ui:event>
