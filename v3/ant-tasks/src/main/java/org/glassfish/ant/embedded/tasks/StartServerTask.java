@@ -40,25 +40,21 @@
 
 package org.glassfish.ant.embedded.tasks;
 
-import org.apache.tools.ant.Task;
 import org.apache.tools.ant.BuildException;
-
-import org.glassfish.api.embedded.Server;
-import org.glassfish.api.embedded.ContainerBuilder;
+import org.glassfish.embeddable.GlassFishException;
 
 public class StartServerTask extends TaskBase {
 
     String serverID = Constants.DEFAULT_SERVER_ID;
-    int port = -1;
+    int port = Constants.DEFAULT_HTTP_PORT;
     String installRoot = null, instanceRoot = null, configFile = null;
-    Boolean autoDelete;
-    ContainerBuilder.Type containerType = ContainerBuilder.Type.all;
+    Boolean configFileReadOnly = true;
 
     public void setServerID(String serverID) {
         this.serverID = serverID;
     }
 
-    public void setPort(int port) {
+    public void setHttpPort(int port) {
         this.port = port;
     }
 
@@ -74,37 +70,17 @@ public class StartServerTask extends TaskBase {
         this.configFile = configFile;
     }
 
-    public void setAutoDelete(Boolean autoDelete) {
-        this.autoDelete = autoDelete;
+    public void setConfigFileReadOnly(Boolean configFileReadOnly) {
+        this.configFileReadOnly = configFileReadOnly;
     }
-
 
     public void execute() throws BuildException {
-
         try {
-            Server server = Server.getServer(serverID);
-            if (server != null) {
-                return;
-            }
-            log ("Starting server");
-            server = Util.getServer(serverID, installRoot, instanceRoot, configFile, autoDelete);
-
-            Util.createPort(server, configFile, port);
-
-            server.addContainer(getContainerType());
-            server.start();
-
-        } catch (Exception ex) {
+            Util.startGlassFish(serverID, installRoot, instanceRoot,
+                    configFile, configFileReadOnly, port);
+        } catch (GlassFishException ex) {
             error(ex);
         }
-    }
-
-    ContainerBuilder.Type getContainerType() {
-        return containerType;
-    }
-
-    void setContainerType(ContainerBuilder.Type type) {
-        this.containerType = type;
     }
 
 }

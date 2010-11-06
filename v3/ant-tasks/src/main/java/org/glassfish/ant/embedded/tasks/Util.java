@@ -40,67 +40,129 @@
 
 package org.glassfish.ant.embedded.tasks;
 
-import org.glassfish.api.embedded.EmbeddedFileSystem;
-import org.glassfish.api.embedded.Port;
-import org.glassfish.api.embedded.Server;
-import org.glassfish.embeddable.web.ConfigException;
-import org.glassfish.embeddable.web.EmbeddedWebContainer;
-import org.glassfish.embeddable.web.HttpListener;
+import org.glassfish.embeddable.BootstrapProperties;
+import org.glassfish.embeddable.CommandResult;
+import org.glassfish.embeddable.CommandRunner;
+import org.glassfish.embeddable.Deployer;
+import org.glassfish.embeddable.GlassFish;
 import org.glassfish.embeddable.GlassFishException;
+import org.glassfish.embeddable.GlassFishProperties;
+import org.glassfish.embeddable.GlassFishRuntime;
 
 import java.io.File;
-import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 public class Util {
 
-    public static Server getServer(String serverID, String installRoot, String instanceRoot, String configFile,
-                                   Boolean autoDelete) throws IOException {
+    private final static Map<String, GlassFish> gfMap =
+            new HashMap<String, GlassFish>();
 
-        Server server = Server.getServer(serverID);
-        if (server != null)
-            return server;
+    private static GlassFishRuntime glassfishRuntime;
 
-        Server.Builder builder = new Server.Builder(serverID);
-
-        EmbeddedFileSystem efs = getFileSystem(installRoot, instanceRoot, configFile, autoDelete);
-        server = builder.embeddedFileSystem(efs).build();
-        return server;
-    }
-
-    public static EmbeddedFileSystem getFileSystem(String installRoot, String instanceRoot, String configFile, Boolean autoDelete) {
-
-        EmbeddedFileSystem.Builder efsb = new EmbeddedFileSystem.Builder();
-        if (installRoot != null)
-            efsb.installRoot(new File(installRoot), true);
-        if (instanceRoot != null) {
-            // this property is normally used as a token in a regular glassfish domain.xml
-            System.setProperty("com.sun.aas.instanceRootURI", "file:" + instanceRoot);
-            efsb.instanceRoot(new File(instanceRoot));
+    public static synchronized GlassFish startGlassFish(String serverID, String installRoot,
+                                                        String instanceRoot, String configFileURI,
+                                                        boolean configFileReadOnly, int httpPort)
+            throws GlassFishException {
+        GlassFish glassfish = gfMap.get(serverID);
+        if (glassfish != null) {
+            return glassfish;
+        }
+        if (glassfishRuntime == null) {
+            BootstrapProperties bootstrapProperties = new BootstrapProperties();
+            if (installRoot != null) {
+                bootstrapProperties.setInstallRoot(installRoot);
+            }
+            glassfishRuntime = GlassFishRuntime.bootstrap(bootstrapProperties);
         }
 
-        if (configFile != null)
-            efsb.configurationFile(new File(configFile));
-        if (autoDelete != null)
-            efsb.autoDelete(autoDelete.booleanValue());
+        GlassFishProperties glassfishProperties = new GlassFishProperties();
+        if (instanceRoot != null) {
+            glassfishProperties.setInstanceRoot(instanceRoot);
+        }
+        if (configFileURI != null) {
+            glassfishProperties.setConfigFileURI(configFileURI);
+            glassfishProperties.setConfigFileReadOnly(configFileReadOnly);
+        }
+        if (httpPort != -1) {
+            glassfishProperties.setPort("http", httpPort);
+        }
+        glassfishProperties.setProperty("-type", "EMBEDDED");
 
-        return efsb.build();
+        glassfish = glassfishRuntime.newGlassFish(glassfishProperties);
+        glassfish.start();
+
+        gfMap.put(serverID, glassfish);
+
+        System.out.println("Started GlassFish [" + serverID + "]");
+
+        return glassfish;
     }
 
-    public static void createPort(Server server, String configFile, int port)
-            throws java.io.IOException {
-        // TODO :: change this to use org.glassfish.embeddable.GlassFish.getService
-        EmbeddedWebContainer embedded = server.getHabitat().
-                getComponent(EmbeddedWebContainer.class);
-        HttpListener listener = new HttpListener();
-        listener.setId("http-listener-1");
-        listener.setPort(port != -1 ? port : Constants.DEFAULT_HTTP_PORT);
-        try {
-            embedded.addWebListener(listener);
-        } catch (GlassFishException ex) {
-            throw new IOException(ex);
-        } catch (ConfigException ex) {
-            throw new IOException(ex);
+    public static void deploy(String app, String serverId, List<String> deployParams)
+            throws Exception {
+        GlassFish glassfish = gfMap.get(serverId);
+        if (glassfish == null) {
+            throw new Exception("Embedded GlassFish [" + serverId + "] not running");
+        }
+        if (app == null) {
+            throw new Exception("Application can not be null");
+        }
+        Deployer deployer = glassfish.getDeployer();
+        if (deployParams.size() > 0) {
+            deployer.deploy(new File(app).toURI(), deployParams.toArray(new String[0]));
+            System.out.println("Deployed [" + app + "] with parameters " + deployParams);
+        } else {
+            deployer.deploy(new File(app).toURI());
+            System.out.println("Deployed [" + app + "]");
+        }
+    }
+
+    public static void undeploy(String appName, String serverId) throws Exception {
+        GlassFish glassfish = gfMap.get(serverId);
+        if (glassfish == null) {
+            throw new Exception("Embedded GlassFish [" + serverId + "] not running");
+        }
+        if (appName == null) {
+            throw new Exception("Application name can not be null");
+        }
+        Deployer deployer = glassfish.getDeployer();
+        deployer.undeploy(appName);
+        System.out.println("Undeployed [" + appName + "]");
+    }
+
+    public static void runCommand(String commandLine, String serverId) throws Exception {
+        GlassFish glassfish = gfMap.get(serverId);
+        if (glassfish == null) {
+            throw new Exception("Embedded GlassFish [" + serverId + "] not running");
+        }
+        if (commandLine == null) {
+            throw new Exception("Command can not be null");
+        }
+        String[] split = commandLine.split(" ");
+        String command = split[0].trim();
+        String[] commandParams = null;
+        if (split.length > 1) {
+            commandParams = new String[split.length - 1];
+            for (int i = 1; i < split.length; i++) {
+                commandParams[i - 1] = split[i].trim();
+            }
+        }
+        CommandRunner cr = glassfish.getCommandRunner();
+        CommandResult result = commandParams == null ?
+                cr.run(command) : cr.run(command, commandParams);
+        System.out.println("Executed command [" + commandLine +
+                "]. Output : \n" + result.getOutput());
+    }
+
+    public static synchronized void disposeGlassFish(String serverID)
+            throws GlassFishException {
+        GlassFish glassfish = gfMap.remove(serverID);
+        if (glassfish != null) {
+            glassfish.dispose();
+            System.out.println("Stopped GlassFish [" + serverID + "]");
         }
     }
 

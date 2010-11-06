@@ -40,13 +40,11 @@
 
 package org.glassfish.ant.embedded.tasks;
 
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.Task;
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Task;
+import org.glassfish.embeddable.GlassFishException;
 
-import org.glassfish.api.embedded.Server;
-
-public class StopServerTask extends Task{
+public class StopServerTask extends Task {
 
     String serverID = Constants.DEFAULT_SERVER_ID;
 
@@ -54,18 +52,11 @@ public class StopServerTask extends Task{
         this.serverID = serverID;
     }
 
-
     public void execute() throws BuildException {
-        log ("Stopping server");
-        Server server = Server.getServer(serverID);
-        if (server ==  null) {
-            log("Embedded Server [" + serverID + "] not running", Project.MSG_WARN );
-            return;
-        }
         try {
-            server.stop();
-        } catch (Exception ex) {
-            log (ex.getMessage());
+            Util.disposeGlassFish(serverID);
+        } catch (GlassFishException ex) {
+            log(ex.getMessage());
         }
     }
 
