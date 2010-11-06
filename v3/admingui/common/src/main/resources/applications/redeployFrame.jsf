@@ -153,6 +153,7 @@
             
             </sun:propertySheetSection>
 </sun:propertySheet>
+    "<br /><br />
     </sun:form>
 #include "/common/applications/uploadJS.inc"
  </define>

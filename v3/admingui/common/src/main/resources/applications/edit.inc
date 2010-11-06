@@ -48,11 +48,25 @@
             <sun:staticText id="name" text="#{pageSession.appName}"/>
         </sun:property>
 
+        
+
         <sun:property id="statusProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.status}">
             <sun:checkbox id="status" rendered="#{pageSession.onlyDASExist}" label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap2['enabled']}" selectedValue="true" />
             <sun:staticText id="statusText" rendered="#{!pageSession.onlyDASExist}" text="#{pageSession.status}" />
         </sun:property>
 
+        <sun:property id="osgi" rendered="#{pageSession.showOsgiType}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.osgiType}" >
+                <sun:checkbox id="osgi"  label=" "  disabled="#{true}"  selected="#{requestScope.osgiType}"  />
+                <!beforeCreate
+                    setAttribute(key="osgiType" value="#{false}");
+                    if ("#{pageSession.valueMap['type']"){
+                           setAttribute(key="osgiType" value="#{true}");
+                    }
+                />
+        </sun:property>
+        <sun:property id="dummy" rendered="#{pageSession.showOsgiType}" >
+        </sun:property>
+ 
         <sun:property id="vsProp"  rendered="#{pageSession.finalShowVS}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.virtualServerLabel}" helpText="$resource{i18n.deploy.vsHelp}">
             <sun:listbox id="vs" immediate="#{true}" multiple="#{true}"  rows="$int{4}"
                 labels="$pageSession{availableVS}"
@@ -73,7 +87,7 @@
             <sun:textField id="ctx" columns="$int{40}" maxLength="#{sessionScope.fieldLengths['maxLength.webApp.ContextRoot']}" text="#{pageSession.valueMap['contextRoot']}" />
         </sun:property>
 
-        <sun:property id="availability" rendered="#{pageSession.showAvailability}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.availability}" helpText="$resource{i18n.deploy.availabilityHelp}">
+        <sun:property id="availability" rendered="#{pageSession.finalShowAvail}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.availability}" helpText="$resource{i18n.deploy.availabilityHelp}">
             <sun:checkbox id="availability" label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['availabilityEnabled']}" selectedValue="true" />
         </sun:property>
 

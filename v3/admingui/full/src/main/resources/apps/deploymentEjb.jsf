@@ -72,7 +72,7 @@
     </sun:checkbox>
 </sun:property>
         
-<sun:property id="availability" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.availability}" helpText="$resource{i18n.deploy.availabilityHelp}">
+<sun:property id="availability"  rendered="#{!pageSession.onlyDASExist}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.availability}" helpText="$resource{i18n.deploy.availabilityHelp}">
     <sun:checkbox id="availability" label="$resource{i18n.common.Enabled}" selected="#{pageSession.ejb['availabilityEnabled']}" selectedValue="true" />
 </sun:property>
 
@@ -83,15 +83,15 @@
 
 
 <sun:property id="force" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.forceRedeploy}" helpText="$resource{i18n.deploy.forceRedeployHelp}">
-        <sun:checkbox id="force"  selected="#{pageSession.ejb['force']}" selectedValue="true" />
+        <sun:checkbox id="force"  label=" " selected="#{pageSession.ejb['force']}" selectedValue="true" />
 </sun:property>
 
 <sun:property id="keepState" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.redeploy.keepState}" helpText="$resource{i18n.redeploy.keepStateHelp}">
-        <sun:checkbox id="keepState"  selected="#{pageSession.ejb['keepState']}" selectedValue="true" />
+        <sun:checkbox id="keepState" label=" " selected="#{pageSession.ejb['keepState']}" selectedValue="true" />
 </sun:property>
 
-<sun:property id="preserveAppScopedResources" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.redeploy.preserveAppScopedResources}" helpText="$resource{i18n.redeploy.preserveAppScopedResourcesHelp}">
-        <sun:checkbox id="preserveAppScopedResources"  selected="#{pageSession.ejb['PROPERTY-preserveAppScopedResources']}" selectedValue="true" />
+<sun:property id="preserveAppScopedResources" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18n.redeploy.preserveAppScopedResources}" helpText="$resource{i18n.redeploy.preserveAppScopedResourcesHelp}">
+        <sun:checkbox id="preserveAppScopedResources" label=" " selected="#{pageSession.ejb['PROPERTY-preserveAppScopedResources']}" selectedValue="true" />
 </sun:property>
 
 

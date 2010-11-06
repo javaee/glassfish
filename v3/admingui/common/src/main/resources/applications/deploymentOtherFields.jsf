@@ -72,32 +72,34 @@
 </sun:property>
 
 
-<sun:property id="availability" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.availability}" helpText="$resource{i18n.deploy.availabilityHelp}">
+<sun:property id="availability" rendered="#{!pageSession.onlyDASExist}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.availability}" helpText="$resource{i18n.deploy.availabilityHelp}">
     <sun:checkbox id="availability" label="$resource{i18n.common.Enabled}" selected="#{pageSession.other['availabilityEnabled']}" selectedValue="true" />
 </sun:property>
 
+<sun:property id="osgi" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.osgiType}" helpText="$resource{i18n.deploy.osgiTypeHelp}">
+        <sun:checkbox id="osgi"  label=" " selected="#{pageSession.other['type']}" selectedValue="osgi" />
+</sun:property>
+
 <sun:property id="precmplProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.precompile}" helpText="$resource{i18n.deploy.PrecompileHelp}">
-	<sun:checkbox id="precompileJSP" label="$resource{i18n.common.Enabled}" selected="#{pageSession.other['precompilejsp']}" selectedValue="true" />
+	<sun:checkbox id="precompileJSP" label=" " selected="#{pageSession.other['precompilejsp']}" selectedValue="true" />
 </sun:property>
 
 <sun:property id="v2" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.run}" helpText="$resource{i18n.deploy.runHelp}">
-        <sun:checkbox id="ver2" label="$resource{i18n.common.Enabled}" selected="#{pageSession.other['verify']}" selectedValue="true" />
+        <sun:checkbox id="ver2" label=" " selected="#{pageSession.other['verify']}" selectedValue="true" />
 </sun:property>
 
-<sun:property id="osgi" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.osgiType}" helpText="$resource{i18n.deploy.osgiTypeHelp}">
-        <sun:checkbox id="osgi"  selected="#{pageSession.other['type']}" selectedValue="osgi" />
-</sun:property>
+
 
 <sun:property id="force" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.forceRedeploy}" helpText="$resource{i18n.deploy.forceRedeployHelp}">
-        <sun:checkbox id="force"  selected="#{pageSession.other['force']}" selectedValue="true" />
+        <sun:checkbox id="force"  label=" " selected="#{pageSession.other['force']}" selectedValue="true" />
 </sun:property>
 
 <sun:property id="keepState" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.redeploy.keepState}" helpText="$resource{i18n.redeploy.keepStateHelp}">
-        <sun:checkbox id="force"  selected="#{pageSession.other['keepState']}" selectedValue="true" />
+        <sun:checkbox id="keepState"  label=" " selected="#{pageSession.other['keepState']}" selectedValue="true" />
 </sun:property>
 
 <sun:property id="keepSessions" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.redeploy.keepSessions}" helpText="$resource{i18n.redeploy.keepSessionsHelp}">
-        <sun:checkbox id="force"  selected="#{pageSession.other['PROPERTY-keepSessions']}" selectedValue="true" />
+        <sun:checkbox id="keepSessions"  label=" " selected="#{pageSession.other['PROPERTY-keepSessions']}" selectedValue="true" />
 </sun:property>
 
 

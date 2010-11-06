@@ -656,9 +656,11 @@ public class ApplicationHandlers {
             @HandlerOutput(name = "appType", type = String.class)})
     public static void getApplicationType(HandlerContext handlerCtx) {
         Map<String,String> snifferMap = (Map) handlerCtx.getInputValue("snifferMap");
-        String appType = "ejb";
+        String appType = "other";
         if (! GuiUtil.isEmpty(snifferMap.get("web"))){
             appType="war";
+        }if (! GuiUtil.isEmpty(snifferMap.get("ejb"))){
+            appType="ejb";
         }else
         if (! GuiUtil.isEmpty(snifferMap.get("connector"))){
             appType="rar";
