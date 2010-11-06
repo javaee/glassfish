@@ -41,13 +41,13 @@
 -->
 
 <!-- deploymentEjb.jsf -->
-<!-- This is the default property sheet for specify app client deployment -->
+<!-- This is the default property sheet for specify EJB Jar deployment -->
 
-<sun:propertySheet id="ejb" visible="#{false}" >
+<sun:propertySheet id="jar" visible="#{false}" >
     <!beforeCreate
         setAttribute(key="fieldMap" value="ejb");
         createMap(result="#{pageSession.ejb}")
-        mapPut(map="#{pageSession.deployMap}", key="ejb", value="#{pageSession.ejb}");
+        mapPut(map="#{pageSession.deployMap}", key="jar", value="#{pageSession.ejb}");
         mapPut(map="#{pageSession.ejb}", key="convertToFalseList", value={ "enabled", "availabilityEnabled", "verify" ,"force" "keepState",  "PROPERTY-preserveAppScopedResources"} );
      />
     <!afterCreate
