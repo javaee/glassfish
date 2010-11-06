@@ -36,8 +36,8 @@
  */
 package com.sun.hk2.component;
 
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -63,7 +63,7 @@ public class EventPublishingInhabitant<T> extends AbstractInhabitantImpl<T> {
   /**
    * Those that will receive events
    */
-  private HashSet<InhabitantListener> listeners;
+  private volatile CopyOnWriteArraySet<InhabitantListener> listeners;
 
   
   /* public */EventPublishingInhabitant() {
@@ -147,20 +147,27 @@ public class EventPublishingInhabitant<T> extends AbstractInhabitantImpl<T> {
   }
 
 //@Override // for EventPublishingInhabitant
-  public synchronized void addInhabitantListener(InhabitantListener listener) {
-    if (null == listener) throw new IllegalArgumentException();
-    if (null == listeners) {
-      listeners = new HashSet<InhabitantListener>();
+  public void addInhabitantListener(InhabitantListener listener) {
+    if (null == listener) {
+      throw new IllegalArgumentException();
     }
+    
+    if (null == listeners) {
+      synchronized (this) {
+        if (null == listeners) {
+          listeners = new CopyOnWriteArraySet<InhabitantListener>();
+        }
+      }
+    }
+    
     listeners.add(listener);
   }
 
-//  @Override // for EventPublishingInhabitant
   public boolean removeInhabitantListener(InhabitantListener listener) {
     return (null == listeners) ? false : listeners.remove(listener);
   }
 
-  protected synchronized void notify(InhabitantListener.EventType eventType) {
+  protected void notify(InhabitantListener.EventType eventType) {
     if (null != listeners) {
       Iterator<InhabitantListener> iter = listeners.iterator();
       while (iter.hasNext()) {
@@ -168,11 +175,11 @@ public class EventPublishingInhabitant<T> extends AbstractInhabitantImpl<T> {
         try {
           boolean keepListening = listener.inhabitantChanged(eventType, this);
           if (!keepListening) {
-            iter.remove();
+            removeInhabitantListener(listener);
           }
         } catch (Exception e) {
           // don't percolate the exception since it may negatively impact processing
-          Logger.getAnonymousLogger().log(Level.WARNING, "exception caught from listener:", e);
+          Logger.getAnonymousLogger().log(Level.WARNING, "exception caught from listener", e);
         }
       }
     }
