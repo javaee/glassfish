@@ -41,9 +41,11 @@
 package com.sun.enterprise.admin.cli;
 
 import java.io.*;
+import java.net.URISyntaxException;
 import java.text.*;
 import java.util.*;
 import java.util.logging.*;
+import org.glassfish.common.util.admin.AsadminInput;
 
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.component.*;
@@ -270,6 +272,7 @@ public class AsadminMain {
                                 ProgramOptions.getValidOptions(), false);
                 ParameterMap params = rcp.getOptions();
                 po = new ProgramOptions(params, env);
+                readAndMergeOptionsFromAuxInput(po);
                 List<String> operands = rcp.getOperands();
                 argv = operands.toArray(new String[operands.size()]);
             } else
@@ -325,6 +328,31 @@ public class AsadminMain {
         }
     }
 
+    private static void readAndMergeOptionsFromAuxInput(final ProgramOptions progOpts) 
+            throws CommandException {
+        final String auxInput = progOpts.getAuxInput();
+        if (auxInput == null || auxInput.length() == 0) {
+            return;
+        }
+        final ParameterMap newParamMap = new ParameterMap();
+        /*
+         * We will place the options passed via the aux. input on the command
+         * line and we do not want to repeat the read from stdin again, so
+         * remove the aux input setting.
+         */
+        progOpts.setAuxInput(null);
+        try {
+            final AsadminInput.InputReader reader = AsadminInput.reader(auxInput);
+            final Properties newOptions = reader.settings().get("option");
+            for (String propName : newOptions.stringPropertyNames()) {
+                newParamMap.add(propName, newOptions.getProperty(propName));
+            }
+            progOpts.updateOptions(newParamMap);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+    
     /**
      * Print usage message for asadmin command.
      * XXX - should be derived from ProgramOptions.

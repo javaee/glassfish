@@ -45,6 +45,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
+import org.glassfish.common.util.admin.AsadminInput;
 
 import org.jvnet.hk2.component.Habitat;
 import org.glassfish.api.admin.SSHCommandExecutionException;
@@ -61,6 +62,7 @@ import org.glassfish.common.util.admin.AuthTokenManager;
 public class NodeRunner  {
 
     private static final String NL = System.getProperty("line.separator");
+    private static final String AUTH_TOKEN_STDIN_LINE_PREFIX = "option." + AuthTokenManager.AUTH_TOKEN_OPTION_NAME + "=";
 
     private  Habitat habitat;
     private Logger logger;
@@ -140,20 +142,24 @@ public class NodeRunner  {
         UnsupportedOperationException,
         IllegalArgumentException {
 
-        args.add(0, AuthTokenManager.AUTH_TOKEN_OPTION);
-        args.add(1, authTokenManager.createToken());
+        final List<String> stdinLines = new ArrayList<String>();
+        stdinLines.add(AsadminInput.versionSpecifier());
+        stdinLines.add(AUTH_TOKEN_STDIN_LINE_PREFIX + authTokenManager.createToken());
+        args.add(0, AsadminInput.CLI_INPUT_OPTION);
+        args.add(1, AsadminInput.SYSTEM_IN_INDICATOR); // specified to read from System.in
         
         if (node.isLocal()) {
             return runAdminCommandOnLocalNode(node, output, waitForReaderThreads,
-                    args);
+                    args, stdinLines);
         } else {
-            return runAdminCommandOnRemoteNode(node, output, args);
+            return runAdminCommandOnRemoteNode(node, output, args, stdinLines);
         }
     }
 
     private int runAdminCommandOnLocalNode(Node node, StringBuilder output,
                                            boolean waitForReaderThreads,
-                                           List<String> args) throws
+                                           List<String> args,
+                                           List<String> stdinLines) throws
             ProcessManagerException {
 
         List<String> fullcommand = new ArrayList<String>();
@@ -173,6 +179,7 @@ public class NodeRunner  {
 
         trace("Running command locally: " + lastCommandRun);
         ProcessManager pm = new ProcessManager(fullcommand);
+        pm.setStdinLines(stdinLines);
 
         // XXX should not need this after fix for 12777, but we seem to
         pm.waitForReaderThreads(waitForReaderThreads);
@@ -197,7 +204,8 @@ public class NodeRunner  {
     }
 
     private int runAdminCommandOnRemoteNode(Node node, StringBuilder output,
-                                       List<String> args) throws
+                                       List<String> args,
+                                       List<String> stdinLines) throws
             SSHCommandExecutionException, IllegalArgumentException,
             UnsupportedOperationException {
 
@@ -231,7 +239,7 @@ public class NodeRunner  {
             sshL.init(node, logger);
 
             ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-            commandStatus = sshL.runCommand(lastCommandRun, outStream);
+            commandStatus = sshL.runCommand(lastCommandRun, outStream, stdinLines);
             String results = outStream.toString();
             output.append(outStream.toString());
             return commandStatus;              

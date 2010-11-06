@@ -99,7 +99,7 @@ public class RemoteCommand extends CLICommand {
                 boolean secure, String user, String password, Logger logger,
                 String authToken)
                 throws CommandException {
-            super(name, host, port, secure, user, password, logger, authToken);
+            super(name, host, port, secure, user, password, logger, authToken, true /* prohibitDirectoryUploads */);
         }
 
         /**

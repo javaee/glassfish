@@ -50,6 +50,7 @@ import com.sun.enterprise.v3.admin.InserverCommandRunnerHelper;
 import com.sun.grizzly.config.dom.FileCache;
 import com.sun.grizzly.config.dom.Http;
 import com.sun.grizzly.config.dom.HttpRedirect;
+import com.sun.grizzly.config.dom.NetworkConfig;
 import com.sun.grizzly.config.dom.NetworkListener;
 import com.sun.grizzly.config.dom.PortUnification;
 import com.sun.grizzly.config.dom.Protocol;
@@ -247,7 +248,11 @@ public abstract class SecureAdminCommand implements AdminCommand {
 
         private Protocols writableProtocols() throws TransactionFailure {
             if (protocols_w == null) {
-                final Protocols p = config_w.getNetworkConfig().getProtocols();
+                final NetworkConfig nc = config_w.getNetworkConfig();
+                if (nc == null) {
+                    return null;
+                }
+                final Protocols p = nc.getProtocols();
                 protocols_w = t.enroll(p);
             }
             return protocols_w;
@@ -260,9 +265,12 @@ public abstract class SecureAdminCommand implements AdminCommand {
                 /*
                  * Try to find an existing entry for this protocol.
                  */
-                final Protocol p_r = config_w.getNetworkConfig().getProtocols().findProtocol(protocolName);
+                final Protocol p_r = findProtocol(protocolName);
                 if (p_r == null) {
                     final Protocols ps_w = writableProtocols();
+                    if (ps_w == null) {
+                        return null;
+                    }
                     p_w = ps_w.createChild(Protocol.class);
                     p_w.setName(protocolName);
                     ps_w.getProtocol().add(p_w);
@@ -273,6 +281,18 @@ public abstract class SecureAdminCommand implements AdminCommand {
             }
             p_w.setSecurityEnabled(Boolean.toString(isSecure));
             return p_w;
+        }
+
+        private Protocol findProtocol(final String protocolName) {
+            final NetworkConfig nc = config_w.getNetworkConfig();
+            if (nc == null) {
+                return null;
+            }
+            final Protocols ps = nc.getProtocols();
+            if (ps == null) {
+                return null;
+            }
+            return ps.findProtocol(protocolName);
         }
 
         private void deleteProtocol(
@@ -455,6 +475,15 @@ public abstract class SecureAdminCommand implements AdminCommand {
                             context.writableProtocol(SEC_ADMIN_LISTENER_PROTOCOL_NAME,
                             true);
 
+                    /*
+                     * It seems possible to create configs without network listeners
+                     * and children.  In that case it's not a real config so we
+                     * will skip it.
+                     */
+                    if (secAdminListenerProtocol_w == null) {
+                        return false;
+                    }
+                    
                     /*
                      * Get an existing or create a new writeable http child under the new protocol.
                      */

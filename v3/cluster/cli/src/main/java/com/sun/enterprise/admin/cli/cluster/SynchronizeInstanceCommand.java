@@ -57,6 +57,7 @@ import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 import com.sun.enterprise.util.cluster.SyncRequest;
 import com.sun.enterprise.util.io.FileUtils;
+import org.glassfish.common.util.admin.AuthTokenManager;
 
 /**
  * Synchronize a local server instance.
@@ -126,11 +127,9 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
          * Because we reuse the command, we also need to reuse the auth token
          * (if one is present).
          */
-        final String origAuthToken = programOpts.getAuthToken();
+        final String origAuthToken = programOpts.getAuxInput();
         if (origAuthToken != null) {
-            if ( ! origAuthToken.endsWith("+")) {
-                programOpts.setAuthToken(origAuthToken + "+");
-            }
+            programOpts.setAuthToken(AuthTokenManager.markTokenForReuse(origAuthToken));
         }
 
         syncCmd = new RemoteCommand("_synchronize-files", programOpts, env);
@@ -197,6 +196,13 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
             if (domainXml.lastModified() == dtime) {
                 logger.fine(Strings.get("Sync.alreadySynced"));
                 syncState.delete();
+                /*
+                 * Note that we earlier marked the token for reuse.  It's OK
+                 * to return immediately here with the DAS still willing to
+                 * accept the same token again.  The token will expire and be
+                 * cleaned up in a little while and it was never exposed in a
+                 * way that could be intercepted and used illicitly.
+                 */
                 return true;
             }
 
@@ -262,6 +268,14 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
                     continue;
                 getFileModTimes(f, configDir, sr, SyncLevel.DIRECTORY);
             }
+            /*
+             * Before sending the last sync request revert to using the original
+             * auth token, if one is present.  The token would be retired
+             * later when it expires anyway, but this is just a little cleaner.
+             */
+            if (origAuthToken != null) {
+                syncCmd.getProgramOptions().setAuthToken(origAuthToken);
+            }
             synchronizeFiles(sr);
         } catch (ConnectException cex) {
             logger.finer("Couldn't connect to DAS: " + cex);
@@ -275,25 +289,8 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
         } catch (CommandException ex) {
             logger.finer("Exception during synchronization: " + ex);
             exc = ex;
-        } finally {
-            /*
-             * If authToken was present, we asked to reuse it when we first
-             * constructed the command.  Because we won't reuse the token
-             * further we need to tell the DAS to discard it which we do by
-             * running any command.
-             */
-            if (origAuthToken != null) {
-                programOpts.setAuthToken(origAuthToken);
-                try {
-                    RemoteCommand discardCommand =
-                                new RemoteCommand("version", programOpts, env);
-                    discardCommand.executeAndReturnOutput();
-                } catch (Exception ex) {
-                    // don't care about failures
-                }
-            }
         }
-
+        
         if (exc != null) {
             /*
              * Some unexpected failure.  If the domain.xml hasn't

@@ -40,6 +40,7 @@
 
 package com.sun.enterprise.container.common;
 
+import com.sun.logging.LogDomains;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.SecureAdmin;
 import com.sun.enterprise.security.auth.realm.file.FileRealm;
@@ -129,7 +130,8 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
 
     private static LocalStringManagerImpl lsm = new LocalStringManagerImpl(GenericAdminAuthenticator.class);
     
-    private final Logger logger = Logger.getAnonymousLogger();
+    private final Logger logger = LogDomains.getLogger(GenericAdminAuthenticator.class,
+            LogDomains.ADMIN_LOGGER);
 
     @Override
     public void postConstruct() {
@@ -166,11 +168,23 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
             logger.fine("Accepted locally-provisioned password authentication");
             return true;
         }
+        /*
+         * Try to authenticate as a trusted sender first.  One reason is that
+         * under secure admin an incoming command could have an auth token and,
+         * if there is one, we'd like to consume it and retire it.  If we 
+         * checked for file realm auth. first then a command submitted from a
+         * shell process on a system using asadmin might be using a stored 
+         * password which would authenticate, thereby bypassing the auth token
+         * processing and allowing the token to remain valid longer than it should.
+         */
+        boolean result = authenticateAsTrustedSender(authRelatedHeaders, requestPrincipal);
+        if (result) {
+            logger.log(Level.FINE, "Authenticated as trusted sender");
+            return result;
+        }
         if (as.usesFileRealm()) {
-            boolean result = handleFileRealm(user, password);
-            if ( ! result) {
-                result = authenticateAsTrustedSender(authRelatedHeaders, requestPrincipal);
-            } else {
+            result = handleFileRealm(user, password);
+            if (result) {
                 logger.log(Level.FINE, "File realm user authentication passed for admin user {0}", user);
             }
             return result;

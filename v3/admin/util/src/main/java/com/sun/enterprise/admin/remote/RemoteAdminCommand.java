@@ -66,6 +66,7 @@ import org.glassfish.admin.payload.PayloadFilesManager;
 import org.glassfish.admin.payload.PayloadImpl;
 import org.glassfish.api.admin.Payload;
 import javax.xml.parsers.*;
+import org.glassfish.common.util.admin.AuthTokenManager;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
@@ -130,6 +131,7 @@ public class RemoteAdminCommand {
     protected String            password;
     protected Logger            logger;
     protected String            authToken = null;
+    protected boolean           prohibitDirectoryUploads = false;
 
     // executeCommand parameters
     protected ParameterMap      options;
@@ -225,7 +227,7 @@ public class RemoteAdminCommand {
     public RemoteAdminCommand(String name, String host, int port,
             boolean secure, String user, String password, Logger logger)
             throws CommandException {
-        this(name, host, port, secure, user, password, logger, null);
+        this(name, host, port, secure, user, password, logger, null, false);
     }
 
     /**
@@ -234,7 +236,8 @@ public class RemoteAdminCommand {
      */
     public RemoteAdminCommand(String name, String host, int port,
             boolean secure, String user, String password, Logger logger,
-            final String authToken)
+            final String authToken,
+            final boolean prohibitDirectoryUploads)
             throws CommandException {
         this.name = name;
         this.host = host;
@@ -244,6 +247,7 @@ public class RemoteAdminCommand {
         this.password = password;
         this.logger = logger;
         this.authToken = authToken;
+        this.prohibitDirectoryUploads = prohibitDirectoryUploads;
         checkName();
     }
 
@@ -534,6 +538,11 @@ public class RemoteAdminCommand {
             });
     }
 
+    private void doHttpCommand(String uriString, String httpMethod,
+            HttpCommand cmd) throws CommandException {
+        doHttpCommand(uriString, httpMethod, cmd, false /* isForMetadata */);
+    }
+
     /**
      * Set up an HTTP connection, call cmd.prepareConnection so the consumer of
      * the connection can further configure it, then open the connection (following
@@ -550,7 +559,7 @@ public class RemoteAdminCommand {
      * @throws CommandException if anything goes wrong
      */
     private void doHttpCommand(String uriString, String httpMethod,
-            HttpCommand cmd) throws CommandException {
+            HttpCommand cmd, boolean isForMetadata) throws CommandException {
         HttpURLConnection urlConnection = null;
 
         /*
@@ -624,9 +633,13 @@ public class RemoteAdminCommand {
                             url.getBasicAuthString());
                 }
                 if (authToken != null) {
+                    /*
+                     * If this request is for metadata then we expect to reuse
+                     * the auth token.   
+                     */
                     urlConnection.setRequestProperty(
                             SecureAdmin.Util.ADMIN_ONE_TIME_AUTH_TOKEN_HEADER_NAME,
-                            authToken);
+                            (isForMetadata ? AuthTokenManager.markTokenForReuse(authToken) : authToken));
                 }
                 urlConnection.setRequestMethod(httpMethod);
                 urlConnection.setReadTimeout(readTimeout);
@@ -644,7 +657,11 @@ public class RemoteAdminCommand {
                  */
                 String redirection = checkConnect(urlConnection);
                 if (redirection != null) {
-                    logger.log(Level.FINE, "Following redirection to " + redirection);
+                    /*
+                     * Log at FINER; at FINE it would appear routinely when used from
+                     * asadmin.
+                     */
+                    logger.log(Level.FINER, "Following redirection to " + redirection);
                     url = followRedirection(url, redirection);
                     shouldTryCommandAgain = true;
                     shouldUseSecure = url.isSecure();
@@ -1261,7 +1278,7 @@ public class RemoteAdminCommand {
                 doUpload = Boolean.parseBoolean(upString);
             else
                 doUpload = !isLocal(host);
-            if (sawDirectory && doUpload) {
+            if (prohibitDirectoryUploads && sawDirectory && doUpload) {
                 // oops, can't upload directories
                 logger.finer("--upload=" + upString +
                                             ", doUpload=" + doUpload);

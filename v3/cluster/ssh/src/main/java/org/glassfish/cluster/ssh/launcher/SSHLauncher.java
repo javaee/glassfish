@@ -40,6 +40,8 @@
 
 package org.glassfish.cluster.ssh.launcher;
 
+import com.trilead.ssh2.ChannelCondition;
+import com.trilead.ssh2.Session;
 import java.io.*;
 
 import com.sun.enterprise.util.StringUtils;
@@ -89,6 +91,7 @@ public class SSHLauncher {
     private static final String AUTH_KEY_FILE = "authorized_keys";
     private static final int DEFAULT_TIMEOUT_MSEC = 120000; // 2 minutes
     private static final String SSH_KEYGEN = "ssh-keygen";
+    private static final char LINE_SEP = System.getProperty("line.separator").charAt(0);
     
   /**
      * Database of known hosts.
@@ -308,7 +311,25 @@ public class SSHLauncher {
     }
 
     public int runCommand(String command, OutputStream os) throws IOException,
-                                            InterruptedException 
+                                            InterruptedException
+    {
+        return runCommand(command, os, null);
+    }
+
+    /**
+     * Executes a command on the remote system via ssh, optionally sending
+     * lines of data to the remote process's System.in.
+     *
+     * @param command the command to execute
+     * @param os stream to receive the output from the command
+     * @param stdinLines optional data to be sent to the process's System.in stream; null if no input should be sent
+     * @return
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public int runCommand(String command, OutputStream os,
+            List<String> stdinLines) throws IOException,
+                                            InterruptedException
     {
         command = SFTPClient.normalizePath(command);
         if (logger.isLoggable(Level.FINER)) {
@@ -316,14 +337,88 @@ public class SSHLauncher {
         }
 
         openConnection();
+        final Session sess = connection.openSession();
 
-        int status = connection.exec(command, os);
+        int status = exec(sess, command, os, listInputStream(stdinLines));
 
         // XXX: Should we close connection after each command or cache it
         // and re-use it?
         SSHUtil.unregister(connection);
         connection = null;
         return status;
+    }
+
+    private int exec(final Session session, final String command, final OutputStream os,
+            final InputStream is)
+            throws IOException, InterruptedException {
+        try {
+            session.execCommand(command);
+            PumpThread t1 = new PumpThread(session.getStdout(), os);
+            t1.start();
+            PumpThread t2 = new PumpThread(session.getStderr(), os);
+            t2.start();
+            final OutputStream stdin = session.getStdin();
+            if (is != null) {
+                final PumpThread inputPump = new PumpThread(is,
+                        stdin);
+                inputPump.run();
+            }
+            stdin.close();
+            t1.join();
+            t2.join();
+
+            // wait for some time since the delivery of the exit status often gets delayed
+            session.waitForCondition(ChannelCondition.EXIT_STATUS,3000);
+            Integer r = session.getExitStatus();
+            if(r!=null) return r.intValue();
+            return -1;
+        } finally {
+            session.close();
+        }
+    }
+
+    private InputStream listInputStream(final List<String> stdinLines) throws IOException {
+        if (stdinLines == null) {
+            return null;
+        }
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        for (String line : stdinLines) {
+            baos.write(line.getBytes());
+            baos.write(LINE_SEP);
+        }
+        return new ByteArrayInputStream(baos.toByteArray());
+    }
+
+    /**
+     * Pumps {@link InputStream} to {@link OutputStream}.
+     *
+     * @author Kohsuke Kawaguchi
+     */
+    private static final class PumpThread extends Thread {
+        private final InputStream in;
+        private final OutputStream out;
+
+        public PumpThread(InputStream in, OutputStream out) {
+            super("pump thread");
+            this.in = in;
+            this.out = out;
+        }
+
+        public void run() {
+            byte[] buf = new byte[1024];
+            try {
+                while(true) {
+                    int len = in.read(buf);
+                    if(len<0) {
+                        in.close();
+                        return;
+                    }
+                    out.write(buf,0,len);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void pingConnection() throws IOException, InterruptedException

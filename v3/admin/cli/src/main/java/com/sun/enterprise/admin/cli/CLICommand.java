@@ -271,6 +271,15 @@ public abstract class CLICommand implements PostConstruct {
     }
 
     /**
+     * Returns the program options associated with this command.
+     * 
+     * @return the command's program options
+     */
+    public ProgramOptions getProgramOptions() {
+        return programOpts;
+    }
+
+    /**
      * Return a Reader for the man page for this command,
      * or null if not found.
      */
