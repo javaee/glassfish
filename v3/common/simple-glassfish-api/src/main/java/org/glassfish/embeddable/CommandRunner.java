@@ -80,7 +80,7 @@ public interface CommandRunner {
      * @param args command arguments.
      * @return {@link CommandResult} which encapsulates exit status, command output, failure cause (if any).
      */
-    CommandResult run(String command, String... args) throws GlassFishException;
+    CommandResult run(String command, String... args);
 
     /**
      * Set the terse level.
