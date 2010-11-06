@@ -264,7 +264,8 @@ public class FailureInducer {
     }
 
     /**
-     * Enable wait action dyring delegated recovery
+     * Enable wait action dyring delegated recovery via "add-wait-point-during-recovery"
+     * property added to the transaction-service config
      */
     public static void setWaitPointRecovery(int waitDuration) {
         recoveryWaitDuration = waitDuration;
