@@ -93,6 +93,11 @@ public class EmbeddedOSGiGlassFishRuntimeBuilder implements RuntimeBuilder {
         installRoot = bsProps.getInstallRoot();
 
         // Install all gf bundles, start the primordial bundle and wait for GlassFishRuntime service to be available
+        // We install the bundles in two installments, viz:
+        // 1. First we install and start the endorsed bundles,
+        // 2. Then we gor for the rest.
+        // This way, endorsed bundles becomes candidates for providers instead of system bundle for a matching pkg.
+        installAndStartEndorsedBundles();
         installBundles();
         configureBundles();
         startBundles();
@@ -104,6 +109,27 @@ public class EmbeddedOSGiGlassFishRuntimeBuilder implements RuntimeBuilder {
             throw new GlassFishException(e);
         } finally {
             st.close();
+        }
+    }
+
+    private void installAndStartEndorsedBundles() {
+        List<Bundle> endorsedBundles = new ArrayList<Bundle>();
+        File endorsedModulesDir = new File(installRoot, "modules/endorsed/");
+        for (File f : endorsedModulesDir.listFiles()) {
+            if (f.getName().endsWith(JAR_EXT)) {
+                try {
+                    endorsedBundles.add(this.bundleContext.installBundle(f.toURI().toString()));
+                } catch (BundleException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        for (Bundle b : endorsedBundles) {
+            try {
+                b.start(Bundle.START_TRANSIENT);
+            } catch (BundleException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -137,10 +163,11 @@ public class EmbeddedOSGiGlassFishRuntimeBuilder implements RuntimeBuilder {
     private List<File> findJars() {
         File modulesDir = new File(installRoot, "modules/");
         final File autostartModulesDir = new File(modulesDir, "autostart/");
+        final File endorsedModulesDir = new File(modulesDir, "endorsed/");
         final List<File> jars = new ArrayList<File>();
         modulesDir.listFiles(new FileFilter() {
             public boolean accept(File pathname) {
-                if (pathname.isDirectory() && !pathname.equals(autostartModulesDir)) {
+                if (pathname.isDirectory() && (!pathname.equals(autostartModulesDir) && !pathname.equals(endorsedModulesDir))) {
                     pathname.listFiles(this);
                 } else if (pathname.getName().endsWith(JAR_EXT)) {
                     jars.add(pathname);
