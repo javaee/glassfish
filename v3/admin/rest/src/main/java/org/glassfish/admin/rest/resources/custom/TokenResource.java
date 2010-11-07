@@ -40,7 +40,6 @@
 
 package org.glassfish.admin.rest.resources.custom;
 
-import org.glassfish.admin.rest.Constants;
 import org.glassfish.admin.rest.resources.TemplateCommandGetResource;
 
 /**
@@ -50,7 +49,7 @@ import org.glassfish.admin.rest.resources.TemplateCommandGetResource;
 public class TokenResource extends TemplateCommandGetResource{
     public TokenResource(String resourceName, String commandName, String commandMethod, boolean b) {
         super(resourceName, commandName, commandMethod, b);
-        parameterType = Constants.QUERY_PARAMETER;
+
     }
 
 }

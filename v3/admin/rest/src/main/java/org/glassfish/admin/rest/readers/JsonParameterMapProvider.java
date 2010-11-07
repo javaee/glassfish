@@ -45,7 +45,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.HashMap;
 import java.util.Iterator;
 
 import javax.ws.rs.Consumes;
@@ -53,60 +52,58 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
+import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONObject;
+import org.glassfish.api.admin.ParameterMap;
 
 /**
  * @author Ludovic Champenois
  */
 @Consumes(MediaType.APPLICATION_JSON)
 @Provider
-public class JsonHashMapProvider implements MessageBodyReader<HashMap<String, String>> {
+public class JsonParameterMapProvider implements MessageBodyReader<ParameterMap> {
 
     @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return type.equals(HashMap.class);
+        return type.equals(ParameterMap.class);
     }
 
     @Override
-    public HashMap<String, String> readFrom(Class<HashMap<String, String>> type, Type genericType,
+    public ParameterMap readFrom(Class<ParameterMap> type, Type genericType,
             Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> headers,
             InputStream in) throws IOException {
-
 
 
         JSONObject obj;
         try {
             obj = new JSONObject(inputStreamAsString(in));
-            Iterator  iter=obj.keys();
-                        HashMap map = new HashMap();
+            Iterator iter = obj.keys();
+            ParameterMap map = new ParameterMap();
 
-            while (iter.hasNext()){
+            while (iter.hasNext()) {
                 String k = (String) iter.next();
-                map.put(k, ""+obj.get(k));
-              
+                Object value = obj.get(k);
+                if (value instanceof JSONArray) {
+                    JSONArray array = (JSONArray) value;
+                    for (int i = 0; i < array.length(); i++) {
+                        map.add(k, "" + array.get(i));
+                    }
+
+                } else {
+                    map.add(k, "" + value);
+                }
+
             }
             return map;
 
         } catch (Exception ex) {
-            HashMap map = new HashMap();
-            map.put("error", "Entity Parsing Error: " + ex.getMessage());
+            ParameterMap map = new ParameterMap();
+            map.add("error", "Entity Parsing Error: " + ex.getMessage());
 
-            //throw new RuntimeException(exception);
             return map;
         }
 
-//        try {
-//
-//
-//            JsonInputObject jsonObject = new JsonInputObject(in);
-//            return ProviderUtil.getStringMap((HashMap) jsonObject.initializeMap());
-//        } catch (InputException exception) {
-//            HashMap map = new HashMap();
-//            map.put("error", "Entity Parsing Error: " + exception.getMessage());
-//
-//            //throw new RuntimeException(exception);
-//            return map;
-//        }
+
     }
 
     public static String inputStreamAsString(InputStream stream) throws IOException {

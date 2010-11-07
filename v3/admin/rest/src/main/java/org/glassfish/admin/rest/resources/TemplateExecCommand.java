@@ -41,6 +41,7 @@
 package org.glassfish.admin.rest.resources;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import java.net.HttpURLConnection;
 import org.glassfish.admin.rest.ResourceUtil;
 import org.glassfish.admin.rest.RestService;
 import org.glassfish.admin.rest.provider.MethodMetaData;
@@ -52,7 +53,6 @@ import org.glassfish.api.admin.ParameterMap;
 
 import javax.ws.rs.OPTIONS;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.*;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -62,7 +62,6 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Logger;
-import org.glassfish.admin.rest.CliFailureException;
 import org.jvnet.hk2.component.Habitat;
 
 /**
@@ -86,11 +85,7 @@ public class TemplateExecCommand {
 //    protected HashMap<String, String> commandParams = null;
     protected boolean isLinkedToParent = false;
     protected Logger logger = Logger.getLogger(TemplateExecCommand.class.getName());
-    /* * parameterType the type of parameter. Possible values are
-     *        Constants.QUERY_PARAMETER and Constants.MESSAGE_PARAMETER
-     *
-     */
-    protected int parameterType;
+
 
     public TemplateExecCommand(String resourceName, String commandName, String commandMethod, String commandAction, String commandDisplayName,
                                boolean isLinkedToParent) {
@@ -115,7 +110,7 @@ public class TemplateExecCommand {
 
         OptionsResult optionsResult = new OptionsResult(resourceName);
         Map<String, MethodMetaData> mmd = new HashMap<String, MethodMetaData>();
-        MethodMetaData methodMetaData = ResourceUtil.getMethodMetaData(commandName, getCommandParams(), parameterType, habitat, RestService.logger);
+        MethodMetaData methodMetaData = ResourceUtil.getMethodMetaData(commandName, getCommandParams(),  habitat, RestService.logger);
 
         optionsResult.putMethodMetaData(commandMethod, methodMetaData);
         mmd.put(commandMethod, methodMetaData);
@@ -126,26 +121,20 @@ public class TemplateExecCommand {
         return ret;
     }
 
-    protected ActionReportResult executeCommand(ParameterMap data) {
+    protected Response executeCommand(ParameterMap data) {
         RestActionReporter actionReport = ResourceUtil.runCommand(commandName, data, habitat,
                 ResourceUtil.getResultType(requestHeaders));
         ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
         ActionReportResult results = new ActionReportResult(commandName, actionReport, options().getMetaData());
         results.setCommandDisplayName(commandDisplayName);
-
-        if (exitCode != ActionReport.ExitCode.FAILURE) {
-            results.setStatusCode(200); /*200 - ok*/
-        } else {
-            Throwable ex = actionReport.getFailureCause();
-            if (ex!=null){
-                 throw  new CliFailureException(actionReport.getMessage(), ex);
-            } else {
-                throw new CliFailureException(actionReport.getMessage());
-            }
-            
+        int status =HttpURLConnection.HTTP_OK; /*200 - ok*/
+        if (exitCode == ActionReport.ExitCode.FAILURE) {
+            status = HttpURLConnection.HTTP_INTERNAL_ERROR;         
         }
+        results.setStatusCode(status); 
 
-        return results;
+        return Response.status(status).entity(results).build();
+
     }
 
     /*override it

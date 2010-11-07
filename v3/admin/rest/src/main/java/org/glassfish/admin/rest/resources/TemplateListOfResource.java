@@ -356,7 +356,6 @@ public abstract class TemplateListOfResource {
         String command = getPostCommand();
         if (command != null) {
             MethodMetaData postMethodMetaData = ResourceUtil.getMethodMetaData(command, habitat, RestService.logger);
-            postMethodMetaData.setDescription("Create");
             if (Util.getResourceName(uriInfo).equals("Application")) {
                 postMethodMetaData.setIsFileUploadOperation(true);
             }

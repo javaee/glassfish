@@ -48,7 +48,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
-import org.glassfish.admin.rest.Constants;
 import org.glassfish.admin.rest.ResourceUtil;
 
 import org.glassfish.admin.rest.results.ActionReportResult;
@@ -66,12 +65,11 @@ public class TemplateCommandPostResource extends TemplateExecCommand {
 
     public TemplateCommandPostResource(String resourceName, String commandName, String commandMethod, String commandAction, String commandDisplayName,  boolean isLinkedToParent) {
         super(resourceName, commandName, commandMethod, commandAction, commandDisplayName, isLinkedToParent);
-        parameterType = Constants.MESSAGE_PARAMETER;
     }
 
     @POST
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
-    public ActionReportResult processPost(ParameterMap data) {
+    public Response processPost(ParameterMap data) {
         if (data.containsKey("error")) {
             String errorMessage = localStrings.getLocalString("rest.request.parsing.error", "Unable to parse the input entity. Please check the syntax.");
             throw new WebApplicationException(ResourceUtil.getResponse(400, /*parsing error*/ errorMessage, requestHeaders, uriInfo));
@@ -86,7 +84,7 @@ public class TemplateCommandPostResource extends TemplateExecCommand {
     //Handle POST request without any entity(input).
     //Do not care what the Content-Type is.
     @POST
-    public ActionReportResult processPost() {
+    public Response processPost() {
         try {
             return processPost(new ParameterMap());
         } catch (Exception e) {

@@ -542,11 +542,6 @@ public class TemplateResource {
 
         /////optionsResult.putMethodMetaData("POST", new MethodMetaData());
         MethodMetaData postMethodMetaData = ResourceUtil.getMethodMetaData(childModel);
-        if (entityNeedsToBeCreated) {
-            postMethodMetaData.setDescription("Create A New One");
-        } else {
-            postMethodMetaData.setDescription("Update");
-        }
         map.put("POST", postMethodMetaData);
 
 

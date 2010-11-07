@@ -96,9 +96,9 @@ public class OptionsResultXmlProvider extends BaseProvider<OptionsResult> {
 
            MethodMetaData methodMetaData = proxy.getMethodMetaData(method);
 
-           //query params
-           result = result + getQueryParams(methodMetaData,
-               indent + Constants.INDENT);
+//           //query params
+//           result = result + getQueryParams(methodMetaData,
+//               indent + Constants.INDENT);
 
            //parameters (message parameters)
            result = result + getMessageParams(methodMetaData,
@@ -121,30 +121,30 @@ public class OptionsResultXmlProvider extends BaseProvider<OptionsResult> {
     }
 
 
-    //get xml representation for the method query parameters
-    private String getQueryParams(MethodMetaData methodMetaData,
-            String indent) {
-        //TODO too many string concatenations happening here. Change this and other methods in this class to use StringBuffer
-        String result = "";
-        if (methodMetaData.sizeQueryParamMetaData() > 0) {
-            result = result + "\n" + indent;
-            result = result + "<" + QUERY_PARAMETERS + ">";
-
-            Set<String> queryParams = methodMetaData.queryParams();
-            Iterator<String> iterator = queryParams.iterator();
-            String queryParam;
-            while (iterator.hasNext()) {
-                queryParam = iterator.next();
-                ParameterMetaData parameterMetaData =
-                    methodMetaData.getQueryParamMetaData(queryParam);
-                result = result + getParameter(queryParam, parameterMetaData,
-                    indent + Constants.INDENT);
-            }
-            result = result + "\n" + indent;
-            result = result +  getEndXmlElement(QUERY_PARAMETERS);
-        }
-        return result;
-    }
+//    //get xml representation for the method query parameters
+//    private String getQueryParams(MethodMetaData methodMetaData,
+//            String indent) {
+//        //TODO too many string concatenations happening here. Change this and other methods in this class to use StringBuffer
+//        String result = "";
+//        if (methodMetaData.sizeQueryParamMetaData() > 0) {
+//            result = result + "\n" + indent;
+//            result = result + "<" + QUERY_PARAMETERS + ">";
+//
+//            Set<String> queryParams = methodMetaData.queryParams();
+//            Iterator<String> iterator = queryParams.iterator();
+//            String queryParam;
+//            while (iterator.hasNext()) {
+//                queryParam = iterator.next();
+//                ParameterMetaData parameterMetaData =
+//                    methodMetaData.getQueryParamMetaData(queryParam);
+//                result = result + getParameter(queryParam, parameterMetaData,
+//                    indent + Constants.INDENT);
+//            }
+//            result = result + "\n" + indent;
+//            result = result +  getEndXmlElement(QUERY_PARAMETERS);
+//        }
+//        return result;
+//    }
 
 
     //get xml representation for the method message parameters

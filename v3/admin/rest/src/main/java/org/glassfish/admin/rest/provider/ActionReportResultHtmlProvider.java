@@ -84,13 +84,14 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
             final MethodMetaData postMetaData = proxy.getMetaData().getMethodMetaData("POST");
             final MethodMetaData deleteMetaData = proxy.getMetaData().getMethodMetaData("DELETE");
             final MethodMetaData getMetaData = proxy.getMetaData().getMethodMetaData("GET");
+            final ConfigBean entity = proxy.getEntity();
 
             if ((proxy.getCommandDisplayName()!=null) &&(getMetaData!=null)) {//for commands, we want the output of the command before the form
-                //  result.append("<h2>Raw Output</h2>");
-                result.append(processReport(ar));
+                if (entity==null) {//show extra properties only for non entity pages
+                    result.append(processReport(ar));
+                }
             }
             
-            final ConfigBean entity = proxy.getEntity();
             if ((postMetaData != null) && (entity == null)) {
                 String postCommand = getHtmlRespresentationsForCommand(postMetaData, "POST", ( proxy.getCommandDisplayName()==null )? "Create" : proxy.getCommandDisplayName(), uriInfo);
                 result.append(getHtmlForComponent(postCommand, "Create " + ar.getActionDescription(), ""));
@@ -191,10 +192,6 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
                 result.append(ProviderUtil.getHtmlForComponent(commandLinks, "Commands", ""));
             }
 
-            if ((proxy.getCommandDisplayName()==null) ||(getMetaData==null)) {//for NON commands, we want the output of the command after the form
-                //  result.append("<h2>Raw Output</h2>");
-                result.append(processReport(ar));
-            }
         }
         return result.append("</div></body></html>").toString();
     }
@@ -243,6 +240,7 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
     }
 
     protected String processReport(ActionReporter ar) {
+        
         StringBuilder result = new StringBuilder();
         String des=ar.getActionDescription();
         //check for no description, make it blank
@@ -268,7 +266,11 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
 
         Properties extraProperties = ar.getExtraProperties();
         if ((extraProperties != null) && (!extraProperties.isEmpty())) {
-            result.append(getExtraProperties(extraProperties));
+            if ((extraProperties.size()==1)&&(extraProperties.get("methods")!=null)){
+                //do not show only methods metadata in html, not really needed
+            } else {
+                result.append(getExtraProperties(extraProperties));
+            }
         }
 
         List<ActionReport.MessagePart> children = ar.getTopMessagePart().getChildren();

@@ -54,7 +54,6 @@ public class MethodMetaData {
 
     public MethodMetaData() {
         __parameterMetaData = new TreeMap<String, ParameterMetaData>();
-        __queryParamMetaData = new TreeMap<String, ParameterMetaData>();
     }
 
 
@@ -79,39 +78,8 @@ public class MethodMetaData {
     }
 
 
-    public ParameterMetaData getQueryParamMetaData(String param) {
-        return __queryParamMetaData.get(param);
-    }
-
-
-    public ParameterMetaData putQueryParamMetaData(String param,
-            ParameterMetaData queryParamMetaData) {
-        return __queryParamMetaData.put(param, queryParamMetaData);
-    }
-
-
-    public ParameterMetaData removeQueryParamMetaData(String param) {
-        return __queryParamMetaData.remove(param);
-    }
-
-
-    public int sizeQueryParamMetaData() {
-        return __queryParamMetaData.size();
-    }
-
-
     public Set<String> parameters() {
         return __parameterMetaData.keySet();
-    }
-
-
-    public Set<String> queryParams() {
-        return __queryParamMetaData.keySet();
-    }
-
-
-    public void setDescription(String description) {
-        __description = description;
     }
 
 
@@ -126,7 +94,5 @@ public class MethodMetaData {
 
 
     Map<String, ParameterMetaData> __parameterMetaData;
-    Map<String, ParameterMetaData> __queryParamMetaData;
-    String __description;
     boolean __isFileUploadOperation = false;
 }

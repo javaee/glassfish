@@ -191,7 +191,6 @@ public abstract class CollectionLeafResource {
         String postCommand = getPostCommand();
         if (postCommand != null) {
             MethodMetaData postMethodMetaData = ResourceUtil.getMethodMetaData(postCommand, habitat, RestService.logger);
-            postMethodMetaData.setDescription("Create");
             mmd.put("POST", postMethodMetaData);
         }
 
@@ -199,7 +198,6 @@ public abstract class CollectionLeafResource {
         String deleteCommand = getDeleteCommand();
         if (deleteCommand != null) {
             MethodMetaData deleteMethodMetaData = ResourceUtil.getMethodMetaData(deleteCommand, habitat, RestService.logger);
-            deleteMethodMetaData.setDescription("Delete");
             mmd.put("DELETE", deleteMethodMetaData);
         }
 

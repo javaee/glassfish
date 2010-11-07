@@ -222,31 +222,17 @@ public class ResourceUtil {
         return ar;
     }
 
-    /**
-     * Constructs and returns the resource method meta-data.
-     *
-     * @param command the command associated with the resource method
-     * @param habitat the habitat
-     * @param logger  the logger to use
-     * @return MethodMetaData the meta-data store for the resource method.
-     */
-    public static MethodMetaData getMethodMetaData(String command, Habitat habitat, Logger logger) {
-        return getMethodMetaData(command, Constants.MESSAGE_PARAMETER,
-                habitat, logger);
-    }
 
     /**
      * Constructs and returns the resource method meta-data.
      *
      * @param command       the command associated with the resource method
-     * @param parameterType the type of parameter. Possible values are
-     *                      Constants.QUERY_PARAMETER and Constants.MESSAGE_PARAMETER
      * @param habitat       the habitat
      * @param logger        the logger to use
      * @return MethodMetaData the meta-data store for the resource method.
      */
-    public static MethodMetaData getMethodMetaData(String command, int parameterType, Habitat habitat, Logger logger) {
-        return getMethodMetaData(command, null, parameterType, habitat, logger);
+    public static MethodMetaData getMethodMetaData(String command,  Habitat habitat, Logger logger) {
+        return getMethodMetaData(command, null,  habitat, logger);
     }
 
     /**
@@ -255,13 +241,11 @@ public class ResourceUtil {
      * @param command             the command assocaited with the resource method
      * @param commandParamsToSkip the command parameters for which not to
      *                            include the meta-data.
-     * @param parameterType       the type of parameter. Possible values are
-     *                            Constants.QUERY_PARAMETER and Constants.MESSAGE_PARAMETER
      * @param habitat             the habitat
      * @param logger              the logger to use
      * @return MethodMetaData the meta-data store for the resource method.
      */
-    public static MethodMetaData getMethodMetaData(String command, HashMap<String, String> commandParamsToSkip, int parameterType,
+    public static MethodMetaData getMethodMetaData(String command, HashMap<String, String> commandParamsToSkip, 
                                                    Habitat habitat, Logger logger) {
         MethodMetaData methodMetaData = new MethodMetaData();
 
@@ -290,12 +274,8 @@ public class ResourceUtil {
                     parameterName = alias;
                 }
 
-                if (parameterType == Constants.QUERY_PARAMETER) {
-                    methodMetaData.putQueryParamMetaData(parameterName, parameterMetaData);
-                } else {
-                    //message parameter
-                    methodMetaData.putParameterMetaData(parameterName, parameterMetaData);
-                }
+
+                methodMetaData.putParameterMetaData(parameterName, parameterMetaData);
             }
         }
 
@@ -324,27 +304,15 @@ public class ResourceUtil {
         }
     }
 
-    /**
-     * Constructs and returns the resource method meta-data. This method is
-     * called to get meta-data in case of update method (POST).
-     *
-     * @param configBeanModel the config bean associated with the resource.
-     * @return MethodMetaData the meta-data store for the resource method.
-     */
-    public static MethodMetaData getMethodMetaData(ConfigModel configBeanModel) {
-        return getMethodMetaData(configBeanModel, Constants.MESSAGE_PARAMETER);
-    }
 
     /**
      * Constructs and returns the resource method meta-data. This method is
      * called to get meta-data in case of update method (POST).
      *
      * @param configBeanModel    the config bean associated with the resource.
-     * @param parameterType the type of parameter. Possible values are
-     *                      Constants.QUERY_PARAMETER and Constants.MESSAGE_PARAMETER
      * @return MethodMetaData the meta-data store for the resource method.
      */
-    public static MethodMetaData getMethodMetaData(ConfigModel configBeanModel, int parameterType) {
+    public static MethodMetaData getMethodMetaData(ConfigModel configBeanModel) {
         MethodMetaData methodMetaData = new MethodMetaData();
 
         Class<? extends ConfigBeanProxy> configBeanProxy = null;
@@ -365,12 +333,9 @@ public class ResourceUtil {
 
                         //camelCase the attributeName before passing out
                         attributeName = eleminateHypen(attributeName);
-                        if (parameterType == Constants.QUERY_PARAMETER) {
-                            methodMetaData.putQueryParamMetaData(attributeName, parameterMetaData);
-                        } else {
-                            //message parameter
-                            methodMetaData.putParameterMetaData(attributeName, parameterMetaData);
-                        }
+
+                        methodMetaData.putParameterMetaData(attributeName, parameterMetaData);
+                        
                     }
                 } catch (NoSuchMethodException e) {
                     e.printStackTrace();
@@ -436,12 +401,9 @@ public class ResourceUtil {
                 } catch (NoSuchMethodException e) {
                 }
 
-                if (parameterType == Constants.QUERY_PARAMETER) {
-                    methodMetaData.putQueryParamMetaData(attributeName, parameterMetaData);
-                } else {
-                    //message parameter
-                    methodMetaData.putParameterMetaData(attributeName, parameterMetaData);
-                }
+
+                methodMetaData.putParameterMetaData(attributeName, parameterMetaData);
+    
             }
         } catch (ClassNotFoundException cnfe) {
             throw new RuntimeException(cnfe);
@@ -793,21 +755,21 @@ public class ResourceUtil {
         }
     }
 
-    public static Map buildMethodMetadataMap(MethodMetaData mmd, boolean isQuery) { // yuck
+    public static Map buildMethodMetadataMap(MethodMetaData mmd) { // yuck
         Map<String, Map> map = new TreeMap<String, Map>();
-        Set<String> params = isQuery ? mmd.queryParams() : mmd.parameters();
+        Set<String> params =  mmd.parameters();
         Iterator<String> iterator = params.iterator();
         String param;
         while (iterator.hasNext()) {
             param = iterator.next();
-            ParameterMetaData parameterMetaData = isQuery ? mmd.getQueryParamMetaData(param) : mmd.getParameterMetaData(param);
+            ParameterMetaData parameterMetaData =  mmd.getParameterMetaData(param);
             map.put(param, processAttributes(parameterMetaData.attributes(), parameterMetaData));
         }
 
         return map;
     }
 
-    public static Map<String, String> processAttributes(Set<String> attributes, ParameterMetaData parameterMetaData) {
+    private static Map<String, String> processAttributes(Set<String> attributes, ParameterMetaData parameterMetaData) {
         Map <String, String> pmdm = new HashMap<String, String>();
 
         Iterator<String> attriter = attributes.iterator();
@@ -993,11 +955,11 @@ public class ResourceUtil {
         Map<String, Object> postMetaDataMap = new HashMap<String, Object>();
         if (postMetaData != null) {
             postMetaDataMap.put("name", "POST");
-            if (postMetaData.sizeQueryParamMetaData() > 0) {
-                postMetaDataMap.put(QUERY_PARAMETERS, buildMethodMetadataMap(postMetaData, true));
-            }
+//            if (postMetaData.sizeQueryParamMetaData() > 0) {
+//                postMetaDataMap.put(QUERY_PARAMETERS, buildMethodMetadataMap(postMetaData, true));
+//            }
             if (postMetaData.sizeParameterMetaData() > 0) {
-                postMetaDataMap.put(MESSAGE_PARAMETERS, buildMethodMetadataMap(postMetaData, false));
+                postMetaDataMap.put(MESSAGE_PARAMETERS, buildMethodMetadataMap(postMetaData));
             }
             methodMetaData.add(postMetaDataMap);
         }
@@ -1007,7 +969,7 @@ public class ResourceUtil {
             Map<String, Object> deleteMetaDataMap = new HashMap<String, Object>();
 
             deleteMetaDataMap.put("name", "DELETE");
-            deleteMetaDataMap.put(MESSAGE_PARAMETERS,  buildMethodMetadataMap(deleteMetaData, false));
+            deleteMetaDataMap.put(MESSAGE_PARAMETERS,  buildMethodMetadataMap(deleteMetaData));
             methodMetaData.add(deleteMetaDataMap);
         }
 
@@ -1033,6 +995,7 @@ public class ResourceUtil {
      * returns true if the HTML viewer displays the deprecated elements or attributes
      * of a config bean
      */
+
     public static boolean canShowDeprecatedItems(Habitat habitat) {
 
         RestConfig rg = getRestConfig(habitat);
