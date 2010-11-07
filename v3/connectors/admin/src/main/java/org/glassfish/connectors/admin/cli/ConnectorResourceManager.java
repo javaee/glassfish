@@ -46,6 +46,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import com.sun.enterprise.config.serverbeans.*;
+import org.glassfish.admin.cli.resources.BindableResourcesHelper;
 import org.glassfish.admin.cli.resources.ResourceManager;
 import org.glassfish.admin.cli.resources.ResourceUtil;
 import org.glassfish.api.I18n;
@@ -95,6 +96,9 @@ public class ConnectorResourceManager implements ResourceManager {
     @Inject
     private ResourceUtil resourceUtil;
 
+    @Inject
+    private BindableResourcesHelper resourcesHelper;
+
     public ConnectorResourceManager() {
     }
 
@@ -107,7 +111,7 @@ public class ConnectorResourceManager implements ResourceManager {
 
         setAttributes(attributes, target);
 
-        ResourceStatus validationStatus = isValid(resources);
+        ResourceStatus validationStatus = isValid(resources, true, target);
         if(validationStatus.getStatus() == ResourceStatus.FAILURE){
             return validationStatus;
         }
@@ -136,19 +140,18 @@ public class ConnectorResourceManager implements ResourceManager {
 
     }
 
-    private ResourceStatus isValid(Resources resources){
+    private ResourceStatus isValid(Resources resources, boolean validateResourceRef, String target){
         ResourceStatus status = new ResourceStatus(ResourceStatus.SUCCESS, "Validation Successful");
         if (jndiName == null) {
             String msg = localStrings.getLocalString("create.connector.resource.noJndiName",
                     "No JNDI name defined for connector resource.");
             return new ResourceStatus(ResourceStatus.FAILURE, msg);
         }
-        // ensure we don't already have one of this name
-        if (resources.getResourceByName(BindableResource.class, jndiName) != null) {
-            String msg = localStrings.getLocalString("create.connector.resource.duplicate",
-                    "A resource named {0} already exists. In order to make the resource available in " +
-                            "instances/clusters, use create-resource-ref", jndiName);
-            return new ResourceStatus(ResourceStatus.FAILURE, msg);
+
+        status = resourcesHelper.validateBindableResourceForDuplicates(resources, jndiName, validateResourceRef,
+                target, ConnectorResource.class);
+        if(status.getStatus() == ResourceStatus.FAILURE){
+            return status;
         }
 
         if (!isConnPoolExists(resources, poolName)) {
@@ -213,7 +216,7 @@ public class ConnectorResourceManager implements ResourceManager {
         if(!validate){
             status = new ResourceStatus(ResourceStatus.SUCCESS,"");
         }else{
-            status = isValid(resources);
+            status = isValid(resources, false, null);
         }
         if(status.getStatus() == ResourceStatus.SUCCESS){
             return createConfigBean(resources, properties);

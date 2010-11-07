@@ -47,6 +47,8 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.sun.enterprise.config.serverbeans.*;
+import org.glassfish.admin.cli.resources.BindableResourcesHelper;
 import org.glassfish.admin.cli.resources.ResourceManager;
 import org.glassfish.admin.cli.resources.ResourceUtil;
 import org.glassfish.api.I18n;
@@ -63,15 +65,9 @@ import static org.glassfish.resource.common.ResourceConstants.*;
 
 import org.jvnet.hk2.config.types.Property;
 import static com.sun.appserv.connectors.internal.api.ConnectorConstants.*;
-import com.sun.enterprise.config.serverbeans.BindableResource;
+
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
-import com.sun.enterprise.config.serverbeans.AdminObjectResource;
-import com.sun.enterprise.config.serverbeans.Application;
-import com.sun.enterprise.config.serverbeans.Applications;
-import com.sun.enterprise.config.serverbeans.Resources;
-import com.sun.enterprise.config.serverbeans.Resource;
-import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import javax.resource.ResourceException;
@@ -93,6 +89,9 @@ public class AdminObjectManager implements ResourceManager {
 
     @Inject
     private ResourceUtil resourceUtil;
+
+    @Inject
+    private BindableResourcesHelper resourcesHelper;
 
     private static final String DESCRIPTION = ServerTags.DESCRIPTION;
 
@@ -121,7 +120,7 @@ public class AdminObjectManager implements ResourceManager {
             throws Exception {
         setAttributes(attributes, target);
 
-        ResourceStatus validationStatus = isValid(resources);
+        ResourceStatus validationStatus = isValid(resources, true, target);
         if(validationStatus.getStatus() == ResourceStatus.FAILURE){
             return validationStatus;
         }
@@ -152,18 +151,18 @@ public class AdminObjectManager implements ResourceManager {
 
     }
 
-    private ResourceStatus isValid(Resources resources){
+    private ResourceStatus isValid(Resources resources, boolean validateResourceRef, String target){
         ResourceStatus status = new ResourceStatus(ResourceStatus.SUCCESS, "Validation Successful");
         if (jndiName == null) {
             String msg = localStrings.getLocalString("create.admin.object.noJndiName",
                             "No JNDI name defined for administered object.");
             return new ResourceStatus(ResourceStatus.FAILURE, msg);
         }
-        // ensure we don't already have one of this name
-        if (resources.getResourceByName(BindableResource.class, jndiName) != null) {
-            String msg = localStrings.getLocalString("create.admin.object.duplicate",
-                    "A resource named {0} already exists.", jndiName);
-            return new ResourceStatus(ResourceStatus.FAILURE, msg);
+
+        status = resourcesHelper.validateBindableResourceForDuplicates(resources, jndiName, validateResourceRef,
+                target, AdminObjectResource.class);
+        if(status.getStatus() == ResourceStatus.FAILURE){
+            return status;
         }
 
         //no need to validate in remote instance as the validation would have happened in DAS.
@@ -339,7 +338,7 @@ public class AdminObjectManager implements ResourceManager {
         if(!validate){
             status = new ResourceStatus(ResourceStatus.SUCCESS,"");
         }else{
-            status = isValid(resources);
+            status = isValid(resources, false, null);
         }
         if(status.getStatus() == ResourceStatus.SUCCESS){
             return createConfigBean(resources, properties);

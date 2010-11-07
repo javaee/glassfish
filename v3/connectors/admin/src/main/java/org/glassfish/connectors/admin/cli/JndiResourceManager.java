@@ -41,6 +41,7 @@ package org.glassfish.connectors.admin.cli;
 
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import org.glassfish.admin.cli.resources.BindableResourcesHelper;
 import org.glassfish.admin.cli.resources.ResourceManager;
 import org.glassfish.admin.cli.resources.ResourceUtil;
 import org.glassfish.api.I18n;
@@ -75,6 +76,8 @@ public class JndiResourceManager implements ResourceManager {
     @Inject
     private ResourceUtil resourceUtil;
 
+    @Inject
+    private BindableResourcesHelper resourcesHelper;
 
     private String resType;
     private String factoryClass;
@@ -92,7 +95,7 @@ public class JndiResourceManager implements ResourceManager {
                                  String target) throws Exception {
         setAttributes(attributes, target);
 
-        ResourceStatus validationStatus = isValid(resources);
+        ResourceStatus validationStatus = isValid(resources, true, target);
         if (validationStatus.getStatus() == ResourceStatus.FAILURE) {
             return validationStatus;
         }
@@ -121,7 +124,7 @@ public class JndiResourceManager implements ResourceManager {
         return new ResourceStatus(ResourceStatus.SUCCESS, msg, true);
     }
 
-    private ResourceStatus isValid(Resources resources) {
+    private ResourceStatus isValid(Resources resources, boolean validateResourceRef, String target) {
         ResourceStatus status = new ResourceStatus(ResourceStatus.SUCCESS, "Validation Successful");
         if (resType == null) {
             String msg = localStrings.getLocalString(
@@ -144,14 +147,12 @@ public class JndiResourceManager implements ResourceManager {
             return new ResourceStatus(ResourceStatus.FAILURE, msg, true);
         }
 
-        // ensure we don't already have one of this name
-        if (resources.getResourceByName(BindableResource.class, jndiName) != null) {
-            String msg = localStrings.getLocalString(
-                    "create.jndi.resource.duplicate",
-                    "A JNDI resource named {0} already exists.",
-                    jndiName);
-            return new ResourceStatus(ResourceStatus.FAILURE, msg, true);
+        status = resourcesHelper.validateBindableResourceForDuplicates(resources, jndiName, validateResourceRef,
+                target, AdminObjectResource.class);
+        if(status.getStatus() == ResourceStatus.FAILURE){
+            return status;
         }
+
         return status;
     }
 
@@ -206,7 +207,7 @@ public class JndiResourceManager implements ResourceManager {
         if (!validate) {
             status = new ResourceStatus(ResourceStatus.SUCCESS, "");
         } else {
-            status = isValid(resources);
+            status = isValid(resources, false, null);
         }
         if (status.getStatus() == ResourceStatus.SUCCESS) {
             return createConfigBean(resources, properties);
