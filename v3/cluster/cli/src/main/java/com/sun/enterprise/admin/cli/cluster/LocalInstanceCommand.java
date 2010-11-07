@@ -265,6 +265,7 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
         File grandParent = dirs.getServerGrandParentDir();
 
         if (whackee == null || !whackee.isDirectory()) {
+            tempDump("whackee is NOT a directory: " + whackee);
             throw new CommandException(Strings.get("DeleteInstance.noWhack",
                     whackee));
         }
@@ -278,6 +279,8 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
             if (files != null)
                 FileUtils.whack(whackee);
 
+            tempDump("The directory was empty.  This is considered an error: " + whackee);
+
             throw new CommandException(Strings.get("DeleteInstance.noWhack",
                     whackee));
         }
@@ -288,8 +291,11 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
         try {
             File tmpwhackee = File.createTempFile("oldinst", null, parent);
             tmpwhackee.delete();
+            tempDump("about to rename to " + tmpwhackee);
             FileUtils.renameFile(whackee, tmpwhackee);
+            tempDump("successful rename to " + tmpwhackee, " -- about to whack");
             FileUtils.whack(tmpwhackee);
+            tempDump("Whacked OK");
         }
         catch (IOException ioe) {
             throw new CommandException(Strings.get("DeleteInstance.badWhackWithException",
@@ -548,4 +554,15 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
         String installRootPath = getInstallRootPath();
         return installRootPath + "/" + "nodes";
     }
+void tempDump(String... args) {
+    // weird occasional error in QL tests...
+    String[] newargs = new String[args.length + 1];
+
+    newargs[0]= "TEMPORARY DEBUG OUTPUT FOR DeleteLocalInstance";
+
+    for(int i = 1; i < newargs.length; i++)
+        newargs[i] = args[i-1];
+
+    CLIUtil.writeCommandToDebugLog(newargs, 666);
+}
 }

@@ -53,6 +53,7 @@ import org.glassfish.api.admin.*;
 
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
+import com.sun.enterprise.util.ObjectAnalyzer;
 
 /**
  * Delete a local server instance.
@@ -79,7 +80,9 @@ public class DeleteLocalInstanceCommand extends LocalInstanceCommand {
     @Override
     protected void initInstance() throws CommandException {
         try {
+            tempDump("before initInstance");
             super.initInstance();
+            tempDump("after initInstance");
         }
         catch (CommandException e) {
             throw e;
@@ -102,7 +105,7 @@ public class DeleteLocalInstanceCommand extends LocalInstanceCommand {
             throws CommandException, CommandValidationException {
         instanceName = instanceName0;
         super.validate();
-
+        tempDump("Dump of ServerDirs:", ObjectAnalyzer.toString(getServerDirs()));
         if (!StringUtils.ok(getServerDirs().getServerName()))
             throw new CommandException(Strings.get("DeleteInstance.noInstanceName"));
 
@@ -112,6 +115,7 @@ public class DeleteLocalInstanceCommand extends LocalInstanceCommand {
             setDasDefaults(dasProperties);
         }
 
+        tempDump("Is the instance's directory really a directory?: " + getServerDirs().getServerDir().isDirectory());
         if (!getServerDirs().getServerDir().isDirectory())
             throw new CommandException(Strings.get("DeleteInstance.noWhack",
                     getServerDirs().getServerDir()));
@@ -123,12 +127,20 @@ public class DeleteLocalInstanceCommand extends LocalInstanceCommand {
     protected int executeCommand()
             throws CommandException, CommandValidationException {
 
+        tempDump("in execute()");
+        tempDump(ObjectAnalyzer.toStringWithSuper(this));
+
         if (isRunning()) {
+            tempDump("*****  ERROR!!!! instance is running !!!!");
             throw new CommandException(Strings.get("DeleteInstance.running"));
         }
 
+        tempDump("instance was not running -- calling _unregister_instance now");
         doRemote();
+
+        tempDump("_unreg worked -- whacking filesystem now...");
         whackFilesystem();
+        tempDump("everything worked -- returning success...");
         return SUCCESS;
     }
 
@@ -145,6 +157,10 @@ public class DeleteLocalInstanceCommand extends LocalInstanceCommand {
         }
         catch (CommandException ce) {
             // Let's add our $0.02 to this Exception!
+
+            tempDump("Got an exception unregistering instance: ", ce.toString());
+
+
             Throwable t = ce.getCause();
             String newString = Strings.get("DeleteInstance.remoteError",
                     ce.getLocalizedMessage());
