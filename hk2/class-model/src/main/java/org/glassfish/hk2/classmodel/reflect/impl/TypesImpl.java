@@ -69,27 +69,29 @@ public class TypesImpl implements TypeBuilder {
 
     }
 
-    public synchronized TypeImpl getType(int access, String name, TypeProxy parent) {
+    public TypeImpl getType(int access, String name, TypeProxy parent) {
         Class<? extends Type> requestedType = getType(access);
 
         TypeProxy<Type> typeProxy = types.getHolder(name, requestedType);
-        final Type type = typeProxy.get();
-        if (null == type) {
-            if ((access & Opcodes.ACC_ANNOTATION)==Opcodes.ACC_ANNOTATION) {
-               return new AnnotationTypeImpl(name, typeProxy);
-            } else
-            if ((access & Opcodes.ACC_INTERFACE)==Opcodes.ACC_INTERFACE) {
-                return new InterfaceModelImpl(name, typeProxy, parent);
+        synchronized(typeProxy) {
+            final Type type = typeProxy.get();
+            if (null == type) {
+                if ((access & Opcodes.ACC_ANNOTATION)==Opcodes.ACC_ANNOTATION) {
+                   return new AnnotationTypeImpl(name, typeProxy);
+                } else
+                if ((access & Opcodes.ACC_INTERFACE)==Opcodes.ACC_INTERFACE) {
+                    return new InterfaceModelImpl(name, typeProxy, parent);
+                } else {
+                    return new ClassModelImpl(name, typeProxy, parent);
+                }
             } else {
-                return new ClassModelImpl(name, typeProxy, parent);
+                TypeImpl impl = (TypeImpl)type;
+                if (ExtensibleTypeImpl.class.isInstance(impl)) {
+                    // ensure we have the parent right
+                    ((ExtensibleTypeImpl<?>)impl).setParent(parent);
+                }
+                return impl;
             }
-        } else {
-            TypeImpl impl = (TypeImpl)type;
-            if (ExtensibleTypeImpl.class.isInstance(impl)) {
-                // ensure we have the parent right
-                ((ExtensibleTypeImpl<?>)impl).setParent(parent);
-            }
-            return impl;
         }
     }
 
