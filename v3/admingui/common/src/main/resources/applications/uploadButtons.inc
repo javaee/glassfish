@@ -50,9 +50,9 @@
             result = (checkRequired('#{dirPathId}', '#{reqMsg}'));
         }
         if (result == true) {
-	    if (admingui.deploy.checkType('#{pageSession.typeId}', 'Specify the Type' )){
+	    if (admingui.deploy.checkType('#{pageSession.typeId}', '$resource{i18n.msg.JS.deploy.selectType}' )){
                 if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')){
-                    if (admingui.deploy.checkTarget('#{pageSession.onlyDASExist}', 'form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_list_value', 'No Target is selected.  Continue ? ')){
+                    if (admingui.deploy.checkTarget('#{pageSession.onlyDASExist}', '#{pageSession.commonAddRemoveId}'+'_list_value', '$resource{i18n.msg.JS.deploy.confirmNoTarget}')){
                         disableAllButtons();
                         return submitAndDisable(this, '$resource{i18n.button.Processing}', '_self');
                     }
