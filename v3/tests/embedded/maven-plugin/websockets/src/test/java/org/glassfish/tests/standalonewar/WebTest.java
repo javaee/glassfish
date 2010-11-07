@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,51 +38,65 @@
  * holder.
  */
 
-package com.sun.enterprise.glassfish.bootstrap;
+package org.glassfish.tests.standalonewar;
 
-import org.glassfish.embeddable.CommandRunner;
-import org.glassfish.embeddable.GlassFishException;
-import org.glassfish.embeddable.GlassFishProperties;
-import org.jvnet.hk2.component.Habitat;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
-import java.text.MessageFormat;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.Socket;
+import java.net.URL;
+import java.net.URLConnection;
 
-/**
- * @author bhavanishankar@dev.java.net
- */
-class ConfiguratorImpl implements Configurator {
+public class WebTest {
+        
+    private static int count = 0;
+    private static int EXPECTED_COUNT = 3;
 
-    Habitat habitat;
-
-    private static final Map<String, String[]> httpListeners = new HashMap();
-
-    // TODO :: instead of using commandRunner, create a contract and delegate.
-    static {
-        httpListeners.put("org.glassfish.embeddable.httpPort", new String[]{
-                "--listenerport={0}", "--listeneraddress=0.0.0.0", "--defaultvs=server",
-                "http-listener-1"});
-        httpListeners.put("org.glassfish.embeddable.httpsPort", new String[]{
-                "--listenerport={0}", "--listeneraddress=0.0.0.0", "--defaultvs=server",
-                "--securityenabled=true", "http-listener-2"});
-        // TODO :: support other simple configurations like jmx.port and jms.port
+    private String contextPath = "test";
+    
+    @BeforeClass
+    public static void setup() throws IOException {
     }
 
-    public ConfiguratorImpl(Habitat habitat) {
-        this.habitat = habitat;
+    @Test
+    public void testWeb() throws Exception {
+        goGet("localhost", 8080, "Please input your name", contextPath);
     }
 
-    public void configure(Properties props) throws GlassFishException {
-        CommandRunner commandRunner = habitat.getComponent(CommandRunner.class);
-        for (String key : httpListeners.keySet()) {
-            String configuredVal = props.getProperty(key);
-            if (configuredVal != null) {
-                String[] values = httpListeners.get(key);
-                values[0] = MessageFormat.format(values[0], configuredVal);
-                commandRunner.run("create-http-listener", values);
+    private static void goGet(String host, int port,
+                              String result, String contextPath) throws Exception {
+        try {
+            URL servlet = new URL("http://localhost:8080/grizzly-websockets-chat");
+            URLConnection yc = servlet.openConnection();
+            BufferedReader in = new BufferedReader(new InputStreamReader(
+                    yc.getInputStream()));
+            String line = null;
+            int index;
+            while ((line = in.readLine()) != null) {
+                index = line.indexOf(result);
+                if (index != -1) {
+                    index = line.indexOf(":");
+                    String status = line.substring(index+1);
+
+                    if (status.equalsIgnoreCase("PASS")){
+                        count++;
+                    } else {
+                        return;
+                    }
+                }
             }
+            Assert.assertTrue(count==3);
+        } catch(Exception e) {
+            e.printStackTrace();
+            throw e;
         }
-    }
+   }
+
 }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,51 +38,20 @@
  * holder.
  */
 
-package com.sun.enterprise.glassfish.bootstrap;
+package com.sun.grizzly.samples.websockets;
 
-import org.glassfish.embeddable.CommandRunner;
-import org.glassfish.embeddable.GlassFishException;
-import org.glassfish.embeddable.GlassFishProperties;
-import org.jvnet.hk2.component.Habitat;
+import com.sun.grizzly.websockets.WebSocketEngine;
 
-import java.text.MessageFormat;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import java.util.logging.Logger;
 
-/**
- * @author bhavanishankar@dev.java.net
- */
-class ConfiguratorImpl implements Configurator {
-
-    Habitat habitat;
-
-    private static final Map<String, String[]> httpListeners = new HashMap();
-
-    // TODO :: instead of using commandRunner, create a contract and delegate.
-    static {
-        httpListeners.put("org.glassfish.embeddable.httpPort", new String[]{
-                "--listenerport={0}", "--listeneraddress=0.0.0.0", "--defaultvs=server",
-                "http-listener-1"});
-        httpListeners.put("org.glassfish.embeddable.httpsPort", new String[]{
-                "--listenerport={0}", "--listeneraddress=0.0.0.0", "--defaultvs=server",
-                "--securityenabled=true", "http-listener-2"});
-        // TODO :: support other simple configurations like jmx.port and jms.port
-    }
-
-    public ConfiguratorImpl(Habitat habitat) {
-        this.habitat = habitat;
-    }
-
-    public void configure(Properties props) throws GlassFishException {
-        CommandRunner commandRunner = habitat.getComponent(CommandRunner.class);
-        for (String key : httpListeners.keySet()) {
-            String configuredVal = props.getProperty(key);
-            if (configuredVal != null) {
-                String[] values = httpListeners.get(key);
-                values[0] = MessageFormat.format(values[0], configuredVal);
-                commandRunner.run("create-http-listener", values);
-            }
-        }
+public class WebSocketsServlet extends HttpServlet {
+    static final Logger logger = Logger.getLogger(WebSocketEngine.WEBSOCKET);
+    private final ChatApplication app = new ChatApplication();
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+        WebSocketEngine.getEngine().register(new ChatApplication());
     }
 }

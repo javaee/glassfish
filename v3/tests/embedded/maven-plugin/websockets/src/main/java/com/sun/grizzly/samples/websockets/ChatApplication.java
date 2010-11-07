@@ -38,51 +38,56 @@
  * holder.
  */
 
-package com.sun.enterprise.glassfish.bootstrap;
+package com.sun.grizzly.samples.websockets;
 
-import org.glassfish.embeddable.CommandRunner;
-import org.glassfish.embeddable.GlassFishException;
-import org.glassfish.embeddable.GlassFishProperties;
-import org.jvnet.hk2.component.Habitat;
+import com.sun.grizzly.tcp.Request;
+import com.sun.grizzly.websockets.DataFrame;
+import com.sun.grizzly.websockets.NetworkHandler;
+import com.sun.grizzly.websockets.WebSocket;
+import com.sun.grizzly.websockets.WebSocketApplication;
+import com.sun.grizzly.websockets.WebSocketListener;
 
-import java.text.MessageFormat;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.io.IOException;
 
-/**
- * @author bhavanishankar@dev.java.net
- */
-class ConfiguratorImpl implements Configurator {
-
-    Habitat habitat;
-
-    private static final Map<String, String[]> httpListeners = new HashMap();
-
-    // TODO :: instead of using commandRunner, create a contract and delegate.
-    static {
-        httpListeners.put("org.glassfish.embeddable.httpPort", new String[]{
-                "--listenerport={0}", "--listeneraddress=0.0.0.0", "--defaultvs=server",
-                "http-listener-1"});
-        httpListeners.put("org.glassfish.embeddable.httpsPort", new String[]{
-                "--listenerport={0}", "--listeneraddress=0.0.0.0", "--defaultvs=server",
-                "--securityenabled=true", "http-listener-2"});
-        // TODO :: support other simple configurations like jmx.port and jms.port
+public class ChatApplication extends WebSocketApplication {
+    @Override
+    public boolean isApplicationRequest(Request request) {
+        return request.requestURI().equals("/chat");
     }
 
-    public ConfiguratorImpl(Habitat habitat) {
-        this.habitat = habitat;
+    @Override
+    public WebSocket createSocket(WebSocketListener... listeners) throws IOException {
+        return new ChatWebSocket();
     }
 
-    public void configure(Properties props) throws GlassFishException {
-        CommandRunner commandRunner = habitat.getComponent(CommandRunner.class);
-        for (String key : httpListeners.keySet()) {
-            String configuredVal = props.getProperty(key);
-            if (configuredVal != null) {
-                String[] values = httpListeners.get(key);
-                values[0] = MessageFormat.format(values[0], configuredVal);
-                commandRunner.run("create-http-listener", values);
+    public void onMessage(WebSocket socket, DataFrame frame) throws IOException {
+        final String data = frame.getTextPayload();
+        if (data.startsWith("login:")) {
+            login((ChatWebSocket) socket, frame);
+        } else {
+            broadcast(((ChatWebSocket) socket).getUser() + " : " + data);
+        }
+    }
+
+    private void broadcast(String text) throws IOException {
+        WebSocketsServlet.logger.info("Broadcasting : " + text);
+        for (WebSocket webSocket : getWebSockets()) {
+            try {
+                webSocket.send(text);
+            } catch (IOException e) {
+                e.printStackTrace();
+                WebSocketsServlet.logger.info("Removing chat client: " + e.getMessage());
+                webSocket.close();
             }
+        }
+
+    }
+
+    private void login(ChatWebSocket socket, DataFrame frame) throws IOException {
+        if (socket.getUser() == null) {
+            WebSocketsServlet.logger.info("ChatApplication.login");
+            socket.setUser(frame.getTextPayload().split(":")[1].trim());
+            broadcast(socket.getUser() + " has joined the chat.");
         }
     }
 }

@@ -1,0 +1,18 @@
+<head>
+   <title>WebSockets Ping</title>
+ <script>
+// core init of the "framework"
+ws = new WebSocket("ws://192.168.1.100:8080/grizzly-websockets-chat");
+ws.onmessage = function(evt)
+{
+ var pTag = document.createElement("p");
+ var text = document.createTextNode(evt.data);
+ pTag.appendChild(text);
+ document.getElementById('content').appendChild(pTag);
+};
+ws.onclose = function()
+{
+ alert("socket closed");
+};
+</script>
+

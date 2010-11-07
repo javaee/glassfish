@@ -38,51 +38,69 @@
  * holder.
  */
 
-package com.sun.enterprise.glassfish.bootstrap;
+body {
+    background: #5c8098 url(../images/body-background.png) repeat-x;
+}
 
-import org.glassfish.embeddable.CommandRunner;
-import org.glassfish.embeddable.GlassFishException;
-import org.glassfish.embeddable.GlassFishProperties;
-import org.jvnet.hk2.component.Habitat;
+html, body, h1, h2 {
+    margin: 0;
+    padding: 0;
+}
 
-import java.text.MessageFormat;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+body, textarea, input {
+    font-size: 12px;
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+    color: #2d2b3d;
+}
 
-/**
- * @author bhavanishankar@dev.java.net
- */
-class ConfiguratorImpl implements Configurator {
+#container {
+    text-align: center;
+}
 
-    Habitat habitat;
+#container-inner {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: justify;
+    width: 820px;
+}
 
-    private static final Map<String, String[]> httpListeners = new HashMap();
+#header {
+    width: 820px;
+    height: 100px;
+    background: url(../images/header-background.png) no-repeat;
+}
 
-    // TODO :: instead of using commandRunner, create a contract and delegate.
-    static {
-        httpListeners.put("org.glassfish.embeddable.httpPort", new String[]{
-                "--listenerport={0}", "--listeneraddress=0.0.0.0", "--defaultvs=server",
-                "http-listener-1"});
-        httpListeners.put("org.glassfish.embeddable.httpsPort", new String[]{
-                "--listenerport={0}", "--listeneraddress=0.0.0.0", "--defaultvs=server",
-                "--securityenabled=true", "http-listener-2"});
-        // TODO :: support other simple configurations like jmx.port and jms.port
-    }
+#header h1 {
+    display: none;
+}
 
-    public ConfiguratorImpl(Habitat habitat) {
-        this.habitat = habitat;
-    }
+#main {
+    height: 610px;
+    background: url(../images/main-background.png) no-repeat;
+    text-align: left;
+    width: 740px;
+    padding: 30px 40px 20px 40px;
+}
 
-    public void configure(Properties props) throws GlassFishException {
-        CommandRunner commandRunner = habitat.getComponent(CommandRunner.class);
-        for (String key : httpListeners.keySet()) {
-            String configuredVal = props.getProperty(key);
-            if (configuredVal != null) {
-                String[] values = httpListeners.get(key);
-                values[0] = MessageFormat.format(values[0], configuredVal);
-                commandRunner.run("create-http-listener", values);
-            }
-        }
-    }
+#display {
+    border: 1px solid #5c8098;
+    width: 740px;
+    height: 400px;
+    margin-bottom: 10px;
+    overflow-y: scroll;
+}
+
+#login-name {
+    width: 200px;
+}
+
+#message {
+    width: 740px;
+    height: 50px;
+}
+
+#missing-sockets {
+    color: red;
+    font-size: xx-large;
+    display: none;
 }

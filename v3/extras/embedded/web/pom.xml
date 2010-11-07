@@ -127,6 +127,15 @@
             <optional>true</optional>
         </dependency>
 
+	<!-- additional grizzly modules package which includes websockets -->
+        <dependency>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-grizzly-full</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+            <optional>true</optional>
+        </dependency>
+
         <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-nucleus</artifactId>
