@@ -44,7 +44,6 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
 import java.lang.reflect.Method;
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -53,34 +52,29 @@ import java.util.Properties;
  * @author bhavanishankar@dev.java.net
  * @goal admin
  */
-
 public class AdminMojo extends AbstractServerMojo {
 
     /**
-     * @parameter expression="${command}"
+     * @parameter expression="${commands}"
      */
-    protected String command;
-
-    /**
-     * @parameter expression="${args}"
-     */
-    protected String[] args;
+    protected String[] commands;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
-            runCommand(serverID, getClassLoader(), command, args);
+            runCommand(serverID, getClassLoader(), commands);
         } catch (Exception ex) {
+            ex.printStackTrace();
             throw new MojoExecutionException(ex.getMessage(), ex);
         }
     }
 
     public void runCommand(String serverId, ClassLoader cl,
-                           String command, String[] args) throws Exception {
+                           String[] commandLines) throws Exception {
         Class clazz = cl.loadClass(PluginUtil.class.getName());
         Method m = clazz.getMethod("runCommand", new Class[]{
-                String.class, Properties.class, String[].class});
-        m.invoke(null, new Object[]{serverId, command, args});
+                String.class, String[].class});
+        m.invoke(null, new Object[]{serverId, commandLines});
     }
 
 }

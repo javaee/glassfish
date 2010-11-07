@@ -81,7 +81,7 @@ public class PluginUtil {
         GlassFish gf = gfMap.remove(serverId);
         if (gf != null && gf.getStatus().equals(GlassFish.Status.STARTED)) {
             gf.stop();
-            if(gfr != null) {
+            if (gfr != null) {
                 gfr.shutdown();
             }
         }
@@ -145,16 +145,33 @@ public class PluginUtil {
         return gf;
     }
 
-    public static void runCommand(String serverId, String command, String[] args)
+    public static void runCommand(String serverId, String[] commandLines)
             throws Exception {
-        GlassFish gf = gfMap.remove(serverId);
-        CommandResult result = null;
+        GlassFish gf = gfMap.get(serverId);
         if (gf != null) {
-            CommandRunner commandRunner = gf.getService(CommandRunner.class);
-            result = commandRunner.run(command, args);
+            CommandRunner cr = gf.getService(CommandRunner.class);
+            for (String commandLine : commandLines) {
+                String[] split = commandLine.split(" ");
+                String command = split[0].trim();
+                String[] commandParams = null;
+                if (split.length > 1) {
+                    commandParams = new String[split.length - 1];
+                    for (int i = 1; i < split.length; i++) {
+                        commandParams[i - 1] = split[i].trim();
+                    }
+                }
+                try {
+                    CommandResult result = commandParams == null ?
+                            cr.run(command) : cr.run(command, commandParams);
+                    logger.logp(Level.INFO, "PluginUtil", "runCommand",
+                            "Ran command [{0}]. Exit Code [{1}], Output = [{2}]",
+                            new Object[]{commandLine, result.getExitStatus(), result.getOutput()});
+                } catch (Exception ex) {
+                    System.out.println(ex.getMessage());
+                    ex.printStackTrace();
+                }
+            }
         }
-        logger.logp(Level.INFO, "PluginUtil", "runCommand", "Ran command {0}, CommandResult {1} ",
-                new Object[]{command, result});
     }
-    
+
 }
