@@ -316,145 +316,6 @@ function getCookie(name) {
 
 //===========================================================
 
-/** 
- * Relating to Deployment
- */
-
-function setVisible(type) {
-    var fixedValue = 'form:title:ps:psec:';
-    if (type == "webApp") {
-        var fields = new Array();
-        fields[0] = fixedValue.concat("wsp");
-        fields[1] = "form:title:ps:advancedSection";
-        fields[2] = fixedValue.concat("threadpoolProp");
-        fields[3] = fixedValue.concat("registryProp");
-        setVisibleFields(fields, false);
-        fields = new Array();
-        fields[0] = fixedValue.concat("cxp");
-        fields[1] = fixedValue.concat("vsp");
-        fields[2] = fixedValue.concat("precmplProp");
-        fields[3] = fixedValue.concat("librariesProp");
-        fields[4] = fixedValue.concat("enableProp");
-        setVisibleFields(fields, true);
-        setTargetSection(true);
-        setHaProp(fixedValue.concat("haProp"), true);
-    }
-    else if (type == "application") {
-        var fields = new Array();
-        fields[0] = fixedValue.concat("cxp");
-        fields[1] = fixedValue.concat("threadpoolProp");
-        fields[2] = fixedValue.concat("registryProp");
-        setVisibleFields(fields, false);
-        var fields = new Array();
-        fields[0] = fixedValue.concat("vsp");
-        fields[1] = fixedValue.concat("wsp");
-        fields[2] = fixedValue.concat("precmplProp");
-        fields[3] = "form:title:ps:advancedSection";
-        fields[4] = fixedValue.concat("librariesProp");
-        fields[5] = fixedValue.concat("enableProp");
-        setVisibleFields(fields, true);
-        setTargetSection(true);
-        setHaProp(fixedValue.concat("haProp"),true);
-    }
-    else if (type == "ejbModule") {
-        webui.suntheme.common.setVisible("form:title:ps:advancedSection", true);
-        webui.suntheme.common.setVisible(fixedValue.concat("librariesProp"), true);
-        webui.suntheme.common.setVisible(fixedValue.concat("enableProp"), true);
-        var fields = new Array();
-        fields[0] = fixedValue.concat("wsp");
-        fields[1] = fixedValue.concat("cxp");
-        fields[2] = fixedValue.concat("vsp");
-        fields[3] = fixedValue.concat("precmplProp");
-        fields[4] = fixedValue.concat("threadpoolProp");
-        fields[5] = fixedValue.concat("registryProp");
-        setVisibleFields(fields, false);
-        setTargetSection(true);
-        setHaProp(fixedValue.concat("haProp"),true);
-    }
-    else if (type == "appclient") {
-        webui.suntheme.common.setVisible(fixedValue.concat("wsp"), true);
-        webui.suntheme.common.setVisible("form:ps:advancedSection", true);
-
-        var fields = new Array();
-        fields[0] = fixedValue.concat("librariesProp");
-        fields[1] = fixedValue.concat("enableProp");
-        fields[2] = fixedValue.concat("precmplProp");
-        fields[3] = fixedValue.concat("cxp");
-        fields[4] = fixedValue.concat("vsp");
-        fields[5] = fixedValue.concat("threadpoolProp");
-        fields[6] = fixedValue.concat("registryProp");
-        setVisibleFields(fields, false);
-        setTargetSection(false);
-        setHaProp(fixedValue.concat("haProp"),false);
-    }
-    else if (type == "connector") {
-        webui.suntheme.common.setVisible("form:title:ps:advancedSection", false);
-        var fields = new Array();
-        fields[0] = fixedValue.concat("precmplProp");
-        fields[1] = fixedValue.concat("cxp");
-        fields[2] = fixedValue.concat("vsp");
-        fields[3] = fixedValue.concat("wsp");
-        fields[4] = fixedValue.concat("librariesProp");
-        fields[5] = fixedValue.concat("targetSectionId");
-        setVisibleFields(fields, false);
-
-        fields = new Array();
-        fields[0] = fixedValue.concat("threadpoolProp");
-        fields[1] = fixedValue.concat("registryProp");
-        setVisibleFields(fields, true);
-        setTargetSection(true);
-        setHaProp(fixedValue.concat("haProp"), false);
-    }
-}
-
-function setVisibleFields(fields, value) {
-    for (ctr=0; ctr < fields.length; ctr++) {
-        webui.suntheme.common.setVisible(fields[ctr], value);
-    }
-}
-
-
-function checkExtension(appType, extensionId, msg, reqdMsg){
-    var extension = getTextElement(extensionId).value;
-    //alert(appType + ',' + extension + ',' +  msg);
-    if (extension.length <= 0) {
-        return true;
-    }
-    if (((appType == "webApp") && (extension != ".war")) ||
-        ((appType == "application") && (extension != ".ear")) ||
-        ((appType == "ejbModule") && (extension != ".jar")) ||
-        ((appType == "appclient") && (extension != ".jar")) ||
-        ((appType == "connector") && (extension != ".rar")) ) {
-        return showAlert(msg);
-    }
-    else
-        return true;
-
-}
-
-
-function setTargetSection(value){
-    var id = "form:title:ps:targetSectionId";
-    component = document.getElementById(id);
-    if (component != null)
-        webui.suntheme.common.setVisible(id, value);
-}
-
-function setHaProp(id, value){
-    var component = document.getElementById(id);
-    if (component != null) {
-        webui.suntheme.common.setVisible(id, value);
-    }
-}
-
-function checkRedeployRequired(form, reqdMesg) {
-    var uploadField = getField(form, "fileupload_com.sun.webui.jsf.upload");
-    var dirField = getField(form, "dirPath_field");
-    if (uploadField.value=='' && dirField.value=='') {
-        return showAlert(reqdMesg);
-    }
-    return true;
-}
 
 function extractName(value) {
     var appName="";
@@ -485,89 +346,6 @@ function getSuffix(fullName){
         return "";
     else
         return fullName.substring(index, fullName.length);
-}
-
-function setFieldValue(appNameId, value,  typeId, contextRootId, extensionId) {
-    var appName = extractName(value);
-    var pfex = getPrefix(appName);
-    var sfex = getSuffix(appName);
-
-    var component = getTextElement(extensionId);
-    component.value=sfex;
-
-    if (appNameId==null || appNameId.length <=0)
-        return;
-    component = getTextElement(appNameId);
-    component.value=pfex
-
-    //TODO: v3 may need to adjust for other supported type.
-//    component = getSelectElement(typeId);
-//    if (component.value == "webApp") {
-//        component = getTextElement(contextRootId);
-//        component.value = pfex
-//    }
-    if ( sfex == ".war"){
-        component = getTextElement(contextRootId);
-        if (component != null){
-            component.value = pfex;
-        }
-    }
-}
-
-function populateDirAndAppName(fileChooserId, dirPathId, appNameId, typeId, ctxRootId, extensionId){ 
-    var fc = document.getElementById(fileChooserId).getSelectionValue();
-    window.opener.getTextElement(dirPathId).value = fc;
-
-    var appName = extractName(fc);
-    if (appNameId.length > 0) {
-        window.opener.getTextElement(appNameId).value=getPrefix(appName);
-    }
-    if (extensionId.length > 0) {
-        window.opener.getTextElement(extensionId).value=getSuffix(appName);
-    }
-
-//    if (typeId.length > 0) {
-//        type = window.opener.getSelectElement(typeId).value;
-//        if (type == "webApp") {
-//            component = window.opener.getTextElement(ctxRootId);
-//            component.value = getPrefix(appName);
-//        }
-//    }
-
-    //TODO V3: may need to adjust other type.
-    if (getSuffix(appName) == ".war"){
-        component = window.opener.getTextElement(ctxRootId);
-        if (component != null){
-            component.value = getPrefix(appName);
-        }
-    }
-    window.close();
-}
-
-function populatorDirAndAppName(fileChooserId, txtFld2Id){ 
-    var fc = document.getElementById(fileChooserId).getSelectionValue();
- 	window.opener.getTextElement(txtFld2Id).value = fc;
-    window.close();
- }
-
-
-function checkType(theButton, typeId, extensionId, msg){
-
-    var appType = getSelectElement(typeId).value;
-    var extension = getTextElement(extensionId).value;
-
-    if (extension.length <= 0)
-        return true;
-    if (((appType == "webApp") && (extension != ".war")) ||
-        ((appType == "application") && (extension != ".ear")) ||
-        ((appType == "ejbModule") && (extension != ".jar")) ||
-        ((appType == "appclient") && (extension != ".jar")) ||
-        ((appType == "connector") && (extension != ".rar")) ) {
-        return getConfirm(theButton, msg);
-    }
-    else
-        return true;
-
 }
 
 // End of Deployment code
@@ -1131,7 +909,7 @@ admingui.help = {
 		if (node.onclick) {
 		    node.oldonclick = node.onclick;
 		}
-		node.onclick = function () { if (this.oldonclick != null) { this.oldonclick(); } admingui.help.showHelpPage(this.href, 'helpContent'); return false; };
+		node.onclick = function () {if (this.oldonclick != null) {this.oldonclick();}admingui.help.showHelpPage(this.href, 'helpContent');return false;};
 	    }
 	} else {
 	    // Not a href, so walk its children
@@ -2010,7 +1788,6 @@ function reloadHeaderFrame() {
 }
 
 admingui.deploy = {
-    // FIXME: similar functions are defined in uploadJS.inc :(
     uploadInit: function(dirPathId, dirSelectBtnId, filSelectBtnId, fileuploadId) {
             //
             //We need to set a timeout to delay the call to getTextElement inside disable component.
@@ -2051,13 +1828,13 @@ admingui.deploy = {
         var sheets = appTypeString.split(',');
         if (propSheetId.length <=0){
             for( ix=0; ix < sheets.length; ix++){
-                comp = document.getElementById('form:' + sheets[ix]);
+                comp = obj.document.getElementById('form:' + sheets[ix]);
                 if (comp != null)
                     comp.style.display='none';
             }
         }else{
             for (i=0; i < sheets.length; i++){
-                cc = document.getElementById('form:'+sheets[i]);
+                cc = obj.document.getElementById('form:'+sheets[i]);
                 if (cc == null){
                     continue;
                 }
@@ -2072,8 +1849,7 @@ admingui.deploy = {
         if (typeof(appName) != 'undefined' ) {
             admingui.deploy.setAppName(appNameId, appName, obj, appTypeString);
             //may as well set context root if it exist.
-            //component = obj.getTextElement(contextRootId);
-            var component = document.getElementById(contextRootId);
+            var component = obj.document.getElementById(contextRootId);
             if (component != null){
                 component.value = getPrefix(appName);
             }
@@ -2095,8 +1871,7 @@ admingui.deploy = {
             var str3 = appNameId.substr(ix+1+ix2);
             var sheets = appTypeString.split(',');
             for( idx=0; idx < sheets.length; idx++){
-                //var comp = obj.getTextElement('form:'+sheets[idx]+str3);
-                var comp = document.getElementById('form:'+sheets[idx]+str3);
+                var comp = obj.document.getElementById('form:'+sheets[idx]+str3);
                 if (comp != null){
                     comp.value=pfex;
                 }
@@ -2106,12 +1881,9 @@ admingui.deploy = {
 
     setFieldValue : function(appNameId, value, dropDownProp, typeId, contextRootId, extensionId, obj, appTypeString) {
         var appName = extractName(value);
-        //var pfex = getPrefix(appName);
         var sfex = getSuffix(appName);
         var sfex2 = '';
-
-        //obj.getTextElement(extensionId).value=sfex;
-        document.getElementById(extensionId).value = sfex;
+        obj.document.getElementById(extensionId).value=sfex;
         var appTypes = ','+appTypeString+',';
 
         //If no extension for file choosen, or no plugin for that extension, show dropDown type and don't fill in anything, then return;
@@ -2126,18 +1898,18 @@ admingui.deploy = {
         
         //for redeploy, there is no dropdown type to choose from.
         if (typeId != ""){
-            document.getElementById(typeId).value = sfex2;
-            document.getElementById(dropDownProp).style.display = 'block';
+            obj.document.getElementById(typeId).value = sfex2;
+            obj.document.getElementById(dropDownProp).style.display = 'block';
             admingui.deploy.showPropertySheet(sfex2, obj, appNameId, contextRootId, appTypeString, appName);
         }
     },
 
-    populateDirAndAppName : function(fileChooserId, dirPathId, appNameId, typeId, dropDownProp, contextRootId, extensionId){
+    populateDirAndAppName : function(fileChooserId, dirPathId, appNameId, typeId, dropDownProp, contextRootId, extensionId, appTypeString){
         var fc = document.getElementById(fileChooserId).getSelectionValue();
         window.opener.getTextElement(dirPathId).value = fc;
         //for redeploy, there is no dropdown for app type, there is no need to fill in any field.
         if (dropDownProp != ""){
-            admingui.deploy.setFieldValue(appNameId, fc, dropDownProp, typeId, contextRootId, extensionId, window.opener);
+            admingui.deploy.setFieldValue(appNameId, fc, dropDownProp, typeId, contextRootId, extensionId, window.opener, appTypeString);
         }
     },
 
@@ -2155,7 +1927,31 @@ admingui.deploy = {
             component.focus();
         }
         return result;
+    },
+
+
+    checkTarget : function (onlyDAS, addRemoveId, confirmMsg){
+        if (onlyDAS=='true') return true;
+        var component = document.getElementById(addRemoveId);
+        if (component != null){
+            var target = document.getElementById(addRemoveId).value;
+            if (target==null || target==""){
+               return getConfirm(this, confirmMsg);
+            }
+        }
+        return true;
+    },
+
+    checkType: function( typeId, alertMsg){
+        var value = document.getElementById(typeId).value;
+        var result = (value != null) && (value != '') && (isWhitespace(value) == false);
+        if (result == false) {
+            showAlert(alertMsg);
+            return false;
+        }
+        return true;
     }
+
 }
 
 admingui.table = {

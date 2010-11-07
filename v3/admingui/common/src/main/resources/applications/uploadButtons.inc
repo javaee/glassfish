@@ -50,9 +50,13 @@
             result = (checkRequired('#{dirPathId}', '#{reqMsg}'));
         }
         if (result == true) {
-	    if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')){
-		disableAllButtons();
-		return submitAndDisable(this, '$resource{i18n.button.Processing}', '_self');
+	    if (admingui.deploy.checkType('#{pageSession.typeId}', 'Specify the Type' )){
+                if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')){
+                    if (admingui.deploy.checkTarget('#{pageSession.onlyDASExist}', 'form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_list_value', 'No Target is selected.  Continue ? ')){
+                        disableAllButtons();
+                        return submitAndDisable(this, '$resource{i18n.button.Processing}', '_self');
+                    }
+                }
 	    }
         }
         return false;"
@@ -66,10 +70,6 @@
             setAttribute(key="origPath", value="#{dirPath}");
             setAttribute(key="filePath", value="#{dirPath}");
         }
-<!--
-        getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
-        getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
--->
         deploy(filePath="$attribute{filePath}"
               origPath="$attribute{origPath}"
               allMaps = "#{pageSession.deployMap}"

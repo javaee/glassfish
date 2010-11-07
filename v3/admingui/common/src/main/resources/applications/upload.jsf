@@ -58,6 +58,5 @@
     <sun:form>
 	<sun:hidden id="helpKey" value="$resource{help_common.uploadDev}" />
     </sun:form>
-//#include "/common/applications/uploadJS.inc"
 </define>
 </composition>
