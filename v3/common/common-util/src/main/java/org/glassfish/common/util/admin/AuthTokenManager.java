@@ -131,10 +131,10 @@ public class AuthTokenManager {
             }
             if ( ! isBeingReused) {
                 usesRemaining--;
-                logger.log(Level.FINER,
-                            "Use of auth token {0} OK; remaining uses = {1,number,integer}",
-                            new Object[] {token, new Integer(usesRemaining)});
             }
+            logger.log(Level.FINER,
+                        "Use of auth token {0} OK; isBeingReused = {2}; remaining uses = {1,number,integer}",
+                        new Object[] {token, new Integer(usesRemaining), Boolean.toString(isBeingReused)});
             expiration += (TOKEN_EXPIRATION_IN_MS);
             return true;
         }
@@ -180,7 +180,7 @@ public class AuthTokenManager {
 
         final TokenInfo ti = liveTokens.get(tokenAsRecorded);
         if (ti == null) {
-            logger.log(Level.FINER, "Attempt to use non-existent auth token {0}", tokenAsRecorded);
+            logger.log(Level.FINE, "Attempt to use non-existent auth token {0}", tokenAsRecorded);
         }
         final boolean result =  ti != null && ti.use(isReusedToken, now);
 

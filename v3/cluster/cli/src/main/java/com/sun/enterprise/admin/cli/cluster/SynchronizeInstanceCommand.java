@@ -127,7 +127,7 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
          * Because we reuse the command, we also need to reuse the auth token
          * (if one is present).
          */
-        final String origAuthToken = programOpts.getAuxInput();
+        final String origAuthToken = programOpts.getAuthToken();
         if (origAuthToken != null) {
             programOpts.setAuthToken(AuthTokenManager.markTokenForReuse(origAuthToken));
         }

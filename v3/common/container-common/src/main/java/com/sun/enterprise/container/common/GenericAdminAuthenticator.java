@@ -169,7 +169,12 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
             return true;
         }
         /*
-         * Try to authenticate as a trusted sender first.  One reason is that
+         * Try to authenticate as a trusted sender first.  A trusted sender is
+         * one that either presents an SSL cert that is in our truststore or
+         * presents a very-short-term authentication token in the http request
+         * header.
+         * 
+         * One reason to check for a trusted sender first is that
          * under secure admin an incoming command could have an auth token and,
          * if there is one, we'd like to consume it and retire it.  If we 
          * checked for file realm auth. first then a command submitted from a
@@ -180,13 +185,20 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
         boolean result = authenticateAsTrustedSender(authRelatedHeaders, requestPrincipal);
         if (result) {
             logger.log(Level.FINE, "Authenticated as trusted sender");
-            return result;
+            return true;
+        }
+        /*
+         * If this is an instance, do not use the admin realm.  We do not support
+         * direct admin contact from a client to an instance.
+         */
+        if (serverEnv.isInstance()) {
+            logger.log(Level.FINE, "Not a \"trusted sender\" and bypassing admin realm check; this is an instance; rejecting admin request as unauthorized");
+            return false;
         }
         if (as.usesFileRealm()) {
             result = handleFileRealm(user, password);
-            if (result) {
-                logger.log(Level.FINE, "File realm user authentication passed for admin user {0}", user);
-            }
+            logger.log(Level.FINE, "Not a \"trusted sender\"; file realm user authentication {1} for admin user {0}",
+                    new Object[] {user, result ? "passed" : "failed"});
             return result;
         } else {
             //now, deleate to the security service
@@ -212,7 +224,7 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
 //              LoginException le = new LoginException("login failed!");
 //              le.initCause(e);
 //              thorw le //TODO need to work on this, this is rather too ugly
-                return authenticateAsTrustedSender(authRelatedHeaders, requestPrincipal);
+                return false;
            } finally {
                 if (hack)
                     Thread.currentThread().setContextClassLoader(pc);
