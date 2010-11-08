@@ -211,7 +211,11 @@
             <artifactId>osgi-javaee-base</artifactId>
             <version>${project.version}</version>
         </dependency>
-
+       <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>osgi-ee-resources</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <!-- schema2beans - both CMP and LB admin now depend on it -->
         <dependency>
             <groupId>org.glassfish.external</groupId>

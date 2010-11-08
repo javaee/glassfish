@@ -87,6 +87,11 @@
            <artifactId>jdbc-admin</artifactId>
            <version>${project.version}</version>
         </dependency>
+        <dependency>        
+           <groupId>org.glassfish</groupId>
+           <artifactId>osgi-jdbc</artifactId>
+           <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.glassfish.admingui</groupId>
 	    <artifactId>console-jdbc-plugin</artifactId>
