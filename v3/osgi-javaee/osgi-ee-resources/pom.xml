@@ -87,6 +87,7 @@
         <dependency>
             <groupId>javax.jms</groupId>
             <artifactId>jms-api</artifactId>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>
