@@ -44,6 +44,7 @@
  */
 package org.glassfish.flashlight.datatree.impl;
 
+import com.sun.enterprise.util.ObjectAnalyzer;
 import static com.sun.enterprise.util.SystemPropertyConstants.SLASH;
 import org.glassfish.flashlight.datatree.TreeNode;
 import java.util.*;
@@ -71,6 +72,10 @@ public abstract class AbstractTreeNode implements TreeNode, Comparable {
     // Special character Regex to be converted to .* for v2 compatibility
     private String STAR = "*";
 
+    @Override
+    public String toString() {
+        return ObjectAnalyzer.toString(this);
+    }
 
     @Override
     public String getName() {
