@@ -40,6 +40,7 @@
 
 package org.glassfish.common.util.admin;
 
+import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.logging.LogDomains;
 import java.security.SecureRandom;
 import java.util.HashMap;
@@ -94,6 +95,8 @@ public class AuthTokenManager {
 
     public static final String AUTH_TOKEN_OPTION_NAME = "_authtoken";
 
+    private static final String SUPPRESSED_TOKEN_OUTPUT = "????";
+
     private final static int TOKEN_SIZE = 10;
 
     private final static long TOKEN_EXPIRATION_IN_MS = 60 * 1000;
@@ -106,6 +109,9 @@ public class AuthTokenManager {
             LogDomains.ADMIN_LOGGER);
 
     private final static char REUSE_TOKEN_MARKER = '+';
+
+    private static final LocalStringManagerImpl localStrings =
+            new LocalStringManagerImpl(AuthTokenManager.class);
 
     /* hex conversion stolen shamelessly from Bill's LocalPasswordImpl - maybe refactor to share later */
     private static final char[] hex = {
@@ -124,9 +130,11 @@ public class AuthTokenManager {
 
         private synchronized boolean use(final boolean isBeingReused, final long now) {
             if (isUsedUp(now)) {
-                logger.log(Level.FINER,
-                            "Use of auth token {0} attempted but token is invalid; usesRemaining = {1,number,integer}, expired = {2}",
-                            new Object[] {token, new Integer(usesRemaining), Boolean.toString(expiration <= now)});
+                final String msg = localStrings.getLocalString("AuthTokenInvalid",
+                        "Use of auth token {2} attempted but token is invalid; usesRemaining = {0,number,integer}, expired = {1}",
+                        new Integer(usesRemaining), Boolean.toString(expiration <= now),
+                        logger.isLoggable(Level.FINER) ? token : SUPPRESSED_TOKEN_OUTPUT);
+                
                 return false;
             }
             if ( ! isBeingReused) {
@@ -180,7 +188,12 @@ public class AuthTokenManager {
 
         final TokenInfo ti = liveTokens.get(tokenAsRecorded);
         if (ti == null) {
-            logger.log(Level.FINE, "Attempt to use non-existent auth token {0}", tokenAsRecorded);
+            logger.log(Level.WARNING,
+                    localStrings.getLocalString(
+                        "AuthTokenNonexistent",
+                        "Attempt to use non-existent auth token {0}",
+                        logger.isLoggable(Level.FINER) ? tokenAsRecorded : SUPPRESSED_TOKEN_OUTPUT)
+                        );
         }
         final boolean result =  ti != null && ti.use(isReusedToken, now);
 
