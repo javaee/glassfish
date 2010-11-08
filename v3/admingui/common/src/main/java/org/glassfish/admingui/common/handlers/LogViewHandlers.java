@@ -127,6 +127,8 @@ public class LogViewHandlers {
         String instanceName = (String) handlerCtx.getInputValue("InstanceName");
 
         notNullStringPut(attMap, "instanceName", instanceName);
+        Date from = null, to = null;
+
         if ((instanceName != null)) {
             	    notNullStringPut(attMap, "instanceName", instanceName);
             if (logFileName != null) {
@@ -135,21 +137,21 @@ public class LogViewHandlers {
                         ("enabled".equalsIgnoreCase(dateEnabledString)
                         || "true".equalsIgnoreCase(dateEnabledString)))  {
                     // Date is enabled, figure out what the values are
-                    fromDate = convertDateTime(handlerCtx, fromDate, fromTime);
-                    toDate = convertDateTime(handlerCtx, toDate, toTime);
-                    if ((fromDate == null)) {
+                    from = convertDateTime(handlerCtx, fromDate, fromTime);
+                    to = convertDateTime(handlerCtx, toDate, toTime);
+                    if ((from == null)) {
                         GuiUtil.handleError(handlerCtx, "Specific Date Range was chosen, however, date fields are incomplete.");
                     }
-                    if (toDate != null && fromDate != null) {
-                        if (((Date) fromDate).after((Date) toDate)) {
+                    if (to != null && from != null) {
+                        if (from.after(to)) {
                             GuiUtil.handleError(handlerCtx, "Timestamp value of 'From: ' field " + fromDate +
                                     " must not be greater than 'To: ' field value " + toDate);
                         }
                     }
                 } else {
                     // Date not enabled, ignore from/to dates
-                    fromDate = null;
-                    toDate = null;
+                    from = null;
+                    to = null;
                 }
 
                 if ((logLevel != null) && (logLevel.trim().length() == 0)) {
@@ -217,8 +219,11 @@ public class LogViewHandlers {
                 notNullStringPut(attMap, "searchForward", after);//direction
                 notNullStringPut(attMap, "maximumNumberOfResults", numberToDisplay);
                 notNullStringPut(attMap, "onlyLevel", onlyLevel);
-                notNullStringPut(attMap, "fromTime", fromDate);
-                notNullStringPut(attMap, "toTime", toDate);
+
+                if (from != null)
+                    notNullStringPut(attMap,"fromTime", Long.valueOf(from.getTime()));
+                if (to != null)
+                    notNullStringPut(attMap, "toTime", Long.valueOf(to.getTime()));
                 notNullStringPut(attMap, "anySearch", anySearch);
                 notNullStringPut(attMap, "logLevel", logLevel);
                 notNullStringPut(attMap, "instanceName", instanceName);
