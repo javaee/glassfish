@@ -116,7 +116,9 @@ public abstract class CollectionLeafResource {
     public void setParentAndTagName(Dom parent, String tagName) {
         this.parent = parent;
         this.tagName = tagName;
-        entity = parent.leafElements(tagName);
+        if (parent!=null){
+            entity = parent.leafElements(tagName);
+        }
 
     }
 
