@@ -40,6 +40,9 @@
 
 package com.sun.enterprise.naming.util;
 
+import com.sun.enterprise.naming.GlassFishNamingBuilder;
+import org.glassfish.internal.api.Globals;
+import org.jvnet.hk2.component.Habitat;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import com.sun.enterprise.naming.util.ObjectInputOutputStreamFactoryFactory;
@@ -54,6 +57,11 @@ public class NamingActivator implements BundleActivator
     {
         ObjectInputOutputStreamFactoryFactory.setFactory(
                 new OSGiObjectInputOutputStreamFactoryImpl(context));
+
+        // force initialisation of NamingBuilder so that any naming operation will be redirected via
+        // our builder which is essential for issue #8458
+        Habitat habitat = Globals.getDefaultHabitat();
+        habitat.getComponent(GlassFishNamingBuilder.class);
     }
 
     public void stop(BundleContext context) throws Exception
