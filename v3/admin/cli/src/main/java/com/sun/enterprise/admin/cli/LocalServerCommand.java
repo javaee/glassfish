@@ -51,6 +51,7 @@ import com.sun.enterprise.security.store.PasswordAdapter;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.universal.process.Jps;
+import com.sun.enterprise.universal.process.ProcessUtils;
 import com.sun.enterprise.universal.xml.MiniXmlParser;
 import com.sun.enterprise.universal.xml.MiniXmlParserException;
 import com.sun.enterprise.util.HostAndPort;
@@ -290,32 +291,21 @@ public abstract class LocalServerCommand extends CLICommand {
      * Is the server still running?
      * This is only called when we're hanging around waiting for the server to die.
      * Byron Nevins, Nov 7, 2010 - Check to see if the process itself is still running
-     * I don't know of any more reliable way of doing this!
-     * If there are any problems fall back to the previous implementation of
-     * isRunning
+     * We use OS tools to figure this out.  See ProcessUtils for details.
+     * Failover to the JPS check if necessary
      */
-    protected final boolean isRunning() {
+    protected boolean isRunning() {
         int pp = getPrevPid();
 
-        if(pp < 0)
+        if (pp < 0)
             return isRunningByCheckingForPidFile();
 
-        return Jps.isPid(pp);
-    }
+        Boolean b = ProcessUtils.isProcessRunning(pp);
 
-    /**
-     * Is the server still running?
-     * This is only called when we're hanging around waiting for the server to die.
-     */
-    protected final boolean isRunningByCheckingForPidFile() {
-        File pf = getServerDirs().getPidFile();
-
-        if (pf != null) {
-            return pf.exists();
-        }
+        if(b == null) // this means it couldn't find out!
+            return isRunningUsingJps();
         else
-            return isRunning(programOpts.getHost(), // remote case
-                    programOpts.getPort());
+            return b.booleanValue();
     }
 
     protected final void waitForRestart(File pwFile, long oldTimeStamp, long uptimeOldServer) throws CommandException {
@@ -339,6 +329,38 @@ public abstract class LocalServerCommand extends CLICommand {
         catch (Exception ex) {
             return -1;
         }
+    }
+
+    /**
+     * Is the server still running?
+     * This is only called when we're hanging around waiting for the server to die.
+     * Byron Nevins, Nov 7, 2010 - Check to see if the process itself is still running
+     * We use jps to check
+     * If there are any problems fall back to the previous implementation of
+     * isRunning() which looks for the pidfile to get deleted
+     */
+    private final boolean isRunningUsingJps() {
+        int pp = getPrevPid();
+
+        if (pp < 0)
+            return isRunningByCheckingForPidFile();
+
+        return Jps.isPid(pp);
+    }
+
+    /**
+     * Is the server still running?
+     * This is only called when we're hanging around waiting for the server to die.
+     */
+    private boolean isRunningByCheckingForPidFile() {
+        File pf = getServerDirs().getPidFile();
+
+        if (pf != null) {
+            return pf.exists();
+        }
+        else
+            return isRunning(programOpts.getHost(), // remote case
+                    programOpts.getPort());
     }
 
     /**
