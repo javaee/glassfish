@@ -42,6 +42,7 @@ package org.glassfish.admin.rest.resources.custom;
 
 import com.sun.jersey.api.core.ResourceContext;
 import com.sun.jersey.spi.container.ContainerRequest;
+import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -58,7 +59,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.Response;
-import org.glassfish.admin.rest.CliFailureException;
 import org.glassfish.admin.rest.ResourceUtil;
 import org.glassfish.admin.rest.resources.TemplateExecCommand;
 import org.glassfish.admin.rest.results.ActionReportResult;
@@ -128,13 +128,16 @@ public class SystemPropertiesCliResource extends TemplateExecCommand {
     }
 
     @POST
-    public ActionReportResult create(HashMap<String, String> data) {
+    public Response create(HashMap<String, String> data) {
         try {
             deleteExistingProperties();
             return saveProperties(data);
         } catch (Exception ex) {
             if (ex.getCause() instanceof ValidationException) {
-                return ResourceUtil.getActionReportResult(400, ex.getMessage(), requestHeaders, uriInfo);
+                return 
+                        Response.status(400).entity(
+                        ResourceUtil.getActionReportResult(400, ex.getMessage(), requestHeaders, uriInfo)).build();
+                
             } else {
                 throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
             }
@@ -142,13 +145,13 @@ public class SystemPropertiesCliResource extends TemplateExecCommand {
     }
 
     @PUT
-    public ActionReportResult update(HashMap<String, String> data) {
+    public Response update(HashMap<String, String> data) {
         return create(data);
     }
 
     @Path("{Name}/")
     @POST
-    public ActionReportResult getSystemPropertyResource(@PathParam("Name") String id, HashMap<String, String> data) {
+    public Response getSystemPropertyResource(@PathParam("Name") String id, HashMap<String, String> data) {
         data.put(id, data.get("value"));
         data.remove("value");
         List<PathSegment> segments = uriInfo.getPathSegments(true);
@@ -182,11 +185,11 @@ public class SystemPropertiesCliResource extends TemplateExecCommand {
         return options.toString();
     }
 
-    protected ActionReportResult saveProperties(HashMap<String, String> data) {
+    protected Response saveProperties(HashMap<String, String> data) {
         return saveProperties(null, data);
     }
     
-    protected ActionReportResult saveProperties(String parent, HashMap<String, String> data) {
+    protected Response saveProperties(String parent, HashMap<String, String> data) {
         String propertiesString = convertPropertyMapToString(data);
 
         data = new HashMap<String, String>();
@@ -197,16 +200,13 @@ public class SystemPropertiesCliResource extends TemplateExecCommand {
         ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
         ActionReportResult results = new ActionReportResult(commandName, actionReport, new OptionsResult());
 
-        if (exitCode != ActionReport.ExitCode.FAILURE) {
-            results.setStatusCode(200); /*200 - ok*/
-        } else {
-            Throwable ex = actionReport.getFailureCause();
-            throw (ex == null)
-                    ? new CliFailureException(actionReport.getMessage())
-                    : new CliFailureException(actionReport.getMessage(), ex);
+        int status =HttpURLConnection.HTTP_OK; /*200 - ok*/
+        if (exitCode == ActionReport.ExitCode.FAILURE) {
+            status = HttpURLConnection.HTTP_INTERNAL_ERROR;         
         }
-
-        return results;
+        results.setStatusCode(status); 
+        
+        return Response.status(status).entity(results).build();
     }
 
     protected void deleteExistingProperties() throws TransactionFailure {
