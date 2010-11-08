@@ -56,9 +56,14 @@ import java.util.logging.Logger;
  * @author bnevins
  */
 public final class ProcessUtils {
-
     private ProcessUtils() {
         // all static class -- no instances allowed!!
+    }
+
+    public static void main(String[] args) {
+        for (String s : args) {
+            System.out.println(s + " ===> " + isProcessRunning(Integer.parseInt(s)));
+        }
     }
 
     public static File getExe(String name) {
@@ -79,8 +84,91 @@ public final class ProcessUtils {
     public static final int getPid() {
         return pid;
     }
+
+    /**
+     * Kill the process with the given Process ID.
+     * @param pid
+     * @return a String if the process was not killed for any reason including if it does not exist.
+     *  Return null if it was killed.
+     */
+    public static String kill(int pid) {
+        try {
+            String pidString = Integer.toString(pid);
+            ProcessManager pm = null;
+            String cmdline;
+
+            if (OS.isWindowsForSure()) {
+                pm = new ProcessManager("taskkill", "/F", "/T", "/pid", pidString);
+                cmdline = "taskkill /F /T /pid " + pidString;
+            }
+            else {
+                pm = new ProcessManager("kill", "-9", "" + pidString);
+                cmdline = "kill -9 " + pidString;
+            }
+
+            pm.setEcho(false);
+            pm.execute();
+            String result = pm.getStderr() + pm.getStdout();
+            int exitValue = pm.getExitValue();
+
+            if (exitValue == 0)
+                return null;
+            else
+                return Strings.get("ProcessUtils.killerror", cmdline, result, "" + exitValue);
+        }
+        catch (ProcessManagerException ex) {
+            return ex.getMessage();
+        }
+    }
+
+    /**
+     * If we can determine it -- find out if the process that owns the given
+     * process id is running.
+     * @param aPid
+     * @return true if it's running, false if not and null if we don't know.
+     * I.e the return value is a true tri-state Boolean.
+     */
+    public static final Boolean isProcessRunning(int aPid) {
+        try {
+            if (OS.isWindowsForSure())
+                return isProcessRunningWindows(aPid);
+            else
+                return isProcessRunningUnix(aPid);
+        }
+        catch (Exception e) {
+            return null;
+        }
+    }
+    //////////////////////////////////////////////////////////////////////////
+    //////////     all private below     /////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
     private static final int pid;
     private static final String[] paths;
+
+    private static boolean isProcessRunningWindows(int aPid) throws ProcessManagerException {
+        String pidString = Integer.toString(aPid);
+        ProcessManager pm = new ProcessManager("tasklist", "/FI", "\"pid eq " + pidString + "\"");
+        pm.setEcho(false);
+        pm.execute();
+
+        // annoying but true -- the command ALWAYS returns zero no matter what!
+        // if it exists it will write info to stdout and nothing to stderr
+        // if it does not exist it writes to stderr and nothing to stdout
+
+        boolean hasStdout = pm.getStdout().length() > 1;
+        boolean hasStderr = pm.getStderr().length() > 1;
+
+        if (hasStdout && !hasStderr)
+            return true;
+        else if (hasStderr && !hasStdout)
+            return false;
+        else
+            throw new ProcessManagerException("unknown");
+    }
+
+    private static Boolean isProcessRunningUnix(int aPid) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
 
     static {
         // variables named with 'temp' are here so that we can legally set the
@@ -118,41 +206,5 @@ public final class ProcessUtils {
             paths = tempPaths.split(File.pathSeparator);
         else
             paths = new String[0];
-    }
-
-    /**
-     * Kill the process with the given Process ID.
-     * @param pid
-     * @return a String if the process was not killed for any reason including if it does not exist.
-     *  Return null if it was killed.
-     */
-    public static  String kill(int pid) {
-        try {
-            String pidString = Integer.toString(pid);
-            ProcessManager pm = null;
-            String cmdline;
-
-            if (OS.isWindowsForSure()) {
-                pm = new ProcessManager("taskkill", "/F", "/T", "/pid", pidString);
-                cmdline = "taskkill /F /T /pid " + pidString;
-            }
-            else {
-                pm = new ProcessManager("kill", "-9", "" + pidString);
-                cmdline = "kill -9 " + pidString;
-            }
-            
-            pm.setEcho(false);
-            pm.execute();
-            String result = pm.getStderr() + pm.getStdout();
-            int exitValue = pm.getExitValue();
-
-            if (exitValue == 0)
-                return null;
-            else
-                return Strings.get("ProcessUtils.killerror", cmdline, result, "" + exitValue);
-        }
-        catch (ProcessManagerException ex) {
-            return ex.getMessage();
-        }
     }
 }

@@ -97,6 +97,7 @@ public class Jps {
                 return;
             }
             ProcessManager pm = new ProcessManager(jpsExe.getPath(), "-l");
+            pm.setEcho(false);
             pm.execute();
             String jpsOutput = pm.getStdout();
 
