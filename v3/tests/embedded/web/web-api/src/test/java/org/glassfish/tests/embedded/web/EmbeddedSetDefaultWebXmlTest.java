@@ -40,21 +40,21 @@
 
 package org.glassfish.tests.embedded.web;
 
-import org.junit.Test;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.AfterClass;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.File;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.logging.Level;
-import java.net.*;
-import org.apache.catalina.Deployer;
-import org.apache.catalina.logger.SystemOutLogger;
-import org.glassfish.api.embedded.*; 
+import java.util.ArrayList;
+import java.util.List;
+import org.glassfish.embeddable.*;
 import org.glassfish.embeddable.web.*;
 import org.glassfish.embeddable.web.config.*;
-import javax.servlet.Servlet;
-import javax.servlet.ServletRegistration;
-import org.glassfish.tests.webapi.HelloWeb;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * Tests EmbeddedFileSystem.configurationFile and WebBuilder.setDefaultWebXml
@@ -64,53 +64,32 @@ import org.glassfish.tests.webapi.HelloWeb;
  */
 public class EmbeddedSetDefaultWebXmlTest {
 
-    static Server server;
+    static GlassFish glassfish;
     static EmbeddedWebContainer embedded;
     static File root;
 
     @BeforeClass
     public static void setupServer() throws Exception {
-        try {
-            Server.Builder builder = new Server.Builder("web-api");
-            server = builder.build();
-            //f = new File(System.getProperty("basedir"));
-            String p = System.getProperty("buildDir");
-            
-            /*EmbeddedFileSystem.Builder fsBuilder = new EmbeddedFileSystem.Builder();
-            root = new File(p).getParentFile();
-            root =new File(root, "glassfish");
-            EmbeddedFileSystem fs = fsBuilder.instanceRoot(root).build();
-            File domainXml = new File(p+"/org/glassfish/tests/webapi/domain.xml");
-            // specify the domain.xml location
-            fsBuilder.configurationFile(domainXml);
-            EmbeddedFileSystem efs = fsBuilder.build();
-            Server.Builder builder = new Server.Builder("dirserve");
-            builder.embeddedFileSystem(efs);
-            server = builder.build();
-            */
-
-            WebContainerConfig config = new WebContainerConfig();
-            File defaultWebXml = new File(p+"/org/glassfish/tests/webapi/my-default-web.xml");
-            config.setDefaultWebXml(defaultWebXml.toURL());
-            System.out.println("Using default-web.xml "+defaultWebXml.getAbsolutePath());
-            //        " domain.xml "+domainXml.getAbsolutePath());
-
-            // TODO :: change this to use
-            // org.glassfish.embeddable.GlassFish.lookupService
-            embedded = server.getHabitat().
-                    getComponent(EmbeddedWebContainer.class);
-            embedded.start(config);
-            embedded.setLogLevel(Level.INFO);
-        } catch(Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
+        glassfish = GlassFishRuntime.bootstrap().newGlassFish();
+        glassfish.start();
+        embedded = glassfish.getService(EmbeddedWebContainer.class);
+        System.out.println("================ EmbeddedSetDefaultWebXml Test");
+        System.out.println("Starting Web "+embedded);
+        embedded.setLogLevel(Level.INFO);
+        WebContainerConfig config = new WebContainerConfig();
+        File defaultWebXml = new File(root+"/org/glassfish/tests/webapi/my-default-web.xml");
+        config.setDefaultWebXml(defaultWebXml.toURL());
+        System.out.println("Using default-web.xml "+defaultWebXml.getAbsolutePath());
+        config.setListings(true);
+        root = new File(System.getProperty("buildDir"));
+        config.setDocRootDir(root);
+        config.setPort(8080);
+        System.out.println("Added Web with base directory "+root.getAbsolutePath());
+        embedded.start(config);     
     }
     
     @Test
-    public void testEmbeddedWebAPIConfig() throws Exception {   
-            
-        System.out.println("================ EmbeddedSetDefaultWebXml Test");
+    public void testEmbeddedWebAPIConfig() throws Exception {
 
         URL servlet = new URL("http://localhost:8080");
         URLConnection yc = servlet.openConnection();
@@ -130,15 +109,12 @@ public class EmbeddedSetDefaultWebXmlTest {
      }
 
     @AfterClass
-    public static void shutdownServer() throws Exception {
-        System.out.println("shutdown initiated");
-        if (server!=null) {
-            try {
-                server.stop();
-            } catch (LifecycleException e) {
-                e.printStackTrace();
-                throw e;
-            }
+    public static void shutdownServer() throws GlassFishException {
+        System.out.println("Stopping server " + glassfish);
+        if (glassfish != null) {
+            glassfish.stop();
+            glassfish.dispose();
+            glassfish = null;
         }
     }
     

@@ -40,22 +40,20 @@
 
 package org.glassfish.tests.embedded.web;
 
-import org.junit.Test;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.File;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.logging.Level;
+import java.util.ArrayList;
+import java.util.List;
+import org.glassfish.embeddable.*;
+import org.glassfish.embeddable.web.*;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.AfterClass;
-import java.io.*;
-import java.net.*;
-import java.util.Collection;
-import java.util.List;
-import java.util.logging.Level;
-import com.sun.grizzly.config.dom.NetworkConfig;
-import com.sun.grizzly.config.dom.NetworkListener;
-import org.apache.catalina.Deployer;
-import org.apache.catalina.logger.SystemOutLogger;
-import org.glassfish.api.deployment.DeployCommandParameters;
-import org.glassfish.api.embedded.*;
-import org.glassfish.embeddable.web.*;
+import org.junit.Test;
 
 /**
  * Test for EmbeddedWebContainer#CreateVirtualServer & EmbeddedWebContainer#deleteWebListener
@@ -63,91 +61,78 @@ import org.glassfish.embeddable.web.*;
  * @author Amy Roh
  */
 public class EmbeddedWebCreateVirtualServer {
-
-    static Server server;
+    
+    static GlassFish glassfish;
     static EmbeddedWebContainer embedded;
-    static Port http;
-    static File root;
-    static NetworkConfig nc;
-    static List<NetworkListener> listeners;
-
 
     @BeforeClass
-    public static void setupServer() throws Exception {
-        try {
-            EmbeddedFileSystem.Builder fsBuilder = new EmbeddedFileSystem.Builder();
-            String p = System.getProperty("buildDir");
-            root = new File(p).getParentFile();
-            root =new File(root, "glassfish");
-            EmbeddedFileSystem fs = fsBuilder.instanceRoot(root).build();
-
-            Server.Builder builder = new Server.Builder("web-api");
-            builder.embeddedFileSystem(fs);
-            server = builder.build();
-
-            NetworkConfig nc = server.getHabitat().getComponent(NetworkConfig.class);
-            List<NetworkListener> listeners = nc.getNetworkListeners().getNetworkListener();
-            System.out.println("Network listener size before creation " + listeners.size());
-            for (NetworkListener nl : listeners) {
-                System.out.println("Network listener " + nl.getPort());
-            }
-
-            System.out.println("Starting Web " + server);
-            ContainerBuilder b = server.createConfig(ContainerBuilder.Type.web);
-            System.out.println("builder is " + b);
-            server.addContainer(b);
-            embedded = (EmbeddedWebContainer) b.create(server);
-            embedded.setLogLevel(Level.INFO);
-            embedded.setConfiguration((WebBuilder)b);
-            embedded.start();
-
-        } catch(Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
+    public static void setupServer() throws GlassFishException {
+        glassfish = GlassFishRuntime.bootstrap().newGlassFish();
+        glassfish.start();
+        embedded = glassfish.getService(EmbeddedWebContainer.class);
+        System.out.println("================ Test Embedded Create Virtual Server");
+        System.out.println("Starting Web "+embedded);
+        embedded.setLogLevel(Level.INFO);
+        embedded.start();
     }
 
     @Test
     public void testEmbeddedWebAPI() throws Exception {
 
-        System.out.println("================ Test Embedded Create Virtual Server");
+        List<WebListener> listenerList = new ArrayList(embedded.getWebListeners());
+        Assert.assertTrue(listenerList.size()==1);
+        for (WebListener listener : embedded.getWebListeners())
+            System.out.println("Web listener "+listener.getId()+" "+listener.getPort());
 
-        nc = server.getHabitat().getComponent(NetworkConfig.class);
-        listeners = nc.getNetworkListeners().getNetworkListener();
-        System.out.println("Network listener size after creation " + listeners.size());
-        Assert.assertTrue(listeners.size()==1);
-        for (NetworkListener nl : listeners) {
-            System.out.println("Network listener " + nl.getPort());
-        }
 
-        WebListener listener = embedded.createWebListener("test-listener", WebListener.class);
-        listener.setPort(9090);
+        WebListener testListener = embedded.createWebListener("test-listener", WebListener.class);
+        testListener.setPort(9090);
         WebListener[] webListeners = new HttpListener[1];
-        webListeners[0] = listener;
+        webListeners[0] = testListener;
 
-        embedded.createVirtualServer("test-server", root, webListeners);
+        File f = new File(System.getProperty("basedir"));
+        String virtualServerId = "embedded-server";
+        VirtualServer virtualServer = (VirtualServer)
+                embedded.createVirtualServer(virtualServerId, f, webListeners);
+        embedded.addVirtualServer(virtualServer);
 
-        nc = server.getHabitat().getComponent(NetworkConfig.class);
-        listeners = nc.getNetworkListeners().getNetworkListener();
-        System.out.println("Network listener size after creation " + listeners.size());
-        Assert.assertTrue(listeners.size()==2);
-        for (NetworkListener nl : listeners) {
-            System.out.println("Network listener " + nl.getName() +" " + nl.getPort());
+        listenerList = new ArrayList(embedded.getWebListeners());
+        System.out.println("Network listener size after creation " + listenerList.size());
+        Assert.assertTrue(listenerList.size()==2);
+        for (WebListener listener : embedded.getWebListeners())
+            System.out.println("Web listener "+listener.getId()+" "+listener.getPort());
+
+        VirtualServer vs = embedded.findVirtualServer(virtualServerId);
+        Assert.assertEquals(virtualServerId,vs.getID());
+
+        //Context context = (Context) embedded.createContext(root, null);
+        //defaultVirtualServer.addContext(context, "");
+
+        Deployer deployer = glassfish.getDeployer();
+
+        URL source = WebHello.class.getClassLoader().getResource(
+                "org/glassfish/tests/embedded/web/WebHello.class");
+        String p = source.getPath().substring(0, source.getPath().length() -
+                "org/glassfish/tests/embedded/web/WebHello.class".length());
+        File path = new File(p).getParentFile().getParentFile();
+
+        String name = null;
+
+        if (path.getName().lastIndexOf('.') != -1) {
+            name = path.getName().substring(0, path.getName().lastIndexOf('.'));
+        } else {
+            name = path.getName();
         }
 
-        EmbeddedDeployer deployer = server.getDeployer();
-        String p = System.getProperty("buildDir");
-        System.out.println("Root is " + p);
-        ScatteredArchive.Builder builder = new ScatteredArchive.Builder("sampleweb", new File(p));
-        builder.resources(new File(p));
-        builder.addClassPath((new File(p)).toURL());
-        DeployCommandParameters dp = new DeployCommandParameters(new File(p));
+        System.out.println("Deploying " + path + ", name = " + name);
 
-        System.out.println("Deploying " + p);
-        String appName = deployer.deploy(builder.buildWar(), dp);
-        Assert.assertNotNull("Deployment failed!", appName);
+        String appName = deployer.deploy(path.toURI(), "--name=" + name);
 
-        URL servlet = new URL("http://localhost:9090/classes/hello");
+        System.out.println("Deployed " + appName);
+
+        Assert.assertTrue(appName != null);
+
+        URL servlet = new URL("http://localhost:8080/test-classes/hello");
         URLConnection yc = servlet.openConnection();
         BufferedReader in = new BufferedReader(new InputStreamReader(yc.getInputStream()));
         StringBuilder sb = new StringBuilder();
@@ -159,33 +144,29 @@ public class EmbeddedWebCreateVirtualServer {
         System.out.println(inputLine);
         Assert.assertEquals("Hello World!", sb.toString());
 
-        System.out.println("Removing web listener "+listener.getId());
-        embedded.removeWebListener(listener);
+        System.out.println("Removing web listener "+testListener.getId());
+        embedded.removeWebListener(testListener);
 
-        nc = server.getHabitat().getComponent(NetworkConfig.class);
-        listeners = nc.getNetworkListeners().getNetworkListener();
-        System.out.println("Network listener size after deletion " + listeners.size());
-        Assert.assertTrue(listeners.size()==1);
-        for (NetworkListener nl : listeners) {
-            System.out.println("Network listener " + nl.getName() +" " + nl.getPort());
-        }
+        listenerList = new ArrayList(embedded.getWebListeners());
+        System.out.println("Network listener size after deletion " + listenerList.size());
+        Assert.assertTrue(listenerList.size()==1);
+        for (WebListener listener : embedded.getWebListeners())
+            System.out.println("Web listener "+listener.getId()+" "+listener.getPort());
+
         if (appName!=null)
-            deployer.undeploy(appName, null);
+            deployer.undeploy(appName);
 
         embedded.stop();
 
      }
 
-    //@AfterClass
-    public static void shutdownServer() throws Exception {
-        System.out.println("shutdown initiated");
-        if (server!=null) {
-            try {
-                server.stop();
-            } catch (LifecycleException e) {
-                e.printStackTrace();
-                throw e;
-            }
+    @AfterClass
+    public static void shutdownServer() throws GlassFishException {
+        System.out.println("Stopping server " + glassfish);
+        if (glassfish != null) {
+            glassfish.stop();
+            glassfish.dispose();
+            glassfish = null;
         }
     }
     

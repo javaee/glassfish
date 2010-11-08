@@ -40,22 +40,20 @@
 
 package org.glassfish.tests.embedded.web;
 
-import org.junit.Test;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.File;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.logging.Level;
+import java.util.ArrayList;
+import java.util.List;
+import org.glassfish.embeddable.*;
+import org.glassfish.embeddable.web.*;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.AfterClass;
-import java.io.*;
-import java.net.*;
-import java.util.Collection;
-import java.util.List;
-import java.util.logging.Level;
-import com.sun.grizzly.config.dom.NetworkConfig;
-import com.sun.grizzly.config.dom.NetworkListener;
-import org.apache.catalina.Deployer;
-import org.apache.catalina.logger.SystemOutLogger;
-import org.glassfish.api.deployment.DeployCommandParameters;
-import org.glassfish.api.embedded.*;
-import org.glassfish.embeddable.web.*;
+import org.junit.Test;
 
 /**
  * Tests creating a port using EmbeddedWebContainer#createWeblistener & WebListener#setPort.
@@ -65,71 +63,39 @@ import org.glassfish.embeddable.web.*;
  */
 public class EmbeddedWebAPITest {
 
-    static Server server;
+    static GlassFish glassfish;
     static EmbeddedWebContainer embedded;
-    static Port http;
-    static File root;
-    static File f;
-
 
     @BeforeClass
-    public static void setupServer() throws Exception {
-        try {
-
-            String p = System.getProperty("buildDir");
-            root = new File(p).getParentFile();
-            root =new File(root, "glassfish");
-            // TODO :: EmbeddedFileSystem with new glassfish api
-            /*EmbeddedFileSystem.Builder fsBuilder = new EmbeddedFileSystem.Builder();
-            EmbeddedFileSystem fs = fsBuilder.instanceRoot(root).build();
-            builder.embeddedFileSystem(fs);*/
-
-            Server.Builder builder = new Server.Builder("web-api");
-            server = builder.build();
-            f = new File(System.getProperty("basedir"));
-
-            // TODO :: change this to use org.glassfish.embeddable.GlassFish.lookupService
-            embedded = server.getHabitat().getComponent(EmbeddedWebContainer.class);
-
-            System.out.println("================ Test Embedded Web API");
-            System.out.println("Starting Web " + server+" "+embedded);
-            embedded.setLogLevel(Level.INFO);
-
-            NetworkConfig nc = server.getHabitat().getComponent(NetworkConfig.class);
-            List<NetworkListener> listeners = nc.getNetworkListeners().getNetworkListener();
-            System.out.println("Network listener size before creation " + listeners.size());
-            for (NetworkListener nl : listeners) {
-                System.out.println("Network listener " + nl.getPort());
-            }
-
-            WebListener listener = embedded.createWebListener("test-listener", HttpListener.class);
-            listener.setPort(9090);
-            embedded.addWebListener(listener);
-
-            nc = server.getHabitat().getComponent(NetworkConfig.class);
-            listeners = nc.getNetworkListeners().getNetworkListener();
-            System.out.println("Network listener size after creation " + listeners.size());
-            Assert.assertTrue(listeners.size()==1);
-            for (NetworkListener nl : listeners) {
-                System.out.println("Network listener " + nl.getPort());
-            }
-            Collection<NetworkListener> cnl = server.getHabitat().getAllByContract(NetworkListener.class);
-            System.out.println("Network listener size after creation " + cnl.size());
-            for (NetworkListener nl : cnl) {
-                System.out.println("Network listener " + nl.getPort());
-            }
-
-            embedded.start();
-
-        } catch(Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
+    public static void setupServer() throws GlassFishException {
+        glassfish = GlassFishRuntime.bootstrap().newGlassFish();
+        glassfish.start();
+        embedded = glassfish.getService(EmbeddedWebContainer.class);
+        System.out.println("================ Test Embedded Web API");
+        System.out.println("Starting Web "+embedded);
+        embedded.setLogLevel(Level.INFO);
+        embedded.start();
     }
     
     @Test
-    public void testEmbeddedWebAPI() throws Exception { 
+    public void testEmbeddedWebAPI() throws Exception {
 
+        List<WebListener> listenerList = new ArrayList(embedded.getWebListeners());
+        Assert.assertTrue(listenerList.size()==1);
+        for (WebListener listener : embedded.getWebListeners())
+            System.out.println("Web listener "+listener.getId()+" "+listener.getPort());
+
+        WebListener testListener = embedded.createWebListener("test-listener", HttpListener.class);
+        testListener.setPort(9090);
+        embedded.addWebListener(testListener);
+
+        listenerList = new ArrayList(embedded.getWebListeners());
+        System.out.println("Network listener size after creation " + listenerList.size());
+        Assert.assertTrue(listenerList.size()==2);
+        for (WebListener listener : embedded.getWebListeners())
+            System.out.println("Web listener "+listener.getId()+" "+listener.getPort());
+
+        File f = new File(System.getProperty("basedir"));        
         String virtualServerId = "embedded-server";
         VirtualServer defaultVirtualServer = (VirtualServer)
                 embedded.createVirtualServer(virtualServerId, f);
@@ -141,19 +107,31 @@ public class EmbeddedWebAPITest {
         //Context context = (Context) embedded.createContext(root, null);
         //defaultVirtualServer.addContext(context, "");
 
-        EmbeddedDeployer deployer = server.getDeployer();
-        String p = System.getProperty("buildDir");
-        System.out.println("Root is " + p);
-        ScatteredArchive.Builder builder = new ScatteredArchive.Builder("sampleweb", new File(p));
-        builder.resources(new File(p));
-        builder.addClassPath((new File(p)).toURL());
-        DeployCommandParameters dp = new DeployCommandParameters(new File(p));
+        Deployer deployer = glassfish.getDeployer();
 
-        System.out.println("Deploying " + p);
-        String appName = deployer.deploy(builder.buildWar(), dp);
-        Assert.assertNotNull("Deployment failed!", appName);
+        URL source = WebHello.class.getClassLoader().getResource(
+                "org/glassfish/tests/embedded/web/WebHello.class");
+        String p = source.getPath().substring(0, source.getPath().length() -
+                "org/glassfish/tests/embedded/web/WebHello.class".length());
+        File path = new File(p).getParentFile().getParentFile();
 
-        URL servlet = new URL("http://localhost:9090/classes/hello");
+        String name = null;
+
+        if (path.getName().lastIndexOf('.') != -1) {
+            name = path.getName().substring(0, path.getName().lastIndexOf('.'));
+        } else {
+            name = path.getName();
+        }
+
+        System.out.println("Deploying " + path + ", name = " + name);
+
+        String appName = deployer.deploy(path.toURI(), "--name=" + name);
+
+        System.out.println("Deployed " + appName);
+
+        Assert.assertTrue(appName != null);
+
+        URL servlet = new URL("http://localhost:8080/test-classes/hello");
         URLConnection yc = servlet.openConnection();
         BufferedReader in = new BufferedReader(new InputStreamReader(yc.getInputStream()));
         StringBuilder sb = new StringBuilder();
@@ -168,22 +146,18 @@ public class EmbeddedWebAPITest {
         Thread.sleep(1000);
 
         if (appName!=null)
-            deployer.undeploy(appName, null);
+            deployer.undeploy(appName);
 
-        embedded.stop();
-        
+        embedded.stop();  
      }
 
     @AfterClass
-    public static void shutdownServer() throws Exception {
-        System.out.println("shutdown initiated");
-        if (server!=null) {
-            try {
-                server.stop();
-            } catch (LifecycleException e) {
-                e.printStackTrace();
-                throw e;
-            }
+    public static void shutdownServer() throws GlassFishException {
+        System.out.println("Stopping server " + glassfish);
+        if (glassfish != null) {
+            glassfish.stop();
+            glassfish.dispose();
+            glassfish = null;
         }
     }
     
