@@ -42,6 +42,7 @@ package com.sun.enterprise.security.cli;
 
 import com.sun.enterprise.config.serverbeans.AuthRealm;
 import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.Domain;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
@@ -97,6 +98,10 @@ public class DeleteAuthRealm implements AdminCommand {
 
     @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
     private Config config;
+
+    @Inject
+    private Configs configs;
+    
     @Inject
     private Domain domain;
    // @Inject
@@ -112,6 +117,16 @@ public class DeleteAuthRealm implements AdminCommand {
      */
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
+
+        Config tmp = null;
+        try {
+            tmp = configs.getConfigByName(target);
+        } catch (Exception ex) {
+        }
+
+        if (tmp != null) {
+            config = tmp;
+        }
 
         Server targetServer = domain.getServerNamed(target);
         if (targetServer!=null) {

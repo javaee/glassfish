@@ -41,6 +41,7 @@
 package com.sun.enterprise.security.cli;
 
 import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.Domain;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
@@ -105,6 +106,9 @@ public class DeleteMessageSecurityProvider implements AdminCommand {
     private Config config;
 
     @Inject
+    private Configs configs;
+
+    @Inject
     private Domain domain;
 
     ProviderConfig thePC = null;
@@ -124,15 +128,26 @@ public class DeleteMessageSecurityProvider implements AdminCommand {
         
         ActionReport report = context.getActionReport();
 
-        Server targetServer = domain.getServerNamed(target);
-        if (targetServer!=null) {
-            config = domain.getConfigNamed(targetServer.getConfigRef());
+        Config tmp = null;
+        try {
+            tmp = configs.getConfigByName(target);
+        } catch (Exception ex) {
         }
-        com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
-        if (cluster!=null) {
-            config = domain.getConfigNamed(cluster.getConfigRef());
+
+        if (tmp != null) {
+            config = tmp;
         }
-        SecurityService securityService = config.getSecurityService();
+        if (tmp == null) {
+            Server targetServer = domain.getServerNamed(target);
+            if (targetServer != null) {
+                config = domain.getConfigNamed(targetServer.getConfigRef());
+            }
+            com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
+            if (cluster != null) {
+                config = domain.getConfigNamed(cluster.getConfigRef());
+            }
+        }
+        final SecurityService securityService = config.getSecurityService();
         List<MessageSecurityConfig> mscs = securityService.getMessageSecurityConfig();        
         
         for (MessageSecurityConfig  msc : mscs) {

@@ -57,13 +57,12 @@ import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.config.serverbeans.AuthRealm;
+import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.config.serverbeans.Server;
-import com.sun.enterprise.security.auth.realm.Realm;
 import com.sun.enterprise.security.auth.realm.RealmsManager;
 import com.sun.enterprise.util.SystemPropertyConstants;
-import java.util.Enumeration;
 import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.ServerEnvironment;
@@ -97,6 +96,10 @@ public class ListAuthRealm implements AdminCommand {
 
     @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
     private Config config;
+
+    @Inject
+    private Configs configs;
+
     @Inject
     private Domain domain;
     @Inject
@@ -112,6 +115,15 @@ public class ListAuthRealm implements AdminCommand {
         
         final ActionReport report = context.getActionReport();
 
+        Config tmp = null;
+        try {
+            tmp = configs.getConfigByName(target);
+        } catch (Exception ex) {
+        }
+
+        if (tmp != null) {
+            config = tmp;
+        }
         Server targetServer = domain.getServerNamed(target);
         if (targetServer!=null) {
             config = domain.getConfigNamed(targetServer.getConfigRef());

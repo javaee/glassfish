@@ -63,7 +63,7 @@ import org.jvnet.hk2.component.PerLookup;
  *
  * Usage: list-supported-cipher-suites
  *         [--help] [--user admin_user] [--passwordfile file_name]
- *         [ --target  target_name]
+ *         [target_name(default server)]
  **/
 
 @Service(name = "list-supported-cipher-suites")
@@ -71,7 +71,7 @@ import org.jvnet.hk2.component.PerLookup;
 @CommandLock(CommandLock.LockType.NONE)
 @I18n("list.supported.cipher.suites")
 @ExecuteOn({RuntimeType.DAS, RuntimeType.INSTANCE})
-@TargetType({CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER})
+@TargetType({CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE})
 public class ListSupportedCipherSuites implements AdminCommand {
 
     final private static LocalStringManagerImpl localStrings =
