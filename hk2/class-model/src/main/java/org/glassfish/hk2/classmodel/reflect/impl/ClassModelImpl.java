@@ -53,18 +53,6 @@ public class ClassModelImpl extends ExtensibleTypeImpl<ClassModel> implements Cl
     }
     
     void addField(FieldModel field) {
-        if (fields==null) {
-            System.out.println("WAIT my fields are null");
-            Map<Thread, StackTraceElement[]> traces = Thread.getAllStackTraces();
-            for (Map.Entry<Thread, StackTraceElement[]> entry : traces.entrySet()) {
-                if (entry.getKey().getName().contains("Hk2")) {
-                    System.out.println("Thread " + entry.getKey());
-                    for (StackTraceElement ste : entry.getValue()) {
-                        System.out.println("    "  + ste);
-                    }
-                }
-            }
-        }        
         fields.put(field.getName(), field);
     }
 

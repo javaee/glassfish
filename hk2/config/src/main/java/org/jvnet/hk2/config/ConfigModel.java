@@ -113,6 +113,26 @@ public final class ConfigModel {
     };
 
     /**
+     * Deferred reference to the class object that can load the configurable type
+     */
+
+    public final Holder<Class> classHolder = new Holder<Class>() {
+        Class type = null;
+
+        @Override
+        public synchronized Class get() {
+            if (type==null) {
+                try {
+                    type =  classLoaderHolder.get().loadClass(targetTypeName);
+                } catch (ClassNotFoundException e) {
+                    // ignore, we just return null;
+                }
+            }
+            return type;
+        }
+    };
+
+    /**
      * Fully-qualified name of the target type that this injector works on.
      */
     public final String targetTypeName;
@@ -148,11 +168,7 @@ public final class ConfigModel {
      * @return the class object for this proxy type
      */
     public <T extends ConfigBeanProxy> Class<T> getProxyType() {
-        try {
-            return (Class<T>) classLoaderHolder.get().loadClass(targetTypeName);
-        } catch (ClassNotFoundException e) {
-            return null;
-        }
+        return (Class<T>) classHolder.get();
     }
 
     /**
