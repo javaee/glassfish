@@ -39,6 +39,8 @@
  */
 package com.sun.enterprise.admin.cli.cluster;
 
+import com.sun.enterprise.universal.process.Jps;
+import com.sun.enterprise.universal.process.ProcessUtils;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.io.FileUtils;
 import java.io.*;
@@ -132,6 +134,17 @@ public class DeleteLocalInstanceCommand extends LocalInstanceCommand {
 
         if (isRunning()) {
             tempDump("*****  ERROR!!!! instance is running !!!!");
+            int prevpid = getPrevPid();
+            tempDump("prevpid = " + prevpid);
+            tempDump("ProcessUtils.isProcessRunning(" + prevpid + ") -- returned: " +  ProcessUtils.isProcessRunning(getPrevPid()));
+            Map<String, Integer> procs = Jps.getProcessTable();
+            Set<Map.Entry<String,Integer>> set = procs.entrySet();
+            Iterator<Map.Entry<String,Integer>> it = set.iterator();
+            while(it.hasNext()) {
+                Map.Entry<String,Integer> entry = it.next();
+                tempDump("FROM JPS -- name=" + entry.getKey() + ", pid= " + entry.getValue());
+            }
+            
             throw new CommandException(Strings.get("DeleteInstance.running"));
         }
 
