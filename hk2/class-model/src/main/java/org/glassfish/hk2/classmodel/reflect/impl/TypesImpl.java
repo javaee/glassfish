@@ -75,15 +75,18 @@ public class TypesImpl implements TypeBuilder {
         TypeProxy<Type> typeProxy = types.getHolder(name, requestedType);
         synchronized(typeProxy) {
             final Type type = typeProxy.get();
+            TypeImpl result;
             if (null == type) {
                 if ((access & Opcodes.ACC_ANNOTATION)==Opcodes.ACC_ANNOTATION) {
-                   return new AnnotationTypeImpl(name, typeProxy);
+                   result = new AnnotationTypeImpl(name, typeProxy);
                 } else
                 if ((access & Opcodes.ACC_INTERFACE)==Opcodes.ACC_INTERFACE) {
-                    return new InterfaceModelImpl(name, typeProxy, parent);
+                    result = new InterfaceModelImpl(name, typeProxy, parent);
                 } else {
-                    return new ClassModelImpl(name, typeProxy, parent);
+                    result =  new ClassModelImpl(name, typeProxy, parent);
                 }
+                typeProxy.set(result);
+                return result;
             } else {
                 TypeImpl impl = (TypeImpl)type;
                 if (ExtensibleTypeImpl.class.isInstance(impl)) {

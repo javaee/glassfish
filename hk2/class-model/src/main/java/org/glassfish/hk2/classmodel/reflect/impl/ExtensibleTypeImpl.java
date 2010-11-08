@@ -65,37 +65,10 @@ public abstract class ExtensibleTypeImpl<T extends ExtensibleType> extends TypeI
         if (null == this.parent) { 
           this.parent = parent;
         }
-        if (implementedIntf==null) {
-            System.out.println("WAIT my interfaces are null");
-            Map<Thread, StackTraceElement[]> traces = Thread.getAllStackTraces();
-            for (Map.Entry<Thread, StackTraceElement[]> entry : traces.entrySet()) {
-                if (entry.getKey().getName().contains("Hk2")) {
-                    System.out.println("Thread " + entry.getKey());
-                    for (StackTraceElement ste : entry.getValue()) {
-                        System.out.println("    "  + ste);
-                    }
-                }
-            }
-        }
         return this.parent;
     }
 
     void isImplementing(TypeProxy<InterfaceModel> intf) {
-        if (implementedIntf==null) {
-            System.out.println("WAIT my interfaces are null");
-            Map<Thread, StackTraceElement[]> traces = Thread.getAllStackTraces();
-            for (Map.Entry<Thread, StackTraceElement[]> entry : traces.entrySet()) {
-                if (entry.getKey().getName().contains("hk2")) {
-                    System.out.println("Thread " + entry.getKey());
-                    for (StackTraceElement ste : entry.getValue()) {
-                        System.out.println("    "  + ste);
-                    }
-                }
-            }
-        }
-        if (intf==null) {
-           System.out.println("WAIT my parameter is null"); 
-        }                         
         implementedIntf.add(intf);
     }
 
