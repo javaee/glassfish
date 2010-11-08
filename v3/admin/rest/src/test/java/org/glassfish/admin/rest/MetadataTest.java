@@ -65,6 +65,6 @@ public class MetadataTest extends RestTestBase {
 
         // Another dumb test to make sure that "name" shows up on the HTML page
         response = client.resource(getAddress(URL_CONFIG)).get(ClientResponse.class);
-        assertTrue(response.getEntity(String.class).contains("Extra Properties"));
+        assertTrue(response.getEntity(String.class).contains("extraProperties"));
     }
 }
