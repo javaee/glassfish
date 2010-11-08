@@ -251,8 +251,16 @@ public class SerialInitContextFactory implements InitialContextFactory {
     private /* should be final */ GroupInfoService gis = null ;
 
     public SerialInitContextFactory() {
-        habitat = (defaultHabitat == null) ? Globals.getDefaultHabitat() 
-            : defaultHabitat;
+        // Issue 14396
+        Habitat temp = defaultHabitat ;
+        if (temp == null) {
+            temp = Globals.getDefaultHabitat() ;
+        }
+        if (temp == null) {
+            // May need to initialize hk2 component model in standalone client
+            temp = Globals.getStaticHabitat() ;
+        }
+        habitat = temp ;
 
         if (useLB) {
             try {
