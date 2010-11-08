@@ -239,30 +239,33 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
             // If wsdl file is an http URL, download that WSDL and all embedded relative wsdls, schemas
             if (ws.getWsdlFileUri().startsWith("http")) {
                 try {
-                    downloadWsdlsAndSchemas( new URL(ws.getWsdlFileUri()), wsdlDir);
+                    wsdlFileUri = downloadWsdlsAndSchemas( new URL(ws.getWsdlFileUri()), wsdlDir);
                 } catch(Exception e) {
                     throw new DeploymentException(e.toString(), e);
                 }
-                wsdlFileUri = ws.getWsdlFileUri().substring(ws.getWsdlFileUri().lastIndexOf("/")+1);
                 wsdlFile = new File(wsdlDir, wsdlFileUri);
             } else {
                 wsdlFileUri = ws.getWsdlFileUri();
                 File wsdlFileAbs = new File(wsdlFileUri);
                 wsdlFile = wsdlFileAbs.isAbsolute()? wsdlFileAbs : new File(moduleDir, wsdlFileUri);
-
-                if (!wsdlFile.exists()) {
-                    String errorMessage =  format(rb.getString("wsdl.notfound"),
-                            ws.getWsdlFileUri(),bundle.getModuleDescriptor().getArchiveUri())  ;
-                    logger.severe(errorMessage);
-                    throw new DeploymentException(errorMessage);
-                }
             }
-        } else {
-            //make required dirs in case they are not present
-            wsdlFileUri = JAXBRIContext.mangleNameToClassName(ws.getName()) + ".wsdl";
-            wsdlDir.mkdirs();
-            wsdlFile = new File(wsdlDir, wsdlFileUri);
-        }
+
+            if (!wsdlFile.exists()) {
+                String errorMessage = format(rb.getString("wsdl.notfound"),
+                        ws.getWsdlFileUri(), bundle.getModuleDescriptor().getArchiveUri());
+                logger.severe(errorMessage);
+                throw new DeploymentException(errorMessage);
+            }
+        } /*JAX-WS runtime takes care of generating/publishing the wsdl and hence the following code is unnecessary 
+                else {
+
+
+                    //make required dirs in case they are not present
+                    wsdlFileUri = JAXBRIContext.mangleNameToClassName(ws.getName()) + ".wsdl";
+                    wsdlDir.mkdirs();
+                    wsdlFile = new File(wsdlDir, wsdlFileUri);
+
+            }    */
     }
 
     /**
@@ -287,8 +290,16 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
     public MetaData getMetaData() {
         return new MetaData(false, null, new Class[] {Application.class});
     }
-    
-    private void downloadWsdlsAndSchemas( URL httpUrl, File wsdlDir) throws Exception {
+
+    /**
+     *  This method downloads the main wsdl/schema and its imports in to the directory specified and returns the name of downloded root
+     * document.
+     * @param httpUrl
+     * @param wsdlDir
+     * @return Returns the name of the root file downloaded with the invocation.
+     * @throws Exception
+     */
+    private String downloadWsdlsAndSchemas( URL httpUrl, File wsdlDir) throws Exception {
         // First make required directories and download this wsdl file
         wsdlDir.mkdirs();
         String fileName = httpUrl.toString().substring(httpUrl.toString().lastIndexOf("/")+1);
@@ -332,7 +343,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
             }
             downloadWsdlsAndSchemas( new URL(urlWithoutFileName+"/"+next.getLocation()), newWsdlDir);
         }
-
+        return fileName;
     }
     // If catalog file is present, get the mapped WSDL for given WSDL and replace the value in
     // the given WebService object
@@ -543,8 +554,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
             if(n != null) {
                 givenLocation = n.getNodeValue();
             }
-            if((givenLocation == null) ||
-                ((givenLocation != null) && givenLocation.startsWith("http"))) {
+            if(givenLocation == null || givenLocation.startsWith("http")) {
                 continue;
             }
             Import imp = new Import();
