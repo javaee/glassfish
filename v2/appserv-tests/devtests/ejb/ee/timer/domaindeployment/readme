@@ -6,20 +6,23 @@ This test, when run with 'all' target performs the following steps:
   - startDomain
   - setup-database (add jdbc resource for the timer resource and set it as the timer resource)
   - setup-cluster (create cluster of 2 instances, enable  resource in the cluster)
-- deploy (deploy the application which automatically starts ''timer01'' randomly on one of the instances - check the instance logs to see which one)
 
-- run
-  - run-test (verify that automatic timer is executed on one and only one instance)
-    Deploy randomly assigns an instance to own automatic timer and it is started on that instance when the bean is loaded.
-    Test adds a new programmatic timer on each instance during verification call.
-    Test creates files to hold port for the instance that owns the automatic timer ('success') and the one that does not ('error')
-    Expected result: automatic timer was executed on one and only one instance
-  - run-failover (verify that timers are automatically migrated to another instance, when the instance that originally runs them is stopped)
-    Test identifies the instance (reading the files from the step above) that owns automatic timer and stops that instance.
-    Test verifies that after a small sleep the timers are executed on the other instance.
-    Expected result: all 3 timers are executed on the other instance
+- run-test
+  - deploy 
+    - deploy-to-domain - deploy application with the target 'domain' (no automatic timers should be created at this time)
+    - add-app-ref-for-target - execute add-application-ref on target 'c1' (enable the application which automatically starts ''timer01'' randomly on one of the instances - check the instance logs to see which one)
+  - verify
+    Expected result: only one timer belongs to this ejb
+  - add-cluster
+    - setup-cluster (create another cluster of 2 instances, enable  resource in the cluster)
+    - add-app-ref-for-target - execute add-application-ref on target 'c2' (enable the application on cluster c2, no new timers should be created)
+  - verify
+    Expected result: only one timer belongs to this ejb
+  - redeploy - redeploy application with the target 'domain' (automatic timer should be created only on one instance of 4 instances)
+  - verify
+    Expected result: only one timer belongs to this ejb
+  - undeploy
 
-- undeploy
 - unsetup
   - unsetup-cluster (stop and delete the cluster)
   - unsetup-database (remove resource and unset timer resource)
