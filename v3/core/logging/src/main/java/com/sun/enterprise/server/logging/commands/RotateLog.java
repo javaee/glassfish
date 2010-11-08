@@ -47,6 +47,8 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -57,6 +59,7 @@ import org.jvnet.hk2.component.PerLookup;
  */
 @ExecuteOn(value={RuntimeType.INSTANCE},ifOffline=FailurePolicy.Error)
 @Service(name = "rotate-log")
+@TargetType({CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER, CommandTarget.CLUSTERED_INSTANCE})
 @Scoped(PerLookup.class)
 @I18n("rotate.log")
 public class RotateLog implements AdminCommand {
