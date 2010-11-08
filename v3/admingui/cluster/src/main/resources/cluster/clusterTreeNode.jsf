@@ -46,6 +46,7 @@
 	    childImageURL="/resource/cluster/images/cluster.gif"
 	    childExpanded="false"
 	    childURL="#{request.contextPath}/cluster/cluster/clusterGeneral.jsf?clusterName=#{$this{valueBinding}.text}"
+            imageURL="/resource/cluster/images/cluster.gif"
 	    text="$resource{i18ncs.tree.clusters}"
 	    url="/cluster/cluster/clusters.jsf">
 	<ui:event type="beforeCreate">
@@ -53,7 +54,4 @@
 	    gf.restRequest(endpoint="#{sessionScope.REST_URL}/clusters/cluster.json" method="get" result="#{requestScope.resp}"); 
 	    setAttribute(key="children" value="#{requestScope.resp.data.extraProperties.childResources}");
 	</ui:event>
-	<!facet image>
-	    <sun:iconHyperlink id="treeIcon" icon="TREE_FOLDER" url="/cluster/cluster/clusters.jsf" alt="$resource{i18ncs.tree.clusters}" border="0" immediate="true" />
-	</facet>
     </dynamicTreeNode>

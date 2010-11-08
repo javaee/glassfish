@@ -47,13 +47,11 @@
 	childExpanded="false"
 	childURL="/web/configuration/virtualServerEdit.jsf?name=#{$this{valueBinding}.text}&configName=${configName}"
 	text="$resource{i18n_web.tree.virtualServers}"
+        imageURL="/resource/web/images/http.gif"
 	url="/web/configuration/virtualServers.jsf?configName=${configName}">
         setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
     <ui:event type="beforeCreate">
 	gf.restRequest(endpoint="#{sessionScope.REST_URL}/configs/config/${configName}/http-service/virtual-server.json" method="get" result="#{requestScope.resp}");
 	setAttribute(key="children" value="#{requestScope.resp.data.extraProperties.childResources}");
     </ui:event>
-    <!facet image>
-        <sun:iconHyperlink id="treeIcon" icon="TREE_FOLDER" url="/web/configuration/virtualServers.jsf?configName=${configName}" border="0" immediate="true" />
-    </facet>
 </dynamicTreeNode>

@@ -77,7 +77,6 @@
                 mapPut(map="#{pageSession.valueMap}"  key="sshkeyfile",  value="#{pageSession.attrMap['keyfile']}");
             }
         }
-        println("================ #{pageSession.valueMap}");
 
         setPageSessionAttribute(key="edit" value="#{true}");
         setPageSessionAttribute(key="showCancelButton" value="#{true}" );

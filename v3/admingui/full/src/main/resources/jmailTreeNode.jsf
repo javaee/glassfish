@@ -46,15 +46,13 @@
 	childImageURL="/resource/full/images/javaMailSession.gif"
 	childExpanded="false"
 	childURL="/full/mailResourceEdit.jsf?name=#{$this{valueBinding}.text}"
+        imageURL="/resource/full/images/javaMailSession.gif"
 	text="$resource{i18n.tree.javaMailSessions}"
 	url="/full/mailResources.jsf">
     <ui:event type="beforeCreate">
 	gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/mail-resource.json" method="get" result="#{requestScope.resp}");
 	setAttribute(key="children" value="#{requestScope.resp.data.extraProperties.childResources}");
     </ui:event>
-    <!facet image>
-        <sun:iconHyperlink id="treeIcon" icon="TREE_FOLDER" url="/full/mailResources.jsf"  border="0" immediate="true" alt="$resource{i18n.tree.javaMailSessions}"/>
-    </facet>
 </dynamicTreeNode>
 
 <sun:treeNode id="jndi"

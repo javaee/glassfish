@@ -117,7 +117,7 @@
                     //We need to create source-ref of the selected targets.
                     convertArrayToCommaString(array="#{pageSession.selectedTargets}" commaString="#{requestScope.cs}")
                     convertStringtoList(str="#{requestScope.cs}" result="#{requestScope.targetList}");
-                    println("===========#{requestScope.targetList}");
+                    //println("===========#{requestScope.targetList}");
                     setAttribute(key="nTargets" value="#{requestScope.targetList.size()}");
                     dec(number="#{requestScope.nTargets}" value="#{requestScope.endRef}");
                     forLoop(end="#{requestScope.endRef}"  varName="nn"){
