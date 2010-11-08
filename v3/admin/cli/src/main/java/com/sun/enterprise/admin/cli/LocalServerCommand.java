@@ -37,9 +37,9 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.admin.cli;
 
+import com.sun.enterprise.util.io.FileUtils;
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -50,6 +50,7 @@ import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 import com.sun.enterprise.security.store.PasswordAdapter;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.io.SmartFile;
+import com.sun.enterprise.universal.process.Jps;
 import com.sun.enterprise.universal.xml.MiniXmlParser;
 import com.sun.enterprise.universal.xml.MiniXmlParserException;
 import com.sun.enterprise.util.HostAndPort;
@@ -69,7 +70,6 @@ public abstract class LocalServerCommand extends CLICommand {
     ////////////////////////////////////////////////////////////////
     /// Section:  protected methods that are OK to override
     ////////////////////////////////////////////////////////////////
-
     /**
      * Override this method and return false to turn-off the file validation.
      * E.g. it demands that config/domain.xml be present.  In special cases like
@@ -115,7 +115,8 @@ public abstract class LocalServerCommand extends CLICommand {
                 return addrSet.get(0);
             else
                 throw new CommandException(strings.get("NoAdminPort"));
-        } catch (MiniXmlParserException ex) {
+        }
+        catch (MiniXmlParserException ex) {
             throw new CommandException(strings.get("NoAdminPortEx", ex), ex);
         }
     }
@@ -288,8 +289,25 @@ public abstract class LocalServerCommand extends CLICommand {
     /**
      * Is the server still running?
      * This is only called when we're hanging around waiting for the server to die.
+     * Byron Nevins, Nov 7, 2010 - Check to see if the process itself is still running
+     * I don't know of any more reliable way of doing this!
+     * If there are any problems fall back to the previous implementation of
+     * isRunning
      */
     protected final boolean isRunning() {
+        int pp = getPrevPid();
+
+        if(pp < 0)
+            return isRunningByCheckingForPidFile();
+
+        return Jps.isPid(pp);
+    }
+
+    /**
+     * Is the server still running?
+     * This is only called when we're hanging around waiting for the server to die.
+     */
+    protected final boolean isRunningByCheckingForPidFile() {
         File pf = getServerDirs().getPidFile();
 
         if (pf != null) {
@@ -305,6 +323,22 @@ public abstract class LocalServerCommand extends CLICommand {
             waitForRestartRemote(uptimeOldServer);
         else
             waitForRestartLocal(pwFile, oldTimeStamp, uptimeOldServer);
+    }
+
+    // todo move prevpid to ServerDirs ???
+    protected final int getPrevPid() {
+        try {
+            File prevPidFile = new File(getServerDirs().getPidFile().getPath() + ".prev");
+
+            if (!prevPidFile.canRead())
+                return -1;
+
+            String pids = FileUtils.readSmallFile(prevPidFile).trim();
+            return Integer.parseInt(pids);
+        }
+        catch (Exception ex) {
+            return -1;
+        }
     }
 
     /**
