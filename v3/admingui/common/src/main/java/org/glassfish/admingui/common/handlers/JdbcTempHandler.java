@@ -306,7 +306,7 @@ public class JdbcTempHandler {
         }
         return connDefProps;
     }
-    public static Logger guiLogger = GuiUtil.getLogger();
+    public static final Logger guiLogger = GuiUtil.getLogger();
     public static final String REASON_FAILED_KEY = "ReasonFailedKey";
     //public static final  String SET_KEY = "SetKey";
     //public static final  String BOOLEAN_KEY = "BooleanKey";
