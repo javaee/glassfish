@@ -53,7 +53,7 @@ import static org.junit.Assert.*;
  * @author jasonlee
  */
 public class MetadataTest extends RestTestBase {
-    protected static final String URL_CONFIG = "/domain/configs/config";
+    protected static final String URL_CONFIG = "/domain/configs/config.json";
     @Test
     public void configParameterTest() {
         ClientResponse response = options(URL_CONFIG);
