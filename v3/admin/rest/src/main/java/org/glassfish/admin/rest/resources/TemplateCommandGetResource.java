@@ -68,8 +68,8 @@ public class TemplateCommandGetResource extends TemplateExecCommand {
         MediaType.APPLICATION_JSON,
         MediaType.APPLICATION_XML,
         MediaType.APPLICATION_FORM_URLENCODED})
-    public Response processGet(ParameterMap data) {
-        //ParameterMap data = new ParameterMap();
+    public Response processGet() {
+            ParameterMap data = new ParameterMap();
             processCommandParams(data);
             addQueryString(((ContainerRequest) requestHeaders).getQueryParameters(), data);
             purgeEmptyEntries(data);
