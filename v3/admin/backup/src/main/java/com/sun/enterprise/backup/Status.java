@@ -165,6 +165,20 @@ class Status {
         return props.getProperty(Constants.PROPS_USER_NAME);
     }
 
+    // Return the full path to the backup file.
+    String getBackupPath() {
+        if(props == null)
+            return null;
+        
+        try {
+            File f = new File(props.getProperty(Constants.PROPS_BACKUP_FILE));
+
+            return f.getAbsolutePath();
+        } catch (NullPointerException e) {
+            return null;
+        }
+    }
+
     // Return the filename portion of the path.
     String getFileName() {
         if(props == null)
@@ -181,9 +195,9 @@ class Status {
 
     String getBackupConfigName(){
        if(props == null)
-            return null;
+            return new String("");
 
-        return props.getProperty(Constants.BACKUP_CONFIG);
+        return props.getProperty(Constants.BACKUP_CONFIG, "");
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -199,7 +213,6 @@ class Status {
     private void setPropsFromFile(File file) {
         props = null;
         ZipInputStream zis = null;
-
 
         if(file.getName().toLowerCase().endsWith(".properties")) {
             readPropertiesFile(file);
