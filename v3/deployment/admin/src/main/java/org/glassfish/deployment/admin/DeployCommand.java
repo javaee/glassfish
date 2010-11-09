@@ -314,6 +314,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
 
             if (properties != null) {
                 deploymentContext.getAppProps().putAll(properties);
+                validateDeploymentProperties(properties, deploymentContext);
             }
 
             // clean up any generated files
@@ -746,6 +747,20 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                     context.getLogger().warning("Verifier is not installed yet. Install verifier module.");
                 }
             }
+        }
+    }
+
+    private void validateDeploymentProperties(Properties properties, 
+        DeploymentContext context) {
+        String compatProp = properties.getProperty(
+            DeploymentProperties.COMPATIBILITY);
+        if (compatProp != null && !compatProp.equals("v2")) {
+            // this only allowed value for property compatibility is v2
+            String warningMsg = localStrings.getLocalString("compat.value.not.supported", "{0} is not a supported value for compatibility property.", compatProp);
+            ActionReport subReport = context.getActionReport().addSubActionsReport();
+            subReport.setActionExitCode(ActionReport.ExitCode.WARNING);
+            subReport.setMessage(warningMsg);
+            context.getLogger().log(Level.WARNING, warningMsg);
         }
     }
 }
