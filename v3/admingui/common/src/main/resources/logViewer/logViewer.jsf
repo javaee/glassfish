@@ -51,7 +51,7 @@
 
 <sun:page id="page1">
 <ui:event type="beforeCreate">
-    setPageSessionAttribute(key="instanceName" value="server");
+    <!-- setPageSessionAttribute(key="instanceName" value="server"); -->
     getRequestValue(key="instanceName" value=>$attribute{instanceName});
 <!-- This just gets the Log File Directory... get via REST, remove this handler -->
     getRequestValue(key="logFile" value=>$attribute{reqLogFile});
@@ -377,11 +377,15 @@
 	    <ui:event type="afterCreate">
 		getClientId(component="$this{component}" clientId=>$page{topActionGroup});
 	    </ui:event>
-	    <sun:button id="button1" rendered="#{hasResults}" text="#{button1Text}" disabled="false">
+	    <sun:button id="button1" rendered="#{showButton1}" text="#{button1Text}" disabled="false">
                 <ui:event type="beforeCreate">
+                    setAttribute(key="showButton1", value="#{hasResults}");
                     setAttribute(key="button1Text", value="$resource{i18nc.logViewer.RecordsBefore, #{first}}");
                     if (#{hasRecords}=false) {
                         setAttribute(key="button1Text", value="$resource{i18nc.logViewer.Prev}");
+                    }
+                    if (#{first}=0) {
+                        setAttribute(key="showButton1", value="#{false}");
                     }
                 </ui:event>
                 <ui:event type="command">
