@@ -52,6 +52,7 @@ import com.sun.grizzly.config.dom.Http;
 import com.sun.grizzly.config.dom.HttpRedirect;
 import com.sun.grizzly.config.dom.NetworkConfig;
 import com.sun.grizzly.config.dom.NetworkListener;
+import com.sun.grizzly.config.dom.NetworkListeners;
 import com.sun.grizzly.config.dom.PortUnification;
 import com.sun.grizzly.config.dom.Protocol;
 import com.sun.grizzly.config.dom.ProtocolFinder;
@@ -59,7 +60,6 @@ import com.sun.grizzly.config.dom.Protocols;
 import com.sun.grizzly.config.dom.Ssl;
 import com.sun.logging.LogDomains;
 import java.beans.PropertyVetoException;
-import java.net.URI;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -103,7 +103,7 @@ public abstract class SecureAdminCommand implements AdminCommand {
 
     private final static String SEC_ADMIN_LISTENER_PROTOCOL_NAME = "sec-admin-listener";
     private final static String REDIRECT_PROTOCOL_NAME = "admin-http-redirect";
-    private final static String ADMIN_LISTENER_NAME = "admin-listener";
+    public final static String ADMIN_LISTENER_NAME = "admin-listener";
 
     private static final Logger logger = LogDomains.getLogger(SupplementalCommandExecutorImpl.class,
                                         LogDomains.ADMIN_LOGGER);
@@ -453,10 +453,11 @@ public abstract class SecureAdminCommand implements AdminCommand {
                 final Property p = pc.getProperty(REST_AUTH_URL_PROPERTY_NAME);
                 final Property p_w = t.enroll(p);
                 final String urlText = p_w.getValue();
-                final URI uri = URI.create(urlText);
-                final URI newURI = new URI(newEnabledState ? "https" : "http", uri.getSchemeSpecificPart(), uri.getFragment());
+                final StringBuilder newURLString = new StringBuilder();
+                newURLString.append(newEnabledState ? "https" : "http");
+                newURLString.append("://").append(urlText.substring(urlText.indexOf("//") + "//".length()));
                 final ProviderConfig pc_w = t.enroll(pc);
-                p_w.setValue(newURI.toASCIIString());
+                p_w.setValue(newURLString.toString());
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
@@ -599,12 +600,29 @@ public abstract class SecureAdminCommand implements AdminCommand {
             return pf_w;
         }
 
+        private NetworkListener writableNetworkListener(
+                final Transaction t,
+                final Config config_w,
+                final String listenerName) throws TransactionFailure {
+            NetworkListener nl_w = null;
+            final NetworkConfig nc = config_w.getNetworkConfig();
+            NetworkListener nl = nc.getNetworkListener(listenerName);
+            if (nl == null) {
+                throw new IllegalArgumentException();
+            } else {
+                nl_w = t.enroll(nl);
+            }
+            return nl_w;
+        }
+
+        
+
         private void assignAdminListenerProtocol(
                 final Transaction t,
                 final Config config_w,
                 final String protocolName) throws TransactionFailure {
-            final NetworkListener nl = config_w.getNetworkConfig().getNetworkListener(ADMIN_LISTENER_NAME);
-            t.enroll(nl).setProtocol(protocolName);
+            final NetworkListener nl_w = writableNetworkListener(t, config_w, ADMIN_LISTENER_NAME);
+            nl_w.setProtocol(protocolName);
         }
 
         @Override
@@ -782,6 +800,57 @@ public abstract class SecureAdminCommand implements AdminCommand {
     abstract Iterator<Work<ConfigLevelContext>> perConfigSteps();
 
     /**
+     * Performs the enable/disable logic for secure admin.
+     * <p>
+     * This is separate from the execute method so it can be invoked during
+     * upgrade.
+     * 
+     * @throws TransactionFailure
+     */
+    public void run() throws TransactionFailure {
+        ConfigSupport.apply(new SingleConfigCode<Domain>() {
+            @Override
+            public Object run(Domain domain_w) throws PropertyVetoException, TransactionFailure {
+
+                // get the transaction
+                final Transaction t = Transaction.getTransaction(domain_w);
+                final TopLevelContext topLevelContext = new TopLevelContext(t, domain_w);
+                if (t!=null) {
+
+                    try {
+                        /*
+                         * Do the work on just the secure-admin element.
+                         */
+                        for (Iterator<Work<TopLevelContext>> it = secureAdminSteps(); it.hasNext();) {
+                            final Work<TopLevelContext> step = it.next();
+                            step.run(topLevelContext);
+                        }
+
+                        /*
+                         * Now apply the required changes to the admin listener
+                         * to all configurations in the domain.
+                         */
+                        final Configs configs = domain_w.getConfigs();
+                        for (Config c : configs.getConfig()) {
+                            final Config c_w = t.enroll(c);
+                            ConfigLevelContext configLevelContext = new ConfigLevelContext(topLevelContext, c_w);
+                            for (Iterator<Work<ConfigLevelContext>> it = perConfigSteps(); it.hasNext();) {
+                                final Work<ConfigLevelContext> step = it.next();
+                                step.run(configLevelContext);
+                            }
+                        }
+
+                        t.commit();
+                    } catch (RetryableException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+
+                return Boolean.TRUE;
+            }
+        }, domain);
+    }
+    /**
      * Executes the particular xxx-secure-admin command (enable or disable).
      * @param context
      */
@@ -790,48 +859,8 @@ public abstract class SecureAdminCommand implements AdminCommand {
         final ActionReport report = context.getActionReport();
 
         try {
-            ConfigSupport.apply(new SingleConfigCode<Domain>() {
-                @Override
-                public Object run(Domain domain_w) throws PropertyVetoException, TransactionFailure {
-
-                    // get the transaction
-                    final Transaction t = Transaction.getTransaction(domain_w);
-                    final TopLevelContext topLevelContext = new TopLevelContext(t, domain_w);
-                    if (t!=null) {
-
-                        try {
-                            /*
-                             * Do the work on just the secure-admin element.
-                             */
-                            for (Iterator<Work<TopLevelContext>> it = secureAdminSteps(); it.hasNext();) {
-                                final Work<TopLevelContext> step = it.next();
-                                step.run(topLevelContext);
-                            }
-
-                            /*
-                             * Now apply the required changes to the admin listener
-                             * to all configurations in the domain.
-                             */
-                            final Configs configs = domain_w.getConfigs();
-                            for (Config c : configs.getConfig()) {
-                                final Config c_w = t.enroll(c);
-                                ConfigLevelContext configLevelContext = new ConfigLevelContext(topLevelContext, c_w);
-                                final MessagePart partForThisConfig = report.getTopMessagePart().addChild();
-                                for (Iterator<Work<ConfigLevelContext>> it = perConfigSteps(); it.hasNext();) {
-                                    final Work<ConfigLevelContext> step = it.next();
-                                    step.run(configLevelContext);
-                                }
-                            }
-
-                            t.commit();
-                        } catch (RetryableException ex) {
-                            throw new RuntimeException(ex);
-                        }
-                    }
-
-                    return Boolean.TRUE;
-                }
-            }, domain);
+            run();
+//            final MessagePart partForThisConfig = report.getTopMessagePart().addChild();
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         } catch (TransactionFailure ex) {
             logger.log(Level.SEVERE, Strings.get(transactionErrorMessageKey()), ex);
