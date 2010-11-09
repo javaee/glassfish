@@ -123,13 +123,13 @@ public class RestUtil {
         Map attrMap = new HashMap();
         String str = token.substring(start + tokenStartMarker.length(), end - tokenEndMarker.length() + 1);
         attrMap.put("tokens", str);
-        
-        // FXIME : Temporary disable the call to resolveTokens since it is broken.
-        /*
-        Map result = restRequest(endpoint + "/resolve-tokens.json", attrMap, "GET", null, true);
-        return (String)GuiUtil.getMapValue(result, "data,extraProperties,tokens," + str);
-         *
-         */
+
+        try {
+            Map result = restRequest(endpoint + "/resolve-tokens.json", attrMap, "GET", null, true);
+            return (String)GuiUtil.getMapValue(result, "data,extraProperties,tokens," + str);
+        } catch (Exception ex) {
+            GuiUtil.getLogger().info(ex.getMessage());
+        }
         return token;
     }
 
