@@ -41,7 +41,6 @@
 package com.sun.enterprise.v3.admin.cluster;
 
 
-import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.v3.admin.StopServer;
 import org.glassfish.api.Async;
 import org.glassfish.api.Param;
@@ -54,6 +53,7 @@ import org.glassfish.api.admin.ServerEnvironment;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
 
 /**
@@ -77,7 +77,7 @@ public class StopInstanceInstanceCommand extends StopServer implements AdminComm
     @Inject
     private ServerEnvironment env;
     @Inject
-    private ModulesRegistry registry;
+    private Habitat habitat;
     @Param(optional = true, defaultValue = "true")
     private Boolean force = true;
 
@@ -91,6 +91,6 @@ public class StopInstanceInstanceCommand extends StopServer implements AdminComm
             return;
         }
 
-        doExecute(registry, env, context.getLogger(), force);
+        doExecute(habitat, env, context.getLogger(), force);
     }
 }
