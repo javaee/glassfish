@@ -40,6 +40,7 @@
 
 package org.glassfish.jms.admin.cli;
 
+import com.sun.enterprise.connectors.jms.util.JmsRaUtil;
 import org.glassfish.resource.common.PoolInfo;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
@@ -67,7 +68,7 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
 
 @ExecuteOn({RuntimeType.DAS})
-@TargetType({CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
+@TargetType({CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CLUSTERED_INSTANCE,CommandTarget.CONFIG})
 @Service(name="jms-ping")
 @Scoped(PerLookup.class)
 @CommandLock(CommandLock.LockType.NONE)
@@ -162,10 +163,27 @@ public class JMSPing implements AdminCommand {
 
    void createJMSResource(JmsHost defaultJmsHost, ActionReport subReport, String tmpJMSResource)
    {
+        String port = null;
+        String host = null;
+        Server targetServer = domain.getServerNamed(target);
+            if (targetServer != null && ! targetServer.isDas()) {
+                port = JmsRaUtil.getJMSPropertyValue(targetServer);
+                host = domain.getNodeNamed(targetServer.getNode()).getNodeHost();
+            } else{
+                Cluster cluster = domain.getClusterNamed(target);
+                if (cluster != null && cluster.getInstances().size() != 0) {
+                    targetServer = cluster.getInstances().get(0);
+                    port = JmsRaUtil.getJMSPropertyValue(targetServer);
+                    host = domain.getNodeNamed(targetServer.getNode()).getNodeHost();
+                }
+            }
+
         String userName = defaultJmsHost.getAdminUserName();
         String password = defaultJmsHost.getAdminPassword();
-        String host = defaultJmsHost.getHost();
-        String port = defaultJmsHost.getPort();
+        if(host == null)
+             host = defaultJmsHost.getHost();
+        if(port == null)
+            port = defaultJmsHost.getPort();
 
         ParameterMap aoAttrList = new ParameterMap();
 
@@ -189,7 +207,7 @@ public class JMSPing implements AdminCommand {
 
         aoAttrList.set("restype",  "javax.jms.QueueConnectionFactory");
         aoAttrList.set("DEFAULT",  tmpJMSResource);
-        aoAttrList.set("target", target);
+        //aoAttrList.set("target", target);
         commandRunner.getCommandInvocation("create-jms-resource", subReport).parameters(aoAttrList).execute();
 
     }
@@ -210,7 +228,7 @@ public class JMSPing implements AdminCommand {
     {
         ParameterMap aoAttrList = new ParameterMap();
         aoAttrList.set("DEFAULT",  tmpJMSResource);
-        aoAttrList.set("target", target);
+        //aoAttrList.set("target", target);
 
         commandRunner.getCommandInvocation("delete-jms-resource", subReport).parameters(aoAttrList).execute();
     }
