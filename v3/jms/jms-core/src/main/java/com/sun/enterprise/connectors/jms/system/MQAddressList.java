@@ -71,7 +71,7 @@ import org.jvnet.hk2.config.TransactionFailure;
 public class MQAddressList {
 
     static Logger logger = LogDomains.getLogger(MQAddressList.class,  LogDomains.JMS_LOGGER);
-    private static String myName =
+    private String myName =
                System.getProperty(SystemPropertyConstants.SERVER_NAME);
 
     private List<MQUrl> urlList = new ArrayList<MQUrl>();
@@ -116,7 +116,7 @@ public class MQAddressList {
         this.targetName = targetName;
     }
     public void setInstanceName(String instanceName){
-        MQAddressList.myName = instanceName;
+        myName = instanceName;
     }
     public void setup()throws Exception
     {
