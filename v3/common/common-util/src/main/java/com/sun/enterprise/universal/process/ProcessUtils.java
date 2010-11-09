@@ -108,13 +108,13 @@ public final class ProcessUtils {
 
             pm.setEcho(false);
             pm.execute();
-            String result = pm.getStderr() + pm.getStdout();
             int exitValue = pm.getExitValue();
 
             if (exitValue == 0)
                 return null;
             else
-                return Strings.get("ProcessUtils.killerror", cmdline, result, "" + exitValue);
+                return Strings.get("ProcessUtils.killerror", cmdline, 
+                        pm.getStderr() + pm.getStdout(), "" + exitValue);
         }
         catch (ProcessManagerException ex) {
             return ex.getMessage();
@@ -166,8 +166,12 @@ public final class ProcessUtils {
             throw new ProcessManagerException("unknown");
     }
 
-    private static Boolean isProcessRunningUnix(int aPid) {
-        throw new UnsupportedOperationException("Not yet implemented");
+    private static Boolean isProcessRunningUnix(int aPid) throws ProcessManagerException {
+        ProcessManager pm = new ProcessManager("kill", "-0", "" + aPid);
+        pm.setEcho(false);
+        pm.execute();
+        int retval = pm.getExitValue();
+        return retval == 0 ? Boolean.TRUE: Boolean.FALSE;
     }
 
     static {
