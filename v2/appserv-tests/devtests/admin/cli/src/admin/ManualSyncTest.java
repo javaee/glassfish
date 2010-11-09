@@ -298,7 +298,7 @@ public class ManualSyncTest extends AdminBaseDevTest {
         String s = get("servers.server."+i+".property.rendezvousOccurred");
         report("check-rendezvous-"+i, s.equals("true"));
 
-        report("import-sync-bundle-specifynode", !asadmin("import-sync-bundle", "--instance", i, bundle.getPath()));
+        //report("import-sync-bundle-specifynode", !asadmin("import-sync-bundle", "--instance", i, bundle.getPath()));
 
         //cleanup
         report("delete-instance-"+i, asadmin("delete-instance", i));
