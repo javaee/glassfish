@@ -188,6 +188,8 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     @Inject
     private ResourceNamingService resourceNamingService;
 
+    private Resources globalResources;
+
     // performance improvement, cache the lookup of transaction manager.
     private JavaEETransactionManager transactionManager;
     private ProcessEnvironment.ProcessType processType;
@@ -1396,7 +1398,10 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     }
 
     private Resources getResources(){
-        return habitat.getComponent(Domain.class).getResources();
+        if(globalResources == null){
+            globalResources = habitat.getComponent(Domain.class).getResources();
+        }
+        return globalResources; 
     }
 
     /**
