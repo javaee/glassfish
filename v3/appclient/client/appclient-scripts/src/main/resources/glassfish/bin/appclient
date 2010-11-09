@@ -340,7 +340,7 @@ computeJREHome() {
 ACCArgType=ACC
 JVMArgType=JVM
 
-accJar=$AS_INSTALL_MOD/gf-client.jar
+accJar=$AS_INSTALL/lib/gf-client.jar
 
 # Record the default ACC config file if possible
 recordACCArg -configxml "$AS_INSTALL/domains/domain1/config/sun-acc.xml"

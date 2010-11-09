@@ -40,5 +40,5 @@ REM  holder.
 REM
 setlocal
 set AS_INSTALL=%~dp0..
-set AS_INSTALL_MOD=%AS_INSTALL%\modules
-java  -classpath "%AS_INSTALL_MOD%\gf-client.jar" org.glassfish.appclient.client.packageappclient.PackageAppClient %*
+set AS_INSTALL_LIB=%AS_INSTALL%\lib
+java  -classpath "%AS_INSTALL_LIB%\gf-client.jar" org.glassfish.appclient.client.packageappclient.PackageAppClient %*

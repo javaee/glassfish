@@ -285,7 +285,7 @@ public class JWSAdapterManager implements PostConstruct {
 
     File gfClientJAR() {
         return new File(
-            modulesDir(),
+            libDir(),
             "gf-client.jar");
     }
 
@@ -297,6 +297,10 @@ public class JWSAdapterManager implements PostConstruct {
 
     private File modulesDir() {
         return new File(new File(installRootURI), "modules");
+    }
+
+    private File libDir() {
+        return new File(new File(installRootURI), "lib");
     }
 
     static String publicExtensionHref(final Extension ext) {

@@ -60,7 +60,7 @@ var mainClassIdentRequired = 1;
 
 var appcPath = envVars("APPCPATH");
 
-var accJar="\"" + AS_INSTALL_MOD + "\\gf-client.jar\"";
+var accJar="\"" + AS_INSTALL + "\\lib\\gf-client.jar\"";
 
 var fso = WScript.CreateObject("Scripting.FileSystemObject");
 var jvmArgs="-Dcom.sun.aas.installRoot=\"" + AS_INSTALL +
