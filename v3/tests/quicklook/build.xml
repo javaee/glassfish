@@ -400,6 +400,8 @@
                <include name="**/glassfish-api.jar"/>
                <include name="**/amx-all.jar"/>
                <include name="**/management-api.jar"/>
+            </fileset>
+            <fileset dir="${glassfish.home}/lib">
                <include name="**/gf-client.jar"/>
             </fileset>
 	    <pathelement path="${plugin_classpath}"/>
