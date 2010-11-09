@@ -45,6 +45,8 @@ import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.CommandLock;
+import org.glassfish.api.admin.ExecuteOn;
+import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.webservices.WebServicesContainer;
 import org.glassfish.webservices.deployment.DeployedEndpointData;
 import org.glassfish.webservices.deployment.WebServicesDeploymentMBean;
@@ -61,13 +63,16 @@ import java.util.Properties;
  * CLI for listing all web services.
  * <p>
  * asadmin __list-webservices [--appname <appname> [--modulename <modulename> [--
-endpointname <endpointname>]]]
+endpointname <endpointname>]]] [target]
+ *
+ * Will be executed on DAS and stand-alone instances
 
  * @author Jitendra Kotamraju
  */
 @Service(name = "__list-webservices")
 @Scoped(PerLookup.class)
 @CommandLock(CommandLock.LockType.NONE)
+@ExecuteOn(RuntimeType.INSTANCE)
 public class ListWebServicesCommand implements AdminCommand {
     @Inject
     private Habitat habitat;
@@ -80,6 +85,9 @@ public class ListWebServicesCommand implements AdminCommand {
 
     @Param(optional=true)
     String endpointName;
+
+    @Param(primary=true, optional=true)
+    public String target;
 
     @Override
     public void execute(AdminCommandContext context) {
