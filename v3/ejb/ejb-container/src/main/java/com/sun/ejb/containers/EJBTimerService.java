@@ -257,6 +257,8 @@ public class EJBTimerService
                 operationOnConnectionFailure = ejbt.getPropertyValue(ON_CONECTION_FAILURE);
                 rescheduleFailedTimer = Boolean.valueOf(ejbt.getPropertyValue(RESCHEDULE_FAILED_TIMER));
 
+                // Load confing listener
+                ejbContainerUtil.getDefaultHabitat().getComponent(EJBTimerServiceConfigListener.class);
             }
 
         } catch(Exception e) {
