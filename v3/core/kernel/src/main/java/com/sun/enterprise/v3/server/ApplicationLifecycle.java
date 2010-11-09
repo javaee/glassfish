@@ -482,18 +482,20 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
                     Parser parser = new Parser(parsingContext);
                     ReadableArchiveScannerAdapter scannerAdapter = new ReadableArchiveScannerAdapter(parser, context.getSource());
                     parser.parse(scannerAdapter, null);
-                    for (ReadableArchive externalLibArchive : 
+                    for (ReadableArchive externalLibArchive :
                         getExternalLibraries(context)) {
+                        ReadableArchiveScannerAdapter libAdapter = null;
                         try {
-                            ReadableArchiveScannerAdapter adapter = new ReadableArchiveScannerAdapter(parser, externalLibArchive);
-                            parser.parse(adapter, null);
+                            libAdapter = new ReadableArchiveScannerAdapter(parser, externalLibArchive);
+                            parser.parse(libAdapter, null);
                         } finally {
-                            if (externalLibArchive != null) {
-                                externalLibArchive.close();
+                            if (libAdapter!=null) {
+                                libAdapter.close();
                             }
                         }
                     }
                     parser.awaitTermination();
+                    scannerAdapter.close();
                     context.addModuleMetaData(parsingContext.getTypes());
                     context.addModuleMetaData(parser);
                     return parsingContext.getTypes();

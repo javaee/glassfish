@@ -50,9 +50,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * User: Jerome Dochez
- * Date: May 22, 2008
- * Time: 3:27:59 PM
+ * Singleton executor service factory.
+ *
+ * @author Jerome Dochez
  */
 @Service
 @FactoryFor(ExecutorService.class)
