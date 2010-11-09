@@ -42,10 +42,18 @@ package com.sun.enterprise.admin.cli.cluster;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.io.IOException;
+
 //import java.net.InetAddress;
 //import java.net.UnknownHostException;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
 import org.glassfish.api.Param;
@@ -106,6 +114,9 @@ public class ImportSyncBundleCommand extends LocalInstanceCommand {
     @Param(name = "instance")
     private String instanceName0;
 
+    @Param(name = "node", optional = true, alias = "nodeagent")
+    protected String _node;
+
     String DASHost;
     int DASPort = -1;
     String DASProtocol;
@@ -140,6 +151,11 @@ public class ImportSyncBundleCommand extends LocalInstanceCommand {
         if (!syncBundleFile.isFile())
             throw new CommandException(Strings.get("noFile", syncBundle));
 
+        if (!isRegisteredToDAS()) {
+            throw new CommandException(Strings.get("import.sync.bundle.invalidInstance", instanceName));
+        }
+        node = _node;
+
         //isDasRunning = rendezvousWithDAS() ? true : false;
 
         //Should we validate node and instance if das is running? No validation for now.
@@ -173,6 +189,62 @@ public class ImportSyncBundleCommand extends LocalInstanceCommand {
         INSTANCE_DOTTED_NAME = "servers.server." + instanceName;
         RENDEZVOUS_DOTTED_NAME = INSTANCE_DOTTED_NAME + ".property." + RENDEZVOUS_PROPERTY_NAME;
         //RENDEZVOUS_DOTTED_NAME_VALUE = RENDEZVOUS_DOTTED_NAME + "=true";
+    }
+
+    private boolean isRegisteredToDAS() throws CommandException {
+        boolean isRegisteredOnDAS = false;
+        InputStream input = null;
+        XMLStreamReader reader = null;
+        try {
+            //find node from domain.xml
+            ZipFile zip = new ZipFile(syncBundleFile);
+            ZipEntry entry = zip.getEntry("config/domain.xml");
+            if (entry != null) {
+                input = zip.getInputStream(entry);
+
+                reader = XMLInputFactory.newInstance().createXMLStreamReader(input);
+                while (!isRegisteredOnDAS) {
+                    int event = reader.next();
+
+                    if (event == XMLStreamReader.END_DOCUMENT) {
+                        break;
+                    }
+
+                    if (event == XMLStreamReader.START_ELEMENT && "server".equals(reader.getLocalName())) {
+                        // get the attributes for this <server>
+                        int num = reader.getAttributeCount();
+                        Map<String, String> map = new HashMap<String, String>();
+                        for (int i = 0; i < num; i++) {
+                            map.put(reader.getAttributeName(i).getLocalPart(), reader.getAttributeValue(i));
+                        }
+                        String thisName = map.get("name");
+                        if (instanceName.equals(thisName)) {
+                            isRegisteredOnDAS = true;
+                            if (_node == null) {  // if node not specified
+                                _node = map.get("node"); // find it in domain.xml
+                            }
+                        }
+                    }
+                }
+                if (input != null) input.close();
+                if (reader != null) reader.close();
+            } else {
+                throw new CommandException(Strings.get("import.sync.bundle.domainXmlNotFound",
+                    syncBundle));
+            }
+        } catch (IOException ex) {
+            logger.log(Level.SEVERE, Strings.get("import.sync.bundle.inboundPayloadFailed",
+                    syncBundle, ex.getLocalizedMessage()), ex);
+            throw new CommandException(Strings.get("import.sync.bundle.inboundPayloadFailed",
+                    syncBundle, ex.getLocalizedMessage()), ex);
+        } catch (XMLStreamException xe) {
+            logger.log(Level.SEVERE, Strings.get("import.sync.bundle.inboundPayloadFailed",
+                    syncBundle, xe.getLocalizedMessage()), xe);
+            throw new CommandException(Strings.get("import.sync.bundle.inboundPayloadFailed",
+                    syncBundle, xe.getLocalizedMessage()), xe);
+        }
+
+        return isRegisteredOnDAS;
     }
 
     /**
@@ -305,7 +377,7 @@ public class ImportSyncBundleCommand extends LocalInstanceCommand {
             RemoteCommand rc = new RemoteCommand("set", this.programOpts, this.env);
             rc.executeAndReturnOutput("set", dottedName);
         } catch (CommandException ex) {
-            logger.warning(Strings.get("import.sync.bundle.completeRegistrationFailed", instanceName, dottedName));
+            logger.warning(Strings.get("import.sync.bundle.completeRegistrationFailed", dottedName));
         }
     }
 
