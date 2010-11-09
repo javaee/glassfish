@@ -126,6 +126,18 @@ public abstract class LocalServerCommand extends CLICommand {
         serverDirs = sd;
     }
 
+    protected final void setLocalPassword() {
+        String pw = getServerDirs().getLocalPassword();
+
+        if (ok(pw)) {
+            programOpts.setPassword(pw,
+                    ProgramOptions.PasswordLocation.LOCAL_PASSWORD);
+            logger.finer("Using local password");
+        }
+        else
+            logger.finer("Not using local password");
+    }
+
     protected final void resetServerDirs() throws IOException {
         serverDirs = serverDirs.refresh();
     }

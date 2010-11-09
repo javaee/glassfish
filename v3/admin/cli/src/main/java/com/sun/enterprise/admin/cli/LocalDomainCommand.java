@@ -129,15 +129,7 @@ public abstract class LocalDomainCommand extends LocalServerCommand {
         } catch (Exception e) {
             throw new CommandException(e.getMessage(), e);
         }
-
-        String pw = getServerDirs().getLocalPassword();
-
-        if (ok(pw)) {
-            programOpts.setPassword(pw,
-                            ProgramOptions.PasswordLocation.LOCAL_PASSWORD);
-            logger.finer("Using local password");
-        } else
-            logger.finer("Not using local password");
+        setLocalPassword();
     }
 
     protected boolean isThisDAS(File ourDir) {
