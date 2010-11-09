@@ -39,19 +39,13 @@
  */
 package com.sun.enterprise.v3.admin;
 
-import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.enterprise.module.Module;
-import com.sun.enterprise.universal.process.ProcessManager;
-import com.sun.enterprise.universal.process.ProcessManagerException;
-import com.sun.enterprise.universal.process.ProcessUtils;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.util.OS;
-import java.io.File;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import java.util.Collection;
 import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.embeddable.GlassFish;
+import org.jvnet.hk2.component.Habitat;
+
+import java.io.File;
+import java.util.logging.Logger;
 
 /**
  * A class to house identical code for stopping instances and DAS
@@ -65,17 +59,15 @@ public class StopServer {
      * All running services are stopped. 
      * LookupManager is flushed.
      */
-    protected final void doExecute(ModulesRegistry registry, ServerEnvironment env, Logger logger, boolean force) {
+    protected final void doExecute(Habitat habitat, ServerEnvironment env, Logger logger, boolean force) {
         try {
             logger.info(localStrings.getLocalString("stop.domain.init", "Server shutdown initiated"));
-            Collection<Module> modules = registry.getModules(
-                    "org.glassfish.core.glassfish");
-            if (modules.size() == 1) {
-                final Module mgmtAgentModule = modules.iterator().next();
-                mgmtAgentModule.stop();
-            }
-            else {
-                logger.warning(modules.size() + " no of primordial modules found");
+            // Don't shutdown GlassFishRuntime, as that can bring the OSGi framework down which is wrong
+            // when we are embedded inside an existing runtime. So, just stop the glassfish instance that
+            // we are supposed to stop. Leave any cleanup to some other code.
+            GlassFish gfKernel = habitat.getComponent(GlassFish.class);
+            if (gfKernel != null) {
+                gfKernel.stop();
             }
         }
         catch (Throwable t) {

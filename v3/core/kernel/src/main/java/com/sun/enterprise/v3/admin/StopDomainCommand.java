@@ -48,6 +48,7 @@ import org.glassfish.api.admin.*;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
 
 /**
@@ -66,7 +67,7 @@ public class StopDomainCommand extends StopServer implements AdminCommand {
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(StopDomainCommand.class);
     @Inject
-    ModulesRegistry registry;
+    Habitat habitat;
     @Inject
     ServerEnvironment env;
     @Param(optional = true, defaultValue = "true")
@@ -91,6 +92,6 @@ public class StopDomainCommand extends StopServer implements AdminCommand {
             return;
         }
 
-        doExecute(registry, env, context.getLogger(), force);
+        doExecute(habitat, env, context.getLogger(), force);
     }
 }
