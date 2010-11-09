@@ -48,6 +48,7 @@ import com.sun.enterprise.deployment.web.ServletFilter;
 import org.glassfish.apf.impl.AnnotationUtils;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.hk2.classmodel.reflect.Parser;
+import org.glassfish.hk2.classmodel.reflect.ParsingContext;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
@@ -101,6 +102,12 @@ public class WarScanner extends ModuleScanner<WebBundleDescriptor> {
 
         this.archiveFile =  new File(readableArchive.getURI()); 
         this.classLoader = classLoader;
+        if (parser == null) {
+            ParsingContext.Builder builder = new ParsingContext.Builder();
+            builder.logger(logger);
+            ParsingContext pc = builder.build();
+            parser = new Parser(pc);
+        }
         this.classParser = parser;
 
         if (AnnotationUtils.getLogger().isLoggable(Level.FINE)) {
