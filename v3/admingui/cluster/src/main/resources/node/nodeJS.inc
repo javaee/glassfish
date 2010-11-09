@@ -40,32 +40,18 @@
 
 -->
 
-<!initPage
-    setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
-    setResourceBundle(key="i18ncs" bundle="org.glassfish.cluster.admingui.Strings")
-    setResourceBundle(key="help_cluster" bundle="org.glassfish.cluster.admingui.Helplinks");
-/>
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18ncs.node.NewPageTitle}" >
-<!define name="content">
-    <event>
-    <!beforeCreate
-        setPageSessionAttribute(key="edit" value="#{false}");
-        setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/cluster/node/nodes.jsf");
-        setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/nodes");
-        setPageSessionAttribute(key="childType" value="create-node");
-        setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}");
-        gf.getDefaultValues(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
-        setPageSessionAttribute(key="title" value="$resource{i18ncs.node.NewPageTitle}");
-        setPageSessionAttribute(key="titleHelp" value="$resource{i18ncs.node.NewPageTitleHelp}");
-        setPageSessionAttribute(key="convertToFalseList" value="force");
-    />
-    </event>
-<sun:form id="propertyForm">
-#include "/common/shared/alertMsg.inc"
-#include "/cluster/node/nodeAttr.inc"
-
-    <sun:hidden id="helpKey" value="$resource{help_cluster.nodeNew}" />
-</sun:form>
-#include "/cluster/node/nodeJS.inc"
-</define>
-</composition>
+<f:verbatim>
+    <script type="text/javascript">
+    function showSshSection(type, sheet1){
+         var sheet1 = document.getElementById(sheet1);
+         if (type == 'CONFIG'){
+             style = 'none';
+         }else{
+             style = 'block';
+         }
+         if (sheet1 != null){
+             sheet1.style.display = style;
+         }
+    }
+    </script>
+</f:verbatim>   

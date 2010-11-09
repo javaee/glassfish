@@ -93,5 +93,9 @@
 "<br /><br />
 	<sun:hidden id="helpKey" value="$resource{help_cluster.nodeEdit}" />
 </sun:form>
+
+
+#include "/cluster/node/nodeJS.inc"
+
 </define>
 </composition>
