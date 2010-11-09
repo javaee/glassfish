@@ -57,6 +57,7 @@ import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 import java.net.URLEncoder;
+import java.net.InetAddress;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -710,6 +711,12 @@ public class ApplicationHandlers {
         }catch (Exception ex){
             ex.printStackTrace();
         }
+        String localHostName = null;
+        try {
+            localHostName = InetAddress.getLocalHost().getHostName();
+        } catch (Exception ex) {
+            // ignore exception
+        }
 
         for (String vsName : vsList) {
             if (vsName.equals("__asadmin")) {
@@ -748,7 +755,10 @@ public class ApplicationHandlers {
                         String port = (String)nlAttributes.get("port");
                         String resolvedPort = RestUtil.resolveToken((String)GuiUtil.getSessionValue("REST_URL") +
                                 "/configs/config/" + configName, port);
+
                         for (String hostName : hostNames) {
+                            if (localHostName != null && hostName.equalsIgnoreCase("localhost"))
+                                hostName = localHostName;
                             URLs.add(protocol + "://" + hostName + ":" + resolvedPort);
                         }
                     }
