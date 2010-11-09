@@ -59,6 +59,7 @@ import java.net.URLClassLoader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  * @author bhavanishankar@dev.java.net
@@ -78,6 +79,10 @@ public abstract class AbstractServerMojo extends AbstractMojo {
 
     private static String SHELL_JAR = "lib/embedded/glassfish-embedded-static-shell.jar";
     private static String FELIX_JAR = "osgi/felix/bin/felix.jar";
+
+    private static final String EMBEDDED_GROUP_ID = "org.glassfish.extras";
+    private static final String EMBEDDED_ALL = "glassfish-embedded-all";
+    private static final String EMBEDDED_ARTIFACT_PREFIX = "glassfish-embedded-";
 
 //    private static final String UBER_JAR_URI = "org.glassfish.embedded.osgimain.jarURI";
 
@@ -229,11 +234,28 @@ public abstract class AbstractServerMojo extends AbstractMojo {
         return classLoader;
     }
 
+    private Artifact getUberFromSpecifiedDependency() {
+        Set<Artifact> artifacts = project.getDependencyArtifacts();
+        if (artifacts != null) {
+            for (Artifact artifact : artifacts) {
+                if (EMBEDDED_GROUP_ID.equals(artifact.getGroupId())) {
+                    if (artifact.getArtifactId().startsWith(EMBEDDED_ARTIFACT_PREFIX)) {
+                        return artifact;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
     private URLClassLoader getUberGFClassLoader() throws Exception {
         // Use the version user has configured in the plugin.
         Artifact gfMvnPlugin = (Artifact) project.getPluginArtifactMap().get(thisArtifactId);
-        Artifact gfUber = factory.createArtifact("org.glassfish.extras", "glassfish-embedded-all",
-                "3.1-SNAPSHOT", "compile", "jar");
+        Artifact gfUber = getUberFromSpecifiedDependency();
+        if (gfUber == null) {
+            gfUber = factory.createArtifact(EMBEDDED_GROUP_ID, EMBEDDED_ALL,
+                    gfMvnPlugin.getVersion(), "compile", "jar");
+        }
         resolver.resolve(gfUber, remoteRepositories, localRepository);
         try {
             resolver.resolve(gfMvnPlugin, remoteRepositories, localRepository);
