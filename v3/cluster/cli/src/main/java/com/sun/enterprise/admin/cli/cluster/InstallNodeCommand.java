@@ -130,11 +130,10 @@ public class InstallNodeCommand extends CLICommand {
         return SUCCESS;
     }
 
-    private void copyToHosts(File zipFile, String baseRootValue, ArrayList<String> binDirFiles) throws IOException, InterruptedException {
+    private void copyToHosts(File zipFile, String baseRootValue, ArrayList<String> binDirFiles) throws IOException, InterruptedException, CommandException {
 
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         if (installDir == null) {
-//            installDir = baseRootValue.replaceAll("\\\\","/");
             installDir = baseRootValue;
         }
         for (String host: hosts) {
@@ -165,7 +164,11 @@ public class InstallNodeCommand extends CLICommand {
             try {
                 logger.info("Installing " + zip + " into " + host + ":" + installDir);
                 String unzipCommand = "cd " + installDir + "; jar -xvf glassfish.zip";
-                sshLauncher.runCommand(unzipCommand, outStream);
+                int status = sshLauncher.runCommand(unzipCommand, outStream);
+                if (status != 0){
+                    logger.info (Strings.get("jar.failed", host, outStream.toString()));
+                    throw new CommandException ("Remote command output: " +outStream.toString());
+                }
                 logger.finer("Installed " + zip + " into " + host + ":" + installDir);
             } catch (IOException ioe){
                 logger.info (Strings.get("jar.failed", host, outStream.toString()));
