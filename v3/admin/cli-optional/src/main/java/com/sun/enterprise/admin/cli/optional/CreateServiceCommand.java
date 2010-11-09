@@ -72,7 +72,8 @@ public final class CreateServiceCommand extends CLICommand {
     private String serviceName;
     @Param(name = "serviceproperties", optional = true)
     private String serviceProperties;
-    @Param(name = "dry-run", optional = true, defaultValue = "false")
+    @Param(name = "dry-run", shortName = "n", optional = true,
+            defaultValue = "false")
     private boolean dry_run;
     @Param(name = "force", optional = true, defaultValue = "false")
     private boolean force;
