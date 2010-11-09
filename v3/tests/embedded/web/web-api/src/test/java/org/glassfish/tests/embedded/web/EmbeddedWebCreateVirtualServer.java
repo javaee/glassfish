@@ -84,13 +84,12 @@ public class EmbeddedWebCreateVirtualServer {
         for (WebListener listener : embedded.getWebListeners())
             System.out.println("Web listener "+listener.getId()+" "+listener.getPort());
 
-
         WebListener testListener = embedded.createWebListener("test-listener", WebListener.class);
         testListener.setPort(9090);
         WebListener[] webListeners = new HttpListener[1];
         webListeners[0] = testListener;
 
-        File f = new File(System.getProperty("basedir"));
+        File f = new File(System.getProperty("buildDir"));
         String virtualServerId = "embedded-server";
         VirtualServer virtualServer = (VirtualServer)
                 embedded.createVirtualServer(virtualServerId, f, webListeners);
@@ -106,7 +105,7 @@ public class EmbeddedWebCreateVirtualServer {
         Assert.assertEquals(virtualServerId,vs.getID());
 
         //Context context = (Context) embedded.createContext(root, null);
-        //defaultVirtualServer.addContext(context, "");
+        //virtualServer.addContext(context, "");
 
         Deployer deployer = glassfish.getDeployer();
 

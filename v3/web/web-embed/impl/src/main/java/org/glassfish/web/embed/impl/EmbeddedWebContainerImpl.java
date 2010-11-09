@@ -59,8 +59,9 @@ import com.sun.grizzly.config.dom.Transport;
 import com.sun.grizzly.config.dom.Transports;
 
 import org.glassfish.api.container.Sniffer;
-import org.glassfish.api.deployment.DeployCommandParameters;
-import org.glassfish.api.embedded.*;
+import org.glassfish.api.embedded.Port;
+import org.glassfish.api.embedded.Ports;
+import org.glassfish.embeddable.Deployer;
 import org.glassfish.embeddable.GlassFishException;
 import org.glassfish.embeddable.web.ConfigException;
 import org.glassfish.embeddable.web.Context;
@@ -324,7 +325,7 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
             if (engines!=null) {
                 engine = engines[0];
             } else {
-                throw new LifecycleException(new Exception("Cannot find engine implementation"));
+                throw new GlassFishException(new Exception("Cannot find engine implementation"));
             }
         
             File docRoot = getPath();
@@ -399,7 +400,7 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
             if (engines!=null) {
                 engine = engines[0];
             } else {
-                throw new LifecycleException(new Exception("Cannot find engine implementation"));
+                throw new GlassFishException(new Exception("Cannot find engine implementation"));
             }
 
             String virtualServerId = webContainerConfig.getVirtualServerId();
@@ -482,16 +483,11 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
             log.info("Creating context with docBase '" + docRoot.getPath() + "'");
         }
 
-
         String appName = null;
         Context context = null;
         try {
-            EmbeddedDeployer deployer = habitat.getByContract(EmbeddedDeployer.class);
-            ScatteredArchive.Builder builder = new ScatteredArchive.Builder("", docRoot);
-            builder.resources(docRoot);
-            builder.addClassPath(docRoot.toURL());
-            DeployCommandParameters dp = new DeployCommandParameters(docRoot);
-            appName = deployer.deploy(builder.buildWar(), dp);
+            Deployer deployer = habitat.getComponent(Deployer.class);
+            appName = deployer.deploy(docRoot.toURI());
             if (!appName.startsWith("/")) {
                 appName = "/"+appName;
             }
@@ -500,8 +496,12 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
         }
         for (Container vs : engine.findChildren()) {
             context = (Context) ((VirtualServer)vs).findContext(appName);
-        }        
-        context.setDirectoryListing(listings);
+        }
+        if (context!=null) {
+            context.setDirectoryListing(listings);
+        } else {
+            log.severe("Cannot find deployed context");
+        }
 
         return context;
 
@@ -534,13 +534,9 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
         
         String appName = null;
         Context context = null;
-        try {
-            EmbeddedDeployer deployer = habitat.getByContract(EmbeddedDeployer.class);
-            ScatteredArchive.Builder builder = new ScatteredArchive.Builder(contextRoot, docRoot);
-            builder.resources(docRoot);
-            builder.addClassPath(docRoot.toURL());
-            DeployCommandParameters dp = new DeployCommandParameters(docRoot);
-            appName = deployer.deploy(builder.buildWar(), dp);
+        try {               
+            Deployer deployer = habitat.getComponent(Deployer.class);
+            appName = deployer.deploy(docRoot.toURI());
             if (!appName.startsWith("/")) {
                 appName = "/"+appName;
             }
@@ -550,7 +546,11 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
         for (Container vs : engine.findChildren()) {
             context = (Context) ((VirtualServer)vs).findContext(appName);
         }
-        context.setDirectoryListing(listings);
+        if (context!=null) {
+            context.setDirectoryListing(listings);
+        } else {
+            log.severe("Cannot find deployed context");
+        }
 
         return context;
 
@@ -585,13 +585,9 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
 
         String appName = null;
         Context context = null;
-        try {
-            EmbeddedDeployer deployer = habitat.getByContract(EmbeddedDeployer.class);
-            ScatteredArchive.Builder builder = new ScatteredArchive.Builder("", docRoot);
-            builder.resources(docRoot);
-            builder.addClassPath(docRoot.toURL());
-            DeployCommandParameters dp = new DeployCommandParameters(docRoot);
-            appName = deployer.deploy(builder.buildWar(), dp);
+        try {               
+            Deployer deployer = habitat.getComponent(Deployer.class);
+            appName = deployer.deploy(docRoot.toURI());
             if (!appName.startsWith("/")) {
                 appName = "/"+appName;
             }
@@ -601,7 +597,11 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
         for (Container vs : engine.findChildren()) {
             context = (Context) ((VirtualServer)vs).findContext(appName);
         }
-        context.setDirectoryListing(listings);
+        if (context!=null) {
+            context.setDirectoryListing(listings);
+        } else {
+            log.severe("Cannot find deployed context");
+        }
 
         return context;
         

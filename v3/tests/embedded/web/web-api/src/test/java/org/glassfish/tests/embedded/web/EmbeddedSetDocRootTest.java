@@ -79,7 +79,7 @@ public class EmbeddedSetDocRootTest {
         embedded.setLogLevel(Level.INFO);
         WebContainerConfig config = new WebContainerConfig();
         config.setListings(true);
-        root = new File(System.getProperty("basedir"));
+        root = new File(System.getProperty("buildDir"));
         config.setDocRootDir(root);
         config.setPort(8080);
         System.out.println("Added Web with base directory "+root.getAbsolutePath());
@@ -92,12 +92,11 @@ public class EmbeddedSetDocRootTest {
                 embedded.createVirtualServer("test-server", root);
         embedded.addVirtualServer(vs);
         Context context = (Context) embedded.createContext(root, null);
-        vs.addContext(context, "/test");
+        /*vs.addContext(context, "/test");
         
         Servlet hello = new WebHello();
         ServletRegistration reg = context.addServlet("test-servlet", hello);
-        reg.addMapping(new String[] {"/hello"});
-
+        reg.addMapping(new String[] {"/hello"});    */
 
         URL servlet = new URL("http://localhost:8080");
         URLConnection yc = servlet.openConnection();

@@ -95,7 +95,7 @@ public class EmbeddedWebAPITest {
         for (WebListener listener : embedded.getWebListeners())
             System.out.println("Web listener "+listener.getId()+" "+listener.getPort());
 
-        File f = new File(System.getProperty("basedir"));        
+        File f = new File(System.getProperty("buildDir"));
         String virtualServerId = "embedded-server";
         VirtualServer defaultVirtualServer = (VirtualServer)
                 embedded.createVirtualServer(virtualServerId, f);
@@ -131,7 +131,7 @@ public class EmbeddedWebAPITest {
 
         Assert.assertTrue(appName != null);
 
-        URL servlet = new URL("http://localhost:8080/test-classes/hello");
+        URL servlet = new URL("http://localhost:8080/classes/hello");
         URLConnection yc = servlet.openConnection();
         BufferedReader in = new BufferedReader(new InputStreamReader(yc.getInputStream()));
         StringBuilder sb = new StringBuilder();

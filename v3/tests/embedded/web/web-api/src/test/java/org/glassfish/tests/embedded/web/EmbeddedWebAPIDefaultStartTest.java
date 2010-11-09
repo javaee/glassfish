@@ -109,7 +109,7 @@ public class EmbeddedWebAPIDefaultStartTest {
 
         Assert.assertTrue(appName != null);
 
-        URL servlet = new URL("http://localhost:8080/test-classes/hello");
+        URL servlet = new URL("http://localhost:8080/classes/hello");
         URLConnection yc = servlet.openConnection();
         BufferedReader in = new BufferedReader(new InputStreamReader(yc.getInputStream()));
         StringBuilder sb = new StringBuilder();
