@@ -88,6 +88,8 @@ public class DomainXmlTransformer {
     private static final String JMS_HOST = "jms-host";
     private static final String JMX_CONNECTOR = "jmx-connector";
     private static final String LAZY_INIT_ATTR = "lazy-init";
+    private static final String DAS_CONFIG = "das-config";
+    private static final String DYNAMIC_RELOAD_ENABLED = "dynamic-reload-enabled";
     private static final String ENABLED = "enabled";
     private static final String FALSE = "false";
 
@@ -95,8 +97,9 @@ public class DomainXmlTransformer {
     private static final Set<String> SKIP_ELEMENTS_KEEP_PORTS = new HashSet();
     private static final Set<String> EMPTY_ELEMENTS = new HashSet(Arrays.asList(NETWORK_LISTENERS, PROTOCOLS, APPLICATIONS));
     private static final Set<String> EMPTY_ELEMENTS_KEEP_PORTS = new HashSet(Arrays.asList(APPLICATIONS));
-    private static final Set<String> LAZY_SETTINGS_ELEMENTS = new HashSet(Arrays.asList(IIOP_LISTENER, JMS_HOST));
+    private static final Set<String> SKIP_SETTINGS_ELEMENTS = new HashSet(Arrays.asList(IIOP_LISTENER, JMS_HOST, DAS_CONFIG));
     private static final Set<String> DISABLE_ELEMENTS = new HashSet(Arrays.asList(JMX_CONNECTOR));
+    private static final Set<String> DISABLE_SUB_ELEMENTS = new HashSet(Arrays.asList(LAZY_INIT_ATTR, DYNAMIC_RELOAD_ENABLED));
 
     private static final StringManager localStrings = 
         StringManager.getManager(DomainXmlTransformer.class);
@@ -156,10 +159,10 @@ public class DomainXmlTransformer {
                             _logger.fine("[DomainXmlTransformer] Skipping details of: " + name);
                         }
                         skip_to_end = true;
-                    } else if (LAZY_SETTINGS_ELEMENTS.contains(name)) {
+                    } else if (SKIP_SETTINGS_ELEMENTS.contains(name)) {
                         // Make sure lazy init is not enabled by creating a new start element
                         // based on the original but that never includes the lazy init attribute
-                        event  = getAdjustedStartEvent(event, LAZY_INIT_ATTR);
+                        event  = getSkippedElementStartEvent(event);
                         skip_to_end = true;
                     } else if (DISABLE_ELEMENTS.contains(name)) {
                         // Disable this element
@@ -242,12 +245,12 @@ public class DomainXmlTransformer {
     /** Create a new start element based on the original but that does not include 
      * the specified attribute.
      */
-    private StartElement getAdjustedStartEvent(XMLEvent event, String skipValue) {
+    private StartElement getSkippedElementStartEvent(XMLEvent event) {
         Set attributes = new HashSet();
 
         for(java.util.Iterator i = event.asStartElement().getAttributes(); i.hasNext();) {
             Attribute a = (Attribute) i.next();
-            if( !a.getName().getLocalPart().equals(skipValue) ) {
+            if( !DISABLE_SUB_ELEMENTS.contains(a.getName().getLocalPart())) {
                 attributes.add(a);
             }
         }
