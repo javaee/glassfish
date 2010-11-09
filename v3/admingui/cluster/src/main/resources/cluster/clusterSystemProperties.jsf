@@ -56,6 +56,7 @@
             urlencode(value="#{pageSession.clusterName}" encoding="UTF-8" result="#{pageSession.encodedClusterName}");
             setSessionAttribute(key="clusterTabs" value="clusterSystemProps");
 
+            setPageSessionAttribute(key="parentPage", value="#{request.contextPath}/cluster/cluster/clusterGeneral.jsf?clusterName=#{encodedClusterName}");
             setPageSessionAttribute(key="selfPage", value="#{request.contextPath}/cluster/cluster/clusterSystemProperties.jsf?clusterName=#{encodedClusterName}");
             setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/clusters/cluster/#{pageSession.encodedClusterName}");
             setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/system-properties");
@@ -90,7 +91,8 @@
 
                 <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" rendered="#{pageSession.showCancelButton}" text="$resource{i18n.button.Cancel}" >
                     <!command
-                        gf.redirect(page="#{parentPage}?configName=#{configName}");
+                        println("***** redirecting to #{pageSession.parentPage}");
+                        gf.redirect(page="#{pageSession.parentPage}");
                     />
                 </sun:button>
             </sun:panelGroup>

@@ -40,19 +40,18 @@
 
 -->
 
-<sun:treeNode
-id="gms"
-text="$resource{i18ncs.tree.gms}"
-url="/cluster/cluster/gms.jsf?configName=${configName}"
-imageURL="/resource/cluster/images/management_services.gif"
-rendered="$pageSession{gmsShowIt}"
->
-<ui:event type="beforeCreate">
-    setResourceBundle(key="i18ncs" bundle="org.glassfish.cluster.admingui.Strings");
-    setPageSessionAttribute(key="gmsShowIt" value="$boolean{false}");
-    if ("!(server-config=${configName})") {
-        setPageSessionAttribute(key="gmsShowIt" value="$boolean{true}");
-    }
-</ui:event>
+<sun:treeNode id="gms"
+        text="$resource{i18ncs.tree.gms}"
+        url="/cluster/cluster/gms.jsf?configName=${configName}"
+        imageURL="/resource/cluster/images/management_services.gif"
+        rendered="$pageSession{gmsShowIt}"
+    >
+    <ui:event type="beforeCreate">
+        setResourceBundle(key="i18ncs" bundle="org.glassfish.cluster.admingui.Strings");
+        setPageSessionAttribute(key="gmsShowIt" value="$boolean{false}");
+        if ("!(server-config=${configName})") {
+            setPageSessionAttribute(key="gmsShowIt" value="$boolean{true}");
+        }
+    </ui:event>
 </sun:treeNode>
 

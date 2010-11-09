@@ -52,21 +52,21 @@
     </sun:tab>
 
     <sun:tab id="clusterApp" immediate="$boolean{true}" text="$resource{i18ncs.cluster.ApplicationsTab}">
-	<!command
+        <!command
             setSessionAttribute(key="clusterTabs" value="clusterApp");
             gf.redirect(page="#{request.contextPath}/cluster/cluster/clusterApplications.jsf?clusterName=#{encodedClusterName}");
         />
     </sun:tab>
 
     <sun:tab id="clusterInst" immediate="$boolean{true}" text="$resource{i18ncs.cluster.InstancesTab}">
-	<!command
+        <!command
             setSessionAttribute(key="clusterTabs" value="clusterInst");
             gf.redirect(page="#{request.contextPath}/cluster/cluster/clusterInstances.jsf?clusterName=#{pageSession.encodedClusterName}");
         />
     </sun:tab>
 
      <sun:tab id="clusterResources" immediate="$boolean{true}" text="$resource{i18ncs.cluster.ResourcesTab}">
-	<!command
+        <!command
             setSessionAttribute(key="clusterTabs" value="clusterResources");
             gf.redirect(page="#{request.contextPath}/cluster/cluster/clusterResources.jsf?clusterName=#{encodedClusterName}");
         />
@@ -74,7 +74,7 @@
 
         <!-- Should be from the jms plugin
     <sun:tab id="clusterPhysicalDest" immediate="$boolean{true}" text="$resource{i18ncs.cluster.PhysicalDestTab}">
-	<!command
+        <!command
             setSessionAttribute(key="clusterTabs" value="clusterPhysicalDest");
             redirect(page="../cluster/clusterPhysicalDest.jsf?name=#{encodedClusterName}");
         />
@@ -82,26 +82,26 @@
         -->
 
     <sun:tab id="clusterProps" immediate="$boolean{true}" text="$resource{i18ncs.cluster.PropertiesTab}">
-	<!command
+        <!command
             setSessionAttribute(key="clusterTabs" value="clusterSystemProps");
             gf.redirect(page="#{request.contextPath}/cluster/cluster/clusterSystemProperties.jsf?clusterName=#{encodedClusterName}");
         />
-	<sun:tab id="clusterSystemProps" immediate="$boolean{true}" text="$resource{i18ncs.cluster.SystemPropertiesTab}">
-	    <!command
+        <sun:tab id="clusterSystemProps" immediate="$boolean{true}" text="$resource{i18ncs.cluster.SystemPropertiesTab}">
+            <!command
                 setSessionAttribute(key="clusterTabs" value="clusterSystemProps");
                 gf.redirect(page="#{request.contextPath}/cluster/cluster/clusterSystemProperties.jsf?clusterName=#{encodedClusterName}");
-	    />
-	</sun:tab>
+            />
+        </sun:tab>
         <sun:tab id="clusterInstanceProps" immediate="$boolean{true}" text="$resource{i18ncs.cluster.ClusterProperties}">
-	    <!command
+            <!command
                 setSessionAttribute(key="clusterTabs" value="clusterInstanceProps");
                 gf.redirect(page="#{request.contextPath}/cluster/cluster/clusterProperties.jsf?clusterName=#{encodedClusterName}");
             />
-	</sun:tab>    
+        </sun:tab>    
     </sun:tab>
 </sun:tabSet>
 <event>
     <!afterCreate
-	includeIntegrations(type="org.glassfish.admingui:clusterTab");
+        includeIntegrations(type="org.glassfish.admingui:clusterTab");
     />
 </event>

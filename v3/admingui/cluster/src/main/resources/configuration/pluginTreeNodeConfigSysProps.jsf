@@ -40,14 +40,15 @@
 
 -->
 
-<sun:treeNode id="sysProps" text="$resource{i18ncs.SystemPropertiesTitle}" url="/cluster/configuration/configurationSystemProperties.jsf?configName=${configName}"
-    imageURL="/resource/images/system_properties.png" rendered="$pageSession{sysPropsShowIt}">
-<ui:event type="beforeCreate">
-    setResourceBundle(key="i18ncs" bundle="org.glassfish.cluster.admingui.Strings");
-    setPageSessionAttribute(key="sysPropsShowIt" value="$boolean{false}");
-    if ("!(server-config=${configName})") {
-        setPageSessionAttribute(key="sysPropsShowIt" value="$boolean{true}");
-    }
-</ui:event>
+<sun:treeNode id="sysProps" text="$resource{i18ncs.SystemPropertiesTitle}" 
+        url="/cluster/configuration/configurationSystemProperties.jsf?configName=${configName}"
+        imageURL="/resource/images/system_properties.png" rendered="$pageSession{sysPropsShowIt}">
+    <ui:event type="beforeCreate">
+        setResourceBundle(key="i18ncs" bundle="org.glassfish.cluster.admingui.Strings");
+        setPageSessionAttribute(key="sysPropsShowIt" value="$boolean{false}");
+        if ("!(server-config=${configName})") {
+            setPageSessionAttribute(key="sysPropsShowIt" value="$boolean{true}");
+        }
+    </ui:event>
 </sun:treeNode>
 

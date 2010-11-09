@@ -57,6 +57,7 @@
             urlencode(value="#{pageSession.clusterName}" encoding="UTF-8" result="#{pageSession.encodedClusterName}");
             setSessionAttribute(key="clusterTabs" value="clusterInstanceProps");
 
+            setPageSessionAttribute(key="parentPage", value="#{request.contextPath}/cluster/cluster/clusterGeneral.jsf?clusterName=#{encodedClusterName}");
             setPageSessionAttribute(key="selfPage", value="#{request.contextPath}/cluster/cluster/clusterProperties.jsf?clusterName=#{encodedClusterName}");
             setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/clusters/cluster/#{pageSession.encodedClusterName}");
             setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}");
@@ -73,7 +74,28 @@
     <sun:form id="propertyForm">
 #include "/cluster/cluster/clusterTabs.inc"
     <sun:title id="propertyContentPage" title="$resource{i18ncs.cluster.ClusterProperties}" >
-#include "/common/shared/editPageButtons.inc"
+        <!facet pageButtonsTop>
+            <sun:panelGroup id="topButtons">
+                <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
+                        onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
+                    <!command
+                        removeEmptyProps(props="#{pageSession.tableList}" modifiedProps="#{pageSession.tableList}");
+                        javaToJSON(obj="#{pageSession.tableList}" json="#{requestScope.tmpJSON}");
+                        gf.restRequest(endpoint="#{pageSession.selfUrl}/property.json", method="POST", data="#{requestScope.tmpJSON}", result="#{requestScope.restResponse}");
+
+                        prepareSuccessfulMsg();
+                        gf.redirect(page="#{pageSession.selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                    />
+                </sun:button>
+
+                <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" text="$resource{i18n.button.Cancel}" >
+                    <!command
+                        println("***** redirecting to #{pageSession.parentPage}");
+                        gf.redirect(page="#{pageSession.parentPage}");
+                    />
+                </sun:button>
+            </sun:panelGroup>
+        </facet>
     </sun:title>
 #include "/common/shared/alertMsg.inc"
 #include "/cluster/cluster/clusterNameSection.inc"
