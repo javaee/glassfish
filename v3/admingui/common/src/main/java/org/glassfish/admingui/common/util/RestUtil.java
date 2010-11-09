@@ -548,19 +548,32 @@ public class RestUtil {
 
     public static Map<String, String> getChildMap(String endpoint) throws Exception {
         Map<String, String> childElements = new TreeMap<String, String>();
-        Map responseMap = restRequest(endpoint, new HashMap<String, Object>(), "get", null, false);
-        Map data = (Map) responseMap.get("data");
-        if (data != null) {
-            Map extraProperties = (Map) data.get("extraProperties");
-            if (extraProperties != null) {
-                childElements = (Map<String, String>) extraProperties.get("childResources");
-                if (childElements == null) {
-                    childElements = new TreeMap<String, String>();
+        if (doesProxyExist(endpoint)) {
+            Map responseMap = restRequest(endpoint, new HashMap<String, Object>(), "get", null, false);
+            Map data = (Map) responseMap.get("data");
+            if (data != null) {
+                Map extraProperties = (Map) data.get("extraProperties");
+                if (extraProperties != null) {
+                    childElements = (Map<String, String>) extraProperties.get("childResources");
+                    if (childElements == null) {
+                        childElements = new TreeMap<String, String>();
+                    }
                 }
             }
         }
 
         return childElements;
+    }
+
+    public static Boolean doesProxyExist(String endpoint) {
+        try {
+            if (RestUtil.get(endpoint).isSuccess()) {
+                return true;
+            }
+        } catch (Exception e) {
+            return false;
+        }
+        return false;
     }
 
     /**

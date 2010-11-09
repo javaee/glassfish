@@ -156,7 +156,7 @@ public class MonitoringHandlers {
         try {
             //This check is to get the correct type of statistics.
             if ((type == null || statType == null) || type.equals(statType)) {
-                if (doesProxyExist(endpoint)) {
+                if (RestUtil.doesProxyExist(endpoint)) {
                     Map<String, Object> stats = getMonitoringStatInfo(endpoint);
                     //Jersey monitoring data format
                     if (statType != null && statType.equals("jersey")) {
@@ -497,7 +497,7 @@ public class MonitoringHandlers {
                     if (moduleProps.containsKey(compStrs[1]) && moduleProps.get(compStrs[1]).equals("Servlet")) {
                         monitorEndpoint = monitorEndpoint + "/" + URLEncoder.encode(compStrs[0], "UTF-8") + "/" + URLEncoder.encode(compStrs[1], "UTF-8");
 
-                        if (doesProxyExist(monitorEndpoint)) {
+                        if (RestUtil.doesProxyExist(monitorEndpoint)) {
                             webServletUrl = monitorEndpoint;
                             statType = "ServletInstance";
                         }
@@ -542,7 +542,7 @@ public class MonitoringHandlers {
                 ex.printStackTrace();
             }
 
-            if (doesProxyExist(statUrl)) {               
+            if (RestUtil.doesProxyExist(statUrl)) {
                 if (compStrs.length == 1) {
                     statType = (String) moduleProps.get(compStrs[0]);
                 } else {
@@ -672,7 +672,7 @@ public class MonitoringHandlers {
         if (instanceName.equals("server")) {
             monitorURL = (String) GuiUtil.getSessionValue("MONITOR_URL") + "/server";
         } else {
-            if (doesProxyExist(serverRestURL + "/servers/server/" + instanceName + "/system-property/ASADMIN_LISTENER_PORT")) {
+            if (RestUtil.doesProxyExist(serverRestURL + "/servers/server/" + instanceName + "/system-property/ASADMIN_LISTENER_PORT")) {
                 port = (String) RestUtil.getAttributesMap(serverRestURL + "/servers/server/" + instanceName + "/system-property/ASADMIN_LISTENER_PORT").get("value");
             } else {
                 String configName = (String) RestUtil.getAttributesMap(serverRestURL + "/servers/server/" + instanceName).get("configRef");
@@ -722,15 +722,8 @@ public class MonitoringHandlers {
         return null;
     }
 
-    public static Boolean doesProxyExist(String endpoint) {
-        if (RestUtil.get(endpoint).isSuccess()) {
-            return true;
-        }
-        return false;
-    }
-
     public static Boolean doesMonitoringDataExist(String endpoint) {
-        if (RestUtil.get(endpoint).isSuccess()) {
+        if (RestUtil.doesProxyExist(endpoint)) {
             if (getMonitoringStatInfo(endpoint).size() > 0) {
                 return true;
             }
