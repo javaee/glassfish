@@ -219,7 +219,7 @@ public class ConfigureJMSCluster implements AdminCommand {
         }
         if (MASTER_BROKER.equalsIgnoreCase(configStoreType) && FILE.equals(messageStoreType)){
 
-            if(dbvendor != null || dburl != null || dbuser != null | jmsDbPassword != null) {
+            if(dbvendor != null || dburl != null || dbuser != null) {
                 report.setMessage(localStrings.getLocalString("configure.jms.cluster.invalidDboptions",
                             "Database options should not be specified for this configuration"));
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
@@ -256,11 +256,7 @@ public class ConfigureJMSCluster implements AdminCommand {
                             "No messagestoretype specified. Using the default value - file"));
             messageStoreType="file";
         }
-        if(force){
-            report.setMessage(localStrings.getLocalString("configure.jms.cluster.clusterWithInstances",
-                            "Force running this command... \n" +
-                                    "WARNING: Please ensure that you have followed the instructions specified in the documentation before running this command with this option. Force running this command without the required precautions can lead to inconsistent JMS behavior and corruption of configuration and message stores"));
-        }
+
 
         config = domain.getConfigNamed(cluster.getConfigRef());
 
@@ -277,8 +273,8 @@ public class ConfigureJMSCluster implements AdminCommand {
                         param.setMessageStoreType(JDBC);
                     }
                     else{
-                        param.setConfigStoreType(configStoreType);
-                        param.setMessageStoreType(messageStoreType);
+                        param.setConfigStoreType(configStoreType.toLowerCase());
+                        param.setMessageStoreType(messageStoreType.toLowerCase());
                     }
                     param.setDbVendor(dbvendor);
                     param.setDbUsername(dbuser);
@@ -298,7 +294,7 @@ public class ConfigureJMSCluster implements AdminCommand {
                   }
                }, jmsAvailability);
 
-            //update the useMasterBroker flag on the JmsService only if availabiltyEnabled is false
+           /* //update the useMasterBroker flag on the JmsService only if availabiltyEnabled is false
             if(!availabilityEnabled.booleanValue()){
               ConfigSupport.apply(new SingleConfigCode<JmsService>() {
                 public Object run(JmsService param) throws PropertyVetoException, TransactionFailure {
@@ -307,7 +303,7 @@ public class ConfigureJMSCluster implements AdminCommand {
                     return param;
                 }
             }, jmsservice);
-            }
+            }*/
 
         } catch(TransactionFailure tfe) {
             report.setMessage(localStrings.getLocalString("configure.jms.cluster.fail",
@@ -315,6 +311,11 @@ public class ConfigureJMSCluster implements AdminCommand {
                             " " + tfe.getLocalizedMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(tfe);
+        }
+        if(force){
+            report.setMessage(localStrings.getLocalString("configure.jms.cluster.clusterWithInstances",
+                            "Force running this command... \n" +
+                                    "WARNING: Please ensure that you have followed the instructions specified in the documentation before running this command with this option. Force running this command without the required precautions can lead to inconsistent JMS behavior and corruption of configuration and message stores"));
         }
         report.setMessage(localStrings.getLocalString("configure.jms.cluster.success",
                 "JMS Cluster Configuration updated for Cluster {0}.", clusterName));
