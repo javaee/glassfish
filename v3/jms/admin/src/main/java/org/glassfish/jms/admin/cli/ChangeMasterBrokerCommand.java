@@ -47,27 +47,16 @@ import org.glassfish.api.admin.*;
 import org.glassfish.config.support.TargetType;
 import org.glassfish.config.support.CommandTarget;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.config.serverbeans.*;
 
-import org.glassfish.api.I18n;
-import org.glassfish.api.Param;
-import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.config.support.CommandTarget;
-import org.glassfish.config.support.TargetType;
-import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.admin.RuntimeType;
-import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.util.SystemPropertyConstants;
-import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.config.serverbeans.Cluster;
 import com.sun.enterprise.connectors.jms.util.JmsRaUtil;
 
 import org.glassfish.internal.api.ServerContext;
-import java.util.Properties;
-import java.util.Map;
+
 import java.util.List;
 import java.beans.PropertyVetoException;
 import org.jvnet.hk2.annotations.Service;
@@ -81,7 +70,6 @@ import org.jvnet.hk2.config.TransactionFailure;
 
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
-import java.beans.PropertyVetoException;
 
 
 /**
@@ -253,7 +241,7 @@ public class ChangeMasterBrokerCommand extends JMSDestination implements AdminCo
          try {
              MBeanServerConnection mbsc = mqInfo.getMQMBeanServerConnection();
              ObjectName on = new ObjectName(
-                 CLUSTER_MONITOR_MBEAN_NAME);
+                     CLUSTER_CONFIG_MBEAN_NAME);
              Object [] params = null;
 
              String []  signature = new String [] {
