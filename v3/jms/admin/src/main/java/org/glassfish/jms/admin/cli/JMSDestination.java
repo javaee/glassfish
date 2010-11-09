@@ -95,10 +95,10 @@ public abstract class JMSDestination {
 				+ ":type=" + "DestinationManager"
 				+ ",subtype=Config";
            
-	   protected static final String CLUSTER_MONITOR_MBEAN_NAME
+	   protected static final String CLUSTER_CONFIG_MBEAN_NAME
     			= MBEAN_DOMAIN_NAME
 				+ ":type=" + "Cluster"
-				+ ",subtype=Monitor";
+				+ ",subtype=Config";
             // Queue destination type
             protected static final String DESTINATION_TYPE_QUEUE= "q";
             //Topic destination type
