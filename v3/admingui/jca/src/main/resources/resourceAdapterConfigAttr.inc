@@ -58,6 +58,7 @@
                      setPageSessionAttribute(key="snifferType" value="connector");
                      gfr.getApplicationsBySnifferType();
                      setPageSessionAttribute(key="connectorList" value="#{pageSession.snifferTypeApplicationsList}");
+                     filterOutRarExtension(inList="#{pageSession.connectorList}" convertedList="#{pageSession.connectorList}");
                      listAdd(list="#{pageSession.connectorList}" value="jmsra" index="$int{0}")
                 />
                 <!command
