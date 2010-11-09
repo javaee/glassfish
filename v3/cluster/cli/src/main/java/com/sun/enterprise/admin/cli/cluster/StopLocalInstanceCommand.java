@@ -120,7 +120,7 @@ public class StopLocalInstanceCommand extends LocalInstanceCommand {
          */
         programOpts.setInteractive(false);
 
-        if (!isThisServer(serverDir, "Instance-Root_value"))
+        if (!isRunning())
             return instanceNotRunning();
 
         logger.finer("It's the correct Instance");
