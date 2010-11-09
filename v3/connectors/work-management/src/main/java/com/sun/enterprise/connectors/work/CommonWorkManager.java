@@ -113,16 +113,16 @@ public final class CommonWorkManager implements WorkManager {
                         logger.finest("Got the thread pool [ "+threadPoolId+" ] for WorkManager of RAR [ "+raName+" ]");
                     }
                 } catch (NoSuchThreadPoolException e) {
-                    String msg = localStrings.getString("workmanager.threadpool_not_found");
-                    logger.log(Level.SEVERE,msg, threadPoolId);
+                    String msg = localStrings.getString("workmanager.threadpool_not_found", new Object[]{threadPoolId});
+                    logger.log(Level.SEVERE,msg);
                     ConnectorRuntimeException cre = new ConnectorRuntimeException(e.getMessage());
                     cre.initCause(e);
                     throw cre;
                 }
             }
             if (tp == null) {
-                String msg = localStrings.getString("workmanager.threadpool_not_found");
-                logger.log(Level.SEVERE, msg, threadPoolId);
+                String msg = localStrings.getString("workmanager.threadpool_not_found", new Object[]{threadPoolId});
+                logger.log(Level.SEVERE, msg);
                 throw new ConnectorRuntimeException(msg);
             }
             registerWithMonitoringService();
