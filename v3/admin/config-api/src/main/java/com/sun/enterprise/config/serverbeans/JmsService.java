@@ -155,36 +155,7 @@ public interface JmsService extends ConfigBeanProxy, Injectable, PropertyBag {
      */
     void setDefaultJmsHost(String value) throws PropertyVetoException;
 
-    /**
-     * Gets the value of the useMasterBroker property.
-     *
-     * Causes MQ conventional cluster feature to use a Master Broker if true
-     * or to use the DB option if false.
-     *
-     * @return possible object is
-     *         {@link String }
-     */
-    @Attribute (defaultValue="true",dataType=Boolean.class)
-    String getUseMasterBroker();
-
-    /**
-     * Sets the value of the useMasterBroker property.
-     *
-     * @param value allowed object is
-     *              {@link String }
-     */
-    void setUseMasterBroker(String value) throws PropertyVetoException;
-
-    /**
-     * Gets the value of the MasterBroker property.
-     *
-     * Causes MQ conventional cluster feature to use the MQ broker associated with
-     * the specified GF instance as the master broker.
-     *
-     * @return possible object is
-     *         {@link String }
-     */
-    @Attribute
+     @Attribute
     String getMasterBroker();
 
     /**
