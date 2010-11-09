@@ -141,7 +141,7 @@
         <echo message="Starting cluster"/>
         <java  fork="on"
               failonerror="true"
-              classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/modules/gf-client.jar:${env.APS_HOME}/lib/reportbuilder.jar:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
+              classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/lib/gf-client.jar:${env.APS_HOME}/lib/reportbuilder.jar:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
               classname="${se.client}">
            <arg line="prepare"/>
            <arg line="${assemble.dir}/${appname}-web.war"/>
@@ -191,7 +191,7 @@
         <echo message="Stopping cluster"/>
         <java  fork="on"
               failonerror="true"
-              classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/modules/gf-client.jar:${env.APS_HOME}/lib/reportbuilder.jar:${build.classes.dir}"
+              classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/lib/gf-client.jar:${env.APS_HOME}/lib/reportbuilder.jar:${build.classes.dir}"
               classname="${se.client}">
            <arg line="clean"/>
            <arg line="${appname}-web"/>
@@ -268,7 +268,7 @@
         <echo message="Verifying results"/>
         <java  fork="on"
               failonerror="true"
-              classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/modules/gf-client.jar:${env.APS_HOME}/lib/reportbuilder.jar:${build.classes.dir}"
+              classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/lib/gf-client.jar:${env.APS_HOME}/lib/reportbuilder.jar:${build.classes.dir}"
               classname="${se.client}">
            <arg line="verify_default"/>
            <arg line="${appname}-web"/>
@@ -292,7 +292,7 @@
         <echo message="Verifying results"/>
         <java  fork="on"
               failonerror="true"
-              classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/modules/gf-client.jar:${env.APS_HOME}/lib/reportbuilder.jar:${build.classes.dir}"
+              classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/lib/gf-client.jar:${env.APS_HOME}/lib/reportbuilder.jar:${build.classes.dir}"
               classname="${se.client}">
            <arg line="verify_xa"/>
            <arg line="${appname}-web"/>
@@ -318,7 +318,7 @@
         <echo message="Executing test on port ${port}"/>
         <java  fork="on"
               failonerror="true"
-              classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/modules/gf-client.jar:${env.APS_HOME}/lib/reportbuilder.jar:${build.classes.dir}"
+              classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/lib/gf-client.jar:${env.APS_HOME}/lib/reportbuilder.jar:${build.classes.dir}"
               classname="${se.client}">
            <arg line="${operation}"/>
            <arg line="${appname}-web"/>
@@ -331,7 +331,7 @@
         <echo message="Rolling back one transaction"/>
         <java  fork="on"
               failonerror="true"
-              classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/modules/gf-client.jar:${env.APS_HOME}/lib/reportbuilder.jar:${build.classes.dir}"
+              classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/lib/gf-client.jar:${env.APS_HOME}/lib/reportbuilder.jar:${build.classes.dir}"
               classname="${se.client}">
            <arg line="rollback"/>
         </java>
@@ -342,7 +342,7 @@
         <echo message="Recover XA transaction"/>
         <java  fork="on"
               failonerror="true"
-              classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/modules/gf-client.jar:${env.APS_HOME}/lib/reportbuilder.jar:${build.classes.dir}"
+              classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/lib/gf-client.jar:${env.APS_HOME}/lib/reportbuilder.jar:${build.classes.dir}"
               classname="${se.client}">
            <arg line="recover"/>
            <arg line="${env.S1AS_HOME}"/>

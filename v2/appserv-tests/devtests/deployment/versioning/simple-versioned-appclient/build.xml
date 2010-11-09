@@ -35,7 +35,7 @@
   <property name="classRunclient" value="org.glassfish.appclient.client.AppClientFacade"/>
 
   <!-- some properties to build the jvm.arguments property -->
-  <property name="gfClientJar" value="${inst}/modules/gf-client.jar"/>
+  <property name="gfClientJar" value="${inst}/lib/gf-client.jar"/>
   <property name="sunAccXml" value="${inst}/domains/domain1/config/sun-acc.xml"/>
   <property name="appClientStubsFile" value="${build}/${untaggedName}Client.jar"/>
 
