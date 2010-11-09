@@ -138,8 +138,24 @@ public class ConnectorsUtil {
         return j2eeModuleDirName;
     }
 
-    public static String getLocation(String moduleName) {
-        return ConfigBeansUtilities.getLocation(moduleName);
+    public static String getLocation(String moduleName) throws ConnectorRuntimeException {
+        String location = null;
+        location = ConfigBeansUtilities.getLocation(moduleName);
+        if(location == null){
+            //check whether its embedded RAR
+            String rarName = getRarNameFromApplication(moduleName);
+            String appName = getApplicationNameOfEmbeddedRar(moduleName);
+
+            if(appName != null && rarName != null){
+                location = ConfigBeansUtilities.getLocation(appName);
+                if(location != null){
+                    location = location + File.separator + rarName + "_rar";
+                }else{
+                    throw new ConnectorRuntimeException("Unable to find location for module : " + moduleName);
+                }
+            }
+        }
+        return location;
         /* TODO V3
 
             if(moduleName == null) {
@@ -154,8 +170,6 @@ public class ConnectorsUtil {
             }
             return location;
         */
-
-
     }
     /**
      *  Return the system PM name for the JNDI name

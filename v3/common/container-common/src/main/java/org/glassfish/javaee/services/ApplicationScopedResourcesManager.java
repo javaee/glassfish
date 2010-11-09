@@ -268,7 +268,9 @@ public class ApplicationScopedResourcesManager implements PostStartup, PostConst
 
         for(Resource resource : resources.getResources()){
             //destroy all resources first and then pools
-            if(!(resource instanceof ResourcePool)){
+            if(!(resource instanceof ResourcePool) && !(resource instanceof ResourceAdapterConfig)){
+            // no need to undeploy resource-adapter-config as it (config) will be removed by the end of undeploy
+            // operation of the application.
                 undeployResource(resource);
             }
         }

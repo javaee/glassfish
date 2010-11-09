@@ -291,7 +291,7 @@ public class RARUtils {
      * @param rarName resource-adapter name
      * @return location of resource-adapter
      */
-    private static String getRarLocation(String rarName) {
+    private static String getRarLocation(String rarName) throws ConnectorRuntimeException{
         return ConnectorsUtil.getLocation(rarName);
     }
 

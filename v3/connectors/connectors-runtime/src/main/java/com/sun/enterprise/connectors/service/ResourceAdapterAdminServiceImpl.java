@@ -501,26 +501,21 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
     public void reCreateActiveResourceAdapter(String moduleName)
             throws ConnectorRuntimeException {
 
-        String moduleDir = ConnectorsUtil.getLocation(moduleName);
-        /* TODO V3 moduleDir=null can happen only for embedded rar,
-        need to decide whether it need to be handled or not */
-        if (moduleDir != null) {
-            //TODO V3 is there a case where RAR is not deployed ?
-            if (isRarDeployed(moduleName)) {
-                ConnectorApplication app = _registry.getConnectorApplication(moduleName);
-                app.undeployResources();
-                stopAndRemoveActiveResourceAdapter(moduleName);
-                createActiveResourceAdapter(moduleDir, moduleName, app.getClassLoader());
-                _registry.getConnectorApplication(moduleName).deployResources();
-            }
-            //No need to deploy the .rar, it may be a case where rar is not deployed yet
-            //Also, when the rar is started, RA-Config is anyway used
-            /*else {
-                ConnectorApplication app = _registry.getConnectorApplication(moduleName);
-                createActiveResourceAdapter(moduleDir, moduleName, app.getClassLoader());
-                _registry.getConnectorApplication(moduleName).deployResources();
-            }*/
+        if (isRarDeployed(moduleName)) {
+            ConnectorApplication app = _registry.getConnectorApplication(moduleName);
+            app.undeployResources();
+            stopAndRemoveActiveResourceAdapter(moduleName);
+            String moduleDir = ConnectorsUtil.getLocation(moduleName);
+            createActiveResourceAdapter(moduleDir, moduleName, app.getClassLoader());
+            _registry.getConnectorApplication(moduleName).deployResources();
         }
+     /*   //No need to deploy the .rar, it may be a case where rar is not deployed yet
+        //Also, when the rar is started, RA-Config is anyway used
+        else {
+            ConnectorApplication app = _registry.getConnectorApplication(moduleName);
+            createActiveResourceAdapter(moduleDir, moduleName, app.getClassLoader());
+            _registry.getConnectorApplication(moduleName).deployResources();
+        }*/
     }
 
     /**
