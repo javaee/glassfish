@@ -41,10 +41,12 @@
 package org.glassfish.jdbc.admin.cli;
 
 import java.beans.PropertyVetoException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Properties;
 import java.util.Map;
 
+import com.sun.enterprise.config.serverbeans.*;
 import org.glassfish.api.I18n;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.config.ConfigSupport;
@@ -53,13 +55,6 @@ import org.jvnet.hk2.config.TransactionFailure;
 import org.jvnet.hk2.config.types.Property;
 import static org.glassfish.resource.common.ResourceConstants.*;
 import org.glassfish.resource.common.ResourceStatus;
-import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
-import com.sun.enterprise.config.serverbeans.JdbcResource;
-import com.sun.enterprise.config.serverbeans.Resource;
-import com.sun.enterprise.config.serverbeans.ResourcePool;
-import com.sun.enterprise.config.serverbeans.Resources;
-import com.sun.enterprise.config.serverbeans.Server;
-import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.admin.cli.resources.ResourceManager;
 
@@ -352,32 +347,27 @@ public class JDBCConnectionPoolManager implements ResourceManager {
     }
 
     private Object deleteAssociatedResources(final Server[] servers, Resources resources,
-                                             final boolean cascade, final String poolName) throws TransactionFailure {
-        return ConfigSupport.apply(new SingleConfigCode<Resources>() {
-            public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
-                Resource res = null;
-                for (Resource resource : param.getResources()) {
-                    if (resource instanceof JdbcResource) {
-                        if (((JdbcResource) resource).getPoolName().equals(poolName)) {
-                            if (cascade) {
-                                // delete resource-refs
-                                deleteResourceRefs(servers, ((JdbcResource) resource).getJndiName());
-                                res = resource;
-                                break;
-                            } else {
-                                return ResourceStatus.FAILURE;
-                            }
-                        }
+                                           final boolean cascade, final String poolName) throws TransactionFailure {
+        if (cascade) {
+            ConfigSupport.apply(new SingleConfigCode<Resources>() {
+                public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
+                    Collection<BindableResource> referringResources = param.getResourcesOfPool(poolName);
+                    for (BindableResource referringResource : referringResources) {
+                        // delete resource-refs
+                        deleteResourceRefs(servers, referringResource.getJndiName());
+                        // remove the resource
+                        param.getResources().remove(referringResource);
                     }
+                    return true; //no-op
                 }
-                // delete jdbc-resource
-                if (res != null) {
-                    param.getResources().remove(res);
-                }
-                return null;
+            }, resources);
+        }else{
+            Collection<BindableResource> referringResources = resources.getResourcesOfPool(poolName);
+            if(referringResources.size() > 0){
+                return ResourceStatus.FAILURE;
             }
-        }, resources);
-
+        }
+        return true; //no-op
     }
 
     private void deleteResourceRefs(Server[] servers, final String refName)

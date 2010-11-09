@@ -60,6 +60,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
 
 import java.beans.PropertyVetoException;
+import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -164,39 +165,36 @@ public class DeleteConnectorConnectionPool implements AdminCommand {
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
 
+    //TODO duplicate code in JDBCConnectionPoolManager
     private Object deleteAssociatedResources(final Server[] servers, Resources resources,
-            final boolean cascade, final String connPoolId) throws TransactionFailure {
-
-        return ConfigSupport.apply(new SingleConfigCode<Resources>() {
-            public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
-                Resource res = null;
-                for (Resource resource : param.getResources()) {
-                    if (resource instanceof ConnectorResource) {
-                        if (((ConnectorResource)resource).getPoolName().equals(connPoolId)) {
-                            if (cascade) {
-                                // delete resource-refs
-                                deleteResourceRefs(servers, ((ConnectorResource)resource).getJndiName());
-                                res = resource;
-                                break;
-                            } else {
-                                return ResourceStatus.FAILURE;
-                            }
-                        }
+                                           final boolean cascade, final String poolName) throws TransactionFailure {
+        if (cascade) {
+            ConfigSupport.apply(new SingleConfigCode<Resources>() {
+                public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
+                    Collection<BindableResource> referringResources = param.getResourcesOfPool(poolName);
+                    for (BindableResource referringResource : referringResources) {
+                        // delete resource-refs
+                        deleteResourceRefs(servers, referringResource.getJndiName());
+                        // remove the resource
+                        param.getResources().remove(referringResource);
                     }
-                 }
-                 // delete connector-resource
-                 if (res != null) {
-                     param.getResources().remove(res);
-                 }
-                 return null;
+                    return true; //no-op
+                }
+            }, resources);
+        }else{
+            Collection<BindableResource> referringResources = resources.getResourcesOfPool(poolName);
+            if(referringResources.size() > 0){
+                return ResourceStatus.FAILURE;
             }
-        }, resources);
+        }
+        return true; //no-op
     }
 
+    //TODO duplicate code in JDBCConnectionPoolManager
     private void deleteResourceRefs(Server[] servers, final String refName)
             throws TransactionFailure {
         for (Server server : servers) {
-           server.deleteResourceRef(refName);
+            server.deleteResourceRef(refName);
         }
     }
 }
