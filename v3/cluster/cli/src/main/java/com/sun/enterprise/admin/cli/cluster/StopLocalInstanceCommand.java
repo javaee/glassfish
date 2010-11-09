@@ -56,6 +56,7 @@ import com.sun.enterprise.util.HostAndPort;
  * @author Bill Shannon
  * @author Byron Nevins
  *
+ * 
  */
 @Service(name = "stop-local-instance")
 @Scoped(PerLookup.class)

@@ -90,7 +90,6 @@ import com.sun.enterprise.util.io.ServerDirs;
 // ----------------   public methods here   --------------- --------------
 // -----------------------------------------------------------------------
 public abstract class LocalInstanceCommand extends LocalServerCommand {
-
     @Param(name = "nodedir", optional = true, alias = "agentdir")
     protected String nodeDir;           // nodeDirRoot
     @Param(name = "node", optional = true, alias = "nodeagent")
@@ -187,7 +186,8 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
         catch (IOException e) {
             throw new CommandException(e);
         }
-
+        
+        setLocalPassword();
         logger.finer("nodeDirChild: " + nodeDirChild);
         logger.finer("instanceDir: " + instanceDir);
     }
@@ -306,7 +306,8 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
             sb.append("whackee=").append(whackee.toString());
             sb.append(", files in parent:");
             files = parent.listFiles();
-            for (File f : files) sb.append(f.toString()).append(", ");
+            for (File f : files)
+                sb.append(f.toString()).append(", ");
             File f1 = new File(whackee.toString());
             sb.append(", new wackee.exists=").append(f1.exists());
             throw new CommandException(Strings.get("DeleteInstance.badWhack",
@@ -465,7 +466,6 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
         // or there can be zero in which case we create one-and-only
 
         File[] files = parent.listFiles(new FileFilter() {
-
             public boolean accept(File f) {
                 return isDirectory(f);
             }
@@ -510,7 +510,6 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
         // look for subdirs in the parent dir -- there must be one and only one
 
         File[] files = parent.listFiles(new FileFilter() {
-
             public boolean accept(File f) {
                 return isDirectory(f);
             }
@@ -554,15 +553,16 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
         String installRootPath = getInstallRootPath();
         return installRootPath + "/" + "nodes";
     }
-void tempDump(String... args) {
-    // weird occasional error in QL tests...
-    String[] newargs = new String[args.length + 1];
 
-    newargs[0]= "TEMPORARY DEBUG OUTPUT FOR DeleteLocalInstance";
+    void tempDump(String... args) {
+        // weird occasional error in QL tests...
+        String[] newargs = new String[args.length + 1];
 
-    for(int i = 1; i < newargs.length; i++)
-        newargs[i] = args[i-1];
+        newargs[0] = "TEMPORARY DEBUG OUTPUT FOR DeleteLocalInstance";
 
-    CLIUtil.writeCommandToDebugLog(newargs, 666);
-}
+        for (int i = 1; i < newargs.length; i++)
+            newargs[i] = args[i - 1];
+
+        CLIUtil.writeCommandToDebugLog(newargs, 666);
+    }
 }
