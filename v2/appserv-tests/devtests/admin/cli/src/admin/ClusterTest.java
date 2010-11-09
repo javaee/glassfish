@@ -347,10 +347,8 @@ public class ClusterTest extends AdminBaseDevTest {
         final String cname = "eec1";
         final String dasurl = "http://localhost:8080/";
         final String i1url = "http://localhost:18080/";
-        final String i1murl = "http://localhost:14848/management/domain/";
         final String i1name = "eein1-with-a-very-very-very-long-name";
         final String i2url = "http://localhost:28080/";
-        final String i2murl = "http://localhost:24848/management/domain/";
         final String i2name = "eein2";
         final String dasmurl = "http://localhost:4848/management/domain/";
 
@@ -398,9 +396,6 @@ public class ClusterTest extends AdminBaseDevTest {
         report(tn + "DAS-undeploy", asadmin("undeploy", "servletonly"));
         report(tn + "DAS-get-del-app1", !matchString("So what is your lucky number?", getURL(i1url + "war/servletonly")));
 
-        report(tn + "getREST1", matchString("server/" + i1name + "/property", getURL(i1murl + "servers/server/" + i1name)));
-        report(tn + "getREST1a", !matchString("servers/server/server", getURL(i1murl + "servers/server")));
-        report(tn + "getREST2", matchString("server/" + i2name + "/property", getURL(i2murl + "servers/server/" + i2name)));
         String s = getURL(dasmurl + "servers/server");
         report(tn + "getREST3a", matchString(i1name, s));
         report(tn + "getREST3b", matchString(i2name, s));
@@ -423,20 +418,6 @@ public class ClusterTest extends AdminBaseDevTest {
                 "--connectiondefinition", "javax.jms.QueueConnectionFactory",
                 "jms/qConnPool"));
 
-        // check that the resources have been created on all instances
-        report(tn + "jdbc-check1", matchString("sample_jdbc_pool",
-                getURL(i1murl + "resources/jdbc-connection-pool")));
-        report(tn + "jdbc-check2", matchString("sample_jdbc_pool",
-                getURL(i2murl + "resources/jdbc-connection-pool")));
-        report(tn + "iiop-check1", matchString("sample_iiop_listener",
-                getURL(i1murl + "configs/config/eec1-config/iiop-service/iiop-listener")));
-        report(tn + "iiop-check2", matchString("sample_iiop_listener",
-                getURL(i2murl + "configs/config/eec1-config/iiop-service/iiop-listener")));
-        report(tn + "cp-check1", matchString("qConnPool",
-                getURL(i1murl + "resources/connector-connection-pool")));
-        report(tn + "cp-check2", matchString("qConnPool",
-                getURL(i2murl + "resources/connector-connection-pool")));
-
         // try to create a resource on only one instance - should fail
         report(tn + "create-connector-connection-pool-instance",
                !asadmin("create-connector-connection-pool", "--target", i2name,
@@ -451,20 +432,6 @@ public class ClusterTest extends AdminBaseDevTest {
                 "--target", cname, "sample_iiop_listener"));
         report(tn + "delete-connector-connection-pool", asadmin("delete-connector-connection-pool",
                 "--target", cname, "jms/qConnPool"));
-
-        // check that the resources have been deleted
-        report(tn + "jdbc-del-check1", !matchString("sample_jdbc_pool",
-                getURL(i1murl + "resources/resources/jdbc-resource")));
-        report(tn + "jdbc-del-check2", !matchString("sample_jdbc_pool",
-                getURL(i2murl + "resources/resources/jdbc-resource")));
-        report(tn + "iiop-del-check1", !matchString("sample_iiop_listener",
-                getURL(i1murl + "configs/config/eec1-config/iiop-service/iiop-listener")));
-        report(tn + "iiop-del-check2", !matchString("sample_iiop_listener",
-                getURL(i2murl + "configs/config/eec1-config/iiop-service/iiop-listener")));
-        report(tn + "cp-del-check1", !matchString("qConnPool",
-                getURL(i1murl + "resources/connector-connection-pool")));
-        report(tn + "cp-del-check2", !matchString("qConnPool",
-                getURL(i2murl + "resources/connector-connection-pool")));
 
         // stop the instances
         report(tn + "stop-local-instance1", asadmin("stop-local-instance", i1name));
@@ -494,12 +461,9 @@ public class ClusterTest extends AdminBaseDevTest {
         final String cname = "dec1";
         final String dasurl = "http://localhost:8080/";
         final String i1url = "http://localhost:18080/";
-        final String i1murl = "http://localhost:14848/management/domain/";
         final String i1name = "dein1";
         final String i2url = "http://localhost:28080/";
-        final String i2murl = "http://localhost:24848/management/domain/";
         final String i2name = "dein2";
-        final String dasmurl = "http://localhost:4848/management/domain/";
 
         // create a cluster and two instances
         report(tn + "create-cluster", asadmin("create-cluster", cname));
@@ -600,7 +564,6 @@ public class ClusterTest extends AdminBaseDevTest {
         final String i2name = "gslin2";
         final String i3url = "http://localhost:38080/";
         final String i3name = "gslin3";
-        final String dasmurl = "http://localhost:4848/management/domain/";
 
         // create a cluster and two instances
         report(tn + "create-cluster", asadmin("create-cluster", cname));
