@@ -187,7 +187,6 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
             throw new CommandException(e);
         }
         
-        setLocalPassword();
         logger.finer("nodeDirChild: " + nodeDirChild);
         logger.finer("instanceDir: " + instanceDir);
     }

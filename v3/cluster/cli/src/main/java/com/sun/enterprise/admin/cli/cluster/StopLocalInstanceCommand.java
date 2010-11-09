@@ -112,14 +112,8 @@ public class StopLocalInstanceCommand extends LocalInstanceCommand {
         String serverName = getServerDirs().getServerName();
         HostAndPort addr = getAdminAddress(serverName);
         programOpts.setHostAndPort(addr);
-        logger.finer("StopInstance.stoppingMessage" + addr.getPort());
 
-        /*
-         * If we're using the local password, we don't want to prompt
-         * for a new password.  If the local password doesn't work it
-         * most likely means we're talking to the wrong server.
-         */
-        programOpts.setInteractive(false);
+        logger.finer("StopInstance.stoppingMessage" + addr.getPort());
 
         if (!isRunning())
             return instanceNotRunning();
@@ -159,6 +153,18 @@ public class StopLocalInstanceCommand extends LocalInstanceCommand {
      */
     protected int doRemoteCommand()
             throws CommandException, CommandValidationException {
+
+        // put the local-password for the instance  in programOpts
+        // we don't do this for ALL local-instance commands because if they call
+        // DAS with the instance's local-password it will cause BIG trouble...
+        setLocalPassword(); 
+
+        /*
+         * If we're using the local password, we don't want to prompt
+         * for a new password.  If the local password doesn't work it
+         * most likely means we're talking to the wrong server.
+         */
+        programOpts.setInteractive(false);
 
         // run the remote stop-domain command and throw away the output
         RemoteCommand cmd = new RemoteCommand("_stop-instance", programOpts, env);
