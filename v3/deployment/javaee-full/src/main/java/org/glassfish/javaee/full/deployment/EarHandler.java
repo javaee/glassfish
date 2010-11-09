@@ -360,8 +360,10 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
                                 (DelegatingClassLoader.ClassFinder)subCl);
                             cl.addModuleClassLoader(moduleUri, subCl);
                         } else {
+                            Boolean isTempClassLoader = context.getTransientAppMetaData(ExtendedDeploymentContext.IS_TEMP_CLASSLOADER, Boolean.class);
                             if (subCl instanceof URLClassLoader && 
-                                context.getTransientAppMetaData(ExtendedDeploymentContext.IS_TEMP_CLASSLOADER, Boolean.class)) {
+                                (isTempClassLoader != null) && 
+                                isTempClassLoader) {
                                 // for temp classloader, we add all the module
                                 // urls to the top level EarClassLoader
                                 URL[] moduleURLs = 
