@@ -243,7 +243,7 @@ public class CreateJMSResource implements AdminCommand {
     }
 
     private boolean filterForTarget(String jndiName){
-        List<String> resourceList = new ArrayList();
+        //List<String> resourceList = new ArrayList();
          if (target != null){
              List<ResourceRef> resourceRefs = null;
              Cluster cluster = domain.getClusterNamed(target);
