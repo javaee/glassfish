@@ -127,7 +127,7 @@ public abstract class LocalServerCommand extends CLICommand {
     }
 
     protected final void setLocalPassword() {
-        String pw = getServerDirs().getLocalPassword();
+        String pw = serverDirs == null ? null : serverDirs.getLocalPassword();
 
         if (ok(pw)) {
             programOpts.setPassword(pw,
