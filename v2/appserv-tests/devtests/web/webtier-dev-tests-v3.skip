@@ -1,2 +1,6 @@
 singleengine # comment out until https://glassfish.dev.java.net/issues/show_bug.cgi?id=14014 is fixed
 weldJsfFormLoginHttpSessionListener # comment out until https://glassfish.dev.java.net/issues/show_bug.cgi?id=7548 is fixed
+asadminDeletesTarget # comment out until https://glassfish.dev.java.net/issues/show_bug.cgi?id=14392 is fixed
+networkListenerTarget # comment out until https://glassfish.dev.java.net/issues/show_bug.cgi?id=14392 is fixed
+portUnificationTarget # comment out until https://glassfish.dev.java.net/issues/show_bug.cgi?id=14392 is fixed
+wrongTransportTarget # comment out until https://glassfish.dev.java.net/issues/show_bug.cgi?id=14392 is fixed
