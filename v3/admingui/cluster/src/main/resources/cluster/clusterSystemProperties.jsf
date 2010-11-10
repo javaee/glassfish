@@ -75,26 +75,7 @@
     <sun:title id="propertyContentPage" title="$resource{i18ncs.cluster.ClusterSystemProperties}" >
         <!facet pageButtonsTop>
             <sun:panelGroup id="topButtons">
-                <sun:button id="saveButton" text="$resource{i18n.button.Save}"
-                        onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
-                    <!command
-                        //javaToJSON(obj="#{pageSession.tableList}" json="#{requestScope.tmpJSON}");
-                        createMap(result="#{requestScope.data}");
-                        foreach (var="row" list="#{pageSession.tableList}") {
-                            mapPut(map="#{requestScope.data}", key="#{row.name}", value="#{row.value}");
-                        }
-                        gf.restRequest(endpoint="#{pageSession.selfUrl}", method="POST", data="#{requestScope.data}", contentType="application/x-www-form-urlencoded", result="#{requestScope.restResponse}");
-                        prepareSuccessfulMsg();
-                        gf.redirect(page="#{pageSession.selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
-                    />
-                </sun:button>
-
-                <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" rendered="#{pageSession.showCancelButton}" text="$resource{i18n.button.Cancel}" >
-                    <!command
-                        println("***** redirecting to #{pageSession.parentPage}");
-                        gf.redirect(page="#{pageSession.parentPage}");
-                    />
-                </sun:button>
+#include "clusterSystemPropertiesButtons.jsf"
             </sun:panelGroup>
         </facet>
     </sun:title>
@@ -102,6 +83,13 @@
 #include "/cluster/cluster/clusterNameSection.inc"
 #include "/common/shared/propertyTable.inc"
 
+    <sun:title id="title2">
+        <!facet pageButtonsTop>
+            <sun:panelGroup id="bottomButtons">
+#include "clusterSystemPropertiesButtons.jsf"
+            </sun:panelGroup>
+        </facet>
+    </sun:title>
 <sun:hidden id="helpKey" value="$resource{help_cluster.clusterSystemProperties}" />
 
     </sun:form>
