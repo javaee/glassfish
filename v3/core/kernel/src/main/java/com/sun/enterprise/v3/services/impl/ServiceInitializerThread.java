@@ -40,6 +40,7 @@
 
 package com.sun.enterprise.v3.services.impl;
 
+import com.sun.grizzly.Controller;
 import com.sun.grizzly.DefaultProtocolChainInstanceHandler;
 import com.sun.grizzly.ProtocolChain;
 import com.sun.grizzly.TCPSelectorHandler;
@@ -94,6 +95,13 @@ public class ServiceInitializerThread extends SelectorThread {
      */
     @Override
     protected void initController() {
+        final Controller c = new Controller() {
+            @Override
+            public void logVersion() {
+                // no-op
+            }
+        };
+        super.setController(c);
         super.initController();
         final DefaultProtocolChainInstanceHandler instanceHandler = new DefaultProtocolChainInstanceHandler() {
             private final ConcurrentLinkedQueue<ProtocolChain> chains =
