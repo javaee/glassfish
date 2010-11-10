@@ -244,9 +244,11 @@ import java.util.logging.Logger;
     void run() throws EnhancedException {
         wizard.enableNext(false);
         wizard.enableCancel(true);
-        wizard.setNextButtonText(Msg.get("CONFIG_PANEL_NEXT_BUTTON_TEXT",null));
+	// Set the next button text to "Finish" in case of config only mode as this would be the last panel.
+        if (ConfigHelper.getStringValue("InstallType.Option.CONFIGURATION_MODE").equals("CONFIG_ONLY")) {
+        	wizard.setNextButtonText(Msg.get("exit",null));
+	}
         wizard.setBackButtonText(Msg.get("CONFIG_PANEL_BACK_BUTTON_TEXT",null));
-        wizard.setCancelButtonText(Msg.get("CONFIG_PANEL_CANCEL_BUTTON_TEXT",null));
 
 	global.overallStatus = true;
         updateGlobalPageSkips("CREATE_DOMAIN",true);
