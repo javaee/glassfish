@@ -50,6 +50,7 @@ import java.util.*;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
 import org.glassfish.api.Param;
+import org.glassfish.api.I18n;
 import org.glassfish.api.admin.*;
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 import com.sun.enterprise.admin.util.SecureAdminClientManager;
@@ -67,6 +68,7 @@ import com.sun.enterprise.util.OS;
  */
 @Service(name = "create-local-instance")
 @Scoped(PerLookup.class)
+@I18n("create.local.instance")
 public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesystemCommand {
     private final String CONFIG = "config";
     private final String CLUSTER = "cluster";
@@ -77,8 +79,8 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
     @Param(name = CLUSTER, optional = true)
     private String clusterName;
 
-    @Param(name="lbenabled", optional = true, acceptableValues = "true,false")
-    private String lbEnabled;
+    @Param(name="lbenabled", optional = true)
+    private Boolean lbEnabled;
 
     @Param(name = "systemproperties", optional = true, separator = ':')
     private String systemProperties;     // XXX - should it be a Properties?
@@ -454,24 +456,6 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
             }
         }
         return instanceHostName;
-    }
-
-    @Override
-    public String getUsage() {
-        String str = super.getUsage();
-        String newStr = str;
-        StringBuffer sb = new StringBuffer(str);
-        String config = "--"+CONFIG+" <"+CONFIG+">";
-        String cluster = "--"+CLUSTER+" <"+CLUSTER+">";
-        String oldConfigCluster = "["+config+"] ["+cluster+"]";
-        String newConfigCluster = "["+config+" | "+cluster+"]";
-        int start = sb.indexOf(oldConfigCluster);
-        if (start != -1) {
-            int end = start + oldConfigCluster.length();
-            StringBuffer newsb = sb.replace(start, end, newConfigCluster);
-            newStr = newsb.toString();
-        }
-        return newStr;
     }
 
     @Override

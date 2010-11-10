@@ -110,8 +110,8 @@ public class CreateInstanceCommand implements AdminCommand {
     @Param(name="cluster", optional=true)
     String clusterName;
 
-    @Param(name="lbenabled", optional = true, acceptableValues = "true,false")
-    private String lbEnabled;
+    @Param(name="lbenabled", optional = true)
+    private Boolean lbEnabled;
 
     @Param(name = "checkports", optional = true, defaultValue = "true")
     private boolean checkPorts;
