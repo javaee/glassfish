@@ -81,8 +81,8 @@
     </mailingLists>
 
     <scm>
-      <connection>scm:svn:https://hk2.dev.java.net/svn/hk2/tags/hk2-parent-1.0.59-SNAPSHOT</connection>
-      <developerConnection>scm:svn:https://hk2.dev.java.net/svn/hk2/tags/hk2-parent-1.0.59-SNAPSHOT</developerConnection>
+      <connection>scm:svn:https://hk2.dev.java.net/svn/hk2/trunk/hk2</connection>
+      <developerConnection>scm:svn:https://hk2.dev.java.net/svn/hk2/trunk/hk2</developerConnection>
       <url>https://hk2.dev.java.net/svn/hk2/tags/hk2-parent-1.0.59-SNAPSHOT</url>
     </scm>
     <distributionManagement>
