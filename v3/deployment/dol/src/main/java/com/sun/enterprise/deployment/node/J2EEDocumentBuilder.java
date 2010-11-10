@@ -150,10 +150,7 @@ public class J2EEDocumentBuilder {
         try {
             Document document = getDocument(descriptor, node);
             Source source = new DOMSource(document);
-            System.setProperty("javax.xml.transform.TransformerFactory", "com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl");
-            TransformerFactory factory =  TransformerFactory.newInstance();
-            System.clearProperty("javax.xml.transform.TransformerFactory");
-            Transformer transformer = factory.newTransformer();
+            Transformer transformer = getTransformer();
             setTransformerProperties(node, transformer);
             transformer.transform(source, output);
         } catch(Exception e) {
@@ -161,8 +158,37 @@ public class J2EEDocumentBuilder {
             throw e;
         }
     }        
-    
 
+    private static Transformer getTransformer() throws Exception {
+        //get current TCL and system property values
+        ClassLoader currentTCL = Thread.currentThread().getContextClassLoader();
+        String userTransformerFactory = System.getProperty("javax.xml.transform.TransformerFactory");
+
+        Transformer transformer = null;
+        try {
+            //Set TCL to system classloader, and clear TransformerProperty
+            //so that we obtain the VM default transformer factory from
+            //the TransformerFactory
+            Thread.currentThread().setContextClassLoader(
+                J2EEDocumentBuilder.class.getClassLoader());
+            if (userTransformerFactory != null) {
+                System.clearProperty("javax.xml.transform.TransformerFactory");
+            }
+             
+            //get the VM default transformer factory and use that for DOL
+            //processing
+            transformer = TransformerFactory.newInstance().newTransformer();
+        } finally {
+            //reset thread context classloader and system property to their 
+            //original values
+            Thread.currentThread().setContextClassLoader(currentTCL);
+            if (userTransformerFactory != null) {
+                System.setProperty("javax.xml.transform.TransformerFactory", userTransformerFactory);
+            }
+        }
+        return transformer;
+    }        
+    
     private static void setTransformerProperties (RootXMLNode node, Transformer transformer) {
         if (node.getDocType()!=null) {
             transformer.setOutputProperty(
