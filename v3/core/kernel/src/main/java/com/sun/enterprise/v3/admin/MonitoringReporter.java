@@ -71,10 +71,14 @@ import static com.sun.enterprise.util.SystemPropertyConstants.SLASH;
  * Correct!  TreeNode!  Clashing names is why we have to explicitly use this ghastly
  * name:  org.glassfish.flashlight.datatree.TreeNode all over the place...
  */
-@Service (name = "MonitoringReporter")
+@Service(name = "MonitoringReporter")
 @Scoped(PerLookup.class)
 @ExecuteOn({RuntimeType.DAS, RuntimeType.INSTANCE})
 public class MonitoringReporter extends V2DottedNameSupport {
+    public enum OutputType {
+        GET, LIST
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -95,18 +99,12 @@ public class MonitoringReporter extends V2DottedNameSupport {
     ////////////////////////  The API Methods  ///////////////////////////
     ///////////////////////////////////////////////////////////////////////
 
-    public void prepare(AdminCommandContext c, String arg) {
-        context = c;
-        report = context.getActionReport();
+    public void prepareGet(AdminCommandContext c, String arg) {
+        prepare(c, arg, OutputType.GET);
+    }
 
-        // DAS runs the show on this command.  If we are running in an
-        // instance -- that means we should call runLocally() AND it also
-        // means that the pattern is already perfect!
-
-        if (isDas())
-            prepareDas(arg);
-        else
-            prepareInstance(arg);
+    public void prepareList(AdminCommandContext c, String arg) {
+        prepare(c, arg, OutputType.LIST);
     }
 
     public void execute() {
@@ -121,6 +119,20 @@ public class MonitoringReporter extends V2DottedNameSupport {
     ///////////////////////////////////////////////////////////////////////
     ////////////////////////  ALL PRIVATE BELOW ///////////////////////////
     ///////////////////////////////////////////////////////////////////////
+    private void prepare(AdminCommandContext c, String arg, OutputType type) {
+        outputType = type;
+        context = c;
+        report = context.getActionReport();
+
+        // DAS runs the show on this command.  If we are running in an
+        // instance -- that means we should call runLocally() AND it also
+        // means that the pattern is already perfect!
+
+        if (isDas())
+            prepareDas(arg);
+        else
+            prepareInstance(arg);
+    }
 
     private void prepareDas(String arg) {
         // TODO throw an exception if any errors????
@@ -141,23 +153,25 @@ public class MonitoringReporter extends V2DottedNameSupport {
         // TODO throw an exception if any errors!
         pattern = arg;
     }
+
     // mostly just copied over from old "get" implementation
+    // That's why it is excruciatingly unreadable...
     private void runLocally() {
 
         // don't run if this is DAS **and** DAS is not in the server list.
         // otherwise we are in an instance and definitely want to run!
-         if (isDas() && !dasIsInList())
+        if (isDas() && !dasIsInList())
             return;
 
-       // say the pattern is "something" -->
-         // we want "server.something" for DAS and "i1.server.something" for i1
-         // Yes -- this is difficult to get perfect!!!  What if user entered
-         //"server.something"?
+        // say the pattern is "something" -->
+        // we want "server.something" for DAS and "i1.server.something" for i1
+        // Yes -- this is difficult to get perfect!!!  What if user entered
+        //"server.something"?
 
         String localPattern = prependServerDot(pattern);
-        
+
         // Weird -- but this is how it works internally!
-        if(!isDas())
+        if (!isDas())
             localPattern = serverEnv.getInstanceName() + "." + localPattern;
 
         org.glassfish.flashlight.datatree.TreeNode tn = datareg.get(serverEnv.getInstanceName());
@@ -169,7 +183,6 @@ public class MonitoringReporter extends V2DottedNameSupport {
             return;
         }
 
-        TreeMap map = new TreeMap();
         List<org.glassfish.flashlight.datatree.TreeNode> ltn = tn.getNodes(localPattern);
         boolean singleStat = false;
 
@@ -186,6 +199,16 @@ public class MonitoringReporter extends V2DottedNameSupport {
         if (!singleStat)
             localPattern = null; // signal to method call below.  localPattern was already used above...
 
+        if (outputType == OutputType.GET)
+            doGet(localPattern, ltn);
+        else if(outputType == OutputType.LIST)
+            doList(localPattern, ltn);
+        // else error!!!
+    }
+
+    // Byron Nevins -- copied from original implementation
+    private void doGet(String localPattern, List<org.glassfish.flashlight.datatree.TreeNode> ltn) {
+        TreeMap map = new TreeMap();
         for (org.glassfish.flashlight.datatree.TreeNode tn1 : sortTreeNodesByCompletePathName(ltn)) {
             if (!tn1.hasChildNodes()) {
                 insertNameValuePairs(map, tn1, localPattern);
@@ -203,6 +226,17 @@ public class MonitoringReporter extends V2DottedNameSupport {
         setSuccess();
     }
 
+    private void doList(String localPattern, List<org.glassfish.flashlight.datatree.TreeNode> ltn) {
+        // list means only print things that have children.  Don't print the children.
+        for (org.glassfish.flashlight.datatree.TreeNode tn1 : ltn) {
+            if (tn1.hasChildNodes()) {
+                ActionReport.MessagePart part = report.getTopMessagePart().addChild();
+                part.setMessage(tn1.getCompletePathName());
+            }
+        }
+        setSuccess();
+    }
+
     /**
      * This can be a bit confusing.  It is sort of like a recursive call.
      * GetCommand will be called on the instance.  BUT -- the pattern arg will
@@ -216,7 +250,7 @@ public class MonitoringReporter extends V2DottedNameSupport {
 
         List<Server> remoteServers = getRemoteServers();
 
-        if(remoteServers.isEmpty())
+        if (remoteServers.isEmpty())
             return;
 
         try {
@@ -232,7 +266,7 @@ public class MonitoringReporter extends V2DottedNameSupport {
     }
 
     private String prependServerDot(String s) {
-        if(s.startsWith(SERVERDOT))
+        if (s.startsWith(SERVERDOT))
             return s;
         else
             return SERVERDOT + s;
@@ -479,6 +513,7 @@ public class MonitoringReporter extends V2DottedNameSupport {
     ServerEnvironment serverEnv;
     @Inject
     Habitat habitat;
+    private OutputType outputType;
     private final static String DOTTED_NAME = ".dotted-name";
     private static final String SERVERDOT = "server.";
 }

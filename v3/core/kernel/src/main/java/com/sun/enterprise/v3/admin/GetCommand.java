@@ -121,10 +121,10 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
         }
 
         if (monitor) {
-            getMonitorAttributes(report, context);
-            String old = report.getMessage();
-            String append = "\nXXXXXXXXX\n" + mr.toString();
-            report.setMessage(old == null ? append : old + append);
+            getMonitorAttributes(context);
+            //String old = report.getMessage();
+            //String append = "\nXXXXXXXXX\n" + mr.toString();
+            //report.setMessage(old == null ? append : old + append);
             return;
         }
 
@@ -217,8 +217,8 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
         }
     }
 
-    private void getMonitorAttributes(ActionReport report, AdminCommandContext ctxt) {
-        mr.prepare(ctxt, pattern);
+    private void getMonitorAttributes(AdminCommandContext ctxt) {
+        mr.prepareGet(ctxt, pattern);
         mr.execute();
     }
 }
