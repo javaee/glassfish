@@ -197,26 +197,11 @@ public class ReadableArchiveScannerAdapter extends AbstractAdapter {
                 return null;
             }
 
-            // this is non sense, the subArchive should do this job for me but it does not.
-            // see the long comment from Tim on entries().
-            URI subURI=subArchive.getURI();
-            if (subURI.getScheme().startsWith("jar")) {
-                try {
-                    subURI = new URI(
-                    "jar",
-                    "file:" + uri.getSchemeSpecificPart() +
-                        "!/" +
-                        name,
-                    null);
-                } catch(URISyntaxException e) {
-                    logger.log(Level.FINE, e.getMessage(),e);
-                }
-            }
             if (subArchive!=null) {
                 if (logger.isLoggable(level)) {
                     logger.log(level, "Spawning sub parsing " + subArchive.getURI());
                 }
-                final ReadableArchiveScannerAdapter adapter = new InternalJarAdapter(this, subArchive, subURI);
+                final ReadableArchiveScannerAdapter adapter = new InternalJarAdapter(this, subArchive, subArchive.getURI());
                 // we increment our release count, this tells us when we can safely close the parent
                 // archive.
                 releaseCount.incrementAndGet();
