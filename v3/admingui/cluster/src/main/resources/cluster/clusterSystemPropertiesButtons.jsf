@@ -39,10 +39,8 @@
     holder.
 
 -->
-<sun:button id="saveButton" text="$resource{i18n.button.Save}"
-        onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
+<sun:button id="saveButton" text="$resource{i18n.button.Save}" onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
     <!command
-        //javaToJSON(obj="#{pageSession.tableList}" json="#{requestScope.tmpJSON}");
         createMap(result="#{requestScope.data}");
         foreach (var="row" list="#{pageSession.tableList}") {
             mapPut(map="#{requestScope.data}", key="#{row.name}", value="#{row.value}");

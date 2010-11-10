@@ -73,17 +73,13 @@
     <sun:form id="propertyForm">
 #include "/cluster/standalone/standaloneInstanceTabs.inc"
         <sun:title id="propertyContentPage" title="$resource{i18ncs.PropertiesTitle}" >
-            <!facet pageButtonsTop>
-#include "/cluster/standalone/standaloneInstancePropertiesButtons.jsf"
-            </facet>
+#include "/cluster/shared/instancePropertiesButtons.jsf"
         </sun:title>
 #include "/common/shared/alertMsg.inc"
 #include "/common/shared/propertyDescTable.inc"
 
         <sun:title id="bottomTitle">
-            <!facet pageButtonsTop>
-#include "/cluster/standalone/standaloneInstancePropertiesButtons.jsf"
-            </facet>
+#include "/cluster/shared/instancePropertiesButtons.jsf"
         </sun:title>
 
         <sun:hidden id="helpKey" value="$resource{help_cluster.standaloneInstanceProperties}" />

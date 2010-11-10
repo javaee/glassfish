@@ -58,7 +58,7 @@
             setSessionAttribute(key="clusterTabs" value="clusterSystemProps");
             setSessionAttribute(key="clusterInstanceTabs" value="configProps");
 
-            setPageSessionAttribute(key="parentPage", value="#{request.contextPath}/cluster/cluster/clusterInstances.jsf?clusterName=#{pageSession.encodedClusterName}");
+            setPageSessionAttribute(key="parentPage", value="#{request.contextPath}/cluster/cluster/clusterInstanceEdit.jsf?clusterName=#{pageSession.encodedClusterName}&instanceName=#{pageSession.encodedInstanceName}");
             setPageSessionAttribute(key="selfPage", value="#{request.contextPath}/cluster/cluster/clusterInstanceConfigProperties.jsf?clusterName=#{encodedClusterName}&instanceName=#{pageSession.encodedInstanceName}");
         />
     </event>
