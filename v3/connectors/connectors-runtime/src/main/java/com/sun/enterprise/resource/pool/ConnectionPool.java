@@ -1621,8 +1621,11 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
         //Entity beans when used in bean managed transaction will face an issue
         //since connections are destroyed during reclaim. Stateful session beans 
         // will work fine.
+        String msg = localStrings.getString("reclaim.leaked.connection", poolInfo);
+        _logger.log(Level.INFO, msg);
         ds.removeResource(handle);
         notifyWaitingThreads();
+
     }
 
     /**
