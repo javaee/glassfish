@@ -263,10 +263,11 @@ public class CreateFileUser implements /*UndoableCommand*/ AdminCommand {
                        //refreshRealm(authRealmName);
                         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
                     } catch (Exception e) {
+                        String localalizedErrorMsg = (e.getLocalizedMessage() == null)?"":e.getLocalizedMessage();
                         report.setMessage(
                                 localStrings.getLocalString("create.file.user.useraddfailed",
                                 "Adding User {0} to the file realm {1} failed",
-                                userName, authRealmName) + "  " + e.getLocalizedMessage());
+                                userName, authRealmName) + "  " + localalizedErrorMsg);
                         report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                         report.setFailureCause(e);
                     }
