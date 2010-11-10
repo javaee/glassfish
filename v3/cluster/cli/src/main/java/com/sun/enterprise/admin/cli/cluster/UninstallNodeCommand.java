@@ -41,11 +41,9 @@
 
 package com.sun.enterprise.admin.cli.cluster;
 
-import com.sun.enterprise.admin.cli.CLICommand;
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 import com.sun.enterprise.config.serverbeans.Node;
 import com.sun.enterprise.util.SystemPropertyConstants;
-import com.trilead.ssh2.SCPClient;
 import com.trilead.ssh2.SFTPv3DirectoryEntry;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.CommandException;
@@ -53,15 +51,15 @@ import org.glassfish.api.admin.CommandException;
 //import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.cluster.ssh.launcher.SSHLauncher;
 import org.glassfish.cluster.ssh.sftp.SFTPClient;
+import org.glassfish.cluster.ssh.util.SSHUtil;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
 
-import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.Map;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -72,28 +70,9 @@ import java.util.List;
 @Service(name = "uninstall-node")
 @Scoped(PerLookup.class)
 //@ExecuteOn({RuntimeType.DAS})
-public class UninstallNodeCommand extends CLICommand {
-
-    @Param(optional = true)
-    private String sshuser;
-
-    @Param(optional=true)
-    private int sshport;
-
-    @Param(optional = true)
-    private String sshkeyfile;
-
-    @Param(optional = false, primary = true, multiple = true)
-    private String[] hosts;
-
+public class UninstallNodeCommand extends SSHCommandsBase {
     @Param(name="installdir", optional = true)
     private String installDir;
-
-    private String sshpassword;
-
-    private String sshkeypassphrase=null;
-
-    private boolean promptPass=false;
 
     @Inject
     SSHLauncher sshLauncher;
@@ -101,6 +80,7 @@ public class UninstallNodeCommand extends CLICommand {
     @Inject
     Node[] nodeList;
 
+    @Override
     protected void validate() throws CommandException {
         for (String host: hosts) {
             for (Node node: nodeList) {
@@ -109,6 +89,26 @@ public class UninstallNodeCommand extends CLICommand {
                 }
             }
         }
+        
+        sshuser = resolver.resolve(sshuser);
+        if (sshkeyfile == null) {
+            //if user hasn't specified a key file check if key exists in
+            //default location
+            String existingKey = SSHUtil.getExistingKeyFile();
+            if (existingKey == null) {
+                promptPass=true;
+            } else {
+                sshkeyfile = existingKey;
+            }
+        } else {
+            validateKeyFile(sshkeyfile);
+        }
+        
+        //we need the key passphrase if key is encrypted
+        if(sshkeyfile != null && isEncryptedKey()){
+            sshkeypassphrase=getSSHPassphrase();
+        }
+        
     }
 
     @Override
@@ -126,7 +126,7 @@ public class UninstallNodeCommand extends CLICommand {
         return SUCCESS;
     }
 
-    private void deleteFromHosts(String baseRootValue) throws IOException, InterruptedException {
+    private void deleteFromHosts(String baseRootValue) throws CommandException, IOException, InterruptedException {
 
         if (installDir == null) {
             installDir = baseRootValue;
@@ -135,6 +135,17 @@ public class UninstallNodeCommand extends CLICommand {
         for (String host: hosts) {
             sshLauncher.init(sshuser, host, sshport, sshpassword, sshkeyfile, sshkeypassphrase, logger);
 
+            if (sshkeyfile != null && !sshLauncher.checkConnection()) {
+                //key auth failed, so use password auth
+                promptPass=true;
+            }
+            
+            if (promptPass) {                
+                sshpassword=getSSHPassword(host);
+                //re-initialize
+                sshLauncher.init(sshuser, host, sshport, sshpassword, sshkeyfile, sshkeypassphrase, logger);
+            }
+            
             SFTPClient sftpClient = sshLauncher.getSFTPClient();
 
 
@@ -172,5 +183,12 @@ public class UninstallNodeCommand extends CLICommand {
                 cmd.executeAndReturnAttributes(new String[]{"__locations"});
         return attrs.get("Base-Root_value");
 
+    }
+    
+    private void validateKeyFile(String file) throws CommandException {
+        File f = new File(file);
+        if (!f.exists()) {
+            throw new CommandException(Strings.get("KeyDoesNotExist", file));
+        }
     }
 }

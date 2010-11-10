@@ -41,7 +41,6 @@
 
 package com.sun.enterprise.admin.cli.cluster;
 
-import com.sun.enterprise.admin.cli.CLICommand;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.io.FileListerRelative;
 import com.sun.enterprise.util.zip.ZipFileException;
@@ -50,11 +49,14 @@ import com.trilead.ssh2.SCPClient;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.CommandException;
 import org.glassfish.cluster.ssh.launcher.SSHLauncher;
+import org.glassfish.cluster.ssh.util.SSHUtil;
 import org.glassfish.cluster.ssh.sftp.SFTPClient;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
+import org.jvnet.hk2.component.Habitat;
+import org.glassfish.internal.api.Globals;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -71,22 +73,9 @@ import java.util.List;
 
 @Service(name = "install-node")
 @Scoped(PerLookup.class)
-public class InstallNodeCommand extends CLICommand {
-
-    @Param(optional = true)
-    private String sshuser;
-
-    @Param(optional=true)
-    private int sshport;
-
-    @Param(optional = true)
-    private String sshkeyfile;
-
+public class InstallNodeCommand extends SSHCommandsBase {
     @Param(name="archivedir", optional = true)
     private String archiveDir;
-
-    @Param(optional = false, primary = true, multiple = true)
-    private String[] hosts;
 
     @Param(name="installdir", optional = true)
     private String installDir;
@@ -97,22 +86,38 @@ public class InstallNodeCommand extends CLICommand {
     @Param(optional = true)
     private boolean force;
 
-    private String sshpassword;
-
-    private String sshkeypassphrase=null;
+    @Inject
+    private Habitat habitat;
     
-    private boolean promptPass=false;
-
     @Inject
     SSHLauncher sshLauncher;
 
     @Override
     protected void validate() throws CommandException {
+        sshuser = resolver.resolve(sshuser);
+        if (sshkeyfile == null) {
+            //if user hasn't specified a key file check if key exists in
+            //default location
+            String existingKey = SSHUtil.getExistingKeyFile();
+            if (existingKey == null) {
+                promptPass=true;
+            } else {
+                sshkeyfile = existingKey;
+            }
+        } else {
+            validateKeyFile(sshkeyfile);
+        }
+        
+        //we need the key passphrase if key is encrypted
+        if(sshkeyfile != null && isEncryptedKey()){
+            sshkeypassphrase=getSSHPassphrase();
+        }
         
     }
 
     @Override
     protected int executeCommand() throws CommandException {
+        Globals.setDefaultHabitat(habitat);
         try {
 
             String baseRootValue = getSystemProperty(SystemPropertyConstants.PRODUCT_ROOT_PROPERTY) ; 
@@ -136,8 +141,21 @@ public class InstallNodeCommand extends CLICommand {
         if (installDir == null) {
             installDir = baseRootValue;
         }
+        
         for (String host: hosts) {
             sshLauncher.init(sshuser, host, sshport, sshpassword, sshkeyfile, sshkeypassphrase, logger);
+            
+            if (sshkeyfile != null && !sshLauncher.checkConnection()) {
+                //key auth failed, so use password auth
+                promptPass=true;
+            }
+            
+            if (promptPass) {                
+                sshpassword=getSSHPassword(host);
+                //re-initialize
+                sshLauncher.init(sshuser, host, sshport, sshpassword, sshkeyfile, sshkeypassphrase, logger);
+            }
+                
             //String remoteDir = installLocation + "/glassfish3/glassfish";
 
             SFTPClient sftpClient = sshLauncher.getSFTPClient();
@@ -176,9 +194,9 @@ public class InstallNodeCommand extends CLICommand {
             }
 
             try {
-            logger.info("Removing " + host + ":" + installDir + "/glassfish.zip");
-            sftpClient.rm(installDir + "/glassfish.zip");
-            logger.finer("Removed " + host + ":" + installDir + "/glassfish.zip");
+                logger.info("Removing " + host + ":" + installDir + "/glassfish.zip");
+                sftpClient.rm(installDir + "/glassfish.zip");
+                logger.finer("Removed " + host + ":" + installDir + "/glassfish.zip");
             } catch (IOException ioe){
                 logger.info(Strings.get("remove.glassfish.failed",host, installDir));
                 throw new IOException(ioe);
@@ -252,5 +270,12 @@ public class InstallNodeCommand extends CLICommand {
         logger.info("Created installation zip " + glassFishZipFile.getCanonicalPath());
 
         return glassFishZipFile;
+    }
+    
+    private void validateKeyFile(String file) throws CommandException {
+        File f = new File(file);
+        if (!f.exists()) {
+            throw new CommandException(Strings.get("KeyDoesNotExist", file));
+        }
     }
 }
