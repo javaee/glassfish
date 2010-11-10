@@ -81,24 +81,7 @@
         }
     />
     <!facet pageButtonsTop>
-        <sun:panelGroup id="topButtons">
-            <sun:button id="saveButton" text="$resource{i18n.button.Save}" >
-                <!command
-                    createMap(result="#{requestScope.data}");
-                    foreach (var="row", list="#{pageSession.tableList}") {
-                        mapPut(map="#{requestScope.data}", key="#{row.name}", value="#{row.overrideValue}");
-                    }
-                    gf.restRequest(endpoint="#{pageSession.selfUrl}", method="POST", attrs="#{requestScope.data}", contentType="application/x-www-form-urlencoded", result="#{requestScope.restResponse}");
-                    prepareSuccessfulMsg();
-                    gf.redirect(page="#{pageSession.selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
-                />
-            </sun:button>
-            <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" rendered="#{pageSession.showCancelButton}" text="$resource{i18n.button.Cancel}" >
-                <!command
-                    gf.redirect(page="#{parentPage}");
-                />
-            </sun:button>
-        </sun:panelGroup>
+#include "/cluster/shared/sysPropsDefaultAndOverridesButtons.jsf"
     </facet>
 </sun:title>
 #include "/common/shared/alertMsg.inc"
@@ -176,4 +159,9 @@
         "<br/>
     </sun:tableRowGroup>
 </sun:table>
+<sun:title id="title2">
+    <!facet pageButtonsTop>
+#include "/cluster/shared/sysPropsDefaultAndOverridesButtons.jsf"
+    </facet>
+</sun:title>
 #include "/common/shared/changeButtonsJS.inc"

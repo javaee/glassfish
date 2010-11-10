@@ -56,7 +56,7 @@
             setSessionAttribute(key="clusterTabs" value="clusterInstanceProps");
             setSessionAttribute(key="standaloneInstanceTabs" value="instanceProps");
 
-            setPageSessionAttribute(key="parentPage", value="#{request.contextPath}/cluster/standalone/standaloneInstances.jsf");
+            setPageSessionAttribute(key="parentPage", value="#{request.contextPath}/cluster/standalone/standaloneInstanceGeneral.jsf?instanceName=#{pageSession.encodedInstanceName}");
             setPageSessionAttribute(key="selfPage", value="#{request.contextPath}/cluster/standalone/standaloneInstanceProperties.jsf?instanceName=#{pageSession.encodedInstanceName}");
             setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/servers/server/#{pageSession.encodedInstanceName}");
             setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}");
@@ -72,14 +72,21 @@
     </event>
     <sun:form id="propertyForm">
 #include "/cluster/standalone/standaloneInstanceTabs.inc"
-    <sun:title id="propertyContentPage" title="$resource{i18ncs.PropertiesTitle}" >
-#include "/common/shared/editPageButtons.inc"
-    </sun:title>
+        <sun:title id="propertyContentPage" title="$resource{i18ncs.PropertiesTitle}" >
+            <!facet pageButtonsTop>
+#include "/cluster/standalone/standaloneInstancePropertiesButtons.jsf"
+            </facet>
+        </sun:title>
 #include "/common/shared/alertMsg.inc"
 #include "/common/shared/propertyDescTable.inc"
-#include "/common/shared/editPageBottomButtons.inc"
 
-<sun:hidden id="helpKey" value="$resource{help_cluster.standaloneInstanceProperties}" />
+        <sun:title id="bottomTitle">
+            <!facet pageButtonsTop>
+#include "/cluster/standalone/standaloneInstancePropertiesButtons.jsf"
+            </facet>
+        </sun:title>
+
+        <sun:hidden id="helpKey" value="$resource{help_cluster.standaloneInstanceProperties}" />
 
     </sun:form>
 #include "/common/shared/changeButtonsJS.inc"

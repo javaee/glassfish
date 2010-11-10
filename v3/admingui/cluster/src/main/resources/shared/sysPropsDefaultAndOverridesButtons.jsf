@@ -39,35 +39,21 @@
     holder.
 
 -->
-
-<!-- standalone/standaloneInstanceConfigProperties.jsf -->
-
-<!initPage
-    setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
-    setResourceBundle(key="i18ncs" bundle="org.glassfish.cluster.admingui.Strings")
-    setResourceBundle(key="help_cluster" bundle="org.glassfish.cluster.admingui.Helplinks");
-
-/>
-<!composition template="/templates/default.layout"  guiTitle="Standalone Instance #{pageSession.instanceName} $resource{i18ncs.SystemPropertiesTitle}" >
-<!define name="content">
-    <event>
-        <!beforeCreate
-            getRequestValue(key="instanceName" value="#{pageSession.instanceName}");
-            urlencode(value="#{pageSession.instanceName}" encoding="UTF-8" result="#{pageSession.encodedInstanceName}");
-            setSessionAttribute(key="standaloneInstanceTabs" value="configProps");
-
-            setPageSessionAttribute(key="parentPage", value="#{request.contextPath}/cluster/standalone/standaloneInstanceGeneral.jsf?instanceName=#{pageSession.encodedInstanceName}");
-            setPageSessionAttribute(key="selfPage", value="#{request.contextPath}/cluster/standalone/standaloneInstanceConfigProperties.jsf?instanceName=#{pageSession.encodedInstanceName}");
+<sun:panelGroup id="topButtons">
+    <sun:button id="saveButton" text="$resource{i18n.button.Save}" >
+        <!command
+            createMap(result="#{requestScope.data}");
+            foreach (var="row", list="#{pageSession.tableList}") {
+                mapPut(map="#{requestScope.data}", key="#{row.name}", value="#{row.overrideValue}");
+            }
+            gf.restRequest(endpoint="#{pageSession.selfUrl}", method="POST", attrs="#{requestScope.data}", contentType="application/x-www-form-urlencoded", result="#{requestScope.restResponse}");
+            prepareSuccessfulMsg();
+            gf.redirect(page="#{pageSession.selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
         />
-    </event>
-    <sun:form id="propertyForm">
-#include "/cluster/standalone/standaloneInstanceTabs.inc"
-#include "/cluster/shared/sysPropsDefaultAndOverrides.jsf"
-
-<sun:hidden id="helpKey" value="$resource{help_cluster.standaloneInstanceConfigPropperties}" />
-
-    </sun:form>
-
-
-</define>
-</composition>
+    </sun:button>
+    <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" rendered="#{pageSession.showCancelButton}" text="$resource{i18n.button.Cancel}" >
+        <!command
+            gf.redirect(page="#{parentPage}");
+        />
+    </sun:button>
+</sun:panelGroup>
