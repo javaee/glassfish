@@ -151,7 +151,7 @@ public class CommandRunnerImpl implements CommandRunner {
             logger.log(Level.SEVERE, "Cannot instantiate " + commandName, e);
             return null;
         }
-        return getModel(command);
+        return command == null ? null : getModel(command);
     }
 
     /**
@@ -924,7 +924,7 @@ public class CommandRunnerImpl implements CommandRunner {
             }
 
             String targetName = parameters.getOne("target");
-            if(targetName == null)
+            if(targetName == null || model.getModelFor("target").getParam().obsolete())
                 targetName = "server";
 
             logger.fine(adminStrings.getLocalString("dynamicreconfiguration.diagnostics.target",
