@@ -47,6 +47,7 @@ import org.glassfish.api.container.Container;
 import org.glassfish.api.event.*;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.EventListener.Event;
+import org.glassfish.internal.deployment.DeploymentTracing;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.internal.deployment.Deployment;
 import org.jvnet.hk2.config.TransactionFailure;
@@ -230,13 +231,25 @@ public class ApplicationInfo extends ModuleInfo {
         }
 
         context.setPhase(ExtendedDeploymentContext.Phase.LOAD);
+        DeploymentTracing tracing = context.getModuleMetaData(DeploymentTracing.class);
+        if (tracing!=null) {
+            tracing.addMark(
+                DeploymentTracing.Mark.LOAD);
+        }
+
 
         super.load(context, tracker);
 
         appClassLoader = context.getClassLoader();
 
         for (ModuleInfo module : modules) {
+            if (tracing!=null) {
+                tracing.addModuleMark(DeploymentTracing.ModuleMark.LOAD, module.getName());
+            }
             module.load(getSubContext(module,context), tracker);
+            if (tracing!=null) {
+                tracing.addModuleMark(DeploymentTracing.ModuleMark.LOADED, module.getName());
+            }
         }
 
         // put all the transient app meta meta from context to 
@@ -245,9 +258,17 @@ public class ApplicationInfo extends ModuleInfo {
 
         isLoaded = true;
 
+        if (tracing!=null) {
+            tracing.addMark(DeploymentTracing.Mark.LOAD_EVENTS);
+        }
+
         if (events!=null) {
             events.send(new Event<ApplicationInfo>(Deployment.APPLICATION_LOADED, this), false);
-        }        
+        }
+        if (tracing!=null) {
+            tracing.addMark(DeploymentTracing.Mark.LOADED);
+        }
+        
     }
 
 
@@ -255,15 +276,35 @@ public class ApplicationInfo extends ModuleInfo {
         ExtendedDeploymentContext context,
         ProgressTracker tracker) throws Exception {
 
-        Logger logger = context.getLogger();
+        DeploymentTracing tracing = context.getModuleMetaData(DeploymentTracing.class);
+        if (tracing!=null) {
+            tracing.addMark(DeploymentTracing.Mark.START);
+        }
+        
         super.start(context, tracker);
         // registers all deployed items.
         for (ModuleInfo module : getModuleInfos()) {
+            if (tracing!=null) {
+                tracing.addModuleMark(DeploymentTracing.ModuleMark.START, module.getName());
+            }
             module.start(getSubContext(module, context), tracker);
+            if (tracing!=null) {
+                tracing.addModuleMark(
+                    DeploymentTracing.ModuleMark.STARTED, module.getName());
+            }
+
         }
+        if (tracing!=null) {
+            tracing.addMark(DeploymentTracing.Mark.START_EVENTS);
+        }
+
         if (events!=null) {
             events.send(new Event<ApplicationInfo>(Deployment.APPLICATION_STARTED, this), false);
         }
+        if (tracing!=null) {
+            tracing.addMark(DeploymentTracing.Mark.STARTED);
+        }
+
     }
 
     public void stop(ExtendedDeploymentContext context, Logger logger) {

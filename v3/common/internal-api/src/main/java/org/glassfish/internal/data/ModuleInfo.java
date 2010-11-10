@@ -57,6 +57,7 @@ import java.util.logging.Logger;
 import com.sun.enterprise.config.serverbeans.Engine;
 import com.sun.enterprise.config.serverbeans.Module;
 import com.sun.enterprise.config.serverbeans.ServerTags;
+import org.glassfish.internal.deployment.DeploymentTracing;
 import org.jvnet.hk2.config.types.Property;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.ActionReport;
@@ -157,6 +158,11 @@ public class ModuleInfo {
     public void load(ExtendedDeploymentContext context, ProgressTracker tracker) throws Exception {
         Logger logger = context.getLogger();
         context.setPhase(ExtendedDeploymentContext.Phase.LOAD);
+        DeploymentTracing tracing = context.getModuleMetaData(DeploymentTracing.class);
+        if (tracing!=null) {
+            tracing.addMark(DeploymentTracing.Mark.LOAD);
+        }
+
         moduleClassLoader = context.getClassLoader();
 
         Set<EngineRef> filteredEngines = new LinkedHashSet<EngineRef>();
@@ -168,6 +174,11 @@ public class ModuleInfo {
     
                 final EngineInfo engineInfo = engine.getContainerInfo();
 
+                if (tracing!=null) {
+                    tracing.addContainerMark(DeploymentTracing.ContainerMark.LOAD,
+                        engineInfo.getSniffer().getModuleType());
+                }
+                
                 // get the container.
                 Deployer deployer = engineInfo.getDeployer();
 
@@ -185,11 +196,22 @@ public class ModuleInfo {
                     logger.log(Level.SEVERE, "Exception while invoking " + deployer.getClass() + " load method", e);
                     throw e;
                 }
+                if (tracing!=null) {
+                    tracing.addContainerMark(DeploymentTracing.ContainerMark.LOADED,
+                        engineInfo.getSniffer().getModuleType());
+                }
+
             }
             engines = filteredEngines;
+            if (tracing!=null) {
+                tracing.addMark(DeploymentTracing.Mark.LOAD_EVENTS);
+            }
 
             if (events!=null) {
                 events.send(new Event<ModuleInfo>(Deployment.MODULE_LOADED, this), false);
+            }
+            if (tracing!=null) {
+                tracing.addMark(DeploymentTracing.Mark.LOADED);
             }
         } finally {
             Thread.currentThread().setContextClassLoader(currentClassLoader);
@@ -237,6 +259,11 @@ public class ModuleInfo {
                 if (logger.isLoggable(Level.FINE)) {
                     logger.fine("starting " + engine.getContainerInfo().getSniffer().getModuleType());
                 }
+                DeploymentTracing tracing = context.getModuleMetaData(DeploymentTracing.class);
+                if (tracing!=null) {
+                    tracing.addContainerMark(DeploymentTracing.ContainerMark.START,
+                        engine.getContainerInfo().getSniffer().getModuleType());
+                }
 
                 try {
                     if (!engine.start( context, tracker)) {
@@ -246,6 +273,10 @@ public class ModuleInfo {
                 } catch(Exception e) {
                     logger.log(Level.SEVERE, "Exception while invoking " + engine.getApplicationContainer().getClass() + " start method", e);
                     throw e;
+                }
+                if (tracing!=null) {
+                    tracing.addContainerMark(DeploymentTracing.ContainerMark.STARTED,
+                        engine.getContainerInfo().getSniffer().getModuleType());
                 }
             }
             started=true;

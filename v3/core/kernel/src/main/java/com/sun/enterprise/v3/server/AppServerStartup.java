@@ -271,7 +271,7 @@ public class AppServerStartup implements ModuleStartup {
                 (System.currentTimeMillis() - platformInitTime),
                 System.currentTimeMillis() - context.getCreationTime()));
 
-        printModuleStatus(level);
+        printModuleStatus(systemRegistry, level);
 
         try {
 			// it will only be set when called from AsadminMain and the env. variable AS_DEBUG is set to true
@@ -325,11 +325,11 @@ public class AppServerStartup implements ModuleStartup {
         for (Inhabitant<? extends PostStartup> postStartup : habitat.getInhabitants(PostStartup.class)) {
             postStartup.get();
         }
-        printModuleStatus(level);
+        printModuleStatus(systemRegistry, level);
 
      }
 
-    private void printModuleStatus(Level level)
+    public static void printModuleStatus(ModulesRegistry registry, Level level)
     {
         if (!logger.isLoggable(level)) {
             return;
@@ -338,21 +338,21 @@ public class AppServerStartup implements ModuleStartup {
         StringBuilder sb = new StringBuilder("Module Status Report Begins\n");
         // first started :
 
-        for (Module m : systemRegistry.getModules()) {
+        for (Module m : registry.getModules()) {
             if (m.getState()== ModuleState.READY) {
                 sb.append(m).append("\n");
             }
         }
         sb.append("\n");
         // then resolved
-        for (Module m : systemRegistry.getModules()) {
+        for (Module m : registry.getModules()) {
             if (m.getState()== ModuleState.RESOLVED) {
                 sb.append(m).append("\n");
             }
         }
         sb.append("\n");
         // finally installed
-        for (Module m : systemRegistry.getModules()) {
+        for (Module m : registry.getModules()) {
             if (m.getState()!= ModuleState.READY && m.getState()!=ModuleState.RESOLVED) {
                 sb.append(m).append("\n");
             }

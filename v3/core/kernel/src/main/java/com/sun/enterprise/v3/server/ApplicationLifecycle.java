@@ -44,13 +44,11 @@ import org.glassfish.deployment.versioning.VersioningUtils;
 import org.glassfish.deployment.versioning.VersioningSyntaxException;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.Calendar;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 import org.glassfish.deployment.common.*;
@@ -58,6 +56,7 @@ import org.glassfish.deployment.monitor.DeploymentLifecycleProbeProvider;
 import org.glassfish.hk2.classmodel.reflect.Parser;
 import org.glassfish.hk2.classmodel.reflect.ParsingContext;
 import org.glassfish.hk2.classmodel.reflect.Types;
+import org.glassfish.internal.deployment.DeploymentTracing;
 import org.glassfish.server.ServerEnvironmentImpl;
 import com.sun.enterprise.config.serverbeans.*;
 import org.jvnet.hk2.config.types.Property;
@@ -69,7 +68,6 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.common.util.admin.ParameterMapExtractor;
 import java.util.StringTokenizer;
 
-import com.sun.enterprise.v3.admin.AdminAdapter;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.*;
 import org.glassfish.api.event.*;
@@ -110,7 +108,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.concurrent.*;
 import java.net.URI;
-import java.net.URL;
 import java.net.URLClassLoader;
 import java.lang.instrument.ClassFileTransformer;
 
@@ -331,15 +328,30 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
                     commandParams.type);
                 context.setArchiveHandler(handler);
             }
+            DeploymentTracing tracing = context.getModuleMetaData(DeploymentTracing.class);
+
+            if (tracing!=null) {
+                tracing.addMark(DeploymentTracing.Mark.ARCHIVE_HANDLER_OBTAINED);
+            }
             if (handler==null) {
                 report.setMessage(localStrings.getLocalString("unknownarchivetype","Archive type of {0} was not recognized",context.getSourceDir()));
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 return null;                
             }
             ClassLoaderHierarchy clh = habitat.getByContract(ClassLoaderHierarchy.class);
+            if (tracing!=null) {
+                tracing.addMark(DeploymentTracing.Mark.CLASS_LOADER_HIERARCHY);
+            }
+
             context.createDeploymentClassLoader(clh, handler);
+            if (tracing!=null) {
+                tracing.addMark(DeploymentTracing.Mark.CLASS_LOADER_CREATED);
+            }
 
             getDeployableTypes(context);
+            if (tracing!=null) {
+                tracing.addMark(DeploymentTracing.Mark.PARSING_DONE);
+            }
 
             final ClassLoader cloader = context.getClassLoader();
             final ClassLoader currentCL = Thread.currentThread().getContextClassLoader();
@@ -355,6 +367,9 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
                 }
                 List<EngineInfo> sortedEngineInfos =
                     setupContainerInfos(handler, sniffers, context);
+                if (tracing!=null) {
+                    tracing.addMark(DeploymentTracing.Mark.CONTAINERS_SETUP_DONE);
+                }
 
                 if (logger.isLoggable(Level.FINE)) {
                     for (EngineInfo info : sortedEngineInfos) {
@@ -382,6 +397,9 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
                 events.send(new Event<DeploymentContext>(Deployment.DEPLOYMENT_BEFORE_CLASSLOADER_CREATION, context), false);
 
                 context.createApplicationClassLoader(clh, handler);
+                if (tracing!=null) {
+                    tracing.addMark(DeploymentTracing.Mark.CLASS_LOADER_CREATED);
+                }
 
 
                     // this is a first time deployment as opposed as load following an unload event,
@@ -420,6 +438,10 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
                 appInfo.setIsJavaEEApp(sortedEngineInfos);
                 appRegistry.add(appName, appInfo);
 
+                if (tracing!=null) {
+                    tracing.addMark(DeploymentTracing.Mark.PREPARED);
+                }
+                
                 // send the APPLICATION_PREPARED event
                 // set the phase and thread context classloader properly 
                 // before sending the event
@@ -583,6 +605,8 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
 
         }
 
+        DeploymentTracing tracing = context.getModuleMetaData(DeploymentTracing.class);
+        
         if (sniffers.size()==0) {
             report.failure(logger,localStrings.getLocalString("deploy.unknownmoduletpe","Module type not recognized for module {0}", context.getSourceDir()));
             return null;
@@ -604,6 +628,10 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
                 return null;
             }
             final String containerName = sniffer.getContainersNames()[0];
+            if (tracing!=null) {
+                tracing.addContainerMark(DeploymentTracing.ContainerMark.SNIFFER_DONE, containerName );
+            }
+            
 
             // start all the containers associated with sniffers.
             EngineInfo engineInfo = containerRegistry.getContainer(containerName);
@@ -613,7 +641,17 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
                 Collection<EngineInfo> containersInfo=null;
                 synchronized (containerRegistry) {
                     if (containerRegistry.getContainer(containerName) == null) {
+                        if (tracing!=null) {
+                            tracing.addContainerMark(
+                                DeploymentTracing.ContainerMark.BEFORE_CONTAINER_SETUP, containerName );
+                        }
+
                         containersInfo = setupContainer(sniffer, snifferModule, logger, context);
+                        if (tracing!=null) {
+                            tracing.addContainerMark(
+                                DeploymentTracing.ContainerMark.AFTER_CONTAINER_SETUP, containerName );
+                        }
+
                         if (containersInfo == null || containersInfo.size() == 0) {
                             String msg = "Cannot start container(s) associated to application of type : " + sniffer.getModuleType();
                             report.failure(logger, msg, null);
@@ -630,6 +668,11 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
                 }
             }
             engineInfo = containerRegistry.getContainer(sniffer.getContainersNames()[0]);
+            if (tracing!=null) {
+                tracing.addContainerMark(
+                    DeploymentTracing.ContainerMark.GOT_CONTAINER, containerName );
+            }
+
             if (engineInfo ==null) {
                 final String msg = "Aborting, Failed to start container " + containerName;
                 report.failure(logger, msg, null);
@@ -647,8 +690,13 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
                 if (deployer == null) {
                      report.failure(logger, "Got a null deployer out of the " + engineInfo.getContainer().getClass() + " container, is it annotated with @Service ?");
                      return null;
-                } 
-             } 
+                }
+             }
+            if (tracing!=null) {
+                tracing.addContainerMark(
+                    DeploymentTracing.ContainerMark.GOT_DEPLOYER, containerName );
+            }
+
             containerInfosByDeployers.put(deployer, engineInfo);
         }
 
@@ -800,13 +848,30 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
 
         ActionReport report = context.getActionReport();
         List<EngineRef> addedEngines = new ArrayList<EngineRef>();
+
+        DeploymentTracing tracing = context.getModuleMetaData(DeploymentTracing.class);
+
+        if (tracing!=null) {
+            tracing.addModuleMark(DeploymentTracing.ModuleMark.PREPARE,
+                        moduleName);
+        }
+
         for (EngineInfo engineInfo : sortedEngineInfos) {
 
             // get the deployer
             Deployer deployer = engineInfo.getDeployer();
 
             try {
+                if (tracing!=null) {
+                    tracing.addContainerMark(DeploymentTracing.ContainerMark.PREPARE,
+                                engineInfo.getSniffer().getModuleType() );
+                }
                 deployer.prepare(context);
+                if (tracing!=null) {
+                    tracing.addContainerMark(DeploymentTracing.ContainerMark.PREPARED,
+                                engineInfo.getSniffer().getModuleType() );
+                }
+
 
                 // construct an incomplete EngineRef which will be later
                 // filled in at loading time
@@ -820,9 +885,17 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
                 throw e;
             }
         }
+        if (tracing!=null) {
+            tracing.addModuleMark(DeploymentTracing.ModuleMark.PREPARE_EVENTS, moduleName);
+        }
+        
         if (events!=null) {
             events.send(new Event<DeploymentContext>(Deployment.MODULE_PREPARED, context), false);
         }
+        if (tracing!=null) {
+            tracing.addModuleMark(DeploymentTracing.ModuleMark.PREPARED,moduleName);
+        }
+
         // I need to create the application info here from the context, or something like this.
         // and return the application info from this method for automatic registration in the caller.
 
