@@ -641,6 +641,7 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
         ccp.setConnectionValidationRequired(Boolean.valueOf(adminPool.getIsConnectionValidationRequired()));
 
         ccp.setNonTransactional(Boolean.valueOf(adminPool.getNonTransactionalConnections()));
+        ccp.setNonComponent(Boolean.valueOf(adminPool.getAllowNonComponentCallers()));
 
         ccp.setPingDuringPoolCreation(Boolean.valueOf(adminPool.getPing()));
         //These are default properties of all Jdbc pools
