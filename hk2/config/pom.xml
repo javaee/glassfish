@@ -28,6 +28,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>apt-maven-plugin</artifactId>
+                <version>1.0-alpha-4</version>
                 <inherited>false</inherited>                    
                 <configuration>
                     <!-- forking is necessary here, to avoid the class cast exception as described
