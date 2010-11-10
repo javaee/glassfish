@@ -82,9 +82,7 @@ public class DeleteLocalInstanceCommand extends LocalInstanceCommand {
     @Override
     protected void initInstance() throws CommandException {
         try {
-            tempDump("before initInstance");
             super.initInstance();
-            tempDump("after initInstance");
         }
         catch (CommandException e) {
             throw e;
@@ -107,7 +105,6 @@ public class DeleteLocalInstanceCommand extends LocalInstanceCommand {
             throws CommandException, CommandValidationException {
         instanceName = instanceName0;
         super.validate();
-        tempDump("Dump of ServerDirs:", ObjectAnalyzer.toString(getServerDirs()));
         if (!StringUtils.ok(getServerDirs().getServerName()))
             throw new CommandException(Strings.get("DeleteInstance.noInstanceName"));
 
@@ -117,7 +114,6 @@ public class DeleteLocalInstanceCommand extends LocalInstanceCommand {
             setDasDefaults(dasProperties);
         }
 
-        tempDump("Is the instance's directory really a directory?: " + getServerDirs().getServerDir().isDirectory());
         if (!getServerDirs().getServerDir().isDirectory())
             throw new CommandException(Strings.get("DeleteInstance.noWhack",
                     getServerDirs().getServerDir()));
@@ -128,32 +124,20 @@ public class DeleteLocalInstanceCommand extends LocalInstanceCommand {
     @Override
     protected int executeCommand()
             throws CommandException, CommandValidationException {
-
-        tempDump("in execute()");
-        tempDump(ObjectAnalyzer.toStringWithSuper(this));
-
         if (isRunning()) {
-            tempDump("*****  ERROR!!!! instance is running !!!!");
             int prevpid = getPrevPid();
-            tempDump("prevpid = " + prevpid);
-            tempDump("ProcessUtils.isProcessRunning(" + prevpid + ") -- returned: " +  ProcessUtils.isProcessRunning(getPrevPid()));
             Map<String, Integer> procs = Jps.getProcessTable();
             Set<Map.Entry<String,Integer>> set = procs.entrySet();
             Iterator<Map.Entry<String,Integer>> it = set.iterator();
             while(it.hasNext()) {
                 Map.Entry<String,Integer> entry = it.next();
-                tempDump("FROM JPS -- name=" + entry.getKey() + ", pid= " + entry.getValue());
             }
             
             throw new CommandException(Strings.get("DeleteInstance.running"));
         }
 
-        tempDump("instance was not running -- calling _unregister_instance now");
         doRemote();
-
-        tempDump("_unreg worked -- whacking filesystem now...");
         whackFilesystem();
-        tempDump("everything worked -- returning success...");
         return SUCCESS;
     }
 
@@ -170,10 +154,6 @@ public class DeleteLocalInstanceCommand extends LocalInstanceCommand {
         }
         catch (CommandException ce) {
             // Let's add our $0.02 to this Exception!
-
-            tempDump("Got an exception unregistering instance: ", ce.toString());
-
-
             Throwable t = ce.getCause();
             String newString = Strings.get("DeleteInstance.remoteError",
                     ce.getLocalizedMessage());
