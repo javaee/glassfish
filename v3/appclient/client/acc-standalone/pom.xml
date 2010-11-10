@@ -151,6 +151,7 @@ this or the downstream JARs and so attempts to find things fail.
                             </manifest>
                             <manifestEntries>
                                 <PreMain-Class>org.glassfish.appclient.client.acc.agent.AppClientContainerAgent</PreMain-Class>
+				<GlassFish-ServerExcluded>true</GlassFish-ServerExcluded>
                             </manifestEntries>
                         </archive>
                     </configuration>
