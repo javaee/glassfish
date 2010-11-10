@@ -68,6 +68,7 @@ import com.sun.pkg.client.Manifest;
 import com.sun.pkg.client.SystemInfo;
 import com.sun.pkg.client.SystemInfo.UpdateCheckFrequency;
 import com.sun.pkg.client.Version;
+import java.util.logging.Level;
 
 import org.glassfish.admingui.common.util.GuiUtil;
 
@@ -419,7 +420,7 @@ public class UpdateCenterHandlers {
             install=true;
         List obj = (List) handlerCtx.getInputValue("selectedRows");
         if (obj == null){
-            GuiUtil.getLogger().fine("updateCenterProcess: No row selected for"  + install);
+            //no row selected
             return;
         }
         List<Map> selectedRows = (List) obj;
@@ -478,7 +479,7 @@ public class UpdateCenterHandlers {
             UpdateCheckFrequency userPreference = SystemInfo.getUpdateCheckFrequency();
             boolean donotping = userPreference == UpdateCheckFrequency.NEVER;
             if(donotping){
-                GuiUtil.getLogger().info("UpdateCheckFrequency is set to NEVER by user.  Component update count not performed. ");
+                GuiUtil.getLogger().info(GuiUtil.getMessage(BUNDLE,"noCheckPerformed"));
                 GuiUtil.setSessionValue(USER_OK, Boolean.FALSE);
                 handlerCtx.setOutputValue("count", -1);
                 return;
@@ -496,7 +497,10 @@ public class UpdateCenterHandlers {
             Image image = getUpdateCenterImage();
             countInt = updateCountInSession(image);
         }
-        GuiUtil.getLogger().info("Update Component count = " + countInt);
+        if(GuiUtil.getLogger().isLoggable(Level.FINE)){
+            String msg = GuiUtil.getMessage(BUNDLE, "updateCount") + countInt;
+            GuiUtil.getLogger().fine(msg);
+        }
         handlerCtx.setOutputValue("count", countInt);
     }
 
@@ -507,7 +511,7 @@ public class UpdateCenterHandlers {
 	    List list = getUpdateDisplayList(image, true);
 	    countInt = (Integer) list.get(0);
 	 }else{
-	    GuiUtil.getLogger().warning("Error in getting update component list, cannot get image.");
+	    GuiUtil.getLogger().warning(GuiUtil.getMessage(BUNDLE, "cannotGetImage"));
 	 }
          GuiUtil.setSessionValue(UPDATE_COUNT, countInt);
          return countInt;
@@ -577,11 +581,10 @@ public class UpdateCenterHandlers {
             image = new Image (new File (ucDir));
             refreshCatalog(image);
         }catch(Exception ex){
-            GuiUtil.getLogger().warning("Cannot create update center Image for " + ucDir  + "; Update Center functionality will not be available in Admin Console ");
+            GuiUtil.getLogger().warning(GuiUtil.getMessage(BUNDLE, "NoImage", new String[]{ucDir}));
         }
         return image;
     }
-    
    
     private static synchronized void refreshCatalog (Image image){
         try{
@@ -591,7 +594,7 @@ public class UpdateCenterHandlers {
             }
         }catch(Exception ex){
             GuiUtil.getLogger().warning( ex.getMessage());
-            GuiUtil.getLogger().warning(GuiUtil.getMessage("org.glassfish.updatecenter.admingui.Strings", "ProxySetupHelp"));
+            GuiUtil.getLogger().warning(GuiUtil.getMessage(BUNDLE, "ProxySetupHelp"));
         }
     } 
 
