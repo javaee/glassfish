@@ -147,7 +147,7 @@ public class GuiUtil {
 
         Logger logger = GuiUtil.getLogger();
         if (logger.isLoggable(Level.INFO)) {
-            logger.log(Level.FINE,  GuiUtil.getCommonMessage("LOG_INIT_SESSION"));
+            logger.log(Level.INFO,  GuiUtil.getCommonMessage("LOG_INIT_SESSION"));
         }
         ExternalContext externalCtx = FacesContext.getCurrentInstance().getExternalContext();
         Map<String, Object> sessionMap = externalCtx.getSessionMap();
