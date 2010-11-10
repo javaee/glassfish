@@ -125,6 +125,7 @@ import java.util.logging.Logger;
  *
  * @author &#2325;&#2375;&#2342;&#2366;&#2352; (km@dev.java.net)
  * @author Ken Paulsen (kenpaulsen@dev.java.net)
+ * @author Siraj Ghaffar (sirajg@dev.java.net)
  * @since GlassFish V3 (March 2008)
  */
 @Service
@@ -236,6 +237,13 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
      */
     @Override
     public void service(GrizzlyRequest req, GrizzlyResponse res) {
+    
+        bundle = getResourceBundle(req.getLocale());
+
+        if (!env.isDas()) {
+            sendStatusNotDAS(req, res);
+            return;
+        }
 
         //This is needed to support the case where user update to 3.1 from previous release, and didn't run the upgrade tool.
         if (adminConsoleConfigUpgrade == null){
@@ -269,7 +277,6 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
             }
             return;
         }
-        bundle = getResourceBundle(req.getLocale());
         res.setContentType("text/html; charset=UTF-8");
 
         if (isApplicationLoaded()) {
@@ -815,6 +822,26 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
                                  + ':' + req.getServerPort() + "/login.jsf";
             localHtml = localHtml.replace(REDIRECT_TOKEN, locationUrl);
             bytes = localHtml.replace(STATUS_TOKEN, status).getBytes("UTF-8");
+            res.setContentLength(bytes.length);
+            ob.write(bytes, 0, bytes.length);
+            ob.flush();
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    /**
+     *
+     */
+    private void sendStatusNotDAS(GrizzlyRequest req, GrizzlyResponse res) {
+        byte[] bytes;
+        try {
+            String html = Utils.packageResource2String("statusNotDAS.html");
+            GrizzlyOutputBuffer ob = getOutputBuffer(res);
+            // Replace locale specific Strings
+            String localHtml = replaceTokens(html, bundle);
+
+            bytes = localHtml.getBytes("UTF-8");
             res.setContentLength(bytes.length);
             ob.write(bytes, 0, bytes.length);
             ob.flush();
