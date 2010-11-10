@@ -53,7 +53,6 @@ import org.glassfish.api.Param;
 import org.glassfish.api.I18n;
 import org.glassfish.api.admin.*;
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
-import com.sun.enterprise.admin.util.SecureAdminClientManager;
 import com.sun.enterprise.admin.servermgmt.KeystoreManager;
 import com.sun.enterprise.admin.util.CommandModelData.ParamModelData;
 import com.sun.enterprise.security.store.PasswordAdapter;
@@ -90,9 +89,6 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
 
     @Param(name = "checkports", optional = true, defaultValue = "true")
     private boolean checkPorts = true;
-
-    @Param(name = "bootstrap", optional = true, defaultValue = "true")
-    private boolean bootstrap = true;
 
     @Param(name = "savemasterpassword", optional = true, defaultValue = "false")
     private boolean saveMasterPassword = false;
@@ -132,20 +128,6 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
         super.validate();  // instanceName is validated and set in super.validate(), directories created
         INSTANCE_DOTTED_NAME = "servers.server." + instanceName;
         RENDEZVOUS_DOTTED_NAME = INSTANCE_DOTTED_NAME + ".property." + RENDEZVOUS_PROPERTY_NAME;
-
-        /*
-         * Before contacting the DAS, intialize client authentication so
-         * we either send the admin indicator header or we use client cert
-         * authentication, depending on the current configuration.
-         */
-        SecureAdminClientManager.initClientAuthentication(
-                passwords.get(CLIConstants.MASTER_PASSWORD) != null ?
-                    passwords.get(CLIConstants.MASTER_PASSWORD).toCharArray() : null,
-                programOpts.isInteractive(),
-                instanceName,
-                nodeDir,
-                node,
-                nodeDirRoot);
 
         if (!rendezvousWithDAS()) {
             instanceDir.delete();
@@ -190,9 +172,7 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
                 throw ce;
             }
         }
-        if (bootstrap) {
-            bootstrapSecureAdminFiles();
-        }
+        bootstrapSecureAdminFiles();
         try {
             exitCode = super.executeCommand();
             if (exitCode == SUCCESS) {
