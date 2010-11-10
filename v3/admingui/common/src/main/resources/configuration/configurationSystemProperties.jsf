@@ -40,23 +40,20 @@
 
 -->
 
-<!-- cluster/clusterInstanceConfigProperties.jsf -->
-
 <!initPage
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
     setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
-    setResourceBundle(key="i18ncs" bundle="org.glassfish.cluster.admingui.Strings")
-    setResourceBundle(key="help_cluster" bundle="org.glassfish.cluster.admingui.Helplinks");
+    setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
 
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18ncs.SystemPropertiesTitle} - #{pageSession.configName}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18nc.configurations.SystemPropertiesTitle} - #{pageSession.configName}" >
 <!define name="content">
     <event>
         <!beforeCreate
             getRequestValue(key="configName" value="#{pageSession.configName}");
 
             setPageSessionAttribute(key="parentPage", value="#{request.contextPath}/configuration/configuration.jsf?configName=#{pageSession.configName}");
-            setPageSessionAttribute(key="selfPage", value="#{request.contextPath}/cluster/configuration/configurationSystemProperties.jsf?configName=#{pageSession.configName}");
+            setPageSessionAttribute(key="selfPage", value="#{request.contextPath}/common/configuration/configurationSystemProperties.jsf?configName=#{pageSession.configName}");
             setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}");
             setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/system-properties");
 
@@ -64,6 +61,10 @@
             setPageSessionAttribute(key="edit" value="#{true}" );
             setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
             setPageSessionAttribute(key="showDefaultButton" value="#{false}" );
+
+            if ("(server-config=$pageSession{configName})") {
+                setPageSessionAttribute(key="isServerConfig" value="$boolean{true}");
+            }
 
             // Get config attributes
             gf.restRequest(endpoint="#{pageSession.parentUrl}", method="get", result="#{requestScope.result}");
@@ -75,18 +76,20 @@
 
             // find clusters/instances using this config
             createList(result="#{pageSession.configUsageList}" size="0");
-            gf.restRequest(endpoint="#{sessionScope.REST_URL}/servers/server", method="get", result="#{requestScope.result}");
-            gf.getMapKeys(Map="#{requestScope.result.data.extraProperties.childResources}", Keys="#{requestScope.instances}");
-            foreach (var="instance", list="#{requestScope.instances}") {
-                gf.restRequest(endpoint="#{sessionScope.REST_URL}/servers/server/#{instance}", method="get", result="#{requestScope.instanceResults}");
-                if ("#{requestScope.instanceResults.data.extraProperties.entity.configRef}=#{pageSession.configName}") {
-                    listAdd(list="#{pageSession.configUsageList}", value="#{instance}");
+            //if (!"$pageSession{isServerConfig}") {
+                gf.restRequest(endpoint="#{sessionScope.REST_URL}/servers/server", method="get", result="#{requestScope.result}");
+                gf.getMapKeys(Map="#{requestScope.result.data.extraProperties.childResources}", Keys="#{requestScope.instances}");
+                foreach (var="instance", list="#{requestScope.instances}") {
+                    gf.restRequest(endpoint="#{sessionScope.REST_URL}/servers/server/#{instance}", method="get", result="#{requestScope.instanceResults}");
+                    if ("#{requestScope.instanceResults.data.extraProperties.entity.configRef}=#{pageSession.configName}") {
+                        listAdd(list="#{pageSession.configUsageList}", value="#{instance}");
+                    }
                 }
-            }
+            //}
         />
     </event>
     <sun:form id="propertyForm">
-        <sun:title id="propertyContentPage" title="$resource{i18ncs.common.ConfigurationCol} $resource{i18ncs.SystemPropertiesTitle}" >
+        <sun:title id="propertyContentPage" title="$resource{i18n.systemProps.systemProps} - #{pageSession.configName}" >
             <!facet pageButtonsTop>
                 <sun:panelGroup id="topButtons">
 #include "configSystemPropertiesButtons.jsf"
@@ -170,13 +173,13 @@
                 <sun:tableColumn headerText="$resource{i18n.systemProps.colDefaultValue}" sort="value" rowHeader="$boolean{false}" id="col3">
                     <sun:textField columns="$int{40}" maxLength="#{sessionScope.fieldLengths['maxLength.common.PropertyValue']}" id="col1St" value="#{td.value.value}" />
                 </sun:tableColumn>
-                <sun:tableColumn headerText="$resource{i18n.systemProps.colInstanceValues}" sort="value" rowHeader="$boolean{false}" id="col4">
+                <sun:tableColumn headerText="$resource{i18n.systemProps.colInstanceValues}" sort="value" rowHeader="$boolean{false}" id="col4" rendered="#{!pageSession.isServerConfig}">
                     <sun:hyperlink id="instanceLink" text="$resource{i18n.systemProps.colInstanceValues}" url="/cluster/configuration/sysInstanceValues.jsf?propName=#{td.value.name}&configName=#{pageSession.configName}"/>
                 </sun:tableColumn>
                 "<br/>
             </sun:tableRowGroup>
         </sun:table>
-        <sun:propertySheet id="propertySheet2" >
+        <sun:propertySheet id="propertySheet2" rendered="#{!pageSession.isServerConfig}">
             <sun:propertySheetSection id="usingThisConfigSheet">
                 <sun:property id="usingThisConfigProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.systemProps.instClustLabel}" >
                     <foreach key="entry" list="#{pageSession.configUsageList}">

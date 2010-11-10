@@ -168,6 +168,18 @@
                 priority="800"
                 parentId="#{configNameId}"
                 content="monitor/monitoringNode.jsf" />
+        <integration-point
+                id="sysprops"
+                type="org.glassfish.admingui:navNode"
+                priority="800"
+                parentId="#{configNameId}"
+                content="monitor/monitoringNode.jsf" />
+        <integration-point
+                id="sysprops_node"
+                type="org.glassfish.admingui:navNode"
+                priority="900"
+                parentId="#{configNameId}"
+                content="configuration/pluginTreeNodeConfigSysProps.jsf"/>
 
         <integration-point
                 id="monitoring"

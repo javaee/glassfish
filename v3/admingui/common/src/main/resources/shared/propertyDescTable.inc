@@ -53,25 +53,25 @@
         />
 <!-- Actions (Top) -->
     <!facet actionsTop>
-    <sun:panelGroup id="topActionsGroup1">
-        <!afterCreate
-                getClientId(component="$this{component}" clientId=>$page{topActionGroup});
-            />
-        <sun:button id="addSharedTableButton" disabled="#{false}" text="$resource{i18n.button.AddProperty}" >   
-            <!command
-                getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
-                addRowToTable(TableRowGroup="$attribute{tableRowGroup}", NameList={"name", "value", "description"});
-            />                                 
-        </sun:button>
-        <sun:button id="button1" text="$resource{i18n.button.DeleteProperties}" disabled="#{true}" primary="#{false}">
-            <!command
-                getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{trg});   
-                getSelectedTableRowKeys(tableRowGroup="${trg}" rowKeys=>$attribute{rowKeys});
-                deleteTableRows(tableRowGroup="${trg}" rowKeys="${rowKeys}");
-                commitTableRowGroup(tableRowGroup="${trg}");
-            />                                
-        </sun:button>
-    </sun:panelGroup>
+        <sun:panelGroup id="topActionsGroup1">
+            <!afterCreate
+                    getClientId(component="$this{component}" clientId=>$page{topActionGroup});
+                />
+            <sun:button id="addSharedTableButton" disabled="#{false}" text="$resource{i18n.button.AddProperty}" >   
+                <!command
+                    getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
+                    addRowToTable(TableRowGroup="$attribute{tableRowGroup}", NameList={"name", "value", "description"});
+                />                                 
+            </sun:button>
+            <sun:button id="button1" text="$resource{i18n.button.DeleteProperties}" disabled="#{true}" primary="#{false}">
+                <!command
+                    getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{trg});   
+                    getSelectedTableRowKeys(tableRowGroup="${trg}" rowKeys=>$attribute{rowKeys});
+                    deleteTableRows(tableRowGroup="${trg}" rowKeys="${rowKeys}");
+                    commitTableRowGroup(tableRowGroup="${trg}");
+                />                                
+            </sun:button>
+        </sun:panelGroup>
     </facet>       
     <sun:tableRowGroup id="rowGroup1" selected="#{td.value.selected}" data={"$pageSession{tableList}", "$pageSession{tableList2}"}  sourceVar="td">
         <ui:event type="beforeCreate">
