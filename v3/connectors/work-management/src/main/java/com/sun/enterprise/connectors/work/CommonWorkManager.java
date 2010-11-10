@@ -121,6 +121,11 @@ public final class CommonWorkManager implements WorkManager {
                 }
             }
             if (tp == null) {
+                // in case the default thread-pool was not available.
+                // Set the message appropriately.
+                if(threadPoolId == null){
+                    threadPoolId = "default thread-pool of server";
+                }
                 String msg = localStrings.getString("workmanager.threadpool_not_found", new Object[]{threadPoolId});
                 logger.log(Level.SEVERE, msg);
                 throw new ConnectorRuntimeException(msg);
