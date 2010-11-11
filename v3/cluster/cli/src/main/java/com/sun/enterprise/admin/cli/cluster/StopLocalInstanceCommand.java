@@ -61,7 +61,6 @@ import com.sun.enterprise.util.HostAndPort;
 @Service(name = "stop-local-instance")
 @Scoped(PerLookup.class)
 public class StopLocalInstanceCommand extends LocalInstanceCommand {
-
     @Param(optional = true, defaultValue = "true")
     private Boolean force;
     @Param(name = "instance_name", primary = true, optional = true)
@@ -105,21 +104,27 @@ public class StopLocalInstanceCommand extends LocalInstanceCommand {
 
         if (serverDir == null || !serverDir.isDirectory())
             return noSuchInstance();
+        try {
+            if (getServerDirs().getLocalPassword() == null)
+                return instanceNotRunning();
 
-        if (getServerDirs().getLocalPassword() == null)
-            return instanceNotRunning();
+            String serverName = getServerDirs().getServerName();
+            HostAndPort addr = getAdminAddress(serverName);
+            programOpts.setHostAndPort(addr);
 
-        String serverName = getServerDirs().getServerName();
-        HostAndPort addr = getAdminAddress(serverName);
-        programOpts.setHostAndPort(addr);
+            logger.finer("StopInstance.stoppingMessage" + addr.getPort());
 
-        logger.finer("StopInstance.stoppingMessage" + addr.getPort());
+            if (!isRunningForSure())
+                return instanceNotRunning();
 
-        if (!isRunningForSure())
-            return instanceNotRunning();
-
-        logger.finer("It's the correct Instance");
-        return doRemoteCommand();
+            logger.finer("It's the correct Instance");
+            // we CAN communicate with the admin listener if we get here...
+            return doRemoteCommand();
+        }
+        finally {
+            if (kill)
+                kill();
+        }
     }
 
     /**
@@ -127,13 +132,13 @@ public class StopLocalInstanceCommand extends LocalInstanceCommand {
      * we detect that the DAS is not running.
      */
     protected int instanceNotRunning() throws CommandException {
-        if (kill)
-            return kill();
 
         // by definition this is not an error
         // https://glassfish.dev.java.net/issues/show_bug.cgi?id=8387
 
-        logger.warning(Strings.get("StopInstance.instanceNotRunning"));
+        if (!kill)
+            logger.warning(Strings.get("StopInstance.instanceNotRunning"));
+
         return 0;
     }
 
@@ -151,13 +156,12 @@ public class StopLocalInstanceCommand extends LocalInstanceCommand {
     /**
      * Execute the actual stop-domain command.
      */
-    protected int doRemoteCommand()
-            throws CommandException, CommandValidationException {
+    protected int doRemoteCommand() throws CommandException {
 
         // put the local-password for the instance  in programOpts
         // we don't do this for ALL local-instance commands because if they call
         // DAS with the instance's local-password it will cause BIG trouble...
-        setLocalPassword(); 
+        setLocalPassword();
 
         /*
          * If we're using the local password, we don't want to prompt
@@ -170,10 +174,6 @@ public class StopLocalInstanceCommand extends LocalInstanceCommand {
         RemoteCommand cmd = new RemoteCommand("_stop-instance", programOpts, env);
         cmd.executeAndReturnOutput("_stop-instance", "--force", force.toString());
         waitForDeath();
-
-        if(kill)
-            kill();
-        
         return 0;
     }
 
@@ -192,7 +192,7 @@ public class StopLocalInstanceCommand extends LocalInstanceCommand {
         while (!timedOut(startWait)) {
             boolean isRunning;
 
-            if(kill) // get out of here if it's a Zombie fast!
+            if (kill) // get out of here if it's a Zombie fast!
                 isRunning = isRunningForSure();
             else
                 isRunning = isRunning(); // normal case -- wait for the PROCESS to die
@@ -237,7 +237,7 @@ public class StopLocalInstanceCommand extends LocalInstanceCommand {
             pids = FileUtils.readSmallFile(prevPid).trim();
             String s = ProcessUtils.kill(Integer.parseInt(pids));
 
-            if(s != null)
+            if (s != null)
                 logger.finer(s);
         }
         catch (CommandException ce) {
