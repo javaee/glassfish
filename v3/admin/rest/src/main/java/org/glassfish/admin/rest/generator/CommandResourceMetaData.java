@@ -184,7 +184,7 @@ ListLbConfig
             {"Domain", "create-instance", "POST", "create-instance", "Create Instance"},
             {"Domain", "create-password-alias", "POST", "create-password-alias", "create-password-alias"},
             {"Domain", "delete-password-alias", "POST", "delete-password-alias", "delete-password-alias"},
-            {"Domain", "list-password-alias", "GET", "list-password-alias", "list-password-alias"},
+            {"Domain", "list-password-aliases", "GET", "list-password-aliases", "list-password-aliases"},
             {"Domain", "update-password-alias", "POST", "update-password-alias", "update-password-alias"},
             {"Domain", "disable-monitoring", "POST", "disable-monitoring", "Disable Monitoring"},
             {"Domain", "disable-secure-admin", "POST", "disable-secure-admin", "disable-secure-admin"},
