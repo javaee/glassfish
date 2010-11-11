@@ -138,6 +138,11 @@ public abstract class LocalServerCommand extends CLICommand {
             logger.finer("Not using local password");
     }
 
+    protected final void unsetLocalPassword() {
+            programOpts.setPassword(null,
+                    ProgramOptions.PasswordLocation.LOCAL_PASSWORD);
+    }
+
     protected final void resetServerDirs() throws IOException {
         serverDirs = serverDirs.refresh();
     }
@@ -314,7 +319,7 @@ public abstract class LocalServerCommand extends CLICommand {
 
         Boolean b = ProcessUtils.isProcessRunning(pp);
 
-        if(b == null) // this means it couldn't find out!
+        if (b == null) // this means it couldn't find out!
             return isRunningUsingJps();
         else
             return b.booleanValue();

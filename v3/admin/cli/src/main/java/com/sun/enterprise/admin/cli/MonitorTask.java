@@ -146,8 +146,8 @@ public class MonitorTask extends TimerTask {
                 }
            counter++;
         } catch (Exception e) {
-            logger.severe(
-                    strings.get("monitorCommand.errorRemote", e.getMessage()));
+            //logger.severe(
+                    //strings.get("monitorCommand.errorRemote", e.getMessage()));
             cancelMonitorTask();
             exceptionMessage = e.getMessage();
         }
