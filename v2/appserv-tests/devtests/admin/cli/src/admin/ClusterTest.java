@@ -418,13 +418,6 @@ public class ClusterTest extends AdminBaseDevTest {
                 "--connectiondefinition", "javax.jms.QueueConnectionFactory",
                 "jms/qConnPool"));
 
-        // try to create a resource on only one instance - should fail
-        report(tn + "create-connector-connection-pool-instance",
-               !asadmin("create-connector-connection-pool", "--target", i2name,
-               "--raname", "jmsra",
-               "--connectiondefinition", "javax.jms.QueueConnectionFactory",
-               "jms/instanceOnlyConnPool"));
-
         // delete the resources
         report(tn + "delete-jdbc-connection-pool", asadmin("delete-jdbc-connection-pool",
                 "--target", cname, "sample_jdbc_pool"));
