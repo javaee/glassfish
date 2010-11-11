@@ -44,6 +44,7 @@ import org.jboss.weld.ejb.spi.BusinessInterfaceDescriptor;
 import org.jboss.weld.ejb.SessionBeanInterceptor;
 
 import javax.ejb.Local;
+import javax.ejb.Remote;
 import javax.interceptor.InvocationContext;
 
 import com.sun.enterprise.deployment.*;
@@ -246,6 +247,16 @@ public class EjbDescriptorImpl<T> implements org.jboss.weld.ejb.spi.EjbDescripto
             addIfLocal(next.getInterfaces(), names);
         }
     }
+    
+    private void addIfRemote(Class[] interfaces, Set<String> names) {
+        for(Class next : interfaces) {
+            if( next.getAnnotation(Remote.class) != null ) {
+                names.add(next.getName());
+            }
+            addIfRemote(next.getInterfaces(), names);
+        }
+    }
+    
 
     private EjbInterceptor createSystemLevelCDIInterceptor() {
 
@@ -294,5 +305,51 @@ public class EjbDescriptorImpl<T> implements org.jboss.weld.ejb.spi.EjbDescripto
             }
         }
         return null;
+    }
+
+
+    @Override
+    public Collection<BusinessInterfaceDescriptor<?>> getRemoteBusinessInterfaces() {
+        Set<BusinessInterfaceDescriptor<?>> remoteBusIntfs = new HashSet<BusinessInterfaceDescriptor<?>>();
+
+        if( ejbDesc.getType().equals(EjbSessionDescriptor.TYPE) ) {
+
+            EjbSessionDescriptor sessionDesc = (EjbSessionDescriptor) ejbDesc;
+            Set<String> remoteNames = sessionDesc.getRemoteBusinessClassNames();
+
+            // Add superinterfaces that are also marked as Local
+            Set<String> extraNames = new HashSet<String>();
+            for(String local : remoteNames) {
+                try {
+                    Class remoteClass = sessionDesc.getEjbBundleDescriptor().getClassLoader().loadClass(local);
+                    addIfRemote(remoteClass.getInterfaces(), extraNames);
+                } catch(ClassNotFoundException e) {
+                    throw new IllegalStateException(e);
+                }
+            }
+
+            remoteNames.addAll(extraNames);
+
+            // Include the no-interface Local view
+            if( sessionDesc.isLocalBean() ) {
+                remoteNames.add(sessionDesc.getEjbClassName());
+            }
+
+
+            for(String remote : remoteNames) {
+                try {
+
+                    Class remoteClass = sessionDesc.getEjbBundleDescriptor().getClassLoader().loadClass(remote);
+                    BusinessInterfaceDescriptor busIntfDesc =
+                            new BusinessInterfaceDescriptorImpl(remoteClass);
+                    remoteBusIntfs.add(busIntfDesc);
+
+                } catch(ClassNotFoundException e) {
+                    throw new IllegalStateException(e);
+                }
+            }
+        }
+       
+        return remoteBusIntfs;
     }
 }

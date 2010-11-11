@@ -40,28 +40,21 @@
 
 package org.glassfish.weld;
 
-import org.glassfish.api.naming.NamedNamingObjectProxy;
-import org.glassfish.api.invocation.ComponentInvocation;
+import javax.naming.NamingException;
 
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.component.Habitat;
+import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
+import org.glassfish.api.naming.NamedNamingObjectProxy;
+import org.jboss.weld.bootstrap.WeldBootstrap;
+import org.jboss.weld.bootstrap.spi.BeanDeploymentArchive;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Service;
 
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
-
-
 import com.sun.enterprise.deployment.BundleDescriptor;
-import com.sun.enterprise.deployment.WebBundleDescriptor;
-import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.JndiNameEnvironment;
-
-import org.jboss.weld.bootstrap.WeldBootstrap;
-
-import org.jboss.weld.bootstrap.spi.BeanDeploymentArchive;
-
-import javax.naming.NamingException;
+import com.sun.enterprise.deployment.WebBundleDescriptor;
 
 /**
  * Proxy for java:comp/BeanManager lookups

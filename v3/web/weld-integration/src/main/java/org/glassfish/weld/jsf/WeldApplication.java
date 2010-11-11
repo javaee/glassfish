@@ -40,43 +40,17 @@
 
 package org.glassfish.weld.jsf;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Locale;
-import java.util.ResourceBundle;
-
 import javax.el.ELContextListener;
 import javax.el.ExpressionFactory;
 import javax.enterprise.inject.spi.BeanManager;
-import javax.faces.FacesException;
 import javax.faces.application.Application;
 import javax.faces.application.ApplicationWrapper;
-import javax.faces.application.NavigationHandler;
-import javax.faces.application.ResourceHandler;
-import javax.faces.application.StateManager;
-import javax.faces.application.ViewHandler;
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
-import javax.faces.convert.Converter;
-import javax.faces.el.MethodBinding;
-import javax.faces.el.PropertyResolver;
-import javax.faces.el.ReferenceSyntaxException;
-import javax.faces.el.ValueBinding;
-import javax.faces.el.VariableResolver;
-import javax.faces.event.ActionListener;
-import javax.faces.validator.Validator;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 import org.glassfish.weld.util.Util;
 
-import org.jboss.weld.el.WeldELContextListener;
-import org.jboss.weld.el.WeldExpressionFactory;
-
 public class WeldApplication extends ApplicationWrapper {
-   
-    private static final ELContextListener[] EMPTY_LISTENERS = {};
    
     private final Application application;
     private ExpressionFactory expressionFactory;

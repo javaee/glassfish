@@ -44,16 +44,23 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.weld.ejb.EjbDescriptorImpl;
-
+import org.jboss.weld.bootstrap.WeldBootstrap;
 import org.jboss.weld.bootstrap.api.ServiceRegistry;
 import org.jboss.weld.bootstrap.api.helpers.SimpleServiceRegistry;
 import org.jboss.weld.bootstrap.spi.BeanDeploymentArchive;
+import org.jboss.weld.bootstrap.spi.BeansXml;
 import org.jboss.weld.ejb.spi.EjbDescriptor;
 
 
@@ -86,18 +93,23 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
     public static final String JAR = "JAR";
     public String bdaType;
 
+    private DeploymentContext context;
+
+
     /**
      * Produce a <code>BeanDeploymentArchive</code> form information contained 
      * in the provided <code>ReadableArchive</code>.
+     * @param context 
      */
     public BeanDeploymentArchiveImpl(ReadableArchive archive,
-        Collection<com.sun.enterprise.deployment.EjbDescriptor> ejbs) {
-        this.wClasses = new ArrayList();
-        this.wUrls = new ArrayList();
+        Collection<com.sun.enterprise.deployment.EjbDescriptor> ejbs, DeploymentContext ctx) {
+        this.wClasses = new ArrayList<Class<?>>();
+        this.wUrls = new ArrayList<URL>();
         this.archive = archive;
         this.id = archive.getURI().getPath(); 
         this.ejbDescImpls = new HashSet<EjbDescriptor<?>>();
         this.beanDeploymentArchives = new ArrayList<BeanDeploymentArchive>();
+        this.context = ctx;
 
         for(com.sun.enterprise.deployment.EjbDescriptor next : ejbs) {
             EjbDescriptorImpl wbEjbDesc = new EjbDescriptorImpl(next);
@@ -112,12 +124,13 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
     }
 
     public BeanDeploymentArchiveImpl(String id, List<Class<?>> wClasses, List<URL> wUrls,
-        Collection<com.sun.enterprise.deployment.EjbDescriptor> ejbs) {
+        Collection<com.sun.enterprise.deployment.EjbDescriptor> ejbs, DeploymentContext ctx) {
         this.id = id;
         this.wClasses = wClasses;
         this.wUrls = wUrls;
         this.ejbDescImpls = new HashSet<EjbDescriptor<?>>();
         this.beanDeploymentArchives = new ArrayList<BeanDeploymentArchive>();
+        this.context = ctx;
 
         for(com.sun.enterprise.deployment.EjbDescriptor next : ejbs) {
             EjbDescriptorImpl wbEjbDesc = new EjbDescriptorImpl(next);
@@ -130,12 +143,23 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
         return beanDeploymentArchives;
     }
 
-    public Collection<Class<?>> getBeanClasses() {
+    public Collection<String> getBeanClasses() {
+        //TODO
+        List<String> s  = new ArrayList<String>();
+        for (Iterator<Class<?>> iterator = wClasses.iterator(); iterator.hasNext();) {
+            String classname = iterator.next().getName();
+            s.add(classname);
+        }
+        return s;
+    }
+    
+    public Collection<Class<?>> getBeanClassObjects(){
         return wClasses;
     }
 
-    public Collection<URL> getBeansXml() {
-        return wUrls;
+    public BeansXml getBeansXml() {
+        WeldBootstrap wb =  context.getTransientAppMetaData(WeldDeployer.WELD_BOOTSTRAP, WeldBootstrap.class);
+        return wb.parse(wUrls);
     }
 
     /**
@@ -162,7 +186,7 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
     }
 
     public ServiceRegistry getServices() {
-        if (null == simpleServiceRegistry) {
+        if (simpleServiceRegistry == null) {
             simpleServiceRegistry = new SimpleServiceRegistry();
         }
         return simpleServiceRegistry;
@@ -175,7 +199,7 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
     public String toString() {
         String val = "ID: "+getId()+" CLASSES: "+getBeanClasses()+"\n"; 
         Collection <BeanDeploymentArchive> bdas = getBeanDeploymentArchives();
-        Iterator iter = bdas.iterator();
+        Iterator<BeanDeploymentArchive> iter = bdas.iterator();
         while (iter.hasNext()) {
             BeanDeploymentArchive bda = (BeanDeploymentArchive)iter.next();
             val += "   ID: "+bda.getId()+" CLASSES: "+bda.getBeanClasses();
@@ -191,9 +215,9 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
         try {
             if (archive.exists(WEB_INF_BEANS_XML)) {
                 bdaType = WAR;
-                Enumeration entries = archive.entries();
+                Enumeration<String> entries = archive.entries();
                 while (entries.hasMoreElements()) {
-                    String entry = (String)entries.nextElement();
+                    String entry = entries.nextElement();
                     if (entry.endsWith(CLASS_SUFFIX)) {
                         entry = entry.substring(WEB_INF_CLASSES.length()+1);
                         String className = filenameToClassname(entry);
@@ -201,7 +225,7 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
                     } else if (entry.endsWith("beans.xml")) {
                         URI uri = archive.getURI();
                         File file = new File(uri.getPath() + entry);
-                        URL beansXmlUrl = file.toURL();
+                        URL beansXmlUrl = file.toURI().toURL();
                         wUrls.add(beansXmlUrl);
                     }
                 }
@@ -240,9 +264,9 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
     }   
 
     private void collectJarInfo(ReadableArchive archive) throws IOException, ClassNotFoundException {
-        Enumeration entries = archive.entries();
+        Enumeration<String> entries = archive.entries();
         while (entries.hasMoreElements()) {
-            String entry = (String)entries.nextElement();
+            String entry = entries.nextElement();
             if (entry.endsWith(CLASS_SUFFIX)) {
                 String className = filenameToClassname(entry);
                 wClasses.add(getClassLoader().loadClass(className));

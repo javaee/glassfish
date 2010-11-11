@@ -40,26 +40,19 @@
 
 package org.glassfish.weld;
 
-import com.sun.enterprise.deployment.deploy.shared.Util;
+import java.io.IOException;
+import java.util.Enumeration;
 
-import org.glassfish.internal.deployment.GenericSniffer;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.deployment.common.DeploymentUtils;
+import org.glassfish.internal.deployment.GenericSniffer;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Singleton;
 
-import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-
 
 /**
  * Implementation of the Sniffer for Weld.
- *
  */
 @Service(name="weld")
 @Scoped(Singleton.class)
@@ -93,9 +86,7 @@ public class WeldSniffer extends GenericSniffer implements Sniffer {
             isWeldArchive = isEntryPresent(archive, WEB_INF_BEANS_XML);
 
             if (!isWeldArchive) {
-
                 // Check jars under WEB_INF/lib
-
                 if (isEntryPresent(archive, WEB_INF_LIB)) {
                     isWeldArchive = scanLibDir(archive, WEB_INF_LIB); 
                 } 

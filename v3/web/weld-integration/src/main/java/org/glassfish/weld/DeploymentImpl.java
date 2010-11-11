@@ -40,9 +40,7 @@
 
 package org.glassfish.weld;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -54,46 +52,40 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import com.sun.enterprise.deployment.EjbDescriptor;
+import javax.enterprise.inject.spi.Extension;
 
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.javaee.core.deployment.ApplicationHolder;
-
+import org.jboss.weld.bootstrap.WeldBootstrap;
 import org.jboss.weld.bootstrap.api.ServiceRegistry;
 import org.jboss.weld.bootstrap.api.helpers.SimpleServiceRegistry;
 import org.jboss.weld.bootstrap.spi.BeanDeploymentArchive;
 import org.jboss.weld.bootstrap.spi.Deployment;
+import org.jboss.weld.bootstrap.spi.Metadata;
+
+import com.sun.enterprise.deployment.EjbDescriptor;
 
 /*
  * Represents a deployment of a CDI (Weld) application. 
  */
 public class DeploymentImpl implements Deployment {
 
-    private Logger logger = Logger.getLogger(DeploymentImpl.class.getName());
-
     private static final String META_INF_BEANS_XML = "META-INF/beans.xml";
     private static final String JAR_SUFFIX = ".jar";
     private static final char SEPARATOR_CHAR = '/';
 
     // Keep track of our BDAs for this deployment
-
     private List<BeanDeploymentArchive> jarBDAs;
     private List<BeanDeploymentArchive> warBDAs;
     private List<BeanDeploymentArchive> libJarBDAs = null;
 
-    private ReadableArchive archive;
     private List<BeanDeploymentArchive> beanDeploymentArchives = null;
-    private Collection<EjbDescriptor> ejbs;
     private DeploymentContext context;
 
     // A convenience Map to get BDA for a given BDA ID
-
     private Map<String, BeanDeploymentArchive> idToBeanDeploymentArchive;
-
     private SimpleServiceRegistry simpleServiceRegistry = null;
 
     /**
@@ -103,8 +95,6 @@ public class DeploymentImpl implements Deployment {
     public DeploymentImpl(ReadableArchive archive, Collection<EjbDescriptor> ejbs,
                           DeploymentContext context) {
         this.beanDeploymentArchives = new ArrayList<BeanDeploymentArchive>();
-        this.archive = archive;
-        this.ejbs = ejbs;
         this.context = context;
         this.idToBeanDeploymentArchive = new HashMap<String, BeanDeploymentArchive>();
 
@@ -112,23 +102,23 @@ public class DeploymentImpl implements Deployment {
         // If we've produced BDA(s) from any /lib jars, <code>return</code> as
         // additional BDA(s) will be produced for any subarchives (war/jar).
 
-        if (null == libJarBDAs) {
+        if (libJarBDAs == null) {
             libJarBDAs = scanForLibJars(archive, ejbs, context);
-            if (null != libJarBDAs && libJarBDAs.size() > 0) {
+            if ((libJarBDAs != null) && libJarBDAs.size() > 0) {
                 return;
             }
         }
 
-        BeanDeploymentArchive bda = new BeanDeploymentArchiveImpl(archive, ejbs);
+        BeanDeploymentArchive bda = new BeanDeploymentArchiveImpl(archive, ejbs, context);
         this.beanDeploymentArchives.add(bda);
         if (((BeanDeploymentArchiveImpl)bda).getBDAType().equals(BeanDeploymentArchiveImpl.WAR)) {
-            if (null == warBDAs) {
-                warBDAs = new ArrayList();
+            if (warBDAs == null) {
+                warBDAs = new ArrayList<BeanDeploymentArchive>();
             }
             warBDAs.add(bda);
         } else if (((BeanDeploymentArchiveImpl)bda).getBDAType().equals(BeanDeploymentArchiveImpl.JAR)) {
-            if (null == jarBDAs) {
-                jarBDAs = new ArrayList();
+            if (jarBDAs == null) {
+                jarBDAs = new ArrayList<BeanDeploymentArchive>();
             }
             jarBDAs.add(bda);
         }
@@ -144,32 +134,30 @@ public class DeploymentImpl implements Deployment {
     public void scanArchive(ReadableArchive archive, Collection<EjbDescriptor> ejbs,
                             DeploymentContext context) {
 
-        if (null == libJarBDAs) {
+        if (libJarBDAs == null) {
             libJarBDAs = scanForLibJars(archive, ejbs, context);
-            if (null != libJarBDAs && libJarBDAs.size() > 0) {
+            if ((libJarBDAs != null) && libJarBDAs.size() > 0) {
                 return;
             }
         }
 
-        BeanDeploymentArchive bda = new BeanDeploymentArchiveImpl(archive, ejbs);
+        BeanDeploymentArchive bda = new BeanDeploymentArchiveImpl(archive, ejbs, context);
 
-        this.archive = archive;
-        this.ejbs = ejbs;
         this.context = context;
 
-        if (null == idToBeanDeploymentArchive) {
+        if (idToBeanDeploymentArchive == null) {
             idToBeanDeploymentArchive = new HashMap<String, BeanDeploymentArchive>();
         }
 
         beanDeploymentArchives.add(bda);
         if (((BeanDeploymentArchiveImpl)bda).getBDAType().equals(BeanDeploymentArchiveImpl.WAR)) {
-            if (null == warBDAs) {
-                warBDAs = new ArrayList();
+            if (warBDAs == null) {
+                warBDAs = new ArrayList<BeanDeploymentArchive>();
             }
             warBDAs.add(bda);
         } else if (((BeanDeploymentArchiveImpl)bda).getBDAType().equals(BeanDeploymentArchiveImpl.JAR)) {
-            if (null == jarBDAs) {
-                jarBDAs = new ArrayList();
+            if (jarBDAs == null) {
+                jarBDAs = new ArrayList<BeanDeploymentArchive>();
             }
             jarBDAs.add(bda);
         }
@@ -189,12 +177,12 @@ public class DeploymentImpl implements Deployment {
         //    /ejb1.jar <----> /ejb2.jar
         // If there are any application (/lib) jars, make them accessible
 
-        if (null != jarBDAs) {
-            ListIterator jarIter = jarBDAs.listIterator();
+        if (jarBDAs != null) {
+            ListIterator<BeanDeploymentArchive> jarIter = jarBDAs.listIterator();
             while (jarIter.hasNext()) {
                 boolean modifiedArchive = false;
                 BeanDeploymentArchive jarBDA = (BeanDeploymentArchive)jarIter.next();
-                ListIterator jarIter1 = jarBDAs.listIterator();
+                ListIterator<BeanDeploymentArchive> jarIter1 = jarBDAs.listIterator();
                 while (jarIter1.hasNext()) {
                     BeanDeploymentArchive jarBDA1 = (BeanDeploymentArchive)jarIter1.next();
                     if (jarBDA1.getId().equals(jarBDA.getId())) {
@@ -205,8 +193,8 @@ public class DeploymentImpl implements Deployment {
                 }
 
                 // Make /lib jars (application) accessible
-                if (null != libJarBDAs) {
-                    ListIterator libJarIter = libJarBDAs.listIterator();
+                if (libJarBDAs != null) {
+                    ListIterator<BeanDeploymentArchive> libJarIter = libJarBDAs.listIterator();
                     while (libJarIter.hasNext()) {
                         BeanDeploymentArchive libJarBDA = (BeanDeploymentArchive)libJarIter.next();
                         jarBDA.getBeanDeploymentArchives().add(libJarBDA);
@@ -228,13 +216,13 @@ public class DeploymentImpl implements Deployment {
         //    /web.war ----> /ejb.jar
         // If there are any application (/lib) jars, make them accessible
 
-        if (null != warBDAs) {
-            ListIterator warIter = warBDAs.listIterator();
+        if (warBDAs != null) {
+            ListIterator<BeanDeploymentArchive> warIter = warBDAs.listIterator();
             boolean modifiedArchive = false;
             while (warIter.hasNext()) {
                 BeanDeploymentArchive warBDA = (BeanDeploymentArchive)warIter.next();
-                if (null != jarBDAs) {
-                    ListIterator jarIter = jarBDAs.listIterator();
+                if (jarBDAs != null) {
+                    ListIterator<BeanDeploymentArchive> jarIter = jarBDAs.listIterator();
                     while (jarIter.hasNext()) {
                         BeanDeploymentArchive jarBDA = (BeanDeploymentArchive)jarIter.next();
                         warBDA.getBeanDeploymentArchives().add(jarBDA);
@@ -244,8 +232,8 @@ public class DeploymentImpl implements Deployment {
 
                 // Make /lib jars (application) accessible
 
-                if (null != libJarBDAs) {
-                    ListIterator libJarIter = libJarBDAs.listIterator();
+                if (libJarBDAs != null) {
+                    ListIterator<BeanDeploymentArchive> libJarIter = libJarBDAs.listIterator();
                     while (libJarIter.hasNext()) {
                         BeanDeploymentArchive libJarBDA = (BeanDeploymentArchive)libJarIter.next();
                         warBDA.getBeanDeploymentArchives().add(libJarBDA);
@@ -268,14 +256,15 @@ public class DeploymentImpl implements Deployment {
     }
 
 
+    @Override
     public List<BeanDeploymentArchive> getBeanDeploymentArchives() {
-        
-        if (beanDeploymentArchives.size() > 0) {
+        if (!beanDeploymentArchives.isEmpty()) {
             return beanDeploymentArchives;
         }
         return Collections.emptyList(); 
     }
 
+    @Override
     public BeanDeploymentArchive loadBeanDeploymentArchive(Class<?> beanClass) {
         List<BeanDeploymentArchive> beanDeploymentArchives = getBeanDeploymentArchives();
         ListIterator<BeanDeploymentArchive> lIter = beanDeploymentArchives.listIterator(); 
@@ -292,7 +281,8 @@ public class DeploymentImpl implements Deployment {
         List<URL> wUrls = new ArrayList<URL>();
         Set<EjbDescriptor> ejbs = new HashSet<EjbDescriptor>();
         wClasses.add(beanClass);
-        BeanDeploymentArchive newBda = new BeanDeploymentArchiveImpl(beanClass.getName(), wClasses, wUrls, ejbs);
+        BeanDeploymentArchive newBda = 
+            new BeanDeploymentArchiveImpl(beanClass.getName(), wClasses, wUrls, ejbs, context);
         lIter = beanDeploymentArchives.listIterator();
         while (lIter.hasNext()) {
             BeanDeploymentArchive bda = lIter.next();
@@ -301,34 +291,21 @@ public class DeploymentImpl implements Deployment {
         return newBda;
     }
 
+    @Override
     public ServiceRegistry getServices() {
-        if (null == simpleServiceRegistry) {
+        if (simpleServiceRegistry == null) {
             simpleServiceRegistry = new SimpleServiceRegistry();
         }
         return simpleServiceRegistry;
     }
 
-
-
-    public BeanDeploymentArchive getBeanDeploymentArchiveForArchive(String archiveId) {
-        return idToBeanDeploymentArchive.get(archiveId);
+    @Override
+    public Iterable<Metadata<Extension>> getExtensions() {
+        return context.getTransientAppMetaData(WeldDeployer.WELD_BOOTSTRAP, WeldBootstrap.class).loadExtensions(Thread.currentThread().getContextClassLoader());
+        //return null;
     }
 
-    public void cleanup() {
-        if (null != jarBDAs) {
-            jarBDAs.clear();
-        }
-        if (null != warBDAs) {
-            warBDAs.clear();
-        }
-        if (null != libJarBDAs) {
-            libJarBDAs.clear();
-        }
-        if (null != idToBeanDeploymentArchive) {
-            idToBeanDeploymentArchive.clear();
-        }
-    }
-
+    @Override
     public String toString() {
         String val = null;
         List<BeanDeploymentArchive> beanDeploymentArchives = getBeanDeploymentArchives();
@@ -339,15 +316,35 @@ public class DeploymentImpl implements Deployment {
         }
         return val;
     }
+    
+    public BeanDeploymentArchive getBeanDeploymentArchiveForArchive(String archiveId) {
+        return idToBeanDeploymentArchive.get(archiveId);
+    }
+
+    public void cleanup() {
+        if (jarBDAs != null) {
+            jarBDAs.clear();
+        }
+        if (warBDAs != null) {
+            warBDAs.clear();
+        }
+        if (libJarBDAs!= null) {
+            libJarBDAs.clear();
+        }
+        if (idToBeanDeploymentArchive != null) {
+            idToBeanDeploymentArchive.clear();
+        }
+    }
+
 
     // This method creates and returns a List of BeanDeploymentArchives for each
     // Weld enabled jar under /lib of an existing Archive.
-    
-    private List scanForLibJars(ReadableArchive archive, Collection<EjbDescriptor> ejbs,
-                                DeploymentContext context) {
-        List libJars = null;
+    private List<BeanDeploymentArchive> scanForLibJars(
+                            ReadableArchive archive, Collection<EjbDescriptor> ejbs, 
+                            DeploymentContext context) {
+        List<ReadableArchive> libJars = null;
         ApplicationHolder holder = context.getModuleMetaData(ApplicationHolder.class);
-        if (null != holder && null != holder.app) {
+        if ((holder != null) && (holder.app != null)) {
             String libDir = holder.app.getLibraryDirectory();
             if (libDir != null && !libDir.isEmpty()) {
                 Enumeration<String> entries = archive.entries(libDir);
@@ -359,8 +356,8 @@ public class DeploymentImpl implements Deployment {
                         try {
                             ReadableArchive jarInLib = archive.getSubArchive(entryName);
                             if (jarInLib.exists(META_INF_BEANS_XML)) {
-                                if (null == libJars) {
-                                    libJars = new ArrayList();
+                                if (libJars == null) {
+                                    libJars = new ArrayList<ReadableArchive>();
                                 }
                                 libJars.add(jarInLib);
                             }
@@ -370,14 +367,14 @@ public class DeploymentImpl implements Deployment {
                 }
             }
         }
-        if (null != libJars) {
-            ListIterator libJarIterator = libJars.listIterator();
+        if (libJars != null) {
+            ListIterator<ReadableArchive> libJarIterator = libJars.listIterator();
             while (libJarIterator.hasNext()) {
                 ReadableArchive libJarArchive = (ReadableArchive)libJarIterator.next();
-                BeanDeploymentArchive bda = new BeanDeploymentArchiveImpl(libJarArchive, ejbs);
+                BeanDeploymentArchive bda = new BeanDeploymentArchiveImpl(libJarArchive, ejbs, context);
                 this.beanDeploymentArchives.add(bda);
-                if (null == libJarBDAs) {
-                    libJarBDAs = new ArrayList();
+                if (libJarBDAs  == null) {
+                    libJarBDAs = new ArrayList<BeanDeploymentArchive>();
                     libJarBDAs.add(bda);
                 }
                 this.idToBeanDeploymentArchive.put(bda.getId(), bda);
@@ -386,4 +383,5 @@ public class DeploymentImpl implements Deployment {
         }
         return libJarBDAs;
     }
+
 }

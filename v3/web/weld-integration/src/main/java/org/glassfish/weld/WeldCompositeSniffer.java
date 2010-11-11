@@ -41,9 +41,7 @@
 package org.glassfish.weld;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.List;
 
 import org.glassfish.api.container.CompositeSniffer;
 import org.glassfish.api.deployment.DeploymentContext;
@@ -69,7 +67,7 @@ public class WeldCompositeSniffer extends WeldSniffer implements CompositeSniffe
         boolean isWeldApplication = false;
         ApplicationHolder holder = context.getModuleMetaData(ApplicationHolder.class);
         ReadableArchive appRoot = context.getSource();
-        if (null != holder && null != holder.app) {
+        if ((holder != null) && (holder.app != null)) {
             isWeldApplication = scanLibDir(appRoot, holder.app.getLibraryDirectory(), context);
         }
         return isWeldApplication;
@@ -81,7 +79,6 @@ public class WeldCompositeSniffer extends WeldSniffer implements CompositeSniffe
 
     private boolean scanLibDir(ReadableArchive archive, String libLocation, DeploymentContext context) {
         boolean entryPresent = false;
-        List libJars = null;
         if (libLocation != null && !libLocation.isEmpty()) {
             Enumeration<String> entries = archive.entries(libLocation);
             while (entries.hasMoreElements() && !entryPresent) {

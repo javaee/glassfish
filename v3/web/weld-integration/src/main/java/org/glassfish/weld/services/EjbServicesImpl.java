@@ -40,41 +40,35 @@
 
 package org.glassfish.weld.services;
 
-import com.sun.enterprise.deployment.*;
-
 import java.lang.reflect.Method;
-
-import java.util.HashSet;
-import java.util.Set;
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.ejb.PostActivate;
+import javax.ejb.PrePassivate;
+import javax.enterprise.inject.spi.InterceptionType;
+import javax.enterprise.inject.spi.Interceptor;
+import javax.interceptor.AroundInvoke;
+import javax.interceptor.AroundTimeout;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 import org.glassfish.ejb.api.EjbContainerServices;
 import org.glassfish.weld.ejb.EjbDescriptorImpl;
 import org.glassfish.weld.ejb.SessionObjectReferenceImpl;
-
 import org.jboss.weld.ejb.api.SessionObjectReference;
-import org.jboss.weld.ejb.spi.EjbServices;
 import org.jboss.weld.ejb.spi.EjbDescriptor;
+import org.jboss.weld.ejb.spi.EjbServices;
 import org.jboss.weld.ejb.spi.InterceptorBindings;
-
-import com.sun.enterprise.deployment.EjbInterceptor;
-import com.sun.enterprise.deployment.LifecycleCallbackDescriptor;
-import javax.enterprise.inject.spi.Interceptor;
-import javax.enterprise.inject.spi.InterceptionType;
-import static javax.enterprise.inject.spi.InterceptionType.*;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.ejb.PrePassivate;
-import javax.ejb.PostActivate;
-import javax.interceptor.AroundInvoke;
-import javax.interceptor.AroundTimeout;
-
 import org.jvnet.hk2.component.Habitat;
+
+import com.sun.enterprise.deployment.EjbBundleDescriptor;
+import com.sun.enterprise.deployment.EjbInterceptor;
+import com.sun.enterprise.deployment.EjbSessionDescriptor;
+import com.sun.enterprise.deployment.LifecycleCallbackDescriptor;
 
 /**
  */
