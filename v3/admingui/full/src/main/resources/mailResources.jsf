@@ -50,7 +50,8 @@
 />
 <!composition template="/templates/default.layout"
     guiTitle="$resource{i18njmail.javaMailSessions.pageTitle}"
-    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:resources:mailResources');"
+    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:resources:mailResources');
+        setTimeout('admingui.table.changeThreeTableButtons(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0);"
 >
 <!define name="content">
     <event>

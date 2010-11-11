@@ -52,7 +52,8 @@
     guiTitle="$resource{i18njca.adminObjectResources.pageTitle}"
     guiTemplateOnLoad="
         admingui.nav.refreshTree('treeForm:tree:resources:jmsResources:jmsDestinationResources');
-        admingui.nav.refreshTree('treeForm:tree:resources:Connectors:adminObjectResources');"
+        admingui.nav.refreshTree('treeForm:tree:resources:Connectors:adminObjectResources');
+        setTimeout('admingui.table.changeThreeTableButtons(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\'); admingui.table.initAllRows(\\\\\'#{pageSession.tableId}\\\\\');', 0);"
 >
 <!define name="content">
     <event>

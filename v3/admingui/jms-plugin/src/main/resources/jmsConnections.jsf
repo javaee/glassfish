@@ -51,7 +51,8 @@
     guiTemplateOnLoad="
         admingui.nav.refreshTree('treeForm:tree:resources:Connectors:connectorResources');
         admingui.nav.refreshTree('treeForm:tree:resources:Connectors:connectorConnectionPools');
-        admingui.nav.refreshTree('treeForm:tree:resources:jmsResources:jmsConnectionFactories');"
+        admingui.nav.refreshTree('treeForm:tree:resources:jmsResources:jmsConnectionFactories');
+        setTimeout('admingui.table.toggleButtons(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\'); admingui.table.initAllRows(\\\\\'#{pageSession.tableId}\\\\\');', 0);"
 >
 <!define name="content">
     <event>

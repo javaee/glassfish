@@ -48,7 +48,8 @@
 />
 <!composition template="/templates/default.layout"
     guiTitle="$resource{i18njmail.externalResources.pageTitle}"
-    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:resources:jndi:externalResources');"
+    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:resources:jndi:externalResources');
+        setTimeout('admingui.table.changeThreeTableButtons(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\'); admingui.table.initAllRows(\\\\\'#{pageSession.tableId}\\\\\');', 0);"
 >
 <!define name="content">
     <event>

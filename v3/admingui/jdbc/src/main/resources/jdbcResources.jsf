@@ -49,7 +49,8 @@
 />
 <!composition template="/templates/default.layout"
     guiTitle="$resource{i18njdbc.jdbcResources.pageTitle}"
-    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:resources:JDBC:jdbcResources');"
+    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:resources:JDBC:jdbcResources');
+        setTimeout('admingui.table.changeThreeTableButtons(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0)"
 >
 <!define name="content">
     <event>
