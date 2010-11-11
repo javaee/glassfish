@@ -41,14 +41,12 @@
 
 package com.sun.enterprise.admin.cli.cluster;
 
-import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 import com.sun.enterprise.config.serverbeans.Node;
 import com.sun.enterprise.util.SystemPropertyConstants;
+import com.trilead.ssh2.SCPClient;
 import com.trilead.ssh2.SFTPv3DirectoryEntry;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.CommandException;
-//import org.glassfish.api.admin.ExecuteOn;
-//import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.cluster.ssh.launcher.SSHLauncher;
 import org.glassfish.cluster.ssh.sftp.SFTPClient;
 import org.glassfish.cluster.ssh.util.SSHUtil;
@@ -69,9 +67,8 @@ import java.util.List;
 
 @Service(name = "uninstall-node")
 @Scoped(PerLookup.class)
-//@ExecuteOn({RuntimeType.DAS})
 public class UninstallNodeCommand extends SSHCommandsBase {
-    @Param(name="installdir", optional = true)
+    @Param(name="installdir", optional = true, defaultValue = "${com.sun.aas.installRoot}")
     private String installDir;
 
     @Inject
@@ -114,8 +111,7 @@ public class UninstallNodeCommand extends SSHCommandsBase {
     @Override
     protected int executeCommand() throws CommandException {
         try {
-            //String baseRootValue = executeLocationsCommand();
-            String baseRootValue = getSystemProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY) + "/../";
+            String baseRootValue = getSystemProperty(SystemPropertyConstants.PRODUCT_ROOT_PROPERTY);
             deleteFromHosts(baseRootValue);
         } catch (IOException ioe) {
             throw new CommandException(ioe);
@@ -153,15 +149,11 @@ public class UninstallNodeCommand extends SSHCommandsBase {
                 throw new IOException (installDir + " Directory does not exist");
             }
 
-            //ArrayList<String> remoteDirectories = new ArrayList<String>();
-            //deleteRemoteFiles(sftpClient, installDir, remoteDirectories);
             deleteRemoteFiles(sftpClient, installDir);
             sftpClient.rmdir(installDir);
         }
     }
 
-    //private void deleteRemoteFiles(SFTPClient sftpClient, String dir,
-    //ArrayList<String> remoteDirectories) {
     private void deleteRemoteFiles(SFTPClient sftpClient, String dir)
     throws IOException {
         for (SFTPv3DirectoryEntry directoryEntry: (List<SFTPv3DirectoryEntry>)sftpClient.ls(dir)) {
@@ -174,15 +166,6 @@ public class UninstallNodeCommand extends SSHCommandsBase {
                 sftpClient.rm(dir+"/"+directoryEntry.filename);
             }
         }
-    }
-
-    private String executeLocationsCommand() throws CommandException {
-        RemoteCommand cmd =
-                new RemoteCommand("__locations", programOpts, env);
-        Map<String, String> attrs =
-                cmd.executeAndReturnAttributes(new String[]{"__locations"});
-        return attrs.get("Base-Root_value");
-
     }
     
     private void validateKeyFile(String file) throws CommandException {

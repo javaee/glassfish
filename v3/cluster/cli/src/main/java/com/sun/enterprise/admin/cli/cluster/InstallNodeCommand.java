@@ -73,24 +73,32 @@ import java.util.List;
 
 @Service(name = "install-node")
 @Scoped(PerLookup.class)
-public class InstallNodeCommand extends SSHCommandsBase {
-    @Param(name="archivedir", optional = true)
-    private String archiveDir;
 
-    @Param(name="installdir", optional = true)
+public class InstallNodeCommand extends SSHCommandsBase {
+
+    @Param(name="archive", optional = true)
+    private String archive;
+
+    @Param(name = "installdir", optional = true, defaultValue = "${com.sun.aas.installRoot}")
     private String installDir;
 
-    @Param(optional = true)
-    private boolean recreate;
+    @Param(optional = true, defaultValue = "false")
+    private boolean create;
 
-    @Param(optional = true)
+    @Param(optional = true, defaultValue = "false")
+    private boolean save;
+
+    @Param(name = "force", optional = true, defaultValue = "false")
     private boolean force;
+
 
     @Inject
     private Habitat habitat;
     
     @Inject
-    SSHLauncher sshLauncher;
+    private SSHLauncher sshLauncher;
+
+    private String archiveName = "glassfish.zip";
 
     @Override
     protected void validate() throws CommandException {
@@ -122,8 +130,11 @@ public class InstallNodeCommand extends SSHCommandsBase {
 
             String baseRootValue = getSystemProperty(SystemPropertyConstants.PRODUCT_ROOT_PROPERTY) ; 
             ArrayList<String>  binDirFiles = new ArrayList<String>();
-            File zipFile = createZipFile(baseRootValue, binDirFiles);
+            File zipFile = createZipFileIfNeeded(baseRootValue, binDirFiles);
             copyToHosts(zipFile, baseRootValue, binDirFiles);
+            if (!save) {
+                zipFile.delete();
+            }
         } catch (IOException ioe) {
             throw new CommandException(ioe);
         } catch (ZipFileException ze) {
@@ -181,7 +192,7 @@ public class InstallNodeCommand extends SSHCommandsBase {
 
             try {
                 logger.info("Installing " + zip + " into " + host + ":" + installDir);
-                String unzipCommand = "cd " + installDir + "; jar -xvf glassfish.zip";
+                String unzipCommand = "cd " + installDir + "; jar -xvf " + archiveName;
                 int status = sshLauncher.runCommand(unzipCommand, outStream);
                 if (status != 0){
                     logger.info (Strings.get("jar.failed", host, outStream.toString()));
@@ -194,9 +205,10 @@ public class InstallNodeCommand extends SSHCommandsBase {
             }
 
             try {
-                logger.info("Removing " + host + ":" + installDir + "/glassfish.zip");
-                sftpClient.rm(installDir + "/glassfish.zip");
-                logger.finer("Removed " + host + ":" + installDir + "/glassfish.zip");
+                String zipFileName = zip.substring(zip.lastIndexOf("/"),zip.length());
+            logger.info("Removing " + host + ":" + installDir + "/"+zipFileName);
+            sftpClient.rm(installDir + "/"+zipFileName);
+            logger.finer("Removed " + host + ":" + installDir + "/" + zipFileName);
             } catch (IOException ioe){
                 logger.info(Strings.get("remove.glassfish.failed",host, installDir));
                 throw new IOException(ioe);
@@ -216,30 +228,37 @@ public class InstallNodeCommand extends SSHCommandsBase {
         }
     }
 
-    private File createZipFile(String baseRootValue, ArrayList<String> binDirFiles) throws IOException, ZipFileException {
+    private File createZipFileIfNeeded(String baseRootValue, ArrayList<String> binDirFiles) throws IOException, ZipFileException {
 
         File installRoot = new File(baseRootValue); 
 
         File zipFileLocation = null;
         File glassFishZipFile = null;
 
-        if (archiveDir != null) {
-            zipFileLocation = new File(archiveDir);
-            glassFishZipFile = new File(zipFileLocation, "glassfish.zip");
-            if (glassFishZipFile.exists() && !recreate) {
+        
+
+        if (archive != null) {
+            archive.replaceAll("\\\\","/");
+            archiveName = archive.substring(archive.lastIndexOf("/") + 1, archive.length());
+            zipFileLocation = new File(archive.substring(0,archive.lastIndexOf("/")));
+            glassFishZipFile = new File(archive);
+            if (glassFishZipFile.exists() && !create) {
                 logger.finer("Found " + glassFishZipFile.getCanonicalPath());
                 return glassFishZipFile;
             } else if (!zipFileLocation.canWrite()) {
-                throw new IOException ("Cannot write to " + archiveDir);
+                throw new IOException ("Cannot write to " + archive);
             }
-        } else if (installRoot.canWrite()) {
-            zipFileLocation = installRoot;
         } else {
-            zipFileLocation = new File(System.getProperty("java.io.tmpdir"));
+            zipFileLocation = new File(".");
+            glassFishZipFile = new File(zipFileLocation, archiveName);
+            if (glassFishZipFile.exists() && !create) {
+                return glassFishZipFile;
+            } else if (!zipFileLocation.canWrite()) {
+                glassFishZipFile = new File(new File(System.getProperty("java.io.tmpdir")), archiveName);
+            }
         }
 
-        glassFishZipFile = new File(zipFileLocation, "glassfish.zip");
-        if (glassFishZipFile.exists() && !recreate) {
+        if (glassFishZipFile.exists() && !create) {
             logger.finer("Found " + glassFishZipFile.getCanonicalPath());
             return glassFishZipFile;
         }
