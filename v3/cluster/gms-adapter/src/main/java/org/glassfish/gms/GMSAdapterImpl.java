@@ -326,14 +326,13 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                             // todo: remove check for value length greater than 1.
                             // this value could be anything from IPv4 address, IPv6 address, hostname, network interface name.
                             // Only supported IPv4 address in gf v2.
-
-                        }
-                        if (NetworkUtility.isBindAddressValid(value)) {
-                            configProps.put(keyName, value);
-                        } else {
-                            logger.log(Level.SEVERE,
-                                "gmsservice.bind.int.address.invalid",
-                                value);
+                            if (NetworkUtility.isBindAddressValid(value)) {
+                                configProps.put(keyName, value);
+                            } else {
+                                logger.log(Level.SEVERE,
+                                    "gmsservice.bind.int.address.invalid",
+                                    value);
+                            }
                         }
                     }
                     break;
