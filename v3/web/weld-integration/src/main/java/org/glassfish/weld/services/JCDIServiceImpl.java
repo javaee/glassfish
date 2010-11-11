@@ -48,6 +48,7 @@ import javax.enterprise.inject.spi.InjectionTarget;
 
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
+import org.glassfish.weld.BeanDeploymentArchiveImpl;
 import org.glassfish.weld.WeldDeployer;
 import org.jboss.weld.bootstrap.WeldBootstrap;
 import org.jboss.weld.bootstrap.spi.BeanDeploymentArchive;
@@ -211,8 +212,10 @@ public class JCDIServiceImpl implements JCDIService
         BeanManager beanManager = bootstrap.getManager(bda);
 
         AnnotatedType annotatedType = beanManager.createAnnotatedType(managedClass);
-        
-        InjectionTarget it = beanManager.createInjectionTarget(annotatedType);
+        InjectionTarget it = ((BeanDeploymentArchiveImpl)bda).getInjectionTarget(annotatedType);
+        if (it == null) {
+            it = beanManager.createInjectionTarget(annotatedType);
+        }
 
         CreationalContext cc = beanManager.createCreationalContext(null);
 

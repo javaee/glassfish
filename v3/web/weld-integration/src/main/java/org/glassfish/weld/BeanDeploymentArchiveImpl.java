@@ -47,9 +47,11 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -62,6 +64,9 @@ import org.jboss.weld.bootstrap.api.helpers.SimpleServiceRegistry;
 import org.jboss.weld.bootstrap.spi.BeanDeploymentArchive;
 import org.jboss.weld.bootstrap.spi.BeansXml;
 import org.jboss.weld.ejb.spi.EjbDescriptor;
+
+import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.InjectionTarget;
 
 
 /*
@@ -94,6 +99,7 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
     public String bdaType;
 
     private DeploymentContext context;
+    private final Map<AnnotatedType<?>, InjectionTarget<?>> itMap = new HashMap<AnnotatedType<?>, InjectionTarget<?>>();
 
 
     /**
@@ -295,4 +301,13 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
             return DeploymentImpl.class.getClassLoader();
         }
     }
+
+    public InjectionTarget<?> getInjectionTarget(AnnotatedType<?> annotatedType) {
+        return itMap.get(annotatedType);
+    }
+
+    void putInjectionTarget(AnnotatedType<?> annotatedType, InjectionTarget<?> it) {
+        itMap.put(annotatedType, it);
+    }
+
 }

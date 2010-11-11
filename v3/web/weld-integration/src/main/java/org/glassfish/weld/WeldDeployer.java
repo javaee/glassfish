@@ -50,6 +50,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.InjectionTarget;
 import javax.servlet.Filter;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContextListener;
@@ -233,7 +234,8 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
                 for(Class<?> nonClazz : NON_CONTEXT_CLASSES) {
                     if (nonClazz.isAssignableFrom(bdaClazz)) {
                         AnnotatedType at = bootstrap.getManager(bda).createAnnotatedType(bdaClazz);
-                        bootstrap.getManager(bda).fireProcessInjectionTarget(at);
+                        InjectionTarget<?> it = bootstrap.getManager(bda).fireProcessInjectionTarget(at);
+                        ((BeanDeploymentArchiveImpl)bda).putInjectionTarget(at, it);
                     }
                 }
             }
