@@ -182,6 +182,8 @@ public class OTSResourceImpl extends OTSResourcePOA implements OTSResource {
                 throw new HeuristicHazard(ex.getMessage());
             if (e.errorCode == XAException.XA_HEURHAZ)
                 throw new HeuristicHazard(ex.getMessage());
+
+		/** XA_HEURMIX should translate to HeuristicMixedException
             if (e.errorCode == XAException.XA_HEURMIX)
                 throw new HeuristicHazard(ex.getMessage());
 			//IASRI START 4722883
@@ -196,8 +198,11 @@ public class OTSResourceImpl extends OTSResourcePOA implements OTSResource {
 					(e.errorCode == XAException.XA_RBTRANSIENT) || 
 					(e.errorCode == XAException.XA_RBCOMMFAIL)) 
 				throw new TRANSIENT();
+
+            // Use HeuristicHazard as a temp exception because CosTransactions.idl Resource
+            // has commit_one_phase() defined to throw only HeuristicHazard 
             if (e.errorCode >= XAException.XA_RBBASE &&
-                e.errorCode <= XAException.XA_RBEND) {
+                e.errorCode <= XAException.XA_RBEND || e.errorCode == XAException.XA_HEURMIX) {
 				HeuristicHazard hazex = new HeuristicHazard();
 				((Throwable)hazex).initCause((Throwable)ex);
 				throw hazex;

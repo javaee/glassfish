@@ -1616,7 +1616,10 @@ class RegisteredResources {
                     		heuristicExceptionFlowForget = true;
                     		heuristicRaisedSetStatus = true;
                     		exceptionThrownTryAgain = false;
-                    		heuristicMixed = false;
+            			if ((e!= null) && (e.errorCode == XAException.XA_HEURMIX)) 
+                    		    heuristicMixed = true;
+                                else
+                    		    heuristicMixed = false;
 						}
 						//IASRI END 4722883
 		

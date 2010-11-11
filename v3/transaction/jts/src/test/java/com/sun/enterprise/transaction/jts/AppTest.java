@@ -865,75 +865,27 @@ public class AppTest extends TestCase {
 
     public void testCommitOnePhaseWithXAER_RMERR() {
         System.out.println("**Testing TX XAER_RMERR exception code in 1PC ===>");
-        try {
-            // Suppress warnings from 1PC logging
-            LogDomains.getLogger(OTSResourceImpl.class, LogDomains.TRANSACTION_LOGGER).setLevel(Level.SEVERE);
-
-            System.out.println("**Starting transaction ....");
-            t.begin();
-            Transaction tx = t.getTransaction();
-
-            TestResource theResource = new TestResource();
-            t.enlistResource(tx, new TestResourceHandle(theResource));
-
-            theResource.setCommitErrorCode(XAException.XAER_RMERR);
-            t.delistResource(tx, new TestResourceHandle(theResource), XAResource.TMSUCCESS);
-
-            System.out.println("**Calling TX commit ===>");
-            try {
-                tx.commit();
-                assert (false);
-            } catch (RollbackException ex) {
-                System.out.println("**Caught expected exception...");
-            }
-            System.out.println("**Status after commit: "
-                    + JavaEETransactionManagerSimplified.getStatusAsString(tx.getStatus())
-                    + " <===");
-            assert (true);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            assert (false);
-        }
+        // Suppress warnings from 1PC logging
+        LogDomains.getLogger(OTSResourceImpl.class, LogDomains.TRANSACTION_LOGGER).setLevel(Level.SEVERE);
+        _testCommitOnePhaseWithExc(XAException.XAER_RMERR, RollbackException.class);
     }
 
-    public void testCommitOnePhaseWithHeuristicExc() {
-        System.out.println("**Testing TM with HeuristicExc during 1PC commit ===>");
-        try {
-            System.out.println("**Starting transaction ....");
-            t.begin();
-            assertEquals (JavaEETransactionManagerSimplified.getStatusAsString(t.getStatus()), 
-                "Active");
+    public void testCommitOnePhaseWithHeuristicRlbExc() {
+        _testCommitOnePhaseWithExc(XAException.XA_HEURRB, HeuristicRollbackException.class);
+    }
 
-            // Create and set invMgr
-            createUtx();
-            Transaction tx = t.getTransaction();
-            TestResource theResource = new TestResource();
-            t.enlistResource(tx, new TestResourceHandle(theResource));
-            theResource.setCommitErrorCode(XAException.XA_HEURRB);
-            t.delistResource(tx, new TestResourceHandle(theResource), XAResource.TMSUCCESS);
-            
-            System.out.println("**Calling TM commit ===>");
-            t.commit();
-            String status = JavaEETransactionManagerSimplified.getStatusAsString(t.getStatus());
-            System.out.println("**Error - successful commit - Status after commit: " + status + " <===");
-            assert (false);
-        } catch (HeuristicRollbackException ex) {
-            System.out.println("**Caught expected HeuristicRollbackException ...");
-            try {
-                String status = JavaEETransactionManagerSimplified.getStatusAsString(t.getStatus());
-                System.out.println("**Status after commit: " + status + " <===");
-            } catch (Exception ex1) {
-                ex1.printStackTrace();
-            }
-            assert (true);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            assert (false);
-        }
+    public void testCommitOnePhaseWithHeuristicMixedExc() {
+        _testCommitOnePhaseWithExc(XAException.XA_HEURMIX, HeuristicMixedException.class);
     }
 
     public void testCommitOnePhaseWithXAExc() {
         System.out.println("**Testing TM with failed 1PC commit ===>");
+         LogDomains.getLogger(OTSResourceImpl.class, LogDomains.TRANSACTION_LOGGER).setLevel(Level.SEVERE);
+        _testCommitOnePhaseWithExc(XAException.XAER_RMFAIL, SystemException.class);
+    }
+
+    private void _testCommitOnePhaseWithExc(int errorCode, Class exType) {
+        System.out.println("**Testing TM with " + exType.getName() + " during 1PC commit ===>");
         try {
             System.out.println("**Starting transaction ....");
             t.begin();
@@ -945,32 +897,28 @@ public class AppTest extends TestCase {
             Transaction tx = t.getTransaction();
             TestResource theResource = new TestResource();
             t.enlistResource(tx, new TestResourceHandle(theResource));
-            theResource.setCommitErrorCode(XAException.XAER_RMFAIL);
+            theResource.setCommitErrorCode(errorCode);
             t.delistResource(tx, new TestResourceHandle(theResource), XAResource.TMSUCCESS);
             
             System.out.println("**Calling TM commit ===>");
-
-            // Suppress stack traces
-            LogDomains.getLogger(OTSResourceImpl.class, LogDomains.TRANSACTION_LOGGER).setLevel(Level.SEVERE);
-
             t.commit();
             String status = JavaEETransactionManagerSimplified.getStatusAsString(t.getStatus());
             System.out.println("**Error - successful commit - Status after commit: " + status + " <===");
             assert (false);
-        } catch (SystemException ex) {
-            System.out.println("**Caught expected SystemException during 1PC...");
-            try {
-                String status = JavaEETransactionManagerSimplified.getStatusAsString(t.getStatus());
-                System.out.println("**Status after commit: " + status + " <===");
-            } catch (Exception ex1) {
-                System.out.println("**Caught exception checking for status ...");
-                ex1.printStackTrace();
-            }
-            assert (true);
         } catch (Exception ex) {
-            System.out.println("**Caught NOT a SystemException during 1PC...");
-            ex.printStackTrace();
-            assert (false);
+            if (exType.isInstance(ex)) {
+                System.out.println("**Caught expected " + exType.getName() + " ...");
+                try {
+                    String status = JavaEETransactionManagerSimplified.getStatusAsString(t.getStatus());
+                    System.out.println("**Status after commit: " + status + " <===");
+                } catch (Exception ex1) {
+                    ex1.printStackTrace();
+                }
+                assert (true);
+            } else {
+                ex.printStackTrace();
+                assert (false);
+            }
         }
     }
 
