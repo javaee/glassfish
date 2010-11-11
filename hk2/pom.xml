@@ -83,7 +83,7 @@
     <scm>
       <connection>scm:svn:https://hk2.dev.java.net/svn/hk2/trunk/hk2</connection>
       <developerConnection>scm:svn:https://hk2.dev.java.net/svn/hk2/trunk/hk2</developerConnection>
-      <url>https://hk2.dev.java.net/svn/hk2/tags/hk2-parent-1.0.59-SNAPSHOT</url>
+      <url>https://hk2.dev.java.net/svn/hk2/trunk/hk2</url>
     </scm>
     <distributionManagement>
         <site>
