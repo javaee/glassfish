@@ -80,7 +80,7 @@
 #include "/cluster/cluster/clusterTabs.inc"
 #include "/common/shared/alertMsg.inc"
 <!-- Page Title -->
-    <sun:title id="propertyContentPage" title="$resource{i18ncs.cluster.instance.recoverTransactions}">
+    <sun:title id="propertyContentPage" title="$resource{i18ncs.cluster.instance.recoverTransactionsTitle}"   helpText="$resource{i18ncs.cluster.instance.recoverTransactionsTitleHelp}">
         <!facet pageButtonsTop>
             <sun:panelGroup id="topButtons">
                 <sun:button id="saveButton" text="$resource{i18n.button.OK}" disabled="#{empty runningInstances}">
