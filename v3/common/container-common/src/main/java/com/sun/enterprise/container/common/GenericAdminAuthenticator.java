@@ -233,7 +233,7 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
     }
 
     /**
-     * Try to authenticate using a Principal, typically from the incoming admin request,
+     * Tries to authenticate using a Principal, typically from the incoming admin request,
      * or using the special admin indicator (which flags requests as from another
      * server in the unsecured use case).
      *
@@ -249,15 +249,14 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
          * enabled, use only the special indicator check.
          */
         boolean result;
-        if (SecureAdmin.Util.isEnabled(secureAdmin)) {
-            result = authenticateUsingCert(reqPrincipal, 
-                    serverEnv.isDas() ? SecureAdmin.Util.instanceAlias(secureAdmin) :
-                        SecureAdmin.Util.DASAlias(secureAdmin));
-            if (result) {
-                logger.log(Level.FINE, "Authenticated SSL client auth principal {0}", reqPrincipal.getName());
-                return result;
-            }
-        } else {
+        result = authenticateUsingCert(reqPrincipal, 
+                serverEnv.isDas() ? SecureAdmin.Util.instanceAlias(secureAdmin) :
+                    SecureAdmin.Util.DASAlias(secureAdmin));
+        if (result) {
+            logger.log(Level.FINE, "Authenticated SSL client auth principal {0}", reqPrincipal.getName());
+            return result;
+        }
+        if ( ! SecureAdmin.Util.isEnabled(secureAdmin)) {
             result = authenticateUsingSpecialIndicator(
                     authRelatedHeaders.get(SecureAdmin.Util.ADMIN_INDICATOR_HEADER_NAME));
             if (result) {
