@@ -38,15 +38,10 @@ REM  and therefore, elected the GPL Version 2 license, then the option applies
 REM  only if the new code is made subject to such option by the copyright
 REM  holder.
 REM
-rem/*
-rem * To change this template, choose Tools | Templates
-rem * and open the template in the editor.
-rem */
+
 setlocal
-set AS_INSTALL=%~dp0..
-call "%AS_INSTALL%\config\asenv.bat"
-REM asenv.bat currently overwrites AS_INSTALL (incorrectly).  So set it back.
-set AS_INSTALL=%~dp0..
+set _AS_INSTALL=%~dp0..
+call "%_AS_INSTALL%\config\asenv.bat"
 if "%AS_JAVA%x" == "x" goto UsePath
 set JAVA="%AS_JAVA%\bin\java"
 goto run
@@ -54,5 +49,5 @@ goto run
 set JAVA=java
 :run
 set inputArgs=%*
-for /F "tokens=*" %%a in ('cscript //nologo "%AS_INSTALL%\bin\appclient.js"') do %%a
+for /F "tokens=*" %%a in ('cscript //nologo "%_AS_INSTALL%\bin\appclient.js"') do %%a
 %javaCmd%

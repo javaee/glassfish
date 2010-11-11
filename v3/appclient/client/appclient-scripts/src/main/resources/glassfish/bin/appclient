@@ -97,26 +97,29 @@ accMainArgs=
 # if any, was just processed and therefore what value we expect next.
 expecting=
 
-AS_INSTALL=`dirname $0`/..
-case "`uname`" in
-  CYGWIN*) AS_INSTALL=`cygpath --windows $AS_INSTALL`
-esac
-. "${AS_INSTALL}/config/asenv.conf"
+quoteIfNeeded() {
+    quoteAns=`awk 'BEGIN {sep="";out=""} END {count=split(inp,pieces,":"); for (piece=1; piece<=count; piece++) {if (index(pieces[piece]," ") > 0) {out=out sep "\"" pieces[piece] "\""} else {out=out sep pieces[piece]};sep=":"};print out}' inp="$*" /dev/null`
+}
 
-# asenv.conf currently overwrites AS_INSTALL (incorrectly).  So set it back.
-AS_INSTALL=`dirname $0`/..
+_AS_INSTALL=`dirname $0`/..
+case "`uname`" in
+  CYGWIN*) _AS_INSTALL=`cygpath --windows $_AS_INSTALL`
+esac
+. "${_AS_INSTALL}/config/asenv.conf"
+
 JAVA=java
 # Depends upon Java from ../config/asenv.conf
 if [ ${AS_JAVA} ]; then
-    JAVA=${AS_JAVA}/bin/java
+    JAVA="${AS_JAVA}/bin/java"
 fi
-AS_INSTALL_MOD=$AS_INSTALL/modules
+_AS_INSTALL_MOD=$_AS_INSTALL/modules
 
-builtinEndorsedDirsValue=$AS_INSTALL/lib/endorsed:$AS_INSTALL_MOD/endorsed
+quoteIfNeeded $_AS_INSTALL/lib/endorsed:$_AS_INSTALL_MOD/endorsed
+builtinEndorsedDirsValue=$quoteAns
 userEndorsedDirsSetting=
 mainClassIdentRequired=1
 
-jvmArgs=-Dcom.sun.aas.installRoot=$AS_INSTALL\ -Djava.security.policy=$AS_INSTALL/lib/appclient/client.policy\ -Djava.system.class.loader=org.glassfish.appclient.client.acc.agent.ACCAgentClassLoader\ -Djava.security.auth.login.config=$AS_INSTALL/lib/appclient/appclientlogin.conf
+jvmArgs=-Dcom.sun.aas.installRoot="$_AS_INSTALL"\ -Djava.security.policy="$_AS_INSTALL/lib/appclient/client.policy"\ -Djava.system.class.loader=org.glassfish.appclient.client.acc.agent.ACCAgentClassLoader\ -Djava.security.auth.login.config="$_AS_INSTALL/lib/appclient/appclientlogin.conf"
 if [ "$VMARGS" != "" ]; then
     jvmArgs=$jvmArgs\ $VMARGS
 fi
@@ -223,6 +226,7 @@ recordMainClass() {
     # Change the JVM arg type also so further options that would otherwise
     # look like JVM ones are passed to the client.
     JVMArgType=APP
+    mainClassIdentRequired=0
 }
 
 recordJVMArg() {
@@ -237,7 +241,7 @@ recordJVMArg() {
         case $1 in
 
             -Djava.endorsed.dirs=*)
-                userEndorsedDirsSetting=$1
+                userEndorsedDirsSetting=$2
                 ;;
 
             *)
@@ -282,9 +286,10 @@ finishJVMArgs() {
         endorsedDirSetting=$userEndorsedDirsSetting:$builtinEndorsedDirsValue
     else
         computeJREEndorsedDirsValue
-        endorsedDirSetting=-Djava.endorsed.dirs=$builtinEndorsedDirsValue:$jreEndorsedDirsValue
+        endorsedDirSetting=$builtinEndorsedDirsValue:$jreEndorsedDirsValue
     fi
-    jvmArgs=$jvmArgs\ $endorsedDirSetting;
+    quoteIfNeeded $endorsedDirSettings
+    jvmArgs=$jvmArgs\ -Djava.endorsed.dirs=$quoteAns;
 }
 
 computeJREEndorsedDirsValue() {
@@ -340,10 +345,11 @@ computeJREHome() {
 ACCArgType=ACC
 JVMArgType=JVM
 
-accJar=$AS_INSTALL/lib/gf-client.jar
+quoteIfNeeded $_AS_INSTALL/lib/gf-client.jar
+accJar=$quoteAns
 
 # Record the default ACC config file if possible
-recordACCArg -configxml "$AS_INSTALL/domains/domain1/config/sun-acc.xml"
+recordACCArg -configxml "$_AS_INSTALL/domains/domain1/config/sun-acc.xml"
 
 for x do
     argType=APP  # unless we decide it is some other type later in the logic

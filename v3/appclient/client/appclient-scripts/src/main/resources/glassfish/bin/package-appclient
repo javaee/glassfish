@@ -40,6 +40,19 @@
 #
 
 # set -x
-AS_INSTALL=`dirname $0`/..
-AS_INSTALL_LIB=$AS_INSTALL/lib
-java  -classpath "$AS_INSTALL_LIB/gf-client.jar" org.glassfish.appclient.client.packageappclient.PackageAppClient "$@"
+_AS_INSTALL=`dirname $0`/..
+#
+# Run with the user-specified Java, if any.
+#
+case "`uname`" in
+  CYGWIN*) _AS_INSTALL=`cygpath --windows $_AS_INSTALL`
+esac
+. "${_AS_INSTALL}/config/asenv.conf"
+JAVA=java
+# Depends upon Java from ../config/asenv.conf
+if [ ${AS_JAVA} ]; then
+    JAVA=${AS_JAVA}/bin/java
+fi
+
+_AS_INSTALL_LIB=$_AS_INSTALL/lib
+$JAVA -classpath "$_AS_INSTALL_LIB/gf-client.jar" org.glassfish.appclient.client.packageappclient.PackageAppClient "$@"
