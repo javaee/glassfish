@@ -115,7 +115,7 @@ public class StopLocalInstanceCommand extends LocalInstanceCommand {
 
         logger.finer("StopInstance.stoppingMessage" + addr.getPort());
 
-        if (!isRunning())
+        if (!isRunningForSure())
             return instanceNotRunning();
 
         logger.finer("It's the correct Instance");
