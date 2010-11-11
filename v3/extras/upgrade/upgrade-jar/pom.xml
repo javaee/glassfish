@@ -69,6 +69,11 @@
                         </manifest>
                         <manifestEntries>
                             <Class-Path>../modules/common-util.jar ../lib/javahelp.jar ../lib/upgrade-branding.jar ../lib/upgrade-tool-l10n.jar</Class-Path>
+                            <!-- See GlassFish issue 14590: https://glassfish.dev.java.net/issues/show_bug.cgi?id=14590
+                                 Adding the following manifest entry causes this jar to be not part of application common class loader.
+                                 It must not be part of application common class loader, as it would make internal gf classes visible
+                                 to applications in addition to slowing down classloading. By Sahoo. -->
+                            <GlassFish-ServerExcluded>true</GlassFish-ServerExcluded> 
                         </manifestEntries>
                     </archive>
                 </configuration>
