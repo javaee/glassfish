@@ -98,15 +98,23 @@ public class ValidateRemoteDirDeploymentCommand extends DeployCommandParameters
         final Logger logger = context.getLogger();
 
         /*
-         * This logic applies only if the deployment is a directory deployment
-         * and only if the target includes a non-DAS target.
+         * This supplemental command should run only if the deployment
+         * underway is a directory deployment, if the archive exists, and
+         * only if the target includes a non-DAS target.
          */
         final ReadableArchive archive = archive(logger, report);
         if (archive == null) {
             /*
-             * There were problems reading the archive.  The report has been
-             * set with a failure status, so just return.
+             * This is a little weird.  We cannot read the archive the user
+             * specified.  Eventually, the deploy command will find this out
+             * also.  But if we return a failure from here then the
+             * command framework will report that a supplemental command has
+             * failed and the deploy command will never have a chance to nicely
+             * complain about the missing archive.  So, from this supplemental
+             * command we'll report success so the deploy command will
+             * be run.
              */
+            reportSuccess(report);
             return;
         }
 
@@ -177,6 +185,7 @@ public class ValidateRemoteDirDeploymentCommand extends DeployCommandParameters
 
     private void reportSuccess(final ActionReport report) {
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+        report.setMessage("");
     }
 
     /**
