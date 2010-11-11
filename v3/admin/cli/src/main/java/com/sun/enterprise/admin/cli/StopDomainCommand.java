@@ -117,7 +117,7 @@ public class StopDomainCommand extends LocalDomainCommand {
             programOpts.setInteractive(false);
 
             // in the local case, make sure we're talking to the correct DAS
-            if (!isThisDAS(getDomainRootDir()))
+             if (!isThisDAS(getDomainRootDir()))
                 return dasNotRunning();
 
             logger.finer("It's the correct DAS");
@@ -166,7 +166,7 @@ public class StopDomainCommand extends LocalDomainCommand {
     protected void doCommand() throws CommandException {
         // run the remote stop-domain command and throw away the output
         RemoteCommand cmd = new RemoteCommand(getName(), programOpts, env);
-        cmd.executeAndReturnOutput("stop-domain", "--force", force.toString());
+         cmd.executeAndReturnOutput("stop-domain", "--force", force.toString());
         waitForDeath();
 
         if (kill && local) {
@@ -187,7 +187,14 @@ public class StopDomainCommand extends LocalDomainCommand {
         int count = 0;
 
         while (!timedOut(startWait)) {
-            if (!isRunning()) {
+            boolean isRunning;
+
+            if(kill) // get out of here if it's a Zombie fast!
+                isRunning = isRunningForSure();
+            else
+                isRunning = isRunning(); // normal case -- wait for the PROCESS to die
+
+            if (!isRunning) {
                 alive = false;
                 break;
             }

@@ -44,6 +44,8 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 import java.security.KeyStore;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.glassfish.api.admin.CommandException;
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
@@ -139,8 +141,8 @@ public abstract class LocalServerCommand extends CLICommand {
     }
 
     protected final void unsetLocalPassword() {
-            programOpts.setPassword(null,
-                    ProgramOptions.PasswordLocation.LOCAL_PASSWORD);
+        programOpts.setPassword(null,
+                ProgramOptions.PasswordLocation.LOCAL_PASSWORD);
     }
 
     protected final void resetServerDirs() throws IOException {
@@ -304,6 +306,15 @@ public abstract class LocalServerCommand extends CLICommand {
         return isRunning(null, port);
     }
 
+    protected boolean isRunningForSure() {
+        // maybe the process is running but it is hung?
+        //
+        if (!isRunning())
+            return false;
+
+        return isRunningUsingAdminPort();
+    }
+
     /**
      * Is the server still running?
      * This is only called when we're hanging around waiting for the server to die.
@@ -323,6 +334,22 @@ public abstract class LocalServerCommand extends CLICommand {
             return isRunningUsingJps();
         else
             return b.booleanValue();
+    }
+
+    protected boolean isRunningUsingAdminPort() {
+        // first the fast easy check
+
+        if (!isRunning(programOpts.getPort()))
+            return false; // no need to continue...
+
+        // the port is in use.  Is it a GF Server?
+        try {
+            getUptime();
+            return true;
+        }
+        catch (CommandException ex) {
+            return false;
+        }
     }
 
     protected final void waitForRestart(File pwFile, long oldTimeStamp, long uptimeOldServer) throws CommandException {

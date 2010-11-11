@@ -190,7 +190,14 @@ public class StopLocalInstanceCommand extends LocalInstanceCommand {
         int count = 0;
 
         while (!timedOut(startWait)) {
-            if (!isRunning()) {
+            boolean isRunning;
+
+            if(kill) // get out of here if it's a Zombie fast!
+                isRunning = isRunningForSure();
+            else
+                isRunning = isRunning(); // normal case -- wait for the PROCESS to die
+
+            if (!isRunning) {
                 alive = false;
                 break;
             }
