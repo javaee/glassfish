@@ -481,19 +481,62 @@ public class ASMainHelper {
     }
 
     /**
-     * This method is responsible for setting up the launcher class loader and
-     * setting the context class loader as well.
-     * Launcher class loader is used to load jdk tools.jar (why?), and
-     * OSGi framework classes) and glassfish.jar, which contains glassfish bootstrap API classes.
-     * Our hierarchy looks like this:
+     * This method is responsible setting up launcher class loader which is then used while calling
+     * {@link org.glassfish.embeddable.GlassFishRuntime#bootstrap(org.glassfish.embeddable.BootstrapProperties, ClassLoader)}.
      *
-     * @param delegate: Parent class loader for the launcher
+     * This launcher class loader's delegation hierarchy looks like this:
+     * launcher class loader
+     *       -> OSGi framework launcher class loader
+     *             -> extension class loader
+     *                   -> null (bootstrap loader)
+     * We first create what we call "OSGi framework launcher class loader," that has
+     * classes that we want to be visible via system bundle.
+     * Then we create launcher class loader which has {@link OSGiGlassFishRuntimeBuilder} and its dependencies in
+     * its search path. We set the former one as the parent of this, there by sharing the same copy of
+     * GlassFish API classes and also making OSGi classes visible to OSGiGlassFishRuntimeBuilder.
+     *
+     * We could have merged all the jars into one class loader and called it the launcher class loader, but
+     * then such a loader, when set as the bundle parent loader for all OSGi classloading delegations, would make
+     * more things visible than desired. Please note, glassfish.jar has a very long dependency chain. See
+     * glassfish issue 13287 for the kinds of problems it can create.
+     *
+     * @see #createOSGiFrameworkLauncherCL(java.util.Properties, ClassLoader)
+     * @param delegate: Parent class loader for the launcher class loader.
      */
     static ClassLoader createLauncherCL(Properties ctx, ClassLoader delegate) {
         try {
+            ClassLoader osgiFWLauncherCL = createOSGiFrameworkLauncherCL(ctx, delegate);
+            ClassLoaderBuilder clb = new ClassLoaderBuilder(ctx, osgiFWLauncherCL);
+            clb.addLauncherJar(); // glassfish.jar
+            return clb.build();
+        } catch (IOException e) {
+            throw new Error(e);
+        }
+    }
+
+    /**
+     * This method is responsible for setting up the what we call "OSGi framework launcher class loader." It has
+     * the following classes/jars in its search path:
+     *  - OSGi framework classes,
+     *  - GlassFish bootstrap apis (simple-glassfish-api.jar)
+     *  - jdk tools.jar classpath.
+     * OSGi framework classes are there because we want to launch the framework.
+     * simple-glassfish-api.jar is needed, because we need those classes higher up in the class loader chain otherwise
+     * {@link com.sun.enterprise.glassfish.bootstrap.GlassFishMain.Launcher} won't be able to see the same copy that's
+     * used by rest of the system.
+     * tools.jar is needed because its packages, which are exported via system bundle, are consumed by EJBC.
+     * This class loader is configured to be the delegate for all bundle class loaders by setting
+     * org.osgi.framework.bundle.parent=framework in OSGi configuration. Since this is the delegate for all bundle
+     * class loaders, one should be very careful about adding stuff here, as it not only affects performance, it also
+     * affects functionality as explained in GlassFish issue 13287.
+     *
+     * @param delegate: Parent class loader for this class loader.
+     */
+    private static ClassLoader createOSGiFrameworkLauncherCL(Properties ctx, ClassLoader delegate) {
+        try {
             ClassLoaderBuilder clb = new ClassLoaderBuilder(ctx, delegate);
-            clb.addLauncherJar();
             clb.addFrameworkJars();
+            clb.addBootstrapApiJar(); // simple-glassfish-api.jar
             clb.addJDKToolsJar();
             return clb.build();
         } catch (IOException e) {
@@ -572,6 +615,10 @@ public class ASMainHelper {
 
         public void addLauncherJar() throws IOException {
             cpb.addJar(new File(glassfishDir, "modules/glassfish.jar"));
+        }
+
+        public void addBootstrapApiJar() throws IOException {
+            cpb.addJar(new File(glassfishDir, "modules/simple-glassfish-api.jar"));
         }
     }
 

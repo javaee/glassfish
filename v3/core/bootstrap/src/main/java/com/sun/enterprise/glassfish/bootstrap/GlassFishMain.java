@@ -84,12 +84,9 @@ public class GlassFishMain {
          * needs to locate OSGi framework factory using some class loader and that class loader must share same OSGi APIs
          * with the class loader of OSGiGlassFishRuntimeBuilder. Since we don't have the classpath for OSGi framework
          * until main method is called (note, we allow user to select what OSGi framework to use at runtime without
-         * requiring them to add any extra jar in system classpath), we can't assume that everything is correctly set up in
-         * system classpath. So, we create a single class loader which has GlassFishRuntime, OSGiGlassFishRuntimebuilder
-         * and OSGi framework jar in claspath. We use that class loader to load Launcher class which is used to load
-         * glassfishapi as well as implementation of glassfishapi and OSGi framework. This launcher class loader is also
-         * used as the parent class loader for underlying module system (be it HK2 or OSGi). In case of OSGi, using
-         * bootdelegation property or system package list to make sure only version of glassfishapi is loaded.
+         * requiring them to add any extra jar in system classpath), we can't assume that everything is correctly set up
+         * in system classpath. So, we create a class loader which can load GlassFishRuntime, OSGiGlassFishRuntimebuilder
+         * and OSGi framework classes.
          */
         final ClassLoader launcherCL = ASMainHelper.createLauncherCL(ctx,
                 ClassLoader.getSystemClassLoader().getParent());
