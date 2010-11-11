@@ -102,7 +102,7 @@
         </sun:tableColumn>
         -->
 
-        <sun:tableColumn id="colEnabled2" headerText="$resource{i18njms.resourcesTable.colEnabled}" rendered="#{!isConnPage}" sort="enabled" rowHeader="$boolean{true}">
+        <!--<sun:tableColumn id="colEnabled2" headerText="$resource{i18njms.resourcesTable.colEnabled}" rendered="#{!isConnPage}" sort="enabled" rowHeader="$boolean{true}">
             <staticText id="enabled" value="#{td.value.enabled}">
                 <!event type="beforeEncode">
                        urlencode(value="#{td.value.name}" encoding="UTF-8" result="#{pageSession.encodedName}");
@@ -110,6 +110,14 @@
                        setAttribute(key="resourceRef" value="#{requestScope.resourceRefMap['enabled']}");                
                 </event>
             </staticText>
+        </sun:tableColumn>-->
+
+        <sun:tableColumn rendered="#{!pageSession.onlyDASExist and !isConnPage}" headerText="$resource{i18n.deployTable.colStatus}" sort="enabled" rowHeader="$boolean{true}" id="col22">
+            <sun:hyperlink rendered="#{!pageSession.onlyDASExist}" id="targetLink" text="#{td.value.enableURL}" url="#{targetPage}?name=#{td.value.encodedName}&generalPage=#{pageSession.generalPage}?name=#{td.value.encodedName}" />
+        </sun:tableColumn>
+
+        <sun:tableColumn  rendered="#{pageSession.onlyDASExist and !isConnPage}" headerText="$resource{i18n.deployTable.colEnabled}" sort="enabled" rowHeader="$boolean{true}" id="col222">
+            <sun:image rendered="#{pageSession.onlyDASExist}" id="enCol" value="#{td.value.enableURL}" />
         </sun:tableColumn>
 
         <sun:tableColumn id="colConnDefName" headerText="$resource{i18njms.resourcesTable.colResType}" sort="connectionDefinitionName" rendered="#{isConnPage}" rowHeader="$boolean{true}">

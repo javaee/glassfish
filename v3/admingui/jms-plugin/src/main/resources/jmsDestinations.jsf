@@ -65,6 +65,9 @@
             setPageSessionAttribute(key="listLink" value="/jms/jmsDestinations.jsf");
             setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18njms.resourcesTable.deleteDestMessage}");
 
+            setPageSessionAttribute(key="generalPage" value="#{request.contextPath}/jms/jmsDestinationEdit.jsf");
+            setPageSessionAttribute(key="targetPage" value="#{request.contextPath}/common/resourceNode/resourceEditTargets.jsf");
+
             setPageSessionAttribute(key="resourceType" value="adminObjectResource");
             setPageSessionAttribute(key="hasPool" value="#{false}");
             setPageSessionAttribute(key="hasResType" value="#{true}");

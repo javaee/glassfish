@@ -80,8 +80,12 @@
         <sun:hyperlink rendered="#{supportCluster}" id="targetLink" text="#{td.value.enabled}" url="#{targetLink}?name=#{td.value.name}" />
     </sun:tableColumn>-->
 
-    <sun:tableColumn headerText="$resource{i18n.deployTable.colEnabled}" sort="enabled" rowHeader="$boolean{true}" id="col22">
-        <sun:staticText escape="true" id="typeCol" value="#{td.value.enabled}" />
+    <sun:tableColumn rendered="#{!pageSession.onlyDASExist}" headerText="$resource{i18n.deployTable.colStatus}" sort="enabled" rowHeader="$boolean{true}" id="col22">
+        <sun:hyperlink rendered="#{!pageSession.onlyDASExist}" id="targetLink" text="#{td.value.enableURL}" url="#{targetPage}?name=#{td.value.encodedName}&generalPage=#{pageSession.generalPage}?name=#{td.value.encodedName}" />
+    </sun:tableColumn>
+
+    <sun:tableColumn  rendered="#{pageSession.onlyDASExist}" headerText="$resource{i18n.deployTable.colEnabled}" sort="enabled" rowHeader="$boolean{true}" id="col222">
+        <sun:image rendered="#{pageSession.onlyDASExist}" id="enCol" value="#{td.value.enableURL}" />
     </sun:tableColumn>
     
     <sun:tableColumn headerText="$resource{i18njdbc.resourcesTable.colPool}" sort="poolName" rendered="#{pageSession.hasPool}"  rowHeader="$boolean{true}" id="col3">
