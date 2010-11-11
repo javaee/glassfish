@@ -286,7 +286,7 @@ public final class GlassFishORBManager {
         fineLog( "GlassFishORBManager: initProperties: processType {0}",
             processType ) ;
 
-        if( (processType == ProcessType.ACC) || (processType == ProcessType.Other) ) {
+        if(!processType.isServer()) {
             // No access to domain.xml.  Just init properties.
             // In this case iiopListener beans will be null.
             checkORBInitialPort(EMPTY_PROPERTIES);
@@ -417,7 +417,7 @@ public final class GlassFishORBManager {
                 + CSIv2SSLTaggedComponentHandlerImpl.class.getName(),"dummy");
        
 
-        if (processType == ProcessType.Server) {
+        if (processType.isServer()) {
             gmsClient = new IiopFolbGmsClient( habitat ) ;
 
             if (gmsClient.isGMSAvailable()) {
@@ -458,7 +458,7 @@ public final class GlassFishORBManager {
 
             // Standard OMG Properties.
             String orbDefaultServerId = DEFAULT_SERVER_ID;
-            if (!processType.isServer() && !processType.isStandaloneServer()) {
+            if (!processType.isServer()) {
                 orbDefaultServerId = ACC_DEFAULT_SERVER_ID;               
             }
 
@@ -588,7 +588,7 @@ public final class GlassFishORBManager {
                 logger.log(Level.SEVERE, "enterprise.orb_reference_exception", in);
             }
 
-            if( processType.isServer() ) {
+            if (processType.isServer()) {
                 // This MUST happen before new InitialGroupInfoService,
                 // or the ServerGroupManager will get initialized before the
                 // GIS is available.
@@ -726,7 +726,7 @@ public final class GlassFishORBManager {
         // Done to initialize the Persistent Server Port, before any
         // POAs are created. This was earlier done in POAEJBORB
         // Do it only in the appserver, not on appclient.  
-        if ( processType.isServer() ) {
+        if (processType.isServer()) {
             props.setProperty(ORBConstants.PERSISTENT_SERVER_PORT_PROPERTY,
                     initialPort);
         }

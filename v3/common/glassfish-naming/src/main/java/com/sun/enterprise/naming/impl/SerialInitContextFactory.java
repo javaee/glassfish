@@ -246,6 +246,8 @@ public class SerialInitContextFactory implements InitialContextFactory {
 
     private final Habitat habitat ;
 
+    private static ORBLocator orbLocator = null ;
+
     private final GroupInfoServiceObserverImpl giso ;
 
     private /* should be final */ GroupInfoService gis = null ;
@@ -299,9 +301,9 @@ public class SerialInitContextFactory implements InitialContextFactory {
     private ORB getORB() {
         ORB result = null ;
         if (habitat != null) {
-            ORBLocator orbLoc = habitat.getByContract(ORBLocator.class) ;
-            if (orbLoc != null) {
-                return orbLoc.getORB() ;
+            orbLocator = habitat.getByContract(ORBLocator.class) ;
+            if (orbLocator != null) {
+                return orbLocator.getORB() ;
             }
         }
 
@@ -334,6 +336,7 @@ public class SerialInitContextFactory implements InitialContextFactory {
                 }
             }
 
+            // XXX orbLocator.initialzeLoadBalancing
             if (useLB) {
                 final List<String> epList = getEndpointList( myEnv ) ;
                 if (!epList.isEmpty()) {
