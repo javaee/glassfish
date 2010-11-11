@@ -50,6 +50,7 @@
 <!define name="content">
     <event>
     <!beforeCreate
+        setSessionAttribute(key="availabilityTabs" value="webAvailabilityTab");
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
         setPageSessionAttribute(key="childType" value="web-container-availability");
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/availability-service");
