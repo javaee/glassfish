@@ -63,7 +63,7 @@ import org.glassfish.api.deployment.archive.Archive;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.deployment.common.InstalledLibrariesResolver;
-import org.glassfish.hk2.classmodel.reflect.Parser;
+import org.glassfish.hk2.classmodel.reflect.*;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.component.ComponentException;
@@ -73,6 +73,7 @@ import org.xml.sax.SAXParseException;
 import javax.enterprise.deploy.shared.ModuleType;
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.*;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.JarInputStream;
@@ -148,6 +149,8 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
     private static final boolean processAnnotationForOldDD =
             Boolean.getBoolean(PROCESS_ANNOTATION_FOR_OLD_DD); 
     
+    private static ExecutorService executorService = null;
+
     protected T descriptor;
 
     @Inject
@@ -549,6 +552,12 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
         } else {
             parser = archive.getExtraData(Parser.class);
         }
+
+        if (parser == null) {
+            ParsingContext parsingContext = new ParsingContext.Builder().logger(logger).executorService(getExecutorService()).build();
+            parser = new Parser(parsingContext);
+        }
+
         scanner.process(archive, bundleDesc, classLoader, parser);
 
         if (!scanner.getElements().isEmpty()) {
@@ -1911,5 +1920,23 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
         // 1. It is not a full deployment descriptor
         // 2. It is called through dynamic deployment
         return (!isFull && annotationProcessingRequested && classLoader != null);
+    }
+
+    protected synchronized ExecutorService getExecutorService() {
+        if (executorService != null) {
+            return executorService;
+        }
+        Runtime runtime = Runtime.getRuntime();
+        int nrOfProcessors = runtime.availableProcessors();
+        executorService = Executors.newFixedThreadPool(nrOfProcessors, new ThreadFactory() {
+            @Override
+            public Thread newThread(Runnable r) {
+                Thread t = new Thread(r);
+                t.setName("dol-jar-scanner");
+                t.setDaemon(true);
+                return t;
+            }
+        });
+        return executorService;
     }
 }
