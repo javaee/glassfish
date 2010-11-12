@@ -863,13 +863,6 @@ public class AppTest extends TestCase {
         }
     }
 
-    public void testCommitOnePhaseWithXAER_RMERR() {
-        System.out.println("**Testing TX XAER_RMERR exception code in 1PC ===>");
-        // Suppress warnings from 1PC logging
-        LogDomains.getLogger(OTSResourceImpl.class, LogDomains.TRANSACTION_LOGGER).setLevel(Level.SEVERE);
-        _testCommitOnePhaseWithExc(XAException.XAER_RMERR, RollbackException.class);
-    }
-
     public void testCommitOnePhaseWithHeuristicRlbExc() {
         _testCommitOnePhaseWithExc(XAException.XA_HEURRB, HeuristicRollbackException.class);
     }
@@ -878,14 +871,50 @@ public class AppTest extends TestCase {
         _testCommitOnePhaseWithExc(XAException.XA_HEURMIX, HeuristicMixedException.class);
     }
 
+    public void testCommitOnePhaseWithRlbExc() {
+        System.out.println("**Testing XAER_NOTA in 1PC ===>");
+        _testCommitOnePhaseWithExc(XAException.XAER_NOTA, RollbackException.class);
+
+        System.out.println("**Testing XAER_RMERR in 1PC ===>");
+        _testCommitOnePhaseWithExc(XAException.XAER_RMERR, RollbackException.class, false);
+
+        System.out.println("**Testing XA_RBROLLBACK in rollback part of 1PC ===>");
+        _testCommitOnePhaseWithExc(XAException.XA_RBROLLBACK, RollbackException.class, true);
+
+        System.out.println("**Testing XAER_RMERR in rollback part of 1PC ===>");
+        _testCommitOnePhaseWithExc(XAException.XAER_RMERR, RollbackException.class, true);
+
+        System.out.println("**Testing XAER_RMFAIL in rollback part of 1PC ===>");
+        _testCommitOnePhaseWithExc(XAException.XAER_RMFAIL, RollbackException.class, true);
+    }
+
     public void testCommitOnePhaseWithXAExc() {
         System.out.println("**Testing TM with failed 1PC commit ===>");
-         LogDomains.getLogger(OTSResourceImpl.class, LogDomains.TRANSACTION_LOGGER).setLevel(Level.SEVERE);
         _testCommitOnePhaseWithExc(XAException.XAER_RMFAIL, SystemException.class);
     }
 
     private void _testCommitOnePhaseWithExc(int errorCode, Class exType) {
+        _testCommitOnePhaseWithExc(errorCode, exType, false);
+    }
+
+    public void testRollbackWithErrorNoExc() {
+        System.out.println("**Testing XA_RBROLLBACK in rollback ===>");
+        _testXARollbackWithError(XAException.XA_RBROLLBACK);
+
+        System.out.println("**Testing XAER_RMERR in rollback ===>");
+        _testXARollbackWithError(XAException.XAER_RMERR);
+
+        System.out.println("**Testing XAER_NOTA in rollback ===>");
+        _testXARollbackWithError(XAException.XAER_NOTA);
+
+        System.out.println("**Testing XAER_RMFAIL in rollback ===>");
+        _testXARollbackWithError(XAException.XAER_RMFAIL);
+    }
+
+    private void _testCommitOnePhaseWithExc(int errorCode, Class exType, boolean setRollbackOnly) {
         System.out.println("**Testing TM with " + exType.getName() + " during 1PC commit ===>");
+        ((JavaEETransactionManagerSimplified)t).getLogger().setLevel(Level.SEVERE);
+        LogDomains.getLogger(OTSResourceImpl.class, LogDomains.TRANSACTION_LOGGER).setLevel(Level.SEVERE);
         try {
             System.out.println("**Starting transaction ....");
             t.begin();
@@ -900,6 +929,11 @@ public class AppTest extends TestCase {
             theResource.setCommitErrorCode(errorCode);
             t.delistResource(tx, new TestResourceHandle(theResource), XAResource.TMSUCCESS);
             
+            if (setRollbackOnly) {
+                System.out.println("**Calling TM setRollbackOnly ===>");
+                t.setRollbackOnly();
+            }
+
             System.out.println("**Calling TM commit ===>");
             t.commit();
             String status = JavaEETransactionManagerSimplified.getStatusAsString(t.getStatus());
@@ -919,6 +953,36 @@ public class AppTest extends TestCase {
                 ex.printStackTrace();
                 assert (false);
             }
+        }
+    }
+
+    private void _testXARollbackWithError(int errorCode) {
+        System.out.println("**Testing TM with XA error during XA rollback ===>");
+        ((JavaEETransactionManagerSimplified)t).getLogger().setLevel(Level.SEVERE);
+        LogDomains.getLogger(OTSResourceImpl.class, LogDomains.TRANSACTION_LOGGER).setLevel(Level.SEVERE);
+        try {
+            System.out.println("**Starting transaction ....");
+            t.begin();
+            assertEquals (JavaEETransactionManagerSimplified.getStatusAsString(t.getStatus()),
+                "Active");
+
+            // Create and set invMgr
+            createUtx();
+            Transaction tx = t.getTransaction();
+            TestResource theResource = new TestResource();
+            t.enlistResource(tx, new TestResourceHandle(theResource));
+            theResource.setCommitErrorCode(errorCode);
+            t.delistResource(tx, new TestResourceHandle(theResource), XAResource.TMSUCCESS);
+
+            System.out.println("**Calling TM rollback ===>");
+            t.rollback();
+            System.out.println("**Status after rollback: "
+                    + JavaEETransactionManagerSimplified.getStatusAsString(t.getStatus())
+                    + " <===");
+            assert (true);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            assert (false);
         }
     }
 
@@ -1052,6 +1116,10 @@ public class AppTest extends TestCase {
       public void rollback(Xid xid)
             throws XAException {
           System.out.println("in XA rollback");
+        if (commitErrorCode != 9999) {
+          System.out.println("throwing XAException." + commitErrorCode + " during rollback" );
+          throw new XAException(commitErrorCode);
+        }
       }
     
       public int prepare(Xid xid)

@@ -1062,9 +1062,8 @@ class RegisteredResources {
                             // If the exception is TRANSACTION_ROLLED back,
                             // then continue.
                             exceptionThrown = false;
-                        }
 
-                        if (exc instanceof HeuristicRollback) {
+                        } else if (exc instanceof HeuristicRollback) {
 
                             // If the exception is Heuristic Rollback,
                             // remember that a heuristic exception

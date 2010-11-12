@@ -328,6 +328,7 @@ public class TransactionManagerImpl implements TransactionManager {
         } catch (HeuristicHazard ex) {
             throw new HeuristicRollbackException();
         } catch (Exception ex) {
+            // ex.printStackTrace();
             throw new SystemException(ex.toString());
         }
         /***

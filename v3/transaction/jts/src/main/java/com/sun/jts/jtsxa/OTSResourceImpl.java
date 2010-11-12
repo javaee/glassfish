@@ -208,7 +208,7 @@ public class OTSResourceImpl extends OTSResourcePOA implements OTSResource {
 				throw hazex;
 	    	}
 			//IASRI END 4722883
-            if (e.errorCode == XAException.XAER_RMERR) {
+            if (e.errorCode == XAException.XAER_RMERR || e.errorCode == XAException.XAER_NOTA) {
                 _logger.log(Level.WARNING, "jts.unexpected_error_occurred_twopc_commit", ex);
                 throw new TRANSACTION_ROLLEDBACK(0, CompletionStatus.COMPLETED_NO);
             }
@@ -348,6 +348,13 @@ public class OTSResourceImpl extends OTSResourcePOA implements OTSResource {
 		(e.errorCode == XAException.XA_RBTRANSIENT) || 
 		(e.errorCode == XAException.XA_RBCOMMFAIL)) 
 		throw new TRANSIENT();
+            if (e.errorCode == XAException.XAER_RMERR || 
+                    e.errorCode == XAException.XA_RBROLLBACK ||
+                    e.errorCode == XAException.XAER_NOTA ||
+                    e.errorCode == XAException.XAER_RMFAIL) {
+                _logger.log(Level.WARNING, "jts.unexpected_error_occurred_twopc_rollback", ex);
+                throw new TRANSACTION_ROLLEDBACK(0, CompletionStatus.COMPLETED_MAYBE);
+            }
             INTERNAL internal =  new INTERNAL(0,CompletionStatus.COMPLETED_MAYBE);
             internal.initCause(ex);
             _logger.log(Level.WARNING, "jts.unexpected_error_occurred_twopc_rollback", ex);
