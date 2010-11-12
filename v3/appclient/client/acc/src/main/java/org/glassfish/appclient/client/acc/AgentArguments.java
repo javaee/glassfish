@@ -41,8 +41,10 @@
 package org.glassfish.appclient.client.acc;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Properties;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -51,7 +53,12 @@ import java.util.regex.Pattern;
  * <p>
  * The agent arguments are a comma-separated sequence of
  * <code>[keyword=]quoted-or-unquoted-string</code>.
- * The "keyword=" part is optional.
+ * The "keyword=" part is optional.  A given keyword can 
+ * appear multiple times, so after analysis each keyword can map
+ * to potentially multiple values (as a List<String>).
+ * <p>
+ * This class organizes the agent arguments into named and anonymous values.
+ *
  */
 public class AgentArguments {
 
@@ -75,8 +82,7 @@ public class AgentArguments {
     private static final int UNQUOTED = 3;
     private static Pattern agentArgPattern = Pattern.compile(AGENT_ARG_PATTERN, Pattern.DOTALL);
 
-    private final Properties namedValues = new Properties();
-    private final List<String> anonValues = new ArrayList<String>();
+    private final Map<String,List<String>> values = new HashMap<String,List<String>>();
 
     public static AgentArguments newInstance(final String args) {
         AgentArguments result = new AgentArguments();
@@ -85,12 +91,12 @@ public class AgentArguments {
     }
 
     /**
-     * Returns the named values as a Properties object.
-     * @return Properties object representing all name-value pairs found in
-     * the scanned string
+     * Returns the list of values associated with the specified keyword.
+     * @param keyword the keyword whose values are needed
+     * @return the values associated with the keyword; null if the keyword never appeared in the input
      */
-    public Properties namedValues() {
-        return namedValues;
+    public List<String> namedValues(final String keyword) {
+        return actualOrEmptyList(keyword);
     }
 
     /**
@@ -98,9 +104,13 @@ public class AgentArguments {
      * @return List of Strings, one for each unnamed value in the scanned string
      */
     public List<String> unnamedValues() {
-        return anonValues;
+        return actualOrEmptyList(null);
     }
 
+    private List<String> actualOrEmptyList(final String keyword) {
+        return (values.get(keyword) != null ? values.get(keyword) : Collections.EMPTY_LIST);
+    }
+    
     /**
      * Scans the input args string, updating the nameValuePairs properties
      * object using items with a keyword and updated the singleWordArgs list
@@ -122,11 +132,16 @@ public class AgentArguments {
              * from the matcher will be valid.
              */
             final String value = m.group(QUOTED) != null ? m.group(QUOTED) : m.group(UNQUOTED);
-            if (keyword != null) {
-                namedValues.setProperty(keyword, value);
-            } else {
-                anonValues.add(value);
-            }
+            getOrCreateValuesForKeyword(keyword).add(value);
         }
+    }
+
+    private List<String> getOrCreateValuesForKeyword(final String keyword) {
+        List<String> result = values.get(keyword);
+        if (result == null) {
+            result = new ArrayList<String>();
+            values.put(keyword, result);
+        }
+        return result;
     }
 }

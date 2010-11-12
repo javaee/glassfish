@@ -40,8 +40,6 @@
 
 package org.glassfish.appclient.client.acc;
 
-import com.sun.enterprise.util.LocalStringManager;
-import com.sun.enterprise.util.LocalStringManagerImpl;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,10 +64,9 @@ import java.util.List;
 public class CommandLaunchInfo {
 
     /* agent argument names */
-    private static final String CLIENT_AGENT_ARG_NAME = "client=";
-    private static final String COMMAND_AGENT_ARG = "arg=";
-    private static final String MODE_AGENT_ARG = "mode=";
-    private static final String APPCPATH = "appcpath=";
+    private static final String CLIENT_AGENT_ARG_NAME = "client";
+    private static final String MODE_AGENT_ARG = "mode";
+    private static final String APPCPATH = "appcpath";
 
     /* records the type of launch the user requested: jar, directory, class, or class file*/
     private ClientLaunchType clientLaunchType;
@@ -90,22 +87,27 @@ public class CommandLaunchInfo {
     /* info about the appclient script options */
     private AppclientCommandArguments appclientCommandLaunchInfo = null;
 
-    /**
-     * Creates and returns a new CommandLaunchInfo instance.
-     * <p>
-     * Typically the caller is the agent which will pass the agent arguments
-     * it received when the VM invoked its premain method.
-     *
-     * @param agentArgs string of agent arguments
-     * @return new CommandLaunchInfo object
-     */
-    public static CommandLaunchInfo newInstance(final String agentArgs) throws UserError {
-        CommandLaunchInfo result = new CommandLaunchInfo(agentArgs);
+//    /**
+//     * Creates and returns a new CommandLaunchInfo instance.
+//     * <p>
+//     * Typically the caller is the agent which will pass the agent arguments
+//     * it received when the VM invoked its premain method.
+//     *
+//     * @param agentArgs string of agent arguments
+//     * @return new CommandLaunchInfo object
+//     */
+//    public static CommandLaunchInfo newInstance(final String agentArgs) throws UserError {
+//        CommandLaunchInfo result = new CommandLaunchInfo(agentArgs);
+//        return result;
+//    }
+
+    public static CommandLaunchInfo newInstance(final AgentArguments agentArgs) throws UserError {
+        final CommandLaunchInfo result = new CommandLaunchInfo(agentArgs);
         return result;
     }
 
 
-    private CommandLaunchInfo(final String agentArgs) throws UserError {
+    private CommandLaunchInfo(final AgentArguments agentArgs) throws UserError {
         clientLaunchType = saveArgInfo(agentArgs);
     }
 
@@ -138,32 +140,28 @@ public class CommandLaunchInfo {
     }
     
     private ClientLaunchType saveArgInfo(
-            final String agentArgs) throws UserError {
+            final AgentArguments agentArgs) throws UserError {
         if (agentArgs == null){
             return ClientLaunchType.UNKNOWN;
         }
         ClientLaunchType result = null;
-        List<String> appclientCommandArgs = new ArrayList<String>();
 
-        final String[] args = agentArgs.split(",");
-        for (String arg : args) {
-            if (arg.startsWith(CLIENT_AGENT_ARG_NAME)) {
-                result = processClientArg(arg.substring(CLIENT_AGENT_ARG_NAME.length()));
-            } else if (arg.startsWith(COMMAND_AGENT_ARG)) {
-                processAppclientArg(appclientCommandArgs, arg.substring(COMMAND_AGENT_ARG.length()));
-            } else if (arg.startsWith(MODE_AGENT_ARG)) {
-                processMode(arg.substring(MODE_AGENT_ARG.length()));
-            } else if (arg.startsWith(APPCPATH)) {
-                processAppcPath(arg.substring(APPCPATH.length()));
-            }
+        String s;
+        if ((s = lastFromList(agentArgs.namedValues(CLIENT_AGENT_ARG_NAME))) != null) {
+            result = processClientArg(s);
         }
-        /*
-         * Now that we have all the appclient arguments, process them as a group.
-         */
-        appclientCommandLaunchInfo = AppclientCommandArguments.newInstance(
-                appclientCommandArgs);
+        if ((s = lastFromList(agentArgs.namedValues(MODE_AGENT_ARG))) != null) {
+            processMode(s);
+        }
+        if ((s = lastFromList(agentArgs.namedValues(APPCPATH)))  != null) {
+            processAppcPath(s);
+        }
 
         return result;
+    }
+
+    private String lastFromList(final List<String> list) {
+        return (list.isEmpty() ? null : list.get(list.size() - 1));
     }
 
     private void processMode(final String mode) {
@@ -185,10 +183,6 @@ public class CommandLaunchInfo {
         ClientLaunchType type = ClientLaunchType.byType(clientType);
 
         return type;
-    }
-
-    private void processAppclientArg(final List<String> commandArgs, String arg) {
-        commandArgs.add(arg);
     }
 
     private void processAppcPath(final String appcPath) {
