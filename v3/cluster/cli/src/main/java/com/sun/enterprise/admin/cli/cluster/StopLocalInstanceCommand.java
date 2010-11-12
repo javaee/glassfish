@@ -104,27 +104,21 @@ public class StopLocalInstanceCommand extends LocalInstanceCommand {
 
         if (serverDir == null || !serverDir.isDirectory())
             return noSuchInstance();
-        try {
-            if (getServerDirs().getLocalPassword() == null)
-                return instanceNotRunning();
 
-            String serverName = getServerDirs().getServerName();
-            HostAndPort addr = getAdminAddress(serverName);
-            programOpts.setHostAndPort(addr);
+        if (getServerDirs().getLocalPassword() == null)
+            return instanceNotRunning();
 
-            logger.finer("StopInstance.stoppingMessage" + addr.getPort());
+        String serverName = getServerDirs().getServerName();
+        HostAndPort addr = getAdminAddress(serverName);
+        programOpts.setHostAndPort(addr);
 
-            if (!isRunningForSure())
-                return instanceNotRunning();
+        logger.finer("StopInstance.stoppingMessage" + addr.getPort());
 
-            logger.finer("It's the correct Instance");
-            // we CAN communicate with the admin listener if we get here...
-            return doRemoteCommand();
-        }
-        finally {
-            if (kill)
-                kill();
-        }
+        if (!isRunning())
+            return instanceNotRunning();
+
+        logger.finer("It's the correct Instance");
+        return doRemoteCommand();
     }
 
     /**
@@ -132,13 +126,13 @@ public class StopLocalInstanceCommand extends LocalInstanceCommand {
      * we detect that the DAS is not running.
      */
     protected int instanceNotRunning() throws CommandException {
+        if (kill)
+            return kill();
 
         // by definition this is not an error
         // https://glassfish.dev.java.net/issues/show_bug.cgi?id=8387
 
-        if (!kill)
-            logger.warning(Strings.get("StopInstance.instanceNotRunning"));
-
+        logger.warning(Strings.get("StopInstance.instanceNotRunning"));
         return 0;
     }
 
@@ -156,7 +150,8 @@ public class StopLocalInstanceCommand extends LocalInstanceCommand {
     /**
      * Execute the actual stop-domain command.
      */
-    protected int doRemoteCommand() throws CommandException {
+    protected int doRemoteCommand()
+            throws CommandException, CommandValidationException {
 
         // put the local-password for the instance  in programOpts
         // we don't do this for ALL local-instance commands because if they call
@@ -170,11 +165,17 @@ public class StopLocalInstanceCommand extends LocalInstanceCommand {
          */
         programOpts.setInteractive(false);
 
-        // run the remote stop-domain command and throw away the output
-        RemoteCommand cmd = new RemoteCommand("_stop-instance", programOpts, env);
-        cmd.executeAndReturnOutput("_stop-instance", "--force", force.toString());
-        waitForDeath();
-        return 0;
+        try {
+            // run the remote stop-domain command and throw away the output
+            RemoteCommand cmd = new RemoteCommand("_stop-instance", programOpts, env);
+            cmd.executeAndReturnOutput("_stop-instance", "--force", force.toString());
+            waitForDeath();
+            return 0;
+        }
+        finally {
+            if (kill)
+                kill();
+        }
     }
 
     /**
@@ -190,14 +191,7 @@ public class StopLocalInstanceCommand extends LocalInstanceCommand {
         int count = 0;
 
         while (!timedOut(startWait)) {
-            boolean isRunning;
-
-            if (kill) // get out of here if it's a Zombie fast!
-                isRunning = isRunningForSure();
-            else
-                isRunning = isRunning(); // normal case -- wait for the PROCESS to die
-
-            if (!isRunning) {
+            if (!isRunning()) {
                 alive = false;
                 break;
             }
