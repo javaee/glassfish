@@ -583,7 +583,7 @@
 
         <plugins>
 
-            <!-- Enforces maven 2.0.9 and jdk 1.6.0-04 and above to be used to build v3 -->
+            <!-- Enforces maven 2.2.1 and jdk 1.6.0-04 and above to be used to build v3 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
@@ -600,6 +600,10 @@
                                 <version>[1.6.0-4,)</version>
                                 <message>You need JDK 1.6.0_04 and above!</message>
                             </requireJavaVersion>
+                            <requireMavenVersion>
+                                <version>[2.2.1,)</version>
+                                <message>You need Maven 2.2.1 or above!</message>
+                            </requireMavenVersion>
                         </rules>
                         </configuration>
                     </execution>
