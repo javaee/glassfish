@@ -118,8 +118,8 @@ public class ClusterTeardownTest extends AdminBaseDevTest {
         System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
         System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
         System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-        AsadminReturn ar1 = asadminWithOutput("stop-local-instance", i1name);
-        AsadminReturn ar2 = asadminWithOutput("stop-local-instance", i2name);
+        AsadminReturn ar1 = asadminWithOutput("stop-local-instance", "--kill", i1name);
+        AsadminReturn ar2 = asadminWithOutput("stop-local-instance", "--kill", i2name);
         AsadminReturn ar3 = asadminWithOutput("delete-local-instance", i1name);
         AsadminReturn ar4 = asadminWithOutput("delete-local-instance", i2name);
 
