@@ -728,6 +728,8 @@ class RegisteredResources {
 
         boolean heuristicException = false;
         boolean heuristicMixed = false;
+        int heuristicRollback = 0;
+        int numExc = 0;
 
         // First, get the retry count.
 
@@ -820,6 +822,9 @@ class RegisteredResources {
                             // damage has occurred.
 
                             heuristicException = true;
+                            if (exc instanceof HeuristicRollback) {
+                                heuristicRollback++;
+                            }
                             heuristicMixed = !(exc instanceof HeuristicHazard);
                             heuristicRaised = true;
                             exceptionThrown = false;
@@ -897,6 +902,11 @@ class RegisteredResources {
 	                        						new java.lang.Object[] {
 													new Integer(commitRetries), "commit"});
                         }
+
+                        if (!exceptionThrown) {
+                           // exceptionThrown is false for retry, but there was an exception
+                           numExc++;
+                        }
                     }
                 }
 
@@ -932,9 +942,11 @@ class RegisteredResources {
         // The browse is complete.
         // If a heuristic exception was raised, perform forget processing. This
         // will then throw the appropriate heuristic exception to the caller.
+        // Note that HeuristicHazard exception with be converted to the HeuristicRolledbackException
+        // by the caller
 
         if (heuristicException)
-          distributeForget(commitRetries, infiniteRetry, heuristicMixed);
+          distributeForget(commitRetries, infiniteRetry, (heuristicRollback == numExc) ? false : heuristicMixed);
 
         if (!transactionCompleted) {
             if (coord != null)

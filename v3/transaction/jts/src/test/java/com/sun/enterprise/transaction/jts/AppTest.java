@@ -893,10 +893,6 @@ public class AppTest extends TestCase {
         _testCommitOnePhaseWithExc(XAException.XAER_RMFAIL, SystemException.class);
     }
 
-    private void _testCommitOnePhaseWithExc(int errorCode, Class exType) {
-        _testCommitOnePhaseWithExc(errorCode, exType, false);
-    }
-
     public void testRollbackWithErrorNoExc() {
         System.out.println("**Testing XA_RBROLLBACK in rollback ===>");
         _testXARollbackWithError(XAException.XA_RBROLLBACK);
@@ -909,6 +905,10 @@ public class AppTest extends TestCase {
 
         System.out.println("**Testing XAER_RMFAIL in rollback ===>");
         _testXARollbackWithError(XAException.XAER_RMFAIL);
+    }
+
+    private void _testCommitOnePhaseWithExc(int errorCode, Class exType) {
+        _testCommitOnePhaseWithExc(errorCode, exType, false);
     }
 
     private void _testCommitOnePhaseWithExc(int errorCode, Class exType, boolean setRollbackOnly) {
@@ -987,7 +987,21 @@ public class AppTest extends TestCase {
     }
 
     public void testCommit2PCWithXAExc() {
-        System.out.println("**Testing TM with failed 2PC commit ===>");
+        System.out.println("**Testing TM with 1 XAER_RMFAIL 2PC commit ===>");
+        _testCommit2PCWithXAExc(XAException.XAER_RMFAIL, 9999, SystemException.class);
+
+        System.out.println("**Testing TM with both XA_HEURRB 2PC commit ===>");
+        _testCommit2PCWithXAExc(XAException.XA_HEURRB, XAException.XA_HEURRB, HeuristicRollbackException.class);
+
+        System.out.println("**Testing TM with 1 XA_HEURRB & 1 XA_HEURMIX 2PC commit ===>");
+        _testCommit2PCWithXAExc(XAException.XA_HEURRB, XAException.XA_HEURMIX, HeuristicMixedException.class);
+
+        System.out.println("**Testing TM with 1 XA_HEURRB 2PC commit ===>");
+        _testCommit2PCWithXAExc(XAException.XA_HEURRB, 9999, HeuristicRollbackException.class);
+    }
+
+    private void _testCommit2PCWithXAExc(int errorCode1, int errorCode2, Class exType) {
+        System.out.println("**Testing TM with " + exType.getName() + " during failed 2PC commit ===>");
         try {
             System.out.println("**Starting transaction ....");
             t.begin();
@@ -997,35 +1011,38 @@ public class AppTest extends TestCase {
             // Create and set invMgr
             createUtx();
             Transaction tx = t.getTransaction();
-            TestResource theResource = new TestResource();
             TestResource theResource1 = new TestResource();
-            t.enlistResource(tx, new TestResourceHandle(theResource));
+            TestResource theResource2 = new TestResource();
             t.enlistResource(tx, new TestResourceHandle(theResource1));
+            t.enlistResource(tx, new TestResourceHandle(theResource2));
 
-            theResource1.setCommitErrorCode(XAException.XAER_RMFAIL);
+            theResource1.setCommitErrorCode(errorCode1);
+            theResource2.setCommitErrorCode(errorCode2);
 
-            t.delistResource(tx, new TestResourceHandle(theResource), XAResource.TMSUCCESS);
             t.delistResource(tx, new TestResourceHandle(theResource1), XAResource.TMSUCCESS);
+            t.delistResource(tx, new TestResourceHandle(theResource2), XAResource.TMSUCCESS);
             
             System.out.println("**Calling TM commit ===>");
             t.commit();
             String status = JavaEETransactionManagerSimplified.getStatusAsString(t.getStatus());
             System.out.println("**Error - successful commit - Status after commit: " + status + " <===");
             assert (false);
-        } catch (SystemException ex) {
-            System.out.println("**Caught expected SystemException during 2PC...");
-            try {
-                String status = JavaEETransactionManagerSimplified.getStatusAsString(t.getStatus());
-                System.out.println("**Status after commit: " + status + " <===");
-            } catch (Exception ex1) {
-                System.out.println("**Caught exception checking for status ...");
-                ex1.printStackTrace();
-            }
-            assert (true);
         } catch (Exception ex) {
-            System.out.println("**Caught NOT a SystemException during 2PC...");
-            ex.printStackTrace();
-            assert (false);
+            if (exType.isInstance(ex)) {
+                System.out.println("**Caught expected " + exType.getName() + " ...");
+                try {
+                    String status = JavaEETransactionManagerSimplified.getStatusAsString(t.getStatus());
+                    System.out.println("**Status after commit: " + status + " <===");
+                } catch (Exception ex1) {
+                    System.out.println("**Caught exception checking for status ...");
+                    ex1.printStackTrace();
+                }
+                assert (true);
+            } else {
+                System.out.println("**Caught NOT a " + exType.getName() + " during 2PC...");
+                ex.printStackTrace();
+                assert (false);
+            }
         }
     }
 
