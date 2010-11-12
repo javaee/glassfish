@@ -87,8 +87,8 @@ public class CollectLogFiles implements AdminCommand {
     @Param(optional = true)
     String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
 
-    @Param(name = "retrievefile", optional = true, defaultValue = "false")
-    boolean retrieveFile;
+    @Param(name = "retrieve", optional = true, defaultValue = "false")
+    boolean retrieve;
 
     @Param(primary = true, optional = true, defaultValue = ".")
     private String retrieveFilePath;
@@ -185,7 +185,7 @@ public class CollectLogFiles implements AdminCommand {
                 return;
             }
 
-            if (this.retrieveFile) {
+            if (this.retrieve) {
                 retrieveFile(zipFile, context, tempDirectory, props, report);
                 report.setMessage(localStrings.getLocalString(
                         "collectlogfiles.instance.success", "Created Zip file under {0}.",retrieveFilePath + File.separator + new File(zipFile).getName()));
@@ -268,7 +268,7 @@ public class CollectLogFiles implements AdminCommand {
                 return;
             }
 
-            if (this.retrieveFile) {
+            if (this.retrieve) {
                 retrieveFile(zipFile, context, tempDirectory, props, report);
                 report.setMessage(localStrings.getLocalString(
                         "collectlogfiles.instance.success", "Created Zip file under {0}.",retrieveFilePath + File.separator + new File(zipFile).getName()));
@@ -369,7 +369,7 @@ public class CollectLogFiles implements AdminCommand {
                     return;
                 }
 
-                if (this.retrieveFile) {
+                if (this.retrieve) {
                     retrieveFile(zipFile, context, tempDirectory, props, report);
                     report.setMessage(localStrings.getLocalString(
                             "collectlogfiles.cluster.success","{0} Created Zip file under {1}.",finalMessage,retrieveFilePath + File.separator + new File(zipFile).getName()));
