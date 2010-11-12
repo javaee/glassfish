@@ -996,8 +996,14 @@ public class AppTest extends TestCase {
         System.out.println("**Testing TM with 1 XA_HEURRB & 1 XA_HEURMIX 2PC commit ===>");
         _testCommit2PCWithXAExc(XAException.XA_HEURRB, XAException.XA_HEURMIX, HeuristicMixedException.class);
 
+        System.out.println("**Testing TM with 1 XA_HEURRB & 1 XA_HEURCOM 2PC commit ===>");
+        _testCommit2PCWithXAExc(XAException.XA_HEURRB, XAException.XA_HEURCOM, HeuristicMixedException.class);
+
+        System.out.println("**Testing TM with 1 XA_HEURCOM & 1 XA_HEURRB 2PC commit ===>");
+        _testCommit2PCWithXAExc(XAException.XA_HEURCOM, XAException.XA_HEURRB, HeuristicMixedException.class);
+
         System.out.println("**Testing TM with 1 XA_HEURRB 2PC commit ===>");
-        _testCommit2PCWithXAExc(XAException.XA_HEURRB, 9999, HeuristicRollbackException.class);
+        _testCommit2PCWithXAExc(XAException.XA_HEURRB, 9999, HeuristicMixedException.class);
     }
 
     private void _testCommit2PCWithXAExc(int errorCode1, int errorCode2, Class exType) {

@@ -729,7 +729,6 @@ class RegisteredResources {
         boolean heuristicException = false;
         boolean heuristicMixed = false;
         int heuristicRollback = 0;
-        int numExc = 0;
 
         // First, get the retry count.
 
@@ -902,11 +901,6 @@ class RegisteredResources {
 	                        						new java.lang.Object[] {
 													new Integer(commitRetries), "commit"});
                         }
-
-                        if (!exceptionThrown) {
-                           // exceptionThrown is false for retry, but there was an exception
-                           numExc++;
-                        }
                     }
                 }
 
@@ -946,7 +940,7 @@ class RegisteredResources {
         // by the caller
 
         if (heuristicException)
-          distributeForget(commitRetries, infiniteRetry, (heuristicRollback == numExc) ? false : heuristicMixed);
+          distributeForget(commitRetries, infiniteRetry, (heuristicRollback == nRes) ? false : heuristicMixed);
 
         if (!transactionCompleted) {
             if (coord != null)
