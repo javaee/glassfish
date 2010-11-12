@@ -84,7 +84,9 @@ public class ListPersistenceTypesCommand implements AdminCommand {
         if (!checkEnvAndParams()) {
             return;
         }
-        logger.log(Level.INFO, Strings.get("list.persistence.types.called", containerType));
+        if (logger.isLoggable(Level.FINE)){
+            logger.log(Level.FINE, Strings.get("list.persistence.types.called", containerType));
+        }
         Set<String> types = BackingStoreFactoryRegistry.getRegisteredTypes();
         types.remove("noop"); // implementation detail.  do not expose to users.
         StringBuilder sb = new StringBuilder("");
