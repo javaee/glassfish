@@ -41,9 +41,11 @@
 package com.sun.enterprise.admin.cli.optional;
 
 import java.io.*;
+import java.util.*;
 
 import org.glassfish.api.admin.*;
 import com.sun.enterprise.admin.cli.remote.DASUtils;
+import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 import com.sun.enterprise.util.ObjectAnalyzer;
 import com.sun.enterprise.backup.BackupException;
 import com.sun.enterprise.backup.BackupManager;
@@ -102,8 +104,15 @@ public final class BackupDomainCommand extends BackupCommands {
 
         if (force == null ) {
             if (isRunning()) {
-                throw new CommandException(strings.get("DomainIsNotStopped",
-                                           domainName));
+                boolean suspendAvailable = canSuspend();
+
+                if (suspendAvailable && !isSuspended()) {
+                    throw new CommandException(
+                        strings.get("DomainIsNotSuspended", domainName));
+                } else if (!suspendAvailable) {
+                    throw new CommandException(strings.get("DomainIsNotStopped",
+                        domainName));
+                }
             } 
         }
 
@@ -149,4 +158,45 @@ public final class BackupDomainCommand extends BackupCommands {
         return super.toString() + "\n" + ObjectAnalyzer.toString(this);
     }
 
+    /**
+     * This method determines if the DAS has the ability to suspend itself.
+     */
+    private boolean canSuspend() {
+
+        try {
+            RemoteCommand cmd = new RemoteCommand("list-commands", 
+                                                  programOpts, env);
+            String response = cmd.executeAndReturnOutput("list-commands");
+
+            if (response.indexOf("suspend-domain") >= 0)
+                return true;
+        } catch (Exception e) {
+            logger.info("Exception while probing DAS (list-commands): " +
+                e.getMessage());
+        }
+
+        return false;
+    } 
+
+    /**
+     * This method determines if the DAS is currently suspended.
+     */
+    private boolean isSuspended() {
+
+        try {
+            RemoteCommand cmd = new RemoteCommand("suspend-domain", 
+                                                  programOpts, env);
+            String response = cmd.executeAndReturnOutput("suspend-domain",
+                                                         "--_test=true");
+
+            if (response.indexOf("SUSPENDED=TRUE") >= 0)
+                return true;
+
+        } catch (Exception e) {
+            logger.info("Exception while probing DAS (suspend-domain): " +
+                e.getMessage());
+        }
+
+        return false;
+    } 
 }

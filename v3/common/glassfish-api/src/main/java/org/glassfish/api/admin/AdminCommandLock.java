@@ -286,6 +286,22 @@ public class AdminCommandLock {
     }
 
     /**
+     * Indicates if commands are currently suspended.
+     */
+    public synchronized boolean isSuspended() {
+        /*
+         * If the suspendCommandsLockThread is alive then we are
+         * already suspended or really close to it.
+         */
+        if (suspendCommandsLockThread != null &&
+            suspendCommandsLockThread.isAlive()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Lock the DAS from accepting any commands annotated with a SHARED
      * or EXCLUSIVE CommandLock.  This method will result in the acquisition
      * of an EXCLUSIVE lock.  This method will not return until the lock
