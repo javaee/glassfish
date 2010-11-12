@@ -760,7 +760,9 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
 
     @Override
     public void event(Event event) {
-        if (event.is(Deployment.APPLICATION_PREPARED)) {
+        if (event.is(Deployment.DEPLOYMENT_BEFORE_CLASSLOADER_CREATION)) {
+            // this is where we have processed metadata and 
+            // haven't created the application classloader yet
             DeploymentContext context = (DeploymentContext)event.hook();
             if (verify) {
                 Verifier verifier = habitat.getByContract(Verifier.class);
