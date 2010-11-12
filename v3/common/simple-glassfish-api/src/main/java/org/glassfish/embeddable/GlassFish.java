@@ -108,12 +108,20 @@ public interface GlassFish {
     /**
      * Start GlassFish.
      * When this method is called, all the lifecycle (aka startup) services are started.
+     * Calling this method while the server is in {@link Status#STARTED} state is a no-op.
+     *
+     * @throws {@link IllegalStateException} if server is already started.
+     * @throws GlassFishException if server can't be started for some unknown reason.
      */
     void start() throws GlassFishException;
 
     /**
      * Stop GlassFish. When this method is called, all the lifecycle (aka startup) services are stopped.
      * GlassFish can be started again by calling the start method.
+     * Calling this method while the server is in {@link Status#STARTED} state is a no-op.
+     *
+     * @throws {@link IllegalStateException} if server is already stopped.
+     * @throws GlassFishException if server can't be started for some unknown reason.
      */
     void stop() throws GlassFishException;
 

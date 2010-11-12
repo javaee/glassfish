@@ -75,6 +75,7 @@ import java.util.Map;
 public class DeployerImpl implements Deployer {
     @Inject
     Habitat habitat;
+
     public String deploy(URI archive, String... params) throws GlassFishException {
         if (!"file".equalsIgnoreCase(archive.getScheme())) {
             throw new UnsupportedOperationException("Currently only file protocol is supported");
@@ -93,6 +94,10 @@ public class DeployerImpl implements Deployer {
         } catch (IOException e) {
             throw new GlassFishException(e);
         }
+    }
+
+    public String deploy(File file, String... params) throws GlassFishException {
+        return deploy(file.toURI(), params);
     }
 
     public void undeploy(String appName, String... params) throws GlassFishException {

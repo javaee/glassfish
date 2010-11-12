@@ -65,6 +65,8 @@ public class GlassFishProperties {
 
     /**
      * Create GlassFishProperties with custom properties.
+     * This method does not take a copy of the passed in properties object; instead it just maintains a reference to
+     * it, so all semantics of "pass-by-reference" applies.
      * <p/>
      * <p/>Custom properties can include values for all or some of the keys
      * defined as constants in this class. Eg., a value for com.sun.aas.instanceRoot

@@ -540,7 +540,9 @@ public class Server {
     public synchronized void start() throws LifecycleException {
         if(glassfish != null) {
             try {
-                glassfish.start();
+                if (glassfish.getStatus() != GlassFish.Status.STARTED) {
+                    glassfish.start();
+                }
             } catch (GlassFishException e) {
                 throw new LifecycleException(e); // TODO(Sahoo): Proper Exception Handling
             }

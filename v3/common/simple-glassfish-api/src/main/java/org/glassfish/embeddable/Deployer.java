@@ -66,7 +66,7 @@ public interface Deployer {
      *
      * <p/>Examples :
      * <pre>
-     *           deployer.deploy("http://acme.com/foo.war")
+     *           deployer.deploy(new URI("http://acme.com/foo.war"))
      *
      *           deployer.deploy(new File("/tmp/bar.ear").toURI(),
      *                                    "--name=foo", "--force=true", "--create-tables=true")
@@ -76,6 +76,16 @@ public interface Deployer {
      * @return the name of the deployed application
      */
     String deploy(URI archive, String... params) throws GlassFishException;
+
+    /**
+     * Deploys an application identified by a file. Invoking this method is equivalent to invoking
+     * {@link #deploy(URI, String...) <tt>deploy(file.toURI, params)</tt>}.
+     *
+     * @param file File or directory identifying the application to be deployed.
+     * @param params Optional list of deployment options.
+     * @return the name of the deployed application
+     */
+    String deploy(File file, String... params) throws GlassFishException;
 
     /**
      * Undeploys an application from {@link GlassFish}

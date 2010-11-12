@@ -63,6 +63,8 @@ public class BootstrapProperties {
 
     /**
      * Create BootstrapProperties with custom properties.
+     * This method does not take a copy of the passed in properties object; instead it just maintains a reference to
+     * it, so all semantics of "pass-by-reference" applies.
      * <p/>
      * <p/>Custom properties can include GlassFish_Platform,
      * com.sun.aas.installRoot, com.sun.aas.installRootURI
