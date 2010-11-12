@@ -135,7 +135,7 @@
         <stax-api.version>1.0-2</stax-api.version>
         <jsftemplating.version>2.0.4</jsftemplating.version>
         <scales.version>1.3.1</scales.version>
-        <glassfish-corba.version>3.1.0-b015</glassfish-corba.version>
+        <glassfish-corba.version>3.1.0-b016</glassfish-corba.version>
         <uc-pkg-client.version>1.122-38.2791</uc-pkg-client.version>
         <uc-pkg-bootstrap.version>1.122-38.2791</uc-pkg-bootstrap.version>
         
@@ -161,8 +161,8 @@
         <jersey.version>1.5-ea03</jersey.version>
         <jbi.version>1.0</jbi.version>
         <wsdl4j.version>1.6.2</wsdl4j.version>
-        <gmbal.version>3.0.0-b023</gmbal.version>
-        <glassfish-management-api.version>3.0.0-b012</glassfish-management-api.version>
+        <gmbal.version>3.1.0-b001</gmbal.version>
+        <glassfish-management-api.version>3.1.0-b001</glassfish-management-api.version>
         <mimepull.version>1.4</mimepull.version>
         <findbugs.exclude></findbugs.exclude>
         <btrace.version>1.0.5</btrace.version>
