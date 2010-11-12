@@ -62,6 +62,7 @@ import com.sun.enterprise.admin.cli.remote.DASUtils;
 @Service(name = "stop-domain")
 @Scoped(PerLookup.class)
 public class StopDomainCommand extends LocalDomainCommand {
+
     @Param(name = "domain_name", primary = true, optional = true)
     private String userArgDomainName;
     @Param(name = "force", optional = true, defaultValue = "true")
@@ -97,53 +98,48 @@ public class StopDomainCommand extends LocalDomainCommand {
     @Override
     protected int executeCommand()
             throws CommandException {
-        try {
-            if (local) {
-                // if the local password isn't available, the domain isn't running
-                // (localPassword is set by initDomain)
-                if (getServerDirs().getLocalPassword() == null)
-                    return dasNotRunning();
 
-                programOpts.setHostAndPort(getAdminAddress());
-                logger.finer("Stopping local domain on port "
-                        + programOpts.getPort());
+        if (local) {
+            // if the local password isn't available, the domain isn't running
+            // (localPassword is set by initDomain)
+            if (getServerDirs().getLocalPassword() == null)
+                return dasNotRunning();
 
-                /*
-                 * If we're using the local password, we don't want to prompt
-                 * for a new password.  If the local password doesn't work it
-                 * most likely means we're talking to the wrong server.
-                 */
-                programOpts.setInteractive(false);
-
-                // in the local case, make sure we're talking to the correct DAS
-                if (!isThisDAS(getDomainRootDir()))
-                    return dasNotRunning();
-
-                logger.finer("It's the correct DAS");
-            }
-            else { // remote
-                // Verify that the DAS is running and reachable
-                if (!DASUtils.pingDASQuietly(programOpts, env))
-                    return dasNotRunning();
-
-                logger.finer("DAS is running");
-                programOpts.setInteractive(false);
-            }
+            programOpts.setHostAndPort(getAdminAddress());
+            logger.finer("Stopping local domain on port "
+                    + programOpts.getPort());
 
             /*
-             * At this point any options will have been prompted for, and
-             * the password will have been prompted for by pingDASQuietly,
-             * so even if the password is wrong we don't want any more
-             * prompting here.
+             * If we're using the local password, we don't want to prompt
+             * for a new password.  If the local password doesn't work it
+             * most likely means we're talking to the wrong server.
              */
+            programOpts.setInteractive(false);
 
-            doCommand();
-            return 0;
+            // in the local case, make sure we're talking to the correct DAS
+            if (!isThisDAS(getDomainRootDir()))
+                return dasNotRunning();
+
+            logger.finer("It's the correct DAS");
         }
-        finally {
-            if (kill && local)
-                kill();
+        else { // remote
+            // Verify that the DAS is running and reachable
+            if (!DASUtils.pingDASQuietly(programOpts, env))
+                return dasNotRunning();
+
+            logger.finer("DAS is running");
+            programOpts.setInteractive(false);
         }
+
+        /*
+         * At this point any options will have been prompted for, and
+         * the password will have been prompted for by pingDASQuietly,
+         * so even if the password is wrong we don't want any more
+         * prompting here.
+         */
+
+        doCommand();
+        return 0;
     }
 
     /**
@@ -151,13 +147,16 @@ public class StopDomainCommand extends LocalDomainCommand {
      * we detect that the DAS is not running.
      */
     protected int dasNotRunning() throws CommandException {
-        if (kill && !local)
-            throw new CommandException(Strings.get("StopDomain.dasNotRunningRemotely"));
+        if (kill) {
+            if (local)
+                return kill();
+            else // remote.  We can NOT kill and we can't ask it to kill itself.
+                throw new CommandException(Strings.get("StopDomain.dasNotRunningRemotely"));
+        }
+
         // by definition this is not an error
         // https://glassfish.dev.java.net/issues/show_bug.cgi?id=8387
-        else if (!kill)
-            logger.warning(Strings.get("StopDomain.dasNotRunning"));
-
+        logger.warning(Strings.get("StopDomain.dasNotRunning"));
         return 0;
     }
 
@@ -165,24 +164,13 @@ public class StopDomainCommand extends LocalDomainCommand {
      * Execute the actual stop-domain command.
      */
     protected void doCommand() throws CommandException {
-        CommandException ce = null;
         // run the remote stop-domain command and throw away the output
-        try {
-            RemoteCommand cmd = new RemoteCommand(getName(), programOpts, env);
-            cmd.executeAndReturnOutput("stop-domain", "--force", force.toString());
-            waitForDeath();
-        }
-        catch (CommandException e) {
-            ce = e;
-        }
-        catch (Exception e) {
-            ce = new CommandException(e);
-        }
-        finally {
-            if (kill && local) {
-                kill();
-                return;
-            }
+        RemoteCommand cmd = new RemoteCommand(getName(), programOpts, env);
+        cmd.executeAndReturnOutput("stop-domain", "--force", force.toString());
+        waitForDeath();
+
+        if (kill && local) {
+            kill();
         }
     }
 
@@ -199,14 +187,7 @@ public class StopDomainCommand extends LocalDomainCommand {
         int count = 0;
 
         while (!timedOut(startWait)) {
-            boolean isRunning;
-
-            if (kill) // get out of here if it's a Zombie fast!
-                isRunning = isRunningForSure();
-            else
-                isRunning = isRunning(); // normal case -- wait for the PROCESS to die
-
-            if (!isRunning) {
+            if (!isRunning()) {
                 alive = false;
                 break;
             }
@@ -245,8 +226,8 @@ public class StopDomainCommand extends LocalDomainCommand {
 
             pids = FileUtils.readSmallFile(prevPid).trim();
             String s = ProcessUtils.kill(Integer.parseInt(pids));
-
-            if (s != null)
+            
+            if(s != null)
                 logger.finer(s);
         }
         catch (CommandException ce) {
