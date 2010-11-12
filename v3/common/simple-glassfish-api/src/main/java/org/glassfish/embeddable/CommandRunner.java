@@ -66,13 +66,23 @@ public interface CommandRunner {
      * command arguments. Refer to GlassFish Administration Guide to know about the commands supported
      * in GlassFish and their usage.
      *
-     * <p/>Example : To add an additional http listener 9090 :
+     * <p/>Example: To add an additional http listener 9090 :
+     *
+     * <pre>
+     *      commandRunner.run("create-http-listener", "--listenerport", "9090",
+     *                                       "--listeneraddress", "0.0.0.0",
+     *                                       "--defaultvs", "server",
+     *                                       "--securityenabled", "false",
+     *                                       "listener_id", "my-http-listener-1");
+     *
+     * </pre>
+     * asadmin commands also allow option values to be specified using '=', so the above example can be written as:
      *
      * <pre>
      *      commandRunner.run("create-http-listener", "--listenerport=9090",
      *                                       "--listeneraddress=0.0.0.0",
      *                                       "--defaultvs=server",
-     *                                       "--securityenabled=false"
+     *                                       "--securityenabled=false",
      *                                       "listener_id=my-http-listener-1");
      *
      * </pre>
