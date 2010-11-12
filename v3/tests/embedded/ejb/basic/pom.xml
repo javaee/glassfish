@@ -45,9 +45,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.glassfish.tests.embedded.ejb</groupId>
-    <artifactId>ejb-api-test</artifactId>
+    <artifactId>basic</artifactId>
     <version>3.1-SNAPSHOT</version>
-    <name>EJB Embedded API test</name>
+    <name>Test HelloWorld and Timer EJB deployed with org.glassfish.embeddable APIs</name>
   <build>
     <plugins>
             <plugin>
@@ -84,5 +84,37 @@
             <version>4.3.1</version>
             <scope>test</scope>
         </dependency>
+<!--
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.ejb</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+                <groupId>org.glassfish.security</groupId>
+                <artifactId>inmemory.jacc.provider</artifactId>
+            <version>${project.version}</version>
+                <scope>test</scope>
+        </dependency>
+        <dependency>
+                <groupId>org.glassfish.transaction</groupId>
+                <artifactId>jta</artifactId>
+            <version>${project.version}</version>
+                <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.glassfish.ejb</groupId>
+            <artifactId>ejb-container</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.ejb</groupId>
+            <artifactId>gf-ejb-connector</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+-->
     </dependencies>
 </project>

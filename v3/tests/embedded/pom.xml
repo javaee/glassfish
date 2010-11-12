@@ -51,6 +51,7 @@
     <name>GlassFish Embedded Tests</name>  
     <modules>
     	<module>basic</module>
+    	<module>ejb</module>
     	<module>maven-plugin</module>
     </modules>
 </project>
