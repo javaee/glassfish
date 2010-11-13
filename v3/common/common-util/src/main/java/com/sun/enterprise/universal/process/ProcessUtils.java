@@ -44,8 +44,6 @@ import com.sun.enterprise.universal.io.*;
 import com.sun.enterprise.util.*;
 import java.io.*;
 import java.lang.management.ManagementFactory;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Includes a somewhat kludgy way to get the pid for "me".
@@ -60,7 +58,9 @@ public final class ProcessUtils {
         // all static class -- no instances allowed!!
     }
 
+    // for informal testing.  Too difficult to make a unit test...
     public static void main(String[] args) {
+        debug = true;
         for (String s : args) {
             System.out.println(s + " ===> " + isProcessRunning(Integer.parseInt(s)));
         }
@@ -152,33 +152,29 @@ public final class ProcessUtils {
         pm.execute();
         String out = pm.getStdout() + pm.getStderr();
 
+        /* output is either 
+        (1) 
+        INFO: No tasks running with the specified criteria.
+        (2) 
+        Image Name                   PID Session Name     Session#    Mem Usage
+        ========================= ====== ================ ======== ============
+        java.exe                    3760 Console                 0     64,192 K
+         */
+
+        if (debug) {
+            System.out.println("------------   Output from tasklist   ----------");
+            System.out.println(out);
+            System.out.println("------------------------------------------------");
+        }
+
         if (StringUtils.ok(out)) {
-            if (out.indexOf("java.exe") >= 0)
+            if (out.indexOf("" + aPid) >= 0)
                 return true;
             else
                 return false;
         }
+
         throw new ProcessManagerException("unknown");
-
-        // annoying but true -- the command ALWAYS returns zero no matter what!
-        // if it exists it will write info to stdout and nothing to stderr
-        // if it does not exist it writes to stderr and nothing to stdout
-
-        // Apparently this crazy code doesn't work on Windows 2008 (IT#14661)
-        /*  saving it for a while.  Delete this after Dec. 1, 2010
-        boolean hasStdout = pm.getStdout().length() > 1;
-        boolean hasStderr = pm.getStderr().length() > 1;
-
-        if (hasStdout && !hasStderr)
-        return true;
-        else if (hasStderr && !hasStdout)
-        return false;
-        else
-        throw new ProcessManagerException("unknown");
-         */
-
-
-
     }
 
     private static Boolean isProcessRunningUnix(int aPid) throws ProcessManagerException {
@@ -226,4 +222,5 @@ public final class ProcessUtils {
         else
             paths = new String[0];
     }
+    private static boolean debug;
 }
