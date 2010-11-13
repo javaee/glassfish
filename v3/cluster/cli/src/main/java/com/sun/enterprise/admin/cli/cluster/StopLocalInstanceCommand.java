@@ -150,8 +150,7 @@ public class StopLocalInstanceCommand extends LocalInstanceCommand {
     /**
      * Execute the actual stop-domain command.
      */
-    protected int doRemoteCommand()
-            throws CommandException, CommandValidationException {
+    protected int doRemoteCommand() throws CommandException {
 
         // put the local-password for the instance  in programOpts
         // we don't do this for ALL local-instance commands because if they call
@@ -170,12 +169,20 @@ public class StopLocalInstanceCommand extends LocalInstanceCommand {
             RemoteCommand cmd = new RemoteCommand("_stop-instance", programOpts, env);
             cmd.executeAndReturnOutput("_stop-instance", "--force", force.toString());
             waitForDeath();
-            return 0;
         }
-        finally {
-            if (kill)
-                kill();
+        catch (CommandException e) {
+            // 1.  We can't access the server at all
+            // 2.  We timed-out waiting for it to die
+            if(!kill)
+                throw e;
         }
+
+        if (kill) {
+            // do NOT make this an error -- user specified a kill
+            // if kill throws a CE -- then it WILL get tossed back as an error
+            kill();
+        }
+        return 0;
     }
 
     /**
