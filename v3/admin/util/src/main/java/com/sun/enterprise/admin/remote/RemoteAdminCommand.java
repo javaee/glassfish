@@ -53,7 +53,6 @@ import org.glassfish.api.admin.*;
 import org.glassfish.api.admin.CommandModel.ParamModel;
 
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
-import com.sun.enterprise.universal.io.FileUtils;
 import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.universal.GFBase64Encoder;
 import com.sun.enterprise.admin.util.CommandModelData;
@@ -61,6 +60,7 @@ import com.sun.enterprise.admin.util.CommandModelData.ParamModelData;
 import com.sun.enterprise.admin.util.AuthenticationInfo;
 import com.sun.enterprise.admin.util.HttpConnectorAddress;
 import com.sun.enterprise.util.SystemPropertyConstants;
+import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.net.NetUtils;
 import org.glassfish.admin.payload.PayloadFilesManager;
 import org.glassfish.admin.payload.PayloadImpl;
@@ -1001,7 +1001,7 @@ public class RemoteAdminCommand {
         if (userOut == null) {
             handleResponse(params, in, code);
         } else {
-            FileUtils.copyStream(in, userOut);
+            FileUtils.copy(in, userOut, 0);
         }
     }
 
@@ -1107,7 +1107,7 @@ public class RemoteAdminCommand {
         if (logger.isLoggable(Level.FINER)) { // XXX - assume "debug" == "FINER"
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             try {
-                FileUtils.copyStream(in, baos);
+                FileUtils.copy(in, baos, 0);
             } catch (IOException ex) { }
             in = new ByteArrayInputStream(baos.toByteArray());
             String response = baos.toString();

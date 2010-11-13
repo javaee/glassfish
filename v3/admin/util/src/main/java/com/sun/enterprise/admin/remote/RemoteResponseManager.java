@@ -45,8 +45,8 @@ import java.util.*;
 import java.util.jar.*;
 import java.util.logging.Logger;
 
+import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.universal.StringUtils;
-import com.sun.enterprise.universal.io.FileUtils;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
 /**
@@ -75,7 +75,7 @@ public class RemoteResponseManager implements ResponseManager {
         // make a copy of the stream.  O/w if Manifest.read() blows up -- the
         // data would be gone!
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        FileUtils.copyStream(in, baos);
+        FileUtils.copy(in, baos, 0);
         
         responseStream = new ByteArrayInputStream(baos.toByteArray());
         response = baos.toString();
