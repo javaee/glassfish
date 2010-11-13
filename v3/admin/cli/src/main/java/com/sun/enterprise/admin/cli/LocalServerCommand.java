@@ -318,11 +318,6 @@ public abstract class LocalServerCommand extends CLICommand {
         if (pp < 0)
             return isRunningByCheckingForPidFile();
 
-        if (OS.isWindows()) {
-            // tasklist is unreliable on some Windows platforms
-            return isRunningUsingJps();
-        }
-
         Boolean b = ProcessUtils.isProcessRunning(pp);
 
         if (b == null) // this means it couldn't find out!
