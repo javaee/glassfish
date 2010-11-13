@@ -43,7 +43,6 @@ package com.sun.enterprise.tools.verifier;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
-import com.sun.enterprise.deployment.Descriptor;
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.tools.verifier.apiscan.stdapis.APIRepository;
@@ -132,7 +131,7 @@ public class Verifier implements org.glassfish.internal.deployment.Verifier
         verifierFrameworkContext.setApplication(context.getModuleMetaData(com.sun.enterprise.deployment.Application.class));
         verifierFrameworkContext.setJarFileName(context.getSourceDir().getAbsolutePath());
         verifierFrameworkContext.setJspOutDir(context.getScratchDir("jsp"));
-        //verifierFrameworkContext.setIsBackend(true);
+        verifierFrameworkContext.setIsBackend(true);
         verifierFrameworkContext.setOutputDirName(env.getDomainRoot().getAbsolutePath()+"/logs/verifier-results");
         com.sun.enterprise.tools.verifier.ResultManager rm = verifierFrameworkContext.getResultManager();
 
@@ -312,26 +311,26 @@ public class Verifier implements org.glassfish.internal.deployment.Verifier
 
     private void verifyArchive()
     {
-        if (!application.isVirtual())
+        if (!getApplication().isVirtual())
         { // don't run app tests for standalone module
-            runVerifier(new ApplicationVerifier(verifierFrameworkContext, application));
+            runVerifier(new ApplicationVerifier(verifierFrameworkContext));
         }
 
-        for (Iterator itr = application.getEjbBundleDescriptors().iterator();
+        for (Iterator itr = getApplication().getEjbBundleDescriptors().iterator();
              itr.hasNext();)
         {
             EjbBundleDescriptor ejbd = (EjbBundleDescriptor) itr.next();
             runVerifier(new EjbVerifier(verifierFrameworkContext, ejbd));
         }
 
-        for (Iterator itr = application.getWebBundleDescriptors().iterator();
+        for (Iterator itr = getApplication().getWebBundleDescriptors().iterator();
              itr.hasNext();)
         {
             WebBundleDescriptor webd = (WebBundleDescriptor) itr.next();
             runVerifier(new WebVerifier(verifierFrameworkContext, webd));
         }
 
-        for (Iterator itr = application.getApplicationClientDescriptors()
+        for (Iterator itr = getApplication().getApplicationClientDescriptors()
                 .iterator();
              itr.hasNext();)
         {
@@ -340,7 +339,7 @@ public class Verifier implements org.glassfish.internal.deployment.Verifier
             runVerifier(new AppClientVerifier(verifierFrameworkContext, appClientDescriptor));
         }
 
-        for (Iterator itr = application.getRarDescriptors().iterator();
+        for (Iterator itr = getApplication().getRarDescriptors().iterator();
              itr.hasNext();)
         {
             ConnectorDescriptor cond = (ConnectorDescriptor) itr.next();
@@ -383,8 +382,7 @@ public class Verifier implements org.glassfish.internal.deployment.Verifier
                     new File(jarFile),
                     new File(explodeDirName),
                     clh.getCommonClassLoader());
-            application = result.application;
-            verifierFrameworkContext.setApplication(application);
+            verifierFrameworkContext.setApplication(result.application);
             verifierFrameworkContext.setArchive(result.archive);
         }
         catch (IOException e)
@@ -451,5 +449,9 @@ public class Verifier implements org.glassfish.internal.deployment.Verifier
         verifierFrameworkContext.getResultManager().log(logRecord);
     }
 
+
+    public Application getApplication() {
+        return verifierFrameworkContext.getApplication();
+    }
 
 }

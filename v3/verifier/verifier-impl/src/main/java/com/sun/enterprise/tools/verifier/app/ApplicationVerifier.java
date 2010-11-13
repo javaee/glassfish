@@ -53,10 +53,9 @@ public class ApplicationVerifier extends BaseVerifier {
 
     private Application application = null;
 
-    public ApplicationVerifier(VerifierFrameworkContext verifierFrameworkContext,
-                               Application application) {
+    public ApplicationVerifier(VerifierFrameworkContext verifierFrameworkContext) {
         this.verifierFrameworkContext = verifierFrameworkContext;
-        this.application = application;
+        this.application = verifierFrameworkContext.getApplication();
     }
 
     /**
