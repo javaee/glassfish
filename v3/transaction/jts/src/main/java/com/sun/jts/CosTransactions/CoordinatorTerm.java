@@ -361,6 +361,8 @@ class CoordinatorTerm implements CompletionHandler {
                     heuristicExc = exc;
                 } catch( INVALID_TRANSACTION exc ) {
                     throw exc;
+                } catch( INTERNAL exc ) {
+                    throw exc;
                 } catch( Throwable exc ) {
                 }
             }
@@ -405,12 +407,13 @@ class CoordinatorTerm implements CompletionHandler {
                 //$ DO SOMETHING ABOUT PROMPT RETURN  */
 
                 try {
-                    if( prepareResult == Vote.VoteCommit )
+                    if( prepareResult == Vote.VoteCommit ) {
                         try {
                             coordinator.commit();
                         } catch( NotPrepared exc ) {
                             prepareResult = Vote.VoteRollback;
                         }
+                    }
 
                     if( prepareResult == Vote.VoteRollback && heuristicExc == null ) {
                         status = Status.StatusRolledBack; // GDH COPDEF1 Swapped these two lines

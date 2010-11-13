@@ -273,6 +273,9 @@ public class OTSResourceImpl extends OTSResourcePOA implements OTSResource {
             if (e.errorCode == XAException.XAER_RMFAIL ||
                 e.errorCode == XAException.XAER_RMERR) {
                 throw new RuntimeException(e);
+            } else if (e.errorCode == XAException.XAER_PROTO ||
+                e.errorCode == XAException.XAER_INVAL) {
+                throw new INTERNAL(e.getMessage(), 0, CompletionStatus.COMPLETED_MAYBE);
             }
         }
 

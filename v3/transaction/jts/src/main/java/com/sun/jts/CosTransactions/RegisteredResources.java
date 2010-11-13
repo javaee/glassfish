@@ -584,7 +584,8 @@ class RegisteredResources {
                 // which raised the exception.
 
                 boolean hazard = exc instanceof HeuristicHazard;
-                if (exc instanceof HeuristicMixed || hazard) {
+                boolean internal = exc instanceof INTERNAL;
+                if (exc instanceof HeuristicMixed || hazard || internal) {
 
                     // Mark the Resource which threw the exception as
                     // heuristic so that we do not
@@ -607,11 +608,11 @@ class RegisteredResources {
                     // Now throw the appropriate exception.
 
                     if (hazard) {
-                        HeuristicHazard ex2 = new HeuristicHazard();
-                        throw ex2;
+                        throw (HeuristicHazard) exc;
+                    } else if (internal) {
+                        throw (INTERNAL) exc;
                     } else {
-                        HeuristicMixed ex2 = new HeuristicMixed();
-                        throw ex2;
+                        throw (HeuristicMixed) exc;
                     }
                 } else if (exc instanceof RuntimeException) {
                         rmErr = true;

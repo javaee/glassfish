@@ -1886,7 +1886,8 @@ public class TopCoordinator extends CoordinatorImpl {
                 // the exception to the caller.
 
                 if (exc instanceof HeuristicMixed ||
-                        exc instanceof HeuristicHazard) {
+                        exc instanceof HeuristicHazard ||
+                        exc instanceof INTERNAL) {
 
                     heuristicExc = exc;
                     if (!tranState.
@@ -1926,6 +1927,8 @@ public class TopCoordinator extends CoordinatorImpl {
 
                     if (heuristicExc instanceof HeuristicMixed) {
                         throw (HeuristicMixed)heuristicExc;
+                    } else if (heuristicExc instanceof INTERNAL) {
+                        throw (INTERNAL)heuristicExc;
                     } else {
                         throw (HeuristicHazard)heuristicExc;
                     }

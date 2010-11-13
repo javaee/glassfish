@@ -926,7 +926,11 @@ public class AppTest extends TestCase {
             Transaction tx = t.getTransaction();
             TestResource theResource = new TestResource();
             t.enlistResource(tx, new TestResourceHandle(theResource));
-            theResource.setCommitErrorCode(errorCode);
+            if (setRollbackOnly) {
+                theResource.setRollbackErrorCode(errorCode);
+            } else {
+                theResource.setCommitErrorCode(errorCode);
+            }
             t.delistResource(tx, new TestResourceHandle(theResource), XAResource.TMSUCCESS);
             
             if (setRollbackOnly) {
@@ -971,7 +975,7 @@ public class AppTest extends TestCase {
             Transaction tx = t.getTransaction();
             TestResource theResource = new TestResource();
             t.enlistResource(tx, new TestResourceHandle(theResource));
-            theResource.setCommitErrorCode(errorCode);
+            theResource.setRollbackErrorCode(errorCode);
             t.delistResource(tx, new TestResourceHandle(theResource), XAResource.TMSUCCESS);
 
             System.out.println("**Calling TM rollback ===>");
@@ -1004,9 +1008,26 @@ public class AppTest extends TestCase {
 
         System.out.println("**Testing TM with 1 XA_HEURRB 2PC commit ===>");
         _testCommit2PCWithXAExc(XAException.XA_HEURRB, 9999, HeuristicMixedException.class);
+
+        System.out.println("**Testing TM with 2nd XAER_PROTO in *prepare* of 2PC commit ===>");
+        _testCommit2PCWithXAExc(9999, XAException.XAER_PROTO, false, SystemException.class);
+
+        System.out.println("**Testing TM with 1st XAER_PROTO in *prepare* of 2PC commit ===>");
+        _testCommit2PCWithXAExc(XAException.XAER_PROTO, 9999, false, SystemException.class);
+
+        System.out.println("**Testing TM with 2nd XAER_INVAL in *prepare* of 2PC commit ===>");
+        _testCommit2PCWithXAExc(9999, XAException.XAER_INVAL, false, SystemException.class);
+
+        System.out.println("**Testing TM with 1st XAER_INVAL in *prepare* of 2PC commit ===>");
+        _testCommit2PCWithXAExc(XAException.XAER_INVAL, 9999, false, SystemException.class);
+
     }
 
     private void _testCommit2PCWithXAExc(int errorCode1, int errorCode2, Class exType) {
+        _testCommit2PCWithXAExc(errorCode1, errorCode2, true, exType);
+    }
+
+    private void _testCommit2PCWithXAExc(int errorCode1, int errorCode2, boolean failOnCommit, Class exType) {
         System.out.println("**Testing TM with " + exType.getName() + " during failed 2PC commit ===>");
         try {
             System.out.println("**Starting transaction ....");
@@ -1022,8 +1043,13 @@ public class AppTest extends TestCase {
             t.enlistResource(tx, new TestResourceHandle(theResource1));
             t.enlistResource(tx, new TestResourceHandle(theResource2));
 
-            theResource1.setCommitErrorCode(errorCode1);
-            theResource2.setCommitErrorCode(errorCode2);
+            if (failOnCommit) {
+                theResource1.setCommitErrorCode(errorCode1);
+                theResource2.setCommitErrorCode(errorCode2);
+            } else {
+                theResource1.setPrepareErrorCode(errorCode1);
+                theResource2.setPrepareErrorCode(errorCode2);
+            }
 
             t.delistResource(tx, new TestResourceHandle(theResource1), XAResource.TMSUCCESS);
             t.delistResource(tx, new TestResourceHandle(theResource2), XAResource.TMSUCCESS);
@@ -1114,12 +1140,21 @@ public class AppTest extends TestCase {
       private boolean inUse;
     
       private int commitErrorCode = 9999;
+      private int rollbackErrorCode = 9999;
+      private int prepareErrorCode = 9999;
     
       // to test different xaexception error codes
       public void setCommitErrorCode(int errorCode) {
         this.commitErrorCode = errorCode;
       }
     
+      public void setRollbackErrorCode(int errorCode) {
+        this.rollbackErrorCode = errorCode;
+      }
+    
+      public void setPrepareErrorCode(int errorCode) {
+        this.prepareErrorCode = errorCode;
+      }
     
       public void commit(Xid xid, boolean onePhase) throws XAException{
         // test goes here
@@ -1139,15 +1174,19 @@ public class AppTest extends TestCase {
       public void rollback(Xid xid)
             throws XAException {
           System.out.println("in XA rollback");
-        if (commitErrorCode != 9999) {
-          System.out.println("throwing XAException." + commitErrorCode + " during rollback" );
-          throw new XAException(commitErrorCode);
+        if (rollbackErrorCode != 9999) {
+          System.out.println("throwing XAException." + rollbackErrorCode + " during rollback" );
+          throw new XAException(rollbackErrorCode);
         }
       }
     
       public int prepare(Xid xid)
             throws XAException {
           System.out.println("in XA prepare");
+        if (prepareErrorCode != 9999) {
+          System.out.println("throwing XAException." + prepareErrorCode + " during prepare" );
+          throw new XAException(prepareErrorCode);
+        }
           return XAResource.XA_OK;
       }
     
