@@ -46,6 +46,7 @@ import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.MessageSecurityConfig;
 import com.sun.enterprise.config.serverbeans.ProviderConfig;
 import com.sun.enterprise.config.serverbeans.SecureAdmin;
+import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.v3.admin.InserverCommandRunnerHelper;
 import com.sun.grizzly.config.dom.FileCache;
 import com.sun.grizzly.config.dom.Http;
@@ -298,6 +299,9 @@ public abstract class SecureAdminCommand implements AdminCommand {
         private void deleteProtocol(
                     final String protocolName) throws TransactionFailure {
                 final Protocols ps_w = writableProtocols();
+                if (ps_w == null) {
+                    return;
+                }
                 final Protocol doomedProtocol = ps_w.findProtocol(protocolName);
                 if (doomedProtocol != null) {
                     ps_w.getProtocol().remove(doomedProtocol);
@@ -430,7 +434,11 @@ public abstract class SecureAdminCommand implements AdminCommand {
 
         private ProviderConfig findProviderConfig(
                 final Config config_w) {
-            for (MessageSecurityConfig msc : config_w.getSecurityService().getMessageSecurityConfig()) {
+            final SecurityService ss = config_w.getSecurityService();
+            if (ss == null) {
+                return null;
+            }
+            for (MessageSecurityConfig msc : ss.getMessageSecurityConfig()) {
                 if (msc.getAuthLayer().equals(AUTH_LAYER_NAME)) {
                     for (ProviderConfig pc : msc.getProviderConfig()) {
                         if (pc.getProviderId().equals(PROVIDER_ID_VALUE)) {
@@ -606,6 +614,9 @@ public abstract class SecureAdminCommand implements AdminCommand {
                 final String listenerName) throws TransactionFailure {
             NetworkListener nl_w = null;
             final NetworkConfig nc = config_w.getNetworkConfig();
+            if (nc == null) {
+                return null;
+            }
             NetworkListener nl = nc.getNetworkListener(listenerName);
             if (nl == null) {
                 throw new IllegalArgumentException();
@@ -622,7 +633,9 @@ public abstract class SecureAdminCommand implements AdminCommand {
                 final Config config_w,
                 final String protocolName) throws TransactionFailure {
             final NetworkListener nl_w = writableNetworkListener(t, config_w, ADMIN_LISTENER_NAME);
-            nl_w.setProtocol(protocolName);
+            if (nl_w != null) {
+                nl_w.setProtocol(protocolName);
+            }
         }
 
         @Override
@@ -639,6 +652,10 @@ public abstract class SecureAdminCommand implements AdminCommand {
                             context.writableProtocol(
                             REDIRECT_PROTOCOL_NAME,
                             false);
+
+                    if (adminHttpRedirectProtocol_w == null) {
+                        return true;
+                    }
 
                     final HttpRedirect httpRedirect_w = writeableHttpRedirect(
                             context.t, adminHttpRedirectProtocol_w);
