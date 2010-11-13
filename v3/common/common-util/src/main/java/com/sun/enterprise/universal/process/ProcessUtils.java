@@ -113,7 +113,7 @@ public final class ProcessUtils {
             if (exitValue == 0)
                 return null;
             else
-                return Strings.get("ProcessUtils.killerror", cmdline, 
+                return Strings.get("ProcessUtils.killerror", cmdline,
                         pm.getStderr() + pm.getStdout(), "" + exitValue);
         }
         catch (ProcessManagerException ex) {
@@ -150,20 +150,35 @@ public final class ProcessUtils {
         ProcessManager pm = new ProcessManager("tasklist", "/FI", "\"pid eq " + pidString + "\"");
         pm.setEcho(false);
         pm.execute();
+        String out = pm.getStdout() + pm.getStderr();
+
+        if (StringUtils.ok(out)) {
+            if (out.indexOf("java.exe") >= 0)
+                return true;
+            else
+                return false;
+        }
+        throw new ProcessManagerException("unknown");
 
         // annoying but true -- the command ALWAYS returns zero no matter what!
         // if it exists it will write info to stdout and nothing to stderr
         // if it does not exist it writes to stderr and nothing to stdout
 
+        // Apparently this crazy code doesn't work on Windows 2008 (IT#14661)
+        /*  saving it for a while.  Delete this after Dec. 1, 2010
         boolean hasStdout = pm.getStdout().length() > 1;
         boolean hasStderr = pm.getStderr().length() > 1;
 
         if (hasStdout && !hasStderr)
-            return true;
+        return true;
         else if (hasStderr && !hasStdout)
-            return false;
+        return false;
         else
-            throw new ProcessManagerException("unknown");
+        throw new ProcessManagerException("unknown");
+         */
+
+
+
     }
 
     private static Boolean isProcessRunningUnix(int aPid) throws ProcessManagerException {
@@ -171,7 +186,7 @@ public final class ProcessUtils {
         pm.setEcho(false);
         pm.execute();
         int retval = pm.getExitValue();
-        return retval == 0 ? Boolean.TRUE: Boolean.FALSE;
+        return retval == 0 ? Boolean.TRUE : Boolean.FALSE;
     }
 
     static {
