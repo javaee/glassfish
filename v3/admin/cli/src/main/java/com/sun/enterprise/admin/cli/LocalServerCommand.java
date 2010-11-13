@@ -39,6 +39,7 @@
  */
 package com.sun.enterprise.admin.cli;
 
+import com.sun.enterprise.util.OS;
 import com.sun.enterprise.util.io.FileUtils;
 import java.io.*;
 import java.net.*;
@@ -139,8 +140,8 @@ public abstract class LocalServerCommand extends CLICommand {
     }
 
     protected final void unsetLocalPassword() {
-            programOpts.setPassword(null,
-                    ProgramOptions.PasswordLocation.LOCAL_PASSWORD);
+        programOpts.setPassword(null,
+                ProgramOptions.PasswordLocation.LOCAL_PASSWORD);
     }
 
     protected final void resetServerDirs() throws IOException {
@@ -316,6 +317,11 @@ public abstract class LocalServerCommand extends CLICommand {
 
         if (pp < 0)
             return isRunningByCheckingForPidFile();
+
+        if (OS.isWindows()) {
+            // tasklist is unreliable on some Windows platforms
+            return isRunningUsingJps();
+        }
 
         Boolean b = ProcessUtils.isProcessRunning(pp);
 
