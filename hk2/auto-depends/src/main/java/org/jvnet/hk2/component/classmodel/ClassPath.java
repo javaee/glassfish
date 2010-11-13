@@ -63,10 +63,10 @@ import org.jvnet.hk2.component.Habitat;
 public abstract class ClassPath {
 
   // classpath is the one that was passed in originally
-  public LinkedHashSet<String> classPathEntries = new LinkedHashSet<String>();
+  public final LinkedHashSet<String> classPathEntries = new LinkedHashSet<String>();
   
   // classpath is expanded to include manifest jar entries, etc.
-  public LinkedHashSet<String> expandedClassPathEntries = new LinkedHashSet<String>();
+  public final LinkedHashSet<String> expandedClassPathEntries = new LinkedHashSet<String>();
 
   /**
    * Creates a ClassPathHelper instance.
@@ -125,7 +125,20 @@ public abstract class ClassPath {
 
   @Override
   public String toString() {
-    return "ClassPath-" + System.identityHashCode(this) + "=" + getEntries();
+    return "ClassPath-" + System.identityHashCode(this) + "=" + expandedClassPathEntries;
+  }
+  
+  @Override
+  public int hashCode() {
+    return expandedClassPathEntries.hashCode();
+  }
+  
+  @Override
+  public boolean equals(Object another) {
+    if (ClassPath.class.isInstance(another)) {
+      return expandedClassPathEntries.equals(((ClassPath)another).expandedClassPathEntries);
+    }
+    return false;
   }
   
   /**

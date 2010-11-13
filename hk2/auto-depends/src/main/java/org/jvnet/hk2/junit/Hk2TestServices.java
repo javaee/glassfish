@@ -50,6 +50,7 @@ import org.jvnet.hk2.component.classmodel.InhabitantsParsingContextGenerator;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -62,7 +63,11 @@ import java.util.logging.Logger;
 public class Hk2TestServices {
 
     private final Logger logger = Logger.getLogger(Hk2TestServices.class.getName());
-  
+
+    private static final boolean USE_CACHE = true;
+    private static final SoftCache<ClassPath, InhabitantsParsingContextGenerator> ipcgCache = 
+      (USE_CACHE) ? new SoftCache<ClassPath, InhabitantsParsingContextGenerator>() : null;
+    
     private Habitat habitat;
     
     private final HabitatFactory habitatFactory;
@@ -107,33 +112,45 @@ public class Hk2TestServices {
       habitat.initialized();
     }
 
-    protected void populateHabitat(Habitat habitat, InhabitantsParser ip) {
-      InhabitantsParsingContextGenerator ipcgen = InhabitantsParsingContextGenerator.create(habitat);
-      ClassPath classpath = ClassPath.create(habitat, true);
-      Set<String> cpSet = classpath.getEntries();
-      for (String fileName : cpSet) {
-          File f = new File(fileName);
-          if (f.exists()) {
-            try {
-              ipcgen.parse(f);
-            } catch (IOException e) {
-              e.printStackTrace();
+    protected void populateHabitat(final Habitat habitat, InhabitantsParser ip) {
+      final ClassPath classpath = ClassPath.create(habitat, true);
+      Callable<InhabitantsParsingContextGenerator> populator = new Callable<InhabitantsParsingContextGenerator>() {
+          @Override
+          public InhabitantsParsingContextGenerator call() throws Exception {
+            InhabitantsParsingContextGenerator ipcgen = InhabitantsParsingContextGenerator.create(habitat);
+            Set<String> cpSet = classpath.getEntries();
+            for (String fileName : cpSet) {
+                File f = new File(fileName);
+                if (f.exists()) {
+                  try {
+                    ipcgen.parse(f);
+                  } catch (IOException e) {
+                    e.printStackTrace();
+                  }
+                }
             }
+            return ipcgen;
           }
-      }
+      };
 
-      InhabitantsFeed feed = InhabitantsFeed.create(habitat, ip);
-      feed.populate(ipcgen);
-
-      if (logger.isLoggable(Level.FINER)) {
-        Iterator<String> contracts = habitat.getAllContracts();
-        while (contracts.hasNext()) {
-            String contract = contracts.next();
-            logger.log(Level.FINER, "Found contract: {0}", contract);
-            for (Inhabitant<?> t : habitat.getInhabitantsByContract(contract)) {
-              logger.log(Level.FINER, " --> {0} {1}", new Object[] {t.typeName(), t.metadata()});
-            }
+      InhabitantsParsingContextGenerator ipcgen;
+      try {
+        InhabitantsFeed feed = InhabitantsFeed.create(habitat, ip);
+        ipcgen = (USE_CACHE) ? ipcgCache.get(classpath, populator) : populator.call();
+        feed.populate(ipcgen);
+  
+        if (logger.isLoggable(Level.FINER)) {
+          Iterator<String> contracts = habitat.getAllContracts();
+          while (contracts.hasNext()) {
+              String contract = contracts.next();
+              logger.log(Level.FINER, "Found contract: {0}", contract);
+              for (Inhabitant<?> t : habitat.getInhabitantsByContract(contract)) {
+                logger.log(Level.FINER, " --> {0} {1}", new Object[] {t.typeName(), t.metadata()});
+              }
+          }
         }
+      } catch (Exception e) {
+        throw new RuntimeException(e);
       }
     }
 

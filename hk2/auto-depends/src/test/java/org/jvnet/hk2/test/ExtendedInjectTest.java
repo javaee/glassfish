@@ -211,6 +211,11 @@ public class ExtendedInjectTest {
       fail("Expected unsatisfied dependencies exception but got: " + simple);
     } catch (UnsatisfiedDependencyException e) {
       // expected
+      assertEquals("exception type", UnsatisfiedDependencyException.class, e.getClass());
+      assertEquals("message", "injection failed on org.jvnet.hk2.test.impl.ErrorThrowingDependentService.errorThrowing with interface org.jvnet.hk2.test.contracts.ErrorThrowingContract (see cause)", e.getLocalizedMessage());
+      Throwable e2 = e.getCause();
+      assertEquals("exception 2 type", ComponentException.class, e2.getClass());
+      assertEquals("message 2", "Injection failed on void org.jvnet.hk2.test.impl.ErrorThrowingService.fakeRandomContractThrowingUp(org.jvnet.hk2.test.runlevel.RandomContract)", e2.getLocalizedMessage());
     }
     
     assertFalse(iets.isInstantiated());
