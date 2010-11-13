@@ -1249,6 +1249,11 @@ public class RemoteAdminCommand {
     private void initializeDoUpload() throws CommandException {
         boolean sawFile = false;
         boolean sawDirectory = false;
+        /*
+         * We don't upload directories, even when asked to upload.
+         */
+        boolean sawUploadableFile = false;
+
         for (Map.Entry<String, List<String>> param : options.entrySet()) {
             String paramName = param.getKey();
             if (paramName.equals("DEFAULT"))    // operands handled below
@@ -1258,6 +1263,7 @@ public class RemoteAdminCommand {
                 sawFile = true;
                 final File optionFile = new File(options.getOne(opt.getName()));
                 sawDirectory |= optionFile.isDirectory();
+                sawUploadableFile |= optionFile.isFile();
             }
         }
 
@@ -1268,6 +1274,7 @@ public class RemoteAdminCommand {
             for (String operandValue : operands) {
                 final File operandFile = new File(operandValue);
                 sawDirectory |= operandFile.isDirectory();
+                sawUploadableFile |= operandFile.isFile();
             }
         }
 
@@ -1277,7 +1284,7 @@ public class RemoteAdminCommand {
             if (ok(upString))
                 doUpload = Boolean.parseBoolean(upString);
             else
-                doUpload = !isLocal(host);
+                doUpload = !isLocal(host) && sawUploadableFile;
             if (prohibitDirectoryUploads && sawDirectory && doUpload) {
                 // oops, can't upload directories
                 logger.finer("--upload=" + upString +
