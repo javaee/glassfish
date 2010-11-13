@@ -1,6 +1,6 @@
 package org.jvnet.hk2.component.classmodel;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -66,15 +66,25 @@ public class ClassPathTest {
 
       assertTrue("unexpected classpath entry: " + cpSet, cpSet.isEmpty());
 
-      cpHelper = ClassPath.create(null, (String)null);
-      cpSet = cpHelper.getEntries();
+      ClassPath cpHelper2 = ClassPath.create(null, (String)null);
+      cpSet = cpHelper2.getEntries();
 
       assertTrue("unexpected classpath entry: " + cpSet, cpSet.isEmpty());
+  }
+  
+  @Test
+  public void testEquals() {
+    ClassPath cpHelper = ClassPath.create(null, "");
+    ClassPath cpHelper2 = ClassPath.create(null, (String)null);
+    assertTrue(cpHelper.equals(cpHelper2));
+    assertEquals(cpHelper.hashCode(), cpHelper2.hashCode());
+
+    ClassPath cpHelper3 = ClassPath.create(null, true);
+    assertFalse(cpHelper.equals(cpHelper3));
   }
 
   @Test
   public void testFindJarsInClasspathNoManifestClasspath() throws Exception {
-
       // create some jars with empty manifests
       final Manifest emptyManifest = new Manifest();
 
@@ -92,7 +102,6 @@ public class ClassPathTest {
       assertTrue("missing classpath jar", cpSet.contains(jar2.getAbsolutePath()));
       assertTrue("missing classpath jar", cpSet.contains(jar3.getAbsolutePath()));
       assertTrue("missing classpath dir", cpSet.contains(dir1.getAbsolutePath()));
-
   }
 
   @Test
@@ -127,7 +136,6 @@ public class ClassPathTest {
       assertTrue("missing classpath jar", cpSet.contains(jar2.getAbsolutePath()));
       assertTrue("missing classpath jar", cpSet.contains(jar3.getAbsolutePath()));
       assertTrue("missing classpath dir", cpSet.contains(dir1.getAbsolutePath()));
-
   }
 
   @Test
@@ -162,7 +170,6 @@ public class ClassPathTest {
       assertTrue("missing classpath jar", cpSet.contains(jar2.getAbsolutePath()));
       assertTrue("missing classpath jar", cpSet.contains(jar3.getAbsolutePath()));
       assertTrue("missing classpath dir", cpSet.contains(dir1.getAbsolutePath()));
-
   }
   
 }

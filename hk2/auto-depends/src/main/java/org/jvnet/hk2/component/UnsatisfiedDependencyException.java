@@ -34,9 +34,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.jvnet.hk2.component;
-
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
@@ -60,10 +58,17 @@ public class UnsatisfiedDependencyException extends ComponentException {
         this(target,null);
     }
     public UnsatisfiedDependencyException(AnnotatedElement target, Throwable cause) {
-        super("Unsatisfied dependency exception : " + target, cause);
+        super("injection failed on " + target + (null == cause ? "" : " (see cause)"), cause);
         this.member = target;
     }
 
+    public UnsatisfiedDependencyException(Field target, Throwable cause) {
+      super("injection failed on " + target.getDeclaringClass().getCanonicalName() + "." + 
+          target.getName() + " with " + target.getGenericType() + 
+          (null == cause ? "" : " (see cause)"), cause);
+      this.member = target;
+    }
+    
     public boolean isField() {
         return member instanceof Field;
     }
