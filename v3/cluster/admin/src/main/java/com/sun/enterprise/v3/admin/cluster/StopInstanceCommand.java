@@ -44,6 +44,8 @@ import com.sun.enterprise.admin.remote.ServerRemoteAdminCommand;
 import java.util.logging.Logger;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.sun.enterprise.admin.remote.RemoteAdminCommand;
 import com.sun.enterprise.admin.util.RemoteInstanceCommandHelper;
@@ -105,12 +107,15 @@ public class StopInstanceCommand extends StopServer implements AdminCommand, Pos
     private ModulesRegistry registry;
     @Param(optional = true, defaultValue = "true")
     private Boolean force = true;
+    @Param(optional = true, defaultValue = "false")
+    private Boolean kill = false;
     @Param(optional = false, primary = true)
     private String instanceName;
     private Logger logger;
     private RemoteInstanceCommandHelper helper;
     private ActionReport report;
     private String errorMessage = null;
+    private String cmdName = "stop-instance";
     private Server instance;
     File pidFile = null;
     SFTPClient ftpClient=null;    
@@ -124,11 +129,16 @@ public class StopInstanceCommand extends StopServer implements AdminCommand, Pos
         int dasPort;
         String dasHost;
 
-        if (env.isDas())
-            errorMessage = callInstance();
-        else
+        if (env.isDas()) {
+            if (kill) {
+                errorMessage = killInstance(context);
+            } else {
+                errorMessage = callInstance();
+            }
+        }  else {
             errorMessage = Strings.get("stop.instance.notDas",
                     env.getRuntimeType().toString());
+        }
         
         if(errorMessage == null) {
             errorMessage = pollForDeath();
@@ -196,20 +206,26 @@ public class StopInstanceCommand extends StopServer implements AdminCommand, Pos
         helper = new RemoteInstanceCommandHelper(habitat);
     }
 
+    private String initializeInstance() {
+        if (!StringUtils.ok(instanceName))
+            return Strings.get("stop.instance.noInstanceName", cmdName);
+
+        instance = helper.getServer(instanceName);
+        if (instance == null)
+            return Strings.get("stop.instance.noSuchInstance", instanceName);
+
+        return null;
+    }
+
     /**
      * return null if all went OK...
      *
      */
     private String callInstance() {
-        String cmdName = "stop-instance";
 
-        if (!StringUtils.ok(instanceName))
-            return Strings.get("stop.instance.noInstanceName", cmdName);
-
-        instance = helper.getServer(instanceName);
-
-        if (instance == null)
-            return Strings.get("stop.instance.noSuchInstance", instanceName);
+        String msg = initializeInstance();
+        if (msg != null)
+            return msg;
 
         String host = instance.getAdminHost();
 
@@ -241,6 +257,37 @@ public class StopInstanceCommand extends StopServer implements AdminCommand, Pos
 
         return null;
     }
+
+    private String killInstance(AdminCommandContext context) {
+        String msg = initializeInstance();
+        if (msg != null)
+            return msg;
+
+        String nodeName = instance.getNode();
+        Node node = nodes.getNode(nodeName);
+        NodeUtils nodeUtils = new NodeUtils(habitat, logger);
+
+        // asadmin command to run on instances node
+        ArrayList<String> command = new ArrayList<String>();
+        command.add("stop-local-instance");
+        command.add("--kill");
+        command.add(instanceName);
+        String humanCommand = makeCommandHuman(command);
+        String firstErrorMessage = Strings.get("stop.local.instance.kill",
+                instanceName, nodeName, humanCommand);
+
+        logger.fine("stop-instance: running " + humanCommand + " on " + nodeName);
+
+        nodeUtils.runAdminCommandOnNode(node, command, context,
+                                        firstErrorMessage, humanCommand, null);
+
+        ActionReport killreport = context.getActionReport();
+        if (killreport.getActionExitCode() != ActionReport.ExitCode.SUCCESS) {
+            return killreport.getMessage();
+        }
+        return null;
+    }
+
 
     // return null means A-OK
     private String pollForDeath() {
@@ -284,5 +331,15 @@ public class StopInstanceCommand extends StopServer implements AdminCommand, Pos
         }
         return Strings.get("stop.instance.timeout.completely", instanceName);
 
+    }
+
+    private String makeCommandHuman(List<String> command) {
+        StringBuilder fullCommand = new StringBuilder();
+
+        for (String s : command) {
+            fullCommand.append(" ");
+            fullCommand.append(s);
+        }
+        return fullCommand.toString().trim();
     }
 }

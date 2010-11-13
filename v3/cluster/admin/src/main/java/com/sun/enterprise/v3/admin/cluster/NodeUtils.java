@@ -394,6 +394,10 @@ public class NodeUtils {
         String nodeName = node.getName();
         String installDir = node.getInstallDir();
 
+        if (output == null) {
+            output = new StringBuilder();
+        }
+
         if (StringUtils.ok(humanCommand)) {
             msg3 = Strings.get("node.ssh.tocomplete",
                         nodeHost, installDir, humanCommand);

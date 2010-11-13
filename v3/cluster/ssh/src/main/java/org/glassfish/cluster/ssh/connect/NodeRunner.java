@@ -88,7 +88,7 @@ public class NodeRunner  {
     public boolean isSshNode(Node node) {
 
         if (node == null) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Node is null");
         }
         if (node.getType() ==null)
             return false;
@@ -142,11 +142,17 @@ public class NodeRunner  {
         UnsupportedOperationException,
         IllegalArgumentException {
 
+
+        if (node == null) {
+            throw new IllegalArgumentException("Node is null");
+        }
+
         final List<String> stdinLines = new ArrayList<String>();
         stdinLines.add(AsadminInput.versionSpecifier());
         stdinLines.add(AUTH_TOKEN_STDIN_LINE_PREFIX + authTokenManager.createToken());
         args.add(0, AsadminInput.CLI_INPUT_OPTION);
         args.add(1, AsadminInput.SYSTEM_IN_INDICATOR); // specified to read from System.in
+        args.add(2, "--interactive=false");            // No prompting!
         
         if (node.isLocal()) {
             return runAdminCommandOnLocalNode(node, output, waitForReaderThreads,
