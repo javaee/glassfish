@@ -187,9 +187,12 @@ public class StaticGlassFishRuntime extends GlassFishRuntime {
 
     private String createTempInstanceRoot(GlassFishProperties gfProps)
             throws Exception {
-        String tmpDir = System.getProperty("glassfish.embedded.tmpdir");
+        String tmpDir = System.getProperty("glassfish.embedded.tmpdir",
+                gfProps.getProperties().getProperty("glassfish.embedded.tmpdir"));
         if (tmpDir == null) {
-            tmpDir = System.getProperty("user.dir");
+            tmpDir = System.getProperty("java.io.tmpdir");
+        } else {
+            new File(tmpDir).mkdirs();
         }
         File instanceRoot = File.createTempFile("gfembed", "tmp", new File(tmpDir));
         instanceRoot.delete();

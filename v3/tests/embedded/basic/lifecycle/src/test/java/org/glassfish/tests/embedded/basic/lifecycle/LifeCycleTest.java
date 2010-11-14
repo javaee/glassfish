@@ -42,6 +42,7 @@ package org.glassfish.tests.embedded.basic.lifecycle;
 
 import org.glassfish.embeddable.GlassFish;
 import org.glassfish.embeddable.GlassFishException;
+import org.glassfish.embeddable.GlassFishProperties;
 import org.glassfish.embeddable.GlassFishRuntime;
 import org.junit.Test;
 
@@ -76,7 +77,9 @@ public class LifeCycleTest {
         logger.info("Instance1 disposed");
         checkDisposed();
 
-        GlassFish instance2 = runtime.newGlassFish();
+        GlassFishProperties props = new GlassFishProperties();
+        props.setProperty("glassfish.embedded.tmpdir", System.getProperty("user.dir"));
+        GlassFish instance2 = runtime.newGlassFish(props);
         logger.info("instance2 created" + instance2);
         instance2.start();
         logger.info("Instance2 started #1");
@@ -95,6 +98,7 @@ public class LifeCycleTest {
 
     private void checkDisposed() {
         String instanceRoot = System.getProperty("com.sun.aas.instanceRoot");
+        logger.info("Checking whether " + instanceRoot + " is disposed or not");
         if (new File(instanceRoot).exists()) {
             throw new RuntimeException("Directory " + instanceRoot +
                     " is not cleaned up after glassfish.dispose()");
