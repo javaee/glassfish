@@ -103,6 +103,7 @@ public class DeploymentHandler {
         Map attrMap = new HashMap((Map) allMaps.get(appType));
 
         if (GuiUtil.isEmpty(origPath)) {
+            GuiUtil.getLogger().info("deploy(): origPath is NULL");
             String mesg = GuiUtil.getMessage("msg.deploy.nullArchiveError");
             GuiUtil.handleError(handlerCtx, mesg);
             return;

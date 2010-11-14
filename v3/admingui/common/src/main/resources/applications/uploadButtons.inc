@@ -64,11 +64,15 @@
     <!command
         compare(obj1="#{uploadRdBtn}" obj2="client" objEqual=>$attribute{needUpload});
         if (${needUpload}){
-            uploadFileToTempDir(file="#{uploadedFile}" uploadedTempFile=>$attribute{filePath}, origPath=>$attribute{origPath});
+            println("===== needUploadToTempfile");
+            uploadFileToTempDir(file="#{uploadedFile}" uploadedTempFile="#{requestScope.filePath}", origPath="#{requestScope.origPath}");
+            println("===== filePath=#{requestScope.filePath} origPath=#{requestScope.origPath}");
         }
         if (! ${needUpload}){
             setAttribute(key="origPath", value="#{dirPath}");
             setAttribute(key="filePath", value="#{dirPath}");
+            println("========= No upload needed. origPath=#{requestScope.origPath}, filePath=#{requestScope.filePath} ");
+
         }
         deploy(filePath="$attribute{filePath}"
               origPath="$attribute{origPath}"

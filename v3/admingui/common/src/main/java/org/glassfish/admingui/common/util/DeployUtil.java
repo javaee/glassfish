@@ -82,8 +82,9 @@ public class DeployUtil {
      public static boolean invokeDeploymentFacility(String[] targets, Properties props, String archivePath, HandlerContext handlerCtx) 
      	throws Exception {
      	if(archivePath == null) {
+            GuiUtil.getLogger().info("invokeDeploymentFacility(): archivePath = NULL");
             //Localize this message.
-            GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.deploy.nullArchiveError"));
+            GuiUtil.handleError(handlerCtx, "invokeDeploymentFacility: " + GuiUtil.getMessage("msg.deploy.nullArchiveError"));
      	}
         
         if (targets == null){

@@ -158,8 +158,8 @@ public class RestUtil {
         method = method.toLowerCase();
 
 	Logger logger = GuiUtil.getLogger();
-	if (logger.isLoggable(Level.FINE)) {
-	    logger.log(Level.FINE, 
+	if (logger.isLoggable(Level.FINEST)) {
+	    logger.log(Level.FINEST, 
                     GuiUtil.getCommonMessage("LOG_REST_REQUEST_INFO", new Object[]{endpoint, attrs, method}));
 	}
 
