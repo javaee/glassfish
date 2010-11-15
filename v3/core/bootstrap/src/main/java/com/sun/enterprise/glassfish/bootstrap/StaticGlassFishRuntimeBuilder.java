@@ -71,7 +71,7 @@ public class StaticGlassFishRuntimeBuilder implements RuntimeBuilder {
         // The classloades should contain installRoot/modules/**/*.jar files.
         String installRoot = getInstallRoot(bsProps);
         if (installRoot != null) {
-            System.setProperty(Constants.INSTALL_ROOT_PROP_NAME, installRoot);
+            System.setProperty("org.glassfish.embeddable.installRoot", installRoot);
         }
         // Required to add moduleJarURLs to support 'java -jar modules/glassfish.jar case'
         List<URL> moduleJarURLs = getModuleJarURLs(installRoot);

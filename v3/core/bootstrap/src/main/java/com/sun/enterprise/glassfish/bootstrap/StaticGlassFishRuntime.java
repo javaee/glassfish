@@ -166,7 +166,7 @@ public class StaticGlassFishRuntime extends GlassFishRuntime {
         System.setProperty(Constants.INSTANCE_ROOT_PROP_NAME, instanceRoot.getAbsolutePath());
         System.setProperty(Constants.INSTANCE_ROOT_URI_PROP_NAME, instanceRoot.toURI().toString());
 
-        String installRootValue = System.getProperty(Constants.INSTALL_ROOT_PROP_NAME);
+        String installRootValue = System.getProperty("org.glassfish.embeddable.installRoot");
         if (installRootValue == null) {
             installRootValue = instanceRoot.getAbsolutePath();
             gfProps.setProperty("-type", "EMBEDDED");
@@ -187,8 +187,8 @@ public class StaticGlassFishRuntime extends GlassFishRuntime {
 
     private String createTempInstanceRoot(GlassFishProperties gfProps)
             throws Exception {
-        String tmpDir = System.getProperty("glassfish.embedded.tmpdir",
-                gfProps.getProperties().getProperty("glassfish.embedded.tmpdir"));
+        String tmpDir =  gfProps.getProperties().getProperty("glassfish.embedded.tmpdir",
+                System.getProperty("glassfish.embedded.tmpdir"));
         if (tmpDir == null) {
             tmpDir = System.getProperty("java.io.tmpdir");
         } else {
