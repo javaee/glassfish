@@ -255,11 +255,8 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
     }
 
     private void generateCustomResourceMapping(String beanName, ClassWriter classWriter) {
-        for (int i = 0; i < configBeanCustomResources.length; i++) {
-            String row[] = configBeanCustomResources[i];
-            if (row[0].equals(beanName)) {
-                classWriter.createCustomResourceMapping(row[1], row[2]);
-            }
+        for (CommandResourceMetaData cmd : CommandResourceMetaData.getCustomResourceMapping(beanName)) {
+            classWriter.createCustomResourceMapping(cmd.customClassName, cmd.resourcePath);
         }
     }
 
@@ -277,7 +274,6 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
      * @param parentWriter
      */
     private void generateCommandResources(String parentBeanName, ClassWriter parentWriter)  {
-
         List<CommandResourceMetaData> commandMetaData = CommandResourceMetaData.getMetaData(parentBeanName);
         if(commandMetaData.size() > 0) {
             for (CommandResourceMetaData metaData : commandMetaData) {
@@ -324,8 +320,8 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
 
         boolean isLinkedToParent = false;
         if(metaData.commandParams != null) {
-            for(CommandResourceMetaData.ParameterMetaData parameterMeraData : metaData.commandParams) {
-                if(Constants.PARENT_NAME_VARIABLE.equals(parameterMeraData.value) ) {
+            for(CommandResourceMetaData.ParameterMetaData parameterMetaData : metaData.commandParams) {
+                if(Constants.PARENT_NAME_VARIABLE.equals(parameterMetaData.value) ) {
                     isLinkedToParent = true;
                 }
             }
@@ -428,7 +424,7 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
             }
         }
     }
-
+    
     //TODO - fetch command name from config bean(RestRedirect annotation).
     //RESTREdirect currently only support automatically these deletes:
     /*
@@ -556,17 +552,6 @@ delete-instance
         put("ProtocolFinder", "create-protocol-finder");
         put("ListSecurityMap", "create-connector-security-map");
     }};
-
-    public static final String[][] configBeanCustomResources = {
-        // ConfigBean, Custom Resource Class, path
-        {"Cluster", "SystemPropertiesCliResource", "system-properties"},
-        {"Config", "SystemPropertiesCliResource", "system-properties"},
-        {"Domain", "JmxServiceUrlsResource", "jmx-urls"},
-        {"Domain", "LogViewerResource", "view-log"},
-        {"Domain", "SetDomainConfigResource", "set"},
-        {"NetworkListener", "FindHttpProtocolResource", "find-http-protocol"},
-        {"Server", "SystemPropertiesCliResource", "system-properties"}
-    };
 
     private static class CollectionLeafMetaData {
         String postCommandName;

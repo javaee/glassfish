@@ -107,16 +107,17 @@ public class NetworkListenerTest extends RestTestBase {
 
 
 //        asadmin set configs.config.server-config.network-config.network-listeners.network-listener.http-listener-1.protocol=pu-protocol
-            response = post("/domain/set", new HashMap<String, String>() {{
-                put("configs.config.server-config.network-config.network-listeners.network-listener.http-listener-1.protocol", portUniProtocolName);
+            response = post("/domain/configs/config/server-config/network-config/network-listeners/network-listener/http-listener-1", new HashMap<String, String>() {{
+                put("protocol", portUniProtocolName);
             }});
             checkStatusForSuccess(response);
 
             response = get("/domain/configs/config/server-config/network-config/network-listeners/network-listener/http-listener-1/find-http-protocol");
             assertTrue(response.getEntity(String.class).contains("http-listener-2"));
         } finally {
-            ClientResponse response = post("/domain/set", new HashMap<String, String>() {{
-                put("configs.config.server-config.network-config.network-listeners.network-listener.http-listener-1.protocol", "http-listener-1");
+//            ClientResponse response = post("/domain/set", new HashMap<String, String>() {{
+            ClientResponse response = post("/domain/configs/config/server-config/network-config/network-listeners/network-listener/http-listener-1", new HashMap<String, String>() {{
+                put("protocol", "http-listener-1");
             }});
             checkStatusForSuccess(response);
             response = delete(URL_PROTOCOL + "/" + portUniProtocolName + "/delete-protocol-finder",

@@ -40,6 +40,8 @@
 
 package org.glassfish.admin.rest;
 
+import org.junit.After;
+import org.junit.Before;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 import javax.ws.rs.core.MultivaluedMap;
 import java.util.HashMap;
@@ -67,7 +69,36 @@ public class JvmOptionsTest extends RestTestBase {
     protected static final String URL_DEFAULT_CONFIG_CREATE_PROFILER = "/domain/configs/config/default-config/java-config/create-profiler";
     protected static final String URL_DEFAULT_CONFIG_DELETE_PROFILER = "/domain/configs/config/default-config/java-config/profiler/delete-profiler";
     protected static final String URL_DEFAULT_CONFIG_PROFILER_JVM_OPTIONS = "/domain/configs/config/default-config/java-config/profiler/jvm-options";
+    
+    private ConfigTest configTest;
+    private String testConfigName;
+    private String URL_TEST_CONFIG;
+    private String URL_TEST_CONFIG_JVM_OPTIONS;
 
+    @Before
+    public void createConfig() {
+        if (configTest == null) {
+            configTest = new ConfigTest();
+            configTest.setup();
+        }
+
+        testConfigName = "config-" + generateRandomString();
+        MultivaluedMap formData = new MultivaluedMapImpl() {{
+            add("id", "default-config");
+            add("id", testConfigName);
+        }};
+        configTest.createAndVerifyConfig(testConfigName, formData);
+        
+        URL_TEST_CONFIG = "/domain/configs/config/" + testConfigName;
+        URL_TEST_CONFIG_JVM_OPTIONS = URL_TEST_CONFIG + "/java-config/jvm-options";
+    }
+
+    @After
+    public void deleteConfig() {
+        configTest.deleteAndVerifyConfig(testConfigName);
+    }
+    
+    
     @Test
     public void getJvmOptions() {
         ClientResponse response = get(URL_SERVER_JVM_OPTIONS);
@@ -83,17 +114,18 @@ public class JvmOptionsTest extends RestTestBase {
         Map<String, String> newOptions = new HashMap<String, String>() {{
             put(optionName, "someValue");
         }};
+        
 
 //        Map<String, String> payload = buildJvmOptionsPayload(newOptions);
-        ClientResponse response = post(URL_SERVER_JVM_OPTIONS, newOptions);
+        ClientResponse response = put(URL_TEST_CONFIG_JVM_OPTIONS, newOptions);
         assertTrue(isSuccess(response));
-        response = get(URL_SERVER_JVM_OPTIONS);
+        response = get(URL_TEST_CONFIG_JVM_OPTIONS);
         List<String> jvmOptions = getJvmOptions(response);
         assertTrue(jvmOptions.contains(optionName+"=someValue"));
 
-        response = delete(URL_SERVER_JVM_OPTIONS, newOptions);
+        response = delete(URL_TEST_CONFIG_JVM_OPTIONS, newOptions);
         assertTrue(isSuccess(response));
-        response = get(URL_SERVER_JVM_OPTIONS);
+        response = get(URL_TEST_CONFIG_JVM_OPTIONS);
         jvmOptions = getJvmOptions(response);
         assertFalse(jvmOptions.contains(optionName+"=someValue"));
     }
@@ -107,18 +139,18 @@ public class JvmOptionsTest extends RestTestBase {
             put(option2Name, "");
         }};
 
-        ClientResponse response = post(URL_SERVER_JVM_OPTIONS, newOptions);
+        ClientResponse response = put(URL_TEST_CONFIG_JVM_OPTIONS, newOptions);
         assertTrue(isSuccess(response));
-        response = get(URL_SERVER_JVM_OPTIONS);
+        response = get(URL_TEST_CONFIG_JVM_OPTIONS);
         List<String> jvmOptions = getJvmOptions(response);
         assertTrue(jvmOptions.contains(option1Name));
         assertFalse(jvmOptions.contains(option1Name+"="));
         assertTrue(jvmOptions.contains(option2Name));
         assertFalse(jvmOptions.contains(option2Name+"="));
 
-        response = delete(URL_SERVER_JVM_OPTIONS, newOptions);
+        response = delete(URL_TEST_CONFIG_JVM_OPTIONS, newOptions);
         assertTrue(isSuccess(response));
-        response = get(URL_SERVER_JVM_OPTIONS);
+        response = get(URL_TEST_CONFIG_JVM_OPTIONS);
         jvmOptions = getJvmOptions(response);
         assertFalse(jvmOptions.contains(option1Name));
         assertFalse(jvmOptions.contains(option2Name));
@@ -126,26 +158,17 @@ public class JvmOptionsTest extends RestTestBase {
 
     @Test
     public void testIsolatedOptionsCreationOnNewConfig() {
-        ConfigTest configTest = new ConfigTest();
         final String optionName = "-Doption" + generateRandomString();
-        final String configName = "config-" + generateRandomString();
-        final String URL_NEW_CONFIG_JVM_OPTIONS = "/domain/configs/config/" + configName + "/java-config/jvm-options";
 
         Map<String, String> newOptions = new HashMap<String, String>() {{
             put(optionName, "");
-            put("target", configName);
+            put("target", testConfigName);
         }};
-        MultivaluedMap formData = new MultivaluedMapImpl() {{
-            add("id", "default-config");
-            add("id", configName);
-        }};
-        configTest.setup();
-        configTest.createAndVerifyConfig(configName, formData);
 
         // Test new config to make sure option is there
-        ClientResponse response = post(URL_NEW_CONFIG_JVM_OPTIONS, newOptions);
+        ClientResponse response = put(URL_TEST_CONFIG_JVM_OPTIONS, newOptions);
         assertTrue(isSuccess(response));
-        response = get(URL_NEW_CONFIG_JVM_OPTIONS);
+        response = get(URL_TEST_CONFIG_JVM_OPTIONS);
         List<String> jvmOptions = getJvmOptions(response);
         assertTrue(jvmOptions.contains(optionName));
 
@@ -153,8 +176,6 @@ public class JvmOptionsTest extends RestTestBase {
         response = get(URL_SERVER_JVM_OPTIONS);
         jvmOptions = getJvmOptions(response);
         assertFalse(jvmOptions.contains(optionName));
-
-        configTest.deleteAndVerifyConfig(configName);
     }
     
     @Test
@@ -163,27 +184,48 @@ public class JvmOptionsTest extends RestTestBase {
         final String optionName = "-Doption" + generateRandomString();
         Map<String, String> attrs = new HashMap<String, String>() {{
             put("name", profilerName);
-            put("target", "server-config");
+            put("target", testConfigName);
         }};
         Map<String, String> newOptions = new HashMap<String, String>() {{
-            put("target", "server-config");
-            put("profiler", "true");
+//            put("target", testConfigName);
+//            put("profiler", "true");
             put(optionName, "");
         }};
         
-        deleteProfiler(URL_SERVER_CONFIG_DELETE_PROFILER, "server-config", false);
+        deleteProfiler(URL_TEST_CONFIG + "/java-config/profiler/delete-profiler", testConfigName, false);
 
-        ClientResponse response = post(URL_SERVER_CONFIG_CREATE_PROFILER, attrs);
+        ClientResponse response = post(URL_TEST_CONFIG + "/java-config/create-profiler", attrs);
         assertTrue(isSuccess(response));
         
-        response = post(URL_SERVER_CONFIG_PROFILER_JVM_OPTIONS, newOptions);
+        response = put(URL_TEST_CONFIG + "/java-config/profiler/jvm-options", newOptions);
         assertTrue(isSuccess(response));
         
-        response = get(URL_SERVER_CONFIG_PROFILER_JVM_OPTIONS);
+        response = get(URL_TEST_CONFIG + "/java-config/profiler/jvm-options");
         List<String> jvmOptions = getJvmOptions(response);
         assertTrue(jvmOptions.contains(optionName));
         
-        deleteProfiler(URL_SERVER_CONFIG_DELETE_PROFILER, "server-config", true);
+        deleteProfiler(URL_TEST_CONFIG + "/java-config/profiler/delete-profiler", testConfigName, true);
+    }
+    
+    @Test
+    public void testJvmOptionWithColon() {
+        final String optionName = "-XX:MaxPermSize";
+        final String optionValue = "152m";
+        Map<String, String> newOptions = new HashMap<String, String>() {{
+            put(optionName, optionValue);
+        }};
+
+        ClientResponse response = put(URL_TEST_CONFIG_JVM_OPTIONS, newOptions);
+        assertTrue(isSuccess(response));
+        response = get(URL_TEST_CONFIG_JVM_OPTIONS);
+        List<String> jvmOptions = getJvmOptions(response);
+        assertTrue(jvmOptions.contains(optionName+"="+optionValue));
+
+        response = delete(URL_TEST_CONFIG_JVM_OPTIONS, newOptions);
+        assertTrue(isSuccess(response));
+        response = get(URL_TEST_CONFIG_JVM_OPTIONS);
+        jvmOptions = getJvmOptions(response);
+        assertFalse(jvmOptions.contains(optionName+"="+optionValue));
     }
     
     protected void deleteProfiler(final String url, final String target, final boolean failOnError) {

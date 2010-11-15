@@ -52,6 +52,7 @@ public class CommandResourceMetaData {
     public String resourcePath;
     public String displayName;
     public ParameterMetaData[] commandParams;
+    public String customClassName; // used by the custom resource mapping
 
     public static class ParameterMetaData {
         String name;
@@ -85,6 +86,23 @@ public class CommandResourceMetaData {
         }
         return retVal;
     }
+    
+    public static List<CommandResourceMetaData> getCustomResourceMapping(String beanName) {
+        List<CommandResourceMetaData> customResources = new LinkedList<CommandResourceMetaData>();
+        for (String[] row : configBeanCustomResources) {
+            if (row[0].equals(beanName)) {
+                CommandResourceMetaData metaData = new CommandResourceMetaData();
+                metaData.customClassName = row[1];
+                metaData.resourcePath = row[2];
+                
+                customResources.add(metaData);
+            }
+        }
+
+        return customResources;
+    }
+
+
     /*
      create-http-lb-ref     under a lb config elemente 
 create-http-redirect   under lb config
@@ -300,4 +318,16 @@ ListLbConfig
             {"TransactionService", "unfreeze-transaction-service", "POST", "unfreeze-transaction-service", "unfreeze-transaction-service"},
             {"WorkSecurityMap", "update-connector-work-security-map", "POST", "update-connector-work-security-map", "Update", "id=$parent"}
     };
+
+    private static final String[][] configBeanCustomResources = {
+        // ConfigBean, Custom Resource Class, path
+        {"Cluster", "SystemPropertiesCliResource", "system-properties"},
+        {"Config", "SystemPropertiesCliResource", "system-properties"},
+        {"Domain", "JmxServiceUrlsResource", "jmx-urls"},
+        {"Domain", "LogViewerResource", "view-log"},
+        {"Domain", "SetDomainConfigResource", "set"},
+        {"NetworkListener", "FindHttpProtocolResource", "find-http-protocol"},
+        {"Server", "SystemPropertiesCliResource", "system-properties"}
+    };
+
 }

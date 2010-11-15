@@ -41,6 +41,7 @@
 package org.glassfish.admin.rest;
 
 
+import org.glassfish.admin.rest.generator.CommandResourceMetaData;
 import java.lang.reflect.Method;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -839,10 +840,9 @@ public class ResourceUtil {
         }
 
         String beanName = getUnqualifiedTypeName(dom.model.targetTypeName);
-        for (String[] resource : ResourcesGeneratorBase.configBeanCustomResources) {
-            if (resource[0].equals(beanName)) {
-                links.put(resource[2], ProviderUtil.getElementLink(uriInfo, resource[2]));
-            }
+        
+        for (CommandResourceMetaData cmd : CommandResourceMetaData.getCustomResourceMapping(beanName)) {
+            links.put(cmd.resourcePath, ProviderUtil.getElementLink(uriInfo, cmd.resourcePath));
         }
 
         return links;
