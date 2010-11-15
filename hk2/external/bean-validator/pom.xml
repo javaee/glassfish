@@ -50,7 +50,7 @@
          maven-bundle-plugin and hk2-maven-plugin together -->
     <packaging>jar</packaging>
     <properties>
-      <hibernate-validator.version>4.0.2.GA</hibernate-validator.version>
+      <hibernate-validator.version>4.1.0.Final</hibernate-validator.version>
       <javax.validation.version>1.0</javax.validation.version>
       <slf4j.version>1.5.6</slf4j.version>
     </properties>
@@ -112,6 +112,9 @@
                            org.slf4j; org.slf4j.spi; org.slf4j.helpers; version=${slf4j.version}; resolution:=optional,
                            *
                        </Import-Package>
+                       <Implementation-Version>
+                         ${hibernate-validator.version}
+                       </Implementation-Version>
                     </instructions>
                     <!-- Maven uses the output directory (target/classes)
                     rather than the final bundle, when compiling against
