@@ -179,7 +179,7 @@ create_hosted_nodes() {
 
 install_hosted_nodes() {
   echo Installing GlassFish on nodes from hosted_nodes file...
-  asadmin install-node --installdir $INSTALLLOC/glassfish3 `grep -v '^#' hosted-nodes | cut -d" " -f2`
+  asadmin install-node --installdir $INSTALL_LOC/glassfish3 `grep -v '^#' hosted-nodes | cut -d" " -f2`
 }
 
 cmd_on_hosted_nodes() {
