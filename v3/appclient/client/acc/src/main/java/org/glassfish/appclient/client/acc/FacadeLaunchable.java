@@ -413,10 +413,54 @@ public class FacadeLaunchable implements Launchable {
              * the user specified a main class or a name but it does not
              * match the single app client that's present.
              */
+            
             FacadeLaunchable facade = null;
-            if (archiveURIs.length == 1) {
+
+            /*
+             * Earlier releases used the -mainclass option on the appclient
+             * command to specify an artitrary class, not restricted to the
+             * the main class as specified as the Main-Class in an app client
+             * JAR's manifest.  To preserve backward compatibility we need to
+             * do the same.  
+             */
+
+            if (Launchable.LaunchableUtil.matchesAnyClass(clientRA, callerSpecifiedMainClassName)) {
+                facade = new FacadeLaunchable(habitat, clientFacadeRA,
+                        facadeMainAttrs, clientRA, callerSpecifiedMainClassName,
+                        anchorDir);
+                /*
+                 * If the caller-specified class name does not match the
+                 * Main-Class setting for this client archive then inform the user.
+                 */
+                if ( ! clientMainClassName.equals(callerSpecifiedMainClassName)) {
+                    logger.log(Level.INFO, MessageFormat.format(
+                            logger.getResourceBundle().getString("appclient.foundMainClassDiffFromManifest"),
+                            new Object[] {
+                                    groupFacadeURI,
+                                    moduleID,
+                                    callerSpecifiedMainClassName,
+                                    clientMainClassName
+                            }));
+                }
+            } else if (Launchable.LaunchableUtil.matchesName(
+                            moduleID, groupFacadeURI, facadeClientDescriptor, callerSpecifiedAppClientName)) {
+                /*
+                 * Get the main class name from the matching client JAR's manifest.
+                 */
+                facade = new FacadeLaunchable(habitat, clientFacadeRA,
+                        facadeMainAttrs, clientRA,
+                        clientMainClassName,
+                        anchorDir);
+            } else if (archiveURIs.length == 1) {
+                /*
+                 * If only one client exists, use the main class recorded in
+                 * the group facade unless the caller specified one.
+                 */
+
                 facade = new FacadeLaunchable(habitat, clientFacadeRA, facadeMainAttrs,
-                        clientRA, facadeMainAttrs.getValue(GLASSFISH_APPCLIENT_MAIN_CLASS),
+                        clientRA,
+                        (callerSpecifiedMainClassName != null ?
+                            callerSpecifiedMainClassName : facadeMainAttrs.getValue(GLASSFISH_APPCLIENT_MAIN_CLASS)),
                         anchorDir);
                 /*
                  * If the user specified a main class or an app name then warn
@@ -437,19 +481,6 @@ public class FacadeLaunchable implements Launchable {
                                          callerSpecifiedMainClassName,
                                          callerSpecifiedAppClientName}));
                 }
-            } else if (Launchable.LaunchableUtil.matchesMainClassName(clientRA, callerSpecifiedMainClassName)) {
-                facade = new FacadeLaunchable(habitat, clientFacadeRA,
-                        facadeMainAttrs, clientRA, callerSpecifiedMainClassName,
-                        anchorDir);
-            } else if (Launchable.LaunchableUtil.matchesName(
-                            moduleID, groupFacadeURI, facadeClientDescriptor, callerSpecifiedAppClientName)) {
-                /*
-                 * Get the main class name from the matching client JAR's manifest.
-                 */
-                facade = new FacadeLaunchable(habitat, clientFacadeRA,
-                        facadeMainAttrs, clientRA,
-                        clientMainClassName,
-                        anchorDir);
             }
             if (facade != null) {
                 return facade;
