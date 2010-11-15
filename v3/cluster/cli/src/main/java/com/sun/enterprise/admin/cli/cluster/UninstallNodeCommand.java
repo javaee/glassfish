@@ -43,8 +43,6 @@ package com.sun.enterprise.admin.cli.cluster;
 
 import com.sun.enterprise.config.serverbeans.Node;
 import com.sun.enterprise.util.SystemPropertyConstants;
-import com.trilead.ssh2.SCPClient;
-import com.trilead.ssh2.SFTPv3DirectoryEntry;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.CommandException;
 import org.glassfish.cluster.ssh.launcher.SSHLauncher;
@@ -54,11 +52,11 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
+import org.jvnet.hk2.component.Habitat;
+import org.glassfish.internal.api.Globals;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
-import java.util.List;
 
 /**
  * @author Rajiv Mordani
@@ -71,6 +69,12 @@ public class UninstallNodeCommand extends SSHCommandsBase {
     @Param(name="installdir", optional = true, defaultValue = "${com.sun.aas.installRoot}")
     private String installDir;
 
+    @Param(optional = true, defaultValue = "false")
+    private boolean force;
+    
+    @Inject
+    private Habitat habitat;
+    
     @Inject
     SSHLauncher sshLauncher;
 
@@ -79,10 +83,12 @@ public class UninstallNodeCommand extends SSHCommandsBase {
 
     @Override
     protected void validate() throws CommandException {
-        for (String host: hosts) {
-            for (Node node: nodeList) {
-                if (node.getNodeHost().equals(host)) {
-                    throw new CommandException("delete-node-ssh needs to be called to delete node for " + host + " before uninstall-node is called");
+        if (!force) {
+            for (String host: hosts) {
+                for (Node node: nodeList) {
+                    if (node.getNodeHost().equals(host)) {
+                        throw new CommandException(Strings.get("call.delete.node.ssh", host));
+                    }
                 }
             }
         }
@@ -110,6 +116,7 @@ public class UninstallNodeCommand extends SSHCommandsBase {
 
     @Override
     protected int executeCommand() throws CommandException {
+        Globals.setDefaultHabitat(habitat);
         try {
             String baseRootValue = getSystemProperty(SystemPropertyConstants.PRODUCT_ROOT_PROPERTY);
             deleteFromHosts(baseRootValue);
@@ -150,20 +157,8 @@ public class UninstallNodeCommand extends SSHCommandsBase {
             }
 
             deleteRemoteFiles(sftpClient, installDir);
-            sftpClient.rmdir(installDir);
-        }
-    }
-
-    private void deleteRemoteFiles(SFTPClient sftpClient, String dir)
-    throws IOException {
-        for (SFTPv3DirectoryEntry directoryEntry: (List<SFTPv3DirectoryEntry>)sftpClient.ls(dir)) {
-            if (directoryEntry.filename.equals(".") || directoryEntry.filename.equals("..")) {
-                continue;
-            } else if (directoryEntry.attributes.isDirectory()) {
-                deleteRemoteFiles(sftpClient, dir+"/"+directoryEntry.filename);
-                sftpClient.rmdir(dir  +"/"+directoryEntry.filename);
-            } else {
-                sftpClient.rm(dir+"/"+directoryEntry.filename);
+            if(sftpClient.ls(installDir).isEmpty()) {
+                sftpClient.rmdir(installDir);
             }
         }
     }

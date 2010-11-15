@@ -43,15 +43,17 @@ package com.sun.enterprise.admin.cli.cluster;
 import java.io.*;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
 
-import org.jvnet.hk2.annotations.*;
-import org.jvnet.hk2.component.*;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
 import com.sun.enterprise.admin.cli.CLICommand;
 import org.glassfish.cluster.ssh.util.SSHUtil;
+import org.glassfish.cluster.ssh.sftp.SFTPClient;
 
 import com.sun.enterprise.universal.glassfish.TokenResolver;
+
+import com.trilead.ssh2.SFTPv3DirectoryEntry;
 
 /**
  *  Base class for SSH provisioning commands.
@@ -152,5 +154,20 @@ public abstract class SSHCommandsBase extends CLICommand {
             throw new CommandException(Strings.get("ErrorParsingKey", sshkeyfile, ioe.getMessage()));
         }
         return res;
+    }
+    
+    protected void deleteRemoteFiles(SFTPClient sftpClient, String dir)
+    throws IOException {
+        for (SFTPv3DirectoryEntry directoryEntry: (List<SFTPv3DirectoryEntry>)sftpClient.ls(dir)) {
+            if (directoryEntry.filename.equals(".") || directoryEntry.filename.equals("..")
+                    || directoryEntry.filename.equals("nodes")) {
+                continue;
+            } else if (directoryEntry.attributes.isDirectory()) {
+                deleteRemoteFiles(sftpClient, dir+"/"+directoryEntry.filename);
+                sftpClient.rmdir(dir  +"/"+directoryEntry.filename);
+            } else {
+                sftpClient.rm(dir+"/"+directoryEntry.filename);
+            }
+        }
     }
 }
