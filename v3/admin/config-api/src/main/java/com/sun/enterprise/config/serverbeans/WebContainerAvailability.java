@@ -77,12 +77,12 @@ public interface WebContainerAvailability extends ConfigBeanProxy, Injectable,
      * availability-service is also "true", then j2ee apps and stand-alone web
      * modules may be ha enabled. Finer-grained control exists at lower levels.
      * If this attribute is missing, it "inherits" the value of the global
-     * availability-enabled under availability-service.
+     * availability-enabled under availability-service.  Default is "true".
      * 
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="true")
     public String getAvailabilityEnabled();
 
     /**
@@ -97,12 +97,12 @@ public interface WebContainerAvailability extends ConfigBeanProxy, Injectable,
      * Gets the value of the persistenceType property.
      *
      * Specifies the session persistence mechanism for web applications that
-     * have availability enabled. Default is "memory".
+     * have availability enabled. Default is "replicated".
      * 
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="memory")
+    @Attribute (defaultValue="replicated")
     public String getPersistenceType();
 
     /**
@@ -123,7 +123,7 @@ public interface WebContainerAvailability extends ConfigBeanProxy, Injectable,
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="web-method")
     public String getPersistenceFrequency();
 
     /**
@@ -145,7 +145,7 @@ public interface WebContainerAvailability extends ConfigBeanProxy, Injectable,
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute (defaultValue="session")
     public String getPersistenceScope();
 
     /**
@@ -166,6 +166,7 @@ public interface WebContainerAvailability extends ConfigBeanProxy, Injectable,
      * @return possible object is
      *         {@link String }
      */
+    @Deprecated
     @Attribute (defaultValue="false",dataType=Boolean.class)
     public String getPersistenceStoreHealthCheckEnabled();
 
@@ -207,6 +208,7 @@ public interface WebContainerAvailability extends ConfigBeanProxy, Injectable,
      * @return possible object is
      *         {@link String }
      */
+    @Deprecated
     @Attribute
     public String getHttpSessionStorePoolName();
 
