@@ -587,11 +587,13 @@ class RegisteredResources {
                 boolean internal = exc instanceof INTERNAL;
                 if (exc instanceof HeuristicMixed || hazard || internal) {
 
-                    // Mark the Resource which threw the exception as
-                    // heuristic so that we do not
-                    // try to roll it back, but we do send it a forget.
+                    if (!internal) {
+                        // Mark the Resource which threw the exception as
+                        // heuristic so that we do not
+                        // try to roll it back, but we do send it a forget.
 
-                    resourceStates.set(i,ResourceStatus.Heuristic);
+                        resourceStates.set(i,ResourceStatus.Heuristic);
+                    }
 
                     try {
                         distributeRollback(true);
