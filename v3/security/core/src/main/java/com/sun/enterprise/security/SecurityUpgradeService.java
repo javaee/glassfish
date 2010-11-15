@@ -38,16 +38,24 @@
  * holder.
  */
 
-package org.glassfish.config.support;
+package com.sun.enterprise.security;
 
 import com.sun.enterprise.config.serverbeans.AuthRealm;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.JaccProvider;
 import com.sun.enterprise.config.serverbeans.SecurityService;
+import com.sun.logging.LogDomains;
 import java.beans.PropertyVetoException;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -83,11 +91,20 @@ public class SecurityUpgradeService implements ConfigurationUpgrade, PostConstru
     ServerEnvironment env;
 
     private static final String DIR_GENERATED_POLICY = "generated" + File.separator + "policy";
+    private static final String DIR_CONFIG = "config";
+    private static final String JKS = ".jks";
+    private static final String NSS = ".db";
+  //  private static final String KEYSTORE = "keystore.jks";
+    private static final String TRUSTSTORE = "cacerts.jks";
+
     private static final String JDBC_REALM_CLASSNAME = "com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm";
-        public static final String PARAM_DIGEST_ALGORITHM = "digest-algorithm";
+    public static final String PARAM_DIGEST_ALGORITHM = "digest-algorithm";
+    private static final Logger _logger = LogDomains.getLogger(SecurityUpgradeService.class, LogDomains.SECURITY_LOGGER);
 
 
-    public void postConstruct() {
+
+    
+    public void postConstruct()  {
         for (Config config : configs.getConfig()) {
             SecurityService service = config.getSecurityService();
             if (service != null) {
@@ -137,14 +154,62 @@ public class SecurityUpgradeService implements ConfigurationUpgrade, PostConstru
                     }
                 }
             } catch (PropertyVetoException pve) {
-                Logger.getAnonymousLogger().log(Level.SEVERE, null, pve);
+                _logger.log(Level.SEVERE, "security_upgrade_service_exception", pve);
                 throw new RuntimeException(pve);
             } catch (TransactionFailure tf) {
-                Logger.getAnonymousLogger().log(Level.SEVERE, null, tf);
+               _logger.log(Level.SEVERE, "security_upgrade_service_exception", tf);
                 throw new RuntimeException(tf);
 
             }
         }
+
+        //Detect an NSS upgrade scenario and point to the steps
+        File configDir = new File(instanceRoot, "config");
+        //default KS password
+
+
+        if (configDir != null) {
+            for (File configFile : configDir.listFiles()) {
+                if (configFile.getName().endsWith(NSS)) {
+                    //Extract the keystore and truststore files from security.jar and write them to the config directory
+                    //Commenting the keystore copying currently because the users are asked to copy the keystore.jks
+                    //into the config directory before the upgrade process.
+
+                   // InputStream keyIStream = SecurityUpgradeService.class.getResourceAsStream("/config/" + KEYSTORE);
+                    InputStream trustIStream = SecurityUpgradeService.class.getResourceAsStream("/config/" + TRUSTSTORE);
+
+                  //  File keyFile = new File(configDir, KEYSTORE);
+                    File trustFile = new File(configDir, TRUSTSTORE);
+
+                    try {
+                        
+                      //  if (!keyFile.exists()) {
+                        //    keyFile.createNewFile();
+                     //   }
+                        if (!trustFile.exists()) {
+                            trustFile.createNewFile();
+                        }
+                     //   OutputStream keyOStream = new FileOutputStream(keyFile);
+                        OutputStream trustOStream = new FileOutputStream(trustFile);
+
+                     //   while (keyIStream != null && keyIStream.available() > 0) {
+                      //      keyOStream.write(keyIStream.read());
+                     //   }
+                        while (trustIStream != null && trustIStream.available() > 0) {
+                            trustOStream.write(trustIStream.read());
+                        }
+                    } catch (IOException ex) {
+                        Logger.getLogger(SecurityUpgradeService.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
+                    _logger.log(Level.SEVERE, "AutoUpgrade from v2 EE edition to v3 is not currently supported." +
+                            "Please refer to the instructions in http://wikihome.sfbay.sun.com/security/Wiki.jsp?page=V2.XEEToV3.1NSSUpgrade " +
+                            "for upgrading manually");
+                }
+            }
+        }
+        
+
     }
 
     private void upgradeJACCProvider(SecurityService securityService) {
