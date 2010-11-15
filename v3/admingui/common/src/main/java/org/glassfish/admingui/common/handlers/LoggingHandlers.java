@@ -153,10 +153,10 @@ public class LoggingHandlers {
         String config = (String)handlerCtx.getInputValue("config");
         Map<String, Object> props = new HashMap();
         for(String key : attrNames){
-            props.put("id", key + "=" + attrs.get(key));
+            props.put("id", key + "='" + attrs.get(key) + "'");
             props.put("target", config);
             RestUtil.restRequest((String)GuiUtil.getSessionValue("REST_URL") + "/set-log-attributes.json",
-                    props, "POST", null, true);
+                props, "POST", null, true);
         }
      }
 
