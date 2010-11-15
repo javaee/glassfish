@@ -66,6 +66,7 @@
 
     <target name="debug-windows" depends="instance, cluster"/>
     <target name="cli" depends="zombie, ports, instance, cluster, configs, sync, domain, backup, tokens,validation,node, load-balancer, misc-commands, manual-sync, upgrade"/>
+    <!--<target name="cli" depends="zombie, ports, instance, cluster, configs, sync, domain, backup, tokens,validation,node, load-balancer, misc-commands, manual-sync, upgrade, cluster-upgrade"/>-->
 
     <target name="cluster" depends="init">
         <java classname="admin.ClusterTest"  fork="true" classpath="${test}">
@@ -245,6 +246,12 @@
     </target>
 <target name="upgrade" depends="init">
         <java classname="admin.UpgradeTest"  fork="true" classpath="${test}">
+            <jvmarg value="${javaprops}"/>
+        </java>
+    </target>
+
+    <target name="cluster-upgrade" depends="init">
+        <java classname="admin.ClusterUpgradeTest"  fork="true" classpath="${test}">
             <jvmarg value="${javaprops}"/>
         </java>
     </target>
