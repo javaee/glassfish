@@ -326,6 +326,13 @@ public class MonitoringReporter extends V2DottedNameSupport {
             return true;
         }
 
+        // 7.  See 14685 for an example -->  "*jsp*"
+        if(userarg.startsWith("*")) {
+            targets = allServers;
+            pattern = userarg.substring(1);
+            return true;
+        }
+
         int index = userarg.indexOf(".");
         String targetName;
         String otherstuff;
@@ -334,16 +341,16 @@ public class MonitoringReporter extends V2DottedNameSupport {
             targetName = userarg.substring(0, index);
 
             if (userarg.length() == index + 1) {
-                // 7. <servername>.
+                // 8. <servername>.
                 pattern = "*";
             }
             else
-                // 8. <servername>.<pattern>
+                // 9. <servername>.<pattern>
                 pattern = userarg.substring(index + 1);
         }
         else {
             // no dots in userarg
-            // 9. <servername>
+            // 10. <servername>
             targetName = userarg;
             pattern = "*";
         }
