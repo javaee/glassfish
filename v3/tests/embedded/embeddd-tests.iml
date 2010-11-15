@@ -53,6 +53,18 @@
       <sourceFolder url="file://$MODULE_DIR$/ejb/ejb-api/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/ejb/ejb-api/src/test/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/basic/lifecycle/src/test/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/maven-plugin/ejbtimer/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/maven-plugin/ejbtimer/src/test/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/ejb/basic/src/test/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/ejb/basic/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/maven-plugin/magicbox/src/test/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/maven-plugin/magicbox/src/main/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/maven-plugin/TestEA/src/main/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/maven-plugin/TestEA/src/test/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/maven-plugin/localejbs/src/main/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/maven-plugin/localejbs/src/test/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/maven-plugin/remoteejbs/src/main/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/maven-plugin/remoteejbs/src/test/java" isTestSource="true" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
