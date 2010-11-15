@@ -74,6 +74,7 @@ import org.glassfish.appclient.server.core.jws.servedcontent.FixedContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.SimpleDynamicContentImpl;
 import org.glassfish.appclient.server.core.jws.servedcontent.StaticContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.TokenHelper;
+import org.glassfish.deployment.common.DeploymentUtils;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -172,8 +173,8 @@ public class JavaWebStartInfo implements ConfigListener {
 
     private final JavaWebStartState jwsState = new JavaWebStartState();
 
-    private final static String JAVA_WEB_START_ENABLED_PROPERTY_NAME = "" +
-            "java-web-start-enabled";
+    private final static String JAVA_WEB_START_ENABLED_PROPERTY_NAME =
+            DeploymentUtils.DEPLOYMENT_PROPERTY_JAVA_WEB_START_ENABLED;
 
     private AppClientDeployerHelper helper;
 
