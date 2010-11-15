@@ -43,11 +43,8 @@ package com.sun.enterprise.connectors.util;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.net.MalformedURLException;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -339,15 +336,16 @@ public class RARUtils {
         File f = new File(file);
         validateRARLocation(f);
         try {
+            ClassLoader commonClassLoader =
+                    ConnectorRuntime.getRuntime().getClassLoaderHierarchy().getCommonClassLoader();
             if (f.isDirectory()) {
-                cl = new URLClassLoader(new URL[]{f.toURI().toURL()},
-                        Thread.currentThread().getContextClassLoader());
-                        //ApplicationServer.getServerContext().getCommonClassLoader());
+                Set<URL> urls = new LinkedHashSet<URL>();
+                urls.add(f.toURI().toURL());
+                appendURLs(urls, f);
+                cl = new URLClassLoader(urls.toArray(new URL[urls.size()]), commonClassLoader);
+
             } else {
-                cl =
-                        (new ConnectorRARClassLoader(file,
-                            Thread.currentThread().getContextClassLoader()));
-                                //ApplicationServer.getServerContext().getCommonClassLoader()));
+                cl = new ConnectorRARClassLoader(file, commonClassLoader);
             }
             return cl;
         } catch (IOException ioe) {
@@ -356,9 +354,20 @@ public class RARUtils {
                 _logger.log(Level.FINE, "IO Error while trying to read connector"
                         + "descriptor to get resource-adapter properties", ioe);
             }
-            ConnectorRuntimeException cre = new ConnectorRuntimeException("unable to read connector descriptor from : " + file);
+            ConnectorRuntimeException cre = new ConnectorRuntimeException(
+                    "unable to read connector descriptor from : " + file);
             cre.setStackTrace(ioe.getStackTrace());
             throw cre;
+        }
+    }
+
+    private static void appendURLs(Set<URL> urls, File f) throws MalformedURLException {
+        for (File file : f.listFiles()) {
+            if (file.getName().toUpperCase().endsWith(".JAR")) {
+                urls.add(file.toURI().toURL());
+            } else if (file.isDirectory()) {
+                appendURLs(urls, file);
+            }
         }
     }
 

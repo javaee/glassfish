@@ -476,14 +476,20 @@ public class ConnectorConfigParserUtils {
             }else{
                 //try loading via ClassLoader of the RAR from ConnectorRegistry
                 ConnectorApplication app = ConnectorRegistry.getInstance().getConnectorApplication(resourceAdapterName);
-                if(app == null){
-                    throw new ConnectorRuntimeException("RAR ["+resourceAdapterName+"] is not yet initialized");
+
+                if(app == null ){
+                    _logger.log(Level.FINE, "unable to load class [ " + className + " ] of RAR " +
+                            "[ " + resourceAdapterName + " ]" +
+                            " from server instance, trying other instances' deployments");
+                    //try loading via RARUtils
+                    loadedClass = RARUtils.loadClassFromRar(resourceAdapterName, className);
+                }else{
+                    loadedClass = app.getClassLoader().loadClass(className);
                 }
-                loadedClass = app.getClassLoader().loadClass(className);
             }
         } catch (ClassNotFoundException e1) {
-            //try loading via RARUtils
-            loadedClass = RARUtils.loadClassFromRar(resourceAdapterName, className);
+            _logger.log(Level.FINE, "rardeployment.class_not_found",className);
+            throw new ConnectorRuntimeException("Class Not Found : " + className);
         }
         return loadedClass;
     }

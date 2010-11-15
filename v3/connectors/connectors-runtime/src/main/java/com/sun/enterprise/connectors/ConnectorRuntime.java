@@ -1319,6 +1319,10 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
         return clh.getConnectorClassLoader(null);
     }
 
+    public ClassLoaderHierarchy getClassLoaderHierarchy(){
+        return clh;
+    }
+
     /**
      * {@inheritDoc}
      */
