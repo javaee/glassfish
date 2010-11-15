@@ -1106,6 +1106,23 @@ admingui.help = {
   *   Validation functions
   */
 
+function checkPSW(ps1Id, ps2Id, notMatchMsg, emptyMsg) {
+    var ps1 = getTextElement(ps1Id).value;
+    var ps2 = getTextElement(ps2Id).value;
+    if (ps1 != ps2){
+        return showAlert(notMatchMsg);
+    }
+    if ( (ps1==null || ps1=='') && (ps2==null || ps2=='')){
+        if ( getConfirm(this, emptyMsg) ){
+            return true;
+        }else{
+            return false;
+        }
+    }
+    return true;
+}
+
+
 function guiValidate(reqMsg, reqInt, reqPort) {
     var inputs = document.getElementsByTagName("input");
     var styleClass = null;
