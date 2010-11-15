@@ -50,6 +50,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -118,7 +119,7 @@ public class JWSAdapterManager implements PostConstruct {
     private static final String LINE_SEP = System.getProperty("line.separator");
 
     private static final List<String> DO_NOT_SERVE_LIST =
-            Arrays.asList("glassfish/modules/jaxb-osgi.jar");
+            Collections.EMPTY_LIST; //Arrays.asList("glassfish/modules/jaxb-osgi.jar");
 
     private static final String JWS_SIGNED_SYSTEM_JARS_ROOT = "java-web-start/___system";
     private static final String JWS_SIGNED_DOMAIN_JARS_ROOT = "java-web-start/___domain";
