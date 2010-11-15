@@ -260,7 +260,7 @@ public class DeploymentHandler {
              if ( ! targetList.isEmpty()){
                  targetArray = (String[])targetList.toArray(new String[targetList.size()]);
              }
-             DeployUtil.invokeDeploymentFacility( targetArray, deploymentProps, filePath, handlerCtx);
+             DeployUtil.invokeDeploymentFacility( targetArray, deploymentProps, filePath, handlerCtx, "redeploy.warning");
         } catch (Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);
         }
@@ -317,7 +317,7 @@ public class DeploymentHandler {
             //re-generate the table data because there may be some apps thats been undeployed 
             //successfully.  If we stopProcessing, the table data is stale and still shows the
             //app that has been gone.
-            if (DeployUtil.checkDeployStatus(status, handlerCtx, false)) {
+            if (DeployUtil.checkDeployStatus(status, handlerCtx, false, "undeploy.warning")) {
                 if(! domainOnly){
                     removeFromDefaultWebModule(appName, targets);
                 }
