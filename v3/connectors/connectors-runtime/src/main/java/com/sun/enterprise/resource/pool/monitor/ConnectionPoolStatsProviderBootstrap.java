@@ -43,6 +43,7 @@ package com.sun.enterprise.resource.pool.monitor;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.connectors.util.ResourcesUtil;
+import com.sun.logging.LogDomains;
 import org.glassfish.resource.common.PoolInfo;
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.resource.listener.PoolLifeCycle;
@@ -85,9 +86,9 @@ import org.jvnet.hk2.component.Habitat;
 public class ConnectionPoolStatsProviderBootstrap implements PostConstruct, 
         PoolLifeCycle {
 
-    @Inject
-    Logger logger;
-    
+    protected final static Logger logger =
+    LogDomains.getLogger(ConnectorConnPoolStatsProvider.class,LogDomains.RSR_LOGGER);
+
     @Inject
     private PoolManager poolManager;
 
