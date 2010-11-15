@@ -41,10 +41,7 @@
 package com.sun.enterprise.connectors.module;
 
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
-import com.sun.enterprise.config.serverbeans.AdminObjectResource;
-import com.sun.enterprise.config.serverbeans.ConnectorConnectionPool;
-import com.sun.enterprise.config.serverbeans.Resource;
-import com.sun.enterprise.config.serverbeans.Resources;
+import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.connectors.util.ResourcesUtil;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.logging.LogDomains;
@@ -139,7 +136,7 @@ public class ConnectorApplication implements ApplicationContainer, EventListener
 
     private void deployGlobalResources() {
         Resources allResources = resourceManager.getAllResources();
-        Collection<Resource> resources = filterConnectorResources(allResources);
+        Collection<Resource> resources = filterConnectorResources(allResources, false);
         resourceManager.deployResources(resources);
     }
 
@@ -152,8 +149,7 @@ public class ConnectorApplication implements ApplicationContainer, EventListener
         }
     }
 */
-
-    private Collection<Resource> filterConnectorResources(Resources allResources) {
+    private Collection<Resource> filterConnectorResources(Resources allResources, boolean includePools) {
         //TODO V3 needed for redeploy of module, what happens to the listeners of these resources ?
         Collection<ConnectorConnectionPool> connectionPools =
                 ConnectorsUtil.getAllPoolsOfModule(moduleName, allResources);
@@ -161,12 +157,14 @@ public class ConnectorApplication implements ApplicationContainer, EventListener
         Collection<Resource> resources = ConnectorsUtil.getAllResources(poolNames, allResources);
         Collection<AdminObjectResource> adminObjectResources =
                 ResourcesUtil.createInstance().getEnabledAdminObjectResources(moduleName);
-        for (AdminObjectResource aor : adminObjectResources) {
-            resources.add(aor);
+        resources.addAll(adminObjectResources);
+        if(includePools){
+            Collection<ConnectorConnectionPool> allPoolsOfModule = ConnectorsUtil.getAllPoolsOfModule(moduleName, allResources);
+            resources.addAll(allPoolsOfModule);
         }
         return resources;
     }
-    
+
     /**
      * undeploy all resources/pools pertaining to this resource adapter
      */
@@ -189,7 +187,7 @@ public class ConnectorApplication implements ApplicationContainer, EventListener
         boolean status;
         //TODO ASR : should we undeploy app-scoped connector resources also ?
         //TODO ASR : should we stop deployment by checking app-scoped connector resources also ?
-        Collection<Resource> resources = filterConnectorResources(resourceManager.getAllResources());
+        Collection<Resource> resources = filterConnectorResources(resourceManager.getAllResources(), true);
         if (failIfResourcesExist && resources.size() > 0) {
             String message = "one or more resources of resource-adapter [ " + moduleName + " ] exist, " +
                     "use '--cascade=true' to delete them during undeploy";
@@ -330,7 +328,7 @@ public class ConnectorApplication implements ApplicationContainer, EventListener
                 if (dcp.origin != OpsParams.Origin.deploy) {
                     if (dcp.origin == OpsParams.Origin.undeploy) {
                         if (!(dcp.ignoreCascade || dcp.cascade)) {
-                            if (filterConnectorResources(resourceManager.getAllResources()).size() > 0) {
+                            if (filterConnectorResources(resourceManager.getAllResources(), true).size() > 0) {
                                 String message = "one or more resources of resource-adapter [ " + moduleName + " ] exist, " +
                                         "use '--cascade=true' to delete them during undeploy";
                                 _logger.log(Level.WARNING, "resources.of.rar.exist", moduleName);
