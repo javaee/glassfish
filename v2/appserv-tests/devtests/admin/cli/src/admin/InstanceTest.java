@@ -144,18 +144,8 @@ public class InstanceTest extends AdminBaseDevTest {
         report(metname + "-list-instances", isInstanceRunning(iname));
         report(metname + "-stop", asadmin("stop-local-instance", iname));
 
-        if (!asadmin("delete-local-instance", iname)) {
-            if (File.separatorChar == '\\') {
-                System.out.println("&&&&&&&&&   SKIPPING TWO  TESTS  $$$$$$$$$$$$$$");
-                for (int i = 0; i < 25; i++) {
-                    System.out.println("*****  FIX ISSUE 12160 -- I can't delete the instance!! ***** ");
-                }
-            }
-        }
-        else {
-            report(metname + "-delete", true);
-            report(metname + "-no-dir-again", !checkInstanceDir(iname));
-        }
+		report(metname + "-delete", asadmin("delete-local-instance", iname));
+		report(metname + "-no-dir-again", !checkInstanceDir(iname));
     }
 
 
