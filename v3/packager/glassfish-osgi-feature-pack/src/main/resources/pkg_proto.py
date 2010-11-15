@@ -62,7 +62,7 @@ pkg = {
 			"pkg:/glassfish-web@" + conf.glassfish_version : {"type" : "require" },
 			"pkg:/glassfish-osgi-http@" + conf.glassfish_version : {"type" : "require" },
 			"pkg:/glassfish-osgi-gui@" + conf.glassfish_version : {"type" : "require" },
-			"pkg:/glassfish-osgi-feature-pack-incorporation@" + conf.glassfish_version : {"type" : "require" },
+			"pkg:/glassfish-osgi-incorporation@" + conf.glassfish_version : {"type" : "require" },
                       },
     "licenses"      : {
                         "../../../../CDDL+GPL.txt" : {"license" : "CDDL and GPL v2 with classpath exception"},
