@@ -140,14 +140,14 @@
                         setPageSessionAttribute(key="javaWebStartEnabled" value="false");
                     }
                     foreach (var="oneProp" list="#{pageSession.tableList}") {
-                        if (#{requestScope.oneProp.name}=javaWebStartEnabled){
+                        if (#{requestScope.oneProp.name}=$constant{org.glassfish.deployment.client.DFDeploymentProperties.DEPLOY_OPTION_JAVA_WEB_START_ENABLED}){
                             setAttribute(key="found" value="true");
                             mapPut(map="#{requestScope.oneProp}" key="value" value="#{pageSession.javaWebStartEnabled}")
                         }
                     }
                     if (!#{requestScope.found}){
                         createMap(result="#{requestScope.jmap}");
-                        mapPut(map="#{requestScope.jmap}" key="name" value="javaWebStartEnabled")
+                        mapPut(map="#{requestScope.jmap}" key="name" value="$constant{org.glassfish.deployment.client.DFDeploymentProperties.DEPLOY_OPTION_JAVA_WEB_START_ENABLED}")
                         mapPut(map="#{requestScope.jmap}" key="value" value="#{pageSession.javaWebStartEnabled}")
                         listAdd(list="#{pageSession.tableList}" value="#{requestScope.jmap}");
                     }

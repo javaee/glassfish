@@ -289,6 +289,4 @@ public class DeployUtil {
         
     }
 
-    private static final String COMMON_BUNDLE = "org.glassfish.common.admingui.Strings";
-
 }

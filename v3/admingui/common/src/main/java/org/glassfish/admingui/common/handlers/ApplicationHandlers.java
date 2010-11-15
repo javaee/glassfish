@@ -76,6 +76,8 @@ import org.glassfish.admingui.common.util.DeployUtil;
 import org.glassfish.admingui.common.util.RestUtil;
 import org.glassfish.admingui.common.util.TargetUtil;
 import org.glassfish.admingui.common.util.AppUtil;
+import org.glassfish.deployment.client.DFDeploymentProperties;
+
 
 
 
@@ -178,7 +180,7 @@ public class ApplicationHandlers {
                 }
 
                 if (snifferList.contains("appclient")){
-                    String jwEnabled = RestUtil.getPropValue(GuiUtil.getSessionValue("REST_URL") + "/applications/application/"+encodedAppName, "javaWebStartEnabled",  handlerCtx);
+                    String jwEnabled = RestUtil.getPropValue(GuiUtil.getSessionValue("REST_URL") + "/applications/application/"+encodedAppName, DFDeploymentProperties.DEPLOY_OPTION_JAVA_WEB_START_ENABLED,  handlerCtx);
                     if (!GuiUtil.isEmpty(jwEnabled) && jwEnabled.equals("true") ){
                         List<String> targetList = DeployUtil.getApplicationTarget(appName, "application-ref");
                         oneRow.put("hasAppClientLaunch", (targetList.isEmpty())? false: true);

@@ -226,12 +226,12 @@ public class DeploymentHandler {
             DFDeploymentProperties deploymentProps = new DFDeploymentProperties();
 
              //If we are redeploying a web app, we want to preserve context root.
-             String ctxRoot = valueMap.get("contextRoot");
+             String ctxRoot = valueMap.get(DFDeploymentProperties.CONTEXT_ROOT);
              if (ctxRoot != null){
                  deploymentProps.setContextRoot(ctxRoot);
              }
 
-             String availabilityEnabled = valueMap.get("availabilityEnabled");
+             String availabilityEnabled = valueMap.get(DFDeploymentProperties.AVAILABILITY_ENABLED);
              if (availabilityEnabled != null){
                 deploymentProps.setAvailabilityEnabled(Boolean.parseBoolean(availabilityEnabled));
              }
@@ -243,13 +243,13 @@ public class DeploymentHandler {
              deploymentProps.setForce(true);
              deploymentProps.setUpload(false);
              deploymentProps.setName(appName);
-             deploymentProps.setVerify(Boolean.parseBoolean(deployMap.get("verify")));
-             deploymentProps.setPrecompileJSP(Boolean.parseBoolean(deployMap.get("precompilejsp")));
+             deploymentProps.setVerify(Boolean.parseBoolean(deployMap.get(DFDeploymentProperties.VERIFY)));
+             deploymentProps.setPrecompileJSP(Boolean.parseBoolean(deployMap.get(DFDeploymentProperties.PRECOMPILE_JSP)));
              if ("osgi".equals(deployMap.get("type"))){
                  deploymentProps.setProperty("type", "osgi");
              }
              Properties props = new Properties();
-             _setProps(deployMap, props, "javaWebStartEnabled");
+             _setProps(deployMap, props, DFDeploymentProperties.DEPLOY_OPTION_JAVA_WEB_START_ENABLED);
              _setProps(deployMap, props, "keepSessions");
              _setProps(deployMap, props, "preserveAppScopedResources");
              deploymentProps.setProperties(props);

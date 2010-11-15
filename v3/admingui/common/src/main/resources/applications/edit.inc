@@ -98,7 +98,7 @@
             <!beforeCreate
                 setPageSessionAttribute(key="javaWebStartEnabled" value="false");
                 foreach (var="oneProp" list="#{pageSession.tableList}") {
-                    if (#{requestScope.oneProp.name}=javaWebStartEnabled){
+                    if (#{requestScope.oneProp.name}=$constant{org.glassfish.deployment.client.DFDeploymentProperties.DEPLOY_OPTION_JAVA_WEB_START_ENABLED}){
                         setPageSessionAttribute(key="javaWebStartEnabled" value="#{requestScope.oneProp.value}");
                         //will be nice if we can break here
                     }
