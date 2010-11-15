@@ -151,20 +151,20 @@
             />
     </sun:tableColumn>
 
-    <sun:tableColumn headerText="$resource{i18n_web.grizzly.protocol.nameCol}" sort="Name" rowHeader="$boolean{true}" id="col1">
+    <sun:tableColumn headerText="$resource{i18n_web.grizzly.protocol.nameCol}" sort="name" rowHeader="$boolean{true}" id="col1">
         <sun:hyperlink id="link" text="#{td.value.name}"
             url="#{pageSession.editLink}&name=#{td.value.name}&cancelTo=protocols.jsf" />
     </sun:tableColumn>
 
 
-    <sun:tableColumn headerText="$resource{i18n_web.grizzly.protocol.listenerNameCol}"  rowHeader="$boolean{true}" id="colnet">
+    <sun:tableColumn headerText="$resource{i18n_web.grizzly.protocol.listenerNameCol}" sort="name"  rowHeader="$boolean{true}" id="colnet">
         <foreach key="listenerName" list="#{td.value.listenerList}" >
             <sun:hyperlink  text="#{listenerName}" url="#{request.contextPath}/web/grizzly/networkListenerEdit.jsf?name=#{listenerName}&cancelTo=protocols.jsf" />"<br>
        </foreach>
     </sun:tableColumn>
 
 
-    <sun:tableColumn headerText="$resource{i18n_web.grizzly.protocol.securityEnabledCol}"  rowHeader="$boolean{true}" id="ss">
+    <sun:tableColumn headerText="$resource{i18n_web.grizzly.protocol.securityEnabledCol}" sort="securityEnabled" rowHeader="$boolean{true}" id="ss">
         <staticText id="ss" value="#{td.value.securityEnabled}" />
     </sun:tableColumn>
 

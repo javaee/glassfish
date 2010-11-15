@@ -54,16 +54,16 @@
             <sun:checkbox id="select" selected="#{td.value.selected}" selectedValue="$boolean{true}" />
     </sun:tableColumn>    
 
-    <sun:tableColumn headerText="$resource{i18n_web.grizzly.transport.nameCol}"  rowHeader="$boolean{true}" id="col1">
+    <sun:tableColumn headerText="$resource{i18n_web.grizzly.transport.nameCol}" sort="name"  rowHeader="$boolean{true}" id="col1">
         <sun:hyperlink id="link" text="#{td.value.name}" 
             url="#{pageSession.editLink}&name=#{td.value.name}" />
     </sun:tableColumn>
 
-    <sun:tableColumn headerText="$resource{i18n_web.grizzly.transport.byteBufferCol}"  rowHeader="$boolean{true}" id="col3">
+    <sun:tableColumn headerText="$resource{i18n_web.grizzly.transport.byteBufferCol}" sort="byteBuffer"   rowHeader="$boolean{true}" id="col3">
         <staticText id="byteBuffer" value="#{td.value.byteBuffer}" />
     </sun:tableColumn>
 
-    <sun:tableColumn headerText="$resource{i18n_web.grizzly.transport.classnameCol}"  sort="protocol" rowHeader="$boolean{true}" id="pro">
+    <sun:tableColumn headerText="$resource{i18n_web.grizzly.transport.classnameCol}"  sort="classname" rowHeader="$boolean{true}" id="pro">
         <staticText id="classname" value="#{td.value.classname}" />
     </sun:tableColumn>
 
