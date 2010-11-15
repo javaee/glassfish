@@ -140,7 +140,7 @@ public class StopInstanceCommand extends StopServer implements AdminCommand, Pos
                     env.getRuntimeType().toString());
         }
         
-        if(errorMessage == null) {
+        if(errorMessage == null && !kill) {
             errorMessage = pollForDeath();
         }
 
@@ -153,6 +153,12 @@ public class StopInstanceCommand extends StopServer implements AdminCommand, Pos
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         report.setMessage(Strings.get("stop.instance.success",
                     instanceName));
+
+        if (kill) {
+            // If we killed then stop-local-instance already waited for death
+            return;
+        }
+
         // we think the instance is down but it might not be completely down so do further checking
         // get the node name and then the node
         // if localhost check if files exists
