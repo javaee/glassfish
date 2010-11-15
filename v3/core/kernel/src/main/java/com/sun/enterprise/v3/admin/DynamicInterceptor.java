@@ -78,9 +78,10 @@ import javax.management.remote.JMXServiceURL;
 public class DynamicInterceptor implements MBeanServer
 {
     private volatile MBeanServer mDelegateMBeanServer;
-    private static HashMap<String, MBeanServerConnection> instanceConnections;
+    private static final HashMap<String, MBeanServerConnection> instanceConnections =
+            new HashMap<String, MBeanServerConnection>();;
     private static final LocalStringManagerImpl localStrings =
-                        new LocalStringManagerImpl(DynamicInterceptor.class);
+            new LocalStringManagerImpl(DynamicInterceptor.class);
 
     private static final String SERVER_PREFIX = "amx:pp=/domain/servers/server[";
     private static final String CLUSTER_PREFIX = "amx:pp=/domain/clusters/cluster[";
@@ -90,8 +91,7 @@ public class DynamicInterceptor implements MBeanServer
 
 
     public DynamicInterceptor() {
-        mDelegateMBeanServer    = null;
-        instanceConnections = new HashMap<String, MBeanServerConnection>();
+        mDelegateMBeanServer = null;
     }
 
     private ReplicationInfo getTargets( final ObjectName objectName) throws InstanceNotFoundException {
@@ -272,8 +272,8 @@ public class DynamicInterceptor implements MBeanServer
     } */
 
     private MBeanServerConnection getInstanceConnection(String instanceName) throws InstanceNotFoundException {
-        if(!instanceConnections.containsKey(instanceName)) {
-            synchronized(this) {
+        synchronized (instanceConnections) {
+            if (!instanceConnections.containsKey(instanceName)) {
                 try {
                     String urlStr = "service:jmx:rmi:///jndi/rmi://" +
                             MbeanService.getInstance().getHost(instanceName) + ":" +
@@ -286,8 +286,8 @@ public class DynamicInterceptor implements MBeanServer
                      throw new InstanceNotFoundException(ex.getLocalizedMessage());
                 }
             }
+            return instanceConnections.get(instanceName);
         }
-        return instanceConnections.get(instanceName);
     }
 
     /**
