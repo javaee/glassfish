@@ -175,7 +175,9 @@ public class ClusterHandler {
                 }
             }
             try{
-                RestUtil.restRequest( prefix + clusterName + "/" + action, null, "post" ,null, false);
+                String endpoint = prefix + clusterName + "/" + action;
+                GuiUtil.getLogger().info(endpoint);
+                RestUtil.restRequest( endpoint, null, "post" ,null, false);
             }catch (Exception ex){
                 GuiUtil.prepareAlert("error", GuiUtil.getMessage("msg.Error"), ex.getMessage());
                 return;
@@ -203,7 +205,9 @@ public class ClusterHandler {
                 }
             }else{
                 try {
-                   RestUtil.restRequest(prefix + instanceName + "/" + action , null, "post" ,null, false);
+                    String endpoint = prefix + instanceName + "/" + action;
+                    GuiUtil.getLogger().info(endpoint);
+                    RestUtil.restRequest(endpoint , null, "post" ,null, false);
                 } catch (Exception ex){
                     String endpoint=prefix + instanceName + "/" + action;
                     GuiUtil.getLogger().severe(
@@ -253,7 +257,9 @@ public class ClusterHandler {
             }
             if(action.equals("delete-node")){
                 try{
-                       response = RestUtil.restRequest(prefix + nodeName + "/" + action + ".json" , null, "post" ,null, false);
+                    String endpoint = prefix + nodeName + "/" + action;
+                    GuiUtil.getLogger().info(endpoint);
+                    response = RestUtil.restRequest(endpoint, null, "post",null, false);
                 }catch (Exception ex){
                     GuiUtil.getLogger().severe(
                             GuiUtil.getCommonMessage("LOG_NODE_ACTION_ERROR", new Object[]{prefix + nodeName, action , "null"}));
@@ -283,6 +289,8 @@ public class ClusterHandler {
             //ignore for now till issue# 12646 is fixed
             //attrsMap.put("weight", oneInstance.get("weight"));
             try{
+                GuiUtil.getLogger().info(endpoint);
+                GuiUtil.getLogger().info(attrsMap.toString());
                 response = RestUtil.restRequest( endpoint , attrsMap, "post" ,null, false);
             }catch (Exception ex){
                 GuiUtil.getLogger().severe(
@@ -335,7 +343,9 @@ public class ClusterHandler {
     // If successfully deleted the instance, null will be returned, otherwise, return the error string to be displayed to user.
     private static String deleteInstance(String instanceName){
         try{
-            RestUtil.restRequest( GuiUtil.getSessionValue("REST_URL") + "/servers/server/" + instanceName + "/delete-instance", null ,"post", null, false );
+            String endpoint = GuiUtil.getSessionValue("REST_URL") + "/servers/server/" + instanceName + "/delete-instance";
+            GuiUtil.getLogger().info(endpoint);
+            RestUtil.restRequest( endpoint, null,"post", null, false );
             return null;
         }catch(Exception ex){
             String endpoint = GuiUtil.getSessionValue("REST_URL") + "/servers/server/" + instanceName + "/delete-instance\n";

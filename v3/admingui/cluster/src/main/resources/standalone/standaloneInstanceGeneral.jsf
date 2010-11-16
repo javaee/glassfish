@@ -84,8 +84,10 @@
             onClick="if ( getConfirm(this,'$resource{i18n.msg.JS.confirmStartInstance}') )
                 { return submitAndDisable(this, '$resource{i18n.button.Processing}');}  else {return false;} " >
              <!command
-                gf.restRequest(endpoint="#{sessionScope.REST_URL}/servers/server/#{pageSession.instanceName}/start-instance" );
-                gf.redirect("#{pageSession.selfPage}");
+                 println("Staring instance ....");
+                 println("#{sessionScope.REST_URL}/servers/server/#{pageSession.instanceName}/start-instance");
+                 gf.restRequest(endpoint="#{sessionScope.REST_URL}/servers/server/#{pageSession.instanceName}/start-instance" );
+                 gf.redirect("#{pageSession.selfPage}");
          />
         </sun:button>
 
@@ -93,6 +95,8 @@
             onClick="if ( getConfirm(this,'$resource{i18n.msg.JS.confirmStopInstance}') )
                 { return submitAndDisable(this, '$resource{i18n.button.Processing}');}  else {return false;} " >
             <!command
+                println("Stopping instance ....");
+                println("#{sessionScope.REST_URL}/servers/server/#{pageSession.instanceName}/stop-instance");
                 gf.restRequest(endpoint="#{sessionScope.REST_URL}/servers/server/#{pageSession.instanceName}/stop-instance" );
                 gf.redirect("#{pageSession.selfPage}");
             />
@@ -102,8 +106,10 @@
             onClick="if ( getConfirm(this,'$resource{i18n.msg.JS.confirmRestartInstance}') )
                 { return submitAndDisable(this, '$resource{i18n.button.Processing}');}  else {return false;} " >
              <!command
-                gf.restRequest(endpoint="#{sessionScope.REST_URL}/servers/server/#{pageSession.instanceName}/restart-instance" );
-                gf.redirect("#{pageSession.selfPage}");
+                 println("Restart Instance ...");
+                 println("#{sessionScope.REST_URL}/servers/server/#{pageSession.instanceName}/restart-instance");
+                 gf.restRequest(endpoint="#{sessionScope.REST_URL}/servers/server/#{pageSession.instanceName}/restart-instance" );
+                 gf.redirect("#{pageSession.selfPage}");
             />
         </sun:button>
         <sun:button id="logViewer" text="$resource{i18n.button.logViewer}"  disabled="#{requestScope.isStopped}" primary="#{false}"

@@ -70,7 +70,9 @@
                 if (!#{forStandalone}){
                     mapPut(map="#{requestScope.attrs}" key="cluster"  value="#{pageSession.clusterName}" )
                 }
-
+                println("Creating instance ....");
+                println("#{sessionScope.REST_URL}/create-instance");
+                println("attrs: #{requestScope.attrs}");
                 gf.restRequest(endpoint="#{sessionScope.REST_URL}/create-instance"  attrs="#{requestScope.attrs}" method="post"  result="#{requestScope.result}");
                 gf.redirect(page="#{pageSession.listLink}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
              />
