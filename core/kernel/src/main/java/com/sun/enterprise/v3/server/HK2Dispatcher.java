@@ -40,21 +40,18 @@
 
 package com.sun.enterprise.v3.server;
 
-import com.sun.grizzly.tcp.Adapter;
-import com.sun.grizzly.tcp.Request;
-import com.sun.grizzly.tcp.Response;
-
 import java.lang.reflect.Field;
-import java.lang.ref.WeakReference;
-import java.util.Set;
-import java.util.HashSet;
+
+import org.glassfish.grizzly.http.server.HttpRequestProcessor;
+import org.glassfish.grizzly.http.server.Request;
+import org.glassfish.grizzly.http.server.Response;
 
 
 public class HK2Dispatcher {
 
-    Field threadLocalsField = null;
-    Field tableField = null;
-    Field hashCode = null;
+    Field threadLocalsField;
+    Field tableField;
+    Field hashCode;
     Field value;
 
     private void init() {
@@ -80,7 +77,7 @@ public class HK2Dispatcher {
     }
 
 
-    public void dispath(Adapter adapter, ClassLoader cl, Request req, Response res) {
+    public void dispatch(HttpRequestProcessor adapter, ClassLoader cl, Request req, Response res) {
 
         // save the thread local entries.
         Thread thread = Thread.currentThread();

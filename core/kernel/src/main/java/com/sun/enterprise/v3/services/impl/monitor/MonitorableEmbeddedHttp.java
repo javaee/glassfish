@@ -40,21 +40,16 @@
 
 package com.sun.enterprise.v3.services.impl.monitor;
 
-import com.sun.grizzly.TCPSelectorHandler;
-import org.glassfish.grizzly.config.GrizzlyEmbeddedHttp;
-import org.glassfish.grizzly.config.GrizzlyServiceListener;
-import com.sun.grizzly.http.FileCacheFactory;
-import com.sun.grizzly.http.KeepAliveStats;
-import com.sun.grizzly.http.SelectorThreadKeyHandler;
-import com.sun.grizzly.util.ExtendedThreadPool;
 import java.util.concurrent.TimeUnit;
 
+import org.glassfish.grizzly.config.GrizzlyServiceListener;
+
 /**
- * Monitoring aware {@link GrizzlyEmbeddedHttp} implementation.
+ * Monitoring aware {@link GrizzlyServiceListener} implementation.
  * 
  * @author Alexey Stashok
  */
-public class MonitorableEmbeddedHttp extends GrizzlyEmbeddedHttp {
+public class MonitorableEmbeddedHttp extends GrizzlyServiceListener {
     // The GrizzlyMonitoring objects, which encapsulates Grizzly probe emitters
     private final GrizzlyMonitoring monitoring;
     private final String monitoringId;

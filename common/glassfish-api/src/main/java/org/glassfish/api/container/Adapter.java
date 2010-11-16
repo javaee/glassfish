@@ -42,6 +42,9 @@ package org.glassfish.api.container;
 
 import java.net.InetAddress;
 import java.util.List;
+
+import org.glassfish.grizzly.http.server.Request;
+import org.glassfish.grizzly.http.server.Response;
 import org.jvnet.hk2.annotations.Contract;
 
 /**
@@ -90,4 +93,6 @@ public interface Adapter {
      * network endpoint
      */
     void setRegistered(boolean isRegistered);
+
+    void service(Request req, Response res);
 }

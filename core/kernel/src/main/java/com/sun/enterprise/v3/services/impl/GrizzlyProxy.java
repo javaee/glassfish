@@ -73,7 +73,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * This clas is responsible for configuring Grizzly {@link SelectorThread}.
+ * This class is responsible for configuring Grizzly.
  *
  * @author Jerome Dochez
  * @author Jeanfrancois Arcand
@@ -98,7 +98,7 @@ public class GrizzlyProxy implements NetworkProxy {
     private VirtualServer vs;
 
 
-    public GrizzlyProxy(GrizzlyService service, NetworkListener listener) {
+    public GrizzlyProxy(GrizzlyService service, NetworkListener listener) throws IOException {
         grizzlyService = service;       
         logger = service.getLogger();
         networkListener = listener;
@@ -125,18 +125,15 @@ public class GrizzlyProxy implements NetworkProxy {
      * Create a <code>GrizzlyServiceListener</code> based on a NetworkListener
      * configuration object.
      */
-    private void configureGrizzly() {
-        if(!("light-weight-listener".equals(networkListener.getProtocol()))) {
+    private void configureGrizzly() throws IOException {
+        if(!"light-weight-listener".equals(networkListener.getProtocol())) {
             registerMonitoringStatsProviders();
         }
 
-        grizzlyListener = new GrizzlyListener(grizzlyService.getMonitoring(), new Controller(){
-            public void logVersion(){}   
-        }, networkListener.getName());
+        grizzlyListener = new GrizzlyListener(grizzlyService.getMonitoring(), networkListener);
         grizzlyListener.configure(networkListener, grizzlyService.habitat);
 
         if(!grizzlyListener.isGenericListener()) {
-            final GrizzlyEmbeddedHttp embeddedHttp = grizzlyListener.getEmbeddedHttp();
             final Protocol httpProtocol = networkListener.findHttpProtocol();
 
             if (httpProtocol != null) {
@@ -144,7 +141,7 @@ public class GrizzlyProxy implements NetworkProxy {
                 mapper.setPort(portNumber);
                 mapper.setId(networkListener.getName());
 
-                final ContainerMapper adapter = new ContainerMapper(grizzlyService, embeddedHttp);
+                final ContainerMapper adapter = new ContainerMapper(grizzlyService, grizzlyListener);
                 adapter.setMapper(mapper);
                 adapter.setDefaultHost(grizzlyListener.getDefaultVirtualServer());
                 adapter.configureMapper();

@@ -37,49 +37,41 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.v3.services.impl;
-
-import com.sun.enterprise.v3.services.impl.monitor.GrizzlyMonitoring;
-import com.sun.enterprise.v3.services.impl.monitor.MonitorableServiceListener;
-import com.sun.grizzly.Controller;
-import com.sun.grizzly.ProtocolChain;
-import com.sun.grizzly.ProtocolChainInstanceHandler;
-import com.sun.grizzly.arp.AsyncFilter;
-import com.sun.grizzly.arp.AsyncHandler;
-import com.sun.grizzly.arp.DefaultAsyncHandler;
-import org.glassfish.grizzly.config.dom.NetworkListener;
-import org.jvnet.hk2.component.Habitat;
 
 import java.beans.PropertyChangeEvent;
 import java.io.IOException;
 
+import com.sun.enterprise.v3.services.impl.monitor.GrizzlyMonitoring;
+import org.glassfish.grizzly.config.GrizzlyServiceListener;
+import org.glassfish.grizzly.config.dom.NetworkListener;
+import org.jvnet.hk2.component.Habitat;
+
 /**
- * This class extends Grizzly's GrizzlyServiceListener class to customize it for GlassFish
- * and enable a single listener do both lazy service initialization as well as init of HTTP
- * and admin listeners
+ * This class extends Grizzly's GrizzlyServiceListener class to customize it for GlassFish and enable a single listener
+ * do both lazy service initialization as well as init of HTTP and admin listeners
+ *
  * @author Vijay Ramachandran
  */
-public class GrizzlyListener extends MonitorableServiceListener {
+public class GrizzlyListener extends GrizzlyServiceListener {
     private boolean isGenericListener = false;
     private ServiceInitializerThread serviceInitializer;
     private NetworkListener listener;
 
-    public GrizzlyListener(GrizzlyMonitoring monitoring, Controller controller, String listenerName) {
-        super(monitoring, controller, listenerName);
+    public GrizzlyListener(GrizzlyMonitoring monitoring, NetworkListener controller) throws IOException {
+        super(controller);
     }
 
-    /*
-    * Configures the given grizzlyListener.
-    */
+    /**
+     * Configures the given grizzlyListener.
+     */
     @Override
     public void configure(NetworkListener networkListener, Habitat habitat) {
         this.listener = networkListener;
-        if("light-weight-listener".equals(networkListener.getProtocol())) {
+        if ("light-weight-listener".equals(networkListener.getProtocol())) {
             isGenericListener = true;
         }
-
-        if(!isGenericListener) {
+        if (!isGenericListener) {
             super.configure(networkListener, habitat);
         } else {
             initializeListener(networkListener, habitat);
@@ -99,7 +91,7 @@ public class GrizzlyListener extends MonitorableServiceListener {
 
     @Override
     public void start() throws IOException, InstantiationException {
-        if(isGenericListener) {
+        if (isGenericListener) {
             serviceInitializer.initController();
             serviceInitializer.startEndpoint();
         } else {
@@ -110,7 +102,7 @@ public class GrizzlyListener extends MonitorableServiceListener {
 
     @Override
     public void stop() {
-        if(isGenericListener) {
+        if (isGenericListener) {
             serviceInitializer.stopEndpoint();
         } else {
             getEmbeddedHttp().stopEndpoint();
@@ -118,7 +110,7 @@ public class GrizzlyListener extends MonitorableServiceListener {
     }
 
     public void initEndpoint() throws IOException, InstantiationException {
-        if(isGenericListener) {
+        if (isGenericListener) {
             serviceInitializer.initEndpoint();
         } else {
             getEmbeddedHttp().initEndpoint();
@@ -127,7 +119,7 @@ public class GrizzlyListener extends MonitorableServiceListener {
 
     @Override
     public Controller getController() {
-        if(isGenericListener) {
+        if (isGenericListener) {
             return serviceInitializer.getController();
         } else {
             return getEmbeddedHttp().getController();
@@ -135,11 +127,11 @@ public class GrizzlyListener extends MonitorableServiceListener {
     }
 
     public void startEndpoint() throws IOException, InstantiationException {
-        if(isGenericListener) {
+        if (isGenericListener) {
             serviceInitializer.startEndpoint();
         } else {
             getEmbeddedHttp().startEndpoint();
-        }        
+        }
     }
 
     public boolean isGenericListener() {
@@ -148,26 +140,22 @@ public class GrizzlyListener extends MonitorableServiceListener {
 
     @Override
     public int getPort() {
-        if(isGenericListener) {
+        if (isGenericListener) {
             return serviceInitializer.getPort();
         } else {
             return getEmbeddedHttp().getPort();
         }
     }
 
-
     public void processDynamicConfigurationChange(PropertyChangeEvent[] events) {
-        for (PropertyChangeEvent event: events) {
+        for (PropertyChangeEvent event : events) {
             if ("comet-support-enabled".equals(event.getPropertyName())) {
                 processDynamicCometConfiguration(event);
                 break;
             }
         }
     }
-
-
     // --------------------------------------------------------- Private Methods
-
 
     private void processDynamicCometConfiguration(PropertyChangeEvent event) {
         final boolean enableComet = Boolean.valueOf(event.getNewValue().toString());
@@ -189,7 +177,7 @@ public class GrizzlyListener extends MonitorableServiceListener {
         }
         getEmbeddedHttp().getAsyncHandler().addAsyncFilter(cometFilter);
         final ProtocolChainInstanceHandler pcih =
-                getEmbeddedHttp().getController().getProtocolChainInstanceHandler();
+            getEmbeddedHttp().getController().getProtocolChainInstanceHandler();
         if (!(pcih instanceof NonCachingInstanceHandler)) {
             ProtocolChainInstanceHandler nonCaching =
                 new NonCachingInstanceHandler(pcih);
@@ -201,7 +189,7 @@ public class GrizzlyListener extends MonitorableServiceListener {
     private void disableComet() {
         getEmbeddedHttp().setAsyncHandler(null);
         final ProtocolChainInstanceHandler pcih =
-                getEmbeddedHttp().getController().getProtocolChainInstanceHandler();
+            getEmbeddedHttp().getController().getProtocolChainInstanceHandler();
         if (!(pcih instanceof NonCachingInstanceHandler)) {
             ProtocolChainInstanceHandler nonCaching =
                 new NonCachingInstanceHandler(pcih);
@@ -214,39 +202,29 @@ public class GrizzlyListener extends MonitorableServiceListener {
     private AsyncFilter createCometAsyncFilter() {
         try {
             Class<? extends AsyncFilter> c =
-                    (Class<? extends AsyncFilter>) Class.forName("com.sun.grizzly.comet.CometAsyncFilter",
-                                                                 true,
-                                                                 Thread.currentThread().getContextClassLoader());
+                (Class<? extends AsyncFilter>) Class.forName("com.sun.grizzly.comet.CometAsyncFilter",
+                    true,
+                    Thread.currentThread().getContextClassLoader());
             return c.newInstance();
         } catch (Exception e) {
             return null;
         }
     }
-
-
     // ---------------------------------------------------------- Nested Classes
 
-
     /**
-     * This ProtocolChainInstanceHandler will be used to prevent GrizzlyEmbeddedHttp
-     * from caching the default PCIH that isn't based on the async configuration
-     * change (i.e., if comet is enabled, the current PCIH will not handle async
+     * This ProtocolChainInstanceHandler will be used to prevent GrizzlyEmbeddedHttp from caching the default PCIH that
+     * isn't based on the async configuration change (i.e., if comet is enabled, the current PCIH will not handle async
      * execution properly, so we don't want it cached).
      */
     private static final class NonCachingInstanceHandler implements ProtocolChainInstanceHandler {
-
         private final ProtocolChainInstanceHandler wrapped;
-
         // -------------------------------------------------------- Constructors
-
 
         private NonCachingInstanceHandler(ProtocolChainInstanceHandler wrapped) {
             this.wrapped = wrapped;
         }
-
-
         // --------------------------- Methods from ProtocolChainInstanceHandler
-
 
         @Override
         public ProtocolChain poll() {

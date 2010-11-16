@@ -39,26 +39,26 @@
  */
 package com.sun.enterprise.v3.services.impl;
 
-import com.sun.logging.LogDomains;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.component.PerLookup;
-import org.glassfish.api.container.Sniffer;
-import org.glassfish.internal.data.ContainerRegistry;
-import org.glassfish.internal.data.EngineInfo;
-import com.sun.grizzly.tcp.Adapter;
-import com.sun.grizzly.tcp.Request;
-import com.sun.grizzly.tcp.Response;
-import com.sun.grizzly.util.http.mapper.MappingData;
-import com.sun.grizzly.util.buf.MessageBytes;
-import com.sun.enterprise.v3.server.ContainerStarter;
-import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.enterprise.module.Module;
-
 import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.sun.enterprise.module.Module;
+import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.v3.server.ContainerStarter;
+import com.sun.logging.LogDomains;
+import org.glassfish.api.container.Sniffer;
+import org.glassfish.grizzly.http.server.HttpRequestProcessor;
+import org.glassfish.grizzly.http.server.Request;
+import org.glassfish.grizzly.http.server.Response;
+import org.glassfish.grizzly.http.server.util.MappingData;
+import org.glassfish.grizzly.http.util.DataChunk;
+import org.glassfish.internal.data.ContainerRegistry;
+import org.glassfish.internal.data.EngineInfo;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PerLookup;
 
 /**
  * These adapters are temporarily registered to the mapper to handle static
@@ -71,7 +71,7 @@ import java.util.logging.Logger;
  */
 @Service
 @Scoped(PerLookup.class)
-public class SnifferAdapter implements Adapter {
+public class SnifferAdapter extends HttpRequestProcessor {
 
     @Inject
     ContainerRegistry containerRegistry;
@@ -86,7 +86,7 @@ public class SnifferAdapter implements Adapter {
     
     private Sniffer sniffer;
     private ContainerMapper mapper;
-    private Adapter adapter = null;
+    private HttpRequestProcessor adapter;
 
     public void initialize(Sniffer sniffer, ContainerMapper mapper) {
         this.sniffer = sniffer;
@@ -130,7 +130,7 @@ public class SnifferAdapter implements Adapter {
                 Module snifferModule = modulesRegistry.find(sniffer.getClass());
                 try {
                     Collection<EngineInfo> containersInfo = containerStarter.startContainer(sniffer, snifferModule);
-                    if (containersInfo != null && containersInfo.size() > 0) {
+                    if (containersInfo != null && !containersInfo.isEmpty()) {
                         // force the start on each container
                         for (EngineInfo info : containersInfo) {
                             if (logger.isLoggable(Level.FINE)) {
@@ -154,11 +154,10 @@ public class SnifferAdapter implements Adapter {
             // at this point the post construct should have been called.
             // seems like there is some possibility that the container is not synchronously started
             // preventing the calls below to succeed...
-            MessageBytes decodedURI = req.decodedURI();
+            DataChunk decodedURI = req.getRequest().getRequestURIRef().getDecodedRequestURIBC();
             try {
                 // Clear the previous mapped information.
-                MappingData mappingData =
-                        (MappingData) req.getNote(ContainerMapper.MAPPING_DATA);
+                MappingData mappingData = (MappingData) req.getNote(ContainerMapper.MAPPING_DATA);
                 mappingData.recycle();
 
                 adapter = mapper.mapUriWithSemicolon(req, decodedURI, 0, null);
