@@ -73,41 +73,6 @@ public class InstanceHandler {
     public InstanceHandler() {
     }
 
-
-     @Handler(id = "getDebugInfo",
-    input = {
-        @HandlerInput(name = "debugOptions", type = String.class, required = true),
-        @HandlerInput(name = "debugEnabled", type = Boolean.class, required = true)
-    },
-    output = {
-        @HandlerOutput(name = "debugInfo", type = String.class)
-    })
-    public static void getDebugInfo(HandlerContext handlerCtx) {
-
-        String debugOptions = (String) handlerCtx.getInputValue("debugOptions");
-        String debugPort = "";
-        StringTokenizer tokens = new StringTokenizer(debugOptions, ",");
-        String doption = "";
-        while (tokens.hasMoreTokens()) {
-            doption = tokens.nextToken().trim();
-            if (doption.startsWith("address")) {
-                int pos = doption.indexOf("=");
-                if (pos >= 0) {
-                    debugPort = doption.substring(pos + 1).trim();
-                    break;
-                }
-            }
-        }
-
-        Boolean debugEnabled = (Boolean) handlerCtx.getInputValue("debugEnabled");
-        String msg = ("true".equals(""+debugEnabled)) ?
-            GuiUtil.getMessage("inst.debugEnabled") + debugPort :
-            GuiUtil.getMessage("inst.notEnabled");
-        handlerCtx.setOutputValue("debugInfo", msg);
-
-     }
-
-
     @Handler(id="getJvmOptionsValues",
         input={
             @HandlerInput(name="endpoint",   type=String.class, required=true),
