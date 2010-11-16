@@ -56,32 +56,36 @@
 
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
         setPageSessionAttribute(key="childType" value="system-property");
-        setPageSessionAttribute(key="selfUrl", value="#{sessionScope.REST_URL}/servers/server/server");
-        gf.restRequest(endpoint="#{pageSession.selfUrl}/property", method="GET", result="#{requestScope.propTable}");
-        setPageSessionAttribute(key="tableList", value="#{requestScope.propTable.data.extraProperties.properties}");
 
-        //set the following for including buttons.inc
-        setPageSessionAttribute(key="edit" value="#{true}" );
-        setPageSessionAttribute(key="rest-api" value="#{true}" );
-        setPageSessionAttribute(key="showDefaultButton" value="#{false}" );
-        setPageSessionAttribute(key="showCancelButton" value="#{false}" );
-        setPageSessionAttribute(key="hasPropertySheet" value="#{false}" );
-        setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
-        setPageSessionAttribute(key="systemProp" value="#{true}" );
+        setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/servers/server/server");
+        setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/system-properties");
+
+        gf.restRequest(endpoint="#{pageSession.parentUrl}/property", method="GET", result="#{requestScope.propTable}");
+        setPageSessionAttribute(key="tableList", value="#{requestScope.propTable.data.extraProperties.properties}");
     />
     </event>
 
-            <sun:form id="form1">
+    <sun:form id="form1">
 #include "/common/appServer/serverInstTabs.inc"
 #include "/common/shared/alertMsg.inc"
-<sun:title id="propertyContentPage" title="$resource{i18n.appServer.tokenTitle}" helpText="$resource{i18n.appServer.tokenTitleHelp}">
-#include "/common/shared/editPageButtons.inc"
-</sun:title>
-"<br/><br/>
-#include "/common/shared/propertyDescTable.inc"
-            <sun:hidden id="helpKey" value="$resource{help_common.appServerToken}" />
-</sun:form>
-            "<br/>
+        <sun:title id="propertyContentPage" title="$resource{i18n.appServer.tokenTitle}" helpText="$resource{i18n.appServer.tokenTitleHelp}">
+            <!facet pageButtonsTop>
+                <sun:panelGroup id="topButtons">
+#include "/common/configuration/systemPropertiesButtons.jsf"
+                </sun:panelGroup>
+            </facet>
+        </sun:title>
+#include "/common/configuration/systemProperties.jsf"
+        <sun:title>
+            <!facet pageButtonsTop>
+                <sun:panelGroup id="topButtons">
+#include "/common/configuration/systemPropertiesButtons.jsf"
+                </sun:panelGroup>
+            </facet>
+        </sun:title>
+
+        <sun:hidden id="helpKey" value="$resource{help_common.appServerToken}" />
+    </sun:form>
 #include "/common/shared/changeButtonsJS.inc" 
-    </define>
+</define>
 </composition>

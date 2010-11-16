@@ -58,11 +58,31 @@
 
             setPageSessionAttribute(key="parentPage", value="#{request.contextPath}/cluster/standalone/standaloneInstanceGeneral.jsf?instanceName=#{pageSession.encodedInstanceName}");
             setPageSessionAttribute(key="selfPage", value="#{request.contextPath}/cluster/standalone/standaloneInstanceConfigProperties.jsf?instanceName=#{pageSession.encodedInstanceName}");
+        
+            setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/servers/server/#{pageSession.encodedInstanceName}");
+            setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/system-properties");
         />
     </event>
     <sun:form id="propertyForm">
 #include "/cluster/standalone/standaloneInstanceTabs.inc"
-#include "/cluster/shared/sysPropsDefaultAndOverrides.jsf"
+
+        <sun:title id="clusterSysPropsPage" title="$resource{i18ncs.SystemPropertiesTitle}" >
+            <!facet pageButtonsTop>
+                <sun:panelGroup id="topButtons">
+#include "/common/configuration/systemPropertiesButtons.jsf"
+                </sun:panelGroup>
+            </facet>
+        </sun:title>
+
+#include "/common/configuration/systemProperties.jsf"
+
+        <sun:title>
+            <!facet pageButtonsTop>
+                <sun:panelGroup id="bottomButtons">
+#include "/common/configuration/systemPropertiesButtons.jsf"
+                </sun:panelGroup>
+            </facet>
+        </sun:title>
 
 <sun:hidden id="helpKey" value="$resource{help_cluster.standaloneInstanceConfigPropperties}" />
 

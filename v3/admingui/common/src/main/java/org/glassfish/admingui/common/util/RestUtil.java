@@ -49,14 +49,12 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -67,7 +65,6 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.context.FacesContext;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -111,7 +108,7 @@ public class RestUtil {
     public static String resolveToken(String endpoint, String token) {
         String tokenStartMarker = "${", tokenEndMarker = "}";
 
-        if (!token.trim().startsWith(tokenStartMarker))
+        if (!token.trim().startsWith(tokenStartMarker)) 
             return token;
         int start = token.indexOf(tokenStartMarker);
         if (start < 0)
@@ -138,39 +135,41 @@ public class RestUtil {
     }
 
     public static Map<String, Object> restRequest(String endpoint, Map<String, Object> attrs, String method, HandlerContext handlerCtx, boolean quiet, boolean throwException) {
-	boolean useData = false;
+        boolean useData = false;
 
-	Object data = null;
+        Object data = null;
         if (attrs == null) {
-	    try {
+            try {
                 data = (handlerCtx == null) ? null : handlerCtx.getInputValue("data");
             } catch (Exception e) {
                 //
             }
-	    if (data != null) {
-		// We'll send the raw data
-		useData = true;
-	    } else {
-		// Initialize the attributes to an empty map
-		attrs = new HashMap<String, Object>();
-	    }
+            if (data != null) {
+                // We'll send the raw data
+                useData = true;
+            } else {
+                // Initialize the attributes to an empty map
+                attrs = new HashMap<String, Object>();
+            }
         }
         method = method.toLowerCase();
 
-	Logger logger = GuiUtil.getLogger();
-	if (logger.isLoggable(Level.FINEST)) {
-	    logger.log(Level.FINEST, 
+        Logger logger = GuiUtil.getLogger();
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.log(Level.FINEST, 
                     GuiUtil.getCommonMessage("LOG_REST_REQUEST_INFO", new Object[]{endpoint, attrs, method}));
-	}
+        }
 
-	// Execute the request...
+        // Execute the request...
         RestResponse response = null;
         if ("post".equals(method)) {
-	    if (useData) {
-		response = post(endpoint, data, (String) handlerCtx.getInputValue("contentType"));
-	    } else {
-		response = post(endpoint, attrs);
-	    }
+            if (useData) {
+                response = post(endpoint, data, (String) handlerCtx.getInputValue("contentType"));
+            } else {
+                response = post(endpoint, attrs);
+            }
+        } else if ("put".equals(method)) {
+            response = put(endpoint, attrs);
         } else if ("get".equals(method)) {
             response = get(endpoint, attrs);
         } else if ("delete".equals(method)) {
@@ -231,7 +230,7 @@ public class RestUtil {
                 valueMap = (Map<String, Object>) extraProperties.get(key);
             }
         } catch (Exception ex) {
-	    throw new RuntimeException(ex);
+            throw new RuntimeException(ex);
         }
 
         return valueMap;
@@ -248,11 +247,11 @@ public class RestUtil {
                 int status = response.getResponseCode();
                 Map responseMap = response.getResponse();
                 if ((status != 200) && (status != 201)) {
-		    if (!quiet) {
-			GuiUtil.getLogger().log(
+                    if (!quiet) {
+                        GuiUtil.getLogger().log(
                             Level.SEVERE,
                             GuiUtil.getCommonMessage( "LOG_REQUEST_FAILED", new Object[]{endpoint, attrs, response.getResponseBody()}));
-		    }
+                    }
                     message = (String)((Map)responseMap.get("data")).get("message");
                     if (message == null) {
                         Object msgs = responseMap.get("message");
@@ -287,11 +286,11 @@ public class RestUtil {
                 }
                 return responseMap;
             } catch (Exception ex) {
-		if (!quiet) {
-		    GuiUtil.getLogger().log(
+                if (!quiet) {
+                    GuiUtil.getLogger().log(
                         Level.SEVERE,
                         GuiUtil.getCommonMessage("LOG_REQUEST_FAILED", new Object[]{endpoint, attrs, response.getResponseBody()}));
-		}
+                }
                 if (handlerCtx != null) {
                     //If this is called from the jsf as handler, we want to stop processing and show error
                     //instead of dumping the exception on screen.
@@ -335,36 +334,36 @@ public class RestUtil {
         MultivaluedMap formData = new MultivaluedMapImpl();
         for (final Map.Entry<String, Object> entry : payload.entrySet()) {
             final Object value = entry.getValue();
-	    final String key = entry.getKey();
-	    if (value instanceof Collection) {
-		for (Object obj : ((Collection) value)) {
-		    try {
-			formData.add(key, obj);
-		    } catch (ClassCastException ex) {
+            final String key = entry.getKey();
+            if (value instanceof Collection) {
+                for (Object obj : ((Collection) value)) {
+                    try {
+                        formData.add(key, obj);
+                    } catch (ClassCastException ex) {
                         Logger logger = GuiUtil.getLogger();
                         if (logger.isLoggable(Level.FINEST)) {
                             logger.log(Level.FINEST,
                                     GuiUtil.getCommonMessage("LOG_BUILD_MULTI_VALUE_MAP_ERROR", new Object[]{key, obj}));
                         }
 
-			// Allow it to continue b/c this property most likely
-			// should have been excluded for this request
-		    }
-		}
-	    } else {
-		//formData.putSingle(key, (value != null) ? value.toString() : value);
-		try {
-		    formData.putSingle(key, value);
-		} catch (ClassCastException ex) {
+                        // Allow it to continue b/c this property most likely
+                        // should have been excluded for this request
+                    }
+                }
+            } else {
+                //formData.putSingle(key, (value != null) ? value.toString() : value);
+                try {
+                    formData.putSingle(key, value);
+                } catch (ClassCastException ex) {
                     Logger logger = GuiUtil.getLogger();
                     if (logger.isLoggable(Level.FINEST)) {
                         logger.log(Level.FINEST,
                                 GuiUtil.getCommonMessage("LOG_BUILD_MULTI_VALUE_MAP_ERROR" , new Object[]{key, value}));
                     }
-		    // Allow it to continue b/c this property most likely
-		    // should have been excluded for this request
-		}
-	    }
+                    // Allow it to continue b/c this property most likely
+                    // should have been excluded for this request
+                }
+            }
         }
         return formData;
     }
@@ -583,17 +582,17 @@ public class RestUtil {
     }
 
     /**
-     *	<p> This method returns the value of the REST token if it is
-     *	    successfully set in session scope.</p>
+     *        <p> This method returns the value of the REST token if it is
+     *            successfully set in session scope.</p>
      */
     private static String getRestToken() {
-	String token = null;
-	FacesContext ctx = FacesContext.getCurrentInstance();
-	if (ctx != null) {
-	    token = (String) ctx.getExternalContext().getSessionMap().
-		    get(AdminConsoleAuthModule.REST_TOKEN);
-	}
-	return token;
+        String token = null;
+        FacesContext ctx = FacesContext.getCurrentInstance();
+        if (ctx != null) {
+            token = (String) ctx.getExternalContext().getSessionMap().
+                    get(AdminConsoleAuthModule.REST_TOKEN);
+        }
+        return token;
     }
 
     //******************************************************************************************************************
@@ -608,32 +607,25 @@ public class RestUtil {
     }
     
     public static RestResponse get(String address, Map<String, Object> payload) {
-	WebResource webResource = JERSEY_CLIENT.resource(address).queryParams(buildMultivalueMap(payload));
-	//webResource.addFilter(new HTTPBasicAuthFilter("admin", "admin"));
-	ClientResponse resp = webResource.
-		cookie(new Cookie(REST_TOKEN_COOKIE, getRestToken())).
-		accept(RESPONSE_TYPE).get(ClientResponse.class);
-	return RestResponse.getRestResponse(resp);
-	/*
-        return RestResponse.getRestResponse(JERSEY_CLIENT.resource(address)
-                .queryParams(buildMultivalueMap(payload))
-                .accept(RESPONSE_TYPE)
-                .get(ClientResponse.class));
-	*/
+        WebResource webResource = JERSEY_CLIENT.resource(address).queryParams(buildMultivalueMap(payload));
+        ClientResponse resp = webResource
+                .cookie(new Cookie(REST_TOKEN_COOKIE, getRestToken()))
+                .accept(RESPONSE_TYPE).get(ClientResponse.class);
+        return RestResponse.getRestResponse(resp);
     }
 
     public static RestResponse post(String address, Object payload, String contentType) {
         WebResource webResource = JERSEY_CLIENT.resource(address);
-	if (contentType == null) {
-	    contentType = MediaType.APPLICATION_JSON;
-	}
+        if (contentType == null) {
+            contentType = MediaType.APPLICATION_JSON;
+        }
         if (payload instanceof Map) {
             payload = buildMultivalueMap((Map<String, Object>)payload);
         }
-        ClientResponse cr = webResource.header("Content-Type", contentType).
-		cookie(new Cookie(REST_TOKEN_COOKIE, getRestToken())).
-		accept(RESPONSE_TYPE).post(ClientResponse.class, payload);
-        //checkStatusForSuccess(cr);
+        ClientResponse cr = webResource.header("Content-Type", contentType)
+                .cookie(new Cookie(REST_TOKEN_COOKIE, getRestToken()))
+//                .header("Content-type", MediaType.APPLICATION_FORM_URLENCODED)
+                .accept(RESPONSE_TYPE).post(ClientResponse.class, payload);
         RestResponse rr = RestResponse.getRestResponse(cr);
         return rr;
     }
@@ -641,33 +633,39 @@ public class RestUtil {
     public static RestResponse post(String address, Map<String, Object> payload) {
         WebResource webResource = JERSEY_CLIENT.resource(address);
         MultivaluedMap formData = buildMultivalueMap(payload);
-        ClientResponse cr = webResource.
-		cookie(new Cookie(REST_TOKEN_COOKIE, getRestToken())).
-		accept(RESPONSE_TYPE).post(ClientResponse.class, formData);
-        //checkStatusForSuccess(cr);
+        ClientResponse cr = webResource
+                .cookie(new Cookie(REST_TOKEN_COOKIE, getRestToken()))
+//                .header("Content-type", MediaType.APPLICATION_FORM_URLENCODED)
+                .accept(RESPONSE_TYPE).post(ClientResponse.class, formData);
         RestResponse rr = RestResponse.getRestResponse(cr);
         return rr;
     }
 
-    // TODO: This will be implemented when the REST API is updated to use PUTs for updates as is planned
-    public static String put(String address) {
-        throw new UnsupportedOperationException();
+    public static RestResponse put(String address, Map<String, Object> payload) {
+        WebResource webResource = JERSEY_CLIENT.resource(address);
+        MultivaluedMap formData = buildMultivalueMap(payload);
+        ClientResponse cr = webResource
+                .cookie(new Cookie(REST_TOKEN_COOKIE, getRestToken()))
+//                .header("Content-type", MediaType.APPLICATION_FORM_URLENCODED)
+                .accept(RESPONSE_TYPE).put(ClientResponse.class, formData);
+        RestResponse rr = RestResponse.getRestResponse(cr);
+        return rr;
     }
 
     public static RestResponse delete(String address, Map<String, Object> payload) {
         WebResource webResource = JERSEY_CLIENT.resource(address);
-        ClientResponse cr = webResource.queryParams(buildMultivalueMap(payload)).
-		cookie(new Cookie(REST_TOKEN_COOKIE, getRestToken())).
-		accept(RESPONSE_TYPE).delete(ClientResponse.class);
+        ClientResponse cr = webResource.queryParams(buildMultivalueMap(payload))
+                .cookie(new Cookie(REST_TOKEN_COOKIE, getRestToken()))
+                .accept(RESPONSE_TYPE).delete(ClientResponse.class);
         checkStatusForSuccess(cr);
         return RestResponse.getRestResponse(cr);
     }
 
     public static RestResponse options(String address, String responseType) {
         WebResource webResource = JERSEY_CLIENT.resource(address);
-        ClientResponse cr = webResource.
-		cookie(new Cookie(REST_TOKEN_COOKIE, getRestToken())).
-		accept(responseType).options(ClientResponse.class);
+        ClientResponse cr = webResource
+                .cookie(new Cookie(REST_TOKEN_COOKIE, getRestToken()))
+                .accept(responseType).options(ClientResponse.class);
         checkStatusForSuccess(cr);
         return RestResponse.getRestResponse(cr);
     }

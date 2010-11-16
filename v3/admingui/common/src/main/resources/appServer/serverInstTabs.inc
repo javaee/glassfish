@@ -52,7 +52,7 @@
     <sun:tab id="token" immediate="true" text="$resource{i18n.appServer.tokenTitle}" toolTip="$resource{i18n.appServer.tokenTab}">
         <!command
             setSessionAttribute(key="serverInstTabs" value="token");
-            gf.redirect(page="#{request.contextPath}/common/appServer/token.jsf");
+            gf.redirect(page="#{request.contextPath}/common/appServer/dasSystemProperties.jsf");
         />
     </sun:tab>
     <sun:tab id="resources" immediate="true" text="$resource{i18nc.resources}" toolTip="$resource{i18nc.resourcesTab}">

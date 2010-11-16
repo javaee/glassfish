@@ -95,15 +95,15 @@ public class RestApiHandlers {
     }
 
     /**
-     *	<p> For the given REST endpoint, retrieve the values of the entity and
-     *	    return those as a Map.  If the entity is not found, an Exception is
-     *	    thrown.  This is the REST-based alternative to getProxyAttrs.</p>
+     *        <p> For the given REST endpoint, retrieve the values of the entity and
+     *            return those as a Map.  If the entity is not found, an Exception is
+     *            thrown.  This is the REST-based alternative to getProxyAttrs.</p>
      */
     @Handler(id = "gf.getEntityAttrs",
             input = {
                     @HandlerInput(name = "endpoint", type = String.class, required = true),
                     @HandlerInput(name = "currentMap", type = Map.class),
-		            @HandlerInput(name = "key", type=String.class, defaultValue="entity")},
+                            @HandlerInput(name = "key", type=String.class, defaultValue="entity")},
             output = {
                     @HandlerOutput(name = "valueMap", type = Map.class)
             })
@@ -172,10 +172,10 @@ public class RestApiHandlers {
     }
 
     /**
-     *	<p> This handler can be used to execute a generic REST request.  It
-     *	    will return a Java data structure based on the response of the
-     *	    REST request.  'data' and 'attrs' are mutually exclusive.  'data'
-     *	    is used to pass RAW data to the endpoint (such as JSON).</p>
+     *        <p> This handler can be used to execute a generic REST request.  It
+     *            will return a Java data structure based on the response of the
+     *            REST request.  'data' and 'attrs' are mutually exclusive.  'data'
+     *            is used to pass RAW data to the endpoint (such as JSON).</p>
      */
     @Handler(id = "gf.restRequest",
             input = {
@@ -192,7 +192,7 @@ public class RestApiHandlers {
         Map<String, Object> attrs = (Map<String, Object>) handlerCtx.getInputValue("attrs");
         String endpoint = (String) handlerCtx.getInputValue("endpoint");
         String method = (String) handlerCtx.getInputValue("method");
-	    boolean quiet = (Boolean) handlerCtx.getInputValue("quiet");
+        boolean quiet = (Boolean) handlerCtx.getInputValue("quiet");
         boolean throwException = (Boolean) handlerCtx.getInputValue("throwException");
         handlerCtx.setOutputValue("result",  RestUtil.restRequest(endpoint, attrs, method, handlerCtx, quiet, throwException));
     }

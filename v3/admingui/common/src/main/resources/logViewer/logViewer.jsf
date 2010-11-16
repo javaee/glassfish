@@ -338,7 +338,7 @@
 </sun:title>
 "<a name="#options"></a>&nbsp;&nbsp;
 <sun:hyperlink rendered="#{hasResults}" url="#thetop" name="thebottom"><sun:staticText text="$resource{i18nc.logViewer.modifySearch}" /></sun:hyperlink>
-<!-- appServer/propertyTable.inc -->
+
 <sun:propertySheet id="propertySheetLogResults">
     <sun:propertySheetSection id="propertSectionLogResults">
 	<sun:property id="instanceProp" labelAlign="left" noWrap="true" overlapLabel="false" label="$resource{i18nc.logViewer.instanceLabel}">

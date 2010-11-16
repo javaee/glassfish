@@ -61,37 +61,32 @@
             setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/clusters/cluster/#{pageSession.encodedClusterName}");
             setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/system-properties");
 
-            setPageSessionAttribute(key="rest-api" value="true");
-            setPageSessionAttribute(key="edit" value="#{true}" );
-            setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
-            setPageSessionAttribute(key="showDefaultButton" value="#{false}" );
-
             gf.restRequest(endpoint="#{pageSession.selfUrl}", method="GET", result="#{requestScope.propTable}");
             setPageSessionAttribute(key="tableList", value="#{requestScope.propTable.data.extraProperties.systemProperties}");
         />
     </event>
     <sun:form id="propertyForm">
 #include "/cluster/cluster/clusterTabs.inc"
-    <sun:title id="propertyContentPage" title="$resource{i18ncs.cluster.ClusterSystemProperties}" >
-        <!facet pageButtonsTop>
-            <sun:panelGroup id="topButtons">
-#include "clusterSystemPropertiesButtons.jsf"
-            </sun:panelGroup>
-        </facet>
-    </sun:title>
+        <sun:title id="clusterSysPropsPage" title="$resource{i18ncs.cluster.ClusterSystemProperties}" >
+            <!facet pageButtonsTop>
+                <sun:panelGroup id="topButtons">
+#include "/common/configuration/systemPropertiesButtons.jsf"
+                </sun:panelGroup>
+            </facet>
+        </sun:title>
+
 #include "/common/shared/alertMsg.inc"
 #include "/cluster/cluster/clusterNameSection.inc"
-#include "/common/shared/propertyTable.inc"
+#include "/common/configuration/systemProperties.jsf"
 
-    <sun:title id="title2">
-        <!facet pageButtonsTop>
-            <sun:panelGroup id="bottomButtons">
-#include "clusterSystemPropertiesButtons.jsf"
-            </sun:panelGroup>
-        </facet>
-    </sun:title>
-<sun:hidden id="helpKey" value="$resource{help_cluster.clusterSystemProperties}" />
-
+        <sun:title>
+            <!facet pageButtonsTop>
+                <sun:panelGroup id="bottomButtons">
+#include "/common/configuration/systemPropertiesButtons.jsf"
+                </sun:panelGroup>
+            </facet>
+        </sun:title>
+        <sun:hidden id="helpKey" value="$resource{help_cluster.clusterSystemProperties}" />
     </sun:form>
 #include "/common/shared/changeButtonsJS.inc"
 </define>
