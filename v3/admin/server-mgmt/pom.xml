@@ -52,7 +52,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>server-mgmt</artifactId>
     <packaging>hk2-jar</packaging>
-    <name>Admin Server Management</name>
+    <name>admin-server-management</name>
     <description>Server Management</description>
 
     <build>

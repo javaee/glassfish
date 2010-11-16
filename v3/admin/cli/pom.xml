@@ -52,7 +52,7 @@
     
     <artifactId>admin-cli</artifactId>
     <packaging>hk2-jar</packaging>
-    <name>Admin CLI for v3</name>
+    <name>admin-cli</name>
     
     <developers>
         <developer>
