@@ -43,6 +43,7 @@ package com.sun.ejb.containers;
 import com.sun.ejb.containers.EJBLocalRemoteObject;
 import com.sun.ejb.spi.io.IndirectlySerializable;
 import com.sun.ejb.spi.io.SerializableObjectFactory;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.logging.LogDomains;
 
 import javax.ejb.EJBException;
@@ -71,6 +72,9 @@ public abstract class EJBLocalObjectImpl
 {
     private static final Logger _logger =
             EjbContainerUtilImpl.getInstance().getLogger();
+
+    private static LocalStringManagerImpl localStrings =
+        new LocalStringManagerImpl(EJBLocalObjectImpl.class);
 
     private static Class[] NO_PARAMS = new Class[] {};    
     private static Method REMOVE_METHOD = null;
@@ -201,19 +205,11 @@ public abstract class EJBLocalObjectImpl
             
             return primaryKey;
         }
-        /*TODO
         else {
             throw new EJBException(localStrings.getLocalString(
             "containers.invalid_operation",
             "Invalid operation for Session EJBs."));
-        }*/
-
-        throw new EJBException(
-            "Invalid operation for Session EJBs.");
-        /*TODO throw new EJBException(localStrings.getLocalString(
-            "containers.invalid_operation",
-            "Invalid operation for Session EJBs."));
-        */
+        }
     }
     
     public boolean isIdentical(EJBLocalObject other)

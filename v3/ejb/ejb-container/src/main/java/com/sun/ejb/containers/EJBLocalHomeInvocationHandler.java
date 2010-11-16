@@ -47,6 +47,7 @@ import com.sun.ejb.containers.util.MethodMap;
 import com.sun.ejb.spi.io.IndirectlySerializable;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.EjbSessionDescriptor;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import javax.ejb.EJBException;
 import javax.ejb.EJBLocalHome;
@@ -66,6 +67,9 @@ final class EJBLocalHomeInvocationHandler
 
     private static final Logger logger =
             EjbContainerUtilImpl.getInstance().getLogger();
+
+    private static LocalStringManagerImpl localStrings =
+        new LocalStringManagerImpl(EJBLocalHomeInvocationHandler.class);
 
     private boolean isStatelessSession_;
     private boolean isEntity_;
@@ -177,10 +181,8 @@ final class EJBLocalHomeInvocationHandler
                 Object [] params = new Object[] 
                     { invInfo.ejbName, "LocalHome", 
                       invInfo.method.toString() };
-                /*TODO String errorMsg = localStrings.getLocalString
-                    ("ejb.bean_class_method_not_found;, "", params);
-                */
-                String errorMsg = "ejb.bean_class_method_not_found";                                  
+                String errorMsg = localStrings.getLocalString
+                    ("ejb.bean_class_method_not_found", "", params);
                 throw new EJBException(errorMsg);
             }
 
