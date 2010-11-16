@@ -84,6 +84,8 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
     private Habitat habitat;
 
     private static final String HTTP_THREAD_POOL = "http-thread-pool";
+    private static final String ASADMIN_LISTENER = "admin-listener";
+    private static final String ASADMIN_VIRTUAL_SERVER = "__asadmin";
 
     public void postConstruct() {
         for (Config config : configs.getConfig()) {
@@ -93,6 +95,8 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
                 promoteHttpServiceProperties(config.getHttpService());
                 promoteVirtualServerProperties(config.getHttpService());
                 promoteSystemProperties();
+                if (!config.getName().equals("server-config"))
+                    addAsadminProtocol(config.getNetworkConfig());
             } catch (PropertyVetoException pve) {
                 Logger.getAnonymousLogger().log(Level.SEVERE,
                     "Failure while upgrading domain.xml.", pve);
@@ -617,5 +621,23 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
         http.setServerName(listener.getServerName());
         http.setRedirectPort(listener.getRedirectPort());
         http.setXpoweredBy(listener.getXpoweredBy());
+    }
+
+    private Protocol addAsadminProtocol(NetworkConfig config)
+        throws TransactionFailure {
+        final Protocols protocols = getProtocols(config);
+        return (Protocol) ConfigSupport.apply(new SingleConfigCode<Protocols>() {
+            public Object run(Protocols param) throws TransactionFailure {
+                final Protocol protocol = param.createChild(Protocol.class);
+                param.getProtocol().add(protocol);
+                protocol.setName(ASADMIN_LISTENER);
+                Http http = protocol.createChild(Http.class);
+                http.setFileCache(http.createChild(FileCache.class));
+                protocol.setHttp(http);
+                http.setDefaultVirtualServer(ASADMIN_VIRTUAL_SERVER);
+                http.setMaxConnections("250");
+                return protocol;
+            }
+        }, protocols);
     }
 }
