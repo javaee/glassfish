@@ -1080,7 +1080,30 @@ public class FileUtils {
             }
         }
     }
-
+/**
+ * Find files matching the regular expression in the given directory
+ * @param dir the directory to search
+ * @param regexp the regular expression pattern
+ * @return either an array of matching File objects or an empty array.  Guaranteed
+ * to never return null
+ */
+    public static File[] findFilesInDir(File dir, final String regexp) {
+        try {
+            File[] matches = dir.listFiles(new FilenameFilter() {
+                @Override
+                public boolean accept(File dir, String name) {
+                    return name.matches(regexp);
+                }
+            });
+            if (matches != null)
+                return matches;
+        }
+        catch (Exception e) {
+            // fall through
+        }
+        return new File[0];
+    }
+    
     /**
      * Represents a unit of work that should be retried, if needed, until it
      * succeeds or the configured retry limit is reached.
