@@ -76,11 +76,8 @@ public class ClusterUpgradeTest extends AdminBaseDevTest {
     }
 
     public static void main(String[] args) {
-        // todo:
-        // remove once the test is passing and/or integrated
-        // into 'cli' target. until then, the output is useful
-        // for debugging
-        System.setProperty("verbose", "true");
+        // uncomment this for output to the console
+        //System.setProperty("verbose", "true");
 
         new ClusterUpgradeTest().runEm();
     }
@@ -145,6 +142,11 @@ public class ClusterUpgradeTest extends AdminBaseDevTest {
                 System.err.println("Could not stop cluster. You may need to " +
                     "kill some Java processes.");
             }
+
+            // test for issue 14719
+            report("create-new-instance-issue-14719",
+                asadmin("create-local-instance", "--node", "007",
+                    "--cluster", "upcluster", "upin_new_guy"));
 
             // shut down
             stopDomain("updomain");
