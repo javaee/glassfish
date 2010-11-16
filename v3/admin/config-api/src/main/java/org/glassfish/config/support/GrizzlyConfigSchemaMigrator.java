@@ -95,8 +95,7 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
                 promoteHttpServiceProperties(config.getHttpService());
                 promoteVirtualServerProperties(config.getHttpService());
                 promoteSystemProperties();
-                if (!config.getName().equals("server-config"))
-                    addAsadminProtocol(config.getNetworkConfig());
+                addAsadminProtocol(config.getNetworkConfig());
             } catch (PropertyVetoException pve) {
                 Logger.getAnonymousLogger().log(Level.SEVERE,
                     "Failure while upgrading domain.xml.", pve);
@@ -626,18 +625,23 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
     private Protocol addAsadminProtocol(NetworkConfig config)
         throws TransactionFailure {
         final Protocols protocols = getProtocols(config);
-        return (Protocol) ConfigSupport.apply(new SingleConfigCode<Protocols>() {
-            public Object run(Protocols param) throws TransactionFailure {
-                final Protocol protocol = param.createChild(Protocol.class);
-                param.getProtocol().add(protocol);
-                protocol.setName(ASADMIN_LISTENER);
-                Http http = protocol.createChild(Http.class);
-                http.setFileCache(http.createChild(FileCache.class));
-                protocol.setHttp(http);
-                http.setDefaultVirtualServer(ASADMIN_VIRTUAL_SERVER);
-                http.setMaxConnections("250");
-                return protocol;
-            }
-        }, protocols);
+        Protocol adminProtocol = protocols.findProtocol(ASADMIN_LISTENER);
+        if (adminProtocol == null) {
+            return (Protocol) ConfigSupport.apply(new SingleConfigCode<Protocols>() {
+                public Object run(Protocols param) throws TransactionFailure {
+                    final Protocol protocol = param.createChild(Protocol.class);
+                    param.getProtocol().add(protocol);
+                    protocol.setName(ASADMIN_LISTENER);
+                    Http http = protocol.createChild(Http.class);
+                    http.setFileCache(http.createChild(FileCache.class));
+                    protocol.setHttp(http);
+                    http.setDefaultVirtualServer(ASADMIN_VIRTUAL_SERVER);
+                    http.setMaxConnections("250");
+                    return protocol;
+                }
+            }, protocols);
+        } else {
+            return null;
+        }
     }
 }
