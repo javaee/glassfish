@@ -64,6 +64,12 @@ public class ContextImpl extends StandardContext implements Context {
     // ----------------------------------------------------- Instance Variables
     
     private SecurityConfig config;
+
+    /**
+     * Should we generate directory listings?
+     */
+    protected boolean directoryListing = false;
+
     
     // --------------------------------------------------------- Public Methods
 
@@ -74,6 +80,7 @@ public class ContextImpl extends StandardContext implements Context {
      * enabled on this <tt>Context</tt>, false otherwise
      */
     public void setDirectoryListing(boolean directoryListing) {
+        this.directoryListing = directoryListing;
         Wrapper wrapper = (Wrapper) findChild(Constants.DEFAULT_SERVLET_NAME);
         if (wrapper !=null) {
             Servlet servlet = ((StandardWrapper)wrapper).getServlet();
@@ -91,14 +98,7 @@ public class ContextImpl extends StandardContext implements Context {
      * <tt>Context</tt>, false otherwise
      */
     public boolean isDirectoryListing() {      
-        Wrapper wrapper = (Wrapper) findChild(Constants.DEFAULT_SERVLET_NAME);
-        if (wrapper !=null) {
-            Servlet servlet = ((StandardWrapper)wrapper).getServlet();
-            if (servlet instanceof DefaultServlet) {
-                return ((DefaultServlet)servlet).isListings();
-            }
-        }
-        return false;
+        return directoryListing;
     }
 
     /**

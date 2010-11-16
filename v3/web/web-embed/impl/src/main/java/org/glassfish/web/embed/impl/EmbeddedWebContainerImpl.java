@@ -337,6 +337,7 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
                 addVirtualServer(defaultVirtualServer);
             }
             if (listings) {
+                embedded.setDirectoryListing(listings);
                 for (Context context : defaultVirtualServer.getContexts()) {
                     context.setDirectoryListing(listings);
                 }
@@ -413,6 +414,7 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
             }
             listings = webContainerConfig.getListings();
             if (listings) {
+                embedded.setDirectoryListing(listings);
                 for (Context context : defaultVirtualServer.getContexts()) {
                     context.setDirectoryListing(listings);
                 }
