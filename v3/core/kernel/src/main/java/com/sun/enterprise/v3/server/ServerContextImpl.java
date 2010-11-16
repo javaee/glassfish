@@ -140,7 +140,7 @@ public class ServerContextImpl implements ServerContext, PostConstruct {
     }
 
     public String getDefaultDomainName() {
-        return "com.sun.appserv";
+        return "glassfish";
     }
     /**
      * Returns the default habitat for this instance
