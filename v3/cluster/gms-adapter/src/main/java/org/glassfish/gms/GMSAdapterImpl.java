@@ -137,10 +137,6 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
 
     @Override
     public void postConstruct() {
-        // workaround until we can set level to CONFIG in server
-        if (logger.isLoggable(Level.INFO) && !logger.isLoggable(Level.CONFIG)) {
-            logger.setLevel(Level.CONFIG);
-        }
     }
 
     AtomicBoolean initialized = new AtomicBoolean(false);
@@ -516,7 +512,6 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
         printProps(configProps);
 
         String memberType = (String) configProps.get(MEMBERTYPE_STRING);
-        GMSLogDomain.getLogger(GMSLogDomain.GMS_LOGGER).setLevel(Level.CONFIG);
         gms = (GroupManagementService) GMSFactory.startGMSModule(instanceName, clusterName,
                 GroupManagementService.MemberType.valueOf(memberType), configProps);
         //remove GMSLogDomain.getLogger(GMSLogDomain.GMS_LOGGER).setLevel(gmsLogLevel);
