@@ -65,6 +65,7 @@
             if ("#{pageSession.status}=REQUIRES_RESTART"){
                 setAttribute(key="isRestartRequired" value="#{true}");
             }
+            gfr.getInstanceDebugInfo();
        />
     </event>
     <sun:form id="propertyForm">
@@ -164,6 +165,10 @@
 
         <sun:property id="configProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.ConfigurationLabel}">
             <sun:hyperlink id="configlink" text="#{pageSession.vMap['configRef']}"  url="#{request.contextPath}/common/configuration/configuration.jsf?configName=#{pageSession.vMap['config-ref']}" />
+        </sun:property>
+
+        <sun:property id="debugProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.debugLabel}">
+            <sun:staticText id="debugEnabled" text="#{pageSession.instanceDebugInfo}" />
         </sun:property>
 
     </sun:propertySheetSection>

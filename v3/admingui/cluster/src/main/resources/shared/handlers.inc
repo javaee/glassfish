@@ -114,3 +114,21 @@
 
 </handler>
 
+
+    <!--
+    This handler gets the JDPA debug information.
+    Input: #{pageSession.instanceName}
+    Output" #{pageSession.instanceDebugInfo}
+    -->
+    <handler id="gfr.getInstanceDebugInfo" >
+        createMap(result="#{requestScope._debugAttrMap}")
+        mapPut(map="#{requestScope._debugAttrMap}" key="target" value="#{pageSession.instanceName}")
+        gf.restRequest(endpoint="#{sessionScope.REST_URL}/management/domain/get-runtime-info" attrs="#{requestScope._debugAttrMap}"
+            method="GET" result="#{requestScope.debugResult}");
+        setAttribute(key="debugF" value="#{requestScope.debugResult.data.subReports.get(0).properties.debug}");
+        setPageSessionAttribute(key="instanceDebugInfo" value="$resource{i18n.inst.notEnabled}");
+        if ("#{requestScope.debugF}=true"){
+            setAttribute(key="debugPort" value="#{requestScope.debugResult.data.subReports.get(0).properties.debugPort}");
+            setPageSessionAttribute(key="instanceDebugInfo" value="$resource{i18n.inst.debugEnabled} ${debugPort}");
+        }
+    </handler>
