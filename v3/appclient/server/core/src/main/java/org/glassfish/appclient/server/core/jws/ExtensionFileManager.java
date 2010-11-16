@@ -45,7 +45,6 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URI;
-import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -59,6 +58,7 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.internal.api.ServerContext;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
@@ -132,7 +132,7 @@ public class ExtensionFileManager implements PostConstruct {
     private Vector<File> buildExtensionFileDirs() {
         final URI installRootURI = serverContext.getInstallRoot().toURI();
         Vector<File> result = new Vector<File>();
-        
+
         String extDirs = System.getProperty(EXT_DIRS_PROPERTY_NAME);
         StringTokenizer stkn = new StringTokenizer(extDirs, File.pathSeparator);
 
@@ -146,7 +146,7 @@ public class ExtensionFileManager implements PostConstruct {
              * clients, which we do not want.
              */
             final URI extDirURI = extDir.toURI();
-            if (installRootURI.relativize(extDirURI) != extDirURI) {
+            if ( ! installRootURI.relativize(extDirURI).equals(extDirURI)) {
                 result.add(extDir);
             }
         }
