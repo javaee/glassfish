@@ -63,7 +63,6 @@
     foreach (var="oneRow" list="#{pageSession.tmpRows}") {
         setAttribute(key="resourceTargets" value={});
         setAttribute(key="enabledTargetsCount" value="$int{0}");
-        <!--setAttribute(key="disabledTargetsCount" value="$int{0}");-->
         setAttribute(key="enableURL" value="");
         createMap(result=>$attribute{targetsMap});
         setAttribute(key="targetUrls" value={});
@@ -96,9 +95,6 @@
                 gf.getEntityAttrs(endpoint="#{clusterUrl}/resource-ref/#{oneRow['encodedName']}" valueMap="#{requestScope.refAttrs}");
                 if ("#{refAttrs.enabled} = true") {
                     inc(number="#{enabledTargetsCount}" value="#{enabledTargetsCount}");
-                }
-                if ("#{refAttrs.enabled} = false") {
-                    inc(number="#{disabledTargetsCount}" value="#{disabledTargetsCount}");
                 }
             }
         }
