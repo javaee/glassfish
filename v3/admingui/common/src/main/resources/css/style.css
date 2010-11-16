@@ -68,19 +68,20 @@
     left: -150px;
     z-index: 1000;
     width: 300px;
-    height: 35px;
     padding: 0px;
 }
 .modalTop {
     width: 292px;
-    background-color: #000099;
     padding: 4px;
-    color: #ffffff;
     text-align: right;
+    border-bottom: solid 1px black;
+    font-size: small;
 }
 .modalTop a, .modalTop a:visited {
-    color: #ffffff;
+    color: black;
+    text-decoration: none;
 }
 .modalBody {
     padding: 10px;
+    vertical-align: middle;
 }
