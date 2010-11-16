@@ -293,7 +293,12 @@ public class MonitoringResource {
         for (TreeNode node : nodeList) {
             //process only the non-leaf nodes, if any
             if (node.hasChildNodes()) {
-                links.put(node.getName(), getElementLink(uriInfo, node.getName()));
+                String name = node.getName();
+                // Monitoring code escapes "." with "\.". Thus name "order.jar" will be given as "order\.jar".
+                // This would result in URL of form monitoring/domain/server/applications/orderapp/order\.jar for the child resource. This URL is rejected by Grizzly.
+                // Unescape here. Please note that we again introduce the escape before doing a get on monitoringregistry
+                name =  name.replaceAll("\\\\.", "\\.");
+                links.put(name, getElementLink(uriInfo, name));
             }
 
         }
