@@ -40,22 +40,21 @@
 
 package com.sun.enterprise.config.serverbeans;
 
+import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.io.FileUtils;
+import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.ServerEnvironment;
-import org.glassfish.api.Param;
 import org.glassfish.config.support.GenericCrudCommand;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.config.TransactionFailure;
 
+import java.beans.PropertyVetoException;
+import java.io.File;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
-import java.beans.PropertyVetoException;
-import java.io.File;
-
-import org.jvnet.hk2.config.TransactionFailure;
-import com.sun.enterprise.util.io.FileUtils;
-import com.sun.enterprise.util.LocalStringManagerImpl;
 
 /**
  * This is the abstract class which will be used by the config beans
@@ -116,15 +115,27 @@ public abstract class CopyConfig implements AdminCommand {
         configs.getConfig().add(destCopy);
         copyOfConfig = destCopy;
 
+        String srcConfig = "";
+        if(config!=null) {
+            srcConfig = config.getName();
+        }
+
         try {
                 File configConfigDir = new File(env.getConfigDirPath(),
                         configName);
                 new File(configConfigDir, "docroot").mkdirs();
                 new File(configConfigDir, "lib/ext").mkdirs();
 
-                String rootFolder = envImpl.getProps().get(com.sun.enterprise.util.SystemPropertyConstants.INSTALL_ROOT_PROPERTY);
-                String templateDir = rootFolder + File.separator + "lib" + File.separator + "templates";
-                File src = new File(templateDir, ServerEnvironmentImpl.kLoggingPropertiesFileName);
+                String srcConfigLoggingFile = env.getInstanceRoot().getAbsolutePath() + File.separator + "config" + File.separator +
+                        srcConfig + File.separator + ServerEnvironmentImpl.kLoggingPropertiesFileName;
+                File src = new File(srcConfigLoggingFile);
+
+                if(!src.exists()) {
+                    String rootFolder = envImpl.getProps().get(com.sun.enterprise.util.SystemPropertyConstants.INSTALL_ROOT_PROPERTY);
+                    String templateDir = rootFolder + File.separator + "lib" + File.separator + "templates";
+                    src = new File(templateDir, ServerEnvironmentImpl.kLoggingPropertiesFileName);
+                }
+
                 File dest = new File(configConfigDir, ServerEnvironmentImpl.kLoggingPropertiesFileName);
                 FileUtils.copy(src, dest);
             }catch(Exception e) {
