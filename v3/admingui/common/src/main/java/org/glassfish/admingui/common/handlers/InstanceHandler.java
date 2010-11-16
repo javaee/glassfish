@@ -61,10 +61,8 @@ import java.util.Map;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
-import java.util.StringTokenizer;
 
 import org.glassfish.admingui.common.util.GuiUtil;
-import org.glassfish.admingui.common.util.RestResponse;
 import org.glassfish.admingui.common.util.RestUtil;
 
 public class InstanceHandler {
@@ -103,8 +101,6 @@ public class InstanceHandler {
         return list;
     }
  
-   // FIXME: There's no reason to call each endpoint once for each option.  They can
-   // be passed several JVM Options, and they'll do the right thing.
    @Handler(id="saveJvmOptionValues",
         input={
             @HandlerInput(name="endpoint",   type=String.class, required=true),
@@ -117,46 +113,17 @@ public class InstanceHandler {
             List<Map<String, String>> options = (List) handlerCtx.getInputValue("options");
             Map<String, Object> payload = new HashMap<String, Object>();
             payload.put("target", (String) handlerCtx.getInputValue("target"));
-            deleteJvmOptions(handlerCtx);
+            if (endpoint.contains("profiler")) {
+                payload.put("profiler", "true");
+            }
             for (Map<String, String> oneRow : options) {
                 String str = oneRow.get(PROPERTY_VALUE);
                 ArrayList kv = getKeyValuePair(str);
                 payload.put((String)kv.get(0), kv.get(1));
-                addJvmOption(endpoint,payload);
             }
+            RestUtil.restRequest(endpoint, payload, "POST", handlerCtx, false);
         } catch (Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);
-        }
-    }
-
-    public static void addJvmOption(String endpoint, Map payload) throws Exception{
-        if (endpoint.contains("profiler")) {
-            payload.put("profiler", "true");
-        }
-        RestResponse response = RestUtil.post(endpoint, payload);
-        if (!response.isSuccess()) {
-            throw new Exception (response.getResponseBody());
-        }
-    }
-
-    public static void deleteJvmOptions(HandlerContext handlerCtx) throws Exception{
-        Map<String, Object> payload = new HashMap<String, Object>();
-        String endpoint = (String) handlerCtx.getInputValue("endpoint");
-        String target = (String) handlerCtx.getInputValue("target");
-        payload.put("target", target);
-        ArrayList list = getJvmOptions(handlerCtx);
-        for (Object s: list) {
-            String str = (String)s;
-            ArrayList kv = getKeyValuePair(str);
-            payload.put((String)kv.get(0), kv.get(1));
-            if (endpoint.contains("/profiler")) {
-                endpoint = endpoint.substring(0, endpoint.indexOf("/profiler")) + "/jvm-options";
-                payload.put("profiler", "true");
-            }
-            RestResponse response = RestUtil.delete(endpoint, payload);
-            if (!response.isSuccess()) {
-                throw new Exception (response.getResponseBody());
-            }
         }
     }
 
