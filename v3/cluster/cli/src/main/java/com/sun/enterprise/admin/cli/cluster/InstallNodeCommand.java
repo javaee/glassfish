@@ -83,7 +83,7 @@ public class InstallNodeCommand extends SSHCommandsBase {
     @Param(name="archive", optional = true)
     private String archive;
 
-    @Param(name = "installdir", optional = true, defaultValue = "${com.sun.aas.installRoot}")
+    @Param(name = "installdir", optional = true, defaultValue = "${com.sun.aas.productRoot}")
     private String installDir;
 
     @Param(optional = true, defaultValue = "false")
@@ -180,7 +180,6 @@ public class InstallNodeCommand extends SSHCommandsBase {
                 sshLauncher.init(sshuser, host, sshport, sshpassword, sshkeyfile, sshkeypassphrase, logger);
             }
                 
-            //String remoteDir = installLocation + "/glassfish3/glassfish";
 
             SFTPClient sftpClient = sshLauncher.getSFTPClient();
             SCPClient scpClient = sshLauncher.getSCPClient();
