@@ -72,7 +72,7 @@ import java.util.List;
 
 /**
  * @author Rajiv Mordani
- */
+ */ 
 
 
 @Service(name = "install-node")
@@ -104,7 +104,9 @@ public class InstallNodeCommand extends SSHCommandsBase {
     @Inject
     Node[] nodeList;
 
-    private String archiveName = "glassfish.zip";
+    private String archiveName;
+
+    private boolean delete = true;
 
     @Override
     protected void validate() throws CommandException {
@@ -144,11 +146,11 @@ public class InstallNodeCommand extends SSHCommandsBase {
         Globals.setDefaultHabitat(habitat);
         try {
 
-            String baseRootValue = getSystemProperty(SystemPropertyConstants.PRODUCT_ROOT_PROPERTY) ; 
+            String baseRootValue = getSystemProperty(SystemPropertyConstants.PRODUCT_ROOT_PROPERTY) ;
             ArrayList<String>  binDirFiles = new ArrayList<String>();
             File zipFile = createZipFileIfNeeded(baseRootValue, binDirFiles);
             copyToHosts(zipFile, binDirFiles);
-            if (!save) {
+            if (!save && delete) {
                 zipFile.delete();
             }
         } catch (IOException ioe) {
@@ -243,7 +245,7 @@ public class InstallNodeCommand extends SSHCommandsBase {
             }
 
             try {
-                String zipFileName = zip.substring(zip.lastIndexOf("/"),zip.length());
+                String zipFileName = zip.substring(zip.lastIndexOf("/") + 1, zip.length());
             logger.info("Removing " + host + ":" + installDir + "/"+zipFileName);
             sftpClient.rm(installDir + "/"+zipFileName);
             logger.finer("Removed " + host + ":" + installDir + "/" + zipFileName);
@@ -286,29 +288,25 @@ public class InstallNodeCommand extends SSHCommandsBase {
         
 
         if (archive != null) {
-            archive.replaceAll("\\\\","/");
+            archive = archive.replaceAll("\\\\","/");
             archiveName = archive.substring(archive.lastIndexOf("/") + 1, archive.length());
             zipFileLocation = new File(archive.substring(0,archive.lastIndexOf("/")));
             glassFishZipFile = new File(archive);
             if (glassFishZipFile.exists() && !create) {
                 logger.finer("Found " + glassFishZipFile.getCanonicalPath());
+                delete = false;
                 return glassFishZipFile;
             } else if (!zipFileLocation.canWrite()) {
                 throw new IOException ("Cannot write to " + archive);
             }
         } else {
             zipFileLocation = new File(".");
-            glassFishZipFile = new File(zipFileLocation, archiveName);
-            if (glassFishZipFile.exists() && !create) {
-                return glassFishZipFile;
-            } else if (!zipFileLocation.canWrite()) {
-                glassFishZipFile = new File(new File(System.getProperty("java.io.tmpdir")), archiveName);
+            if (!zipFileLocation.canWrite()) {
+                zipFileLocation = new File(System.getProperty("java.io.tmpdir"));
             }
-        }
-
-        if (glassFishZipFile.exists() && !create) {
-            logger.finer("Found " + glassFishZipFile.getCanonicalPath());
-            return glassFishZipFile;
+            glassFishZipFile = File.createTempFile("glassfish", ".zip", zipFileLocation);
+            String filePath  = glassFishZipFile.getCanonicalPath();
+            archiveName = filePath.substring(filePath.lastIndexOf("/") + 1, filePath.length());            
         }
 
 
