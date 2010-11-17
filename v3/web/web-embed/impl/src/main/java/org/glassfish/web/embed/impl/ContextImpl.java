@@ -44,6 +44,7 @@ import javax.servlet.*;
 
 import org.glassfish.embeddable.web.Context;
 import org.glassfish.embeddable.web.config.SecurityConfig;
+import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.core.Constants;
 import org.apache.catalina.core.StandardContext;
@@ -134,7 +135,7 @@ public class ContextImpl extends StandardContext implements Context {
     public void enable() throws GlassFishException {               
        try {
             start();
-        } catch (org.apache.catalina.LifecycleException e) {
+        } catch (LifecycleException e) {
             throw new GlassFishException(e);
         }
     }
@@ -147,7 +148,7 @@ public class ContextImpl extends StandardContext implements Context {
     public void disable() throws GlassFishException {
        try {
             stop();
-        } catch (org.apache.catalina.LifecycleException e) {
+        } catch (LifecycleException e) {
             throw new GlassFishException(e);
         }        
     }

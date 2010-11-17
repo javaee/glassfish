@@ -47,12 +47,12 @@ import java.util.List;
 import java.util.logging.*;
 
 import org.apache.catalina.Container;
+import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Pipeline;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.valves.AccessLogValve;
 import org.apache.catalina.valves.RemoteAddrValve;
 import org.apache.catalina.valves.RemoteHostValve;
-import org.glassfish.api.embedded.LifecycleException;
 import org.glassfish.embeddable.web.config.VirtualServerConfig;
 import org.glassfish.embeddable.GlassFishException;
 import org.glassfish.embeddable.web.ConfigException;
@@ -128,7 +128,16 @@ public class VirtualServerImpl extends StandardHost implements VirtualServer {
     
    
     // --------------------------------------------------------- Public Methods
-    
+
+    /**
+     * Sets the id of this <tt>VirtualServer</tt>.
+     *
+     * @param ID id of this <tt>VirtualServer</tt>.
+     */
+    public void setID(String ID) {
+        setName(ID);
+    }
+
     /**
      * Gets the id of this <tt>VirtualServer</tt>.
      * 
@@ -137,7 +146,16 @@ public class VirtualServerImpl extends StandardHost implements VirtualServer {
     public String getID() {
         return getName();
     }
-    
+
+    /**
+     * Sets the docroot of this <tt>VirtualServer</tt>.
+     *
+     * @param docRoot the docroot of this <tt>VirtualServer</tt>.
+     */
+    public void setDocRoot(File docRoot) {
+        this.setAppBase(docRoot.getPath());
+    }
+
     /**
      * Gets the docroot of this <tt>VirtualServer</tt>.
      * 
@@ -268,7 +286,7 @@ public class VirtualServerImpl extends StandardHost implements VirtualServer {
     public void enable() throws GlassFishException {
        try {
             start();
-        } catch (org.apache.catalina.LifecycleException e) {
+        } catch (LifecycleException e) {
             throw new GlassFishException(e);
         }
     }
@@ -281,7 +299,7 @@ public class VirtualServerImpl extends StandardHost implements VirtualServer {
     public void disable() throws GlassFishException {
        try {
             stop();
-        } catch (org.apache.catalina.LifecycleException e) {
+        } catch (LifecycleException e) {
             throw new GlassFishException(e);
         }        
     }
@@ -525,7 +543,7 @@ public class VirtualServerImpl extends StandardHost implements VirtualServer {
                     accessLogValve.stop();
                 }
                 accessLogValve.start();
-            } catch (org.apache.catalina.LifecycleException le) {
+            } catch (LifecycleException le) {
                 log.severe(le.getMessage());
             }
         }

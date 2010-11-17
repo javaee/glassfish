@@ -1732,7 +1732,16 @@ public class VirtualServer extends StandardHost
     // ----------------------------------------------------- embedded methods
     
     
-    private VirtualServerConfig config;
+    private VirtualServerConfig config;    
+
+    /**
+     * Sets the docroot of this <tt>VirtualServer</tt>.
+     *
+     * @param docRoot the docroot of this <tt>VirtualServer</tt>.
+     */
+    public void setDocRoot(File docRoot) {
+        this.setAppBase(docRoot.getPath());
+    }
     
     /**
      * Gets the docroot of this <tt>VirtualServer</tt>.

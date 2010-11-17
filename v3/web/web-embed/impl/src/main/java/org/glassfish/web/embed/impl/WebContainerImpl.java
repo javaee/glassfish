@@ -142,7 +142,32 @@ public class WebContainerImpl implements WebContainer {
     // --------------------------------------------------------- Public Methods
 
     public void setConfiguration(WebContainerConfig config) {
-        //TODO
+
+        final WebContainerConfig webConfig = config;
+        com.sun.enterprise.config.serverbeans.VirtualServer vsBean = httpService.getVirtualServerByName(defaultvs);
+        log.info("WebContainer set configuration "+vsBean+" port before="+portNumber+" after="+webConfig.getPort());
+        try {
+            if (vsBean!=null) {
+                ConfigSupport.apply(new SingleConfigCode<com.sun.enterprise.config.serverbeans.VirtualServer>() {
+                    public Object run(com.sun.enterprise.config.serverbeans.VirtualServer avs)
+                            throws PropertyVetoException, TransactionFailure {
+                        avs.setId(webConfig.getVirtualServerId());
+                        avs.setDocroot(webConfig.getDocRootDir().getPath());
+                        avs.setHosts(webConfig.getHostNames());
+                        avs.setNetworkListeners(webConfig.getListenerName());
+                        return avs;
+                    }
+                }, vsBean);
+            }
+            embedded.setDirectoryListing(webConfig.getListings());
+            if (portNumber!=webConfig.getPort()) {
+                Ports ports = habitat.getComponent(Ports.class);
+                Port port = ports.createPort(webConfig.getPort());
+                bind(port, "http");
+            }
+        }  catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     /**
@@ -619,7 +644,7 @@ public class WebContainerImpl implements WebContainer {
      *
      * @throws org.glassfish.embeddable.web.ConfigException if a <tt>Context</tt> already exists
      * at the given context root on <tt>VirtualServer</tt>
-     * @throws org.glassfish.api.embedded.LifecycleException if the given <tt>context</tt> fails
+     * @throws GlassFishException if the given <tt>context</tt> fails
      * to be started
      */
     public void addContext(Context context, String contextRoot)
@@ -697,7 +722,7 @@ public class WebContainerImpl implements WebContainer {
      * @throws ConfigException if a <tt>WebListener</tt> with the
      * same id has already been registered with this
      * <tt>WebContainer</tt>
-     * @throws LifecycleException if the given <tt>webListener</tt> fails
+     * @throws GlassFish if the given <tt>webListener</tt> fails
      * to be started
      */
     public void addWebListener(WebListener webListener) 
@@ -761,7 +786,7 @@ public class WebContainerImpl implements WebContainer {
      * @param webListener the <tt>WebListener</tt> to be stopped
      * and removed
      *
-     * @throws LifecycleException if an error occurs during the stopping
+     * @throws GlassFishException if an error occurs during the stopping
      * or removal of the given <tt>webListener</tt>
      */
     public void removeWebListener(WebListener webListener)
@@ -865,7 +890,7 @@ public class WebContainerImpl implements WebContainer {
      * @throws ConfigException if a <tt>VirtualServer</tt> with the
      * same id has already been registered with this
      * <tt>WebContainer</tt>
-     * @throws LifecycleException if the given <tt>virtualServer</tt> fails
+     * @throws GlassFishException if the given <tt>virtualServer</tt> fails
      * to be started
      */
     public void addVirtualServer(VirtualServer virtualServer)
@@ -946,7 +971,7 @@ public class WebContainerImpl implements WebContainer {
      * @param virtualServer the <tt>VirtualServer</tt> to be stopped
      * and removed
      *
-     * @throws LifecycleException if an error occurs during the stopping
+     * @throws GlassFishException if an error occurs during the stopping
      * or removal of the given <tt>virtualServer</tt>
      */
     public void removeVirtualServer(VirtualServer virtualServer) 
