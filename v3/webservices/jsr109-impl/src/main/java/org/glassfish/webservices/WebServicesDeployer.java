@@ -41,6 +41,7 @@
 package org.glassfish.webservices;
 
 
+import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.archivist.Archivist;
@@ -53,11 +54,10 @@ import com.sun.enterprise.deploy.shared.FileArchive;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.logging.LogDomains;
 import com.sun.tools.ws.util.xml.XmlUtil;
-import com.sun.xml.bind.api.JAXBRIContext;
+import org.glassfish.api.deployment.UndeployCommandParameters;
 import org.glassfish.loader.util.ASClassLoaderUtil;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
-import org.glassfish.api.deployment.UndeployCommandParameters;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.api.container.RequestDispatcher;
@@ -87,7 +87,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.deployment.common.Artifacts;
-import org.glassfish.deployment.common.DeploymentUtils;
 
 
 /**
@@ -117,8 +116,6 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
 
     @Inject
     private ArchiveFactory archiveFactory;
-
-    private WebServicesDeploymentMBean bean;
 
     private final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(WebServicesDeployer.class);
 
@@ -185,6 +182,9 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
             }
             doWebServicesDeployment(app,dc);
             Thread.currentThread().setContextClassLoader(oldCl);
+            WebServicesContainer container = habitat.getComponent(WebServicesContainer.class);
+            WebServicesDeploymentMBean bean = container.getDeploymentBean();
+            bean.deploy(app);
             return true;
         } catch (Exception ex) {
             // re-throw all the exceptions as runtime exceptions
@@ -761,7 +761,6 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
         Application app = container.getApplication();
         for(WebService svc : app.getWebServiceDescriptors()) {
             for(WebServiceEndpoint endpoint : svc.getEndpoints()) {
-                bean.undeploy(endpoint);
                 if (notifier != null) {
                     notifier.notifyUndeployed(endpoint);
                 }
@@ -778,12 +777,17 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
             final Artifacts generatedArtifacts = DeploymentUtils.generatedArtifacts(dc);
             generatedArtifacts.clearArtifacts() ;
         } */
-        
+
+        WebServicesContainer container = habitat.getComponent(WebServicesContainer.class);
+        WebServicesDeploymentMBean bean = container.getDeploymentBean();
+        UndeployCommandParameters params = dc.getCommandParameters(UndeployCommandParameters.class);
+        if (params != null)  {
+            bean.undeploy(params.name);
+        }
     }
 
     @Override
     public WebServicesApplication load(WebServicesContainer container, DeploymentContext context) {
-        bean = container.getDeploymentBean();
         Set<String> publishedFiles = null;
         Application app = context.getModuleMetaData(Application.class);
         try {
@@ -791,11 +795,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
         } catch(Exception e) {
             throw new RuntimeException(e);
         }
-        for(WebService svc : app.getWebServiceDescriptors()) {
-            for(WebServiceEndpoint endpoint : svc.getEndpoints()) {
-                bean.deploy(endpoint);
-            }
-        }
+
 
         return new WebServicesApplication(context, env, dispatcher, config, habitat,publishedFiles);
     }

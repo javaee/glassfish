@@ -63,16 +63,16 @@ import java.util.Properties;
  * CLI for listing all web services.
  * <p>
  * asadmin __list-webservices [--appname <appname> [--modulename <modulename> [--
-endpointname <endpointname>]]] [target]
+endpointname <endpointname>]]]
  *
- * Will be executed on DAS and stand-alone instances
+ * Will be executed on DAS
 
  * @author Jitendra Kotamraju
  */
 @Service(name = "__list-webservices")
 @Scoped(PerLookup.class)
 @CommandLock(CommandLock.LockType.NONE)
-@ExecuteOn(RuntimeType.INSTANCE)
+@ExecuteOn(RuntimeType.DAS)
 public class ListWebServicesCommand implements AdminCommand {
     @Inject
     private Habitat habitat;
@@ -85,9 +85,6 @@ public class ListWebServicesCommand implements AdminCommand {
 
     @Param(optional=true)
     String endpointName;
-
-    @Param(primary=true, optional=true)
-    public String target;
 
     @Override
     public void execute(AdminCommandContext context) {
