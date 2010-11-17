@@ -462,7 +462,10 @@ public class DeploymentUtils {
             for (URL manifestURL : manifestURLs) {
                 URI manifestLibURI = archiveURI.relativize(manifestURL.toURI());
                 if (manifestLibURI.isAbsolute()) {
-                    externalLibURIs.add(manifestLibURI);
+                    File externalLib = new File(manifestLibURI); 
+                    if (externalLib.exists()) {
+                        externalLibURIs.add(manifestLibURI);
+                    }
                 }
             }
         } catch (Exception e) {
