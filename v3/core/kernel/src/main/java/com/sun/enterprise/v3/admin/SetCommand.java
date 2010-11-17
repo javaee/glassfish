@@ -240,7 +240,7 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand, Pos
                             attrName.replace('_', '-').equals(name.replace('_', '-')))  {
                         if (isDeprecatedAttr(targetNode, name)) {
                            warning(context, localStrings.getLocalString("admin.set.deprecated",
-                                   "Warning: The attribute {0} is deprecated.", targetName));
+                                   "Warning: The attribute {0} is deprecated.", finalDottedName));
                         }
 
                         if (!isProperty) {
