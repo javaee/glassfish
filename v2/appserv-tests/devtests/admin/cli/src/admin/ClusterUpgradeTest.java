@@ -157,9 +157,21 @@ public class ClusterUpgradeTest extends AdminBaseDevTest {
 //            report("create-new-instance-issue-14719",
 //                asadmin("create-local-instance", "--node", "007",
 //                    "--cluster", "upcluster", "upin_new_guy"));
+//            report("delete-new-instance-issue-14719",
+//                asadmin("delete-local-instance", "upin_new_guy"));
+
+            // delete instances
+            report("delete-instance-1", asadmin("delete-local-instance",
+                "upin1"));
+            report("delete-instance-2", asadmin("delete-local-instance",
+                "upin2"));
 
             // shut down
             stopDomain("updomain");
+
+            // remove nodes dir
+            report("cleanup-nodes-dir", deleteDirectory(
+                new File(getGlassFishHome(), "nodes")));
 
         } finally {
             removeUpDomain();
