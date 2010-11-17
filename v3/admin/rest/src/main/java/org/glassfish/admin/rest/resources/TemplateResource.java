@@ -368,29 +368,31 @@ public class TemplateResource {
     }
 
     public void setBeanByKey(List<Dom> parentList, String id) {
-        for (Dom c : parentList) {
-            String keyAttributeName = null;
-            ConfigModel model = c.model;
-            if (model.key == null) {
-                try {
-                    for (String s : model.getAttributeNames()) {//no key, by default use the name attr
-                        if (s.equals("name")) {
-                            keyAttributeName = s;
+        if (parentList != null) { // Believe it or not, this can happen
+            for (Dom c : parentList) {
+                String keyAttributeName = null;
+                ConfigModel model = c.model;
+                if (model.key == null) {
+                    try {
+                        for (String s : model.getAttributeNames()) {//no key, by default use the name attr
+                            if (s.equals("name")) {
+                                keyAttributeName = s;
+                            }
                         }
-                    }
-                    if (keyAttributeName == null) {//nothing, so pick the first one
-                        keyAttributeName = model.getAttributeNames().iterator().next();
-                    }
-                } catch (Exception e) {
-                    keyAttributeName = "ThisIsAModelBug:NoKeyAttr"; //no attr choice fo a key!!! Error!!!
-                } //firstone
-            } else {
-                keyAttributeName = model.key.substring(1, model.key.length());
-            }
+                        if (keyAttributeName == null) {//nothing, so pick the first one
+                            keyAttributeName = model.getAttributeNames().iterator().next();
+                        }
+                    } catch (Exception e) {
+                        keyAttributeName = "ThisIsAModelBug:NoKeyAttr"; //no attr choice fo a key!!! Error!!!
+                    } //firstone
+                } else {
+                    keyAttributeName = model.key.substring(1, model.key.length());
+                }
 
-            String keyvalue = c.attribute(keyAttributeName.toLowerCase());
-            if (keyvalue.equals(id)) {
-                setEntity((ConfigBean) c);
+                String keyvalue = c.attribute(keyAttributeName.toLowerCase());
+                if (keyvalue.equals(id)) {
+                    setEntity((ConfigBean) c);
+                }
             }
         }
     }
