@@ -157,7 +157,7 @@
         </sun:property>
 
             <sun:property id="nodeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.nodeLabel}">
-                <sun:hyperlink id="nodeLink" text="#{pageSession.vMap['node']}"  url="#{request.contextPath}/cluster/node/nodeEdit.jsf?nodeName=#{pageSession.vMap['node']}" />
+                <sun:hyperlink id="nodeLink" text="#{pageSession.vMap['nodeRef']}"  url="#{request.contextPath}/cluster/node/nodeEdit.jsf?nodeName=#{pageSession.vMap['nodeRef']}" />
             </sun:property>
 
             <sun:property id="configProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.ConfigurationLabel}">

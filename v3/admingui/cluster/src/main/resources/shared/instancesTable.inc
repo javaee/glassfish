@@ -75,7 +75,7 @@
         <sun:hyperlink id="configlink" text="#{td.value.configRef}" url="/configuration/configuration.jsf?configName=#{td.value.configRef}" />
     </sun:tableColumn>
     <sun:tableColumn headerText="$resource{i18ncs.common.NodeCol}" sort="node" rowHeader="$boolean{true}" id="col5">
-        <sun:hyperlink id="nodeAgentlink" text="#{td.value.node}"  url="#{request.contextPath}/cluster/node/nodeEdit.jsf?nodeName=#{td.value.node}" />
+        <sun:hyperlink id="nodeAgentlink" text="#{td.value.nodeRef}"  url="#{request.contextPath}/cluster/node/nodeEdit.jsf?nodeName=#{td.value.nodeRef}" />
     </sun:tableColumn>
     <sun:tableColumn headerText="$resource{i18n.common.Status}"  rowHeader="$boolean{true}" id="col6">
         <staticText id="statusCol" value="#{requestScope.statusString}" >
