@@ -191,7 +191,7 @@ public class ClusterOperationUtil {
                     returnValue = finalResult;
                 if(finalResult != ActionReport.ExitCode.SUCCESS) {
                     instanceState.setState(s, InstanceState.StateType.RESTART_REQUIRED, false);
-                    instanceState.addFailedCommandToInstance(s, commandName+" "+parameters.getOne("DEFAULT"));
+                    instanceState.addFailedCommandToInstance(s, commandName, parameters);
                 }
             } catch (Exception ex) {
                 ActionReport aReport = context.getActionReport().addSubActionsReport();
@@ -209,7 +209,7 @@ public class ClusterOperationUtil {
                 if(returnValue == ActionReport.ExitCode.SUCCESS)
                     returnValue = finalResult;
                 instanceState.setState(s, InstanceState.StateType.RESTART_REQUIRED, false);
-                instanceState.addFailedCommandToInstance(s, commandName+" "+parameters.getOne("DEFAULT"));
+                instanceState.addFailedCommandToInstance(s, commandName, parameters);
             }
         }
         return returnValue;
@@ -272,7 +272,7 @@ public class ClusterOperationUtil {
                     InstanceStateService instanceState = habitat.getComponent(InstanceStateService.class);
                     for(Server s : targetService.getInstances(t)) {
                         instanceState.setState(s.getName(), InstanceState.StateType.RESTART_REQUIRED, false);
-                        instanceState.addFailedCommandToInstance(s.getName(), commandName+" "+parameters.getOne("DEFAULT"));
+                        instanceState.addFailedCommandToInstance(s.getName(), commandName, parameters);
                     }
                     result = ActionReport.ExitCode.WARNING;
                     continue;

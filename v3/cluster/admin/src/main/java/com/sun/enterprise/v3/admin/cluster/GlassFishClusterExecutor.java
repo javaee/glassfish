@@ -158,8 +158,7 @@ public class GlassFishClusterExecutor implements ClusterExecutor, PostConstruct 
                                     " dynamic-reconfig-enabled flag is set to false for cluster {0}", targetName));
                     for(Server s : targetService.getInstances(targetName)) {
                         instanceState.setState(s.getName(), InstanceState.StateType.RESTART_REQUIRED, false);
-                        instanceState.addFailedCommandToInstance(s.getName(),
-                                commandName+" "+parameters.getOne("DEFAULT"));
+                        instanceState.addFailedCommandToInstance(s.getName(), commandName, parameters);
                     }
                     return ActionReport.ExitCode.WARNING;
                 }

@@ -125,7 +125,11 @@ public class InstanceStateService implements Startup, PostConstruct {
         }
     }
 
-    public synchronized void addFailedCommandToInstance(String instance, String cmdDetails) {
+    public synchronized void addFailedCommandToInstance(String instance, String cmd, ParameterMap params) {
+        String cmdDetails = cmd;
+        String defArg = params.getOne("DEFAULT");
+        if (defArg != null) cmdDetails += " " + defArg;
+
         try {
             InstanceState i = instanceStates.get(instance);
             if( (i != null) && (i.getFailedCommands().size() < MAX_RECORDED_FAILED_COMMANDS) ) {
