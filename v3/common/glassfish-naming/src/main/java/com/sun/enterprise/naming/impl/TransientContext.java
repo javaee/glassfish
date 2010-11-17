@@ -45,7 +45,11 @@ import com.sun.enterprise.naming.util.LogFacade;
 import javax.naming.*;
 import java.io.Serializable;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Map;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -57,12 +61,17 @@ import java.util.logging.Logger;
  * An example for using this is in /test/subcontext
  */
 public class TransientContext implements Context, Serializable {
-    static Logger _logger = LogFacade.getLogger();
+    static final Logger _logger = LogFacade.getLogger();
 
     public static final boolean debug = false;
     Hashtable myEnv;
-    private Hashtable bindings = new Hashtable();
+    private Map<String,Object> bindings = new HashMap<String,Object>();
     static NameParser myParser = new SerialNameParser();
+
+    // Issue 7067: lots of lookup failures in a heavily concurrent client.
+    // So add a read/write lock, which allows unlimited concurrent readers,
+    // and only imposes a global lock on relatively infrequent updates.
+    private static final ReadWriteLock lock = new ReentrantReadWriteLock() ;
 
     public TransientContext() {
     }
@@ -73,6 +82,7 @@ public class TransientContext implements Context, Serializable {
      * @return the created subcontext.
      * @throws NamingException if there is a naming exception.
      */
+    @Override
     public Context createSubcontext(String name) throws NamingException {
         return drillDownAndCreateSubcontext(name);
     }
@@ -83,6 +93,7 @@ public class TransientContext implements Context, Serializable {
      * @return the created subcontext.
      * @throws NamingException if there is a naming exception.
      */
+    @Override
     public Context createSubcontext(Name name) throws NamingException {
         return createSubcontext(name.toString());
     }
@@ -92,6 +103,7 @@ public class TransientContext implements Context, Serializable {
      *
      * @throws NamingException if there is a naming exception.
      */
+    @Override
     public void destroySubcontext(String name) throws NamingException {
         drillDownAndDestroySubcontext(name);
     }
@@ -101,6 +113,7 @@ public class TransientContext implements Context, Serializable {
      *
      * @throws NamingException if there is a naming exception.
      */
+    @Override
     public void destroySubcontext(Name name) throws NamingException {
         destroySubcontext(name.toString());
     }
@@ -114,30 +127,35 @@ public class TransientContext implements Context, Serializable {
      * @return the created subcontext.
      * @throws NamingException if there is a Naming exception
      */
-    public Context drillDownAndCreateSubcontext(String name)
+    private Context drillDownAndCreateSubcontext(String name)
             throws NamingException {
-        Name n = new CompositeName(name);
-        if (n.size() <= 1) { // bottom
-            if (bindings.containsKey(name)) {
-                throw new NameAlreadyBoundException("Subcontext " +
-                        name + "already present");
-            }
+        lock.writeLock().lock() ;
+        try {
+            Name n = new CompositeName(name);
+            if (n.size() <= 1) { // bottom
+                if (bindings.containsKey(name)) {
+                    throw new NameAlreadyBoundException("Subcontext " +
+                            name + "already present");
+                }
 
-            TransientContext ctx = null;
-            ctx = new TransientContext();
-            bindings.put(name, ctx);
-            return ctx;
-        } else {
-            String suffix = n.getSuffix(1).toString();
-            Context retCtx, ctx; // the created context
-            try {
-                ctx = resolveContext(n.get(0));
-            } catch (NameNotFoundException e) {
+                TransientContext ctx = null;
                 ctx = new TransientContext();
+                bindings.put(name, ctx);
+                return ctx;
+            } else {
+                String suffix = n.getSuffix(1).toString();
+                Context retCtx, ctx; // the created context
+                try {
+                    ctx = resolveContext(n.get(0));
+                } catch (NameNotFoundException e) {
+                    ctx = new TransientContext();
+                }
+                retCtx = ctx.createSubcontext(suffix);
+                bindings.put(n.get(0), ctx);
+                return retCtx;
             }
-            retCtx = ctx.createSubcontext(suffix);
-            bindings.put(n.get(0), ctx);
-            return retCtx;
+        } finally {
+            lock.writeLock().unlock();
         }
     }
 
@@ -148,24 +166,29 @@ public class TransientContext implements Context, Serializable {
      *
      * @throws NamingException if there is a naming exception
      */
-    public void drillDownAndDestroySubcontext(String name)
+    private void drillDownAndDestroySubcontext(String name)
             throws NamingException {
-        Name n = new CompositeName(name);
-        if (n.size() < 1) {
-            throw new InvalidNameException("Cannot destoy empty subcontext");
-        }
-        if (n.size() == 1) { // bottom
-            if (bindings.containsKey(name)) {
-                bindings.remove(name);
-            } else {
-                throw new NameNotFoundException("Subcontext: " + name +
-                        " not found");
+        lock.writeLock().lock();
+        try {
+            Name n = new CompositeName(name);
+            if (n.size() < 1) {
+                throw new InvalidNameException("Cannot destoy empty subcontext");
             }
-        } else {
-            String suffix = n.getSuffix(1).toString();
-            Context ctx; // the context to drill down from
-            ctx = resolveContext(n.get(0));
-            ctx.destroySubcontext(suffix);
+            if (n.size() == 1) { // bottom
+                if (bindings.containsKey(name)) {
+                    bindings.remove(name);
+                } else {
+                    throw new NameNotFoundException("Subcontext: " + name +
+                            " not found");
+                }
+            } else {
+                String suffix = n.getSuffix(1).toString();
+                Context ctx; // the context to drill down from
+                ctx = resolveContext(n.get(0));
+                ctx.destroySubcontext(suffix);
+            }
+        } finally {
+            lock.writeLock().unlock();
         }
     }
 
@@ -176,18 +199,24 @@ public class TransientContext implements Context, Serializable {
      * @throws NamingException          if there is a naming exception.
      * @throws java.rmi.RemoteException if there is an RMI exception.
      */
+    @Override
     public Object lookup(String name) throws NamingException {
-        Name n = new CompositeName(name);
-        if (n.size() < 1) {
-            throw new InvalidNameException("Cannot bind empty name");
-        }
+        lock.readLock().lock() ;
+        try {
+            Name n = new CompositeName(name);
+            if (n.size() < 1) {
+                throw new InvalidNameException("Cannot bind empty name");
+            }
 
-        if (n.size() == 1) { // bottom
-            return doLookup(n.toString());
-        } else {
-            String suffix = n.getSuffix(1).toString();
-            TransientContext ctx = resolveContext(n.get(0));
-            return ctx.lookup(suffix);
+            if (n.size() == 1) { // bottom
+                return doLookup(n.toString());
+            } else {
+                String suffix = n.getSuffix(1).toString();
+                TransientContext ctx = resolveContext(n.get(0));
+                return ctx.lookup(suffix);
+            }
+        } finally {
+            lock.readLock().unlock();
         }
     }
 
@@ -198,6 +227,7 @@ public class TransientContext implements Context, Serializable {
      * @throws NamingException          if there is a naming exception.
      * @throws java.rmi.RemoteException if there is an RMI exception.
      */
+    @Override
     public Object lookup(Name name) throws NamingException {
         return lookup(name.toString());
     }
@@ -223,22 +253,28 @@ public class TransientContext implements Context, Serializable {
      * @throws NamingException          if there is a naming exception.
      * @throws java.rmi.RemoteException if there is an RMI exception.
      */
+    @Override
     public void bind(String name, Object obj) throws NamingException {
-        Name n = new CompositeName(name);
-        if (n.size() < 1) {
-            throw new InvalidNameException("Cannot bind empty name");
-        }
-        if (n.size() == 1) { // bottom
-            doBindOrRebind(n.toString(), obj, false);
-        } else {
-            String suffix = n.getSuffix(1).toString();
-            Context ctx;
-            try {
-                ctx = resolveContext(n.get(0));
-            } catch (NameNotFoundException e) {
-                ctx = createSubcontext(n.get(0));
+        lock.writeLock().lock();
+        try {
+            Name n = new CompositeName(name);
+            if (n.size() < 1) {
+                throw new InvalidNameException("Cannot bind empty name");
             }
-            ctx.bind(suffix, obj);
+            if (n.size() == 1) { // bottom
+                doBindOrRebind(n.toString(), obj, false);
+            } else {
+                String suffix = n.getSuffix(1).toString();
+                Context ctx;
+                try {
+                    ctx = resolveContext(n.get(0));
+                } catch (NameNotFoundException e) {
+                    ctx = createSubcontext(n.get(0));
+                }
+                ctx.bind(suffix, obj);
+            }
+        } finally {
+            lock.writeLock().unlock();
         }
     }
 
@@ -248,6 +284,7 @@ public class TransientContext implements Context, Serializable {
      * @throws NamingException          if there is a naming exception.
      * @throws java.rmi.RemoteException if there is an RMI exception.
      */
+    @Override
     public void bind(Name name, Object obj)
             throws NamingException {
         bind(name.toString(), obj);
@@ -304,24 +341,30 @@ public class TransientContext implements Context, Serializable {
      * @throws NamingException          if there is a naming exception
      * @throws java.rmi.RemoteException if there is a RMI exception
      */
+    @Override
     public void rebind(String name, Object obj)
             throws NamingException {
-        Name n = new CompositeName(name);
-        if (n.size() < 1) {
-            throw new InvalidNameException("Cannot bind empty name");
-        }
-        if (n.size() == 1) { // bottom
-            doBindOrRebind(n.toString(), obj, true);
-        } else {
-            String suffix = n.getSuffix(1).toString();
-            Context ctx = null;
-            try {
-                ctx = resolveContext(n.get(0));
-                ctx.rebind(suffix, obj);
-            } catch (NameNotFoundException e) {
-                ctx = createSubcontext(n.get(0));
-                ctx.rebind(suffix, obj);
+        lock.writeLock().lock();
+        try {
+            Name n = new CompositeName(name);
+            if (n.size() < 1) {
+                throw new InvalidNameException("Cannot bind empty name");
             }
+            if (n.size() == 1) { // bottom
+                doBindOrRebind(n.toString(), obj, true);
+            } else {
+                String suffix = n.getSuffix(1).toString();
+                Context ctx = null;
+                try {
+                    ctx = resolveContext(n.get(0));
+                    ctx.rebind(suffix, obj);
+                } catch (NameNotFoundException e) {
+                    ctx = createSubcontext(n.get(0));
+                    ctx.rebind(suffix, obj);
+                }
+            }
+        } finally {
+            lock.writeLock().unlock();
         }
     }
 
@@ -331,6 +374,7 @@ public class TransientContext implements Context, Serializable {
      * @throws NamingException          if there is a naming exception
      * @throws java.rmi.RemoteException if there is a RMI exception
      */
+    @Override
     public void rebind(Name name, Object obj)
             throws NamingException {
         rebind(name.toString(), obj);
@@ -361,17 +405,23 @@ public class TransientContext implements Context, Serializable {
      * @throws NamingException          if there is a naming exception
      * @throws java.rmi.RemoteException if there is a RMI exception
      */
+    @Override
     public void unbind(String name) throws NamingException {
-        Name n = new CompositeName(name);
-        if (n.size() < 1) {
-            throw new InvalidNameException("Cannot unbind empty name");
-        }
-        if (n.size() == 1) { // bottom
-            doUnbind(n.toString());
-        } else {
-            String suffix = n.getSuffix(1).toString();
-            TransientContext ctx = resolveContext(n.get(0));
-            ctx.unbind(suffix);
+        lock.writeLock().lock();
+        try {
+            Name n = new CompositeName(name);
+            if (n.size() < 1) {
+                throw new InvalidNameException("Cannot unbind empty name");
+            }
+            if (n.size() == 1) { // bottom
+                doUnbind(n.toString());
+            } else {
+                String suffix = n.getSuffix(1).toString();
+                TransientContext ctx = resolveContext(n.get(0));
+                ctx.unbind(suffix);
+            }
+        } finally {
+            lock.writeLock().unlock();
         }
     }
 
@@ -381,6 +431,7 @@ public class TransientContext implements Context, Serializable {
      * @throws NamingException          if there is a naming exception
      * @throws java.rmi.RemoteException if there is a RMI exception
      */
+    @Override
     public void unbind(Name name)
             throws NamingException {
         unbind(name.toString());
@@ -392,6 +443,7 @@ public class TransientContext implements Context, Serializable {
      * @throws NamingException          if there is a naming exception
      * @throws java.rmi.RemoteException if there is a RMI exception
      */
+    @Override
     public void rename(Name oldname, Name newname) throws NamingException {
         rename(oldname.toString(), newname.toString());
     }
@@ -402,25 +454,31 @@ public class TransientContext implements Context, Serializable {
      * @throws NamingException          if there is a naming exception
      * @throws java.rmi.RemoteException if there is a RMI exception
      */
+    @Override
     public void rename(String oldname, String newname)
             throws NamingException {
         if (oldname.equals("") || newname.equals("")) {
             throw new InvalidNameException("Cannot rename empty name");
         }
 
-        // Check if new name exists
-        if (bindings.get(newname) != null) {
-            throw new NameAlreadyBoundException(newname +
-                    " is already bound");
-        }
+        lock.writeLock().lock() ;
+        try {
+            // Check if new name exists
+            if (bindings.get(newname) != null) {
+                throw new NameAlreadyBoundException(newname +
+                        " is already bound");
+            }
 
-        // Check if old name is bound
-        Object oldBinding = bindings.remove(oldname);
-        if (oldBinding == null) {
-            throw new NameNotFoundException(oldname + " not bound");
-        }
+            // Check if old name is bound
+            Object oldBinding = bindings.remove(oldname);
+            if (oldBinding == null) {
+                throw new NameNotFoundException(oldname + " not bound");
+            }
 
-        bindings.put(newname, oldBinding);
+            bindings.put(newname, oldBinding);
+        } finally {
+            lock.writeLock().unlock();
+        }
     }
 
     /**
@@ -430,7 +488,12 @@ public class TransientContext implements Context, Serializable {
      * @throws java.rmi.RemoteException if there is a RMI exception
      */
     public Hashtable list() {
-        return bindings;
+        lock.readLock().lock();
+        try {
+            return new Hashtable(bindings);
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     /**
@@ -440,17 +503,23 @@ public class TransientContext implements Context, Serializable {
      * @throws java.rmi.RemoteException if there is a RMI exception
      */
     public Hashtable listContext(String name) throws NamingException {
-        if (debug) {
-            print(bindings);
-        }
-        if (name.equals(""))
-            return bindings;
+        lock.readLock().lock();
+        try {
+            if (debug) {
+                print(bindings);
+            }
+            if (name.equals("")) {
+                return new Hashtable(bindings);
+            }
 
-        Object target = lookup(name);
-        if (target instanceof TransientContext) {
-            return ((TransientContext) target).listContext("");
+            Object target = lookup(name);
+            if (target instanceof TransientContext) {
+                return ((TransientContext) target).listContext("");
+            }
+            throw new NotContextException(name + " cannot be listed");
+        } finally {
+            lock.readLock().unlock();
         }
-        throw new NotContextException(name + " cannot be listed");
     }
 
     /**
@@ -458,6 +527,7 @@ public class TransientContext implements Context, Serializable {
      *
      * @throws NamingException if there is a naming exception
      */
+    @Override
     public NamingEnumeration list(Name name) throws NamingException {
         return list(name.toString());
     }
@@ -467,18 +537,25 @@ public class TransientContext implements Context, Serializable {
      *
      * @throws NamingException if there is a naming exception
      */
+    @Override
     public NamingEnumeration list(String name) throws NamingException {
-        if (debug) {
-            print(bindings);
-        }
-        if (name.equals(""))
-            return new RepNames(bindings);
+        lock.readLock().lock() ;
+        try {
+            if (debug) {
+                print(bindings);
+            }
+            if (name.equals("")) {
+                return new RepNames(new Hashtable(bindings));
+            }
 
-        Object target = lookup(name);
-        if (target instanceof Context) {
-            return ((Context) target).list("");
+            Object target = lookup(name);
+            if (target instanceof Context) {
+                return ((Context) target).list("");
+            }
+            throw new NotContextException(name + " cannot be listed");
+        } finally {
+            lock.readLock().unlock();
         }
-        throw new NotContextException(name + " cannot be listed");
     }
 
     /**
@@ -486,15 +563,22 @@ public class TransientContext implements Context, Serializable {
      *
      * @throws NamingException if there is a naming exception
      */
+    @Override
     public NamingEnumeration listBindings(String name) throws NamingException {
-        if (name.equals(""))
-            return new RepBindings(bindings);
+        lock.readLock().lock() ;
+        try {
+            if (name.equals("")) {
+                return new RepBindings(new Hashtable(bindings));
+            }
 
-        Object target = lookup(name);
-        if (target instanceof Context) {
-            return ((Context) target).listBindings("");
+            Object target = lookup(name);
+            if (target instanceof Context) {
+                return ((Context) target).listBindings("");
+            }
+            throw new NotContextException(name + " cannot be listed");
+        } finally {
+            lock.readLock().unlock();
         }
-        throw new NotContextException(name + " cannot be listed");
     }
 
     /**
@@ -502,6 +586,7 @@ public class TransientContext implements Context, Serializable {
      *
      * @throws NamingException if there is a naming exception
      */
+    @Override
     public NamingEnumeration listBindings(Name name) throws NamingException {
         return listBindings(name.toString());
     }
@@ -511,6 +596,7 @@ public class TransientContext implements Context, Serializable {
      *
      * @throws NamingException if there is a naming exception
      */
+    @Override
     public Object lookupLink(String name) throws NamingException {
         // This flat context does not treat links specially
         return lookup(name);
@@ -521,6 +607,7 @@ public class TransientContext implements Context, Serializable {
      *
      * @throws NamingException if there is a naming exception
      */
+    @Override
     public Object lookupLink(Name name) throws NamingException {
         // Flat namespace; no federation; just call string version
         return lookupLink(name.toString());
@@ -531,6 +618,7 @@ public class TransientContext implements Context, Serializable {
      *
      * @throws NamingException if there is a naming exception
      */
+    @Override
     public NameParser getNameParser(String name) throws NamingException {
         return myParser;
     }
@@ -540,6 +628,7 @@ public class TransientContext implements Context, Serializable {
      *
      * @throws NamingException if there is a naming exception
      */
+    @Override
     public NameParser getNameParser(Name name) throws NamingException {
         // Flat namespace; no federation; just call string version
         return getNameParser(name.toString());
@@ -551,6 +640,7 @@ public class TransientContext implements Context, Serializable {
      * @return null
      * @throws NamingException if there is a naming exception
      */
+    @Override
     public String composeName(String name, String prefix)
             throws NamingException {
         return null;
@@ -562,6 +652,7 @@ public class TransientContext implements Context, Serializable {
      * @return Name result of the concatenation
      * @throws NamingException if there is a naming exception
      */
+    @Override
     public Name composeName(Name name, Name prefix)
             throws NamingException {
         Name result = (Name) (prefix.clone());
@@ -574,12 +665,18 @@ public class TransientContext implements Context, Serializable {
      *
      * @throws NamingException if there is a naming exception
      */
+    @Override
     public Object addToEnvironment(String propName, Object propVal)
             throws NamingException {
-        if (myEnv == null) {
-            myEnv = new Hashtable(5, 0.75f);
+        lock.writeLock().lock() ;
+        try {
+            if (myEnv == null) {
+                myEnv = new Hashtable(5, 0.75f);
+            }
+            return myEnv.put(propName, propVal);
+        } finally {
+            lock.writeLock().unlock();
         }
-        return myEnv.put(propName, propVal);
     }
 
     /**
@@ -587,12 +684,18 @@ public class TransientContext implements Context, Serializable {
      *
      * @throws NamingException if there is a naming exception
      */
+    @Override
     public Object removeFromEnvironment(String propName)
             throws NamingException {
-        if (myEnv == null) {
-            return null;
+        lock.writeLock().lock() ;
+        try {
+            if (myEnv == null) {
+                return null;
+            }
+            return myEnv.remove(propName);
+        } finally {
+            lock.writeLock().unlock();
         }
-        return myEnv.remove(propName);
     }
 
     /**
@@ -600,17 +703,24 @@ public class TransientContext implements Context, Serializable {
      *
      * @throws NamingException if there is a naming exception
      */
+    @Override
     public Hashtable getEnvironment() throws NamingException {
-        if (myEnv == null) {
-            // Must return non-null
-            myEnv = new Hashtable(3, 0.75f);
+        lock.writeLock().lock() ;
+        try {
+            if (myEnv == null) {
+                // Must return non-null
+                myEnv = new Hashtable(3, 0.75f);
+            }
+            return myEnv;
+        } finally {
+            lock.writeLock().unlock();
         }
-        return myEnv;
     }
 
     /**
      * Invalidate the current environment.
      */
+    @Override
     public void close() throws NamingException {
         myEnv = null;
     }
@@ -618,6 +728,7 @@ public class TransientContext implements Context, Serializable {
     /**
      * Operation not supported.
      */
+    @Override
     public String getNameInNamespace() throws NamingException {
         throw new OperationNotSupportedException("getNameInNamespace() " +
                 "not implemented");
@@ -626,14 +737,13 @@ public class TransientContext implements Context, Serializable {
     /**
      * Print the current hashtable.
      */
-    private static void print(Hashtable ht) {
-        for (Enumeration en = ht.keys(); en.hasMoreElements();) {
-            Object key = en.nextElement();
-            Object value = ht.get(key);
+    private static void print(Map<String,Object> ht) {
+        for( Map.Entry<String,Object> entry : ht.entrySet()) {
+            String key = entry.getKey() ;
+            Object value = entry.getValue() ;
             if (_logger.isLoggable(Level.FINE)) {
-                _logger.log(Level.FINE, "[" + key + ":" +
-                        key.getClass().getName() +
-                        ", " + value + ":" + value.getClass().getName() + "]");
+                _logger.log(Level.FINE, "[{0}, {1}:{2}]",
+                        new Object[]{key, value, value.getClass().getName()});
             }
             // END OF IASRI 4660742
         }
@@ -649,14 +759,17 @@ public class TransientContext implements Context, Serializable {
             this.names = bindings.keys();
         }
 
+        @Override
         public boolean hasMoreElements() {
             return names.hasMoreElements();
         }
 
+        @Override
         public boolean hasMore() throws NamingException {
             return hasMoreElements();
         }
 
+        @Override
         public Object nextElement() {
             if (names.hasMoreElements()) {
                 String name = (String) names.nextElement();
@@ -666,11 +779,13 @@ public class TransientContext implements Context, Serializable {
                 return null;
         }
 
+        @Override
         public Object next() throws NamingException {
             return nextElement();
         }
 
         // New API for JNDI 1.2
+        @Override
         public void close() throws NamingException {
             throw new OperationNotSupportedException("close() not implemented");
         }
@@ -686,27 +801,33 @@ public class TransientContext implements Context, Serializable {
             this.names = bindings.keys();
         }
 
+        @Override
         public boolean hasMoreElements() {
             return names.hasMoreElements();
         }
 
+        @Override
         public boolean hasMore() throws NamingException {
             return hasMoreElements();
         }
 
+        @Override
         public Object nextElement() {
             if (hasMoreElements()) {
                 String name = (String) names.nextElement();
                 return new Binding(name, bindings.get(name));
-            } else
+            } else {
                 return null;
+            }
         }
 
+        @Override
         public Object next() throws NamingException {
             return nextElement();
         }
 
         // New API for JNDI 1.2
+        @Override
         public void close() throws NamingException {
             throw new
                     OperationNotSupportedException("close() not implemented");
