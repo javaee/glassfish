@@ -113,9 +113,10 @@ public interface RunLevelService<T> {
   void proceedTo(int runLevel);
   
   /**
-   * Causes this RunLevelService to attempt to stop in-flight any
-   * currently progressing proceedTo() operation.  This call will
-   * have not affect if there is no current proceedTo() running.
+   * Causes this RunLevelService to attempt to stop any in-flight
+   * proceedTo() operation.  This call will not have any
+   * any affect if there is no current proceedTo() operation
+   * in progress.
    * 
    * <p>
    * See the javadoc for each implementation for specific details 
