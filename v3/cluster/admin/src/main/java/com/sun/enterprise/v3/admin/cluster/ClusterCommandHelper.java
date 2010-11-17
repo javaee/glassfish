@@ -329,7 +329,7 @@ class ClusterCommandHelper {
         // Distribute servers into serverTable
         int count = 0;
         for (Server server : original) {
-            String nodeName = server.getNode();
+            String nodeName = server.getNodeRef();
 
             List<Server> serverList = serverTable.get(nodeName);
             if (serverList == null) {
@@ -360,7 +360,7 @@ class ClusterCommandHelper {
     private String serverListToString(List<Server> servers) {
         StringBuilder sb = new StringBuilder();
         for (Server s : servers) {
-            sb.append(s.getNode() + "-" + s.getName() + " ");
+            sb.append(s.getNodeRef() + "-" + s.getName() + " ");
         }
         return sb.toString();
     }

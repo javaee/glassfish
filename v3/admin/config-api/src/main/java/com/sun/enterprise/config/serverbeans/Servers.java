@@ -115,7 +115,7 @@ public interface Servers extends ConfigBeanProxy, Injectable  {
             String nodeName = node.getName();
             if (serverList.size() > 0) {
                 for (Server server: serverList){
-                    if (nodeName.equals(server.getNode())){
+                    if (nodeName.equals(server.getNodeRef())){
                         serverListOnNode.add(server);
                     }
                 }

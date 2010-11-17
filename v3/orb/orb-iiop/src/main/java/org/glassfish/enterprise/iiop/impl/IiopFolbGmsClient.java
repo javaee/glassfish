@@ -342,7 +342,7 @@ public class IiopFolbGmsClient implements CallBack {
 
         String hostName = null ;
 
-        String nodeName = server.getNode() ;
+        String nodeName = server.getNodeRef() ;
         if (nodeName.equals("localhost")) {
             try {
                 hostName = InetAddress.getLocalHost().getHostName() ;

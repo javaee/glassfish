@@ -236,7 +236,7 @@ public class LogFilter {
             // store under glassfish/domains/domain1/logs/<instance name>/ directory which is used to get LogFile object.
             // Right now user needs to go through this URL to setup and configure ssh http://wikis.sun.com/display/GlassFish/3.1SSHSetup
 
-            String serverNode = targetServer.getNode();
+            String serverNode = targetServer.getNodeRef();
 
             if (serverNode.equals("localhost") || serverNode.equals("127.0.0.1")) {
 

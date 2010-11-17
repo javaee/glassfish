@@ -166,11 +166,11 @@ public class ChangeMasterBrokerCommand extends JMSDestination implements AdminCo
 	      if(sp != null) oldMasterBrokerPort = sp.getValue();
        }
        if(oldMasterBrokerPort == null) oldMasterBrokerPort = getDefaultJmsHost(jmsservice).getPort();
-       String oldMasterBrokerHost = nodes.getNode(oldMBServer.getNode()).getNodeHost();
+       String oldMasterBrokerHost = nodes.getNode(oldMBServer.getNodeRef()).getNodeHost();
 
        String newMasterBrokerPort = JmsRaUtil.getJMSPropertyValue(newMBServer);
        if(newMasterBrokerPort == null) newMasterBrokerPort = getDefaultJmsHost(jmsservice).getPort();
-       String newMasterBrokerHost = nodes.getNode(newMBServer.getNode()).getNodeHost();
+       String newMasterBrokerHost = nodes.getNode(newMBServer.getNodeRef()).getNodeHost();
 
 
        String oldMasterBroker = oldMasterBrokerHost + ":" + oldMasterBrokerPort;

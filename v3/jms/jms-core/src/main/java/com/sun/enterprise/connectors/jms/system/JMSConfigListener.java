@@ -132,7 +132,7 @@ public class JMSConfigListener implements ConfigListener{
              Server newMBServer = domain.getServerNamed(newMB);
              if(newMBServer != null)
              {
-                 Node node = domain.getNodeNamed(newMBServer.getNode());
+                 Node node = domain.getNodeNamed(newMBServer.getNodeRef());
                  String newMasterBrokerPort = JmsRaUtil.getJMSPropertyValue(newMBServer);
                  if(newMasterBrokerPort == null) newMasterBrokerPort = getDefaultJmsHost(jmsservice).getPort();
                  String newMasterBrokerHost = node.getNodeHost();
@@ -158,7 +158,7 @@ public class JMSConfigListener implements ConfigListener{
                if (thisServer.isDas())return null;
 
                if(jmsProviderPort != null){
-                    String nodeName = changedServer.getNode();
+                    String nodeName = changedServer.getNodeRef();
                     String nodeHost = null;
 
                    if(nodeName != null)

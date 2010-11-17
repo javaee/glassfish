@@ -168,13 +168,13 @@ public class JMSPing implements AdminCommand {
         Server targetServer = domain.getServerNamed(target);
             if (targetServer != null && ! targetServer.isDas()) {
                 port = JmsRaUtil.getJMSPropertyValue(targetServer);
-                host = domain.getNodeNamed(targetServer.getNode()).getNodeHost();
+                host = domain.getNodeNamed(targetServer.getNodeRef()).getNodeHost();
             } else{
                 Cluster cluster = domain.getClusterNamed(target);
                 if (cluster != null && cluster.getInstances().size() != 0) {
                     targetServer = cluster.getInstances().get(0);
                     port = JmsRaUtil.getJMSPropertyValue(targetServer);
-                    host = domain.getNodeNamed(targetServer.getNode()).getNodeHost();
+                    host = domain.getNodeNamed(targetServer.getNodeRef()).getNodeHost();
                 }
             }
 

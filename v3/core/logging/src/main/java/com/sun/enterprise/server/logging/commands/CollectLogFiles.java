@@ -202,7 +202,7 @@ public class CollectLogFiles implements AdminCommand {
             // This loop if target standalone instance
 
             String instanceName = targetServer.getName();
-            String serverNode = targetServer.getNode();
+            String serverNode = targetServer.getNodeRef();
             File tempDirectory = null;
             String zipFile = "";
             File targetDir = null;
@@ -309,7 +309,7 @@ public class CollectLogFiles implements AdminCommand {
             for (Server instance : instances) {
                 // downloading log files for all instances which is part of cluster under temp directory.
                 String instanceName = instance.getName();
-                String serverNode = instance.getNode();
+                String serverNode = instance.getNodeRef();
                 boolean errorOccur = false;
                 instanceCount++;
                 try {

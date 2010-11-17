@@ -505,7 +505,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
                                         "BrokerEnableHA flag","java.lang.Boolean");
                         setProperty(cd, envProp4);
 
-                        String nodeHostName = domain.getNodeNamed(server.getNode()).getNodeHost();
+                        String nodeHostName = domain.getNodeNamed(server.getNodeRef()).getNodeHost();
                         if (nodeHostName != null)  {
                                 ConnectorConfigProperty  envProp5 = new ConnectorConfigProperty  (
                                                 BROKERBINDADDRESS , nodeHostName,

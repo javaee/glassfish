@@ -164,7 +164,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      * @throws PropertyVetoException if a listener vetoes the change
      */
     @Param(name = PARAM_NODE, optional = true)
-    void setNode(String value) throws PropertyVetoException;
+    void setNodeRef(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the node property.
@@ -175,8 +175,8 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      *         {@link String }
      */
     @Attribute
-    String getNode();
-
+    String getNodeRef();
+    
     /**
      * Gets the value of the lbWeight property.
      *

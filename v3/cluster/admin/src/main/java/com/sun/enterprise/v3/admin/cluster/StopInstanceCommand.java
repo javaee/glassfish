@@ -164,7 +164,7 @@ public class StopInstanceCommand extends StopServer implements AdminCommand, Pos
         // if localhost check if files exists
         // else if SSH check if file exists  on remote system
         // else can't check anything else.
-        String nodeName = instance.getNode();
+        String nodeName = instance.getNodeRef();
         Node node = nodes.getNode(nodeName);
         String nodeHost = node.getNodeHost();
         InstanceDirUtils insDU = new InstanceDirUtils(node, serverContext);
@@ -269,7 +269,7 @@ public class StopInstanceCommand extends StopServer implements AdminCommand, Pos
         if (msg != null)
             return msg;
 
-        String nodeName = instance.getNode();
+        String nodeName = instance.getNodeRef();
         Node node = nodes.getNode(nodeName);
         NodeUtils nodeUtils = new NodeUtils(habitat, logger);
 

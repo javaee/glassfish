@@ -130,7 +130,7 @@ public class DeleteInstanceCommand implements AdminCommand {
         // from the config no matter if we could delete the files or not.
 
         // Get the name of the node from the instance's node-ref field
-        noderef = instance.getNode();
+        noderef = instance.getNodeRef();
         if(!StringUtils.ok(noderef)) {
             msg = Strings.get("missingNodeRef", instanceName);
             fsfailure = true;

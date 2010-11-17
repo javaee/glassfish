@@ -77,7 +77,7 @@ public class LogFilterForInstance {
         // store in domains/domain1/logs/<instance name> which is used to get LogFile object.
         // Right now user needs to go through this URL to setup and configure ssh http://wikis.sun.com/display/GlassFish/3.1SSHSetup
         SSHLauncher sshL = getSSHL(habitat);
-        String sNode = targetServer.getNode();
+        String sNode = targetServer.getNodeRef();
         Nodes nodes = domain.getNodes();
         Node node = nodes.getNode(sNode);
         sshL.init(node, logger);
@@ -119,7 +119,7 @@ public class LogFilterForInstance {
         // store in  tempDirectoryOnServer which is used to create zip file.
         // Right now user needs to go through this URL to setup and configure ssh http://wikis.sun.com/display/GlassFish/3.1SSHSetup
         SSHLauncher sshL = getSSHL(habitat);
-        String sNode = targetServer.getNode();
+        String sNode = targetServer.getNodeRef();
         Nodes nodes = domain.getNodes();
         Node node = nodes.getNode(sNode);
         sshL.init(node, logger);
@@ -152,7 +152,7 @@ public class LogFilterForInstance {
                                           String instanceName) throws IOException {
 
         // helper method to get all log file names for given instance
-        String sNode = targetServer.getNode();
+        String sNode = targetServer.getNodeRef();
         Vector instanceLogFileNames = new Vector();
         Vector instanceLogFileNamesAsString = new Vector();
 

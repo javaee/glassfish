@@ -166,7 +166,7 @@ public class MQAddressList {
     }
 
     public String getNodeHostName(final Server as) throws Exception{
-        String nodeRef = as.getNode();
+        String nodeRef = as.getNodeRef();
         Nodes nodes = Globals.get(Nodes.class);
         Node node = nodes.getNode(nodeRef);
 

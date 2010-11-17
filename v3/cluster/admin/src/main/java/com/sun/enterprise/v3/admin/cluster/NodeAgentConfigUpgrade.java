@@ -127,7 +127,7 @@ public class NodeAgentConfigUpgrade implements ConfigurationUpgrade, PostConstru
 
                     for (Server s: serverList){
                         s = t.enroll(s);
-                        s.setNode(s.getNodeAgentRef());
+                        s.setNodeRef(s.getNodeAgentRef());
                         s.setNodeAgentRef(null);
                     }
                     //remove the node-agent element

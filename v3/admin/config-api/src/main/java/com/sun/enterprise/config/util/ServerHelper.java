@@ -124,7 +124,7 @@ public class ServerHelper {
         String hostName = null;
 
         // Get it from the node associated with the server
-        String nodeName = server.getNode();
+        String nodeName = server.getNodeRef();
         if (StringUtils.ok(nodeName)) {
             Node node = nodes.getNode(nodeName);
             if (node != null) {

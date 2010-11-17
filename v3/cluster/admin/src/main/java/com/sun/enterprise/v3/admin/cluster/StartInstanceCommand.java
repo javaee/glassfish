@@ -144,7 +144,7 @@ public class StartInstanceCommand implements AdminCommand {
             return;
         }
 
-        noderef = instance.getNode();
+        noderef = instance.getNodeRef();
         if(!StringUtils.ok(noderef)) {
             msg = Strings.get("missingNodeRef", instanceName);
             logger.severe(msg);

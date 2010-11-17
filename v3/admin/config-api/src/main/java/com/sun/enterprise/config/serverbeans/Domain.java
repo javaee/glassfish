@@ -499,7 +499,7 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
                 List<Server> servers = domain.getServers().getServer();
 
                 for(Server server : servers) {
-                    if(nodeName.equals(server.getNode()))
+                    if(nodeName.equals(server.getNodeRef()))
                             ret.add(server);
                 }
             }
@@ -520,7 +520,7 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
             try {
                 for(Server server : serverList) {
                     Cluster mycl = server.getCluster();
-                    if(nodeName.equals(server.getNode()) )   {
+                    if(nodeName.equals(server.getNodeRef()) )   {
                         clMap.put(mycl.getName(),mycl);
                     }
                 }

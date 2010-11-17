@@ -274,7 +274,7 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
             List<Server> serverList=servers.getServer();
             if (serverList != null) {
                 for (Server server : serverList){
-                    if (nodeName.equals(server.getNode())){
+                    if (nodeName.equals(server.getNodeRef())){
                         return true;
                     }
                 }
