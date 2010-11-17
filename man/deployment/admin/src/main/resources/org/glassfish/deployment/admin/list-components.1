@@ -27,7 +27,8 @@ DESCRIPTION
      deployed,  this subcommand lists all versions. To list which
      version is enabled, set the --long option to true. For  more
      information  about  module and application versions, see the
-     Oracle GlassFish Server 3.1 Application Deployment Guide.
+     Module and Application Versions in Oracle  GlassFish  Server
+     3.1 Application Deployment Guide.
 
      This subcommand is supported in remote mode only.
 
@@ -45,12 +46,13 @@ OPTIONS
 
          Lists the application-scoped  resources  for  each  com-
          ponent.  If  the  --subcomponents  option  is also used,
-         lists the application-scoped  resources  for  each  com-
-         ponent within an application.
+         lists  the   application-scoped   resources   for   each
 
-Java EE 6           Last change: 29 Sep 2010                    1
+Java EE 6           Last change: 16 Nov 2010                    1
 
 asadmin Utility Subcommands                    list-components(1)
+
+         component within an application.
 
      --subcomponents
 
@@ -88,22 +90,22 @@ OPERANDS
              Lists the components for the default server instance
              server and is the default value.
 
-         domain_name
+         domain
 
-             Lists the components for the named domain.
+             Lists the components for the domain.
 
          cluster_name
              Lists the components for every  server  instance  in
              the cluster.
 
+Java EE 6           Last change: 16 Nov 2010                    2
+
+asadmin Utility Subcommands                    list-components(1)
+
          instance_name
 
              Lists  the  components  for  a   particular   server
              instance.
-
-Java EE 6           Last change: 29 Sep 2010                    2
-
-asadmin Utility Subcommands                    list-components(1)
 
 EXAMPLES
      Example 1 Listing Components
@@ -127,5 +129,5 @@ SEE ALSO
 
      Oracle GlassFish Server 3.1 Application Deployment Guide
 
-Java EE 6           Last change: 29 Sep 2010                    3
+Java EE 6           Last change: 16 Nov 2010                    3
 

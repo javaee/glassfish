@@ -3,16 +3,18 @@ asadmin Utility Subcommands                  collect-log-files(1)
 
 NAME
      collect-log-files - collects all  available  log  files  and
-     creates a ZIP archive
+     creates a ZIP archive in the specified output directory
 
 SYNOPSIS
      collect-log-files [--help] [--target target]
-     [--outputfilepath pathname]
+     --outputfilepath pathname
 
 DESCRIPTION
      The collect-log-files subcommand collects all available  log
      files  for a specified GlassFish Server instance or cluster,
-     and compiles the logs into a single ZIP archive.
+     and compiles the logs into a single ZIP  archive.  This  ZIP
+     archive  is  created  in the directory specified with the --
+     outputfilepath option.
 
 OPTIONS
      --help
@@ -32,8 +34,10 @@ OPTIONS
      --outputfilepath
 
          The name of the directory in which the ZIP archive  will
-         be  saved.  The ZIP file is name is constructed from the
-         target and timestamp, as follows:
+         be saved. This option is required.
+
+         The ZIP file name is constructed from the specified tar-
+         get and timestamp, as follows:
 
            target_yyyy-mm-dd_hh-min-sec.zip
 
@@ -41,14 +45,14 @@ EXAMPLES
      Example 1 Collecting Log Files into a ZIP  Archive  for  All
      Logs in a Cluster
 
+Java EE 6           Last change: 11 Nov 2010                    1
+
+asadmin Utility Subcommands                  collect-log-files(1)
+
      This example generates a ZIP archive from the log files  for
      a  cluster named c1. The ZIP archive is saved in a directory
      named /space/output. In this example, the  cluster  c1  con-
      tains three server instances, named in1, in2, and in3.
-
-Java EE 6           Last change: 31 Aug 2010                    1
-
-asadmin Utility Subcommands                  collect-log-files(1)
 
        asadmin> collect-log-files --target c1 --outputfilepath /space/output
 
@@ -65,14 +69,12 @@ EXIT STATUS
                                  mand
 
 SEE ALSO
-     display-error-distribution(1),  display-error-statistics(1),
-     display-log-records(1),  list-log-levels(1),  rotate-log(1),
-     set-log-levels(1)
+     list-log-levels(1), rotate-log(1), set-log-levels(1)
 
      asadmin(1M)
 
      Chapter 7, Administering  the  Logging  Service,  in  Oracle
      GlassFish Server 3.1 Administration Guide
 
-Java EE 6           Last change: 31 Aug 2010                    2
+Java EE 6           Last change: 11 Nov 2010                    2
 

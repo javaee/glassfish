@@ -29,8 +29,8 @@ DESCRIPTION
               directory
 
      Logging levels can be configured by using the Administration
-     Console or the set-log-level subcommand.  Additional proper-
-     ties can be set by using the Administration  Console  or  by
+     Console  or  the set-log-levels subcommand.  Additional pro-
+     perties can be set by using the Administration Console or by
      editing    the    logging.properties   file.   The   default
      logging.properties file  is  typically  located  in  domain-
      dir/config.
@@ -40,12 +40,12 @@ DESCRIPTION
      JSR 047 API is recommended for better log configuration.
 
 SEE ALSO
-     list-logger-levels(1), rotate-log(1), set-log-level(1)
+     list-log-levels(1), rotate-log(1), set-log-levels(1)
 
      asadmin(1M)
 
      Chapter 7, Administering  the  Logging  Service,  in  Oracle
      GlassFish Server 3.1 Administration Guide
 
-Java EE 6            Last change: 8 Oct 2009                    1
+Java EE 6           Last change: 01 Nov 2010                    1
 

@@ -54,8 +54,8 @@ Java EE 6           Last change: 17 Oct 2010                    1
 
 asadmin Utility Subcommands                       install-node(1)
 
-         o    The --password option of the asadmin  utility  must
-              specify a password file.
+         o    The --passwordfile option of  the  asadmin  utility
+              must specify a password file.
 
          o    The    password    file    must     contain     the
               AS_ADMIN_SSHPASSWORD entry.
@@ -123,12 +123,12 @@ asadmin Utility Subcommands                       install-node(1)
          default is 22.
 
      --sshuser
-         The SSH user that is to run the process  for  connecting
-         to the host where the GlassFish Server software is to be
-         installed. The default is the user that is  running  the
-         DAS process. To ensure that the DAS can read this user's
-         SSH private key file, specify the user that  is  running
-         the DAS process.
+         The user that is  to  run  the  process  for  connecting
+         through  SSH  to  the  host  where  the GlassFish Server
+         software is to be installed. The  default  is  the  user
+         that  is running the DAS process. To ensure that the DAS
+         can read this user's SSH private key file,  specify  the
+         user that is running the DAS process.
 
      --sshkeyfile
 
@@ -147,7 +147,7 @@ asadmin Utility Subcommands                       install-node(1)
 
              o    id_dsa
 
-             o    identitylocation
+             o    identity
 
 OPERANDS
      host-list

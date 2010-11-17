@@ -46,21 +46,18 @@ OPTIONS
                   instance as the target for creating the lifecy-
                   cle module.
 
-             o    configuration_name- Specifies a particular con-
-                  figuration  as  the  target  for  creating  the
-                  lifecycle module.
+     --classpath
+         This option indicates  where  this  module  is  actually
+         located  if  it  is  not  under  the  applications  root
 
-Java EE 6           Last change: 11 Aug 2010                    1
+Java EE 6           Last change: 16 Nov 2010                    1
 
 asadmin Utility Subcommands            create-lifecycle-module(1)
 
-     --classpath
-
-         This option indicates  where  this  module  is  actually
-         located  if it is not under the applications root direc-
-         tory.
+         directory.
 
      --loadorder
+
          This option represents an integer value that can be used
          to  force  the order in which deployed lifecycle modules
          are loaded at server startup. Smaller  numbered  modules
@@ -68,7 +65,6 @@ asadmin Utility Subcommands            create-lifecycle-module(1)
          lifecycle modules have the same load-order value.
 
      --failurefatal
-
          This options tells the system what to do if the  lifecy-
          cle  module does not load correctly. When this option is
          set to true, the system aborts  the  server  startup  if
@@ -76,35 +72,36 @@ asadmin Utility Subcommands            create-lifecycle-module(1)
          false.
 
      --enabled
+
          This option determines whether the resource  is  enabled
          at runtime. The default value is true.
 
      --description
-
          This is the text description of the resource  associated
          with this module.
 
      --property
+
          This is  an  optional  attribute  containing  name/value
          pairs used to configure the resource.
 
 OPERANDS
      module_name
-
          This operand is a unique  identifier  for  the  deployed
          server lifecycle event listener module.
 
 EXAMPLES
      Example 1 Creating a Lifecycle Module
 
-Java EE 6           Last change: 11 Aug 2010                    2
-
-asadmin Utility Subcommands            create-lifecycle-module(1)
-
      The following example creates a lifecycle module named  cus-
      tomSetup.
 
        asadmin> create-lifecycle-module --classname "com.acme.CustomSetup"
+
+Java EE 6           Last change: 16 Nov 2010                    2
+
+asadmin Utility Subcommands            create-lifecycle-module(1)
+
        --classpath "/export/customSetup" --loadorder 1 --failurefatal=true
        --description "this is a sample customSetup"
        --property rmi="Server=acme1:7070":timeout=30 customSetup
@@ -124,5 +121,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 11 Aug 2010                    3
+Java EE 6           Last change: 16 Nov 2010                    3
 

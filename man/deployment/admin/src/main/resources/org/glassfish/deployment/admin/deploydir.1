@@ -13,7 +13,6 @@ SYNOPSIS
      [--verify={false|true}]
      [--precompilejsp={false|true}]
      [--name component-name]
-     [--upload={true|false}]
      [--retrieve local_dirpath]
      [--uniquetablenames={true|false}]
      [--dbvendorname dbvendorname]
@@ -50,11 +49,11 @@ DESCRIPTION
      same machine. For this reason, the only values  for  the  --
      host option are:
 
-Java EE 6           Last change: 20 Oct 2010                    1
+         o    localhost
+
+Java EE 6           Last change: 16 Nov 2010                    1
 
 asadmin Utility Subcommands                          deploydir(1)
-
-         o    localhost
 
          o    The value of the $HOSTNAME environment variable
 
@@ -100,7 +99,7 @@ OPTIONS
          precompiled  during  deployment.  Instead, JSPs are com-
          piled during runtime. Default is false.
 
-Java EE 6           Last change: 20 Oct 2010                    2
+Java EE 6           Last change: 16 Nov 2010                    2
 
 asadmin Utility Subcommands                          deploydir(1)
 
@@ -120,42 +119,28 @@ asadmin Utility Subcommands                          deploydir(1)
          letter or number. It can contain alphanumeric characters
          plus underscore (_), dash (-), and  period  (.)  charac-
          ters.  For more information about module and application
-         versions, see the Oracle GlassFish Server  3.1  Applica-
-         tion Deployment Guide.
-
-     --upload
-
-         Uploads  the  deployable  file  to  the   administration
-         server.  The deployable file must be accessible from the
-         client. If the file is accessible  to  both  server  and
-         client,  set  the  --upload option to false. The default
-         value depends on whether the server you are deploying to
-         is  local or remote.  If the server is local, the option
-         defaults to false.  If the server is remote, the  option
-         defaults  to  true.  Explicitly specifying true or false
-         overrides the default.
+         versions, see the Module  and  Application  Versions  in
+         Oracle   GlassFish  Server  3.1  Application  Deployment
+         Guide.
 
      --retrieve
+
          Retrieves the client  stub  JAR  file  from  the  server
          machine to the local directory.
 
      --dbvendorname
-
          Specifies the name of  the  database  vendor  for  which
          tables are created. Supported values include db2, mssql,
          mysql, oracle, derby, javadb,  postgresql,  and  sybase.
          These values are case-insensitive. If not specified, the
-         value of the database-vendor-name attribute in  sun-ejb-
-         jar.xml  is used. If no value is specified, a connection
-         is made to  the  resource  specified  by  the  jndi-name
-         subelement  of  the cmp-resource element in the sun-ejb-
-         jar.xml file, and the database vendor name is  read.  If
-         the   connection  cannot be established, or if the value
-         is not recognized, SQL-92 compliance is presumed.
-
-Java EE 6           Last change: 20 Oct 2010                    3
-
-asadmin Utility Subcommands                          deploydir(1)
+         value   of   the   database-vendor-name   attribute   in
+         glassfish-ejb-jar.xml is used. If no value is specified,
+         a connection is made to the resource  specified  by  the
+         jndi-name  subelement of the cmp-resource element in the
+         glassfish-ejb-jar.xml file, and the database vendor name
+         is read. If the  connection cannot be established, or if
+         the  value  is  not  recognized,  SQL-92  compliance  is
+         presumed.
 
      --createtables
 
@@ -163,10 +148,15 @@ asadmin Utility Subcommands                          deploydir(1)
          an  application with unmapped CMP beans. If specified as
          false, tables are not created.  If  not  specified,  the
          value  of  the create-tables-at-deploy entry in the cmp-
-         resource element of the sun-ejb-jar.xml file  determines
-         whether or not tables are created.
+         resource  element  of  the  glassfish-ejb-jar.xml   file
+         determines whether or not tables are created.
+
+Java EE 6           Last change: 16 Nov 2010                    3
+
+asadmin Utility Subcommands                          deploydir(1)
 
      --dropandcreatetables
+
          If specified as true when the component  is  redeployed,
          the  tables  created  by  the  previous  deployment  are
          dropped before creating  the  new  tables.   Applies  to
@@ -176,13 +166,13 @@ asadmin Utility Subcommands                          deploydir(1)
          an explicit undeploy. If specified as false, tables  are
          neither  dropped  nor  created.   If  not specified, the
          tables are dropped if the drop-tables-at-undeploy  entry
-         in  the cmp-resource element of the sun-ejb-jar.xml file
-         is set to true, and the new tables are  created  if  the
-         create-tables-at-deploy  entry  in the cmp-resource ele-
-         ment of the sun-ejb-jar.xml file is set to true.
+         in the cmp-resource element of the glassfish-ejb-jar.xml
+         file is set to true, and the new tables are  created  if
+         the  create-tables-at-deploy  entry  in the cmp-resource
+         element of the  glassfish-ejb-jar.xml  file  is  set  to
+         true.
 
      --uniquetablenames
-
          Guarantees unique table names  for  all  the  beans  and
          results in a hash code added to the table names. This is
          useful if you have an  application  with  case-sensitive
@@ -190,25 +180,20 @@ asadmin Utility Subcommands                          deploydir(1)
          beans.
 
      --deploymentplan
+
          Deploys the deployment plan, which is a  JAR  file  that
          contains  GlassFish  Server  descriptors.  Specify  this
          option when deploying a pure EAR file. A pure  EAR  file
          is an EAR without GlassFish Server descriptors.
 
      --enabled
-
          Allows users to access the application. If set to false,
          users  will  not be able to access the application. This
          option enables the application on the  specified  target
          instance or cluster. If you deploy to the target domain,
          this option is ignored, since deploying  to  the  domain
          doesn't  deploy  to  a specific instance or cluster. The
-         default is true except for deployment to a  cluster,  in
-         which case the default is false.
-
-Java EE 6           Last change: 20 Oct 2010                    4
-
-asadmin Utility Subcommands                          deploydir(1)
+         default is true.
 
      --generatermistubs
 
@@ -216,7 +201,12 @@ asadmin Utility Subcommands                          deploydir(1)
          put  into the client.jar. If set to false, the stubs are
          not generated. Default is false.
 
+Java EE 6           Last change: 16 Nov 2010                    4
+
+asadmin Utility Subcommands                          deploydir(1)
+
      --availabilityenabled
+
          This  option  controls  whether   high-availability   is
          enabled  for  web sessions and for stateful session bean
          (SFSB) checkpointing and potentially passivation. If set
@@ -229,7 +219,6 @@ asadmin Utility Subcommands                          deploydir(1)
          such as the server and container levels.
 
      --asyncreplication
-
          This option controls whether web session and SFSB states
          for  which  high  availability is enabled are first buf-
          fered and then replicated using a separate  asynchronous
@@ -242,11 +231,11 @@ asadmin Utility Subcommands                          deploydir(1)
          in the cluster.
 
      --lbenabled
+
          This option controls whether the deployed application is
          available for load balancing. The default is true.
 
      --keepstate
-
          This  option  controls  whether   web   sessions,   SFSB
          instances,  and  persistently  created  EJB  timers  are
          retained between redeployments. The  default  is  false.
@@ -259,17 +248,17 @@ asadmin Utility Subcommands                          deploydir(1)
          bean class.
 
          For web applications, this feature is applicable only if
-
-Java EE 6           Last change: 20 Oct 2010                    5
-
-asadmin Utility Subcommands                          deploydir(1)
-
          in  the  glassfish-web-app.xml file the persistence-type
          attribute of the session-manager element is file.
 
          For stateful session  bean  instances,  the  persistence
          type without high availability is set in the server (the
          sfsb-persistence-type attribute)  and  must  be  set  to
+
+Java EE 6           Last change: 16 Nov 2010                    5
+
+asadmin Utility Subcommands                          deploydir(1)
+
          file, which is the default and recommended value.
 
          If any active web session, SFSB instance, or  EJB  timer
@@ -313,11 +302,6 @@ asadmin Utility Subcommands                          deploydir(1)
              configuration is disabled, the referencing  clusters
              or  server  instances  do not get the new version of
              the application until the  clustered  or  standalone
-
-Java EE 6           Last change: 20 Oct 2010                    6
-
-asadmin Utility Subcommands                          deploydir(1)
-
              server instances are restarted.
 
          cluster_name
@@ -325,16 +309,21 @@ asadmin Utility Subcommands                          deploydir(1)
              Deploys the component to every  server  instance  in
              the cluster.
 
+Java EE 6           Last change: 16 Nov 2010                    6
+
+asadmin Utility Subcommands                          deploydir(1)
+
          instance_name
+
              Deploys  the  component  to   a   particular   sever
              instance.
 
      --type
-
          The packaging archive type  of  the  component  that  is
          being deployed. Possible values are as follows:
 
          osgi
+
              The component is packaged as an OSGi  Alliance  bun-
              dle.
 
@@ -342,7 +331,6 @@ asadmin Utility Subcommands                          deploydir(1)
          aged as a regular archive, omit this option.
 
      --properties or --property
-
          Optional keyword-value  pairs  that  specify  additional
          properties  for the deployment. The available properties
          are determined by the implementation  of  the  component
@@ -364,12 +352,8 @@ asadmin Utility Subcommands                          deploydir(1)
          ment:
 
          jar-signing-alias
+
              Specifies the alias  for  the  security  certificate
-
-Java EE 6           Last change: 20 Oct 2010                    7
-
-asadmin Utility Subcommands                          deploydir(1)
-
              with which the application client container JAR file
              is signed. Java Web Start will  not  run  code  that
              requires elevated permissions unless it resides in a
@@ -379,6 +363,11 @@ asadmin Utility Subcommands                          deploydir(1)
              certificate  with  this alias from the domain's key-
              store. Java Web Start then asks the user whether  to
              trust  the  code  and  displays the GlassFish Server
+
+Java EE 6           Last change: 16 Nov 2010                    7
+
+asadmin Utility Subcommands                          deploydir(1)
+
              certificate information.  To sign this JAR file with
              a  different certificate, add the certificate to the
              domain keystore, then use this property.  For  exam-
@@ -421,17 +410,18 @@ asadmin Utility Subcommands                          deploydir(1)
              complete. Applies to HTTP sessions  in  a  web  con-
              tainer. Default is false.
 
-Java EE 6           Last change: 20 Oct 2010                    8
-
-asadmin Utility Subcommands                          deploydir(1)
-
              false
-
                  Active  sessions  of  the  application  are  not
                  preserved and restored (default).
 
              true
+
                  Active sessions of the application are preserved
+
+Java EE 6           Last change: 16 Nov 2010                    8
+
+asadmin Utility Subcommands                          deploydir(1)
+
                  and restored.
 
                  If any active session of the  application  fails
@@ -460,7 +450,8 @@ asadmin Utility Subcommands                          deploydir(1)
 OPERANDS
      dirpath
          Path to the directory containing the exploded format  of
-         the deployable archive.
+         the  deployable  archive. This is the path to the direc-
+         tory on the server machine.
 
 EXAMPLES
      Example 1 Deploying an Application From a Directory
@@ -470,14 +461,14 @@ EXAMPLES
      option is set to  true,  if  an  application  of  that  name
      already exists, the application is redeployed.
 
-Java EE 6           Last change: 20 Oct 2010                    9
-
-asadmin Utility Subcommands                          deploydir(1)
-
        asadmin> deploydir --force=true --precompilejsp=true /home/temp/sampleApp
        Application deployed successfully with name sampleApp.
        WARNING : deploydir command deprecated.  Please use deploy command instead.
        Command deploydir executed successfully
+
+Java EE 6           Last change: 16 Nov 2010                    9
+
+asadmin Utility Subcommands                          deploydir(1)
 
 EXIT STATUS
      0                           subcommand executed successfully
@@ -492,5 +483,5 @@ SEE ALSO
 
      Oracle GlassFish Server 3.1 Application Deployment Guide
 
-Java EE 6           Last change: 20 Oct 2010                   10
+Java EE 6           Last change: 16 Nov 2010                   10
 

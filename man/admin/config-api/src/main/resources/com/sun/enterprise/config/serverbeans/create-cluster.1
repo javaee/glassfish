@@ -50,7 +50,7 @@ DESCRIPTION
 
          o    delete-local-instance(1)
 
-Java EE 6           Last change: 21 Oct 2010                    1
+Java EE 6           Last change: 17 Nov 2010                    1
 
 asadmin Utility Subcommands                     create-cluster(1)
 
@@ -96,19 +96,29 @@ OPTIONS
          property values in the default-config configuration. The
          following properties are available:
 
+         ASADMIN_LISTENER_PORT
+             This property specifies the port number of the  HTTP
+             port or the HTTPS port for administration. This port
+             is the port in the URL that you specify in your  web
+             browser   to   manage  the  instance,  for  example,
+             http://localhost:4949. Valid values are 1-65535.  On
+             UNIX,  creating  sockets that listen on ports 1-1024
+
+Java EE 6           Last change: 17 Nov 2010                    2
+
+asadmin Utility Subcommands                     create-cluster(1)
+
+             requires superuser privileges.
+
          HTTP_LISTENER_PORT
+
              This property specifies the port number of the  port
              that  is  used  to  listen  for HTTP requests. Valid
              values are 1-65535. On UNIX, creating  sockets  that
              listen    on   ports   1-1024   requires   superuser
              privileges.
 
-Java EE 6           Last change: 21 Oct 2010                    2
-
-asadmin Utility Subcommands                     create-cluster(1)
-
          HTTP_SSL_LISTENER_PORT
-
              This property specifies the port number of the  port
              that  is  used  to listen for HTTPS requests.  Valid
              values are 1-65535. On UNIX, creating  sockets  that
@@ -116,13 +126,13 @@ asadmin Utility Subcommands                     create-cluster(1)
              privileges.
 
          IIOP_LISTENER_PORT
+
              This property specifies the port number of the  port
              that  is used for IIOP connections. Valid values are
              1-65535. On UNIX, creating sockets  that  listen  on
              ports 1-1024 requires superuser privileges.
 
          IIOP_SSL_LISTENER_PORT
-
              This property specifies the port number of the  port
              that  is  used  for  secure  IIOP connections. Valid
              values are 1-65535. On UNIX, creating  sockets  that
@@ -130,65 +140,108 @@ asadmin Utility Subcommands                     create-cluster(1)
              privileges.
 
          IIOP_SSL_MUTUALAUTH_PORT
+
              This property specifies the port number of the  port
              that is used for secure IIOP connections with client
-             authentication.
+             authentication. Valid values are 1-65535.  On  UNIX,
+             creating   sockets   that  listen  on  ports  1-1024
+             requires superuser privileges.
+
+         JAVA_DEBUGGER_PORT
+             This property specifies the port number of the  port
+             that  is  used  for connections to the Java Platform
+             Debugger Architecture (JPDA) debugger. Valid  values
+             are  1-65535.  On UNIX, creating sockets that listen
+             on ports 1-1024 requires superuser privileges.
+
+Java EE 6           Last change: 17 Nov 2010                    3
+
+asadmin Utility Subcommands                     create-cluster(1)
+
+         JMS_PROVIDER_PORT
+
+             This property specifies the port number for the Java
+             Message  Service provider. Valid values are 1-65535.
+             On UNIX,  creating  sockets  that  listen  on  ports
+             1-1024 requires superuser privileges.
 
          JMX_SYSTEM_CONNECTOR_PORT
-
              This property specifies the port number on which the
              JMX  connector listens. Valid values are 1-65535. On
              UNIX, creating sockets that listen on  ports  1-1024
              requires superuser privileges.
 
+         OSGI_SHELL_TELNET_PORT
+
+             This property specifies the port number of the  port
+             that  is  used  for  connections to the Apache Felix
+             Remote Shell. This shell uses the Felix  shell  ser-
+             vice  to  interact  with the OSGi  module management
+             subsystem. Valid values are 1-65535. On UNIX, creat-
+             ing  sockets  that  listen  on ports 1-1024 requires
+             superuser privileges.
+
      --properties
          Defines properties for the cluster. The  following  pro-
          perties are available:
 
-         gms-member-type
+         GMS_LISTENER_PORT
 
-             Specifies to the Group Management Service (GMS)  the
-             member type of each instance in the cluster.
+             The port number of the port  on  which  the  cluster
+             listens  for messages from the Group Management Ser-
+             vice (GMS). The default value should suffice in most
+             situations.
+
+         GMS_LOOPBACK
+             Specifies  whether  an  instance  may  receive  from
+             itself  application-level messages that the instance
+             broadcasts to the cluster.
 
              Possible values are as follows:
 
-Java EE 6           Last change: 21 Oct 2010                    3
+             false
+
+                 The  instance  may  not  receive  messages  from
+                 itself (default).
+
+Java EE 6           Last change: 17 Nov 2010                    4
 
 asadmin Utility Subcommands                     create-cluster(1)
 
-             CORE
+             true
 
-                 The instance is available to provide high  avai-
-                 lability services to the cluster, such as repli-
-                 cation of session state data, failover, and load
-                 balancing (default).
+                 The instance may receive messages  from  itself.
+                 Use  this  setting  for testing an instance when
+                 the instance is the only instance in a cluster.
 
-             SPECTATOR
-                 The instance can be  administered  through  cen-
-                 tralized  administration of the cluster but does
-                 not assist computation for the cluster.
+         GMS_MULTICAST_TIME_TO_LIVE
+             The maximum number of  iterations  or  transmissions
+             that  a multicast message for the following types of
+             events can experience before  the  message  is  dis-
+             carded:
 
-             These values are case insensitive.
+                 o    Group discovery
 
-             For the  domain  administration  server  (DAS),  the
-             value  of this property is set to SPECTATOR and can-
-             not be changed.
+                 o    Member heartbeats
 
-             If this property is set directly  to  SPECTATOR,  no
-             instance  can  provide high availability services to
-             the cluster. If you require some  instances  in  the
-             cluster  to  be of type SPECTATOR, use a system pro-
-             perty  to  set  the  type  individually   for   each
-             instance.
+                 o    Membership changes
+             To match the configuration of the network  on  which
+             the  DAS  and  clustered instances are deployed, set
+             this value as low  as  possible.  To  determine  the
+             lowest  possible  value  for  your  system,  use the
+             validate-multicast(1) subcommand.
 
-             For  example,  use  the  create-system-properties(1)
-             subcommand   to  create  the  system  property  GMS-
-             MEMBER-TYPE-cluster-name. Then set  the  gms-member-
-             type  property  of the cluster to ${GMS-MEMBER-TYPE-
-             cluster-name}  to  specify  the   system   property.
-             Finally,  for  each instance in the cluster, set the
-             GMS-MEMBER-TYPE-cluster-name system property to  the
-             required type.
+             A value of 0 ensures that multicast  messages  never
+             leave the host from which they are broadcast.
+
+             A value of 1 might prevent the broadcast of messages
+             between hosts on same subnet that are connected by a
+             switch or a router.
+
+             The default is 4, which ensures  that  messages  are
+             successfully  broadcast  to  all  cluster members in
+             networks where hosts are connected  by  switches  or
+             routers.
 
      --gmsenabled
 
@@ -204,7 +257,7 @@ asadmin Utility Subcommands                     create-cluster(1)
              The DAS participates in each cluster for which  this
              option is set to true.
 
-Java EE 6           Last change: 21 Oct 2010                    4
+Java EE 6           Last change: 17 Nov 2010                    5
 
 asadmin Utility Subcommands                     create-cluster(1)
 
@@ -257,7 +310,7 @@ asadmin Utility Subcommands                     create-cluster(1)
          option, a syntax error does not occur. Instead, the sub-
          command runs successfully and the option is ignored.
 
-Java EE 6           Last change: 21 Oct 2010                    5
+Java EE 6           Last change: 17 Nov 2010                    6
 
 asadmin Utility Subcommands                     create-cluster(1)
 
@@ -307,19 +360,53 @@ asadmin Utility Subcommands                     create-cluster(1)
          option, a syntax error does not occur. Instead, the sub-
          command runs successfully and the option is ignored.
 
-Java EE 6           Last change: 21 Oct 2010                    6
+Java EE 6           Last change: 17 Nov 2010                    7
 
 asadmin Utility Subcommands                     create-cluster(1)
 
 OPERANDS
-     cluster-name                A  unique  identifier  for   the
-                                 cluster to be created.
+     cluster-name
+
+         The name of the cluster.
+
+         The name must meet the following requirements:
+
+             o    The name must start with a letter, a number, or
+                  an underscore.
+
+             o    The name may contain only the following charac-
+                  ters:
+
+                 o    Lowercase letters
+
+                 o    Uppercase letters
+
+                 o    Numbers
+
+                 o    Hyphen
+
+                 o    Period
+
+                 o    Underscore
+
+                 o    Slash
+
+                 o    Hash
+
+             o    The name must be unique in the domain and  must
+                  not  be  the name of a another cluster, a named
+                  configuration, a GlassFish Server instance , or
+                  a node.
+
+             o    The name must not be  domain,  server,  or  any
+                  other  keyword  that  is  reserved by GlassFish
+                  Server.
 
 EXAMPLES
      Example 1 Creating a Cluster
 
      This example creates a cluster that is named ltscluster  for
-     which   port 1169 is to be used for secure IIOP connections.
+     which  port  1169 is to be used for secure IIOP connections.
      Because the --config option is not  specified,  the  cluster
      references  a copy of the named configuration default-config
      that is named ltscluster-config.
@@ -327,6 +414,11 @@ EXAMPLES
        asadmin> create-cluster
        --systemproperties IIOP_SSL_LISTENER_PORT=1169
        ltscluster
+
+Java EE 6           Last change: 17 Nov 2010                    8
+
+asadmin Utility Subcommands                     create-cluster(1)
+
        Command create-cluster executed successfully.
 
 EXIT STATUS
@@ -339,9 +431,9 @@ SEE ALSO
      resource(1),    create-local-instance(1),   create-resource-
      ref(1),   delete-cluster(1),   delete-instance(1),   delete-
      local-instance(1),   deploy(1),   list-clusters(1),   start-
-     cluster(1), stop-cluster(1)
+     cluster(1), stop-cluster(1), validate-multicast(1)
 
      asadmin(1M)
 
-Java EE 6           Last change: 21 Oct 2010                    7
+Java EE 6           Last change: 17 Nov 2010                    9
 

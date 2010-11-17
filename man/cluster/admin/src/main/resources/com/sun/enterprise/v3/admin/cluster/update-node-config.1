@@ -3,7 +3,7 @@ asadmin Utility Subcommands                 update-node-config(1)
 
 NAME
      update-node-config - updates the  configuration  data  of  a
-     node that is not enabled for communication over SSH
+     node that is not enabled for remote communication
 
 SYNOPSIS
      update-node-config [--help]
@@ -13,24 +13,22 @@ SYNOPSIS
 
 DESCRIPTION
      The update-node-config subcommand updates the  configuration
-     data  of  a  node that is not enabled for communication over
-     secure shell (SSH).
+     data of a node that is not enabled for remote communication.
 
      This subcommand can update only a node that is  not  enabled
-     for  communication over SSH. A node that is enabled for com-
-     munication over SSH must be updated  by  using  the  update-
-     node-ssh(1)  subcommand.  To  determine  whether  a  node is
-     enabled for communication over SSH,  use  the  list-nodes(1)
-     subcommand.
+     for remote communication. A node that is enabled for commun-
+     ication over SSH must be updated by using  the  update-node-
+     ssh(1)  subcommand.  To  determine whether a node is enabled
+     for communication over SSH, use  the  list-nodes(1)  subcom-
+     mand.
 
      Options of this subcommand specify the  new  values  of  the
      node's  configuration data. The default for these options is
      to leave the existing value unchanged.
 
-     This subcommand must be  run  on  the  host  that  the  node
-     represents.  The  domain  administration  server  (DAS) on a
-     remote host cannot contact the node.  This  subcommand  does
-     not require SSH to be configured to update the node.
+     This subcommand does not require SSH  to  be  configured  to
+     update  the  node.  You  may  run  this  subcommand from any
+     machine that can contact the DAS.
 
      This subcommand is supported in remote mode only.
 
@@ -47,18 +45,21 @@ OPTIONS
      --installdir
 
          The full path to the parent  of  the  base  installation
+         directory  of the GlassFish Server software on the host,
+         for example, /export/glassfish3/.
 
 Java EE 6           Last change: 14 Oct 2010                    1
 
 asadmin Utility Subcommands                 update-node-config(1)
 
-         directory  of the GlassFish Server software on the host,
-         for example, /export/glassfish3/.
-
      --nodedir
 
-         The full path  to  the  directory  that  is  to  contain
-         GlassFish Server instances that are created on the node.
+         The path to the directory that is to  contain  GlassFish
+         Server  instances  that  are  created on the node.  If a
+         relative path is specified, the path is relative to  the
+         as-install  directory, where as-install is the base ins-
+         tallation directory of the GlassFish Server software  on
+         the host.
 
 OPERANDS
      node-name

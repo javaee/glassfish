@@ -2,7 +2,8 @@
 asadmin Utility Subcommands                   get-client-stubs(1)
 
 NAME
-     get-client-stubs - retrieves the client stub JAR file.
+     get-client-stubs  -  retrieves  the  application  JAR  files
+     needed to launch the application client.
 
 SYNOPSIS
      get-client-stubs [--help] --appname application_name local_directory_path
@@ -11,13 +12,14 @@ DESCRIPTION
      The get-client-stubs  subcommand  copies  the  required  JAR
      files  for  an AppClient standalone module or each AppClient
      module in an application from  the  server  machine  to  the
-     local  directory.  Each  client's stub JAR file is retrieved
-     separately, along with any required supporting JAR  files  .
+     local   directory.  Each  client's  generated  JAR  file  is
+     retrieved, along with any required supporting  JAR  files  .
      The  client JAR file name is of the form app-nameClient.jar.
      Before executing the get-client-stubs subcommand,  you  must
-     deploy  the  application or module. The client stub JAR file
-     is useful for running the application  using  the  appclient
-     utility. This subcommand is supported in remote mode only.
+     deploy  the  application or module. The generated client JAR
+     file  is  useful  for  running  the  application  using  the
+     appclient  utility.  This  subcommand is supported in remote
+     mode only.
 
 OPTIONS
      --help
@@ -35,8 +37,9 @@ OPTIONS
          letter or number. It can contain alphanumeric characters
          plus underscore (_), dash (-), and  period  (.)  charac-
          ters.  For more information about module and application
-         versions, see the Oracle GlassFish Server  3.1  Applica-
-         tion Deployment Guide.
+         versions, see the Module  and  Application  Versions  in
+         Oracle   GlassFish  Server  3.1  Application  Deployment
+         Guide.
 
 OPERANDS
      local_directory_path
@@ -45,14 +48,15 @@ OPERANDS
          JAR file should be stored.
 
 EXAMPLES
+
+Java EE 6           Last change: 16 Nov 2010                    1
+
+asadmin Utility Subcommands                   get-client-stubs(1)
+
      Example 1 Using get-client-stubs
 
        asadmin> get-client-stubs --appname myapplication /sample/example
        Command get-client-stubs executed successfully
-
-Java EE 6           Last change: 20 Oct 2010                    1
-
-asadmin Utility Subcommands                   get-client-stubs(1)
 
 EXIT STATUS
      0                   command executed successfully
@@ -66,5 +70,5 @@ SEE ALSO
 
      Oracle GlassFish Server 3.1 Application Deployment Guide
 
-Java EE 6           Last change: 20 Oct 2010                    2
+Java EE 6           Last change: 16 Nov 2010                    2
 

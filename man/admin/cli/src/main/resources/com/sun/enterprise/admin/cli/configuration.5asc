@@ -18,9 +18,13 @@ DESCRIPTION
          o    Deployed  applications  or  modules,  such  as  web
               applications
 
+         o    Clusters and server instances
+
      The term configuration is also used to describe  a  part  of
      the  overall  configuration, such as the transaction service
-     configuration or the configuration of a database.
+     configuration  or  the  configuration  of  a  database.   In
+     clustered  environments,  clusters  or  server instances can
+     share configurations.
 
      Examples of configuration data are port numbers, flags  that
      enable  or  disable processes, application names, and so on.
@@ -37,24 +41,19 @@ DESCRIPTION
      the  value  of an attribute or property, use the set subcom-
      mand.
 
-     Most of the GlassFish Server configuration is stored in  the
-     domain.xml  file.  For  full  details about the structure of
-     this file, see the Oracle GlassFish Server 3.1  Domain  File
-     Format Reference.
-
 SEE ALSO
      get(1), list(1), set(1)
 
      asadmin(1M)
 
-Java EE 6           Last change: 22 Sep 2009                    1
+     dotted-names(5ASC)
+
+Java EE 6           Last change: 17 Nov 2010                    1
 
 GlassFish Server Concepts                     configuration(5ASC)
-
-     dotted-names(5ASC)
 
      Configuration Tasks in Oracle GlassFish Server 3.1  Adminis-
      tration Guide
 
-Java EE 6           Last change: 22 Sep 2009                    2
+Java EE 6           Last change: 17 Nov 2010                    2
 

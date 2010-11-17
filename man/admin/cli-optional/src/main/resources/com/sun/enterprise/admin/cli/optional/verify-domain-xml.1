@@ -10,8 +10,15 @@ SYNOPSIS
      [--domaindir domain-dir] [domain-name]
 
 DESCRIPTION
-     Verifies the content of the domain.xml file. This subcommand
-     is supported in local mode only.
+     Verifies the content of the domain.xml file by checking  the
+     following:
+
+         o    That the domain.xml file can be parsed
+
+         o    That the names for  elements  that  have  them  are
+              unique
+
+     This subcommand is supported in local mode only.
 
 OPTIONS
      -h --help
@@ -21,10 +28,7 @@ OPTIONS
      --domaindir
          Specifies the directory where the domains  are  located.
          The  path  must  be  accessible  in the file system. The
-         default  is  the  value  of   the   $AS_DEF_DOMAINS_PATH
-         environment  variable.  This  variable is defined in the
-         file asenv.bat or asenv.conf. The default value of  this
-         variable is as-install/domains.
+         default is as-install/domains.
 
 OPERANDS
      domain_name
@@ -35,23 +39,21 @@ OPERANDS
 EXAMPLES
      Example 1 Using verify-domain-xml
 
-       asadmin> verify-domain-xml --verbose=true
+       asadmin> verify-domain-xml
        All Tests Passed.
        domain.xml is valid
 
 EXIT STATUS
      0                   command executed successfully
 
-     1                   error in executing the command
-
-Java EE 6           Last change: 23 Sep 2009                    1
+Java EE 6           Last change: 17 Nov 2010                    1
 
 asadmin Utility Subcommands                  verify-domain-xml(1)
+
+     1                   error in executing the command
 
 SEE ALSO
      asadmin(1M)
 
-     Oracle GlassFish Server 3.1 Domain File Format Reference
-
-Java EE 6           Last change: 23 Sep 2009                    2
+Java EE 6           Last change: 17 Nov 2010                    2
 

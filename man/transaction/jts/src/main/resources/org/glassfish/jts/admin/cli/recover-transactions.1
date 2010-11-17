@@ -41,36 +41,27 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --transactionlogdir
-         The location of the transaction logs  for  a  particular
-         server.  When  a  server fails it writes the location in
-         its transaction log.
-
-         If the failed server's transaction logs  are  copied  to
-         some  other  location to make it available to the surro-
-         gate recovery server, use this option to specify the new
-
-Java EE 6           Last change: 27 Oct 2010                    1
-
-asadmin Utility Subcommands               recover-transactions(1)
-
-         location of the transaction logs. If the failed server's
-         transaction service tx-log-dir property is  modified  to
-         reflect   a  new  location,  then  this  option  is  not
-         required.
+         The location of the transaction logs for  a  server  for
+         which transaction recovery is requested.
 
      --target
 
          The target server that performs  the  recovery  for  the
          server that is specified by the server_name operand. The
+
+Java EE 6           Last change: 16 Nov 2010                    1
+
+asadmin Utility Subcommands               recover-transactions(1)
+
          target server should be running.
 
      --destination
+
          This option is deprecated. It works exactly  as  the  --
          target option does.
 
 OPERANDS
      server_name
-
          For a stand-alone server, the value of this  operand  is
          typically  server.  Transactions are recovered only if a
          resource fails, but the server is still running.
@@ -86,20 +77,16 @@ OPERANDS
          required.
 
 EXAMPLES
-     Example 1 Recovering transactions from a running server
+     Example 1 Recovering transactions on a running server
 
        % asadmin recover-transactions server1
        Transaction recovered.
 
-     Example 2 Recovering transactions from a server that is  not
+     Example 2 Recovering transactions for a server that  is  not
      running
 
        % asadmin recover-transactions --transactionlogdir /logs/tx --target server1 server2
        Transaction recovered.
-
-Java EE 6           Last change: 27 Oct 2010                    2
-
-asadmin Utility Subcommands               recover-transactions(1)
 
 EXIT STATUS
      0    command executed successfully
@@ -110,9 +97,13 @@ SEE ALSO
      freeze-transaction-service(1),         unfreeze-transaction-
      service(1), rollback-transaction(1)
 
+Java EE 6           Last change: 16 Nov 2010                    2
+
+asadmin Utility Subcommands               recover-transactions(1)
+
      asadmin(1M)
 
      Chapter 28, Transactions, in The Java EE 6 Tutorial
 
-Java EE 6           Last change: 27 Oct 2010                    3
+Java EE 6           Last change: 16 Nov 2010                    3
 

@@ -28,7 +28,7 @@ SYNOPSIS
      [--target target]
      [--type pkg-type]
      [--properties(name=value)[:name=value]*]
-     filepath
+     [file_archive |filepath]
 
 DESCRIPTION
      The deploy subcommand deploys applications  to  the  server.
@@ -51,7 +51,7 @@ DESCRIPTION
      create tables fails, the deployment does not fail; a warning
      message is provided in the log file.
 
-Java EE 6           Last change: 20 Oct 2010                    1
+Java EE 6           Last change: 16 Nov 2010                    1
 
 asadmin Utility Subcommands                             deploy(1)
 
@@ -100,24 +100,23 @@ OPTIONS
          letter or number. It can contain alphanumeric characters
          plus underscore (_), dash (-), and  period  (.)  charac-
          ters.  For more information about module and application
-         versions, see the Oracle GlassFish Server  3.1  Applica-
-         tion Deployment Guide.
+         versions, see the Module  and  Application  Versions  in
+         Oracle   GlassFish  Server  3.1  Application  Deployment
 
-Java EE 6           Last change: 20 Oct 2010                    2
+Java EE 6           Last change: 16 Nov 2010                    2
 
 asadmin Utility Subcommands                             deploy(1)
+
+         Guide.
 
      --upload
 
          Uploads  the  deployable  file  to  the   administration
          server.  The deployable file must be accessible from the
          client. If the file is accessible  to  both  server  and
-         client,  set  the  --upload option to false. The default
-         value depends on whether the server you are deploying to
-         is  local or remote.  If the server is local, the option
-         defaults to false.  If the server is remote, the  option
-         defaults  to  true.  Explicitly specifying true or false
-         overrides the default.
+         client, set the --upload option to false. The default is
+         false. If a directory filepath is specified, this option
+         is ignored.
 
      --retrieve
          Retrieves the client  stub  JAR  file  from  the  server
@@ -129,21 +128,22 @@ asadmin Utility Subcommands                             deploy(1)
          tables are created. Supported values include db2, mssql,
          mysql, oracle, derby, javadb,  postgresql,  and  sybase.
          These values are case-insensitive. If not specified, the
-         value of the database-vendor-name attribute in  sun-ejb-
-         jar.xml  is used. If no value is specified, a connection
-         is made to  the  resource  specified  by  the  jndi-name
-         subelement  of  the cmp-resource element in the sun-ejb-
-         jar.xml file, and the database vendor name is  read.  If
-         the   connection  cannot be established, or if the value
-         is not recognized, SQL-92 compliance is presumed.
+         value   of   the   database-vendor-name   attribute   in
+         glassfish-ejb-jar.xml is used. If no value is specified,
+         a connection is made to the resource  specified  by  the
+         jndi-name  subelement of the cmp-resource element in the
+         glassfish-ejb-jar.xml file, and the database vendor name
+         is read. If the  connection cannot be established, or if
+         the  value  is  not  recognized,  SQL-92  compliance  is
+         presumed.
 
      --createtables
           If specified as true, creates tables at  deployment  of
          an  application with unmapped CMP beans. If specified as
          false, tables are not created.  If  not  specified,  the
          value  of  the create-tables-at-deploy entry in the cmp-
-         resource element of the sun-ejb-jar.xml file  determines
-         whether or not tables are created.
+         resource  element  of  the  glassfish-ejb-jar.xml   file
+         determines whether or not tables are created.
 
      --dropandcreatetables
 
@@ -155,16 +155,17 @@ asadmin Utility Subcommands                             deploy(1)
          ment  of  an application or on a deployment that follows
          an explicit undeploy. If specified as false, tables  are
          neither  dropped  nor  created.   If  not specified, the
-         tables are dropped if the drop-tables-at-undeploy  entry
 
-Java EE 6           Last change: 20 Oct 2010                    3
+Java EE 6           Last change: 16 Nov 2010                    3
 
 asadmin Utility Subcommands                             deploy(1)
 
-         in  the cmp-resource element of the sun-ejb-jar.xml file
-         is set to true, and the new tables are  created  if  the
-         create-tables-at-deploy  entry  in the cmp-resource ele-
-         ment of the sun-ejb-jar.xml file is set to true.
+         tables are dropped if the drop-tables-at-undeploy  entry
+         in the cmp-resource element of the glassfish-ejb-jar.xml
+         file is set to true, and the new tables are  created  if
+         the  create-tables-at-deploy  entry  in the cmp-resource
+         element of the  glassfish-ejb-jar.xml  file  is  set  to
+         true.
 
      --uniquetablenames
 
@@ -188,8 +189,7 @@ asadmin Utility Subcommands                             deploy(1)
          instance or cluster. If you deploy to the target domain,
          this option is ignored, since deploying  to  the  domain
          doesn't  deploy  to  a specific instance or cluster. The
-         default is true except for deployment to a  cluster,  in
-         which case the default is false.
+         default is true.
 
      --generatermistubs
          If set to true, static RMI-IIOP stubs are generated  and
@@ -209,7 +209,7 @@ asadmin Utility Subcommands                             deploy(1)
          lability is configured and  enabled  at  higher  levels,
          such as the server and container levels.
 
-Java EE 6           Last change: 20 Oct 2010                    4
+Java EE 6           Last change: 16 Nov 2010                    4
 
 asadmin Utility Subcommands                             deploy(1)
 
@@ -262,7 +262,7 @@ asadmin Utility Subcommands                             deploy(1)
          data, the class loader of the newly redeployed  applica-
          tion deserializes the data that was previously saved.
 
-Java EE 6           Last change: 20 Oct 2010                    5
+Java EE 6           Last change: 16 Nov 2010                    5
 
 asadmin Utility Subcommands                             deploy(1)
 
@@ -313,7 +313,7 @@ asadmin Utility Subcommands                             deploy(1)
          The packaging archive type  of  the  component  that  is
          being deployed. Possible values are as follows:
 
-Java EE 6           Last change: 20 Oct 2010                    6
+Java EE 6           Last change: 16 Nov 2010                    6
 
 asadmin Utility Subcommands                             deploy(1)
 
@@ -367,7 +367,7 @@ asadmin Utility Subcommands                             deploy(1)
              trust. Default is s1as,  the  alias  for  the  self-
              signed certificate created for every domain.
 
-Java EE 6           Last change: 20 Oct 2010                    7
+Java EE 6           Last change: 16 Nov 2010                    7
 
 asadmin Utility Subcommands                             deploy(1)
 
@@ -422,7 +422,7 @@ asadmin Utility Subcommands                             deploy(1)
                  To preserve active  sessions,  GlassFish  Server
                  serializes   the  sessions  and  saves  them  in
 
-Java EE 6           Last change: 20 Oct 2010                    8
+Java EE 6           Last change: 16 Nov 2010                    8
 
 asadmin Utility Subcommands                             deploy(1)
 
@@ -442,11 +442,28 @@ asadmin Utility Subcommands                             deploy(1)
              ployed.
 
 OPERANDS
-     filepath
-         if the --upload option is set to true, this is the  path
-         to the deployable file on the local client machine. Oth-
-         erwise, this is the absolute path to  the  file  on  the
-         server machine.
+     file_archive |filepath
+         The path to the archive that  contains  the  application
+         that is being deployed. This path can be a relative path
+         or an absolute path.
+
+         The archive can be in either of the following formats:
+
+             o    An     archive     file,      for      example,
+                  /export/JEE_apps/hello.war.
+
+                  If the --upload option is set to true, this  is
+                  the  path  to  the deployable file on the local
+                  client machine. If the --upload option  is  set
+                  to  false,  this is the path to the file on the
+                  server machine.
+
+             o    A directory that contains the  exploded  format
+                  of  the deployable archive. This is the path to
+                  the directory on the server machine.
+
+                  If you specify a directory, the --upload option
+                  is ignored.
 
 EXAMPLES
      Example 1 Deploying an Enterprise Application
@@ -455,6 +472,10 @@ EXAMPLES
      the Cart.ear file to the default server instance server. You
      can use the --target option to deploy to a different  server
      instance or to a cluster.
+
+Java EE 6           Last change: 16 Nov 2010                    9
+
+asadmin Utility Subcommands                             deploy(1)
 
        asadmin> deploy Cart.ear
        Application deployed successfully with name Cart.
@@ -467,10 +488,6 @@ EXAMPLES
      file  to the default server instance server. You can use the
      --target option to deploy to a different server instance  or
      to a cluster.
-
-Java EE 6           Last change: 20 Oct 2010                    9
-
-asadmin Utility Subcommands                             deploy(1)
 
        asadmin> deploy hello.war
        Application deployed successfully with name hello.
@@ -497,7 +514,12 @@ asadmin Utility Subcommands                             deploy(1)
      This example uses the --target option. The  target  in  this
      example is an existing cluster, cluster1.
 
-       asadmin> deploy --createtables=true EmployeeEJB.jar
+       asadmin> deploy --createtables=true --target cluster1 EmployeeEJB.jar
+
+Java EE 6           Last change: 16 Nov 2010                   10
+
+asadmin Utility Subcommands                             deploy(1)
+
        Application deployed successfully with name EmployeeEJB.
        Command deploy executed successfully
 
@@ -510,11 +532,7 @@ asadmin Utility Subcommands                             deploy(1)
      example  is an existing standalone server instance that does
      not belong to a cluster.
 
-Java EE 6           Last change: 20 Oct 2010                   10
-
-asadmin Utility Subcommands                             deploy(1)
-
-       asadmin> deploy jdbcra.rar
+       asadmin> deploy --target myinstance jdbcra.rar
        Application deployed successfully with name jdbcra.
        Command deploy executed successfully
 
@@ -531,5 +549,5 @@ SEE ALSO
 
      Oracle GlassFish Server 3.1 Application Deployment Guide
 
-Java EE 6           Last change: 20 Oct 2010                   11
+Java EE 6           Last change: 16 Nov 2010                   11
 

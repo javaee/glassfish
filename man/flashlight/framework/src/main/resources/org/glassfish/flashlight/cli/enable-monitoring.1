@@ -47,7 +47,7 @@ OPTIONS
      --mbean
          Enables Mbean monitoring. Default value is false.
 
-Java EE 6           Last change: 30 Oct 2009                    1
+Java EE 6           Last change: 01 Nov 2010                    1
 
 asadmin Utility Subcommands                  enable-monitoring(1)
 
@@ -65,15 +65,9 @@ asadmin Utility Subcommands                  enable-monitoring(1)
          include  connector-connection-pool,   connector-service,
          ejb-container,  http-service, jdbc-connection-pool, jer-
          sey,  jpa,  jms-service,  jvm,  security,   thread-pool,
-         transaction-service, web-container, jruby-container, and
-         web-services-container. Additional modules can be listed
-         by using the get subcommand.
-
-         To set the level of JRuby container monitoring you  need
-         to  deploy  at  least  one  Ruby  application or use the
-         configure-jruby-container subcommand to enable  monitor-
-         ing.   For   more   information,   see  configure-jruby-
-         container(1).
+         transaction-service,  web-container,  and  web-services-
+         container. Additional modules can be listed by using the
+         get subcommand.
 
      --pid
 
@@ -97,16 +91,16 @@ EXAMPLES
      Example 1 Enabling  the  Monitoring  Service  for  GlassFish
      Server
 
-Java EE 6           Last change: 30 Oct 2009                    2
-
-asadmin Utility Subcommands                  enable-monitoring(1)
-
      This example enables monitoring for GlassFish Server in gen-
      eral  by setting the enable-monitoring flag to true (default
      is true).
 
        asadmin> enable-monitoring
        Command enable-monitoring executed successfully
+
+Java EE 6           Last change: 01 Nov 2010                    2
+
+asadmin Utility Subcommands                  enable-monitoring(1)
 
      Example 2 Enabling Monitoring for the Web and EJB Containers
 
@@ -130,19 +124,14 @@ EXIT STATUS
                                  mand
 
 SEE ALSO
-     disable-monitoring(1), monitor(1), list(1), get(1),  set(1),
-     configure-jruby-container(1)
+     disable-monitoring(1), monitor(1), list(1), get(1), set(1)
 
      monitoring(5ASC)
 
      asadmin(1M)
 
-Java EE 6           Last change: 30 Oct 2009                    3
-
-asadmin Utility Subcommands                  enable-monitoring(1)
-
      Chapter 8, Administering the Monitoring Service,  in  Oracle
      GlassFish Server 3.1 Administration Guide
 
-Java EE 6           Last change: 30 Oct 2009                    4
+Java EE 6           Last change: 01 Nov 2010                    3
 

@@ -21,8 +21,7 @@ DESCRIPTION
 
               CONFIG
 
-                  The node does not  support  communication  over
-                  secure shell (SSH).
+                  The node does not support remote communication.
 
               SSH
                   The node  supports  communication  over  secure
@@ -34,9 +33,9 @@ DESCRIPTION
      nodes are listed in long format. In long format, the follow-
      ing additional information about each node is displayed:
 
-         o    The path to  the  base  installation  directory  of
-              GlassFish   Server   on  the  host  that  the  node
-              represents
+         o    The path to the parent  of  the  base  installation
+              directory  of GlassFish Server on the host that the
+              node represents
 
          o    A comma-separated list of the names of the  GlassF-
               ish Server instances that reside on the node
@@ -107,11 +106,11 @@ asadmin Utility Subcommands                         list-nodes(1)
      long format.
 
        asadmin> list-nodes --long=true
-       NODE NAME   TYPE     NODE HOST   INSTALL DIRECTORY              REFERENCED BYy
-       localhost   CONFIG   localhost   /export/glassfish3/glassfish   pmdsa1,
-       sj01        CONFIG   sj01        /export/glassfish3/glassfish   pmd-i-sj01, yml-i-sj01,
-       sj02        CONFIG   sj02        /export/glassfish3/glassfish   pmd-i-sj02, yml-i-sj02,
-       sj03        SSH      sj03        /export/glassfish3/glassfish
+       NODE NAME   TYPE     NODE HOST   INSTALL DIRECTORY     REFERENCED BY
+       localhost   CONFIG   localhost   /export/glassfish3/   pmdsa1,
+       sj01        CONFIG   sj01        /export/glassfish3/   pmd-i-sj01, yml-i-sj01,
+       sj02        CONFIG   sj02        /export/glassfish3/   pmd-i-sj02, yml-i-sj02,
+       sj03        SSH      sj03        /export/glassfish3/
        Command list-nodes executed successfully.
 
 EXIT STATUS

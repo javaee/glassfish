@@ -49,7 +49,7 @@ DESCRIPTION
      can find the client without using the  -mainclass  or  -name
      options.  If  you  provide  a -mainclass or -name value that
 
-Java EE 6           Last change: 26 Oct 2009                    1
+Java EE 6           Last change: 16 Nov 2009                    1
 
 Utility Commands                                    appclient(1M)
 
@@ -103,7 +103,7 @@ OPTIONS
          Used  for  multiple client applications. By default, the
          display  name   is   specified   in   the   client   jar
 
-Java EE 6           Last change: 26 Oct 2009                    2
+Java EE 6           Last change: 16 Nov 2009                    2
 
 Utility Commands                                    appclient(1M)
 
@@ -124,16 +124,17 @@ Utility Commands                                    appclient(1M)
 
      -targetserver
 
-         optional; a comma-separated list  of  server  specifica-
-         tions  for ORB endpoints. Each server specification must
-         include at least the host. Optionally, a server specifi-
-         cation  can  include  the  port  as well. If the port is
-         omitted from a server specification, the default  value,
-         3700, is used for that host.
+         optional; a comma-separated list of one or  more  server
+         specifications for ORB endpoints. Each server specifica-
+         tion must include  at  least  the  host.  Optionally,  a
+         server  specification  can  include the port as well. If
+         the port is omitted from  a  server  specification,  the
+         default value, 3700, is used for that host.
 
      -user
-         optional; the user name of the authorized administrative
-         user of the domain administration server.
+         optional; the application user who is authorized to have
+         access  to particular guarded components in the applica-
+         tion, such as EJB components.
 
      -passwordfile
 
@@ -145,20 +146,21 @@ Utility Commands                                    appclient(1M)
          followed  by  the password name in uppercase letters, an
          equals sign and the password.
 
-          The valid entries in the file are as follows:
+          The entry in the  file  that  matters  for  application
+         clients is as follows:
 
-           AS_ADMIN_PASSWORD=administration-password
-           AS_ADMIN_MAPPEDPASSWORD=mapped-password
            AS_ADMIN_USERPASSWORD=user-password
-           AS_ADMIN_MASTERPASSWORD=master-password
-           AS_ADMIN_ALIASPASSWORD=alias-password
+
+         This password is used by  the  client-side  security  to
+         authenticate the user to the application.
 
          The password can be specified by one  of  the  following
-         means:
 
-Java EE 6           Last change: 26 Oct 2009                    3
+Java EE 6           Last change: 16 Nov 2009                    3
 
 Utility Commands                                    appclient(1M)
+
+         means:
 
              o    Through the -passwordfile option
 
@@ -166,19 +168,6 @@ Utility Commands                                    appclient(1M)
          For security reasons, a password that is specified as an
          environment  variable is not read by the appclient util-
          ity.
-
-         If the AS_ADMIN_PASSWORD environment variable  has  been
-         exported  to  the  global  environment,  specifying  the
-         -passwordfile option produces a warning about using  the
-         -password  option.  To  avoid  this  warning,  upset the
-         AS_ADMIN_PASSWORD environment variable.
-
-         The master password is not  propagated  on  the  command
-         line or an environment variable, but can be specified in
-         the file that the -passwordfile option specifies.
-
-         The  default  value   for   AS_ADMIN_MASTERPASSWORD   is
-         changeit.
 
      class-selector
 
@@ -195,10 +184,10 @@ Utility Commands                                    appclient(1M)
 
          class-name
 
-             the fully qualified class name of  the  main  client
-             application  main()  method  to  be  invoked  by the
-             Application   Client   Container.    For    example,
-             com.sun.test.AppClient.
+             the fully qualified name of the application client's
+             main class. The Application Client Container invokes
+             the main method of this class to start  the  client.
+             For example, com.sun.test.AppClient.
 
              If you use class-name as  the  class  selector,  you
              must  also set the classpath. You can either use the
@@ -210,36 +199,34 @@ Utility Commands                                    appclient(1M)
              or   Setting   the   Class   Path,  Windows  Version
              (http://java.sun.com/javase/6/docs/technotes/tools/windows/classpath.html).
 
-Java EE 6           Last change: 26 Oct 2009                    4
-
-Utility Commands                                    appclient(1M)
-
      application-options
-
          optional; you can set client application arguments.
 
 EXAMPLES
      Example 1 Using the appclient command
 
-       appclient -splash welcome.jpg -xml sun-acc.xml -jar myclientapp.jar scott sample
+       appclient -xml sun-acc.xml -jar myclientapp.jar scott sample
 
-     Where: welcome.jpg is  a  splash  screen  specified  by  the
-     -splash  JVM  option,  sun-acc.xml is the name of the client
-     configuration XML file, myclientapp.jar is the client appli-
-     cation .jar file, and scott and sample are arguments to pass
-     to  the  application.  If  welcome.jpg,   sun-acc.xml,   and
-     myclientapp.jar  are  not in the current directory, you must
-     give the absolute path  locations;  otherwise  the  relative
-     paths  are used. The relative path is relative to the direc-
-     tory where the command is being executed.
+Java EE 6           Last change: 16 Nov 2009                    4
+
+Utility Commands                                    appclient(1M)
+
+     Where: sun-acc.xml is the name of the  client  configuration
+     XML  file,  myclientapp.jar  is  the client application .jar
+     file, and scott and sample are  arguments  to  pass  to  the
+     application.  If  sun-acc.xml and myclientapp.jar are not in
+     the current directory, you must give the absolute path loca-
+     tions;  otherwise  the relative paths are used. The relative
+     path is relative to the directory where the command is being
+     executed.
 
 ATTRIBUTES
      See attributes(5) for descriptions of the  following  attri-
      butes:
 
      ____________________________________________________________
-    |       ATTRIBUTE TYPE        |       ATTRIBUTE VALUE       |
     |_____________________________|_____________________________|
+    | Interface Stability         | Unstable                    |
     |_____________________________|_____________________________|
 
 SEE ALSO
@@ -247,5 +234,5 @@ SEE ALSO
 
      asadmin(1M), package-appclient(1M)
 
-Java EE 6           Last change: 26 Oct 2009                    5
+Java EE 6           Last change: 16 Nov 2009                    5
 
