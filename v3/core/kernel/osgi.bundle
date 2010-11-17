@@ -61,17 +61,4 @@ DynamicImport-Package: org.glassfish.flashlight.provider, \
 # Only in non-OSGi embedded mode, kernel depends on logging package, so
 # optionally depend on that pkg. This way, when GF is embedded in 
 # OSGi environment, logging bundle need not be installed.
-# Although kernel does not depend on any of the packages like javax.annotation,
-# javax.xml.bind or javax.xml.ws, these packages are provided by endorsed standards and
-# by having optional dependency on them, we make sure that they will be always coming from
-# bundles in endorsed dir as opposed to JRE, because JRE never exports them with non-default version.
-# Some may wonder doing this will lead to early resolution of
-# JAXB and JAX-WS API packages. Yes, that's the case, but they anyway get resolved because of
-# other bundles loading classes from them during startup process.
-# This trick works on Felix only which uses an incremental resolver as opposed to Equinox
-# which uses a greedy resolver.
-Import-Package: com.sun.enterprise.server.logging.*; resolution:=optional, \
-                javax.annotation; version=1.1.0; resolution:=optional, \
-                javax.xml.bind; version=2.2.1; resolution:=optional, \
-                javax.xml.ws; version=2.2.0; resolution:=optional, \
-                *
+Import-Package: com.sun.enterprise.server.logging.*; resolution:=optional, *

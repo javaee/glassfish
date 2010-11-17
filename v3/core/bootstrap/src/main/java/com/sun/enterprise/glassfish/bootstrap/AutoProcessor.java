@@ -126,8 +126,8 @@ public class AutoProcessor {
                 catch (Exception ex) {
                     System.err.println("Auto-properties install: " + location + " ("
                             + ex + ((ex.getCause() != null) ? " - " + ex.getCause() : "") + ")");
-                    if (ex.getCause() != null)
-                        ex.printStackTrace();
+//                    if (ex.getCause() != null)
+//                        ex.printStackTrace();
                 }
             }
         }
