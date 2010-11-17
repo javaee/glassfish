@@ -66,14 +66,14 @@ import org.junit.Test;
 public class EmbeddedSetDocRootTest {
 
     static GlassFish glassfish;
-    static EmbeddedWebContainer embedded;
+    static WebContainer embedded;
     static File root;
 
     @BeforeClass
     public static void setupServer() throws GlassFishException {
         glassfish = GlassFishRuntime.bootstrap().newGlassFish();
         glassfish.start();
-        embedded = glassfish.getService(EmbeddedWebContainer.class);
+        embedded = glassfish.getService(WebContainer.class);
         System.out.println("================ EmbeddedSetDocRoot Test");
         System.out.println("Starting Web "+embedded);
         embedded.setLogLevel(Level.INFO);

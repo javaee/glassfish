@@ -54,19 +54,19 @@ import org.glassfish.embeddable.GlassFishException;
  * web resources into the URI namespace.
  */
 
-public interface EmbeddedWebContainer {
+public interface WebContainer {
 
     /**
      * Sets the embedded configuration for this embedded instance.
      * Such configuration should always override any xml based
      * configuration.
      *
-     * @param builder the embedded instance configuration
+     * @param config the embedded instance configuration
      */
-    public void setConfiguration(WebBuilder builder);
+    public void setConfiguration(WebContainerConfig config);
 
     /**
-     * Starts this <tt>EmbeddedWebContainer</tt> and any of the
+     * Starts this <tt>WebContainer</tt> and any of the
      * <tt>WebListener</tt> and <tt>VirtualServer</tt> instances
      * registered with it.
      *
@@ -77,13 +77,13 @@ public interface EmbeddedWebContainer {
      * or listener configuration exists.
      * 
      * @throws Exception if an error occurs during the start up of this
-     * <tt>EmbeddedWebContainer</tt> or any of its registered
+     * <tt>WebContainer</tt> or any of its registered
      * <tt>WebListener</tt> or <tt>VirtualServer</tt> instances 
      */
     public void start() throws GlassFishException;
 
     /**
-     * Starts this <tt>EmbeddedWebContainer</tt> and any of the
+     * Starts this <tt>WebContainer</tt> and any of the
      * <tt>WebListener</tt> and <tt>VirtualServer</tt> instances
      * registered with it.
      *
@@ -94,7 +94,7 @@ public interface EmbeddedWebContainer {
      * or listener configuration exists.
      *
      * @throws Exception if an error occurs during the start up of this
-     * <tt>EmbeddedWebContainer</tt> or any of its registered
+     * <tt>WebContainer</tt> or any of its registered
      * <tt>WebListener</tt> or <tt>VirtualServer</tt> instances
      *
      * @param config the embedded instance configuration
@@ -102,12 +102,12 @@ public interface EmbeddedWebContainer {
     public void start(WebContainerConfig config) throws GlassFishException;
 
     /**
-     * Stops this <tt>EmbeddedWebContainer</tt> and any of the
+     * Stops this <tt>WebContainer</tt> and any of the
      * <tt>WebListener</tt> and <tt>VirtualServer</tt> instances
      * registered with it.
      *
      * @throws Exception if an error occurs during the shut down of this
-     * <tt>EmbeddedWebContainer</tt> or any of its registered
+     * <tt>WebContainer</tt> or any of its registered
      * <tt>WebListener</tt> or <tt>VirtualServer</tt> instances 
      */
     public void stop() throws GlassFishException;
@@ -229,16 +229,16 @@ public interface EmbeddedWebContainer {
 
     /**
      * Adds the given <tt>WebListener</tt> to this
-     * <tt>EmbeddedWebContainer</tt>.
+     * <tt>WebContainer</tt>.
      *
-     * <p>If this <tt>EmbeddedWebContainer</tt> has already been started,
+     * <p>If this <tt>WebContainer</tt> has already been started,
      * the given <tt>webListener</tt> will be started as well.
      *
      * @param webListener the <tt>WebListener</tt> to add
      *
      * @throws ConfigException if a <tt>WebListener</tt> with the
      * same id has already been registered with this
-     * <tt>EmbeddedWebContainer</tt>
+     * <tt>WebContainer</tt>
      * @throws GlassFishException if the given <tt>webListener</tt> fails
      * to be started
      */
@@ -252,22 +252,22 @@ public interface EmbeddedWebContainer {
      *
      * @return the <tt>WebListener</tt> with the given id, or
      * <tt>null</tt> if no <tt>WebListener</tt> with that id has been
-     * registered with this <tt>EmbeddedWebContainer</tt>
+     * registered with this <tt>WebContainer</tt>
      */
     public WebListener findWebListener(String id);
 
     /**
      * Gets the collection of <tt>WebListener</tt> instances registered
-     * with this <tt>EmbeddedWebContainer</tt>.
+     * with this <tt>WebContainer</tt>.
      * 
      * @return the (possibly empty) collection of <tt>WebListener</tt>
-     * instances registered with this <tt>EmbeddedWebContainer</tt>
+     * instances registered with this <tt>WebContainer</tt>
      */
     public Collection<WebListener> getWebListeners();
 
     /**
      * Stops the given <tt>webListener</tt> and removes it from this
-     * <tt>EmbeddedWebContainer</tt>.
+     * <tt>WebContainer</tt>.
      *
      * @param webListener the <tt>WebListener</tt> to be stopped
      * and removed
@@ -305,16 +305,16 @@ public interface EmbeddedWebContainer {
     
     /**
      * Adds the given <tt>VirtualServer</tt> to this
-     * <tt>EmbeddedWebContainer</tt>.
+     * <tt>WebContainer</tt>.
      *
-     * <p>If this <tt>EmbeddedWebContainer</tt> has already been started,
+     * <p>If this <tt>WebContainer</tt> has already been started,
      * the given <tt>virtualServer</tt> will be started as well.
      *
      * @param virtualServer the <tt>VirtualServer</tt> to add
      *
      * @throws ConfigException if a <tt>VirtualServer</tt> with the
      * same id has already been registered with this
-     * <tt>EmbeddedWebContainer</tt>
+     * <tt>WebContainer</tt>
      * @throws GlassFishException if the given <tt>virtualServer</tt> fails
      * to be started
      */
@@ -328,22 +328,22 @@ public interface EmbeddedWebContainer {
      *
      * @return the <tt>VirtualServer</tt> with the given id, or
      * <tt>null</tt> if no <tt>VirtualServer</tt> with that id has been
-     * registered with this <tt>EmbeddedWebContainer</tt>
+     * registered with this <tt>WebContainer</tt>
      */
     public VirtualServer findVirtualServer(String id);
 
     /**
      * Gets the collection of <tt>VirtualServer</tt> instances registered
-     * with this <tt>EmbeddedWebContainer</tt>.
+     * with this <tt>WebContainer</tt>.
      * 
      * @return the (possibly empty) collection of <tt>VirtualServer</tt>
-     * instances registered with this <tt>EmbeddedWebContainer</tt>
+     * instances registered with this <tt>WebContainer</tt>
      */
     public Collection<VirtualServer> getVirtualServers();
 
     /**
      * Stops the given <tt>virtualServer</tt> and removes it from this
-     * <tt>EmbeddedWebContainer</tt>.
+     * <tt>WebContainer</tt>.
      *
      * @param virtualServer the <tt>VirtualServer</tt> to be stopped
      * and removed

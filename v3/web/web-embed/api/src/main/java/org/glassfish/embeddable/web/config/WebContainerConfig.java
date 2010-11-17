@@ -45,9 +45,9 @@ import java.io.File;
 import java.net.URL;
 
 /**
- * Class that is used for configuring EmbeddedWebContainer instances.
+ * Class that is used for configuring WebContainer instances.
  *
- * @see org.glassfish.embeddable.web.EmbeddedWebContainer
+ * @see org.glassfish.embeddable.web.WebContainer
  */
 public class WebContainerConfig {
 

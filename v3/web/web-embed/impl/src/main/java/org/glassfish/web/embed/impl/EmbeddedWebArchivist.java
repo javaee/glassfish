@@ -63,11 +63,6 @@ import com.sun.enterprise.deployment.RootDeploymentDescriptor;
  */
 public class EmbeddedWebArchivist extends WebArchivist {
 
-/*
-    @Inject
-    WebBuilder builder;
-*/
-
     private final ModuleScanner scanner = new ModuleScanner() {
 
             final Set<Class> elements = new HashSet<Class>();

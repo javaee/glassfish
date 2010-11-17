@@ -65,23 +65,23 @@ import org.junit.Test;
 public class EmbeddedSetDefaultWebXmlTest {
 
     static GlassFish glassfish;
-    static EmbeddedWebContainer embedded;
+    static WebContainer embedded;
     static File root;
 
     @BeforeClass
     public static void setupServer() throws Exception {
         glassfish = GlassFishRuntime.bootstrap().newGlassFish();
         glassfish.start();
-        embedded = glassfish.getService(EmbeddedWebContainer.class);
+        embedded = glassfish.getService(WebContainer.class);
         System.out.println("================ EmbeddedSetDefaultWebXml Test");
         System.out.println("Starting Web "+embedded);
         embedded.setLogLevel(Level.INFO);
         WebContainerConfig config = new WebContainerConfig();
+        root = new File(System.getProperty("buildDir"));
         File defaultWebXml = new File(root+"/org/glassfish/tests/webapi/my-default-web.xml");
         config.setDefaultWebXml(defaultWebXml.toURL());
         System.out.println("Using default-web.xml "+defaultWebXml.getAbsolutePath());
         config.setListings(true);
-        root = new File(System.getProperty("buildDir"));
         config.setDocRootDir(root);
         config.setPort(8080);
         System.out.println("Added Web with base directory "+root.getAbsolutePath());

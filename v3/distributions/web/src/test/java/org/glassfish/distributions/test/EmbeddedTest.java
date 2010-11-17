@@ -47,7 +47,7 @@ import org.glassfish.embeddable.Deployer;
 import org.glassfish.embeddable.GlassFish;
 import org.glassfish.embeddable.GlassFishException;
 import org.glassfish.embeddable.GlassFishRuntime;
-import org.glassfish.embeddable.web.EmbeddedWebContainer;
+import org.glassfish.embeddable.web.WebContainer;
 import org.glassfish.embeddable.web.HttpListener;
 import org.glassfish.embeddable.web.WebListener;
 import org.junit.AfterClass;
@@ -73,8 +73,8 @@ public class EmbeddedTest {
         glassfish = GlassFishRuntime.bootstrap().newGlassFish();
         glassfish.start();
 
-        EmbeddedWebContainer webcontainer =
-                glassfish.getService(EmbeddedWebContainer.class);
+        WebContainer webcontainer =
+                glassfish.getService(WebContainer.class);
         Collection<WebListener> listeners = webcontainer.getWebListeners();
         System.out.println("Network listener size before creation " + listeners.size());
         for (WebListener listener : listeners) {

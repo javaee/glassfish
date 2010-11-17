@@ -56,7 +56,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- * Tests EmbeddedWebContainer#start correctly starts the server with default 8080 port
+ * Tests WebContainer#start correctly starts the server with default 8080 port
  * if no port is previously defined.
  *
  * @author Amy Roh
@@ -64,13 +64,13 @@ import org.junit.Test;
 public class EmbeddedWebAPIDefaultStartTest {
 
     static GlassFish glassfish;
-    static EmbeddedWebContainer embedded;
+    static WebContainer embedded;
 
     @BeforeClass
     public static void setupServer() throws GlassFishException {
         glassfish = GlassFishRuntime.bootstrap().newGlassFish();
         glassfish.start();
-        embedded = glassfish.getService(EmbeddedWebContainer.class);
+        embedded = glassfish.getService(WebContainer.class);
     }
     
     @Test

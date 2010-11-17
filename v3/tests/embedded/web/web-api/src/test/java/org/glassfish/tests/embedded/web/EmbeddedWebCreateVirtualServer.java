@@ -56,20 +56,20 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- * Test for EmbeddedWebContainer#CreateVirtualServer & EmbeddedWebContainer#deleteWebListener
+ * Test for WebContainer#CreateVirtualServer & WebContainer#deleteWebListener
  *
  * @author Amy Roh
  */
 public class EmbeddedWebCreateVirtualServer {
     
     static GlassFish glassfish;
-    static EmbeddedWebContainer embedded;
+    static WebContainer embedded;
 
     @BeforeClass
     public static void setupServer() throws GlassFishException {
         glassfish = GlassFishRuntime.bootstrap().newGlassFish();
         glassfish.start();
-        embedded = glassfish.getService(EmbeddedWebContainer.class);
+        embedded = glassfish.getService(WebContainer.class);
         System.out.println("================ Test Embedded Create Virtual Server");
         System.out.println("Starting Web "+embedded);
         embedded.setLogLevel(Level.INFO);

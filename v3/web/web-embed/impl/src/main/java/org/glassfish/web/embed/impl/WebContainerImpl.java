@@ -65,10 +65,9 @@ import org.glassfish.embeddable.Deployer;
 import org.glassfish.embeddable.GlassFishException;
 import org.glassfish.embeddable.web.ConfigException;
 import org.glassfish.embeddable.web.Context;
-import org.glassfish.embeddable.web.EmbeddedWebContainer;
+import org.glassfish.embeddable.web.WebContainer;
 import org.glassfish.embeddable.web.HttpListener;
 import org.glassfish.embeddable.web.VirtualServer;
-import org.glassfish.embeddable.web.WebBuilder;
 import org.glassfish.embeddable.web.WebListener;
 import org.glassfish.embeddable.web.config.WebContainerConfig;
 import org.jvnet.hk2.annotations.ContractProvided;
@@ -95,8 +94,8 @@ import org.apache.catalina.startup.Embedded;
  * @author Amy Roh
  */
 @Service
-@ContractProvided(EmbeddedWebContainer.class)
-public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
+@ContractProvided(WebContainer.class)
+public class WebContainerImpl implements WebContainer {
 
     @Inject
     NetworkConfig config;
@@ -108,7 +107,7 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
     HttpService httpService;
     
     private static Logger log = 
-            Logger.getLogger(EmbeddedWebContainerImpl.class.getName());
+            Logger.getLogger(WebContainerImpl.class.getName());
       
     
     // ----------------------------------------------------------- Constructors
@@ -142,9 +141,8 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
 
     // --------------------------------------------------------- Public Methods
 
-    public void setConfiguration(WebBuilder builder) {
-        setPath(builder.getDocRootDir());
-        listings = builder.getListings();
+    public void setConfiguration(WebContainerConfig config) {
+        //TODO
     }
 
     /**
@@ -164,7 +162,7 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
 
     public void bind(Port port, String protocol) {
 
-        log.info("EmbeddedWebContainer binding port "+port.getPortNumber()+" protocol "+protocol);
+        log.info("WebContainer binding port "+port.getPortNumber()+" protocol "+protocol);
 
         portNumber = port.getPortNumber();
         listenerName = getListenerName();
@@ -284,7 +282,7 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
     }
     
     /**
-     * Starts this <tt>EmbeddedWebContainer</tt> and any of the
+     * Starts this <tt>WebContainer</tt> and any of the
      * <tt>WebListener</tt> and <tt>VirtualServer</tt> instances
      * registered with it.
      *
@@ -295,7 +293,7 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
      * or listener configuration exists.
      * 
      * @throws Exception if an error occurs during the start up of this
-     * <tt>EmbeddedWebContainer</tt> or any of its registered
+     * <tt>WebContainer</tt> or any of its registered
      * <tt>WebListener</tt> or <tt>VirtualServer</tt> instances 
      */
     public void start() throws GlassFishException {
@@ -358,7 +356,7 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
     }
 
     /**
-     * Starts this <tt>EmbeddedWebContainer</tt> and any of the
+     * Starts this <tt>WebContainer</tt> and any of the
      * <tt>WebListener</tt> and <tt>VirtualServer</tt> instances
      * registered with it.
      *
@@ -369,7 +367,7 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
      * or listener configuration exists.
      *
      * @throws Exception if an error occurs during the start up of this
-     * <tt>EmbeddedWebContainer</tt> or any of its registered
+     * <tt>WebContainer</tt> or any of its registered
      * <tt>WebListener</tt> or <tt>VirtualServer</tt> instances
      *
      * @param webContainerConfig the embedded instance configuration
@@ -435,12 +433,12 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
     }
     
     /**
-     * Stops this <tt>EmbeddedWebContainer</tt> and any of the
+     * Stops this <tt>WebContainer</tt> and any of the
      * <tt>WebListener</tt> and <tt>VirtualServer</tt> instances
      * registered with it.
      *
      * @throws Exception if an error occurs during the shut down of this
-     * <tt>EmbeddedWebContainer</tt> or any of its registered
+     * <tt>WebContainer</tt> or any of its registered
      * <tt>WebListener</tt> or <tt>VirtualServer</tt> instances 
      */
     public void stop() throws GlassFishException {
@@ -689,16 +687,16 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
 
     /**
      * Adds the given <tt>WebListener</tt> to this
-     * <tt>EmbeddedWebContainer</tt>.
+     * <tt>WebContainer</tt>.
      *
-     * <p>If this <tt>EmbeddedWebContainer</tt> has already been started,
+     * <p>If this <tt>WebContainer</tt> has already been started,
      * the given <tt>webListener</tt> will be started as well.
      *
      * @param webListener the <tt>WebListener</tt> to add
      *
      * @throws ConfigException if a <tt>WebListener</tt> with the
      * same id has already been registered with this
-     * <tt>EmbeddedWebContainer</tt>
+     * <tt>WebContainer</tt>
      * @throws LifecycleException if the given <tt>webListener</tt> fails
      * to be started
      */
@@ -734,7 +732,7 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
      *
      * @return the <tt>WebListener</tt> with the given id, or
      * <tt>null</tt> if no <tt>WebListener</tt> with that id has been
-     * registered with this <tt>EmbeddedWebContainer</tt>
+     * registered with this <tt>WebContainer</tt>
      */
     public WebListener findWebListener(String id) {
         for (WebListener listener : listeners) {
@@ -747,10 +745,10 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
 
     /**
      * Gets the collection of <tt>WebListener</tt> instances registered
-     * with this <tt>EmbeddedWebContainer</tt>.
+     * with this <tt>WebContainer</tt>.
      * 
      * @return the (possibly empty) collection of <tt>WebListener</tt>
-     * instances registered with this <tt>EmbeddedWebContainer</tt>
+     * instances registered with this <tt>WebContainer</tt>
      */
     public Collection<WebListener> getWebListeners() {
         return listeners;
@@ -758,7 +756,7 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
 
     /**
      * Stops the given <tt>webListener</tt> and removes it from this
-     * <tt>EmbeddedWebContainer</tt>.
+     * <tt>WebContainer</tt>.
      *
      * @param webListener the <tt>WebListener</tt> to be stopped
      * and removed
@@ -857,16 +855,16 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
 
     /**
      * Adds the given <tt>VirtualServer</tt> to this
-     * <tt>EmbeddedWebContainer</tt>.
+     * <tt>WebContainer</tt>.
      *
-     * <p>If this <tt>EmbeddedWebContainer</tt> has already been started,
+     * <p>If this <tt>WebContainer</tt> has already been started,
      * the given <tt>virtualServer</tt> will be started as well.
      *
      * @param virtualServer the <tt>VirtualServer</tt> to add
      *
      * @throws ConfigException if a <tt>VirtualServer</tt> with the
      * same id has already been registered with this
-     * <tt>EmbeddedWebContainer</tt>
+     * <tt>WebContainer</tt>
      * @throws LifecycleException if the given <tt>virtualServer</tt> fails
      * to be started
      */
@@ -916,7 +914,7 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
      *
      * @return the <tt>VirtualServer</tt> with the given id, or
      * <tt>null</tt> if no <tt>VirtualServer</tt> with that id has been
-     * registered with this <tt>EmbeddedWebContainer</tt>
+     * registered with this <tt>WebContainer</tt>
      */
     public VirtualServer findVirtualServer(String id) {
         return (VirtualServer)engine.findChild(id);
@@ -924,10 +922,10 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
 
     /**
      * Gets the collection of <tt>VirtualServer</tt> instances registered
-     * with this <tt>EmbeddedWebContainer</tt>.
+     * with this <tt>WebContainer</tt>.
      * 
      * @return the (possibly empty) collection of <tt>VirtualServer</tt>
-     * instances registered with this <tt>EmbeddedWebContainer</tt>
+     * instances registered with this <tt>WebContainer</tt>
      */
     public Collection<VirtualServer> getVirtualServers(){
         
@@ -943,7 +941,7 @@ public class EmbeddedWebContainerImpl implements EmbeddedWebContainer {
 
     /**
      * Stops the given <tt>virtualServer</tt> and removes it from this
-     * <tt>EmbeddedWebContainer</tt>.
+     * <tt>WebContainer</tt>.
      *
      * @param virtualServer the <tt>VirtualServer</tt> to be stopped
      * and removed

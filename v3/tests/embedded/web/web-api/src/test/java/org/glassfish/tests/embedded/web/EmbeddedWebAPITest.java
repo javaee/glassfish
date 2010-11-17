@@ -56,7 +56,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- * Tests creating a port using EmbeddedWebContainer#createWeblistener & WebListener#setPort.
+ * Tests creating a port using WebContainer#createWeblistener & WebListener#setPort.
  * Checks if network listener is correctly added and deployment suceeds on the port specified.
  *
  * @author Amy Roh
@@ -64,13 +64,13 @@ import org.junit.Test;
 public class EmbeddedWebAPITest {
 
     static GlassFish glassfish;
-    static EmbeddedWebContainer embedded;
+    static WebContainer embedded;
 
     @BeforeClass
     public static void setupServer() throws GlassFishException {
         glassfish = GlassFishRuntime.bootstrap().newGlassFish();
         glassfish.start();
-        embedded = glassfish.getService(EmbeddedWebContainer.class);
+        embedded = glassfish.getService(WebContainer.class);
         System.out.println("================ Test Embedded Web API");
         System.out.println("Starting Web "+embedded);
         embedded.setLogLevel(Level.INFO);

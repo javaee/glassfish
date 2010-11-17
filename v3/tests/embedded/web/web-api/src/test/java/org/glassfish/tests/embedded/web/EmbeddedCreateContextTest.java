@@ -56,20 +56,20 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- * Tests EmbeddedWebContainer#createContext
+ * Tests WebContainer#createContext
  * 
  * @author Amy Roh
  */
 public class EmbeddedCreateContextTest {
 
     static GlassFish glassfish;
-    static EmbeddedWebContainer embedded;
+    static WebContainer embedded;
 
     @BeforeClass
     public static void setupServer() throws GlassFishException {
         glassfish = GlassFishRuntime.bootstrap().newGlassFish();
         glassfish.start();
-        embedded = glassfish.getService(EmbeddedWebContainer.class);
+        embedded = glassfish.getService(WebContainer.class);
         System.out.println("================ EmbeddedCreateContext Test");
         System.out.println("Starting Web "+embedded);
         embedded.setLogLevel(Level.INFO);
