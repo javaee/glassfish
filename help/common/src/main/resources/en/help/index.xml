@@ -30,7 +30,7 @@
     <indexitem target="task-appedit" text="editing (task)"></indexitem>
     <indexitem target="ref-appclientlaunch" text="launching (reference)"></indexitem>
     <indexitem target="task-applaunch" text="launching (task)"></indexitem>
-    <indexitem target="ref-managetargets" text="managing targets (reference)"></indexitem>
+    <indexitem target="ref-appmanagetargets" text="managing targets (reference)"></indexitem>
     <indexitem target="ref-managevirtualservers" text="managing virtual servers (reference)"></indexitem>
     <indexitem target="ref-redeploy" text="redeploying (reference)"></indexitem>
     <indexitem target="task-appredeploy" text="redeploying (task)"></indexitem>
@@ -43,7 +43,7 @@
     <indexitem target="task-appviewdesc" text="viewing deployment descriptors (task)"></indexitem>
     <indexitem target="ref-appmonitoringdata" text="viewing monitoring data (reference)"></indexitem>
     <indexitem target="task-appmonitoringdata" text="viewing monitoring data (task)"></indexitem>
-    <indexitem target="ref-targetlisting" text="viewing targets (reference)"></indexitem>
+    <indexitem target="ref-apptargets" text="viewing targets (reference)"></indexitem>
     <indexitem target="ref-endpoint" text="viewing web service endpoint information (reference)"></indexitem>
     <indexitem target="task-endpoint" text="viewing web service endpoint information (task)"></indexitem></indexitem>
  <indexitem text="audit modules">
@@ -61,6 +61,7 @@
  <indexitem target="ref-serverinstappsconfig" text="autodeploy settings for applications (reference)"></indexitem>
  <indexitem target="task-setadvanceappconfig" text="autodeploy settings for applications (task)"></indexitem>
  <indexitem target="ref-editcertrealm" text="certificate realm, properties"></indexitem>
+ <indexitem target="ref-sysinstancevalues" text="clustered instances, system properties (reference)"></indexitem>
  <indexitem target="task-logging-collectlogfiles" text="collect log files"></indexitem>
  <indexitem text="components">
     <indexitem target="ref-uc-addon" text="installing add-on (reference)"></indexitem>
@@ -71,6 +72,10 @@
     <indexitem target="task-uc-pkgdetails" text="viewing information (task)"></indexitem>
     <indexitem target="ref-uc-installed" text="viewing installed (reference)"></indexitem>
     <indexitem target="task-uc-installed-remove" text="viewing installed (task)"></indexitem></indexitem>
+ <indexitem text="configurations">
+    <indexitem target="ref-sysinstancevalues" text="clustered instances (reference)"></indexitem>
+    <indexitem target="ref-sysinstancevalues" text="standalone instances (reference)"></indexitem>
+    <indexitem target="ref-configurationsystemproperties" text="system properties (reference)"></indexitem></indexitem>
  <indexitem text="connector modules">
     <indexitem target="ref-uploaddev" text="deploying (reference)"></indexitem>
     <indexitem target="task-appdeployconn" text="deploying (task)"></indexitem></indexitem>
@@ -130,6 +135,11 @@
     <indexitem target="ref-logviewer" text="viewing the server log (reference)"></indexitem>
     <indexitem target="task-logviewer" text="viewing the server log (task)"></indexitem></indexitem>
  <indexitem target="task-logging-max-logfiles" text="history files, limiting number of"></indexitem>
+ <indexitem text="instances">
+    <indexitem text="clustered">
+        <indexitem target="ref-sysinstancevalues" text="system properties (reference)"></indexitem></indexitem>
+    <indexitem text="standalone">
+        <indexitem target="ref-sysinstancevalues" text="system properties (reference)"></indexitem></indexitem></indexitem>
  <indexitem text="JACC providers">
     <indexitem target="ref-jaccprovidernew" text="creating (reference)"></indexitem>
     <indexitem target="task-jaccprovidernew" text="creating (task)"></indexitem>
@@ -270,9 +280,14 @@
  <indexitem text="SSL settings">
     <indexitem target="ref-jmxconnectorssledit" text="JMX connector (reference)"></indexitem>
     <indexitem target="task-jmxconnectorssledit" text="JMX connector (task)"></indexitem></indexitem>
+ <indexitem target="ref-sysinstancevalues" text="standalone instances, system properties (reference)"></indexitem>
  <indexitem target="task-subscriptions" text="Subscriptions page, viewing"></indexitem>
  <indexitem target="task-register" text="Sun Online Account"></indexitem>
- <indexitem target="ref-preconfiguredprops" text="system properties, predefined"></indexitem>
+ <indexitem text="system properties">
+    <indexitem target="ref-sysinstancevalues" text="clustered instances (reference)"></indexitem>
+    <indexitem target="ref-configurationsystemproperties" text="configurations (reference)"></indexitem>
+    <indexitem target="ref-preconfiguredprops" text="predefined"></indexitem>
+    <indexitem target="ref-sysinstancevalues" text="standalone instances (reference)"></indexitem></indexitem>
  <indexitem target="ref-systemproperties" text="system properties (reference)"></indexitem>
  <indexitem target="task-systemproperties" text="system properties (task)"></indexitem>
  <indexitem text="Update Tool">

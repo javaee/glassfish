@@ -1,0 +1,52 @@
+<!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
+ 
+Use is subject to License Terms  -->
+<a name="ref-gms"></a><h4>Edit Group Management Service </h4>
+<a name="indexterm-66"></a><p>Use the Group Management Service page to change GMS settings.</p>
+
+<p>The Group Management Service (GMS) is an in-process service that provides cluster monitoring,
+cluster membership, and group communication services. The GMS is built atop a configurable
+stack of group membership discovery and health monitoring protocols. The GMS performs the
+following functions:</p>
+
+
+<ul><li><p>Notifies registered modules in a GlassFish Server instance when one or more member instances are added to or removed from a cluster, or are suspected or confirmed to have failed.</p>
+
+</li>
+<li><p>Provides the ability to send and receive messages between a group of processes.</p>
+
+</li></ul>
+<p>The Group Management Service page contains the following options.</p>
+
+<dl><dt>Load Defaults</dt>
+<dd><p>Button to restore the default values of all the settings.</p>
+
+</dd>
+<dt>Maximum Missed Heartbeats</dt>
+<dd><p>The number of monitoring attempts after which a server instance failure is suspected. The default is 3.</p>
+
+</dd>
+<dt>Heartbeat Frequency</dt>
+<dd><p>The period of time between monitoring attempts. The default is 2000 milliseconds.</p>
+
+</dd>
+<dt>Group Discovery Timeout</dt>
+<dd><p>The amount of time that the GMS waits for discovery of other cluster members. The default is 5000 milliseconds.</p>
+
+</dd>
+<dt>Failure Verification Wait Time</dt>
+<dd><p>The amount of time after which a suspected failure is marked as verified. The default is 1500 milliseconds.</p>
+
+</dd>
+<dt>Additional Properties</dt>
+<dd><p>Additional properties for the Group Management Service.</p>
+
+<p>The GlassFish Server does not define any additional GMS properties.</p>
+
+</dd>
+</dl>
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

@@ -96,12 +96,18 @@
  <tocitem target="ref-topic-group" text="GlassFish Server Administration Console Reference" expand="false">
     <tocitem target="ref-group-commontask-all" text="Common Tasks" expand="false">
         <tocitem target="ref-developercommontasks" text="Common Tasks" expand="false"></tocitem></tocitem>
-    <tocitem target="ref-group-registration" text="Registration and Support" expand="false">
-        <tocitem target="ref-registrationpage" text="Product Registration" expand="false"></tocitem>
+    <tocitem target="ref-group-registration" text="Product Registration" expand="false">
+        <tocitem target="ref-registrationpage" text="Product Registration" expand="false"></tocitem></tocitem>
+    <tocitem target="ref-group-news" text="GlassFish News" expand="false">
         <tocitem target="ref-supportpage" text="GlassFish News" expand="false"></tocitem></tocitem>
     <tocitem target="ref-group-appservsettings" text="GlassFish Server" expand="false">
         <tocitem target="ref-generaltab" text="General Information" expand="false"></tocitem>
         <tocitem target="ref-logviewer" text="Log Viewer" expand="false"></tocitem>
+        <tocitem target="ref-serverinstresources" text="Resources" expand="false"></tocitem>
+        <tocitem target="ref-group-pswdaliases" text="Password Aliases" expand="false">
+            <tocitem target="ref-pswdaliases" text="Passwords Aliases" expand="false"></tocitem>
+            <tocitem target="ref-pswdaliasnew" text="New Password Alias" expand="false"></tocitem>
+            <tocitem target="ref-pswdaliasedit" text="Edit Password Alias" expand="false"></tocitem></tocitem>
         <tocitem target="ref-group-advancedsettings" text="Advanced" expand="false">
             <tocitem target="ref-serverinstappsconfig" text="Applications Configuration" expand="false"></tocitem>
             <tocitem target="ref-domainattributestab" text="Domain Attributes" expand="false"></tocitem></tocitem>
@@ -116,9 +122,9 @@
         <tocitem target="ref-applications" text="Applications" expand="false"></tocitem>
         <tocitem target="ref-appedit" text="Edit Application" expand="false"></tocitem>
         <tocitem target="ref-webapp-editdd" text="Module Descriptors" expand="false"></tocitem>
-        <tocitem target="ref-displaydd" text="Deployment Descriptor" expand="false"></tocitem>
-        <tocitem target="ref-targetlisting" text="Application Targets" expand="false"></tocitem>
-        <tocitem target="ref-managetargets" text="Manage Targets" expand="false"></tocitem>
+        <tocitem target="ref-webapp-displaydd" text="Deployment Descriptor" expand="false"></tocitem>
+        <tocitem target="ref-apptargets" text="Application Targets" expand="false"></tocitem>
+        <tocitem target="ref-appmanagetargets" text="Manage Targets" expand="false"></tocitem>
         <tocitem target="ref-managevirtualservers" text="Virtual Server Targets" expand="false"></tocitem>
         <tocitem target="ref-endpoint" text="Web Service Endpoint Information" expand="false"></tocitem>
         <tocitem target="ref-appclientlaunch" text="Launch Application Client" expand="false"></tocitem>
@@ -127,11 +133,17 @@
     <tocitem target="ref-group-lifecyclemodules" text="Lifecycle Modules" expand="false">
         <tocitem target="ref-lifecyclemodules" text="Lifecycle Modules" expand="false"></tocitem>
         <tocitem target="ref-lifecyclemodulenew" text="New Lifecycle Module" expand="false"></tocitem>
-        <tocitem target="ref-lifecyclemoduleedit" text="Edit Lifecycle Module" expand="false"></tocitem></tocitem>
+        <tocitem target="ref-lifecyclemoduleedit" text="Edit Lifecycle Module" expand="false"></tocitem>
+        <tocitem target="ref-lifecycletargets" text="Lifecycle Module Targets" expand="false"></tocitem>
+        <tocitem target="ref-lifecyclemanagetargets" text="Manage Targets" expand="false"></tocitem></tocitem>
     <tocitem target="ref-group-resources" text="Resources" expand="false">
-        <tocitem target="ref-resources" text="Resources" expand="false"></tocitem></tocitem>
+        <tocitem target="ref-resources" text="Resources" expand="false"></tocitem>
+        <tocitem target="ref-resourcetargets" text="Resource Targets" expand="false"></tocitem>
+        <tocitem target="ref-resourcemanagetargets" text="Manage Resource Targets" expand="false"></tocitem></tocitem>
     <tocitem target="ref-group-configuration" text="Configurations" expand="false">
-        <tocitem target="ref-configuration" text="Configurations" expand="false"></tocitem>
+        <tocitem target="ref-configurations" text="Configurations" expand="false"></tocitem>
+        <tocitem target="ref-configurationsnew" text="New Configuration" expand="false"></tocitem>
+        <tocitem target="ref-configuration" text="Configuration" expand="false"></tocitem>
         <tocitem target="ref-group-jvm" text="JVM Settings" expand="false">
             <tocitem target="ref-serverinstjvmgeneral" text="JVM General Settings" expand="false"></tocitem>
             <tocitem target="ref-serverinstjvmpathsettings" text="JVM Path Settings" expand="false"></tocitem>
@@ -179,7 +191,11 @@
             <tocitem target="ref-jmxconnectoredit" text="Edit JMX Connector" expand="false"></tocitem>
             <tocitem target="ref-jmxconnectorssledit" text="SSL" expand="false"></tocitem></tocitem>
         <tocitem target="ref-group-monitoringservice" text="Monitoring" expand="false">
-            <tocitem target="ref-monitoringservice" text="Monitoring Service" expand="false"></tocitem></tocitem></tocitem>
+            <tocitem target="ref-monitoringservice" text="Monitoring Service" expand="false"></tocitem></tocitem>
+        <tocitem target="ref-group-configurationsystemproperties" text="System Properties " expand="false">
+            <tocitem target="ref-configurationsystemproperties" text="System Properties" expand="false"></tocitem>
+            <tocitem target="ref-sysinstancevalues" text="Instance Values" expand="false"></tocitem>
+            <tocitem target="ref-predefinedconfigsysproperties" text="Predefined System Properties " expand="false"></tocitem></tocitem></tocitem>
     <tocitem target="ref-group-uc" text="Update Tool" expand="false">
         <tocitem target="ref-uc-concepts" text="Update Tool Key Concepts" expand="false"></tocitem>
         <tocitem target="ref-uc-addon" text="Available Add-Ons" expand="false"></tocitem>

@@ -50,7 +50,7 @@
     <groupId>org.glassfish.admingui</groupId>
     <artifactId>console-common-help</artifactId>
     <packaging>hk2-jar</packaging>
-    <name>Admin Console Common Help Content</name>
+    <name>Administration Console Common Help Content</name>
     <description>Online help content for the console-common bundle.</description>
 
     <developers>

@@ -31,15 +31,14 @@ name must be unique.</p><p>The name can include an optional version identifier, 
 separated from the name by a colon (<tt>:</tt>). The version identifier must begin
 with a letter or number. It can contain alphanumeric characters plus underscore (<tt>_</tt>), dash
 (<tt>-</tt>), and period (<tt>.</tt>) characters. For more information about module and application versions,
-see the <a href="http://docs.sun.com/doc/821-2417"><i>Oracle GlassFish Server 3.1 Application Deployment Guide</i></a>.</p></li>
+see the <a href="http://docs.sun.com/doc/821-2417/gkhhv?a=view">Module and Application Versions in <i>Oracle GlassFish Server 3.1 Application Deployment Guide</i></a>.</p></li>
 <li><b>From the Virtual Servers drop-down list, select the virtual server to be associated
 with this application.</b><p>The Virtual Servers option appears if only the default server instance, <tt>server</tt>, exists. If
 clusters or other stand-alone server instances exist, you can select virtual servers after
 deployment. Go to the Edit Application page, select the Target tab, and select
 Manage Virtual Servers for the desired target.</p></li>
-<li><b>Select the Status Enabled checkbox to enable the application.</b><p>This option is selected by default unless the application is deployed to a
-cluster, in which case this option is not selected by default. If
-this option is disabled, the application is unavailable.</p></li>
+<li><b>Select the Status Enabled checkbox to enable the application.</b><p>This option is selected by default. If this option is disabled, the application
+is unavailable.</p></li>
 <li><b>Select the Availability Enabled checkbox to enable session persistence and SFSB checkpointing for the
 application.</b><p>If the Enabled checkbox is selected, high-availability is enabled for web sessions and for
 stateful session bean (SFSB) checkpointing and potentially passivation. If set to false (default)

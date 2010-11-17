@@ -1,0 +1,86 @@
+<index version="2.0">
+
+ <indexitem text="applications">
+    <indexitem text="viewing deployed">
+        <indexitem target="ref-clusterapplications" text="to clusters (reference)"></indexitem>
+        <indexitem target="ref-standaloneinstanceapplications" text="to standalone instances (reference)"></indexitem></indexitem></indexitem>
+ <indexitem target="ref-availabilityservice" text="availability service, editing (reference)"></indexitem>
+ <indexitem text="clustered instances">
+    <indexitem target="ref-clusterinstancenew" text="creating (reference)"></indexitem>
+    <indexitem target="ref-clusterinstanceedit" text="managing (reference)"></indexitem>
+    <indexitem target="ref-clusterinstanceproperties" text="properties (reference)"></indexitem>
+    <indexitem target="ref-clusterresources" text="resources (reference)"></indexitem>
+    <indexitem target="ref-clusterinstanceconfigproperties" text="system properties (reference)"></indexitem></indexitem>
+ <indexitem text="clusters">
+    <indexitem target="ref-clusterapplications" text="applications (reference)"></indexitem>
+    <indexitem target="ref-clusternew" text="creating (reference)"></indexitem>
+    <indexitem target="ref-clustergeneral" text="general information (reference)"></indexitem>
+    <indexitem target="ref-clusters" text="listing (reference)"></indexitem>
+    <indexitem target="ref-clusterproperties" text="properties (reference)"></indexitem>
+    <indexitem target="ref-clustergeneral" text="starting (reference)"></indexitem>
+    <indexitem target="ref-clustergeneral" text="stopping (reference)"></indexitem>
+    <indexitem target="ref-clustersystemproperties" text="system properties (reference)"></indexitem></indexitem>
+ <indexitem text="creating">
+    <indexitem target="ref-clusterinstancenew" text="clustered instances (reference)"></indexitem>
+    <indexitem target="ref-standaloneinstancenew" text="standalone instances (reference)"></indexitem></indexitem>
+ <indexitem text="EJB timers">
+    <indexitem target="ref-migrateejbtimers" text="migrating (reference)"></indexitem>
+    <indexitem target="task-migrate-ejb-timers" text="migrating (task)"></indexitem></indexitem>
+ <indexitem text="group management service">
+    <indexitem target="task-gmscluster" text="configuring for a cluster (task)"></indexitem><indexitem target="ref-clustergeneral" text="configuring for a cluster (task)"></indexitem>
+    <indexitem target="task-gms" text="configuring settings (task)"></indexitem>
+    <indexitem target="task-gmsenable" text="disabling (task)"></indexitem>
+    <indexitem target="ref-gms" text="editing (reference)"></indexitem>
+    <indexitem target="task-gmsenable" text="enabling (task)"></indexitem></indexitem>
+ <indexitem text="instances">
+    <indexitem target="ref-clusternew" text="adding to cluster during creation (reference)"></indexitem>
+    <indexitem text="clustered">
+        <indexitem target="ref-clusterinstancenew" text="creating (reference)"></indexitem>
+        <indexitem target="ref-clusterinstanceedit" text="managing (reference)"></indexitem>
+        <indexitem target="ref-clusterinstanceproperties" text="properties (reference)"></indexitem>
+        <indexitem target="ref-clusterresources" text="resources (reference)"></indexitem>
+        <indexitem target="ref-clusterinstanceconfigproperties" text="system properties (reference)"></indexitem></indexitem>
+    <indexitem text="standalone">
+        <indexitem target="ref-standaloneinstancenew" text="creating (reference)"></indexitem>
+        <indexitem target="ref-standaloneinstancegeneral" text="managing (reference)"></indexitem>
+        <indexitem target="ref-standaloneinstanceproperties" text="properties (reference)"></indexitem>
+        <indexitem target="ref-standaloneinstanceresources" text="resources (reference)"></indexitem>
+        <indexitem target="ref-standaloneinstanceconfigproperties" text="system properties (reference)"></indexitem></indexitem></indexitem>
+ <indexitem text="managing">
+    <indexitem target="ref-clusterinstanceedit" text="clustered instances (reference)"></indexitem>
+    <indexitem target="ref-standaloneinstancegeneral" text="standalone instances (reference)"></indexitem></indexitem>
+ <indexitem text="migrating">
+    <indexitem target="ref-migrateejbtimers" text="EJB timers (reference)"></indexitem>
+    <indexitem target="task-migrate-ejb-timers" text="EJB timers (task)"></indexitem></indexitem>
+ <indexitem text="nodes">
+    <indexitem target="ref-nodenew" text="creating (reference)"></indexitem>
+    <indexitem target="task-createnode" text="creating (task)"></indexitem>
+    <indexitem target="task-deletenode" text="deleting (reference)"></indexitem><indexitem target="ref-nodes" text="deleting (reference)"></indexitem>
+    <indexitem target="ref-nodeedit" text="editing (reference)"></indexitem>
+    <indexitem target="task-editnode" text="editing (task)"></indexitem>
+    <indexitem target="ref-nodes" text="listing (reference)"></indexitem>
+    <indexitem target="task-listnodes" text="listing (task)"></indexitem></indexitem>
+ <indexitem text="properties">
+    <indexitem target="ref-clusterinstanceproperties" text="clustered instances (reference)"></indexitem>
+    <indexitem target="ref-clusterproperties" text="clusters (reference)"></indexitem>
+    <indexitem target="ref-standaloneinstanceproperties" text="standalone instances (reference)"></indexitem></indexitem>
+ <indexitem text="resources">
+    <indexitem target="ref-clusterresources" text="clustered instances (reference)"></indexitem>
+    <indexitem target="ref-standaloneinstanceresources" text="standalone instances (reference)"></indexitem></indexitem>
+ <indexitem text="standalone instances">
+    <indexitem target="ref-standaloneinstanceapplications" text="applications (reference)"></indexitem>
+    <indexitem target="ref-standaloneinstancenew" text="creating (reference)"></indexitem>
+    <indexitem target="ref-standaloneinstancegeneral" text="managing (reference)"></indexitem>
+    <indexitem target="ref-standaloneinstanceproperties" text="properties (reference)"></indexitem>
+    <indexitem target="ref-standaloneinstanceresources" text="resources (reference)"></indexitem>
+    <indexitem target="ref-standaloneinstanceconfigproperties" text="system properties (reference)"></indexitem></indexitem>
+ <indexitem text="system properties">
+    <indexitem target="ref-clusterinstanceconfigproperties" text="clustered instances (reference)"></indexitem>
+    <indexitem target="ref-clustersystemproperties" text="clusters (reference)"></indexitem>
+    <indexitem target="ref-standaloneinstanceconfigproperties" text="standalone instances (reference)"></indexitem></indexitem>
+ <indexitem text="timers">
+    <indexitem text="EJB">
+        <indexitem target="ref-migrateejbtimers" text="migrating (reference)"></indexitem>
+        <indexitem target="task-migrate-ejb-timers" text="migrating (task)"></indexitem></indexitem></indexitem>
+ <indexitem target="ref-recovertransactions" text="transactions, recovering (reference)"></indexitem>
+</index>

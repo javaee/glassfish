@@ -1,0 +1,52 @@
+<!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
+ 
+Use is subject to License Terms  -->
+<a name="ref-predefinedconfigsysproperties"></a><h4>Predefined System Properties </h4>
+<p>GlassFish Server defines the following configuration system properties:</p>
+
+<dl><dt><tt>ASADMIN_LISTENER_PORT</tt></dt>
+<dd><p>This property specifies the port number of the HTTP port or the HTTPS port for administration. This port is the port in the URL that you specify in your web browser to manage the instance, for example, <tt>http://localhost:4949</tt>. Valid values are 1&#8211;65535. On UNIX, creating sockets that listen on ports 1&#8211;1024 requires superuser privileges.</p>
+
+</dd>
+<dt><tt>HTTP_LISTENER_PORT</tt></dt>
+<dd><p>This property specifies the port number of the port that is used to listen for HTTP requests. Valid values are 1&#8211;65535. On UNIX, creating sockets that listen on ports 1&#8211;1024 requires superuser privileges.</p>
+
+</dd>
+<dt><tt>HTTP_SSL_LISTENER_PORT</tt></dt>
+<dd><p>This property specifies the port number of the port that is used to listen for HTTPS requests. Valid values are 1&#8211;65535. On UNIX, creating sockets that listen on ports 1&#8211;1024 requires superuser privileges.</p>
+
+</dd>
+<dt><tt>IIOP_LISTENER_PORT</tt></dt>
+<dd><p>This property specifies the port number of the port that is used for IIOP connections. Valid values are 1&#8211;65535. On UNIX, creating sockets that listen on ports 1&#8211;1024 requires superuser privileges.</p>
+
+</dd>
+<dt><tt>IIOP_SSL_LISTENER_PORT</tt></dt>
+<dd><p>This property specifies the port number of the port that is used for secure IIOP connections. Valid values are 1&#8211;65535. On UNIX, creating sockets that listen on ports 1&#8211;1024 requires superuser privileges.</p>
+
+</dd>
+<dt><tt>IIOP_SSL_MUTUALAUTH_PORT</tt></dt>
+<dd><p>This property specifies the port number of the port that is used for secure IIOP connections with client authentication. Valid values are 1&#8211;65535. On UNIX, creating sockets that listen on ports 1&#8211;1024 requires superuser privileges.</p>
+
+</dd>
+<dt><tt>JAVA_DEBUGGER_PORT</tt></dt>
+<dd><p>This property specifies the port number of the port that is used for connections to the <a href="http://java.sun.com/javase/technologies/core/toolsapis/jpda/">Java Platform Debugger Architecture (JPDA)</a> debugger. Valid values are 1&#8211;65535. On UNIX, creating sockets that listen on ports 1&#8211;1024 requires superuser privileges.</p>
+
+</dd>
+<dt><tt>JMS_PROVIDER_PORT</tt></dt>
+<dd><p>This property specifies the port number for the Java Message Service provider. Valid values are 1&#8211;65535. On UNIX, creating sockets that listen on ports 1&#8211;1024 requires superuser privileges.</p>
+
+</dd>
+<dt><tt>JMX_SYSTEM_CONNECTOR_PORT</tt></dt>
+<dd><p>This property specifies the port number on which the JMX connector listens. Valid values are 1&#8211;65535. On UNIX, creating sockets that listen on ports 1&#8211;1024 requires superuser privileges.</p>
+
+</dd>
+<dt><tt>OSGI_SHELL_TELNET_PORT</tt></dt>
+<dd><p>This property specifies the port number of the port that is used for connections to the <a href="http://felix.apache.org/site/apache-felix-remote-shell.html">Apache Felix Remote Shell</a>. This shell uses the Felix shell service to interact with the OSGi module management subsystem. Valid values are 1&#8211;65535. On UNIX, creating sockets that listen on ports 1&#8211;1024 requires superuser privileges.</p>
+
+</dd>
+</dl>
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

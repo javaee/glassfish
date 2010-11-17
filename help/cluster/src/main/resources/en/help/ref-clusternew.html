@@ -1,0 +1,118 @@
+<!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
+ 
+Use is subject to License Terms  -->
+<a name="ref-clusternew"></a><h4>New Cluster</h4>
+<a name="indexterm-13"></a><a name="indexterm-14"></a><p>Use the New Cluster page to create a cluster.</p>
+
+<p>The New Cluster page contains the following options.</p>
+
+<dl><dt>Cluster Name</dt>
+<dd><p>The name of the cluster.</p>
+
+<p>The name must meet the following requirements:</p>
+
+
+<ul><li><p>The name must start with a letter, a number, or an underscore.</p>
+
+</li>
+<li><p>The name may contain only the following characters:</p>
+
+
+<ul><li><p>Lowercase letters</p>
+
+</li>
+<li><p>Uppercase letters</p>
+
+</li>
+<li><p>Numbers</p>
+
+</li>
+<li><p>Hyphen</p>
+
+</li>
+<li><p>Period</p>
+
+</li>
+<li><p>Underscore</p>
+
+</li>
+<li><p>Slash</p>
+
+</li>
+<li><p>Hash</p>
+
+</li></ul>
+</li>
+<li><p>The name must be unique in the domain and must not be the name of a another cluster, a named configuration, a GlassFish Server instance , or a node.</p>
+
+</li>
+<li><p>The name must not be <tt>domain</tt>, <tt>server</tt>, or any other keyword that is reserved by GlassFish Server.</p>
+
+</li></ul>
+</dd>
+<dt>Configuration</dt>
+<dd><p>A drop-down list of existing named configurations that the cluster can use. A cluster requires a named configuration that defines the configuration of all instances that are added to the cluster. One configuration must be selected from the list. The cluster will use the selected configuration when the cluster is created.</p>
+
+</dd>
+<dt>Make a Copy of the Selected Configuration</dt>
+<dd><p>If this option is selected, the selected configuration is copied when the cluster is created. The copy of the configuration is assigned the name <tt><i>cluster-name</i>-config</tt>, where <i>cluster-name</i> is the name of the cluster as typed in the Cluster Name field.</p>
+
+<p>If <tt>default-config</tt> is selected from the Configuration drop-down list, you must select this option. The <tt>default-config</tt> configuration can only be copied, not referenced.</p>
+
+</dd>
+<dt>Reference the Selected Configuration </dt>
+<dd><p>If this option is selected, the cluster will use the specified existing named configuration.</p>
+
+<p>If <tt>default-config</tt> is selected from the Configuration drop-down list, you must <b>not</b> select this option. The <tt>default-config</tt> configuration cannot be referenced, only copied.</p>
+
+</dd>
+<dt>Server Instances to be Created</dt>
+<dd><p>A list of GlassFish Server instances that are to be created when the cluster is created. For each instance, the following information is provided:</p>
+
+<dl><dt>Instance Name</dt>
+<dd><p>The name of the instance.</p>
+
+</dd>
+<dt>Weight</dt>
+<dd><p>An integer that represents the load-balancing weight of the instance.</p>
+
+<p>The load-balancing weight determines the proportion of all requests to the cluster that the instance should process.</p>
+
+<p>For example, in a two-instance cluster, you might require one instance to process one out of four requests, and the other instance to process three out of four requests. In this situation, set the weight of the instance that is process one out of four requests to 1 and set the weight of the other instance to 3. If you prefer to use percentages, set the weights of the instances to 25 and 75 respectively.</p>
+
+<p>The default weight is 100.</p>
+
+</dd>
+<dt>Node</dt>
+<dd><p>A drop-down list of existing nodes where the instance can reside. One node must be selected from the list. The instance will reside on the selected node when the cluster is created.</p>
+
+</dd>
+</dl>
+<p>The Server Instances to be Created table also contains the following options.</p>
+
+<dl><dt>New</dt>
+<dd><p>Button to create an instance. Clicking this button adds a row to the Server Instances to be Created table.</p>
+
+</dd>
+<dt>Delete</dt>
+<dd><p>Button to delete an instance.</p>
+
+</dd>
+</dl>
+</dd>
+</dl>
+<h5>Related Tasks</h5>
+
+<ul><li><p><b>Broken Link (Target ID: TASK-CREATE-CLUSTER)</b></p>
+
+</li></ul>
+<h5>Equivalent <tt>asadmin</tt> Subcommand</h5>
+
+<ul><li><p><a href="http://docs.sun.com/doc/821-2433/create-cluster-1?a=view"><tt>create-cluster</tt>(1)</a></p>
+
+</li></ul>
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

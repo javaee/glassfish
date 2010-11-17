@@ -1,0 +1,131 @@
+<!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
+ 
+Use is subject to License Terms  -->
+<a name="ref-standaloneinstanceapplications"></a><h4>Applications</h4>
+<a name="indexterm-54"></a><a name="indexterm-55"></a><p>Use the Applications page to perform the following tasks on the selected
+standalone GlassFish Server instance:</p>
+
+
+<ul><li><p>Viewing and managing the applications that are already deployed to the instance</p>
+
+</li>
+<li><p>Deploying more applications to the instance</p>
+
+</li></ul>
+<p>The Applications page displays a list of applications that are deployed to
+the selected instance. For each application, the following information is provided.</p>
+
+<dl><dt>Name</dt>
+<dd><p>The application name.</p>
+
+<p>The name can include an optional version identifier, which follows the name and is separated from the name by a colon (<tt>:</tt>). For more information about module and application versions, see <a href="http://docs.sun.com/doc/821-2417/gkhhv?a=view">Module and Application Versions in <i>Oracle GlassFish Server 3.1 Application Deployment Guide</i></a>.</p>
+
+</dd>
+<dt>Enabled</dt>
+<dd><p>An indication of whether the application is enabled:</p>
+
+
+<ul><li><p>If the application is enabled, a check mark (&#10003;) is displayed.</p>
+
+</li>
+<li><p>If the application is disabled, a cross (&#10007;) is displayed.</p>
+
+</li></ul>
+</dd>
+<dt>LB Enabled</dt>
+<dd><p>An indication of whether the application is enabled for load balancing:</p>
+
+
+<ul><li><p>If the application is enabled for load balancing, a check mark (&#10003;) is displayed.</p>
+
+</li>
+<li><p>If the application is disabled for load balancing, a cross (&#10007;) is displayed.</p>
+
+</li></ul>
+</dd>
+<dt>Engines</dt>
+<dd><p>The types of containers that the application uses. Container types can be any of the following types:</p>
+
+
+<ul><li><p><tt>web</tt></p>
+
+</li>
+<li><p><tt>webservices</tt></p>
+
+</li>
+<li><p><tt>ejb</tt></p>
+
+</li>
+<li><p><tt>connector</tt></p>
+
+</li>
+<li><p><tt>appclient</tt></p>
+
+</li>
+<li><p><tt>weld</tt> &#8212; the container for Contexts and Dependency Injection for the Java EE Platform applications</p>
+
+</li></ul>
+</dd>
+</dl>
+<p>The Deployed Applications table also contains the following options.</p>
+
+<dl><dt>Deploy</dt>
+<dd><p>Button to deploy an application.</p>
+
+</dd>
+<dt>Remove</dt>
+<dd><p>Button to remove one or more selected applications. Removing an application does <b>not</b> undeploy the application. To undeploy an application, you must use the <a href="http://docs.sun.com/doc/821-2472/ref-applications?a=view">Applications</a> page that displays all applications that are deployed in GlassFish Server.</p>
+
+</dd>
+<dt>More Actions</dt>
+<dd><p>Drop-down list that performs additional actions on one or more selected applications.</p>
+
+<dl><dt>Enable</dt>
+<dd><p>Enables one or more selected applications.</p>
+
+</dd>
+<dt>Disable</dt>
+<dd><p>Disables one or more selected applications.</p>
+
+</dd>
+<dt>Enable LB</dt>
+<dd><p>Enables one or more selected applications for load balancing.</p>
+
+</dd>
+<dt>Disable LB</dt>
+<dd><p>Disables one or more selected applications for load balancing.</p>
+
+</dd>
+</dl>
+</dd>
+</dl>
+<h5>Related Tasks</h5>
+
+<ul><li><p>To Configure Applications for a Standalone Instance</p>
+
+</li></ul>
+<h5>Equivalent <tt>asadmin</tt> Subcommands</h5>
+
+<ul><li><p><a href="http://docs.sun.com/doc/821-2433/deploy-1?a=view"><tt>deploy</tt>(1)</a></p>
+
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2433/disable-1?a=view"><tt>disable</tt>(1)</a></p>
+
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2433/disable-http-lb-application-1?a=view"><tt>disable-http-lb-application</tt>(1)</a></p>
+
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2433/enable-1?a=view"><tt>enable</tt>(1)</a></p>
+
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2433/enable-http-lb-application-1?a=view"><tt>enable-http-lb-application</tt>(1)</a></p>
+
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2433/list-applications-1?a=view"><tt>list-applications</tt>(1)</a></p>
+
+</li></ul>
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

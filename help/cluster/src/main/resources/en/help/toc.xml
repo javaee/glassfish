@@ -1,0 +1,54 @@
+<toc version="2.0">
+
+ <tocitem target="tasks-topic-group" text="GlassFish Server Administration Console Tasks" expand="false">
+    <tocitem target="task-group-gms" text="Configuring and Managing GMS" expand="false">
+        <tocitem target="task-gmsenable" text="To Enable the Group Management Service" expand="false"></tocitem>
+        <tocitem target="task-gmscluster" text="To Configure Group Management Service Settings for a Cluster" expand="false"></tocitem>
+        <tocitem target="task-gms" text="To Configure the Group Management Service" expand="false"></tocitem></tocitem>
+    <tocitem target="task-group-nodes" text="Creating, Deleting, and Editing GlassFish Server Nodes" expand="false">
+        <tocitem target="task-createnode" text="To Create a Node" expand="false"></tocitem>
+        <tocitem target="task-deletenode" text="To Delete Nodes" expand="false"></tocitem>
+        <tocitem target="task-listnodes" text="To List All Nodes in the Current Domain" expand="false"></tocitem>
+        <tocitem target="task-editnode" text="To Edit a Node" expand="false"></tocitem></tocitem>
+    <tocitem target="task-group-configejbcontainer" text="Configuring the EJB Container" expand="false">
+        <tocitem target="task-migrate-ejb-timers" text="To Migrate EJB Timers" expand="false"></tocitem></tocitem></tocitem>
+ <tocitem target="ref-topic-group" text="GlassFish Server Administration Console Reference" expand="false">
+    <tocitem target="ref-group-clusters" text="Clusters" expand="false">
+        <tocitem target="ref-clusters" text="Clusters" expand="false"></tocitem>
+        <tocitem target="ref-clusternew" text="New Cluster" expand="false"></tocitem>
+        <tocitem target="ref-group-clustergeneral" text="General Information" expand="false">
+            <tocitem target="ref-clustergeneral" text="General Information" expand="false"></tocitem>
+            <tocitem target="ref-migrateejbtimers" text="Migrate EJB Timers" expand="false"></tocitem></tocitem>
+        <tocitem target="ref-clusterapplications" text="Applications" expand="false"></tocitem>
+        <tocitem target="ref-group-clusterinstances" text="Clustered Server Instances" expand="false">
+            <tocitem target="ref-clusterinstances" text="Clustered Server Instances" expand="false"></tocitem>
+            <tocitem target="ref-clusterinstancenew" text="New Clustered Server Instance" expand="false"></tocitem>
+            <tocitem target="ref-group-clusterinstanceedit" text="General Information" expand="false">
+                <tocitem target="ref-clusterinstanceedit" text="General Information" expand="false"></tocitem>
+                <tocitem target="ref-recovertransactions" text="Recover Transactions " expand="false"></tocitem></tocitem>
+            <tocitem target="ref-clusterinstanceconfigproperties" text="Instance System Properties" expand="false"></tocitem>
+            <tocitem target="ref-clusterinstanceproperties" text="Instance Properties" expand="false"></tocitem></tocitem>
+        <tocitem target="ref-clusterresources" text="Resources" expand="false"></tocitem>
+        <tocitem target="ref-clustersystemproperties" text="Cluster System Properties" expand="false"></tocitem>
+        <tocitem target="ref-clusterproperties" text="Cluster Properties" expand="false"></tocitem></tocitem>
+    <tocitem target="ref-group-nodes" text="Nodes" expand="false">
+        <tocitem target="ref-nodes" text="Nodes" expand="false"></tocitem>
+        <tocitem target="ref-nodenew" text="New Node" expand="false"></tocitem>
+        <tocitem target="ref-nodeedit" text="Edit Node" expand="false"></tocitem></tocitem>
+    <tocitem target="ref-group-standaloneinstances" text="Standalone Server Instances" expand="false">
+        <tocitem target="ref-standaloneinstances" text="Standalone Server Instances" expand="false"></tocitem>
+        <tocitem target="ref-standaloneinstancenew" text="New Standalone Server Instance" expand="false"></tocitem>
+        <tocitem target="ref-standaloneinstancegeneral" text="General Information" expand="false"></tocitem>
+        <tocitem target="ref-standaloneinstanceapplications" text="Applications" expand="false"></tocitem>
+        <tocitem target="ref-standaloneinstanceresources" text="Resources" expand="false"></tocitem>
+        <tocitem target="ref-standaloneinstanceconfigproperties" text="Instance System Properties" expand="false"></tocitem>
+        <tocitem target="ref-standaloneinstanceproperties" text="Instance Properties" expand="false"></tocitem></tocitem>
+    <tocitem target="ref-group-configuration" text="Configurations" expand="false">
+        <tocitem target="ref-group-availabilityservice" text="Availability Service" expand="false">
+            <tocitem target="ref-availabilityservice" text="Availability Service" expand="false"></tocitem></tocitem>
+        <tocitem target="ref-group-gms" text="Edit Group Management Service " expand="false">
+            <tocitem target="ref-gms" text="Edit Group Management Service " expand="false"></tocitem>
+</tocitem>
+</tocitem>
+</tocitem>
+</toc>

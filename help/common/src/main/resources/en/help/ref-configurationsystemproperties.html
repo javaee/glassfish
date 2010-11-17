@@ -1,0 +1,79 @@
+<!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
+ 
+Use is subject to License Terms  -->
+<a name="ref-configurationsystemproperties"></a><h4>System Properties</h4>
+<a name="indexterm-241"></a><a name="indexterm-242"></a><p>The System Properties page displays a list of the Java system properties that
+are defined in the selected named configuration. Java system properties are passed to
+the Java application launcher through the <tt>-D</tt> option of the Java application launcher whenGlassFish
+Server is started</p>
+
+<p>These properties define the default values of port settings for all GlassFish
+Server instances that reference the configuration.</p>
+
+<p>For information about predefined port settings in a configuration, see Predefined Configuration System Properties.</p>
+
+<p>For each property, the following information is displayed:</p>
+
+<dl><dt>Instance Variable Name</dt>
+<dd><p>The name of the system property.</p>
+
+</dd>
+<dt>Default Value</dt>
+<dd><p>The value that is set for the property in the named configuration that the instance references. This field is read only.</p>
+
+</dd>
+<dt>Instance Values</dt>
+<dd><p>A link to the <a href="ref-sysinstancevalues.html">Instance Values</a> page for the property.</p>
+
+</dd>
+</dl>
+<p>The Additional Properties table also contains the following options.</p>
+
+<dl><dt>Add Property</dt>
+<dd><p>Button to add a property. Clicking this button adds a row to the Additional Properties table.</p>
+
+</dd>
+<dt>Delete Properties</dt>
+<dd><p>Button to delete one or more selected properties. Any property that is deleted reverts to its default value or, if no default value is set, is undefined.</p>
+
+</dd>
+</dl>
+<p>The System Properties page also contains the following options:</p>
+
+<dl><dt>Dynamic Reconfiguration</dt>
+<dd><p>If this option is enabled, changes to the configuration are applied to the instances that reference the configuration without the need to restart the instances.</p>
+
+</dd>
+<dt>Clusters and/or Instances Using This Configuration</dt>
+<dd><p>A list of the clusters and instances that reference the configuration with an indication of whether each cluster or instance is running:</p>
+
+
+<ul><li><p>If the cluster or instance is running, a check mark (&#10003;) is displayed.</p>
+
+</li>
+<li><p>If the cluster or instance is stopped, an exclamation point (<tt>!</tt>) is displayed.</p>
+
+</li></ul>
+</dd>
+</dl>
+<h5>Related Tasks</h5>
+
+<ul><li><p>To Set Default Values for Configuration Properties</p>
+
+</li></ul>
+<h5>Equivalent <tt>asadmin</tt> Subcommands</h5>
+
+<ul><li><p><a href="http://docs.sun.com/doc/821-2433/create-system-properties-1?a=view"><tt>create-system-properties</tt>(1)</a></p>
+
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2433/delete-system-property-1?a=view"><tt>delete-system-property</tt>(1)</a></p>
+
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2433/list-system-properties-1?a=view"><tt>list-system-properties</tt>(1)</a></p>
+
+</li></ul>
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

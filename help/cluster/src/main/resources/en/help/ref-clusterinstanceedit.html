@@ -1,0 +1,109 @@
+<!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
+ 
+Use is subject to License Terms  -->
+<a name="ref-clusterinstanceedit"></a><h4>General Information</h4>
+<a name="indexterm-27"></a><a name="indexterm-28"></a><a name="indexterm-29"></a><p>The General Information page contains the following options.</p>
+
+<dl><dt>Start</dt>
+<dd><p>Button to start the instance. If the instance is running, this button is deactivated.</p>
+
+</dd>
+<dt>Stop </dt>
+<dd><p>Button to stop the instance. If the instance is stopped, this button is deactivated.</p>
+
+</dd>
+<dt>View Log Files</dt>
+<dd><p>Button to view log files for the instance.</p>
+
+</dd>
+<dt>Rotate Log</dt>
+<dd><p>Button to rotate the log file for the instance. When the log file is rotated, the file is renamed with a timestamp name in the format <tt>server.log_</tt><i>date-and-time</i><tt></tt>, and an empty log file is created for new log messages. The changes are applied dynamically. Server restart is not required.</p>
+
+</dd>
+<dt>Recover Transactions</dt>
+<dd><p>Button to recover transactions for the instance.</p>
+
+</dd>
+<dt>Cluster Name</dt>
+<dd><p>The name that was assigned to the cluster when the cluster was created. Clicking the name opens the <a href="ref-clustergeneral.html">General Information</a> page for the cluster.</p>
+
+</dd>
+<dt>Instance Name</dt>
+<dd><p>The name that was assigned to the instance when the instance was added to the cluster. This field is .</p>
+
+</dd>
+<dt>Status</dt>
+<dd><p>An indication of whether the instance is running or not running. This field is .</p>
+
+</dd>
+<dt>Node</dt>
+<dd><p>The name of the node on which the instance resides. Clicking the name opens the <b>Broken Link (Target ID: REF-EDITNODE)</b> page for the node.</p>
+
+</dd>
+<dt>Configuration</dt>
+<dd><p>The configuration that was selected for the <b>cluster</b> when the cluster of which the instance is a member was created. Each instance in the cluster uses this configuration. Clicking the configuration opens the <a href="http://docs.sun.com/doc/821-2472/ref-configuration?a=view">Configurations</a> page for the cluster.</p>
+
+</dd>
+<dt>HTTP Ports</dt>
+<dd><p>A comma-separated list of the port numbers of the ports on which the instance listens for the following types of requests:</p>
+
+
+<ul><li><p>Administration requests</p>
+
+</li>
+<li><p>HTTP requests</p>
+
+</li>
+<li><p>HTTPS requests</p>
+
+</li></ul>
+<p>This field is read only.</p>
+
+</dd>
+<dt>IIOP Ports</dt>
+<dd><p>A comma-separated list of the port numbers of the ports that the instance uses for the following types of connections:</p>
+
+
+<ul><li><p>Secure IIOP connection</p>
+
+</li>
+<li><p>Secure IIOP connections with client authentication</p>
+
+</li>
+<li><p>IIOP connections</p>
+
+</li></ul>
+<p>This field is read only.</p>
+
+</dd>
+</dl>
+<h5>Related Tasks</h5>
+
+<ul><li><p>To Start an Instance</p>
+
+</li>
+<li><p>To Stop an Instance</p>
+
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2472/task-logviewer?a=view">To View Server Instance or Cluster Log Files</a></p>
+
+</li>
+<li><p>To Rotate the Log File</p>
+
+</li></ul>
+<h5>Equivalent <tt>asadmin</tt> Subcommands</h5>
+
+<ul><li><p><a href="http://docs.sun.com/doc/821-2433/start-instance-1?a=view"><tt>start-instance</tt>(1)</a></p>
+
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2433/stop-instance-1?a=view"><tt>stop-instance</tt>(1)</a></p>
+
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2433/rotate-log-1?a=view"><tt>rotate-log</tt>(1)</a></p>
+
+</li></ul>
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

@@ -1,0 +1,120 @@
+<!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
+ 
+Use is subject to License Terms  -->
+<a name="ref-nodeedit"></a><h4>Edit Node</h4>
+<a name="indexterm-47"></a><p>Use the Edit Node page to update the configuration data of a
+GlassFish Server node. You can also use this page to change the
+type of a node from CONFIG to SSH to enable SSH communication for
+the node.</p>
+
+<p>If you change the type of the node from CONFIG to SSH
+, default values are applied if any of the following fields is
+left empty:</p>
+
+
+<ul><li><p>SSH Port</p>
+
+</li>
+<li><p>User Name</p>
+
+</li>
+<li><p>Key File</p>
+
+</li></ul>
+<p>The Edit Node page contains the following options:</p>
+
+<dl><dt>Name</dt>
+<dd><p>The name that was assigned to the node when the node was created. This field is read only.</p>
+
+</dd>
+<dt>Type</dt>
+<dd><p>Drop-down list to specify the type of the node, which is one of the following types:</p>
+
+<dl><dt>SSH</dt>
+<dd><p>The node supports communication over secure shell (SSH).</p>
+
+</dd>
+<dt>CONFIG</dt>
+<dd><p>The node does not support remote communication. If CONFIG is selected, no options for SSH configuration are displayed. If the current type of the node is SSH and you select CONFIG, SSH configuration data is removed from the node's configuration when you save your changes.</p>
+
+</dd>
+</dl>
+</dd>
+<dt>Node Host</dt>
+<dd><p>The name of the host that the node is to represent after the node is updated.</p>
+
+</dd>
+<dt>Node Directory</dt>
+<dd><p>The path to the directory that is to contain GlassFish Server instances that are created on the node. If a relative path is specified, the path is relative to the <i>as-install</i> directory, where <i>as-install</i> is the base installation directory of the GlassFish Server software on the host.</p>
+
+</dd>
+<dt>Installation Directory</dt>
+<dd><p>The full path to the parent of the base installation directory of the GlassFish Server software on the host, for example, <tt>/export/glassfish3/</tt>. </p>
+
+</dd>
+<dt>Force</dt>
+<dd><p>If the Enabled option is selected, the node is updated in the domain administration server (DAS) configuration even if validation of the node's parameters fails. To validate a node's parameters, the DAS must be able to contact the node's host through SSH.</p>
+
+</dd>
+<dt>SSH Port</dt>
+<dd><p>The port to use for SSH connections to this node's host. </p>
+
+<p>If you change the type of the node from CONFIG to SSH and leave this field empty, the SSH Port option is set to 22.</p>
+
+<p>If the Node Host option is set to <tt>localhost</tt>, the SSH Port option is ignored.</p>
+
+</dd>
+<dt>User Name</dt>
+<dd><p>The user that is to run the process for connecting to this node's host through SSH. </p>
+
+<p>If you change the type of the node from CONFIG to SSH and leave this field empty, the User Name option is set to the user that is running the DAS process.</p>
+
+<p>If the Node Host option is set to <tt>localhost</tt>, the SSH User option is ignored.</p>
+
+</dd>
+<dt>Key File</dt>
+<dd><p>The absolute path to the SSH private key file for user that the User Name option specifies. This file is used for authentication to the <tt>sshd</tt> daemon on the node's host.</p>
+
+
+<hr><p><b>Note - </b>GlassFish Server also supports password authentication through the <tt>AS_ADMIN_SSHPASSWORD</tt> entry in the password file. The password file is specified in the <tt>--paswordfile</tt> option of the <b>Broken Link (Target ID: ASADMIN-1M)</b> utility.</p>
+
+
+<hr>
+<p>If the SSH private key file is protected by a passphrase, the password file must contain the <tt>AS_ADMIN_SSHKEYPASSPHRASE</tt> entry.</p>
+
+<p>The path to the key file must be reachable by the DAS and the key file must be readable by the DAS. The path may contain Java properties of the form <tt>${<i>prop.name</i>}</tt>.</p>
+
+<p>The default depends on whether you change the type of the node from CONFIG to SSH to enable SSH communication for the node:</p>
+
+<p>If you change the type of the node from CONFIG to SSH and leave this field empty, the Key File option is set to a platform-dependent key file in the user's <tt>.ssh</tt> directory, for example:</p>
+
+
+<ul><li><p><tt>id_rsa</tt></p>
+
+</li>
+<li><p><tt>id_dsa</tt></p>
+
+</li>
+<li><p><tt>identity</tt></p>
+
+</li></ul>
+</dd>
+</dl>
+<h5>Related Tasks</h5>
+
+<ul><li><p><a href="task-editnode.html">To Edit a Node</a></p>
+
+</li></ul>
+<h5>Equivalent <tt>asadmin</tt> Subcommands</h5>
+
+<ul><li><p><a href="http://docs.sun.com/doc/821-2433/update-node-config-1?a=view"><tt>update-node-config</tt>(1)</a></p>
+
+</li>
+<li><p><a href="http://docs.sun.com/doc/821-2433/update-node-ssh-1?a=view"><tt>update-node-ssh</tt>(1)</a></p>
+
+</li></ul>
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

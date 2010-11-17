@@ -1,0 +1,34 @@
+<!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
+ 
+Use is subject to License Terms  -->
+<a name="ref-recovertransactions"></a><h4>Recover Transactions </h4>
+<a name="indexterm-30"></a><p>Use the Recover Transactions page to recover transactions for a clustered server instance.</p>
+
+<p>The Recover Transactions page contains the following options.</p>
+
+<dl><dt>Destination Server</dt>
+<dd><p>Another server instance in the same cluster that can recover the transactions on the current server instance.</p>
+
+</dd>
+<dt>Transaction Log Directory</dt>
+<dd><p>The directory in which the transaction logs are stored. The default is <tt>/logs/tx</tt> under the domain directory.</p>
+
+<p>Transaction logs are kept in the <tt>tx</tt> subdirectory of the directory specified by Transaction Log Location setting of the Transaction Service for the cluster configuration. The default Transaction Log Location value is the directory specified by the Log Root field of the Domain Attributes page, which is located under the Advanced tab of the GlassFish Server node.</p>
+
+</dd>
+</dl>
+<h5>Related Tasks</h5>
+
+<ul><li><p><b>Broken Link (Target ID: TASK-RECOVERTRANSACTIONS)</b></p>
+
+</li></ul>
+<h5>Equivalent <tt>asadmin</tt> Subcommands</h5>
+
+<ul><li><p><a href="http://docs.sun.com/doc/821-2433/recover-transactions-1?a=view"><tt>recover-transactions</tt>(1)</a></p>
+
+</li></ul>
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>
