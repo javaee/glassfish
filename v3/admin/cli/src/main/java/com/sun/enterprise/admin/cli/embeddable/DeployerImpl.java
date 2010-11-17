@@ -42,8 +42,6 @@ package com.sun.enterprise.admin.cli.embeddable;
 
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.CommandException;
-import org.glassfish.api.admin.CommandRunner;
-import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.embeddable.Deployer;
 import org.glassfish.embeddable.GlassFishException;
 import org.jvnet.hk2.annotations.ContractProvided;
@@ -53,13 +51,9 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.URI;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * This is an implementation of {@link Deployer}.
@@ -77,10 +71,12 @@ public class DeployerImpl implements Deployer {
     Habitat habitat;
 
     public String deploy(URI archive, String... params) throws GlassFishException {
-        if (!"file".equalsIgnoreCase(archive.getScheme())) {
-            throw new UnsupportedOperationException("Currently only file protocol is supported");
+        File file;
+        try {
+            file = makeFile(archive);
+        } catch (IOException e) {
+            throw new GlassFishException("Unable to make a file out of " + archive, e);
         }
-        File file = new File(archive);
         String[] newParams = new String[params.length + 1];
         System.arraycopy(params, 0, newParams, 0, params.length);
         newParams[params.length] = file.getAbsolutePath();
@@ -117,6 +113,47 @@ public class DeployerImpl implements Deployer {
 
     public Collection<String> getDeployedApplications() throws GlassFishException {
         throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    private File makeFile(URI archive) throws IOException {
+        File file;
+        if ("file".equalsIgnoreCase(archive.getScheme())) {
+            file = new File(archive);
+        } else {
+            file = File.createTempFile("app", "tmp");
+            file.deleteOnExit();
+            InputStream in = null;
+            OutputStream out = null;
+            try {
+                out = new FileOutputStream(file);
+                in = archive.toURL().openStream();
+                copyStream(in, out);
+            } finally {
+                if (in != null) {
+                    try {
+                        in.close();
+                    } catch (IOException e) {
+                        // ignore
+                    }
+                }
+                if (out != null) {
+                    try {
+                        out.close();
+                    } finally {
+                        // ignore
+                    }
+                }
+            }
+        }
+        return file;
+    }
+
+    private void copyStream(InputStream in, OutputStream out) throws IOException {
+        byte[] buf = new byte[4096];
+        int len;
+        while ((len = in.read(buf)) >= 0) {
+            out.write(buf, 0, len);
+        }
     }
 
 }
