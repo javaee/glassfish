@@ -502,7 +502,10 @@ public class WebModule extends PwcWebModule implements Context {
         configureValves();
         configureCatalinaProperties();
         webModuleStartedEvent();
-        setDirectoryListing(directoryListing);
+        if (directoryListing) {
+            setDirectoryListing(directoryListing);
+        }
+
         hasStarted = true;
     }
 
