@@ -97,7 +97,6 @@
                         <groupId>org.glassfish.appclient.server</groupId>
                         <artifactId>appclient-server-core</artifactId>
                         <version>${project.version}</version>
-                        <scope>provided</scope>
                 </dependency>
 		
         <dependency>
