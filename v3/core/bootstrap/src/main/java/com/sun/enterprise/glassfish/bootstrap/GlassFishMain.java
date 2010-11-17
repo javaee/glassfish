@@ -47,6 +47,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.Properties;
 
@@ -144,9 +145,9 @@ public class GlassFishMain {
                             System.out.println("Syntax: deploy <options> file");
                             continue;
                         }
-                        final File file = new File(tokens[tokens.length -1]);
+                        final URI uri = URI.create(tokens[tokens.length -1]);
                         String[] params = Arrays.copyOfRange(tokens, 1, tokens.length-1);
-                        String name = deployer.deploy(file.toURI(), params);
+                        String name = deployer.deploy(uri, params);
                         System.out.println("Deployed = " + name);
                     } else if (command.startsWith("undeploy")) {
                         if (gf.getStatus() != GlassFish.Status.STARTED) {
@@ -199,9 +200,6 @@ public class GlassFishMain {
             Runtime.getRuntime().addShutdownHook(new Thread("GlassFish Shutdown Hook") {
                 public void run() {
                     try {
-                        if (gf != null) {
-                            gf.stop();
-                        }
                         gfr.shutdown();
                     }
                     catch (Exception ex) {
