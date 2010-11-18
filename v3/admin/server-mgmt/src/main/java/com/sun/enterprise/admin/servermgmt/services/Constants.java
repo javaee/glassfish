@@ -81,6 +81,16 @@ class Constants {
     static final String START_ARG_END = "</startargument>";
     static final String STOP_ARG_END = "</stopargument>";
     static final String TRACE_PREPEND = "TRACE:  ";
+    static final String DRYRUN_PREPEND = "DRYRUN:  ";
     static final String README = "PlatformServices.log";
     static final String SERVICE_NAME_PREFIX = "application/GlassFish/";
+    static final String INITD = "/etc/init.d";
+    static final String REGEXP_PATTERN_BEGIN = "[KS][0-9][0-9]?";
+
+    static final boolean LINUX_HACK;
+
+    static {
+        LINUX_HACK = System.getProperty("user.name").equals("bnevins") &&
+                Boolean.parseBoolean(System.getenv("LINUX_HACK"));
+    }
 }
