@@ -66,8 +66,6 @@ class LoggerHelper
 		// the final should cause this to be inlined...
 		if(req.terse)
 			logger.setLevel(Level.WARNING);
-		else if(req.verbose)
-			logger.setLevel(Level.FINEST);
 		else
 			logger.setLevel(Level.INFO);
 		

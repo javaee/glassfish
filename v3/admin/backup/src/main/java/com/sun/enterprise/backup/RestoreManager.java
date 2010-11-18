@@ -242,11 +242,14 @@ public class RestoreManager extends BackupRestoreManager {
         // in the domain dir now.
         File propsFile = new File(request.domainDir, Constants.PROPS_FILENAME);
         Status status = new Status();
+        String mesg = new String("");
 
-        String mesg = StringHelper.get("backup-res.SuccessfulRestore", 
-            request.domainName, request.domainDir );
+ 
+        if (request.verbose == true || request.terse != true)
+            mesg = StringHelper.get("backup-res.SuccessfulRestore", 
+                                    request.domainName, request.domainDir );
 
-        if(request.terse == false)
+        if(request.verbose == true)
             mesg += "\n" + status.read(propsFile, false);
         
         if(!propsFile.delete())
