@@ -51,6 +51,8 @@ import com.sun.enterprise.config.serverbeans.AvailabilityService;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.deployment.WebServiceEndpoint;
+import com.sun.enterprise.transaction.api.RecoveryResourceRegistry;
+import com.sun.enterprise.transaction.spi.RecoveryEventListener;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.grizzly.config.dom.NetworkListener;
@@ -101,8 +103,8 @@ public class MetroContainer implements PostConstruct, Container, WebServiceDeplo
     private ServerContext serverContext;
     @Inject
     private ServerEnvironmentImpl env;
-//    @Inject
-//    private JavaEETransactionManager txManager;
+    @Inject
+    private RecoveryResourceRegistry recoveryRegistry;
     @Inject
     GMSAdapterService gmsAdapterService;
     @Inject(optional = true)
@@ -266,14 +268,19 @@ public class MetroContainer implements PostConstruct, Container, WebServiceDeplo
                 .httpPort(getHttpPort(false, serverName, config))
                 .httpsPort(getHttpPort(true, serverName, config));
         
-//        final WSATRuntimeConfig.RecoveryEventListener listener = WSATRuntimeConfig.getInstance().new WSATRecoveryEventListener();
-//        
-//        ???Interface wrapperListener = new ???Interface {
-//            ...
-//        }
-//        
-//        txManager.???registration_method(wrapperListener);
-        
+        final WSATRuntimeConfig.RecoveryEventListener metroListener = WSATRuntimeConfig.getInstance().new WSATRecoveryEventListener();
+        recoveryRegistry.addEventListener(new RecoveryEventListener() {
+
+            @Override
+            public void beforeRecovery(boolean delegated, String instance) {
+                metroListener.beforeRecovery(delegated, instance);
+            }
+
+            @Override
+            public void afterRecovery(boolean success, boolean delegated, String instance) {
+                metroListener.afterRecovery(success, delegated, instance);
+            }
+        });
     }
     
     /**
