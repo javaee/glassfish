@@ -266,7 +266,8 @@ public class MetroContainer implements PostConstruct, Container, WebServiceDeplo
         WSATRuntimeConfig.initializer()
                 .hostName(getHostName())
                 .httpPort(getHttpPort(false, serverName, config))
-                .httpsPort(getHttpPort(true, serverName, config));
+                .httpsPort(getHttpPort(true, serverName, config))
+                .done();
         
         final WSATRuntimeConfig.RecoveryEventListener metroListener = WSATRuntimeConfig.getInstance().new WSATRecoveryEventListener();
         recoveryRegistry.addEventListener(new RecoveryEventListener() {
