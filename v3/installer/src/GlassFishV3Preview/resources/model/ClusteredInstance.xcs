@@ -133,11 +133,14 @@ import java.lang.String;
 import java.util.List;
 import org.openinstaller.provider.conf.ConfigHelper;
 
+    boolean createCluster  = ConfigHelper.getValue("ClusteredInstance.Configuration.CREATE_CLUSTER");
+if (createCluster)  {
        String enteredValue = (String)thisProperty.getUnconfirmedValue();
         if ((enteredValue == null) || enteredValue.equals("")) {
             ConfigHelper.setValue("ClusteredInstance.Configuration.STATUS", "ERROR");
             throw new EnhancedException("NULL_OR_EMPTY_VALUE", new String[]{});
         }
+	}
           ]]></onSet>
         </actions>
         </prop>

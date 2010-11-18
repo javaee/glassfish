@@ -475,6 +475,7 @@ CONFIGURE_SELECTED_COMPONENTS_MSG=Configures the selected software components wi
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~A D M I N   P A S S W O R D   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ADMIN_USER_TEXT=Username
 ADMIN_PASSWORD_TEXT=Password
+ADMIN_REENTERPASSWORD_TEXT=Reenter Password
 ADMIN_PORT_TEXT=Admin Port
 DOMAIN_NAME_TEXT=Domain Name
 HTTP_PORT_TEXT=Http Port
