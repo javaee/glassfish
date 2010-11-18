@@ -67,16 +67,26 @@ import java.util.Collection;
 @Scoped(PerLookup.class)
 @ContractProvided(Deployer.class) // bcos Deployer interface can't depend on HK2, we need ContractProvided here.
 public class DeployerImpl implements Deployer {
+
+    /*
+     * This class currently copies generic URIs to a file before processing. Once deployment backend
+     * supports URI, we should be able to use URIs directly.
+     */
+
     @Inject
     Habitat habitat;
 
     public String deploy(URI archive, String... params) throws GlassFishException {
         File file;
         try {
-            file = makeFile(archive);
+            file = convertToFile(archive);
         } catch (IOException e) {
             throw new GlassFishException("Unable to make a file out of " + archive, e);
         }
+        return deploy(file, params);
+    }
+
+    public String deploy(File file, String... params) throws GlassFishException {
         String[] newParams = new String[params.length + 1];
         System.arraycopy(params, 0, newParams, 0, params.length);
         newParams[params.length] = file.getAbsolutePath();
@@ -92,8 +102,12 @@ public class DeployerImpl implements Deployer {
         }
     }
 
-    public String deploy(File file, String... params) throws GlassFishException {
-        return deploy(file.toURI(), params);
+    public String deploy(InputStream is, String... params) throws GlassFishException {
+        try {
+            return deploy(createFile(is), params);
+        } catch (IOException e) {
+            throw new GlassFishException(e);
+        }
     }
 
     public void undeploy(String appName, String... params) throws GlassFishException {
@@ -115,33 +129,37 @@ public class DeployerImpl implements Deployer {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
-    private File makeFile(URI archive) throws IOException {
+    private File convertToFile(URI archive) throws IOException {
         File file;
         if ("file".equalsIgnoreCase(archive.getScheme())) {
             file = new File(archive);
         } else {
-            file = File.createTempFile("app", "tmp");
-            file.deleteOnExit();
-            InputStream in = null;
-            OutputStream out = null;
-            try {
-                out = new FileOutputStream(file);
-                in = archive.toURL().openStream();
-                copyStream(in, out);
-            } finally {
-                if (in != null) {
-                    try {
-                        in.close();
-                    } catch (IOException e) {
-                        // ignore
-                    }
+            file = createFile(archive.toURL().openStream());
+        }
+        return file;
+    }
+
+    private File createFile(InputStream in) throws IOException {
+        File file;
+        file = File.createTempFile("app", "tmp");
+        file.deleteOnExit();
+        OutputStream out = null;
+        try {
+            out = new FileOutputStream(file);
+            copyStream(in, out);
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    // ignore
                 }
-                if (out != null) {
-                    try {
-                        out.close();
-                    } finally {
-                        // ignore
-                    }
+            }
+            if (out != null) {
+                try {
+                    out.close();
+                } finally {
+                    // ignore
                 }
             }
         }

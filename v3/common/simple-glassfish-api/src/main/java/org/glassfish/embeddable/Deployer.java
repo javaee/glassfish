@@ -41,6 +41,7 @@
 package org.glassfish.embeddable;
 
 import java.io.File;
+import java.io.InputStream;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Map;
@@ -87,6 +88,16 @@ public interface Deployer {
      * @return the name of the deployed application
      */
     String deploy(File file, String... params) throws GlassFishException;
+
+    /**
+     * Deploys an application from the specified <code>InputStream</code> object.
+     * The input stream is closed when this method completes, even if an exception is thrown.
+     *
+     * @param is InputStream used to read the content of the application.
+     * @param params Optional list of deployment options.
+     * @return the name of the deployed application
+     */
+    String deploy(InputStream is, String... params) throws GlassFishException;
 
     /**
      * Undeploys an application from {@link GlassFish}
