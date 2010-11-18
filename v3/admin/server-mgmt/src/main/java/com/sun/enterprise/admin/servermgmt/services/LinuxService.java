@@ -50,6 +50,7 @@ import com.sun.enterprise.util.io.ServerDirs;
 import java.io.File;
 import java.lang.String;
 import java.util.*;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import static com.sun.enterprise.admin.servermgmt.services.Constants.*;
 import java.util.logging.Level;
@@ -74,15 +75,7 @@ public class LinuxService extends NonSMFServiceAdapter {
             throw new IllegalArgumentException(Strings.get("internal.error",
                     "Constructor called but Linux Services are not available."));
         }
-        etcDir = new File("/etc");
-
-        // might be different for different flavors
-        for (int i = 0; i < 7; i++) {
-            // On OEL for instance the files are links to the real dir like this:
-            //  /etc/rc0.d --> /etc/rc.d/rc0.d
-            // let's use the REAL dirs just to be safe...
-            rcDirs[i] = FileUtils.safeGetCanonicalFile(new File(etcDir, "rc" + i + ".d"));
-        }
+        setRcDirs();
     }
 
     @Override
@@ -172,17 +165,81 @@ public class LinuxService extends NonSMFServiceAdapter {
     ///////////////////////////////////////////////////////////////////////
 
     private void setRcDirs() {
-        // Yes -- they differ on different platforms.
+        // Yes -- they differ on different platforms!
         // I Know what Sol10, Ubuntu, Debian, SuSE, RH and OEL look like
+        // on SuSE the rc?.d dirs are in /init.d/
+        // On RH, OEL they are linked dirs to the real dirs under /etc/rc.d/ 
+        // On Ubuntu they are real dirs in /etc
 
-        
+        // try to make this as forgiving as possible.
+        File[] rcDirs = new File[8];    // 0, 1, 2...6, S
+        if (!setRcDirs(new File("/etc"), rcDirs))
+            if (!setRcDirs(new File("/etc/init.d"), rcDirs))
+                throw new RuntimeException(Strings.get("no_rc2"));
+
+        // now we have an array of at least some rc directories.
+        addKills(rcDirs);
+        addStarts(rcDirs);
     }
+
+    private boolean setRcDirs(File dir, File[] rcDirs) {
+        // some have 4 missing, some have S missing etc.  All seem to have 5
+        if (!new File(dir, "rc5.d").isDirectory())
+            return false;
+
+        for (int i = 0; i < 7; i++) {
+            rcDirs[i] = new File(dir, "rc" + i + ".d");
+        }
+
+        rcDirs[7] = new File(dir, "rcS.d");
+
+        for (int i = 0; i < 8; i++) {
+            rcDirs[i] = validate(rcDirs[i]);
+        }
+
+        return true;
+    }
+
+    private void addKills(File[] rcDirs) {
+        if (rcDirs[0] != null)
+            killDirs.add(rcDirs[0]);
+        if (rcDirs[1] != null)
+            killDirs.add(rcDirs[1]);
+        if (rcDirs[6] != null)
+            killDirs.add(rcDirs[6]);
+        if (rcDirs[7] != null)
+            killDirs.add(rcDirs[7]);
+    }
+
+    private void addStarts(File[] rcDirs) {
+        if (rcDirs[2] != null)
+            startDirs.add(rcDirs[2]);
+        if (rcDirs[3] != null)
+            startDirs.add(rcDirs[3]);
+        if (rcDirs[4] != null)
+            startDirs.add(rcDirs[4]);
+        if (rcDirs[5] != null)
+            startDirs.add(rcDirs[5]);
+    }
+
+    private File validate(File rcdir) {
+        if (rcdir == null)
+            return null;
+
+        // On OEL for instance the files are links to the real dir like this:
+        //  /etc/rc0.d --> /etc/rc.d/rc0.d
+        // let's use the REAL dirs just to be safe...
+        rcdir = FileUtils.safeGetCanonicalFile(rcdir);
+
+        if (!rcdir.isDirectory())
+            return null;
+
+        return rcdir;
+    }
+
     private void checkFileSystem() {
         File initd = new File(INITD);
         checkDir(initd, "no_initd");
-
-        for (File f : rcDirs)
-            checkDir(f, "no_rc");
     }
 
     /**
@@ -225,7 +282,11 @@ public class LinuxService extends NonSMFServiceAdapter {
             throw new RuntimeException("Programmer Internal Error");
 
         String regexp = REGEXP_PATTERN_BEGIN + targetName;
-        for (File dir : rcDirs) {
+
+        List<File> allDirs = new ArrayList<File>(killDirs);
+        allDirs.addAll(startDirs);
+
+        for (File dir : allDirs) {
             File[] matches = FileUtils.findFilesInDir(dir, regexp);
 
             if (matches.length < 1)
@@ -260,31 +321,43 @@ public class LinuxService extends NonSMFServiceAdapter {
     }
 
     private void createLinks() {
-        for (File f : links) {
-            String cmd = "ln -s " + target.getAbsolutePath() + " " + f.getAbsolutePath();
+        String[] cmds = new String[4];
+        cmds[0] = "ln";
+        cmds[1] = "-s";
+        cmds[2] = target.getAbsolutePath();
+
+        createLinks(cmds, kFile, killDirs);
+        createLinks(cmds, sFile, startDirs);
+    }
+
+    // This is what happens when you hate copy&paste code duplication.  Lots of methods!!
+    private void createLinks(String[] cmds, String linkname, List<File> dirs) {
+        String path = target.getAbsolutePath();
+
+        for (File dir : dirs) {
+            File link = new File(dir, linkname);
+            cmds[3] = link.getAbsolutePath();
+            String cmd = toString(cmds);
+
             if (LINUX_HACK)
                 trace(cmd);
             else if (info.dryRun)
                 dryRun(cmd);
             else
-                createLink(f, cmd);
+                createLink(link, cmds);
         }
     }
 
-    private void createLink(File link, String cmd) {
+    private void createLink(File link, String[] cmds) {
         try {
-            String[] cmds = new String[4];
-            cmds[0] = "ln";
-            cmds[1] = "-s";
-            cmds[2] = target.getAbsolutePath();
-            cmds[3] = link.getAbsolutePath();
             ProcessManager mgr = new ProcessManager(cmds);
             mgr.execute();
             trace("Create Link Output: " + mgr.getStdout() + mgr.getStderr());
             link.setExecutable(true, false);
+            trace("Created link file: " + link);
         }
         catch (ProcessManagerException e) {
-            throw new RuntimeException(Strings.get("ln_error", cmd, e));
+            throw new RuntimeException(Strings.get("ln_error", toString(cmds), e));
         }
     }
 
@@ -308,26 +381,6 @@ public class LinuxService extends NonSMFServiceAdapter {
         target = new File(INITD + "/" + targetName);
         kFile = "K" + info.kPriority + targetName;
         sFile = "S" + info.sPriority + targetName;
-
-        // Here is where we have the intricate knowledge of how *NIX Services work!
-        links[0] = new File(rcDirs[0], kFile);
-        links[1] = new File(rcDirs[1], kFile);
-        links[6] = new File(rcDirs[6], kFile);
-
-        links[2] = new File(rcDirs[2], sFile);
-        links[3] = new File(rcDirs[3], sFile);
-        links[4] = new File(rcDirs[4], sFile);
-        links[5] = new File(rcDirs[5], sFile);
-
-        if (info.trace) {
-            trace("sfile: " + sFile);
-            trace("kfile: " + kFile);
-            trace("Link Files:");
-
-            for (File f : links) {
-                trace(f.getAbsolutePath());
-            }
-        }
     }
 
     private String getServiceUserStart() {
@@ -349,24 +402,6 @@ public class LinuxService extends NonSMFServiceAdapter {
         return "";
     }
 
-    private String[] getInstallCommand() {
-        String[] cmds = new String[3];
-        cmds[0] = UPDATER;
-        cmds[1] = target.getName();
-        cmds[2] = "defaults";
-
-        return cmds;
-    }
-
-    private String[] getUninstallCommand() {
-        String[] cmds = new String[3];
-        cmds[0] = UPDATER;
-        cmds[1] = target.getName();
-        cmds[2] = "remove";
-
-        return cmds;
-    }
-
     private String getFinalUser() {
         if (StringUtils.ok(info.serviceUser))
             return info.serviceUser;
@@ -382,13 +417,21 @@ public class LinuxService extends NonSMFServiceAdapter {
 
         return u;
     }
+
+    private String toString(String[] arr) {
+        // for creating messages/error reports
+        StringBuilder sb = new StringBuilder();
+
+        for (String s : arr)
+            sb.append(s).append(" ");
+
+        return sb.toString();
+    }
     private String targetName;
     File target;
     private static final String TEMPLATE_FILE_NAME = "linux-service.template";
-    private static final String UPDATER = "update-rc.d";
-    private final File[] rcDirs = new File[7];
-    private final File[] links = new File[7];
-    private final File etcDir;
+    private List<File> killDirs = new ArrayList<File>();
+    private List<File> startDirs = new ArrayList<File>();
     private String sFile;
     private String kFile;
 }
