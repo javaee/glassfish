@@ -64,6 +64,8 @@ public class EmbeddedCreateVirtualServerTest {
 
     static GlassFish glassfish;
     static WebContainer embedded;
+    static int newPort = 9090;
+    static String contextRoot = "test";
 
     @BeforeClass
     public static void setupServer() throws GlassFishException {
@@ -85,7 +87,7 @@ public class EmbeddedCreateVirtualServerTest {
             System.out.println("Web listener "+listener.getId()+" "+listener.getPort());
 
         WebListener testListener = embedded.createWebListener("test-listener", HttpListener.class);
-        testListener.setPort(9090);
+        testListener.setPort(newPort);
         WebListener[] webListeners = new HttpListener[1];
         webListeners[0] = testListener;
         
@@ -125,13 +127,13 @@ public class EmbeddedCreateVirtualServerTest {
 
         System.out.println("Deploying " + path + ", name = " + name);
 
-        String appName = deployer.deploy(path.toURI(), "--name=" + name);
+        String appName = deployer.deploy(path.toURI(), "--contextroot", "test", "--name=" + name);
 
         System.out.println("Deployed " + appName);
 
         Assert.assertTrue(appName != null);
-
-        URL servlet = new URL("http://localhost:9090/classes/hello");
+ 
+        URL servlet = new URL("http://localhost:"+newPort+"/"+contextRoot+"/hello");
         URLConnection yc = servlet.openConnection();
         BufferedReader in = new BufferedReader(new InputStreamReader(yc.getInputStream()));
         StringBuilder sb = new StringBuilder();

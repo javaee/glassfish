@@ -69,6 +69,7 @@ public class EmbeddedSetConfigurationTest {
     static WebContainer embedded;
     static File root;
     static int newPort = 9090;
+    static String contextRoot = "test";
 
     @BeforeClass
     public static void setupServer() throws GlassFishException {
@@ -93,7 +94,8 @@ public class EmbeddedSetConfigurationTest {
         VirtualServer vs = (VirtualServer)
                 embedded.createVirtualServer("test-server", root);
         embedded.addVirtualServer(vs);
-        Context context = (Context) embedded.createContext(root, null);
+        Context context = (Context) embedded.createContext(root);
+        embedded.addContext(context, contextRoot);
 
         URL servlet = new URL("http://localhost:"+newPort);
         URLConnection yc = servlet.openConnection();

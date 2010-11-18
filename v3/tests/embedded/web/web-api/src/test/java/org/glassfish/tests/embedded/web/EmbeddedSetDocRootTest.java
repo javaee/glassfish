@@ -68,6 +68,7 @@ public class EmbeddedSetDocRootTest {
     static GlassFish glassfish;
     static WebContainer embedded;
     static File root;
+    static String contextRoot = "test";
 
     @BeforeClass
     public static void setupServer() throws GlassFishException {
@@ -91,14 +92,9 @@ public class EmbeddedSetDocRootTest {
         VirtualServer vs = (VirtualServer)
                 embedded.createVirtualServer("test-server", root);
         embedded.addVirtualServer(vs);
-        Context context = (Context) embedded.createContext(root, null);
-        /*vs.addContext(context, "/test");
-        
-        Servlet hello = new WebHello();
-        ServletRegistration reg = context.addServlet("test-servlet", hello);
-        reg.addMapping(new String[] {"/hello"});    */
+        Context context = (Context) embedded.createContext(root, contextRoot, null);
 
-        URL servlet = new URL("http://localhost:8080");
+        URL servlet = new URL("http://localhost:8080/"+contextRoot);
         URLConnection yc = servlet.openConnection();
         BufferedReader in = new BufferedReader(
                                 new InputStreamReader(

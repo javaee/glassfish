@@ -65,6 +65,7 @@ public class EmbeddedWebAPITest {
 
     static GlassFish glassfish;
     static WebContainer embedded;
+    static String contextRoot = "test";
 
     @BeforeClass
     public static void setupServer() throws GlassFishException {
@@ -125,13 +126,13 @@ public class EmbeddedWebAPITest {
 
         System.out.println("Deploying " + path + ", name = " + name);
 
-        String appName = deployer.deploy(path.toURI(), "--name=" + name);
+        String appName = deployer.deploy(path.toURI(), "--contextroot", "test", "--name=" + name);
 
         System.out.println("Deployed " + appName);
 
         Assert.assertTrue(appName != null);
 
-        URL servlet = new URL("http://localhost:8080/classes/hello");
+        URL servlet = new URL("http://localhost:8080/"+contextRoot+"/hello");
         URLConnection yc = servlet.openConnection();
         BufferedReader in = new BufferedReader(new InputStreamReader(yc.getInputStream()));
         StringBuilder sb = new StringBuilder();
