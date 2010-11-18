@@ -338,6 +338,12 @@ public class LogDomains {
                 private final int offValue = Level.OFF.intValue();
 
                 public void log(LogRecord record) {
+                    if(record.getResourceBundle()==null) {
+                        ResourceBundle rb = getResourceBundle();
+                        if(rb!=null) {
+                            record.setResourceBundle(rb);
+                        }
+                    }
                     record.setThreadID((int) Thread.currentThread().getId());
                     super.log(record);
                 }
