@@ -49,12 +49,15 @@ import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.container.CompositeSniffer;
 import org.glassfish.internal.deployment.SnifferManager;
 import org.glassfish.internal.deployment.ApplicationInfoProvider;
+import org.glassfish.internal.deployment.ExtendedDeploymentContext;
+import org.glassfish.deployment.common.DeploymentUtils;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
 import java.net.URISyntaxException;
 import java.util.*;
+import java.util.logging.Level;
 import java.net.URI;
 import java.net.URL;
 
@@ -256,15 +259,27 @@ public class SnifferManagerImpl implements SnifferManager {
             }
 
             // add library jars for this module
-            ApplicationInfoProvider appInfoProvider = habitat.getComponent(ApplicationInfoProvider.class);
-            if (appInfoProvider != null) {
-                List<URL> libraryJars = appInfoProvider.getLibraryJars(context);
-                for (URL url : libraryJars) {
-                    uris.add(url.toURI());
+            if (context instanceof ExtendedDeploymentContext) {
+                if (((ExtendedDeploymentContext)context).getParentContext() == null) {
+                    // standalone module, we just need to get the module 
+                    // library jars
+                    List<URL> moduleLibraries = DeploymentUtils.getModuleLibraryJars(context);
+                    for (URL url : moduleLibraries) {
+                        uris.add(url.toURI());
+                    }
+                } else {
+                    // non-standalone case, we need to look at other libraries too
+                    ApplicationInfoProvider appInfoProvider = habitat.getComponent(ApplicationInfoProvider.class);
+                    if (appInfoProvider != null) {
+                        List<URL> libraryJars = appInfoProvider.getLibraryJars(context);
+                        for (URL url : libraryJars) {
+                            uris.add(url.toURI());
+                        }
+                    }
                 }
             }
-        } catch (URISyntaxException e) {
-            // ignore.
+        } catch (Exception e) {
+            context.getLogger().log(Level.WARNING, e.getMessage(), e);
         }
         return uris;
     }

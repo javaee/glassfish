@@ -80,7 +80,6 @@ import java.util.Properties;
 import java.util.Collection;
 import java.io.IOException;
 import java.io.File;
-import java.io.FileFilter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.net.URL;
@@ -259,54 +258,12 @@ public class DolProvider implements ApplicationMetaDataProvider<Application>,
 
             libraryURLs.addAll(DOLUtils.getLibraryJars(bundleDesc, archive));
 
-            libraryURLs.addAll(getModuleLibraryJars(context, archive));
+            libraryURLs.addAll(DeploymentUtils.getModuleLibraryJars(context));
         } catch (Exception e) {
             Logger.getAnonymousLogger().log(Level.WARNING, "failed to get library jar: ", e);
         }
 
         return libraryURLs;
-    }
-
-    private List<URL> getModuleLibraryJars(DeploymentContext context, 
-        ReadableArchive archive) throws Exception {
-        List<URL> moduleLibraryURLs = new ArrayList<URL>();
-        ArchiveHandler handler = context.getArchiveHandler();
-        if (handler.getClass() == null || 
-            handler.getClass().getAnnotation(Service.class) == null) {
-            return moduleLibraryURLs;
-        }
-        String handlerName = handler.getClass().getAnnotation(Service.class).name();
-        File archiveFile = new File(archive.getURI());
-        if (handlerName.equals("war")) {
-            // we should add all the WEB-INF/lib jars for web module
-            File webInf = new File(archiveFile, "WEB-INF");
-            File webInfLib = new File(webInf, "lib");
-            if (webInfLib.exists()) {
-                moduleLibraryURLs = getLibDirectoryJars(webInfLib);
-            }
-        } else if (handlerName.equals("connector")) {
-            // we should add the top level jars for connector module
-            moduleLibraryURLs = getLibDirectoryJars(archiveFile);
-        }
-        return moduleLibraryURLs;
-    }
-
-    private List<URL> getLibDirectoryJars(File moduleLibDirectory) throws Exception {
-        List<URL> libLibraryURLs = new ArrayList<URL>();
-        File[] jarFiles = moduleLibDirectory.listFiles(new FileFilter() {
-            public boolean accept(File pathname) {
-                return (pathname.isFile() &&
-                        pathname.getAbsolutePath().endsWith(".jar"));
-            }
-        });
-
-        if (jarFiles != null && jarFiles.length > 0) {
-            for (File jarFile : jarFiles) {
-                libLibraryURLs.add(jarFile.toURL());
-            }
-        }
- 
-        return libLibraryURLs;
     }
 
     protected void handleDeploymentPlan(File deploymentPlan,
