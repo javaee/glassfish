@@ -139,6 +139,13 @@ public final class ComplianceMonitor implements NotificationListener {
         return INSTANCE;
     }
 
+    public static synchronized void  removeInstance() {
+        if(INSTANCE != null) {
+            INSTANCE.destroy();
+            INSTANCE = null;
+        }
+    }
+
     public void start() {
         if (shouldValidate() && !mStarted) {
             mValidatorThread.start();
@@ -155,6 +162,13 @@ public final class ComplianceMonitor implements NotificationListener {
             }
         }
     }
+
+    protected void destroy() {
+        mValidatorThread.quit();
+        mStarted = false;
+        mValidationLevel = null;
+    }
+
 
     private static final class ValidatorThread extends Thread {
 

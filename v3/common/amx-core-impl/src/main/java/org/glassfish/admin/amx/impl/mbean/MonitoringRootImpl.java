@@ -48,10 +48,13 @@ import org.glassfish.admin.amx.impl.util.ObjectNameBuilder;
 import org.glassfish.admin.amx.monitoring.MonitoringRoot;
 import org.glassfish.admin.amx.monitoring.ServerMon;
 import org.glassfish.admin.amx.core.Util;
+import org.glassfish.api.admin.ServerEnvironment;
+import com.sun.enterprise.config.serverbeans.Server;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.Habitat;
 
 public class MonitoringRootImpl extends AMXImplBase // implements MonitoringRoot
 {
-
     public MonitoringRootImpl(final ObjectName parent) {
         super(parent, MonitoringRoot.class);
     }

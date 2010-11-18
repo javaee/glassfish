@@ -1021,6 +1021,7 @@ public class AMXImplBase extends MBeanImplBase
 
     protected ObjectName registerChild(final Object mbean, final ObjectName childObjectName) {
         try {
+            //System.out.println("Registering child :: " + childObjectName.toString());
             final ObjectName objectName = getMBeanServer().registerMBean(mbean, childObjectName).getObjectName();
 
             return objectName;

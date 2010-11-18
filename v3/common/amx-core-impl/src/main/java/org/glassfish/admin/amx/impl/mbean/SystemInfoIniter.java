@@ -65,7 +65,6 @@ final class SystemInfoIniter {
 
     public void init() {
         final boolean supportsClusters = supportsClusters();
-
         mSystemInfo.addFeature(CLUSTERS_FEATURE, supportsClusters);
         mSystemInfo.addFeature(MULTIPLE_SERVERS_FEATURE, supportsClusters);
         mSystemInfo.addFeature(RUNNING_IN_DAS_FEATURE, isRunningInDomainAdminServer());

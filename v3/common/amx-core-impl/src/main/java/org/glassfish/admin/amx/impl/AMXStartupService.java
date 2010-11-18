@@ -95,6 +95,7 @@ import org.glassfish.external.amx.AMXGlassfish;
 import org.glassfish.external.amx.AMXUtil;
 
 import com.sun.enterprise.config.serverbeans.AmxPref;
+import org.glassfish.admin.amx.impl.mbean.ComplianceMonitor;
 
 /**
 An {@link AMXLoader} responsible for loading core amx MBeans
@@ -154,6 +155,7 @@ public final class AMXStartupService
             } catch (final InterruptedException e) {
             }
         }
+        FeatureAvailability.getInstance().deRegisterFeatures();
         ImplUtil.getLogger().info("AMXStartupService: has been shut down and all AMX MBeans unregistered, remaining MBeans: " + mMBeanServer.queryNames(allAMXPattern, null));
     }
 
@@ -184,7 +186,7 @@ public final class AMXStartupService
             throw new Error(e);
         }
         //debug( "AMXStartupService.postConstruct(): registered: " + OBJECT_NAME );
-        ImplUtil.getLogger().fine("Initialized AMXStartupServiceNew in " + delta.elapsedMillis() + " ms, registered as " + OBJECT_NAME);
+        ImplUtil.getLogger().info("Initialized AMXStartupServiceNew in " + delta.elapsedMillis() + " ms, registered as " + OBJECT_NAME);
 
         mEvents.register(new ShutdownListener());
     }
@@ -251,7 +253,7 @@ public final class AMXStartupService
     /** also works as a loaded/not loaded flag: null if not yet loaded */
     private volatile ObjectName DOMAIN_ROOT_OBJECTNAME = null;
 
-    private synchronized ObjectName loadDomainRoot() {
+    private synchronized ObjectName loadDomainRoot() {        
         if (DOMAIN_ROOT_OBJECTNAME != null) {
             return DOMAIN_ROOT_OBJECTNAME;
         }
@@ -278,9 +280,9 @@ public final class AMXStartupService
 
         ObjectName systemInfoObjectName =
                 ObjectNameBuilder.buildChildObjectName(mMBeanServer, DOMAIN_ROOT_OBJECTNAME, SystemInfo.class);
-
+        
         systemInfoObjectName = mMBeanServer.registerMBean(systemInfo, systemInfoObjectName).getObjectName();
-
+        
         return systemInfoObjectName;
     }
 
@@ -349,10 +351,11 @@ public final class AMXStartupService
         try {
             // Find and load any additional AMX subsystems
             final Collection<AMXLoader> loaders = mHabitat.getAllByContract(AMXLoader.class);
-            //ImplUtil.getLogger().info( "AMXStartupService._loadAMXMBeans(): found this many loaders: " + loaders.size() );
+            ImplUtil.getLogger().fine( "AMXStartupService._loadAMXMBeans(): found this many loaders: " + loaders.size() );
             final AMXLoaderThread[] threads = new AMXLoaderThread[loaders.size()];
             int i = 0;
             for (final AMXLoader loader : loaders) {
+                ImplUtil.getLogger().fine( "AMXStartupService._loadAMXMBeans(): found this many loaders: " + loader);
                 threads[i] = new AMXLoaderThread(loader);
                 threads[i].start();
                 ++i;
@@ -396,6 +399,11 @@ public final class AMXStartupService
             }
 
             ImplUtil.unregisterAMXMBeans(getDomainRootProxy());
+            // Need to set this to null for making this work in the same VM.
+            this.DOMAIN_ROOT_OBJECTNAME = null;
+            // here is where we have to reset the singletons
+            ComplianceMonitor.removeInstance();
+            SystemInfoFactory.removeInstance();
         }
     }
     // public Startup.Lifecycle getLifecycle() { return Startup.Lifecycle.SERVER; }

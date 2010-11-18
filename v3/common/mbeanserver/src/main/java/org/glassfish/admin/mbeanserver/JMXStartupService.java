@@ -140,10 +140,10 @@ public final class JMXStartupService implements PostStartup, PostConstruct {
     private synchronized void shutdown() {
         Util.getLogger().fine("JMXStartupService: shutting down AMX and JMX");
 
-        mBootAMX.shutdown();
+        if(mBootAMX != null) mBootAMX.shutdown();
         mBootAMX = null;
 
-        mConnectorsStarterThread.shutdown();
+        if(mConnectorsStarterThread != null) mConnectorsStarterThread.shutdown();
         mConnectorsStarterThread = null;
 
         // we can't block here waiting, we have to assume that the rest of the AMX modules do the right thing
@@ -191,7 +191,6 @@ public final class JMXStartupService implements PostStartup, PostConstruct {
                 ((RMIConnectorStarter) starter).stopAndUnexport();
             }
             try {
-                System.out.println("connection OBJ Name = "+connObjectName);
                 mMBeanServer.unregisterMBean(connObjectName);
                 connObjectName = null;
             } catch (MBeanRegistrationException ex) {
@@ -254,10 +253,8 @@ public final class JMXStartupService implements PostStartup, PostConstruct {
 
             try {
                 connObjectName = new ObjectName(JMX_CONNECTOR_SERVER_PREFIX + ",protocol=" + protocol + ",name=" + connConfig.getName());
-                System.out.println("connection OBJ Name while creation = "+connObjectName);
                 ObjectName connObjectName1 = mMBeanServer.registerMBean(server, connObjectName).getObjectName();
-                System.out.println("Registered the connector :: "+ connObjectName);
-            } catch (final Exception e) {
+           } catch (final Exception e) {
                 // it's not critical to have it registered as an MBean
                 e.printStackTrace();
             }

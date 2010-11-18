@@ -83,7 +83,6 @@ public class DomainRootImpl extends AMXImplBase // implements DomainRoot
 
     public DomainRootImpl() {
         super(null, DomainRoot.class);
-
         mInstanceRoot = new File(System.getProperty("com.sun.aas.instanceRoot"));
         mAppserverDomainName = mInstanceRoot.getName();
     }
@@ -141,11 +140,12 @@ public class DomainRootImpl extends AMXImplBase // implements DomainRoot
         super.postRegisterHook(registrationSucceeded);
 
         // Start compliance after everything else; it uses key MBeans like Paths
+        //turning off ComplianceMonitor for now to help embedded runs.
         if (registrationSucceeded.booleanValue()) {
             // start compliance monitoring immediately, even before children are registered
             mCompliance = ComplianceMonitor.getInstance(getDomainRootProxy());
             mCompliance.start();
-        }
+        } 
     }
 
     public Map<ObjectName, List<String>> getComplianceFailures() {
@@ -168,7 +168,7 @@ public class DomainRootImpl extends AMXImplBase // implements DomainRoot
     @Override
     protected final void registerChildren() {
         super.registerChildren();
-
+        //System.out.println("Registering children of DomainRoot");
         final ObjectName self = getObjectName();
         final ObjectNameBuilder objectNames =
                 new ObjectNameBuilder(getMBeanServer(), self);
