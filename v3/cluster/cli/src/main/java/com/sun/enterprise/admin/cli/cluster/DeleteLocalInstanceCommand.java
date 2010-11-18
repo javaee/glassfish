@@ -145,23 +145,24 @@ public class DeleteLocalInstanceCommand extends LocalInstanceCommand {
      * Ask DAS to wipe it out from domain.xml
      */
     private void doRemote() throws CommandException {
-        try {
+        if (isDASRunning()) {
             RemoteCommand rc = new RemoteCommand("_unregister-instance", programOpts, env);
             rc.execute("_unregister-instance",
                     "--node", getServerDirs().getServerParentDir().getName(),
-                    //"--remote_only", "true",
                     getServerDirs().getServerName());
-        }
-        catch (CommandException ce) {
-            // Let's add our $0.02 to this Exception!
-            Throwable t = ce.getCause();
+        } else {
             String newString = Strings.get("DeleteInstance.remoteError",
-                    ce.getLocalizedMessage());
+                    programOpts.getHost(), "" + programOpts.getPort());
+            throw new CommandException(newString);
+        }
+    }
 
-            if (t != null)
-                throw new CommandException(newString, t);
-            else
-                throw new CommandException(newString);
+    private boolean isDASRunning() {
+        try {
+            getUptime();
+            return true;
+        } catch (CommandException ex) {
+            return false;
         }
     }
 }
