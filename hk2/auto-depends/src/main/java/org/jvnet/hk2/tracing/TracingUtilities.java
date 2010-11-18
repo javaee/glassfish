@@ -40,6 +40,13 @@
 
 package org.jvnet.hk2.tracing;
 
+import com.sun.hk2.component.ExistingSingletonInhabitant;
+import org.jvnet.hk2.component.Inhabitant;
+
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * Utilities for tracing hk2 usage at runtime.
@@ -53,4 +60,64 @@ public class TracingUtilities {
     public static boolean isEnabled() {
         return enabled;
     }
+
+    public static class Node {
+        final Inhabitant t;
+        final long inception = System.currentTimeMillis();
+        long completion;
+
+        final List<Node> children = new ArrayList<Node>();
+
+        public Node(Inhabitant t) {
+            this.t = t;
+        }
+
+        public void done() {
+            completion = System.currentTimeMillis();
+        }
+
+        public long elapsed() {
+            return completion-inception;
+        }
+
+        private void dump(String prefix, PrintStream ps) {
+            StringBuffer buffer = new StringBuffer();
+            for (int i=0;i<prefix.length();i++) {
+                buffer.append("|");
+            }
+            buffer.append("->");
+            buffer.append(" Inhabitant : ").append(t.typeName()).append(" initialized at ").
+                    append(inception).append(" took ").append(elapsed());
+            ps.println(buffer);
+            
+            for (Node child : new ArrayList<Node>(children)) {
+                child.dump(prefix+"  ", ps);
+            }
+        }
+    }
+
+    public static final Node rootNode = new Node(new ExistingSingletonInhabitant<TracingUtilities>(new TracingUtilities()));
+
+    public static void dump(PrintStream ps) {
+        for (Node node : new ArrayList<Node>(rootNode.children))  {
+            node.dump("", ps);
+        }
+    }
+
+    public static void dump(String typeName, PrintStream ps) {
+        dump(typeName, rootNode, ps);
+    }
+
+    public static void dump(String typeName, Node node, PrintStream ps) {
+
+        for (Node child : new ArrayList<Node>(node.children)) {
+            if (child.t.typeName().equals(typeName)) {
+                child.dump("", ps);
+                return;
+            } else {
+                dump(typeName, child, ps);
+            }
+        }
+    }
+    
 }

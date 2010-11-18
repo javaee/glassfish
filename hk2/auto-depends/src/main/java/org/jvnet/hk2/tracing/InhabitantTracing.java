@@ -52,18 +52,38 @@ import java.util.Iterator;
  */
 public class InhabitantTracing {
 
-    private Deque<Inhabitant> stack = new ArrayDeque<Inhabitant>();
+    private Deque<TracingUtilities.Node> stack = new ArrayDeque<TracingUtilities.Node>();
 
     public void push(Inhabitant i) {
-        stack.push(i);
+        TracingUtilities.Node parent = (stack.isEmpty()?TracingUtilities.rootNode:stack.peek());
+        TracingUtilities.Node newNode = new TracingUtilities.Node(i);
+        parent.children.add(newNode);
+        stack.push(newNode);
     }
 
     public Iterator<Inhabitant> inOrder() {
-        return stack.iterator();
+        return new Iterator<Inhabitant>() {
+            final Iterator<TracingUtilities.Node> itr = stack.iterator();
+            @Override
+            public boolean hasNext() {
+                return itr.hasNext();
+            }
+
+            @Override
+            public Inhabitant next() {
+                return itr.next().t;
+            }
+
+            @Override
+            public void remove() {
+                itr.remove();
+            }
+        };
     }
     
     public void pop() {
-        stack.pop();
+        TracingUtilities.Node current = stack.pop();
+        current.done();
         if (stack.isEmpty()) {
             TracingThreadLocal.clean();
         }
