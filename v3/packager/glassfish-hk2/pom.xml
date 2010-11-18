@@ -88,6 +88,10 @@
                     <groupId>com.googlecode.jtype</groupId>
                     <artifactId>jtype</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>junit</groupId>
+                    <artifactId>junit</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <!-- previous packages - required for dependency graph calculation -->
