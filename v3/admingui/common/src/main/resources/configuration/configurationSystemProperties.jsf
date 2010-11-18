@@ -204,7 +204,7 @@
                 </sun:panelGroup>
             </facet>
         </sun:title>
-    <sun:hidden id="helpKey" value="$resource{help_cluster.configurationSystemProperties}" />
+    <sun:hidden id="helpKey" value="$resource{help_common.configurationSystemProperties}" />
     </sun:form>
 #include "/common/shared/changeButtonsJS.inc"
 </define>

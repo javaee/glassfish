@@ -62,7 +62,7 @@
 #include "/cluster/standalone/standaloneInstanceTabs.inc"
 #include "/shared/alertMsg.inc"
 #include "monitoringServerStatsPage.inc"
-	<sun:hidden id="helpKey" value="$resource{help_web.monitorRuntime}" />
+	<sun:hidden id="helpKey" value="$resource{help_common.monitorRuntime}" />
             </sun:form>
 #include "/shared/changeButtonsJS.inc"
 </define>
