@@ -112,6 +112,8 @@ public class CreateNodeSshCommand implements AdminCommand  {
 
         logger = context.getLogger();
 
+        checkDefaults();
+
         ParameterMap map = new ParameterMap();
         map.add("DEFAULT", name);
         map.add(NodeUtils.PARAM_INSTALLDIR, installdir);
@@ -155,5 +157,21 @@ public class CreateNodeSshCommand implements AdminCommand  {
         }
 
         report.setMessage(msg.toString());
+    }
+
+    /**
+     * Sometimes the console passes an empty string for a parameter. This
+     * makes sure those are defaulted correctly.
+     */
+    void checkDefaults() {
+        if (!StringUtils.ok(installdir)) {
+            installdir = NodeUtils.NODE_DEFAULT_INSTALLDIR;
+        }
+        if (!StringUtils.ok(sshport)) {
+            sshport = NodeUtils.NODE_DEFAULT_SSH_PORT;
+        }
+        if (!StringUtils.ok(sshuser)) {
+            sshuser = NodeUtils.NODE_DEFAULT_SSH_USER;
+        }
     }
 }
