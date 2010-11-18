@@ -422,15 +422,22 @@ public class ServletContainerInitializerUtil {
             Set<Class<?>> resultSet = new HashSet<Class<?>>();
             if (type instanceof AnnotationType) {
                 for (AnnotatedElement ae : ((AnnotationType) type).allAnnotatedTypes()) {
-                    try {
-                        resultSet.add(cl.loadClass(ae.getName()));
-                    } catch (Throwable t) {
-                        if (log.isLoggable(Level.WARNING)) {
-                            log.log(Level.WARNING,
-                                "servletContainerInitializerUtil.classLoadingError",
-                                new Object[] {ae.getName(), t.toString()});
-                        }
-                    }                    
+                    if (ae instanceof Member) {
+                        ae = ((Member) ae).getDeclaringType();
+                    } else if (ae instanceof Parameter) {
+                        ae = ((Parameter) ae).getMethod().getDeclaringType();
+                    }
+                    if (ae instanceof Type) {
+                        try {
+                            resultSet.add(cl.loadClass(ae.getName()));
+                        } catch (Throwable t) {
+                            if (log.isLoggable(Level.WARNING)) {
+                                log.log(Level.WARNING,
+                                    "servletContainerInitializerUtil.classLoadingError",
+                                    new Object[] {ae.getName(), t.toString()});
+                            }
+                        }     
+                    }
                 }
             } else {
                 Collection<ClassModel> classes;
