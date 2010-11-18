@@ -83,8 +83,8 @@ public class DynamicInterceptor implements MBeanServer
     private static final LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(DynamicInterceptor.class);
 
-    private static final String SERVER_PREFIX = "amx:pp=/domain/servers/server[";
-    private static final String CLUSTER_PREFIX = "amx:pp=/domain/clusters/cluster[";
+    private static final String SERVER_PREFIX = "amx:pp=/domain/servers";
+    private static final String CLUSTER_PREFIX = "amx:pp=/domain/clusters";
     private static final String CONFIG_PREFIX = "amx:pp=/domain/configs/config[";
     private static final String JSR77_PREFIX ="amx:pp=/J2EEDomain";
     private static final String MON_PREFIX ="amx:pp=/mon/server-mon[";
@@ -106,15 +106,15 @@ public class DynamicInterceptor implements MBeanServer
 
         // if this is for create Mbean
         if(objectName == null) {
-            instances.add("server");
+            result.addInstance("server");
             return result;
         }
 
         String oName = objectName.toString();
 
         // Initialize the MBeanService and check if we are on DAS
-        if(MbeanService.getInstance() ==null || MbeanService.getInstance().isDas()) {
-            instances.add("server");
+        if(MbeanService.getInstance() == null) {
+            result.addInstance("server");
             return result;
         }
 
@@ -123,41 +123,53 @@ public class DynamicInterceptor implements MBeanServer
         //If its a MBean corresponding to config
         if(isConfig(oName)) {
             String configName = getName(oName);
-            String targetName = configName.substring(0, configName.indexOf("-config"));
-            if( (!"default".equals(targetName)) && (!"server".equals(targetName)) ) {
-                instances.addAll(MbeanService.getInstance().getInstances(configName));
+            if(configName != null && configName.indexOf("-config") > 0 ) {
+                String targetName = configName.substring(0, configName.indexOf("-config"));
+                if( (!"default".equals(targetName)) && (!"server".equals(targetName)) ) {
+                    result.addAllInstances(MbeanService.getInstance().getInstances(configName));
+                }
+            } else {
+                result.addInstance("server");
             }
         }
 
         // if its a MBean corresponding to a cluster
         if(isCluster(oName)) {
             String targetName = getName(oName);
-            instances.addAll(MbeanService.getInstance().getInstances(targetName));
+            if(targetName != null) {
+                result.addAllInstances(MbeanService.getInstance().getInstances(targetName));
+            }
 
         }
 
         // if its an MBean corresponding to a server
         if(isServer(oName)) {
             String targetName = getName(oName);
-            instances.add(targetName);
-            if(!("server".equals(targetName)))
-                result.setTargetIsAnInstance(true);
+            if(targetName != null) {
+                result.addInstance(targetName);
+                if(!("server".equals(targetName)))
+                    result.setTargetIsAnInstance(true);
+            } else {
+                result.addInstance("server");
+            }
         }
 
         // If its an MBean corresponding to a JSR77 managed object
-        if(isJSR77(oName, objectName)) {
-            if(objectName.getKeyProperty("j2eeType").equals("J2EEDomain")) {
-                instances.add("server");
-            } else if (objectName.getKeyProperty("j2eeType").equals("J2EEServer")) {
+        if(isJSR77(oName, objectName)) {            
+            if(objectName.getKeyProperty("j2eeType") != null && 
+                    objectName.getKeyProperty("j2eeType").equals("J2EEDomain")) {
+                result.addInstance("server");
+            } else if (objectName.getKeyProperty("j2eeType") != null &&
+                    objectName.getKeyProperty("j2eeType").equals("J2EEServer")) {
                 String targetInstance = objectName.getKeyProperty("name");
                 if(MbeanService.getInstance().isValidServer(targetInstance)) {
-                    instances.add(targetInstance);
-                    result.setTargetIsAnInstance(true);
+                    result.addInstance("server");
+                    result.addInstance(targetInstance);                    
                 }
             } else {
                 String targetInstance = objectName.getKeyProperty("J2EEServer");
                 if(MbeanService.getInstance().isValidServer(targetInstance)) {
-                    instances.add(targetInstance);
+                    result.addInstance(targetInstance);
                 }
             }
         }
@@ -165,15 +177,15 @@ public class DynamicInterceptor implements MBeanServer
         // If its an monitoring MBean
         if(isMonitoring(oName)) {
             String targetName = getName(oName);
-            instances.add(targetName);
+            result.addInstance(targetName);
                 if(!("server".equals(targetName)))
                     result.setTargetIsAnInstance(true);
         }
 
         // If its a generic query
         if("amx:*".equals(oName) || "*.*".equals(oName)) {
-            instances.add("server");
-            instances.addAll(MbeanService.getInstance().getAllInstances());
+            result.addInstance("server");
+            result.addAllInstances(MbeanService.getInstance().getAllInstances());
         }
 
         if (objectName.getKeyProperty("type")!=null) {
@@ -181,17 +193,38 @@ public class DynamicInterceptor implements MBeanServer
                     objectName.getKeyProperty("type").equals("domain") ||
                     objectName.getKeyProperty("type").equals("resources") ||
                     objectName.getKeyProperty("type").equals("system-applications") ||
-                    objectName.getKeyProperty("type").equals("applications") ) {
-                instances.add("server");
+                    objectName.getKeyProperty("type").equals("applications") ||
+                    objectName.getKeyProperty("type").equalsIgnoreCase("MBeanServerDelegate")) {
+
+                result.addInstance("server");
             }
         }
 
         if( oName.startsWith("amx-support") || oName.startsWith("jmxremote") ) {
-            instances.add("server");
+            result.addInstance("server");
         }
+
+        if(objectName.getKeyProperty("type") != null &&
+                 (objectName.getKeyProperty("type").equals("Mapper") ||
+                 objectName.getKeyProperty("type").equals("Connector") ||
+                 objectName.getKeyProperty("type").equals("Engine") ||
+                 objectName.getKeyProperty("type").equals("ProtocolHandler") ||
+                 objectName.getKeyProperty("type").equals("Service") ||
+                 objectName.getKeyProperty("type").equals("Host") ||
+                 objectName.getKeyProperty("type").equals("Loader") ||
+                 objectName.getKeyProperty("type").equals("JspMonitor") ||
+                 objectName.getKeyProperty("type").equals("Valve"))) {
+            result.addInstance("server");
+
+        }
+
+         if((MbeanService.getInstance().isDas())) {
+            result.addInstance("server");
+            return result;
+        } 
         
         // What abouut JVM
-        System.out.println(" instance = "+oName+" :: "+instances.toString());
+        //System.out.println(" instance = "+oName+" :: "+instances.toString());
         return result;
     }
 
@@ -401,6 +434,7 @@ public class DynamicInterceptor implements MBeanServer
 
     public final void unregisterMBean(final ObjectName objectName)
             throws InstanceNotFoundException, MBeanRegistrationException {
+       // System.out.println("Unregistering MBean :"+objectName.toString());
         if(objectName == null)
             throw new InstanceNotFoundException();
         ReplicationInfo result = getInstance(objectName);
@@ -845,9 +879,8 @@ public class DynamicInterceptor implements MBeanServer
         return oName.startsWith(SERVER_PREFIX);
     }
 
-    private boolean isJSR77(String oName, ObjectName o) {
-        if((o.getKeyProperty("j2eeType") !=null) &&
-                (o.getKeyProperty("j2eeType").equals("J2EEDomain"))) {
+    private boolean isJSR77(String oName, ObjectName o) {        
+        if(o.getKeyProperty("j2eeType") !=null) {
             return true;
         } else if(oName.startsWith(JSR77_PREFIX)) {
             return true;
@@ -861,7 +894,11 @@ public class DynamicInterceptor implements MBeanServer
     }
 
     private String getName(String oName) {
-        return oName.substring(oName.indexOf("[") + 1, oName.indexOf("]"));
+        if(oName.indexOf("[") > 0 ) {
+          return oName.substring(oName.indexOf("[") + 1, oName.indexOf("]"));
+        } else {
+            return null;
+        }
     }
 
     private class ReplicationInfo {
@@ -869,8 +906,19 @@ public class DynamicInterceptor implements MBeanServer
         private List<String> instances = new ArrayList<String>();
 
         boolean isTargetAnInstance() { return instanceTarget;}
+
         void setTargetIsAnInstance(boolean b) { instanceTarget = b;}
+
         List<String> getInstances() { return instances;}
-        void addInstance(String s) { instances.add(s);}
+
+        void addInstance(String s) {
+            if(!instances.contains(s)) {
+                instances.add(s);
+            }
+        }
+
+        void addAllInstances(List list) {
+            instances.addAll(list);
+        }
     }
 }
