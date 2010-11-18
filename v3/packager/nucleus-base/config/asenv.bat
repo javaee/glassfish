@@ -37,6 +37,7 @@ REM  and therefore, elected the GPL Version 2 license, then the option applies
 REM  only if the new code is made subject to such option by the copyright
 REM  holder.
 REM
+
 REM
 REM                       * * *    N O T E     * * *
 REM
