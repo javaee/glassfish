@@ -45,7 +45,8 @@
     setResourceBundle(key="i18ncs" bundle="org.glassfish.cluster.admingui.Strings")
     setResourceBundle(key="help_cluster" bundle="org.glassfish.cluster.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18ncs.node.EditPageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18ncs.node.EditPageTitle}"
+    guiOnLoad="showPswdSection('#{pageSession.psSelected}', '#{pageSession.ps1Id}', '#{pageSession.ps2Id}', '#{pageSession.pswdAliasId}');" >
 <!define name="content">
     <event>
     <!beforeCreate
@@ -63,8 +64,8 @@
         mapPut(map="#{pageSession.valueMap}"  key="nodedir"  value="#{pageSession.attrMap['nodeDir']}");
         mapPut(map="#{pageSession.valueMap}"  key="installdir",  value="#{pageSession.attrMap['installDir']}");
         mapPut(map="#{pageSession.valueMap}"  key="type",  value="#{pageSession.attrMap['type']}");
-        //mapPut(map="#{pageSession.valueMap}"  key="name",  value="#{pageSession.attrMap['name']}");
-        
+
+        setPageSessionAttribute(key="psSelected" value="1");
         gf.checkIfEndPointExist(endpoint="#{pageSession.selfUrl}/ssh-connector" exists="#{requestScope.sshConnectorExist}");
         if (#{requestScope.sshConnectorExist}){
             gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}/ssh-connector.json", currentMap="#{pageSession.attrMap}"  valueMap="#{pageSession.attrMap}");
@@ -75,6 +76,8 @@
                 gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}/ssh-connector/ssh-auth.json", currentMap="#{pageSession.attrMap}"  valueMap="#{pageSession.attrMap}");
                 mapPut(map="#{pageSession.valueMap}"  key="sshuser",  value="#{pageSession.attrMap['userName']}");
                 mapPut(map="#{pageSession.valueMap}"  key="sshkeyfile",  value="#{pageSession.attrMap['keyfile']}");
+                gf.convertNodePswd(pswd="#{pageSession.attrMap['password']}" pswdText="#{pageSession.pswdText}" pswdAlias="#{pageSession.pswdAlias}" psSelected="#{pageSession.psSelected}");
+                setPageSessionAttribute(key="confirmPassword" value="#{pageSession.pswdText}");
             }
         }
 

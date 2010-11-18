@@ -53,5 +53,43 @@
              sheet1.style.display = style;
          }
     }
+
+    function showPswdSection(type, ps1Id, ps2Id, pswdAId){
+        var p1 = document.getElementById(ps1Id);
+        var p2 = document.getElementById(ps2Id);
+        var pas = document.getElementById(pswdAId);
+        if (type == '1'){
+            disableComponent(ps1Id, 'text');
+            disableComponent(ps2Id, 'text');
+            disableComponent(pswdAId, 'select');
+            return;
+        }
+        if (type == '2'){
+            enableComponent(ps1Id, 'text');
+            enableComponent(ps2Id, 'text');
+            disableComponent(pswdAId, 'select');
+            return;
+        }
+        if (type == '3'){
+            disableComponent(ps1Id, 'text');
+            disableComponent(ps2Id, 'text');
+            enableComponent(pswdAId, 'select');
+            return;
+        }
+    }
+
+    function checkSSHPswd(typeId, psSelectId, ps1Id, ps2Id, notMatchMsg, emptyMsg){
+	if (! guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')){
+	    return false;
+	}
+        if (document.getElementById(typeId).value == 'CONFIG'){
+            return true;
+        }
+        if ( document.getElementById(psSelectId).value == '2'){
+            return checkPSW( ps1Id, ps2Id, notMatchMsg, emptyMsg);
+        }
+        return true;
+    }
+
     </script>
-</f:verbatim>   
+</f:verbatim>

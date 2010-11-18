@@ -45,7 +45,8 @@
     setResourceBundle(key="i18ncs" bundle="org.glassfish.cluster.admingui.Strings")
     setResourceBundle(key="help_cluster" bundle="org.glassfish.cluster.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18ncs.node.NewPageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18ncs.node.NewPageTitle}" 
+        guiOnLoad="showPswdSection('#{pageSession.psSelected}', '#{pageSession.ps1Id}', '#{pageSession.ps2Id}', '#{pageSession.pswdAliasId}');" >
 <!define name="content">
     <event>
     <!beforeCreate
@@ -55,9 +56,11 @@
         setPageSessionAttribute(key="childType" value="create-node");
         setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}");
         gf.getDefaultValues(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
+        mapPut(map="#{pageSession.valueMap}", key="type" value="SSH");
         setPageSessionAttribute(key="title" value="$resource{i18ncs.node.NewPageTitle}");
         setPageSessionAttribute(key="titleHelp" value="$resource{i18ncs.node.NewPageTitleHelp}");
         setPageSessionAttribute(key="convertToFalseList" value="force");
+        setPageSessionAttribute(key="psSelected" value="1");
     />
     </event>
 <sun:form id="propertyForm">
