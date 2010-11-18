@@ -130,8 +130,7 @@ public class VirtualServerImpl extends StandardHost implements VirtualServer {
      * default-web.xml location
      */
     private String defaultWebXmlLocation;
-
-    @Inject
+    
     private Habitat habitat;
 
     private List<WebListener> listeners = new ArrayList<WebListener>();
@@ -172,6 +171,10 @@ public class VirtualServerImpl extends StandardHost implements VirtualServer {
      */
     public File getDocRoot() {
         return new File(getAppBase());
+    }
+
+    protected void setHabitat(Habitat habitat) {
+        this.habitat = habitat;
     }
 
     /**
@@ -221,13 +224,12 @@ public class VirtualServerImpl extends StandardHost implements VirtualServer {
         String appName = null;
         try {
             Deployer deployer = habitat.getComponent(Deployer.class);
-            //appName = deployer.deploy(file, "--name", contextRoot);
-            appName = deployer.deploy(file);
+            appName = deployer.deploy(file, "--contextroot", contextRoot);
             if (!appName.startsWith("/")) {
                 appName = "/"+appName;
             }
         } catch (Exception ex) {
-            log.severe(ex.getMessage());
+            ex.printStackTrace();
         }
         if (log.isLoggable(Level.INFO)) {
             log.info("Added context "+appName+" using name "+contextRoot);

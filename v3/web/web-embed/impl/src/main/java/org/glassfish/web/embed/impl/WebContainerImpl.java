@@ -653,8 +653,7 @@ public class WebContainerImpl implements WebContainer {
         String appName;
         try {
             Deployer deployer = habitat.getComponent(Deployer.class);
-            //appName = deployer.deploy(file, "--name", contextRoot);
-            appName = deployer.deploy(file);
+            appName = deployer.deploy(file, "--name", contextRoot);
             if (!appName.startsWith("/")) {
                 appName = "/"+appName;
             }
@@ -835,6 +834,7 @@ public class WebContainerImpl implements WebContainer {
         }
         virtualServer.setNetworkListenerNames(names);
         virtualServer.setWebListeners(webListeners);
+        virtualServer.setHabitat(habitat);
 
         if (log.isLoggable(Level.INFO)) {
             log.info("Created virtual server "+id+" docroot "+docRoot.getPath()+
@@ -869,6 +869,7 @@ public class WebContainerImpl implements WebContainer {
 
         }
         virtualServer.setNetworkListenerNames(networkListenerNames.toArray(new String[0]));
+        virtualServer.setHabitat(habitat);
 
         if (log.isLoggable(Level.INFO)) {
             log.info("Created virtual server "+id+" docroot "+docRoot.getPath()+

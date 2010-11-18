@@ -1791,8 +1791,7 @@ public class VirtualServer extends StandardHost
         try {
             org.glassfish.embeddable.Deployer deployer =
                     Globals.getDefaultHabitat().getComponent(org.glassfish.embeddable.Deployer.class);
-            //appName = deployer.deploy(file, "--contextroot", contextRoot);
-            appName = deployer.deploy(file);
+            appName = deployer.deploy(file, "--contextroot", contextRoot);
             if (!appName.startsWith("/")) {
                 appName = "/"+appName;
             }
