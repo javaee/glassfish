@@ -190,11 +190,20 @@ public class RestoreManager extends BackupRestoreManager {
     //////////////////////////////////////////////////////////////////////////
 
     private void copyBackups() throws IOException    { 
-        if(backupDir != null) {
-            File tempRestoreDirBackups = new File(tempRestoreDir,
+
+        File domainBackupDir = 
+            new File(request.domainDir, Constants.BACKUP_DIR);
+ 
+        /**
+         * If an existing backup directory does not exist then there
+         * is nothing to copy.
+         */
+        if(!FileUtils.safeIsDirectory(domainBackupDir))
+            return;
+        
+        File tempRestoreDirBackups = new File(tempRestoreDir,
                                                   Constants.BACKUP_DIR);
-            FileUtils.copyTree(backupDir, tempRestoreDirBackups);
-        }
+        FileUtils.copyTree(domainBackupDir, tempRestoreDirBackups);
     }
     
     //////////////////////////////////////////////////////////////////////////
