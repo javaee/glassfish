@@ -78,8 +78,13 @@
                 <sun:panelGroup id="topButtons">
                     <sun:button id="launchButton" primary="#{true}" text="$resource{i18n.deployTable.launch}"
                         onClick="var pfix=document.getElementById('form1:option').value;
-                        var win=window.open(pfix+'?#{pageSession.args}','appclient','width='+.50*screen.width+',height='+.50*screen.height+',top='+.1*screen.height+',left='+.1*screen.width+',toolbar=yes,status=yes,menubar=yes,scrollbars=yes,location=yes');
-                        win.focus(); return false;"
+                        var args = document.getElementById('#{pageSession.argId}').value;
+                        if(!(args==null || args=='')){
+                            args='?'+args;
+                        }
+                        var win=window.open(pfix+args,'appclient','width='+.50*screen.width+',height='+.50*screen.height+',top='+.1*screen.height+',left='+.1*screen.width+',toolbar=yes,status=yes,menubar=yes,scrollbars=yes,location=yes');
+                        win.focus();
+                        return false;"
                     />
                     <sun:button id="backButton" immediate="#{true}"
                         text="$resource{i18n.button.Back}" primary="#{false}" >
