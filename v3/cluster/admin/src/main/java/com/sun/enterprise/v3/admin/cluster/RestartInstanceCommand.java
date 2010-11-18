@@ -81,7 +81,9 @@ public class RestartInstanceCommand implements AdminCommand {
             logger.fine("Restart-instance old-pid = " + oldPid);
             callInstance();
             waitForRestart();
-            report.setMessage(Strings.get("restart.instance.success", instanceName));
+            String msg = Strings.get("restart.instance.success", instanceName);
+            logger.info(msg);
+            report.setMessage(msg);
         }
         catch (CommandException ex) {
             setError(Strings.get("restart.instance.racError", instanceName,
