@@ -123,7 +123,7 @@
     <handler id="gfr.getInstanceDebugInfo" >
         createMap(result="#{requestScope._debugAttrMap}")
         mapPut(map="#{requestScope._debugAttrMap}" key="target" value="#{pageSession.instanceName}")
-        gf.restRequest(endpoint="#{sessionScope.REST_URL}/management/domain/get-runtime-info" attrs="#{requestScope._debugAttrMap}"
+        gf.restRequest(endpoint="#{sessionScope.REST_URL}/get-runtime-info" attrs="#{requestScope._debugAttrMap}"
             method="GET" result="#{requestScope.debugResult}");
         setAttribute(key="debugF" value="#{requestScope.debugResult.data.subReports.get(0).properties.debug}");
         setPageSessionAttribute(key="instanceDebugInfo" value="$resource{i18n.inst.notEnabled}");
