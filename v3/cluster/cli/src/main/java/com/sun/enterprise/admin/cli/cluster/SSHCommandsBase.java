@@ -91,7 +91,7 @@ public abstract class SSHCommandsBase extends CLICommand {
      * Get SSH password from password file or user.
      */
     protected String getSSHPassword(String node) throws CommandException {
-        String password = getFromPasswordFile("AS_ADMIN_SSH_PASSWORD");
+        String password = getFromPasswordFile("AS_ADMIN_SSHPASSWORD");
 
         //get password from user if not found in password file
         if (password == null) {
@@ -108,7 +108,7 @@ public abstract class SSHCommandsBase extends CLICommand {
      * Get SSH key passphrase from password file or user.
      */
     protected String getSSHPassphrase() throws CommandException {
-        String passphrase = getFromPasswordFile("AS_ADMIN_SSH_KEYPASSPHRASE");
+        String passphrase = getFromPasswordFile("AS_ADMIN_SSHKEYPASSPHRASE");
 
         //get password from user if not found in password file
         if (passphrase == null) {
