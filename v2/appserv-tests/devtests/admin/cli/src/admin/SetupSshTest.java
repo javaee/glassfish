@@ -196,8 +196,8 @@ public class SetupSshTest extends AdminBaseDevTest {
             System.out.println("f = " + f.toString());
             out = new BufferedWriter(new FileWriter(f, true));
             out.newLine();
-            out.write("AS_ADMIN_SSH_PASSWORD=" + sshPass + "\n");
-            out.write("AS_ADMIN_SSH_KEYPASSPHRASE=\n");
+            out.write("AS_ADMIN_SSHPASSWORD=" + sshPass + "\n");
+            out.write("AS_ADMIN_SSHKEYPASSPHRASE=\n");
         } catch (IOException ioe) {
             //ignore
         }
