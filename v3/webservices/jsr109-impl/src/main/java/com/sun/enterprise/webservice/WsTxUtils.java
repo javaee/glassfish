@@ -55,7 +55,13 @@ import org.glassfish.internal.api.ServerContext;
  *
  * @author Marek Potociar <marek.potociar at sun.com>
  * @author Alexey Stashok <oleksiy.stashok@sun.cOM>
+ * 
+ * @deprecated This class should no longer be required. 
+ *             {@link org.glassfish.webservices.metroglue.MetroContainer} will 
+ *             take care of the WS-TX initialization. The class may be removed 
+ *             in the next release.
  */
+@Deprecated
 public class WsTxUtils {
 
     private static Logger logger = LogDomains.getLogger(WsTxUtils.class, LogDomains.WEBSERVICES_LOGGER);

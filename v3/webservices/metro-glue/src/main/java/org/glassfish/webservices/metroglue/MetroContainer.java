@@ -48,11 +48,15 @@ import java.util.logging.Logger;
 import java.text.MessageFormat;
 
 import com.sun.enterprise.config.serverbeans.AvailabilityService;
+import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.deployment.WebServiceEndpoint;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.io.FileUtils;
+import com.sun.grizzly.config.dom.NetworkListener;
 import com.sun.logging.LogDomains;
 import com.sun.xml.ws.api.ha.HighAvailabilityProvider;
+import com.sun.xml.ws.tx.dev.WSATRuntimeConfig;
 
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.container.Container;
@@ -97,6 +101,8 @@ public class MetroContainer implements PostConstruct, Container, WebServiceDeplo
     private ServerContext serverContext;
     @Inject
     private ServerEnvironmentImpl env;
+//    @Inject
+//    private JavaEETransactionManager txManager;
     @Inject
     GMSAdapterService gmsAdapterService;
     @Inject(optional = true)
@@ -131,6 +137,7 @@ public class MetroContainer implements PostConstruct, Container, WebServiceDeplo
         logger.finest("endpoint.event.deployed");
         if (!wstxServicesDeployed.get() && !wstxServicesDeploying.get()) {
             deployWsTxServices();
+            initializeWsTxRuntime();
         }
 
     }
@@ -244,5 +251,73 @@ public class MetroContainer implements PostConstruct, Container, WebServiceDeplo
 //        }
 
         return haEnabled;
+    }
+
+    /**
+     * Initialization of WS-TX runtime configuration
+     */
+    private void initializeWsTxRuntime() {
+        final String serverName = serverContext.getInstanceName();            
+        final Config config  = serverContext.getConfigBean().getConfig();
+        
+        
+        WSATRuntimeConfig.initializer()
+                .hostName(getHostName())
+                .httpPort(getHttpPort(false, serverName, config))
+                .httpsPort(getHttpPort(true, serverName, config));
+        
+//        final WSATRuntimeConfig.RecoveryEventListener listener = WSATRuntimeConfig.getInstance().new WSATRecoveryEventListener();
+//        
+//        ???Interface wrapperListener = new ???Interface {
+//            ...
+//        }
+//        
+//        txManager.???registration_method(wrapperListener);
+        
+    }
+    
+    /**
+     * Lookup the canonical host name of the system this server instance is running on.
+     *
+     * @return the canonical host name or null if there was an error retrieving it
+     */
+    private String getHostName() {
+        // this value is calculated from InetAddress.getCanonicalHostName when the AS is
+        // installed.  asadmin then passes this value as a system property when the server
+        // is started.
+        return System.getProperty(SystemPropertyConstants.HOST_NAME_PROPERTY);
+    }    
+
+    /**
+     * Get the http/https port number for the default virtual server of this server instance.
+     * <p/>
+     * If the 'secure' parameter is true, then return the secure http listener port, otherwise
+     * return the non-secure http listener port.
+     *
+     * @param secure true if you want the secure port, false if you want the non-secure port
+     * @return the port or null if there was an error retrieving it.
+     */
+    private String getHttpPort(boolean secure, String serverName, Config config) {
+        try {
+            
+            final String[] networkListenerNames = config.getHttpService().getVirtualServerByName(serverName).getNetworkListeners().split(",");
+
+            for (String listenerName : networkListenerNames) {
+                if (listenerName == null || listenerName.length() == 0) {
+                    continue;
+                }
+
+                NetworkListener listener = config.getNetworkConfig().getNetworkListener(listenerName.trim());
+
+                if (secure == Boolean.valueOf(listener.findHttpProtocol().getSecurityEnabled())) {
+                    return listener.getPort();
+                }
+            }
+        } catch (Throwable t) {
+            // error condition handled in wsit code
+            logger.log(Level.FINEST, "Exception occurred retrieving port configuration for WSTX service", t);
+        }
+
+        return null;
     }
 }
