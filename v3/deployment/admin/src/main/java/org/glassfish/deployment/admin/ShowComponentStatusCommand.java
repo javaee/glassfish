@@ -100,7 +100,6 @@ public class ShowComponentStatusCommand implements AdminCommand {
         final Logger logger = context.getLogger();
 
         ActionReport.MessagePart part = report.getTopMessagePart();
-        part.setMessage(target);
 
         // retrieve matched version(s) if exist
         List<String> matchedVersions = null;
