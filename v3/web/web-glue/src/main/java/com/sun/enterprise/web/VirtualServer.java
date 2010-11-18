@@ -586,7 +586,7 @@ public class VirtualServer extends StandardHost
             wmInfo.setLocation(new File(docroot));
             wmInfo.setDescriptor(wbd);
             wmInfo.setParentLoader(
-                EmbeddedWebContainer.class.getClassLoader());
+                serverContext.getCommonClassLoader());
             WebappClassLoader loader = new WebappClassLoader(
                 wmInfo.getParentLoader());
             loader.start();            

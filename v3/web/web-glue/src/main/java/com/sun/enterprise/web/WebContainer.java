@@ -465,7 +465,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             _embedded.setDebug(_debug);
         _embedded.setLogger(new IASLogger(_logger));
 
-        // TODO (Sahoo): Stop using ModuleImpl
         engine = _embedded.createEngine();
         engine.setParentClassLoader(EmbeddedWebContainer.class.getClassLoader());
         _embedded.addEngine(engine);
