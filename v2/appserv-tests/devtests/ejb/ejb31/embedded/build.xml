@@ -28,6 +28,7 @@
         <antcall target="ejbinwar"/>
         <antcall target="ejbandwar"/>
         <antcall target="skipjar"/>
+        <antcall target="embedasync"/>
         <antcall target="stop-derby"/>
     </target>
 
@@ -89,6 +90,12 @@
         <record name="skipjar.output" action="start" />
             <ant dir="skipjar" target="all"/>
         <record name="skipjar.output" action="stop" />
+    </target>
+
+    <target name="embedasync">
+        <record name="embedasync.output" action="start" />
+            <ant dir="embedasync" target="all"/>
+        <record name="embedasync.output" action="stop" />
     </target>
 
     <target name="usage">

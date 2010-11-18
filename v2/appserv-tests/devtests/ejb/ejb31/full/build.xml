@@ -22,7 +22,6 @@
         <antcall target="sfsbscnc"/>
         <antcall target="ear"/>
         <antcall target="passact"/>
-        <antcall target="embedasync"/>
         <antcall target="jcdifull"/>
     </target>
 
@@ -72,12 +71,6 @@
         <record name="passact.output" action="start" />
             <ant dir="passact" target="all"/>
         <record name="passact.output" action="stop" />
-    </target>
-
-    <target name="embedasync">
-        <record name="embedasync.output" action="start" />
-            <ant dir="embedasync" target="all"/>
-        <record name="embedasync.output" action="stop" />
     </target>
 
     <target name="jcdifull">
