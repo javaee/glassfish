@@ -143,6 +143,14 @@ public class EmbeddedWebAPITest {
         System.out.println(inputLine);
         Assert.assertEquals("Hello World!", sb.toString());
 
+        embedded.removeWebListener(testListener);
+
+        listenerList = new ArrayList(embedded.getWebListeners());
+        System.out.println("Network listener size after creation " + listenerList.size());
+        Assert.assertTrue(listenerList.size()==1);
+        for (WebListener listener : embedded.getWebListeners())
+            System.out.println("Web listener "+listener.getId()+" "+listener.getPort());
+
         Thread.sleep(1000);
 
         if (appName!=null)

@@ -42,6 +42,7 @@ package org.glassfish.web.embed.impl;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.logging.*;
@@ -125,7 +126,8 @@ public class VirtualServerImpl extends StandardHost implements VirtualServer {
      * default-web.xml location
      */
     private String defaultWebXmlLocation;
-    
+
+    private List<WebListener> listeners = new ArrayList<WebListener>();
    
     // --------------------------------------------------------- Public Methods
 
@@ -166,6 +168,17 @@ public class VirtualServerImpl extends StandardHost implements VirtualServer {
     }
 
     /**
+     * Sets the collection of <tt>WebListener</tt> instances from which
+     * this <tt>VirtualServer</tt> receives requests.
+     *
+     * @param webListeners the collection of <tt>WebListener</tt> instances from which
+     * this <tt>VirtualServer</tt> receives requests.
+     */
+    public void setWebListeners(WebListener...  webListeners) {
+        listeners = Arrays.asList(webListeners);
+    }
+
+    /**
      * Gets the collection of <tt>WebListener</tt> instances from which
      * this <tt>VirtualServer</tt> receives requests.
      * 
@@ -173,21 +186,7 @@ public class VirtualServerImpl extends StandardHost implements VirtualServer {
      * this <tt>VirtualServer</tt> receives requests.
      */
     public Collection<WebListener> getWebListeners() {
-
-        /*List<WebListener> listeners = new ArrayList<WebListener>();
-        Connector[] connectors =
-                (Connector[]) ((StandardEngine)getParent()).getService().findConnectors();
-
-        for (String name : getNetworkListenerNames()) {
-            for (Connector connector : connectors) {
-                if (name.equals(connector.getName())) {
-                    listeners.add(connector);
-                }
-            }
-        }
-        return listeners;*/
-        
-        return null;        
+        return listeners;
     }
 
     /**

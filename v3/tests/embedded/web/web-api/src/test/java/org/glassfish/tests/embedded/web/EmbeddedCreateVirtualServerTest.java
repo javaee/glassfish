@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -56,12 +56,12 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- * Test for WebContainer#CreateVirtualServer & WebContainer#deleteWebListener
- *
+ * Tests WebContainer#createVirtualServerTest
+ * 
  * @author Amy Roh
  */
-public class EmbeddedWebCreateVirtualServer {
-    
+public class EmbeddedCreateVirtualServerTest {
+
     static GlassFish glassfish;
     static WebContainer embedded;
 
@@ -70,25 +70,25 @@ public class EmbeddedWebCreateVirtualServer {
         glassfish = GlassFishRuntime.bootstrap().newGlassFish();
         glassfish.start();
         embedded = glassfish.getService(WebContainer.class);
-        System.out.println("================ Test Embedded Create Virtual Server");
+        System.out.println("================ EmbeddedCreateVirtualServer Test");
         System.out.println("Starting Web "+embedded);
         embedded.setLogLevel(Level.INFO);
         embedded.start();
     }
-
+    
     @Test
-    public void testEmbeddedWebAPI() throws Exception {
+    public void test() throws Exception {
 
         List<WebListener> listenerList = new ArrayList(embedded.getWebListeners());
         Assert.assertTrue(listenerList.size()==1);
         for (WebListener listener : embedded.getWebListeners())
             System.out.println("Web listener "+listener.getId()+" "+listener.getPort());
 
-        WebListener testListener = embedded.createWebListener("test-listener", WebListener.class);
+        WebListener testListener = embedded.createWebListener("test-listener", HttpListener.class);
         testListener.setPort(9090);
         WebListener[] webListeners = new HttpListener[1];
         webListeners[0] = testListener;
-
+        
         File f = new File(System.getProperty("buildDir"));
         String virtualServerId = "embedded-server";
         VirtualServer virtualServer = (VirtualServer)
@@ -131,7 +131,7 @@ public class EmbeddedWebCreateVirtualServer {
 
         Assert.assertTrue(appName != null);
 
-        URL servlet = new URL("http://localhost:8080/test-classes/hello");
+        URL servlet = new URL("http://localhost:9090/classes/hello");
         URLConnection yc = servlet.openConnection();
         BufferedReader in = new BufferedReader(new InputStreamReader(yc.getInputStream()));
         StringBuilder sb = new StringBuilder();
@@ -144,7 +144,7 @@ public class EmbeddedWebCreateVirtualServer {
         Assert.assertEquals("Hello World!", sb.toString());
 
         System.out.println("Removing web listener "+testListener.getId());
-        embedded.removeWebListener(testListener);
+        embedded.removeWebListener(testListener);                       
 
         listenerList = new ArrayList(embedded.getWebListeners());
         System.out.println("Network listener size after deletion " + listenerList.size());
@@ -157,7 +157,7 @@ public class EmbeddedWebCreateVirtualServer {
 
         embedded.stop();
 
-     }
+    } 
 
     @AfterClass
     public static void shutdownServer() throws GlassFishException {

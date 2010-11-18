@@ -163,7 +163,7 @@ public class WebContainerImpl implements WebContainer {
             if (portNumber!=webConfig.getPort()) {
                 Ports ports = habitat.getComponent(Ports.class);
                 Port port = ports.createPort(webConfig.getPort());
-                bind(port, "http");
+                bind(port, null);
             }
         }  catch (Exception ex) {
             ex.printStackTrace();
@@ -185,16 +185,23 @@ public class WebContainerImpl implements WebContainer {
         return sniffers;
     }
 
-    public void bind(Port port, String protocol) {
-
-        log.info("WebContainer binding port "+port.getPortNumber()+" protocol "+protocol);
+    public void bind(Port port, WebListener webListener) {
 
         portNumber = port.getPortNumber();
-        listenerName = getListenerName();
-        WebListener webListener = new HttpListener();
-        webListener.setId(listenerName);
-        webListener.setPort(portNumber);
+        String protocol = Port.HTTP_PROTOCOL;
+
+        if (webListener==null) {
+            listenerName = getListenerName();
+            webListener = new HttpListener();
+            webListener.setId(listenerName);
+            webListener.setPort(portNumber);
+        } else {
+            listenerName = webListener.getId();
+            protocol = webListener.getProtocol();
+        }
         listeners.add(webListener);
+
+        log.info("WebContainer binding port "+port.getPortNumber()+" protocol "+protocol);
 
         if (protocol.equals(Port.HTTP_PROTOCOL)) {
             securityEnabled = "false";
@@ -281,7 +288,6 @@ public class WebContainerImpl implements WebContainer {
         final String listenerName = name;
 
         try {
-
             NetworkListeners networkListeners = config.getNetworkListeners();
             final NetworkListener listenerToBeRemoved = config.getNetworkListener(listenerName);
             if (listenerToBeRemoved == null) {
@@ -303,6 +309,7 @@ public class WebContainerImpl implements WebContainer {
 
             }
         } catch (TransactionFailure e) {
+            log.severe("Remove listener "+name+" failed "+e.getMessage());
         }
     }
     
@@ -556,10 +563,10 @@ public class WebContainerImpl implements WebContainer {
             log.info("Creating context '" + contextRoot + "' with docBase '" +
                      docRoot.getPath() + "'");
         }
-        
+
         String appName = null;
         Context context = null;
-        try {               
+        try {
             Deployer deployer = habitat.getComponent(Deployer.class);
             appName = deployer.deploy(docRoot.toURI());
             if (!appName.startsWith("/")) {
@@ -722,7 +729,7 @@ public class WebContainerImpl implements WebContainer {
      * @throws ConfigException if a <tt>WebListener</tt> with the
      * same id has already been registered with this
      * <tt>WebContainer</tt>
-     * @throws GlassFish if the given <tt>webListener</tt> fails
+     * @throws GlassFishException if the given <tt>webListener</tt> fails
      * to be started
      */
     public void addWebListener(WebListener webListener) 
@@ -743,7 +750,7 @@ public class WebContainerImpl implements WebContainer {
         try {
             Ports ports = habitat.getComponent(Ports.class);
             Port port = ports.createPort(webListener.getPort());
-            bind(port, webListener.getProtocol());
+            bind(port, webListener);
         } catch (java.io.IOException ex) {
             throw new ConfigException(ex);
         }
@@ -826,18 +833,11 @@ public class WebContainerImpl implements WebContainer {
             names[i] = webListeners[i].getId();
         }
         virtualServer.setNetworkListenerNames(names);
+        virtualServer.setWebListeners(webListeners);
 
         if (log.isLoggable(Level.INFO)) {
             log.info("Created virtual server "+id+" docroot "+docRoot.getPath()+
                     " networklisteners "+virtualServer.getNetworkListeners());
-        }
-
-        try {
-            for (WebListener listener : webListeners) {
-                addWebListener(listener);
-            }
-        } catch (Exception ex) {
-            log.severe("Couldn't add web listener for virtual server "+id);
         }
 
         return virtualServer;
@@ -922,8 +922,12 @@ public class WebContainerImpl implements WebContainer {
                 }
             }, httpService);
 
-        } catch (TransactionFailure e) {
-            throw new GlassFishException(e);
+            for (WebListener listener : virtualServer.getWebListeners()) {
+                addWebListener(listener);
+            }
+
+        } catch (Exception ex) {
+            throw new GlassFishException(ex);
         }
 
         if (log.isLoggable(Level.INFO)) {
