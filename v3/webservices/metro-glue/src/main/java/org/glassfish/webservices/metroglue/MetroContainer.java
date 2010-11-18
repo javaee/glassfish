@@ -270,7 +270,6 @@ public class MetroContainer implements PostConstruct, Container, WebServiceDeplo
                 .httpPort(getHttpPort(false, serverName, config))
                 .httpsPort(getHttpPort(true, serverName, config))
                 .txLogLocation(txService.getTxLogDir())
-                .enableWsatRecovery(Boolean.parseBoolean(txService.getAutomaticRecovery()))
                 .done();
         
         final WSATRuntimeConfig.RecoveryEventListener metroListener = WSATRuntimeConfig.getInstance().new WSATRecoveryEventListener();
