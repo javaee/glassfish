@@ -54,6 +54,7 @@ import com.sun.enterprise.web.session.SessionCookieConfig;
 import com.sun.logging.LogDomains;
 import com.sun.web.security.RealmAdapter;
 import org.apache.catalina.*;
+import org.apache.catalina.Deployer;
 import org.apache.catalina.authenticator.AuthenticatorBase;
 import org.apache.catalina.authenticator.SingleSignOn;
 import org.apache.catalina.core.StandardContext;
@@ -61,6 +62,7 @@ import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.deploy.ErrorPage;
 import org.apache.catalina.valves.RemoteAddrValve;
 import org.apache.catalina.valves.RemoteHostValve;
+import org.glassfish.embeddable.*;
 import org.glassfish.embeddable.web.Context;
 import org.glassfish.embeddable.web.ConfigException;
 import org.glassfish.embeddable.web.WebListener;
@@ -70,7 +72,6 @@ import org.glassfish.internal.api.ServerContext;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.data.ApplicationRegistry;
-import org.glassfish.embeddable.GlassFishException;
 import org.glassfish.web.loader.WebappClassLoader;
 import org.glassfish.web.valve.GlassFishValve;
 import org.jvnet.hk2.component.Habitat;
@@ -79,10 +80,7 @@ import org.jvnet.hk2.config.types.Property;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -1732,7 +1730,9 @@ public class VirtualServer extends StandardHost
     // ----------------------------------------------------- embedded methods
     
     
-    private VirtualServerConfig config;    
+    private VirtualServerConfig config;
+    
+    private List<WebListener> listeners = new ArrayList<WebListener>();
 
     /**
      * Sets the docroot of this <tt>VirtualServer</tt>.
@@ -1751,12 +1751,25 @@ public class VirtualServer extends StandardHost
     }
 
     /**
+     * Sets the collection of <tt>WebListener</tt> instances from which
+     * this <tt>VirtualServer</tt> receives requests.
+     *
+     * @param webListeners the collection of <tt>WebListener</tt> instances from which
+     * this <tt>VirtualServer</tt> receives requests.
+     */
+    public void setWebListeners(WebListener...  webListeners) {
+        listeners = Arrays.asList(webListeners);
+    }
+
+    /**
      * Gets the collection of <tt>WebListener</tt> instances from which
+     * this <tt>VirtualServer</tt> receives requests.
+     *
+     * @return the collection of <tt>WebListener</tt> instances from which
      * this <tt>VirtualServer</tt> receives requests.
      */
     public Collection<WebListener> getWebListeners() {
-        // TODO
-        return null;
+        return listeners;
     }
 
     /**
@@ -1773,10 +1786,18 @@ public class VirtualServer extends StandardHost
             throw new ConfigException("Context with contextRoot "+
                     contextRoot+" is already registered");
         }
-        context.setPath(contextRoot);
-        addChild((Container)context);
-        if (_logger.isLoggable(Level.FINE)) {
-            _logger.log(Level.INFO, "Added context "+context.getPath());
+        File file = new File(((StandardContext)context).getDocBase());
+        String appName = null;
+        try {
+            org.glassfish.embeddable.Deployer deployer =
+                    Globals.getDefaultHabitat().getComponent(org.glassfish.embeddable.Deployer.class);
+            //appName = deployer.deploy(file, "--contextroot", contextRoot);
+            appName = deployer.deploy(file);
+            if (!appName.startsWith("/")) {
+                appName = "/"+appName;
+            }
+        } catch (Exception ex) {
+            _logger.log(Level.SEVERE, ex.getMessage());
         }
     }
 

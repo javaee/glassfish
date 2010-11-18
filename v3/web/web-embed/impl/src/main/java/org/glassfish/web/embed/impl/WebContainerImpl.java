@@ -58,6 +58,7 @@ import com.sun.grizzly.config.dom.ThreadPool;
 import com.sun.grizzly.config.dom.Transport;
 import com.sun.grizzly.config.dom.Transports;
 
+import org.apache.catalina.core.StandardContext;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.embedded.Port;
 import org.glassfish.api.embedded.Ports;
@@ -515,25 +516,13 @@ public class WebContainerImpl implements WebContainer {
             log.info("Creating context with docBase '" + docRoot.getPath() + "'");
         }
 
-        String appName = null;
-        Context context = null;
-        try {
-            Deployer deployer = habitat.getComponent(Deployer.class);
-            appName = deployer.deploy(docRoot.toURI());
-            if (!appName.startsWith("/")) {
-                appName = "/"+appName;
-            }
-        } catch (Exception ex) {
-            log.severe(ex.getMessage());
-        }
-        for (Container vs : engine.findChildren()) {
-            context = (Context) ((VirtualServer)vs).findContext(appName);
-        }
-        if (context!=null) {
-            context.setDirectoryListing(listings);
-        } else {
-            log.severe("Cannot find deployed context");
-        }
+        ContextImpl context = new ContextImpl();
+        context.setDocBase(docRoot.getAbsolutePath());
+        context.setDirectoryListing(listings);
+        context.setParentClassLoader(Thread.currentThread().getContextClassLoader());
+
+        Realm realm = habitat.getByContract(Realm.class);
+        context.setRealm(realm);
 
         return context;
 
@@ -564,24 +553,27 @@ public class WebContainerImpl implements WebContainer {
                      docRoot.getPath() + "'");
         }
 
-        String appName = null;
-        Context context = null;
+        ContextImpl context = new ContextImpl();
+        context.setDocBase(docRoot.getAbsolutePath());
+        context.setPath(contextRoot);
+        context.setDirectoryListing(listings);
+        if (classLoader != null) {
+            context.setParentClassLoader(classLoader);
+        } else {
+            context.setParentClassLoader(
+                    Thread.currentThread().getContextClassLoader());
+        }
+
+        Realm realm = habitat.getByContract(Realm.class);
+        context.setRealm(realm);
+
         try {
-            Deployer deployer = habitat.getComponent(Deployer.class);
-            appName = deployer.deploy(docRoot.toURI());
-            if (!appName.startsWith("/")) {
-                appName = "/"+appName;
+            if (defaultVirtualServer!=null) {
+                defaultVirtualServer.addContext(context, contextRoot);
             }
         } catch (Exception ex) {
-            log.severe(ex.getMessage());
-        }
-        for (Container vs : engine.findChildren()) {
-            context = (Context) ((VirtualServer)vs).findContext(appName);
-        }
-        if (context!=null) {
-            context.setDirectoryListing(listings);
-        } else {
-            log.severe("Cannot find deployed context");
+            log.severe("Couldn't add context "+contextRoot+" to default virtual server");
+            ex.printStackTrace();
         }
 
         return context;
@@ -615,25 +607,18 @@ public class WebContainerImpl implements WebContainer {
             log.info("Creating context with docBase '" + docRoot.getPath() + "'");
         }
 
-        String appName = null;
-        Context context = null;
-        try {               
-            Deployer deployer = habitat.getComponent(Deployer.class);
-            appName = deployer.deploy(docRoot.toURI());
-            if (!appName.startsWith("/")) {
-                appName = "/"+appName;
-            }
-        } catch (Exception ex) {
-            log.severe(ex.getMessage());
-        }
-        for (Container vs : engine.findChildren()) {
-            context = (Context) ((VirtualServer)vs).findContext(appName);
-        }
-        if (context!=null) {
-            context.setDirectoryListing(listings);
+        ContextImpl context = new ContextImpl();
+        context.setDocBase(docRoot.getAbsolutePath());
+        context.setDirectoryListing(listings);
+        if (classLoader != null) {
+            context.setParentClassLoader(classLoader);
         } else {
-            log.severe("Cannot find deployed context");
+            context.setParentClassLoader(
+                    Thread.currentThread().getContextClassLoader());
         }
+
+        Realm realm = habitat.getByContract(Realm.class);
+        context.setRealm(realm);
 
         return context;
         
@@ -662,7 +647,23 @@ public class WebContainerImpl implements WebContainer {
                 throw new ConfigException("Context with contextRoot "+
                         contextRoot+" is already registered");
             }
-            vs.addContext(context, contextRoot);
+        }
+
+        File file = new File(((StandardContext)context).getDocBase());
+        String appName;
+        try {
+            Deployer deployer = habitat.getComponent(Deployer.class);
+            //appName = deployer.deploy(file, "--name", contextRoot);
+            appName = deployer.deploy(file);
+            if (!appName.startsWith("/")) {
+                appName = "/"+appName;
+            }
+        } catch (Exception ex) {
+            log.severe(ex.getMessage());
+            throw new GlassFishException(ex);
+        }
+        if (log.isLoggable(Level.INFO)) {
+            log.info("Added context "+appName+" using name "+contextRoot);
         }
     }
 

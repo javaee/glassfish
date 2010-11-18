@@ -50,10 +50,12 @@ import java.util.logging.*;
 import org.apache.catalina.Container;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Pipeline;
+import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.valves.AccessLogValve;
 import org.apache.catalina.valves.RemoteAddrValve;
 import org.apache.catalina.valves.RemoteHostValve;
+import org.glassfish.embeddable.Deployer;
 import org.glassfish.embeddable.web.config.VirtualServerConfig;
 import org.glassfish.embeddable.GlassFishException;
 import org.glassfish.embeddable.web.ConfigException;
@@ -62,6 +64,8 @@ import org.glassfish.embeddable.web.VirtualServer;
 import org.glassfish.embeddable.web.WebListener;
 import org.glassfish.web.valve.GlassFishValve;
 import org.apache.catalina.authenticator.SingleSignOn;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.Habitat;
 
 /**
  * Representation of a virtual server.
@@ -126,6 +130,9 @@ public class VirtualServerImpl extends StandardHost implements VirtualServer {
      * default-web.xml location
      */
     private String defaultWebXmlLocation;
+
+    @Inject
+    private Habitat habitat;
 
     private List<WebListener> listeners = new ArrayList<WebListener>();
    
@@ -210,10 +217,20 @@ public class VirtualServerImpl extends StandardHost implements VirtualServer {
             throw new ConfigException("Context with contextRoot "+
                     contextRoot+" is already registered");
         }
-        context.setPath(contextRoot);
-        addChild((Container)context);
+        File file = new File(((StandardContext)context).getDocBase());
+        String appName = null;
+        try {
+            Deployer deployer = habitat.getComponent(Deployer.class);
+            //appName = deployer.deploy(file, "--name", contextRoot);
+            appName = deployer.deploy(file);
+            if (!appName.startsWith("/")) {
+                appName = "/"+appName;
+            }
+        } catch (Exception ex) {
+            log.severe(ex.getMessage());
+        }
         if (log.isLoggable(Level.INFO)) {
-            log.info("Added context "+context.getPath());
+            log.info("Added context "+appName+" using name "+contextRoot);
         }
     }
 
