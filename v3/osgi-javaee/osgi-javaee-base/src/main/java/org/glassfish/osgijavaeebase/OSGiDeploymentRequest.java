@@ -43,10 +43,12 @@ package org.glassfish.osgijavaeebase;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.util.io.FileUtils;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.OpsParams;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
+import org.glassfish.internal.api.Globals;
 import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.server.ServerEnvironmentImpl;
@@ -290,6 +292,7 @@ public abstract class OSGiDeploymentRequest
         parameters.enabled = Boolean.TRUE;
         parameters.origin = DeployCommandParameters.Origin.deploy;
         parameters.force = false;
+        parameters.target = getInstanceName();
         return parameters;
     }
 
@@ -303,5 +306,11 @@ public abstract class OSGiDeploymentRequest
 
     public OSGiApplicationInfo getResult() {
         return result;
+    }
+
+    private String getInstanceName() {
+        ServerEnvironment se = Globals.get(ServerEnvironment.class);
+        String target = se.getInstanceName();
+        return target;
     }
 }
