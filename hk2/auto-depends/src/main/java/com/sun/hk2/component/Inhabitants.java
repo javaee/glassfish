@@ -187,7 +187,7 @@ public class Inhabitants {
           RunLevel injectedValRL = AbstractInhabitantImpl.getAnnotation(injectedVal.getClass(), RunLevel.class, false);
           if (null == targetRL && null != injectedValRL) {
               throw new ComponentException("invalid dependency from a non-RunLevel instance " +
-                  targetRL + " to a RunLevel instance " + injectedVal);
+                  target + " to a RunLevel instance " + injectedVal);
         }
     }
   }

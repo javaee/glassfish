@@ -108,7 +108,7 @@ public class RunLevelInhabitant<T, V> extends EventPublishingInhabitant<T> {
       Integer current = state.getCurrentRunLevel();
       current = (null == current) ? DefaultRunLevelService.KERNEL_RUNLEVEL : current;
       if (null == planned || runLevel > planned || runLevel > current + 1) {
-        throw new ComponentException("minimum expected RunLevel is: " + runLevel +
+        throw new ComponentException("unable to activate " + this + "; minimum expected RunLevel is: " + runLevel +
             "; planned is: " + planned + "; current is: " + current);
       }
     }

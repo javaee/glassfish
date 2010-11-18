@@ -1,0 +1,9 @@
+<project name="buildit" default="backup">
+  <property environment="env"/>
+  <target name="backup">
+    <defaultexcludes add="**/.svn/**"/>
+    <defaultexcludes add="**/target/**"/>
+    <jar destfile="backup.zip" basedir="."
+      excludes="**/*.class,**/*.jar,**/*.zip"/>
+  </target>
+</project>
