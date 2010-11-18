@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.v3.admin;
 
 import com.sun.enterprise.admin.util.ClusterOperationUtil;
@@ -79,31 +78,22 @@ import static com.sun.enterprise.util.SystemPropertyConstants.SLASH;
 @CommandLock(CommandLock.LockType.NONE)
 @ExecuteOn({RuntimeType.DAS, RuntimeType.INSTANCE})
 public class GetCommand extends V2DottedNameSupport implements AdminCommand {
-
     @Inject
     private MonitoringReporter mr;
-    
     @Inject
-    Domain domain;
-
+    private Domain domain;
     @Inject
-    ServerEnvironment serverEnv;
-
+    private ServerEnvironment serverEnv;
     @Inject
-    Target targetService;
-
+    private Target targetService;
     @Inject
-    Habitat habitat;
-
+    private Habitat habitat;
     @Param(optional = true, defaultValue = "false", shortName = "m")
-    Boolean monitor;
-
+    private Boolean monitor;
     @Param(primary = true)
-    String pattern;
-
+    private String pattern;
     @Inject(optional = true)
     private MonitoringRuntimeDataRegistry mrdr;
-
     private final String DOTTED_NAME = ".dotted-name";
     final private static LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(GetCommand.class);
@@ -116,7 +106,8 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
         try {
             PropsFileActionReporter reporter = (PropsFileActionReporter) report;
             reporter.useMainChildrenAttribute(true);
-        } catch (ClassCastException e) {
+        }
+        catch (ClassCastException e) {
             // ignore this is not a manifest output.
         }
 
@@ -187,7 +178,8 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
                     part.setMessage(prefix + node.getValue() + "=" + encode(node.getKey().attribute("value")));
                     foundMatch = true;
                 }
-            } else {
+            }
+            else {
                 Map<String, String> attributes = getNodeAttributes(node.getKey(), pattern);
                 TreeMap<String, String> attributesSorted = new TreeMap(attributes);
                 for (Map.Entry<String, String> name : attributesSorted.entrySet()) {
@@ -212,13 +204,22 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
     private String encode(String value) {
         try {
             return URLEncoder.encode(value, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
+        }
+        catch (UnsupportedEncodingException e) {
             return value;
         }
     }
 
     private void getMonitorAttributes(AdminCommandContext ctxt) {
         mr.prepareGet(ctxt, pattern);
+
+        String s = "Get Command: " + mr.toString();
+
+        if (Boolean.parseBoolean(System.getenv("AS_DEBUG")))
+            ctxt.logger.info(s);
+        else
+            ctxt.logger.fine(s);
+
         mr.execute();
     }
 }

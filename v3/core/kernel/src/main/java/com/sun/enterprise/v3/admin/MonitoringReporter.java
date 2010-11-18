@@ -201,7 +201,7 @@ public class MonitoringReporter extends V2DottedNameSupport {
 
         if (outputType == OutputType.GET)
             doGet(localPattern, ltn);
-        else if(outputType == OutputType.LIST)
+        else if (outputType == OutputType.LIST)
             doList(localPattern, ltn);
         // else error!!!
     }
@@ -289,6 +289,7 @@ public class MonitoringReporter extends V2DottedNameSupport {
      */
     private boolean initPatternAndTargets() {
         Server das = domain.getServerNamed("server");
+        String targetName = null;
 
         // no DAS in here!
         List<Server> allServers = targetService.getAllInstances();
@@ -327,32 +328,54 @@ public class MonitoringReporter extends V2DottedNameSupport {
         }
 
         // 7.  See 14685 for an example -->  "*jsp*"
-        if(userarg.startsWith("*")) {
+        if (userarg.startsWith("*")) {
             targets = allServers;
             pattern = userarg.substring(1);
             return true;
         }
 
-        int index = userarg.indexOf(".");
-        String targetName;
-        String otherstuff;
+        // Another example:
+        // servername*something*
+        // IT 14778
+        // note we will NOT support serv*something getting resolved to server*something
+        // that's too crazy.  They have to enter a reasonable name
 
-        if (index >= 0) {
+        // we are looking for, e.g. instance1*foo.goo*
+        // target is instance1  pattern is *foo.goo*
+        // instance1.something is handled below
+        String re = "[^\\.]+\\*.*";
+
+        if (userarg.matches(re)) {
+            int index = userarg.indexOf("*");
+
+            if (index < 0) { // can't happen!!
+                setError(Strings.get("admin.get.monitoring.invalidtarget", userarg));
+                return false;
+            }
             targetName = userarg.substring(0, index);
+            pattern = userarg.substring(index);
+        }
 
-            if (userarg.length() == index + 1) {
-                // 8. <servername>.
+        if (targetName == null) {
+            int index = userarg.indexOf(".");
+
+            if (index >= 0) {
+                targetName = userarg.substring(0, index);
+
+                if (userarg.length() == index + 1) {
+                    // 8. <servername>.
+                    pattern = "*";
+                }
+                else
+                    // 9. <servername>.<pattern>
+                    pattern = userarg.substring(index + 1);
+            }
+            else {
+                // no dots in userarg
+                // 10. <servername>
+                targetName = userarg;
                 pattern = "*";
             }
-            else
-                // 9. <servername>.<pattern>
-                pattern = userarg.substring(index + 1);
-        }
-        else {
-            // no dots in userarg
-            // 10. <servername>
-            targetName = userarg;
-            pattern = "*";
         }
 
         // note that "server" is hard-coded everywhere in GF code.  We're stuck with it!!
