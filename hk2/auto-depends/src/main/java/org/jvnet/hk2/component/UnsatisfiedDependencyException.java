@@ -53,20 +53,29 @@ public class UnsatisfiedDependencyException extends ComponentException {
 
     final AnnotatedElement member;
 
-
     public UnsatisfiedDependencyException(AnnotatedElement target) {
-        this(target,null);
+        this(target, null);
     }
     public UnsatisfiedDependencyException(AnnotatedElement target, Throwable cause) {
-        super("injection failed on " + target + (null == cause ? "" : " (see cause)"), cause);
+        super(injection_failed_msg(target, cause), cause);
         this.member = target;
     }
 
     public UnsatisfiedDependencyException(Field target, Throwable cause) {
-      super("injection failed on " + target.getDeclaringClass().getCanonicalName() + "." + 
-          target.getName() + " with " + target.getGenericType() + 
-          (null == cause ? "" : " (see cause)"), cause);
+      super(injection_failed_msg(target, cause), cause);
       this.member = target;
+    }
+    
+    static String injection_failed_msg(AnnotatedElement t, Throwable cause) {
+      String msg;
+      if (Field.class.isInstance(t)) {
+        Field target = Field.class.cast(t);
+        msg = "injection failed on " + target.getDeclaringClass().getCanonicalName() + "." + 
+            target.getName() + " with " + target.getGenericType();
+      } else {
+        msg = "injection failed on " + t;
+      }
+      return msg;
     }
     
     public boolean isField() {

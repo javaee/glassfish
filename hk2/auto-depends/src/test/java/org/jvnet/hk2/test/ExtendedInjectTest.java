@@ -14,7 +14,6 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
-import org.jvnet.hk2.component.UnsatisfiedDependencyException;
 import org.jvnet.hk2.junit.Hk2Runner;
 import org.jvnet.hk2.test.contracts.DummyContract;
 import org.jvnet.hk2.test.contracts.ErrorThrowingContract;
@@ -53,9 +52,6 @@ public class ExtendedInjectTest {
   @Inject
   Holder<RandomService> singletonServiceHolder;
 
-  @Inject(optional=true)
-  Simple simpleServiceOptional;
-
   @Inject(optional = true)
   DummyContract neverService;
 
@@ -74,10 +70,6 @@ public class ExtendedInjectTest {
   @Inject(optional = true)
   SimpleGetter simpleOptionalServiceWithADependency;
 
-  // TODO: Holder only works on named services or services by type (?)
-//  @Inject(optional=true)
-//  Holder<SimpleGetter> simpleGetterServiceHolderOptional;
-  
   // These are NOT annotated at field level, but is at method level
   Simple setterOneSimple;
   Simple setterOtherSimple;
@@ -209,13 +201,13 @@ public class ExtendedInjectTest {
     try {
       Simple simple = h.getComponent(Simple.class, "ErrorThrowingDependentService");
       fail("Expected unsatisfied dependencies exception but got: " + simple);
-    } catch (UnsatisfiedDependencyException e) {
+    } catch (Exception e) {
       // expected
-      assertEquals("exception type", UnsatisfiedDependencyException.class, e.getClass());
-      assertEquals("message", "injection failed on org.jvnet.hk2.test.impl.ErrorThrowingDependentService.errorThrowing with interface org.jvnet.hk2.test.contracts.ErrorThrowingContract (see cause)", e.getLocalizedMessage());
+      assertEquals("exception type", ComponentException.class, e.getClass());
+      assertEquals("message", "injection failed on org.jvnet.hk2.test.impl.ErrorThrowingDependentService.errorThrowing with interface org.jvnet.hk2.test.contracts.ErrorThrowingContract", e.getLocalizedMessage());
       Throwable e2 = e.getCause();
       assertEquals("exception 2 type", ComponentException.class, e2.getClass());
-      assertEquals("message 2", "Injection failed on void org.jvnet.hk2.test.impl.ErrorThrowingService.fakeRandomContractThrowingUp(org.jvnet.hk2.test.runlevel.RandomContract)", e2.getLocalizedMessage());
+      assertEquals("message 2", "injection failed on void org.jvnet.hk2.test.impl.ErrorThrowingService.fakeRandomContractThrowingUp(org.jvnet.hk2.test.runlevel.RandomContract)", e2.getLocalizedMessage());
     }
     
     assertFalse(iets.isInstantiated());
@@ -229,11 +221,9 @@ public class ExtendedInjectTest {
 //      assertNotNull("log record: " + lr, lr.getThrown());
 //    }
   }
-
   
   
   static class LogHandler extends Handler {
-
     final ArrayList<LogRecord> publishedRecords = new ArrayList<LogRecord>();
     
     @Override

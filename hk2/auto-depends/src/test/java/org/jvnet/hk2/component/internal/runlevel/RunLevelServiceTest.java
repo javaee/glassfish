@@ -17,6 +17,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.RunLevel;
+import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.InhabitantActivator;
@@ -24,6 +25,7 @@ import org.jvnet.hk2.component.InhabitantSorter;
 import org.jvnet.hk2.component.RunLevelListener;
 import org.jvnet.hk2.component.RunLevelService;
 import org.jvnet.hk2.component.RunLevelState;
+import org.jvnet.hk2.component.UnsatisfiedDependencyException;
 import org.jvnet.hk2.component.internal.runlevel.DefaultRunLevelService;
 import org.jvnet.hk2.component.internal.runlevel.Recorder;
 import org.jvnet.hk2.junit.Hk2Runner;
@@ -33,12 +35,15 @@ import org.jvnet.hk2.test.runlevel.ExceptionRunLevelManagedService2b;
 import org.jvnet.hk2.test.runlevel.InterruptRunLevelManagedService1a;
 import org.jvnet.hk2.test.runlevel.InterruptRunLevelManagedService2b;
 import org.jvnet.hk2.test.runlevel.NonRunLevelWithRunLevelDepService;
+import org.jvnet.hk2.test.runlevel.OptionalRunLevelTstEnv;
 import org.jvnet.hk2.test.runlevel.RunLevelContract;
 import org.jvnet.hk2.test.runlevel.RunLevelServiceBase;
 import org.jvnet.hk2.test.runlevel.RunLevelServiceNegOne;
 import org.jvnet.hk2.test.runlevel.ServiceA;
 import org.jvnet.hk2.test.runlevel.ServiceB;
 import org.jvnet.hk2.test.runlevel.ServiceC;
+import org.jvnet.hk2.test.runlevel.ShouldBeActivateable1;
+import org.jvnet.hk2.test.runlevel.ShouldNotBeActivateable1;
 import org.jvnet.hk2.test.runlevel.TestRunLevelListener;
 
 import com.sun.hk2.component.AbstractInhabitantImpl;
@@ -1090,7 +1095,105 @@ public class RunLevelServiceTest {
     assertEquals("activation operations", 3, ia.activateCount);
     assertEquals("deactivation operations", 1, ia.releaseCount);
   }
-  
+
+  /**
+   * This goes beyond the RunLevelService, but there is certainly
+   * a component of RunLevelService to consider.
+   * <p/>
+   * The basic assertions are these:<br/>
+   * (a) it's ok to use optional when there is no implementation
+   * available for a given contract available in the system.<br/>
+   * (b) you should get cascading UnsatisfiedDependencyExceptions
+   * in all other cases should there be a failure during service
+   * initialization (e.g., PostConstruct throwing RuntimeException).
+   * <p/>
+   * In addition to the habitat being in the right context, the 
+   * RunLevelService listeners furthermore need to see the correct
+   * number of errors during the injection process.
+   * <p/>
+   * In this test we use the following:<br/>
+   * Contracts:<br/>
+   *  ContractWithNoImplementers - no implementations present on platform<br/>
+   *  ContractWithExceptionThrowingImplementers - implementations that throw exceptions during init<br/>
+   *  ShouldBeActivateable1 - marker contract for checking the habitat after the fact to ensure that services can be activated<br/>
+   *  ShouldNotBeActivable1 - same, but opposite, marker contract<br/>
+   * <p/>
+   * Implementations:<br/>
+   *  ServiceImplOf_ContractWithException - singleton responsible for throwing the exception<br/>
+   *  ServiceClientOf_ContractWithNoImplementers - client with an optional depency to a service that doesn't exist - should be fine<br/>
+   *  ServiceClientOf_ContractWithExceptionThrowingImplementers - client with an optional dependency to a service that throws - should not be wired even though its optional!<br/>
+   *  ServiceClientFirstRemovedOf_ContractWithNoImplementers - a transitive set of dependencies, each involving optional, which should also be fine<br/>
+   *  ServiceClientFirstRemovedOf_ContractWithExceptionThrowingImplementers - should not be wirable for similar reasons, present on system but not available<br/>
+   *  OptionalRunLevelTstEnv - used for scoping to the correct RunLevelService impl<b/>
+   * <p/>
+   * 
+   * Test:
+   * The Test will be to move to runLevel=1 for env=OptionalInjectionEnvTest having a testing RunLevelListener installed.<br/>
+   * (0) if the run level did not proceedTo 1 completely then fail.<br/>
+   * (1) if any of ClientServiceOf_ContractWithNoImplementers, FirstRemovedClientServiceOf_ContractWithNoImplementers do not become active then fail.<br/>
+   * (2) if any of ServiceImplOf_ContractWithExceptionThrowingImplementers, ClientServiceOf_ContractWithExceptionThrowingImplementers, FirstRemovedClientServiceOf_ContractWithExceptionThrowingImplementers becomes active then fail.<br/>
+   * (3) If any of the two bad RunLevel services become active then fail.<br/>
+   * (4) if the onError is not called two times then fail.<br/>
+   * (5) if the exception in the onError is not rooted with an ComponentException cause then fail.<br/>
+   * (6) If any of the two ok RunLevel services don't become active then fail.<br/>
+   *
+   * <p/>
+   * TODO: We really need to redefine "optional" as "required if present", and perhaps add an @Inject attribute for "allowError" or something.
+   */
+  @Test
+  public void testOptionalDependencies() throws Exception {
+    // setup the test
+    installTestRunLevelService(false);
+
+    this.defRLlistener = (TestRunLevelListener) listener;
+    defRLlistener.calls.clear();
+
+    // get things rolling
+    rls = new TestDefaultRunLevelService(h, false, OptionalRunLevelTstEnv.class, recorders); 
+    rls.proceedTo(1);
+    
+    // test for failure
+    
+    // (0) if the run level did not proceedTo 1 completely then fail<br/>
+    assertEquals(1, rls.getState().getCurrentRunLevel());
+    assertEquals(null, rls.getState().getPlannedRunLevel());
+    
+    // (1) if any of ClientServiceOf_ContractWithNoImplementers, FirstRemovedClientServiceOf_ContractWithNoImplementers do not become active then fail.<br/>
+    // (6) If any of the two ok RunLevel services don't become active then fail.<br/>
+    Collection<Inhabitant<?>> coll = h.getAllInhabitantsByContract(ShouldBeActivateable1.class.getName());
+    assertEquals("should be active count", 4, coll.size());
+    for (Inhabitant<?> i : coll) {
+      assertTrue("expected active: " + i, i.isInstantiated());
+      ShouldBeActivateable1 service = (ShouldBeActivateable1) i.get();
+      service.validateSelf();
+    }
+    
+    // (2) if any of ServiceImplOf_ContractWithExceptionThrowingImplementers, ClientServiceOf_ContractWithExceptionThrowingImplementers, FirstRemovedClientServiceOf_ContractWithExceptionThrowingImplementers becomes active then fail.<br/>
+    // (3) If any of the two bad RunLevel services become active then fail.<br/>
+    coll = h.getAllInhabitantsByContract(ShouldNotBeActivateable1.class.getName());
+    assertEquals("should not be active count", 5, coll.size());
+    for (Inhabitant<?> i : coll) {
+      assertFalse("expected not active: " + i, i.isInstantiated());
+    }
+
+    // (4) if the onError is not called two times then fail.<br/>
+    // (5) if the exception in the onError is not rooted with an ComponentException cause then fail.<br/>
+    assertListenerState(false, true, false);
+    int errCount = 0;
+    for (TestRunLevelListener.Call call : defRLlistener.calls) {
+      if (call.type.equals("error")) {
+        errCount++;
+        assertEquals(ComponentException.class, call.error.getClass());
+        Throwable t = call.error.getCause();
+        assertNotNull(t);
+        while (null != t) {
+          assertEquals(ComponentException.class, t.getClass());
+          t = t.getCause();
+        }
+      }
+    }
+    assertEquals("error count", 2, errCount);
+  }
   
   @SuppressWarnings("unchecked")
   private void installTestRunLevelService(boolean async) {

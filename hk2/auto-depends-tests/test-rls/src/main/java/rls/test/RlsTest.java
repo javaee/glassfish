@@ -27,8 +27,8 @@ import com.sun.hk2.component.Holder;
 public class RlsTest implements ModuleStartup {
 
   @Inject static Habitat h;
-  @Inject(optional=true) static ContractY y;
-  @Inject(optional=true) static ServiceOtherToY other;
+//  @Inject(optional=true) static ContractY y;
+//  @Inject(optional=true) static ServiceOtherToY other;
   @Inject static Holder<ServiceZ> zHolder;
   
   @Override
@@ -50,8 +50,8 @@ public class RlsTest implements ModuleStartup {
     assertTrue("Sorter should be called", RandomInhabitantSorter.called);
     assertTrue("Activator should be called", MultiThreadedInhabitantActivator.called);
     
-    assertNull("can't support dependencies to a non RLS", y);
-    assertNull("can't support dependencies to a non RLS", other);
+//    assertNull("can't support dependencies to a non RLS", y);
+//    assertNull("can't support dependencies to a non RLS", other);
 
     try {
       Thread.currentThread().sleep(250);

@@ -39,12 +39,14 @@ package org.jvnet.hk2.component;
 
 import com.sun.hk2.component.InjectionResolver;
 
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.lang.annotation.Annotation;
 import java.util.Collection;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -117,7 +119,6 @@ public class InjectionManager {
                 Inhabitant<?> onBehalfOf,
                 Class type,
                 InjectionResolver... targets) {
-
         try {
             assert component!=null;
 
@@ -147,21 +148,17 @@ public class InjectionManager {
                                     }
                                 } catch (Exception e) {
                                 }
-
                             } else {
                                 if (!target.isOptional(field, inject)) {
-                                    Logger.getAnonymousLogger().info("Cannot inject " + field + " into component " + component);
                                     throw new UnsatisfiedDependencyException(field);
                                 }
                             }
                         } catch (ComponentException e) {
-                            if (!target.isOptional(field, inject)) {
-                                throw new UnsatisfiedDependencyException(field,e);
-                            }
+                            error_injectionException(target, inject, field, e);
                         } catch (IllegalAccessException e) {
-                            throw new ComponentException("Injection failed on " + field.toGenericString(), e);
+                            error_injectionException(target, inject, field, e);
                         } catch (RuntimeException e) {
-                            throw new ComponentException("Injection failed on " + field.toGenericString(), e);
+                            error_injectionException(target, inject, field, e);
                         }
                     }
                 }
@@ -233,12 +230,14 @@ public class InjectionManager {
                                   }
                                 }
                               }
+                            } catch (ComponentException e) {
+                                error_injectionException(target, inject, setter, e);
                             } catch (IllegalAccessException e) {
-                                error_injectionException(setter, e);
+                                error_injectionException(target, inject, setter, e);
                             } catch (InvocationTargetException e) {
-                                error_injectionException(setter, e);
+                                error_injectionException(target, inject, setter, e);
                             } catch (RuntimeException e) {
-                                error_injectionException(setter, e);
+                                error_injectionException(target, inject, setter, e);
                             }
                         }
                     }
@@ -250,15 +249,30 @@ public class InjectionManager {
             // report more information to assist diagnosis.
             // can't trust component.toString() as the object could be in an inconsistent state.
             Class<?> cls = type;
-            LinkageError x = new LinkageError("Failed to inject " + cls +" from "+cls.getClassLoader());
+            LinkageError x = new LinkageError("injection failed on " + cls + " from " + cls.getClassLoader());
             x.initCause(e);
             throw x;
         }
 
     }
 
-    protected void error_injectionException(Method setter, Exception e) {
-      throw new ComponentException("Injection failed on " + setter.toGenericString(), e);
+    protected void error_injectionException(InjectionResolver target, Annotation inject, AnnotatedElement injectionPoint, Exception e) {
+      Logger.getAnonymousLogger().log(Level.FINE, "injection failure", e);
+      
+      if (e.getClass().isInstance(UnsatisfiedDependencyException.class)) {
+        if (injectionPoint == ((UnsatisfiedDependencyException)e).getUnsatisfiedElement()) {
+          // no need to wrap again
+          throw (UnsatisfiedDependencyException)e;
+        }
+        
+        if (target.isOptional(injectionPoint, inject)) {
+          return;
+        } else {
+          throw new UnsatisfiedDependencyException(injectionPoint, e);
+        }
+      }
+      
+      throw new ComponentException(UnsatisfiedDependencyException.injection_failed_msg(injectionPoint, e), e);
     }
 
     protected boolean allowInjection(Method method, Class<?>[] paramTypes) {
