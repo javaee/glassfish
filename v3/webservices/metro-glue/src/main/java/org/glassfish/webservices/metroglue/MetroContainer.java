@@ -39,6 +39,7 @@
  */
 package org.glassfish.webservices.metroglue;
 
+import com.sun.enterprise.config.serverbeans.TransactionService;
 import java.io.File;
 import java.util.Properties;
 import java.util.ResourceBundle;
@@ -262,11 +263,14 @@ public class MetroContainer implements PostConstruct, Container, WebServiceDeplo
         final String serverName = serverContext.getInstanceName();            
         final Config config  = serverContext.getConfigBean().getConfig();
         
+        final TransactionService txService = config.getTransactionService();
         
         WSATRuntimeConfig.initializer()
                 .hostName(getHostName())
                 .httpPort(getHttpPort(false, serverName, config))
                 .httpsPort(getHttpPort(true, serverName, config))
+                .txLogLocation(txService.getTxLogDir())
+                .enableWsatRecovery(Boolean.parseBoolean(txService.getAutomaticRecovery()))
                 .done();
         
         final WSATRuntimeConfig.RecoveryEventListener metroListener = WSATRuntimeConfig.getInstance().new WSATRecoveryEventListener();
