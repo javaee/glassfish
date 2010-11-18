@@ -72,6 +72,7 @@ import java.net.URLDecoder;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -379,6 +380,21 @@ public class UtilHandlers {
         handlerCtx.setOutputValue("result", list);
     }
 
+
+    /**
+     * <p> sort a <code>List</code></p>
+     * <p> Input list: "list" -- Type: <code>java.util.List</code>
+     *
+     * @param handlerCtx The HandlerContext
+     */
+    @Handler(id="gf.listSort",
+    	input={
+            @HandlerInput(name="list", type=List.class, required=true)}
+    )
+    public static void listSort(HandlerContext handlerCtx) {
+        List list = (List)handlerCtx.getInputValue("list");
+        Collections.sort(list);
+    }
 
     /**
      * <p> Combine 2 lists <code>List</code> by adding the object in the 2nd list to the first list</p>

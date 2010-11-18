@@ -1107,12 +1107,19 @@ admingui.help = {
   */
 
 function checkPSW(ps1Id, ps2Id, notMatchMsg, emptyMsg) {
-    var ps1 = getTextElement(ps1Id).value;
-    var ps2 = getTextElement(ps2Id).value;
+    var ps1Comp = getTextElement(ps1Id);
+    var ps2Comp = getTextElement(ps2Id);
+    var ps1 = ps1Comp.value;
+    var ps2 = ps2Comp.value;
     if (ps1 != ps2){
-        return showAlert(notMatchMsg);
+        ps1Comp.select();
+        ps1Comp.focus();
+        showAlert(notMatchMsg);
+        return false;
     }
     if ( (ps1==null || ps1=='') && (ps2==null || ps2=='')){
+        ps1Comp.select();
+        ps1Comp.focus();
         if ( getConfirm(this, emptyMsg) ){
             return true;
         }else{
@@ -1121,6 +1128,7 @@ function checkPSW(ps1Id, ps2Id, notMatchMsg, emptyMsg) {
     }
     return true;
 }
+
 
 
 function guiValidate(reqMsg, reqInt, reqPort) {

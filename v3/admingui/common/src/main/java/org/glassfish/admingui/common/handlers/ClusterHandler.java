@@ -428,6 +428,46 @@ public class ClusterHandler {
         }
     }
 
+
+    @Handler(id = "gf.convertNodePswd",
+        input = {
+            @HandlerInput(name="pswd", type=String.class, required=true)},
+        output = {
+            @HandlerOutput(name = "pswdText", type = String.class),
+            @HandlerOutput(name = "pswdAlias", type = String.class),
+            @HandlerOutput(name = "psSelected", type = String.class)})
+    public static void convertNodePswd(HandlerContext handlerCtx) {
+
+        String pswd = (String) handlerCtx.getInputValue("pswd");
+        if (GuiUtil.isEmpty(pswd)){
+            handlerCtx.setOutputValue("psSelected", 1);
+            return;
+        }
+        if (pswd.startsWith("${ALIAS=") && pswd.endsWith("}")){
+            String pswdAlias = pswd.substring(8, pswd.length()-1);
+            handlerCtx.setOutputValue("pswdAlias", pswdAlias);
+            handlerCtx.setOutputValue("psSelected", 3);
+            return;
+        }
+        handlerCtx.setOutputValue("psSelected", 2);
+        handlerCtx.setOutputValue("pswdText", pswd);
+    }
+
+//gf.convertToAlias(in="#{pageSession.pswdAlias}" out="#{requestScope.tmpv}");
+    @Handler(id = "gf.convertToAlias",
+        input = {
+            @HandlerInput(name="in", type=String.class, required=true)},
+        output = {
+            @HandlerOutput(name = "out", type = String.class)})
+    public static void convertToAlias(HandlerContext handlerCtx) {
+        String in = (String) handlerCtx.getInputValue("in");
+        String out = null;
+        if (! GuiUtil.isEmpty(in)){
+            out = "${ALIAS="+in+"}";
+        }
+        handlerCtx.setOutputValue("out",  out);
+    }
+
     public static final String CLUSTER_RESOURCE_NAME = "org.glassfish.cluster.admingui.Strings";
 
     //The following is defined in v3/cluster/admin/src/main/java/..../cluster/Constants.java
