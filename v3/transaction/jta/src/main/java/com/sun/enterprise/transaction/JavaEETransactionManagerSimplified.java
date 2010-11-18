@@ -233,9 +233,7 @@ public class JavaEETransactionManagerSimplified
         // START IASRI 4705808 TTT004 -- monitor resource table stats
         try {
             // XXX TODO:
-            String doStats
-                = System.getProperty("MONITOR_JTA_RESOURCE_TABLE_STATISTICS");
-            if (Boolean.getBoolean(doStats)) {
+            if (Boolean.getBoolean("MONITOR_JTA_RESOURCE_TABLE_STATISTICS")) {
                 registerStatisticMonitorTask();
             }
 
