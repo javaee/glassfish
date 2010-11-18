@@ -221,7 +221,7 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
 	    if (!authenticated) {
 		authenticated = authenticateViaRestToken(req);
 		if (!authenticated) {
-		    authenticated = authenticateViaAdminRealm(req.getRequest());
+		    authenticated = authenticateViaAdminRealm(req);
 		}
 	    }
 	}
@@ -292,13 +292,14 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
     }
 
 
-    private boolean authenticateViaAdminRealm(Request req) throws LoginException, IOException  {
-        String[] up = AdminAdapter.getUserPassword(req);
+    private boolean authenticateViaAdminRealm(GrizzlyRequest req) throws LoginException, IOException  {
+        String[] up = AdminAdapter.getUserPassword(req.getRequest());
         String user = up[0];
         String password = up.length > 1 ? up[1] : "";
         AdminAccessController authenticator = habitat.getByContract(AdminAccessController.class);
         if (authenticator != null) {
-            return authenticator.loginAsAdmin(user, password, as.getAuthRealmName());
+            return (authenticator.loginAsAdmin(user, password, as.getAuthRealmName(),
+                    req.getRemoteHost()) != AdminAccessController.Access.NONE);
         }
         return true;   //if the authenticator is not available, allow all access - per Jerome
     }

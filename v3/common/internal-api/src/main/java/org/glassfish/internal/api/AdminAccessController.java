@@ -40,7 +40,6 @@
 
 package org.glassfish.internal.api;
 
-import com.sun.grizzly.tcp.Request;
 import java.security.Principal;
 import java.util.Map;
 import org.jvnet.hk2.annotations.Contract;
@@ -53,6 +52,30 @@ import javax.security.auth.login.LoginException;
 @Contract
 public interface AdminAccessController {
 
+    /**
+     * Represents the possible types of access granted as the result of 
+     * logging in as an admin user.
+     * <p>
+     * <ul>
+     * <li>FULL - the connection should be permitted full admin access, including
+     * the ability to change the configuration
+     * <li>MONITORING - the connection should be permitted to monitor the 
+     * server but not to change any configuration
+     * <li>NONE - no access permitted
+     * </ul>
+     * The calling logic is responsible for enforcing any restrictions as to
+     * what access should be allowed vs. prohibited based on the returned Access value.
+     * <p>
+     * Some parts of the authentication logic throw an exception if the user cannot
+     * be authenticated but there are some places where it just returns.
+     * Hence the NONE case.
+     */
+    public static enum Access {
+        FULL,
+        MONITORING,
+        NONE
+    }
+
     /** Authenticates the admin user by delegating to the underlying realm. The implementing classes
      *  should use the GlassFish security infrastructure constructs like LoginContextDriver. This method assumes that
      *  the realm infrastructure is available in both the configuration and runtime of the server.
@@ -61,10 +84,12 @@ public interface AdminAccessController {
      * @param user String representing the user name of the user doing an admin opearation
      * @param password String representing clear-text password of the user doing an admin operation
      * @param realm String representing the name of the admin realm for given server
+     * @param originHost the host from which the request was sent
      * @throws LoginException if there is any error in underlying implementation
-     * @return true if authentication succeeds, false otherwise
+     * @return level of access to be granted
      */
-    boolean loginAsAdmin(String user, String password, String realm) throws LoginException;
+    AdminAccessController.Access loginAsAdmin(String user, String password,
+            String realm, String originHost) throws LoginException;
 
     /** Authenticates the admin user by delegating to the underlying realm. The implementing classes
      *  should use the GlassFish security infrastructure constructs like LoginContextDriver. This method assumes that
@@ -81,11 +106,13 @@ public interface AdminAccessController {
      * @param user String representing the user name of the user doing an admin opearation
      * @param password String representing clear-text password of the user doing an admin operation
      * @param realm String representing the name of the admin realm for given server
+     * @param originHost the host from which the request was sent
      * @param authRelatedHeaders authentication-related headers from the incoming admin request
      * @param requestPrincipal Principal associated with the incoming admin request (can be null)
      * @throws LoginException if there is any error in underlying implementation
      * @return true if authentication succeeds, false otherwise
      */
-    boolean loginAsAdmin(String user, String password, String realm,
-            Map<String,String> authRelatedHeaders, Principal requestPrincipal) throws LoginException;
+    AdminAccessController.Access loginAsAdmin(String user, String password, String realm,
+            String originHost, Map<String,String> authRelatedHeaders,
+            Principal requestPrincipal) throws LoginException;
 }

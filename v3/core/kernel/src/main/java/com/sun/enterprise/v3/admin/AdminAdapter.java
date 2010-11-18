@@ -251,7 +251,7 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
         }
     }
 
-    public boolean authenticate(GrizzlyRequest req)
+    public AdminAccessController.Access authenticate(GrizzlyRequest req)
             throws Exception {
         final Request r = req.getRequest();
         String[] up = getUserPassword(r);
@@ -261,9 +261,9 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
         if (authenticator != null) {
             final Principal sslPrincipal = req.getUserPrincipal();
             return authenticator.loginAsAdmin(user, password, as.getAuthRealmName(),
-                    authRelatedHeaders(req), sslPrincipal);
+                    req.getRemoteHost(), authRelatedHeaders(req), sslPrincipal);
         }
-        return true;   //if the authenticator is not available, allow all access - per Jerome
+        return AdminAccessController.Access.FULL;   //if the authenticator is not available, allow all access - per Jerome
     }
     
     private Map<String,String> authRelatedHeaders(final GrizzlyRequest gr) {
@@ -301,21 +301,74 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
 
     private boolean authenticate(GrizzlyRequest req, ActionReport report, GrizzlyResponse res)
             throws Exception {
-        boolean authenticated = authenticate(req);
-        if (!authenticated) {
-            String msg = adminStrings.getLocalString("adapter.auth.userpassword",
-                    "Invalid user name or password");
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setMessage(msg);
-            report.setActionDescription("Authentication error");
-            res.setStatus(HttpURLConnection.HTTP_UNAUTHORIZED);
-            res.setHeader("WWW-Authenticate", "BASIC");
-            res.setContentType(report.getContentType());
-            report.writeReport(res.getOutputStream());
-            res.getOutputStream().flush();
-            res.finishResponse();
+        AdminAccessController.Access access = authenticate(req);
+        /*
+         * Admin requests through this adapter are assumed to change the
+         * configuration, which means the access granted needs to be FULL.
+         * Anything less is
+         */
+        switch (access)  {
+            case FULL:
+                return true;
+
+            case MONITORING:
+                reportAuthFailure(res, report, "adapter.auth.notOnInstance",
+                        "Configuration access to an instance is not allowed; please connect to the domain admin server instead to make configuration changes",
+                        HttpURLConnection.HTTP_FORBIDDEN);
+
+                break;
+
+            case NONE:
+                /*
+                 * If this is an instance we
+                 * do NOT want to give an intruder one response (forbidden) if
+                 * the credentials were OK but we're refusing the request because
+                 * this is an instance and a different response (an auth challenge)
+                 * if the credentials are invalid.
+                 */
+                if (env.isDas()) {
+                    reportAuthFailure(res, report, "adapter.auth.userpassword",
+                        "Invalid user name or password",
+                        HttpURLConnection.HTTP_UNAUTHORIZED,
+                        "WWW-Authenticate", "BASIC");
+                } else {
+                    reportAuthFailure(res, report, "adapter.auth.notOnInstance",
+                            "Configuration access to an instance is not allowed; please connect to the domain admin server instead to make configuration changes",
+                        HttpURLConnection.HTTP_FORBIDDEN);
+                }
+                break;
+
         }
-        return authenticated;
+
+        return access != AdminAccessController.Access.NONE;
+    }
+
+    private void reportAuthFailure(final GrizzlyResponse res,
+            final ActionReport report,
+            final String msgKey,
+            final String msg,
+            final int httpStatus) throws IOException {
+        reportAuthFailure(res, report, msgKey, msg, httpStatus, null, null);
+    }
+
+    private void reportAuthFailure(final GrizzlyResponse res,
+            final ActionReport report,
+            final String msgKey,
+            final String msg,
+            final int httpStatus,
+            final String headerName,
+            final String headerValue) throws IOException {
+        report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+        report.setMessage(adminStrings.getLocalString(msgKey, msg));
+        report.setActionDescription("Authentication error");
+        res.setStatus(httpStatus);
+        if (headerName != null) {
+            res.setHeader(headerName, headerValue);
+        }
+        res.setContentType(report.getContentType());
+        report.writeReport(res.getOutputStream());
+        res.getOutputStream().flush();
+        res.finishResponse();
     }
 
     private ActionReport getClientActionReport(String requestURI, GrizzlyRequest req) {

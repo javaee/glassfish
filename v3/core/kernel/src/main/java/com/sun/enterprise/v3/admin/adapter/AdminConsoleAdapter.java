@@ -587,7 +587,8 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
                 Request req = greq.getRequest();
                 String[] userPass = AdminAdapter.getUserPassword(req);
                 String pswd = (userPass.length >= 2) ? userPass[1] : "";
-                if (!authenticator.loginAsAdmin(userPass[0], pswd, as.getAuthRealmName())) {
+                if (authenticator.loginAsAdmin(userPass[0], pswd, 
+                        as.getAuthRealmName(), greq.getRemoteHost()) != AdminAccessController.Access.FULL) {
                     setStateMsg(AdapterState.AUTHENTICATING);
                     gres.setStatus(HttpURLConnection.HTTP_UNAUTHORIZED);
                     gres.addHeader("WWW-Authenticate", "BASIC");

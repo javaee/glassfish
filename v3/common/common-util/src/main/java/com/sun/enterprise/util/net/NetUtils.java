@@ -66,6 +66,10 @@ public class NetUtils {
     }
     public static final int MAX_PORT = 65535;
 
+    public static boolean isThisHostLocal(final String hostname) {
+        return IsThisHostLocal(hostname);
+    }
+    
     /////////////  BEGIN  Newer methods added June 2010 ////////////////////
     public static boolean IsThisHostLocal(String hostname) {
         // come on JDK!  Why is this so #$@% difficult!?!
