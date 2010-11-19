@@ -59,39 +59,64 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- * Tests WebContainer#setConfiguration(WebContainerConfig)
+ * Tests for Context#addServlet
  * 
  * @author Amy Roh
  */
-public class EmbeddedSetConfigurationTest {
+public class EmbeddedAddServletTest {
 
     static GlassFish glassfish;
     static WebContainer embedded;
     static File root;
-    static int newPort = 9090;
-    static String contextRoot = "test";
+    static String vsname = "test-server";
 
     @BeforeClass
     public static void setupServer() throws GlassFishException {
         glassfish = GlassFishRuntime.bootstrap().newGlassFish();
         glassfish.start();
         embedded = glassfish.getService(WebContainer.class);
-        System.out.println("================ EmbeddedSetDocRoot Test");
+        System.out.println("================ EmbeddedAddServlet Test");
         System.out.println("Starting Web "+embedded);
         embedded.setLogLevel(Level.INFO);
         WebContainerConfig config = new WebContainerConfig();
         config.setListings(true);
         root = new File(System.getProperty("buildDir"));
         config.setDocRootDir(root);
-        config.setPort(newPort);
+        config.setPort(8080);
         System.out.println("Added Web with base directory "+root.getAbsolutePath());
-        embedded.start();
-        embedded.setConfiguration(config);
+        embedded.start(config);
     }
     
     @Test
     public void testEmbeddedWebAPIConfig() throws Exception {
-        URL servlet = new URL("http://localhost:"+newPort);
+        WebListener testListener = embedded.createWebListener("test-listener", HttpListener.class);
+        testListener.setPort(9090);
+        WebListener[] webListeners = new HttpListener[1];
+        webListeners[0] = testListener;
+
+        VirtualServerConfig config = new VirtualServerConfig();
+        config.setHostNames("localhost");
+        //VirtualServer vs = (VirtualServer)
+        //        embedded.createVirtualServer(vsname, root, webListeners);
+        VirtualServer vs = (VirtualServer)
+                embedded.createVirtualServer(vsname, root);
+        vs.setConfig(config);
+        embedded.addVirtualServer(vs);
+        boolean testvs = false;
+        for (VirtualServer avs : embedded.getVirtualServers()) {
+            System.out.println("virtual server "+avs.getID());
+            if (avs.getID().equals(vsname)) {
+                testvs=true;
+            }
+        }
+        Assert.assertTrue(testvs);
+        Context context = (Context) embedded.createContext(root);
+        ServletRegistration sr = context.addServlet("NewServlet", new NewServlet());
+        sr.addMapping(new String[] {"/newServlet"});
+        
+        vs.addContext(context, "/test");
+
+        URL servlet = new URL("http://localhost:9090/test/new");
         URLConnection yc = servlet.openConnection();
         BufferedReader in = new BufferedReader(
                                 new InputStreamReader(
@@ -103,6 +128,7 @@ public class EmbeddedSetConfigurationTest {
             sb.append(inputLine);
         }
         in.close();
+        
      }
 
     @AfterClass

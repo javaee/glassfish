@@ -50,6 +50,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.glassfish.embeddable.*;
 import org.glassfish.embeddable.web.*;
+import org.glassfish.embeddable.web.config.*;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -98,11 +99,14 @@ public class EmbeddedWebAPITest {
 
         File f = new File(System.getProperty("buildDir"));
         String virtualServerId = "embedded-server";
-        VirtualServer defaultVirtualServer = (VirtualServer)
+        VirtualServer vs = (VirtualServer)
                 embedded.createVirtualServer(virtualServerId, f);
-        embedded.addVirtualServer(defaultVirtualServer);
+        VirtualServerConfig config = new VirtualServerConfig();
+        config.setHostNames("localhost");
+        vs.setConfig(config);
+        embedded.addVirtualServer(vs);
 
-        VirtualServer vs = embedded.findVirtualServer(virtualServerId);
+        vs = embedded.findVirtualServer(virtualServerId);
         Assert.assertEquals(virtualServerId,vs.getID());
 
         //Context context = (Context) embedded.createContext(root, null);

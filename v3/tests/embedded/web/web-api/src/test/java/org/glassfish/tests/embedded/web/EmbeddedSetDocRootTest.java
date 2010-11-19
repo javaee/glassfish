@@ -91,6 +91,9 @@ public class EmbeddedSetDocRootTest {
     public void testEmbeddedWebAPIConfig() throws Exception {
         VirtualServer vs = (VirtualServer)
                 embedded.createVirtualServer("test-server", root);
+        VirtualServerConfig config = new VirtualServerConfig();
+        config.setHostNames("localhost");
+        vs.setConfig(config);
         embedded.addVirtualServer(vs);
         Context context = (Context) embedded.createContext(root, contextRoot, null);
 

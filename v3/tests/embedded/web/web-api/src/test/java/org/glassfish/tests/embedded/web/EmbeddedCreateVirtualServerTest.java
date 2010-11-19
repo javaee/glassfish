@@ -49,7 +49,8 @@ import java.util.logging.Level;
 import java.util.ArrayList;
 import java.util.List;
 import org.glassfish.embeddable.*;
-import org.glassfish.embeddable.web.*;
+import org.glassfish.embeddable.web.*;  
+import org.glassfish.embeddable.web.config.*;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -94,7 +95,10 @@ public class EmbeddedCreateVirtualServerTest {
         File f = new File(System.getProperty("buildDir"));
         String virtualServerId = "embedded-server";
         VirtualServer virtualServer = (VirtualServer)
-                embedded.createVirtualServer(virtualServerId, f, webListeners);
+                embedded.createVirtualServer(virtualServerId, f, webListeners);         
+        VirtualServerConfig config = new VirtualServerConfig();
+        config.setHostNames("localhost");
+        virtualServer.setConfig(config);
         embedded.addVirtualServer(virtualServer);
 
         listenerList = new ArrayList(embedded.getWebListeners());
