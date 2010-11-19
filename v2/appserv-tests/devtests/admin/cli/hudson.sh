@@ -7,9 +7,9 @@ then
   export CYGWIN=nontsec
 fi
 rm -rf glassfish3
-wget -q -O revision-under-test.html http://gf-hudson.sfbay.sun.com/hudson/job/gf-trunk-build-continuous/lastSuccessfulBuild
+wget -q -O revision-under-test.html http://gf-hudson.us.oracle.com/hudson/job/gf-trunk-build-continuous/lastSuccessfulBuild
 grep 'Build #' revision-under-test.html
-time wget -q -O glassfish.zip http://gf-hudson.sfbay.sun.com/hudson/job/gf-trunk-build-continuous/lastSuccessfulBuild/artifact/bundles/glassfish.zip
+time wget -q -O glassfish.zip http://gf-hudson.us.oracle.com/hudson/job/gf-trunk-build-continuous/lastSuccessfulBuild/artifact/bundles/glassfish.zip
 unzip -q glassfish.zip
 export S1AS_HOME="$ROOT/glassfish3/glassfish"
 export APS_HOME="$ROOT/appserv-tests"
