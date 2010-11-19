@@ -231,7 +231,7 @@ public class TokenResolver {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    private static boolean hasToken(String s) {
+    public static boolean hasToken(String s) {
         if (s == null) {
             return false;
         }

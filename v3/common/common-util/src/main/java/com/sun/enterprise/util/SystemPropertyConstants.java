@@ -102,6 +102,7 @@ public class SystemPropertyConstants
      * Field 
      */
     public static final String JAVA_ROOT_PROPERTY = "com.sun.aas.javaRoot";
+    public static final String JAVA_ROOT_PROPERTY_ASENV = "com.sun.aas.javaRoot.asenv";
 
     /**
      * Field 
