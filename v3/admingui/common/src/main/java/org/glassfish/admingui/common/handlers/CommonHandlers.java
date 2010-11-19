@@ -361,7 +361,7 @@ public class CommonHandlers {
         List<Map<String, String>> modifiedProps = new java.util.ArrayList<Map<String, String>>();
         if (props != null) {
             for (Map<String, String> prop : props) {
-                if (!GuiUtil.isEmpty(prop.get("name"))) {
+                if (!(GuiUtil.isEmpty(prop.get("name")) || GuiUtil.isEmpty(prop.get("value")))) {
                     modifiedProps.add(prop);
                 }
             }
