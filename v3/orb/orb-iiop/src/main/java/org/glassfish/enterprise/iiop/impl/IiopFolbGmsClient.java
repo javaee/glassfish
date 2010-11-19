@@ -152,6 +152,8 @@ public class IiopFolbGmsClient implements CallBack {
                 currentMembers = getAllClusterInstanceInfo() ;
                 fineLog( "IiopFolbGmsClient: currentMembers = ", currentMembers ) ;
 
+                fineLog( "iiop instance info = " + getIIOPEndpoints() ) ;
+
                 gmsAdapter.registerFailureNotificationListener(this);
                 gmsAdapter.registerJoinedAndReadyNotificationListener(this);
                 gmsAdapter.registerPlannedShutdownListener(this);
@@ -435,6 +437,29 @@ public class IiopFolbGmsClient implements CallBack {
 
         fineLog( "getAllClusterInstanceInfo: result {0}", result ) ;
         return result ;
+    }
+
+    // return host:port,... string for all clear text ports in the cluster
+    // instance info.
+    public final String getIIOPEndpoints() {
+        final Map<String,ClusterInstanceInfo> cinfos = getAllClusterInstanceInfo() ;
+        final StringBuilder result = new StringBuilder() ;
+        boolean first = true ;
+        for (ClusterInstanceInfo cinfo : cinfos.values() ) {
+            for (SocketInfo sinfo : cinfo.endpoints()) {
+                if (!sinfo.type().startsWith( "SSL" )) {
+                    if (first) {
+                        first = false ;
+                    } else {
+                        result.append( ',' ) ;
+                    }
+
+                    result.append( sinfo.host() ).append( ':' )
+                        .append( sinfo.port() ) ;
+                }
+            }
+        }
+        return result.toString() ;
     }
 
     class GroupInfoServiceGMSImpl extends GroupInfoServiceBase {

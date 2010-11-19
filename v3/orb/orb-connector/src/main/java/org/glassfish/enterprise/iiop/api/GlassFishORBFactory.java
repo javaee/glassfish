@@ -74,4 +74,6 @@ public interface GlassFishORBFactory {
     public int getORBPort(ORB orb); 
 
     public boolean isEjbCall (ServerRequestInfo sri);
+
+    public String getIIOPEndpoints() ;
 }

@@ -901,4 +901,8 @@ public final class GlassFishORBManager {
         logger.log(Level.INFO, "corbaloc url ==> {0}", corbalocURL);
         return corbalocURL;
     }
+
+    String getIIOPEndpoints() {
+        return gmsClient.getIIOPEndpoints() ;
+    }
 }
