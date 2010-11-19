@@ -259,7 +259,7 @@ public class InjectionManager {
     protected void error_injectionException(InjectionResolver target, Annotation inject, AnnotatedElement injectionPoint, Exception e) {
       Logger.getAnonymousLogger().log(Level.FINE, "injection failure", e);
       
-      if (e.getClass().isInstance(UnsatisfiedDependencyException.class)) {
+      if (UnsatisfiedDependencyException.class.isInstance(e)) {
         if (injectionPoint == ((UnsatisfiedDependencyException)e).getUnsatisfiedElement()) {
           // no need to wrap again
           throw (UnsatisfiedDependencyException)e;
