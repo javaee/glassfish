@@ -132,6 +132,9 @@ public class Syslog {
           what.length(), addr, PACKET_SIZE);
         DatagramSocket s = new DatagramSocket();
         s.send(dp);
+        if(!s.isClosed()) {
+            s.close();
+        }
       } catch(IOException e) {
         logger.log(Level.WARNING, "Error sending syslog packet", e);
       }
