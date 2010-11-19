@@ -119,12 +119,12 @@ public class InstanceCommandExecutor extends ServerRemoteAdminCommand implements
                 finalResult = FailurePolicy.applyFailurePolicy(offlinePolicy, ActionReport.ExitCode.FAILURE);
                 if(!finalResult.equals(ActionReport.ExitCode.FAILURE))
                     aReport.setMessage(strings.getLocalString("clusterutil.warnoffline",
-                        "WARNING: Instance {0} seems to be offline; Command was not replicated to that instance",
-                            getServer().getName()));
+                        "WARNING: Instance {0} seems to be offline; command {1} was not replicated to that instance",
+                            getServer().getName(), commandName));
                 else
                     aReport.setMessage(strings.getLocalString("clusterutil.failoffline",
-                            "FAILURE: Instance {0} seems to be offline; Command was not replicated to that instance",
-                            getServer().getName()));
+                            "FAILURE: Instance {0} seems to be offline; command {1} was not replicated to that instance",
+                            getServer().getName(), commandName));
             } else {
                 finalResult = FailurePolicy.applyFailurePolicy(failPolicy, ActionReport.ExitCode.FAILURE);
                 if(finalResult.equals(ActionReport.ExitCode.FAILURE))
