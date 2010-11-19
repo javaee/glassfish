@@ -129,7 +129,7 @@ public class InstanceCommandExecutor extends ServerRemoteAdminCommand implements
                 finalResult = FailurePolicy.applyFailurePolicy(failPolicy, ActionReport.ExitCode.FAILURE);
                 if(finalResult.equals(ActionReport.ExitCode.FAILURE))
                     aReport.setMessage(strings.getLocalString("clusterutil.commandFailed",
-                        "Command {0} failed on server instance {1}: {2}", commandName, getServer().getName(),
+                        "FAILURE: Command {0} failed on server instance {1}: {2}", commandName, getServer().getName(),
                             cmdEx.getMessage()));
                 else
                     aReport.setMessage(strings.getLocalString("clusterutil.commandWarning",
