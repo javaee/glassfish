@@ -120,6 +120,21 @@ public class DynamicInterceptor implements MBeanServer
 
         // Now lets start analysing the Object Name.
 
+        if(objectName.getKeyProperty("type") != null &&
+                 (objectName.getKeyProperty("type").equals("Mapper") ||
+                 objectName.getKeyProperty("type").equals("Connector") ||
+                 objectName.getKeyProperty("type").equals("Engine") ||
+                 objectName.getKeyProperty("type").equals("ProtocolHandler") ||
+                 objectName.getKeyProperty("type").equals("Service") ||
+                 objectName.getKeyProperty("type").equals("Host") ||
+                 objectName.getKeyProperty("type").equals("Loader") ||
+                 objectName.getKeyProperty("type").equals("JspMonitor") ||
+                 objectName.getKeyProperty("type").equals("Valve"))) {
+            result.addInstance("server");
+            return result;
+
+        }
+
         //If its a MBean corresponding to config
         if(isConfig(oName)) {
             String configName = getName(oName);
@@ -139,7 +154,6 @@ public class DynamicInterceptor implements MBeanServer
             if(targetName != null) {
                 result.addAllInstances(MbeanService.getInstance().getInstances(targetName));
             }
-
         }
 
         // if its an MBean corresponding to a server
@@ -202,20 +216,6 @@ public class DynamicInterceptor implements MBeanServer
 
         if( oName.startsWith("amx-support") || oName.startsWith("jmxremote") ) {
             result.addInstance("server");
-        }
-
-        if(objectName.getKeyProperty("type") != null &&
-                 (objectName.getKeyProperty("type").equals("Mapper") ||
-                 objectName.getKeyProperty("type").equals("Connector") ||
-                 objectName.getKeyProperty("type").equals("Engine") ||
-                 objectName.getKeyProperty("type").equals("ProtocolHandler") ||
-                 objectName.getKeyProperty("type").equals("Service") ||
-                 objectName.getKeyProperty("type").equals("Host") ||
-                 objectName.getKeyProperty("type").equals("Loader") ||
-                 objectName.getKeyProperty("type").equals("JspMonitor") ||
-                 objectName.getKeyProperty("type").equals("Valve"))) {
-            result.addInstance("server");
-
         }
 
          if((MbeanService.getInstance().isDas())) {
@@ -305,6 +305,12 @@ public class DynamicInterceptor implements MBeanServer
     } */
 
     private MBeanServerConnection getInstanceConnection(String instanceName) throws InstanceNotFoundException {
+        // first check if this is on the same instance as the one in the argument
+        // In such a case we delegate to the local MBeanServer
+        if(MbeanService.getInstance().isInstance(instanceName)) {
+            return getDelegateMBeanServer();
+        }
+
         synchronized (instanceConnections) {
             if (!instanceConnections.containsKey(instanceName)) {
                 try {
