@@ -40,10 +40,10 @@
 
 package com.sun.enterprise.config.serverbeans;
 
+import com.sun.enterprise.util.LocalStringManagerImpl;
+
 import java.beans.PropertyVetoException;
 import java.util.List;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
@@ -68,6 +68,11 @@ import org.jvnet.hk2.config.*;
 
 @Configured
 public interface JmxConnector extends ConfigBeanProxy, Injectable, Named, PropertyBag {
+    final static String PORT_PATTERN = "\\$\\{[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*\\}"
+            + "|[1-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9][0-9][0-9]"
+            + "|[1-5][0-9][0-9][0-9][0-9]|6[0-4][0-9][0-9][0-9]"
+            + "|65[0-4][0-9][0-9]|655[0-2][0-9]|6553[0-5]";
+    
     /**
      * Gets the value of the enabled property.
      *
@@ -139,8 +144,8 @@ public interface JmxConnector extends ConfigBeanProxy, Injectable, Named, Proper
      *         {@link String }
      */
     @Attribute
-    @Max(value=65535)
-    @Min(value=1)    
+    @Pattern(regexp=PORT_PATTERN, message="must be between 1 and 65535, or "
+    + "reference a system property using the form ${SYSTEM_PROPERTY_NAME}")
     String getPort();
 
     /**
