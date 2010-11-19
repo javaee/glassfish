@@ -40,31 +40,35 @@
 
 package org.glassfish.weld.services;
 
-import java.lang.ref.WeakReference;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.security.PrivilegedExceptionAction;
-import java.security.SecureClassLoader;
-import java.util.Map;
-import java.util.WeakHashMap;
 
 import org.jboss.weld.serialization.spi.ProxyServices;
 
 /**
  * An implementation of the <code>ProxyServices</code> Service.
  * 
- * This implementation uses a delegate classloader that delegates to 
- * the Thread context classloader and the weld bundle classloader for 
- * loading Weld defined proxies. Weld proxies can load not only application 
- * defined classes but also classes exported by weld OSGi bundle. 
+ * This implementation uses the thread context classloader (the application 
+ * classloader) as the classloader for loading the bean proxies. The classloader
+ * that loaded the Bean must be used to load and define the bean proxy to handle
+ * Beans with package-private constructor as discussed in WELD-737. 
+ *  
+ * Weld proxies today have references to some internal weld implementation classes
+ * such as javassist and org.jboss.weld.proxy.* packages. These classes are 
+ * temporarily re-exported through the weld-integration-fragment bundle so that
+ * when the bean proxies when loaded using the application classloader will have
+ * visibility to these internal implementation classes.
  * 
+ * As a fix for WELD-737, Weld may use the Bean's classloader rather than asking
+ * the ProxyServices service implementation. Weld also plans to remove the 
+ * dependencies of the bean proxy on internal implementation classes. When that
+ * happens we can remove the weld-integration-fragment workaround and the 
+ * ProxyServices implementation
+ *  
  * @author Sivakumar Thyagarajan
  */
 public class ProxyServicesImpl implements ProxyServices {
-
-    //Application ClassLoader vs Proxy Classloader
-    private Map<ClassLoader, WeakReference<ClassLoader>> proxyClassLoaders = 
-        new WeakHashMap<ClassLoader, WeakReference<ClassLoader>>();
 
     @Override
     public ClassLoader getClassLoader(final Class<?> proxiedBeanType) {
@@ -83,16 +87,7 @@ public class ProxyServicesImpl implements ProxyServices {
 
     private ClassLoader _getClassLoader() {
         ClassLoader tcl = Thread.currentThread().getContextClassLoader();
-        WeakReference<ClassLoader> wr = this.proxyClassLoaders.get(tcl);
-        ClassLoader proxyCL = ((wr == null) ? null : wr.get());
-        if (proxyCL == null) {
-            ClassLoader weldBundleCL = ProxyServices.class.getClassLoader();
-            proxyCL = new ProxyClassLoader(tcl /* set as parent */,
-                    weldBundleCL);
-            this.proxyClassLoaders.put(tcl, new WeakReference<ClassLoader>(
-                    proxyCL));
-        }
-        return proxyCL;
+        return tcl;
     }
 
     @Override
@@ -120,22 +115,6 @@ public class ProxyServicesImpl implements ProxyServices {
     @Override
     public void cleanup() {
         // nothing to cleanup in this implementation.
-        proxyClassLoaders.clear();
-    }
-
-    class ProxyClassLoader extends SecureClassLoader {
-        private ClassLoader delegateCL;
-
-        public ProxyClassLoader(ClassLoader parentCL, ClassLoader delegateCL) {
-            super(parentCL);
-            this.delegateCL = delegateCL;
-        }
-
-        @Override
-        public Class findClass(String name) throws ClassNotFoundException {
-            return delegateCL.loadClass(name);
-        }
-
     }
 
 }
