@@ -376,27 +376,26 @@ public final class RuntimeRootImpl extends AMXImplBase
 
         final String NL = StringUtil.LS;
         
-        String target = "das";
         String result = "FAILED";
         if ("summary".equals(type))
         {
-            result = info.getSummary(target);
+            result = info.getSummary();
         }
         else if ("memory".equals(type))
         {
-            result = info.getMemoryInformation(target);
+            result = info.getMemoryInformation();
         }
         else if ("thread".equals(type))
         {
-            result = info.getThreadDump(target);
+            result = info.getThreadDump();
         }
         else if ("class".equals(type))
         {
-            result = info.getClassInformation(target);
+            result = info.getClassInformation();
         }
         else if ("log".equals(type))
         {
-            result = info.getLogInformation(target);
+            result = info.getLogInformation();
         }
         else if ("all".equals(type))
         {
