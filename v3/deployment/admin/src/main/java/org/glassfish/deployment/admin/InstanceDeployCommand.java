@@ -211,11 +211,10 @@ public class InstanceDeployCommand extends InstanceDeployCommandParameters imple
                 report.setMessage(msg); 
             }
 
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
-            report.failure(logger,localStrings.getLocalString(
-                    "failToLoadOnInstance",
-                    "Failed to load the application on instance {0} : {1}", server.getName(), e.getMessage()),null);
+        } catch (Throwable e) {
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage(e.getMessage());
+            report.setFailureCause(e);
         } finally {
             try {
                 if (archive != null)  {
@@ -227,11 +226,31 @@ public class InstanceDeployCommand extends InstanceDeployCommandParameters imple
                         "Error while closing deployable artifact : ",
                         path.getAbsolutePath()), e);
             }
-            logger.info(localStrings.getLocalString(
+            if (report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
+                logger.info(localStrings.getLocalString(
                         "deploy.done",
                         "Deployment of {0} done is {1} ms",
                         name,
                         (Calendar.getInstance().getTimeInMillis() - operationStartTime)));
+            } else if (report.getActionExitCode().equals(ActionReport.ExitCode.FAILURE)) {
+                String errorMessage = report.getMessage();
+                Throwable cause = report.getFailureCause();
+                if (cause != null) {
+                    String causeMessage = cause.getMessage();
+                    if (causeMessage != null &&
+                        !causeMessage.equals(errorMessage)) {
+                        errorMessage = errorMessage + " : " + cause.getMessage();
+                    }
+                    logger.log(Level.SEVERE, errorMessage, cause.getCause());
+                }
+                report.setMessage(localStrings.getLocalString(
+                    "failToLoadOnInstance",
+                    "Failed to load the application on instance {0} : {1}", server.getName(), errorMessage));
+                // reset the failure cause so command framework will not try
+                // to print the same message again
+                report.setFailureCause(null);
+            }
+
         }
 
     }
