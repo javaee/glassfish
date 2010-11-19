@@ -80,14 +80,14 @@ class ExtenderManager
 
     public synchronized void start() throws Exception
     {
-        logger.logp(Level.INFO, "ExtenderManager", "start", "ExtenderManager starting");
+        logger.logp(Level.FINE, "ExtenderManager", "start", "ExtenderManager starting");
         glassFishServerTracker = new GlassFishServerTracker(context);
         glassFishServerTracker.open();
     }
 
     public synchronized void stop() throws Exception
     {
-        logger.logp(Level.INFO, "ExtenderManager", "start", "ExtenderManager stopping");
+        logger.logp(Level.FINE, "ExtenderManager", "start", "ExtenderManager stopping");
         unregisterGlassFishShutdownHook();
         if (glassFishServerTracker != null) {
             glassFishServerTracker.close();
@@ -138,7 +138,7 @@ class ExtenderManager
         public Object addingService(ServiceReference reference)
         {
             Extender e = Extender.class.cast(context.getService(reference));
-            logger.logp(Level.INFO, "ExtenderManager$ExtenderTracker", "addingService", "Starting extender called {0}", new Object[]{e});
+            logger.logp(Level.FINE, "ExtenderManager$ExtenderTracker", "addingService", "Starting extender called {0}", new Object[]{e});
             e.start();
             return e;
         }
@@ -146,7 +146,7 @@ class ExtenderManager
         @Override
         public void removedService(ServiceReference reference, Object service) {
             Extender e = Extender.class.cast(context.getService(reference));
-            logger.logp(Level.INFO, "ExtenderManager$ExtenderTracker", "removedService", "Stopping extender called {0}", new Object[]{e});
+            logger.logp(Level.FINE, "ExtenderManager$ExtenderTracker", "removedService", "Stopping extender called {0}", new Object[]{e});
             e.stop();
         }
     }
