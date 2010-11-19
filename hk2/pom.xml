@@ -93,7 +93,7 @@
         <repository>
             <uniqueVersion>false</uniqueVersion>
             <id>rator.sfbay</id>
-            <url>dav:http://glassfish-maven-repository.sfbay/maven/repositories/glassfish/</url>
+            <url>dav:http://glassfish-maven-repository.us.oracle.com/maven/repositories/glassfish/</url>
         </repository>
     </distributionManagement>
     <repositories>
