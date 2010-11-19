@@ -60,23 +60,23 @@ public class JVMInformation  implements JVMInformationMBean { //, MBeanRegistrat
         cr = new ClassReporter(mbsc);
         lr = new LogReporter();
     }
-    public String getThreadDump() { 
+    public String getThreadDump(final String processName) {
         return ( tm.getThreadDump() );
     }
 
-    public String getSummary() { 
+    public String getSummary(final String processName) {
         return ( sr.getSummaryReport() );
     }
 
-    public String getMemoryInformation() { 
+    public String getMemoryInformation(final String processName) {
         return ( mr.getMemoryReport() );
     }
 
-    public String getClassInformation() { 
+    public String getClassInformation(final String processName) {
         return ( cr.getClassReport() );
     }
 
-    public String getLogInformation() {
+    public String getLogInformation(final String processName) {
         return (lr.getLoggingReport());
     }
     /* //TODO

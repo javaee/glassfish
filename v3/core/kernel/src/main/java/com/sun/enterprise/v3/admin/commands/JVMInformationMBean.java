@@ -48,13 +48,13 @@ package com.sun.enterprise.v3.admin.commands;
  */
 public interface JVMInformationMBean {
     
-    public String getThreadDump();
+    public String getThreadDump(String processName);
     
-    public String getClassInformation();
+    public String getClassInformation(String processName);
     
-    public String getMemoryInformation();
+    public String getMemoryInformation(String processName);
     
-    public String getSummary();
+    public String getSummary(String processName);
     
-    public String getLogInformation();
+    public String getLogInformation(String processName);
 }
