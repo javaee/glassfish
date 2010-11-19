@@ -54,6 +54,7 @@ import com.sun.ejb.InvocationInfo;
 import com.sun.ejb.containers.util.MethodMap;
 import com.sun.ejb.spi.io.IndirectlySerializable;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.Utility;
 
 /** 
  * Handler for EJBLocalObject invocations through EJBLocalObject proxy.
@@ -138,10 +139,25 @@ public final class EJBLocalObjectInvocationHandler
     Object invoke(Class clientInterface, Method method, Object[] args) 
         throws Throwable {
 
+        ClassLoader originalClassLoader = null;
+
         // NOTE : be careful with "args" parameter.  It is null
         //        if method signature has 0 arguments.
         try {
         container.onEnteringContainer();
+
+            // In some cases(e.g. CDI + OSGi combination) ClassLoader
+            // is accessed from the current Thread. In those cases we need to set
+            // the context classloader to the application's classloader before
+            // proceeding. Otherwise, the context classloader could still
+            // reflect the caller's class loader.
+
+            if( Thread.currentThread().getContextClassLoader() !=
+                getContainer().getClassLoader() ) {
+                originalClassLoader = Utility.setContextClassLoader
+                    (getContainer().getClassLoader());
+            }
+
         Class methodClass = method.getDeclaringClass();
         if( methodClass == java.lang.Object.class ) {
             return InvocationHandlerUtil.invokeJavaObjectMethod(this, method, args);
@@ -213,6 +229,10 @@ public final class EJBLocalObjectInvocationHandler
 
         return returnValue;
         } finally {
+            if( originalClassLoader != null ) {
+                Utility.setContextClassLoader(originalClassLoader);
+            }
+
             container.onLeavingContainer();
         }
     }
