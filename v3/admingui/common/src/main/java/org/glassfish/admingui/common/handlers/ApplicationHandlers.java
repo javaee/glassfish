@@ -68,9 +68,8 @@ import java.util.Iterator;
 import java.util.Collection;
 import java.util.Collections;
 
-import java.util.Set;
-import java.util.HashSet;
 import java.util.TreeSet;
+import java.util.Set;
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.DeployUtil;
 import org.glassfish.admingui.common.util.RestUtil;
@@ -617,9 +616,8 @@ public class ApplicationHandlers {
 	String appID = (String)handlerCtx.getInputValue("AppID");
         String contextRoot = (String)handlerCtx.getInputValue("contextRoot");
         String ctxRoot = calContextRoot(contextRoot);
-
+        Set<String> URLs = new TreeSet();
         List<String> targetList = DeployUtil.getApplicationTarget(appID, "application-ref");
-        Set URLs = new HashSet();
         for(String target : targetList) {
             String ep = TargetUtil.getTargetEndpoint(target) + "/application-ref/" + appID;
             boolean enabled = Boolean.parseBoolean((String)RestUtil.getAttributesMap(ep).get("enabled"));
@@ -629,7 +627,17 @@ public class ApplicationHandlers {
             String virtualServers = getVirtualServers(target, appID);
             String configName = TargetUtil.getConfigName(target);
             Collection<String> hostNames = TargetUtil.getHostNames(target);
-            URLs.addAll(getURLs(GuiUtil.parseStringList(virtualServers, ","), configName, hostNames));
+
+            List clusters = TargetUtil.getClusters();
+            List<String> instances = new ArrayList();
+            if (clusters.contains(target)){
+                instances = TargetUtil.getClusteredInstances(target);
+            } else {
+                instances.add(target);
+            }
+
+            for (String instance : instances)
+                URLs.addAll(getURLs(GuiUtil.parseStringList(virtualServers, ","), configName, hostNames, instance));
         }
 
 	Iterator it = URLs.iterator();
@@ -637,11 +645,11 @@ public class ApplicationHandlers {
         ArrayList list = new ArrayList();
 	while (it.hasNext()) {
 	    url = (String)it.next();
-            HashMap m = new HashMap();
+            HashMap<String, String> m = new HashMap();
             m.put("url", url + ctxRoot);
             list.add(m);
 	}
-
+        
         handlerCtx.setOutputValue("URLList", list);
 
     }
@@ -694,8 +702,8 @@ public class ApplicationHandlers {
 /********************/
 
 
-    private static Set getURLs(List<String> vsList, String configName, Collection<String> hostNames) {
-        Set URLs = new HashSet();
+    private static Set getURLs(List<String> vsList, String configName, Collection<String> hostNames, String target) {
+        Set URLs = new TreeSet();
         if (vsList == null || vsList.size() == 0) {
             return URLs;
         }
@@ -750,13 +758,12 @@ public class ApplicationHandlers {
                         String protocol = "http";
                         if ("true".equals(security))
                             protocol = "https";
-/*                        URLs.add(protocol + "://" + vsName + ":" +
-                                (String)nlAttributes.get("port"));
- *
- */
+
                         String port = (String)nlAttributes.get("port");
+                        if (port == null)
+                            port = "";
                         String resolvedPort = RestUtil.resolveToken((String)GuiUtil.getSessionValue("REST_URL") +
-                                "/configs/config/" + configName, port);
+                                "/servers/server/" + target, port);
 
                         for (String hostName : hostNames) {
                             if (localHostName != null && hostName.equalsIgnoreCase("localhost"))
