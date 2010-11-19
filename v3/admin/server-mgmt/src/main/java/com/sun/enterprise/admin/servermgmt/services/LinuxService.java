@@ -86,9 +86,6 @@ public class LinuxService extends NonSMFServiceAdapter {
             setTemplateFile(TEMPLATE_FILE_NAME);
             checkFileSystem();
             setTarget();
-            handlePreExisting(info.force);
-            ServicesUtils.tokenReplaceTemplateAtDestination(getTokenMap(), getTemplateFile().getPath(), target.getPath());
-            trace("Target file written: " + target);
         }
         catch (RuntimeException e) {
             throw e;
@@ -101,14 +98,30 @@ public class LinuxService extends NonSMFServiceAdapter {
     @Override
     public final void createServiceInternal() {
         try {
+            handlePreExisting(info.force);
+            ServicesUtils.tokenReplaceTemplateAtDestination(getTokenMap(), getTemplateFile().getPath(), target.getPath());
+            trace("Target file written: " + target);
             trace("**********   Object Dump  **********\n" + this.toString());
 
-            if (uninstall() == 0 && !info.dryRun)
+            if (deleteLinks() == 0 && !info.dryRun)
                 System.out.println(Strings.get("linux.services.uninstall.good"));
             else
                 trace("No preexisting Service with that name was found");
 
             install();
+        }
+        catch (RuntimeException ex) {
+            throw ex;
+        }
+        catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    @Override
+    public final void deleteServiceInternal() {
+        try {
+            uninstall();
         }
         catch (RuntimeException ex) {
             throw ex;
@@ -254,7 +267,7 @@ public class LinuxService extends NonSMFServiceAdapter {
     }
 
     private void handlePreExisting(boolean force) {
-        if (target.isFile()) {
+        if (isPreExisting()) {
             if (force) {
                 target.delete();
                 // we call this same method to make sure they were deleted
@@ -266,18 +279,26 @@ public class LinuxService extends NonSMFServiceAdapter {
         }
     }
 
+    private boolean isPreExisting() {
+        return target.isFile();
+    }
+
     private void install() throws ProcessManagerException {
         createLinks();
     }
 
     // meant to be overridden bu subclasses
     int uninstall() {
+        if (target.delete())
+            trace("Deleted " + target);
+
         return deleteLinks();
     }
 
     private int deleteLinks() {
         trace("Deleting link files...");
         List<File> deathRow = new LinkedList<File>();
+
         if (!StringUtils.ok(targetName)) // invariant
             throw new RuntimeException("Programmer Internal Error");
 

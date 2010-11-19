@@ -41,6 +41,7 @@
 package com.sun.enterprise.admin.servermgmt.services;
 
 import com.sun.enterprise.universal.io.SmartFile;
+import com.sun.enterprise.util.ObjectAnalyzer;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.io.ServerDirs;
@@ -117,6 +118,11 @@ public class PlatformServicesInfo {
             appserverUser = user;
     }
 
+    @Override
+    public String toString() {
+        return ObjectAnalyzer.toString(this);
+    }
+    
     //////////////////////////////////////////////////////////////////////
     //////////////          private         //////////////////////////////
     //////////////////////////////////////////////////////////////////////
