@@ -137,13 +137,13 @@ public class ClusterUpgradeTest extends AdminBaseDevTest {
                 getURL("http://localhost:38080/SApp-war/test").trim();
             System.out.println(String.format("Response from instance 1: '%s'",
                 response));
-//            report("expected-response-instance-1",
-//                expectedResponse.equals(response));
+            report("expected-response-instance-1",
+                expectedResponse.equals(response));
             response = getURL("http://localhost:38081/SApp-war/test").trim();
             System.out.println(String.format("Response from instance 2: '%s'",
                 response));
-//            report("expected-response-instance-2",
-//                expectedResponse.equals(response));
+            report("expected-response-instance-2",
+                expectedResponse.equals(response));
 
             // stop cluster
             boolean stopRightThere = asadmin("stop-cluster", "upcluster");
