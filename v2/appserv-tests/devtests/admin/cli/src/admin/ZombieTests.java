@@ -112,7 +112,7 @@ public class ZombieTests extends AdminBaseDevTest {
     private static final String DOMAIN2 = "domain2";
     private static final String FORCE_OPTION = "--force";
     private static final String FILENAME_OPTION = "--filename";
-    private static final String BACKUP_FILE = "resources/domain2_2010_07_19_v00001.zip";
+    private static final String BACKUP_FILE = "resources/backups/domain2_2010_07_19_v00001.zip";
     private static final String BACKUP_DIR = System.getenv("APS_HOME") + "devtests/admin/cli/backupdir";
 
     private void stopDomainForce() {

@@ -39,8 +39,10 @@ import java.io.*;
 import java.net.*;
 
 /*
- * Dev test for DAS recovery commands (backup-domain, restore-domain, list-backups)
+ * Dev test for DAS recovery commands (backup-domain, restore-domain, 
+ * list-backups)
  * @author Yamini K B
+ * @author Chris Kasso
  */
 public class BackupCommandsTest extends AdminBaseDevTest {
 
@@ -129,6 +131,7 @@ public class BackupCommandsTest extends AdminBaseDevTest {
     }
 
     private void testBackupDirOption() {
+        AsadminReturn ret;
 
         // perform a backup
         report("backup-domain-with-backupdir", asadmin("backup-domain", "--backupdir", BACKUP_DIR, DOMAIN1));
@@ -139,10 +142,21 @@ public class BackupCommandsTest extends AdminBaseDevTest {
         // list backup invalid domain
         report("list-backups-with-invalid-operand", !asadmin("list-backups", "--backupdir", BACKUP_DIR, "foo"));
 
-        //test for absolute path
+        // test for absolute path
         report("list-backups-with-invalid-backupdir", !asadmin("list-backups", "--backupdir", "foo"));
 
+        // test recovery from backupdir.  Ensure backups within the domain 
+        // directory are preserved.
+        asadmin("backup-domain", "--backupdir", BACKUP_DIR, DOMAIN1);
+        ret = asadminWithOutput("list-backups");
+        String existingDomainBackups = ret.out;
+        report("restore-domain-with-valid-backupdir", asadmin("restore-domain", "--backupdir", BACKUP_DIR, DOMAIN1));
+        ret = asadminWithOutput("list-backups");
+
+        report("restore-domain-with-backupdir-preserves-backups", ret.out.equals(existingDomainBackups));
+
         cleanupBackupDir();
+
     }
 
     private void cleanupBackupDir() {
@@ -227,7 +241,7 @@ public class BackupCommandsTest extends AdminBaseDevTest {
     private static final String DOMAIN2 = "domain2";
     private static final String FORCE_OPTION = "--force";
     private static final String FILENAME_OPTION = "--filename";
-    private static final String BACKUP_FILE = "resources/domain2_2010_07_19_v00001.zip";
+    private static final String BACKUP_FILE = "resources/backups/domain2_2010_07_19_v00001.zip";
     private static final String BACKUP_DIR = System.getenv("APS_HOME") + "devtests/admin/cli/backupdir";
 
 }
