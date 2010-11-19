@@ -144,8 +144,7 @@ public interface JmxConnector extends ConfigBeanProxy, Injectable, Named, Proper
      *         {@link String }
      */
     @Attribute
-    @Pattern(regexp=PORT_PATTERN, message="must be between 1 and 65535, or "
-    + "reference a system property using the form ${SYSTEM_PROPERTY_NAME}")
+    @Pattern(regexp=PORT_PATTERN)
     String getPort();
 
     /**
