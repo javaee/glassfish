@@ -40,6 +40,7 @@
 
 package org.glassfish.deployment.admin;
 
+import com.sun.enterprise.admin.util.ColumnFormatter;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.CommandLock;
@@ -96,20 +97,25 @@ public class ListApplicationRefsCommand implements AdminCommand {
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
         final Logger logger = context.getLogger();
+        ColumnFormatter cf = new ColumnFormatter();
 
         ActionReport.MessagePart part = report.getTopMessagePart();
         int numOfApplications = 0;
-
+        if ( !terse && long_opt ) {
+            String[] headings= new String[] { "NAME", "STATUS" };
+            cf = new ColumnFormatter(headings);
+        }
         for (ApplicationRef ref : domain.getApplicationRefsInTarget(target)) {
-            ActionReport.MessagePart childPart = part.addChild();
-            String message = ref.getRef();
-            if( long_opt ){
-                message += getLongStatus(ref);
+            Object[] row = new Object[] { ref.getRef() };
+            if( !terse && long_opt ){
+                row = new Object[]{ ref.getRef(), getLongStatus(ref) };
             }
-            childPart.setMessage(message);
+            cf.addRow(row);
             numOfApplications++;
         }
-        if (numOfApplications == 0 && !terse) {
+        if (numOfApplications != 0) {
+            report.setMessage(cf.toString());
+        } else if ( !terse) {
             part.setMessage(localStrings.getLocalString("list.components.no.elements.to.list", "Nothing to List."));
         }
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
@@ -123,9 +129,9 @@ public class ListApplicationRefsCommand implements AdminCommand {
        }
        boolean isVersionEnabled = domain.isAppRefEnabledInTarget(ref.getRef(), target);
        if ( isVersionEnabled ) {
-           message = localStrings.getLocalString("list.applications.verbose.enabled", "(enabled)");
+           message = localStrings.getLocalString("list.applications.verbose.enabled", "enabled");
        } else {
-           message = localStrings.getLocalString("list.applications.verbose.disabled", "(disabled)");
+           message = localStrings.getLocalString("list.applications.verbose.disabled", "disabled");
        }
        return message;
    }

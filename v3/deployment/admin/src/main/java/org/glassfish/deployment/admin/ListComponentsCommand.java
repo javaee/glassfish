@@ -112,6 +112,7 @@ public class ListComponentsCommand implements AdminCommand {
 
         ActionReport.MessagePart part = report.getTopMessagePart();        
         int numOfApplications = 0;
+        List<String[]> rowList = new ArrayList<String[]>();
 
         if (type != null) {
              List<String> validTypeList = Arrays.asList(validTypes);
@@ -125,29 +126,67 @@ public class ListComponentsCommand implements AdminCommand {
         for (Application app : domain.getApplicationsInTarget(target)) {
                 if (!app.isLifecycleModule()) {
                     if (type==null || isApplicationOfThisType(app, type)) {
-                        ActionReport.MessagePart childPart = part.addChild();
-                        String message = app.getName() + " "
-                                    + getAppSnifferEngines(app, true);
-                        if( long_opt ){
-                            message += getLongStatus(app);
+                        String[] currentRow;
+                        if( !terse && long_opt ){
+                            currentRow = new String[]{ app.getName(),
+                                getAppSnifferEngines(app, true),
+                                getLongStatus(app) };
+                        } else {
+                            currentRow = new String[]{ app.getName(),
+                                getAppSnifferEngines(app, true)};
                         }
-                        if(resources){
-                            displayAppScopedResources(app.getName(), report, childPart);
-                        }
-                        if (subcomponents) {
-                            displaySubComponents(app.getName(), report, 
-                                childPart);
-                        }
-                        childPart.setMessage(message);
                         part.addProperty(app.getName(), 
                             getAppSnifferEngines(app, false));
+                        rowList.add(currentRow);
                         numOfApplications++;
+
                     }
                 }
         }
-        if (numOfApplications == 0 && !terse) {
-            part.setMessage(localStrings.getLocalString("list.components.no.elements.to.list", "Nothing to List."));            
+        // Starting output formatting
+        int numCols = 2;
+        String[] headings = new String[]{"NAME", "TYPE", "STATUS"};
+        int longestValue[] = new int[numCols];
+        if ( !terse && long_opt ) {
+            numCols = 3;
+            longestValue = new int[] {headings[0].length(), headings[1].length(), headings[2].length() };
         }
+        for (String v[] : rowList) {
+            for (int i = 0; i < v.length; i++) {
+                if (v[i].length() > longestValue[i]) {
+                   longestValue[i] = v[i].length();
+                }
+            }
+        }
+        StringBuilder formattedLineBuf = new StringBuilder();
+        for (int i = 0; i < numCols; i++) {
+            longestValue[i] += 2;
+            formattedLineBuf.append("%-")
+                    .append(longestValue[i])
+                    .append("s");
+        }
+        String formattedLine = formattedLineBuf.toString();
+        if ( !terse ) {
+            if (rowList.isEmpty()) {
+                part.setMessage(localStrings.getLocalString("list.components.no.elements.to.list", "Nothing to List."));
+            } else if ( long_opt ) {
+                ActionReport.MessagePart childPart = part.addChild();
+                childPart.setMessage(String.format(formattedLine, (Object[])headings ));
+            }
+        }
+        for (String v[] : rowList) {
+            StringBuilder sb = new StringBuilder();
+            ActionReport.MessagePart childPart = part.addChild();
+            sb.append(String.format(formattedLine, (Object[])v));
+            if(resources){
+                displayAppScopedResources(v[0], report, childPart);
+            }
+            if (subcomponents) {
+                displaySubComponents(v[0], report, childPart);
+            }
+            childPart.setMessage(sb.toString());
+        }
+	// Ending output formatting
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
 
@@ -155,9 +194,9 @@ public class ListComponentsCommand implements AdminCommand {
        String message = "";
        boolean isVersionEnabled = domain.isAppEnabledInTarget(app.getName(), target);
        if ( isVersionEnabled ) {
-           message = localStrings.getLocalString("list.applications.verbose.enabled", "(enabled)");
+           message = localStrings.getLocalString("list.applications.verbose.enabled", "enabled");
        } else {
-           message = localStrings.getLocalString("list.applications.verbose.disabled", "(disabled)");
+           message = localStrings.getLocalString("list.applications.verbose.disabled", "disabled");
        }
        return message;
    }
