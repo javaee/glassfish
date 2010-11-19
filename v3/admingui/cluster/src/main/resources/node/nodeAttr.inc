@@ -163,7 +163,7 @@
             </sun:property>
 
             <sun:property id="installdir2"  rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.InstallDir}" helpText="$resource{i18ncs.node.InstallDirHelp}">
-                <sun:textField id="installDir" text="#{pageSession.valueMap['installdir']}" columns="$int{60}" maxLength="#{sessionScope.fieldLengths['maxLength.node.InstallDir']}"  />
+                <sun:textField id="installDir" text="#{pageSession.valueMap['installdir']}"  styleClass="required" required="#{true}" columns="$int{60}" maxLength="#{sessionScope.fieldLengths['maxLength.node.InstallDir']}"  />
             </sun:property>
 
 
