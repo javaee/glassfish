@@ -64,11 +64,6 @@ public abstract class ServiceAdapter implements Service {
     }
 
     @Override
-    public void deleteServiceInternal() {
-        throw new RuntimeException(Strings.get("no_delete_yet"));
-    }
-
-    @Override
     public PlatformServicesInfo getInfo() {
         return info;
     }

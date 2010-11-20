@@ -39,21 +39,15 @@
  */
 package com.sun.enterprise.admin.servermgmt.services;
 
-import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.universal.process.ProcessManager;
 import com.sun.enterprise.universal.process.ProcessManagerException;
 import com.sun.enterprise.util.OS;
 import com.sun.enterprise.util.ObjectAnalyzer;
 import com.sun.enterprise.util.StringUtils;
-import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.io.ServerDirs;
 import java.io.*;
-import java.util.*;
-import java.util.Map;
 import static com.sun.enterprise.admin.servermgmt.services.Constants.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Warning: there is lots of file twiddling going on in this class.  It is the nature
@@ -110,13 +104,22 @@ public class WindowsService extends NonSMFServiceAdapter {
             if (!isInstalled())
                 throw new RuntimeException(Strings.get("not_installed"));
 
-            ProcessManager pm = new ProcessManager(targetWin32Exe.getAbsolutePath(), "uninstall");
+            if (!targetWin32Exe.canExecute())
+                throw new RuntimeException(Strings.get("cant_exec"));
+
+            ProcessManager pm = new ProcessManager(targetWin32Exe.getAbsolutePath(), "stop");
+            pm.setEcho(false);
             pm.execute();
+
+            pm = new ProcessManager(targetWin32Exe.getAbsolutePath(), "uninstall");
+            pm.setEcho(false);
+            pm.execute();
+
             trace("Uninstalled Windows Service");
-            
+
             if (!targetWin32Exe.delete())
                 targetWin32Exe.deleteOnExit();
-            
+
             if (!targetXml.delete())
                 targetXml.deleteOnExit();
 
@@ -206,9 +209,7 @@ public class WindowsService extends NonSMFServiceAdapter {
         if (targetDir == null || targetWin32Exe == null || targetXml == null)
             throw new RuntimeException(Strings.get("internal.error", "call to isInstall() before initializeInternal()"));
 
-        return targetWin32Exe.isFile()
-                && targetWin32Exe.canExecute()
-                && targetXml.isFile();
+        return targetWin32Exe.isFile() && targetXml.isFile();
     }
 
     private void setSourceWin32Exe() throws IOException {
@@ -274,6 +275,7 @@ public class WindowsService extends NonSMFServiceAdapter {
             return 0;
         // it is NOT an error to not be able to uninstall
         ProcessManager mgr = new ProcessManager(targetWin32Exe.getPath(), "uninstall");
+        mgr.setEcho(false);
         mgr.execute();
         trace("Uninstall STDERR: " + mgr.getStderr());
         trace("Uninstall STDOUT: " + mgr.getStdout());
@@ -297,6 +299,7 @@ public class WindowsService extends NonSMFServiceAdapter {
         }
         else {
             ProcessManager mgr = new ProcessManager(targetWin32Exe.getPath(), "install");
+            mgr.setEcho(false);
             mgr.execute();
             int ret = mgr.getExitValue();
 

@@ -372,6 +372,7 @@ public class LinuxService extends NonSMFServiceAdapter {
     private void createLink(File link, String[] cmds) {
         try {
             ProcessManager mgr = new ProcessManager(cmds);
+            mgr.setEcho(false);
             mgr.execute();
             trace("Create Link Output: " + mgr.getStdout() + mgr.getStderr());
             link.setExecutable(true, false);
