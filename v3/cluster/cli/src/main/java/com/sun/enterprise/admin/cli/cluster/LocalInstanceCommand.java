@@ -484,7 +484,7 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
                 dashost = programOpts.getHost();
             }
             String hostname = InetAddress.getLocalHost().getHostName();
-            if (hostname.equals(dashost) || "localhost".equals(dashost) || NetUtils.IsThisHostLocal(dashost)) {
+            if (hostname.equals(dashost) || NetUtils.isThisHostLocal(dashost)) {
                 hostname = "localhost";
             }
             File f = new File(parent, hostname);

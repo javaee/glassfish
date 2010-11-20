@@ -85,7 +85,7 @@ public final class PortManager {
             if (!StringUtils.ok(host))
                 throw new TransactionFailure(Strings.get("PortManager.noHost", serverName));
 
-            isLocal = NetUtils.IsThisHostLocal(host);
+            isLocal = NetUtils.isThisHostLocal(host);
 
 
             allServers = domain.getServers().getServer();
@@ -193,7 +193,7 @@ public final class PortManager {
         for (Server server : allServers) {
             if (server.isDas())
                 serversOnHost.add(new ServerPorts(domain, server));
-            else if (NetUtils.IsThisHostLocal(server.getAdminHost())) {
+            else if (NetUtils.isThisHostLocal(server.getAdminHost())) {
                 serversOnHost.add(new ServerPorts(domain, server));
             }
         }

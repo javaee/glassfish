@@ -251,8 +251,8 @@ public class ValidateNodeCommand implements AdminCommand {
             if (! NetUtils.isEqual(value, configValue)) {
                 // If they both refer to the localhost then consider them
                 // them same.
-                if ( ! (NetUtils.IsThisHostLocal(value) &&
-                        NetUtils.IsThisHostLocal(configValue)) ) {
+                if ( ! (NetUtils.isThisHostLocal(value) &&
+                        NetUtils.isThisHostLocal(configValue)) ) {
                     throw new CommandValidationException(
                         Strings.get("attribute.mismatch",
                             propname, value, configValue));

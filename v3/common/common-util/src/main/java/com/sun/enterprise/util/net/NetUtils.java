@@ -50,7 +50,11 @@ import java.util.logging.Logger;
 
 public class NetUtils {
 
-    private final static boolean asDebug = Boolean.parseBoolean(System.getenv("AS_DEBUG"));
+    public static final int MAX_PORT = 65535;
+
+    private final static boolean asDebug =
+                                Boolean.parseBoolean(System.getenv("AS_DEBUG"));
+
     private static void printd(String string) {
         if (asDebug) {
             System.out.println(string);
@@ -64,14 +68,65 @@ public class NetUtils {
 
     private NetUtils() {
     }
-    public static final int MAX_PORT = 65535;
 
-    public static boolean isThisHostLocal(final String hostname) {
-        return IsThisHostLocal(hostname);
-    }
-    
-    /////////////  BEGIN  Newer methods added June 2010 ////////////////////
-    public static boolean IsThisHostLocal(String hostname) {
+    /**
+     * Return true if hostname represents the current machine.
+     * A null or empty hostname is considered local, as is the
+     * name "localhost".  Otherwise, all the IP addresses
+     * corresponding to hostname are compared with all the IP addresses
+     * corresponding to "localhost", as well as all the IP addresses
+     * for all the network interfaces on this machine.  Note that
+     * hostname can also be an IP address in string form.
+     *
+     * @return true if hostname is the local host
+     */
+    public static boolean isThisHostLocal(String hostname) {
+        // optimize common cases
+        if (hostname == null || hostname.length() == 0 ||
+                hostname.equalsIgnoreCase("localhost"))
+            return true;
+
+        // now check all the addresses of "localhost"
+        InetAddress hostAddrs[] = null;
+        try {
+            hostAddrs = InetAddress.getAllByName(hostname);
+            InetAddress localHostAddrs[] =
+                InetAddress.getAllByName("localhost");
+            if (localHostAddrs != null && hostAddrs != null) {
+                for (InetAddress lia : localHostAddrs) {
+                    for (InetAddress ia : hostAddrs) {
+                        if (lia.equals(ia))
+                            return true;
+                    }
+                }
+            }
+        } catch (UnknownHostException ex) {
+            // ignore it
+        }
+
+        // it's not localhost, perhaps it's one of the addresses of this host?
+        Enumeration<NetworkInterface> eni = null;
+        try {
+            eni = NetworkInterface.getNetworkInterfaces();
+        } catch (SocketException ex) {
+            // ignore it
+        }
+        if (eni != null && hostAddrs != null) {
+            while (eni.hasMoreElements()) {
+                NetworkInterface ni = eni.nextElement();
+                for (InterfaceAddress intf : ni.getInterfaceAddresses()) {
+                    for (InetAddress ia : hostAddrs) {
+                        if (intf.getAddress().equals(ia))
+                            return true;
+                    }
+                }
+            }
+        }
+        return false;   // nothing matched, not local
+
+        /*
+         * For reference, here's the old code...
+         *
         // come on JDK!  Why is this so #$@% difficult!?!
         // if you can think of something better -- go for it!!!
         // use IP addresses because one hostname can have more than one IP address!
@@ -124,6 +179,7 @@ public class NetUtils {
                     return true;
 
         return false;
+        */
     }
 
     /**
@@ -181,7 +237,6 @@ public class NetUtils {
         }
     }
 
-    /////////////  END  Newer methods added June 2010 ////////////////////
     static public Socket getClientSocket(final String host, final int port, final int msecTimeout) {
         class SocketFetcher implements Runnable {
 

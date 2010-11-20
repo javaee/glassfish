@@ -263,7 +263,7 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
             if (nodeHost == null || nodeHost.length() == 0) {
                 return false;
             }
-            return NetUtils.IsThisHostLocal(nodeHost);
+            return NetUtils.isThisHostLocal(nodeHost);
         }
 
         public static boolean nodeInUse(Node node) {

@@ -91,7 +91,7 @@ public class CreateNodeConfigCommand implements AdminCommand {
 
         //validate installdir if passed and running on localhost
         if (nodehost != null){
-            if (NetUtils.IsThisHostLocal(nodehost) && installdir != null){
+            if (NetUtils.isThisHostLocal(nodehost) && installdir != null){
                 TokenResolver resolver = null;
 
                 // Create a resolver that can replace system properties in strings

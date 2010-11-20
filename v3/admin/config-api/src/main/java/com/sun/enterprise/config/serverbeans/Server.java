@@ -670,7 +670,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                 Node n = domain.getNodeNamed(node);
                 if (n != null) {
                     String nodeHost = n.getNodeHost();
-                    if (nodeHost == null || nodeHost.equals("localhost") || NetUtils.IsThisHostLocal(nodeHost)) { // instance on same host as DAS
+                    if (NetUtils.isThisHostLocal(nodeHost)) { // instance on same host as DAS
                         int dasAdminPort = domain.getServerNamed("server").getAdminPort();
                         // Don't use the getAdminPort duck type method directly on the instance being created
                         int instanceAdminPort = new ServerHelper(instance, config).getAdminPort();

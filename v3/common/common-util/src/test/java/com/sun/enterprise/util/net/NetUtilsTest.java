@@ -106,7 +106,7 @@ public class NetUtilsTest {
         for (int i = 0; i < hostnames.length; i++) {
             String hostname = hostnames[i];
             boolean expResult = expected[i];
-            boolean result = NetUtils.IsThisHostLocal(hostname);
+            boolean result = NetUtils.isThisHostLocal(hostname);
             assertEquals("hostname: " + hostname + ", result: " + result, expResult, result);
         }
     }
