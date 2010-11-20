@@ -57,10 +57,10 @@ public class StatementLeakProbeProvider {
      * Emits probe event/notification that the given connection pool
      * <code>poolName</code>has got a potential statement leak event.
      *
-     * @param connectionPoolName for which statement leak occurred
+     * @param poolName for which statement leak occurred
      */
     @Probe(name = JdbcRAConstants.POTENTIAL_STATEMENT_LEAK)
-    public void potentialStatementLeakEvent(@ProbeParam("connectionPoolName") String connectionPoolName,
+    public void potentialStatementLeakEvent(@ProbeParam("poolName") String poolName,
                                             @ProbeParam("appName") String appName,
                                             @ProbeParam("moduleName") String moduleName) {
     }

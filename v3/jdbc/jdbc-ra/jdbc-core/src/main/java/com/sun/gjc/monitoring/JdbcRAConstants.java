@@ -64,7 +64,7 @@ public interface JdbcRAConstants {
     /**
      * Represents caching of sql query event.
      */
-    public static final String CACHE_SQL_QUERY = "cacheSqlQueryEvent";
+    public static final String TRACE_SQL = "traceSQLEvent";
 
     public static final String POTENTIAL_STATEMENT_LEAK = "potentialStatementLeakEvent";
     
