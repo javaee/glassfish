@@ -339,11 +339,10 @@ public class RARUtils {
             ClassLoader commonClassLoader =
                     ConnectorRuntime.getRuntime().getClassLoaderHierarchy().getCommonClassLoader();
             if (f.isDirectory()) {
-                Set<URL> urls = new LinkedHashSet<URL>();
+                List<URL> urls = new ArrayList<URL>();
                 urls.add(f.toURI().toURL());
                 appendURLs(urls, f);
                 cl = new URLClassLoader(urls.toArray(new URL[urls.size()]), commonClassLoader);
-
             } else {
                 cl = new ConnectorRARClassLoader(file, commonClassLoader);
             }
@@ -361,7 +360,7 @@ public class RARUtils {
         }
     }
 
-    private static void appendURLs(Set<URL> urls, File f) throws MalformedURLException {
+    private static void appendURLs(List<URL> urls, File f) throws MalformedURLException {
         for (File file : f.listFiles()) {
             if (file.getName().toUpperCase().endsWith(".JAR")) {
                 urls.add(file.toURI().toURL());
