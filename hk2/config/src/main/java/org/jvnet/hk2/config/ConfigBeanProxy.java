@@ -108,7 +108,11 @@ public interface ConfigBeanProxy {
 
         public static ConfigBeanProxy getParent(ConfigBeanProxy self) {
             Dom dom = Dom.unwrap(self);
-            return dom.parent().createProxy();
+            if (dom.parent()!=null) {
+                return dom.parent().createProxy();
+            } else {
+                return null;
+            }
         }
 
         public static <T extends ConfigBeanProxy> T getParent(ConfigBeanProxy self, Class<T> c) {
