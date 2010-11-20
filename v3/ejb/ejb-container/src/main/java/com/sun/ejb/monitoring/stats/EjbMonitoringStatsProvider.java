@@ -151,6 +151,8 @@ public abstract class EjbMonitoringStatsProvider {
                     StatsProviderManager.unregister(monitor);
                 }
             }
+
+            methodMonitorMap.clear();
         }
     }
 
