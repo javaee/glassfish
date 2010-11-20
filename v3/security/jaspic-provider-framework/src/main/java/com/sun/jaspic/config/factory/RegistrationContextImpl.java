@@ -87,6 +87,7 @@ final class RegistrationContextImpl implements RegistrationContext {
         return isPersistent;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (o == null || !(o instanceof RegistrationContext)) {
             return false;
@@ -95,6 +96,15 @@ final class RegistrationContextImpl implements RegistrationContext {
         return ( EntryInfo.matchStrings(
             messageLayer, target.getMessageLayer()) &&
             EntryInfo.matchStrings(appContext, target.getAppContext()) &&
-            EntryInfo.matchStrings(description, target.getDescription()) );
+            isPersistent() == target.isPersistent() );
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 17 * hash + (this.messageLayer != null ? this.messageLayer.hashCode() : 0);
+        hash = 17 * hash + (this.appContext != null ? this.appContext.hashCode() : 0);
+        hash = 17 * hash + (this.isPersistent ? 1 : 0);
+        return hash;
     }
 }

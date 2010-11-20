@@ -56,6 +56,7 @@ import javax.security.auth.message.config.AuthConfigFactory.RegistrationContext;
  * @author Bobby Bissett
  */
 final class EntryInfo {
+
     private final String className;
     private final Map<String, String> properties;
     private List<RegistrationContext> regContexts;
@@ -67,10 +68,31 @@ final class EntryInfo {
     EntryInfo(String className, Map<String, String> properties) {
         if (className == null) {
             throw new IllegalArgumentException(
-                "Class name for registration entry cannot be null");
+                    "Class name for registration entry cannot be null");
         }
         this.className = className;
         this.properties = properties;
+    }
+
+    /*
+     * THIS METHOD MAY BE USED FOR CONSTRUCTOR OR REGISTRATION ENTRIES
+     * A helper method for creating a registration entry with
+     * one registration context. If the context is null, this
+     * entry is a constructor entry.
+     */
+    EntryInfo(String className, Map<String, String> properties,
+            RegistrationContext ctx) {
+        this.className = className;
+        this.properties = properties;
+        if (ctx != null) {
+            RegistrationContext ctxImpl =
+                    new RegistrationContextImpl(ctx.getMessageLayer(),
+                    ctx.getAppContext(), ctx.getDescription(), ctx.isPersistent());
+            List<RegistrationContext> newList =
+                    new ArrayList<RegistrationContext>(1);
+            newList.add(ctxImpl);
+            this.regContexts = newList;
+        }
     }
 
     /*
@@ -79,36 +101,26 @@ final class EntryInfo {
      * context will contain at least a non-null layer or appContextId.
      */
     EntryInfo(String className, Map<String, String> properties,
-        List<RegistrationContext> ctxs) {
+            List<RegistrationContext> ctxs) {
 
         if (ctxs == null || ctxs.isEmpty()) {
             throw new IllegalArgumentException(
-                "Registration entry must contain one or" +
-                "more registration contexts");
+                    "Registration entry must contain one or"
+                    + "more registration contexts");
         }
         this.className = className;
         this.properties = properties;
         this.regContexts = ctxs;
     }
 
-    /*
-     * A helper method for creating a registration entry with
-     * one registration context. If the context is null, this
-     * entry is a constructor entry.
-     */
-    EntryInfo(String className, Map<String, String> properties,
-        RegistrationContext ctx) {
-
-        this.className = className;
-        this.properties = properties;
-        if (ctx != null) {
-            RegistrationContext ctxImpl =
-                new RegistrationContextImpl(ctx.getMessageLayer(),
-                ctx.getAppContext(), ctx.getDescription(), ctx.isPersistent());
-            List<RegistrationContext> newList =
-                new ArrayList<RegistrationContext>(1);
-            newList.add(ctxImpl);
-            this.regContexts = newList;
+    EntryInfo(EntryInfo parent) {
+        this.className = parent.className;
+        this.properties = parent.properties;
+        if (parent.regContexts != null) {
+            this.regContexts = new ArrayList<RegistrationContext>(1);
+            for (RegistrationContext rc : parent.regContexts) {
+                this.regContexts.add(rc);
+            }
         }
     }
 
@@ -130,7 +142,7 @@ final class EntryInfo {
 
     /*
      * Compares an entry info to this one. They are
-     * considered equal if:
+     * considered to match if:
      * - they are both constructor or are both registration entries
      * - the classnames are equal or are both null
      * - the property maps are equal or are both null
@@ -142,13 +154,13 @@ final class EntryInfo {
      *
      * @see com.sun.enterprise.security.jmac.config.RegStoreFileParser
      */
-    boolean equals(EntryInfo target) {
+    boolean matchConstructors(EntryInfo target) {
         if (target == null) {
             return false;
         }
-        return ( !(isConstructorEntry() ^ target.isConstructorEntry()) &&
-            matchStrings(className, target.getClassName()) &&
-            matchMaps(properties, target.getProperties()) );
+        return (!(isConstructorEntry() ^ target.isConstructorEntry())
+                && matchStrings(className, target.getClassName())
+                && matchMaps(properties, target.getProperties()));
     }
 
     /*
@@ -178,6 +190,4 @@ final class EntryInfo {
         }
         return m1.equals(m2);
     }
-
-
 }

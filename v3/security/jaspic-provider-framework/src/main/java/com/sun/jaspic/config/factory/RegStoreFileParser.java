@@ -49,12 +49,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.security.auth.message.config.AuthConfigFactory.RegistrationContext;
-
 
 /**
  * Used by GFServerConfigProvider to parse the configuration file. If
@@ -68,7 +68,6 @@ public final class RegStoreFileParser {
 
     private static final Logger logger =
             Logger.getLogger(RegStoreFileParser.class.getName());
-
     private static final String SEP = ":";
     private static final String CON_ENTRY = "con-entry";
     private static final String REG_ENTRY = "reg-entry";
@@ -76,8 +75,7 @@ public final class RegStoreFileParser {
     private static final String LAYER = "layer";
     private static final String APP_CTX = "app-ctx";
     private static final String DESCRIPTION = "description";
-    private static final String [] INDENT = { "", "  ", "    " };
-
+    private static final String[] INDENT = {"", "  ", "    "};
     private final File confFile;
     private List<EntryInfo> entries;
 
@@ -93,52 +91,43 @@ public final class RegStoreFileParser {
     RegStoreFileParser(String pathParent, String pathChild, boolean create) {
         confFile = new File(pathParent, pathChild);
         try {
-            if (confFile.exists()) {
-                loadEntries();
-            } else {
-                if (create) {
-                    synchronized (confFile) {
-                        entries = GFAuthConfigFactory.getDefaultProviders();
-                        writeEntries();
-                    }
-                } else {
-                    if (logger.isLoggable(Level.FINER)) {
-                        logger.log(Level.FINER, "jmac.factory_file_not_found",
-                            pathParent + File.pathSeparator + pathChild);
-                    }
-                }
-            }
+            loadEntries();
         } catch (IOException ioe) {
             logWarningDefault(ioe);
         } catch (IllegalArgumentException iae) {
             logWarningDefault(iae);
-        }
-
-        // file not parsed
-        if (entries == null) {
-            entries = GFAuthConfigFactory.getDefaultProviders();
         }
     }
 
     private void logWarningUpdated(Exception exception) {
         if (logger.isLoggable(Level.WARNING)) {
             logger.log(Level.WARNING,
-                "jmac.factory_could_not_persist", exception.toString());
+                    "jmac.factory_could_not_persist", exception.toString());
         }
     }
 
     private void logWarningDefault(Exception exception) {
         if (logger.isLoggable(Level.WARNING)) {
             logger.log(Level.WARNING,
-                "jmac.factory_could_not_read", exception.toString());
+                    "jmac.factory_could_not_read", exception.toString());
         }
     }
 
     /*
      * Returns the in-memory list of entries.
+     * MUST Hold exclusive lock on calling factory while processing entries
      */
     List<EntryInfo> getPersistedEntries() {
         return entries;
+        /*
+        ArrayList<EntryInfo> rvalue = new ArrayList<EntryInfo>();
+        synchronized (confFile) {
+        for (EntryInfo e : entries) {
+        rvalue.add(new EntryInfo(e));
+        }
+        return rvalue;
+        }
+         */
     }
 
     /*
@@ -181,7 +170,7 @@ public final class RegStoreFileParser {
      * configuration file should be written.
      */
     private boolean checkAndAddToList(String className,
-        RegistrationContext ctx, Map props) {
+            RegistrationContext ctx, Map props) {
 
         // convention is to use null for empty properties
         if (props != null && props.isEmpty()) {
@@ -194,11 +183,6 @@ public final class RegStoreFileParser {
         if (entry == null) {
             entries.add(newEntry);
             return true;
-        }
-
-        // if constructor entry, don't need to check reg context
-        if (entry.isConstructorEntry()) {
-            return false;
         }
 
         // otherwise, check reg contexts to see if there is a match
@@ -220,20 +204,30 @@ public final class RegStoreFileParser {
      */
     private boolean checkAndRemoveFromList(RegistrationContext target) {
         boolean retValue = false;
-        for (EntryInfo info : entries) {
-            if (info.isConstructorEntry()) {
-                continue;
-            }
+        try {
+            ListIterator<EntryInfo> lit = entries.listIterator();
+            while (lit.hasNext()) {
 
-            Iterator<RegistrationContext> iter =
-                    info.getRegContexts().iterator();
-            while (iter.hasNext()) {
-                RegistrationContext ctx = iter.next();
-                if (ctx.equals(target)) {
-                    iter.remove();
-                    retValue = true;
+                EntryInfo info = lit.next();
+                if (info.isConstructorEntry()) {
+                    continue;
+                }
+
+                Iterator<RegistrationContext> iter =
+                        info.getRegContexts().iterator();
+                while (iter.hasNext()) {
+                    RegistrationContext ctx = iter.next();
+                    if (ctx.equals(target)) {
+                        iter.remove();
+                        if (info.getRegContexts().isEmpty()) {
+                            lit.remove();
+                        }
+                        retValue = true;
+                    }
                 }
             }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
         return retValue;
     }
@@ -245,7 +239,7 @@ public final class RegStoreFileParser {
      */
     private EntryInfo getMatchingRegEntry(EntryInfo target) {
         for (EntryInfo info : entries) {
-            if (info.equals(target)) {
+            if (!info.isConstructorEntry() && info.matchConstructors(target)) {
                 return info;
             }
         }
@@ -257,21 +251,25 @@ public final class RegStoreFileParser {
      * current entries.
      */
     private void writeEntries() throws IOException {
-        if (!confFile.canWrite() && logger.isLoggable(Level.WARNING)) {
+        if (confFile.exists() && !confFile.canWrite()
+                && logger.isLoggable(Level.WARNING)) {
             logger.log(Level.WARNING, "jmac.factory_cannot_write_file",
-                confFile.getPath());
+                    confFile.getPath());
         }
-        clearExistingFile();
-        PrintWriter out = new PrintWriter(confFile);
-        int indent = 0;
-        for (EntryInfo info : entries) {
-            if (info.isConstructorEntry()) {
-                writeConEntry(info, out, indent);
-            } else {
-                writeRegEntry(info, out, indent);
+        boolean entriesToWrite = !entries.isEmpty();
+        clearExistingFile(entriesToWrite);
+        if (entriesToWrite) {
+            PrintWriter out = new PrintWriter(confFile);
+            int indent = 0;
+            for (EntryInfo info : entries) {
+                if (info.isConstructorEntry()) {
+                    writeConEntry(info, out, indent);
+                } else {
+                    writeRegEntry(info, out, indent);
+                }
             }
+            out.close();
         }
-        out.close();
     }
 
     /*
@@ -293,7 +291,7 @@ public final class RegStoreFileParser {
         out.println(INDENT[i] + info.getClassName());
         Map<String, String> props = info.getProperties();
         if (props != null) {
-            for (Map.Entry<String,String> val : props.entrySet()) {
+            for (Map.Entry<String, String> val : props.entrySet()) {
                 out.println(INDENT[i] + val.getKey() + SEP + val.getValue());
             }
         }
@@ -327,19 +325,22 @@ public final class RegStoreFileParser {
                 out.println(INDENT[i] + APP_CTX + SEP + ctx.getAppContext());
             }
             if (ctx.getDescription() != null) {
-                out.println(INDENT[i] + DESCRIPTION +
-                    SEP + ctx.getDescription());
+                out.println(INDENT[i] + DESCRIPTION
+                        + SEP + ctx.getDescription());
             }
             out.println(INDENT[--i] + "}");
         }
         out.println(INDENT[--i] + "}");
     }
 
-    private void clearExistingFile() throws IOException {
+    private void clearExistingFile(boolean recreate) throws IOException {
         if (confFile.exists()) {
             confFile.delete();
-        }
-        confFile.createNewFile();
+        } else if (recreate) {
+            logger.log(Level.INFO, "jmac.factory_creating_conf_file",
+                    confFile.getPath());
+            confFile.createNewFile();
+        } 
     }
 
     /*
@@ -348,17 +349,27 @@ public final class RegStoreFileParser {
      * entries are stored or deleted.
      */
     private void loadEntries() throws IOException {
-        entries = new ArrayList<EntryInfo>();
-        BufferedReader reader = new BufferedReader(new FileReader(confFile));
-        String line = reader.readLine();
-        while (line != null) {
-            String trimLine = line.trim(); // can't trim readLine() result
-            if (trimLine.startsWith(CON_ENTRY)) {
-                entries.add(readConEntry(reader));
-            } else if (trimLine.startsWith(REG_ENTRY)) {
-                entries.add(readRegEntry(reader));
+        synchronized (confFile) {
+            entries = new ArrayList<EntryInfo>();
+            if (confFile.exists()) {
+                BufferedReader reader = new BufferedReader(new FileReader(confFile));
+                String line = reader.readLine();
+                while (line != null) {
+                    String trimLine = line.trim(); // can't trim readLine() result
+                    if (trimLine.startsWith(CON_ENTRY)) {
+                        entries.add(readConEntry(reader));
+                    } else if (trimLine.startsWith(REG_ENTRY)) {
+                        entries.add(readRegEntry(reader));
+                    }
+                    line = reader.readLine();
+                }
+            } else {
+                if (logger.isLoggable(Level.FINER)) {
+                    logger.log(Level.FINER, "jmac.factory_file_not_found",
+                            confFile.getParent() + File.pathSeparator
+                            + confFile.getPath());
+                }
             }
-            line = reader.readLine();
         }
     }
 
@@ -376,7 +387,7 @@ public final class RegStoreFileParser {
      * appearance of the ":" character.
      */
     private Map<String, String> readProperties(BufferedReader reader)
-        throws IOException {
+            throws IOException {
 
         String line = reader.readLine().trim();
         if (line.equals("}")) {
@@ -385,7 +396,7 @@ public final class RegStoreFileParser {
         Map<String, String> properties = new HashMap<String, String>();
         while (!line.equals("}")) {
             properties.put(line.substring(0, line.indexOf(SEP)),
-                line.substring(line.indexOf(SEP) + 1, line.length()));
+                    line.substring(line.indexOf(SEP) + 1, line.length()));
             line = reader.readLine().trim();
         }
         return properties;
@@ -395,7 +406,7 @@ public final class RegStoreFileParser {
         String className = null;
         Map<String, String> properties = null;
         List<RegistrationContext> ctxs =
-            new ArrayList<RegistrationContext>();
+                new ArrayList<RegistrationContext>();
         String line = reader.readLine().trim();
         while (!line.equals("}")) {
             if (line.startsWith(CON_ENTRY)) {
@@ -411,7 +422,7 @@ public final class RegStoreFileParser {
     }
 
     private RegistrationContext readRegContext(BufferedReader reader)
-        throws IOException {
+            throws IOException {
 
         String layer = null;
         String appCtx = null;
@@ -419,7 +430,7 @@ public final class RegStoreFileParser {
         String line = reader.readLine().trim();
         while (!line.equals("}")) {
             String value = line.substring(line.indexOf(SEP) + 1,
-                line.length());
+                    line.length());
             if (line.startsWith(LAYER)) {
                 layer = value;
             } else if (line.startsWith(APP_CTX)) {
@@ -431,5 +442,4 @@ public final class RegStoreFileParser {
         }
         return new RegistrationContextImpl(layer, appCtx, description, true);
     }
-
 }
