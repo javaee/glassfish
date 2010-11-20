@@ -245,8 +245,6 @@ public class DisableCommand extends UndeployCommandParameters implements AdminCo
          */
         ApplicationInfo appInfo = deployment.get(appName);
         if (env.isDas()) {
-            events.send(new Event<ApplicationInfo>(Deployment.APPLICATION_DISABLED, appInfo));
-
             try {
                 DeploymentCommandUtils.replicateEnableDisableToContainingCluster(
                         "disable", domain, target, appName, habitat, context, this);
@@ -265,6 +263,11 @@ public class DisableCommand extends UndeployCommandParameters implements AdminCo
                 } catch(TransactionFailure e) {
                     logger.warning("failed to set enable attribute for " + appName);
                 }
+            }
+            if (env.isDas()) {
+                // if it's non DAS target, we should still send this 
+                // DISABLE event on DAS so proper clean up can be triggered
+                events.send(new Event<ApplicationInfo>(Deployment.APPLICATION_DISABLED, appInfo));
             }
             return;
         }

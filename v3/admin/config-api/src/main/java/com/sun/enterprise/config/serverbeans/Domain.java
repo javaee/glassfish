@@ -769,6 +769,20 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
         public static boolean isAppRefEnabledInTarget(
             Domain me, String appName, String target) {
             boolean found = false;
+
+            Cluster containingCluster = getClusterForInstance(me, target);
+            if (containingCluster != null) {
+                // if this is a clustered instance, check the enable 
+                // attribute of its enclosing cluster first
+                // and return false if the cluster level enable attribute
+                // is false
+                ApplicationRef clusterRef = getApplicationRefInTarget(me, appName, containingCluster.getName());
+                if (clusterRef == null || 
+                    !Boolean.valueOf(clusterRef.getEnabled())) {
+                    return false;
+                }
+            }
+
             for (ApplicationRef ref : 
                 getApplicationRefsInTarget(me, target, true)) {
                 if (ref.getRef().equals(appName)) {
