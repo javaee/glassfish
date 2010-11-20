@@ -47,13 +47,13 @@ import java.util.logging.Logger;
 import com.sun.enterprise.admin.launcher.GFLauncher;
 import com.sun.enterprise.admin.launcher.GFLauncherException;
 import com.sun.enterprise.admin.launcher.GFLauncherInfo;
-import com.sun.enterprise.universal.StringUtils;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.process.ProcessStreamDrainer;
 import com.sun.enterprise.util.HostAndPort;
 import com.sun.enterprise.util.io.ServerDirs;
 import com.sun.enterprise.util.net.NetUtils;
 import org.glassfish.api.admin.CommandException;
+import static com.sun.enterprise.util.StringUtils.ok;
 import static com.sun.enterprise.admin.cli.CLIConstants.WAIT_FOR_DAS_TIME_MS;
 
 /**
@@ -133,7 +133,7 @@ public class StartServerHelper{
 
                 ProcessStreamDrainer psd = launcher.getProcessStreamDrainer();
                 String output = psd.getOutErrString();
-                if(StringUtils.ok(output))
+                if(ok(output))
                     throw new CommandException(strings.get("serverDiedOutput",
                             sname, exitCode, output));
                 else

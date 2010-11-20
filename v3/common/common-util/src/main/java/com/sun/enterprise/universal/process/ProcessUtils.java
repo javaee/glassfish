@@ -39,11 +39,13 @@
  */
 package com.sun.enterprise.universal.process;
 
-import com.sun.enterprise.universal.StringUtils;
-import com.sun.enterprise.universal.io.*;
-import com.sun.enterprise.util.*;
 import java.io.*;
 import java.lang.management.ManagementFactory;
+
+import com.sun.enterprise.universal.io.*;
+import com.sun.enterprise.util.*;
+
+import static com.sun.enterprise.util.StringUtils.ok;
 
 /**
  * Includes a somewhat kludgy way to get the pid for "me".
@@ -167,7 +169,7 @@ public final class ProcessUtils {
             System.out.println("------------------------------------------------");
         }
 
-        if (StringUtils.ok(out)) {
+        if (ok(out)) {
             if (out.indexOf("" + aPid) >= 0)
                 return true;
             else
@@ -195,7 +197,7 @@ public final class ProcessUtils {
             String pids = ManagementFactory.getRuntimeMXBean().getName();
             int index = -1;
 
-            if (StringUtils.ok(pids) && (index = pids.indexOf('@')) >= 0) {
+            if (ok(pids) && (index = pids.indexOf('@')) >= 0) {
                 tempPid = Integer.parseInt(pids.substring(0, index));
             }
         }
@@ -210,14 +212,14 @@ public final class ProcessUtils {
         if (OS.isWindows()) {
             tempPaths = System.getenv("Path");
 
-            if (!StringUtils.ok(tempPaths))
+            if (!ok(tempPaths))
                 tempPaths = System.getenv("PATH"); // give it a try
         }
         else {
             tempPaths = System.getenv("PATH");
         }
 
-        if (StringUtils.ok(tempPaths))
+        if (ok(tempPaths))
             paths = tempPaths.split(File.pathSeparator);
         else
             paths = new String[0];

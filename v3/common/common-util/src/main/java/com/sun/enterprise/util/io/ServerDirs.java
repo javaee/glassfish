@@ -39,12 +39,12 @@
  */
 package com.sun.enterprise.util.io;
 
-import com.sun.enterprise.universal.StringUtils;
+import java.io.*;
+import java.io.File;
+
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.util.ObjectAnalyzer;
-import java.io.*;
-import java.io.File;
 
 /**
  * The hierarchy of directories above a running DAS or server instance can get

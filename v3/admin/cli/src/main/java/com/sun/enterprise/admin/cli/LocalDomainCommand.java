@@ -47,8 +47,6 @@ import java.io.*;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
 
-import com.sun.enterprise.universal.StringUtils;
-
 /**
  * A class that's supposed to capture all the behavior common to operation
  * on a "local" domain.  It's supposed to act as the abstract base class that

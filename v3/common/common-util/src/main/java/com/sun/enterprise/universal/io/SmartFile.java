@@ -40,12 +40,13 @@
 
 package com.sun.enterprise.universal.io;
 
-import com.sun.enterprise.universal.StringUtils;
-import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
 import java.io.*;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
 
 /**
  * A class for sanitizing Files.

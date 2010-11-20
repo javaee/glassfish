@@ -46,8 +46,9 @@ import java.util.jar.*;
 import java.util.logging.Logger;
 
 import com.sun.enterprise.util.io.FileUtils;
-import com.sun.enterprise.universal.StringUtils;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+
+import static com.sun.enterprise.util.StringUtils.ok;
 
 /**
  * This class is responsible for handling the Remote Server response.
@@ -80,7 +81,7 @@ public class RemoteResponseManager implements ResponseManager {
         responseStream = new ByteArrayInputStream(baos.toByteArray());
         response = baos.toString();
         
-        if(!StringUtils.ok(response))
+        if(!ok(response))
             throw new RemoteFailureException(strings.get("emptyResponse"));
         
         logger.finer("------- RAW RESPONSE  ---------");

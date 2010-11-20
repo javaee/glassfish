@@ -40,8 +40,11 @@
 
 package com.sun.enterprise.admin.launcher;
 
-import com.sun.enterprise.universal.StringUtils;
 import java.util.*;
+
+import com.sun.enterprise.util.StringUtils;
+
+import static com.sun.enterprise.util.StringUtils.ok;
 
 /**
  *
@@ -234,7 +237,7 @@ class JvmOptions {
         String s = sysProps.get("osgi.shell.telnet.port");
 
         // not configured
-        if(!StringUtils.ok(s))
+        if(!ok(s))
             return;
 
         try {

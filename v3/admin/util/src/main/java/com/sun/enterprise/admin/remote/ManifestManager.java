@@ -46,8 +46,8 @@ import java.util.*;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
+import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.universal.NameValue;
-import com.sun.enterprise.universal.StringUtils;
 import com.sun.enterprise.universal.glassfish.AdminCommandResponse;
 
 /**
@@ -230,7 +230,7 @@ class ManifestManager implements ResponseManager {
     
     private Logger logger;
     private AdminCommandResponse response;
-    private static final String EOL = StringUtils.EOL;
+    private static final String EOL = StringUtils.NEWLINE;
     private static final String TAB = "    ";
 }
  

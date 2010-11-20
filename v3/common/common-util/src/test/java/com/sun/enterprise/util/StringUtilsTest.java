@@ -38,10 +38,8 @@
  * holder.
  */
 
-package com.sun.enterprise.universal;
+package com.sun.enterprise.util;
 
-import java.sql.SQLException;
-import java.util.Vector;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -74,7 +72,7 @@ public class StringUtilsTest {
     public void tearDown() {
     }
 
- /**
+    /**
      * Test of removeEnclosingQuotes method, of class StringUtils.
      */
     @Test
@@ -96,5 +94,4 @@ public class StringUtilsTest {
         assertNull(StringUtils.removeEnclosingQuotes(null));
         
     }
-
 }
