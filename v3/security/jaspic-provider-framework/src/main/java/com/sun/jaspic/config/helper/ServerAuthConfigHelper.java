@@ -40,7 +40,7 @@
 
 package com.sun.jaspic.config.helper;
 
-import com.sun.jaspic.config.delegate.*;
+import com.sun.jaspic.config.delegate.MessagePolicyDelegate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
