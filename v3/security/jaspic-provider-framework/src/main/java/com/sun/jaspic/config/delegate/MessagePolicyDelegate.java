@@ -38,7 +38,6 @@
  * holder.
  */
 
-
 package com.sun.jaspic.config.delegate;
 
 import java.util.Map;
