@@ -115,8 +115,11 @@ public abstract class ServiceAdapter implements Service {
         getTokenMap().put(FQSN_TN, info.fqsn);
         getTokenMap().put(OS_USER_TN, info.osUser);
 
-        if (OS.isWindowsForSure() && !LINUX_HACK) // Windows doesn't respond well to slashes in the name!!
+        if (OS.isWindowsForSure() && !LINUX_HACK) {
+            // Windows doesn't respond well to slashes in the name!!
             getTokenMap().put(SERVICE_NAME_TN, info.serviceName);
+            getTokenMap().put(ENTITY_NAME_TN, info.serviceName);
+        }
         else
             getTokenMap().put(SERVICE_NAME_TN, info.smfFullServiceName);
 
