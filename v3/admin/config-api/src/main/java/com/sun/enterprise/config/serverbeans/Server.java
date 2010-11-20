@@ -713,19 +713,23 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
         private void addClusterRefs(Cluster cluster, Server instance) throws TransactionFailure, PropertyVetoException {
             if (cluster != null) {
                 for (ApplicationRef appRef : cluster.getApplicationRef()) {
-                    ApplicationRef newAppRef = instance.createChild(ApplicationRef.class);
-                    newAppRef.setRef(appRef.getRef());
-                    newAppRef.setDisableTimeoutInMinutes(appRef.getDisableTimeoutInMinutes());
-                    newAppRef.setEnabled(appRef.getEnabled());
-                    newAppRef.setLbEnabled(appRef.getLbEnabled());
-                    newAppRef.setVirtualServers(appRef.getVirtualServers());
-                    instance.getApplicationRef().add(newAppRef);
+                    if (instance.getApplicationRef(appRef.getRef()) == null) {
+                        ApplicationRef newAppRef = instance.createChild(ApplicationRef.class);
+                        newAppRef.setRef(appRef.getRef());
+                        newAppRef.setDisableTimeoutInMinutes(appRef.getDisableTimeoutInMinutes());
+                        newAppRef.setEnabled(appRef.getEnabled());
+                        newAppRef.setLbEnabled(appRef.getLbEnabled());
+                        newAppRef.setVirtualServers(appRef.getVirtualServers());
+                        instance.getApplicationRef().add(newAppRef);
+                    }
                 }
                 for (ResourceRef rr : cluster.getResourceRef()) {
-                    ResourceRef newRR = instance.createChild(ResourceRef.class);
-                    newRR.setRef(rr.getRef());
-                    newRR.setEnabled(rr.getEnabled());
-                    instance.getResourceRef().add(newRR);
+                    if (instance.getResourceRef(rr.getRef()) == null) {
+                        ResourceRef newRR = instance.createChild(ResourceRef.class);
+                        newRR.setRef(rr.getRef());
+                        newRR.setEnabled(rr.getEnabled());
+                        instance.getResourceRef().add(newRR);
+                    }
                 }
             }
         }
