@@ -40,6 +40,7 @@
 
 package org.glassfish.deployment.admin;
 
+import com.sun.enterprise.config.serverbeans.Cluster;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.ServerEnvironment;
@@ -238,7 +239,24 @@ public class DisableCommand extends UndeployCommandParameters implements AdminCo
             }
         }
 
+        /*
+         * If the target is a cluster instance, the DAS will broadcast the command
+         * to all instances in the cluster so they can all update their configs.
+         */
         ApplicationInfo appInfo = deployment.get(appName);
+        if (env.isDas()) {
+            events.send(new Event<ApplicationInfo>(Deployment.APPLICATION_DISABLED, appInfo));
+
+            try {
+                DeploymentCommandUtils.replicateEnableDisableToContainingCluster(
+                        "disable", domain, target, appName, habitat, context, this);
+
+            } catch (Exception e) {
+                report.failure(logger, e.getMessage());
+                return;
+            }
+        }
+
 
         if (!domain.isCurrentInstanceMatchingTarget(target, appName, server.getName(), null)) {
             if (!isundeploy) {
@@ -248,7 +266,6 @@ public class DisableCommand extends UndeployCommandParameters implements AdminCo
                     logger.warning("failed to set enable attribute for " + appName);
                 }
             }
-            events.send(new Event<ApplicationInfo>(Deployment.APPLICATION_DISABLED, appInfo));
             return;
         }
 

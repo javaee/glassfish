@@ -208,7 +208,7 @@ public class ApplicationConfigListener implements TransactionListener,
             Object grandparent = ((ApplicationRef)parent).getParent();
             if (grandparent instanceof Server) {
                 Server gpServer = (Server)grandparent;      
-                if (server.isDas() && !gpServer.isDas()) {
+                if ( ! server.getName().equals(gpServer.getName())) {
                     return false; 
                 }
             } else if (grandparent instanceof Cluster) {
