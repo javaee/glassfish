@@ -88,6 +88,8 @@ public class ConnectionManagerImpl implements ConnectionManager, Serializable {
 
     protected String rarName;
 
+    private transient BindableResource resourceConfiguration;
+
     protected ResourcePrincipal defaultPrin = null;
 
     public ConnectionManagerImpl(PoolInfo poolInfo, ResourceInfo resourceInfo) {
@@ -390,9 +392,27 @@ public class ConnectionManagerImpl implements ConnectionManager, Serializable {
         if ((runtime.isServer() || runtime.isEmbedded()) &&
                 (!resourceInfo.getName().contains(ConnectorConstants.DATASOURCE_DEFINITION_JNDINAME_PREFIX) &&
                         (!isDefaultResource) && (!isSunRAResource))) {
-            BindableResource bindableResource =
-                    (BindableResource) resourcesUtil.getResource(resourceInfo, BindableResource.class);
-            if (bindableResource == null) {
+
+            // performance optimization so that resource configuration is not retrieved from
+            // resources config bean each time.
+            if (resourceConfiguration == null) {
+                 resourceConfiguration =
+                         (BindableResource) resourcesUtil.getResource(resourceInfo, BindableResource.class);
+                if (resourceConfiguration == null) {
+                    String suffix = ConnectorsUtil.getValidSuffix(resourceInfo.getName());
+                    // it is possible that the resource is a __PM or __NONTX suffixed resource used by JPA/EJB Container
+                    // check for the enabled status and existence using non-prefixed resource-name
+                    if (suffix != null) {
+                        String nonPrefixedName = resourceInfo.getName().substring(0, resourceInfo.getName().lastIndexOf(suffix));
+                        resourceInfo = new ResourceInfo(nonPrefixedName, resourceInfo.getApplicationName(),
+                                resourceInfo.getModuleName());
+                        resourceConfiguration = (BindableResource)
+                                resourcesUtil.getResource(resourceInfo, BindableResource.class);
+                    }
+                }
+            }else{
+                // we cache the resourceConfiguration for performance optimization.
+                // make sure that appropriate (actual) resourceInfo is used for validation.
                 String suffix = ConnectorsUtil.getValidSuffix(resourceInfo.getName());
                 // it is possible that the resource is a __PM or __NONTX suffixed resource used by JPA/EJB Container
                 // check for the enabled status and existence using non-prefixed resource-name
@@ -400,14 +420,12 @@ public class ConnectionManagerImpl implements ConnectionManager, Serializable {
                     String nonPrefixedName = resourceInfo.getName().substring(0, resourceInfo.getName().lastIndexOf(suffix));
                     resourceInfo = new ResourceInfo(nonPrefixedName, resourceInfo.getApplicationName(),
                             resourceInfo.getModuleName());
-                    bindableResource = (BindableResource)
-                            resourcesUtil.getResource(resourceInfo, BindableResource.class);
                 }
             }
-            if (bindableResource == null) {
+            if (resourceConfiguration == null) {
                 throw new ResourceException("No such resource : " + resourceInfo);
             }
-            if (!resourcesUtil.isEnabled(bindableResource, resourceInfo)) {
+            if (!resourcesUtil.isEnabled(resourceConfiguration, resourceInfo)) {
                 throw new ResourceException(resourceInfo + " is not enabled");
             }
         }
