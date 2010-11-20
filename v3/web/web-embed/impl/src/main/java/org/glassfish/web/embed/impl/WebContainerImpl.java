@@ -71,6 +71,7 @@ import org.glassfish.embeddable.web.HttpListener;
 import org.glassfish.embeddable.web.VirtualServer;
 import org.glassfish.embeddable.web.WebListener;
 import org.glassfish.embeddable.web.config.WebContainerConfig;
+import org.glassfish.internal.api.ServerContext;
 import org.jvnet.hk2.annotations.ContractProvided;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
@@ -106,6 +107,10 @@ public class WebContainerImpl implements WebContainer {
 
     @Inject
     HttpService httpService;
+
+    @Inject
+    ServerContext serverContext;
+
     
     private static Logger log = 
             Logger.getLogger(WebContainerImpl.class.getName());
@@ -519,7 +524,7 @@ public class WebContainerImpl implements WebContainer {
         ContextImpl context = new ContextImpl();
         context.setDocBase(docRoot.getAbsolutePath());
         context.setDirectoryListing(listings);
-        context.setParentClassLoader(Thread.currentThread().getContextClassLoader());
+        context.setParentClassLoader(serverContext.getCommonClassLoader());        
 
         Realm realm = habitat.getByContract(Realm.class);
         context.setRealm(realm);
@@ -560,8 +565,7 @@ public class WebContainerImpl implements WebContainer {
         if (classLoader != null) {
             context.setParentClassLoader(classLoader);
         } else {
-            context.setParentClassLoader(
-                    Thread.currentThread().getContextClassLoader());
+            context.setParentClassLoader(serverContext.getCommonClassLoader());
         }
 
         Realm realm = habitat.getByContract(Realm.class);
@@ -613,8 +617,7 @@ public class WebContainerImpl implements WebContainer {
         if (classLoader != null) {
             context.setParentClassLoader(classLoader);
         } else {
-            context.setParentClassLoader(
-                    Thread.currentThread().getContextClassLoader());
+            context.setParentClassLoader(serverContext.getCommonClassLoader());            
         }
 
         Realm realm = habitat.getByContract(Realm.class);
@@ -662,7 +665,7 @@ public class WebContainerImpl implements WebContainer {
             throw new GlassFishException(ex);
         }
         if (log.isLoggable(Level.INFO)) {
-            log.info("Added context "+appName+" using name "+contextRoot);
+            log.info("Added context "+appName+" using contextroot "+contextRoot);
         }
     }
 
@@ -827,12 +830,13 @@ public class WebContainerImpl implements WebContainer {
         virtualServer.setName(id);
         if (docRoot!=null) {
             virtualServer.setAppBase(docRoot.getPath());
-        } 
-        String[] names = new String[webListeners.length];
-        for (int i=0; i<webListeners.length; i++) {
-            names[i] = webListeners[i].getId();
         }
-        virtualServer.setNetworkListenerNames(names);
+
+        List<String> names = new ArrayList<String>();
+        for (WebListener listener : webListeners) {
+            names.add(listener.getId());
+        }
+        virtualServer.setNetworkListenerNames(names.toArray(new String[names.size()]));
         virtualServer.setWebListeners(webListeners);
         virtualServer.setHabitat(habitat);
 
@@ -901,6 +905,11 @@ public class WebContainerImpl implements WebContainer {
         final String virtualServerId = virtualServer.getID();
         final String networkListeners = ((StandardHost)virtualServer).getNetworkListeners();
         final String docRoot = virtualServer.getDocRoot().getPath();
+        String hostNames = "${com.sun.aas.hostName}";
+        if (virtualServer.getConfig()!=null) {
+            hostNames = virtualServer.getConfig().getHostNames();
+        }
+        final String hosts = hostNames;
 
         for (com.sun.enterprise.config.serverbeans.VirtualServer vs: httpService.getVirtualServer()) {
             if (virtualServerId.equals(vs.getId())) {
@@ -909,11 +918,15 @@ public class WebContainerImpl implements WebContainer {
             }
         }
         try {
+            for (WebListener listener : virtualServer.getWebListeners()) {
+                addWebListener(listener);
+            }
             ConfigSupport.apply(new SingleConfigCode<HttpService>() {
                 public Object run(HttpService param) throws PropertyVetoException, TransactionFailure {
                     com.sun.enterprise.config.serverbeans.VirtualServer newVirtualServer =
                             param.createChild(com.sun.enterprise.config.serverbeans.VirtualServer.class);
                     newVirtualServer.setId(virtualServerId);
+                    newVirtualServer.setHosts(hosts);
                     newVirtualServer.setNetworkListeners(networkListeners);
                     Property property = newVirtualServer.createChild(Property.class);
                     property.setName("docroot");
@@ -923,11 +936,6 @@ public class WebContainerImpl implements WebContainer {
                     return newVirtualServer;
                 }
             }, httpService);
-
-            for (WebListener listener : virtualServer.getWebListeners()) {
-                addWebListener(listener);
-            }
-
         } catch (Exception ex) {
             throw new GlassFishException(ex);
         }

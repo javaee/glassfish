@@ -56,7 +56,7 @@ public class VirtualServerConfig {
     private String denyRemoteAddress;
     private String allowRemoteHost;
     private String denyRemoteHost;
-    private String[] hostNames;
+    private String hostNames = "${com.sun.aas.hostName}";    
 
     /**
      * Enables or disables Single-Sign-On.
@@ -288,11 +288,11 @@ public class VirtualServerConfig {
     /**
      * Sets the host names that will be assigned to any
      * <tt>VirtualServer</tt> configured via this
-     * <tt>VirtualServerConfig</tt>.
+     * <tt>VirtualServerConfig</tt> separated by commas.
      *
      * @param hostNames the host names
      */ 
-    public void setHostNames(String... hostNames) {
+    public void setHostNames(String hostNames) {
         this.hostNames = hostNames;
     }
 
@@ -302,7 +302,7 @@ public class VirtualServerConfig {
      *
      * @return the host names
      */
-    public String[] getHostNames() {
+    public String getHostNames() {
         return hostNames;
     }
 }
