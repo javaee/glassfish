@@ -512,24 +512,26 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
         }
         ResourceHandle result;
 
+        result = getResourceFromTransaction(tran, alloc, spec);
+        if(result != null){
+            return result;
+        }
+        
         result = prefetch(spec, alloc, tran);
         if (result != null) {
             return result;
         }
-        result = getResourceFromTransaction(tran, alloc, spec);
 
         // We didnt get a connection that is already enlisted in the current transaction (if any).
-        if (result == null) {
-            result = getUnenlistedResource(spec, alloc, tran);
-            if (result != null) {
-                if (maxConnectionUsage_ > 0) {
-                    result.incrementUsageCount();
-                }
-                if (poolLifeCycleListener != null) {
-                    poolLifeCycleListener.connectionUsed(result.getId());
-                    //Decrement numConnFree
-                    poolLifeCycleListener.decrementNumConnFree();
-                }
+        result = getUnenlistedResource(spec, alloc, tran);
+        if (result != null) {
+            if (maxConnectionUsage_ > 0) {
+                result.incrementUsageCount();
+            }
+            if (poolLifeCycleListener != null) {
+                poolLifeCycleListener.connectionUsed(result.getId());
+                //Decrement numConnFree
+                poolLifeCycleListener.decrementNumConnFree();
             }
         }
         return result;
@@ -637,7 +639,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
      * @param alloc Allocator to validate the resource
      * @return boolean representing validation result
      */
-    private boolean isConnectionValid(ResourceHandle h, ResourceAllocator alloc) {
+    protected boolean isConnectionValid(ResourceHandle h, ResourceAllocator alloc) {
         boolean connectionValid = true;
 
         if (validation || validateAtmostEveryIdleSecs) {
