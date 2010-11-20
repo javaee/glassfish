@@ -169,7 +169,7 @@ public class StaticGlassFishRuntime extends GlassFishRuntime {
         String installRootValue = System.getProperty("org.glassfish.embeddable.installRoot");
         if (installRootValue == null) {
             installRootValue = instanceRoot.getAbsolutePath();
-            gfProps.setProperty("-type", "EMBEDDED");
+            JarUtil.extractRars(installRootValue);
         }
         File installRoot = new File(installRootValue);
 

@@ -52,6 +52,7 @@
     <name>GlassFish Embedded Maven Plugin test</name>
 
     <modules>
+        <module>mdb</module>
         <module>applicationDispatcher</module>
         <module>dirListing</module>
         <module>filterURIMapping</module>

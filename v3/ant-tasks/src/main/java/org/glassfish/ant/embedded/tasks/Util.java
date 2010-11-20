@@ -89,7 +89,6 @@ public class Util {
         if (httpPort != -1) {
             glassfishProperties.setPort("http", httpPort);
         }
-        glassfishProperties.setProperty("-type", "EMBEDDED");
 
         glassfish = glassfishRuntime.newGlassFish(glassfishProperties);
         glassfish.start();
