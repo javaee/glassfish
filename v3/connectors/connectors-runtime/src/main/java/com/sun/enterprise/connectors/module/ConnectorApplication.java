@@ -234,7 +234,7 @@ public class ConnectorApplication implements ApplicationContainer, EventListener
         //Look for the undeploy flags only when it is undeploy-command
         if(dcp != null){
             if (dcp.origin == OpsParams.Origin.undeploy) {
-                if(!(dcp.ignoreCascade || dcp.cascade)){
+                if(!(dcp._ignoreCascade || dcp.cascade)){
                     failIfResourcesExist = true;
                 }
             }
@@ -327,7 +327,7 @@ public class ConnectorApplication implements ApplicationContainer, EventListener
 
                 if (dcp.origin != OpsParams.Origin.deploy) {
                     if (dcp.origin == OpsParams.Origin.undeploy) {
-                        if (!(dcp.ignoreCascade || dcp.cascade)) {
+                        if (!(dcp._ignoreCascade || dcp.cascade)) {
                             if (filterConnectorResources(resourceManager.getAllResources(), true).size() > 0) {
                                 String message = "one or more resources of resource-adapter [ " + moduleName + " ] exist, " +
                                         "use '--cascade=true' to delete them during undeploy";
