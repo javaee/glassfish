@@ -38,12 +38,13 @@
  * holder.
  */
 
-
 package com.sun.jaspic.config.helper;
 
-import com.sun.jaspic.config.delegate.*;
+import com.sun.jaspic.config.delegate.MessagePolicyDelegate;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.message.AuthException;
 import javax.security.auth.message.config.AuthConfigFactory;
@@ -64,8 +65,16 @@ public abstract class AuthConfigProviderHelper implements AuthConfigProvider {
     public static final String AUTH_MODULE_KEY = "auth.module.type";
     public static final String SERVER_AUTH_MODULE = "server.auth.module";
     public static final String CLIENT_AUTH_MODULE = "client.auth.module";
-    HashSet<String> selfRegistered = new HashSet<String>();
-    EpochCarrier providerEpoch = new EpochCarrier();
+    private ReentrantReadWriteLock instanceReadWriteLock = new ReentrantReadWriteLock();
+    private Lock rLock = instanceReadWriteLock.readLock();
+    private Lock wLock = instanceReadWriteLock.writeLock();
+    HashSet<String> selfRegistered;
+    EpochCarrier epochCarrier;
+
+    protected AuthConfigProviderHelper() {
+        selfRegistered = new HashSet<String>();
+        epochCarrier = new EpochCarrier();
+    }
 
     protected final String getProperty(String key, String defaultValue) {
         String rvalue = defaultValue;
@@ -101,7 +110,7 @@ public abstract class AuthConfigProviderHelper implements AuthConfigProvider {
         return rvalue;
     }
 
-    protected void selfRegister() {
+    protected void oldSelfRegister() {
         if (getFactory() != null) {
             selfRegistered.clear();
             RegistrationContext[] contexts = getSelfRegistrationContexts();
@@ -111,6 +120,55 @@ public abstract class AuthConfigProviderHelper implements AuthConfigProvider {
                         r.getDescription());
                 selfRegistered.add(id);
             }
+        }
+    }
+
+    protected void selfRegister() {
+        if (getFactory() != null) {
+            wLock.lock();
+            try {
+                RegistrationContext[] contexts = getSelfRegistrationContexts();
+                if (!selfRegistered.isEmpty()) {
+                    HashSet<String> toBeUnregistered = new HashSet<String>();
+                    // get the current self-registrations
+                    String[] regID = getFactory().getRegistrationIDs(this);
+                    for (String i : regID) {
+                        if (selfRegistered.contains(i)) {
+                            RegistrationContext c = getFactory().getRegistrationContext(i);
+                            if (c != null && !c.isPersistent()) {
+                                toBeUnregistered.add(i);
+                            }
+                        }
+                    }
+                    // remove self-registrations that already exist and should continue
+                    for (String i : toBeUnregistered) {
+                        RegistrationContext r = getFactory().getRegistrationContext(i);
+                        for (int j = 0; j < contexts.length; j++) {
+                            if (contextsAreEqual(contexts[j], r)) {
+                                toBeUnregistered.remove(i);
+                                contexts[j] = null;
+                            }
+                        }
+                    }
+                    // unregister those that should not continue to exist
+                    for (String i : toBeUnregistered) {
+                        selfRegistered.remove(i);
+                        getFactory().removeRegistration(i);
+                    }
+                }
+                // add new self-segistrations
+                for (RegistrationContext r : contexts) {
+                    if (r != null) {
+                        String id = getFactory().registerConfigProvider(this,
+                                r.getMessageLayer(), r.getAppContext(),
+                                r.getDescription());
+                        selfRegistered.add(id);
+                    }
+                }
+            } finally {
+                wLock.unlock();
+            }
+
         }
     }
 
@@ -136,8 +194,8 @@ public abstract class AuthConfigProviderHelper implements AuthConfigProvider {
 
     public ClientAuthConfig getClientAuthConfig(String layer, String appContext,
             CallbackHandler cbh) throws AuthException {
-        return new ClientAuthConfigHelper(getLoggerName(), providerEpoch,
-                getAuthContextHelper(appContext,true),
+        return new ClientAuthConfigHelper(getLoggerName(), epochCarrier,
+                getAuthContextHelper(appContext, true),
                 getMessagePolicyDelegate(appContext),
                 layer, appContext,
                 getClientCallbackHandler(cbh));
@@ -145,15 +203,34 @@ public abstract class AuthConfigProviderHelper implements AuthConfigProvider {
 
     public ServerAuthConfig getServerAuthConfig(String layer, String appContext,
             CallbackHandler cbh) throws AuthException {
-        return new ServerAuthConfigHelper(getLoggerName(), providerEpoch,
-                getAuthContextHelper(appContext,true),
+        return new ServerAuthConfigHelper(getLoggerName(), epochCarrier,
+                getAuthContextHelper(appContext, true),
                 getMessagePolicyDelegate(appContext),
                 layer, appContext,
                 getServerCallbackHandler(cbh));
     }
 
-    public void refresh() {
+    public boolean contextsAreEqual(RegistrationContext a, RegistrationContext b) {
+        if (a == null || b == null) {
+            return false;
+        } else if (a.isPersistent() != b.isPersistent()) {
+            return false;
+        } else if (!a.getAppContext().equals(b.getAppContext())) {
+            return false;
+        } else if (!a.getMessageLayer().equals(b.getMessageLayer())) {
+            return false;
+        } else if (!a.getDescription().equals(b.getDescription())) {
+            return false;
+        }
+        return true;
+    }
 
+    /**
+     * to be called by refresh on provider subclass, and after subclass impl.
+     * has reloaded its underlying configuration system.
+     * Note: Spec is silent as to whether self-registrations should be reprocessed.
+     */
+    public void oldRefresh() {
         if (getFactory() != null) {
             String[] regID = getFactory().getRegistrationIDs(this);
             for (String i : regID) {
@@ -165,7 +242,12 @@ public abstract class AuthConfigProviderHelper implements AuthConfigProvider {
                 }
             }
         }
-        providerEpoch.increment();
+        epochCarrier.increment();
+        selfRegister();
+    }
+
+    public void refresh() {
+        epochCarrier.increment();
         selfRegister();
     }
 
@@ -183,6 +265,4 @@ public abstract class AuthConfigProviderHelper implements AuthConfigProvider {
             boolean returnNullContexts) throws AuthException;
 
     public abstract MessagePolicyDelegate getMessagePolicyDelegate(String appContext) throws AuthException;
-
 }
-
