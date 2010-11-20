@@ -41,6 +41,8 @@
 
 package com.sun.jaspic.config.servlet;
 
+import com.sun.jaspic.config.delegate.MessagePolicyDelegate;
+import com.sun.jaspic.config.helper.AuthContextHelper;
 import com.sun.jaspic.config.jaas.JAASAuthConfigProvider;
 import java.util.Map;
 import javax.security.auth.message.AuthException;
@@ -50,8 +52,6 @@ import javax.security.auth.message.config.AuthConfigFactory;
 import javax.security.auth.message.module.ServerAuthModule;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import com.sun.jaspic.config.delegate.MessagePolicyDelegate;
-import com.sun.jaspic.config.helper.AuthContextHelper;
 
 /**
  *
