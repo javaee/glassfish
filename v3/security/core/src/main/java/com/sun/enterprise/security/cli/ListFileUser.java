@@ -91,8 +91,9 @@ import org.glassfish.config.support.TargetType;
 @Scoped(PerLookup.class)
 @CommandLock(CommandLock.LockType.NONE)
 @I18n("list.file.user")
-@ExecuteOn({RuntimeType.DAS, RuntimeType.INSTANCE})
-@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER})
+@ExecuteOn({RuntimeType.DAS})
+@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,
+CommandTarget.CLUSTERED_INSTANCE})
 public class ListFileUser implements AdminCommand {
     
     final private static LocalStringManagerImpl localStrings = 

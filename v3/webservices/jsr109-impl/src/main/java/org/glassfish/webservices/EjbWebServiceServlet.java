@@ -202,14 +202,11 @@ public class EjbWebServiceServlet extends HttpServlet {
         } catch(Throwable t) {
             logger.log(Level.WARNING, "", t);
         } finally {
-            if( authenticated ) {
-                // remove any security context from the thread before returning
-                if (secServ != null) {
-                    //  SecurityContext.setCurrent(null);
-                    secServ.resetSecurityContext();
-                }
+            // remove any security context from the thread local before returning
+            if (secServ != null) {
+                secServ.resetSecurityContext();
+                secServ.resetPolicyContext();
             }
-
             // Restore context class loader
             Thread.currentThread().setContextClassLoader(savedClassLoader);
         }

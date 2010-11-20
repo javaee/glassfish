@@ -49,6 +49,7 @@ import java.text.MessageFormat;
 
 import com.sun.enterprise.config.serverbeans.AvailabilityService;
 import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.deployment.WebServiceEndpoint;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
@@ -60,6 +61,7 @@ import com.sun.grizzly.config.dom.NetworkListener;
 import com.sun.logging.LogDomains;
 import com.sun.xml.ws.api.ha.HighAvailabilityProvider;
 import com.sun.xml.ws.tx.dev.WSATRuntimeConfig;
+import com.sun.xml.wss.impl.config.SecurityConfigProvider;
 
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.container.Container;
@@ -72,6 +74,7 @@ import org.glassfish.internal.api.ServerContext;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.server.ServerEnvironmentImpl;
+
 import org.glassfish.webservices.WebServiceDeploymentListener;
 import org.glassfish.webservices.WebServicesDeployer;
 
@@ -81,6 +84,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Singleton;
+import org.jvnet.hk2.config.types.Property;
 
 /**
  * @author Marek Potociar
@@ -112,6 +116,8 @@ public class MetroContainer implements PostConstruct, Container, WebServiceDeplo
     GMSAdapterService gmsAdapterService;
     @Inject(optional = true)
     private AvailabilityService availabilityService;
+    @Inject
+    private SecurityService secService;
 
     @Override
     public void postConstruct() {
@@ -124,6 +130,13 @@ public class MetroContainer implements PostConstruct, Container, WebServiceDeplo
 
             HighAvailabilityProvider.INSTANCE.initHaEnvironment(clusterName, instanceName);
             logger.info("metro.ha.environemt.initialized");
+        }
+
+        Property prop = secService.getProperty("MAX_NONCE_AGE");
+        long mnAge ;
+        if(prop != null){
+           mnAge = Long.parseLong(prop.getValue());
+           SecurityConfigProvider.INSTANCE.init(mnAge);
         }
     }
 

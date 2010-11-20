@@ -85,7 +85,6 @@ import org.apache.catalina.realm.RealmBase;
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.internal.api.ServerContext;
 //import com.sun.enterprise.Switch;
-import com.sun.enterprise.util.Utility;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.RunAsIdentityDescriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
@@ -117,6 +116,8 @@ import com.sun.enterprise.security.auth.digest.api.DigestParameterGenerator;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
 import static com.sun.enterprise.security.auth.digest.api.Constants.A1;
+import com.sun.enterprise.security.authorize.PolicyContextHandlerImpl;
+import javax.security.jacc.PolicyContext;
 import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.component.PostConstruct;
 
@@ -371,6 +372,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
 
     public void logout() {
         setSecurityContext(null);
+        resetPolicyContext();
     }
 
     public Principal authenticate(HttpServletRequest hreq) {
@@ -455,7 +457,6 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
     protected boolean authenticate(String username, char[] password,
             X509Certificate[] certs) {
 
-        SecurityContext.setCurrent(null);
         String realm_name = null;
         boolean success = false;
         try {
@@ -463,9 +464,6 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
                 Subject subject = new Subject();
                 X509Certificate certificate = certs[0];
                 X500Name x500Name = (X500Name) certificate.getSubjectDN();
-                /*V3:Comment
-                Switch.getSwitch().getCallFlowAgent().addRequestInfo(
-                RequestInfo.REMOTE_USER, x500Name.getName());*/
                 subject.getPublicCredentials().add(x500Name);
                 // Put the certificate chain as an List in the subject, to be accessed by user's LoginModule.
                 final List<X509Certificate> certificateCred = Arrays.asList(certs);
@@ -473,8 +471,6 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
                 LoginContextDriver.doX500Login(subject, moduleID);
                 realm_name = CertificateRealm.AUTH_TYPE;
             } else {
-                /*V3:Comment Switch.getSwitch().getCallFlowAgent().addRequestInfo(
-                RequestInfo.REMOTE_USER, username);*/
                 realm_name = _realmName;
                 LoginContextDriver.login(username, password, realm_name);
             }
@@ -1403,6 +1399,11 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
         return p;
     }
     private static String PROXY_AUTH_TYPE = "PLUGGABLE_PROVIDER";
+
+    private void resetPolicyContext() {
+       ((PolicyContextHandlerImpl)PolicyContextHandlerImpl.getInstance()).reset();
+       PolicyContext.setContextID(null);
+    }
 
     // inner class extends AuthenticatorBase such that session registration
     // of webtier can be invoked by RealmAdapter after authentication
