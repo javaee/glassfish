@@ -64,7 +64,13 @@ public class DataStructureFactory {
         DataStructure ds;
 
         if (className != null) {
-            ds = initializeCustomDataStructureInPrivilegedMode(className, parameters, maxPoolSize, handler, strategyClass);
+            if(className.equals(ListDataStructure.class.getName())){
+                ds = new ListDataStructure(parameters, maxPoolSize, handler, strategyClass);
+            }else if(className.equals(RWLockDataStructure.class.getName())){
+                ds = new RWLockDataStructure(parameters, maxPoolSize, handler, strategyClass);
+            }else{
+                ds = initializeCustomDataStructureInPrivilegedMode(className, parameters, maxPoolSize, handler, strategyClass);
+            }
         } else {
             debug("Initializing RWLock DataStructure");
             ds = new RWLockDataStructure(parameters, maxPoolSize, handler, strategyClass);
