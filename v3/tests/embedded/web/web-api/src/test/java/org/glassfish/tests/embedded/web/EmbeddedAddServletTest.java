@@ -96,10 +96,10 @@ public class EmbeddedAddServletTest {
 
         VirtualServerConfig config = new VirtualServerConfig();
         config.setHostNames("localhost");
-        //VirtualServer vs = (VirtualServer)
-        //        embedded.createVirtualServer(vsname, root, webListeners);
         VirtualServer vs = (VirtualServer)
-                embedded.createVirtualServer(vsname, root);
+                embedded.createVirtualServer(vsname, root, webListeners);
+        //VirtualServer vs = (VirtualServer)
+        //        embedded.createVirtualServer(vsname, root);
         vs.setConfig(config);
         embedded.addVirtualServer(vs);
         boolean testvs = false;
