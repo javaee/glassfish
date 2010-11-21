@@ -50,6 +50,7 @@ import java.beans.PropertyVetoException;
 import java.util.List;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 /**
  * Perform mapping from principal received during Servlet/EJB authentication,
@@ -74,6 +75,7 @@ public interface SecurityMap extends ConfigBeanProxy, Injectable  {
      */
     @Attribute(key=true)
     @NotNull
+    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")
     public String getName();
 
     /**

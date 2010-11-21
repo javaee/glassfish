@@ -87,6 +87,7 @@ public interface ResourceAdapterConfig extends ConfigBeanProxy, Injectable, Reso
      *         {@link String }
      */
     @Attribute
+    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")
     public String getName();
 
     /**

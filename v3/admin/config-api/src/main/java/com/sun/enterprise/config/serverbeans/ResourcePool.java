@@ -58,7 +58,7 @@ public interface ResourcePool extends Resource {
      */
     @Attribute(key=true)
     @NotNull
-    @Pattern(regexp="[^',][^',]*")
+    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#:]*")
     public String getName();
 
     /**
