@@ -85,10 +85,12 @@
         <ant dir="multiplecloseconnection" target="all"/>
 	<ant dir="statementtimeout" target="all"/>
 	<ant dir="conval" target="all"/>
+	<ant dir="conval" target="all-assoc-with-thread"/>
 	<ant dir="connleaktracing" target="all"/>
 	<ant dir="conncreationretry" target="all"/>
 	<ant dir="validateatmostonceperiod" target="all"/>
 	<ant dir="connsharing" target="nonxa"/>
+	<ant dir="connsharing/nonxa" target="all-assoc-with-thread"/>
 	<ant dir="cpds" target="all"/>
 	<ant dir="txisolation" target="all"/>
 	<ant dir="stmtCaching_hit_miss" target="all"/>
