@@ -86,6 +86,8 @@
             </fileset>
         </unzip>
 
+	<mkdir dir="${rootdir}/temp"/>
+
      </target>
 
      <target name="removeJarsNotNeeded">
