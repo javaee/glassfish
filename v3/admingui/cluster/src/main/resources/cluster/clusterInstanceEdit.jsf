@@ -161,7 +161,7 @@
             </sun:property>
 
             <sun:property id="configProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.ConfigurationLabel}">
-                <sun:hyperlink id="configlink" text="#{pageSession.vMap['configRef']}"  url="#{request.contextPath}/common/configuration/configuration.jsf?configName=#{pageSession.vMap['config-ref']}" />
+                <sun:hyperlink id="configlink" text="#{pageSession.vMap['configRef']}"  url="#{request.contextPath}/common/configuration/configuration.jsf?configName=#{pageSession.vMap['configRef']}" />
             </sun:property>
             
         </sun:propertySheetSection>
