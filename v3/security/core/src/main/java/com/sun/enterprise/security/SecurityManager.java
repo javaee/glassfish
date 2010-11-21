@@ -105,6 +105,12 @@ public interface SecurityManager {
      * runas case
      */
     public Subject getCurrentSubject();
+
+    /**
+     * Purge ThreadLocals held by javax.security.jacc.PolicyContext
+     */
+    public void resetPolicyContext();
+    
     
     /* This method is used by SecurityUtil runMethod to run the
      * action as the subject encapsulated in the cuurent

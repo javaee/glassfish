@@ -1140,5 +1140,11 @@ public final class EJBSecurityManager
         }
         return ret;
     }
+
+    @Override
+    public void resetPolicyContext() {
+       ((PolicyContextHandlerImpl)PolicyContextHandlerImpl.getInstance()).reset();
+       PolicyContext.setContextID(null);
+    }
    
 }
