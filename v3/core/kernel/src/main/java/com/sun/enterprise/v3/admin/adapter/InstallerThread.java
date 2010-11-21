@@ -71,10 +71,6 @@ import org.jvnet.hk2.config.TransactionFailure;
  */
 final class InstallerThread extends Thread {
 
-    private final File ipsRoot;
-    private final File warFile;
-    private final String proxyHost;
-    private final int proxyPort;
     private final Domain domain;
     private final ServerEnvironmentImpl env;
     private final String contextRoot;
@@ -87,12 +83,8 @@ final class InstallerThread extends Thread {
     /**
      * Constructor.
      */
-    InstallerThread(File ipsRoot, File warFile, String proxyHost, int proxyPort, AdminConsoleAdapter adapter, Habitat habitat, Domain domain, ServerEnvironmentImpl env, String contextRoot, Logger log, List<String> vss) {
+    InstallerThread(AdminConsoleAdapter adapter, Habitat habitat, Domain domain, ServerEnvironmentImpl env, String contextRoot, Logger log, List<String> vss) {
 
-        this.ipsRoot = ipsRoot;
-        this.warFile = warFile;
-        this.proxyHost = proxyHost;
-        this.proxyPort = proxyPort;
         this.adapter = adapter;
         this.habitat = habitat;
         this.domain = domain;
@@ -112,11 +104,8 @@ final class InstallerThread extends Thread {
             // Admin Console web application running.  Each step ensures that
             // it has not already been completed and adjusts the state message
             // accordingly.
-            download();
-            expand();
             install();
             load();
-            cleanup();
 
             // From within this Thread mark the installation process complete
             adapter.setInstalling(false);
@@ -127,92 +116,7 @@ final class InstallerThread extends Thread {
         }
     }
 
-    /**
-     * <p> This uses the Update Center to download the Admin Console web
-     * application.</p>
-     */
-    private void download() throws Exception {
-	if (AdminConsoleAdapter.isDirectoryDeploy()) {
-	    return;
-	}
-        File warFile = getWarFile();
-        if (warFile.exists()) {
-            // Already downloaded
-            return;
-        }
-
-        // Not downloaded get it from IPS
-        adapter.setStateMsg(AdapterState.DOWNLOADING);
-        Proxy proxy = null;  //Proxy.NO_PROXY;
-        if (proxyHost != null && !"".equals(proxyHost)) {
-            SocketAddress address = new InetSocketAddress(proxyHost, proxyPort);
-            proxy = new Proxy(Proxy.Type.HTTP, address);
-        }
-
-        // Download and install files from Update Center
-        try {
-            Image image = new Image(ipsRoot);
-            String pkgs[] = {adapter.getIPSPackageName()};
-            if (proxy != null) {
-                image.setProxy(proxy);
-            }
-            image.installPackages(pkgs);
-            //Verify that admingui.war exists, it should by this point.
-            if (getWarFile().exists()) {
-                log.log(Level.SEVERE, "Error in downloading Admin Console from UpdateCenter");
-                // FIXME: should we thrown an exception here ?
-            }
-            adapter.setDownloadedVersion();
-            adapter.setStateMsg(AdapterState.DOWNLOADED);
-        } catch (Exception ex) {
-// FIXME: Handle properly
-            ex.printStackTrace();
-        }
-    }
-
-    /**
-     *
-     */
-    private void expand() throws Exception {
-	if (AdminConsoleAdapter.isDirectoryDeploy()) {
-	    return;
-	}
-        File warFile = getWarFile();
-        if (log.isLoggable(Level.FINE)) {
-            log.log(Level.FINE, "Expanding the archive: "
-                    + warFile.getAbsolutePath());
-        }
-        File expFolder = new File(warFile.getParentFile(), AdminConsoleAdapter.ADMIN_APP_NAME);
-        if (expFolder.exists() && new File(expFolder, "WEB-INF").exists()) {
-            // Already completed
-            return;
-        }
-
-        // Set the adapter state
-        adapter.setStateMsg(AdapterState.EXPANDING);
-
-        // Not yet expanded, expand it...
-        expFolder.mkdirs();
-        ZipFile zip = new ZipFile(warFile, expFolder);
-        List list = zip.explode(); //pre Java 5 code
-
-        // Set the adapter state
-        adapter.setStateMsg(AdapterState.EXPANDED);
-        if (log.isLoggable(Level.FINE)) {
-            log.log(Level.FINE, "Expanded the archive with :"
-                    + list.size()
-                    + " entries, at: "
-                    + warFile.getParentFile().getAbsolutePath());
-        }
-    }
-
-    /**
-     *
-     */
-    private File getWarFile() {
-        return warFile;
-    }
-
+   
     /**
      * <p> Install the admingui.war file.</p>
      */
@@ -220,8 +124,6 @@ final class InstallerThread extends Thread {
         if (domain.getSystemApplicationReferencedFrom(env.getInstanceName(), AdminConsoleAdapter.ADMIN_APP_NAME) != null) {
             // Application is already installed
             adapter.setStateMsg(AdapterState.APPLICATION_INSTALLED_BUT_NOT_LOADED);
-            // no need to change domain.xml application config, except to update the deployed version.
-            adapter.updateDeployedVersion();
             return;
         }
 
@@ -267,7 +169,6 @@ final class InstallerThread extends Thread {
                 return true;
             }
         };
-        adapter.updateDeployedVersion();
         Server server = domain.getServerNamed(env.getInstanceName());
         ConfigSupport.apply(code, domain.getSystemApplications(), server);
 
@@ -310,18 +211,6 @@ final class InstallerThread extends Thread {
 
         // Set adapter state
         adapter.setStateMsg(AdapterState.APPLICATION_LOADED);
-    }
-
-    /*
-    * <p> Clean up the backup copy
-    */
-    private void cleanup() {
-        File backup = new File(warFile.getParentFile(), AdminConsoleAdapter.ADMIN_APP_NAME + ".backup");
-        if (backup.exists()) {
-            adapter.setStateMsg(AdapterState.APPLICATION_BACKUP_CLEANING);
-            FileUtils.whack(backup);
-            adapter.setStateMsg(AdapterState.APPLICATION_BACKUP_CLEANED);
-        }
     }
 
 }
