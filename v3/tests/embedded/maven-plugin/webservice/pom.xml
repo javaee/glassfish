@@ -90,7 +90,6 @@
                     <port>8080</port>
                     <name>webservice</name>
                     <serverID>embedded</serverID>
-                    <installRoot>${S1AS_HOME}</installRoot>
                 </configuration>
                 <executions>
                     <execution>

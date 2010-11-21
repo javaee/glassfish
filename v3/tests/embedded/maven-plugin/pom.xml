@@ -63,5 +63,6 @@
         <module>sessionDestroyed</module>
         <module>standalonewar</module>
         <module>websockets</module>
+        <module>webservice</module>
     </modules>
 </project>
