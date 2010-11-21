@@ -63,7 +63,7 @@
 </dynamicTreeNode>
 
 <dynamicTreeNode  childNameKey="message"
-	id="lifecycle"
+	id="lifecycles"
 	treeAdaptorClass="org.glassfish.admingui.common.tree.ListTreeAdaptor"
 	children="#{requestScope.children}"
 	text="$resource{i18n.tree.lifecycle}"

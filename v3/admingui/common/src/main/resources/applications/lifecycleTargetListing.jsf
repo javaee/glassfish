@@ -46,6 +46,8 @@
 />
 <!composition template="/templates/default.layout"
     guiTitle="$resource{i18n.lifecycleTargetListing.PageTitle}"
+    guiOnLoad="admingui.nav.selectTreeNodeWithURL('#{request.contextPath}/common/applications/lifecycleEdit.jsf?appName=#{pageSession.appName}');"
+
 >
 <!define name="content">
     <event>

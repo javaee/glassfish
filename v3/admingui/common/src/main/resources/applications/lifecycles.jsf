@@ -67,7 +67,7 @@
             setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18nc.msg.JS.confirmDeleteLifecycle}");
         />
     </event>
-"    <script type="text/javascript">admingui.nav.selectTreeNodeById(admingui.nav.TREE_ID+":lifecycle");</script>
+"    <script type="text/javascript">admingui.nav.selectTreeNodeById(admingui.nav.TREE_ID+":lifecycles");</script>
             <sun:form id="propertyForm">
 #include "/common/shared/alertMsg.inc"
                 <!-- Page Title -->
@@ -75,7 +75,7 @@
                  "<br />
 #include "/common/applications/lifecyclesTable.inc"
 
-	<sun:hidden id="helpKey" value="$resource{help_common.lifecycles}" />
+	<sun:hidden id="helpKey" value="$resource{help_common.lifecycles}" />ß
     </sun:form>
 </define>
 </composition>

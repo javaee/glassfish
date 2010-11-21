@@ -46,7 +46,9 @@
     setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
     setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18nc.lifecycleModule.editPageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18nc.lifecycleModule.editPageTitle}" 
+    guiOnLoad="admingui.nav.selectTreeNodeWithURL('#{request.contextPath}/common/applications/lifecycleEdit.jsf?appName=#{pageSession.name}');"
+    >
 <!define name="content">
     <event>
     <!beforeCreate
