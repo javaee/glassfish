@@ -145,6 +145,53 @@ public class ASenvPropertyReader {
             put(PRODUCT_ROOT_PROPERTY, installRoot.getParent());
         }
 
+        @Override
+        public String get(Object k) {
+            String v = super.get(k);
+            if (v != null) return v;
+            if (k.equals(HOST_NAME_PROPERTY)) {
+                v = getHostname();
+                put(HOST_NAME_PROPERTY, v);
+            }
+            else if (k.equals(JAVA_ROOT_PROPERTY)) {
+                v = getJavaRoot(super.get(JAVA_ROOT_PROPERTY_ASENV));
+                put(JAVA_ROOT_PROPERTY, v);
+            }
+            return v;
+        }
+
+        @Override
+        public Set<String> keySet() {
+            completeMap();
+            return super.keySet();
+        }
+
+        @Override
+        public Set<Map.Entry<String, String>> entrySet() {
+            completeMap();
+            return super.entrySet();
+        }
+
+        @Override
+        public boolean containsKey(Object k) {
+            completeMap();
+            return super.containsKey((String)k);
+        }
+
+        @Override
+        public Collection<String> values() {
+            completeMap();
+            return super.values();
+        }
+
+        /*
+         * Add the "lazy" items to the map so that the map is complete.
+         */
+        private void completeMap() {
+            get(HOST_NAME_PROPERTY);
+            get(JAVA_ROOT_PROPERTY);
+        }
+
         /*
          * 2 things to do
          * 1) change relative paths to absolute
@@ -164,7 +211,9 @@ public class ASenvPropertyReader {
 
             // props have all tokens replaced now (if they exist)
             // now make the paths absolute.
-            Set<String> keys = keySet();
+            // Call super.keySet here so that the lazy values are not added
+            // to the map at this point.
+            Set<String> keys = super.keySet();
 
             for (String key : keys) {
                 String value = super.get(key);
@@ -254,21 +303,6 @@ public class ASenvPropertyReader {
             }
         }
 
-        @Override
-        public String get(Object k) {
-            String v = super.get(k);
-            if (v != null) return v;
-            if (k.equals(HOST_NAME_PROPERTY)) {
-                v = getHostname();
-                put(HOST_NAME_PROPERTY, v);
-            }
-            else if (k.equals(JAVA_ROOT_PROPERTY)) {
-                v = getJavaRoot(super.get(JAVA_ROOT_PROPERTY_ASENV));
-                put(JAVA_ROOT_PROPERTY, v);
-            }
-            return v;
-        }
-
         static private String getHostname() {
             String hostname = "localhost";
             try {
@@ -343,7 +377,7 @@ public class ASenvPropertyReader {
             return f.exists();
         }
 
-   }
+    }
 
     static private Map<String, String> envToPropMap = new HashMap<String, String>();
     {
