@@ -293,7 +293,7 @@ public abstract class AbstractTreeNode implements TreeNode, Comparable {
         // under dozens of calls in the stack -- Strings are concatanated together
         // Simple solution is to replace literal slashes with a token.  The probe
         // provider code needs to do that.  jndi names are an example of this.
-        // Here we replace slash in the given pattern with th token to pull out
+        // Here we replace slash in the given pattern with the token to pull out
         // the right stuff.
         // This is a ARCHITECTURE flaw.  This hack can be replaced with an
         // ARCHITECTURAL fix later if desired.
