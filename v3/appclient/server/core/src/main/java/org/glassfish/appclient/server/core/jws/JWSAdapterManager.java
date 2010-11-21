@@ -49,7 +49,6 @@ import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -75,6 +74,7 @@ import org.glassfish.appclient.server.core.jws.servedcontent.AutoSignedContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.DynamicContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.SimpleDynamicContentImpl;
 import org.glassfish.appclient.server.core.jws.servedcontent.StaticContent;
+import org.glassfish.enterprise.iiop.api.GlassFishORBFactory;
 import org.glassfish.internal.api.ServerContext;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
@@ -115,6 +115,9 @@ public class JWSAdapterManager implements PostConstruct {
     private ExtensionFileManager extensionFileManager;
 
     @Inject AppClientDeployer appClientDeployer;
+
+    @Inject
+    private GlassFishORBFactory orbFactory;
 
     private static final String LINE_SEP = System.getProperty("line.separator");
 
@@ -197,8 +200,10 @@ public class JWSAdapterManager implements PostConstruct {
             AppClientHTTPAdapter sysAdapter = new AppClientHTTPAdapter(
                     NamingConventions.JWSAPPCLIENT_SYSTEM_PREFIX,
                     new Properties(),
-                    serverEnv.getDomainRoot(), new File(installRootURI),
-                    iiopService);
+                    serverEnv.getDomainRoot(), 
+                    new File(installRootURI),
+                    iiopService,
+                    orbFactory);
 
             requestDispatcher.registerEndpoint(
                     NamingConventions.JWSAPPCLIENT_SYSTEM_PREFIX,
@@ -437,8 +442,10 @@ public class JWSAdapterManager implements PostConstruct {
         final AppClientHTTPAdapter adapter = new AppClientHTTPAdapter(
                 contextRoot, staticContent,
                 dynamicContent, tokens,
-                serverEnv.getDomainRoot(), new File(installRootURI),
-                iiopService);
+                serverEnv.getDomainRoot(), 
+                new File(installRootURI),
+                iiopService,
+                orbFactory);
         requestDispatcher.registerEndpoint(
                 contextRoot,
                 adapter,
