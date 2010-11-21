@@ -49,7 +49,7 @@
 />
 <!composition template="/templates/default.layout"
     guiTitle="$resource{i18ncs.cluster.ApplicationsTitle}"
-    guiTemplateOnLoad="admingui.nav.refreshTree();"
+    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:applications');"
 >
 
 <!define name="content">
