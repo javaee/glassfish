@@ -47,7 +47,7 @@
     <property name="jardir" value="${rootdir}/packager_jars"/>
     <property name="modulesdir" value="${jardir}/glassfish3/glassfish/modules"/>
     <property name="filedir" value="${rootdir}/packager_files"/>
- 
+
     <target name="get.distribution.type">
       <condition property="full.distribution">
 	<equals arg1="${bundlename}" arg2="org.glassfish.embedded.all"/>
@@ -63,13 +63,10 @@
     <target name="create.distribution" depends="get.distribution.type">
         <antcall target="makeJarDir"/>
         <antcall target="removeJarsNotNeeded"/>
-	 <antcall target="addDtds"/>
-        <antcall target="rejar"/>
-	<antcall target="unjar"/>
+	<antcall target="addDtds"/>
    	<antcall target="addRars"/>
 	<antcall target="addEjbTimer"/>
-        <antcall target="jar"/>
-	
+        <antcall target="rejar"/>
         <attachArtifact file="${finaljar}"/>
      </target>
 
@@ -115,35 +112,23 @@
     </target>
     
     <target name="rejar">
-       <echo message="rejarring and processing metadata..."/>
+        <echo message="rejarring and processing metadata..."/>
         <taskdef name="rejar" classname="org.jvnet.maven.plugin.antrun.RejarTask" />
 
+	<defaultexcludes add="META-INF/**.RSA"/>
+	<defaultexcludes add="META-INF/**.inf"/>
+	<defaultexcludes add="META-INF/**.SF"/>
+
         <rejar destfile="${finaljar}" duplicate="preserve" >
-            <zipgroupfileset dir="${jardir}" includes="**/*.jar"/>
-        </rejar>
-    </target>
-
-
-    <target name="unjar">
-	<unjar src="${finaljar}" dest="${rootdir}/temp" />
-        <delete>
-		<fileset dir="${rootdir}/temp/META-INF/">
-			<include name="*.inf"/>
-			<include name="*.RSA"/>
-			<include name="*.SF"/>
-		</fileset>
-	</delete>
-     </target>
-
-    <target name="jar">
-	<jar destfile="${finaljar}" basedir="${rootdir}/temp" >
            <manifest>
                 <attribute name="Bundle-SymbolicName" value="${bundlename}"/>
                 <attribute name="Main-Class" value="com.sun.enterprise.glassfish.bootstrap.UberMain"/>
             </manifest>
-	</jar>
-
+            <zipgroupfileset dir="${jardir}" includes="**/*.jar"/>
+            <fileset dir="${rootdir}/temp" includes="*.rar, *.war"/>
+        </rejar>
     </target>
+
 
     <target name="addExtraRars" if="full.distribution">
 	<echo message="Adding additional rars"/>
