@@ -140,6 +140,7 @@ public class DescriptorFactory
                 context.setSource(archive);
             }
 
+            context.addTransientAppMetaData(ExtendedDeploymentContext.IS_TEMP_CLASSLOADER, Boolean.TRUE); // issue 14564
             ClassLoader cl = archiveHandler.getClassLoader(parentCl, context);
             Archivist archivist = archivistFactory.getArchivist(
                 archive, cl);
