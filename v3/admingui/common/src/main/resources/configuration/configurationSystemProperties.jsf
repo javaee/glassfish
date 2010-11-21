@@ -52,7 +52,7 @@
         <!beforeCreate
             getRequestValue(key="configName" value="#{pageSession.configName}");
 
-            setPageSessionAttribute(key="parentPage", value="#{request.contextPath}/configuration/configuration.jsf?configName=#{pageSession.configName}");
+            setPageSessionAttribute(key="parentPage", value="#{request.contextPath}/common/configuration/configuration.jsf?configName=#{pageSession.configName}");
             setPageSessionAttribute(key="selfPage", value="#{request.contextPath}/common/configuration/configurationSystemProperties.jsf?configName=#{pageSession.configName}");
             setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}");
             setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/system-properties");

@@ -45,11 +45,12 @@
     setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
     setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.configuration.pageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.configuration.pageTitle}"
+    guiOnLoad="admingui.nav.selectTreeNodeWithURL('#{request.contextPath}/common/configuration/configuration.jsf?configName=#{pageSession.configName}');" >
 <!define name="content">
     <event>
         <!beforeCreate
-            getRequestValue(key="configName" value=>$page{configName});
+            getRequestValue(key="configName" value="#{pageSession.configName}");
         />
     </event>
     <sun:form id="configForm">
@@ -62,8 +63,13 @@
             <!afterCreate
                     getClientId(component="$this{component}" clientId=>$attribute{sheetId});
                 />
-            <sun:propertySheetSection id="propSheetSection">
+            <sun:propertySheetSection id="configNameSheet">
+                <sun:property id="configName"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="Configuration Name: " >
+                <sun:staticText id="configName" style="padding: 8pt" text="#{pageSession.configName}"/>
+            </sun:property>
             </sun:propertySheetSection>
+                <sun:propertySheetSection id="propSheetSection">
+                </sun:propertySheetSection>
         </sun:propertySheet>
         <event>
             <!afterCreate
