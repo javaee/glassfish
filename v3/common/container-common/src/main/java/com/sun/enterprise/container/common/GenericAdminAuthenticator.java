@@ -154,7 +154,7 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
      * @param password String representing clear-text password of the user doing an admin operation
      * @param realm String representing the name of the admin realm for given server
      * @param originHost the host from which the request was sent
-     * @return boolean representing successful authentication and group membership
+     * @return AdminAcessController.Access level of access to grant
      * @throws LoginException
      */
     public AdminAccessController.Access loginAsAdmin(String user, String password,
@@ -171,7 +171,7 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
      * @param originHost the host from which the request was sent
      * @param candidateAdminIndicator String containing the special admin indicator (null if absent)
      * @param requestPrincipal Principal, typically as reported by the secure transport delivering the admin request
-     * @return boolean representing successful authentication and group membership
+     * @return AdminAcessController.Access level of access to grant
      * @throws LoginException
      */
     public AdminAccessController.Access loginAsAdmin(String user, String password, String realm,
@@ -192,8 +192,9 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
          * under secure admin an incoming command could have an auth token and,
          * if there is one, we'd like to consume it and retire it.  If we 
          * checked for file realm auth. first then a command submitted from a
-         * shell process on a system using asadmin might be using a stored 
-         * password which would authenticate, thereby bypassing the auth token
+         * shell process on a system using asadmin - which will have a limited-use
+         * token - might also be using a stored password which would authenticate,
+         * thereby bypassing the auth token
          * processing and allowing the token to remain valid longer than it should.
          */
         boolean result = authenticateAsTrustedSender(authRelatedHeaders, requestPrincipal);
@@ -207,8 +208,11 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
          */
         if ( ! NetUtils.isThisHostLocal(originHost) &&
              ! SecureAdmin.Util.isEnabled(secureAdmin) ) {
-            logger.log(Level.FINE, "Rejecting request; secure admin is not enabled and the request is remote");
-            throw new LoginException();
+            logger.log(Level.INFO,
+                    lsm.getLocalString("remote.login.while.secure.admin.disabled",
+                        "Remote admin log-in attempt from host {0} with username \"{1}\" rejected because secure admin is disabled",
+                        originHost, user));
+            return AdminAccessController.Access.NONE;
         }
         if (as.usesFileRealm()) {
             result = handleFileRealm(user, password);
