@@ -129,7 +129,7 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
 
                 if ((vals != null) && (!vals.isEmpty())) {
                     result.append("<ul>");
-
+                    
                     for (Map.Entry entry : (Set<Map.Entry>) vals.entrySet()) {
 
                         Object object = entry.getValue();
@@ -152,7 +152,11 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
                         } else if (object instanceof Map) {
                             if (!((Map) object).isEmpty()) {
                                 Map m = (Map) object;
-                                result.append("<li>").append(entry.getKey());
+                                if (vals.size() != 1) {//add a link if more than 1 child
+                                    result.append("<li>").append("<a href=\"" + uriInfo.getAbsolutePath().toString() + "/" + entry.getKey() + "\">" + entry.getKey() + "</a>");
+                                } else {
+                                    result.append("<li>").append(entry.getKey());
+                                }
                                 result.append("<ul>");
 
                                 for (Map.Entry anEntry : (Set<Map.Entry>) m.entrySet()) {
