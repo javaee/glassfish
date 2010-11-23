@@ -135,6 +135,10 @@ public class DynamicConfigListener implements ConfigListener {
             try {
                 portLock = acquirePortLock(listener);
                 if (type == Changed.TYPE.ADD) {
+                    final int[] ports = portLock.getPorts();
+                    if (isAdminListener && ports[ports.length - 1] == -1) {
+                        return null;
+                    }
                     final Future future = grizzlyService.createNetworkProxy(listener);
                     future.get(RECONFIG_LOCK_TIMEOUT_SEC, TimeUnit.SECONDS);
                     grizzlyService.registerNetworkProxy();
