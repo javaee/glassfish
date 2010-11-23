@@ -500,7 +500,6 @@ public class RemoteAdminCommand {
 
                 if (doUpload) {
                     outboundPayload.writeTo(urlConnection.getOutputStream());
-                    outboundPayload = null; // no longer needed
                 }
 
             }
@@ -652,7 +651,7 @@ public class RemoteAdminCommand {
                 /*
                  * We must handle redirection from http to https explicitly
                  * because, even if the HttpURLConnection's followRedirect is
-                 * set to true the Java SE implementation does not do so if the
+                 * set to true, the Java SE implementation does not do so if the
                  * procotols are different.
                  */
                 String redirection = checkConnect(urlConnection);
@@ -799,6 +798,7 @@ public class RemoteAdminCommand {
                 throw new CommandException(e);
             }
         } while (shouldTryCommandAgain);
+        outboundPayload = null; // no longer needed
     }
 
     /**
