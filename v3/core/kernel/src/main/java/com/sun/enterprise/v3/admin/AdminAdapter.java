@@ -581,6 +581,8 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
         ob.addListener(ls); //there should be a better way to do this ...
         ob = (ObservableBean)ConfigSupport.getImpl(server);
         ob.addListener(ls);
+        ob = (ObservableBean)ConfigSupport.getImpl(config);
+        ob.addListener(ls);
     }
     private void registerDynamicReconfigListeners() {
         registerSystemPropertyListener();
