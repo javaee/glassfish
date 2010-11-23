@@ -230,7 +230,8 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand, Pos
             attrChanges.put(attrName, value);
         }
 
-        for (Map.Entry<Dom, String> node : matchingNodes.entrySet()) {
+        List<Map.Entry> mNodes = applyOverrideRules(new ArrayList(matchingNodes.entrySet()));
+        for (Map.Entry<Dom, String> node : mNodes) {
             final Dom targetNode = node.getKey();
 
             for (String name : targetNode.model.getAttributeNames()) {
