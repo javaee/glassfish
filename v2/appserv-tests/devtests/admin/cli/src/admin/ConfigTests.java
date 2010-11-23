@@ -62,9 +62,9 @@ public class ConfigTests extends AdminBaseDevTest {
         startDomain();
         testCopyDeleteListConfig();
         testDeleteConfig();
-        //testConfigSysprops();
-        // commented out until issue 12313 is resolved
-        //testConcurrentConfigAccess();
+        testConfigSysProps();
+        testConcurrentConfigAccess();
+        testConfigChangeEvents();
         stopDomain();
         stat.printSummary();
     }
@@ -122,9 +122,36 @@ public class ConfigTests extends AdminBaseDevTest {
     private void testConfigSysProps(){
         final String testName = "configSysProps";
 
-        //This fails currently due to bug 12311 commented test for now
-        /*report(testName+"copy-config", !asadmin("copy-config","system-properties","foo=bar", "default-config","myconfig"));*/
+        report(testName+"copy-config", !asadmin("copy-config","system-properties","foo=bar", "default-config","myconfig"));
 
+    }
+
+    /*
+     * This tests that notifications are delivered for config changes.
+     */
+    private void testConfigChangeEvents() {
+        final String tn = "configChange-";
+        AsadminReturn ret;
+
+        report(tn+"create-prop1", asadmin("create-system-properties", "--target", "domain", "someport=1010"));
+        report(tn+"create-nl", asadmin("create-network-listener", "--listenerport", "${someport}", "--protocol", "http-listener-1", "somelistener"));
+        report(tn+"create-vs", asadmin("create-virtual-server", "--hosts", "localhost", "--networklisteners", "somelistener", "somevs"));
+        ret = asadminWithOutput("_get-host-and-port", "--virtualserver", "somevs");
+        report(tn+"check-hap1", ret.out.indexOf("1010") != -1);
+
+        report(tn+"setconfig", asadmin("create-system-properties", "--target", "server-config", "someport=2020"));
+        ret = asadminWithOutput("_get-host-and-port", "--virtualserver", "somevs");
+        report(tn+"check-hap2", ret.out.indexOf("2020") != -1);
+
+        report(tn+"create-prop2", asadmin("create-system-properties", "someport=3030"));
+        ret = asadminWithOutput("_get-host-and-port", "--virtualserver", "somevs");
+        report(tn+"check-hap3", ret.out.indexOf("3030") != -1);
+
+        report(tn+"delvs", asadmin("delete-virtual-server", "somevs"));
+        report(tn+"delnl", asadmin("delete-network-listener", "somelistener"));
+        report(tn+"delsp1", asadmin("delete-system-property", "someport"));
+        report(tn+"delsp2", asadmin("delete-system-property", "--target", "domain", "someport"));
+        report(tn+"delsp1", asadmin("delete-system-property", "--target", "server-config", "someport"));
     }
 
     /*

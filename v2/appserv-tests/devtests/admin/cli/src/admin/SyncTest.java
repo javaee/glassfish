@@ -128,6 +128,8 @@ public class SyncTest extends AdminBaseDevTest {
         // undeploy
         //report(tn + "undeploy", asadmin("undeploy", "--target", cname, "helloworld1"));
         foo.delete();
+        // touch the DAS domain.xml file so that synchronization still occurs
+        this.getDASDomainXML().setLastModified(System.currentTimeMillis());
 
          // start the instance
         report(tn + "start-local-instance1a", asadmin("start-local-instance", i1name));
