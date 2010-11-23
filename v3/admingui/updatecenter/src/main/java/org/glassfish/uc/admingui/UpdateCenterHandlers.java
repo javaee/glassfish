@@ -416,8 +416,9 @@ public class UpdateCenterHandlers {
         Image image = getUpdateCenterImage();
         boolean install = false;
         String action= (String)handlerCtx.getInputValue("action");
-        if (action.equals("install"))
+        if (action.equals("install")) {
             install=true;
+        }
         List obj = (List) handlerCtx.getInputValue("selectedRows");
         if (obj == null){
             //no row selected
