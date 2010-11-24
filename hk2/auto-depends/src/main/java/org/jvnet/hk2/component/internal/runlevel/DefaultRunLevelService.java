@@ -66,7 +66,7 @@ import org.jvnet.hk2.component.RunLevelState;
 import org.jvnet.hk2.component.ServiceContext;
 
 import com.sun.hk2.component.AbstractInhabitantImpl;
-import com.sun.hk2.component.LazyInhabitant;
+import com.sun.hk2.component.ClassLoaderHolder;
 import com.sun.hk2.component.RunLevelInhabitant;
 
 /**
@@ -1126,8 +1126,8 @@ public class DefaultRunLevelService implements RunLevelService<Void>, Enableable
         @Override
         public ClassLoader getClassLoader() {
           ClassLoader cl;
-          if (LazyInhabitant.class.isInstance(i)) {
-            cl = ((LazyInhabitant<?>) i).getClassLoader();
+          if (ClassLoaderHolder.class.isInstance(i)) {
+            cl = ((ClassLoaderHolder)i).getClassLoader();
           } else {
             cl = i.getClass().getClassLoader();
           }
