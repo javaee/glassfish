@@ -81,9 +81,9 @@
     </mailingLists>
 
     <scm>
-      <connection>scm:svn:https://hk2.dev.java.net/svn/hk2/trunk/hk2</connection>
-      <developerConnection>scm:svn:https://hk2.dev.java.net/svn/hk2/trunk/hk2</developerConnection>
-      <url>https://hk2.dev.java.net/svn/hk2/trunk/hk2</url>
+      <connection>scm:svn:https://svn.java.net/svn/hk2~svn/trunk/hk2</connection>
+      <developerConnection>scm:svn:https://svn.java.net/svn/hk2~svn/trunk/hk2</developerConnection>
+      <url>https://svn.java.net/svn/hk2~svn/trunk/hk2</url>
     </scm>
     <distributionManagement>
         <site>
