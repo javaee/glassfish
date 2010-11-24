@@ -36,8 +36,8 @@
  */
 package com.sun.hk2.component;
 
+import org.jvnet.hk2.component.Creator;
 import org.jvnet.hk2.component.Scope;
-import org.jvnet.hk2.component.Womb;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.tracing.TracingThreadLocal;
 import org.jvnet.hk2.tracing.TracingUtilities;
@@ -45,14 +45,15 @@ import org.jvnet.hk2.tracing.TracingUtilities;
 /**
  * @author Kohsuke Kawaguchi
  */
-public class ScopedInhabitant<T> extends AbstractWombInhabitantImpl<T> {
+public class ScopedInhabitant<T> extends AbstractCreatorInhabitantImpl<T> {
     private final Scope scope;
 
-    public ScopedInhabitant(Womb<T> womb, Scope scope) {
-        super(womb);
+    public ScopedInhabitant(Creator<T> creator, Scope scope) {
+        super(creator);
         this.scope = scope;
     }
 
+    @SuppressWarnings("unchecked")
     public T get(Inhabitant onBehalfOf) {
         try {
             if (TracingUtilities.isEnabled())
@@ -69,7 +70,7 @@ public class ScopedInhabitant<T> extends AbstractWombInhabitantImpl<T> {
                     // verify no one else created one in the mean time
                     o = store.get(this);
                     if(o==null) {
-                        o = womb.get(onBehalfOf);
+                        o = creator.get(onBehalfOf);
                         store.put(this,o);
                     }
                 }

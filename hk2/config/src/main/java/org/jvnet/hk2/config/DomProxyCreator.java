@@ -34,44 +34,30 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.component;
+package org.jvnet.hk2.config;
+
+import org.jvnet.hk2.component.ComponentException;
+import org.jvnet.hk2.component.MultiMap;
+import org.jvnet.hk2.component.Inhabitant;
+
+import com.sun.hk2.component.AbstractCreatorImpl;
 
 /**
- * Encapsulates how to create an object.
- *
- * <p>
- * Signature-wise it's the same as {@link Inhabitant}
- * but it carries an additional meaning.
+ * {@link Creator} that returns a typed proxy to {@link Dom}.
  *
  * @author Kohsuke Kawaguchi
- * @see Wombs
  */
 @SuppressWarnings("unchecked")
-public interface Womb<T> extends Inhabitant<T> {
+final class DomProxyCreator<T extends ConfigBeanProxy> extends AbstractCreatorImpl<T> {
+    private final Dom dom;
 
-    /**
-     * Short cut for
-     *
-     * <pre>
-     * T o = create();
-     * initialize(o);
-     * return o;
-     * </pre>
-     */
-    T get() throws ComponentException;
+    public DomProxyCreator(Class<T> type, MultiMap<String, String> metadata, Dom dom) {
+        super(type, null, metadata);
+        this.dom = dom;
+    }
 
-    /**
-     * Creates a new instance.
-     *
-     * The caller is supposed to call the {@link Womb#initialize(Object, Inhabitant)}
-     * right away. This 2-phase initialization allows us to handle
-     * cycle references correctly.
-     * @param onBehalfOf
-     */
-    T create(Inhabitant onBehalfOf) throws ComponentException;
-
-    /**
-     * Performs initialization of object, such as dependency injection.
-     */
-    void initialize(T t, Inhabitant onBehalfOf) throws ComponentException;
+    public T create(Inhabitant onBehalfOf) throws ComponentException {
+        return dom.createProxy(type());
+    }
 }
+

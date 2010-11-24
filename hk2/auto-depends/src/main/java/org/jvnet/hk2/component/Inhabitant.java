@@ -114,7 +114,7 @@ public interface Inhabitant<T> extends Holder<T> {
      *
      * <p>
      * {@link Inhabitant}s are often used with the decorator pattern
-     * (see {@link com.sun.hk2.component.AbstractWombInhabitantImpl} for example), yet during
+     * (see {@link com.sun.hk2.component.AbstractCreatorInhabitantImpl} for example), yet during
      * the object initializtion inside the {@link #get()} method, we often
      * need the reference to the outer-most {@link Inhabitant} registered to
      * the {@link Habitat} (for example so that we can request the injection

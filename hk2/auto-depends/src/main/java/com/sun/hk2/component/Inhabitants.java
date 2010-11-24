@@ -51,8 +51,8 @@ import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.component.RunLevelService;
 import org.jvnet.hk2.component.Scope;
 import org.jvnet.hk2.component.Singleton;
-import org.jvnet.hk2.component.Womb;
-import org.jvnet.hk2.component.Wombs;
+import org.jvnet.hk2.component.Creator;
+import org.jvnet.hk2.component.Creators;
 import org.jvnet.hk2.component.internal.runlevel.RunLevelServices;
 
 /**
@@ -126,37 +126,41 @@ public class Inhabitants {
    * Creates a {@link Inhabitant} by looking at annotations of the given type.
    */
   public static <T> Inhabitant<T> create(Class<T> c, Habitat habitat, MultiMap<String,String> metadata) {
-      return wrapByScope(c, Wombs.create(c,habitat,metadata), habitat);
+      return wrapByScope(c, Creators.create(c,habitat,metadata), habitat);
   }
 
   /**
-   * Creates a {@link Inhabitant} by wrapping {@link Womb} to handle scoping right.
+   * Creates a {@link Inhabitant} by wrapping {@link Creator} to handle scoping right.
    */
-  public static <T> Inhabitant<T> wrapByScope(Class<T> c, Womb<T> womb, Habitat habitat) {
+  public static <T> Inhabitant<T> wrapByScope(Class<T> c, Creator<T> creator, Habitat habitat) {
       Scoped scoped = c.getAnnotation(Scoped.class);
-      if(scoped==null)
-          return new SingletonInhabitant<T>(womb); // treated as singleton
+      if (scoped==null) {
+          return new SingletonInhabitant<T>(creator); // treated as singleton
+      }
 
       Class<? extends Scope> scopeClass = scoped.value();
 
-      return wrapByScope(womb, habitat, scopeClass);
+      return wrapByScope(creator, habitat, scopeClass);
   }
 
-  public static <T> Inhabitant<T> wrapByScope(Womb<T> womb, Habitat habitat,
+  public static <T> Inhabitant<T> wrapByScope(Creator<T> creator, Habitat habitat,
       Class<? extends Scope> scopeClass) {
       // those two scopes are so common and different that they deserve
       // specialized code optimized for them.
-      if(scopeClass== PerLookup.class)
-          return womb;
-      if(scopeClass== Singleton.class)
-          return new SingletonInhabitant<T>(womb);
+      if (scopeClass== PerLookup.class) {
+          return creator;
+      }
+      if (scopeClass== Singleton.class) {
+          return new SingletonInhabitant<T>(creator);
+      }
   
       // other general case
       Scope scope = habitat.getByType(scopeClass);
-      if (scope==null)
+      if (scope==null) {
           throw new ComponentException("Failed to look up %s", scopeClass);
+      }
   
-      return new ScopedInhabitant<T>(womb,scope);
+      return new ScopedInhabitant<T>(creator,scope);
   }
 
   /**

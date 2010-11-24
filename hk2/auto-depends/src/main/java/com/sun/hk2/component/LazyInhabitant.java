@@ -37,11 +37,11 @@
 package com.sun.hk2.component;
 
 import org.jvnet.hk2.component.ComponentException;
+import org.jvnet.hk2.component.Creator;
+import org.jvnet.hk2.component.Creators;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.MultiMap;
-import org.jvnet.hk2.component.Womb;
-import org.jvnet.hk2.component.Wombs;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -106,7 +106,7 @@ public class LazyInhabitant<T> extends EventPublishingInhabitant<T> {
     protected synchronized void fetch() {
         if (null == real) {
           Class<T> c = loadClass();
-          real = Inhabitants.wrapByScope(c,createWomb(c),habitat);
+          real = Inhabitants.wrapByScope(c,createCreator(c),habitat);
         }
     }
     
@@ -132,10 +132,10 @@ public class LazyInhabitant<T> extends EventPublishingInhabitant<T> {
     }
 
     /**
-     * Creates {@link Womb} for instantiating objects.
+     * Creates {@link Creator} for instantiating objects.
      */
-    protected Womb<T> createWomb(Class<T> c) {
-        return Wombs.create(c,habitat,metadata);
+    protected Creator<T> createCreator(Class<T> c) {
+        return Creators.create(c,habitat,metadata);
     }
 
 }

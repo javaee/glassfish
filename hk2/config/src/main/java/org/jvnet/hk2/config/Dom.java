@@ -1015,8 +1015,8 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
      */
     @Override
     @SuppressWarnings("unchecked")
-    protected Womb createWomb(Class c) {
-        return (ConfigBeanProxy.class.isAssignableFrom(c)?new DomProxyWomb(c,metadata(),this):new ConfiguredWomb(super.createWomb(c),this));
+    protected Creator createCreator(Class c) {
+        return (ConfigBeanProxy.class.isAssignableFrom(c)?new DomProxyCreator(c,metadata(),this):new ConfiguredCreator(super.createCreator(c),this));
         // turning off @Configured and @CagedBy until we get a clear picture on how this should work together.
 /*        Womb womb = (ConfigBeanProxy.class.isAssignableFrom(c)?new DomProxyWomb(c,metadata(),this):new ConfiguredWomb(super.createWomb(c),this));
         if (cagedBy==null) {

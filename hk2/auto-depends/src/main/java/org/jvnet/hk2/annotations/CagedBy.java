@@ -73,6 +73,8 @@ import java.lang.annotation.Target;
  * This is the interception point for providing additional infrastructure service
  * for certain kinds of inhabitants. 
  *
+ * @deprecated this is scheduled for removal
+ *
  * @author Kohsuke Kawaguchi
  * @see CageBuilder
  */

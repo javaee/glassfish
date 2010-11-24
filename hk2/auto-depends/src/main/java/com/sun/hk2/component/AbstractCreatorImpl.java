@@ -48,14 +48,14 @@ import org.jvnet.hk2.tracing.TracingUtilities;
  * @author Kohsuke Kawaguchi
  */
 @SuppressWarnings("unchecked")
-public abstract class AbstractWombImpl<T> extends AbstractInhabitantImpl<T> implements Womb<T> {
-    private final static Logger logger = Logger.getLogger(AbstractWombImpl.class.getName());
+public abstract class AbstractCreatorImpl<T> extends AbstractInhabitantImpl<T> implements Creator<T> {
+    private final static Logger logger = Logger.getLogger(AbstractCreatorImpl.class.getName());
   
     protected final Class<T> type;
     protected final Habitat habitat; 
     private final MultiMap<String,String> metadata;
 
-    public AbstractWombImpl(Class<T> type, Habitat habitat, MultiMap<String,String> metadata) {
+    public AbstractCreatorImpl(Class<T> type, Habitat habitat, MultiMap<String,String> metadata) {
         this.type = type;
         this.habitat = habitat;
         this.metadata = metadata;
@@ -98,7 +98,7 @@ public abstract class AbstractWombImpl<T> extends AbstractInhabitantImpl<T> impl
     }
 
     public void release() {
-        // Womb creates a new instance every time,
+        // Creator creates a new instance every time,
         // so there's nothing to release here.
     }
 
