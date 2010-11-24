@@ -46,6 +46,7 @@ import com.sun.common.util.logging.LoggingXMLNames;
 import com.sun.enterprise.admin.monitor.callflow.Agent;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.module.bootstrap.EarlyLogHandler;
 import com.sun.enterprise.util.EarlyLogger;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.v3.logging.AgentFormatterDelegate;
@@ -64,8 +65,8 @@ import org.jvnet.hk2.config.UnprocessedChangeEvents;
 import java.beans.PropertyChangeEvent;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.*;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.logging.*;
 
 /**
@@ -106,7 +107,8 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy, org.g
 
     /*
         Returns properties based on the DAS/Cluster/Instance
-     */
+      */
+
     public Map<String, String> getLoggingProperties() throws IOException {
 
         Server targetServer = domain.getServerNamed(env.getInstanceName());
@@ -133,6 +135,7 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy, org.g
     /*
         Returns logging file to be monitor during server is running.
      */
+
     public File getLoggingFile() throws IOException {
 
         File file = null;
@@ -272,25 +275,31 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy, org.g
 
         // redirect stderr and stdout, a better way to do this
         //http://blogs.sun.com/nickstephen/entry/java_redirecting_system_out_and
-        /*
-                Logger _ologger = LogDomains.getLogger(LogManagerService.class,LogDomains.STD_LOGGER);
-                LoggingOutputStream los = new LoggingOutputStream(_ologger, Level.INFO);
-                LoggingOutputStream.LoggingPrintStream pout = los.new  LoggingPrintStream(los);
-                System.setOut(pout);
 
-                Logger _elogger = LogDomains.getLogger(LogManagerService.class,LogDomains.STD_LOGGER);
-                los = new LoggingOutputStream(_elogger, Level.SEVERE);
-                LoggingOutputStream.LoggingPrintStream perr = los.new  LoggingPrintStream(los);
-                System.setErr(perr);
-             */
-        Logger anonymousLogger = Logger.getAnonymousLogger();
-        LoggingOutputStream los = new LoggingOutputStream(anonymousLogger, Level.INFO);
-        PrintStream pout = new PrintStream(los, true);
+        Logger _ologger = LogDomains.getLogger(LogManagerService.class, LogDomains.STD_LOGGER);
+        LoggingOutputStream los = new LoggingOutputStream(_ologger, Level.INFO);
+        LoggingOutputStream.LoggingPrintStream pout = los.new LoggingPrintStream(los);
         System.setOut(pout);
 
-        los = new LoggingOutputStream(anonymousLogger, Level.SEVERE);
-        PrintStream perr = new PrintStream(los, true);
+        Logger _elogger = LogDomains.getLogger(LogManagerService.class, LogDomains.STD_LOGGER);
+        los = new LoggingOutputStream(_elogger, Level.SEVERE);
+        LoggingOutputStream.LoggingPrintStream perr = los.new LoggingPrintStream(los);
         System.setErr(perr);
+
+        /*Logger anonymousLogger = Logger.getAnonymousLogger();
+       LoggingOutputStream los = new LoggingOutputStream(anonymousLogger, Level.INFO);
+       PrintStream pout = new PrintStream(los,true);
+       synchronized (pout) {
+           System.setOut(pout);
+       }
+
+
+       los = new LoggingOutputStream(anonymousLogger, Level.SEVERE);
+       PrintStream perr = new PrintStream(los,true);
+       synchronized (perr) {
+           System.setErr(perr);
+       } */
+
 
         // finally listen to changes to the logging.properties file
         if (logging != null) {
@@ -359,6 +368,16 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy, org.g
             }
             catchUp.clear();
         }
+
+        ArrayBlockingQueue<LogRecord> catchEarlyMessage = EarlyLogHandler.earlyMessages;
+
+        while (!catchEarlyMessage.isEmpty()) {
+            LogRecord logRecord = catchEarlyMessage.poll();
+            if (logRecord != null) {
+                logger.log(logRecord);
+            }
+        }
+
     }
 
     public void addHandler(Handler handler) {
