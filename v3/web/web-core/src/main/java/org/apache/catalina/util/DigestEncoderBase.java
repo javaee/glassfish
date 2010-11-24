@@ -60,9 +60,9 @@ package org.apache.catalina.util;
 
 
 /**
- * Encode an MD5 digest into a String.
+ * Encode a digest into a String.
  * <p>
- * The 128 bit MD5 hash is converted into a 32 character long String.
+ * The digest hash is converted into a character long String.
  * Each character of the String is the hexadecimal representation of 4 bits
  * of the digest.
  *
@@ -70,22 +70,36 @@ package org.apache.catalina.util;
  * @version $Revision: 1.2 $ $Date: 2005/12/08 01:28:18 $
  */
 
-public final class MD5Encoder extends DigestEncoderBase {
+class DigestEncoderBase {
+
+    // ----------------------------------------------------- Instance Variables
+
+
+    private static final char[] hexadecimal =
+    {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+     'a', 'b', 'c', 'd', 'e', 'f'};
+
 
     // --------------------------------------------------------- Public Methods
 
 
     /**
-     * Encodes the 128 bit (16 bytes) MD5 into a 32 character String.
+     * Encodes the 8m bit (m bytes) MD5 into a 2m character String.
      *
      * @param binaryData Array containing the digest
-     * @return Encoded MD5, or null if encoding failed
+     * @return Encoded digest, or null if encoding failed
      */
     public char[] encode( byte[] binaryData ) {
 
-        if (binaryData.length != 16)
-            return null;
+        char[] buffer = new char[2 * binaryData.length];
 
-        return super.encode(binaryData);
+        for (int i=0; i < binaryData.length; i++) {
+            int low = (int) (binaryData[i] & 0x0f);
+            int high = (int) ((binaryData[i] & 0xf0) >> 4);
+            buffer[i*2] = hexadecimal[high];
+            buffer[i*2 + 1] = hexadecimal[low];
+        }
+
+        return buffer;
     }
 }

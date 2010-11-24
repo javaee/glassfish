@@ -40,6 +40,8 @@
 
 package com.sun.enterprise.web;
 
+import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.runtime.common.DefaultResourcePrincipal;
@@ -48,12 +50,14 @@ import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 import com.sun.enterprise.deployment.web.ContextParameter;
 import com.sun.logging.LogDomains;
 import org.apache.catalina.*;
+import org.apache.catalina.authenticator.DigestAuthenticator;
 import org.apache.catalina.core.ContainerBase;
 import org.apache.catalina.deploy.ApplicationParameter;
 import org.apache.catalina.deploy.ContextEnvironment;
 import org.apache.catalina.deploy.ContextResource;
 import org.apache.catalina.deploy.LoginConfig;
 import org.apache.catalina.startup.ContextConfig;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.web.valve.GlassFishValve;
 import org.jvnet.hk2.component.Habitat;
 
@@ -73,6 +77,7 @@ import java.util.logging.Logger;
 
 public class WebModuleContextConfig extends ContextConfig {
 
+    private static final String DEFAULT_DIGEST_ALGORITHM = "default-digest-algorithm";
     private static final Logger logger = LogDomains.getLogger(
         WebModuleContextConfig.class, LogDomains.WEB_LOGGER);
     
@@ -390,6 +395,18 @@ public class WebModuleContextConfig extends ContextConfig {
                         "webModuleContextConfig.authenticatorConfigured",
                         loginConfig.getAuthMethod());
                 }
+            }
+        }
+
+        if (authenticator instanceof DigestAuthenticator) {
+            Config config = habitat.getComponent(Config.class, ServerEnvironment.DEFAULT_INSTANCE_NAME);
+            SecurityService securityService = config.getSecurityService();
+            String digestAlgorithm = null;
+            if (securityService != null) {
+                digestAlgorithm = securityService.getPropertyValue(DEFAULT_DIGEST_ALGORITHM);
+            }
+            if (digestAlgorithm != null) {
+                ((DigestAuthenticator)authenticator).setAlgorithm(digestAlgorithm);
             }
         }
     }
