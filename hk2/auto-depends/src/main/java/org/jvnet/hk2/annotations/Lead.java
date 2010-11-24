@@ -46,6 +46,8 @@ import java.lang.annotation.Target;
  * Used on a companion object to request an injection of the corresponding lead object.
  *
  * TODO: expand doc
+ * 
+ * @deprecated this is scheduled for removal
  *
  * @author Kohsuke Kawaguchi
  * @see CompanionOf

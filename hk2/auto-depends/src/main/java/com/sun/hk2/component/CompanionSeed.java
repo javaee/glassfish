@@ -60,6 +60,8 @@ import java.util.List;
  * Implementations of this contract are generated for each component
  * with the {@link CompanionOf} annotation.  
  *
+ * @deprecated this is scheduled for removal
+ *
  * @author Kohsuke Kawaguchi
  */
 @Contract

@@ -36,26 +36,42 @@
  */
 package org.jvnet.hk2.component;
 
-import com.sun.hk2.component.ConstructorWomb;
-import com.sun.hk2.component.FactoryWomb;
-import org.jvnet.hk2.annotations.Factory;
-import org.jvnet.hk2.annotations.FactoryFor;
-
 /**
- * {@link Womb} factory.
+ * Encapsulates how to create an object.
+ *
+ * <p>
+ * Signature-wise it's the same as {@link Inhabitant}
+ * but it carries an additional meaning.
  *
  * @author Kohsuke Kawaguchi
+ * @see Creators
  */
-public class Wombs {
-    public static <T> Womb<T> create(Class<T> c, Habitat habitat, MultiMap<String,String> metadata) {
-        Factory f = c.getAnnotation(Factory.class);
-        if (f != null)
-            return new FactoryWomb<T>(c,f.value(),habitat,metadata);
+@SuppressWarnings("unchecked")
+public interface Creator<T> extends Inhabitant<T> {
 
-        Inhabitant factory = habitat.getInhabitantByAnnotation(FactoryFor.class, c.getName());
-        if(factory!=null)
-            return new FactoryWomb<T>(c,factory,habitat,metadata);
+    /**
+     * Short cut for
+     *
+     * <pre>
+     * T o = create();
+     * initialize(o);
+     * return o;
+     * </pre>
+     */
+    T get() throws ComponentException;
 
-        return new ConstructorWomb<T>(c,habitat,metadata);
-    }
+    /**
+     * Creates a new instance.
+     *
+     * The caller is supposed to call the {@link Creator#initialize(Object, Inhabitant)}
+     * right away. This 2-phase initialization allows us to handle
+     * cycle references correctly.
+     * @param onBehalfOf
+     */
+    T create(Inhabitant onBehalfOf) throws ComponentException;
+
+    /**
+     * Performs initialization of object, such as dependency injection.
+     */
+    void initialize(T t, Inhabitant onBehalfOf) throws ComponentException;
 }

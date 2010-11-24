@@ -34,34 +34,50 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.config;
+package com.sun.hk2.component;
 
-import org.jvnet.hk2.component.Womb;
-import org.jvnet.hk2.component.CageBuilder;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.jvnet.hk2.component.Creator;
+import org.jvnet.hk2.component.MultiMap;
+import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.component.Inhabitant;
-import org.jvnet.hk2.component.ComponentException;
-import com.sun.hk2.component.ExistingSingletonInhabitant;
 
 /**
- * Created by IntelliJ IDEA.
- * User: dochez
- * Date: Feb 15, 2008
- * Time: 4:38:06 PM
- * To change this template use File | Settings | File Templates.
+ * Partial implementation of {@link Inhabitant} that delegates to {@link Creator}
+ * for object creation.
+ * <p>
+ * Derived types are expected to implement the {@link #get()} method and
+ * choose when to create an object. 
+ *
+ * @author Kohsuke Kawaguchi
  */
-public class CagedConfiguredWomb<T> extends ConfiguredWomb<T> {
+abstract class AbstractCreatorInhabitantImpl<T> extends AbstractInhabitantImpl<T> {
+    private static final Logger logger = Logger.getLogger(ScopeInstance.class.getName());
 
-    final CageBuilder builder;
+    protected final Creator<T> creator;
 
-
-    public CagedConfiguredWomb(Womb core, Dom dom, CageBuilder builder) {
-        super(core, dom);
-        this.builder = builder;
+    protected AbstractCreatorInhabitantImpl(Creator<T> creator) {
+        this.creator = creator;
     }
 
-    public void initialize(T t, Inhabitant onBehalfOf) throws ComponentException {
-        super.initialize(t, onBehalfOf);
-        builder.onEntered(new ExistingSingletonInhabitant(t));
+    public final String typeName() {
+        return creator.typeName();
     }
 
+    public final Class<T> type() {
+        return creator.type();
+    }
+
+    public MultiMap<String, String> metadata() {
+        return creator.metadata();
+    }
+
+    protected final void dispose(T object) {
+        if (object instanceof PreDestroy) {
+            logger.log(Level.FINER, "calling PreDestroy on {0}", object);
+            ((PreDestroy)object).preDestroy();
+        }
+    }
 }

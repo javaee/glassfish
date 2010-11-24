@@ -51,16 +51,16 @@ import org.jvnet.hk2.component.MultiMap;
  * @author Kohsuke Kawaguchi
  */
 @SuppressWarnings("unchecked")
-public class FactoryWomb<T> extends AbstractWombImpl<T> {
-    private final static Logger logger = Logger.getLogger(FactoryWomb.class.getName());
+public class FactoryCreator<T> extends AbstractCreatorImpl<T> {
+    private final static Logger logger = Logger.getLogger(FactoryCreator.class.getName());
     
     private final Inhabitant<? extends Factory> factory;
 
-    public FactoryWomb(Class<T> type, Class<? extends Factory> factory, Habitat habitat, MultiMap<String,String> metadata) {
+    public FactoryCreator(Class<T> type, Class<? extends Factory> factory, Habitat habitat, MultiMap<String,String> metadata) {
         this(type,habitat.getInhabitantByType(factory),habitat,metadata);
     }
 
-    public FactoryWomb(Class<T> type, Inhabitant<? extends Factory> factory, Habitat habitat, MultiMap<String,String> metadata) {
+    public FactoryCreator(Class<T> type, Inhabitant<? extends Factory> factory, Habitat habitat, MultiMap<String,String> metadata) {
         super(type, habitat, metadata);
         assert factory!=null;
         assert habitat!=null;

@@ -53,6 +53,7 @@ import java.util.logging.Logger;
  * @author Kohsuke Kawaguchi
  * @see org.jvnet.hk2.component.Scope#current()
  */
+@SuppressWarnings("unchecked")
 public final class ScopeInstance implements PreDestroy {
     private static final Logger logger = Logger.getLogger(ScopeInstance.class.getName());
     

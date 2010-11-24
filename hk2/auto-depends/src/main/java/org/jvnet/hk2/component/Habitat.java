@@ -40,7 +40,7 @@ import com.sun.hk2.component.CompanionSeed;
 import static com.sun.hk2.component.CompanionSeed.Registerer.createCompanion;
 
 import com.sun.hk2.component.ExistingSingletonInhabitant;
-import com.sun.hk2.component.FactoryWomb;
+import com.sun.hk2.component.FactoryCreator;
 import com.sun.hk2.component.InjectInjectionResolver;
 import com.sun.hk2.component.InjectionResolver;
 import com.sun.hk2.component.LeadInjectionResolver;
@@ -384,8 +384,9 @@ public class Habitat {
         // for each companion, create an inhabitant that goes with the lead and hook them up
         List<Inhabitant> companions=null;
         for(Inhabitant<?> c : getInhabitantsByAnnotation(CompanionSeed.class,name)) {
-            if(companions==null)
+            if (companions==null) {
                 companions = new ArrayList<Inhabitant>();
+            }
             companions.add(createCompanion(this,i,c));
         }
         i.setCompanions(companions);
@@ -393,8 +394,9 @@ public class Habitat {
         String cageBuilderName = i.metadata().getOne(CAGE_BUILDER_KEY);
         if(cageBuilderName!=null) {
             Inhabitant cageBuilder = byType.getOne(cageBuilderName);
-            if(cageBuilder!=null)
+            if (cageBuilder!=null) {
                 ((CageBuilder)cageBuilder.get()).onEntered(i);
+            }
             // if cageBuilder==null, we can't cage this component now, but
             // we'll do that when cageBuilder comes into the habitat.
             // that happens because every CageBuilder implementations are caged by
@@ -1128,7 +1130,7 @@ public class Habitat {
         if (index.equals(FactoryFor.class.getName())) {
             FactoryFor ff = i.type().getAnnotation(FactoryFor.class);
             Class<?> targetClass = ff.value();
-            FactoryWomb target = new FactoryWomb(targetClass, i, habitat, MultiMap.<String,String>emptyMap());
+            FactoryCreator target = new FactoryCreator(targetClass, i, habitat, MultiMap.<String,String>emptyMap());
             habitat.add(target);
             habitat.addIndex(target, targetClass.getName(), null);
         }

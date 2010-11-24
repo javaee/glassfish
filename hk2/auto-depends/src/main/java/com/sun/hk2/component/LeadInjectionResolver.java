@@ -47,6 +47,7 @@ import org.jvnet.hk2.component.Inhabitant;
 /**
  * Injection Resolver responsible for Lead Annotation type.
  * 
+ * @deprecated this is scheduled for removal
  */
 public class LeadInjectionResolver extends InjectionResolver<Lead>{
 

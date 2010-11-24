@@ -48,6 +48,8 @@ import java.lang.annotation.Documented;
  * <p>
  * Whenever the lead component is placed into habitat, the companion
  * will be also placed into the habitat.
+ * 
+ * @deprecated this is scheduled for removal
  *
  * @author Kohsuke Kawaguchi
  */

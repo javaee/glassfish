@@ -34,30 +34,31 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.config;
+package org.jvnet.hk2.component;
 
-import com.sun.hk2.component.AbstractWombImpl;
-import org.jvnet.hk2.component.ComponentException;
-import org.jvnet.hk2.component.MultiMap;
-import org.jvnet.hk2.component.Womb;
-import org.jvnet.hk2.component.Inhabitant;
+import com.sun.hk2.component.ConstructorCreator;
+import com.sun.hk2.component.FactoryCreator;
+import org.jvnet.hk2.annotations.Factory;
+import org.jvnet.hk2.annotations.FactoryFor;
 
 /**
- * {@link Womb} that returns a typed proxy to {@link Dom}.
+ * {@link Creator} factory.
  *
  * @author Kohsuke Kawaguchi
  */
-@SuppressWarnings("unchecked")
-final class DomProxyWomb<T extends ConfigBeanProxy> extends AbstractWombImpl<T> {
-    private final Dom dom;
+public class Creators {
+    @SuppressWarnings("unchecked")
+    public static <T> Creator<T> create(Class<T> c, Habitat habitat, MultiMap<String,String> metadata) {
+        Factory f = c.getAnnotation(Factory.class);
+        if (f != null) {
+            return new FactoryCreator<T>(c,f.value(),habitat,metadata);
+        }
 
-    public DomProxyWomb(Class<T> type, MultiMap<String, String> metadata, Dom dom) {
-        super(type, null, metadata);
-        this.dom = dom;
-    }
+        Inhabitant factory = habitat.getInhabitantByAnnotation(FactoryFor.class, c.getName());
+        if (factory!=null) {
+            return new FactoryCreator<T>(c,factory,habitat,metadata);
+        }
 
-    public T create(Inhabitant onBehalfOf) throws ComponentException {
-        return dom.createProxy(type());
+        return new ConstructorCreator<T>(c,habitat,metadata);
     }
 }
-

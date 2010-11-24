@@ -137,7 +137,7 @@ public class Hk2Runner extends Runner {
         
         boolean reinitPerTest = (null != options) ? options.reinitializePerTest() : false;
         try {
-            wombInit();
+            creatorInit();
         } catch (ComponentException e) {
             notifier.fireTestFailure(new Failure(getDescription(),e));
             return;
@@ -180,7 +180,7 @@ public class Hk2Runner extends Runner {
             
             if (reinitPerTest && iter.hasNext()) {
                 try {
-                    wombInit();
+                    creatorInit();
                 } catch (ComponentException e) {
                     notifier.fireTestFailure(new Failure(getDescription(),e));
                     return;
@@ -234,7 +234,7 @@ public class Hk2Runner extends Runner {
     }
 
     @SuppressWarnings("unchecked")
-    private void wombInit() {
+    private void creatorInit() {
         singleton = new Hk2TestServices(
                 null == options ? null : options.habitatFactory(),
                 null == options ? null : options.inhabitantsParserFactory(),
@@ -242,8 +242,8 @@ public class Hk2Runner extends Runner {
 
         Habitat habitat = singleton.getHabitat();
         // so far we don't support extra meta-data on our tests.
-        Womb womb = Wombs.create(testClass, habitat, new MultiMap<String, String>());
-        instance = womb.create(womb);
+        Creator creator = Creators.create(testClass, habitat, new MultiMap<String, String>());
+        instance = creator.create(creator);
         try {
             Hk2Test.Populator populator = Hk2Test.Populator.class.cast(instance);
             populator.populate(getHabitat());
@@ -253,7 +253,7 @@ public class Hk2Runner extends Runner {
             e.printStackTrace();
             Logger.getAnonymousLogger().log(Level.SEVERE, e.getMessage(), e);
         }
-        womb.initialize(instance, womb);
+        creator.initialize(instance, creator);
     }
 
     static Hk2TestServices singleton;
