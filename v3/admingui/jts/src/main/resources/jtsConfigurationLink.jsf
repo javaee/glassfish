@@ -45,7 +45,7 @@
         toolTip="$resource{i18n_jts.tree.transactionService.tooltip}"
         url="/jts/transactionService.jsf?configName=#{configName}"
         >
-        <sun:image url="/resource/jts/images/transactionService.gif" />
+        <sun:image url="/resource/jts/newImages/transactionService.gif" />
         <sun:staticText text="$resource{i18n_jts.tree.transactionService}" />
     </sun:hyperlink>
     <!beforeCreate

@@ -41,10 +41,10 @@
 -->
 
 <sun:treeNode
-id="transactionService"
-text="$resource{i18n_jts.tree.transactionService}"
-url="/jts/transactionService.jsf?configName=${configName}"
-imageURL="/resource/jts/images/transactionService.gif"
+    id="transactionService"
+    text="$resource{i18n_jts.tree.transactionService}"
+    url="/jts/transactionService.jsf?configName=${configName}"
+imageURL="/resource/jts/newImages/transactionService.gif"
 >
 <!beforeCreate
     setResourceBundle(key="i18n_jts" bundle="org.glassfish.jts.admingui.Strings");
