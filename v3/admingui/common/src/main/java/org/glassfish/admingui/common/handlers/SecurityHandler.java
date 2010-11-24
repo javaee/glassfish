@@ -243,6 +243,8 @@ public class SecurityHandler {
                 putOptional(attrMap, propList, "assign-groups", "fileAsGroups");
             }else
             if(classname.indexOf("LDAPRealm")!= -1){
+                attrMap.put("baseDn", "\"" + attrMap.get("baseDn") + "\"");
+                attrMap.put("directory", "\"" + attrMap.get("directory") + "\"");
                 putOptional(attrMap, propList, "jaas-context", "ldapJaax");
                 putOptional(attrMap, propList, "base-dn", "baseDn");
                 putOptional(attrMap, propList, "directory", "directory");
@@ -564,7 +566,7 @@ public class SecurityHandler {
         String trueStr = GuiUtil.getMessage("common.true");
         String falseStr = GuiUtil.getMessage("common.false");
         for(Map oneRow : providerList){
-            if (defaultProvider.length() > 0 || defaultClientProvider.length() > 0){
+            if ((defaultProvider != null && defaultProvider.length() > 0) || (defaultClientProvider != null && defaultClientProvider.length() > 0)){
                 oneRow.put("default", trueStr);
             }else{
                 oneRow.put("default", falseStr);
