@@ -168,6 +168,14 @@ public class ResourceReferenceDescriptor extends EnvironmentProperty
     }
    
     /**
+     * Has the sharing scope been set?
+     * @return true if the sharing scope has been set
+     */
+    public boolean hasSharingScope() {
+        return this.sharingScope != null;
+    }
+
+    /**
      * Return the res-sharing-scope of this resource reference.
      * @return the sharing scope.
      */
@@ -195,6 +203,14 @@ public class ResourceReferenceDescriptor extends EnvironmentProperty
 	return true;
     }
     
+    /**
+     * Has the authorization type been set?
+     * @return true if the authorization type has been set
+     */
+    public boolean hasAuthorization() {
+        return this.authorization != null;
+    }
+
     /**
      * Return true of this resource reference is expecting the container 
      * to authorize the resource.
