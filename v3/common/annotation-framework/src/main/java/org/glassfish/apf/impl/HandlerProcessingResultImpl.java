@@ -88,6 +88,9 @@ public class HandlerProcessingResultImpl implements HandlerProcessingResult {
     }
     
     public void addAll(HandlerProcessingResult result) {
+         if (result == null) {
+             return;
+         }
          if (result.getOverallResult().compareTo(overallResult)>0) {
             overallResult = result.getOverallResult();
         }
