@@ -40,21 +40,23 @@
 
 package org.glassfish.config.support;
 
-import java.beans.PropertyVetoException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Collection;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import com.sun.enterprise.config.serverbeans.*;
+import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.Configs;
+import com.sun.enterprise.config.serverbeans.ConnectionPool;
+import com.sun.enterprise.config.serverbeans.HttpFileCache;
+import com.sun.enterprise.config.serverbeans.HttpListener;
+import com.sun.enterprise.config.serverbeans.HttpProtocol;
+import com.sun.enterprise.config.serverbeans.HttpService;
+import com.sun.enterprise.config.serverbeans.JavaConfig;
+import com.sun.enterprise.config.serverbeans.KeepAlive;
+import com.sun.enterprise.config.serverbeans.RequestProcessing;
+import com.sun.enterprise.config.serverbeans.ThreadPools;
+import com.sun.enterprise.config.serverbeans.VirtualServer;
 import com.sun.grizzly.config.dom.FileCache;
 import com.sun.grizzly.config.dom.Http;
 import com.sun.grizzly.config.dom.NetworkConfig;
 import com.sun.grizzly.config.dom.NetworkListener;
 import com.sun.grizzly.config.dom.NetworkListeners;
-import org.jvnet.hk2.config.types.Property;
 import com.sun.grizzly.config.dom.Protocol;
 import com.sun.grizzly.config.dom.Protocols;
 import com.sun.grizzly.config.dom.Ssl;
@@ -66,9 +68,19 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
+import org.jvnet.hk2.config.types.Property;
+
+import java.beans.PropertyVetoException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @SuppressWarnings({"deprecation"})
 @Service
@@ -90,7 +102,11 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
     public void postConstruct() {
         for (Config config : configs.getConfig()) {
             try {
-                rectifyThreadPools(config);
+                final NetworkConfig networkConfig = config.getNetworkConfig();
+                if (networkConfig == null) {
+                    createFromScratch(config);
+                }
+                normalizeThreadPools(config);
                 processHttpListeners(config);
                 promoteHttpServiceProperties(config.getHttpService());
                 promoteVirtualServerProperties(config.getHttpService());
@@ -98,15 +114,21 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
                 addAsadminProtocol(config.getNetworkConfig());
             } catch (PropertyVetoException pve) {
                 Logger.getAnonymousLogger().log(Level.SEVERE,
-                    "Failure while upgrading domain.xml.", pve);
+                        "Failure while upgrading domain.xml.", pve);
                 throw new RuntimeException(pve);
             } catch (TransactionFailure tf) {
                 Logger.getAnonymousLogger().log(Level.SEVERE,
-                    "Failure while upgrading domain.xml.", tf);
+                        "Failure while upgrading domain.xml.", tf);
                 throw new RuntimeException(tf);
             }
         }
     }
+
+    private void createFromScratch(Config config) throws TransactionFailure {
+        normalizeThreadPools(config);
+        getNetworkConfig(config);
+    }
+
 
     private void promoteSystemProperties() throws TransactionFailure {
         ConfigSupport.apply(new SingleConfigCode<JavaConfig>() {
@@ -151,19 +173,21 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
         }
     }
 
-    private void rectifyThreadPools(Config config) throws TransactionFailure {
+    private void normalizeThreadPools(Config config) throws TransactionFailure {
         ThreadPools threadPools = config.getThreadPools();
         if (threadPools == null) {
             threadPools = createThreadPools(config);
         } else {
             final List<ThreadPool> list = threadPools.getThreadPool();
-            final int[] count = {1};
+            boolean httpListenerFound = false;
             for (ThreadPool pool : list) {
-                if(pool.getName() == null) {
+                httpListenerFound |= HTTP_THREAD_POOL.equals(pool.getThreadPoolId()) || HTTP_THREAD_POOL.equals(pool.getName());
+                if (pool.getName() == null) {
                     ConfigSupport.apply(new SingleConfigCode<ThreadPool>() {
                         public Object run(ThreadPool param) {
                             param.setName(param.getThreadPoolId());
-                            if(param.getMinThreadPoolSize() == null || Integer.parseInt(param.getMinThreadPoolSize()) < 2) {
+                            param.setThreadPoolId(null);
+                            if (param.getMinThreadPoolSize() == null || Integer.parseInt(param.getMinThreadPoolSize()) < 2) {
                                 param.setMinThreadPoolSize("2");
                             }
                             return null;
@@ -171,12 +195,22 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
                     }, pool);
                 }
             }
+            if (!httpListenerFound) {
+                ConfigSupport.apply(new SingleConfigCode<ThreadPools>() {
+                    public Object run(ThreadPools param) throws TransactionFailure {
+                        final ThreadPool pool = param.createChild(ThreadPool.class);
+                        pool.setName(HTTP_THREAD_POOL);
+                        param.getThreadPool().add(pool);
+                        return null;
+                    }
+                }, threadPools);
+            }
         }
         final NetworkConfig networkConfig = config.getNetworkConfig();
         if (networkConfig != null) {
             final NetworkListeners networkListeners = networkConfig.getNetworkListeners();
             if (networkListeners != null) {
-                if (networkListeners.getThreadPool() != null) {
+                if (networkListeners.getThreadPool() != null && !networkListeners.getThreadPool().isEmpty()) {
                     ConfigSupport.apply(new SingleConfigCode<ThreadPools>() {
                         public Object run(ThreadPools param) throws TransactionFailure {
                             migrateThreadPools(param);
@@ -184,19 +218,16 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
                         }
                     }, threadPools);
                 }
+                final ConnectionPool pool = config.getHttpService().getConnectionPool();
+//                for (ThreadPool threadPool : threadPools.getThreadPool()) {
+//                    ConfigSupport.apply(new SingleConfigCode<ConfigBeanProxy>() {
+//                        @Override
+//                        public Object run(ConfigBeanProxy configBeanProxy) throws PropertyVetoException, TransactionFailure {
+//                            return null;
+//                        }
+//                    }, threadPool);
+//                }
             }
-        }
-        if(habitat.getComponent(ThreadPool.class, HTTP_THREAD_POOL) == null) {
-            ConfigSupport.apply(new SingleConfigCode<ThreadPools>() {
-                public Object run(ThreadPools param) throws TransactionFailure {
-                    final List<ThreadPool> list = param.getThreadPool();
-                    final ThreadPool pool = param.createChild(ThreadPool.class);
-                    pool.setName(HTTP_THREAD_POOL);
-                    pool.setMaxQueueSize("4096");
-                    list.add(pool);
-                    return pool;
-                }
-            }, config.getThreadPools());
         }
     }
 
@@ -263,7 +294,7 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
     }
 
     private void processHttpListeners(Config config)
-        throws PropertyVetoException, TransactionFailure {
+            throws PropertyVetoException, TransactionFailure {
         if (!config.getHttpService().getHttpListener().isEmpty()) {
             // all changes in this method must be in their own transactions
             migrateSettings(config);
@@ -308,6 +339,7 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
         if (pool == null) {
             return;
         }
+/*
         final Transport transport = (Transport) ConfigSupport.apply(new SingleConfigCode<Transports>() {
             @Override
             public Object run(Transports param) throws TransactionFailure {
@@ -319,6 +351,7 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
             }
         }, getTransports(config));
         updateNetworkListener(config, transport);
+*/
         updateHttp(config, pool);
         updateThreadPool(config, pool);
         ConfigSupport.apply(new SingleConfigCode<HttpService>() {
@@ -331,7 +364,8 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
     }
 
     private void updateThreadPool(NetworkConfig config, final ConnectionPool pool) throws TransactionFailure {
-        for (ThreadPool threadPool : config.getNetworkListeners().getThreadPool()) {
+        final Config parent = config.getParent(Config.class);
+        for (ThreadPool threadPool : parent.getThreadPools().getThreadPool()) {
             ConfigSupport.apply(new SingleConfigCode<ThreadPool>() {
                 @Override
                 public Object run(ThreadPool param) {
@@ -370,9 +404,9 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
     }
 
     private Transports getTransports(NetworkConfig config) throws TransactionFailure {
-        Transports listeners = config.getTransports();
-        if (listeners == null) {
-            listeners = (Transports) ConfigSupport.apply(new SingleConfigCode<NetworkConfig>() {
+        Transports transports = config.getTransports();
+        if (transports == null) {
+            transports = (Transports) ConfigSupport.apply(new SingleConfigCode<NetworkConfig>() {
                 public Object run(NetworkConfig param) throws TransactionFailure {
                     final Transports child = param.createChild(Transports.class);
                     param.setTransports(child);
@@ -380,7 +414,7 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
                 }
             }, config);
         }
-        return listeners;
+        return transports;
 
     }
 
@@ -409,7 +443,7 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
     }
 
     private void migrateRequestProcessing(final NetworkConfig config, HttpService httpService)
-        throws TransactionFailure {
+            throws TransactionFailure {
         final RequestProcessing request = httpService.getRequestProcessing();
         if (request == null) {
             return;
@@ -486,15 +520,19 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
         }, httpService);
     }
 
-    private void migrateHttpProtocol(NetworkConfig config, HttpService httpService) throws TransactionFailure {
+    private void migrateHttpProtocol(NetworkConfig config, final HttpService httpService) throws TransactionFailure {
         final HttpProtocol httpProtocol = httpService.getHttpProtocol();
         if (httpProtocol == null) {
             return;
         }
         ConfigSupport.apply(new SingleConfigCode<NetworkConfig>() {
             @Override
-            public Object run(NetworkConfig param) throws TransactionFailure {
-                for (Protocol protocol : param.getProtocols().getProtocol()) {
+            public Object run(NetworkConfig networkConfig) throws TransactionFailure {
+                final Protocols protocols = networkConfig.getProtocols();
+                if(protocols.getProtocol().isEmpty()) {
+                    createNewProtocols(httpService, protocols);
+                }
+                for (Protocol protocol : protocols.getProtocol()) {
                     ConfigSupport.apply(new SingleConfigCode<Http>() {
                         @Override
                         public Object run(Http http) {
@@ -528,43 +566,106 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
             ConfigSupport.apply(new SingleConfigCode<HttpService>() {
                 @Override
                 public Object run(HttpService param) {
-                    final HttpListener listener1 = param.getHttpListenerById(listener.getId());
-                    param.getHttpListener().remove(listener1);
+                    param.getHttpListener().remove(param.getHttpListenerById(listener.getId()));
                     return null;
                 }
             }, baseConfig.getHttpService());
         }
     }
 
-    private NetworkConfig getNetworkConfig(Config baseConfig) throws TransactionFailure {
+    private NetworkConfig getNetworkConfig(final Config baseConfig) throws TransactionFailure {
         NetworkConfig config = baseConfig.getNetworkConfig();
         if (config == null) {
             config = (NetworkConfig) ConfigSupport.apply(new SingleConfigCode<Config>() {
                 public Object run(Config param) throws PropertyVetoException, TransactionFailure {
-                    final NetworkConfig child = param.createChild(NetworkConfig.class);
-                    param.setNetworkConfig(child);
-                    return child;
+                    final NetworkConfig netConfig = param.createChild(NetworkConfig.class);
+                    netConfig.setProtocols(netConfig.createChild(Protocols.class));
+                    netConfig.setNetworkListeners(netConfig.createChild(NetworkListeners.class));
+                    netConfig.setTransports(netConfig.createChild(Transports.class));
+                    param.setNetworkConfig(netConfig);
+                    return netConfig;
                 }
             }, baseConfig);
         }
         return config;
     }
 
-    private void createNetworkListener(Config baseConfig, final HttpListener listener, final Protocol protocol)
-        throws TransactionFailure {
-        ConfigSupport.apply(new SingleConfigCode<NetworkListeners>() {
+    private void createNewProtocols(final HttpService httpService, final Protocols protocols) throws TransactionFailure {
+        ConfigSupport.apply(new SingleConfigCode<Protocols>() {
             @Override
-            public Object run(NetworkListeners param) throws TransactionFailure {
-                NetworkListener netListener = param.createChild(NetworkListener.class);
-                netListener.setName(listener.getId());
-                netListener.setEnabled(listener.getEnabled());
-                netListener.setAddress(listener.getAddress());
-                netListener.setPort(listener.getPort());
-                netListener.setProtocol(protocol.getName());
-                param.getNetworkListener().add(netListener);
+            public Object run(Protocols param) throws TransactionFailure {
+                for (final HttpListener httpListener : httpService.getHttpListener()) {
+                    final Protocol protocol = param.createChild(Protocol.class);
+                    param.getProtocol().add(protocol);
+                    protocol.setName(httpListener.getId());
+                    final Http http = protocol.createChild(Http.class);
+                    http.setFileCache(http.createChild(FileCache.class));
+                    http.setDefaultVirtualServer(
+                            httpListener.getId().equals(ASADMIN_LISTENER) ? ASADMIN_VIRTUAL_SERVER : "server");
+                    protocol.setHttp(http);
+                }
                 return null;
             }
+        }, protocols);
+    }
+
+    private void createNetworkListener(Config baseConfig, final HttpListener listener, final Protocol protocol)
+            throws TransactionFailure {
+        final NetworkListener networkListener = (NetworkListener) ConfigSupport.apply(new SingleConfigCode<NetworkListeners>() {
+            @Override
+            public Object run(NetworkListeners param) throws TransactionFailure {
+                final Iterator<NetworkListener> it = param.getNetworkListener().iterator();
+                NetworkListener netListener = null;
+                while (it.hasNext() && netListener == null) {
+                    final NetworkListener next = it.next();
+                    if (next.getName().equals(listener.getId())) {
+                        netListener = next;
+                        ConfigSupport.apply(new SingleConfigCode<NetworkListener>() {
+                            @Override
+                            public Object run(NetworkListener netParam) throws PropertyVetoException, TransactionFailure {
+                                updateListener(netParam, listener, protocol);
+                                return null;
+                            }
+                        }, netListener);
+                    }
+                }
+                if (netListener == null) {
+                    netListener = param.createChild(NetworkListener.class);
+                    netListener.setName(listener.getId());
+                    updateListener(netListener, listener, protocol);
+                    param.getNetworkListener().add(netListener);
+                }
+                return netListener;
+            }
         }, getNetworkListeners(baseConfig.getNetworkConfig()));
+
+        Transport transport = networkListener.findTransport();
+        if(transport == null) {
+            transport = (Transport) ConfigSupport.apply(new SingleConfigCode<Transports>() {
+                @Override
+                public Object run(Transports param) throws PropertyVetoException, TransactionFailure {
+                    final Transport child = param.createChild(Transport.class);
+                    child.setName(networkListener.getTransport());
+                    param.getTransport().add(child);
+                    return child;
+                }
+            }, getTransports(networkListener.getParent().getParent()));
+        }
+        ConfigSupport.apply(new SingleConfigCode<Transport>() {
+            @Override
+            public Object run(Transport param) throws PropertyVetoException, TransactionFailure {
+                param.setAcceptorThreads(listener.getAcceptorThreads());
+                return null;
+            }
+        }, transport);
+    }
+
+    private void updateListener(NetworkListener netListener, HttpListener listener, Protocol protocol) {
+        netListener.setEnabled(listener.getEnabled());
+        netListener.setAddress(listener.getAddress());
+        netListener.setPort(listener.getPort());
+        netListener.setProtocol(protocol.getName());
+        netListener.setTransport("tcp");
     }
 
     private NetworkListeners getNetworkListeners(NetworkConfig config) throws TransactionFailure {
@@ -582,7 +683,7 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
     }
 
     private Protocol migrateToProtocols(NetworkConfig config, final HttpListener listener)
-        throws TransactionFailure {
+            throws TransactionFailure {
         final Protocols protocols = getProtocols(config);
         return (Protocol) ConfigSupport.apply(new SingleConfigCode<Protocols>() {
             public Object run(Protocols param) throws TransactionFailure {
@@ -623,7 +724,7 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
     }
 
     private Protocol addAsadminProtocol(NetworkConfig config)
-        throws TransactionFailure {
+            throws TransactionFailure {
         final Protocols protocols = getProtocols(config);
         Protocol adminProtocol = protocols.findProtocol(ASADMIN_LISTENER);
         if (adminProtocol == null) {
