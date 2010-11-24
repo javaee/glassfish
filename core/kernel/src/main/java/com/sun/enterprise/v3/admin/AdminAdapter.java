@@ -84,9 +84,9 @@ import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.Events;
 import org.glassfish.api.event.RestrictTo;
-import org.glassfish.grizzly.http.server.HttpRequestProcessor;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
+import org.glassfish.grizzly.http.server.StaticResourcesService;
 import org.glassfish.internal.api.AdminAccessController;
 import org.glassfish.internal.api.Privacy;
 import org.glassfish.internal.api.ServerContext;
@@ -101,7 +101,7 @@ import org.jvnet.hk2.config.ObservableBean;
  * Listen to admin commands...
  * @author dochez
  */
-public abstract class AdminAdapter extends HttpRequestProcessor implements Adapter, PostConstruct, EventListener {
+public abstract class AdminAdapter extends StaticResourcesService implements Adapter, PostConstruct, EventListener {
 
     public final static String VS_NAME="__asadmin";
     public final static String PREFIX_URI = "/" + VS_NAME;
@@ -162,6 +162,7 @@ public abstract class AdminAdapter extends HttpRequestProcessor implements Adapt
     CountDownLatch latch = new CountDownLatch(1);
 
     protected AdminAdapter(Class<? extends Privacy> privacyClass) {
+        super(null);
         this.privacyClass = privacyClass;
     }
 
@@ -170,7 +171,7 @@ public abstract class AdminAdapter extends HttpRequestProcessor implements Adapt
         
         epd = new AdminEndpointDecider(config, logger);
         registerDynamicReconfigListeners();
-        setDocRoot(env.getProps().get(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY) + "/asadmindocroot/");
+        addDocRoot(env.getProps().get(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY) + "/asadmindocroot/");
     }
 
     /**
@@ -188,8 +189,8 @@ public abstract class AdminAdapter extends HttpRequestProcessor implements Adapt
      *  Tomcat should be able to handle and log any other exception ( including
      *  runtime exceptions )
      */
-    public void service(Request req, Response res) {
-
+    @Override
+    public void onMissingResource(Request req, Response res) {
 
 
         LogHelper.getDefaultLogger().finer("Admin adapter !");

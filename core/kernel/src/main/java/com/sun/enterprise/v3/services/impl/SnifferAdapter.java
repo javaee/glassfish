@@ -82,7 +82,7 @@ public class SnifferAdapter extends HttpRequestProcessor {
     @Inject
     ModulesRegistry modulesRegistry;
 
-    private Logger logger = LogDomains.getLogger(SnifferAdapter.class, LogDomains.CORE_LOGGER);
+    private static final Logger LOGGER = LogDomains.getLogger(SnifferAdapter.class, LogDomains.CORE_LOGGER);
     
     private Sniffer sniffer;
     private ContainerMapper mapper;
@@ -120,34 +120,34 @@ public class SnifferAdapter extends HttpRequestProcessor {
             }
 
             if (containerRegistry.getContainer(sniffer.getContainersNames()[0]) != null) {
-                if (logger.isLoggable(Level.FINE)) {
-                    logger.fine("Container is claimed to be started...");
+                if (LOGGER.isLoggable(Level.FINE)) {
+                    LOGGER.fine("Container is claimed to be started...");
                 }
                 containerRegistry.getContainer(sniffer.getContainersNames()[0]).getContainer();
             } else {
                 final long startTime = System.currentTimeMillis();
-                logger.log(Level.INFO, "core.snifferadapter.starting.container", sniffer.getModuleType());
+                LOGGER.log(Level.INFO, "core.snifferadapter.starting.container", sniffer.getModuleType());
                 Module snifferModule = modulesRegistry.find(sniffer.getClass());
                 try {
                     Collection<EngineInfo> containersInfo = containerStarter.startContainer(sniffer, snifferModule);
                     if (containersInfo != null && !containersInfo.isEmpty()) {
                         // force the start on each container
                         for (EngineInfo info : containersInfo) {
-                            if (logger.isLoggable(Level.FINE)) {
-                                logger.log(Level.FINE, "Got container, deployer is {0}", info.getDeployer());
+                            if (LOGGER.isLoggable(Level.FINE)) {
+                                LOGGER.log(Level.FINE, "Got container, deployer is {0}", info.getDeployer());
                             }
                             info.getContainer();
-                            logger.log(Level.INFO, "core.snifferadapter.container.started",
+                            LOGGER.log(Level.INFO, "core.snifferadapter.container.started",
                                     new Object[]{sniffer.getModuleType(), System.currentTimeMillis() - startTime});
                         }
                     } else {
-                        logger.severe("core.snifferadapter.no.container.available");
+                        LOGGER.severe("core.snifferadapter.no.container.available");
                     }
                 } catch (Exception e) {
-                    logger.log(Level.SEVERE,
+                    LOGGER.log(Level.SEVERE,
                                "core.snifferadapter.exception.starting.container",
                                new Object[] { sniffer.getContainersNames()[0] });
-                    logger.log(Level.SEVERE, e.toString(), e);
+                    LOGGER.log(Level.SEVERE, e.toString(), e);
                 }
             }
 
@@ -168,7 +168,7 @@ public class SnifferAdapter extends HttpRequestProcessor {
                     throw new RuntimeException("SnifferAdapter cannot map themself.");
                 }
             } catch (Exception e) {
-                logger.log(Level.SEVERE, "core.snifferadapter.exception.mapping.request", e);
+                LOGGER.log(Level.SEVERE, "core.snifferadapter.exception.mapping.request", e);
                 throw e;
             }
 
@@ -178,13 +178,6 @@ public class SnifferAdapter extends HttpRequestProcessor {
             } else {
                 throw new RuntimeException("No Adapter found.");
             }
-        }
-    }
-
-    @Override
-    public void afterService(Request request, Response response) throws Exception {
-        if (adapter != null) {
-            adapter.afterService(request, response);
         }
     }
 }

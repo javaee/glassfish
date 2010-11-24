@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.v3.services.impl;
 
 import java.io.IOException;
@@ -53,16 +52,18 @@ import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.grizzly.config.ContextRootInfo;
 import org.glassfish.grizzly.config.GrizzlyServiceListener;
+import org.glassfish.grizzly.http.server.AfterServiceListener;
 import org.glassfish.grizzly.http.server.HttpRequestProcessor;
 import org.glassfish.grizzly.http.server.HttpServiceChain;
 import org.glassfish.grizzly.http.server.Request;
+import org.glassfish.grizzly.http.server.Request.Note;
 import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.grizzly.http.server.util.Mapper;
 import org.glassfish.grizzly.http.server.util.MappingData;
+import org.glassfish.grizzly.http.server.util.MimeType;
 import org.glassfish.grizzly.http.util.ByteChunk;
 import org.glassfish.grizzly.http.util.CharChunk;
 import org.glassfish.grizzly.http.util.DataChunk;
-import org.glassfish.grizzly.http.util.MimeType;
 import org.glassfish.internal.grizzly.V3Mapper;
 
 /**
@@ -75,19 +76,19 @@ import org.glassfish.internal.grizzly.V3Mapper;
  */
 @SuppressWarnings({"NonPrivateFieldAccessedInSynchronizedContext"})
 public class ContainerMapper extends HttpRequestProcessor {
-    private final Logger logger = Logger.getLogger(ContainerMapper.class.getName());
+
+    private static final Logger LOGGER = Logger.getLogger(ContainerMapper.class.getName());
     private final static String ROOT = "";
     private Mapper mapper;
     private GrizzlyServiceListener listener;
     private String defaultHostName = "server";
     private final GrizzlyService grizzlyService;
-    protected final static String MAPPING_DATA = "MappingData";
-    protected final static String MAPPED_ADAPTER = "MappedAdapter";
-
+    protected final static Note<MappingData> MAPPING_DATA =
+            Request.<MappingData>createNote("MappingData");
     private final HK2Dispatcher hk2Dispatcher = new HK2Dispatcher();
-
     private String version;
-
+    private static final AfterServiceListener afterServiceListener =
+            new AfterServiceListenerImpl();
     /**
      * Are we running multiple {@ Adapter} or {@link HttpServiceChain}
      */
@@ -127,10 +128,10 @@ public class ContainerMapper extends HttpRequestProcessor {
      */
     protected synchronized void configureMapper() {
         mapper.setDefaultHostName(defaultHostName);
-        mapper.addHost(defaultHostName,new String[]{},null);
-        mapper.addContext(defaultHostName,ROOT,
-                new ContextRootInfo(this,null),
-                new String[]{"index.html","index.htm"},null);
+        mapper.addHost(defaultHostName, new String[]{}, null);
+        mapper.addContext(defaultHostName, ROOT,
+                new ContextRootInfo(this, null),
+                new String[]{"index.html", "index.htm"}, null);
         // Container deployed have the right to override the default setting.
         Mapper.setAllowReplacement(true);
     }
@@ -138,36 +139,38 @@ public class ContainerMapper extends HttpRequestProcessor {
     /**
      * Map the request to its associated {@link Adapter}.
      *
-     * @param req
-     * @param res
+     * @param request
+     * @param response
      *
      * @throws IOException
      */
     @Override
-    public void service(Request req, Response res) throws Exception{
+    public void service(final Request request, final Response response) throws Exception {
         MappingData mappingData;
-        try{
+        try {
+
+            request.addAfterServiceListener(afterServiceListener);
 
             // If we have only one Adapter deployed, invoke that Adapter
             // directly.
             // TODO: Not sure that will works with JRuby.
-            if (!mapMultipleAdapter && mapper instanceof V3Mapper){
+            if (!mapMultipleAdapter && mapper instanceof V3Mapper) {
                 // Remove the MappingData as we might delegate the request
                 // to be serviced directly by the WebContainer
-                req.setNote(MAPPING_DATA, null);
-                HttpRequestProcessor a = ((V3Mapper)mapper).getHttpRequestProcessor();
-                if (a != null){
-                    req.setNote(MAPPED_ADAPTER, a);
-                    a.service(req, res);
+                request.setNote(MAPPING_DATA, null);
+                HttpRequestProcessor a = ((V3Mapper) mapper).getHttpRequestProcessor();
+                if (a != null) {
+//                    req.setNote(MAPPED_ADAPTER, a);
+                    a.service(request, response);
                     return;
                 }
             }
 
-            DataChunk decodedURI = req.getRequest().getRequestURIRef().getDecodedRequestURIBC();
-            mappingData = (MappingData) req.getNote(MAPPING_DATA);
+            DataChunk decodedURI = request.getRequest().getRequestURIRef().getDecodedRequestURIBC();
+            mappingData = request.getNote(MAPPING_DATA);
             if (mappingData == null) {
                 mappingData = new MappingData();
-                req.setNote(MAPPING_DATA, mappingData);
+                request.setNote(MAPPING_DATA, mappingData);
             }
             HttpRequestProcessor adapter;
 
@@ -175,7 +178,7 @@ public class ContainerMapper extends HttpRequestProcessor {
             final int semicolon = decodedURICC.indexOf(';', 0);
 
             // Map the request without any trailling.
-            adapter = mapUriWithSemicolon(req, decodedURI, semicolon, mappingData);
+            adapter = mapUriWithSemicolon(request, decodedURI, semicolon, mappingData);
             if (adapter == null || adapter instanceof ContainerMapper) {
                 String ext = decodedURI.toString();
                 String type = "";
@@ -184,54 +187,54 @@ public class ContainerMapper extends HttpRequestProcessor {
                     type = ext.substring(ext.lastIndexOf(".") + 1);
                 }
 
-                if (!MimeType.contains(type) && !"/".equals(ext)){
+                if (!MimeType.contains(type) && !"/".equals(ext)) {
                     initializeFileURLPattern(ext);
                     mappingData.recycle();
-                    adapter = mapUriWithSemicolon(req, decodedURI, semicolon, mappingData);
+                    adapter = mapUriWithSemicolon(request, decodedURI, semicolon, mappingData);
                 } else {
-                    doService(req, res);
+                    doService(request, response);
                     return;
                 }
             }
 
-            if (logger.isLoggable(Level.FINE)) {
-                logger.log(Level.FINE, "Request: {0} was mapped to Adapter: {1}",
+            if (LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.log(Level.FINE, "Request: {0} was mapped to Adapter: {1}",
                         new Object[]{decodedURI.toString(), adapter});
             }
 
             // The Adapter used for servicing static pages doesn't decode the
             // request by default, hence do not pass the undecoded request.
             if (adapter == null || adapter instanceof ContainerMapper) {
-                doService(req, res);
+                doService(request, response);
             } else {
-                req.setNote(MAPPED_ADAPTER, adapter);
+//                req.setNote(MAPPED_ADAPTER, adapter);
 
                 ContextRootInfo contextRootInfo = null;
                 if (mappingData.context != null && mappingData.context instanceof ContextRootInfo) {
                     contextRootInfo = (ContextRootInfo) mappingData.context;
                 }
 
-                if (contextRootInfo == null){
-                    adapter.service(req, res);
+                if (contextRootInfo == null) {
+                    adapter.service(request, response);
                 } else {
                     ClassLoader cl = null;
-                    if (contextRootInfo.getContainer() instanceof ApplicationContainer){
-                        cl = ((ApplicationContainer)contextRootInfo.getContainer()).getClassLoader();
+                    if (contextRootInfo.getContainer() instanceof ApplicationContainer) {
+                        cl = ((ApplicationContainer) contextRootInfo.getContainer()).getClassLoader();
                     }
-                    hk2Dispatcher.dispatch(adapter, cl, req, res);
+                    hk2Dispatcher.dispatch(adapter, cl, request, response);
                 }
             }
         } catch (Exception ex) {
             try {
-                res.setStatus(500);
-                if (logger.isLoggable(Level.WARNING)) {
-                    logger.log(Level.WARNING, "Internal Server error: "
-                        + req.getRequest().getRequestURIRef().getDecodedRequestURIBC(), ex);
+                response.setStatus(500);
+                if (LOGGER.isLoggable(Level.WARNING)) {
+                    LOGGER.log(Level.WARNING, "Internal Server error: "
+                            + request.getRequest().getRequestURIRef().getDecodedRequestURIBC(), ex);
                 }
-                customizedErrorPage(req, res);
+                customizedErrorPage(request, response);
             } catch (Exception ex2) {
-                if (logger.isLoggable(Level.WARNING)) {
-                    logger.log(Level.WARNING, "Unable to error page", ex2);
+                if (LOGGER.isLoggable(Level.WARNING)) {
+                    LOGGER.log(Level.WARNING, "Unable to error page", ex2);
                 }
             }
         }
@@ -252,13 +255,13 @@ public class ContainerMapper extends HttpRequestProcessor {
                 HttpRequestProcessor adapter;
                 if (match) {
                     adapter = grizzlyService.habitat.getComponent(SnifferAdapter.class);
-                    ((SnifferAdapter)adapter).initialize(sniffer, this);
-                    ContextRootInfo c= new ContextRootInfo(adapter, null);
+                    ((SnifferAdapter) adapter).initialize(sniffer, this);
+                    ContextRootInfo c = new ContextRootInfo(adapter, null);
 
                     for (String pattern : sniffer.getURLPatterns()) {
-                        for (String host: grizzlyService.hosts ){
-                            mapper.addWrapper(host,ROOT, pattern,c,
-                                "*.jsp".equals(pattern) || "*.jspx".equals(pattern));
+                        for (String host : grizzlyService.hosts) {
+                            mapper.addWrapper(host, ROOT, pattern, c,
+                                    "*.jsp".equals(pattern) || "*.jspx".equals(pattern));
                         }
                     }
                     return;
@@ -311,7 +314,7 @@ public class ContainerMapper extends HttpRequestProcessor {
         mapper.map(req.getRequest().serverName(), decodedURI, mappingData);
         ContextRootInfo contextRootInfo;
         if (mappingData.context != null && (mappingData.context instanceof ContextRootInfo
-                || mappingData.wrapper instanceof ContextRootInfo )) {
+                || mappingData.wrapper instanceof ContextRootInfo)) {
             if (mappingData.wrapper != null) {
                 contextRootInfo = (ContextRootInfo) mappingData.wrapper;
             } else {
@@ -319,7 +322,7 @@ public class ContainerMapper extends HttpRequestProcessor {
             }
             return contextRootInfo.getHttpRequestProcessor();
         } else if (mappingData.context != null
-            && "com.sun.enterprise.web.WebModule".equals(mappingData.context.getClass().getName())) {
+                && "com.sun.enterprise.web.WebModule".equals(mappingData.context.getClass().getName())) {
             return ((V3Mapper) mapper).getHttpRequestProcessor();
         }
         return null;
@@ -333,23 +336,22 @@ public class ContainerMapper extends HttpRequestProcessor {
      *
      * @throws Exception
      */
-    @Override
-    public void afterService(Request req, Response res) throws Exception {
-        MappingData mappingData = (MappingData) req.getNote(MAPPING_DATA);
-        try {
-            HttpRequestProcessor adapter = (HttpRequestProcessor) req.getNote(MAPPED_ADAPTER);
-            if (adapter != null) {
-                adapter.afterService(req, res);
-            }
-            super.afterService(req, res);
-        } finally {
-            req.setNote(MAPPED_ADAPTER, null);
-            if (mappingData != null){
-                mappingData.recycle();
-            }
-        }
-    }
-
+//    @Override
+//    public void afterService(Request req, Response res) throws Exception {
+//        MappingData mappingData = (MappingData) req.getNote(MAPPING_DATA);
+//        try {
+//            HttpRequestProcessor adapter = (HttpRequestProcessor) req.getNote(MAPPED_ADAPTER);
+//            if (adapter != null) {
+//                adapter.afterService(req, res);
+//            }
+//            super.afterService(req, res);
+//        } finally {
+//            req.setNote(MAPPED_ADAPTER, null);
+//            if (mappingData != null){
+//                mappingData.recycle();
+//            }
+//        }
+//    }
     /**
      * Return an error page customized for GlassFish v3.
      *
@@ -362,10 +364,10 @@ public class ContainerMapper extends HttpRequestProcessor {
         byte[] errorBody;
         if (res.getStatus() == 404) {
             errorBody = HttpUtils.getErrorPage(Version.getVersion(),
-                String.format("The requested resource (%s) is not available.", req.getDecodedRequestURI()), "404");
+                    String.format("The requested resource (%s) is not available.", req.getDecodedRequestURI()), "404");
         } else {
             errorBody = HttpUtils.getErrorPage(Version.getVersion(),
-                "Internal Error", "500");
+                    "Internal Error", "500");
         }
         ByteChunk chunk = new ByteChunk();
         chunk.setBytes(errorBody, 0, errorBody.length);
@@ -379,17 +381,17 @@ public class ContainerMapper extends HttpRequestProcessor {
     }
 
     public void register(String contextRoot, Collection<String> vs, HttpRequestProcessor adapter,
-        ApplicationContainer container) {
+            ApplicationContainer container) {
 
-        if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "MAPPER({0}) REGISTER contextRoot: {1} adapter: {2} container: {3} port: {4}",
+        if (LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.log(Level.FINE, "MAPPER({0}) REGISTER contextRoot: {1} adapter: {2} container: {3} port: {4}",
                     new Object[]{this, contextRoot, adapter, container, listener.getPort()});
         }
         /*
-        * In the case of CoyoteAdapter, return, because the context will
-        * have already been registered with the mapper by the connector's
-        * MapperListener, in response to a JMX event
-        */
+         * In the case of CoyoteAdapter, return, because the context will
+         * have already been registered with the mapper by the connector's
+         * MapperListener, in response to a JMX event
+         */
         if ("org.apache.catalina.connector.CoyoteAdapter".equals(adapter.getClass().getName())) {
             return;
         }
@@ -400,59 +402,58 @@ public class ContainerMapper extends HttpRequestProcessor {
         ContextRootInfo c = new ContextRootInfo(adapter, container);
         for (String host : vs) {
             mapper.addContext(host, contextRoot, c, new String[0], null);
-/*
+            /*
             if (adapter instanceof StaticResourcesAdapter) {
-                mapper.addWrapper(host, ctx, wrapper, c);
+            mapper.addWrapper(host, ctx, wrapper, c);
             }
-*/
+             */
         }
     }
 
-/*
+    /*
     private String getWrapperPath(String ctx, String mapping) {
-        if (mapping.indexOf("*.") > 0) {
-            return mapping.substring(mapping.lastIndexOf("/") + 1);
-        } else if (!"".equals(ctx)) {
-            return mapping.substring(ctx.length());
-        } else {
-            return mapping;
-        }
+    if (mapping.indexOf("*.") > 0) {
+    return mapping.substring(mapping.lastIndexOf("/") + 1);
+    } else if (!"".equals(ctx)) {
+    return mapping.substring(ctx.length());
+    } else {
+    return mapping;
+    }
     }
 
     private String getContextPath(String mapping) {
-        String ctx;
-        int slash = mapping.indexOf("/", 1);
-        if (slash != -1) {
-            ctx = mapping.substring(0, slash);
-        } else {
-            ctx = mapping;
-        }
-
-        if (ctx.startsWith("/*.") ||ctx.startsWith("*.") ) {
-            if (ctx.indexOf("/") == ctx.lastIndexOf("/")){
-                ctx = "";
-            } else {
-                ctx = ctx.substring(1);
-            }
-        }
-
-
-        if (ctx.startsWith("/*") || ctx.startsWith("*")) {
-            ctx = "";
-        }
-
-        // Special case for the root context
-        if ("/".equals(ctx)) {
-            ctx = "";
-        }
-
-        return ctx;
+    String ctx;
+    int slash = mapping.indexOf("/", 1);
+    if (slash != -1) {
+    ctx = mapping.substring(0, slash);
+    } else {
+    ctx = mapping;
     }
-*/
 
+    if (ctx.startsWith("/*.") ||ctx.startsWith("*.") ) {
+    if (ctx.indexOf("/") == ctx.lastIndexOf("/")){
+    ctx = "";
+    } else {
+    ctx = ctx.substring(1);
+    }
+    }
+
+
+    if (ctx.startsWith("/*") || ctx.startsWith("*")) {
+    ctx = "";
+    }
+
+    // Special case for the root context
+    if ("/".equals(ctx)) {
+    ctx = "";
+    }
+
+    return ctx;
+    }
+     */
     public void unregister(String contextRoot) {
-        if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "MAPPER ({0}) UNREGISTER contextRoot: {1}",
+        if (LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.log(Level.FINE, "MAPPER ({0}) UNREGISTER contextRoot: {1}",
                     new Object[]{this, contextRoot});
         }
         for (String host : grizzlyService.hosts) {
@@ -460,4 +461,14 @@ public class ContainerMapper extends HttpRequestProcessor {
         }
     }
 
+    private static final class AfterServiceListenerImpl implements AfterServiceListener {
+
+        @Override
+        public void onAfterService(final Request request) {
+            final MappingData mappingData = request.getNote(MAPPING_DATA);
+            if (mappingData != null) {
+                mappingData.recycle();
+            }
+        }
+    }
 }
