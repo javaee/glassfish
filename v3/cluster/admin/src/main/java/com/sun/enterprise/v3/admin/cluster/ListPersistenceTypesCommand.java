@@ -39,8 +39,8 @@
  */
 package com.sun.enterprise.v3.admin.cluster;
 
-import java.util.ArrayList;
-import java.util.Properties;
+import java.util.*;
+
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
@@ -52,7 +52,6 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
 
 import javax.validation.constraints.Pattern;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.ha.store.spi.BackingStoreFactoryRegistry;
@@ -77,6 +76,8 @@ public class ListPersistenceTypesCommand implements AdminCommand {
     private static final String EOL = "\n";
     private static final String SEPARATOR=EOL;
 
+    private static final String[] predefinedPersistenceTypes = { "memory", "replicated", "file"};
+
     @Override
     public void execute(AdminCommandContext context) {
         report = context.getActionReport();
@@ -87,11 +88,20 @@ public class ListPersistenceTypesCommand implements AdminCommand {
         if (logger.isLoggable(Level.FINE)){
             logger.log(Level.FINE, Strings.get("list.persistence.types.called", containerType));
         }
-        Set<String> types = BackingStoreFactoryRegistry.getRegisteredTypes();
-        types.remove("noop"); // implementation detail.  do not expose to users.
+        Set<String> allPersistenceTypes = new TreeSet<String>();
+        for (String predefined :  predefinedPersistenceTypes) {
+            allPersistenceTypes.add(predefined);
+        }
+
+        Set<String> userDefinedTypes = BackingStoreFactoryRegistry.getRegisteredTypes();
+        allPersistenceTypes.addAll(userDefinedTypes);
+        allPersistenceTypes.remove("noop"); // implementation detail.  do not expose to users.
+                                            // "noop" is functionally equivalent to "memory".
+        
+
         StringBuilder sb = new StringBuilder("");
         boolean removeTrailingSeparator = false;
-        for (String type : types) {
+        for (String type : allPersistenceTypes) {
             sb.append(type).append(SEPARATOR);
             removeTrailingSeparator = true;
         }
@@ -100,7 +110,7 @@ public class ListPersistenceTypesCommand implements AdminCommand {
             output = output.substring(0, output.length()-1);
         }
         Properties extraProperties = new Properties();
-        extraProperties.put("types", new ArrayList<String>(types));
+        extraProperties.put("types", new ArrayList<String>(allPersistenceTypes));
         
         report.setExtraProperties(extraProperties);        
         report.setMessage(output);
