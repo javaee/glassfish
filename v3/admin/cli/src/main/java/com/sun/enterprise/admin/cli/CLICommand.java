@@ -636,8 +636,8 @@ public abstract class CLICommand implements PostConstruct {
 
         if (ok(pwfile)) {
             passwords = CLIUtil.readPasswordFileOptions(pwfile, true);
-            logger.finer("Passwords from password file " +
-                                        passwords);
+            logger.finer("Passwords were read from password file: " +
+                                        pwfile);
             String password = passwords.get(
                     Environment.AS_ADMIN_ENV_PREFIX + "PASSWORD");
             if (password != null && programOpts.getPassword() == null)
