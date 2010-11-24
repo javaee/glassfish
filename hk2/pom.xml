@@ -56,27 +56,27 @@
     <mailingLists>
         <mailingList>
             <name>dev</name>
-            <subscribe>https://hk2.dev.java.net/servlets/ProjectMailingListList</subscribe>
-            <post>dev@hk2.dev.java.ne</post>
-            <archive>https://hk2.dev.java.net/servlets/SummarizeList?listName=dev</archive>
+            <subscribe>http://java.net/projects/hk2/lists</subscribe>
+            <post>dev@hk2.java.net</post>
+            <archive>http://java.net/projects/hk2/lists/dev/archive</archive>
         </mailingList>
         <mailingList>
             <name>users</name>
-            <subscribe>https://hk2.dev.java.net/servlets/ProjectMailingListList</subscribe>
-            <post>users@hk2.dev.java.net</post>
-            <archive>https://glassfish.dev.java.net/servlets/SummarizeList?listName=users</archive>
+            <subscribe>http://java.net/projects/hk2/lists</subscribe>
+            <post>users@hk2.java.net</post>
+            <archive>http://java.net/projects/hk2/lists/dev/archive</archive>
         </mailingList>
         <mailingList>
             <name>issues</name>
-            <subscribe>https://hk2.dev.java.net/servlets/ProjectMailingListList</subscribe>
-            <post>issues@hk2.dev.java.net</post>
-            <archive>https://hk2.dev.java.net/servlets/SummarizeList?listName=issues</archive>
+            <subscribe>http://java.net/projects/hk2/lists</subscribe>
+            <post>issues@hk2.java.net</post>
+            <archive>http://java.net/projects/hk2/lists/issues/archive</archive>
         </mailingList>
         <mailingList>
             <name>commits</name>
-            <subscribe>https://hk2.dev.java.net/servlets/ProjectMailingListList</subscribe>
-            <post>commits@hk2.dev.java.net</post>
-            <archive>https://hk2.dev.java.net/servlets/SummarizeList?listName=commits</archive>
+            <subscribe>http://java.net/projects/hk2/lists</subscribe>
+            <post>commits@hk2.java.net</post>
+            <archive>http://java.net/projects/hk2/lists/commits/archive</archive>
         </mailingList>
     </mailingLists>
 
