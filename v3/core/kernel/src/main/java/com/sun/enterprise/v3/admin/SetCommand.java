@@ -156,19 +156,42 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand, Pos
         // now
         // first let's get the parent for this pattern.
         TreeNode[] parentNodes = getAliasedParent(domain, pattern);
-        Map<Dom, String> dottedNames = new HashMap<Dom, String>();
-        for (TreeNode parentNode : parentNodes) {
-            dottedNames.putAll(getAllDottedNodes(parentNode.node));
-        }
 
         // reset the pattern.
-        String prefix = "";
-        if (!pattern.startsWith(parentNodes[0].relativeName)) {
-            prefix = pattern.substring(0, pattern.indexOf(parentNodes[0].relativeName));
+        String prefix;
+        boolean lookAtSubNodes = true;
+        if (parentNodes[0].relativeName.length() == 0) {
+            // handle the case where the pattern references an attribute of the top-level node
+            prefix = "";
+            // pattern is already set properly
+            lookAtSubNodes = false;
         }
-        pattern = parentNodes[0].relativeName;
+        else if(!pattern.startsWith(parentNodes[0].relativeName)) {
+            prefix = pattern.substring(0, pattern.indexOf(parentNodes[0].relativeName));
+            pattern = parentNodes[0].relativeName;
+        }
+        else {
+            prefix = "";
+            pattern = parentNodes[0].relativeName;
+        }
         String targetName = prefix + pattern;
-        Map<Dom, String> matchingNodes = getMatchingNodes(dottedNames, pattern);
+
+        Map<Dom, String> matchingNodes;
+        boolean applyOverrideRules = false;
+        Map<Dom, String> dottedNames = new HashMap<Dom, String>();
+        if (lookAtSubNodes) {
+            for (TreeNode parentNode : parentNodes) {
+                dottedNames.putAll(getAllDottedNodes(parentNode.node));
+            }
+            matchingNodes = getMatchingNodes(dottedNames, pattern);
+            applyOverrideRules = true;
+        } else {
+            matchingNodes = new HashMap<Dom, String>();
+            for (TreeNode parentNode : parentNodes) {
+                matchingNodes.put(parentNode.node, pattern);
+            }
+        }
+
         if (matchingNodes.isEmpty()) {
             // it's possible they are trying to create a property object.. lets check this.
             // strip out the property name
@@ -230,7 +253,10 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand, Pos
             attrChanges.put(attrName, value);
         }
 
-        List<Map.Entry> mNodes = applyOverrideRules(new ArrayList(matchingNodes.entrySet()));
+        List<Map.Entry> mNodes = new ArrayList(matchingNodes.entrySet());
+        if (applyOverrideRules) {
+            mNodes = applyOverrideRules(mNodes);
+        }
         for (Map.Entry<Dom, String> node : mNodes) {
             final Dom targetNode = node.getKey();
 

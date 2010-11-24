@@ -73,7 +73,7 @@ public class V2DottedNameSupport {
         return result;
     }
 
-    protected void getAllSubDottedNames(String prefix, Dom parent,Map<Dom, String> result) {
+    protected void getAllSubDottedNames(String prefix, Dom parent, Map<Dom, String> result) {
 
         Set<String> elementNames = parent.getElementNames();
 
