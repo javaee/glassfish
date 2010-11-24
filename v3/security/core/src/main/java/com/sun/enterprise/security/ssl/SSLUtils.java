@@ -387,7 +387,15 @@ public final class SSLUtils implements PostConstruct {
      * @return the SSLSocketFactory from the initialized SSLContext
      */
     public SSLSocketFactory getAdminSocketFactory(String alias, String protocol) {
+        return getAdminSSLContext(alias, protocol).getSocketFactory();
+    }
 
+    /*
+    * @param alias  the admin key alias
+    * @param protocol the protocol or null, uses "TLS" if this argument is null.
+    * @return the initialized SSLContext
+    */
+    public SSLContext getAdminSSLContext(String alias, String protocol) {
         try {
             if (protocol == null) {
                 protocol = "TLS";
@@ -401,10 +409,10 @@ public final class SSLUtils implements PostConstruct {
             }
             cntxt.init(kMgrs, getTrustManagers(), null);
 
-            return cntxt.getSocketFactory();
+            return cntxt;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
-    
+
 }

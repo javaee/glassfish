@@ -40,7 +40,13 @@
 
 package org.glassfish.admin.rest.resources;
 
+import com.sun.enterprise.config.serverbeans.SecureAdmin;
+import com.sun.enterprise.security.ssl.SSLUtils;
+import com.sun.jersey.api.client.WebResource;
 import org.jvnet.hk2.component.Habitat;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLSession;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Context;
 import java.net.MalformedURLException;
@@ -62,6 +68,7 @@ import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.client.urlconnection.HTTPSProperties;
 import org.glassfish.admin.rest.clientutils.MarshallingUtils;
 import org.glassfish.admin.rest.results.ActionReportResult;
 import org.glassfish.admin.rest.utils.xml.RestActionReporter;
@@ -89,6 +96,10 @@ public class MonitoringResource {
 
     @Context
     protected Habitat habitat;
+    
+    SecureAdmin secureAdmin; //Lazily inited
+    
+    SSLUtils sslUtils; //Lazily inited
 
 
     @GET
@@ -217,8 +228,9 @@ public class MonitoringResource {
             if (server != null) {
                 //forward to URL that has same path as current request. Host and Port are replaced to that of targetInstanceName
                 String forwardURL = uriInfo.getAbsolutePathBuilder().host(server.getAdminHost()).port(server.getAdminPort()).build().toASCIIString();
-
-                ClientResponse response = client.resource(forwardURL).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class); //TODO if the target server is down, we get ClientResponseException. Need to handle it
+                WebResource.Builder resourceBuilder = client.resource(forwardURL).accept(MediaType.APPLICATION_JSON);
+                addAuthenticationInfo(client, resourceBuilder, server);
+                ClientResponse response = resourceBuilder.get(ClientResponse.class); //TODO if the target server is down, we get ClientResponseException. Need to handle it
                 ClientResponse.Status status = ClientResponse.Status.fromStatusCode(response.getStatus());
                 if (status.getFamily() == javax.ws.rs.core.Response.Status.Family.SUCCESSFUL) {
                     String jsonDoc = response.getEntity(String.class);
@@ -306,5 +318,55 @@ public class MonitoringResource {
 
     }
 
+
+    /**
+     * If SecureAdmin is enabled, use SSL to authenticate else add a special header that identifies the request as coming from DAS
+     */
+    private void addAuthenticationInfo(Client client, WebResource.Builder resourceBuilder, Server server) {
+        SecureAdmin secureAdmin = getSecureAdmin();
+        if (SecureAdmin.Util.isEnabled(secureAdmin)) {
+            //SecureAdmin is enabled, instruct Jersey to use HostNameVerifier and SSLContext provided by us.
+            HTTPSProperties httpsProperties = new HTTPSProperties(new BasicHostnameVerifier(server.getAdminHost()), getSSLUtils().getAdminSSLContext(SecureAdmin.Util.DASAlias(secureAdmin), "TLS" )); //TODO need to get hardcoded "TLS" from corresponding ServerRemoteAdminCommand constant
+            client.getProperties().put(HTTPSProperties.PROPERTY_HTTPS_PROPERTIES, httpsProperties);
+        } else {
+            resourceBuilder.header(SecureAdmin.Util.ADMIN_INDICATOR_HEADER_NAME, SecureAdmin.Util.configuredAdminIndicator(secureAdmin));
+        }
+    }
+
+    /**
+     * Encapsulate lazy init of SSLUtils
+     */
+    private SSLUtils getSSLUtils() {
+        if(sslUtils == null) {
+            sslUtils = habitat.getComponent(SSLUtils.class);
+        }
+        return sslUtils;
+    }
+
+    /**
+     * Encapsulate lazy init of SecureAdmin
+     */
+    private SecureAdmin getSecureAdmin() {
+        if(secureAdmin == null) {
+            secureAdmin = habitat.getComponent(SecureAdmin.class);
+        }
+        return secureAdmin;
+    }
+
+    /**
+     * TODO copied from HttpConnectorAddress. Need to refactor code there to reuse
+     */
+    private static class BasicHostnameVerifier implements HostnameVerifier {
+        private final String host;
+        public BasicHostnameVerifier(String host) {
+            if (host == null)
+                throw new IllegalArgumentException("null host");
+            this.host = host;
+        }
+
+        public boolean verify(String s, SSLSession sslSession) {
+            return host.equals(s);
+        }
+    }
 
 }

@@ -42,11 +42,11 @@ package org.glassfish.admin.rest.adapter;
 
 import com.sun.enterprise.config.serverbeans.AdminService;
 import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.SecureAdmin;
 import com.sun.enterprise.module.common_impl.LogHelper;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.v3.admin.AdminAdapter;
 import com.sun.enterprise.v3.admin.adapter.AdminEndpointDecider;
-import com.sun.grizzly.tcp.Request;
 import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
 import com.sun.grizzly.tcp.http11.GrizzlyRequest;
 import com.sun.grizzly.tcp.http11.GrizzlyResponse;
@@ -73,6 +73,7 @@ import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
 
 import java.net.HttpURLConnection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -298,10 +299,27 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
         String password = up.length > 1 ? up[1] : "";
         AdminAccessController authenticator = habitat.getByContract(AdminAccessController.class);
         if (authenticator != null) {
-            return (authenticator.loginAsAdmin(user, password, as.getAuthRealmName(),
-                    req.getRemoteHost()) != AdminAccessController.Access.NONE);
+            return authenticator.loginAsAdmin(user, password, as.getAuthRealmName(), req.getRemoteHost(),
+                    getAuthRelatedHeaders(req), req.getUserPrincipal()) != AdminAccessController.Access.NONE;
         }
         return true;   //if the authenticator is not available, allow all access - per Jerome
+    }
+
+    /**
+     * Extract authentication related headers from Grizzly request.
+     * This headers enables us to authenticate a request coming from DAS without a password.
+     * The headers will be present if secured admin is not turned on and a request is sent from DAS to an instance.
+     * @param req
+     * @return Authentication related headers
+     */
+    private Map<String, String> getAuthRelatedHeaders(GrizzlyRequest req) {
+        Map<String, String> authRelatedHeaders = Collections.EMPTY_MAP;
+        String adminIndicatorHeader = req.getHeader(SecureAdmin.Util.ADMIN_INDICATOR_HEADER_NAME);
+        if(adminIndicatorHeader != null) {
+            authRelatedHeaders = new HashMap<String, String>(1);
+            authRelatedHeaders.put(SecureAdmin.Util.ADMIN_INDICATOR_HEADER_NAME, adminIndicatorHeader);
+        }
+        return authRelatedHeaders;
     }
 
 
