@@ -46,7 +46,7 @@ import org.jvnet.hk2.component.MultiMap;
 /**
  * @author Kohsuke Kawaguchi
  */
-public class LazyInhabitant<T> extends EventPublishingInhabitant<T> {
+public class LazyInhabitant<T> extends EventPublishingInhabitant<T> implements ClassLoaderHolder {
     private final String typeName;
 
     /**
