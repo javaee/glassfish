@@ -89,6 +89,10 @@
                     <artifactId>jtype</artifactId>
                 </exclusion>
                 <exclusion>
+                    <groupId>org.jvnet</groupId>
+                    <artifactId>tiger-types</artifactId>
+                </exclusion>
+                <exclusion>
                     <groupId>junit</groupId>
                     <artifactId>junit</artifactId>
                 </exclusion>
