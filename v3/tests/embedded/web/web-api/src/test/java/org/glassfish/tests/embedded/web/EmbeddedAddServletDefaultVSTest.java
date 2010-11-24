@@ -59,11 +59,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- * Tests for Context#addServlet, embedded.createVirtualServer
+ * Tests for Context#addServlet to default virtual server
  * 
  * @author Amy Roh
  */
-public class EmbeddedAddServletTest {
+public class EmbeddedAddServletDefaultVSTest {
 
     static GlassFish glassfish;
     static WebContainer embedded;
@@ -75,7 +75,7 @@ public class EmbeddedAddServletTest {
         glassfish = GlassFishRuntime.bootstrap().newGlassFish();
         glassfish.start();
         embedded = glassfish.getService(WebContainer.class);
-        System.out.println("================ EmbeddedAddServlet Test");
+        System.out.println("================ EmbeddedAddServletDefaultVS Test");
         System.out.println("Starting Web "+embedded);
         embedded.setLogLevel(Level.INFO);
         WebContainerConfig config = new WebContainerConfig();
@@ -88,32 +88,13 @@ public class EmbeddedAddServletTest {
     }
     
     @Test
-    public void testEmbeddedWebAPIConfig() throws Exception {
-        WebListener testListener = embedded.createWebListener("test-listener", HttpListener.class);
-        testListener.setPort(9090);
-        WebListener[] webListeners = new HttpListener[1];
-        webListeners[0] = testListener;
+    public void testEmbeddedAddServletDefaultVS() throws Exception {
 
-        VirtualServerConfig config = new VirtualServerConfig();
-        config.setHostNames("localhost");
-        //VirtualServer vs = (VirtualServer)
-        //        embedded.createVirtualServer(vsname, root, webListeners);
-        VirtualServer vs = (VirtualServer)
-                embedded.createVirtualServer(vsname, root);
-        vs.setConfig(config);
-        embedded.addVirtualServer(vs);
-        boolean testvs = false;
-        for (VirtualServer avs : embedded.getVirtualServers()) {
-            System.out.println("virtual server "+avs.getID());
-            if (avs.getID().equals(vsname)) {
-                testvs=true;
-            }
-        }
-        Assert.assertTrue(testvs);    
+        VirtualServer vs = embedded.findVirtualServer("server");
+        System.out.println("Default virtual server "+vs);
         Context context = (Context) embedded.createContext(root);
         ServletRegistration sr = context.addServlet("NewServlet", new NewServlet());
         sr.addMapping(new String[] {"/new"});
-        
         vs.addContext(context, "/test");
 
         URL servlet = new URL("http://localhost:8080/test/new");

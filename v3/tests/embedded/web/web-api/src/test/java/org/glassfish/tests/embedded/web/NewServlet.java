@@ -40,20 +40,22 @@
 
 package org.glassfish.tests.embedded.web;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import javax.servlet.annotation.WebServlet;
+import java.io.*;
 import javax.servlet.*;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
-import javax.annotation.Resource;
 
 @WebServlet(urlPatterns={"/new"})
 public class NewServlet extends HttpServlet {
 
+    private String initParamValue;
+    private String myParamValue;
+
+
     public NewServlet() {
         System.out.println("Servlet NewServlet initialized");
     }
-   
+
     public void doGet(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
 
@@ -64,4 +66,45 @@ public class NewServlet extends HttpServlet {
             e.printStackTrace();
         }
     }
+
+    /*public void setMyParameter(String value) {
+        myParamValue = value;
+    }
+
+    public void init(ServletConfig config) throws ServletException {
+        super.init(config);
+        initParamValue = config.getInitParameter("servletInitParamName");
+    }
+
+        public void doGet(HttpServletRequest req, HttpServletResponse res)
+            throws IOException, ServletException {
+
+        PrintWriter pw = res.getWriter();
+        try {
+            pw.println("Hello World!");
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void service(ServletRequest req, ServletResponse res)
+            throws IOException, ServletException {
+        if (!"myServletParamValue".equals(myParamValue)) {
+            throw new ServletException("Wrong servlet instance");
+        }
+
+        if (!"servletInitParamValue".equals(initParamValue)) {
+            throw new ServletException("Missing servlet init param");
+        }
+
+        if (!"myFilterParamValue".equals(
+                req.getAttribute("myFilterParamName"))) {
+            throw new ServletException("Wrong filter instance");
+        }
+
+        if (!"filterInitParamValue".equals(
+                req.getAttribute("filterInitParamName"))) {
+            throw new ServletException("Missing filter init param");
+        }
+    }*/
 }
