@@ -1441,6 +1441,10 @@ public class StandardSession
      * out-of-band (i.e., non-http) request, false otherwise
      */      
     public synchronized boolean hasNonHttpLockOccurred() {
+        //in this case we are not using locks
+        //so just return false
+        if(_sessionLock == null)
+            return false;
         return _sessionLock.hasNonHttpLockOccurred();
     }
 
