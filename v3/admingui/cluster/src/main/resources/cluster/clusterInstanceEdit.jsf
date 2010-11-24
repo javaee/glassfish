@@ -46,7 +46,8 @@
     setResourceBundle(key="i18ncs" bundle="org.glassfish.cluster.admingui.Strings")
     setResourceBundle(key="help_cluster" bundle="org.glassfish.cluster.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="  $resource{i18ncs.clusterInstance.PageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="  $resource{i18ncs.clusterInstance.PageTitle}"
+    guiOnLoad="admingui.nav.selectTreeNodeWithURL('#{request.contextPath}/cluster/cluster/clusterGeneral.jsf?clusterName=#{pageSession.clusterName}');">
 #include "/cluster/shared/handlers.inc"
 <!define name="content">
     <event>
@@ -63,7 +64,7 @@
             setAttribute(key="isRunning" value="#{true}");
         }
         if ("#{pageSession.status}=NOT_RUNNING"){
-            setAttribute(key="isStopped" value="#{true}");
+            setPageSessionAttribute(key="isStopped" value="#{true}");
         }
         if ("#{pageSession.status}=REQUIRES_RESTART"){
             setAttribute(key="isRestartRequired" value="#{true}");
@@ -85,7 +86,7 @@
             </sun:button>
         </sun:panelGroup>
         </facet>
-            <sun:button id="startInstance" disabled="#{!requestScope.isStopped}" text="$resource{i18n.button.Start}"  primary="#{false}"
+            <sun:button id="startInstance" disabled="#{!pageSession.isStopped}" text="$resource{i18n.button.Start}"  primary="#{false}"
                 onClick="if ( getConfirm(this,'$resource{i18n.msg.JS.confirmStartInstance}') )
                     { return submitAndDisable(this, '$resource{i18n.button.Processing}');}  else {return false;} " > 
                  <!command
@@ -96,7 +97,7 @@
              />
             </sun:button>
 
-            <sun:button id="stopInstance" disabled="#{requestScope.isStopped}" text="$resource{i18n.button.Stop}" primary="#{false}"
+            <sun:button id="stopInstance" disabled="#{pageSession.isStopped}" text="$resource{i18n.button.Stop}" primary="#{false}"
                 onClick="if ( getConfirm(this,'$resource{i18n.msg.JS.confirmStopInstance}') )
                     { return submitAndDisable(this, '$resource{i18n.button.Processing}');}  else {return false;} " >
                 <!command
@@ -107,7 +108,7 @@
                 />
             </sun:button>
 
-            <sun:button id="restartInstance" disabled="#{requestScope.isStopped}" text="$resource{i18n.button.Restart}" primary="#{false}"
+            <sun:button id="restartInstance" disabled="#{pageSession.isStopped}" text="$resource{i18n.button.Restart}" primary="#{false}"
                 onClick="if ( getConfirm(this,'$resource{i18n.msg.JS.confirmRestartInstance}') )
                     { return submitAndDisable(this, '$resource{i18n.button.Processing}');}  else {return false;} " >
                  <!command
@@ -118,13 +119,13 @@
                 />
             </sun:button>
 
-            <sun:button id="logViewer" text="$resource{i18n.button.logViewer}"  disabled="#{requestScope.isStopped}" primary="#{false}"
+            <sun:button id="logViewer" text="$resource{i18n.button.logViewer}"  disabled="#{pageSession.isStopped}" primary="#{false}"
                 onClick="javascript:var win=window.open('#{facesContext.externalContext.requestContextPath}/common/logViewer/logViewer.jsf?instanceName=#{pageSession.instanceName}&loglevel=INFO&viewResults=true','LogViewerWindow','width='+(screen.width-300)+',height='+(screen.height-75)+',top=0,left=0,toolbar=no,status=no,menubar=no,scrollbars=yes,resizable=yes,directories=no,location=no');win.focus(); return false;"
             />
 
             <sun:button id="recoverTrans" text="$resource{i18n.button.recoverTrans}" primary="#{false}">
                 <!command
-                    gf.redirect(page="recoverTransactions.jsf?clusterName=#{pageSession.encodedClusterName}&instanceName=$pageSession{instanceName}&pageName=$pageSession{pageName}");
+                    gf.redirect(page="/cluster/cluster/clusterInstanceRecoverTransactions.jsf?clusterName=#{pageSession.encodedClusterName}&instanceName=#{pageSession.encodedInstanceName}&isStopped=#{pageSession.isStopped}");
                 />
             </sun:button>
     </sun:title>

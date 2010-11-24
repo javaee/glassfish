@@ -100,6 +100,14 @@
                 parentId="propSheetSection"
                 content="monitor/configurationLink.jsf"
         />
+        <integration-point
+                id="sysPropsConfigurationLink"
+                type="org.glassfish.admingui:configuration"
+                priority="900"
+                parentId="propSheetSection"
+                content="configuration/systemPropsConfigurationLink.jsf"
+        />
+
 
 	<!-- navNode IPs -->
         <integration-point

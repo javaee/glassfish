@@ -105,21 +105,11 @@
                 gf.redirect("#{pageSession.selfPage}");/>
 
                 </sun:button>
-                <!-- TODO V3 final
-                <sun:button id="jndiBrowsing" text="$resource{i18n.button.jndiBrowsing}"
-                    onClick="javascript:var win=window.open('../jndiTree/jndiNavFrame.jsf?instanceName=#{instanceName}','JndiBrowsingWindow','width='+(screen.width/2)+',height='+(screen.height/2)+',top=0,left=0,toolbar=no,status=no,menubar=no,scrollbars=yes,resizable=yes,directories=no,location=no');win.focus();return false; var f=document.form;if (f != null) {f.submit(); return true}"
-                />
-                <sun:button id="upgradeProfile" text="$resource{i18n.button.upgradeProfile}" primary="#{false}" disabled="#{disableUpgrade}">
-                    <!command
-                        gf.redirect(page="upgradeProfile.jsf");
-                    />
-                </sun:button>
                 <sun:button id="recoverTrans" text="$resource{i18n.button.recoverTrans}" primary="#{false}">
-                    <!command
-                    gf.redirect(page="recoverTransactions.jsf?instanceName=$pageSession{instanceName}&pageName=$pageSession{pageName}");
-                    />
-                </sun:button>
-                -->
+                <!command
+                    gf.redirect(page="serverRecoverTransactions.jsf?instanceName=#{pageSession.instanceName}");
+                />
+            </sun:button>
         </sun:title>
 
                         <!-- PropertySheet .... -->
@@ -130,8 +120,8 @@
                 <!afterCreate
                     getClientId(component="$this{component}" clientId=>$attribute{sheetId});
                 />
-                <sun:property id="hostName"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.hostHomeLabel}" >
-                    <sun:staticText id="hostName" text="#{sessionScope.serverName}" />
+                <sun:property id="hostName"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.serverName}" >
+                    <sun:staticText id="hostName" text="server" />
                 </sun:property>
 
                 <sun:property id="statusProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.status}">

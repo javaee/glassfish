@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -40,47 +40,31 @@
 
 -->
 
-<!-- common/configuration/configuration.jsf -->
 <!initPage
     setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
-    setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
+    setResourceBundle(key="help_cluster" bundle="org.glassfish.cluster.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.configuration.pageTitle}"
-    guiOnLoad="admingui.nav.selectTreeNodeWithURL('#{request.contextPath}/common/configuration/configuration.jsf?configName=#{pageSession.configName}');" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18nc.recoverTransactionsTitle}"
+    guiOnLoad="showTxnLogDir('#{pageSession.target}', '#{pageSession.instanceName}', '#{pageSession.logDirId}');"
+>
+#include "/common/shared/commonHandlers.inc"
 <!define name="content">
     <event>
-        <!beforeCreate
-            getRequestValue(key="configName" value="#{pageSession.configName}");
-        />
+    <!beforeCreate
+        getRequestValue(key="instanceName" value="#{pageSession.instanceName}");
+        getRequestValue(key="isStopped" value="#{pageSession.isStopped}");
+        urlencode(value="#{pageSession.instanceName}" encoding="UTF-8" result="#{pageSession.encodedInstanceName}");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/cluster/standalone/standaloneRecoverTransactions.jsf?&instanceName=#{pageSession.encodedInstanceName}");
+        setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/cluster/standalone/standaloneInstanceGeneral.jsf?instanceName=#{pageSession.encodedInstanceName}");
+        setPageSessionAttribute(key="resourceUrl", value="#{sessionScope.REST_URL}/servers/server/#{pageSession.encodedInstanceName}");
+        gfr.getListOfRunningInstances();
+        setPageSessionAttribute(key="helpKey" value="$resource{help_cluster.standaloneInstanceRecoverTransactions}")
+        setPageSessionAttribute(key="target" value="#{pageSession.instanceName}");
+        setPageSessionAttribute(key="useSelf" value="#{!pageSession.isStopped}");
+    />
     </event>
-    <sun:form id="configForm">
-        <sun:title
-            id="configPageTitle"
-            title="$resource{i18n.configuration.pageTitle}"
-            helpText="$resource{i18n.configuration.pageTitleHelp}"
-        />
-        <sun:propertySheet id="propSheet">
-            <!afterCreate
-                    getClientId(component="$this{component}" clientId=>$attribute{sheetId});
-                />
-            <sun:propertySheetSection id="configNameSheet">
-                <sun:property id="configName"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="Configuration Name: " >
-                <sun:staticText id="configName" style="padding: 8pt" text="#{pageSession.configName}"/>
-            </sun:property>
-            </sun:propertySheetSection>
-                <sun:propertySheetSection id="propSheetSection">
-                </sun:propertySheetSection>
-        </sun:propertySheet>
-        <event>
-            <!afterCreate
-                getUIComponent(clientId="#{sheetId}"  component=>$attribute{component})
-                includeIntegrations(type="org.glassfish.admingui:configuration" root="#{component}");
-            />
-        </event>
-        <sun:hidden id="helpKey" value="$resource{help_common.configuration}" />
-        "<br /><br />
-    </sun:form>
+
+#include "/common/shared/recoverTransactions.inc"
+
 </define>
 </composition>
-
-

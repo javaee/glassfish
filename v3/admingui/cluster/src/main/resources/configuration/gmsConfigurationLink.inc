@@ -40,47 +40,24 @@
 
 -->
 
-<!--
-     This handler gets a list of password aliases
-     Output: #{pageSession.listOfAliases}
--->
-<handler id="gfr.getPswdAliases">
-    gf.restRequest(
-        endpoint="#{sessionScope.REST_URL}/list-password-aliases"
-        method="GET"
-        result="#{requestScope.result}");
-    setAttribute(key="_listOfMap" value="#{requestScope.result.data.children}");
-    setPageSessionAttribute(key="listOfAliases" value={});
-    if( "!(#{requestScope._listOfMap} = #{null})" ){
-      foreach(var="oneChildMap" list="#{requestScope._listOfMap}"){
-         listAdd(list="#{pageSession.listOfAliases}" value="#{requestScope.oneChildMap.message}" );
-      }
-      gf.listSort(list="#{pageSession.listOfAliases}");
-    }
-</handler>
-
-
-<handler id="gfr.getListOfRunningInstances">
-
-    gf.restRequest(endpoint="#{sessionScope.REST_URL}/list-instances",  method="get", result="#{requestScope.results}");
-    listAdd(value="server", result="#{pageSession.runningInstances}");
-    println("----------------- #{pageSession.runningInstances}");
-    foreach (var="instance", list="#{requestScope.results.data.extraProperties.instanceList}") {
-        if ('!(#{instance.status} = NOT_RUNNING)') {
-            listAdd(list="#{pageSession.runningInstances}", value="#{instance.name}");
-        }
-    }
-        println("2222----------------- #{pageSession.runningInstances}");
-
-    
-</handler>
-
-        <!--
-        //setPageSessionAttribute(key="noRunningInstance" value="#{false}");
-    //setAttribute(key="listSize" value="#{requestScope.listOfInstances.size()}")
-    //setAttribute(key="zero" value="$int{0}");
-    //if (#{requestScope.listSize}=#{requestScope.zero}){
-      //  setPageSessionAttribute(key="noRunningInstance" value="#{true}");
-    //}
-        -->
-
+<sun:property  rendered="#{pageSession.gmsShowIt}">
+    <sun:hyperlink  rendered="#{pageSession.gmsShowIt}"
+        toolTip="$resource{i18ncs.tree.gms.tooltip}"
+        url="/cluster/configuration/gms.jsf?configName=${configName}"
+        >
+        
+        <sun:image url="/resource/cluster/images/management_services.gif" />
+        <sun:staticText text="$resource{i18ncs.tree.gms}" />
+    </sun:hyperlink>
+    <!beforeCreate
+            setResourceBundle(key="i18ncs" bundle="org.glassfish.cluster.admingui.Strings");
+            setPageSessionAttribute(key="gmsShowIt" value="$boolean{false}");
+            if ("!(server-config=#{pageSession.configName})") {
+                setPageSessionAttribute(key="gmsShowIt" value="$boolean{true}");
+            }
+            println("DD configName=${configName}");
+            println("XX page configName=#{pageSession.configName}");
+            println("YY configName=#{configName}");
+            println("gmsShowIt=#{pageSession.gmsShowIt}");
+        />
+</sun:property>

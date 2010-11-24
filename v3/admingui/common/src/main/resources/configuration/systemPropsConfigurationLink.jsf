@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -40,18 +40,12 @@
 
 -->
 
-<sun:treeNode id="gms"
-        text="$resource{i18ncs.tree.gms}"
-        url="/cluster/cluster/gms.jsf?configName=${configName}"
-        imageURL="/resource/cluster/images/management_services.gif"
-        rendered="$pageSession{gmsShowIt}"
-    >
-    <ui:event type="beforeCreate">
-        setResourceBundle(key="i18ncs" bundle="org.glassfish.cluster.admingui.Strings");
-        setPageSessionAttribute(key="gmsShowIt" value="$boolean{false}");
-        if ("!(server-config=${configName})") {
-            setPageSessionAttribute(key="gmsShowIt" value="$boolean{true}");
-        }
-    </ui:event>
-</sun:treeNode>
-
+<sun:property>
+    <sun:hyperlink 
+        toolTip="$resource{i18n.tree.systemProps.tooltip}"
+        url="/common/configuration/configurationSystemProperties.jsf?configName=#{pageSession.configName}"
+        >
+        <sun:image url="/resource/images/system_properties.png" />
+        <sun:staticText text="$resource{i18n.tree.systemProps}" />
+    </sun:hyperlink>
+</sun:property>

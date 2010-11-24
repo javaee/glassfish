@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -40,47 +40,24 @@
 
 -->
 
-<!-- common/configuration/configuration.jsf -->
 <!initPage
     setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
     setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.configuration.pageTitle}"
-    guiOnLoad="admingui.nav.selectTreeNodeWithURL('#{request.contextPath}/common/configuration/configuration.jsf?configName=#{pageSession.configName}');" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18nc.recoverTransactionsTitle}"
+>
 <!define name="content">
     <event>
-        <!beforeCreate
-            getRequestValue(key="configName" value="#{pageSession.configName}");
-        />
+    <!beforeCreate
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/appServer/serverRecoverTransactions.jsf?");
+        setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/common/appServer/serverInstGeneralPe.jsf");
+        setPageSessionAttribute(key="resourceUrl", value="#{sessionScope.REST_URL}/servers/server/server");
+        setPageSessionAttribute(key="helpKey" value="$resource{help_common.serverRecoverTransactions}");
+        setPageSessionAttribute(key="target" value="server");
+        setPageSessionAttribute(key="instanceName" value="server");
+        setPageSessionAttribute(key="useSelf" value="true");
+    />
     </event>
-    <sun:form id="configForm">
-        <sun:title
-            id="configPageTitle"
-            title="$resource{i18n.configuration.pageTitle}"
-            helpText="$resource{i18n.configuration.pageTitleHelp}"
-        />
-        <sun:propertySheet id="propSheet">
-            <!afterCreate
-                    getClientId(component="$this{component}" clientId=>$attribute{sheetId});
-                />
-            <sun:propertySheetSection id="configNameSheet">
-                <sun:property id="configName"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="Configuration Name: " >
-                <sun:staticText id="configName" style="padding: 8pt" text="#{pageSession.configName}"/>
-            </sun:property>
-            </sun:propertySheetSection>
-                <sun:propertySheetSection id="propSheetSection">
-                </sun:propertySheetSection>
-        </sun:propertySheet>
-        <event>
-            <!afterCreate
-                getUIComponent(clientId="#{sheetId}"  component=>$attribute{component})
-                includeIntegrations(type="org.glassfish.admingui:configuration" root="#{component}");
-            />
-        </event>
-        <sun:hidden id="helpKey" value="$resource{help_common.configuration}" />
-        "<br /><br />
-    </sun:form>
+#include "/common/shared/recoverTransactions.inc"
 </define>
 </composition>
-
-

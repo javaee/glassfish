@@ -61,7 +61,6 @@
 
         gf.getEntityAttrs(endpoint="#{pageSession.resourceUrl}.json", valueMap="#{pageSession.valueMap}");
         gf.getChildrenNamesList(endpoint="#{pageSession.resourceUrl}/server-ref" id="ref" result="#{pageSession.instanceList}" );
-        //TODO: determine #instance thats up and #instance that is down
         gf.listInstances(optionKeys={"id"} optionValues={"$pageSession{clusterName}"}, statusMap="#{requestScope.statusMap}");
         gf.getClusterStatusSummary(statusMap ="#{requestScope.statusMap}" ,
             numRunning="#{pageSession.numRunning}"  numNotRunning="#{pageSession.numNotRunning}" 

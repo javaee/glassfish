@@ -220,6 +220,9 @@ function enableComponent(componentName, type) {
     } else {
         component = getTextElement(componentName);
     }
+    if (component == null){
+        return;
+    }
     if (typeof(component.setDisabled) === 'function') {
 	component.setDisabled(false);
     } else {
@@ -595,7 +598,7 @@ admingui.nav = {
                         childNodes.innerHTML = newChildren.innerHTML;
                     }
                 } catch (err) {
-alert(err);
+//alert(err);
 // FIXME: Log error
                 }
             } else {

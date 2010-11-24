@@ -76,9 +76,17 @@
     <integration-point
             id="gms_node"
             type="org.glassfish.admingui:navNode"
-            priority="900"
+            priority="850"
             parentId="#{configNameId}"
-            content="/cluster/pluginTreeNodeGms.jsf"/>
+            content="/configuration/pluginTreeNodeGms.inc"/>
+
+    <integration-point
+                id="gmsLink"
+                type="org.glassfish.admingui:configuration"
+                priority="850"
+                parentId="propSheetSection"
+                content="/configuration/gmsConfigurationLink.inc"
+        />
     <integration-point
             id="deployTargetSection"
             type="org.glassfish.admingui:uploadPropertySheetTargetSection"
