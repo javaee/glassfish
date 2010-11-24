@@ -302,7 +302,12 @@ public class DFDeploymentStatus implements java.io.Serializable {
             if (subIter.hasNext()) {
                 DFDeploymentStatus subStage =
                     (DFDeploymentStatus) subIter.next();
+                if (this.getStageStatus().isWorseThan(
+                    subStage.getStageStatus())) {                
+                    subStage.setStageStatus(this.getStageStatus()); 
+                }
                 return subStage;
+                
             } 
             return this;
         }
