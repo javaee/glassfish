@@ -38,6 +38,7 @@ package org.jvnet.hk2.junit;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
@@ -53,6 +54,7 @@ import org.jvnet.hk2.component.InhabitantsParserFactory;
  */
 @Retention(RUNTIME)
 @Target({TYPE})
+@Inherited
 public @interface Hk2RunnerOptions {
 
   /**
