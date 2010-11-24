@@ -72,7 +72,10 @@ public class Client extends AdminBaseDevTest {
         } else if ("rollback".equals(args[0])) {
             (new Client()).rollback();
         } else if ("recover".equals(args[0])) {
-            (new Client()).recover(args[1]);
+            String param = null;
+            if (args.length > 1)
+                param = args[1];
+            (new Client()).recover(param);
         } else if ("verify_default".equals(args[0])) {
             (new Client()).verify_default(args[1], args[2], args[3]);
         } else if ("verify_xa".equals(args[0])) {
@@ -142,13 +145,18 @@ public class Client extends AdminBaseDevTest {
         System.out.println("Executing recover CLI");
         try {
             asadmin("set", "configs.config." + CLUSTER_NAME + "-config.log-service.module-log-levels.resourceadapter=FINE");
-            String txLog = new StringBuffer(location).append(File.separator)
-                    .append("nodes").append(File.separator).append("localhost")
-                    .append(File.separator).append(INSTANCE1_NAME).append(File.separator)
-                    .append("logs").append(File.separator).append(INSTANCE1_NAME)
-                    .append(File.separator).append("tx").toString();
-            AsadminReturn result = asadminWithOutput("recover-transactions", "--target", INSTANCE2_NAME, 
-                    "--transactionlogdir", txLog, INSTANCE1_NAME); 
+            AsadminReturn result = null;
+            if (location != null && location.length() > 0) {
+                String txLog = new StringBuffer(location).append(File.separator)
+                        .append("nodes").append(File.separator).append("localhost")
+                        .append(File.separator).append(INSTANCE1_NAME).append(File.separator)
+                        .append("logs").append(File.separator).append(INSTANCE1_NAME)
+                        .append(File.separator).append("tx").toString();
+                result = asadminWithOutput("recover-transactions", "--target", INSTANCE2_NAME, 
+                        "--transactionlogdir", txLog, INSTANCE1_NAME); 
+            } else {
+                result = asadminWithOutput("recover-transactions", INSTANCE1_NAME); 
+            }
             System.out.println("Executed command: " + result.out);
             if (!result.returnValue) {
                 System.out.println("CLI FAILED: " + result.err);
