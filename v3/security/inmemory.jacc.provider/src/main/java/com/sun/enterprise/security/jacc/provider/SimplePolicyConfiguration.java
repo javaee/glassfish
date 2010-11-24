@@ -1149,10 +1149,10 @@ public class SimplePolicyConfiguration implements PolicyConfiguration {
 
     static void logAccessFailure(ProtectionDomain d, Permission p) {
 
-        if (permissionShouldBeLogged(p) || SharedState.getLogger().isLoggable(Level.FINEST)) {
+        if (permissionShouldBeLogged(p) || SharedState.getLogger().isLoggable(Level.FINE)) {
 
             String id = PolicyContext.getContextID();
-            doPrivilegedLog(Level.INFO, "Domain.that.failed",
+            doPrivilegedLog(Level.FINE, "Domain.that.failed",
                     new Object[]{id, p, d});
         }
 
