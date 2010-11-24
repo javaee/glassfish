@@ -49,18 +49,32 @@
             gf.redirect(page="#{request.contextPath}/common/appServer/serverInstGeneralPe.jsf");
         />
     </sun:tab>
-    <sun:tab id="token" immediate="true" text="$resource{i18n.appServer.tokenTitle}" toolTip="$resource{i18n.appServer.tokenTab}">
-        <!command
-            setSessionAttribute(key="serverInstTabs" value="token");
-            gf.redirect(page="#{request.contextPath}/common/appServer/dasSystemProperties.jsf");
-        />
-    </sun:tab>
     <sun:tab id="resources" immediate="true" text="$resource{i18nc.resources}" toolTip="$resource{i18nc.resourcesTab}">
         <!command
             setSessionAttribute(key="serverInstTabs" value="resources");
             gf.redirect(page="#{request.contextPath}/common/appServer/serverInstResources.jsf?instanceName=server");
         />
     </sun:tab>
+
+    <sun:tab id="serverInstProps" immediate="$boolean{true}" text="$resource{i18nc.PropertiesTab}">
+        <!command
+            setSessionAttribute(key="serverInstTabs" value="configProps");
+            gf.redirect(page="#{request.contextPath}/common/appServer/instanceConfigProperties.jsf?instanceName=server");
+        />
+        <sun:tab id="configProps" immediate="$boolean{true}" text="$resource{i18nc.instanceProperties.SystemPropertiesTitle}" >
+            <!command
+                setSessionAttribute(key="serverInstTabs" value="configProps");
+                gf.redirect(page="#{request.contextPath}/common/appServer/instanceConfigProperties.jsf?instanceName=server");
+            />
+	</sun:tab>
+        <sun:tab id="instanceProps" immediate="$boolean{true}" text="$resource{i18nc.instanceProperties.PropertiesTitle}" >
+	    <!command
+                setSessionAttribute(key="serverInsTabs" value="instanceProps");
+                gf.redirect(page="#{request.contextPath}/common/appServer/instanceProperties.jsf?instanceName=server");
+	    />
+	</sun:tab>
+    </sun:tab>
+
 </sun:tabSet>
 <event>
     <!afterCreate
