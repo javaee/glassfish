@@ -66,13 +66,13 @@ public class GrizzlyListener extends GrizzlyServiceListener {
      * Configures the given grizzlyListener.
      */
     @Override
-    public void configure(NetworkListener networkListener, Habitat habitat) {
+    public void configureListener(NetworkListener networkListener, Habitat habitat) {
         this.listener = networkListener;
         if ("light-weight-listener".equals(networkListener.getProtocol())) {
             isGenericListener = true;
         }
         if (!isGenericListener) {
-            super.configure(networkListener, habitat);
+            super.configureListener(networkListener);
         } else {
             initializeListener(networkListener, habitat);
             setName(networkListener.getName());
@@ -140,11 +140,7 @@ public class GrizzlyListener extends GrizzlyServiceListener {
 
     @Override
     public int getPort() {
-        if (isGenericListener) {
-            return serviceInitializer.getPort();
-        } else {
-            return getEmbeddedHttp().getPort();
-        }
+        return isGenericListener ? serviceInitializer.getPort() : super.getPort();
     }
 
     public void processDynamicConfigurationChange(PropertyChangeEvent[] events) {

@@ -40,21 +40,18 @@
 
 package com.sun.enterprise.v3.services.impl;
 
-import com.sun.grizzly.Context;
-import com.sun.grizzly.ProtocolFilter;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import com.sun.grizzly.ReinvokeAware;
+
+import org.glassfish.grizzly.Context;
+import org.glassfish.grizzly.config.dom.ProtocolFilter;
 
 /**
  * This is just a place holder filter for LWL; the requests should never come here
  */
-public class ServiceInitializerFilter implements ProtocolFilter, ReinvokeAware {
+public class ServiceInitializerFilter /*implements ProtocolFilter, ReinvokeAware*/ {
 
     boolean continousExecution;
-
-    public ServiceInitializerFilter(){
-    }
 
     public boolean execute(Context ctx) throws IOException {
         return execute(ctx, null);

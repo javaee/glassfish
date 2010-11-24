@@ -131,7 +131,7 @@ public class GrizzlyProxy implements NetworkProxy {
         }
 
         grizzlyListener = new GrizzlyListener(grizzlyService.getMonitoring(), networkListener);
-        grizzlyListener.configure(networkListener, grizzlyService.habitat);
+        grizzlyListener.configureListener(networkListener, grizzlyService.habitat);
 
         if(!grizzlyListener.isGenericListener()) {
             final Protocol httpProtocol = networkListener.findHttpProtocol();

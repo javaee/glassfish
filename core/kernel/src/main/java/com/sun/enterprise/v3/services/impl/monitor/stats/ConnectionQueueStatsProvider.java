@@ -40,7 +40,6 @@
 
 package com.sun.enterprise.v3.services.impl.monitor.stats;
 
-import com.sun.grizzly.util.ExtendedThreadPool;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -53,6 +52,7 @@ import org.glassfish.gmbal.AMXMetadata;
 import org.glassfish.gmbal.Description;
 import org.glassfish.gmbal.ManagedAttribute;
 import org.glassfish.gmbal.ManagedObject;
+import org.glassfish.grizzly.threadpool.SyncThreadPool;
 
 /**
  * Connection Queue statistics
@@ -88,7 +88,7 @@ public class ConnectionQueueStatsProvider implements StatsProvider {
     protected long averageLastShift;
     protected int averageMinuteCounter;
 
-    protected volatile ExtendedThreadPool threadPool;
+    protected volatile SyncThreadPool threadPool;
 
     public ConnectionQueueStatsProvider(String name) {
         this.name = name;
@@ -101,8 +101,8 @@ public class ConnectionQueueStatsProvider implements StatsProvider {
 
     @Override
     public void setStatsObject(Object object) {
-        if (object instanceof ExtendedThreadPool) {
-            threadPool = (ExtendedThreadPool) object;
+        if (object instanceof SyncThreadPool) {
+            threadPool = (SyncThreadPool) object;
         } else {
             threadPool = null;
         }
@@ -333,10 +333,9 @@ public class ConnectionQueueStatsProvider implements StatsProvider {
         countQueued.setCount(0);
 
         countTotalQueued.setCount(0);
-
-        final ExtendedThreadPool threadPoolObject = threadPool;
-        if (threadPoolObject != null) {
-            maxQueued.setCount(threadPoolObject.getMaxQueuedTasksCount());
+        if (threadPool != null) {
+            // TODO:  where is this gathered now?
+//            maxQueued.setCount(threadPool.getMaxQueuedTasksCount());
         }
 
         peakQueuedAtomic.set(0);

@@ -40,7 +40,6 @@
 
 package com.sun.enterprise.v3.services.impl.monitor.stats;
 
-import com.sun.grizzly.http.KeepAliveStats;
 import org.glassfish.external.probe.provider.annotations.ProbeListener;
 import org.glassfish.external.probe.provider.annotations.ProbeParam;
 import org.glassfish.external.statistics.CountStatistic;
@@ -50,6 +49,7 @@ import org.glassfish.gmbal.AMXMetadata;
 import org.glassfish.gmbal.Description;
 import org.glassfish.gmbal.ManagedAttribute;
 import org.glassfish.gmbal.ManagedObject;
+import org.glassfish.grizzly.http.KeepAlive;
 
 /**
  * Keep-alive statistics
@@ -69,7 +69,7 @@ public class KeepAliveStatsProvider implements StatsProvider {
     protected final CountStatisticImpl hitsCount = new CountStatisticImpl("CountHits", "count", "Number of requests received by connections in keep-alive mode");
     protected final CountStatisticImpl refusalsCount = new CountStatisticImpl("CountRefusals", "count", "Number of keep-alive connections that were rejected");
     protected final CountStatisticImpl timeoutsCount = new CountStatisticImpl("CountTimeouts", "count", "Number of keep-alive connections that timed out");
-    protected volatile KeepAliveStats keepAliveStats;
+    protected volatile KeepAlive keepAliveStats;
 
     public KeepAliveStatsProvider(String name) {
         this.name = name;
@@ -82,8 +82,8 @@ public class KeepAliveStatsProvider implements StatsProvider {
 
     @Override
     public void setStatsObject(Object object) {
-        if (object instanceof KeepAliveStats) {
-            keepAliveStats = (KeepAliveStats) object;
+        if (object instanceof KeepAlive) {
+            keepAliveStats = (KeepAlive) object;
         } else {
             keepAliveStats = null;
         }
@@ -193,10 +193,9 @@ public class KeepAliveStatsProvider implements StatsProvider {
 
     @Reset
     public void reset() {
-        final KeepAliveStats stats = keepAliveStats;
-        if (stats != null) {
-            maxRequestsCount.setCount(stats.getMaxKeepAliveRequests());
-            timeoutInSeconds.setCount(stats.getKeepAliveTimeoutInSeconds());
+        if (keepAliveStats != null) {
+            maxRequestsCount.setCount(keepAliveStats.getMaxRequestsCount());
+            timeoutInSeconds.setCount(keepAliveStats.getIdleTimeoutInSeconds());
         }
 
         keepAliveConnectionsCount.setCount(0);

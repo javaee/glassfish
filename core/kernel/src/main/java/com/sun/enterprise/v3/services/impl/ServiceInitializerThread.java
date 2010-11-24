@@ -76,7 +76,6 @@ public class ServiceInitializerThread extends SelectorThread {
      */
     public ServiceInitializerThread(GrizzlyListener grizzlyListener, Habitat h) {
         service = grizzlyListener;
-        habitat = h;
         setClassLoader(getClass().getClassLoader());
     }
 
