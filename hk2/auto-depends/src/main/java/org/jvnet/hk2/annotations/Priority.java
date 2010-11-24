@@ -45,6 +45,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * resolution or lookups, meaning that habitat lookups that return multiple services implementation
  * will not order such services based on a potential level value. It is the responsibility of the
  * receiver of such services to order these appropriately if needed.
+ * 
+ * @deprecated Not current supported in Hk2
  */
 @Retention(RUNTIME)
 @Target(TYPE)
