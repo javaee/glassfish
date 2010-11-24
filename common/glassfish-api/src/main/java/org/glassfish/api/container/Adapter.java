@@ -94,5 +94,5 @@ public interface Adapter {
      */
     void setRegistered(boolean isRegistered);
 
-    void service(Request req, Response res);
+    void service(Request req, Response res) throws Exception;
 }
