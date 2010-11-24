@@ -117,6 +117,7 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
             new ConcurrentHashMap<CallBack, PlannedShutdownActionFactory>();
     private EventListener glassfishEventListener = null;
     private boolean aliveAndReadyLoggingEnabled = false;
+    private boolean testFailureRecoveryHandler = false;
 
     @Inject
     Events events;
@@ -471,7 +472,9 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                             // special case mapping.  Glassfish Cluster property GMS_LISTENER_PORT maps to Grizzly Config Constants TCPSTARTPORT and TCPENDPORT.
                             configProps.put(GrizzlyConfigConstants.TCPSTARTPORT.toString(), value);
                             configProps.put(GrizzlyConfigConstants.TCPENDPORT.toString(), value);
-                         } else {
+                        } else if (name.compareTo("TEST_FAILURE_RECOVERY") == 0) {
+                            testFailureRecoveryHandler = Boolean.parseBoolean(value);
+                        } else {
                             // handle normal case.  one to one mapping.
                             configProps.put(name, value);
                             logger.log(Level.CONFIG,
@@ -525,10 +528,10 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                 registerFailureSuspectedListener(this);
 
                 //fix gf it 12905
-                if (! env.isDas()) {
+                if (testFailureRecoveryHandler && ! env.isDas()) {
 
                     // this must be here or appointed recovery server notification is not printed out for automated testing.
-                    registerFailureRecoveryListener("GlassfishV31", this);
+                    registerFailureRecoveryListener("GlassfishFailureRecoveryHandlerTest", this);
                 }
 
                 glassfishEventListener = new org.glassfish.api.event.EventListener() {
@@ -661,16 +664,16 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
             logger.log(Level.WARNING, "gmsexception.update.health.history",
                 t.getLocalizedMessage());
         }
-//        if (signal instanceof FailureRecoverySignal) {
-//            FailureRecoverySignal frsSignal = (FailureRecoverySignal)signal;
-//            logger.log(Level.INFO, "gmsservice.failurerecovery.start.notification", new Object[]{frsSignal.getComponentName(), frsSignal.getMemberToken()});
-//            try {
-//                Thread.sleep(20 * 1000); // sleep 20 seconds. simulate wait time to allow instance to restart and do self recovery before another instance does it.
-//            } catch (InterruptedException ie) {
-//
-//            }
-//            logger.log(Level.INFO, "gmsservice.failurerecovery.completed.notification", new Object[]{frsSignal.getComponentName(), frsSignal.getMemberToken()});
-//        }
+        // testing only.  one must set cluster property GMS_TEST_FAILURE_RECOVERY to true for the following to execute. */
+        if (testFailureRecoveryHandler && signal instanceof FailureRecoverySignal) {
+            FailureRecoverySignal frsSignal = (FailureRecoverySignal)signal;
+            logger.log(Level.INFO, "gmsservice.failurerecovery.start.notification", new Object[]{frsSignal.getComponentName(), frsSignal.getMemberToken()});
+            try {
+                Thread.sleep(20 * 1000); // sleep 20 seconds. simulate wait time to allow instance to restart and do self recovery before another instance does it.
+            } catch (InterruptedException ie) {
+            }
+            logger.log(Level.INFO, "gmsservice.failurerecovery.completed.notification", new Object[]{frsSignal.getComponentName(), frsSignal.getMemberToken()});
+        }
         if (this.aliveAndReadyLoggingEnabled) {
             if (signal instanceof JoinedAndReadyNotificationSignal ||
                 signal instanceof FailureNotificationSignal ||
