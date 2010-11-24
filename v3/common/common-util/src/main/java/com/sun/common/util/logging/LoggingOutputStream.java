@@ -40,15 +40,17 @@
 
 package com.sun.common.util.logging;
 
-import java.util.logging.Logger;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
-import java.io.*;
+import java.util.logging.Logger;
 
 /**
  * Implementation of a OutputStream that flush the records to a Logger.
  * This is useful to redirect stderr and stdout to loggers.
- *
+ * <p/>
  * User: Jerome Dochez
  * author: Jerome Dochez, Carla Mott
  */
@@ -58,6 +60,8 @@ public class LoggingOutputStream extends ByteArrayOutputStream {
 
     private Logger logger;
     private Level level;
+
+    private ThreadLocal reentrant = new ThreadLocal();
 
     /**
      * Constructor
@@ -81,18 +85,26 @@ public class LoggingOutputStream extends ByteArrayOutputStream {
      */
     public void flush() throws IOException {
 
-        String record=null;
+        String record = null;
         synchronized (this) {
             super.flush();
             record = this.toString();
             super.reset();
         }
-        if (record!=null) {
+        if (record != null) {
             if (record.length() == 0 || record.equals(lineSeparator)) {
                 // avoid empty records
                 return;
-            }            
-            logger.logp(level, "", "", record);
+            }
+            if (reentrant.get() != null) {
+                return;
+            }
+            try {
+                reentrant.set(this);
+                logger.logp(level, "", "", record);
+            } finally {
+                reentrant.set(null);
+            }
         }
     }
 
@@ -121,73 +133,74 @@ public class LoggingOutputStream extends ByteArrayOutputStream {
  * are not being printed.
  */
 
-    public class LoggingPrintStream extends PrintStream{
-        LogManager logManager = LogManager.getLogManager( );
+    public class LoggingPrintStream extends PrintStream {
+        LogManager logManager = LogManager.getLogManager();
 
         private ThreadLocal perThreadStObjects = new ThreadLocal();
 
-        public LoggingPrintStream (ByteArrayOutputStream os) {
-              super (os, true);
+        public LoggingPrintStream(ByteArrayOutputStream os) {
+            super(os, true);
 
         }
 
         public void setLogger(Logger l) {
-            logger=l;
+            logger = l;
         }
 
-    public void println(Object x) {
-            if (!checkLocks())  return;
+        public void println(Object x) {
+            if (!checkLocks()) return;
 
-        StackTraceObjects sTO;
+            StackTraceObjects sTO;
 
-    if ( (sTO = (StackTraceObjects) perThreadStObjects.get()) != null ) {
-        /*
-         * should not happen, but being safe.
-         * Only case under which we can come here is if there is
-         * code which does synchronized(System.err) and then does
-         * System.err.println(Throwable) without printing stackTrace
-         * other than java.lang.Throwable. We could have done
-         * this check prior to the check on holdsLock, but since
-         * that is the most common path, let us avoid any overhead
-         * println(String) will also do above check and hence there
-         * is no danger of missing out on valid printlns
-         */
-        perThreadStObjects.set(null);
-    }
+            if ((sTO = (StackTraceObjects) perThreadStObjects.get()) != null) {
+                /*
+                * should not happen, but being safe.
+                * Only case under which we can come here is if there is
+                * code which does synchronized(System.err) and then does
+                * System.err.println(Throwable) without printing stackTrace
+                * other than java.lang.Throwable. We could have done
+                * this check prior to the check on holdsLock, but since
+                * that is the most common path, let us avoid any overhead
+                * println(String) will also do above check and hence there
+                * is no danger of missing out on valid printlns
+                */
+                perThreadStObjects.set(null);
+            }
 
-    if ( !(x instanceof java.lang.Throwable) ) {
-        // No special processing if it is not an exception.
+            if (!(x instanceof java.lang.Throwable)) {
+                // No special processing if it is not an exception.
                 super.println(x);
-        return;
-    }
+                return;
+            }
 
-    // if we pass all these checks, then we log the stacktrace
-    sTO = new StackTraceObjects((Throwable)x);
-    perThreadStObjects.set(sTO);
-    super.println(sTO.toString());
-    }
-    public void println(String str) {
-            if (!checkLocks())  return;
+            // if we pass all these checks, then we log the stacktrace
+            sTO = new StackTraceObjects((Throwable) x);
+            perThreadStObjects.set(sTO);
+            super.println(sTO.toString());
+        }
 
-        StackTraceObjects sTO;
-    sTO = (StackTraceObjects) perThreadStObjects.get();
-    if ( sTO == null ) {
-        // lets get done with the common case fast
-        super.println(str);
-        return;
-    }
+        public void println(String str) {
+            if (!checkLocks()) return;
 
-    if ( !sTO.ignorePrintln(str) ) {
-        perThreadStObjects.set(null);
-        super.println(str);
-        return;
-    }
+            StackTraceObjects sTO;
+            sTO = (StackTraceObjects) perThreadStObjects.get();
+            if (sTO == null) {
+                // lets get done with the common case fast
+                super.println(str);
+                return;
+            }
 
-    if (sTO.checkCompletion()) {
-        perThreadStObjects.set(null);
-        return;
-    }
-    }
+            if (!sTO.ignorePrintln(str)) {
+                perThreadStObjects.set(null);
+                super.println(str);
+                return;
+            }
+
+            if (sTO.checkCompletion()) {
+                perThreadStObjects.set(null);
+                return;
+            }
+        }
 
         public void print(String x) {
             if (checkLocks())
@@ -202,9 +215,10 @@ public class LoggingOutputStream extends ByteArrayOutputStream {
 
         public void print(boolean x) {
             if (checkLocks()) {
-            super.print(x);
+                super.print(x);
             }
         }
+
         public void println(boolean x) {
             if (checkLocks())
                 super.println(x);
@@ -212,19 +226,21 @@ public class LoggingOutputStream extends ByteArrayOutputStream {
 
         public void print(char x) {
             if (checkLocks()) {
-           super.print(x);
+                super.print(x);
             }
         }
+
         public void println(char x) {
             if (checkLocks())
-               super.println(x);
+                super.println(x);
         }
 
         public void print(int x) {
             if (checkLocks()) {
-            super.print(x);
+                super.print(x);
             }
         }
+
         public void println(int x) {
             if (checkLocks())
                 super.println(x);
@@ -232,9 +248,10 @@ public class LoggingOutputStream extends ByteArrayOutputStream {
 
         public void print(long x) {
             if (checkLocks()) {
-            super.print(x);
+                super.print(x);
             }
         }
+
         public void println(long x) {
             if (checkLocks())
                 super.println(x);
@@ -242,9 +259,10 @@ public class LoggingOutputStream extends ByteArrayOutputStream {
 
         public void print(float x) {
             if (checkLocks()) {
-            super.print(x);
+                super.print(x);
             }
         }
+
         public void println(float x) {
             if (checkLocks())
                 super.println(x);
@@ -252,9 +270,10 @@ public class LoggingOutputStream extends ByteArrayOutputStream {
 
         public void print(double x) {
             if (checkLocks()) {
-            super.print(x);
+                super.print(x);
             }
         }
+
         public void println(double x) {
             if (checkLocks())
                 super.println(x);
@@ -262,9 +281,10 @@ public class LoggingOutputStream extends ByteArrayOutputStream {
 
         public void print(char[] x) {
             if (checkLocks()) {
-            super.print(x);
+                super.print(x);
             }
         }
+
         public void println(char[] x) {
             if (checkLocks())
                 super.println(x);
@@ -273,19 +293,19 @@ public class LoggingOutputStream extends ByteArrayOutputStream {
 
         public void println() {
             if (checkLocks()) {
-            super.println();
+                super.println();
             }
         }
 
         public void write(byte[] buf, int off, int len) {
             if (checkLocks()) {
-            super.write(buf,off,len);
+                super.write(buf, off, len);
             }
         }
 
         public void write(int b) {
             if (checkLocks()) {
-            super.write(b);
+                super.write(b);
             }
         }
 
@@ -308,10 +328,11 @@ public class LoggingOutputStream extends ByteArrayOutputStream {
           LoggingPrintStream object will decide whether to continue to do printing or
           give ip up to avoid the dead lock.
          */
+
         private boolean checkLocks() {
             Thread t = Thread.currentThread();
-            if ( !t.holdsLock(logger) && !t.holdsLock(logManager) ) {
-               return true;
+            if (!t.holdsLock(logger) && !t.holdsLock(logManager)) {
+                return true;
             }
             return false;
         }
@@ -323,7 +344,8 @@ public class LoggingOutputStream extends ByteArrayOutputStream {
  * it keeps track of subsequent println(String) to
  * avoid duplicate logging of stacktrace
  */
-    private class	StackTraceObjects {
+
+    private class StackTraceObjects {
 
         private ByteArrayOutputStream stackTraceBuf;
         private PrintStream stStream;
@@ -334,17 +356,17 @@ public class LoggingOutputStream extends ByteArrayOutputStream {
         private int stackTraceBufBytes = 0;
         private int charsIgnored = 0;
 
-        private	StackTraceObjects(Throwable x) {
-        // alloc buffer for getting stack trace.
-        stackTraceBuf = new ByteArrayOutputStream();
-        stStream = new PrintStream(stackTraceBuf, true);
-        comparisonBuf = new ByteArrayOutputStream();
-        cbStream = new PrintStream(comparisonBuf, true);
-        ((Throwable)x).printStackTrace(stStream);
-        stString = stackTraceBuf.toString();
-        stackTraceBufBytes = stackTraceBuf.size();
-        // helps keep our stack trace skipping logic simpler.
-        cbStream.println(x);
+        private StackTraceObjects(Throwable x) {
+            // alloc buffer for getting stack trace.
+            stackTraceBuf = new ByteArrayOutputStream();
+            stStream = new PrintStream(stackTraceBuf, true);
+            comparisonBuf = new ByteArrayOutputStream();
+            cbStream = new PrintStream(comparisonBuf, true);
+            ((Throwable) x).printStackTrace(stStream);
+            stString = stackTraceBuf.toString();
+            stackTraceBufBytes = stackTraceBuf.size();
+            // helps keep our stack trace skipping logic simpler.
+            cbStream.println(x);
         }
 
         public String toString() {
@@ -352,23 +374,23 @@ public class LoggingOutputStream extends ByteArrayOutputStream {
         }
 
         boolean ignorePrintln(String str) {
-        String cbString;
-        int cbLen;
-        cbStream.println(str);
-        cbString = comparisonBuf.toString();
-        cbLen = cbString.length();
-        if (stString.regionMatches(charsIgnored, cbString, 0, cbLen)) {
-            charsIgnored+= cbLen;
-            comparisonBuf.reset();
-            return true;
-        }
+            String cbString;
+            int cbLen;
+            cbStream.println(str);
+            cbString = comparisonBuf.toString();
+            cbLen = cbString.length();
+            if (stString.regionMatches(charsIgnored, cbString, 0, cbLen)) {
+                charsIgnored += cbLen;
+                comparisonBuf.reset();
+                return true;
+            }
 
-        return false;
+            return false;
 
         }
 
         boolean checkCompletion() {
-            if ( charsIgnored >= stackTraceBufBytes ) {
+            if (charsIgnored >= stackTraceBufBytes) {
                 return true;
             } else {
                 return false;
