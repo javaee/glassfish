@@ -137,7 +137,11 @@
     <sun:propertySheetSection id="connectionValidationPropertySheet" label="$resource{i18njdbc.jdbcPool.Validation}">
 
         <sun:property id="conValidationProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.conValidation}" helpText="$resource{i18njdbc.jdbcPool.conValidationHelp}">
-            <sun:checkbox label="$resource{i18n.common.Required}" selected="#{pageSession.valueMap.isConnectionValidationRequired}" selectedValue="true" />
+            <sun:checkbox label="$resource{i18n.common.Required}" selected="#{pageSession.valueMap.isConnectionValidationRequired}" selectedValue="true" onChange="javascript: disableTableField();" >
+                <!afterCreate
+                    getClientId(component="$this{component}" clientId=>$page{conValidationId});
+                />
+            </sun:checkbox>
        </sun:property>
 
         <sun:property id="methodProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.valMethod}" >
@@ -150,23 +154,27 @@
         </sun:property>
 
         <sun:property id="tableProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.tableName}" helpText="$resource{i18njdbc.jdbcPool.tableNameHelp}">
-            <sun:dropDown id="tableTextField"  labels="$pageSession{tableNameList}"  values="$pageSession{tableNameList}" selected="#{pageSession.valueMap.validationTableName}" >
+            <!afterCreate
+                getClientId(component="$this{component}" clientId=>$page{propId});
+            />
+            <sun:hidden id="option" value="#{pageSession.myOption}">
                 <!afterCreate
-                    getClientId(component="$this{component}" clientId=>$page{tableTextField});
+                    getClientId(component="$this{component}" clientId=>$page{optionId});
                 />
-                <!beforeCreate
-                    if(#{pageSession.valueMap['isConnectionValidationRequired']}) {
-                        if ( "#{pageSession.valueMap.connectionValidationMethod}=table" ) {
-                            gf.createAttributeMap(keys={"poolname"} values={"$pageSession{encodedName}"} map="#{requestScope.attrMap}");
-                            gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/get-validation-table-names"
-                                           attrs="#{requestScope.attrMap}"
-                                           method="get"
-                                           result="#{requestScope.result}");
-                            setPageSessionAttribute(key="tableNameList" value="#{requestScope.result.data.extraProperties.validationTableNames}");
-                        }
-                    }
-                />
+            </sun:hidden>
+            <sun:radioButton id="optA"  name="dropDownOption" onClick="javascript: enableRadioButtonFields('dropdown');" />
+            <sun:dropDown id="tableTextField"  labels="$pageSession{tableNameList}"  values="$pageSession{tableNameList}" selected="#{pageSession.tableDropDownValue}" >
+                <!afterCreate
+                    getClientId(component="$this{component}" clientId=>$page{dropdownTextId});
+                />                
             </sun:dropDown>
+            "<br />
+            <sun:radioButton id="optB"  name="textOption" onClick="javascript: enableRadioButtonFields('text');" />
+            <sun:textField id="tableText" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.jdbcPool.tableText']}" text="#{pageSession.tableTextValue}" >
+                <!afterCreate
+                    getClientId(component="$this{component}" clientId=>$page{textId});
+                />
+            </sun:textField>
         </sun:property>
         <sun:property id="validCNProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.valCN}" helpText="$resource{i18njdbc.jdbcPool.valCNHelp}">
             <sun:textField id="validCNTextField"  columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.jdbcPool.valCN']}" text="#{pageSession.valueMap.validationClassname}" >
