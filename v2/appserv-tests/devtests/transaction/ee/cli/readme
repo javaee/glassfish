@@ -9,15 +9,20 @@ This test, when run with 'all' target performs the following steps:
 
 - run
   - run-rollback (execute test for rollback-transaction CLI)
-    Test inserts 3 rows from each clustered instance into the default database
+    Test inserts 3 rows from each clustered instance into the 1st xa database
     Transaction on in1 is rolled back
     Expected result: 3 rows found
   - reset-tables (clean data in tables)
   - run-recover (execute test for recover-transactions CLI)
-    Test inserts 3 rows from in1 into the default and xa database
+    Test inserts 3 rows from in1 into the 1st and 2nd xa database
     Instance in1 is killed 
     Instance in2 receives recover-transaction request
-    Expected result: 3 rows found in xa database
+    Expected result: 3 rows found in the 2nd xa database
+  - reset-tables (clean data in tables)
+  - run-db-restart (make sure transaction manager works properly - simulate SQE test)
+    Test inserts 3 rows into the 1st xa database on in2
+    Derby is restarted
+    Expected result: 3 rows found when verified on in1
 
 - unsetup
   - unsetup-cluster (undeploy the application, stop and delete the cluster)
