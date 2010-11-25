@@ -192,7 +192,9 @@ public class JDBCConnectionPoolManager implements ResourceManager {
             newResource.setTransactionIsolationLevel(isolationlevel);
         }
         newResource.setSteadyPoolSize(steadypoolsize);
-        newResource.setStatementTimeoutInSeconds(statementTimeout);
+        if(statementTimeout != null){
+            newResource.setStatementTimeoutInSeconds(statementTimeout);
+        }
         if (restype != null) {
             newResource.setResType(restype);
         }
@@ -200,10 +202,18 @@ public class JDBCConnectionPoolManager implements ResourceManager {
         newResource.setNonTransactionalConnections(nontransactionalconnections);
         newResource.setMaxWaitTimeInMillis(maxwait);
         newResource.setMaxPoolSize(maxpoolsize);
-        newResource.setMaxConnectionUsageCount(maxConnectionUsageCount);
-        newResource.setMatchConnections(matchConnections);
-        newResource.setLazyConnectionEnlistment(lazyConnectionEnlistment);
-        newResource.setLazyConnectionAssociation(lazyConnectionAssociation);
+        if(maxConnectionUsageCount != null){
+            newResource.setMaxConnectionUsageCount(maxConnectionUsageCount);
+        }
+        if(matchConnections != null){
+            newResource.setMatchConnections(matchConnections);
+        }
+        if(lazyConnectionEnlistment != null){
+            newResource.setLazyConnectionEnlistment(lazyConnectionEnlistment);
+        }
+        if(lazyConnectionAssociation != null){
+            newResource.setLazyConnectionAssociation(lazyConnectionAssociation);
+        }
         newResource.setIsIsolationLevelGuaranteed(isisolationguaranteed);
         newResource.setIsConnectionValidationRequired(isconnectvalidatereq);
         newResource.setIdleTimeoutInSeconds(idletimeout);
@@ -212,22 +222,42 @@ public class JDBCConnectionPoolManager implements ResourceManager {
             newResource.setDatasourceClassname(datasourceclassname);
         }
         newResource.setConnectionValidationMethod(validationmethod);
-        newResource.setConnectionLeakTimeoutInSeconds(connectionLeakTimeout);
-        newResource.setConnectionLeakReclaim(connectionLeakReclaim);
-        newResource.setConnectionCreationRetryIntervalInSeconds(connectionCreationRetryInterval);
-        newResource.setConnectionCreationRetryAttempts(connectionCreationRetryAttempts);
-        newResource.setAssociateWithThread(associateWithThread);
-        newResource.setAllowNonComponentCallers(allownoncomponentcallers);
-        newResource.setStatementCacheSize(statementcachesize);
+        if(connectionLeakTimeout != null){
+            newResource.setConnectionLeakTimeoutInSeconds(connectionLeakTimeout);
+        }
+        if(connectionLeakReclaim != null){
+            newResource.setConnectionLeakReclaim(connectionLeakReclaim);
+        }
+        if(connectionCreationRetryInterval != null){
+            newResource.setConnectionCreationRetryIntervalInSeconds(connectionCreationRetryInterval);
+        }
+        if(connectionCreationRetryAttempts != null){
+            newResource.setConnectionCreationRetryAttempts(connectionCreationRetryAttempts);
+        }
+        if(associateWithThread != null){
+            newResource.setAssociateWithThread(associateWithThread);
+        }
+        if(allownoncomponentcallers != null){
+            newResource.setAllowNonComponentCallers(allownoncomponentcallers);
+        }
+        if(statementcachesize != null){
+            newResource.setStatementCacheSize(statementcachesize);
+        }
         if (validationclassname != null) {
             newResource.setValidationClassname(validationclassname);
         }
-        newResource.setInitSql(initsql);
+        if(initsql != null){
+            newResource.setInitSql(initsql);
+        }
         if (sqltracelisteners != null) {
             newResource.setSqlTraceListeners(sqltracelisteners);
         }
-        newResource.setPooling(pooling);
-        newResource.setPing(ping);
+        if(pooling != null){
+            newResource.setPooling(pooling);
+        }
+        if(ping != null){
+            newResource.setPing(ping);
+        }
         if (driverclassname != null) {
             newResource.setDriverClassname(driverclassname);
         }
