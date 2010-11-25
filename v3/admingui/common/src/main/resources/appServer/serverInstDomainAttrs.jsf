@@ -52,7 +52,6 @@
         <!beforeCreate
             setSessionAttribute(key="domainTabs" value="domainAttrs");
             setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/appServer/serverInstDomainAttrs.jsf?");
-            println("========= #{selfPage}");
             setPageSessionAttribute(key="selfUrl", value="#{sessionScope.REST_URL}");
             setPageSessionAttribute(key="rest-api" value="true");
             gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}.json", valueMap="#{pageSession.valueMap}");

@@ -45,7 +45,9 @@
     setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
 />
 #include "/common/shared/commonHandlers.inc"
-<!composition template="/templates/default.layout" guiTitle="$resource{i18nc.pswdAliases.title}" >
+<!composition template="/templates/default.layout" guiTitle="$resource{i18nc.pswdAliases.title}"
+        guiOnLoad="admingui.nav.selectTreeNodeWithURL('#{request.contextPath}/common/appServer/serverInstDomainAttrs.jsf');"
+>
 <!define name="content">
     <event>
         <!beforeCreate
