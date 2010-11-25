@@ -185,9 +185,20 @@ public class ResourceManager implements PostStartup, PostConstruct, PreDestroy, 
     }
 
     private boolean isBindableResourceEnabled(String jndiName) {
-        boolean resourceEnabled = Boolean.valueOf(((BindableResource)
-                domain.getResources().getResourceByName(BindableResource.class, jndiName)).getEnabled());
-        boolean refEnabled = domain.getServerNamed(environment.getInstanceName()).getResourceRef(jndiName) != null;
+        boolean resourceEnabled = false;
+        BindableResource res = (BindableResource)
+                domain.getResources().getResourceByName(BindableResource.class, jndiName); 
+        if(res != null){
+            resourceEnabled = Boolean.valueOf(res.getEnabled());
+        }
+
+        boolean refEnabled = false;
+        if(resourceEnabled){
+            ResourceRef ref = domain.getServerNamed(environment.getInstanceName()).getResourceRef(jndiName);
+            if(ref != null){
+                refEnabled = Boolean.valueOf(ref.getEnabled());
+            }
+        }
         return resourceEnabled && refEnabled;
     }
 
