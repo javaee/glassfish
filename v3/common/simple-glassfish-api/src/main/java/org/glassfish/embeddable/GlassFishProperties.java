@@ -40,8 +40,6 @@
 
 package org.glassfish.embeddable;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -184,27 +182,43 @@ public class GlassFishProperties {
     }
 
     /**
-     * Optionally specify the protocol and port GlassFish should listen on.
+     * Set the port number for a network listener that the GlassFish server
+     * should use.
      * <p/>
-     * Currently supported values for protocol are 'http' or 'https'.
+     * Examples:
      * <p/>
-     * Eg., To make GlassFish listen on 8080 http port:
+     * 1. When the custom configuration file is not used, the ports can be set using:
+     * <p/>
      * <pre>
-     *      setPort("http", 8080);
+     *      setPort("http-listener", 8080); // GlassFish will listen on HTTP port 8080
+     *      setPort("https-listener", 8181); // GlassFish will listen on HTTPS port 8181
      * </pre>
      * <p/>
-     * If the specified port is invalid, then setPort returns with no-op.
+     * 2. When the custom configuration file (domain.xml) is used, then the
+     * name of the network listener specified here will point to the
+     * network-listener element in the domain.xml. For example:
+     * <p/>
+     * <pre>
+     *      setPort("joe", 8080);
+     * </pre>
+     * <p/>
+     * will point to server.network-config.network-listeners.network-listener.joe. Hence the
+     * GlassFish server will use "joe" network listener with its port set to 8080.
      *
-     * @param protocol Name of the protocol. http or https
-     * @param port Port number
-     * 
+     * <p/>
+     * If there is no such network-listener by name "joe" in the supplied domain.xml,
+     * then the server will throw an exception and fail to start.
+     *
+     * @param networkListener Name of the network listener.
+     * @param port            Port number
      * @return This object after setting the port.
      */
-    public void setPort(String protocol, int port) {
-        if (protocol != null) {
-            String key = nameMap.get(protocol);
+    public void setPort(String networkListener, int port) {
+        if (networkListener != null) {
+            String key = String.format(NETWORK_LISTENER_KEY, networkListener);
             if (key != null) {
-                gfProperties.setProperty(key, Integer.toString(port));
+                gfProperties.setProperty(key + ".port", Integer.toString(port));
+                gfProperties.setProperty(key + ".enabled", "true");
             }
         }
     }
@@ -212,16 +226,16 @@ public class GlassFishProperties {
     /**
      * Get the port number set using {@link #setPort(String, int)}
      *
-     * @param protocol Name of the protocol
+     * @param networkListener Name of the listener
      * @return Port number which was set using {@link #setPort(String, int)}.
      *         -1 if it was not set previously.
      */
-    public int getPort(String protocol) {
+    public int getPort(String networkListener) {
         int port = -1;
-        if (protocol != null) {
-            String key = nameMap.get(protocol);
+        if (networkListener != null) {
+            String key = String.format(NETWORK_LISTENER_KEY, networkListener);
             if (key != null) {
-                String portStr = gfProperties.getProperty(key);
+                String portStr = gfProperties.getProperty(key + ".port");
                 try {
                     port = Integer.parseInt(portStr);
                 } catch (NumberFormatException nfe) {
@@ -243,12 +257,7 @@ public class GlassFishProperties {
     // at the user specified instanceRoot should be operated by GlassFish in read only mode or not.
     private static final String CONFIG_FILE_READ_ONLY =
             "org.glassfish.embeddable.configFileReadOnly";
-    // Maps the simple user specified names to the internal fully qualified names.
-    private static final Map<String, String> nameMap = new HashMap();
-    static {
-        nameMap.put("http", "org.glassfish.embeddable.httpPort");
-        nameMap.put("https", "org.glassfish.embeddable.httpsPort");
-    }
-
+    private static final String NETWORK_LISTENER_KEY =
+            "glassfish-server.network-config.network-listeners.network-listener.%s";
 
 }

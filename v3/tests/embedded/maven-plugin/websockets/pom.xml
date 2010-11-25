@@ -106,7 +106,7 @@
                         </goals>
                         <configuration>
                             <commands>
-                                <param>set configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.websockets-support-enabled=true</param>
+                                <param>set configs.config.server-config.network-config.protocols.protocol.http-listener.http.websockets-support-enabled=true</param>
                             </commands>
                         </configuration>
                     </execution>

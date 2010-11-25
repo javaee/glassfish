@@ -87,7 +87,7 @@ public class Util {
             glassfishProperties.setConfigFileReadOnly(configFileReadOnly);
         }
         if (httpPort != -1) {
-            glassfishProperties.setPort("http", httpPort);
+            glassfishProperties.setPort("http-listener", httpPort);
         }
 
         glassfish = glassfishRuntime.newGlassFish(glassfishProperties);
