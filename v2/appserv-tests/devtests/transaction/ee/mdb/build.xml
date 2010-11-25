@@ -59,7 +59,7 @@
       <ant target="startDomain"/>
       <antcall target="setup-database"/>
       <antcall target="setup-cluster">
-         <param name="type" value="EMBEDDED"/>
+         <param name="type" value="LOCAL"/>
       </antcall>
     </target>
 
