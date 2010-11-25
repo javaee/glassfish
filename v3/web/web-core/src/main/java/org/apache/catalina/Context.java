@@ -198,14 +198,6 @@ public interface Context extends Container {
  
 
     /**
-     * @return true if any of the setter methods have been
-     * called on the SessionCookieConfig object of this context, false
-     * otherwise
-     */
-    public boolean isSessionCookieConfigInitialized();
-
-
-    /**
      * @return the name that will be assigned to any session tracking
      * parameter created on behalf of this context
      */

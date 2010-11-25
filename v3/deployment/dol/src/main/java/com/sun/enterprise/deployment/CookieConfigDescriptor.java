@@ -52,7 +52,7 @@ public class CookieConfigDescriptor extends Descriptor implements CookieConfig {
     private String domain = null;
     private String path = null;
     private String comment = null;
-    private boolean httpOnly = false;
+    private boolean httpOnly = true;
     private boolean secure = false;
     private int maxAge = -1;
 

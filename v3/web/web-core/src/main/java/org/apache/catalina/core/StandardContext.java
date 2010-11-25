@@ -699,8 +699,6 @@ public class StandardContext
      */
     private String sessionCookieName = Globals.SESSION_COOKIE_NAME;
 
-    private boolean sessionCookieConfigInitialized = false;
-
     private boolean sessionCookieNameInitialized = false;
 
     protected ConcurrentHashMap<String, ServletRegistrationImpl> servletRegisMap =
@@ -2567,24 +2565,6 @@ public class StandardContext
             sessionCookieConfig = new SessionCookieConfigImpl(this);
         }
         return sessionCookieConfig;
-    }
-
-    /**
-     * @param initialized true if any of the setter methods have been
-     * called on the SessionCookieConfig object of this context, false
-     * otherwise
-     */
-    public void setSessionCookieConfigInitialized(boolean initialized) {
-        sessionCookieConfigInitialized = initialized;
-    }
-
-    /**
-     * @return true if any of the setter methods have been
-     * called on the SessionCookieConfig object of this context, false
-     * otherwise
-     */
-    public boolean isSessionCookieConfigInitialized() {
-        return sessionCookieConfigInitialized;
     }
 
     /**

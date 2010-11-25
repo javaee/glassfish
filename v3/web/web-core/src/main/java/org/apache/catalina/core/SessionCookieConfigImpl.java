@@ -58,7 +58,7 @@ public class SessionCookieConfigImpl implements SessionCookieConfig {
     private String domain;
     private String path;
     private String comment;
-    private boolean httpOnly;
+    private boolean httpOnly = true;
     private boolean secure;
     private StandardContext ctx;
     private int maxAge = -1;
@@ -88,7 +88,6 @@ public class SessionCookieConfigImpl implements SessionCookieConfig {
 
         this.name = name;
         ctx.setSessionCookieName(name);
-        ctx.setSessionCookieConfigInitialized(true);
     }
 
 
@@ -116,7 +115,6 @@ public class SessionCookieConfigImpl implements SessionCookieConfig {
         }
 
         this.domain = domain;
-        ctx.setSessionCookieConfigInitialized(true);
     }
 
 
@@ -144,7 +142,6 @@ public class SessionCookieConfigImpl implements SessionCookieConfig {
         }
 
         this.path = path;
-        ctx.setSessionCookieConfigInitialized(true);
     }
 
 
@@ -174,7 +171,6 @@ public class SessionCookieConfigImpl implements SessionCookieConfig {
         }
 
         this.comment = comment;
-        ctx.setSessionCookieConfigInitialized(true);
     }
 
 
@@ -205,7 +201,6 @@ public class SessionCookieConfigImpl implements SessionCookieConfig {
         }
 
         this.httpOnly = httpOnly;
-        ctx.setSessionCookieConfigInitialized(true);
     }
 
 
@@ -240,7 +235,6 @@ public class SessionCookieConfigImpl implements SessionCookieConfig {
         }
 
         this.secure = secure;
-        ctx.setSessionCookieConfigInitialized(true);
     }
 
 
@@ -266,8 +260,6 @@ public class SessionCookieConfigImpl implements SessionCookieConfig {
         }
 
         this.maxAge = maxAge;
-        ctx.setSessionCookieConfigInitialized(true);
-
     }
 
 

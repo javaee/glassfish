@@ -2957,6 +2957,7 @@ public class Request
      */
     protected void configureSessionCookie(Cookie cookie) {
         Context context = getContext();
+        cookie.setHttpOnly(true);
         cookie.setMaxAge(-1);
         String contextPath = null;
         // START GlassFish 1024
@@ -2984,8 +2985,7 @@ public class Request
 
         // Override the default config with servlet context
         // sessionCookieConfig
-        if (context != null &&
-                context.isSessionCookieConfigInitialized()) {
+        if (context != null) {
             SessionCookieConfig sessionCookieConfig =
                     context.getSessionCookieConfig();
             if (sessionCookieConfig.getDomain() != null) {
