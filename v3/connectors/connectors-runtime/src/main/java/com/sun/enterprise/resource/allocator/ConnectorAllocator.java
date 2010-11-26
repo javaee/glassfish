@@ -106,11 +106,13 @@ public class ConnectorAllocator extends AbstractConnectorAllocator {
             ManagedConnection mc = (ManagedConnection) evt.getSource();
             mc.removeConnectionEventListener(this);
             poolMgr.resourceErrorOccurred(resource);
+/*
             try {
                 mc.destroy();
             } catch (Exception ex) {
                 // ignore exception
             }
+*/
         }
 
         public void localTransactionStarted(ConnectionEvent evt) {
