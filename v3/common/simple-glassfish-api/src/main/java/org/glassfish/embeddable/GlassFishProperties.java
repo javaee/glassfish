@@ -258,6 +258,6 @@ public class GlassFishProperties {
     private static final String CONFIG_FILE_READ_ONLY =
             "org.glassfish.embeddable.configFileReadOnly";
     private static final String NETWORK_LISTENER_KEY =
-            "glassfish-server.network-config.network-listeners.network-listener.%s";
+            "embedded-glassfish-config.server.network-config.network-listeners.network-listener.%s";
 
 }

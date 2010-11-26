@@ -51,7 +51,11 @@ public class GlassFishException extends Exception {
         super(message, cause);
     }
 
-    public GlassFishException(Exception e) {
+    public GlassFishException(Throwable e) {
         super(e);
+    }
+
+    public GlassFishException(String message) {
+        super(message);
     }
 }

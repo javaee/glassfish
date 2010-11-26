@@ -120,7 +120,9 @@ public class StaticGlassFishRuntime extends GlassFishRuntime {
             // Add this newly created instance to a Map
             gfMap.put(gfProps.getInstanceRoot(), gfImpl);
             return gfImpl;
-        } catch (Exception e) {
+        } catch (GlassFishException e) {
+            throw e;
+        } catch(Exception e) {
             throw new GlassFishException(e);
         }
     }

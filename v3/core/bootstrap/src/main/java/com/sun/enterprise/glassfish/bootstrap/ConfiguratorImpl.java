@@ -54,8 +54,7 @@ class ConfiguratorImpl implements Configurator {
 
     Habitat habitat;
 
-    private static final String CONFIG_PROP_PREFIX = "glassfish-server.";
-    private static final int PREFIX_SIZE = "glassfish-".length();
+    private static final String CONFIG_PROP_PREFIX = "embedded-glassfish-config.";
 
     public ConfiguratorImpl(Habitat habitat) {
         this.habitat = habitat;
@@ -67,9 +66,9 @@ class ConfiguratorImpl implements Configurator {
             String key = (String) obj;
             if (key.startsWith(CONFIG_PROP_PREFIX)) {
                 CommandResult result = commandRunner.run("set",
-                        key.substring(PREFIX_SIZE) + "=" + props.getProperty(key));
+                        key.substring(CONFIG_PROP_PREFIX.length()) + "=" + props.getProperty(key));
                 if (result.getExitStatus() != CommandResult.ExitStatus.SUCCESS) {
-                    result.getFailureCause().printStackTrace();
+                    throw new GlassFishException(result.getOutput());
                 }
             }
         }
