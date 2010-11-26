@@ -73,8 +73,8 @@ public abstract class AbstractServerMojo extends AbstractMojo {
     public static final String INSTALL_ROOT_URI_PROP_NAME = "com.sun.aas.installRootURI";
     public static final String INSTANCE_ROOT_URI_PROP_NAME = "com.sun.aas.instanceRootURI";
     public static final String CONFIG_FILE_URI_PROP_NAME = "com.sun.aas.configFileURI";
-    public static final String HTTP_PORT =
-            "glassfish-server.network-config.network-listeners.network-listener.http-listener.";
+    public static final String HTTP_PORT = "embedded-glassfish-config." +
+            "server.network-config.network-listeners.network-listener.http-listener.";
 
     public static String thisArtifactId = "org.glassfish:maven-embedded-glassfish-plugin";
 
