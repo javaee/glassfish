@@ -43,7 +43,6 @@ package com.sun.enterprise.v3.admin.cluster;
 import org.jvnet.hk2.component.Habitat;
 import org.glassfish.internal.api.RelativePathResolver;
 import com.sun.enterprise.universal.process.ProcessManagerException;
-import org.glassfish.internal.api.ServerContext;
 import com.sun.enterprise.config.serverbeans.Node;
 import com.sun.enterprise.config.serverbeans.SshConnector;
 import com.sun.enterprise.config.serverbeans.SshAuth;
@@ -57,7 +56,6 @@ import com.sun.enterprise.universal.glassfish.TokenResolver;
 import org.glassfish.cluster.ssh.launcher.SSHLauncher;
 import org.glassfish.cluster.ssh.connect.NodeRunner;
 import java.util.logging.Logger;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.FileNotFoundException;
@@ -90,6 +88,7 @@ public class NodeUtils {
     static final String PARAM_SSHPASSWORD = "sshpassword";
     static final String PARAM_SSHKEYPASSPHRASE = "sshkeypassphrase";
     static final String PARAM_TYPE = "type";
+    static final String PARAM_INSTALL = "install";
     static final String LANDMARK_FILE = "glassfish/modules/admin-cli.jar";    
 
     private static final String NL = System.getProperty("line.separator");
@@ -294,6 +293,7 @@ public class NodeUtils {
         String sshkeyfile = map.getOne(PARAM_SSHKEYFILE);
         String sshpassword = map.getOne(PARAM_SSHPASSWORD);
         String sshkeypassphrase = map.getOne(PARAM_SSHKEYPASSPHRASE);
+        boolean installFlag = Boolean.parseBoolean(map.getOne(PARAM_INSTALL));
 
         // We use the resolver to expand any system properties
         if (! NetUtils.isPortStringValid(resolver.resolve(sshport))) {
@@ -327,7 +327,8 @@ public class NodeUtils {
             }
             if (e instanceof FileNotFoundException) {
                 logger.warning(StringUtils.cat(": ", m1, m2, sshL.toString()));
-                throw new CommandValidationException(StringUtils.cat(NL,
+                if (!installFlag)
+                    throw new CommandValidationException(StringUtils.cat(NL,
                                             m1, m2));
             } else {
                 String msg = Strings.get("ssh.bad.connect", nodehost);

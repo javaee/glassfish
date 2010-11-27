@@ -41,11 +41,10 @@
 
 package com.sun.enterprise.admin.cli.cluster;
 
-import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.Nodes;
 import com.sun.enterprise.config.serverbeans.Node;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.io.FileListerRelative;
+import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.zip.ZipFileException;
 import com.sun.enterprise.util.zip.ZipWriter;
 import com.sun.enterprise.util.OS;
@@ -69,6 +68,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Rajiv Mordani
@@ -101,25 +101,20 @@ public class InstallNodeCommand extends SSHCommandsBase {
     @Inject
     private SSHLauncher sshLauncher;
 
-    @Inject
-    Node[] nodeList;
-
     private String archiveName;
 
     private boolean delete = true;
 
     @Override
     protected void validate() throws CommandException {
-        installDir = resolver.resolve(installDir);
+        installDir = resolver.resolve(installDir);      
         if (!force) {
             for (String host: hosts) {
-                for (Node node: nodeList) {
-                    if (node.getNodeHost().equals(host)) {
-                        throw new CommandException(Strings.get("node.already.configured", host));
-                    }
+                if(checkIfNodeExistsForHost(host)) {
+                    throw new CommandException(Strings.get("node.already.configured", host));
                 }
             }
-        }
+        }       
         sshuser = resolver.resolve(sshuser);
         if (sshkeyfile == null) {
             //if user hasn't specified a key file check if key exists in
@@ -195,29 +190,21 @@ public class InstallNodeCommand extends SSHCommandsBase {
                 throw new IOException(ioe);
             }
 
-            //check if an installation already exists on remote host
-
-            try {
-                String asAdmin = OS.isWindows() ? "asadmin.bat" : "asadmin";
-                String cmd = installDir + "/glassfish/bin/" + asAdmin + " version --local --terse";
-                int status = sshLauncher.runCommand(cmd, outStream);
-                System.out.println("results from version "+outStream.toString());
-                if (status == 0){
-                    logger.finer(host + ":'" + cmd + "'" + " returned ["+ outStream.toString() + "]");
-                    if (!force) {
-                        throw new CommandException(Strings.get("found.glassfish.install", host, installDir));
-                    }
-                } else {
-                    logger.finer(host + ":'" + cmd + "'" + " failed ["+ outStream.toString() + "]");
-                }
-            } catch (IOException ex) {
-                logger.info (Strings.get("glassfish.install.check.failed", host));
-                throw new IOException (ex);
-            }
+            if(checkIfAlreadyInstalled(host))
+                continue;
             
             //delete the installDir contents if non-empty
             try {
-                deleteRemoteFiles(sftpClient, installDir);
+                //get list of file in DAS installdir
+                File all = new File(resolver.resolve("${com.sun.aas.installRoot}"));
+                Set files = FileUtils.getAllFilesAndDirectoriesUnder(all);
+
+                List<String> modList = new ArrayList<String>();
+                modList.add(installDir+"/glassfish");
+                for (Object f:files) {
+                    modList.add(installDir+"/glassfish/"+((File)f).getPath());
+                }
+                deleteRemoteFiles(sftpClient, modList, installDir, force);
             } catch (IOException ex) {
                 logger.finer("Failed to remove installDir contents");
                 throw new IOException (ex);
@@ -346,5 +333,36 @@ public class InstallNodeCommand extends SSHCommandsBase {
         if (!f.exists()) {
             throw new CommandException(Strings.get("KeyDoesNotExist", file));
         }
+    }
+    
+    /**
+     * Determines if GlassFish is installed on remote host at specified location.
+     * Uses SSH launcher to execute 'asadmin version'
+     * @param host remote host
+     * @return true if GlassFish install is found, false otherwise.
+     * @throws CommandException
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    private boolean checkIfAlreadyInstalled(String host) throws CommandException, IOException, InterruptedException {
+        //check if an installation already exists on remote host
+        boolean res = false;
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        try {
+            String asAdmin = OS.isWindows() ? "asadmin.bat" : "asadmin";
+            String cmd = installDir + "/glassfish/bin/" + asAdmin + " version --local --terse";
+            int status = sshLauncher.runCommand(cmd, outStream);
+            if (status == 0){
+                logger.finer(host + ":'" + cmd + "'" + " returned ["+ outStream.toString() + "]");
+                logger.info(Strings.get("found.glassfish.install", host, installDir));
+                res = true;
+            } else {
+                logger.finer(host + ":'" + cmd + "'" + " failed ["+ outStream.toString() + "]");
+            }
+        } catch (IOException ex) {
+            logger.info (Strings.get("glassfish.install.check.failed", host));
+            throw new IOException (ex);
+        }
+        return res;
     }
 }

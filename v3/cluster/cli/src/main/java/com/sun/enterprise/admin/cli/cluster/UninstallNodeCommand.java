@@ -41,8 +41,8 @@
 
 package com.sun.enterprise.admin.cli.cluster;
 
-import com.sun.enterprise.config.serverbeans.Node;
 import com.sun.enterprise.util.SystemPropertyConstants;
+import com.sun.enterprise.util.io.FileUtils;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.CommandException;
 import org.glassfish.cluster.ssh.launcher.SSHLauncher;
@@ -57,6 +57,9 @@ import org.glassfish.internal.api.Globals;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Set;
 
 /**
  * @author Rajiv Mordani
@@ -78,21 +81,15 @@ public class UninstallNodeCommand extends SSHCommandsBase {
     @Inject
     SSHLauncher sshLauncher;
 
-    @Inject
-    Node[] nodeList;
-
     @Override
-    protected void validate() throws CommandException {
+    protected void validate() throws CommandException {        
         if (!force) {
             for (String host: hosts) {
-                for (Node node: nodeList) {
-                    if (node.getNodeHost().equals(host)) {
-                        throw new CommandException(Strings.get("call.delete.node.ssh", host));
-                    }
+                if(checkIfNodeExistsForHost(host)) {
+                    throw new CommandException(Strings.get("call.delete.node.ssh", host));
                 }
             }
-        }
-        
+        }       
         sshuser = resolver.resolve(sshuser);
         if (sshkeyfile == null) {
             //if user hasn't specified a key file check if key exists in
@@ -155,8 +152,17 @@ public class UninstallNodeCommand extends SSHCommandsBase {
             if (!sftpClient.exists(installDir)) {
                 throw new IOException (installDir + " Directory does not exist");
             }
+            
+            File all = new File(resolver.resolve("${com.sun.aas.installRoot}"));
+            Set files = FileUtils.getAllFilesAndDirectoriesUnder(all);
 
-            deleteRemoteFiles(sftpClient, installDir);
+            List<String> modList = new ArrayList<String>();
+            modList.add(installDir+"/glassfish");
+            for (Object f:files) {
+                modList.add(installDir+"/glassfish/"+((File)f).getPath());
+            }
+     
+            deleteRemoteFiles(sftpClient, modList, installDir, force);
             if(sftpClient.ls(installDir).isEmpty()) {
                 sftpClient.rmdir(installDir);
             }

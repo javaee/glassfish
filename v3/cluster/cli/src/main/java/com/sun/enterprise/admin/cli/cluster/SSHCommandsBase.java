@@ -41,19 +41,32 @@
 package com.sun.enterprise.admin.cli.cluster;
 
 import java.io.*;
+import java.net.URL;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
 
+import org.glassfish.internal.api.Globals;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
 import com.sun.enterprise.admin.cli.CLICommand;
 import org.glassfish.cluster.ssh.util.SSHUtil;
 import org.glassfish.cluster.ssh.sftp.SFTPClient;
 
+import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.Nodes;
+import com.sun.enterprise.config.serverbeans.Node;
+
 import com.sun.enterprise.universal.glassfish.TokenResolver;
+import com.sun.enterprise.util.io.DomainDirs;
 
 import com.trilead.ssh2.SFTPv3DirectoryEntry;
+
+import org.jvnet.hk2.config.ConfigParser;
+import org.jvnet.hk2.config.Dom;
+import org.jvnet.hk2.config.DomDocument;
+import org.jvnet.hk2.component.Habitat;
 
 /**
  *  Base class for SSH provisioning commands.
@@ -156,18 +169,98 @@ public abstract class SSHCommandsBase extends CLICommand {
         return res;
     }
     
-    protected void deleteRemoteFiles(SFTPClient sftpClient, String dir)
+    /**
+     * Method to delete files and directories on remote host
+     * 'nodes' directory is not considered for deletion since it would contain 
+     * configuration information.
+     * @param sftpClient sftp client instance
+     * @param dasFiles file layout on DAS
+     * @param dir directory to be removed
+     * @param force true means delete all files, false means leave non-GlassFish files
+     *              untouched
+     * @throws IOException in case of error
+     */
+    protected void deleteRemoteFiles(SFTPClient sftpClient, List<String> dasFiles, String dir, boolean force)
     throws IOException {
+ 
         for (SFTPv3DirectoryEntry directoryEntry: (List<SFTPv3DirectoryEntry>)sftpClient.ls(dir)) {
             if (directoryEntry.filename.equals(".") || directoryEntry.filename.equals("..")
                     || directoryEntry.filename.equals("nodes")) {
                 continue;
             } else if (directoryEntry.attributes.isDirectory()) {
-                deleteRemoteFiles(sftpClient, dir+"/"+directoryEntry.filename);
-                sftpClient.rmdir(dir  +"/"+directoryEntry.filename);
+                String f1 = dir+"/"+directoryEntry.filename;
+                deleteRemoteFiles(sftpClient, dasFiles, f1, force);
+                //only if file is present in DAS, it is targeted for removal on remote host
+                //using force deletes all files on remote host
+                if(force) {
+                    logger.fine("Force removing directory " + f1);
+                    sftpClient.rmdir(f1); 
+                } else {                    
+                    if (dasFiles.contains(f1))
+                        sftpClient.rmdir(f1);
+                }
             } else {
-                sftpClient.rm(dir+"/"+directoryEntry.filename);
+                String f2 = dir+"/"+directoryEntry.filename;
+                if(force) {
+                    logger.fine("Force removing file " + f2);
+                    sftpClient.rm(f2); 
+                } else {
+                    if (dasFiles.contains(f2))
+                        sftpClient.rm(f2);
+                }
             }
         }
+    }
+    
+    /** 
+     * Parses static domain.xml of all domains to determine if a node is configured
+     * for use.
+     * @param host remote host
+     * @return true|false
+     */
+    protected boolean checkIfNodeExistsForHost(String host) {
+        boolean result = false;
+        try {
+            File domainsDirFile = DomainDirs.getDefaultDomainsDir();
+            
+            File[] files = domainsDirFile.listFiles(new FileFilter() {
+                        public boolean accept(File f) {
+                            return f.isDirectory();
+                        }
+                    });                    
+
+            for (File file: files) {
+                DomainDirs dir = new DomainDirs(file);
+                File domainXMLFile = dir.getServerDirs().getDomainXml();
+                logger.finer("Domain XML file = " + domainXMLFile);
+                try {
+                    Habitat habitat = Globals.getStaticHabitat();
+                    ConfigParser parser = new ConfigParser(habitat);
+                    URL domainURL = domainXMLFile.toURI().toURL();
+                    DomDocument doc = parser.parse(domainURL);
+                    Dom domDomain = doc.getRoot();
+                    Domain domain = domDomain.createProxy(Domain.class);
+                    Nodes nodes = domain.getNodes();
+
+                    for (Node node: nodes.getNode()) {
+                        if (node.getNodeHost().equals(host)) {
+                            result = true;
+                        }
+                    }
+                } catch (Exception e) {
+                    if(logger.isLoggable(Level.FINE)) {
+                        e.printStackTrace();
+                    }
+                }
+
+            }
+
+           
+        } catch (IOException ioe) {
+            if(logger.isLoggable(Level.FINE)) {
+                ioe.printStackTrace();
+            }
+        }
+        return result;        
     }
 }
