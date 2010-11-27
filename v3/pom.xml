@@ -56,38 +56,38 @@
     <version>3.1-SNAPSHOT</version>
     <name>GlassFish Parent Project</name>
     <scm>
-        <connection>scm:svn:https://svn.dev.java.net/svn/glassfish-svn/trunk/v3</connection>
-        <developerConnection>scm:svn:https://svn.dev.java.net/svn/glassfish-svn/trunk/v3</developerConnection>
+        <connection>scm:svn:https://svn.java.net/svn/glassfish~svn/trunk/v3</connection>
+        <developerConnection>scm:svn:https://svn.java.net/svn/glassfish~svn/trunk/v3</developerConnection>
     </scm>
     <issueManagement>
         <system>IssueTracker</system>
-        <url>https://glassfish.dev.java.net/servlets/ProjectIssues</url>
+        <url>http://java.net/jira/browse/GLASSFISH</url>
     </issueManagement>
 
     <mailingLists>
         <mailingList>
             <name>dev</name>
-            <subscribe>https://glassfish.dev.java.net/servlets/ProjectMailingListList</subscribe>
-            <post>dev@glassfish.dev.java.net</post>
-            <archive>https://glassfish.dev.java.net/servlets/SummarizeList?listName=dev</archive>
+            <subscribe>http://java.net/projects/glassfish/lists</subscribe>
+            <post>dev@glassfish.java.net</post>
+            <archive>http://java.net/projects/glassfish/lists/dev/archive</archive>
         </mailingList>
         <mailingList>
             <name>users</name>
-            <subscribe>https://glassfish.dev.java.net/servlets/ProjectMailingListList</subscribe>
-            <post>users@glassfish.dev.java.net</post>
-            <archive>https://glassfish.dev.java.net/servlets/SummarizeList?listName=users</archive>
+            <subscribe>http://java.net/projects/glassfish/lists</subscribe>
+            <post>users@glassfish.java.net</post>
+            <archive>http://java.net/projects/glassfish/lists/users/archive</archive>
         </mailingList>
         <mailingList>
             <name>issues</name>
-            <subscribe>https://glassfish.dev.java.net/servlets/ProjectMailingListList</subscribe>
-            <post>issues@glassfish.dev.java.net</post>
-            <archive>https://glassfish.dev.java.net/servlets/SummarizeList?listName=issues</archive>
+            <subscribe>http://java.net/projects/glassfish/lists</subscribe>
+            <post>issues@glassfish.java.net</post>
+            <archive>http://java.net/projects/glassfish/lists/issues/archive</archive>
         </mailingList>
         <mailingList>
-            <name>cvs</name>
-            <subscribe>https://glassfish.dev.java.net/servlets/ProjectMailingListList</subscribe>
-            <post>cvs@glassfish.dev.java.net</post>
-            <archive>https://glassfish.dev.java.net/servlets/SummarizeList?listName=cvs</archive>
+            <name>commits</name>
+            <subscribe>http://java.net/projects/glassfish/lists</subscribe>
+            <post>commits@glassfish.java.net</post>
+            <archive>http://java.net/projects/glassfish/lists/commits/archive</archive>
         </mailingList>
     </mailingLists>
 
@@ -112,8 +112,8 @@
         <grizzly.version>1.9.22</grizzly.version>
         <jsr181-api.version>1.0-MR1</jsr181-api.version>
         <saaj-api.version>1.3</saaj-api.version>
-        <hk2.version>1.0.64</hk2.version>
-        <hk2.plugin.version>1.0.64</hk2.plugin.version>
+        <hk2.version>1.0.66</hk2.version>
+        <hk2.plugin.version>1.0.66</hk2.plugin.version>
         <trilead-ssh2.version>build212-hudson-6</trilead-ssh2.version>
         <product.name>GlassFish Server Open Source Edition</product.name>
         <abbrev_product_name>glassfish</abbrev_product_name>
