@@ -123,6 +123,7 @@ public class DataSourceFactoryImpl implements DataSourceFactory {
 
     private void populateBean(Properties properties, Class clazz, Object object) throws IntrospectionException,
             IllegalAccessException, InvocationTargetException, SQLException {
+        if (properties == null) return; // nothing to do. DSF.createXXX allows null value
         BeanInfo beanInfo = Introspector.getBeanInfo(clazz);
 
         PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();

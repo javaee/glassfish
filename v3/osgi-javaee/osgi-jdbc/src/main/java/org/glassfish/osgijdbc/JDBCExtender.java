@@ -48,12 +48,14 @@ import org.osgi.framework.*;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.osgi.service.url.URLConstants;
 import org.osgi.service.url.URLStreamHandlerService;
+import org.osgi.util.tracker.BundleTracker;
+import org.osgi.util.tracker.BundleTrackerCustomizer;
 
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class JDBCExtender implements Extender, SynchronousBundleListener {
+public class JDBCExtender implements Extender {
 
     private BundleContext bundleContext;
 
@@ -62,6 +64,7 @@ public class JDBCExtender implements Extender, SynchronousBundleListener {
     private Set<DataSourceFactoryImpl> dataSourceFactories = new HashSet<DataSourceFactoryImpl>();
     private Habitat habitat;
 
+    private BundleTracker bundleTracker;
 
     private static final Logger logger = Logger.getLogger(
             JDBCExtender.class.getPackage().getName());
@@ -73,17 +76,20 @@ public class JDBCExtender implements Extender, SynchronousBundleListener {
     public void start() {
         debug("begin start()");
         habitat = Globals.getDefaultHabitat();
-        bundleContext.addBundleListener(this);
+        bundleTracker = new BundleTracker(bundleContext, Bundle.ACTIVE, new JDBCBundleTrackerCustomizer());
+        bundleTracker.open();
         addURLHandler();
         debug("completed start()");
     }
 
     public void stop() {
         removeURLHandler();
+        if (bundleTracker != null) {
+            bundleTracker.close();
+        }
         for (DataSourceFactoryImpl dsfi : dataSourceFactories) {
             dsfi.preDestroy();
         }
-        bundleContext.removeBundleListener(this);
         debug("stopped");
     }
 
@@ -110,44 +116,6 @@ public class JDBCExtender implements Extender, SynchronousBundleListener {
         }
     }
 
-    public void bundleChanged(BundleEvent event) {
-        Bundle bundle = event.getBundle();
-        Dictionary header = event.getBundle().getHeaders();
-        switch (event.getType()) {
-            case BundleEvent.STARTING:
-                if (isJdbcDriverBundle(bundle)) {
-                    debug("Starting JDBC Bundle : " + bundle.getSymbolicName());
-
-                    DataSourceFactoryImpl dsfi = new DataSourceFactoryImpl(event.getBundle().getBundleContext());
-                    dataSourceFactories.add(dsfi);
-
-                    Properties serviceProperties = new Properties();
-                    serviceProperties.put(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS,
-                            header.get(Constants.DRIVER.replace(".", "_")));
-
-                    String implVersion = (String) header.get(Constants.IMPL_VERSION);
-                    if (implVersion != null) {
-                        serviceProperties.put(DataSourceFactory.OSGI_JDBC_DRIVER_VERSION, implVersion);
-                    }
-
-                    String implTitle = (String) header.get(Constants.IMPL_TITLE);
-                    if (implTitle != null) {
-                        serviceProperties.put(DataSourceFactory.OSGI_JDBC_DRIVER_NAME, implTitle);
-                    }
-                    debug(" registering service for driver [" +
-                            header.get(Constants.DRIVER.replace(".", "_")) + "]");
-                    event.getBundle().getBundleContext().registerService(DataSourceFactory.class.getName(),
-                            dsfi, serviceProperties);
-                }
-                break;
-            case BundleEvent.STOPPED:
-                if (isJdbcDriverBundle(bundle)) {
-                    debug("JDBC Bundle Stopped : " + bundle.getSymbolicName());
-                }
-                break;
-        }
-    }
-
     private boolean isJdbcDriverBundle(Bundle b) {
         String osgiRFC = (String) b.getHeaders().get(Constants.OSGI_RFC_122);
         if (osgiRFC != null && Boolean.valueOf(osgiRFC)) {
@@ -160,6 +128,43 @@ public class JDBCExtender implements Extender, SynchronousBundleListener {
     private void debug(String s) {
         if(logger.isLoggable(Level.FINEST)){
             logger.finest("[osgi-jdbc] : " + s);
+        }
+    }
+
+    private class JDBCBundleTrackerCustomizer implements BundleTrackerCustomizer {
+        public Object addingBundle(Bundle bundle, BundleEvent event) {
+            if (isJdbcDriverBundle(bundle)) {
+                debug("Starting JDBC Bundle : " + bundle.getSymbolicName());
+
+                DataSourceFactoryImpl dsfi = new DataSourceFactoryImpl(bundle.getBundleContext());
+                dataSourceFactories.add(dsfi);
+
+                Properties serviceProperties = new Properties();
+                Dictionary header = bundle.getHeaders();
+                serviceProperties.put(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS,
+                        header.get(Constants.DRIVER.replace(".", "_")));
+
+                String implVersion = (String) header.get(Constants.IMPL_VERSION);
+                if (implVersion != null) {
+                    serviceProperties.put(DataSourceFactory.OSGI_JDBC_DRIVER_VERSION, implVersion);
+                }
+
+                String implTitle = (String) header.get(Constants.IMPL_TITLE);
+                if (implTitle != null) {
+                    serviceProperties.put(DataSourceFactory.OSGI_JDBC_DRIVER_NAME, implTitle);
+                }
+                debug(" registering service for driver [" +
+                        header.get(Constants.DRIVER.replace(".", "_")) + "]");
+                bundle.getBundleContext().registerService(DataSourceFactory.class.getName(),
+                        dsfi, serviceProperties);
+            }
+            return null; // no need to track this any more
+        }
+
+        public void modifiedBundle(Bundle bundle, BundleEvent event, Object object) {
+        }
+
+        public void removedBundle(Bundle bundle, BundleEvent event, Object object) {
         }
     }
 }
