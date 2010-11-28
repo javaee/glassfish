@@ -172,6 +172,8 @@ public class ResourcesXMLParser implements EntityResolver
      */
     private void initProperties() throws Exception {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        BufferedInputStream bis = null;
+        FileInputStream fis = null;
         try {
             AddResourcesErrorHandler  errorHandler = new AddResourcesErrorHandler();
             factory.setValidating(true);
@@ -185,7 +187,8 @@ public class ResourcesXMLParser implements EntityResolver
                                                         args );
                 throw new Exception( msg );
             }
-            InputSource is = new InputSource(new FileInputStream(resourceFile));
+            fis = new FileInputStream(resourceFile);
+            InputSource is = new InputSource(fis);
             document = builder.parse(is);
             detectDeprecatedDescriptor();
         }/*catch(SAXParseException saxpe){
@@ -197,7 +200,17 @@ public class ResourcesXMLParser implements EntityResolver
                 SAXParserFactory spf = SAXParserFactory.newInstance();
                 SAXParser sp = spf.newSAXParser();
                 sp.setProperty("http://xml.org/sax/properties/lexical-handler", new MyLexicalHandler());
-                sp.getXMLReader().parse(new InputSource(resourceFile.toString()));
+                //we need to open the same file. Close it to be safe.
+                if(fis != null){
+                    try{
+                        fis.close();
+                        fis = null;
+                    }catch(Exception e){
+                        //ignore
+                    }
+                }
+                fis = new FileInputStream(resourceFile);
+                sp.getXMLReader().parse(new InputSource(fis));
             } catch (ParserConfigurationException ex) {
             } catch (SAXException ex) {
             } catch (IOException ex) {
@@ -220,6 +233,14 @@ public class ResourcesXMLParser implements EntityResolver
         }
         catch (IOException ioe) {
             throw new Exception(ioe.getLocalizedMessage());
+        }finally{
+            if(fis != null){
+                try{
+                    fis.close();
+                }catch(Exception e){
+                    //ignore
+                }
+            }
         }
     }
 
