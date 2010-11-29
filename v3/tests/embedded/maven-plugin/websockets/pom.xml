@@ -90,6 +90,13 @@
                     <name>test</name>
                     <serverID>embedded</serverID>
                 </configuration>
+		<dependencies>
+        	    <dependency>
+            		<groupId>org.glassfish.extras</groupId>
+            		<artifactId>glassfish-embedded-web</artifactId>
+            		<version>${project.version}</version>
+		    </dependency>
+		</dependencies>
                 <executions>
                     <execution>
                         <id>start</id>
