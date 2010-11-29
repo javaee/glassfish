@@ -286,21 +286,22 @@ public final class GlassFishORBManager {
         fineLog( "GlassFishORBManager: initProperties: processType {0}",
             processType ) ;
 
+        if (processType != ProcessType.ACC) {
+            String sslClientRequired = System.getProperty(
+                    ORB_SSL_STANDALONE_CLIENT_REQUIRED);
+            if (sslClientRequired != null
+                    && sslClientRequired.equals("true")) {
+                csiv2Props.put(
+                        GlassFishORBHelper.ORB_SSL_CLIENT_REQUIRED, "true");
+            }
+        }
+
         if(!processType.isServer()) {
             // No access to domain.xml.  Just init properties.
             // In this case iiopListener beans will be null.
             checkORBInitialPort(EMPTY_PROPERTIES);
 
-            if(processType != ProcessType.ACC) {
-                String sslClientRequired = System.getProperty(
-                    ORB_SSL_STANDALONE_CLIENT_REQUIRED);
 
-                if ( sslClientRequired != null
-                    && sslClientRequired.equals("true")) {
-                    csiv2Props.put(
-                        GlassFishORBHelper.ORB_SSL_CLIENT_REQUIRED, "true");
-                }
-            }
         } else {
             iiopService = iiopUtils.getIiopService();
             iiopListeners = iiopService.getIiopListener() ;
@@ -541,7 +542,7 @@ public final class GlassFishORBManager {
              * (address in use exception) Having an IORInterceptor
              * (TxSecIORInterceptor) get called during ORB init always
              * results in a nested ORB.init call because of the call to getORB
-             * in the IORInterceptor.
+             * in the IORInterceptor.i
              */
                 
             // TODO Right now we need to explicitly set useOSGI flag.  If it's set to
