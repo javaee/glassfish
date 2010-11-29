@@ -45,16 +45,15 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.glassfish</groupId>
-        <artifactId>osgi-javaee</artifactId>
+        <artifactId>glassfish-parent</artifactId>
         <version>3.1-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
-    <artifactId>osgi-cdi</artifactId>
-    <!-- We don't use bundle packaging as that interfers with other custom packaging types because of a maven bug
-     which is probably fixed in recent maven versions, but I have no time to test them. So, better be safe.-->
+    <artifactId>osgi-cdi-api</artifactId>
+    <!-- We use simple jar packaging as opposed to bundle, as there are some issues in multiple extensions
+    being present in reactor. -->
     <packaging>jar</packaging>
-    <name>GlassFish CDI Support for OSGi Bundles</name>
-    
+    <name>Public API of GlassFish OSGi/CDI Extension - This is typically used for compilation purpose only</name>
+
     <build>
         <plugins>
             <plugin>
@@ -65,17 +64,20 @@
                         <!-- Our parent project disables this plugin for jar type, so we have to enable it here -->
                         <supportedProjectType>jar</supportedProjectType>
                     </supportedProjectTypes>
+                    <unpackBundle>true</unpackBundle>
                 </configuration>
+                <!-- We don't use extensions as this interfers with
+                     hk2-maven-plugin and that results in hk2 artifacts
+                     being copied as .hk2-jar. Instead, we configure the
+                     plugin to run as part of package phase -->
                 <executions>
-                   <execution>
-                      <id>bundle</id>
-                      <phase>package</phase>
-                      <goals>
-                         <!-- We use bundle goal to be able to include osgi-cdi-api classes in this bundle, so that
-                              we have one self contained bundle. -->
-                         <goal>bundle</goal>
-                      </goals>
-                   </execution>
+                    <execution>
+                        <id>osgi-bundle</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>bundle</goal>
+                        </goals>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>
@@ -101,30 +103,14 @@
     
     <dependencies>
         <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>osgi-javaee-base</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-api</artifactId>
             <version>6.0</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>osgi-cdi-api</artifactId>
-            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
