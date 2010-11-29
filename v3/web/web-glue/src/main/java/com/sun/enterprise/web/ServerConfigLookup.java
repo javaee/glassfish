@@ -311,7 +311,6 @@ public class ServerConfigLookup {
             _logger.finest("webContainerAvailability = " + webContainerAvailability);
         }
 
-        //XXX Need to use the following code - haven't tried it out yet - Rajiv
         boolean webModuleAvailability = false;
         DeploymentContext dc = ctx.getWebModuleConfig().getDeploymentContext();
         if (dc != null) {
