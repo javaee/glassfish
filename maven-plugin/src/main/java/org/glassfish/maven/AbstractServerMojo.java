@@ -137,6 +137,11 @@ public abstract class AbstractServerMojo extends AbstractMojo {
     protected MavenProject project;
 
     /**
+     *  @parameter default-value="${plugin.artifacts}"
+     */
+    private java.util.List<Artifact> artifacts; // pluginDependencies
+
+    /**
      * @component
      */
     protected MavenProjectBuilder projectBuilder;
@@ -236,7 +241,6 @@ public abstract class AbstractServerMojo extends AbstractMojo {
     }
 
     private Artifact getUberFromSpecifiedDependency() {
-        Set<Artifact> artifacts = project.getDependencyArtifacts();
         if (artifacts != null) {
             for (Artifact artifact : artifacts) {
                 if (EMBEDDED_GROUP_ID.equals(artifact.getGroupId())) {
