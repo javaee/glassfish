@@ -79,6 +79,7 @@
     <sun:themeLinks/>
     <sun:link url="/resource/css/css_ns6up.css" />
 <f:verbatim>
+    <style> body { display : none;} </style>
 </head>
 
 <body id="body3" class="LogBdy" focus="loginform.j_username" style="background-color: #FFFFFF;">
@@ -100,6 +101,11 @@
                     document.getElementById('loginButton').form.submit();
                     //document.getElementById('loginButton').form.autocomplete="off";
                 }
+            </script>
+            <script type="text/javascript">
+</f:verbatim>
+#include "/common/js/cj.js"
+<f:verbatim>
             </script>
         </div>
     </div>
