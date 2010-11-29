@@ -44,6 +44,7 @@ import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
+import com.sun.enterprise.security.SecurityUpgradeService;
 import com.sun.grizzly.config.dom.NetworkConfig;
 import com.sun.grizzly.config.dom.NetworkListener;
 import com.sun.grizzly.config.dom.NetworkListeners;
@@ -93,6 +94,9 @@ public class SecureAdminConfigUpgrade implements ConfigurationUpgrade, PostConst
     private GrizzlyConfigSchemaMigrator grizzlyMigrator;
 
     @Inject
+    private SecurityUpgradeService securityUpgradeService;
+
+    @Inject
     private Habitat habitat;
 
     @Inject
@@ -108,9 +112,9 @@ public class SecureAdminConfigUpgrade implements ConfigurationUpgrade, PostConst
             return;
         }
         /*
-         * See if the admin listener was secured in the old configuration.
+         * See if we need to set up secure admin during the upgrade.
          */
-        if (isOriginalAdminSecured()) {
+        if (requiresSecureAdmin()) {
             final EnableSecureAdminCommand enableSecureAdminCommand =
                     habitat.getComponent(EnableSecureAdminCommand.class);
             try {
@@ -123,6 +127,10 @@ public class SecureAdminConfigUpgrade implements ConfigurationUpgrade, PostConst
         } else {
             logger.log(Level.INFO, "No secure admin set-up was detected in the original configuration so no upgrade of it was needed");
         }
+    }
+
+    private boolean requiresSecureAdmin() {
+        return isOriginalAdminSecured() || securityUpgradeService.requiresSecureAdmin();
     }
 
     private void ensureNonDASConfigsHaveAdminNetworkListener() throws TransactionFailure {
