@@ -1,0 +1,4 @@
+A variant of the normal-bean-injection-ear testcase that uses programmatic lookup
+
+Related GlassFish issue: https://glassfish.dev.java.net/issues/show_bug.cgi?id=14832
+
