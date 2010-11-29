@@ -71,7 +71,7 @@ import java.util.List;
 
 @Service
 public class JmsProviderLifecycle implements  PostStartup, PostConstruct{
-    private static final String JMS_EAGER_STARTUP = "org.glassfish.jms.EagerStartup";
+    private static final String JMS_INITIALIZE_ON_DEMAND = "org.glassfish.jms.InitializeOnDemand";
     //Lifecycle properties
     public static final String EMBEDDED="EMBEDDED";
     public static final String LOCAL="LOCAL";
@@ -125,7 +125,6 @@ public class JmsProviderLifecycle implements  PostStartup, PostConstruct{
         if(defaultJmsHost == null && jmsHostList != null && jmsHostList.size() >0)  {
             defaultJmsHost = jmsHostList.get(0);
         }
-        boolean jmsEagerStartup = false;
 	    boolean lazyInit = false;
         if (defaultJmsHost != null)
                 lazyInit = Boolean.parseBoolean(defaultJmsHost.getLazyInit());
@@ -135,17 +134,14 @@ public class JmsProviderLifecycle implements  PostStartup, PostConstruct{
         if(REMOTE.equals(integrationMode))
                 return false;
 
-         //Eager startup is currently enabled based on a system property
-        String jmsEagerStartupStr = System.getProperty(JMS_EAGER_STARTUP);
-        if (jmsEagerStartupStr  != null && ! "".equals(jmsEagerStartupStr))
-            jmsEagerStartup = Boolean.parseBoolean(jmsEagerStartupStr);
-
-        if (EMBEDDED.equals(integrationMode) && (!lazyInit || jmsEagerStartup))
-            return true;
-
-        //if local broker and system property is false, don't do eager startup
-        if (LOCAL.equals(integrationMode) &&  "false".equals(jmsEagerStartupStr))
+         //Initialize on demand is currently enabled based on a system property
+        String jmsInitializeOnDemand = System.getProperty(JMS_INITIALIZE_ON_DEMAND);
+        //if the system property is true, don't do eager startup
+        if ("true".equals(jmsInitializeOnDemand))
             return false;
+
+        if (EMBEDDED.equals(integrationMode) && (!lazyInit))
+            return true;
 
         //local broker has eager startup by default
         if(LOCAL.equals(integrationMode))
@@ -153,18 +149,6 @@ public class JmsProviderLifecycle implements  PostStartup, PostConstruct{
 
 
         return false;
-    }
-
-    private boolean isClustered()
-    {
-	    Domain domain = Globals.get(Domain.class);
-	    Clusters clusters = domain.getClusters();
-	    if (clusters == null) return false;
-
-	    List clusterList = clusters.getCluster();
-	    String serverName = System.getProperty(SystemPropertyConstants.SERVER_NAME);
-	    return JmsRaUtil.isClustered(clusterList, serverName);
-
     }
 
         private JmsService getJmsService(){
@@ -176,43 +160,4 @@ public class JmsProviderLifecycle implements  PostStartup, PostConstruct{
             return config.getJmsService();
 
         }
-
-    
-    /**
-     * Creates jms-service config element for monitoring.
-     *
-     * Check if the jms-service monitoring config has been created.
-     * If it has not, then add it.
-     */
-    /*private void createMonitoringConfig() {
-        if (monitoringService == null) {
-            _logger.log(Level.SEVERE, "monitoringService is null. jms-service monitoring config not created");
-            return;
-        }
-        List<MonitoringItem> itemList = monitoringService.getMonitoringItems();
-        boolean hasMonitorConfig = false;
-        for (MonitoringItem mi : itemList) {
-            if (mi.getName().equals(JMS_SERVICE)) {
-                hasMonitorConfig = true;
-            }
-        }
-
-        try {
-            if (!hasMonitorConfig) {
-                ConfigSupport.apply(new SingleConfigCode<MonitoringService>() {
-
-                    public Object run(MonitoringService param) throws PropertyVetoException, TransactionFailure {
-
-                        MonitoringItem newItem = param.createChild(JmsServiceMI.class);
-                        newItem.setName(JMS_SERVICE);
-                        newItem.setLevel(MonitoringItem.LEVEL_OFF);
-                        param.getMonitoringItems().add(newItem);
-                        return newItem;
-                    }
-                }, monitoringService);
-            }
-        } catch (TransactionFailure tfe) {
-            _logger.log(Level.SEVERE, "Exception adding jms-service MonitoringItem", tfe);
-        }
-    }*/
 }
