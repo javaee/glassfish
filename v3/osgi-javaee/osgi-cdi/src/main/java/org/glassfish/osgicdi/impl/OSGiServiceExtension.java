@@ -38,7 +38,7 @@
  * holder.
  */
 
-package org.glassfish.osgicdi;
+package org.glassfish.osgicdi.impl;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -64,8 +64,8 @@ import javax.enterprise.inject.spi.ProcessBean;
 import javax.enterprise.inject.spi.ProcessInjectionTarget;
 import javax.enterprise.util.AnnotationLiteral;
 
-import org.glassfish.osgicdi.OSGiServiceFactory.ServiceUnavailableException;
-
+import org.glassfish.osgicdi.OSGiService;
+import org.glassfish.osgicdi.ServiceUnavailableException;
 
 /**
  * A portable extension that supports discovery and injection of OSGi

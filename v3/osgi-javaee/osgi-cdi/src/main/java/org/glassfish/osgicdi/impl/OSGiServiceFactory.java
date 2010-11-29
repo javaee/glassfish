@@ -38,7 +38,7 @@
  * holder.
  */
 
-package org.glassfish.osgicdi;
+package org.glassfish.osgicdi.impl;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -47,8 +47,11 @@ import java.lang.reflect.Type;
 
 import javax.enterprise.inject.spi.InjectionPoint;
 
+import org.glassfish.osgicdi.OSGiService;
+import org.glassfish.osgicdi.ServiceUnavailableException;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleReference;
+import org.osgi.framework.ServiceException;
 import org.osgi.util.tracker.ServiceTracker;
 
 /**
@@ -68,16 +71,19 @@ class OSGiServiceFactory {
      */
     public static Object getService(final InjectionPoint svcInjectionPoint) 
                                     throws ServiceUnavailableException{
-        final OSGiService os = svcInjectionPoint.getAnnotated().getAnnotation(OSGiService.class);
+        final OSGiService os = 
+            svcInjectionPoint.getAnnotated().getAnnotation(OSGiService.class);
         debug("getService " + svcInjectionPoint.getType() + " OS:" + os);
         Object instance = createServiceProxy(svcInjectionPoint); 
         return instance;
     }
 
     private static Object createServiceProxy(
-            final InjectionPoint svcInjectionPoint) throws ServiceUnavailableException {
+                                    final InjectionPoint svcInjectionPoint) 
+                                    throws ServiceUnavailableException {
         Type serviceType = svcInjectionPoint.getType();
-        final OSGiService os = svcInjectionPoint.getAnnotated().getAnnotation(OSGiService.class);
+        final OSGiService os = 
+            svcInjectionPoint.getAnnotated().getAnnotation(OSGiService.class);
 
         //Get one service instance when the proxy is created
         final Object svcInstance = lookupService(svcInjectionPoint);
@@ -116,7 +122,8 @@ class OSGiServiceFactory {
     private static Object lookupService(InjectionPoint svcInjectionPoint) 
                         throws ServiceUnavailableException {
         Type serviceType = svcInjectionPoint.getType();
-        final OSGiService os = svcInjectionPoint.getAnnotated().getAnnotation(OSGiService.class);
+        final OSGiService os = 
+            svcInjectionPoint.getAnnotated().getAnnotation(OSGiService.class);
         debug("lookup service" + serviceType);
         
         //Get the bundle context from the classloader that loaded the annotation
@@ -138,12 +145,16 @@ class OSGiServiceFactory {
                                     : st.waitForService(os.waitTimeout()));
             debug("service obtained from tracker" + service);
             if (service == null) {
-                throw new ServiceUnavailableException();
+                throw new ServiceUnavailableException(
+                        "Service" + (((Class)serviceType).getName()) + "Unavailable", 
+                        ServiceException.SUBCLASSED, null);
             } 
             return service;
         } catch (InterruptedException e) {
             e.printStackTrace();
-            throw new RuntimeException(e);
+            throw new ServiceUnavailableException("" +
+            		"Service" + (((Class)serviceType).getName()) + "Unavailable", 
+            		ServiceException.SUBCLASSED, e);
         }
     }
 
@@ -153,16 +164,10 @@ class OSGiServiceFactory {
     public static void ungetService(Object serviceInstance, 
                                     InjectionPoint svcInjectionPoint){
         //XXX: not implemented
-        
     }
     
     private static void debug(String string) {
         if(DEBUG_ENABLED)
             System.out.println("ServiceFactory:: " + string);
     }
-    
-    public static class ServiceUnavailableException extends Exception {
-        private static final long serialVersionUID = 4055254962336930137L;
-    }
-    
 }
