@@ -38,7 +38,6 @@
  * holder.
  */
 
-
 package com.sun.jaspic.config.factory;
 
 import javax.security.auth.message.config.AuthConfigFactory.RegistrationContext;

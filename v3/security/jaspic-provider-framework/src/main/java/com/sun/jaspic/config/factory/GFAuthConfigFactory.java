@@ -38,10 +38,10 @@
  * holder.
  */
 
-
 package com.sun.jaspic.config.factory;
 
 import java.lang.reflect.Constructor;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -59,6 +59,7 @@ import javax.security.auth.message.config.AuthConfigFactory;
 import javax.security.auth.message.config.AuthConfigProvider;
 import javax.security.auth.message.config.RegistrationListener;
 
+
 /**
  * This class implements methods in the abstract class AuthConfigFactory.
  * @author  Shing Wai Chan
@@ -67,29 +68,30 @@ public class GFAuthConfigFactory extends AuthConfigFactory {
 
     private static final Logger logger =
             Logger.getLogger(GFAuthConfigFactory.class.getName());
-    // locks are used to protect existence of maps
-    // not concurrent access within maps
+
     private static final ReadWriteLock rwLock;
     private static final Lock rLock;
     private static final Lock wLock;
+
     private static Map<String, AuthConfigProvider> id2ProviderMap;
     private static Map<String, RegistrationContext> id2RegisContextMap;
     private static Map<String, List<RegistrationListener>> id2RegisListenersMap;
     private static Map<AuthConfigProvider, List<String>> provider2IdsMap;
+
     private static final String CONF_FILE_NAME = "auth.conf";
     private static final RegStoreFileParser regStore;
 
     static {
-        rwLock = new ReentrantReadWriteLock(true);
-        rLock = rwLock.readLock();
-        wLock = rwLock.writeLock();
+	rwLock = new ReentrantReadWriteLock(true);
+	rLock = rwLock.readLock();
+	wLock = rwLock.writeLock();
 
         /* Within the GF process, the user.dir location is
          * set to be glassfish/domains/domain-in-use/config.
          */
         regStore = new RegStoreFileParser(System.getProperty("user.dir"),
-                CONF_FILE_NAME, false);
-        GFAuthConfigFactory slave = new GFAuthConfigFactory();
+            CONF_FILE_NAME, false);
+	GFAuthConfigFactory slave = new GFAuthConfigFactory();
         wLock.lock();
         try {
             slave._loadFactory();
@@ -128,8 +130,8 @@ public class GFAuthConfigFactory extends AuthConfigFactory {
      *          or null if no AuthConfigProvider is selected.
      *
      * <p>All factories shall employ the following precedence rules to select
-     * the registered AuthConfigProvider that matchConstructors the layer and appContext
-     * arguments:
+     * the registered AuthConfigProvider that matches (via matchConstructors) the 
+     * layer and appContext arguments:
      *<ul>
      * <li> The provider that is specifically registered for both the
      * corresponding message layer and appContext
@@ -149,10 +151,11 @@ public class GFAuthConfigFactory extends AuthConfigFactory {
      * the factory shall terminate its search for a registered provider.
      *</ul>
      */
-    public AuthConfigProvider getConfigProvider(String layer, String appContext,
-            RegistrationListener listener) {
+    public AuthConfigProvider
+            getConfigProvider(String layer, String appContext,
+	    RegistrationListener listener) {
 
-        AuthConfigProvider provider = null;
+	AuthConfigProvider provider = null;
         String regisID = getRegistrationID(layer, appContext);
         String matchedID = null;
         if (listener == null) {
@@ -237,7 +240,7 @@ public class GFAuthConfigFactory extends AuthConfigFactory {
      * @param properties a Map object containing the initialization
      *          properties to be passed to the provider constructor.
      *          This argument may be null. When this argument is not null,
-     *          all the values and keys occurring in the Map must be of
+     *          all the values and keys occuring in the Map must be of
      *          type String.
      *
      * @param layer a String identifying the message layer
@@ -265,18 +268,19 @@ public class GFAuthConfigFactory extends AuthConfigFactory {
      *          construction or registration fails.
      */
     public String registerConfigProvider(String className,
-            Map properties,
-            String layer, String appContext,
-            String description) {
+					 Map properties,
+					 String layer, String appContext,
+					 String description) {
         //XXX do we need doPrivilege here
         AuthConfigProvider provider =
-                _constructProvider(className, properties, null);
-        return _register(provider, properties, layer, appContext, description, true);
+            _constructProvider(className, properties, null);
+        return _register(provider,properties,
+            layer,appContext,description,true);
     }
 
     public String registerConfigProvider(AuthConfigProvider provider,
             String layer, String appContext, String description) {
-        return _register(provider, null, layer, appContext, description, false);
+	return _register(provider,null,layer,appContext,description,false);
     }
 
     /**
@@ -321,7 +325,6 @@ public class GFAuthConfigFactory extends AuthConfigFactory {
      */
     public String[] detachListener(RegistrationListener listener,
             String layer, String appContext) {
-
         ArrayList<String> list = new ArrayList<String>();
         String regisID = getRegistrationID(layer, appContext);
         wLock.lock();
@@ -367,15 +370,15 @@ public class GFAuthConfigFactory extends AuthConfigFactory {
                 if (collList != null) {
                     regisIDs = new HashSet<String>();
                     for (List<String> listIds : collList) {
-                        if (listIds != null) {
-                            regisIDs.addAll(listIds);
-                        }
+                         if (listIds != null) {
+                             regisIDs.addAll(listIds);
+                         }
                     }
                 }
             }
-            return ((regisIDs != null)
-                    ? regisIDs.toArray(new String[regisIDs.size()])
-                    : new String[0]);
+            return ((regisIDs != null)?
+                regisIDs.toArray(new String[regisIDs.size()]) :
+                new String[0]);
         } finally {
             rLock.unlock();
         }
@@ -393,15 +396,15 @@ public class GFAuthConfigFactory extends AuthConfigFactory {
      * not correspond to an active registration
      */
     public RegistrationContext getRegistrationContext(String registrationID) {
-        rLock.lock();
+	rLock.lock();
         try {
-            return id2RegisContextMap.get(registrationID);
-        } finally {
-            rLock.unlock();
-        }
+	    return id2RegisContextMap.get(registrationID);
+	} finally {
+	    rLock.unlock();
+	}
     }
 
-    /**
+   /**
      * Cause the factory to reprocess its persistent declarative
      * representation of provider registrations.
      *
@@ -449,13 +452,13 @@ public class GFAuthConfigFactory extends AuthConfigFactory {
         // __3<nn>_<layer><appContext>  (layer, appContext)
 
         if (layer != null) {
-            regisID = (appContext != null)
-                    ? "__3" + layer.length() + "_" + layer + appContext
-                    : "__2" + layer;
+            regisID = (appContext != null) ?
+                "__3" + layer.length() + "_" + layer + appContext :
+                "__2" + layer;
         } else {
-            regisID = (appContext != null)
-                    ? "__1" + appContext
-                    : "__0";
+            regisID = (appContext != null) ?
+                "__1" + appContext :
+                "__0";
         }
         return regisID;
     }
@@ -471,11 +474,11 @@ public class GFAuthConfigFactory extends AuthConfigFactory {
         if (regisID.equals("__0")) {
             // null, null
         } else if (regisID.startsWith("__1")) {
-            appContext = (regisID.length() == 3)
-                    ? "" : regisID.substring(3);
+            appContext = (regisID.length() == 3)?
+                   "" : regisID.substring(3);
         } else if (regisID.startsWith("__2")) {
-            layer = (regisID.length() == 3)
-                    ? "" : regisID.substring(3);
+            layer = (regisID.length() == 3)?
+                   "" : regisID.substring(3);
         } else if (regisID.startsWith("__3")) {
             int ind = regisID.indexOf('_', 3);
             if (regisID.length() > 3 && ind > 0) {
@@ -498,7 +501,8 @@ public class GFAuthConfigFactory extends AuthConfigFactory {
         return new String[]{layer, appContext};
     }
 
-    private static AuthConfigProvider _constructProvider(String className, Map properties, AuthConfigFactory factory) {
+    private static AuthConfigProvider _constructProvider
+    (String className, Map properties, AuthConfigFactory factory) {
         //XXX do we need doPrivilege here
         AuthConfigProvider provider = null;
         if (className != null) {
@@ -508,7 +512,8 @@ public class GFAuthConfigFactory extends AuthConfigFactory {
                 Class c = Class.forName(className, true, loader);
                 Constructor<AuthConfigProvider> constr =
                         c.getConstructor(Map.class, AuthConfigFactory.class);
-                provider = constr.newInstance(new Object[]{properties, factory});
+                provider = constr.newInstance
+                    (new Object[]{properties, factory});
             } catch (Throwable t) {
                 Throwable cause = t.getCause();
                 logger.log(Level.WARNING,
@@ -625,29 +630,17 @@ public class GFAuthConfigFactory extends AuthConfigFactory {
                 if (info.isConstructorEntry()) {
                     _constructProvider(info.getClassName(),
                             info.getProperties(), this);
-
-
                 } else {
                     boolean first = true;
                     AuthConfigProvider p = null;
                     List<RegistrationContext> contexts = (info.getRegContexts());
-
-
                     for (RegistrationContext ctx : contexts) {
                         if (first) {
                             p = _constructProvider(info.getClassName(),
                                     info.getProperties(), null);
-
-
                         }
-                        try {
-                            _loadRegistration(p, ctx.getMessageLayer(),
-                                    ctx.getAppContext(), ctx.getDescription());
-
-
-                        } catch (Exception e) {
-                            throw e;
-                        }
+                        _loadRegistration(p, ctx.getMessageLayer(),
+                                ctx.getAppContext(), ctx.getDescription());
                     }
                 }
             }
@@ -655,8 +648,6 @@ public class GFAuthConfigFactory extends AuthConfigFactory {
             if (logger.isLoggable(Level.WARNING)) {
                 logger.log(Level.WARNING,
                         "jmac.factory_auth_config_loader_failure", e);
-
-
             }
         }
     }
@@ -671,21 +662,12 @@ public class GFAuthConfigFactory extends AuthConfigFactory {
         String regisID = getRegistrationID(layer, appContext);
         RegistrationContext prevRegisContext = id2RegisContextMap.get(regisID);
         AuthConfigProvider prevProvider = id2ProviderMap.get(regisID);
-
-
         boolean wasRegistered = id2ProviderMap.containsKey(regisID);
-
-
-
         if (wasRegistered) {
             List<String> prevRegisIDs = provider2IdsMap.get(prevProvider);
             prevRegisIDs.remove(regisID);
-
-
             if (prevRegisIDs.isEmpty()) {
                 provider2IdsMap.remove(prevProvider);
-
-
             }
         }
 
@@ -693,49 +675,35 @@ public class GFAuthConfigFactory extends AuthConfigFactory {
         id2RegisContextMap.put(regisID, rc);
 
         List<String> regisIDs = provider2IdsMap.get(provider);
-
-
         if (regisIDs == null) {
             regisIDs = new ArrayList<String>();
             provider2IdsMap.put(provider, regisIDs);
-
-
         }
 
         if (!regisIDs.contains(regisID)) {
             regisIDs.add(regisID);
-
-
         }
 
         return regisID;
-
-
     }
 
     private static void _storeRegistration(String regId,
             RegistrationContext ctx, AuthConfigProvider p, Map properties) {
+
         String className = null;
-
-
         if (p != null) {
             className = p.getClass().getName();
-
-
         }
         if (ctx.isPersistent()) {
             regStore.store(className, ctx, properties);
-
-
         }
     }
 
     private static void _deleteStoredRegistration(String regId,
             RegistrationContext ctx) {
+
         if (ctx.isPersistent()) {
             regStore.delete(ctx);
-
-
         }
     }
 
@@ -746,20 +714,12 @@ public class GFAuthConfigFactory extends AuthConfigFactory {
         String[] refID = decomposeRegisID(reference);
         String[] targetID = decomposeRegisID(target);
 
-
-
         if (refID[0] != null && !refID[0].equals(targetID[0])) {
             rvalue = false;
-
-
         } else if (refID[1] != null && !refID[1].equals(targetID[1])) {
             rvalue = false;
-
-
         }
         return rvalue;
-
-
     }
 
     /* will return some extra listeners. iow, effected listeners could be reduced
@@ -772,39 +732,28 @@ public class GFAuthConfigFactory extends AuthConfigFactory {
         Set<String> listenerRegistrations =
                 new HashSet<String>(id2RegisListenersMap.keySet());
 
-
         for (String listenerID : listenerRegistrations) {
             if (regIdImplies(regisID, listenerID)) {
                 if (!effectedListeners.containsKey(listenerID)) {
                     effectedListeners.put(listenerID, new ArrayList<RegistrationListener>());
-
-
                 }
                 effectedListeners.get(listenerID).addAll(id2RegisListenersMap.remove(listenerID));
-
-
             }
         }
         return effectedListeners;
-
-
     }
 
     private static void notifyListeners(Map<String, List<RegistrationListener>> map) {
         Set<String> regisIDSet = map.keySet();
 
-
         for (String regisID : regisIDSet) {
             List<RegistrationListener> listeners = map.get(regisID);
-
 
             if (listeners != null && listeners.size() > 0) {
                 String[] dIds = decomposeRegisID(regisID);
 
-
                 for (RegistrationListener listener : listeners) {
                     listener.notify(dIds[0], dIds[1]);
-
                 }
             }
         }

@@ -56,7 +56,6 @@ import javax.security.auth.message.config.AuthConfigFactory.RegistrationContext;
  * @author Bobby Bissett
  */
 final class EntryInfo {
-
     private final String className;
     private final Map<String, String> properties;
     private List<RegistrationContext> regContexts;
@@ -68,10 +67,28 @@ final class EntryInfo {
     EntryInfo(String className, Map<String, String> properties) {
         if (className == null) {
             throw new IllegalArgumentException(
-                    "Class name for registration entry cannot be null");
+                "Class name for registration entry cannot be null");
         }
         this.className = className;
         this.properties = properties;
+    }
+
+    /*
+     * This will create a registration entry. The list of
+     * registration contexts must not be null or empty. Each registration
+     * context will contain at least a non-null layer or appContextId.
+     */
+    EntryInfo(String className, Map<String, String> properties,
+        List<RegistrationContext> ctxs) {
+
+        if (ctxs == null || ctxs.isEmpty()) {
+            throw new IllegalArgumentException(
+                "Registration entry must contain one or" +
+                "more registration contexts");
+        }
+        this.className = className;
+        this.properties = properties;
+        this.regContexts = ctxs;
     }
 
     /*
@@ -81,36 +98,19 @@ final class EntryInfo {
      * entry is a constructor entry.
      */
     EntryInfo(String className, Map<String, String> properties,
-            RegistrationContext ctx) {
+        RegistrationContext ctx) {
+
         this.className = className;
         this.properties = properties;
         if (ctx != null) {
             RegistrationContext ctxImpl =
-                    new RegistrationContextImpl(ctx.getMessageLayer(),
-                    ctx.getAppContext(), ctx.getDescription(), ctx.isPersistent());
+                new RegistrationContextImpl(ctx.getMessageLayer(),
+                ctx.getAppContext(), ctx.getDescription(), ctx.isPersistent());
             List<RegistrationContext> newList =
-                    new ArrayList<RegistrationContext>(1);
+                new ArrayList<RegistrationContext>(1);
             newList.add(ctxImpl);
             this.regContexts = newList;
         }
-    }
-
-    /*
-     * This will create a registration entry. The list of
-     * registration contexts must not be null or empty. Each registration
-     * context will contain at least a non-null layer or appContextId.
-     */
-    EntryInfo(String className, Map<String, String> properties,
-            List<RegistrationContext> ctxs) {
-
-        if (ctxs == null || ctxs.isEmpty()) {
-            throw new IllegalArgumentException(
-                    "Registration entry must contain one or"
-                    + "more registration contexts");
-        }
-        this.className = className;
-        this.properties = properties;
-        this.regContexts = ctxs;
     }
 
     EntryInfo(EntryInfo parent) {
@@ -158,9 +158,9 @@ final class EntryInfo {
         if (target == null) {
             return false;
         }
-        return (!(isConstructorEntry() ^ target.isConstructorEntry())
-                && matchStrings(className, target.getClassName())
-                && matchMaps(properties, target.getProperties()));
+        return ( !(isConstructorEntry() ^ target.isConstructorEntry()) &&
+            matchStrings(className, target.getClassName()) &&
+            matchMaps(properties, target.getProperties()) );
     }
 
     /*
@@ -190,4 +190,6 @@ final class EntryInfo {
         }
         return m1.equals(m2);
     }
+
+
 }
