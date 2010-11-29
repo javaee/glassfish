@@ -78,8 +78,7 @@ public class JvmOptionsTest extends RestTestBase {
     @Before
     public void createConfig() {
         if (configTest == null) {
-            configTest = new ConfigTest();
-            configTest.setup();
+            configTest = getTestClass(ConfigTest.class);
         }
 
         testConfigName = "config-" + generateRandomString();

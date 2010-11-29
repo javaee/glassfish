@@ -52,6 +52,8 @@ import java.io.File;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.xml.parsers.DocumentBuilder;
@@ -95,6 +97,16 @@ public class RestTestBase {
 
     protected void authenticate() {
         client.addFilter(new HTTPBasicAuthFilter(AUTH_USER_NAME, AUTH_PASSWORD));
+    }
+    
+    protected <T> T getTestClass(Class<T> clazz) {
+        try {
+            T test = clazz.newInstance();
+            ((RestTestBase) test).setup();
+            return test;
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     protected static String generateRandomString() {
@@ -276,6 +288,13 @@ public class RestTestBase {
         int status = cr.getStatus();
         if ((status < 200) || (status > 299)) {
             fail("Expected a status between 200 and 299 (inclusive).  Found " + status);
+        }
+    }
+
+    protected void checkStatusForFailure(ClientResponse cr) {
+        int status = cr.getStatus();
+        if ((status < 200) && (status > 299)) {
+            fail("Expected a status less than 200 or greater than 299 (inclusive).  Found " + status);
         }
     }
 
