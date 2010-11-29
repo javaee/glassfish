@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admin.rest;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -56,7 +55,6 @@ public class Util {
     public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(Util.class);
 
     private Util() {
-        
     }
 
     /**
@@ -74,6 +72,13 @@ public class Util {
             return null;
         }
         return getParentName(uriInfo.getPath());
+    }
+
+    public static String getGrandparentName(UriInfo uriInfo) {
+        if (uriInfo == null) {
+            return null;
+        }
+        return getGrandparentName(uriInfo.getPath());
     }
 
     /**
@@ -115,8 +120,25 @@ public class Util {
         String name = getName(url, '/');
         // Find the : to skip past the protocal part of the URL, as that is causing
         // problems with resources named 'http'.
-        int nameIndex = url.indexOf(name,url.indexOf(":")+1);
+        int nameIndex = url.indexOf(name, url.indexOf(":") + 1);
         return getName(url.substring(0, nameIndex - 1), '/');
+    }
+
+    public static String getGrandparentName(String url) {
+        if ((url == null) || ("".equals(url))) {
+            return url;
+        }
+        String name = getParentName(url);
+        // Find the : to skip past the protocal part of the URL, as that is causing
+        // problems with resources named 'http'.
+        int nameIndex = url.indexOf(name, url.indexOf(":") + 1);
+        return getName(url.substring(0, nameIndex - 1), '/');
+    }
+    
+    public static void main (String... args) {
+        String url = "http://localhost:4848/management/domain/configs/config/server-config/java-config/generate-jvm-report";
+        String gp = getGrandparentName(url);
+        System.out.println("gp = " + gp);
     }
 
     /**
@@ -176,21 +198,21 @@ public class Util {
      * @param uriInfo the uriInfo context of the request
      * @return String the html representation of the given message
      */
-    protected static String getHtml(String message, UriInfo uriInfo,boolean delete) {
+    protected static String getHtml(String message, UriInfo uriInfo, boolean delete) {
         String result = ProviderUtil.getHtmlHeader(uriInfo.getBaseUri().toASCIIString());
         String uri = uriInfo.getAbsolutePath().toString();
-        if (delete){
-            uri=uri+"/..";
+        if (delete) {
+            uri = uri + "/..";
         }
         String name = upperCaseFirstLetter(eleminateHypen(getName(uri, '/')));
         String parentName =
-               upperCaseFirstLetter(eleminateHypen(getParentName(uri)));
+                upperCaseFirstLetter(eleminateHypen(getParentName(uri)));
 
         result = result + "<h1>" + name + "</h1>";
-        result = result + message ;//+ "<br><br>";
+        result = result + message;//+ "<br><br>";
         result = result + "<a href=\"" + uri + "\">Back</a>";
 
-      //  result =  result +  "<br>";
+        //  result =  result +  "<br>";
         result = result + "</body></html>";
         return result;
     }

@@ -297,7 +297,7 @@ public class ResourceUtil {
             String key;
             while (iterator.hasNext()) {
                 key = iterator.next();
-                if (commandParams.get(key).equals(Constants.PARENT_NAME_VARIABLE)) {
+                if (commandParams.get(key).equals(Constants.VAR_PARENT)) {
                     commandParams.put(key, parent);
                     break;
                 }

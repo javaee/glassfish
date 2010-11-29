@@ -62,6 +62,8 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Logger;
+import org.glassfish.admin.rest.Constants;
+import org.glassfish.admin.rest.Util;
 import org.jvnet.hk2.component.Habitat;
 
 /**
@@ -149,6 +151,12 @@ public class TemplateExecCommand {
     protected void processCommandParams(ParameterMap data) {
         HashMap<String, String> commandParams = getCommandParams();
         if (commandParams != null) {
+            for (Map.Entry<String, String> entry : commandParams.entrySet()) {
+                String value = entry.getValue();
+                if (Constants.VAR_GRANDPARENT.equals(value)) {
+                    entry.setValue(Util.getGrandparentName(uriInfo));
+                }
+            }
             //formulate parent-link attribute for this command resource
             //Parent link attribute may or may not be the id/target attribute
             if (isLinkedToParent) {

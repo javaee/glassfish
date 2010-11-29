@@ -321,7 +321,7 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
         boolean isLinkedToParent = false;
         if(metaData.commandParams != null) {
             for(CommandResourceMetaData.ParameterMetaData parameterMetaData : metaData.commandParams) {
-                if(Constants.PARENT_NAME_VARIABLE.equals(parameterMetaData.value) ) {
+                if(Constants.VAR_PARENT.equals(parameterMetaData.value) ) {
                     isLinkedToParent = true;
                 }
             }
@@ -474,21 +474,17 @@ delete-instance
         put("AuditModule", "delete-audit-module");
         put("AuthRealm", "delete-auth-realm");
         put("ApplicationRef", "delete-application-ref");
-        
         put("Cluster", "delete-cluster");
         put("ConnectorConnectionPool", "delete-connector-connection-pool");
         put("Config", "delete-config");
         put("ConnectorConnectionPool", "delete-connector-connection-pool");
         put("ConnectorResource", "delete-connector-resource");
         put("CustomResource", "delete-custom-resource");
-        
         put("ExternalJndiResource", "delete-jndi-resource");
         put("GroupMap", "GENERIC-DELETE");
-
         put("HttpListener", "delete-http-listener");
         put("Http", "delete-http");
         put("IiopListener", "delete-iiop-listener");
-        
         put("JdbcResource", "delete-jdbc-resource");       
         put("JaccProvider", "delete-jacc-provider");
         put("LbConfig", "delete-http-lb-config");
@@ -502,10 +498,8 @@ delete-instance
         put("ProtocolFilter", "delete-protocol-filter");
         put("ProtocolFinder", "delete-protocol-finder");
         put("ResourceAdapterConfig", "delete-resource-adapter-config");
-        
         put("SecurityMap", "delete-connector-security-map");
         put("Ssl", "delete-ssl");
-        
         put("Transport", "delete-transport");
         put("ThreadPool", "delete-threadpool");
         put("UserGroup", "GENERIC-DELETE");
