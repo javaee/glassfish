@@ -113,6 +113,8 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
     ProbeProviderFactory probeProviderFactory;
 
     private final Collection<NetworkProxy> proxies = new LinkedBlockingQueue<NetworkProxy>();
+    private final String JMS_DEFAULT_LISTENER_IP="0.0.0.0";
+    private final String JMS_DEFAULT_HOST="localhost";
 
     List<Future<Result<Thread>>> futures;
 
@@ -375,13 +377,14 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
                     List<JmsHost> jmsHosts = jmsService.getJmsHost();
                     for (JmsHost oneHost : jmsHosts) {
                         if (Boolean.valueOf(oneHost.getLazyInit())) {
+                            String jmsHost = null;
+                            if (oneHost.getHost() != null && JMS_DEFAULT_HOST.equals(oneHost.getHost()))
+                                jmsHost = JMS_DEFAULT_LISTENER_IP;
+                            else
+                                jmsHost = oneHost.getHost();
                             NetworkListener dummy = new DummyNetworkListener();
                             dummy.setPort(oneHost.getPort());
-                            try {
-                                dummy.setAddress(InetAddress.getByName(oneHost.getHost()).getHostAddress());
-                            } catch(UnknownHostException uex) {
-                                logger.log(Level.SEVERE, "Unable to get host address for jms-host = " + oneHost.getHost());
-                            }
+                            dummy.setAddress(jmsHost);
                             dummy.setProtocol("light-weight-listener");
                             dummy.setTransport("tcp");
                             dummy.setName("mq-service");
