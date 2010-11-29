@@ -254,13 +254,13 @@ public abstract class DeploymentDescriptorNode<T> implements XMLNode<T>  {
      */
     public  XMLNode getHandlerFor(XMLElement element) {
         if (handlers==null) {
-            DOLUtils.getDefaultLogger().log(Level.SEVERE, "enterprise.deployment.backend.invalidDescriptorMappingFailure",
+            DOLUtils.getDefaultLogger().log(Level.WARNING, "enterprise.deployment.backend.invalidDescriptorMappingFailure",
                     new Object[] {this , "No handler registered"});            
             return null;
         } else {
             Class c = (Class)  handlers.get(element.getQName());
             if (c==null) {
-                DOLUtils.getDefaultLogger().log(Level.SEVERE, "enterprise.deployment.backend.invalidDescriptorMappingFailure",
+                DOLUtils.getDefaultLogger().log(Level.WARNING, "enterprise.deployment.backend.invalidDescriptorMappingFailure",
                     new Object[] {element.getQName(), "No handler registered"});
                 return null;
             } 
@@ -389,34 +389,34 @@ public abstract class DeploymentDescriptorNode<T> implements XMLNode<T>  {
                     if (descriptor!=null) {
                         setDescriptorInfo(descriptor, (String) dispatchTable.get(element.getQName()), (String) value);
                     } else {
-                        DOLUtils.getDefaultLogger().log(Level.SEVERE, "enterprise.deployment.backend.invalidDescriptorMappingFailure",
+                        DOLUtils.getDefaultLogger().log(Level.WARNING, "enterprise.deployment.backend.invalidDescriptorMappingFailure",
                             new Object[] {element.getQName() , value });
                     }
                     
                     return;
                 } catch (InvocationTargetException e) {
-                    DOLUtils.getDefaultLogger().log(Level.SEVERE, "enterprise.deployment.backend.invalidDescriptorMappingFailure",
+                    DOLUtils.getDefaultLogger().log(Level.WARNING, "enterprise.deployment.backend.invalidDescriptorMappingFailure",
                         new Object[] {dispatchTable.get(element.getQName()) , getDescriptor().getClass()});
 		    Throwable t = e.getTargetException();
                     if (t instanceof IllegalArgumentException) {
                         // We report the error but we continue loading, this will allow the verifier to catch these errors or to register
                         // an error handler for notification
-                        DOLUtils.getDefaultLogger().log(Level.SEVERE, "enterprise.deployment.backend.invalidDescriptorMappingFailure",
+                        DOLUtils.getDefaultLogger().log(Level.WARNING, "enterprise.deployment.backend.invalidDescriptorMappingFailure",
                             new Object[] {element , value});
                     } else {
-                        DOLUtils.getDefaultLogger().log(Level.SEVERE, "enterprise.deployment.backend.invalidDescriptorMappingFailure",
+                        DOLUtils.getDefaultLogger().log(Level.WARNING, "enterprise.deployment.backend.invalidDescriptorMappingFailure",
                                 new Object[] {t.toString(), null});
                         DOLUtils.getDefaultLogger().log(Level.WARNING, "Error occurred", t);
                     }
                 } catch(Throwable t) {
-                        DOLUtils.getDefaultLogger().log(Level.SEVERE, "enterprise.deployment.backend.invalidDescriptorMappingFailure",
+                        DOLUtils.getDefaultLogger().log(Level.WARNING, "enterprise.deployment.backend.invalidDescriptorMappingFailure",
                                 new Object[] {t.toString(), null});
                         DOLUtils.getDefaultLogger().log(Level.WARNING, "Error occurred", t);
                 }
             }            
         }
         if (value.trim().length()!=0) {
-            DOLUtils.getDefaultLogger().log(Level.SEVERE, "enterprise.deployment.backend.invalidDescriptorMappingFailure",
+            DOLUtils.getDefaultLogger().log(Level.WARNING, "enterprise.deployment.backend.invalidDescriptorMappingFailure",
                 new Object[] {element.getQName() , value });                
         }
         return;
@@ -458,7 +458,7 @@ public abstract class DeploymentDescriptorNode<T> implements XMLNode<T>  {
                 Method toInvoke = target.getClass().getMethod(methodName, new Class[] { int.class });
                 toInvoke.invoke(target, new Object[] {Integer.valueOf(value)});
             } catch (NumberFormatException nfe) {
-                DOLUtils.getDefaultLogger().log(Level.SEVERE, "enterprise.deployment.backend.invalidDescriptorMappingFailure",
+                DOLUtils.getDefaultLogger().log(Level.WARNING, "enterprise.deployment.backend.invalidDescriptorMappingFailure",
 			new Object []{ getXMLPath().toString() , nfe.toString()});
 	    } catch(NoSuchMethodException e2) {
                 // try with boolean as a parameter

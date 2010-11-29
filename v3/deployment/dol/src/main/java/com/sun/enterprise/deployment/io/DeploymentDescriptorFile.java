@@ -137,7 +137,14 @@ public abstract class DeploymentDescriptorFile<T extends Descriptor> {
             }
 	    
 	    try {
-		
+                if (!validating) {
+                    // if we are not validating, let's not load the DTD
+                    if (getDeploymentDescriptorPath().indexOf(DescriptorConstants.WL) != -1) {
+                        // and let's only turn it off for weblogic*.xml for now
+                        spf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+                    }
+                }
+
 		// Validation part 2a: set the schema language if necessary            
 		spf.setFeature("http://apache.org/xml/features/validation/schema",validating);		
 	    
