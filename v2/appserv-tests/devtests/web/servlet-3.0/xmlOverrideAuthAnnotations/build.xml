@@ -72,6 +72,12 @@
             <param name="password" value="${testpassword}"/>
             <param name="groups" value="${testgroup}"/>
         </antcall>
+        <antcall target="asadmin-common-ignore-fail">
+              <param name="admin.command" value="set" />
+              <param name="operand.props"
+                     value="configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.trace-enabled=true"/>
+          </antcall>
+
     </target>
 
     <target name="build" depends="compile">
@@ -114,6 +120,12 @@
         <antcall target="delete-user-common">
             <param name="user" value="${testuser}"/>
         </antcall>
+        <antcall target="asadmin-common-ignore-fail">
+              <param name="admin.command" value="set" />
+              <param name="operand.props"
+                     value="configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.trace-enabled=false"/>
+       </antcall>
+
     </target>
 
     <target name="usage">

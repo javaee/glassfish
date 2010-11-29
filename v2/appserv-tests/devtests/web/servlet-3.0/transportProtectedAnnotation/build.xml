@@ -88,6 +88,12 @@
                    value="configs.config.server-config.network-config.network-listeners.network-listener.http-listener-2.enabled=true"/>
         </antcall>
 
+        <antcall target="asadmin-common-ignore-fail">
+             <param name="admin.command" value="set" />
+             <param name="operand.props"
+                    value="configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.trace-enabled=true"/>
+         </antcall>
+
         <antcall target="create-user-common">
             <param name="user" value="${testuser}"/>
             <param name="password" value="${testpassword}"/>
@@ -126,6 +132,13 @@
             <param name="operand.props"
                    value="configs.config.server-config.network-config.network-listeners.network-listener.http-listener-2.enabled=false"/>
         </antcall>
+
+        <antcall target="asadmin-common-ignore-fail">
+              <param name="admin.command" value="set" />
+              <param name="operand.props"
+                     value="configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.trace-enabled=false"/>
+          </antcall>
+
 
         <antcall target="delete-user-common">
             <param name="user" value="${testuser}"/>
