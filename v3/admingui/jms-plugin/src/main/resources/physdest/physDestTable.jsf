@@ -67,13 +67,13 @@
                 gf.redirect(page="#{pageSession.selfPage}");
             />
             </sun:button>
-            <sun:button id="flushButton" text="$resource{i18n.button.Flush}" primary="#{false}"
+            <sun:button id="flushButton" text="$resource{i18njms.jmsPhysDestinations.purge}" primary="#{false}"
                 onClick="return submitAndDisable(this, '$resource{i18n.button.Processing}');" >
                 <!command
                     getUIComponent(clientId="$pageSession{configsTableRowGroupId}", component=>$attribute{tableRowGroup});
                     getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
 //                    flushJMSDestination(selectedRows="${selectedRows}");
-                    prepareAlertMsg(summary="$resource{i18njms.jmsPhysDestinations.flushed}", type="success");
+                    prepareAlertMsg(summary="$resource{i18njms.jmsPhysDestinations.purged}", type="success");
                     foreach (var="dest" list="$attribute{selectedRows}") {
                          createMap(result="#{requestScope.attrsMap}");
                          mapPut(map="#{requestScope.attrsMap}" key="desttype" value="#{dest.type}" );
