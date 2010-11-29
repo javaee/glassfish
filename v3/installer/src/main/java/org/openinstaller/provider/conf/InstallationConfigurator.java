@@ -98,15 +98,20 @@ public final class InstallationConfigurator implements Configurator, Notificatio
                 LOGGER.log(Level.INFO, Msg.get("CONFIGURING_GLASSFISH", null));
                 configureGlassfish();
             }
+        } catch (Exception e) {
+            // Don't do anything as major error detection is handled throughout
+            // this class where appropriate and fatal.
+            LOGGER.log(Level.FINEST, e.getMessage());
+        }
 
+        try{
             if (productRef.getProductName().equals("UpdateTool")) {
                 LOGGER.log(Level.INFO, Msg.get("CONFIGURING_UPDATETOOL", null));
                 configureUpdatetool();
             }
         } catch (Exception e) {
-            // Don't do anything as major error detection is handled throughout
-            // this class where appropriate and fatal.
             LOGGER.log(Level.FINEST, e.getMessage());
+            configSuccessful = false;
         }
 
         ResultReport.ResultStatus status =
