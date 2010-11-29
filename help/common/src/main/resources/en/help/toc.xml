@@ -5,12 +5,14 @@
         <tocitem target="task-register" text="To Register the Oracle GlassFish Server" expand="false"></tocitem>
         <tocitem target="task-support" text="To View the GlassFish News Page for the Oracle GlassFish Server" expand="false"></tocitem>
         <tocitem target="task-subscriptions" text="To View the Subscriptions Page for Oracle GlassFish Server" expand="false"></tocitem></tocitem>
-    <tocitem target="task-group-appservsettings" text="Configuring and Managing the GlassFish Server" expand="false">
-        <tocitem target="task-generaltab" text="To View General Information for the GlassFish Server" expand="false"></tocitem>
-        <tocitem target="task-logviewer" text="To View Server Instance or Cluster Log Files" expand="false"></tocitem>
-        <tocitem target="task-setadvanceappconfig" text="To Set the Advanced Applications Configuration" expand="false"></tocitem>
-        <tocitem target="task-setadvancedomainattributes" text="To Set the Advanced Domain Attributes" expand="false"></tocitem>
-        <tocitem target="task-setadminpassword" text="To Change the Administrator Password" expand="false"></tocitem>
+    <tocitem target="task-group-domain" text="Configuring and Managing the Domain" expand="false">
+        <tocitem target="task-setadvancedomainattributes" text="To Set the Domain Attributes" expand="false"></tocitem>
+        <tocitem target="task-setadvanceappconfig" text="To Set the Applications Configuration" expand="false"></tocitem>
+        <tocitem target="task-setadminpassword" text="To Change the Administrator Password" expand="false"></tocitem></tocitem>
+    <tocitem target="task-group-appservsettings" text="Configuring and Managing the DAS" expand="false">
+        <tocitem target="task-generaltab" text="To View General Information for the DAS" expand="false"></tocitem>
+        <tocitem target="task-logviewer" text="To View Log Files for the DAS" expand="false"></tocitem>
+        <tocitem target="task-filter-logs" text="To Filter Displayed Log Records" expand="false"></tocitem>
         <tocitem target="task-systemproperties" text="To Manage System Properties" expand="false"></tocitem>
         <tocitem target="task-appmonitoringdata" text="To View Application Monitoring Data" expand="false"></tocitem>
         <tocitem target="task-servermonitoringdata" text="To View Server Monitoring Data" expand="false"></tocitem>
@@ -100,18 +102,18 @@
         <tocitem target="ref-registrationpage" text="Product Registration" expand="false"></tocitem></tocitem>
     <tocitem target="ref-group-news" text="GlassFish News" expand="false">
         <tocitem target="ref-supportpage" text="GlassFish News" expand="false"></tocitem></tocitem>
-    <tocitem target="ref-group-appservsettings" text="GlassFish Server" expand="false">
-        <tocitem target="ref-generaltab" text="General Information" expand="false"></tocitem>
-        <tocitem target="ref-logviewer" text="Log Viewer" expand="false"></tocitem>
-        <tocitem target="ref-serverinstresources" text="Resources" expand="false"></tocitem>
+    <tocitem target="ref-group-domain" text="Domain" expand="false">
+        <tocitem target="ref-domainattributestab" text="Domain Attributes" expand="false"></tocitem>
+        <tocitem target="ref-serverinstappsconfig" text="Applications Configuration" expand="false"></tocitem>
+        <tocitem target="ref-setadminpassword" text="New Administrator Password" expand="false"></tocitem>
         <tocitem target="ref-group-pswdaliases" text="Password Aliases" expand="false">
             <tocitem target="ref-pswdaliases" text="Passwords Aliases" expand="false"></tocitem>
             <tocitem target="ref-pswdaliasnew" text="New Password Alias" expand="false"></tocitem>
-            <tocitem target="ref-pswdaliasedit" text="Edit Password Alias" expand="false"></tocitem></tocitem>
-        <tocitem target="ref-group-advancedsettings" text="Advanced" expand="false">
-            <tocitem target="ref-serverinstappsconfig" text="Applications Configuration" expand="false"></tocitem>
-            <tocitem target="ref-domainattributestab" text="Domain Attributes" expand="false"></tocitem></tocitem>
-        <tocitem target="ref-setadminpassword" text="New Administrator Password" expand="false"></tocitem>
+            <tocitem target="ref-pswdaliasedit" text="Edit Password Alias" expand="false"></tocitem></tocitem></tocitem>
+    <tocitem target="ref-group-appservsettings" text="server (Admin Server)" expand="false">
+        <tocitem target="ref-generaltab" text="General Information" expand="false"></tocitem>
+        <tocitem target="ref-logviewer" text="Log Viewer" expand="false"></tocitem>
+        <tocitem target="ref-serverinstresources" text="Resources" expand="false"></tocitem>
         <tocitem target="ref-systemproperties" text="System Properties" expand="false"></tocitem>
         <tocitem target="ref-preconfiguredprops" text="Predefined System Properties" expand="false"></tocitem>
         <tocitem target="ref-group-monitor" text="Monitor" expand="false">

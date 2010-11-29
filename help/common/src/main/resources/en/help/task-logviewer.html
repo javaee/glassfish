@@ -5,73 +5,25 @@ Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
 Use is subject to License Terms  -->
 
 
-<a name="task-logviewer"></a><h4>To View Server Instance or Cluster Log Files</h4><a name="indexterm-7"></a><a name="indexterm-8"></a><a name="indexterm-9"></a><ol>
+<a name="task-logviewer"></a><h4>To View Log Files for the DAS</h4><a name="indexterm-15"></a><a name="indexterm-16"></a><a name="indexterm-17"></a><ol>
 <li><b>In the navigation tree, select the server (Admin Server) node.</b><p>The General Information page opens.</p></li>
-<li><b>On the General Information page, click the View Log Files button.</b><p>A Log Viewer window opens.</p></li>
-<li><b>Use the Search Criteria area to customize and filter the log viewer.</b><ul>
-<li><b>Click Advanced Search in the Search Criteria area to make additional refinements to
-the log viewer.</b></li>
-<li><b>In the Timestamp field:</b><ul>
-<li><b>To view the most recent messages, select Most Recent (the default).</b></li>
-<li><b>To view messages only from a certain period of time, select Specific Range
-and type date and time values in the From and To fields
-that appear.</b><p>For the Time value, the syntax must take the following form (<b>SSS</b>
-stands for milliseconds):</p><pre><b>hh</b>:<b>mm</b>:<b>ss</b>.<b>SSS</b></pre><p>For example:</p><pre>17:10:00.000</pre><p>If the From value is later than the To value, an error
-message appears.</p></li></ul></li>
-<li><b>From the Log Level drop-down list, select a log level to filter messages
-by log level. Select the checkbox labeled &#8220;Do not include more severe messages&#8221;
-to display messages at only the chosen level.</b><p>By default, the display includes all messages that appear in the server log
-at the chosen log level and more severe levels.</p><p>To ensure that the messages you want to view appear in the
-server log, first set the appropriate log levels on the Module Log Levels
-page.  See <a href="task-eelogginglevels.html">To Configure Log Levels</a>.</p><p>If you choose to filter log messages based on log level, only
-messages matching the specified filter criteria are shown.  However, this filtering does not
-affect which messages are logged to the server log.</p></li></ul></li>
-<li><b>Use the Modify Search area to specify the server instance or cluster and
-associated log file you want to view.</b><ul>
-<li><b>Select the desired server instance or cluster from the Instance drop-down list.</b><p>The default is server. Other choices depend on the clusters and instances that
-may be defined and enabled for the domain.</p></li>
-<li><b>Select the desired log file for the selected instance or cluster from the
-Log File drop-down list.</b><p>The default is <tt>server.log</tt>. Other choices depend on the log settings for
-the selected target.</p></li></ul></li>
-<li><b>If you clicked Advanced Search in the Search criteria area, perform these steps.</b><ol style="list-style-type: lower-alpha">
-<li><b>From the Logger drop-down list, select one or more namespaces to filter by
-module.</b><p>Use shift-click or control-click to choose multiple namespaces.</p><p>Selecting a namespace at a higher level selects all the namespaces below it.
-For example, selecting <tt>javax.enterprise.system</tt> also selects the loggers for all the modules under
-that namespace: <tt>javax.enterprise.system.core</tt>, <tt>javax.enterprise.system.tools.admin</tt>, and so on.</p></li>
-<li><b>In the Custom Logger field, type the logger names, one per line, to
-view messages from loggers specific to a particular application.</b><p>If the application has several modules, you can view any or all of
-them. For example, suppose the application has loggers with the following names:</p><pre>com.mycompany.myapp.module1
-com.mycompany.myapp.module2
-com.mycompany.myapp.module3</pre><p>To view messages from all modules in the application, type <tt>com.mycompany.myapp</tt>. To
-view messages from <tt>module2</tt> only, type <tt>com.mycompany.myapp.module2</tt>.</p><p>When you specify one or more custom loggers, messages from GlassFish Server
-modules appear only if you specify them explicitly in the Logger area.</p></li>
-<li><b>From the Display drop-down list, select a value from the drop-down list to
-view that number of messages at a time.</b><p>The default number of messages displayed is 40. Other choices are 100, 250,
-and 1000.</p><p>To view stack traces, deselect the &#8220;Limit excessively long messages&#8221; checkbox. By default,
-stack traces do not appear in the viewer; to view them, click the
-<tt>(details)</tt> link for a message.</p></li>
-<li><b>Click Basic Search to hide the Advanced Options area.</b></li></ol></li>
-<li><b>In the Search Results area, customize the display of log messages.</b><p>The Search Results area displays the 40 most recent entries in the
-server log, with the settings specified on the Logging Settings and Log Levels
-pages.</p><ul>
-<li><b>Click the arrows in the columns to sort the messages differently.</b></li>
-<li><b>Click the link labeled <tt>(details)</tt> to view a formatted version of any message.</b><p>A window labeled Log Entry Detail appears, with a formatted version of the
-message.</p></li>
-<li><b>Click the Records before and Records after buttons at the top of the
-table to view earlier or later entries in the log file.</b></li></ul></li></ol><h6>See Also</h6>
+<li><b>On the General Information page, click the View Log Files button.</b><p>A Log Viewer window opens.</p></li></ol><h6>See Also</h6>
 <ul><li><p><a href="task-eelogging.html">To Configure General Logging Settings</a></p>
 
 </li>
 <li><p><a href="task-eelogginglevels.html">To Configure Log Levels</a></p>
 
 </li>
-<li><p><a href="task-generaltab.html">To View General Information for the GlassFish Server</a></p>
+<li><p><a href="task-filter-logs.html">To Filter Displayed Log Records</a></p>
 
 </li>
-<li><p><a href="task-setadvanceappconfig.html">To Set the Advanced Applications Configuration</a></p>
+<li><p><a href="task-generaltab.html">To View General Information for the DAS</a></p>
 
 </li>
-<li><p><a href="task-setadvancedomainattributes.html">To Set the Advanced Domain Attributes</a></p>
+<li><p><a href="task-setadvanceappconfig.html">To Set the Applications Configuration</a></p>
+
+</li>
+<li><p><a href="task-setadvancedomainattributes.html">To Set the Domain Attributes</a></p>
 
 </li>
 <li><p><a href="task-setadminpassword.html">To Change the Administrator Password</a></p>

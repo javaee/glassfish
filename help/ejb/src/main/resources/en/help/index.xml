@@ -1,11 +1,18 @@
 <index version="2.0">
 
+ <indexitem text="availability">
+    <indexitem target="ref-ejbcontaineravailability" text="EJB container (reference)"></indexitem>
+    <indexitem target="task-ejbcontaineravailability" text="EJB container (task)"></indexitem></indexitem>
  <indexitem text="containers, See EJB container"></indexitem>
  <indexitem text="EJB container">
+    <indexitem target="ref-ejbcontaineravailability" text="configuring availability settings (reference)"></indexitem>
+    <indexitem target="task-ejbcontaineravailability" text="configuring availability settings (task)"></indexitem>
     <indexitem target="ref-ejbtimerservice" text="configuring EJB timer service (reference)"></indexitem>
     <indexitem target="task-ejbtimerservice" text="configuring EJB timer service (task)"></indexitem>
     <indexitem target="ref-ejbmdbpoolsettings" text="configuring MDB pool settings (reference)"></indexitem>
-    <indexitem target="task-ejbmdbpoolsettings" text="configuring MDB pool settings (task)"></indexitem></indexitem>
+    <indexitem target="task-ejbmdbpoolsettings" text="configuring MDB pool settings (task)"></indexitem>
+    <indexitem target="task-ejbcontaineravailability" text="disabling availability (task)"></indexitem>
+    <indexitem target="task-ejbcontaineravailability" text="enabling availability (task)"></indexitem></indexitem>
  <indexitem text="EJB timer service">
     <indexitem target="ref-ejbtimerservice" text="configuring (reference)"></indexitem>
     <indexitem target="task-ejbtimerservice" text="configuring (task)"></indexitem></indexitem>

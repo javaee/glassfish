@@ -1,0 +1,94 @@
+<!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
+ 
+Use is subject to License Terms  -->
+
+
+<a name="task-create-standalone-instance"></a><h4>To Create a Standalone GlassFish Server Instance</h4><a name="indexterm-80"></a><a name="indexterm-81"></a><a name="indexterm-82"></a><p>GlassFish Server instances form the basis of an application deployment. A standalone
+instance is not a member of a cluster. Each instance belongs to
+a single domain and has its own directory structure, configuration, and deployed applications.
+Each instance also includes the Java Platform, Enterprise Edition (Java EE) web container
+and Enterprise JavaBeans technology (EJB technology) container. Every new instance must contain
+a reference to a node that defines the host where the instance will
+reside.</p>
+
+<ol>
+<li><b>In the navigation tree, select the Standalone Instances node.</b><p>The Standalone Server Instances page opens.</p></li>
+<li><b>On the Standalone Server Instances page, click New.</b><p>The New Standalone Server Instance page opens.</p></li>
+<li><b>In the Name field, type a name for the instance.</b><p>The name must be unique across all nodes, GlassFish Server instances, clusters,
+and named configurations.</p></li>
+<li><b>From the Node drop-down list, select the node where the instance will
+reside.</b></li>
+<li><b>From the Configuration drop-down list, select the named configuration that the instance
+will use.</b>
+<hr><p><b>Note - </b>If you select <tt>default-config</tt>, you must specify in the next step that
+the configuration is <b>not</b> shared. The <tt>default-config</tt> configuration cannot be shared.</p>
+
+
+<hr>
+</li>
+<li><b>Specify whether the configuration that instance will use is shared.</b><ul>
+<li><b>If the configuration is not shared, leave the Make a Copy of
+the Selected Configuration option selected. </b><p>The selected configuration is copied when the instance is created. The copy of
+the configuration is assigned the name <tt><i>instance-name</i>-config</tt>, where <i>instance-name</i> is the name of
+the instance that you are creating.</p></li>
+<li><b>If the configuration is shared, select the Reference the Selected Configuration option.</b><p>The instance will use the specified existing named configuration.</p></li></ul></li>
+<li><b>Click OK.</b></li></ol><h6>See Also</h6>
+<ul><li><p><a href="task-delete-standalone-instances.html">To Delete Standalone GlassFish Server Instances</a></p>
+
+</li>
+<li><p><a href="task-start-standalone-instances.html">To Start Standalone GlassFish Server Instances</a></p>
+
+</li>
+<li><p><a href="task-stop-standalone-instances.html">To Stop Standalone GlassFish Server Instances</a></p>
+
+</li>
+<li><p><a href="task-view-logs-standalone-instance.html">To View Log Files for a Standalone GlassFish Server Instance</a></p>
+
+</li>
+<li><p><a href="task-standalone-instance-app-deploy.html">To Deploy an Application to a Standalone GlassFish Server Instance</a></p>
+
+</li>
+<li><p><a href="task-standalone-instance-app-list.html">To List Applications That Are Deployed to a Standalone GlassFish Server Instance</a></p>
+
+</li>
+<li><p><a href="task-standalone-instance-app-edit.html">To Edit an Application That Is Deployed to a Standalone GlassFish Server Instance</a></p>
+
+</li>
+<li><p><a href="task-standalone-instance-app-enable-disable.html">To Enable or Disable an Application That Is Deployed to a Standalone GlassFish Server Instance</a></p>
+
+</li>
+<li><p><a href="task-standalone-instance-app-lb-enable-disable.html">To Enable or Disable Load Balancing for an Application That Is Deployed to a Standalone GlassFish Server Instance</a></p>
+
+</li>
+<li><p><a href="task-standalone-instance-resource-create.html">To Create a Resource for a Standalone GlassFish Server Instance</a></p>
+
+</li>
+<li><p><a href="task-standalone-instance-resource-display.html">To List Resources for a Standalone GlassFish Server Instance</a></p>
+
+</li>
+<li><p><a href="task-standalone-instance-resource-enable-disable.html">To Enable or Disable a Resource for a Standalone GlassFish Server Instance</a></p>
+
+</li>
+<li><p><a href="task-standalone-instance-resource-edit.html">To Edit a Resource for a Standalone GlassFish Server Instance</a></p>
+
+</li>
+<li><p><a href="task-change-standalone-instance-ports.html">To Modify the Port Numbers of a Standalone GlassFish Server Instance</a></p>
+
+</li>
+<li><p><a href="task-set-props-standalone-instance.html">To Set Instance-Only Properties for a Standalone GlassFish Server Instance</a></p>
+
+</li>
+<li><p><a href="task-mon-app-standalone-instance.html">To View Application Monitoring Data for a Standalone GlassFish Server Instance</a></p>
+
+</li>
+<li><p><a href="task-mon-server-standalone-instance.html">To View Virtual-Server Monitoring Data for a Standalone GlassFish Server Instance</a></p>
+
+</li>
+<li><p><a href="task-mon-resource-standalone-instance.html">To View Resource Monitoring Data for a Standalone GlassFish Server Instance</a></p>
+
+</li></ul>
+
+
+<small>Copyright &#169; 2010, Oracle and/or its affiliates. All rights reserved. <a href="docinfo.html">Legal Notices</a></small>

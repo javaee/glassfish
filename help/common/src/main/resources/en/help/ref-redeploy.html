@@ -38,7 +38,7 @@ Use is subject to License Terms  -->
 
 <p>Some changes to an application between redeployments prevent this feature from working properly. For example, do not change the set of instance variables in the SFSB bean class.</p>
 
-<p>For web applications, this feature is applicable only if in the <tt>glassfish-web-app.xml</tt> file the <tt>persistence-type</tt> attribute of the <b>Broken Link (Target ID: BEAXQ)</b> element is <tt>file</tt>.</p>
+<p>For web applications, this feature is applicable only if in the <tt>glassfish-web-app.xml</tt> file the <tt>persistence-type</tt> attribute of the <tt>session-manager</tt> element is <tt>file</tt>.</p>
 
 <p>For stateful session bean instances, the persistence type without high availability is set in the server (the SFSB Persistence Type option under EJB Container Availability) and must be set to <tt>file</tt>, which is the default and recommended value.</p>
 
@@ -97,7 +97,7 @@ Use is subject to License Terms  -->
 <li><p><a href="task-apprestart.html">To Reload a Deployed Application</a></p>
 
 </li>
-<li><p><b>Broken Link (Target ID: TASK-EJBCONTAINERAVAILABILITY)</b></p>
+<li><p><a href="../../../ejb/en/help/task-ejbcontaineravailability.html">To Configure Availability Settings for the EJB Container</a></p>
 
 </li></ul>
 <h5>Related <tt>asadmin</tt> Commands</h5>
