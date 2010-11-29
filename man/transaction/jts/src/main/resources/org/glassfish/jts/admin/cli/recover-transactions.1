@@ -13,14 +13,6 @@ DESCRIPTION
      The recover-transactions subcommand manually recovers  pend-
      ing transactions.
 
-     For a stand-alone server, do  not  use  this  subcommand  to
-     recover  transactions  after  a server failure. For a stand-
-     alone  server,  the  recover-transactions   subcommand   can
-     recover  transactions  only  when  a resource fails, but the
-     server is still running. If a stand-alone server fails, only
-     the  full  startup recovery process can recover transactions
-     that were pending when the server failed.
-
      For an installation of multiple server  instances,  you  can
      run  the  recover-transactions  subcommand  from a surviving
      server instance  to  recover  transactions  after  a  server
@@ -31,6 +23,14 @@ DESCRIPTION
 
          o    Transaction logs are stored on a shared file system
               that is accessible to all server instances.
+
+     For a stand-alone server, do  not  use  this  subcommand  to
+     recover  transactions  after  a server failure. For a stand-
+     alone  server,  the  recover-transactions   subcommand   can
+     recover  transactions  only  when  a resource fails, but the
+     server is still running. If a stand-alone server fails, only
+     the  full  startup recovery process can recover transactions
+     that were pending when the server failed.
 
      This subcommand is supported in remote mode only.
 
@@ -49,7 +49,7 @@ OPTIONS
          The target server that performs  the  recovery  for  the
          server that is specified by the server_name operand. The
 
-Java EE 6           Last change: 16 Nov 2010                    1
+Java EE 6           Last change: 17 Nov 2010                    1
 
 asadmin Utility Subcommands               recover-transactions(1)
 
@@ -97,7 +97,7 @@ SEE ALSO
      freeze-transaction-service(1),         unfreeze-transaction-
      service(1), rollback-transaction(1)
 
-Java EE 6           Last change: 16 Nov 2010                    2
+Java EE 6           Last change: 17 Nov 2010                    2
 
 asadmin Utility Subcommands               recover-transactions(1)
 
@@ -105,5 +105,5 @@ asadmin Utility Subcommands               recover-transactions(1)
 
      Chapter 28, Transactions, in The Java EE 6 Tutorial
 
-Java EE 6           Last change: 16 Nov 2010                    3
+Java EE 6           Last change: 17 Nov 2010                    3
 

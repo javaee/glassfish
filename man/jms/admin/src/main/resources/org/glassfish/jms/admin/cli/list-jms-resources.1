@@ -30,10 +30,30 @@ OPTIONS
 OPERANDS
      target
 
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command runs successfully and the option is ignored.
+         Restricts the listing to resources for a specified  tar-
+         get. Valid values are as follows:
+
+         server
+             Lists the resources for the default server instance.
+             This is the default value.
+
+         configuration-name
+
+             Lists the resources in the specified configuration.
+
+         cluster-name
+             Lists the resources for every server instance in the
+             specified cluster.
+
+         instance-name
+
+             Lists  the  resources  for  the   specified   server
+
+Java EE 6           Last change: 16 Sep 2009                    1
+
+asadmin Utility Subcommands                 list-jms-resources(1)
+
+             instance.
 
 EXAMPLES
      Example 1 Listing all JMS resources
@@ -46,10 +66,6 @@ EXAMPLES
        jms/DurableConnectionFactory
        jms/Topic
        Command list-jms-resources executed successfully.
-
-Java EE 6           Last change: 16 Sep 2009                    1
-
-asadmin Utility Subcommands                 list-jms-resources(1)
 
      Example 2 Listing JMS resources of a specified type
 

@@ -308,14 +308,17 @@ Utility Commands                                      asadmin(1M)
 
              o    AS_ADMIN_PASSPHRASEsshd-passphrase (read by the
                   install-node(1) subcommand)
-         In domains that do not allow unauthenticated login,  all
-         remote subcommands must specify the administration pass-
-         word to authenticate to the DAS.  The  password  can  be
+
+             o    AS_ADMIN_JMSDBPASSWORD jdbc-user-password (read
+                  by the configure-jms-cluster(1) subcommand)
 
 Java EE 6           Last change: 17 Oct 2010                    6
 
 Utility Commands                                      asadmin(1M)
 
+         In domains that do not allow unauthenticated login,  all
+         remote subcommands must specify the administration pass-
+         word to authenticate to the DAS.  The  password  can  be
          specified by one of the following means:
 
              o    Through the --passwordfile option
@@ -363,19 +366,18 @@ Utility Commands                                      asadmin(1M)
 
          The default is false.
 
-     --echo
-     -e
-
 Java EE 6           Last change: 17 Oct 2010                    7
 
 Utility Commands                                      asadmin(1M)
+
+     --echo
+     -e
 
          If set to true, the command-line statement is echoed  on
          the standard output. Default is false.
 
      --interactive
      -I
-
          If set to true, only the required options are prompted.
 
          The default depends on how the asadmin utility is run:
@@ -389,6 +391,7 @@ Utility Commands                                      asadmin(1M)
 
      --help
      -?
+
          Displays the help text for the asadmin utility.
 
 EXAMPLES
@@ -410,13 +413,12 @@ EXAMPLES
      Example 2 Specifying an asadmin Utility Option With  a  Sub-
      command
 
-     This example specifies the  --host  asadmin  utility  option
-     with  the  list-applications  subcommand  in single mode. In
-
 Java EE 6           Last change: 17 Oct 2010                    8
 
 Utility Commands                                      asadmin(1M)
 
+     This example specifies the  --host  asadmin  utility  option
+     with  the  list-applications  subcommand  in single mode. In
      this   example,   the   DAS   is   running   on   the   host
      srvr1.example.com.
 
@@ -455,13 +457,12 @@ Utility Commands                                      asadmin(1M)
      operating  system  meta  character  and the colon (:) option
      delimiter in the property value c:\tools\jruby.
 
-     For the UNIX operating system in single mode and  multimode,
-     and  for  all operating systems in multimode,  the backslash
-
 Java EE 6           Last change: 17 Oct 2010                    9
 
 Utility Commands                                      asadmin(1M)
 
+     For the UNIX operating system in single mode and  multimode,
+     and  for  all operating systems in multimode,  the backslash
      (\) is required to escape the  backslash (\) meta  character
      and the colon (:) option delimiter:
 
@@ -495,12 +496,12 @@ Utility Commands                                      asadmin(1M)
        --description Test\\Escape\\Character
        sampleJDBCConnectionPool
 
-     For the Windows operating system in single mode,  no  escape
-     character is required:
-
 Java EE 6           Last change: 17 Oct 2010                   10
 
 Utility Commands                                      asadmin(1M)
+
+     For the Windows operating system in single mode,  no  escape
+     character is required:
 
        asadmin --user admin --passwordfile gfpass create-jdbc-connection-pool
        --datasourceclassname sampleClassName
@@ -536,13 +537,14 @@ Utility Commands                                      asadmin(1M)
      can be enclosed single quote (') characters:
 
        asadmin --user admin --passwordfile gfpass create-jdbc-connection-pool
-       --datasourceclassname com.derby.jdbc.jdbcDataSource
-       --property 'user=dbnuser:passwordfile=dbpasswordfile:
-       DatabaseName="jdbc:derby":server="http://locahost:9092"'
 
 Java EE 6           Last change: 17 Oct 2010                   11
 
 Utility Commands                                      asadmin(1M)
+
+       --datasourceclassname com.derby.jdbc.jdbcDataSource
+       --property 'user=dbnuser:passwordfile=dbpasswordfile:
+       DatabaseName="jdbc:derby":server="http://locahost:9092"'
 
      For the Windows operating system in single mode, a backslash
      (\)  is  required  to escape only the colon (:), but not the
@@ -578,6 +580,11 @@ Utility Commands                                      asadmin(1M)
 
          o    To pass a literal backslash to  a  subcommand,  two
               backslashes  are required. Therefore, the colon (:)
+
+Java EE 6           Last change: 17 Oct 2010                   12
+
+Utility Commands                                      asadmin(1M)
+
               must be escaped by two backslashes (\\).
 
          o    To  prevent  the  subcommand  from   treating   the
@@ -585,11 +592,6 @@ Utility Commands                                      asadmin(1M)
               must  be  escaped.  As  a   result,   two   literal
               backslashes  (\\) must be passed to the subcommand.
               To  prevent  the  shell  from  interpreting   these
-
-Java EE 6           Last change: 17 Oct 2010                   12
-
-Utility Commands                                      asadmin(1M)
-
               backslashes  as  special characters, each backslash
               must be escaped. Therefore, the backslash  must  be
               specified by a total of four backslashes (\\\\).
@@ -621,16 +623,15 @@ Utility Commands                                      asadmin(1M)
        asadmin set-web-env-entry --name="Hello User" --type=java.lang.String
        --value=techscribe --description=\"Hello\\App\"\\authentication hello
 
+Java EE 6           Last change: 17 Oct 2010                   13
+
+Utility Commands                                      asadmin(1M)
+
      For the Windows operating system in single mode, a backslash
      (\) is required to escape only the double quote ("), but not
      the backslash (\):
 
        asadmin set-web-env-entry --name="Hello User" --type=java.lang.String
-
-Java EE 6           Last change: 17 Oct 2010                   13
-
-Utility Commands                                      asadmin(1M)
-
        --value=techscribe --description=\"Hello\App\"\authentication hello
 
 ENVIRONMENT VARIABLES
@@ -667,8 +668,12 @@ SEE ALSO
 
      attributes(5)
 
+Java EE 6           Last change: 17 Oct 2010                   14
+
+Utility Commands                                      asadmin(1M)
+
      http-listener in Oracle GlassFish  Server  3.1  Domain  File
      Format Reference
 
-Java EE 6           Last change: 17 Oct 2010                   14
+Java EE 6           Last change: 17 Oct 2010                   15
 

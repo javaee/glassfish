@@ -51,7 +51,7 @@ DESCRIPTION
      create tables fails, the deployment does not fail; a warning
      message is provided in the log file.
 
-Java EE 6           Last change: 16 Nov 2010                    1
+Java EE 6           Last change: 19 Nov 2010                    1
 
 asadmin Utility Subcommands                             deploy(1)
 
@@ -103,7 +103,7 @@ OPTIONS
          versions, see the Module  and  Application  Versions  in
          Oracle   GlassFish  Server  3.1  Application  Deployment
 
-Java EE 6           Last change: 16 Nov 2010                    2
+Java EE 6           Last change: 19 Nov 2010                    2
 
 asadmin Utility Subcommands                             deploy(1)
 
@@ -143,7 +143,8 @@ asadmin Utility Subcommands                             deploy(1)
          false, tables are not created.  If  not  specified,  the
          value  of  the create-tables-at-deploy entry in the cmp-
          resource  element  of  the  glassfish-ejb-jar.xml   file
-         determines whether or not tables are created.
+         determines  whether or not tables are created. No unique
+         constraints are created for the tables.
 
      --dropandcreatetables
 
@@ -154,12 +155,12 @@ asadmin Utility Subcommands                             deploy(1)
          isting tables will not be dropped on the initial deploy-
          ment  of  an application or on a deployment that follows
          an explicit undeploy. If specified as false, tables  are
-         neither  dropped  nor  created.   If  not specified, the
 
-Java EE 6           Last change: 16 Nov 2010                    3
+Java EE 6           Last change: 19 Nov 2010                    3
 
 asadmin Utility Subcommands                             deploy(1)
 
+         neither  dropped  nor  created.   If  not specified, the
          tables are dropped if the drop-tables-at-undeploy  entry
          in the cmp-resource element of the glassfish-ejb-jar.xml
          file is set to true, and the new tables are  created  if
@@ -207,11 +208,12 @@ asadmin Utility Subcommands                             deploy(1)
          specified application or module  is  enabled  for  high-
          availability. Set this option to true only if high avai-
          lability is configured and  enabled  at  higher  levels,
-         such as the server and container levels.
 
-Java EE 6           Last change: 16 Nov 2010                    4
+Java EE 6           Last change: 19 Nov 2010                    4
 
 asadmin Utility Subcommands                             deploy(1)
+
+         such as the server and container levels.
 
      --asyncreplication
 
@@ -262,7 +264,7 @@ asadmin Utility Subcommands                             deploy(1)
          data, the class loader of the newly redeployed  applica-
          tion deserializes the data that was previously saved.
 
-Java EE 6           Last change: 16 Nov 2010                    5
+Java EE 6           Last change: 19 Nov 2010                    5
 
 asadmin Utility Subcommands                             deploy(1)
 
@@ -305,15 +307,15 @@ asadmin Utility Subcommands                             deploy(1)
              the cluster.
 
          instance_name
-             Deploys  the  component  to   a   particular   sever
-             instance.
+             Deploys the component to  a  particular  stand-alone
+             sever instance.
 
      --type
 
          The packaging archive type  of  the  component  that  is
          being deployed. Possible values are as follows:
 
-Java EE 6           Last change: 16 Nov 2010                    6
+Java EE 6           Last change: 19 Nov 2010                    6
 
 asadmin Utility Subcommands                             deploy(1)
 
@@ -334,15 +336,6 @@ asadmin Utility Subcommands                             deploy(1)
          use either option regardless of the number of properties
          that you specify.
 
-         Note -
-
-           For properties that  contain  .  (dot)  separators  in
-           their  names, using the set subcommand to change these
-           properties  requires  a  server  restart.   A   better
-           approach  is  to  use the redeploy subcommand with the
-           changed properties. If you do use the set  subcommand,
-           the  . (dot) separators in these properties names must
-           be escaped.
          You can specify the following properties for  a  deploy-
          ment:
 
@@ -367,19 +360,20 @@ asadmin Utility Subcommands                             deploy(1)
              trust. Default is s1as,  the  alias  for  the  self-
              signed certificate created for every domain.
 
-Java EE 6           Last change: 16 Nov 2010                    7
-
-asadmin Utility Subcommands                             deploy(1)
-
          java-web-start-enabled
-
              Specifies whether Java Web Start access is permitted
              for an application client module. Default is true.
 
          compatibility
+
              Specifies the GlassFish Server release with which to
              be  backward  compatible  in terms of JAR visibility
              requirements  for  applications.  The  only  allowed
+
+Java EE 6           Last change: 19 Nov 2010                    7
+
+asadmin Utility Subcommands                             deploy(1)
+
              value  is v2, which refers to Sun GlassFishTM Enter-
              prise Server version 2 or Sun JavaTM System Applica-
              tion  Server  version  9.1  or 9.1.1.  The Java EE 6
@@ -421,20 +415,19 @@ asadmin Utility Subcommands                             deploy(1)
 
                  To preserve active  sessions,  GlassFish  Server
                  serializes   the  sessions  and  saves  them  in
-
-Java EE 6           Last change: 16 Nov 2010                    8
-
-asadmin Utility Subcommands                             deploy(1)
-
                  memory.  To  restore  the  sessions,  the  class
                  loader   of  the  newly  redeployed  application
                  deserializes any sessions that  were  previously
                  saved.
 
              preserveAppScopedResources
-
                  If set to true, preserves any application-scoped
                  resources and restores them during redeployment.
+
+Java EE 6           Last change: 19 Nov 2010                    8
+
+asadmin Utility Subcommands                             deploy(1)
+
                  Default is false.
 
              Other available properties  are  determined  by  the
@@ -443,6 +436,7 @@ asadmin Utility Subcommands                             deploy(1)
 
 OPERANDS
      file_archive |filepath
+
          The path to the archive that  contains  the  application
          that is being deployed. This path can be a relative path
          or an absolute path.
@@ -473,16 +467,16 @@ EXAMPLES
      can use the --target option to deploy to a different  server
      instance or to a cluster.
 
-Java EE 6           Last change: 16 Nov 2010                    9
-
-asadmin Utility Subcommands                             deploy(1)
-
        asadmin> deploy Cart.ear
        Application deployed successfully with name Cart.
        Command deploy executed successfully
 
      Example 2 Deploying a Web Application With the Default  Con-
      text Root
+
+Java EE 6           Last change: 19 Nov 2010                    9
+
+asadmin Utility Subcommands                             deploy(1)
 
      This example deploys the web application  in  the  hello.war
      file  to the default server instance server. You can use the
@@ -515,11 +509,6 @@ asadmin Utility Subcommands                             deploy(1)
      example is an existing cluster, cluster1.
 
        asadmin> deploy --createtables=true --target cluster1 EmployeeEJB.jar
-
-Java EE 6           Last change: 16 Nov 2010                   10
-
-asadmin Utility Subcommands                             deploy(1)
-
        Application deployed successfully with name EmployeeEJB.
        Command deploy executed successfully
 
@@ -527,6 +516,10 @@ asadmin Utility Subcommands                             deploy(1)
 
      This example deploys a connector module that is packaged  in
      an RAR file.
+
+Java EE 6           Last change: 19 Nov 2010                   10
+
+asadmin Utility Subcommands                             deploy(1)
 
      This example uses the --target option. The  target  in  this
      example  is an existing standalone server instance that does
@@ -549,5 +542,5 @@ SEE ALSO
 
      Oracle GlassFish Server 3.1 Application Deployment Guide
 
-Java EE 6           Last change: 16 Nov 2010                   11
+Java EE 6           Last change: 19 Nov 2010                   11
 

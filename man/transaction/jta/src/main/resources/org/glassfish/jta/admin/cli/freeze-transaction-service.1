@@ -14,7 +14,8 @@ DESCRIPTION
      starting, completing, or changing the state of all in-flight
      transactions.  Invoke  this  command before rolling back any
      in-flight  transactions.  Invoking  this  subcommand  on  an
-     already  frozen  transaction  subsystem  has no effect. This
+     already frozen transaction subsystem has no effect. Restart-
+     ing the server unfreezes  the  transaction  subsystem.  This
      subcommand is supported in remote mode only.
 
 OPTIONS
@@ -33,8 +34,8 @@ OPTIONS
              server instance server and is the default value.
 
          configuration_name
-             Freezes the transaction service for the named confi-
-             guration.
+             Freezes  the  transaction  service  for  all  server
+             instances that use the named configuration.
 
          cluster_name
 
@@ -45,7 +46,7 @@ OPTIONS
              Freezes the transaction  service  for  a  particular
              server instance.
 
-Java EE 6           Last change: 16 Nov 2010                    1
+Java EE 6           Last change: 17 Nov 2010                    1
 
 asadmin Utility Subcommands         freeze-transaction-service(1)
 
@@ -68,5 +69,5 @@ SEE ALSO
 
      Chapter 28, Transactions, in The Java EE 6 Tutorial
 
-Java EE 6           Last change: 16 Nov 2010                    2
+Java EE 6           Last change: 17 Nov 2010                    2
 

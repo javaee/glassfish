@@ -16,7 +16,9 @@ SYNOPSIS
 
 DESCRIPTION
      The validate-multicast subcommand validates  that  multicast
-     transport is available for clusters.
+     transport  is  available  for  clusters. You should run this
+     subcommand at the same time on each of the hosts to be vali-
+     dated. This subcommand is available in local mode.
 
 OPTIONS
      --help
@@ -41,17 +43,18 @@ OPTIONS
 
      --bindinterface
          The local interface to receive multicast datagram  pack-
-         ets  for  the  GMS.  The default is null, which uses all
-         available binding interfaces.
+         ets  for  the  GMS.  The default is to use all available
+         binding interfaces.
 
          On a multi-home machine (possessing two or more  network
          interfaces),  this  attribute  enables  you  to indicate
          which network interface is used for the GMS. This  value
-         must be a local network interface IP address.
 
-Java EE 6           Last change: 26 Oct 2010                    1
+Java EE 6           Last change: 18 Nov 2010                    1
 
 asadmin Utility Subcommands                 validate-multicast(1)
+
+         must be a local network interface IP address.
 
      --sendperiod
 
@@ -95,11 +98,12 @@ EXAMPLES
        Command validate-multicast executed successfully
 
 EXIT STATUS
-     0                   command executed successfully
 
-Java EE 6           Last change: 26 Oct 2010                    2
+Java EE 6           Last change: 18 Nov 2010                    2
 
 asadmin Utility Subcommands                 validate-multicast(1)
+
+     0                   command executed successfully
 
      1                   error in executing the command
 
@@ -108,5 +112,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 26 Oct 2010                    3
+Java EE 6           Last change: 18 Nov 2010                    3
 

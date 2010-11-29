@@ -51,7 +51,7 @@ DESCRIPTION
 
          o    localhost
 
-Java EE 6           Last change: 16 Nov 2010                    1
+Java EE 6           Last change: 19 Nov 2010                    1
 
 asadmin Utility Subcommands                          deploydir(1)
 
@@ -99,7 +99,7 @@ OPTIONS
          precompiled  during  deployment.  Instead, JSPs are com-
          piled during runtime. Default is false.
 
-Java EE 6           Last change: 16 Nov 2010                    2
+Java EE 6           Last change: 19 Nov 2010                    2
 
 asadmin Utility Subcommands                          deploydir(1)
 
@@ -149,9 +149,10 @@ asadmin Utility Subcommands                          deploydir(1)
          false, tables are not created.  If  not  specified,  the
          value  of  the create-tables-at-deploy entry in the cmp-
          resource  element  of  the  glassfish-ejb-jar.xml   file
-         determines whether or not tables are created.
+         determines  whether or not tables are created. No unique
+         constraints are created for the tables.
 
-Java EE 6           Last change: 16 Nov 2010                    3
+Java EE 6           Last change: 19 Nov 2010                    3
 
 asadmin Utility Subcommands                          deploydir(1)
 
@@ -201,7 +202,7 @@ asadmin Utility Subcommands                          deploydir(1)
          put  into the client.jar. If set to false, the stubs are
          not generated. Default is false.
 
-Java EE 6           Last change: 16 Nov 2010                    4
+Java EE 6           Last change: 19 Nov 2010                    4
 
 asadmin Utility Subcommands                          deploydir(1)
 
@@ -255,7 +256,7 @@ asadmin Utility Subcommands                          deploydir(1)
          type without high availability is set in the server (the
          sfsb-persistence-type attribute)  and  must  be  set  to
 
-Java EE 6           Last change: 16 Nov 2010                    5
+Java EE 6           Last change: 19 Nov 2010                    5
 
 asadmin Utility Subcommands                          deploydir(1)
 
@@ -309,14 +310,14 @@ asadmin Utility Subcommands                          deploydir(1)
              Deploys the component to every  server  instance  in
              the cluster.
 
-Java EE 6           Last change: 16 Nov 2010                    6
+Java EE 6           Last change: 19 Nov 2010                    6
 
 asadmin Utility Subcommands                          deploydir(1)
 
          instance_name
 
-             Deploys  the  component  to   a   particular   sever
-             instance.
+             Deploys the component to  a  particular  stand-alone
+             server instance.
 
      --type
          The packaging archive type  of  the  component  that  is
@@ -339,15 +340,6 @@ asadmin Utility Subcommands                          deploydir(1)
          use either option regardless of the number of properties
          that you specify.
 
-         Note -
-
-           For properties that  contain  .  (dot)  separators  in
-           their  names, using the set subcommand to change these
-           properties  requires  a  server  restart.   A   better
-           approach  is  to  use the redeploy subcommand with the
-           changed properties. If you do use the set  subcommand,
-           the  . (dot) separators in these properties names must
-           be escaped.
          You can specify the following properties for  a  deploy-
          ment:
 
@@ -363,11 +355,6 @@ asadmin Utility Subcommands                          deploydir(1)
              certificate  with  this alias from the domain's key-
              store. Java Web Start then asks the user whether  to
              trust  the  code  and  displays the GlassFish Server
-
-Java EE 6           Last change: 16 Nov 2010                    7
-
-asadmin Utility Subcommands                          deploydir(1)
-
              certificate information.  To sign this JAR file with
              a  different certificate, add the certificate to the
              domain keystore, then use this property.  For  exam-
@@ -376,6 +363,10 @@ asadmin Utility Subcommands                          deploydir(1)
              or  from your own company, which users know they can
              trust. Default is s1as,  the  alias  for  the  self-
              signed certificate created for every domain.
+
+Java EE 6           Last change: 19 Nov 2010                    7
+
+asadmin Utility Subcommands                          deploydir(1)
 
          java-web-start-enabled
 
@@ -417,11 +408,6 @@ asadmin Utility Subcommands                          deploydir(1)
              true
 
                  Active sessions of the application are preserved
-
-Java EE 6           Last change: 16 Nov 2010                    8
-
-asadmin Utility Subcommands                          deploydir(1)
-
                  and restored.
 
                  If any active session of the  application  fails
@@ -432,6 +418,11 @@ asadmin Utility Subcommands                          deploydir(1)
 
                  To preserve active  sessions,  GlassFish  Server
                  serializes   the  sessions  and  saves  them  in
+
+Java EE 6           Last change: 19 Nov 2010                    8
+
+asadmin Utility Subcommands                          deploydir(1)
+
                  memory.  To  restore  the  sessions,  the  class
                  loader   of  the  newly  redeployed  application
                  deserializes any sessions that  were  previously
@@ -466,10 +457,6 @@ EXAMPLES
        WARNING : deploydir command deprecated.  Please use deploy command instead.
        Command deploydir executed successfully
 
-Java EE 6           Last change: 16 Nov 2010                    9
-
-asadmin Utility Subcommands                          deploydir(1)
-
 EXIT STATUS
      0                           subcommand executed successfully
 
@@ -477,11 +464,16 @@ EXIT STATUS
                                  mand
 
 SEE ALSO
+
+Java EE 6           Last change: 19 Nov 2010                    9
+
+asadmin Utility Subcommands                          deploydir(1)
+
      deploy(1), , redeploy(1), undeploy(1)
 
      asadmin(1M)
 
      Oracle GlassFish Server 3.1 Application Deployment Guide
 
-Java EE 6           Last change: 16 Nov 2010                   10
+Java EE 6           Last change: 19 Nov 2010                   10
 

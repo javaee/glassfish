@@ -51,7 +51,7 @@ OPTIONS
          One  or  more  virtual  server  IDs.  Multiple  IDs  are
          separated by commas.
 
-Java EE 6           Last change: 16 Nov 2010                    1
+Java EE 6           Last change: 19 Nov 2010                    1
 
 asadmin Utility Subcommands                           redeploy(1)
 
@@ -103,7 +103,7 @@ asadmin Utility Subcommands                           redeploy(1)
 
          Specifies the name of  the  database  vendor  for  which
 
-Java EE 6           Last change: 16 Nov 2010                    2
+Java EE 6           Last change: 19 Nov 2010                    2
 
 asadmin Utility Subcommands                           redeploy(1)
 
@@ -125,7 +125,8 @@ asadmin Utility Subcommands                           redeploy(1)
          false, tables are not created.  If  not  specified,  the
          value  of  the create-tables-at-deploy entry in the cmp-
          resource  element  of  the  glassfish-ejb-jar.xml   file
-         determines whether or not tables are created.
+         determines  whether or not tables are created. No unique
+         constraints are created for the tables.
 
      --dropandcreatetables
          If specified as true when the component  is  redeployed,
@@ -154,7 +155,7 @@ asadmin Utility Subcommands                           redeploy(1)
          option when deploying a pure EAR file. A pure  EAR  file
          is an EAR without GlassFish Server descriptors.
 
-Java EE 6           Last change: 16 Nov 2010                    3
+Java EE 6           Last change: 19 Nov 2010                    3
 
 asadmin Utility Subcommands                           redeploy(1)
 
@@ -206,7 +207,7 @@ asadmin Utility Subcommands                           redeploy(1)
      --keepstate
          This  option  controls  whether   web   sessions,   SFSB
 
-Java EE 6           Last change: 16 Nov 2010                    4
+Java EE 6           Last change: 19 Nov 2010                    4
 
 asadmin Utility Subcommands                           redeploy(1)
 
@@ -260,7 +261,7 @@ asadmin Utility Subcommands                           redeploy(1)
              Deploys the component to the domain.  If  domain  is
              the   target   for   an   initial   deployment,  the
 
-Java EE 6           Last change: 16 Nov 2010                    5
+Java EE 6           Last change: 19 Nov 2010                    5
 
 asadmin Utility Subcommands                           redeploy(1)
 
@@ -283,8 +284,8 @@ asadmin Utility Subcommands                           redeploy(1)
              the cluster.
 
          instance_name
-             Deploys  the  component  to   a   particular   sever
-             instance.
+             Deploys the component to  a  particular  stand-alone
+             server instance.
 
      --type
 
@@ -308,22 +309,12 @@ asadmin Utility Subcommands                           redeploy(1)
          use either option regardless of the number of properties
          that you specify.
 
-         Note -
-
-           For properties that  contain  .  (dot)  separators  in
-           their  names, using the set subcommand to change these
-
-Java EE 6           Last change: 16 Nov 2010                    6
-
-asadmin Utility Subcommands                           redeploy(1)
-
-           properties  requires  a  server  restart.   A   better
-           approach  is  to  use the redeploy subcommand with the
-           changed properties. If you do use the set  subcommand,
-           the  . (dot) separators in these properties names must
-           be escaped.
          You can specify the following properties for  a  deploy-
          ment:
+
+Java EE 6           Last change: 19 Nov 2010                    6
+
+asadmin Utility Subcommands                           redeploy(1)
 
          jar-signing-alias
 
@@ -368,26 +359,26 @@ asadmin Utility Subcommands                           redeploy(1)
              directory  mechanism.  Setting  this  property to v2
              removes these Java EE 6 restrictions.
 
-Java EE 6           Last change: 16 Nov 2010                    7
-
-asadmin Utility Subcommands                           redeploy(1)
-
          keepSessions={false|true}
-
              Superseded by the --keepstate option.
 
              This property can by used to specify whether  active
              sessions of the application that is being redeployed
-             are preserved and then restored when  the  redeploy-
-             ment  is complete. Applies to HTTP sessions in a web
-             container. Default is false.
+             are   preserved   and   then   restored   when   the
+
+Java EE 6           Last change: 19 Nov 2010                    7
+
+asadmin Utility Subcommands                           redeploy(1)
+
+             redeployment  is  complete. Applies to HTTP sessions
+             in a web container. Default is false.
 
              false
+
                  Active  sessions  of  the  application  are  not
                  preserved and restored (default).
 
              true
-
                  Active sessions of the application are preserved
                  and restored.
 
@@ -405,6 +396,7 @@ asadmin Utility Subcommands                           redeploy(1)
                  saved.
 
              preserveAppScopedResources
+
                  If set to true, preserves any application-scoped
                  resources and restores them during redeployment.
                  Default is false.
@@ -415,22 +407,22 @@ asadmin Utility Subcommands                           redeploy(1)
 
 OPERANDS
      file_archive |filepath
-
          The path to the archive that  contains  the  application
          that  is  being  redeployed. This path can be a relative
          path or an absolute path.
 
          The archive can be in either of the following formats:
 
-Java EE 6           Last change: 16 Nov 2010                    8
-
-asadmin Utility Subcommands                           redeploy(1)
-
              o    An     archive     file,      for      example,
                   /export/JEE_apps/hello.war.
 
                   If the --upload option is set to true, this  is
                   the  path  to  the deployable file on the local
+
+Java EE 6           Last change: 19 Nov 2010                    8
+
+asadmin Utility Subcommands                           redeploy(1)
+
                   client machine. If the --upload option  is  set
                   to false, this is the absolute path to the file
                   on the server machine.
@@ -473,13 +465,13 @@ EXAMPLES
      This example redeploys the  web  application  hellodir.  The
      application was originally deployed from a directory.
 
-Java EE 6           Last change: 16 Nov 2010                    9
-
-asadmin Utility Subcommands                           redeploy(1)
-
        asadmin> redeploy --name hellodir
        Application deployed successfully with name hellodir.
        Command redeploy executed successfully
+
+Java EE 6           Last change: 19 Nov 2010                    9
+
+asadmin Utility Subcommands                           redeploy(1)
 
 EXIT STATUS
      0                           subcommand executed successfully
@@ -494,5 +486,5 @@ SEE ALSO
 
      Oracle GlassFish Server 3.1 Application Deployment Guide
 
-Java EE 6           Last change: 16 Nov 2010                   10
+Java EE 6           Last change: 19 Nov 2010                   10
 

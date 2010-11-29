@@ -42,19 +42,22 @@ OPTIONS
              o    cluster_name- Specifies a particular cluster as
                   the target for creating the lifecycle module.
 
-             o    instance_name- Specifies  a  particular  server
-                  instance as the target for creating the lifecy-
-                  cle module.
+             o    instance_name- Specifies  a  particular  stand-
+                  alone  server instance as the target for creat-
+                  ing the lifecycle module.
 
      --classpath
-         This option indicates  where  this  module  is  actually
-         located  if  it  is  not  under  the  applications  root
+         This option indicates  where  the  lifecycle  module  is
+         located.  It  is  a  classpath with the standard format:
 
-Java EE 6           Last change: 16 Nov 2010                    1
+Java EE 6           Last change: 18 Nov 2010                    1
 
 asadmin Utility Subcommands            create-lifecycle-module(1)
 
-         directory.
+         either  colon-separated  (Unix)  or  semicolon-separated
+         (Windows)  JAR files and directories. The referenced JAR
+         files and directories are not  uploaded  to  the  server
+         instance.
 
      --loadorder
 
@@ -62,28 +65,29 @@ asadmin Utility Subcommands            create-lifecycle-module(1)
          to  force  the order in which deployed lifecycle modules
          are loaded at server startup. Smaller  numbered  modules
          are  loaded  sooner. Order is unspecified if two or more
-         lifecycle modules have the same load-order value.
+         lifecycle modules have the same  load-order  value.  The
+         default  is Integer.MAX_VALUE, which means the lifecycle
+         module is loaded last.
 
      --failurefatal
-         This options tells the system what to do if the  lifecy-
-         cle  module does not load correctly. When this option is
-         set to true, the system aborts  the  server  startup  if
-         this module does not load properly. The default value is
+         This option tells the system what to do if the lifecycle
+         module  does not load correctly. When this option is set
+         to true, the system aborts the server  startup  if  this
+         module  does  not  load  properly.  The default value is
          false.
 
      --enabled
 
-         This option determines whether the resource  is  enabled
-         at runtime. The default value is true.
+         This option determines whether the lifecycle  module  is
+         enabled at runtime. The default value is true.
 
      --description
-         This is the text description of the resource  associated
-         with this module.
+         This is the text description of the lifecycle module.
 
      --property
 
          This is  an  optional  attribute  containing  name/value
-         pairs used to configure the resource.
+         pairs used to configure the lifecycle module.
 
 OPERANDS
      module_name
@@ -93,15 +97,14 @@ OPERANDS
 EXAMPLES
      Example 1 Creating a Lifecycle Module
 
+Java EE 6           Last change: 18 Nov 2010                    2
+
+asadmin Utility Subcommands            create-lifecycle-module(1)
+
      The following example creates a lifecycle module named  cus-
      tomSetup.
 
        asadmin> create-lifecycle-module --classname "com.acme.CustomSetup"
-
-Java EE 6           Last change: 16 Nov 2010                    2
-
-asadmin Utility Subcommands            create-lifecycle-module(1)
-
        --classpath "/export/customSetup" --loadorder 1 --failurefatal=true
        --description "this is a sample customSetup"
        --property rmi="Server=acme1:7070":timeout=30 customSetup
@@ -121,5 +124,8 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 16 Nov 2010                    3
+     Chapter  12,  Developing  Lifecycle  Listeners,  in   Oracle
+     GlassFish Server 3.1 Application Development Guide
+
+Java EE 6           Last change: 18 Nov 2010                    3
 
