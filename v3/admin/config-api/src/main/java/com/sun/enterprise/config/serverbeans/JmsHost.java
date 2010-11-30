@@ -141,7 +141,7 @@ public interface JmsHost extends ConfigBeanProxy, Injectable, PropertyBag {
      *
      * @return true or false
      */
-    @Attribute(defaultValue="false", dataType=Boolean.class)
+    @Attribute(defaultValue="true", dataType=Boolean.class)
     String getLazyInit();
 
     /**
