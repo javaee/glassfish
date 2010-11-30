@@ -106,12 +106,12 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
 
     private final TreeNode serverNode;
     private static final ObjectName MONITORING_ROOT = AMXGlassfish.DEFAULT.monitoringRoot();
-    static final ObjectName MONITORING_SERVER = AMXGlassfish.DEFAULT.serverMon( AMXGlassfish.DEFAULT.dasName() );
-    private static final String DOMAIN = MONITORING_SERVER.getDomain();
-    private static final String PP = MONITORING_SERVER.getKeyProperty( PARENT_PATH_KEY);
-    private static final String TYPE = MONITORING_SERVER.getKeyProperty( TYPE_KEY);
-    private static final String NAME = MONITORING_SERVER.getKeyProperty( NAME_KEY);
-    private static final String PARENT_PATH = PP + "/" + TYPE + "[" + NAME + "]" ;
+    static  ObjectName MONITORING_SERVER ;
+    private static  String DOMAIN ;
+    private static  String PP ;
+    private static  String TYPE ;
+    private static  String NAME ;
+    private static  String PARENT_PATH ;
     private boolean AMXReady = false;
     private StatsProviderRegistry statsProviderRegistry;
     private static final Logger logger =
@@ -131,6 +131,14 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
         //serverNode is special, construct that first if doesn't exist
         serverNode = constructServerPP();
         statsProviderRegistry = new StatsProviderRegistry(mrdr);
+        logger.log(Level.INFO, " In the ctor : instance name " + instanceName);
+        MONITORING_SERVER = AMXGlassfish.DEFAULT.serverMon( instanceName );
+        logger.log(Level.INFO, " In the ctor : MONITORING SERVER " + MONITORING_SERVER);
+        DOMAIN = MONITORING_SERVER.getDomain();
+        PP = MONITORING_SERVER.getKeyProperty( PARENT_PATH_KEY);
+        TYPE = MONITORING_SERVER.getKeyProperty( TYPE_KEY);
+        NAME = MONITORING_SERVER.getKeyProperty( NAME_KEY);
+        PARENT_PATH = PP + "/" + TYPE + "[" + NAME + "]" ;
     }
 
     public void register(String configElement, PluginPoint pp,
