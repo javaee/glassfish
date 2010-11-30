@@ -114,7 +114,7 @@ public final class ComplianceMonitor implements NotificationListener {
         }
 
         // queue all existing MBeans
-        final Set<ObjectName> existing = JMXUtil.queryAllInDomain(mServer, mDomainRoot.objectName().getDomain());
+        final Set<ObjectName> existing = JMXUtil.queryLocalMBeans(mServer, mDomainRoot.objectName().getDomain(), System.getProperty("com.sun.ass.instanceName"));
         for (final ObjectName objectName : existing) {
             //debug( "Queueing for validation: " + objectName );
             validate(objectName);

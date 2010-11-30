@@ -69,10 +69,11 @@ public class MonitoringRootImpl extends AMXImplBase // implements MonitoringRoot
 
         ObjectName childObjectName = null;
         Object mbean = null;
-
+        System.out.println(" In the registerChildren of MonitoringRootImpl instance Name = " + System.getProperty("com.sun.aas.instanceName"));
         // when clustering comes along, some other party will need to register MBeans
         // for each non-DAS instance
-        childObjectName = objectNames.buildChildObjectName(ServerMon.class, AMXGlassfish.DEFAULT.dasName());
+        // childObjectName = objectNames.buildChildObjectName(ServerMon.class, AMXGlassfish.DEFAULT.dasName());
+        childObjectName = objectNames.buildChildObjectName(ServerMon.class, System.getProperty("com.sun.aas.instanceName"));
         mbean = new ServerMonitoringImpl(self);
         registerChild(mbean, childObjectName);
     }

@@ -50,7 +50,7 @@ import org.glassfish.admin.amx.annotation.ManagedOperation;
 
 /**
  */
-@AMXMBeanMetadata(type=J2EETypes.J2EE_SERVER, singleton=true)
+@AMXMBeanMetadata(type=J2EETypes.J2EE_SERVER)
 public interface J2EEServer extends J2EELogicalServer
 {
 	/**
