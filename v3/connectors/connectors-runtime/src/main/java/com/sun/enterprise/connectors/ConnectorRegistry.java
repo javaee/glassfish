@@ -87,6 +87,7 @@ public class ConnectorRegistry {
     protected final Map<String, ConnectorApplication> rarModules;
     protected final Map<String, Validator> beanValidators;
     protected final Map<ResourceInfo, Map<DynamicallyReconfigurableResource, Boolean>> resourceProxies;
+    protected final Set<ResourceInfo> resourceInfos;
 
     /**
      * Return the ConnectorRegistry instance
@@ -112,6 +113,7 @@ public class ConnectorRegistry {
         rarModules = Collections.synchronizedMap(new HashMap<String, ConnectorApplication>());
         beanValidators = Collections.synchronizedMap(new HashMap<String, Validator>());
         resourceProxies = new HashMap<ResourceInfo, Map<DynamicallyReconfigurableResource, Boolean>>();
+        resourceInfos = new HashSet<ResourceInfo>();
         if(_logger.isLoggable(Level.FINE)) {
             _logger.log(Level.FINE, "initialized the connector registry");
         }
@@ -166,6 +168,46 @@ public class ConnectorRegistry {
             mapRemoved = true;
         }
         return mapRemoved;
+    }
+
+    /**
+     * Add resourceInfo that is deployed for book-keeping purposes.
+     * @param resourceInfo Resource being deployed.
+     */
+    public void addResourceInfo(ResourceInfo resourceInfo){
+        if(resourceInfo != null){
+            synchronized (resourceInfos){
+                resourceInfos.add(resourceInfo);
+            }
+        }
+    }
+
+    /**
+     * Remove ResourceInfo from registry. Called when resource is disabled/undeployed.
+     * @param resourceInfo ResourceInfo
+     * @return boolean indicating whether resource exists and removed.
+     */
+    public boolean removeResourceInfo(ResourceInfo resourceInfo){
+        boolean removed = false;
+        if(resourceInfo != null){
+            synchronized (resourceInfos){
+                removed = resourceInfos.remove(resourceInfo);
+            }
+        }
+        return removed;
+    }
+
+    /**
+     * indicates whether the resource is deployed (enabled)
+     * @param resourceInfo resource-info
+     * @return boolean indicating whether the resource is deployed.
+     */
+    public boolean isResourceDeployed(ResourceInfo resourceInfo){
+        boolean isDeployed = false;
+        if(resourceInfo != null){
+            isDeployed = resourceInfos.contains(resourceInfo);
+        }
+        return isDeployed;
     }
 
     /**

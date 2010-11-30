@@ -123,6 +123,7 @@ public class ConnectorResourceAdminServiceImpl extends ConnectorService {
 
             try{
                 namingService.publishObject(resourceInfo, ref, true);
+                _registry.addResourceInfo(resourceInfo);
             }catch(NamingException ne){
                 ConnectorRuntimeException cre = new ConnectorRuntimeException(ne.getMessage());
                 cre.initCause(ne);
@@ -184,6 +185,8 @@ public class ConnectorResourceAdminServiceImpl extends ConnectorService {
             _logger.log(Level.SEVERE, "rardeployment.connectorresource_removal_from_jndi_error", resourceInfo);
             _logger.log(Level.SEVERE, "", cre);
             throw cre;
+        }finally{
+            _registry.removeResourceInfo(resourceInfo);
         }
     }
 
