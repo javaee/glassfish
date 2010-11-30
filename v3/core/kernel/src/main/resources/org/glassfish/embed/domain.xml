@@ -92,7 +92,7 @@
       <mdb-container steady-pool-size="0" max-pool-size="32" pool-resize-quantity="8" >
       </mdb-container>
       <jms-service type="EMBEDDED" default-jms-host="default_JMS_host">
-        <jms-host name="default_JMS_host" host="localhost" port="7676" admin-user-name="admin" admin-password="admin" lazy-init="true"/>
+        <jms-host name="default_JMS_host" host="localhost" port="7676" admin-user-name="admin" admin-password="admin" lazy-init="false"/>
       </jms-service>
       <log-service file="${com.sun.aas.instanceRoot}/logs/server.log" log-rotation-limit-in-bytes="2000000">
         <module-log-levels />
@@ -158,6 +158,7 @@
       <java-config>
 	<jvm-options>-Djavax.net.ssl.keyStore=${com.sun.aas.instanceRoot}/config/keystore.jks</jvm-options>
         <jvm-options>-Djavax.net.ssl.trustStore=${com.sun.aas.instanceRoot}/config/cacerts.jks</jvm-options>
+        <jvm-options>-Dorg.glassfish.jms.InitializeOnDemand=true</jvm-options>
       </java-config>
       <network-config>
         <protocols>
