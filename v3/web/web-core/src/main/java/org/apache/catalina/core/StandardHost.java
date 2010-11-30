@@ -144,6 +144,15 @@ public class StandardHost
     private String contextClass =
         "org.apache.catalina.core.StandardContext";
 
+    /**
+     * The default context.xml location
+     */
+    private String defaultContextXmlLocation;
+
+    /**
+     * The default web.xml location
+     */
+    private String defaultWebXmlLocation;
 
     /**
      * The <code>Deployer</code> to whom we delegate application
@@ -616,6 +625,50 @@ public class StandardHost
          }
          return listeners;
      }
+
+     /**
+     * Gets the default-context.xml location of web modules deployed on this
+     * virtual server.
+     *
+     * @return default-context.xml location of web modules deployed on this
+     * virtual server
+     */
+    public String getDefaultContextXmlLocation() {
+        return defaultContextXmlLocation;
+    }
+
+    /**
+     * Sets the default-context.xml location for web modules deployed on this
+     * virtual server.
+     *
+     * @param defaultContextXmlLocation default-context.xml location for web modules
+     * deployed on this virtual server
+     */
+    public void setDefaultContextXmlLocation(String defaultContextXmlLocation) {
+        this.defaultContextXmlLocation = defaultContextXmlLocation;
+    }
+
+    /**
+     * Gets the default-web.xml location of web modules deployed on this
+     * virtual server.
+     *
+     * @return default-web.xml location of web modules deployed on this
+     * virtual server
+     */
+    public String getDefaultWebXmlLocation() {
+        return defaultWebXmlLocation;
+    }
+
+    /**
+     * Sets the default-web.xml location for web modules deployed on this
+     * virtual server.
+     *
+     * @param defaultWebXmlLocation default-web.xml location for web modules
+     * deployed on this virtual server
+     */
+    public void setDefaultWebXmlLocation(String defaultWebXmlLocation) {
+        this.defaultWebXmlLocation = defaultWebXmlLocation;
+    }
 
 
     // --------------------------------------------------------- Public Methods

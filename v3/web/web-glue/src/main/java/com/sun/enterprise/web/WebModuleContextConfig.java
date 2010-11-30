@@ -269,7 +269,6 @@ public class WebModuleContextConfig extends ContextConfig {
                 throw new LifecycleException(ne);
             }
         }
-        
         TomcatDeploymentConfig.configureWebModule(
             (WebModule)context, webBundleDescriptor);
         authenticatorConfig();

@@ -40,9 +40,14 @@
 
 package com.sun.enterprise.web;
 
-import com.sun.enterprise.config.serverbeans.*;
+import com.sun.enterprise.config.serverbeans.ApplicationRef;
+import com.sun.enterprise.config.serverbeans.Applications;
+import com.sun.enterprise.config.serverbeans.AuthRealm;
+import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
+import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.HttpService;
+import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.config.serverbeans.Server;
-import com.sun.enterprise.config.serverbeans.WebModule;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.archivist.WebArchivist;
@@ -55,11 +60,14 @@ import com.sun.logging.LogDomains;
 import com.sun.web.security.RealmAdapter;
 import org.apache.catalina.*;
 import org.apache.catalina.Deployer;
+import org.apache.catalina.Engine;
 import org.apache.catalina.authenticator.AuthenticatorBase;
 import org.apache.catalina.authenticator.SingleSignOn;
+import org.apache.catalina.core.ServletRegistrationImpl;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.deploy.ErrorPage;
+import org.apache.catalina.startup.ContextConfig;
 import org.apache.catalina.valves.RemoteAddrValve;
 import org.apache.catalina.valves.RemoteHostValve;
 import org.glassfish.embeddable.*;
@@ -185,16 +193,6 @@ public class VirtualServer extends StandardHost
      */
     private boolean allowLinking = false;
 
-    /*
-     * default context.xml location
-     */
-    private String defaultContextXmlLocation;
-
-    /*
-     * default-web.xml location
-     */
-    private String defaultWebXmlLocation;
-
     private String[] cacheControls;
 
     // Is this virtual server active?
@@ -263,51 +261,7 @@ public class VirtualServer extends StandardHost
             }
         }
     }
-
-    /**
-     * Gets the default-context.xml location of any web modules deployed
-     * on this virtual server.
-     *
-     * @return default-context.xml location of any web modules deployed on
-     * this virtual server
-     */
-    public String getDefaultContextXmlLocation() {
-        return defaultContextXmlLocation;
-    }
-
-    /**
-     * Sets the default-context.xml location for any web modules deployed
-     * on this virtual server.
-     *
-     * @param defaultContextXmlLocation default-context.xml location for any
-     * web modules deployed on this virtual server
-     */
-    public void setDefaultContextXmlLocation(String defaultContextXmlLocation) {
-        this.defaultContextXmlLocation = defaultContextXmlLocation;
-    }
-
-    /**
-     * Gets the default-web.xml location of any web modules deployed on this
-     * virtual server.
-     *
-     * @return default-web.xml location of any web modules deployed on this
-     * virtual server
-     */
-    public String getDefaultWebXmlLocation() {
-        return defaultWebXmlLocation;
-    }
-
-    /**
-     * Sets the default-web.xml location for any web modules deployed
-     * on this virtual server.
-     *
-     * @param defaultWebXmlLocation default-web.xml location for any
-     * web modules deployed on this virtual server
-     */
-    public void setDefaultWebXmlLocation(String defaultWebXmlLocation) {
-        this.defaultWebXmlLocation = defaultWebXmlLocation;
-    }
-
+    
     /**
      * Gets the value of the allowLinking property of this virtual server.
      *
@@ -564,7 +518,7 @@ public class VirtualServer extends StandardHost
      * this virtual server's list of modules (only then will one know whether
      * the user has already configured a default web module or not).
      */
-    protected WebModuleConfig createSystemDefaultWebModuleIfNecessary(
+    public WebModuleConfig createSystemDefaultWebModuleIfNecessary(
             WebArchivist webArchivist) {
 
         WebModuleConfig wmInfo = null;
@@ -605,7 +559,7 @@ public class VirtualServer extends StandardHost
      * Determines whether the specified web module is "active" under this
      * virtual server.
      */
-    private boolean isActive(WebModule wm) {
+    private boolean isActive(com.sun.enterprise.config.serverbeans.WebModule wm) {
         return isActive(wm, true);
     }
 
@@ -635,7 +589,7 @@ public class VirtualServer extends StandardHost
      * @return     <code>true</code> if all the criteria are satisfied and
      *             <code>false</code> otherwise.
      */
-    protected boolean isActive(WebModule wm, boolean matchVSID) {
+    protected boolean isActive(com.sun.enterprise.config.serverbeans.WebModule wm, boolean matchVSID) {
 
         String vsID = getID();
 
@@ -1641,7 +1595,10 @@ public class VirtualServer extends StandardHost
      * @return The value of the sso-enabled property for this VirtualServer
      */
     private boolean isSSOEnabled(boolean globalSSOEnabled) {
-        String ssoEnabled = vsBean.getSsoEnabled();
+        String ssoEnabled = "inherit";
+        if (vsBean != null) {
+            ssoEnabled = vsBean.getSsoEnabled();
+        }
         return "inherit".equals(ssoEnabled) && globalSSOEnabled
             || ConfigBeansUtilities.toBoolean(ssoEnabled); 
     }
@@ -1781,23 +1738,17 @@ public class VirtualServer extends StandardHost
      */
     public void addContext(Context context, String contextRoot)
         throws ConfigException, GlassFishException {
-        
+
+        if (!contextRoot.startsWith("/")) {
+            contextRoot = "/"+ contextRoot;
+        }
         if (findContext(contextRoot)!=null) {
             throw new ConfigException("Context with contextRoot "+
                     contextRoot+" is already registered");
         }
-        File file = new File(((StandardContext)context).getDocBase());
-        String appName = null;
-        try {
-            org.glassfish.embeddable.Deployer deployer =
-                    Globals.getDefaultHabitat().getComponent(org.glassfish.embeddable.Deployer.class);
-            appName = deployer.deploy(file, "--contextroot", contextRoot);
-            if (!appName.startsWith("/")) {
-                appName = "/"+appName;
-            }
-        } catch (Exception ex) {
-            _logger.log(Level.SEVERE, ex.getMessage());
-        }
+        context.setPath(contextRoot);
+        addChild((WebModule)context);
+
     }
 
     /**
