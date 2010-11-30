@@ -86,7 +86,7 @@
         <!-- The JSR 160 "system-jmx-connector" -->
         <jmx-connector accept-all="false" address="0.0.0.0" auth-realm-name="admin-realm" enabled="true" name="system" port="8686" protocol="rmi_jrmp" security-enabled="false">
           <ssl cert-nickname="s1as" client-auth-enabled="false" ssl2-enabled="false" ssl3-enabled="true" tls-enabled="true" tls-rollback-enabled="true"/>
-          <property name="client-hostname" value="dhcp-ubur-213-158.East.Sun.COM"/>
+          <property name="client-hostname" value="localhost"/>
         </jmx-connector>
         <!-- The JSR 160 "system-jmx-connector" -->
         <das-config admin-session-timeout-in-minutes="60" autodeploy-dir="${com.sun.aas.instanceRoot}/autodeploy" autodeploy-enabled="true" autodeploy-jsp-precompilation-enabled="false" autodeploy-polling-interval-in-seconds="2" autodeploy-verifier-enabled="false" deploy-xml-validation="full" dynamic-reload-enabled="true" dynamic-reload-poll-interval-in-seconds="2"/>
@@ -105,7 +105,7 @@
       </ejb-container>
       <mdb-container idle-timeout-in-seconds="600" max-pool-size="32" pool-resize-quantity="8" steady-pool-size="0"/>
       <jms-service addresslist-behavior="random" addresslist-iterations="3" default-jms-host="default_JMS_host" init-timeout-in-seconds="60" reconnect-attempts="3" reconnect-enabled="true" reconnect-interval-in-seconds="5" type="EMBEDDED">
-        <jms-host admin-password="admin" admin-user-name="admin" host="dhcp-ubur-213-158.East.Sun.COM" name="default_JMS_host" port="7676"/>
+        <jms-host admin-password="admin" admin-user-name="admin" host="localhost" name="default_JMS_host" port="7676"/>
       </jms-service>
       <log-service alarms="false" file="${com.sun.aas.instanceRoot}/logs/server.log" log-rotation-limit-in-bytes="2000000" log-rotation-timelimit-in-minutes="0" log-to-console="false" retain-error-statistics-for-hours="5" use-system-logging="false">
         <module-log-levels admin="INFO" classloader="INFO" cmp="INFO" cmp-container="INFO" configuration="INFO" connector="INFO" corba="INFO" deployment="INFO" ejb-container="INFO" group-management-service="INFO" javamail="INFO" jaxr="INFO" jaxrpc="INFO" jdo="INFO" jms="INFO" jta="INFO" jts="INFO" management-event="INFO" mdb-container="INFO" naming="INFO" node-agent="INFO" resource-adapter="INFO" root="INFO" saaj="INFO" security="INFO" self-management="INFO" server="INFO" synchronization="INFO" util="INFO" verifier="INFO" web-container="INFO"/>
@@ -233,7 +233,7 @@
         <!-- JSR 160  "system-jmx-connector" -->
         <jmx-connector accept-all="false" address="0.0.0.0" auth-realm-name="admin-realm" enabled="true" name="system" port="${JMX_SYSTEM_CONNECTOR_PORT}" protocol="rmi_jrmp" security-enabled="false">
           <ssl cert-nickname="s1as" client-auth-enabled="false" ssl2-enabled="false" ssl3-enabled="true" tls-enabled="true" tls-rollback-enabled="true"/>
-          <property name="client-hostname" value="dhcp-ubur-213-158.East.Sun.COM"/>
+          <property name="client-hostname" value="localhost"/>
         </jmx-connector>
         <!-- JSR 160  "system-jmx-connector" -->
         <das-config admin-session-timeout-in-minutes="60" autodeploy-dir="${com.sun.aas.instanceRoot}/autodeploy" autodeploy-enabled="true" autodeploy-jsp-precompilation-enabled="false" autodeploy-polling-interval-in-seconds="2" autodeploy-verifier-enabled="false" deploy-xml-validation="full" dynamic-reload-enabled="true" dynamic-reload-poll-interval-in-seconds="2"/>
@@ -252,7 +252,7 @@
       </ejb-container>
       <mdb-container idle-timeout-in-seconds="600" max-pool-size="32" pool-resize-quantity="8" steady-pool-size="0"/>
       <jms-service addresslist-behavior="priority" addresslist-iterations="3" default-jms-host="default_JMS_host" init-timeout-in-seconds="60" reconnect-attempts="3" reconnect-enabled="true" reconnect-interval-in-seconds="5" type="LOCAL">
-        <jms-host admin-password="admin" admin-user-name="admin" host="dhcp-ubur-213-158.East.Sun.COM" name="default_JMS_host" port="${JMS_PROVIDER_PORT}"/>
+        <jms-host admin-password="admin" admin-user-name="admin" host="localhost" name="default_JMS_host" port="${JMS_PROVIDER_PORT}"/>
       </jms-service>
       <log-service alarms="false" file="${com.sun.aas.instanceRoot}/logs/server.log" log-rotation-limit-in-bytes="2000000" log-rotation-timelimit-in-minutes="0" log-to-console="false" retain-error-statistics-for-hours="5" use-system-logging="false">
         <module-log-levels admin="INFO" classloader="INFO" cmp="INFO" cmp-container="INFO" configuration="INFO" connector="INFO" corba="INFO" deployment="INFO" ejb-container="INFO" group-management-service="INFO" javamail="INFO" jaxr="INFO" jaxrpc="INFO" jdo="INFO" jms="INFO" jta="INFO" jts="INFO" management-event="INFO" mdb-container="INFO" naming="INFO" node-agent="INFO" resource-adapter="INFO" root="INFO" saaj="INFO" security="INFO" self-management="INFO" server="INFO" synchronization="INFO" util="INFO" verifier="INFO" web-container="INFO"/>
@@ -390,7 +390,7 @@
       <admin-service system-jmx-connector-name="system" type="server">
         <jmx-connector accept-all="false" address="0.0.0.0" auth-realm-name="admin-realm" enabled="true" name="system" port="${JMX_SYSTEM_CONNECTOR_PORT}" protocol="rmi_jrmp" security-enabled="false">
           <ssl cert-nickname="s1as" client-auth-enabled="false" ssl2-enabled="false" ssl3-enabled="true" tls-enabled="true" tls-rollback-enabled="true"/>
-          <property name="client-hostname" value="dhcp-ubur-213-158.East.Sun.COM"/>
+          <property name="client-hostname" value="localhost"/>
         </jmx-connector>
         <das-config admin-session-timeout-in-minutes="60" autodeploy-dir="${com.sun.aas.instanceRoot}/autodeploy" autodeploy-enabled="true" autodeploy-jsp-precompilation-enabled="false" autodeploy-polling-interval-in-seconds="2" autodeploy-verifier-enabled="false" deploy-xml-validation="full" dynamic-reload-enabled="true" dynamic-reload-poll-interval-in-seconds="2"/>
       </admin-service>
@@ -408,7 +408,7 @@
       </ejb-container>
       <mdb-container idle-timeout-in-seconds="600" max-pool-size="32" pool-resize-quantity="8" steady-pool-size="0"/>
       <jms-service addresslist-behavior="priority" addresslist-iterations="3" default-jms-host="default_JMS_host" init-timeout-in-seconds="60" reconnect-attempts="3" reconnect-enabled="true" reconnect-interval-in-seconds="5" type="LOCAL">
-        <jms-host admin-password="admin" admin-user-name="admin" host="dhcp-ubur-213-158.East.Sun.COM" name="default_JMS_host" port="${JMS_PROVIDER_PORT}"/>
+        <jms-host admin-password="admin" admin-user-name="admin" host="localhost" name="default_JMS_host" port="${JMS_PROVIDER_PORT}"/>
       </jms-service>
       <log-service alarms="false" file="${com.sun.aas.instanceRoot}/logs/server.log" log-rotation-limit-in-bytes="2000000" log-rotation-timelimit-in-minutes="0" log-to-console="false" retain-error-statistics-for-hours="5" use-system-logging="false">
         <module-log-levels admin="INFO" classloader="INFO" cmp="INFO" cmp-container="INFO" configuration="INFO" connector="INFO" corba="INFO" deployment="INFO" ejb-container="INFO" group-management-service="INFO" javamail="INFO" jaxr="INFO" jaxrpc="INFO" jdo="INFO" jms="INFO" jta="INFO" jts="INFO" management-event="INFO" mdb-container="INFO" naming="INFO" node-agent="INFO" resource-adapter="INFO" root="INFO" saaj="INFO" security="INFO" self-management="INFO" server="INFO" synchronization="INFO" util="INFO" verifier="INFO" web-container="INFO"/>
@@ -542,7 +542,7 @@
       <admin-service system-jmx-connector-name="system" type="server">
         <jmx-connector accept-all="false" address="0.0.0.0" auth-realm-name="admin-realm" enabled="true" name="system" port="${JMX_SYSTEM_CONNECTOR_PORT}" protocol="rmi_jrmp" security-enabled="false">
           <ssl cert-nickname="s1as" client-auth-enabled="false" ssl2-enabled="false" ssl3-enabled="true" tls-enabled="true" tls-rollback-enabled="true"/>
-          <property name="client-hostname" value="dhcp-ubur-213-158.East.Sun.COM"/>
+          <property name="client-hostname" value="localhost"/>
         </jmx-connector>
         <das-config admin-session-timeout-in-minutes="60" autodeploy-dir="${com.sun.aas.instanceRoot}/autodeploy" autodeploy-enabled="true" autodeploy-jsp-precompilation-enabled="false" autodeploy-polling-interval-in-seconds="2" autodeploy-verifier-enabled="false" deploy-xml-validation="full" dynamic-reload-enabled="true" dynamic-reload-poll-interval-in-seconds="2"/>
       </admin-service>
@@ -560,7 +560,7 @@
       </ejb-container>
       <mdb-container idle-timeout-in-seconds="600" max-pool-size="32" pool-resize-quantity="8" steady-pool-size="0"/>
       <jms-service addresslist-behavior="priority" addresslist-iterations="3" default-jms-host="default_JMS_host" init-timeout-in-seconds="60" reconnect-attempts="3" reconnect-enabled="true" reconnect-interval-in-seconds="5" type="LOCAL">
-        <jms-host admin-password="admin" admin-user-name="admin" host="dhcp-ubur-213-158.East.Sun.COM" name="default_JMS_host" port="${JMS_PROVIDER_PORT}"/>
+        <jms-host admin-password="admin" admin-user-name="admin" host="localhost" name="default_JMS_host" port="${JMS_PROVIDER_PORT}"/>
       </jms-service>
       <log-service alarms="false" file="${com.sun.aas.instanceRoot}/logs/server.log" log-rotation-limit-in-bytes="2000000" log-rotation-timelimit-in-minutes="0" log-to-console="false" retain-error-statistics-for-hours="5" use-system-logging="false">
         <module-log-levels admin="INFO" classloader="INFO" cmp="INFO" cmp-container="INFO" configuration="INFO" connector="INFO" corba="INFO" deployment="INFO" ejb-container="INFO" group-management-service="INFO" javamail="INFO" jaxr="INFO" jaxrpc="INFO" jdo="INFO" jms="INFO" jta="INFO" jts="INFO" management-event="INFO" mdb-container="INFO" naming="INFO" node-agent="INFO" resource-adapter="INFO" root="INFO" saaj="INFO" security="INFO" self-management="INFO" server="INFO" synchronization="INFO" util="INFO" verifier="INFO" web-container="INFO"/>
