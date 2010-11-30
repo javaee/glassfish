@@ -69,7 +69,6 @@ public class EmbeddedSetConfigurationTest {
     static WebContainer embedded;
     static File root;
     static int newPort = 9090;
-    static String contextRoot = "test";
 
     @BeforeClass
     public static void setupServer() throws GlassFishException {
@@ -85,7 +84,6 @@ public class EmbeddedSetConfigurationTest {
         config.setDocRootDir(root);
         config.setPort(newPort);
         System.out.println("Added Web with base directory "+root.getAbsolutePath());
-        embedded.start();
         embedded.setConfiguration(config);
     }
     

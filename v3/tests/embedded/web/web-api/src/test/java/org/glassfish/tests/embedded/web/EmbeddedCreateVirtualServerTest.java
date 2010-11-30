@@ -66,8 +66,8 @@ public class EmbeddedCreateVirtualServerTest {
     static GlassFish glassfish;
     static WebContainer embedded;
     static int newPort = 9090;
-    static String contextRoot = "test";
-
+    static String contextRoot = "classes"; //"test";
+    
     @BeforeClass
     public static void setupServer() throws GlassFishException {
         glassfish = GlassFishRuntime.bootstrap().newGlassFish();
@@ -76,12 +76,16 @@ public class EmbeddedCreateVirtualServerTest {
         System.out.println("================ EmbeddedCreateVirtualServer Test");
         System.out.println("Starting Web "+embedded);
         embedded.setLogLevel(Level.INFO);
-        embedded.start();
     }
     
     @Test
     public void test() throws Exception {
 
+        HttpListener httpListener = new HttpListener();
+        httpListener.setPort(8080);
+        httpListener.setId("embedded-listener-1");
+        embedded.addWebListener(httpListener);
+        
         List<WebListener> listenerList = new ArrayList(embedded.getWebListeners());
         Assert.assertTrue(listenerList.size()==1);
         for (WebListener listener : embedded.getWebListeners())
@@ -131,7 +135,7 @@ public class EmbeddedCreateVirtualServerTest {
 
         System.out.println("Deploying " + path + ", name = " + name);
 
-        String appName = deployer.deploy(path.toURI(), "--contextroot", "test", "--name=" + name);
+        String appName = deployer.deploy(path.toURI(), "--contextroot", contextRoot, "--name=" + name);
 
         System.out.println("Deployed " + appName);
 
@@ -160,8 +164,6 @@ public class EmbeddedCreateVirtualServerTest {
 
         if (appName!=null)
             deployer.undeploy(appName);
-
-        embedded.stop();
 
     } 
 

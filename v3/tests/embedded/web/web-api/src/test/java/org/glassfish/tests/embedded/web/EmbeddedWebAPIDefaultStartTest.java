@@ -74,11 +74,15 @@ public class EmbeddedWebAPIDefaultStartTest {
         System.out.println("================ Test Embedded Web API Default Start ");
         System.out.println("Starting Web "+embedded);
         embedded.setLogLevel(Level.INFO);
-        embedded.start();
     }
     
     @Test
     public void testDefaultStart() throws Exception {
+
+        HttpListener httpListener = new HttpListener();
+        httpListener.setPort(8080);
+        httpListener.setId("embedded-listener-1");
+        embedded.addWebListener(httpListener);
 
         List<WebListener> listenerList = new ArrayList(embedded.getWebListeners());
         Assert.assertTrue(listenerList.size()==1);
@@ -130,9 +134,6 @@ public class EmbeddedWebAPIDefaultStartTest {
     @AfterClass
     public static void shutdownServer() throws GlassFishException {
         System.out.println("Stopping server " + glassfish);
-        if (embedded != null) {
-            embedded.stop();
-        }
         if (glassfish != null) {
             glassfish.stop();
             glassfish.dispose();

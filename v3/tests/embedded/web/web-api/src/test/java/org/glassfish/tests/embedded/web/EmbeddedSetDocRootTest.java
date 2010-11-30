@@ -68,7 +68,7 @@ public class EmbeddedSetDocRootTest {
     static GlassFish glassfish;
     static WebContainer embedded;
     static File root;
-    static String contextRoot = "test";
+    static String contextRoot = "classes"; //"test";
 
     @BeforeClass
     public static void setupServer() throws GlassFishException {
@@ -84,7 +84,7 @@ public class EmbeddedSetDocRootTest {
         config.setDocRootDir(root);
         config.setPort(8080);
         System.out.println("Added Web with base directory "+root.getAbsolutePath());
-        embedded.start(config);
+        embedded.setConfiguration(config);
     }
     
     @Test

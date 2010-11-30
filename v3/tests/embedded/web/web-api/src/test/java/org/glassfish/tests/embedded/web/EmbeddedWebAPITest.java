@@ -66,7 +66,7 @@ public class EmbeddedWebAPITest {
 
     static GlassFish glassfish;
     static WebContainer embedded;
-    static String contextRoot = "test";
+    static String contextRoot = "classes"; //"test";
 
     @BeforeClass
     public static void setupServer() throws GlassFishException {
@@ -76,11 +76,15 @@ public class EmbeddedWebAPITest {
         System.out.println("================ Test Embedded Web API");
         System.out.println("Starting Web "+embedded);
         embedded.setLogLevel(Level.INFO);
-        embedded.start();
     }
     
     @Test
     public void testEmbeddedWebAPI() throws Exception {
+
+        HttpListener httpListener = new HttpListener();
+        httpListener.setPort(8080);
+        httpListener.setId("embedded-listener-1");
+        embedded.addWebListener(httpListener);
 
         List<WebListener> listenerList = new ArrayList(embedded.getWebListeners());
         Assert.assertTrue(listenerList.size()==1);
@@ -130,7 +134,7 @@ public class EmbeddedWebAPITest {
 
         System.out.println("Deploying " + path + ", name = " + name);
 
-        String appName = deployer.deploy(path.toURI(), "--contextroot", "test", "--name=" + name);
+        String appName = deployer.deploy(path.toURI(), "--contextroot", contextRoot, "--name=" + name);
 
         System.out.println("Deployed " + appName);
 
@@ -160,8 +164,6 @@ public class EmbeddedWebAPITest {
 
         if (appName!=null)
             deployer.undeploy(appName);
-
-        embedded.stop();  
      }
 
     @AfterClass

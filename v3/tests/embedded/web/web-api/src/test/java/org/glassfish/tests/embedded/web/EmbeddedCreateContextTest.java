@@ -64,7 +64,7 @@ public class EmbeddedCreateContextTest {
 
     static GlassFish glassfish;
     static WebContainer embedded;
-    static String contextRoot = "test";
+    static String contextRoot = "classes"; //"test";
 
     @BeforeClass
     public static void setupServer() throws GlassFishException {
@@ -74,16 +74,20 @@ public class EmbeddedCreateContextTest {
         System.out.println("================ EmbeddedCreateContext Test");
         System.out.println("Starting Web "+embedded);
         embedded.setLogLevel(Level.INFO);
-        embedded.start();
     }
     
     @Test
     public void test() throws Exception {
+        
+        HttpListener listener = new HttpListener();
+        listener.setPort(8080);
+        listener.setId("embedded-listener-1");
+        embedded.addWebListener(listener);
 
         String p = System.getProperty("buildDir");
         System.out.println("Root is " + p);
         File docRoot = new File(p);
-        Context context = (Context) embedded.createContext(docRoot,"test", null);
+        Context context = (Context) embedded.createContext(docRoot, contextRoot, null);
 
         URL servlet = new URL("http://localhost:8080/"+contextRoot+"/hello");
         URLConnection yc = servlet.openConnection();

@@ -85,7 +85,7 @@ public class EmbeddedSetDefaultWebXmlTest {
         config.setDocRootDir(root);
         config.setPort(8080);
         System.out.println("Added Web with base directory "+root.getAbsolutePath());
-        embedded.start(config);     
+        embedded.setConfiguration(config);
     }
     
     @Test

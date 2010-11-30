@@ -69,6 +69,7 @@ public class EmbeddedAddServletTest {
     static WebContainer embedded;
     static File root;
     static String vsname = "test-server";
+    static String contextRoot = "/classes"; //"/test";
 
     @BeforeClass
     public static void setupServer() throws GlassFishException {
@@ -84,7 +85,7 @@ public class EmbeddedAddServletTest {
         config.setDocRootDir(root);
         config.setPort(8080);
         System.out.println("Added Web with base directory "+root.getAbsolutePath());
-        embedded.start(config);
+        embedded.setConfiguration(config);
     }
     
     @Test
@@ -111,12 +112,12 @@ public class EmbeddedAddServletTest {
         }
         Assert.assertTrue(testvs);    
         Context context = (Context) embedded.createContext(root);
-        ServletRegistration sr = context.addServlet("NewServlet", new NewServlet());
-        sr.addMapping(new String[] {"/new"});
-        
-        vs.addContext(context, "/test");
+        //ServletRegistration sr = context.addServlet("NewServlet", new NewServlet());
+        //sr.addMapping(new String[] {"/new"});
+        //vs.addContext(context, contextRoot);
+        embedded.addContext(context, contextRoot);
 
-        URL servlet = new URL("http://localhost:8080/test/new");
+        URL servlet = new URL("http://localhost:8080"+contextRoot+"/new");
         URLConnection yc = servlet.openConnection();
         BufferedReader in = new BufferedReader(
                                 new InputStreamReader(

@@ -66,7 +66,7 @@ public class EmbeddedAddContextTest {
     static GlassFish glassfish;
     static WebContainer embedded;
     static File root;                
-    static String contextRoot = "test";
+    static String contextRoot = "classes"; //"test";
 
     @BeforeClass
     public static void setupServer() throws GlassFishException {
@@ -79,9 +79,9 @@ public class EmbeddedAddContextTest {
         WebContainerConfig config = new WebContainerConfig();
         root = new File(System.getProperty("buildDir"));
         config.setDocRootDir(root);
+        config.setListings(true);
         config.setPort(8080);
         System.out.println("Added Web with base directory "+root.getAbsolutePath());
-        embedded.start();
         embedded.setConfiguration(config);
     }
     
