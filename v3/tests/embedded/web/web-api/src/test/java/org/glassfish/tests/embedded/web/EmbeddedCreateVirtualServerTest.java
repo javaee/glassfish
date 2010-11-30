@@ -66,7 +66,7 @@ public class EmbeddedCreateVirtualServerTest {
     static GlassFish glassfish;
     static WebContainer embedded;
     static int newPort = 9090;
-    static String contextRoot = "classes"; //"test";
+    static String contextRoot = "test";
     
     @BeforeClass
     public static void setupServer() throws GlassFishException {

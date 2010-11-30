@@ -68,7 +68,7 @@ public class EmbeddedSetDocRootTest {
     static GlassFish glassfish;
     static WebContainer embedded;
     static File root;
-    static String contextRoot = "classes"; //"test";
+    static String contextRoot = "test";
 
     @BeforeClass
     public static void setupServer() throws GlassFishException {

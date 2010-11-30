@@ -69,7 +69,7 @@ public class EmbeddedAddServletDefaultVSTest {
     static WebContainer embedded;
     static File root;
     static String vsname = "test-server";
-    static String contextRoot = "/classes"; //"/test";
+    static String contextRoot = "/test";
 
     @BeforeClass
     public static void setupServer() throws GlassFishException {
@@ -95,7 +95,7 @@ public class EmbeddedAddServletDefaultVSTest {
         System.out.println("Default virtual server "+vs);
         Context context = (Context) embedded.createContext(root);
         //ServletRegistration sr = context.addServlet("NewServlet", new NewServlet());
-        //sr.addMapping(new String[] {"/new"}); 
+        //sr.addMapping(new String[] {"/new"});
         vs.addContext(context, contextRoot);
 
         URL servlet = new URL("http://localhost:8080"+contextRoot+"/new");

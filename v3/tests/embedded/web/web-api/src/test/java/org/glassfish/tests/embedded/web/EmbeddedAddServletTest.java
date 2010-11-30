@@ -69,7 +69,7 @@ public class EmbeddedAddServletTest {
     static WebContainer embedded;
     static File root;
     static String vsname = "test-server";
-    static String contextRoot = "/classes"; //"/test";
+    static String contextRoot = "/test";
 
     @BeforeClass
     public static void setupServer() throws GlassFishException {

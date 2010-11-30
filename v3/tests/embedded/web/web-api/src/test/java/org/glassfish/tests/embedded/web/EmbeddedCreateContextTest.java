@@ -64,7 +64,7 @@ public class EmbeddedCreateContextTest {
 
     static GlassFish glassfish;
     static WebContainer embedded;
-    static String contextRoot = "classes"; //"test";
+    static String contextRoot = "test";
 
     @BeforeClass
     public static void setupServer() throws GlassFishException {
