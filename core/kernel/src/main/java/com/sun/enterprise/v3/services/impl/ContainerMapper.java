@@ -172,14 +172,14 @@ public class ContainerMapper extends HttpRequestProcessor {
                 mappingData = new MappingData();
                 request.setNote(MAPPING_DATA, mappingData);
             }
-            HttpRequestProcessor adapter;
+            HttpRequestProcessor httpService;
 
             final CharChunk decodedURICC = decodedURI.getCharChunk();
             final int semicolon = decodedURICC.indexOf(';', 0);
 
             // Map the request without any trailling.
-            adapter = mapUriWithSemicolon(request, decodedURI, semicolon, mappingData);
-            if (adapter == null || adapter instanceof ContainerMapper) {
+            httpService = mapUriWithSemicolon(request, decodedURI, semicolon, mappingData);
+            if (httpService == null || httpService instanceof ContainerMapper) {
                 String ext = decodedURI.toString();
                 String type = "";
                 if (ext.indexOf(".") > 0) {
@@ -190,7 +190,7 @@ public class ContainerMapper extends HttpRequestProcessor {
                 if (!MimeType.contains(type) && !"/".equals(ext)) {
                     initializeFileURLPattern(ext);
                     mappingData.recycle();
-                    adapter = mapUriWithSemicolon(request, decodedURI, semicolon, mappingData);
+                    httpService = mapUriWithSemicolon(request, decodedURI, semicolon, mappingData);
                 } else {
                     doService(request, response);
                     return;
@@ -199,12 +199,12 @@ public class ContainerMapper extends HttpRequestProcessor {
 
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.log(Level.FINE, "Request: {0} was mapped to Adapter: {1}",
-                        new Object[]{decodedURI.toString(), adapter});
+                        new Object[]{decodedURI.toString(), httpService});
             }
 
             // The Adapter used for servicing static pages doesn't decode the
             // request by default, hence do not pass the undecoded request.
-            if (adapter == null || adapter instanceof ContainerMapper) {
+            if (httpService == null || httpService instanceof ContainerMapper) {
                 doService(request, response);
             } else {
 //                req.setNote(MAPPED_ADAPTER, adapter);
@@ -215,13 +215,13 @@ public class ContainerMapper extends HttpRequestProcessor {
                 }
 
                 if (contextRootInfo == null) {
-                    adapter.service(request, response);
+                    httpService.service(request, response);
                 } else {
                     ClassLoader cl = null;
                     if (contextRootInfo.getContainer() instanceof ApplicationContainer) {
                         cl = ((ApplicationContainer) contextRootInfo.getContainer()).getClassLoader();
                     }
-                    hk2Dispatcher.dispatch(adapter, cl, request, response);
+                    hk2Dispatcher.dispatch(httpService, cl, request, response);
                 }
             }
         } catch (Exception ex) {
@@ -380,26 +380,26 @@ public class ContainerMapper extends HttpRequestProcessor {
         res.getOutputBuffer().write(chunk.getBuffer());
     }
 
-    public void register(String contextRoot, Collection<String> vs, HttpRequestProcessor adapter,
+    public void register(String contextRoot, Collection<String> vs, HttpRequestProcessor httpService,
             ApplicationContainer container) {
 
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.log(Level.FINE, "MAPPER({0}) REGISTER contextRoot: {1} adapter: {2} container: {3} port: {4}",
-                    new Object[]{this, contextRoot, adapter, container, listener.getPort()});
+                    new Object[]{this, contextRoot, httpService, container, listener.getPort()});
         }
         /*
          * In the case of CoyoteAdapter, return, because the context will
          * have already been registered with the mapper by the connector's
          * MapperListener, in response to a JMX event
          */
-        if ("org.apache.catalina.connector.CoyoteAdapter".equals(adapter.getClass().getName())) {
+        if ("org.apache.catalina.connector.CoyoteAdapter".equals(httpService.getClass().getName())) {
             return;
         }
 
         mapMultipleAdapter = true;
 //        String ctx = getContextPath(contextRoot);
 //        String wrapper = getWrapperPath(ctx, contextRoot);
-        ContextRootInfo c = new ContextRootInfo(adapter, container);
+        ContextRootInfo c = new ContextRootInfo(httpService, container);
         for (String host : vs) {
             mapper.addContext(host, contextRoot, c, new String[0], null);
             /*

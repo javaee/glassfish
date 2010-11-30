@@ -58,8 +58,8 @@ public class GrizzlyListener extends GrizzlyServiceListener {
     private ServiceInitializerThread serviceInitializer;
     private NetworkListener listener;
 
-    public GrizzlyListener(GrizzlyMonitoring monitoring, NetworkListener controller) throws IOException {
-        super(controller);
+    public GrizzlyListener(GrizzlyMonitoring monitoring, NetworkListener controller) {
+//        super(controller);
     }
 
     /**
@@ -144,68 +144,68 @@ public class GrizzlyListener extends GrizzlyServiceListener {
     }
 
     public void processDynamicConfigurationChange(PropertyChangeEvent[] events) {
-        for (PropertyChangeEvent event : events) {
-            if ("comet-support-enabled".equals(event.getPropertyName())) {
-                processDynamicCometConfiguration(event);
-                break;
-            }
-        }
+//        for (PropertyChangeEvent event : events) {
+//            if ("comet-support-enabled".equals(event.getPropertyName())) {
+//                processDynamicCometConfiguration(event);
+//                break;
+//            }
+//        }
     }
     // --------------------------------------------------------- Private Methods
 
-    private void processDynamicCometConfiguration(PropertyChangeEvent event) {
-        final boolean enableComet = Boolean.valueOf(event.getNewValue().toString());
-        if (enableComet) {
-            enableComet();
-        } else {
-            disableComet();
-        }
-    }
+//    private void processDynamicCometConfiguration(PropertyChangeEvent event) {
+//        final boolean enableComet = Boolean.valueOf(event.getNewValue().toString());
+//        if (enableComet) {
+//            enableComet();
+//        } else {
+//            disableComet();
+//        }
+//    }
 
-    private void enableComet() {
-        AsyncFilter cometFilter = createCometAsyncFilter();
-        if (cometFilter == null) {
-            return;
-        }
-        if (getEmbeddedHttp().getAsyncHandler() == null) {
-            AsyncHandler asyncHandler = new DefaultAsyncHandler();
-            getEmbeddedHttp().setAsyncHandler(asyncHandler);
-        }
-        getEmbeddedHttp().getAsyncHandler().addAsyncFilter(cometFilter);
-        final ProtocolChainInstanceHandler pcih =
-            getEmbeddedHttp().getController().getProtocolChainInstanceHandler();
-        if (!(pcih instanceof NonCachingInstanceHandler)) {
-            ProtocolChainInstanceHandler nonCaching =
-                new NonCachingInstanceHandler(pcih);
-            getEmbeddedHttp().getController().setProtocolChainInstanceHandler(nonCaching);
-        }
-        getEmbeddedHttp().setEnableAsyncExecution(true);
-    }
-
-    private void disableComet() {
-        getEmbeddedHttp().setAsyncHandler(null);
-        final ProtocolChainInstanceHandler pcih =
-            getEmbeddedHttp().getController().getProtocolChainInstanceHandler();
-        if (!(pcih instanceof NonCachingInstanceHandler)) {
-            ProtocolChainInstanceHandler nonCaching =
-                new NonCachingInstanceHandler(pcih);
-            getEmbeddedHttp().getController().setProtocolChainInstanceHandler(nonCaching);
-        }
-        getEmbeddedHttp().setEnableAsyncExecution(false);
-    }
-
-    @SuppressWarnings({"unchecked"})
-    private AsyncFilter createCometAsyncFilter() {
-        try {
-            Class<? extends AsyncFilter> c =
-                (Class<? extends AsyncFilter>) Class.forName("com.sun.grizzly.comet.CometAsyncFilter",
-                    true,
-                    Thread.currentThread().getContextClassLoader());
-            return c.newInstance();
-        } catch (Exception e) {
-            return null;
-        }
-    }
+//    private void enableComet() {
+//        AsyncFilter cometFilter = createCometAsyncFilter();
+//        if (cometFilter == null) {
+//            return;
+//        }
+//        if (getEmbeddedHttp().getAsyncHandler() == null) {
+//            AsyncHandler asyncHandler = new DefaultAsyncHandler();
+//            getEmbeddedHttp().setAsyncHandler(asyncHandler);
+//        }
+//        getEmbeddedHttp().getAsyncHandler().addAsyncFilter(cometFilter);
+//        final ProtocolChainInstanceHandler pcih =
+//            getEmbeddedHttp().getController().getProtocolChainInstanceHandler();
+//        if (!(pcih instanceof NonCachingInstanceHandler)) {
+//            ProtocolChainInstanceHandler nonCaching =
+//                new NonCachingInstanceHandler(pcih);
+//            getEmbeddedHttp().getController().setProtocolChainInstanceHandler(nonCaching);
+//        }
+//        getEmbeddedHttp().setEnableAsyncExecution(true);
+//    }
+//
+//    private void disableComet() {
+//        getEmbeddedHttp().setAsyncHandler(null);
+//        final ProtocolChainInstanceHandler pcih =
+//            getEmbeddedHttp().getController().getProtocolChainInstanceHandler();
+//        if (!(pcih instanceof NonCachingInstanceHandler)) {
+//            ProtocolChainInstanceHandler nonCaching =
+//                new NonCachingInstanceHandler(pcih);
+//            getEmbeddedHttp().getController().setProtocolChainInstanceHandler(nonCaching);
+//        }
+//        getEmbeddedHttp().setEnableAsyncExecution(false);
+//    }
+//
+//    @SuppressWarnings({"unchecked"})
+//    private AsyncFilter createCometAsyncFilter() {
+//        try {
+//            Class<? extends AsyncFilter> c =
+//                (Class<? extends AsyncFilter>) Class.forName("com.sun.grizzly.comet.CometAsyncFilter",
+//                    true,
+//                    Thread.currentThread().getContextClassLoader());
+//            return c.newInstance();
+//        } catch (Exception e) {
+//            return null;
+//        }
+//    }
     // ---------------------------------------------------------- Nested Classes
 
     /**

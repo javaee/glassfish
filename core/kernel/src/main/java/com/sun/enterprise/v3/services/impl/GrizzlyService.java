@@ -67,8 +67,6 @@ import org.glassfish.grizzly.config.dom.NetworkConfig;
 import org.glassfish.grizzly.config.dom.NetworkListener;
 import org.glassfish.grizzly.config.dom.NetworkListeners;
 import org.glassfish.grizzly.config.dom.Protocol;
-import com.sun.grizzly.tcp.Adapter;
-import com.sun.grizzly.util.http.mapper.Mapper;
 import java.util.concurrent.LinkedBlockingQueue;
 import org.glassfish.api.FutureProvider;
 import org.glassfish.api.Startup;
@@ -78,6 +76,8 @@ import org.glassfish.api.container.RequestDispatcher;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.flashlight.provider.ProbeProviderFactory;
 import org.glassfish.grizzly.http.server.HttpRequestProcessor;
+import org.glassfish.grizzly.http.server.util.Mapper;
+import org.glassfish.grizzly.impl.ReadyFutureImpl;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -326,7 +326,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
     public void postConstruct() {
         NetworkConfig networkConfig = config.getNetworkConfig();
 
-        configListener = new DynamicConfigListener();
+        configListener = new DynamicConfigListener(logger);
         
         ObservableBean bean = (ObservableBean) ConfigSupport.getImpl(networkConfig.getNetworkListeners());
         bean.addListener(configListener);
@@ -334,7 +334,6 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
         bean.addListener(configListener);
 
         configListener.setGrizzlyService(this);
-        configListener.setLogger(logger);
 
         try {
             futures = new ArrayList<Future<Result<Thread>>>();
@@ -423,15 +422,16 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
     public synchronized Future<Result<Thread>> createNetworkProxy(NetworkListener listener) {
 
         if (!Boolean.valueOf(listener.getEnabled())) {
-            logger.info("Network listener " + listener.getName() +
-                    " on port " + listener.getPort() +
-                    " disabled per domain.xml");
+            logger.log(Level.INFO, "Network listener {0} on port {1} disabled per domain.xml",
+                    new Object[]{listener.getName(), listener.getPort()});
             return null;
         }
 
         final boolean ajpListener = ConfigBeansUtilities.toBoolean(listener.getJkEnabled());
         // create the proxy for the port.
         GrizzlyProxy proxy = new GrizzlyProxy(this, listener);
+        proxy.initialize();
+        
         if (!ajpListener && !"light-weight-listener".equals(listener.getProtocol())) {
             final NetworkConfig networkConfig = listener.getParent(NetworkListeners.class).getParent(NetworkConfig.class);
             // attach all virtual servers to this port
@@ -460,19 +460,18 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
 
         Future<Result<Thread>> future = null;
         if (!ajpListener) {
-            future =  proxy.start();
+            future = proxy.start();
         } else {
             // we need to create a proxy for AJP based listeners, however, we
             // don't want Grizzly to actually handle the request since the
             // webcontainer will start a separate listener implementation to
             // handle such requests.  So the Future needs to return a
             // non-null value here to prevent issues elsewhere.
-            future = new GrizzlyProxy.GrizzlyFuture();
-            ((GrizzlyProxy.GrizzlyFuture) future).setResult(new Result<Thread>(new Thread(new Runnable() {
-                @Override
-                public void run() {
-
-                }
+            future = ReadyFutureImpl.create(new Result<Thread>(
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                        }
             })));
         }
 

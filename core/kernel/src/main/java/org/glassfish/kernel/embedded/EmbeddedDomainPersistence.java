@@ -43,6 +43,7 @@ package org.glassfish.kernel.embedded;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.v3.server.DomainXmlPersistence;
+import java.util.logging.Level;
 import org.glassfish.embeddable.GlassFishProperties;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.config.DomDocument;
@@ -108,6 +109,6 @@ public class EmbeddedDomainPersistence extends DomainXmlPersistence {
 
     @Override
     protected void saved(File destination) {
-        logger.info("Configuration saved at " + destination);
+        logger.log(Level.INFO, "Configuration saved at {0}", destination);
     }
 }

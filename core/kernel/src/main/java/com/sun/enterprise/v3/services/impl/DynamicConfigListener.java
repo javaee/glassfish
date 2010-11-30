@@ -59,7 +59,6 @@ import org.jvnet.hk2.config.UnprocessedChangeEvents;
 
 import com.sun.enterprise.config.serverbeans.VirtualServer;
 import com.sun.enterprise.util.Result;
-import com.sun.enterprise.v3.services.impl.GrizzlyProxy.GrizzlyFuture;
 import org.glassfish.grizzly.config.dom.FileCache;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -69,6 +68,9 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.ReentrantLock;
+import org.glassfish.grizzly.Grizzly;
+import org.glassfish.grizzly.impl.FutureImpl;
+import org.glassfish.grizzly.impl.SafeFutureImpl;
 
 /**
  * Grizzly dynamic configuration handler
@@ -79,13 +81,19 @@ public class DynamicConfigListener implements ConfigListener {
     private static final String ADMIN_LISTENER = "admin-listener";
     private GrizzlyService grizzlyService;
 
-    private Logger logger;
+    private final Logger logger;
 
     private static final int RECONFIG_LOCK_TIMEOUT_SEC = 30;
     private static final ReentrantLock reconfigLock = new ReentrantLock();
-    private static final Map<Integer, GrizzlyFuture> reconfigByPortLock = new HashMap<Integer, GrizzlyFuture>();
+    private static final Map<Integer, FutureImpl> reconfigByPortLock =
+            new HashMap<Integer, FutureImpl>();
 
     public DynamicConfigListener() {
+        this(Grizzly.logger(DynamicConfigListener.class));
+    }
+
+    public DynamicConfigListener(Logger logger) {
+        this.logger = logger;
     }
 
     @Override
@@ -97,8 +105,8 @@ public class DynamicConfigListener implements ConfigListener {
                 public <T extends ConfigBeanProxy> NotProcessed changed(TYPE type,
                     Class<T> tClass, T t) {
                     if (logger.isLoggable(Level.FINE)) {
-                        logger.log(Level.FINE, "NetworkConfig changed " + type
-                            + " " + tClass + " " + t);
+                        logger.log(Level.FINE, "NetworkConfig changed {0} {1} {2}",
+                                new Object[]{type, tClass, t});
                     }
                     if (t instanceof NetworkListener) {
                         return processNetworkListener(type, (NetworkListener) t, events);
@@ -172,7 +180,8 @@ public class DynamicConfigListener implements ConfigListener {
                     future.get(30, TimeUnit.SECONDS);
                     grizzlyService.registerNetworkProxy();
                 } else {
-                    logger.log(Level.FINE, "Skipping proxy registration for the listener " + listener.getName());
+                    logger.log(Level.FINE, "Skipping proxy registration for the listener {0}",
+                            listener.getName());
                 }
             }
         } catch (Exception e) {
@@ -228,10 +237,6 @@ public class DynamicConfigListener implements ConfigListener {
         return logger;
     }
 
-    public void setLogger(Logger logger) {
-        this.logger = logger;
-    }
-
     /**
      * Lock TCP ports, which will take part in the reconfiguration to avoid collisions
      */
@@ -248,7 +253,8 @@ public class DynamicConfigListener implements ConfigListener {
                     Future lock = reconfigByPortLock.get(port);
 
                     if (isLoggingFinest) {
-                        logger.finest("Reconfig lock for port: " + port + " is " + lock);
+                        logger.log(Level.FINEST, "Reconfig lock for port: {0} is {1}",
+                                new Object[]{port, lock});
                     }
 
                     int proxyPort = -1;
@@ -259,7 +265,8 @@ public class DynamicConfigListener implements ConfigListener {
                             if (port != proxyPort) {
                                 lock = reconfigByPortLock.get(proxyPort);
                                 if (isLoggingFinest) {
-                                    logger.finest("Reconfig lock for proxyport: " + proxyPort + " is " + lock);
+                                    logger.log(Level.FINEST, "Reconfig lock for proxyport: {0} is {1}",
+                                            new Object[]{proxyPort, lock});
                                 }
                             } else {
                                 proxyPort = -1;
@@ -276,9 +283,10 @@ public class DynamicConfigListener implements ConfigListener {
                             throw new IllegalStateException(e);
                         }
                     } else {
-                        GrizzlyFuture future = new GrizzlyFuture();
+                        final FutureImpl future = SafeFutureImpl.create();
                         if (isLoggingFinest) {
-                            logger.finest("Set reconfig lock for ports: " + port + " and " + proxyPort + ": " + future);
+                            logger.log(Level.FINEST, "Set reconfig lock for ports: {0} and {1}: {2}",
+                                    new Object[]{port, proxyPort, future});
                         }
                         
                         reconfigByPortLock.put(port, future);
@@ -308,10 +316,11 @@ public class DynamicConfigListener implements ConfigListener {
             final int[] ports = lock.getPorts();
 
             if (isLoggingFinest) {
-                logger.finest("Release reconfig lock for ports: " + Arrays.toString(ports));
+                logger.log(Level.FINEST, "Release reconfig lock for ports: {0}",
+                        Arrays.toString(ports));
             }
             
-            GrizzlyFuture future = null;
+            FutureImpl future = null;
             for (int port : ports) {
                 if (port != -1) {
                     future = reconfigByPortLock.remove(port);
@@ -320,9 +329,10 @@ public class DynamicConfigListener implements ConfigListener {
 
             if (future != null) {
                 if (isLoggingFinest) {
-                    logger.finest("Release reconfig lock, set result: " + future);
+                    logger.log(Level.FINEST,
+                            "Release reconfig lock, set result: {0}", future);
                 }
-                future.setResult(new Result<Thread>(Thread.currentThread()));
+                future.result(new Result<Thread>(Thread.currentThread()));
             }
         } finally {
             reconfigLock.unlock();
@@ -335,7 +345,8 @@ public class DynamicConfigListener implements ConfigListener {
             listenerPort = Integer.parseInt(listener.getPort());
         } catch (NumberFormatException e) {
             if (logger.isLoggable(Level.WARNING)) {
-                logger.log(Level.WARNING, "Can not parse network-listener port number: " + listener.getPort());
+                logger.log(Level.WARNING, "Can not parse network-listener port number: {0}",
+                        listener.getPort());
             }
         }
 
