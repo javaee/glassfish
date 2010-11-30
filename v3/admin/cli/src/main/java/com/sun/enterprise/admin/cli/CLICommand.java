@@ -1079,6 +1079,14 @@ public abstract class CLICommand implements PostConstruct {
     }
 
     /**
+     * Return all the system properties and properties set
+     * in asenv.conf.  The returned Map may not be modified.
+     */
+    protected Map<String,String> getSystemProperties() {
+        return systemProps;
+    }
+
+    /**
      * If this is an unsupported command, throw an exception.
      */
     private static void checkUnsupportedLegacyCommand(String cmd)
