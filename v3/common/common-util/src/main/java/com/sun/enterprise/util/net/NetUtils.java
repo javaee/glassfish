@@ -90,6 +90,17 @@ public class NetUtils {
         InetAddress hostAddrs[] = null;
         try {
             hostAddrs = InetAddress.getAllByName(hostname);
+
+            // any address that's a loopback address is a local address
+            if (hostAddrs != null) {
+                for (InetAddress ia : hostAddrs) {
+                    if (ia.isLoopbackAddress())
+                        return true;
+                }
+            }
+
+            // are any of our addresses the same as any address of "localhost"?
+            // XXX - redundant with the above check?
             InetAddress localHostAddrs[] =
                 InetAddress.getAllByName("localhost");
             if (localHostAddrs != null && hostAddrs != null) {
