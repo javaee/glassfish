@@ -50,10 +50,10 @@
        <repository>            
            <uniqueVersion>false</uniqueVersion>
            <id>rator.sfbay</id>
-           <url>dav:http://glassfish-maven-repository.us.oracle.com/maven/repositories/glassfish/</url>
+           <url>dav:http://glassfish-maven-repository.sfbay/maven/repositories/glassfish/</url>
        </repository>
    </distributionManagement>
-   <version>3.1-b06</version>
+   <version>3.1-SNAPSHOT</version>
    <modules>
        <module>admin/cli</module>
        <module>admin/cli-optional</module>
