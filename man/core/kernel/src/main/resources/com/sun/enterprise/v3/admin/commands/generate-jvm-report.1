@@ -48,16 +48,30 @@ OPTIONS
 
          Displays the help text for the subcommand.
 
-Java EE 6           Last change: 15 Oct 2009                    1
+Java EE 6           Last change: 29 Nov 2010                    1
 
 asadmin Utility Subcommands                generate-jvm-report(1)
 
      --target
 
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command runs successfully and the option is ignored.
+         Specifies the target  for  which  you  are  showing  JVM
+         machine statistics.
+
+         Valid values are as follows:
+
+         server
+             Specifies the DAS (default).
+
+         instance-name
+
+             Specifies a GlassFish Server instance.
+
+         cluster-name
+             Specifies a cluster.
+
+         configuration-name
+
+             Specifies a named configuration.
 
      --type
          The type of report that is to be generated.  Default  is
@@ -83,6 +97,10 @@ asadmin Utility Subcommands                generate-jvm-report(1)
              thread   dump  (stack  trace)  for  a  given  target
              instance.
 
+Java EE 6           Last change: 29 Nov 2010                    2
+
+asadmin Utility Subcommands                generate-jvm-report(1)
+
          log
 
              Provides information  about  the  loggers  that  are
@@ -94,10 +112,6 @@ asadmin Utility Subcommands                generate-jvm-report(1)
 
 EXAMPLES
      Example 1 Obtaining Summary Information for the JVM Machine
-
-Java EE 6           Last change: 15 Oct 2009                    2
-
-asadmin Utility Subcommands                generate-jvm-report(1)
 
      This example shows a partial listing of  a  report  that  is
      generated  if no type is specified. This same report is gen-
@@ -131,6 +145,10 @@ asadmin Utility Subcommands                generate-jvm-report(1)
      This example generates a report that  shows  information  on
      the class loader.
 
+Java EE 6           Last change: 29 Nov 2010                    3
+
+asadmin Utility Subcommands                generate-jvm-report(1)
+
        asadmin> generate-jvm-report --type=class
        Class loading and unloading in the Java Virtual Machine:
        Number of classes currently loaded in the Java Virtual Machine: 3,781
@@ -143,11 +161,6 @@ asadmin Utility Subcommands                generate-jvm-report(1)
        Command generate-jvm-report executed successfully.
 
 EXIT STATUS
-
-Java EE 6           Last change: 15 Oct 2009                    3
-
-asadmin Utility Subcommands                generate-jvm-report(1)
-
      0                           subcommand executed successfully
 
      1                           error in executing  the  subcom-
@@ -159,5 +172,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 15 Oct 2009                    4
+Java EE 6           Last change: 29 Nov 2010                    4
 

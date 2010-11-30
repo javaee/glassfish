@@ -5,7 +5,7 @@ NAME
      list-threadpools - lists all the thread pools
 
 SYNOPSIS
-     list-threadpools [--help]
+     list-threadpools [--help] [target]
 
 DESCRIPTION
      The list-threadpools subcommand lists the  GlassFish  Server
@@ -19,8 +19,35 @@ OPTIONS
 
          Displays the help text for the subcommand.
 
+OPERANDS
+     target
+         This operand specifies the  target  for  which  you  are
+         listing thread pools.
+
+         Valid values are as follows:
+
+         server
+
+             Lists the thread pools  for  the  default  GlassFish
+             Server  instance server and is the default value
+
+         configuration-name
+             Lists the thread pools for the named configuration.
+
+         cluster-name
+
+             Lists the thread pools for  every  instance  in  the
+             cluster.
+
+         instance-name
+             Lists the thread pools for a particular instance.
+
 EXAMPLES
      Example 1 Listing Thread Pools
+
+Java EE 6           Last change: 29 Nov 2010                    1
+
+asadmin Utility Subcommands                   list-threadpools(1)
 
      This example lists the current thread pools.
 
@@ -40,5 +67,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 29 Sep 2009                    1
+Java EE 6           Last change: 29 Nov 2010                    2
 

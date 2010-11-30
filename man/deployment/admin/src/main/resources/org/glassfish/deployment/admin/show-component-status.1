@@ -34,23 +34,23 @@ OPTIONS
 
          cluster_name
 
-             Shows the component status for every server instance
-             in the cluster.
+             Shows the component status for the cluster.
 
          instance_name
-             Shows the component status for a  particular  server
-             instance.
+             Shows  the  component  status  for  a  clustered  or
+             stand-alone server instance.
 
 OPERANDS
      component-name
 
          The name of the component whose status is to be listed.
 
-Java EE 6           Last change: 16 Nov 2010                    1
+         The name can include  an  optional  version  identifier,
+
+Java EE 6           Last change: 29 Nov 2010                    1
 
 asadmin Utility Subcommands              show-component-status(1)
 
-         The name can include  an  optional  version  identifier,
          which follows the name and is separated from the name by
          a colon (:). The version identifier must  begin  with  a
          letter or number. It can contain alphanumeric characters
@@ -76,11 +76,11 @@ EXIT STATUS
      1                   error in executing the subcommand
 
 SEE ALSO
-     list-components(1), list-sub-components(1)
+     list-applications(1), list-sub-components(1)
 
      asadmin(1M)
 
      Oracle GlassFish Server 3.1 Application Deployment Guide
 
-Java EE 6           Last change: 16 Nov 2010                    2
+Java EE 6           Last change: 29 Nov 2010                    2
 

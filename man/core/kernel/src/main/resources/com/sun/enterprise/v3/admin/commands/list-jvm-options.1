@@ -6,7 +6,7 @@ NAME
      launcher
 
 SYNOPSIS
-     list-jvm-options [--help]
+     list-jvm-options [--help] [--target target]
 
 DESCRIPTION
      The list-jvm-options subcommand displays a list of  command-
@@ -24,6 +24,30 @@ OPTIONS
      -?
 
          Displays the help text for the subcommand.
+
+     --target
+         Specifies the target for  which  you  are  listing  Java
+         application launcher options.
+
+         Valid values are as follows:
+
+         server
+
+             Specifies the DAS (default).
+
+         instance-name
+             Specifies a GlassFish Server instance.
+
+         cluster-name
+
+             Specifies a cluster.
+
+         configuration-name
+             Specifies a named configuration.
+
+Java EE 6           Last change: 29 Nov 2010                    1
+
+asadmin Utility Subcommands                   list-jvm-options(1)
 
 EXAMPLES
      Example 1 Listing the Java Application Launcher Options
@@ -48,11 +72,6 @@ EXAMPLES
        com.sun.aas.javaRoot}/jre/lib/ext${path.separator}${com.sun.aas.instanceRoot}
        /lib/ext${path.separator}${com.sun.aas.derbyRoot}/lib
        -Xmx512m
-
-Java EE 6           Last change: 15 Oct 2009                    1
-
-asadmin Utility Subcommands                   list-jvm-options(1)
-
        -XX:MaxPermSize=192m
        -Djava.endorsed.dirs=${com.sun.aas.installRoot}/lib/endorsed
        -XX:LogFile=${com.sun.aas.instanceRoot}/logs/jvm.log
@@ -73,12 +92,17 @@ SEE ALSO
      see the reference page for the operating system that you are
      using:
 
-         o    Oracle Solaris and Linux: java - the Java  applica-
-              tion                                       launcher
+         o    Oracle  Solaris  and  Linux:  java   -   the   Java
+
+Java EE 6           Last change: 29 Nov 2010                    2
+
+asadmin Utility Subcommands                   list-jvm-options(1)
+
+              application                                launcher
               (http://java.sun.com/javase/6/docs/technotes/tools/solaris/java.html)
 
          o    Windows:  java  -  the  Java  application  launcher
               (http://java.sun.com/javase/6/docs/technotes/tools/windows/java.html)
 
-Java EE 6           Last change: 15 Oct 2009                    2
+Java EE 6           Last change: 29 Nov 2010                    3
 

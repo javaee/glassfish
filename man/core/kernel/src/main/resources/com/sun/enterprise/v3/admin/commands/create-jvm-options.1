@@ -7,7 +7,7 @@ NAME
 
 SYNOPSIS
      create-jvm-options [--help] [--target target] [--profiler={true|false}]
-     (jvm_option_name=jvm_option_value) [:jvm_option_name=jvm_option_value*]
+     (jvm-option-name=jvm-option-value) [:jvm-option-name=jvm-option-value*]
 
 DESCRIPTION
      The  create-jvm-options  subcommand   creates   command-line
@@ -50,7 +50,7 @@ DESCRIPTION
      If the subcommand specifies an option that  already  exists,
      the command does not re-create the option.
 
-Java EE 6           Last change: 15 Oct 2009                    1
+Java EE 6           Last change: 29 Nov 2010                    1
 
 asadmin Utility Subcommands                 create-jvm-options(1)
 
@@ -102,7 +102,7 @@ asadmin Utility Subcommands                 create-jvm-options(1)
 
 OPTIONS
 
-Java EE 6           Last change: 15 Oct 2009                    2
+Java EE 6           Last change: 29 Nov 2010                    2
 
 asadmin Utility Subcommands                 create-jvm-options(1)
 
@@ -112,10 +112,24 @@ asadmin Utility Subcommands                 create-jvm-options(1)
          Displays the help text for the subcommand.
 
      --target
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command runs successfully and the option is ignored.
+         Specifies the target on  which  you  are  creating  Java
+         application launcher options.
+
+         Valid values are as follows:
+
+         server
+
+             Specifies the DAS (default).
+
+         instance-name
+             Specifies a GlassFish Server instance.
+
+         cluster-name
+
+             Specifies a cluster.
+
+         configuration-name
+             Specifies a named configuration.
 
      --profiler
 
@@ -124,7 +138,7 @@ asadmin Utility Subcommands                 create-jvm-options(1)
          option to be true. Default is false.
 
 OPERANDS
-     jvm_option_name
+     jvm-option-name
          One or more options delimited by a colon (:). The format
          of an option depends on the following:
 
@@ -132,11 +146,16 @@ OPERANDS
                   mat is option-name=value.
 
              o    If the option has only a name,  the  format  is
-                  option_name. For example, -Xmx2048m.
+                  option-name. For example, -Xmx2048m.
 
          Note -
 
            If an option name or option value  contains  a  colon,
+
+Java EE 6           Last change: 29 Nov 2010                    3
+
+asadmin Utility Subcommands                 create-jvm-options(1)
+
            the  backslash  (\fR) must be used to escape the colon
            in the name or  value.  Other  characters  might  also
            require  an  escape  character.  For  more information
@@ -152,10 +171,6 @@ EXAMPLES
        -Dvariable=OME:-Dwindowslocation=d:\sun\appserver:-Doption1=-value1
        created 4 option(s)
        Command create-jvm-options executed successfully.
-
-Java EE 6           Last change: 15 Oct 2009                    3
-
-asadmin Utility Subcommands                 create-jvm-options(1)
 
      Example 2 Setting a Startup Parameter for the Java  Applica-
      tion Launcher
@@ -179,6 +194,10 @@ asadmin Utility Subcommands                 create-jvm-options(1)
      In this case, one of the two parameters already  exists,  so
      the subcommand reports that only one option was set.
 
+Java EE 6           Last change: 29 Nov 2010                    4
+
+asadmin Utility Subcommands                 create-jvm-options(1)
+
      Example 4 Setting a JVM Startup Parameter for the Profiler
 
      This example sets a JVM startup parameter for the profiler.
@@ -192,10 +211,6 @@ EXIT STATUS
 
      1                           error in executing  the  subcom-
                                  mand
-
-Java EE 6           Last change: 15 Oct 2009                    4
-
-asadmin Utility Subcommands                 create-jvm-options(1)
 
 SEE ALSO
      delete-jvm-options(1),     list-jvm-options(1),      create-
@@ -214,5 +229,5 @@ SEE ALSO
          o    Windows:  java  -  the  Java  application  launcher
               (http://java.sun.com/javase/6/docs/technotes/tools/windows/java.html)
 
-Java EE 6           Last change: 15 Oct 2009                    5
+Java EE 6           Last change: 29 Nov 2010                    5
 

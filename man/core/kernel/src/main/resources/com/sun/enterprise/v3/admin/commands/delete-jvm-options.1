@@ -7,7 +7,7 @@ NAME
 
 SYNOPSIS
      delete-jvm-options [--help] [--target target] [--profiler={true|false}]
-     (jvm_option_name[=jvm_option_value]) [:jvm_option_name[=jvm_option_name]]*
+     (jvm-option-name[=jvm-option-value]) [:jvm-option-name[=jvm-option-name]]*
 
 DESCRIPTION
      The  delete-jvm-options  subcommand  removes  one  or   more
@@ -50,7 +50,7 @@ DESCRIPTION
 
                   -d64
 
-Java EE 6           Last change: 15 Oct 2009                    1
+Java EE 6           Last change: 29 Nov 2010                    1
 
 asadmin Utility Subcommands                 delete-jvm-options(1)
 
@@ -65,10 +65,24 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --target
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command runs successfully and the option is ignored.
+         Specifies the target from which you  are  removing  Java
+         application launcher options.
+
+         Valid values are as follows:
+
+         server
+
+             Specifies the DAS (default).
+
+         instance-name
+             Specifies a GlassFish Server instance.
+
+         cluster-name
+
+             Specifies a cluster.
+
+         configuration-name
+             Specifies a named configuration.
 
      --profiler
 
@@ -77,15 +91,19 @@ OPTIONS
          a profiler for this option to be true.
 
 OPERANDS
-     jvm_option_name
+     jvm-option-name
          One or more options delimited by a colon (:). The format
          of the operand depends on the following:
 
              o    If the option has a name and a value, the  for-
                   mat is option-name=value.
 
+Java EE 6           Last change: 29 Nov 2010                    2
+
+asadmin Utility Subcommands                 delete-jvm-options(1)
+
              o    If the option has only a name,  the  format  is
-                  option_name. For example, -Xmx2048m.
+                  option-name. For example, -Xmx2048m.
 
          Note -
 
@@ -98,10 +116,6 @@ OPERANDS
 
 EXAMPLES
      Example 1 Deleting Java Application Launcher Options
-
-Java EE 6           Last change: 15 Oct 2009                    2
-
-asadmin Utility Subcommands                 delete-jvm-options(1)
 
      This example  removes  multiple  Java  application  launcher
      options.
@@ -129,6 +143,10 @@ SEE ALSO
      create-jvm-options(1),     list-jvm-options(1),     restart-
      domain(1)
 
+Java EE 6           Last change: 29 Nov 2010                    3
+
+asadmin Utility Subcommands                 delete-jvm-options(1)
+
      asadmin(1M)
 
      For more information about the  Java  application  launcher,
@@ -142,5 +160,5 @@ SEE ALSO
          o    Windows:  java  -  the  Java  application  launcher
               (http://java.sun.com/javase/6/docs/technotes/tools/windows/java.html)
 
-Java EE 6           Last change: 15 Oct 2009                    3
+Java EE 6           Last change: 29 Nov 2010                    4
 

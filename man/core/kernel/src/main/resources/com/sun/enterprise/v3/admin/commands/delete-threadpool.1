@@ -5,7 +5,7 @@ NAME
      delete-threadpool - removes a thread pool
 
 SYNOPSIS
-     delete-threadpool [--help] [--target target_name ] threadpool_id
+     delete-threadpool [--help] [--target target] threadpool-id
 
 DESCRIPTION
      Removes the thread pool with the specified ID. This  subcom-
@@ -18,16 +18,36 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --target
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command runs successfully and the option is ignored.
+         This option specifies the  target  from  which  you  are
+         removing the thread pool.
+
+         Valid values are as follows:
+
+         server
+
+             Deletes the thread pool for  the  default  GlassFish
+             Server  instance server and is the default value.
+
+         configuration-name
+             Deletes the thread pool for the named configuration.
+
+         cluster-name
+
+             Deletes the thread pool for every  instance  in  the
+             cluster.
+
+         instance-name
+             Deletes the thread pool for a particular instance.
 
 OPERANDS
-     threadpool_id
+     threadpool-id
 
          An ID for the work  queue,  for  example,  thread-pool1,
          threadpool-2, and so forth.
+
+Java EE 6           Last change: 29 Nov 2010                    1
+
+asadmin Utility Subcommands                  delete-threadpool(1)
 
 EXAMPLES
      Example 1 Deleting a Thread Pool
@@ -43,14 +63,10 @@ EXIT STATUS
      1                           error in executing  the  subcom-
                                  mand
 
-Java EE 6            Last change: 1 Oct 2009                    1
-
-asadmin Utility Subcommands                  delete-threadpool(1)
-
 SEE ALSO
      create-threadpool(1), list-threadpools(1)
 
      asadmin(1M)
 
-Java EE 6            Last change: 1 Oct 2009                    2
+Java EE 6           Last change: 29 Nov 2010                    2
 

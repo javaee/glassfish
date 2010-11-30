@@ -6,7 +6,7 @@ NAME
      file
 
 SYNOPSIS
-     add-resources [--help] [--target target] xml_file_name
+     add-resources [--help] [--target target] xml-file-name
 
 DESCRIPTION
      The add-resources subcommand creates the resources named  in
@@ -14,11 +14,10 @@ DESCRIPTION
      with this subcommand are listed in See  Also  in  this  help
      page.
 
-     The xml_file_name operand is the path to the XML  file  that
+     The xml-file-name operand is the path to the XML  file  that
      contains  the  resources  to be created. The DOCTYPE must be
-     specified                                                 as
-     http://www.sun.com/software/appserver/dtds/sun-
-     resources_1_4.dtd in the resources.xml file.
+     specified      as       http://glassfish.org/dtds/glassfish-
+     resources_1_5.dtd in the resources.xml file.
 
      This subcommand is supported in remote mode only.
 
@@ -40,22 +39,23 @@ OPTIONS
          domain
              Creates the resources for the domain.
 
-         cluster_name
+         cluster-name
 
              Creates the resources for every server  instance  in
              the cluster.
 
-Java EE 6           Last change: 21 Oct 2010                    1
+         instance-name
+             Creates  the  resources  for  a  particular   server
+
+Java EE 6           Last change: 29 Nov 2010                    1
 
 asadmin Utility Subcommands                      add-resources(1)
 
-         instance_name
-
-             Creates  the  resources  for  a  particular   server
              instance.
 
 OPERANDS
-     xml_file_name
+     xml-file-name
+
          The path to the XML file that contains  the  resource(s)
          to  be created. If you specify an absolute path, the XML
          file can be anywhere. If you specify only the file, then
@@ -68,8 +68,8 @@ OPERANDS
 
        <?xml version="1.0" encoding="UTF-8"?>
        <!DOCTYPE resources PUBLIC
-          "-//Sun Microsystems Inc.//DTD Application Server 9.1 Domain//EN"
-          "*http://www.sun.com/software/appserver/dtds/sun-resources_1_2.dtd*">
+          "-//GlassFish.org//DTD GlassFish Application Server 3.1 Resource Definitions //EN"
+          "http://glassfish.org/dtds/glassfish-resources_1_5.dtd">
        <resources>
         <jdbc-connection-pool name="SPECjPool" steady-pool-size="100"
           max-pool-size="150" max-wait-time-in-millis="60000"
@@ -96,11 +96,12 @@ EXAMPLES
      This example creates resources using the contents of the XML
      file resource.xml.
 
-Java EE 6           Last change: 21 Oct 2010                    2
+       asadmin> add-resources resource.xml
+
+Java EE 6           Last change: 29 Nov 2010                    2
 
 asadmin Utility Subcommands                      add-resources(1)
 
-       asadmin> add-resources resource.xml
        Command : Connector connection pool jms/testQFactoryPool created.
        Command : Administered object jms/testQ created.
        Command : Connector resource jms/testQFactory created.
@@ -125,5 +126,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 21 Oct 2010                    3
+Java EE 6           Last change: 29 Nov 2010                    3
 

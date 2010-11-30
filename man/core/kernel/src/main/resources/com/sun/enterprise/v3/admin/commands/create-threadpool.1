@@ -5,11 +5,11 @@ NAME
      create-threadpool - adds a thread pool
 
 SYNOPSIS
-     create-threadpool [--help] [--target target_name]
+     create-threadpool [--help] [--target target]
      [--maxthreadpoolsize maxthreadpoolsize]
      [--minthreadpoolsize minthreadpoolsize]
      [--idletimeout idletimeout] [--maxqueuesize maxqueuesize]
-     [--workqueues workqueues] threadpool_id
+     [--workqueues workqueues] threadpool-id
 
 DESCRIPTION
      The create-threadpool subcommand creates a thread pool  with
@@ -29,29 +29,45 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --target
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command runs successfully and the option is ignored.
+         This option specifies the target on which you are creat-
+         ing the thread pool.
+
+         Valid values are as follows:
+
+         server
+
+             Creates the thread pool for  the  default  GlassFish
+             Server  instance server and is the default value
+
+         configuration-name
+             Creates the thread pool for the named configuration.
+
+         cluster-name
+
+             Creates the thread pool for every  instance  in  the
+             cluster.
+
+Java EE 6           Last change: 29 Nov 2010                    1
+
+asadmin Utility Subcommands                  create-threadpool(1)
+
+         instance-name
+
+             Creates the thread pool for a particular instance.
 
      --maxthreadpoolsize
-
          Specifies the maximum number of  threads  the  pool  can
          contain. Default is 5.
 
      --minthreadpoolsize
+
          Specifies the minimum number of  threads  in  the  pool.
          These  are created when the thread pool is instantiated.
          Default is 2.
 
      --idletimeout
-
          Specifies the amount of time in seconds after which idle
          threads are removed from the pool. Default is 900.
-
-Java EE 6           Last change: 20 Oct 2009                    1
-
-asadmin Utility Subcommands                  create-threadpool(1)
 
      --maxqueuesize
 
@@ -67,7 +83,7 @@ asadmin Utility Subcommands                  create-threadpool(1)
          command runs successfully and the option is ignored.
 
 OPERANDS
-     threadpool_id
+     threadpool-id
 
          An ID for the work queue, for example, threadpool-1.
 
@@ -78,6 +94,11 @@ EXAMPLES
 
        asadmin> create-threadpool --maxthreadpoolsize 100
        --minthreadpoolsize 20 --idletimeout 2 threadpool-1
+
+Java EE 6           Last change: 29 Nov 2010                    2
+
+asadmin Utility Subcommands                  create-threadpool(1)
+
        Command create-threadpool executed successfully
 
 EXIT STATUS
@@ -91,5 +112,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 20 Oct 2009                    2
+Java EE 6           Last change: 29 Nov 2010                    3
 
