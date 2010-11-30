@@ -70,13 +70,13 @@ public class JPAExtender implements Extender, SynchronousBundleListener
     public void start()
     {
         context.addBundleListener(this);
-        logger.logp(Level.INFO, "JPAExtender", "start", " JPAExtender started", new Object[]{});
+        logger.logp(Level.FINE, "JPAExtender", "start", " JPAExtender started", new Object[]{});
     }
 
     public void stop()
     {
         context.removeBundleListener(this);
-        logger.logp(Level.INFO, "JPAExtender", "stop", " JPAExtender stopped", new Object[]{});
+        logger.logp(Level.FINE, "JPAExtender", "stop", " JPAExtender stopped", new Object[]{});
     }
 
     public void bundleChanged(BundleEvent event)
