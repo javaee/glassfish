@@ -60,27 +60,31 @@
 </handler>
 
 
-<handler id="gfr.getListOfRunningInstances">
 
+<!--
+   get a list of running instance.
+   output = #{pageSession.runningInstances}
+-->
+<handler id="gfr.getListOfRunningInstances">
     gf.restRequest(endpoint="#{sessionScope.REST_URL}/list-instances",  method="get", result="#{requestScope.results}");
     listAdd(value="server", result="#{pageSession.runningInstances}");
-    println("----------------- #{pageSession.runningInstances}");
     foreach (var="instance", list="#{requestScope.results.data.extraProperties.instanceList}") {
         if ('!(#{instance.status} = NOT_RUNNING)') {
             listAdd(list="#{pageSession.runningInstances}", value="#{instance.name}");
         }
     }
-        println("2222----------------- #{pageSession.runningInstances}");
-
-    
 </handler>
 
-        <!--
-        //setPageSessionAttribute(key="noRunningInstance" value="#{false}");
-    //setAttribute(key="listSize" value="#{requestScope.listOfInstances.size()}")
-    //setAttribute(key="zero" value="$int{0}");
-    //if (#{requestScope.listSize}=#{requestScope.zero}){
-      //  setPageSessionAttribute(key="noRunningInstance" value="#{true}");
-    //}
-        -->
+
+<!-- get a list of instances based on attrMap
+   input:   #{requestScope.listInstanceAttrMap}
+   output:  #{pageSession.instanceList}
+ -->
+<handler id="gfr.getListOfInstances">
+    gf.restRequest(endpoint="#{sessionScope.REST_URL}/list-instances",  attrsMap="#{requestScope.listInstanceAttrMap}" method="get", result="#{requestScope.result}");
+    setPageSessionAttribute(key="instanceList" value={});
+    foreach (var="instance", list="#{requestScope.result.data.extraProperties.instanceList}") {
+        listAdd(list="#{pageSession.instanceList}", value="#{instance.name}");
+    }
+</handler>
 
