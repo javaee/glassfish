@@ -1738,7 +1738,6 @@ public class VirtualServer extends StandardHost
      */
     public void addContext(Context context, String contextRoot)
         throws ConfigException, GlassFishException {
-
         if (!contextRoot.startsWith("/")) {
             contextRoot = "/"+ contextRoot;
         }
@@ -1746,9 +1745,11 @@ public class VirtualServer extends StandardHost
             throw new ConfigException("Context with contextRoot "+
                     contextRoot+" is already registered");
         }
-        context.setPath(contextRoot);
-        addChild((WebModule)context);
-
+        WebModule wm = ((WebModule)context);
+        wm.setPath(contextRoot);
+        wm.getWebBundleDescriptor().setContextRoot(contextRoot);
+        wm.updateObjectName();
+        addChild(wm);
     }
 
     /**

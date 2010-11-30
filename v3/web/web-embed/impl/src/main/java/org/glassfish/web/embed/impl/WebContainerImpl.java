@@ -121,6 +121,8 @@ public class WebContainerImpl implements WebContainer {
     // ----------------------------------------------------- Instance Variables
 
     private WebContainerConfig config;
+
+    private String defaultvs = "server";
     
     private EmbeddedWebContainer embedded;
     
@@ -428,7 +430,6 @@ public class WebContainerImpl implements WebContainer {
             log.info("Creating context '"+docRoot.getName()+"' with docBase '" +
                     docRoot.getPath() + "'");
         }
-
         String appName;
         WebModule context = null;
         try {
@@ -437,7 +438,7 @@ public class WebContainerImpl implements WebContainer {
             if (!appName.startsWith("/")) {
                 appName = "/"+appName;
             }
-            VirtualServer vs = findVirtualServer("server");
+            VirtualServer vs = findVirtualServer(defaultvs);
             context = (WebModule) ((StandardHost)vs).findChild(appName);
             if (context != null) {
                 ((StandardHost)vs).removeChild(context);

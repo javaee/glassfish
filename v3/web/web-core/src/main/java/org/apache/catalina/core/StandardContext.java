@@ -4749,7 +4749,7 @@ public class StandardContext
     private boolean contextListenerStop() {
 
         boolean ok = true;
-
+        
         if (contextListeners.isEmpty()) {
             return ok;
         }
@@ -6315,11 +6315,24 @@ public class StandardContext
         return new ObjectName(getDomain() + ":" + onameStr);
     }
 
+    public void updateObjectName() { 
+        try {
+            StandardHost host = (StandardHost) getParent();
+            oname = createObjectName(host.getDomain(), host.getJmxName());
+            controller = oname;
+        } catch(Exception ex) {
+            log.log(Level.INFO,
+                    "Error updating ctx with jmx " + this + " " +
+                    oname + " " + ex.toString(),
+                    ex );
+        }
+    }
+
     private void preRegisterJMX() {
         try {
             StandardHost host = (StandardHost) getParent();
             if ((oname == null)
-                || (oname.getKeyProperty("j2eeType") == null)) {
+                    || (oname.getKeyProperty("j2eeType") == null)) {
                 oname = createObjectName(host.getDomain(), host.getJmxName());
                 controller = oname;
             }
