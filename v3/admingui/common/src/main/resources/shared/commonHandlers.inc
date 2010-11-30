@@ -81,7 +81,7 @@
    output:  #{pageSession.instanceList}
  -->
 <handler id="gfr.getListOfInstances">
-    gf.restRequest(endpoint="#{sessionScope.REST_URL}/list-instances",  attrsMap="#{requestScope.listInstanceAttrMap}" method="get", result="#{requestScope.result}");
+    gf.restRequest(endpoint="#{sessionScope.REST_URL}/list-instances",  attrs="#{requestScope.listInstanceAttrMap}" method="get", result="#{requestScope.result}");
     setPageSessionAttribute(key="instanceList" value={});
     foreach (var="instance", list="#{requestScope.result.data.extraProperties.instanceList}") {
         listAdd(list="#{pageSession.instanceList}", value="#{instance.name}");
