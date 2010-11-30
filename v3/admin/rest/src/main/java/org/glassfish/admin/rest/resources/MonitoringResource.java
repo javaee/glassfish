@@ -40,6 +40,8 @@
 
 package org.glassfish.admin.rest.resources;
 
+import javax.ws.rs.core.Response;
+import javax.ws.rs.WebApplicationException;
 import com.sun.enterprise.config.serverbeans.SecureAdmin;
 import com.sun.enterprise.security.ssl.SSLUtils;
 import com.sun.jersey.api.client.WebResource;
@@ -101,7 +103,9 @@ public class MonitoringResource {
     
     SSLUtils sslUtils; //Lazily inited
 
-
+    @Context
+    protected Client client;
+    
     @GET
     //@Produces({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML,"text/html;qs=2"})
@@ -142,8 +146,15 @@ public class MonitoringResource {
                 //levels are turned OFF.
                 //Issue: 9921
                 if (!serverNode.getEnabledChildNodes().isEmpty()) {
-                    list.add(serverNode);
-                    constructEntity(list,  ar);
+                    list.add(serverNode);                  
+                    constructEntity(list,  ar);                    
+                    Domain domain = habitat.getComponent(Domain.class);
+                    Map<String, String> links = (Map<String, String>) ar.getExtraProperties().get("childResources");
+                    for (Server s : domain.getServers().getServer()) {
+                        if (!s.getName().equals("server")) {// add all non 'server' instances
+                            links.put(s.getName(), getElementLink(uriInfo, s.getName()));
+                        }
+                    }                   
                 }
                 return result;
             } else {
@@ -219,10 +230,11 @@ public class MonitoringResource {
     }
 
     private void proxyRequestForInstanceData(RestActionReporter ar) {
-        String targetInstanceName = path.substring(0, path.indexOf('/'));
-        Client client = null;
+        String targetInstanceName = path;
+        if (path.indexOf('/') != -1) {
+            targetInstanceName = path.substring(0, path.indexOf('/'));
+        }
         try {
-            client = Client.create();
             Domain domain = habitat.getComponent(Domain.class);
             Server server = domain.getServerNamed(targetInstanceName);
             if (server != null) {
@@ -258,10 +270,13 @@ public class MonitoringResource {
                 // TODO error to user. Can not locate server for whom data is being looked for
 
             }
-        } finally {
-            if (client != null) {
-                client.destroy();
-            }
+        } catch (Exception ex){
+                throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
+        }finally {
+//  not needed as the client is now inject
+ //           if (client != null) {
+//                client.destroy();
+//            }
         }
     }
 
