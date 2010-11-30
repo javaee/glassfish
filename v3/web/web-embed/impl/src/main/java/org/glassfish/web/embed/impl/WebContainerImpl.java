@@ -46,6 +46,8 @@ import java.io.File;
 import java.util.*;
 import java.util.logging.*;
 
+import com.sun.enterprise.web.EmbeddedWebContainer;
+import com.sun.enterprise.web.WebModule;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.grizzly.config.dom.FileCache;
 import com.sun.grizzly.config.dom.Http;
@@ -58,7 +60,6 @@ import com.sun.grizzly.config.dom.ThreadPool;
 import com.sun.grizzly.config.dom.Transport;
 import com.sun.grizzly.config.dom.Transports;
 
-import org.apache.catalina.core.StandardContext;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.embedded.Port;
 import org.glassfish.api.embedded.Ports;
@@ -84,7 +85,6 @@ import org.apache.catalina.Engine;
 import org.apache.catalina.Realm;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.startup.ContextConfig;
-import org.apache.catalina.startup.Embedded;
 
 
 /**
@@ -99,74 +99,102 @@ import org.apache.catalina.startup.Embedded;
 @ContractProvided(WebContainer.class)
 public class WebContainerImpl implements WebContainer {
 
-    @Inject
-    NetworkConfig config;
-    
+    Inhabitant<? extends org.glassfish.api.container.Container> container;
+
+    Inhabitant<?> embeddedInhabitant;
+
     @Inject
     Habitat habitat;
 
     @Inject
     HttpService httpService;
 
-    @Inject
-    ServerContext serverContext;
-
-    
-    private static Logger log = 
+    private static Logger log =
             Logger.getLogger(WebContainerImpl.class.getName());
-      
-    
-    // ----------------------------------------------------------- Constructors
-    
+
+    @Inject
+    NetworkConfig networkConfig;
+
+    @Inject
+    ServerContext serverContext;   
 
     // ----------------------------------------------------- Instance Variables
 
-    Inhabitant<? extends org.glassfish.api.container.Container> webContainer;
-
-    private VirtualServer defaultVirtualServer = null;
+    private WebContainerConfig config;
     
-    Inhabitant<?> embeddedInhabitant;
-    
-    private Embedded embedded = null;
+    private EmbeddedWebContainer embedded;
     
     private Engine engine = null;
-    
-    private File path = null;
-    
-    private boolean listings;
 
-    private String defaultvs = "server";
+    private boolean initialized = false;
 
-    private int portNumber;
-
-    private String listenerName = "embedded-listener";    
-
-    private String securityEnabled = "false";
+    private String listenerName = "embedded-listener";
 
     private List<WebListener> listeners = new ArrayList<WebListener>();
 
+    private File path = null;
+
+    private String securityEnabled = "false";
+
+    private com.sun.enterprise.web.WebContainer webContainer; 
+
     // --------------------------------------------------------- Public Methods
 
-    public void setConfiguration(WebContainerConfig config) {
+    private void init() {
+        if (initialized) {
+            return;
+        }
+        if (config == null) {
+            // use default settings
+            config = new WebContainerConfig();
+        }
+        container = habitat.getInhabitant(org.glassfish.api.container.Container.class,
+                "com.sun.enterprise.web.WebContainer");
+        if (container==null) {
+            log.severe("Cannot find webcontainer implementation");
+        }
+        embeddedInhabitant = habitat.getInhabitantByType("com.sun.enterprise.web.EmbeddedWebContainer");
+        if (embeddedInhabitant==null) {
+            log.severe("Cannot find embedded implementation");
+        }
+        try {
+            webContainer = (com.sun.enterprise.web.WebContainer) container.get();
+            embedded = (EmbeddedWebContainer) embeddedInhabitant.get();
+            engine = webContainer.getEngine();
+            if (engine == null) {
+                log.severe("Cannot find engine implementation");
+            }
+            initialized = true;
+        } catch (Exception e) {
+            log.severe("Init exception "+e.getMessage());
+        }
+    }
 
+    public void setConfiguration(WebContainerConfig config) {
+        if (!initialized) {
+            init();
+        }
+        this.config = config;
         final WebContainerConfig webConfig = config;
-        com.sun.enterprise.config.serverbeans.VirtualServer vsBean = httpService.getVirtualServerByName(defaultvs);
-        log.info("WebContainer set configuration "+vsBean+" port before="+portNumber+" after="+webConfig.getPort());
+        com.sun.enterprise.config.serverbeans.VirtualServer vsBean =
+                httpService.getVirtualServerByName(config.getVirtualServerId());
         try {
             if (vsBean!=null) {
                 ConfigSupport.apply(new SingleConfigCode<com.sun.enterprise.config.serverbeans.VirtualServer>() {
                     public Object run(com.sun.enterprise.config.serverbeans.VirtualServer avs)
                             throws PropertyVetoException, TransactionFailure {
                         avs.setId(webConfig.getVirtualServerId());
-                        avs.setDocroot(webConfig.getDocRootDir().getPath());
+                        if (webConfig.getDocRootDir() != null) {
+                            avs.setDocroot(webConfig.getDocRootDir().getPath());
+                        }
                         avs.setHosts(webConfig.getHostNames());
                         avs.setNetworkListeners(webConfig.getListenerName());
                         return avs;
                     }
                 }, vsBean);
             }
-            embedded.setDirectoryListing(webConfig.getListings());
-            if (portNumber!=webConfig.getPort()) {
+            embedded.setDirectoryListing(config.getListings());
+            if (findWebListener(config.getPort())==null) {
                 Ports ports = habitat.getComponent(Ports.class);
                 Port port = ports.createPort(webConfig.getPort());
                 bind(port, null);
@@ -191,9 +219,8 @@ public class WebContainerImpl implements WebContainer {
         return sniffers;
     }
 
-    public void bind(Port port, WebListener webListener) {
-
-        portNumber = port.getPortNumber();
+    private void bind(Port port, WebListener webListener) {
+        final int portNumber = port.getPortNumber();
         String protocol = Port.HTTP_PROTOCOL;
 
         if (webListener==null) {
@@ -211,7 +238,7 @@ public class WebContainerImpl implements WebContainer {
 
         if (protocol.equals(Port.HTTP_PROTOCOL)) {
             securityEnabled = "false";
-        } if (protocol.equals(Port.HTTPS_PROTOCOL)) {
+        } else if (protocol.equals(Port.HTTPS_PROTOCOL)) {
             securityEnabled = "true";
         }
 
@@ -223,12 +250,12 @@ public class WebContainerImpl implements WebContainer {
                     protocol.setSecurityEnabled(securityEnabled);
                     param.getProtocol().add(protocol);
                     final Http http = protocol.createChild(Http.class);
-                    http.setDefaultVirtualServer(defaultvs);
+                    http.setDefaultVirtualServer(config.getVirtualServerId());
                     http.setFileCache(http.createChild(FileCache.class));
                     protocol.setHttp(http);
                     return protocol;
                 }
-            }, config.getProtocols());
+            }, networkConfig.getProtocols());
             ConfigSupport.apply(new ConfigCode() {
                 public Object run(ConfigBeanProxy... params) throws TransactionFailure {
                     NetworkListeners nls = (NetworkListeners) params[0];
@@ -252,9 +279,10 @@ public class WebContainerImpl implements WebContainer {
                     nls.getNetworkListener().add(listener);
                     return listener;
                 }
-            }, config.getNetworkListeners(), config.getTransports());
+            }, networkConfig.getNetworkListeners(), networkConfig.getTransports());
 
-            com.sun.enterprise.config.serverbeans.VirtualServer vs = httpService.getVirtualServerByName(defaultvs);
+            com.sun.enterprise.config.serverbeans.VirtualServer vs =
+                    httpService.getVirtualServerByName(config.getVirtualServerId());
             ConfigSupport.apply(new SingleConfigCode<com.sun.enterprise.config.serverbeans.VirtualServer>() {
                 public Object run(com.sun.enterprise.config.serverbeans.VirtualServer avs) throws PropertyVetoException {
                     avs.addNetworkListener(listenerName);
@@ -282,7 +310,7 @@ public class WebContainerImpl implements WebContainer {
     }
 
     private boolean existsListener(String lName) {
-        for (NetworkListener nl : config.getNetworkListeners().getNetworkListener()) {
+        for (NetworkListener nl : networkConfig.getNetworkListeners().getNetworkListener()) {
             if (nl.getName().equals(lName)) {
                 return true;
             }
@@ -294,8 +322,8 @@ public class WebContainerImpl implements WebContainer {
         final String listenerName = name;
 
         try {
-            NetworkListeners networkListeners = config.getNetworkListeners();
-            final NetworkListener listenerToBeRemoved = config.getNetworkListener(listenerName);
+            NetworkListeners networkListeners = networkConfig.getNetworkListeners();
+            final NetworkListener listenerToBeRemoved = networkConfig.getNetworkListener(listenerName);
             if (listenerToBeRemoved == null) {
                 log.severe("Network Listener "+listenerName+" doesn't exist");
             } else {
@@ -318,185 +346,6 @@ public class WebContainerImpl implements WebContainer {
             log.severe("Remove listener "+name+" failed "+e.getMessage());
         }
     }
-    
-    /**
-     * Starts this <tt>WebContainer</tt> and any of the
-     * <tt>WebListener</tt> and <tt>VirtualServer</tt> instances
-     * registered with it.
-     *
-     * <p>This method also creates and starts a default
-     * <tt>VirtualServer</tt> with id <tt>server</tt> and hostname
-     * <tt>localhost</tt>, as well as a default <tt>WebListener</tt>
-     * with id <tt>http-listener-1</tt> on port 8080 if no other virtual server 
-     * or listener configuration exists.
-     * 
-     * @throws Exception if an error occurs during the start up of this
-     * <tt>WebContainer</tt> or any of its registered
-     * <tt>WebListener</tt> or <tt>VirtualServer</tt> instances 
-     */
-    public void start() throws GlassFishException {
-   
-        if (log.isLoggable(Level.INFO)) { 
-            log.info("EmbeddedWebContainer is starting");
-        }
-        
-        webContainer = habitat.getInhabitant(org.glassfish.api.container.Container.class,
-                "com.sun.enterprise.web.WebContainer");
-        if (webContainer==null) {
-            log.severe("Cannot find webcontainer implementation");
-            throw new GlassFishException(new Exception("Cannot find web container implementation"));
-        }
-        
-        embeddedInhabitant = habitat.getInhabitantByType("com.sun.enterprise.web.EmbeddedWebContainer");
-        if (embeddedInhabitant==null) {
-            log.severe("Cannot find embedded implementation");
-            throw new GlassFishException(new Exception("Cannot find embedded implementation"));
-        }
-        
-        // force the start
-        try {
-            webContainer.get();
-            embedded = (Embedded)embeddedInhabitant.get();
-            Engine[] engines = embedded.getEngines();
-            if (engines!=null) {
-                engine = engines[0];
-            } else {
-                throw new GlassFishException(new Exception("Cannot find engine implementation"));
-            }
-        
-            File docRoot = getPath();
-            VirtualServer vs = findVirtualServer(defaultvs);
-            if (vs != null) {
-                defaultVirtualServer = vs;
-            } else {
-                defaultVirtualServer = createVirtualServer(defaultvs, docRoot);
-                addVirtualServer(defaultVirtualServer);
-            }
-            if (listings) {
-                embedded.setDirectoryListing(listings);
-                for (Context context : defaultVirtualServer.getContexts()) {
-                    context.setDirectoryListing(listings);
-                }
-            }
-
-            if (config.getNetworkListeners().getNetworkListener().isEmpty()) {
-                if (log.isLoggable(Level.INFO)) {
-                    log.info("Listener does not exist - creating a new listener at port 8080");
-                }
-                WebListener listener = createWebListener(listenerName, HttpListener.class);
-                listener.setPort(8080);
-                addWebListener(listener);
-            }
-            
-        } catch (Exception e) {
-            throw new GlassFishException(e);
-        }
-    }
-
-    /**
-     * Starts this <tt>WebContainer</tt> and any of the
-     * <tt>WebListener</tt> and <tt>VirtualServer</tt> instances
-     * registered with it.
-     *
-     * <p>This method also creates and starts a default
-     * <tt>VirtualServer</tt> with id <tt>server</tt> and hostname
-     * <tt>localhost</tt>, as well as a default <tt>WebListener</tt>
-     * with id <tt>http-listener-1</tt> on port 8080 if no other virtual server
-     * or listener configuration exists.
-     *
-     * @throws Exception if an error occurs during the start up of this
-     * <tt>WebContainer</tt> or any of its registered
-     * <tt>WebListener</tt> or <tt>VirtualServer</tt> instances
-     *
-     * @param webContainerConfig the embedded instance configuration
-     */
-    public void start(WebContainerConfig webContainerConfig) throws GlassFishException {
-
-        if (log.isLoggable(Level.INFO)) {
-            log.info("EmbeddedWebContainer is starting");
-        }
-
-        webContainer = habitat.getInhabitant(org.glassfish.api.container.Container.class,
-                "com.sun.enterprise.web.WebContainer");
-        if (webContainer==null) {
-            log.severe("Cannot find webcontainer implementation");
-            throw new GlassFishException(new Exception("Cannot find web container implementation"));
-        }
-
-        embeddedInhabitant = habitat.getInhabitantByType("com.sun.enterprise.web.EmbeddedWebContainer");
-        if (embeddedInhabitant==null) {
-            log.severe("Cannot find embedded implementation");
-            throw new GlassFishException(new Exception("Cannot find embedded implementation"));
-        }
-
-        // force the start
-        try {
-            webContainer.get();
-            embedded = (Embedded)embeddedInhabitant.get();
-            Engine[] engines = embedded.getEngines();
-            if (engines!=null) {
-                engine = engines[0];
-            } else {
-                throw new GlassFishException(new Exception("Cannot find engine implementation"));
-            }
-
-            String virtualServerId = webContainerConfig.getVirtualServerId();
-            VirtualServer vs = findVirtualServer(virtualServerId);
-            if (vs != null) {
-                defaultVirtualServer = vs;
-            } else {
-                defaultVirtualServer = createVirtualServer(virtualServerId, webContainerConfig.getDocRootDir());
-                addVirtualServer(defaultVirtualServer);
-            }
-            listings = webContainerConfig.getListings();
-            if (listings) {
-                embedded.setDirectoryListing(listings);
-                for (Context context : defaultVirtualServer.getContexts()) {
-                    context.setDirectoryListing(listings);
-                }
-            }
-
-            if (config.getNetworkListeners().getNetworkListener().isEmpty()) {
-                if (log.isLoggable(Level.INFO)) {
-                    log.info("Listener does not exist - creating a new listener at port 8080");
-                }
-                WebListener listener = createWebListener(webContainerConfig.getListenerName(), HttpListener.class);
-                listener.setPort(webContainerConfig.getPort());
-                addWebListener(listener);
-            }
-
-        } catch (Exception e) {
-            throw new GlassFishException(e);
-        }
-    }
-    
-    /**
-     * Stops this <tt>WebContainer</tt> and any of the
-     * <tt>WebListener</tt> and <tt>VirtualServer</tt> instances
-     * registered with it.
-     *
-     * @throws Exception if an error occurs during the shut down of this
-     * <tt>WebContainer</tt> or any of its registered
-     * <tt>WebListener</tt> or <tt>VirtualServer</tt> instances 
-     */
-    public void stop() throws GlassFishException {
-
-       if (webContainer!=null && webContainer.isInstantiated()) {
-           try {
-               webContainer.release();
-           } catch (Exception e) {
-               throw new GlassFishException(e);
-           }
-       }       
-       
-       if (webContainer!=null && webContainer.isInstantiated()) {
-           try {
-               webContainer.release();
-           } catch (Exception e) {
-               throw new GlassFishException(e);
-           }
-       }
-    }
 
     /**
      * Creates a <tt>Context</tt> and configures it with the given
@@ -516,21 +365,7 @@ public class WebContainerImpl implements WebContainer {
      * @see VirtualServer#addContext
      */
     public Context createContext(File docRoot) {
-
-        if (log.isLoggable(Level.INFO)) {
-            log.info("Creating context with docBase '" + docRoot.getPath() + "'");
-        }
-
-        ContextImpl context = new ContextImpl();
-        context.setDocBase(docRoot.getAbsolutePath());
-        context.setDirectoryListing(listings);
-        context.setParentClassLoader(serverContext.getCommonClassLoader());        
-
-        Realm realm = habitat.getByContract(Realm.class);
-        context.setRealm(realm);
-
-        return context;
-
+        return createContext(docRoot, null);
     }
     
     /**
@@ -551,37 +386,17 @@ public class WebContainerImpl implements WebContainer {
      * @return the new <tt>Context</tt>
      */
     public Context createContext(File docRoot, String contextRoot, 
-            ClassLoader classLoader) {     
-
-        if (log.isLoggable(Level.INFO)) {
-            log.info("Creating context '" + contextRoot + "' with docBase '" +
-                     docRoot.getPath() + "'");
-        }
-
-        ContextImpl context = new ContextImpl();
-        context.setDocBase(docRoot.getAbsolutePath());
-        context.setPath(contextRoot);
-        context.setDirectoryListing(listings);
-        if (classLoader != null) {
-            context.setParentClassLoader(classLoader);
-        } else {
-            context.setParentClassLoader(serverContext.getCommonClassLoader());
-        }
-
-        Realm realm = habitat.getByContract(Realm.class);
-        context.setRealm(realm);
-
+            ClassLoader classLoader) {
+        Context context = createContext(docRoot, null);
         try {
-            if (defaultVirtualServer!=null) {
-                defaultVirtualServer.addContext(context, contextRoot);
+            for (VirtualServer vs : getVirtualServers()) {
+                vs.addContext(context, contextRoot);
             }
         } catch (Exception ex) {
-            log.severe("Couldn't add context "+contextRoot+" to default virtual server");
+            log.severe("Couldn't add context "+context+" using "+contextRoot);
             ex.printStackTrace();
         }
-
         return context;
-
     }
 
     /**
@@ -606,25 +421,31 @@ public class WebContainerImpl implements WebContainer {
      * @see VirtualServer#addContext
      */
     public Context createContext(File docRoot, ClassLoader classLoader) {
-        
+        if (!initialized) {
+            init();
+        }
         if (log.isLoggable(Level.INFO)) {
-            log.info("Creating context with docBase '" + docRoot.getPath() + "'");
+            log.info("Creating context '"+docRoot.getName()+"' with docBase '" +
+                    docRoot.getPath() + "'");
         }
 
-        ContextImpl context = new ContextImpl();
-        context.setDocBase(docRoot.getAbsolutePath());
-        context.setDirectoryListing(listings);
-        if (classLoader != null) {
-            context.setParentClassLoader(classLoader);
-        } else {
-            context.setParentClassLoader(serverContext.getCommonClassLoader());            
+        String appName;
+        WebModule context = null;
+        try {
+            Deployer deployer = habitat.getComponent(Deployer.class);
+            appName = deployer.deploy(docRoot, "--name", docRoot.getName());
+            if (!appName.startsWith("/")) {
+                appName = "/"+appName;
+            }
+            VirtualServer vs = findVirtualServer("server");
+            context = (WebModule) ((StandardHost)vs).findChild(appName);
+            if (context != null) {
+                ((StandardHost)vs).removeChild(context);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
-
-        Realm realm = habitat.getByContract(Realm.class);
-        context.setRealm(realm);
-
         return context;
-        
     }
 
     /**
@@ -644,28 +465,15 @@ public class WebContainerImpl implements WebContainer {
      */
     public void addContext(Context context, String contextRoot)
             throws ConfigException, GlassFishException {
-
+        if (!contextRoot.startsWith("/")) {
+            contextRoot = "/"+ contextRoot;
+        }
         for (VirtualServer vs : getVirtualServers()) {
             if (vs.findContext(contextRoot)!=null) {
                 throw new ConfigException("Context with contextRoot "+
                         contextRoot+" is already registered");
             }
-        }
-
-        File file = new File(((StandardContext)context).getDocBase());
-        String appName;
-        try {
-            Deployer deployer = habitat.getComponent(Deployer.class);
-            appName = deployer.deploy(file, "--name", contextRoot);
-            if (!appName.startsWith("/")) {
-                appName = "/"+appName;
-            }
-        } catch (Exception ex) {
-            log.severe(ex.getMessage());
-            throw new GlassFishException(ex);
-        }
-        if (log.isLoggable(Level.INFO)) {
-            log.info("Added context "+appName+" using contextroot "+contextRoot);
+            vs.addContext(context, contextRoot);
         }
     }
 
@@ -708,16 +516,16 @@ public class WebContainerImpl implements WebContainer {
         if (log.isLoggable(Level.INFO)) {
             log.info("Creating connector "+id);
         }
-        
+
         try {
             webListener = c.newInstance();
             webListener.setId(id);
         } catch (Exception e) {
             log.severe("Couldn't create connector "+e.getMessage());
-        } 
-        
+        }
+
         return webListener;
-        
+
     }
 
     /**
@@ -737,6 +545,10 @@ public class WebContainerImpl implements WebContainer {
      */
     public void addWebListener(WebListener webListener) 
             throws ConfigException, GlassFishException {
+
+        if (!initialized) {
+            init();
+        }
 
         if (findWebListener(webListener.getId())==null) {
             listenerName = webListener.getId();
@@ -770,8 +582,20 @@ public class WebContainerImpl implements WebContainer {
      * registered with this <tt>WebContainer</tt>
      */
     public WebListener findWebListener(String id) {
+        if (!initialized) {
+            init();
+        }
         for (WebListener listener : listeners) {
             if (listener.getId().equals(id)) {
+                return listener;
+            }
+        }
+        return null;
+    }
+
+    private WebListener findWebListener(int port) {
+        for (WebListener listener : listeners) {
+            if (listener.getPort() == port) {
                 return listener;
             }
         }
@@ -785,7 +609,7 @@ public class WebContainerImpl implements WebContainer {
      * @return the (possibly empty) collection of <tt>WebListener</tt>
      * instances registered with this <tt>WebContainer</tt>
      */
-    public Collection<WebListener> getWebListeners() {
+    public Collection<WebListener> getWebListeners() {     
         return listeners;
     }
 
@@ -826,7 +650,9 @@ public class WebContainerImpl implements WebContainer {
     public VirtualServer createVirtualServer(String id,
         File docRoot, WebListener...  webListeners) {
 
-        VirtualServerImpl virtualServer = new VirtualServerImpl();
+        com.sun.enterprise.web.VirtualServer virtualServer =
+                new com.sun.enterprise.web.VirtualServer();
+        virtualServer.setID(id);
         virtualServer.setName(id);
         if (docRoot!=null) {
             virtualServer.setAppBase(docRoot.getPath());
@@ -838,7 +664,6 @@ public class WebContainerImpl implements WebContainer {
         }
         virtualServer.setNetworkListenerNames(names.toArray(new String[names.size()]));
         virtualServer.setWebListeners(webListeners);
-        virtualServer.setHabitat(habitat);
 
         if (log.isLoggable(Level.INFO)) {
             log.info("Created virtual server "+id+" docroot "+docRoot.getPath()+
@@ -860,7 +685,9 @@ public class WebContainerImpl implements WebContainer {
      */    
     public VirtualServer createVirtualServer(String id, File docRoot) {
 
-        VirtualServerImpl virtualServer = new VirtualServerImpl();
+        com.sun.enterprise.web.VirtualServer virtualServer =
+                new com.sun.enterprise.web.VirtualServer();
+        virtualServer.setID(id);
         virtualServer.setName(id);
         if (docRoot!=null) {
             virtualServer.setAppBase(docRoot.getPath());
@@ -868,18 +695,18 @@ public class WebContainerImpl implements WebContainer {
 
         List<String> networkListenerNames = new ArrayList<String>();
         for (NetworkListener networkListener :
-                config.getNetworkListeners().getNetworkListener()) {
+                networkConfig.getNetworkListeners().getNetworkListener()) {
             networkListenerNames.add(networkListener.getName());
 
         }
-        virtualServer.setNetworkListenerNames(networkListenerNames.toArray(new String[0]));
-        virtualServer.setHabitat(habitat);
+        virtualServer.setNetworkListenerNames(
+                networkListenerNames.toArray(new String[networkListenerNames.size()]));
 
         if (log.isLoggable(Level.INFO)) {
             log.info("Created virtual server "+id+" docroot "+docRoot.getPath()+
                     " networklisteners "+virtualServer.getNetworkListeners());
         }
-        
+
         return virtualServer;
         
     }
@@ -901,7 +728,9 @@ public class WebContainerImpl implements WebContainer {
      */
     public void addVirtualServer(VirtualServer virtualServer)
         throws ConfigException, GlassFishException {
-        
+        if (!initialized) {
+            init();
+        }
         final String virtualServerId = virtualServer.getID();
         final String networkListeners = ((StandardHost)virtualServer).getNetworkListeners();
         final String docRoot = virtualServer.getDocRoot().getPath();
@@ -921,7 +750,8 @@ public class WebContainerImpl implements WebContainer {
             for (WebListener listener : virtualServer.getWebListeners()) {
                 addWebListener(listener);
             }
-            ConfigSupport.apply(new SingleConfigCode<HttpService>() {
+            engine.addChild((StandardHost)virtualServer);
+            /*ConfigSupport.apply(new SingleConfigCode<HttpService>() {
                 public Object run(HttpService param) throws PropertyVetoException, TransactionFailure {
                     com.sun.enterprise.config.serverbeans.VirtualServer newVirtualServer =
                             param.createChild(com.sun.enterprise.config.serverbeans.VirtualServer.class);
@@ -935,13 +765,33 @@ public class WebContainerImpl implements WebContainer {
                     param.getVirtualServer().add(newVirtualServer);
                     return newVirtualServer;
                 }
-            }, httpService);
+            }, httpService);*/
         } catch (Exception ex) {
             throw new GlassFishException(ex);
         }
+        com.sun.enterprise.web.VirtualServer vs =
+                (com.sun.enterprise.web.VirtualServer) engine.findChild(virtualServerId);
 
-        if (log.isLoggable(Level.INFO)) {
-            log.info("Added virtual server "+virtualServer.getID()+" with networklisteners "+networkListeners);
+        /*WebModuleConfig wmInfo = vs.createSystemDefaultWebModuleIfNecessary(
+                habitat.getComponent(WebArchivist.class));
+        String defaultPath = null;
+        if (wmInfo != null) {
+            defaultPath = wmInfo.getContextPath();
+            webContainer.loadStandaloneWebModule(vs, wmInfo);
+        }
+                if (_logger.isLoggable(Level.INFO)) {
+                    _logger.log(Level.INFO,
+                            "webContainer.virtualServer.loadedDefaultWebModule",
+                            new Object[]{vs.getName(), defaultPath});
+                }  */
+        if (vs != null) {
+            if (log.isLoggable(Level.INFO)) {
+                log.info("Added virtual server "+vs.getName()+" with networklisteners "+networkListeners);
+                //log.info("Virtual Server "+vs.getName()+" loaded default web module "+defaultPath);
+            }
+        } else {
+            log.severe("Cannot add virtual server "+virtualServerId);
+            throw new GlassFishException(new Exception("Cannot add virtual server "+virtualServerId));
         }
         
     }
@@ -956,6 +806,9 @@ public class WebContainerImpl implements WebContainer {
      * registered with this <tt>WebContainer</tt>
      */
     public VirtualServer findVirtualServer(String id) {
+        if (!initialized) {
+            init();
+        }
         return (VirtualServer)engine.findChild(id);
     }
 
@@ -967,7 +820,9 @@ public class WebContainerImpl implements WebContainer {
      * instances registered with this <tt>WebContainer</tt>
      */
     public Collection<VirtualServer> getVirtualServers(){
-        
+        if (!initialized) {
+            init();
+        }
         List<VirtualServer> virtualServers = new ArrayList<VirtualServer>();
         for (Container child : engine.findChildren()) {
             if (child instanceof VirtualServer) {
@@ -975,7 +830,6 @@ public class WebContainerImpl implements WebContainer {
             }
         }
         return virtualServers;
-        
     }
 
     /**
@@ -990,9 +844,10 @@ public class WebContainerImpl implements WebContainer {
      */
     public void removeVirtualServer(VirtualServer virtualServer) 
             throws GlassFishException {
-           
+        if (!initialized) {
+            init();
+        }
         engine.removeChild((Container)virtualServer);
-   
     }  
     
     /**

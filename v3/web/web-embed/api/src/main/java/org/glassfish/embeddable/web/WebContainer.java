@@ -64,54 +64,7 @@ public interface WebContainer {
      * @param config the embedded instance configuration
      */
     public void setConfiguration(WebContainerConfig config);
-
-    /**
-     * Starts this <tt>WebContainer</tt> and any of the
-     * <tt>WebListener</tt> and <tt>VirtualServer</tt> instances
-     * registered with it.
-     *
-     * <p>This method also creates and starts a default
-     * <tt>VirtualServer</tt> with id <tt>server</tt> and hostname
-     * <tt>localhost</tt>, as well as a default <tt>WebListener</tt>
-     * with id <tt>http-listener-1</tt> on port 8080 if no other virtual server 
-     * or listener configuration exists.
-     * 
-     * @throws Exception if an error occurs during the start up of this
-     * <tt>WebContainer</tt> or any of its registered
-     * <tt>WebListener</tt> or <tt>VirtualServer</tt> instances 
-     */
-    public void start() throws GlassFishException;
-
-    /**
-     * Starts this <tt>WebContainer</tt> and any of the
-     * <tt>WebListener</tt> and <tt>VirtualServer</tt> instances
-     * registered with it.
-     *
-     * <p>This method also creates and starts a default
-     * <tt>VirtualServer</tt> with id <tt>server</tt> and hostname
-     * <tt>localhost</tt>, as well as a default <tt>WebListener</tt>
-     * with id <tt>http-listener-1</tt> on port 8080 if no other virtual server
-     * or listener configuration exists.
-     *
-     * @throws Exception if an error occurs during the start up of this
-     * <tt>WebContainer</tt> or any of its registered
-     * <tt>WebListener</tt> or <tt>VirtualServer</tt> instances
-     *
-     * @param config the embedded instance configuration
-     */
-    public void start(WebContainerConfig config) throws GlassFishException;
-
-    /**
-     * Stops this <tt>WebContainer</tt> and any of the
-     * <tt>WebListener</tt> and <tt>VirtualServer</tt> instances
-     * registered with it.
-     *
-     * @throws Exception if an error occurs during the shut down of this
-     * <tt>WebContainer</tt> or any of its registered
-     * <tt>WebListener</tt> or <tt>VirtualServer</tt> instances 
-     */
-    public void stop() throws GlassFishException;
-
+    
     /**
      * Creates a <tt>Context</tt> and configures it with the given
      * docroot and classloader.
