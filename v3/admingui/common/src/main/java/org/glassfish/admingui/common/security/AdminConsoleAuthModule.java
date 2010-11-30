@@ -63,7 +63,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.glassfish.admingui.common.util.RestResponse;
-
+import org.jvnet.hk2.component.Habitat;
+import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.security.SecurityServicesUtil;
 
 /**
  *  <p>	This class is responsible for providing the Authentication support
@@ -71,6 +73,31 @@ import org.glassfish.admingui.common.util.RestResponse;
  *	as well as invoke REST requests.</p>
  */
 public class AdminConsoleAuthModule implements ServerAuthModule {
+    public static final String TOKEN_ADMIN_LISTENER_PORT = "${ADMIN_LISTENER_PORT}";
+    private CallbackHandler handler = null;
+    private String restURL = null;
+    private String loginPage = null;
+    private String loginErrorPage = null;
+    private static final Class [] SUPPORTED_MESSAGE_TYPES = new Class[] { HttpServletRequest.class, HttpServletResponse.class };
+    private static final String SAVED_SUBJECT = "Saved_Subject";
+    private static final String USER_NAME = "userName";
+    private static final String RESPONSE_TYPE = "application/json";
+
+    /**
+     *	The Session key for the REST Server Name.
+     */
+    public static final String REST_SERVER_NAME = "serverName";
+
+    /**
+     *	The Session key for the REST Server Port.
+     */
+    public static final String REST_SERVER_PORT = "serverPort";
+
+    /**
+     *	The Session key for the REST authentication token.
+     */
+    public static final String REST_TOKEN = "__rTkn__";
+    
 
     /**
      *	<p> This method configures this AuthModule and makes sure all the
@@ -98,6 +125,12 @@ public class AdminConsoleAuthModule implements ServerAuthModule {
 		    + "must be supplied as a property in the provider-config "
 		    + "in the domain.xml file!");
 	    }
+            if (restURL.contains(TOKEN_ADMIN_LISTENER_PORT)) {
+                Habitat habitat = SecurityServicesUtil.getInstance().getHabitat();
+                Domain domain = habitat.getComponent(Domain.class);
+                String port = domain.getServerNamed("server").getConfig().getNetworkConfig().getNetworkListener("admin-listener").getPort();
+                restURL = restURL.replace(TOKEN_ADMIN_LISTENER_PORT, port);
+            }
 	}
     }
 
@@ -259,28 +292,4 @@ public class AdminConsoleAuthModule implements ServerAuthModule {
 	return Boolean.valueOf((String)messageInfo.getMap().get(
 	    "javax.security.auth.message.MessagePolicy.isMandatory"));
     }
-
-    private CallbackHandler handler = null;
-    private String restURL = null;
-    private String loginPage = null;
-    private String loginErrorPage = null;
-    private static final Class [] SUPPORTED_MESSAGE_TYPES = new Class[] { HttpServletRequest.class, HttpServletResponse.class };
-    private static final String SAVED_SUBJECT = "Saved_Subject";
-    private static final String USER_NAME = "userName";
-    private static final String RESPONSE_TYPE = "application/json";
-
-    /**
-     *	The Session key for the REST Server Name.
-     */
-    public static final String REST_SERVER_NAME = "serverName";
-
-    /**
-     *	The Session key for the REST Server Port.
-     */
-    public static final String REST_SERVER_PORT = "serverPort";
-
-    /**
-     *	The Session key for the REST authentication token.
-     */
-    public static final String REST_TOKEN = "__rTkn__";
 }
