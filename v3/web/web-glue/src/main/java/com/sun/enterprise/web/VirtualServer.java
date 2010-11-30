@@ -59,15 +59,11 @@ import com.sun.enterprise.web.session.SessionCookieConfig;
 import com.sun.logging.LogDomains;
 import com.sun.web.security.RealmAdapter;
 import org.apache.catalina.*;
-import org.apache.catalina.Deployer;
-import org.apache.catalina.Engine;
 import org.apache.catalina.authenticator.AuthenticatorBase;
 import org.apache.catalina.authenticator.SingleSignOn;
-import org.apache.catalina.core.ServletRegistrationImpl;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.deploy.ErrorPage;
-import org.apache.catalina.startup.ContextConfig;
 import org.apache.catalina.valves.RemoteAddrValve;
 import org.apache.catalina.valves.RemoteHostValve;
 import org.glassfish.embeddable.*;
@@ -1741,7 +1737,7 @@ public class VirtualServer extends StandardHost
         if (!contextRoot.startsWith("/")) {
             contextRoot = "/"+ contextRoot;
         }
-        if (findContext(contextRoot)!=null) {
+        if (getContext(contextRoot)!=null) {
             throw new ConfigException("Context with contextRoot "+
                     contextRoot+" is already registered");
         }
@@ -1763,7 +1759,7 @@ public class VirtualServer extends StandardHost
     /**
      * Finds the <tt>Context</tt> registered at the given context root.
      */
-    public Context findContext(String contextRoot) {
+    public Context getContext(String contextRoot) {
         Context context = null;
         for (Context c : getContexts()) {
             if (c.getPath().equals(contextRoot)) {

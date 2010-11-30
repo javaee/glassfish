@@ -143,7 +143,7 @@ public interface VirtualServer extends Lifecycle {
      * or <tt>null</tt> if no <tt>Context</tt> exists at the given context
      * root
      */
-    public Context findContext(String contextRoot);
+    public Context getContext(String contextRoot);
 
     /**
      * Gets the collection of <tt>Context</tt> instances registered with

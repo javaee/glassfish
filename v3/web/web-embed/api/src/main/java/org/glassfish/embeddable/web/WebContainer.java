@@ -207,7 +207,7 @@ public interface WebContainer {
      * <tt>null</tt> if no <tt>WebListener</tt> with that id has been
      * registered with this <tt>WebContainer</tt>
      */
-    public WebListener findWebListener(String id);
+    public WebListener getWebListener(String id);
 
     /**
      * Gets the collection of <tt>WebListener</tt> instances registered
@@ -283,7 +283,7 @@ public interface WebContainer {
      * <tt>null</tt> if no <tt>VirtualServer</tt> with that id has been
      * registered with this <tt>WebContainer</tt>
      */
-    public VirtualServer findVirtualServer(String id);
+    public VirtualServer getVirtualServer(String id);
 
     /**
      * Gets the collection of <tt>VirtualServer</tt> instances registered

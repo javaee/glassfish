@@ -78,13 +78,10 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.*;
 import org.jvnet.hk2.config.*;
-import org.jvnet.hk2.config.types.Property;
 
 import org.apache.catalina.Container;
 import org.apache.catalina.Engine;
-import org.apache.catalina.Realm;
 import org.apache.catalina.core.StandardHost;
-import org.apache.catalina.startup.ContextConfig;
 
 
 /**
@@ -438,7 +435,7 @@ public class WebContainerImpl implements WebContainer {
             if (!appName.startsWith("/")) {
                 appName = "/"+appName;
             }
-            VirtualServer vs = findVirtualServer(defaultvs);
+            VirtualServer vs = getVirtualServer(defaultvs);
             context = (WebModule) ((StandardHost)vs).findChild(appName);
             if (context != null) {
                 ((StandardHost)vs).removeChild(context);
@@ -470,7 +467,7 @@ public class WebContainerImpl implements WebContainer {
             contextRoot = "/"+ contextRoot;
         }
         for (VirtualServer vs : getVirtualServers()) {
-            if (vs.findContext(contextRoot)!=null) {
+            if (vs.getContext(contextRoot)!=null) {
                 throw new ConfigException("Context with contextRoot "+
                         contextRoot+" is already registered");
             }
@@ -551,7 +548,7 @@ public class WebContainerImpl implements WebContainer {
             init();
         }
 
-        if (findWebListener(webListener.getId())==null) {
+        if (getWebListener(webListener.getId())==null) {
             listenerName = webListener.getId();
         } else {
             throw new ConfigException("Connector with name '"+
@@ -582,7 +579,7 @@ public class WebContainerImpl implements WebContainer {
      * <tt>null</tt> if no <tt>WebListener</tt> with that id has been
      * registered with this <tt>WebContainer</tt>
      */
-    public WebListener findWebListener(String id) {
+    public WebListener getWebListener(String id) {
         if (!initialized) {
             init();
         }
@@ -806,7 +803,7 @@ public class WebContainerImpl implements WebContainer {
      * <tt>null</tt> if no <tt>VirtualServer</tt> with that id has been
      * registered with this <tt>WebContainer</tt>
      */
-    public VirtualServer findVirtualServer(String id) {
+    public VirtualServer getVirtualServer(String id) {
         if (!initialized) {
             init();
         }
