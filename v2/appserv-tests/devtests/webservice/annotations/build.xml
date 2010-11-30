@@ -11,7 +11,6 @@
         <ant dir="webservices13-addressing" target="all"/>
         <ant dir="webserviceref-lookup" target="all"/>
         <ant dir="webservices13-addressing-2" target="all"/>
-        <ant dir="webservices13-addressing-appclient" target="all"/>
 	<ant dir="provider" target="all"/>
 	<ant dir="svchandler-1" target="all"/>
 	<ant dir="svchandler-2" target="all"/>
@@ -44,6 +43,7 @@
 	<ant dir="prepkged-svc-1" target="all"/>
 	<ant dir="libdependent" target="all"/>
 	<ant dir="soaptcp" target="all"/>
+        <ant dir="webservices13-addressing-appclient" target="all"/>
 -->
     </target>
 </project>
