@@ -39,365 +39,68 @@
 # holder.
 #
 
-# Create a java command to launch an app client, based on the user's input.
-# The client to run can be specified in several ways.
-#
-# -client x.jar
-# a/b/c.class (path to a .class file)
-# -client some-directory (rare, but possible)
-# -mainClass pkg.MyMain (with no preceding -client; uses normal classpath)
-# -jar x.jar (conventional java command syntax)
-# a.b.MyMain (conventional java command syntax)
-#
-# Further, the appclient command may contain other java command
-# options, such as property settings (-Dmy.color=blue), etc., which
-# are passed through to the generated java command line.  As long as they
-# precede the expression which determines the app client class to execute the
-# java launcher will interpret them, just as with VM options on a normal
-# java command.  Any options that appear later on the command line than those
-# that determine the main class are passed to the client as arguments.
-#
-# If possible, the script launches the app client's main class directly,
-# without launching the app client command processor first.  This happens
-# if the user specifies a JAR (using -client or -jar) or a main class
-# (using -mainclass with no preceding -client, or just by specifying the
-# main class name).  In other cases, for example
-# if the user specifies a directory or a class file, the script launches
-# the app client command processor which will in turn launch the app client's
-# main class.  Note that in these later cases the appclient container will
-# display a user-provided splash screen as soon as possible but it cannot do
-# so using the fast feature that is built in to the java launcher.
-#
+# 
 
 # set -x
 
-# accMainArgs contains agent arguments that let the ACC know
-# how the java launcher chose which main class to start and ACC arguments
-# and options which are not passed on the resulting command line.
-accMainArgs=
-
-# mainClassIdent indicates if the script has identified the main class and how
-# definite that identification is.  For example, a user might supply
-# multiple "-client <client-path>" settings on the command line.  By default,
-# for compatibility with past releases, the last such setting take effect.
-# The main class choice based on the -client option is tentative, because it
-# can be overridden by a subsequent -client setting or by a -jar setting.
+chooseJava() {
 #
-# A main class choice based java command line conventions (either a -jar setting
-# or the first appearance of a lone argument, specifying the main class to execute)
-# is final, as is a main class choice based on a user-supplied main class FILE.
+# Looks for Java at AS_JAVA, JAVA_HOME or in the path.
+# Sets javaSearchType to tell which was used to look for java,
+# javaSearchTarget to the location (or path), and
+# JAVA to the found java executable.
 #
-# Because the main class choice can be overridden, until it becomes final, the
-# script records the JVM settings for the main class separate from the
-# accumulated JVM options; similarly for the ACC arguments which record the
-# main class information for the ACC.
+    # Depends upon Java from ../config/asenv.conf
+    if [ "${AS_JAVA}" != "" ]; then
+        javaSearchType=AS_JAVA
+        javaSearchTarget="$AS_JAVA"
+        JAVA="${AS_JAVA}/bin/java"
+    elif [ "${JAVA_HOME}" != "" ]; then
+        javaSearchType=JAVA_HOME
+        javaSearchTarget="$JAVA_HOME"
+        JAVA="${JAVA_HOME}/bin/java"
+    else
+        # Look in the PATH.
+        JAVA=java
+        seekJavaOnPath
+        javaSearchType=PATH
+        javaSearchTarget=$PATH
+    fi
 #
+# Make sure java really exists where we were told to look.  If not
+# display how we tried to find it and then try to run it, letting the shell
+# issue the error so we don't have to do i18n of our own message from the script.
 
-# The state variable "expecting" records which special keyword,
-# if any, was just processed and therefore what value we expect next.
-expecting=
-
-quoteIfNeeded() {
-    quoteAns=`awk 'BEGIN {sep="";out=""} END {count=split(inp,pieces,":"); for (piece=1; piece<=count; piece++) {if (index(pieces[piece]," ") > 0) {out=out sep "\"" pieces[piece] "\""} else {out=out sep pieces[piece]};sep=":"};print out}' inp="$*" /dev/null`
+    if [ ! -x "${JAVA}" ]; then
+        echo
+        echo $javaSearchType=$javaSearchTarget
+        echo
+        ${JAVA}
+        exit
+    fi
 }
 
-_AS_INSTALL=`dirname $0`/..
+seekJavaOnPath() {
+    JAVA=""
+    for osPathElt in `echo $PATH | tr ':' ' ' `
+    do
+        javaExe=${osPathElt}/java
+        if [ -x $javaExe ]; then
+            JAVA=$javaExe
+            javaSearchType=PATH
+            javaSearchTarget=$PATH
+            break
+        fi
+    done
+}
+
+
+export _AS_INSTALL=`dirname "$0"`/..
 case "`uname`" in
   CYGWIN*) _AS_INSTALL=`cygpath --windows $_AS_INSTALL`
 esac
 . "${_AS_INSTALL}/config/asenv.conf"
 
-JAVA=java
-# Depends upon Java from ../config/asenv.conf
-if [ ${AS_JAVA} ]; then
-    JAVA="${AS_JAVA}/bin/java"
-fi
-_AS_INSTALL_MOD=$_AS_INSTALL/modules
+chooseJava
 
-quoteIfNeeded $_AS_INSTALL/lib/endorsed:$_AS_INSTALL_MOD/endorsed
-builtinEndorsedDirsValue=$quoteAns
-userEndorsedDirsSetting=
-mainClassIdentRequired=1
-
-jvmArgs=-Dcom.sun.aas.installRoot="$_AS_INSTALL"\ -Djava.security.policy="$_AS_INSTALL/lib/appclient/client.policy"\ -Djava.system.class.loader=org.glassfish.appclient.client.acc.agent.ACCAgentClassLoader\ -Djava.security.auth.login.config="$_AS_INSTALL/lib/appclient/appclientlogin.conf"
-if [ "$VMARGS" != "" ]; then
-    jvmArgs=$jvmArgs\ $VMARGS
-fi
-# The environment variable extraACCArgsAsAppArgs will cause the script to
-# place ACC arguments that appear once the main class has been specified
-# as client arguments rather than redefinitions of the ACC arguments.  For
-# example, without this setting turned on the command
-#
-# appclient -client x.jar -client y.jar
-#
-# will execute y.jar and ignore x.jar.  With the setting turned on the
-# ACC will launch x.jar and -client y.jar will be the first application
-# passed to the app client.
-# extraACCArgsAsAppArgs=
-
-recordAPPArg() {
-    appArgs=$appArgs\ $1
-}
-
-recordClientArg() {
-#
-# We get here only if we should process this -client arg as a main
-# class determinant.  If -client <client> follows another main class
-# determinant and extra ACC args
-# are to be treated as application arguments, control never reaches here.
-#
-    if [ "$mainClassIdent" = "" -o "$mainClassIdent" = "tentative" ]; then
-        if [ -d $1 ]; then
-            # -client with a directory
-            jvmMainArgs=-jar\ \$accJar
-            accMainArgs=client=dir=$1
-        else
-            # -client with a non-directory, so
-            # the client had better be a JAR or an EAR
-            if [ `expr $1 : '.*\.ear'` -ne 0 ] ; then
-                jvmMainArgs=-jar\ "$accJar"
-            else
-                jvmMainArgs=-jar\ $1
-            fi
-            accMainArgs=client=jar=$1
-        fi
-        mainClassIdent=tentative
-    else
-        recordAPPArg -client
-        recordAPPArg $1
-    fi
-}
-
-recordACCArg() {
-    if [ "$ACCArgType" = "APP" ]; then
-        recordAPPArg $1
-        if [ "$2" != "" ]; then
-            recordAPPArg $2
-        fi
-    elif [ "$1" = "-client" ]; then
-
-#       -client is handled a little differently
-
-        recordClientArg $2
-    else
-        accArgs=$accArgs,arg=$1${2:+,arg=$2}
-    fi
-}
-
-recordMainClass() {
-    case $1 in
-        -jar)
-            if [ `expr $2 : '.*\.ear'` -ne 0 ] ; then
-                jvmMainArgs=-jar\ "$accJar"
-            else
-                jvmMainArgs=-jar\ $2
-            fi
-            accMainArgs=client=jar=\"$2\"
-            mainClassIdent=final ;;
-
-        -client)
-            if [ `expr $2 : '.*\.ear'` -ne 0 ] ; then
-                jvmMainArgs=-jar\ "$accJar"
-            else
-                jvmMainArgs=-jar\ $2
-            fi
-            jvmMainArgs=-jar\ \"$2\"
-            accMainArgs=client=jar=\"$2\"
-            mainClassIdent=tentative ;;
-
-        *.class)
-            jvmMainArgs=-jar $accJar
-            accMainArgs=client=classfile=\"$2\"
-            mainClassIdent=final ;;
-
-        *)
-            jvmMainArgs=$1
-            accMainArgs=client=class=$1
-            mainClassIdent=final ;;
-    esac
-
-    # Change the ACC arg type now that we have seen the main class info if
-    # the user wants extra ACC options and args passed to the client.
-
-    if [ "$extraACCArgsAsAppArgs" != "" ]; then
-        ACCArgType=APP
-    fi
-
-    # Change the JVM arg type also so further options that would otherwise
-    # look like JVM ones are passed to the client.
-    JVMArgType=APP
-    mainClassIdentRequired=0
-}
-
-recordJVMArg() {
-    if [ "$JVMArgType" = "APP" ]; then
-        recordAPPArg $1
-        if [ "$2" != "" ]; then
-            recordAPPArg $2
-        fi
-    elif [ "$1" = "-jar" ]; then
-        recordMainClass -jar $2
-    else
-        case $1 in
-
-            -Djava.endorsed.dirs=*)
-                userEndorsedDirsSetting=$2
-                ;;
-
-            *)
-                jvmArgs=$jvmArgs\ $1\ ${2:+$2}
-                ;;
-        esac
-    fi
-}
-
-
-recordNonACCOption() {
-    if [ "$mainClassIdent" = "" ]; then
-        recordJVMArg $1
-    else
-        recordAPPArg $1
-    fi
-}
-
-recordLoneArg() {
-#
-# This argument is neither an option (it does not start with -) nor is it
-# the value associated with a preceding option that accepts a value.
-# If we have not yet seen the main class determinant then this is it.
-# It could be a class file or a class name.
-
-    if [ "$mainClassIdent" = "" ]; then
-        # This is the main class or main class file.
-        recordMainClass $1
-    else
-        # This must be an argument to the application client.
-        recordAPPArg $1
-    fi
-}
-
-finishJVMArgs() {
-#
-# Note that the user's setting, if present, was stored including the
-# -Djava.endorsed.dirs= part.  So we just add on if the user specified
-# anything but we must supply that part if the user did not specify anything.
-#
-    if [ "$userEndorsedDirsSetting" != "" ]; then
-        endorsedDirSetting=$userEndorsedDirsSetting:$builtinEndorsedDirsValue
-    else
-        computeJREEndorsedDirsValue
-        endorsedDirSetting=$builtinEndorsedDirsValue:$jreEndorsedDirsValue
-    fi
-    quoteIfNeeded $endorsedDirSettings
-    jvmArgs=$jvmArgs\ -Djava.endorsed.dirs=$quoteAns;
-}
-
-computeJREEndorsedDirsValue() {
-    computeJREHome
-    jreEndorsedDirsValue=
-    if [ "$jreHome" != "" ]; then
-        endorsedPath=${jreHome}/lib/endorsed
-        if [ -d $endorsedPath ]; then
-            jreEndorsedDirsValue=$endorsedPath
-        fi
-    fi
-}
-
-computeJREHome() {
-    jreHome=
-    for osPathElt in `echo $PATH | tr ':' ' ' `
-    do
-        javaExe=${osPathElt}/java
-        if [ -f $javaExe ]; then
-            if [ -d $osPathElt/../jre ]; then
-                # This looks like a non-Mac JDK installation.
-                jreHome=$osPathElt/../jre
-                break
-            elif [ -d $osPathElt/../lib ]; then
-                # Looks like a Mac installation
-                jreHome=$osPathElt/..
-                break
-            else
-                # Doesn't look like a JDK; maybe it's a JRE installation.
-                jrePath=$osPathElt/../../jre
-                if [ -d $jrePath ]; then
-                    # This looks like a JRE.
-                    jreHome=$osPathElt/..
-                    break
-                else
-                    continue
-                fi
-            fi
-        fi
-    done
-}
-
-# mainClassIdent can be undefined, tentative, or final
-
-# Once we identify the main class information, further ACC arguments can
-# either override earlier settings or can be passed as arguments to the client.
-# ACCArgType indicates how ACC arguments will be handled.  It starts as ACC
-# and will change to APP once we know the main class IF the user has requested
-# that type of handling for "extra" ACC arguments.
-#
-# Similarly for arguments that would normally be recognized as JVM options; once
-# the main class has been identified they will be treated as application arguments.
-ACCArgType=ACC
-JVMArgType=JVM
-
-quoteIfNeeded $_AS_INSTALL/lib/gf-client.jar
-accJar=$quoteAns
-
-# Record the default ACC config file if possible
-recordACCArg -configxml "$_AS_INSTALL/domains/domain1/config/sun-acc.xml"
-
-for x do
-    argType=APP  # unless we decide it is some other type later in the logic
-    case $x in
-
-        -classpath|-cp|-jar)
-            expecting=$x
-            expectingArgType=JVM ;;
-
-        # The next case must refer to all valid ACC options that expect a value
-        -client|-mainclass|-name|-xml|-configxml|-user|-password|-passwordfile|-targetserver)
-            expecting=$x
-            expectingArgType=ACC ;;
-
-        # The next case must refer to all valid ACC options that expect no value
-        -textauth|-noappinvoke|-usage|-help)
-            recordACCArg $x; expecting=
-            case $x in
-                -usage|-help)
-                    mainClassIdentRequired=0 ;;
-            esac
-            ;;
-
-        -*)
-            recordNonACCOption $x
-            expecting=
-            ;;
-
-        *)
-            if [ "$expecting" != "" ]; then
-                record${expectingArgType}Arg $expecting $x
-            else
-                recordLoneArg $x
-            fi
-            expecting=
-            ;;
-    esac
-done
-if [ "$APPCPATH" != "" ]; then
-    accArgs=$accArgs,appcpath=\"$APPCPATH\"
-fi
-if [ "$jvmMainArgs" = "" ]; then
-    if [ $mainClassIdentRequired -eq 1 ]; then
-        recordACCArg -usage
-        jvmMainArgs=-jar\ $accJar
-    fi
-fi
-finishJVMArgs
-exec $JAVA $jvmArgs -javaagent:$accJar=mode=acscript${accArgs},$accMainArgs \
-    $jvmMainArgs \
-    $appArgs
+eval `"${JAVA}" -classpath "${_AS_INSTALL}/lib/gf-client.jar" org.glassfish.appclient.client.CLIBootstrap "$@"`
