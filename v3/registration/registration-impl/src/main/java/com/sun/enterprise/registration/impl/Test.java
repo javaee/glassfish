@@ -64,12 +64,14 @@ public class Test {
      */
     public static void main(String[] args) {
         try {
+            RelayService relay = new RelayService("/servicetag-registry.xml");
+            relay.generateRegistrationPage("/test.html");
             
             //File f = new File("C:\\ggg.lll");
             //FileOutputStream fs = new FileOutputStream(f);
             //fs.write(77);
             //testSOA();
-            testRegistration();            
+            //testRegistration();
             //testServiceTags();
             //testRMRegistration();
             //testAccountValidation();

@@ -42,8 +42,15 @@ a:visited,a:visited code{color:#917E9C}
           <table width="708" border="0" cellspacing="0" cellpadding="3">
             <tr valign="top">
               <td width="126" height="35">
-              <form name="form1" method="post" action="https://inv-ws-staging2.central.sun.com/RegistrationWeb/register/urn:st:5a8f565a-28a5-4ad2-86c3-47831015246d?product=jdk&locale=en">
-                <input type="hidden" name="servicetag_payload" value="@@@SERVICE_TAGS@@@">
+              <form name="form1" method="post" 
+                    action="https://hs-ws1-tst.oracle.com/RegistrationWeb/register/urn:st:07682f84-6985-4f26-b02e-4336b9a2761d?product=glassfish&locale=en_US&version=default">
+                <input type="hidden" name="servicetag_payload"
+value="<?xml version=%221.0%22 encoding=%22UTF-8%22 standalone=%22no%22?>
+<registration_data version=%221.0%22>
+@@@ENVIRONMENT@@@
+<registry  urn=%22urn:st:5a8f565a-28a5-4ad2-86c3-47831015246d%22 version=%221.0%22>
+@@@SERVICE_TAGS@@@
+</registry></registration_data>">
                 <input type="submit" name="Submit"border="0" class="buttonblue" onmouseover="this.style.color='#fbe249';" onmouseout="this.style.color='#FFF';"  value="Register">
               </form></td>
               <td width="570"><span class="style3">You need to be connected to the Internet to register this Oracle product. </span></td>
@@ -55,16 +62,13 @@ a:visited,a:visited code{color:#917E9C}
     <tr>
        <td>&nbsp;</td>
        <td bgcolor="#f1f7df">
-       <p class="style3">Sun Microsystems, Inc. respects your privacy.
-    We will use your personal information for communications
-    and management of your Sun Online Account, the services
-    and applications you access using your Sun Online Account,
-    and the products you register with your Sun Online Account.</p>
+       <p class="style3">Privacy notice here...
+       </p>
                 <p class="style3">For more information on the data that will be collected as
           part of the registration process and how it will be managed <br>
-          see <a href="http://java.sun.com/javase/registration/JDKRegistrationPrivacy.html">http://java.sun.com/javase/registration/JDKRegistrationPrivacy.html</a>. <br>
+          see ...some link here..... <br>
           <br>
-          For more information on Sun's Privacy Policy see <a href="http://www.sun.com/privacy/">http://www.sun.com/privacy/</a> or contact <a class="moz-txt-link-rfc2396E" href="mailto:privacy@sun.com">privacy@sun.com.</a></p></td>
+          For more information on Oracle's Privacy Policy see ....some link here...</p></td>
   </tr>
   <tr>
     <td>&nbsp;</td>
