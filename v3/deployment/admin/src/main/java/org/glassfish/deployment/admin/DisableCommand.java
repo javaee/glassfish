@@ -224,16 +224,24 @@ public class DisableCommand extends UndeployCommandParameters implements AdminCo
             // we should let undeployment go through
             // on instance side for partial deployment case
             if (!deployment.isRegistered(appName)) {
-                report.setMessage(localStrings.getLocalString("application.notreg","Application {0} not registered", appName));
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                if (env.isDas()) {
+                    // let's only do this check for DAS to be more
+                    // tolerable of the partial deployment case
+                    report.setMessage(localStrings.getLocalString("application.notreg","Application {0} not registered", appName));
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                }
                 return;
             }
 
             if (!DeploymentUtils.isDomainTarget(target)) {
                 ApplicationRef ref = domain.getApplicationRefInTarget(appName, target);
                 if (ref == null) {
-                    report.setMessage(localStrings.getLocalString("ref.not.referenced.target","Application {0} is not referenced by target {1}", appName, target));
-                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    if (env.isDas()) {
+                        // let's only do this check for DAS to be more
+                        // tolerable of the partial deployment case
+                        report.setMessage(localStrings.getLocalString("ref.not.referenced.target","Application {0} is not referenced by target {1}", appName, target));
+                        report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    }
                     return;
                 }
             }

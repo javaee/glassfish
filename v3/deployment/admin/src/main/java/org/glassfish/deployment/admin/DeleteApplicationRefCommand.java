@@ -46,6 +46,7 @@ import org.glassfish.api.Param;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.deployment.UndeployCommandParameters;
 import org.glassfish.api.deployment.OpsParams.Origin;
 import org.glassfish.api.deployment.archive.ReadableArchive;
@@ -121,6 +122,9 @@ public class DeleteApplicationRefCommand implements AdminCommand {
     @Inject(name= ServerEnvironment.DEFAULT_INSTANCE_NAME)
     protected Server server;
 
+    @Inject
+    ServerEnvironment env;
+
     /**
      * Entry point from the framework into the command execution
      * @param context context for the command.
@@ -141,8 +145,12 @@ public class DeleteApplicationRefCommand implements AdminCommand {
         // if matched list is empty and no VersioningException thrown,
         // this is an unversioned behavior and the given application is not registered
         if(matchedVersions.isEmpty()){
-            report.setMessage(localStrings.getLocalString("ref.not.referenced.target","Application {0} is not referenced by target {1}", name, target));
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            if (env.isDas()) {
+                // let's only do this check for DAS to be more
+                // tolerable of the partial deployment case
+                report.setMessage(localStrings.getLocalString("ref.not.referenced.target","Application {0} is not referenced by target {1}", name, target));
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            }
             return;
         }
 
@@ -164,15 +172,23 @@ public class DeleteApplicationRefCommand implements AdminCommand {
 
             Application application = applications.getApplication(appName);
             if (application == null) {
-                report.setMessage(localStrings.getLocalString("application.notreg","Application {0} not registered", appName));
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                if (env.isDas()) {
+                    // let's only do this check for DAS to be more
+                    // tolerable of the partial deployment case
+                    report.setMessage(localStrings.getLocalString("application.notreg","Application {0} not registered", appName));
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                }
                 return;
             }
 
             ApplicationRef applicationRef = domain.getApplicationRefInTarget(appName, target);
             if (applicationRef == null) {
-                report.setMessage(localStrings.getLocalString("appref.not.exists","Target {1} does not have a reference to application {0}.", appName, target));
-                report.setActionExitCode(ActionReport.ExitCode.WARNING);
+                if (env.isDas()) {
+                    // let's only do this check for DAS to be more
+                    // tolerable of the partial deployment case
+                    report.setMessage(localStrings.getLocalString("appref.not.exists","Target {1} does not have a reference to application {0}.", appName, target));
+                    report.setActionExitCode(ActionReport.ExitCode.WARNING);
+                }
                 return;
             }
 
