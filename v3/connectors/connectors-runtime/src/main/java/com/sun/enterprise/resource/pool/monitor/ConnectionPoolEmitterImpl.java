@@ -302,6 +302,14 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
     }
 
     private String getAppName(long resourceHandleId) {
+
+        // if monitoring is disabled, avoid sending events
+        // as we need to do "java:app/AppName" to get applicationName for each
+        // acquire/return connection call which is a performance bottleneck.
+        if(!runtime.isJdbcPoolMonitoringEnabled() && !runtime.isConnectorPoolMonitoringEnabled()){
+            return null;
+        }
+
         String appName = resourceAppAssociationMap.get(resourceHandleId);
         if(appName == null){
             try {

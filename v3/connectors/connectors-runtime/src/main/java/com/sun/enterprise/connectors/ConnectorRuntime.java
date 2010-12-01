@@ -82,6 +82,7 @@ import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.enterprise.resource.deployer.DataSourceDefinitionDeployer;
 import com.sun.enterprise.resource.pool.PoolManager;
 import com.sun.enterprise.resource.pool.monitor.ConnectionPoolProbeProviderUtil;
+import com.sun.enterprise.resource.pool.monitor.PoolMonitoringLevelListener;
 import com.sun.enterprise.security.jmac.callback.ContainerCallbackHandler;
 import com.sun.enterprise.security.SecurityServicesUtil;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
@@ -133,6 +134,7 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     private ConnectorAdminObjectAdminServiceImpl adminObjectAdminService;
     private ConnectorRegistry connectorRegistry = ConnectorRegistry.getInstance();
     private JdbcAdminServiceImpl jdbcAdminService;
+    private PoolMonitoringLevelListener poolMonitoringLevelListener;
 
     @Inject
     private GlassfishNamingManager namingManager;
@@ -816,7 +818,11 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
         initializeEnvironment(processEnvironment);
         if(isServer()) {
             getProbeProviderUtil().registerProbeProvider();
-         }
+        }
+        if(isServer() || isEmbedded()){
+            poolMonitoringLevelListener = habitat.getComponent(PoolMonitoringLevelListener.class);
+        }
+
     }
 
     /**
@@ -1512,4 +1518,21 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     public Set<String> getDatabaseVendorNames() {
         return driverLoader.getDatabaseVendorNames();
     }
+
+    public boolean isJdbcPoolMonitoringEnabled(){
+        boolean enabled = false;
+        if(poolMonitoringLevelListener != null){
+            enabled = poolMonitoringLevelListener.getJdbcPoolMonitoringEnabled();
+        }
+        return enabled;
+    }
+
+    public boolean isConnectorPoolMonitoringEnabled(){
+        boolean enabled= false;
+        if(poolMonitoringLevelListener != null){
+            enabled = poolMonitoringLevelListener.getConnectorPoolMonitoringEnabled();
+        }
+        return enabled;
+    }
+
 }
