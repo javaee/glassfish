@@ -154,7 +154,6 @@ public class TemplateResource {
                 entity = parent.nodeElement(tagName);
                 entityNeedsToBeCreated = false;
             } else { //just update it.
-                Map<ConfigBean, Map<String, String>> mapOfChanges = new HashMap<ConfigBean, Map<String, String>>();
                 data = ResourceUtil.translateCamelCasedNamesToXMLNames(data);
                 ActionReporter ar = applyChanges(data);
                 if(ar.getActionExitCode() != ActionReport.ExitCode.SUCCESS) {
