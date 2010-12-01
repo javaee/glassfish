@@ -40,23 +40,20 @@
 
 -->
 
-<!-- cluster/clusterInstanceConfigProperties.jsf -->
-
 <!initPage
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
     setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
-    setResourceBundle(key="i18ncs" bundle="org.glassfish.cluster.admingui.Strings")
-    setResourceBundle(key="help_cluster" bundle="org.glassfish.cluster.admingui.Helplinks");
+    setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18ncs.SystemPropertiesTitle} - #{pageSession.configName}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18nc.SystemPropertiesTitle} - #{pageSession.configName}" >
 <!define name="content">
     <event>
         <!beforeCreate
             getRequestValue(key="configName" value="#{pageSession.configName}");
             getRequestValue(key="propName" value="#{pageSession.propName}");
 
-            setPageSessionAttribute(key="parentPage", value="#{request.contextPath}/cluster/configuration/configurationSystemProperties.jsf?configName=#{pageSession.configName}");
-            setPageSessionAttribute(key="selfPage", value="#{request.contextPath}/cluster/configuration/sysInstanceValues.jsf?configName=#{pageSession.configName}");
+            setPageSessionAttribute(key="parentPage", value="#{request.contextPath}/common/configuration/configurationSystemProperties.jsf?configName=#{pageSession.configName}");
+            setPageSessionAttribute(key="selfPage", value="#{request.contextPath}/common/configuration/sysInstanceValues.jsf?configName=#{pageSession.configName}");
             setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}");
             setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/system-properties");
             gf.restRequest(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/system-property/#{pageSession.propName}", method="get",
@@ -111,11 +108,12 @@
                             foreach (var="row" list="#{pageSession.tableList}") {
                                 createMap(result="#{requestScope.attrs}");
                                 mapPut(map="#{requestScope.attrs}", key="value", value="#{row.overrideValue}");
+                                println("***** requestScope.attrs = #{requestScope.attrs}");
                                 gf.restRequest(endpoint="#{sessionScope.REST_URL}/servers/server/#{row.instance}/system-properties/#{pageSession.propName}", method="POST",
                                     data="#{requestScope.attrs}", contentType="application/x-www-form-urlencoded", result="#{requestScope.restResponse}");
                             }
                             prepareSuccessfulMsg();
-                            gf.redirect(page="#{pageSession.parentPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                            //gf.redirect(page="#{pageSession.parentPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                         />
                     </sun:button>
 
@@ -155,7 +153,7 @@
             </sun:tableRowGroup>
         </sun:table>
 
-    <sun:hidden id="helpKey" value="$resource{help_cluster.sysInstanceValues}" />
+    <sun:hidden id="helpKey" value="$resource{help_common.sysInstanceValues}" />
     </sun:form>
 #include "/common/shared/changeButtonsJS.inc"
 </define>
