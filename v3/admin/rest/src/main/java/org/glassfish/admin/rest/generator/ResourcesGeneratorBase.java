@@ -487,6 +487,7 @@ delete-instance
         put("IiopListener", "delete-iiop-listener");
         put("JdbcResource", "delete-jdbc-resource");       
         put("JaccProvider", "delete-jacc-provider");
+//        put("JmsHost", "delete-jms-host");
         put("LbConfig", "delete-http-lb-config");
         put("LoadBalancer", "delete-http-lb");
         put("NetworkListener", "delete-network-listener");
@@ -497,6 +498,7 @@ delete-instance
         put("Protocol", "delete-protocol");
         put("ProtocolFilter", "delete-protocol-filter");
         put("ProtocolFinder", "delete-protocol-finder");
+        put("ProviderConfig", "delete-message-security-provider");
         put("ResourceAdapterConfig", "delete-resource-adapter-config");
         put("SecurityMap", "delete-connector-security-map");
         put("Ssl", "delete-ssl");
