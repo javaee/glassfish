@@ -85,8 +85,9 @@
         </dependency>
         
         <dependency>
-            <groupId>javax.jms</groupId>
-            <artifactId>jms-api</artifactId>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.jms</artifactId>
+            <version>${project.parent.version}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
