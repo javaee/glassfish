@@ -44,7 +44,8 @@
     id="transactionService"
     text="$resource{i18n_jts.tree.transactionService}"
     url="/jts/transactionService.jsf?configName=${configName}"
-imageURL="/resource/jts/newImages/transactionService.gif"
+    imageURL="/resource/jts/newImages/transactionService.gif"
+    alt="image"
 >
 <!beforeCreate
     setResourceBundle(key="i18n_jts" bundle="org.glassfish.jts.admingui.Strings");
