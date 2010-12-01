@@ -40,6 +40,7 @@
 package org.glassfish.admin.rest.resources;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.v3.common.ActionReporter;
 import com.sun.jersey.api.core.ResourceContext;
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataMultiPart;
@@ -51,6 +52,7 @@ import org.glassfish.admin.rest.results.ActionReportResult;
 import org.glassfish.admin.rest.results.OptionsResult;
 import org.glassfish.admin.rest.utils.xml.RestActionReporter;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.admin.RestRedirect;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.*;
@@ -136,13 +138,7 @@ public class TemplateResource {
                 data.remove("operation");
                 return delete(data);
             }
-            if (entityNeedsToBeCreated == false) { //just update it.
-                Map<ConfigBean, Map<String, String>> mapOfChanges = new HashMap<ConfigBean, Map<String, String>>();
-                data = ResourceUtil.translateCamelCasedNamesToXMLNames(data);
-                mapOfChanges.put((ConfigBean) getEntity(), data);
-                ConfigSupport cs = habitat.getComponent(ConfigSupport.class);
-                cs.apply(mapOfChanges); //throws TransactionFailure
-            } else {//create if in the tree
+            if (entityNeedsToBeCreated) {//create if in the tree
                 Class<? extends ConfigBeanProxy> proxy = TemplateListOfResource.getElementTypeByName(parent, tagName);
                 ConfigBean theParent = (ConfigBean) parent;
                 //need to change from camel case to xml !!!createAndSet works on xml names
@@ -157,6 +153,15 @@ public class TemplateResource {
                 ConfigSupport.createAndSet(theParent, proxy, xmldata);
                 entity = parent.nodeElement(tagName);
                 entityNeedsToBeCreated = false;
+            } else { //just update it.
+                Map<ConfigBean, Map<String, String>> mapOfChanges = new HashMap<ConfigBean, Map<String, String>>();
+                data = ResourceUtil.translateCamelCasedNamesToXMLNames(data);
+                ActionReporter ar = applyChanges(data);
+                if(ar.getActionExitCode() != ActionReport.ExitCode.SUCCESS) {
+                    //TODO better error handling.
+                    return Response.status(400).entity(ResourceUtil.getActionReportResult(400, "Could not apply changes" + ar.getMessage(), requestHeaders, uriInfo)).build();
+                }
+
             }
             String successMessage = localStrings.getLocalString("rest.resource.update.message",
                     "\"{0}\" updated successfully.", new Object[]{uriInfo.getAbsolutePath()});
@@ -164,13 +169,29 @@ public class TemplateResource {
         } catch (Exception ex) {
             if (ex.getCause() instanceof ValidationException) {
                 return Response.status(400).entity(ResourceUtil.getActionReportResult(400, ex.getMessage(), requestHeaders, uriInfo)).build();
-            } else if (ex instanceof TransactionFailure) {
-                return Response.status(400).entity(ResourceUtil.getActionReportResult(400, ex.getMessage(), requestHeaders, uriInfo)).build();
             } else {
                 throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
             }
         }
     }
+
+    private ActionReporter applyChanges(HashMap<String, String> data) {
+        List<PathSegment> pathSegments = uriInfo.getPathSegments();
+        List<PathSegment> pathSegmentsDiscardingFirstSegment = pathSegments.subList(1, pathSegments.size());
+
+        StringBuilder setBasePath = new StringBuilder();
+        for(PathSegment pathSegment :  pathSegmentsDiscardingFirstSegment) {
+            setBasePath.append(pathSegment.getPath());
+            setBasePath.append('.');
+        }
+        ParameterMap parameters = new ParameterMap();
+        for (Map.Entry<String, String> entry : data.entrySet()) {
+            StringBuilder setExpression = new StringBuilder(setBasePath);
+            parameters.add("DEFAULT", setExpression.append(entry.getKey()).append('=').append(entry.getValue()).toString());
+        }
+        return ResourceUtil.runCommand("set", parameters, habitat, ""); //TODO The last parameter is resultType and is not used. Refactor the called method to remove it
+    }
+
 
     @DELETE
     public Response delete(HashMap<String, String> data) {
