@@ -90,7 +90,7 @@ public class GFAuthConfigFactory extends AuthConfigFactory {
          * set to be glassfish/domains/domain-in-use/config.
          */
         regStore = new RegStoreFileParser(System.getProperty("user.dir"),
-            CONF_FILE_NAME, false);
+            CONF_FILE_NAME);
 	GFAuthConfigFactory slave = new GFAuthConfigFactory();
         wLock.lock();
         try {

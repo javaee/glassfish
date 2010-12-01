@@ -88,10 +88,8 @@ public final class RegStoreFileParser {
      * stored in GFAuthConfigFactory are used. Otherwise,
      * the file is parsed to load the entries.
      *
-     * The boolean argument tells whether to create the config
-     * file always (true) or only if it's needed (false).
      */
-    RegStoreFileParser(String pathParent, String pathChild, boolean create) {
+    RegStoreFileParser(String pathParent, String pathChild) {
         confFile = new File(pathParent, pathChild);
         try {
             loadEntries();
@@ -344,8 +342,8 @@ public final class RegStoreFileParser {
      */
     private void loadEntries() throws IOException {
         synchronized (confFile) {
-            entries = new ArrayList<EntryInfo>();
             if (confFile.exists()) {
+                entries = new ArrayList<EntryInfo>();
                 BufferedReader reader = new BufferedReader(new FileReader(confFile));
                 String line = reader.readLine();
                 while (line != null) {
@@ -358,11 +356,13 @@ public final class RegStoreFileParser {
                     line = reader.readLine();
                 }
             } else {
-                if (logger.isLoggable(Level.FINER)) {
+                 entries = GFAuthConfigFactory.getDefaultProviders();
+                 if (logger.isLoggable(Level.FINER)) {
                     logger.log(Level.FINER, "jmac.factory_file_not_found",
                             confFile.getParent() + File.pathSeparator
                             + confFile.getPath());
-                }
+                    
+                 }
             }
         }
     }
