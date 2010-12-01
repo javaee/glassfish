@@ -90,13 +90,22 @@ public class InstanceState {
                 return " running";
             }
         },
-        RESTART_REQUIRED{
+        RESTART_REQUIRED {
             public String getDescription() {
                 return "REQUIRES_RESTART";
             }
 
             public String getDisplayString() {
                 return " requires restart";
+            }
+        },
+        NEVER_STARTED {
+            public String getDescription() {
+                return "NEVER_STARTED";
+            }
+
+            public String getDisplayString() {
+                return " never started";
             }
         };
 
@@ -106,6 +115,13 @@ public class InstanceState {
 
         public String getDisplayString() {
             return "NONE";
+        }
+
+        public static StateType makeStateType(String s) {
+            for (StateType st : StateType.values()) {
+                if (s.equals(st.getDescription())) return st;
+            }
+            return null;
         }
     };
 
@@ -130,6 +146,11 @@ public class InstanceState {
     }
 
     public void addFailedCommands(String cmd) {
+        if (currentState == StateType.NEVER_STARTED) {
+            // do not keep track of failed commands for instances that
+            // have never been started
+            return;
+        }
         failedCommands.add(cmd);
     }
 
