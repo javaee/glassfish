@@ -45,6 +45,7 @@ import org.jvnet.hk2.component.MultiMap;
  *
  * @author Kohsuke Kawaguchi
  */
+@SuppressWarnings("unchecked")
 public class ExistingSingletonInhabitant<T> extends AbstractInhabitantImpl<T> {
     private final T object;
     private final Class<T> type;
@@ -85,6 +86,7 @@ public class ExistingSingletonInhabitant<T> extends AbstractInhabitantImpl<T> {
         return metadata;
     }
 
+    @Override
     public T get(Inhabitant onBehalfOf) throws ComponentException {
         return object;
     }
@@ -100,5 +102,7 @@ public class ExistingSingletonInhabitant<T> extends AbstractInhabitantImpl<T> {
         // we can't release its instance.
         // (technically it's possible to invoke PreDestroy,
         // not clear which is better --- you can argue both ways.)
+        super.release();
     }
+
 }

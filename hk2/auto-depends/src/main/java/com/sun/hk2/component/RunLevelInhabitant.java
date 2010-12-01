@@ -118,4 +118,10 @@ public class RunLevelInhabitant<T, V> extends EventPublishingInhabitant<T> {
     return state;
   }
   
+  @Override
+  public Inhabitant<T> scopedClone() {
+    // we are a singleton scoped instance by definition (see note in {@link RunLevel})
+    return new ReferenceCountedLazyInhabitant<T>(this, 1);
+  }
+  
 }

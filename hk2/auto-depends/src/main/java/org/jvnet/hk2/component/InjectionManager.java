@@ -101,7 +101,6 @@ public class InjectionManager {
     public void inject(Object component,
                 Class type,
                 InjectionResolver... targets) {
-
         inject(component, null, type, targets);
     }
 
@@ -268,11 +267,11 @@ public class InjectionManager {
         if (target.isOptional(injectionPoint, inject)) {
           return;
         } else {
-          throw new UnsatisfiedDependencyException(injectionPoint, e);
+          throw new UnsatisfiedDependencyException(injectionPoint, inject, e);
         }
       }
       
-      throw new ComponentException(UnsatisfiedDependencyException.injection_failed_msg(injectionPoint, e), e);
+      throw new ComponentException(UnsatisfiedDependencyException.injection_failed_msg(injectionPoint, inject, e), e);
     }
 
     protected boolean allowInjection(Method method, Class<?>[] paramTypes) {

@@ -145,7 +145,7 @@ public class Inhabitants {
 
   public static <T> Inhabitant<T> wrapByScope(Creator<T> creator, Habitat habitat,
       Class<? extends Scope> scopeClass) {
-      // those two scopes are so common and different that they deserve
+      // these two scopes are so common and different that they deserve
       // specialized code optimized for them.
       if (scopeClass== PerLookup.class) {
           return creator;

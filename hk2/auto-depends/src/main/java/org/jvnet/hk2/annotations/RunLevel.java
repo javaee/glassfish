@@ -40,12 +40,17 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import org.jvnet.hk2.component.Singleton;
+
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * Defines the notion of a run level a la Unix.
+ * 
+ * <p/>
+ * Note: RunLevel annotated services should be of {@link Scoped} type {@link Singleton}.
  *
  * @author Jerome Dochez
  */

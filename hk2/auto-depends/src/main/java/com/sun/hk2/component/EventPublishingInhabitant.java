@@ -39,7 +39,6 @@ package com.sun.hk2.component;
 import java.util.Iterator;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.InhabitantListener;
@@ -107,6 +106,7 @@ public class EventPublishingInhabitant<T> extends AbstractInhabitantImpl<T> {
     if (wasActive && !isInstantiated()) {
       notify(InhabitantListener.EventType.INHABITANT_RELEASED);
     }
+    super.release();
   }
 
   @Override
@@ -116,18 +116,25 @@ public class EventPublishingInhabitant<T> extends AbstractInhabitantImpl<T> {
 
   @Override
   public Class<T> type() {
-    if (null == real) throw new IllegalStateException();
+//    if (null == real) throw new IllegalStateException();
+    if (null == real) {
+      fetch();
+    }
+    
     final boolean wasActive = real.isInstantiated();
     Class<T> t = real.type();
     if (!wasActive && real.isInstantiated()) {
       notify(InhabitantListener.EventType.INHABITANT_ACTIVATED);
     }
+
     return t;
   }
 
   @SuppressWarnings("unchecked")
   @Override
   public T get(Inhabitant onBehalfOf) {
+    assert(null != onBehalfOf);
+    
     if (null == real) {
       fetch();
     }
@@ -179,9 +186,10 @@ public class EventPublishingInhabitant<T> extends AbstractInhabitantImpl<T> {
           }
         } catch (Exception e) {
           // don't percolate the exception since it may negatively impact processing
-          Logger.getAnonymousLogger().log(Level.WARNING, "exception caught from listener", e);
+          logger.log(Level.WARNING, "exception caught from listener", e);
         }
       }
     }
   }
+
 }

@@ -46,4 +46,7 @@ import org.jvnet.hk2.annotations.Service;
 @RunLevel(10)
 @Service
 public class SomeServerService {
+  public SomeServerService() {
+    
+  }
 }
