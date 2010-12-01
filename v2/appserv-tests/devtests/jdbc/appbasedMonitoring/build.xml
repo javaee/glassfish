@@ -9,7 +9,7 @@
     &commonSetup;
     &commonBuild;
 
-    <target name="all" depends="set-monitoring,contauth-exec,statementtimeout-exec,build,deploy,run,undeploy"/>
+    <target name="all" depends="set-monitoring,contauth-exec,statementtimeout-exec,build,deploy,run,undeploy,switch-off-monitoring"/>
 
     <target name="set-monitoring" depends="init-common">
         <antcall target="asadmin-common">
@@ -23,6 +23,15 @@
                    value="server.monitoring-service.module-monitoring-levels.jdbc-connection-pool=HIGH"/>
         </antcall>
     </target>
+
+ <target name="switch-off-monitoring" depends="init-common">
+        <antcall target="asadmin-common">
+            <param name="admin.command" value="set"/>
+            <param name="operand.props"
+                   value="server.monitoring-service.module-monitoring-levels.jdbc-connection-pool=OFF"/>
+        </antcall>
+    </target>
+
 
     <target name="contauth-exec">
       <ant dir="../contauth" target="contauth-run"/>
