@@ -37,7 +37,6 @@
 package com.sun.hk2.component;
 
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Factory;
@@ -52,8 +51,6 @@ import org.jvnet.hk2.component.MultiMap;
  */
 @SuppressWarnings("unchecked")
 public class FactoryCreator<T> extends AbstractCreatorImpl<T> {
-    private final static Logger logger = Logger.getLogger(FactoryCreator.class.getName());
-    
     private final Inhabitant<? extends Factory> factory;
 
     public FactoryCreator(Class<T> type, Class<? extends Factory> factory, Habitat habitat, MultiMap<String,String> metadata) {

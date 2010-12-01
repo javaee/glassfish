@@ -61,7 +61,7 @@ public class SingletonInhabitant<T> extends AbstractCreatorInhabitantImpl<T> {
                 try {
                     if (TracingUtilities.isEnabled())
                         TracingThreadLocal.get().push(this);
-                  object = creator.get(onBehalfOf);
+                    object = creator.get(onBehalfOf);
                   } finally {
                           if (TracingUtilities.isEnabled())
                               TracingThreadLocal.get().pop();
@@ -79,9 +79,17 @@ public class SingletonInhabitant<T> extends AbstractCreatorInhabitantImpl<T> {
               object=null;
           }
       }
+      super.release();
   }
 
   public boolean isInstantiated() {
       return object!=null;
   }
+  
+  @Override
+  public Inhabitant<T> scopedClone() {
+    // intentionally pump up the reference count to 1 to avoid releasing singletons if managed mode is turned on
+    return new ReferenceCountedLazyInhabitant<T>(this, 1);
+  }
+
 }

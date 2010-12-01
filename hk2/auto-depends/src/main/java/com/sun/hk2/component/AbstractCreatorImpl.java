@@ -38,7 +38,6 @@ package com.sun.hk2.component;
 
 import java.util.Collection;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.jvnet.hk2.component.*;
 import org.jvnet.hk2.tracing.TracingThreadLocal;
@@ -49,8 +48,6 @@ import org.jvnet.hk2.tracing.TracingUtilities;
  */
 @SuppressWarnings("unchecked")
 public abstract class AbstractCreatorImpl<T> extends AbstractInhabitantImpl<T> implements Creator<T> {
-    private final static Logger logger = Logger.getLogger(AbstractCreatorImpl.class.getName());
-  
     protected final Class<T> type;
     protected final Habitat habitat; 
     private final MultiMap<String,String> metadata;
@@ -100,6 +97,7 @@ public abstract class AbstractCreatorImpl<T> extends AbstractInhabitantImpl<T> i
     public void release() {
         // Creator creates a new instance every time,
         // so there's nothing to release here.
+      super.release();
     }
 
     public MultiMap<String, String> metadata() {

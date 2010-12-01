@@ -54,8 +54,6 @@ import org.jvnet.hk2.component.Inhabitant;
  * @author Kohsuke Kawaguchi
  */
 abstract class AbstractCreatorInhabitantImpl<T> extends AbstractInhabitantImpl<T> {
-    private static final Logger logger = Logger.getLogger(ScopeInstance.class.getName());
-
     protected final Creator<T> creator;
 
     protected AbstractCreatorInhabitantImpl(Creator<T> creator) {

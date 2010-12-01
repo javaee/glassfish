@@ -108,6 +108,10 @@ public class Habitat {
       Boolean.getBoolean("hk2.async.executor");
     final ExecutorService exec;
     
+    // see InjectInjectionResolver
+    // this manages whether PerLookup scoped inhabitants (and other applicable scopes) get released when their parents get released
+    public static final boolean MANAGED_INJECTION_POINTS_ENABLED = true;
+    
     private boolean initialized;
 
     
@@ -718,13 +722,24 @@ public class Habitat {
     }
 
     /**
+     * Gets all matching inhabitants given the type.
+     *
+     * @return
+     *      can be empty but never null.
+     */
+    public <T> Collection<Inhabitant> getAllInhabitantsByType(Class<T> implType) {
+      final List<Inhabitant> l = byType.get(implType.getName());
+      return l;
+    }
+    
+    /**
      * Gets the object of the given type.
      *
      * @return
      *      can be empty but never null.
      */
     public <T> Collection<T> getAllByType(Class<T> implType) {
-        final List<Inhabitant> l = byType.get(implType.getName());
+        final List<Inhabitant> l = (List<Inhabitant>) getAllInhabitantsByType(implType);
         return new AbstractList<T>() {
             public T get(int index) {
                 return (T)l.get(index).get();
@@ -782,13 +797,11 @@ public class Habitat {
      * @param name
      *      can be null, in which case it'll only match to the unnamed component.
      * @return
-     *      null if no such servce exists.
+     *      null if no such service exists.
      */
     public <T> T getComponent(Class<T> contract, String name) throws ComponentException {
-        if (name!=null && name.length()==0)
-            name=null;
         Inhabitant i = getInhabitant(contract, name);
-        if(i!=null)
+        if (i!=null) {
             try {
                 return contract.cast(i.get());
             } catch (ClassCastException e) {
@@ -797,8 +810,9 @@ public class Habitat {
                 Logger.getAnonymousLogger().severe("Service class loader " + i.get().getClass().getClassLoader());
                 throw e;
             }
-        else
+        } else {
             return null;
+        }
     }
 
     public Object getComponent(String fullQualifiedName, String name) {
@@ -821,6 +835,9 @@ public class Habitat {
      *      if no such component is found.
      */
     public <T> Inhabitant<T> getInhabitant(Class<T> contract, String name) throws ComponentException {
+        if (name!=null && name.length()==0) {
+          name=null;
+        }
         return getInhabitantByContract(contract.getName(), name);
     }
 
@@ -840,7 +857,7 @@ public class Habitat {
 
     public Inhabitant<?> getInhabitantByType(String fullyQualifiedClassName) {
         List<Inhabitant> list = byType.get(fullyQualifiedClassName);
-        if(list.isEmpty())  return null;
+        if (list.isEmpty()) return null;
         return list.get(0);
     }
 
@@ -1051,8 +1068,7 @@ public class Habitat {
      * 
      * TODO: more javadoc needed
      */
-    public void release() {
-        // TODO: synchronization story?
+    public synchronized void release() {
         for (Entry<String, List<Inhabitant>> e : byType.entrySet()) {
             for (Inhabitant i : e.getValue()) {
                 i.release();
@@ -1112,7 +1128,7 @@ public class Habitat {
             removeHabitatListener(listener);
           }
         }
-        
+
         super.release();
       }
     }

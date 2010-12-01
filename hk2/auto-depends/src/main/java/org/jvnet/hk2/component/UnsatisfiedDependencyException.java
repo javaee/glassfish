@@ -42,6 +42,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Member;
 import java.lang.annotation.Annotation;
 
+import org.jvnet.hk2.annotations.Inject;
+
 /**
  * Exception thrown by the injection manager when a dependency is not satisfied when
  * performing injection.
@@ -54,26 +56,27 @@ public class UnsatisfiedDependencyException extends ComponentException {
     final AnnotatedElement member;
 
     public UnsatisfiedDependencyException(AnnotatedElement target) {
-        this(target, null);
+        this(target, null, null);
     }
-    public UnsatisfiedDependencyException(AnnotatedElement target, Throwable cause) {
-        super(injection_failed_msg(target, cause), cause);
+    public UnsatisfiedDependencyException(AnnotatedElement target, Annotation inject, Throwable cause) {
+        super(injection_failed_msg(target, inject, cause), cause);
         this.member = target;
     }
 
-    public UnsatisfiedDependencyException(Field target, Throwable cause) {
-      super(injection_failed_msg(target, cause), cause);
+    public UnsatisfiedDependencyException(Field target, Annotation inject, Throwable cause) {
+      super(injection_failed_msg(target, inject, cause), cause);
       this.member = target;
     }
     
-    static String injection_failed_msg(AnnotatedElement t, Throwable cause) {
+    static String injection_failed_msg(AnnotatedElement t, Annotation inject, Throwable cause) {
+      String name = (null != inject && Inject.class == inject.getClass()) ? Inject.class.cast(inject).name() : null;
       String msg;
       if (Field.class.isInstance(t)) {
         Field target = Field.class.cast(t);
         msg = "injection failed on " + target.getDeclaringClass().getCanonicalName() + "." + 
-            target.getName() + " with " + target.getGenericType();
+            target.getName() + " with " + target.getGenericType() + (null == name ? "" : " and name '" + name + "'");
       } else {
-        msg = "injection failed on " + t;
+        msg = "injection failed on " + t + (null == name ? "" : " with name '" + name + "'");
       }
       return msg;
     }
