@@ -60,7 +60,21 @@
             getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
             getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
 
-            gf.deleteCascade(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}", id="#{pageSession.deleteKey}", selectedRows="${selectedRows}");
+            foreach (var="row" list="#{requestScope.selectedRows}") {
+                urlencode(value="#{row['name']}" result="#{requestScope.providerName}");
+
+                createMap(result="#{requestScope.attrMap}");
+                mapPut(map="#{requestScope.attrMap}" key="id" value="#{requestScope.providerName}");
+                mapPut(map="#{requestScope.attrMap}" key="target" value="#{pageSession.configName}");
+                mapPut(map="#{requestScope.attrMap}" key="layer" value="#{pageSession.encodedName}");
+                gf.restRequest(
+                    endpoint="#{pageSession.parentUrl}/#{pageSession.childType}/#{requestScope.providerName}"
+                    attrs="#{requestScope.attrMap}"
+                    method="DELETE"
+                    result="#{requestScope.results}");
+            }
+
+//            gf.deleteCascade(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}", id="#{pageSession.deleteKey}", selectedRows="${selectedRows}");
             //REST-TODO: need to ensure page that has additionalDeleteHandler to change to use rest-api
             if (#{pageSession.additionalDeleteHandler}){
                 gf.invokeHandler(handler="#{pageSession.additionalDeleteHandler}", args="#{pageSession.additionalDeleteHandlerArgs}" );
