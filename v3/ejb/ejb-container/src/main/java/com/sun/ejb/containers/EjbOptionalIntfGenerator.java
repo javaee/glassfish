@@ -188,9 +188,9 @@ public class EjbOptionalIntfGenerator
         ClassWriter cw = new ClassWriter(INTF_FLAGS);
 
        ClassVisitor tv = cw;
-              //  new TraceClassVisitor(cw, new PrintWriter(System.out));
+//        ClassVisitor tv = (_debug)
+//                ? new TraceClassVisitor(cw, new PrintWriter(System.out)) : cw;
         
-        //ClassVisitor tv = cw;
         boolean isSuperClassSerializable = superClass.isAssignableFrom(Serializable.class);
 
         String[] interfaces = new String[] {
@@ -272,7 +272,8 @@ public class EjbOptionalIntfGenerator
         // add toString() method if it was not overridden
         java.lang.reflect.Method mth = Object.class.getDeclaredMethod("toString", emptyClassArray);
         if( !hasSameSignatureAsExisting(mth, allMethods)) {
-            generateBeanMethod(tv, subClassName, mth, delegateClass);
+                        //generateBeanMethod(tv, subClassName, mth, delegateClass);
+            generateToStringBeanMethod(tv, superClass);
         }
 
         tv.visitEnd();
@@ -314,6 +315,30 @@ public class EjbOptionalIntfGenerator
         mg.invokeInterface(Type.getType(delegateClass), asmMethod);
         mg.returnValue();
         mg.endMethod();
+
+    }
+
+    private static void generateToStringBeanMethod(ClassVisitor cv, Class superClass) 
+        throws Exception {
+
+        String toStringMethodName = "toString";
+        String toStringMethodDescriptor = "()Ljava/lang/String;";
+        String stringBuilder = "java/lang/StringBuilder";
+
+        MethodVisitor mv = cv.visitMethod(ACC_PUBLIC, toStringMethodName, toStringMethodDescriptor, null, null);
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitTypeInsn(NEW, stringBuilder);
+        mv.visitInsn(DUP);
+        mv.visitMethodInsn(INVOKESPECIAL, stringBuilder, "<init>", "()V");
+        mv.visitLdcInsn(superClass.getName() + "@");
+        mv.visitMethodInsn(INVOKEVIRTUAL, stringBuilder, "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;");
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Object", "hashCode", "()I");
+        mv.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "toHexString", "(I)Ljava/lang/String;");
+        mv.visitMethodInsn(INVOKEVIRTUAL, stringBuilder, "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;");
+        mv.visitMethodInsn(INVOKEVIRTUAL, stringBuilder, toStringMethodName, toStringMethodDescriptor);
+        mv.visitInsn(ARETURN);
+        mv.visitMaxs(2, 1);
 
     }
 
