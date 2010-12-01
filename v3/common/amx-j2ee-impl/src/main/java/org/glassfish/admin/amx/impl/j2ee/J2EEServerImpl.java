@@ -68,7 +68,7 @@ public class J2EEServerImpl extends J2EELogicalServerImplBase
     }
     /* The vendor information for this server. */
 
-    private static final String serverVendor = "Sun Microsystems, Inc.";
+    private static final String serverVendor = "Oracle Corporation";
 
     public String[] getjavaVMs()
     {
