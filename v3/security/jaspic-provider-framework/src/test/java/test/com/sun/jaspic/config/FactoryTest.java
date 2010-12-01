@@ -70,7 +70,7 @@ public class FactoryTest {
     /** switch definition of default test factory to test native factory
      * will also need to configure proper dependencies
      */
-    //private static final String DEFAULT_TEST_FACTORY_CLASS_NAME = "com.sun.enterprise.security.jmac.config.GFAuthConfigFactory";
+    // private static final String DEFAULT_TEST_FACTORY_CLASS_NAME = "com.sun.enterprise.security.jmac.config.GFAuthConfigFactory";
     private static final String DEFAULT_TEST_FACTORY_CLASS_NAME = GFAuthConfigFactory.class.getName();
     private static String testFactoryClassName = DEFAULT_TEST_FACTORY_CLASS_NAME;
     public static final String DEFAULT_FACTORY_SECURITY_PROPERTY =
