@@ -154,6 +154,7 @@ public class V2ToV3ConfigUpgrade implements ConfigurationUpgrade, PostConstruct 
         "-Dfelix.fileinstall.bundles.new.start=true",
         "-Djavax.management.builder.initial=com.sun.enterprise.v3.admin.AppServerMBeanServerBuilder",
         "-Dorg.glassfish.web.rfc2109_cookie_names_enforced=false",
+        "-Dosgi.shell.telnet.port=${OSGI_SHELL_TELNET_PORT}",
     };
 
     private static final List<String> REMOVAL_LIST = new ArrayList<String>();
