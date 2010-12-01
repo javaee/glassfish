@@ -51,7 +51,7 @@ import org.glassfish.api.container.Adapter;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.grizzly.config.ContextRootInfo;
-import org.glassfish.grizzly.config.GrizzlyServiceListener;
+import org.glassfish.grizzly.config.GrizzlyListener;
 import org.glassfish.grizzly.http.server.AfterServiceListener;
 import org.glassfish.grizzly.http.server.HttpRequestProcessor;
 import org.glassfish.grizzly.http.server.HttpServiceChain;
@@ -80,7 +80,7 @@ public class ContainerMapper extends HttpRequestProcessor {
     private static final Logger LOGGER = Logger.getLogger(ContainerMapper.class.getName());
     private final static String ROOT = "";
     private Mapper mapper;
-    private GrizzlyServiceListener listener;
+    private GrizzlyListener listener;
     private String defaultHostName = "server";
     private final GrizzlyService grizzlyService;
     protected final static Note<MappingData> MAPPING_DATA =
@@ -94,7 +94,7 @@ public class ContainerMapper extends HttpRequestProcessor {
      */
     private boolean mapMultipleAdapter;
 
-    public ContainerMapper(GrizzlyService service, GrizzlyServiceListener embeddedHttp) {
+    public ContainerMapper(GrizzlyService service, GrizzlyListener embeddedHttp) {
         listener = embeddedHttp;
 //        urlDecoder = embeddedHttp.getUrlDecoder();
         grizzlyService = service;

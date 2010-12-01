@@ -43,7 +43,6 @@ import java.beans.PropertyChangeEvent;
 import java.io.IOException;
 
 import com.sun.enterprise.v3.services.impl.monitor.GrizzlyMonitoring;
-import org.glassfish.grizzly.config.GrizzlyServiceListener;
 import org.glassfish.grizzly.config.dom.NetworkListener;
 import org.jvnet.hk2.component.Habitat;
 
@@ -53,7 +52,7 @@ import org.jvnet.hk2.component.Habitat;
  *
  * @author Vijay Ramachandran
  */
-public class GrizzlyListener extends GrizzlyServiceListener {
+public class GrizzlyListener extends org.glassfish.grizzly.config.GrizzlyListener {
     private boolean isGenericListener = false;
     private ServiceInitializerThread serviceInitializer;
     private NetworkListener listener;
@@ -213,25 +212,25 @@ public class GrizzlyListener extends GrizzlyServiceListener {
      * isn't based on the async configuration change (i.e., if comet is enabled, the current PCIH will not handle async
      * execution properly, so we don't want it cached).
      */
-    private static final class NonCachingInstanceHandler implements ProtocolChainInstanceHandler {
-        private final ProtocolChainInstanceHandler wrapped;
-        // -------------------------------------------------------- Constructors
-
-        private NonCachingInstanceHandler(ProtocolChainInstanceHandler wrapped) {
-            this.wrapped = wrapped;
-        }
-        // --------------------------- Methods from ProtocolChainInstanceHandler
-
-        @Override
-        public ProtocolChain poll() {
-            return wrapped.poll();
-        }
-
-        @Override
-        public boolean offer(ProtocolChain protocolChain) {
-            return true;
-        }
-
-    } // END NonCachingInstanceHandler
+//    private static final class NonCachingInstanceHandler implements ProtocolChainInstanceHandler {
+//        private final ProtocolChainInstanceHandler wrapped;
+//        // -------------------------------------------------------- Constructors
+//
+//        private NonCachingInstanceHandler(ProtocolChainInstanceHandler wrapped) {
+//            this.wrapped = wrapped;
+//        }
+//        // --------------------------- Methods from ProtocolChainInstanceHandler
+//
+//        @Override
+//        public ProtocolChain poll() {
+//            return wrapped.poll();
+//        }
+//
+//        @Override
+//        public boolean offer(ProtocolChain protocolChain) {
+//            return true;
+//        }
+//
+//    } // END NonCachingInstanceHandler
 }
 
