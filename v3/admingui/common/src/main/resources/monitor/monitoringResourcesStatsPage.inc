@@ -80,6 +80,7 @@
              </sun:button>
          </sun:panelGroup>
      </facet> 
+#include "/common/shared/nameSection.inc"
             
      "<br /><br />
      <sun:propertySheet id="propertySheet">

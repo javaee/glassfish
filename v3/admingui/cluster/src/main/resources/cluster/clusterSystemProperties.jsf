@@ -76,7 +76,7 @@
         </sun:title>
 
 #include "/common/shared/alertMsg.inc"
-#include "/cluster/cluster/clusterNameSection.inc"
+#include "/common/shared/nameSection.inc"
 #include "/common/configuration/systemProperties.jsf"
 
         <sun:title>

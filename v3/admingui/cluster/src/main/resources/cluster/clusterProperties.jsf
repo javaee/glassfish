@@ -79,7 +79,7 @@
         </facet>
     </sun:title>
 #include "/common/shared/alertMsg.inc"
-#include "/cluster/cluster/clusterNameSection.inc"
+#include "/common/shared/nameSection.inc"
 #include "/common/shared/propertyDescTable.inc"
     <sun:title id="title2">
         <!facet pageButtonsTop>

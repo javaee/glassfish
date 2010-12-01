@@ -76,9 +76,9 @@
                  helpText="$resource{i18ncs.cluster.ResourcesTitleHelp}" >
 </sun:title>
 "<br/>
-#include "/cluster/cluster/clusterNameSection.inc"
+#include "/common/shared/nameSection.inc"
 #include "/common/resourceNode/targetResourceTable.inc"
-<!--#include "/cluster/cluster/clusterNameSection.inc"
+<!--#include "/common/shared/nameSection.inc"
 <sun:table id="table1" title="$resource{i18n.resourcesTable.resources}"  >
          <!afterCreate
             getClientId(component="$this{component}" clientId=>$page{tableId});

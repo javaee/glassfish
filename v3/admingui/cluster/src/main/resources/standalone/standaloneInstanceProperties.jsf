@@ -76,6 +76,8 @@
 #include "/cluster/shared/instancePropertiesButtons.jsf"
         </sun:title>
 #include "/common/shared/alertMsg.inc"
+#include "/common/shared/nameSection.inc"
+
 #include "/common/shared/propertyDescTable.inc"
 
         <sun:title id="bottomTitle">

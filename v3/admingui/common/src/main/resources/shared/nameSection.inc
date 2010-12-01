@@ -40,34 +40,25 @@
 
 -->
 
-<!initPage
-    setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
-    setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
-    setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");   
-/>
-<!composition template="/templates/default.layout"  guiTitle="" >
-<!define name="content">
-    <event>
-    <!beforeCreate
-        getRequestValue(key="filterValue" value="#{pageSession.filterValue}");
-        getRequestValue(key="instanceName" value="#{pageSession.instanceName}");
-        urlencode(value="#{pageSession.instanceName}" encoding="UTF-8" result="#{pageSession.encodedInstanceName}");
-        setSessionAttribute(key="serverInstTabs" value="resources");
-        setPageSessionAttribute(key="listLink" value="#{request.contextPath}/common/appServer/serverInstResources.jsf?instanceName=server");
-        setPageSessionAttribute(key="restURL" value="#{sessionScope.REST_URL}/servers/server/#{pageSession.encodedInstanceName}/resource-ref");
-    />
-    </event>
-<sun:form id="propertyForm">
-
-#include "/common/appServer/serverInstTabs.inc"
-                <!-- Page Title -->
-
-<sun:title id="propertyContentPage" title="$resource{i18nc.resourcesTarget.pageTitle}"
-                 helpText="$resource{i18nc.resourcesTarget.pageTitleHelp}" />
-"<br/>
-#include "/common/shared/nameSection.inc"
-#include "/common/resourceNode/targetResourceTable.inc"
-<sun:hidden id="helpKey" value="$resource{help_common.serverInstResources}" />
-</sun:form>
-</define>
-</composition>
+    <sun:propertySheet id="nameSheet">
+        <!beforeCreate
+            setPageSessionAttribute(key="showClusterName" value="#{true}");
+            if("#{pageSession.clusterName}=${null}"){
+                setPageSessionAttribute(key="showClusterName" value="#{false}");
+            }
+            setPageSessionAttribute(key="showInstanceName" value="#{true}");
+            if("#{pageSession.instanceName}=${null}"){
+                setPageSessionAttribute(key="showInstanceName" value="#{false}");
+            }
+        />
+        <!-- Text Field section -->
+        <sun:propertySheetSection id="propertSectionTextField">
+            <sun:property id="clusterNameProp" rendered="#{pageSession.showClusterName}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.cluster.ClusterName}" >
+                <sun:staticText id="clusterName"text="#{pageSession.clusterName}" />
+            </sun:property>
+            <sun:property id="instanceName" rendered="#{pageSession.showInstanceName}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.instanceName}" >
+                <sun:staticText id="instanceName" text="#{pageSession.instanceName}" />
+            </sun:property>
+        </sun:propertySheetSection>
+    </sun:propertySheet>
+    "<br/>

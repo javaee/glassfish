@@ -49,7 +49,6 @@
 />
 <!composition template="/templates/default.layout"
     guiTitle="$resource{i18ncs.cluster.InstancesTitle}"
-    guiTemplateOnLoad="admingui.nav.refreshTree();"
 >
 
 #include "/cluster/shared/instancesExtraButtons.inc"
@@ -89,7 +88,7 @@
 
 #include "/cluster/shared/saveInstanceWtButton.inc"
 </sun:title>
-#include "/cluster/cluster/clusterNameSection.inc"
+#include "/common/shared/nameSection.inc"
 #include "/cluster/shared/instancesTable.inc"
 
 <sun:hidden id="helpKey" value="$resource{help_cluster.clusterInstances}" />

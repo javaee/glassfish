@@ -50,6 +50,7 @@
 <!composition template="/templates/default.layout"
     guiTitle="$resource{i18ncs.cluster.ApplicationsTitle}"
     guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:applications');"
+    guiOnLoad="admingui.nav.selectTreeNodeWithURL('#{request.contextPath}/cluster/cluster/clusterGeneral.jsf?clusterName=#{pageSession.encodedClusterName}');"
 >
 
 <!define name="content">
@@ -92,7 +93,7 @@
 <sun:title id="propertyContentPage" title="$resource{i18ncs.cluster.ApplicationsTitle}"
                  helpText="$resource{i18ncs.cluster.ApplicationsTitleHelp}" />
 
-#include "/cluster/cluster/clusterNameSection.inc"
+#include "/common/shared/nameSection.inc"
 
 #include "/cluster/shared/appSingleTargetTable.inc"
 <sun:hidden id="helpKey" value="$resource{help_cluster.clusterApplications}" />

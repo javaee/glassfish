@@ -73,7 +73,7 @@
                 </sun:panelGroup>
             </facet>
         </sun:title>
-
+#include "/common/shared/nameSection.inc"
 #include "/common/configuration/systemProperties.jsf"
 
         <sun:title>

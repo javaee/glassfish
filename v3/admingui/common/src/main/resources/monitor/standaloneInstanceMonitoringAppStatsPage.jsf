@@ -49,7 +49,7 @@
 <!define name="content">
     <event>
     <!beforeCreate
-        getRequestValue(key="instanceName" value=>$attribute{instanceName});
+        getRequestValue(key="instanceName" value="#{pageSession.instanceName}");
         urlencode(value="#{instanceName}" encoding="UTF-8" result="#{pageSession.encodedInstanceName}");
         gf.getConfigName(target="#{instanceName}" configName=>$pageSession{configName});
         setSessionAttribute(key="standaloneInstanceTabs" value="monitorApplications");

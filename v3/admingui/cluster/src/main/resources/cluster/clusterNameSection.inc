@@ -41,10 +41,23 @@
 -->
 
     <sun:propertySheet id="propertySheet">
+        <!beforeCreate
+            setPageSessionAttribute(key="showClusterName" value="#{true}");
+            if("#{pageSession.clusterName}=${null}"){
+                setPageSessionAttribute(key="showClusterName" value="#{false}");
+            }
+            setPageSessionAttribute(key="showInstanceName" value="#{true}");
+            if("#{pageSession.instanceName}=${null}"){
+                setPageSessionAttribute(key="showInstanceName" value="#{false}");
+            }
+        />
         <!-- Text Field section -->
         <sun:propertySheetSection id="propertSectionTextField">
-            <sun:property id="clusterNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.cluster.ClusterName}" >
+            <sun:property id="clusterNameProp" rendered="#{pageSession.showClusterName}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.cluster.ClusterName}" >
                 <sun:staticText id="clusterName"text="#{pageSession.clusterName}" />
+            </sun:property>
+            <sun:property id="instanceName" rendered="#{pageSession.showInstanceName}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.instanceName}" >
+                <sun:staticText id="instanceName" text="#{pageSession.instanceName}" />
             </sun:property>
         </sun:propertySheetSection>
     </sun:propertySheet>

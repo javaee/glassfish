@@ -59,7 +59,7 @@
 
             setSessionAttribute(key="clusterTabs" value="clusterSystemProps");
             setSessionAttribute(key="clusterInstanceTabs" value="configProps");
-
+            setPageSessionAttribute(key="showInstance" value="#{true}" );
             setPageSessionAttribute(key="parentPage", value="#{request.contextPath}/cluster/cluster/clusterInstanceEdit.jsf?clusterName=#{pageSession.encodedClusterName}&instanceName=#{pageSession.encodedInstanceName}");
             setPageSessionAttribute(key="selfPage", value="#{request.contextPath}/cluster/cluster/clusterInstanceConfigProperties.jsf?clusterName=#{encodedClusterName}&instanceName=#{pageSession.encodedInstanceName}");
 
@@ -78,6 +78,7 @@
             </facet>
         </sun:title>
 
+#include "/common/shared/nameSection.inc"
 #include "/common/configuration/systemProperties.jsf"
 
         <sun:title>

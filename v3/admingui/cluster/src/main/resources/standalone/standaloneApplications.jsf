@@ -90,7 +90,7 @@
 <sun:title id="propertyContentPage" title="$resource{i18ncs.standalone.ApplicationsTitle}"
                  helpText="$resource{i18ncs.standalone.ApplicationsTitleHelp}" />
 
-#include "/cluster/standalone/instanceNameSection.inc"
+#include "/common/shared/nameSection.inc"
 
 #include "/cluster/shared/appSingleTargetTable.inc"
 <sun:hidden id="helpKey" value="$resource{help_cluster.standaloneApplications}" />
