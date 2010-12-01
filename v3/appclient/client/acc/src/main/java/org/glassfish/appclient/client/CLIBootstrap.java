@@ -165,12 +165,16 @@ public class CLIBootstrap {
          * containing no double quote) or a non-quoted string (a string containing
          * no white space or quotes).
          */
-        final Pattern argPattern = Pattern.compile("([^\"]+)\"|([^\"\\s]+)");
+        final Pattern argPattern = Pattern.compile("\"([^\"]+)\"|([^\"\\s]+)");
 
         final Matcher matcher = argPattern.matcher(inputArgs);
         final List<String> argList = new ArrayList<String>();
         while (matcher.find()) {
-            argList.add(matcher.group());
+            final String arg = (matcher.group(1) != null ? matcher.group(1) : matcher.group(2));
+            argList.add(arg);
+            if (isDebug) {
+                System.err.println("Captured argument " + arg);
+            }
         }
         return argList.toArray(new String[argList.size()]);
     }
