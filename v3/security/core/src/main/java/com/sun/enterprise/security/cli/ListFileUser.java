@@ -93,7 +93,7 @@ import org.glassfish.config.support.TargetType;
 @I18n("list.file.user")
 @ExecuteOn({RuntimeType.DAS})
 @TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,
-CommandTarget.CLUSTERED_INSTANCE})
+CommandTarget.CLUSTERED_INSTANCE,CommandTarget.CONFIG})
 public class ListFileUser implements AdminCommand {
     
     final private static LocalStringManagerImpl localStrings = 
@@ -128,7 +128,7 @@ public class ListFileUser implements AdminCommand {
         
         final ActionReport report = context.getActionReport();
 
-         Config tmp = null;
+        Config tmp = null;
         try {
             tmp = configs.getConfigByName(target);
         } catch (Exception ex) {

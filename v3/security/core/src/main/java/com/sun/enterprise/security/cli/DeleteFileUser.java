@@ -88,7 +88,7 @@ import org.jvnet.hk2.config.types.Property;
 @Scoped(PerLookup.class)
 @I18n("delete.file.user")
 @ExecuteOn({RuntimeType.DAS, RuntimeType.INSTANCE})
-@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER})
+@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER, CommandTarget.CONFIG})
 public class DeleteFileUser implements /*UndoableCommand*/ AdminCommand {
     
     final private static LocalStringManagerImpl localStrings = 

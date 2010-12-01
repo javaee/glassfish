@@ -85,7 +85,7 @@ import org.glassfish.config.support.TargetType;
 @Scoped(PerLookup.class)
 @I18n("update.file.user")
 @ExecuteOn({RuntimeType.DAS, RuntimeType.INSTANCE})
-@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER})
+@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER, CommandTarget.CONFIG})
 public class UpdateFileUser implements AdminCommand {
     
     final private static LocalStringManagerImpl localStrings = 

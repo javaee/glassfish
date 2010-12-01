@@ -92,7 +92,7 @@ import org.jvnet.hk2.config.TransactionFailure;
 @Scoped(PerLookup.class)
 @I18n("create.file.user")
 @ExecuteOn({RuntimeType.DAS, RuntimeType.INSTANCE})
-@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER})
+@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER, CommandTarget.CONFIG})
 public class CreateFileUser implements /*UndoableCommand*/ AdminCommand {
     
     final private static LocalStringManagerImpl localStrings = 
