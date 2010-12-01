@@ -111,7 +111,7 @@ public class EmbeddedCreateVirtualServerTest {
         for (WebListener listener : embedded.getWebListeners())
             System.out.println("Web listener "+listener.getId()+" "+listener.getPort());
 
-        VirtualServer vs = embedded.findVirtualServer(virtualServerId);
+        VirtualServer vs = embedded.getVirtualServer(virtualServerId);
         Assert.assertEquals(virtualServerId,vs.getID());
 
         //Context context = (Context) embedded.createContext(root, null);

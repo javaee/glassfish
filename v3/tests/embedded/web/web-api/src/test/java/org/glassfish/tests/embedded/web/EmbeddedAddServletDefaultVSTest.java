@@ -91,7 +91,7 @@ public class EmbeddedAddServletDefaultVSTest {
     @Test
     public void testEmbeddedAddServletDefaultVS() throws Exception {
 
-        VirtualServer vs = embedded.findVirtualServer("server");
+        VirtualServer vs = embedded.getVirtualServer("server");
         System.out.println("Default virtual server "+vs);
         Context context = (Context) embedded.createContext(root);
         //ServletRegistration sr = context.addServlet("NewServlet", new NewServlet());

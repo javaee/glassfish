@@ -110,7 +110,7 @@ public class EmbeddedWebAPITest {
         vs.setConfig(config);
         embedded.addVirtualServer(vs);
 
-        vs = embedded.findVirtualServer(virtualServerId);
+        vs = embedded.getVirtualServer(virtualServerId);
         Assert.assertEquals(virtualServerId,vs.getID());
 
         //Context context = (Context) embedded.createContext(root, null);

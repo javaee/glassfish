@@ -103,6 +103,8 @@ public class EmbeddedAddContextTest {
             sb.append(inputLine);
         }
         in.close();
+
+        //embedded.removeContext(context);
     } 
 
     @AfterClass
