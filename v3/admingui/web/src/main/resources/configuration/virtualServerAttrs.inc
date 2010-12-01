@@ -57,24 +57,12 @@
         </sun:property>
 
         <sun:property id="stateProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.vs.State}">
-             <sun:radioButton id="on"  name="stateGp" label="$resource{i18n_web.vs.StateOn}" selected="#{pageSession.valueMap['state']}" selectedValue="on" />
-             "<br />
-             <sun:radioButton id="off"  name="stateGp" label="$resource{i18n_web.vs.StateOff}" selected="#{pageSession.valueMap['state']}" selectedValue="off" />
-             "<br />
-             <sun:radioButton id="disabled"  name="stateGp" label="$resource{i18n_web.vs.StateDisabled}" selected="#{pageSession.valueMap['state']}" selectedValue="disabled" />
-             "<br />
-         </sun:property>
+            <sun:dropDown id="state"  selected="#{pageSession.valueMap['state']}" labels={"$resource{i18n_web.vs.StateOn}","$resource{i18n_web.vs.StateOff}","$resource{i18n_web.vs.StateDisabled}"} values={"on","off","disabled"} />
+        </sun:property>
 
-         <sun:property id="enableLog"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.vs.sso}">
-             <sun:radioButton id="httpS"  name="ssoGroup" label="$resource{i18n_web.vs.controlByHS}" selected="#{pageSession.valueMap['ssoEnabled']}" selectedValue="inherit" />
-             " <b>$resource{i18n_web.vs.httpLink}</b>
-             # <sun:helpInline id="flag1H" style="padding: 4pt" style="font-size: 8pt" text=""/>
-             "<br />
-             <sun:radioButton id="ena"  name="ssoGroup" label="$resource{i18n_web.vs.alwaysEnable}" selected="#{pageSession.valueMap['ssoEnabled']}" selectedValue="true" />
-             "<br />
-             <sun:radioButton id="dis"  name="ssoGroup" label="$resource{i18n_web.vs.alwaysDisable}" selected="#{pageSession.valueMap['ssoEnabled']}" selectedValue="false" />
-             "<br />
-         </sun:property>
+        <sun:property id="enableLog"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.vs.sso}">
+            <sun:dropDown id="state"  selected="#{pageSession.valueMap['ssoEnabled']}" labels={"$resource{i18n_web.vs.controlByHS} <b>$resource{i18n_web.vs.httpLink}</b>","$resource{i18n_web.vs.alwaysEnable}","$resource{i18n_web.vs.alwaysDisable}"} values={"inherit","true","false"} />
+        </sun:property>
 
         <sun:property id="ssoCookieHttpOnly"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.vs.ssoCookieHttpOnly}" helpText="$resource{i18n_web.vs.ssoCookieHttpOnlyHelp}">
             <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['ssoCookieHttpOnly']}"  selectedValue="true" />
@@ -119,14 +107,7 @@
     <sun:propertySheetSection id="al" label="$resource{i18n_web.vs.accessLog}">
 
         <sun:property id="enableLog"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.vs.accessLogging}">
-             <sun:radioButton id="httpS"  name="accessLoggingFlagGp" label="$resource{i18n_web.vs.controlByHS}" selected="#{pageSession.valueMap['accessLoggingEnabled']}" selectedValue="inherit" />
-             " <b>$resource{i18n_web.vs.httpLink}</b>
-             # <sun:helpInline id="flag1H" style="padding: 4pt" style="font-size: 8pt" text=""/>
-             "<br />
-             <sun:radioButton id="ena"  name="accessLoggingFlagGp" label="$resource{i18n_web.vs.alwaysEnable}" selected="#{pageSession.valueMap['accessLoggingEnabled']}" selectedValue="true" />
-             "<br />
-             <sun:radioButton id="dis"  name="accessLoggingFlagGp" label="$resource{i18n_web.vs.alwaysDisable}" selected="#{pageSession.valueMap['accessLoggingEnabled']}" selectedValue="false" />
-             "<br />
+             <sun:dropDown id="log"  selected="#{pageSession.valueMap['accessLoggingEnabled']}" labels={"$resource{i18n_web.vs.controlByHS} <b>$resource{i18n_web.vs.httpLink}</b>","$resource{i18n_web.vs.alwaysEnable}","$resource{i18n_web.vs.alwaysDisable}"} values={"inherit","true","false"} />
          </sun:property>
 
         <sun:property id="accesslog"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.vs.path}" helpText="$resource{i18n_web.vs.pathHelp}">
