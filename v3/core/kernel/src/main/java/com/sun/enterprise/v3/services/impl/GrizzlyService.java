@@ -345,7 +345,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
             
             /*
              * Ideally (and ultimately), all services that need lazy Init will add a network-listener element
-             * in the domain.xml with name = "light-weight-listener". And a LWL instance would have been created
+             * in the domain.xml with protocol = "light-weight-listener". And a LWL instance would have been created
              * by the above loop. But for v3-FCS, IIOP and JMS listener will not
              * be able to reach that stage - hence we create a dummy network listener object here and use that
              * to create proxies etc. Whenever, IIOP and JMS listeners move to use network-listener elements,
