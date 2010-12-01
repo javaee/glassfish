@@ -7,14 +7,14 @@ dev-tests on connectors and connection pool
 
 Checkout the following :
 
-svn -N co https://svn.dev.java.net/svn/glassfish-svn/trunk/v2/appserv-tests
+svn -N co https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests
 cd appserv-tests
-svn co https://svn.dev.java.net/svn/glassfish-svn/trunk/v2/appserv-tests/config
-svn co https://svn.dev.java.net/svn/glassfish-svn/trunk/v2/appserv-tests/lib
-svn co https://svn.dev.java.net/svn/glassfish-svn/trunk/v2/appserv-tests/util
-svn -N co https://svn.dev.java.net/svn/glassfish-svn/trunk/v2/appserv-tests/devtests
+svn co https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests/config
+svn co https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests/lib
+svn co https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests/util
+svn -N co https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests/devtests
 cd devtests
-svn co https://svn.dev.java.net/svn/glassfish-svn/trunk/v2/appserv-tests/devtests/connector
+svn co https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests/devtests/connector
 cd connector/v3
 
 set environment :
@@ -43,20 +43,20 @@ Console output as : $APS_HOME/devtests/connector/v3/connector.output
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Checkout the following :
 
-svn -N co https://svn.dev.java.net/svn/glassfish-svn/trunk/v2/appserv-tests
+svn -N co https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests
 cd appserv-tests
-svn co https://svn.dev.java.net/svn/glassfish-svn/trunk/v2/appserv-tests/config
-svn co https://svn.dev.java.net/svn/glassfish-svn/trunk/v2/appserv-tests/lib
-svn co https://svn.dev.java.net/svn/glassfish-svn/trunk/v2/appserv-tests/util
-svn -N co https://svn.dev.java.net/svn/glassfish-svn/trunk/v2/appserv-tests/devtests
+svn co https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests/config
+svn co https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests/lib
+svn co https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests/util
+svn -N co https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests/devtests
 cd devtests
-svn -N co https://svn.dev.java.net/svn/glassfish-svn/trunk/v2/appserv-tests/devtests/connector
+svn -N co https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests/devtests/connector
 cd connector
-svn -N co https://svn.dev.java.net/svn/glassfish-svn/trunk/v2/appserv-tests/devtests/connector/v3
+svn -N co https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests/devtests/connector/v3
 cd v3
 
 eg: there is a test-case by name "embeddedweb"
-svn co https://svn.dev.java.net/svn/glassfish-svn/trunk/v2/appserv-tests/devtests/connector/v3/embeddedweb
+svn co https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests/devtests/connector/v3/embeddedweb
 
 
 set environment :
