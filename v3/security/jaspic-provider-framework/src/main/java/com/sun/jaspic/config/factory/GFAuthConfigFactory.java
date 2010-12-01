@@ -598,12 +598,13 @@ public class GFAuthConfigFactory extends AuthConfigFactory {
             }
             if (regisIDs == null || regisIDs.isEmpty()) {
                 provider2IdsMap.remove(provider);
+            }            
+            if (!rvalue) {
+                return false;
             }
-
             listenerMap = getEffectedListeners(regisID);
-
             if (rc != null && rc.isPersistent()) {
-                _deleteStoredRegistration(regisID, rc);
+                    _deleteStoredRegistration(regisID, rc);
             }
         } finally {
             wLock.unlock();

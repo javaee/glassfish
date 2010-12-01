@@ -67,6 +67,9 @@ import static org.junit.Assert.*;
  */
 public class FactoryTest {
 
+    /** switch definition of default test factory to test native factory
+     * will also need to configure proper dependencies
+     */
     //private static final String DEFAULT_TEST_FACTORY_CLASS_NAME = "com.sun.enterprise.security.jmac.config.GFAuthConfigFactory";
     private static final String DEFAULT_TEST_FACTORY_CLASS_NAME = GFAuthConfigFactory.class.getName();
     private static String testFactoryClassName = DEFAULT_TEST_FACTORY_CLASS_NAME;
@@ -178,14 +181,22 @@ public class FactoryTest {
 
         new FactoryTest().beforeTest();
         new FactoryTest().testSetFactory();
+        new FactoryTest().afterTest();
+
+        new FactoryTest().beforeTest();
+        new FactoryTest().testRemoveRegistration();
+        new FactoryTest().afterTest();
 
         new FactoryTest().beforeTest();
         new FactoryTest().testListeners();
+        new FactoryTest().afterTest();
 
         new FactoryTest().beforeTest();
         new FactoryTest().stressFactory(
                 getIntOption(THREAD_COUNT_KEY, DEFAULT_THREAD_COUNT),
                 getIntOption(MAX_JOIN_SECONDS_KEY, DEFAULT_MAX_JOIN_SECONDS));
+        new FactoryTest().afterTest();
+
     }
 
     @Before
@@ -223,6 +234,58 @@ public class FactoryTest {
         }
         AuthConfigFactory.setFactory(testFactory);
         assertTrue(testFactoryClassName.equals(AuthConfigFactory.getFactory().getClass().getName()));
+    }
+
+    @Test
+    public void testRemoveRegistration() {
+        logger.info("BEGIN Remove Registration TEST");
+        final AuthConfigFactory f = AuthConfigFactory.getFactory();
+        f.refresh();
+        // does self registration
+        AuthConfigProvider p = new _AuthConfigProvider(new HashMap(), f);
+        RegistrationContext rc;
+        String[] rids = f.getRegistrationIDs(p);
+        boolean removed;
+        assertTrue("provider did not self register",rids != null && rids.length>0);
+        for (String i : rids) {
+            rc = f.getRegistrationContext(i);
+            removed = f.removeRegistration(i);
+            assertTrue("expected true from removeRegistration - rid: " + i,
+                    rc != null && removed);
+        }
+        for (String i : rids) {
+            rc = f.getRegistrationContext(i);
+            removed = f.removeRegistration(i);
+            assertTrue("expected false from removeRegistration - rid: " + i,
+                    rc == null && !removed);
+        }
+
+        //testing registration and removal of null provider;
+        String rid = f.registerConfigProvider(null, null, null, "null registration");
+        rc = f.getRegistrationContext(rid);
+        removed = f.removeRegistration(rid);
+        assertTrue("testing null provider - expected true from removeRegistration - rid: " + rid,
+                    rc != null && removed);
+        //testing for interferece with null provider
+        rc = f.getRegistrationContext(rid);
+        removed = f.removeRegistration(rid);
+        assertTrue("testing null provider - expected false from removeRegistration - rid: " + rid,
+                    rc == null && !removed);
+        rid = f.registerConfigProvider(null, null, null, "null registration");
+        //temporary to force call to decomposeRegId in getEffectedListeners
+        p = f.getConfigProvider(null, null, new _Listener(null,null,false));
+        rc = f.getRegistrationContext(rid);
+        assertTrue("testing null provider - getRegistrationContext - rid: " + rid,
+                    rid != null);
+        String badRid = "someInvalidId";
+        rc = f.getRegistrationContext(badRid);
+        removed = f.removeRegistration(badRid);
+        assertTrue("expected false from removeRegistration - rid: " + badRid,
+                    rc == null && !removed);
+        rc = f.getRegistrationContext(rid);
+        removed = f.removeRegistration(rid);
+        assertTrue("testing null provider - expected true from removeRegistration - rid: " + rid,
+                    rc != null && removed);
     }
 
     @Test
@@ -299,6 +362,33 @@ public class FactoryTest {
                 listener[j].check(ridLayer[i], ridContext[i]);
             }
         }
+
+        //repeat with null provider registrations
+        for (int i = 0; i < rid.length; i++) {
+            rid[i] = f.registerConfigProvider(null, ridLayer[i], ridContext[i], ridLayer[i] + ridContext[i]);
+        }
+
+        z = 0;
+        for (int i = 1; i < layer.length; i++) {
+            for (int j = 1; j < context.length; j++) {
+                listener[z] = new _Listener(layer[i], context[j], false);
+                f.getConfigProvider(layer[i], context[j], listener[z]);
+                z++;
+            }
+        }
+        for (int i = 0; i < rid.length; i++) {
+            for (int j = 0; j < listener.length; j++) {
+                if (listener[j].notified) {
+                    assertTrue("Test Setup Failure - listener could not be registered",
+                            listener[j].register());
+                }
+            }
+            f.removeRegistration(rid[i]);
+
+            for (int j = 0; j < listener.length; j++) {
+                listener[j].check(ridLayer[i], ridContext[i]);
+            }
+        }
     }
 
     static class _Listener implements RegistrationListener {
@@ -337,17 +427,18 @@ public class FactoryTest {
             return notified;
         }
 
+
         void check(String l, String c) {
             boolean shouldHaveBeenNotified = false;
             if ((l == null || layer.equals(l)) && (c == null || appContext.equals(c))) {
                 shouldHaveBeenNotified = true;
             }
             if (shouldHaveBeenNotified) {
-                String msg = "listener at layer,context: " + layer + "," + appContext + "should have been notified at: "
+                String msg = "listener at layer,context: " + layer + "," + appContext + " should have been notified at: "
                         + l + "," + c;
                 assertTrue(msg, notified());
             } else {
-                String msg = "listener at layer,context: " + layer + "," + appContext + "should NOT have been notified at: "
+                String msg = "listener at layer,context: " + layer + "," + appContext + " should NOT have been notified at: "
                         + l + "," + c;
                 assertFalse(msg, notified());
             }
@@ -358,7 +449,8 @@ public class FactoryTest {
             synchronized (this) {
                 notified = true;
             }
-            boolean validNotification = layer.equals(l) && appContext.equals(c);
+            boolean validNotification = (layer == l || layer.equals(l)) &&
+                    (appContext == c || appContext.equals(c));
             String msg = "listener notified at wrong layer: " + l + " or context: " + c;
             assertTrue(msg, validNotification);
             if (validNotification && reRegister) {
