@@ -64,5 +64,6 @@
         <module>standalonewar</module>
         <module>websockets</module>
         <module>webservice</module>
+        <module>secureWebApp</module>
     </modules>
 </project>
