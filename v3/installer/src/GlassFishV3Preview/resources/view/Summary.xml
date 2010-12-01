@@ -70,8 +70,12 @@ import org.openinstaller.util.*;
 import org.openinstaller.util.install.Common;
 import org.openinstaller.core.PROCESSING_MODE;
 import java.util.logging.Logger;
+import java.util.logging.Level;
 import java.util.List;
 import java.io.*;
+import com.sun.enterprise.registration.*;
+import com.sun.enterprise.registration.impl.*;
+
 
 /* determines whether a summary represents a configure operation */
 boolean isConfig(Summary aSum) {
@@ -175,9 +179,43 @@ void run ()  {
     wizard.enableHelp(true);
     wizard.enableExit(true);
     summary.requestFocus();
-  }
 
+    // Take care of registration.
+    String installHome = (String)ConfigHelper.getValue("InstallHome.directory.INSTALL_HOME");
+    String regFilePath = installHome + File.separator + "glassfish" + File.separator + "lib" +
+			File.separator + "registration" + File.separator + "servicetag-registry.xml";
+    String regPagePath = installHome + File.separator + "glassfish" + File.separator + "lib" +
+			File.separator + "registration" + File.separator + "registration.html";
 
+    // Generate registration landing html page.
+    try {
+           RelayService relayService = new RelayService(regFilePath);
+           relayService.generateRegistrationPage(regPagePath);
+        } catch (Exception ex) {
+		LOGGER.log(Level.WARNING,ex.getMessage());
+        }
+	
+    // Check if the registration page has successfully been generated, then add the shutdownhook to VM to
+
+    // launch the browser.
+    File regFile = new File(regPagePath);
+    if (regFile.exists()) {
+      BrowserLaunchShutdownHookup bLaunch = new BrowserLaunchShutdownHookup(regPagePath);
+      Runtime.getRuntime().addShutdownHook(bLaunch);
+      }
+      class BrowserLaunchShutdownHookup extends Thread {
+		private String regPagePath;
+		public BrowserLaunchShutdownHookup(String regPage) {
+			this.regPagePath = regPage;
+		}
+		public void run() {
+                    org.glassfish.installer.util.BrowserLauncher launchBrowser =
+                        new org.glassfish.installer.util.BrowserLauncher();
+                    URL registrationURL = new URL("file://" + regPagePath);
+                    launchBrowser.openURL(registrationURL);
+            }
+        }
+}
 return (Runnable)this;]]>
   </apt:scriptCode>
   </apt:scriptHandler>

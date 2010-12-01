@@ -78,15 +78,6 @@
     <page name="ConfigResults">
 	<when><![CDATA[ !DRY_RUN_MODE && !INSTALL_ONLY && !NO_CONFIGURATION ]]></when>
     </page>
-    <page name="RegistrationOptions">
-	<when><![CDATA[ !DRY_RUN_MODE && !CONFIG_ONLY ]]></when>
-    </page>
-    <page name="SOAccountCreation">
-	<when><![CDATA[ !DRY_RUN_MODE && CREATE_NEWACCT && !CONFIG_ONLY ]]></when>
-    </page>
-    <page name="RegistrationInfo">
-	<when><![CDATA[ !DRY_RUN_MODE && (CREATE_NEWACCT || USE_EXISTINGACCT) && !CONFIG_ONLY ]]></when>
-    </page> 
     <page name="Summary">
 	<when><![CDATA[ !CONFIG_ONLY  ]]></when>
     </page>
