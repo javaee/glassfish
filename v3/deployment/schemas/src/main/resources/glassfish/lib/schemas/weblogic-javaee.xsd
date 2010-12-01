@@ -410,7 +410,7 @@
       <!-- Session tracking cookie max-age; default=-1 (unlimited) -->
       <xsd:element name="cookie-max-age-secs" type="j2ee:xsdIntegerType" minOccurs="0" />
 
-      <!-- Mark the session cooke as HttpOnly; default=false -->
+      <!-- Mark the session cooke as HttpOnly; default=true -->
       <xsd:element name="cookie-http-only" type="true-falseType" minOccurs="0" />
 
       <!--
