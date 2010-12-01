@@ -146,6 +146,18 @@ public interface WebContainer {
         throws ConfigException, GlassFishException;
 
     /**
+     * Stops the given <tt>Context</tt> and removes it from all
+     * <tt>VirtualServer</tt>.
+     *
+     * @param context the <tt>Context</tt> to be stopped and removed
+     *
+     * @throws GlassFishException if an error occurs during the stopping
+     * or removal of the given <tt>context</tt>
+     */
+    public void removeContext(Context context)
+        throws ConfigException, GlassFishException;
+
+    /**
      * Creates a <tt>WebListener</tt> from the given class type and
      * assigns the given id to it.
      *
