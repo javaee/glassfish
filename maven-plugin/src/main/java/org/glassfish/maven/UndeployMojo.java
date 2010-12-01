@@ -55,7 +55,7 @@ public class UndeployMojo extends AbstractDeployMojo {
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
             doUndeploy(serverID, getClassLoader(), getBootStrapProperties(),
-                    name, new String[0]);
+                    getGlassFishProperties(), name, new String[0]);
         } catch (Exception e) {
             throw new MojoExecutionException(e.getMessage(), e);
         }

@@ -62,7 +62,7 @@ public class DeployMojo extends AbstractDeployMojo {
 //            doUndeploy(serverID, getClassLoader(), getBootStrapProperties(),
 //                    name, new String[0]);
             doDeploy(serverID, getClassLoader(), getBootStrapProperties(),
-                    new File(getApp()), getDeploymentParameters());
+                    getGlassFishProperties(), new File(getApp()), getDeploymentParameters());
         } catch (Exception e) {
             throw new MojoExecutionException(e.getMessage(), e);
         }

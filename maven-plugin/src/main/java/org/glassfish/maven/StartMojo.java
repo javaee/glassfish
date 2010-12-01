@@ -58,16 +58,19 @@ public class StartMojo extends AbstractServerMojo {
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
-            startGlassFish(serverID, getClassLoader(), getBootStrapProperties());
+            startGlassFish(serverID, getClassLoader(), getBootStrapProperties(),
+                    getGlassFishProperties());
         } catch (Exception ex) {
             throw new MojoExecutionException(ex.getMessage(), ex);
         }
     }
 
-    public void startGlassFish(String serverId, ClassLoader cl, Properties props) throws Exception {
+    public void startGlassFish(String serverId, ClassLoader cl, Properties bootstrapProperties,
+                               Properties glassfishProperties) throws Exception {
             Class clazz = cl.loadClass(PluginUtil.class.getName());
-            Method m = clazz.getMethod("startGlassFish", new Class[]{String.class, Properties.class});
-            m.invoke(null, new Object[]{serverId, props});
+            Method m = clazz.getMethod("startGlassFish", new Class[]{String.class,
+                    Properties.class, Properties.class});
+            m.invoke(null, new Object[]{serverId, bootstrapProperties, glassfishProperties});
     }
 
     

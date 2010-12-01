@@ -140,19 +140,23 @@ public abstract class AbstractDeployMojo extends AbstractServerMojo {
     }
 
     protected void doDeploy(String serverId, ClassLoader cl, Properties bootstrapProps,
+                            Properties glassfishProperties,
                          File archive, String[] deploymentParams) throws Exception {
         Class clazz = cl.loadClass(PluginUtil.class.getName());
         Method m = clazz.getMethod("doDeploy", new Class[]{String.class, Properties.class,
-                File.class, String[].class});
-        m.invoke(null, new Object[]{serverId, bootstrapProps, archive, deploymentParams});
+                Properties.class, File.class, String[].class});
+        m.invoke(null, new Object[]{serverId, bootstrapProps, glassfishProperties,
+                archive, deploymentParams});
     }
 
     protected void doUndeploy(String serverId, ClassLoader cl, Properties bootstrapProps,
+                              Properties glassfishProperties,
                               String appName, String[] deploymentParams) throws Exception {
         Class clazz = cl.loadClass(PluginUtil.class.getName());
         Method m = clazz.getMethod("doUndeploy", new Class[]{String.class, Properties.class,
-                String.class, String[].class});
-        m.invoke(null, new Object[]{serverId, bootstrapProps, appName, deploymentParams});
+                Properties.class, String.class, String[].class});
+        m.invoke(null, new Object[]{serverId, bootstrapProps, glassfishProperties,
+                appName, deploymentParams});
     }
     
 }

@@ -65,8 +65,9 @@ public class PluginUtil {
     private final static Map<String, GlassFish> gfMap =
             new HashMap<String, GlassFish>();
 
-    public static GlassFish startGlassFish(String serverId, Properties bootstrapProperties) throws Exception {
-        GlassFish gf = getGlassFish(serverId, bootstrapProperties);
+    public static GlassFish startGlassFish(String serverId, Properties bootstrapProperties,
+                                           Properties glassfishProperties) throws Exception {
+        GlassFish gf = getGlassFish(serverId, bootstrapProperties, glassfishProperties);
         if (gf.getStatus() != GlassFish.Status.STARTED) {
             long startTime = System.currentTimeMillis();
             gf.start();
@@ -85,25 +86,28 @@ public class PluginUtil {
                 gfr.shutdown();
             }
         }
-        logger.logp(Level.INFO, "PluginUtil", "stopGlassFish", "Stopped GlassFish ServerId = {0}, GlassFish = {1}",
+        logger.logp(Level.INFO, "PluginUtil", "stopGlassFish",
+                "Stopped GlassFish ServerId = {0}, GlassFish = {1}",
                 new Object[]{serverId, gf});
     }
 
     public static void doDeploy(String serverId, Properties bootstrapProperties,
+                                Properties glassfishProperties,
                                 File archive, String[] deploymentParameters) throws Exception {
-        GlassFish gf = startGlassFish(serverId, bootstrapProperties);
+        GlassFish gf = startGlassFish(serverId, bootstrapProperties, glassfishProperties);
         // Lookup the deployer.
         Deployer deployer = gf.getService(Deployer.class);
-        logger.logp(Level.INFO, "PluginUtil", "doDeploy", "Deployer = {0}", deployer);
+        logger.logp(Level.FINE, "PluginUtil", "doDeploy", "Deployer = {0}", deployer);
 
         String name = deployer.deploy(archive.toURI(), deploymentParameters);
         logger.logp(Level.INFO, "PluginUtil", "doDeploy", "Deployed {0}", name);
     }
 
     public static void doUndeploy(String serverId, Properties bootstrapProperties,
+                                  Properties glassfishProperties,
                                   String appName, String[] deploymentParameters) {
         try {
-            GlassFish gf = startGlassFish(serverId, bootstrapProperties);
+            GlassFish gf = startGlassFish(serverId, bootstrapProperties, glassfishProperties);
             // Lookup the deployer.
             Deployer deployer = gf.getService(Deployer.class);
             logger.logp(Level.INFO, "PluginUtil", "doUndeploy", "Deployer = {0}", deployer);
@@ -117,13 +121,13 @@ public class PluginUtil {
         }
     }
 
-    private static GlassFish getGlassFish(String serverId, Properties bootstrapProperties)
+    private static GlassFish getGlassFish(String serverId, Properties bootstrapProperties,
+                                          Properties glassfishProperties)
             throws Exception {
-        logger.info("serverId = " + serverId + ", GfMap = " + gfMap);
         GlassFish gf = gfMap.get(serverId);
         if (gf == null) {
             long startTime = System.currentTimeMillis();
-            logger.logp(Level.INFO, "PluginUtil", "getGlassFish", "Creating GlassFish ServerId = {0}", serverId);
+            logger.logp(Level.FINE, "PluginUtil", "getGlassFish", "Creating GlassFish ServerId = {0}", serverId);
             BootstrapProperties bootstrapOptions = new BootstrapProperties(bootstrapProperties);
             gfr = gfr != null ? gfr : GlassFishRuntime.bootstrap(bootstrapOptions,
                     PluginUtil.class.getClassLoader());
@@ -131,15 +135,16 @@ public class PluginUtil {
             GlassFishRuntime gfr = GlassFishRuntime.bootstrap(bootstrapOptions,
                     PluginUtil.class.getClassLoader());
 */
-            logger.logp(Level.INFO, "PluginUtil", "getGlassFish", "Created GlassFishRuntime ServerId = {0}, " +
-                    "GlassFishRuntime = {1}, TimeTaken = {2} ms",
+            logger.logp(Level.FINE, "PluginUtil", "getGlassFish", "Created GlassFishRuntime " +
+                    "ServerId = {0}, GlassFishRuntime = {1}, TimeTaken = {2} ms",
                     new Object[]{serverId, gfr, System.currentTimeMillis() - startTime});
-            startTime = System.currentTimeMillis();
-            GlassFishProperties gfOptions = new GlassFishProperties(bootstrapProperties);
+            GlassFishProperties gfOptions = new GlassFishProperties(glassfishProperties);
             gf = gfr.newGlassFish(gfOptions);
             logger.logp(Level.INFO, "PluginUtil", "getGlassFish", "Created GlassFish ServerId = {0}, " +
-                    "GlassFish = {1}, GlassFish Status = {2}, TimeTaken = {3} ms",
-                    new Object[]{serverId, gf, gf.getStatus(), System.currentTimeMillis() - startTime});
+                    "BootstrapProperties = {1}, GlassFishRuntime = {2}, GlassFishProperties = {3}, " +
+                    "GlassFish = {4}, GlassFish Status = {5}, TimeTaken = {6} ms",
+                    new Object[]{serverId, bootstrapProperties, gfr, glassfishProperties,
+                            gf, gf.getStatus(), System.currentTimeMillis() - startTime});
             gfMap.put(serverId, gf);
         }
         return gf;

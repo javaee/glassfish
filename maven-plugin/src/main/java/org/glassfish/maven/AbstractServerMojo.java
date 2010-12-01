@@ -53,13 +53,15 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectBuilder;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.StringReader;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 
 /**
  * @author bhavanishankar@dev.java.net
@@ -68,13 +70,12 @@ public abstract class AbstractServerMojo extends AbstractMojo {
 
     // Only PluginUtil has access to org.glassfish.simpleglassfishapi.Constants
     // Hence declare the param names here.
+    public final static String PLATFORM_KEY = "GlassFish_Platform";
     public final static String INSTANCE_ROOT_PROP_NAME = "com.sun.aas.instanceRoot";
     public static final String INSTALL_ROOT_PROP_NAME = "com.sun.aas.installRoot";
-    public static final String INSTALL_ROOT_URI_PROP_NAME = "com.sun.aas.installRootURI";
-    public static final String INSTANCE_ROOT_URI_PROP_NAME = "com.sun.aas.instanceRootURI";
     public static final String CONFIG_FILE_URI_PROP_NAME = "com.sun.aas.configFileURI";
-    public static final String HTTP_PORT = "embedded-glassfish-config." +
-            "server.network-config.network-listeners.network-listener.http-listener.";
+    private static final String NETWORK_LISTENER_KEY = "embedded-glassfish-config." +
+            "server.network-config.network-listeners.network-listener.%s";
 
     public static String thisArtifactId = "org.glassfish:maven-embedded-glassfish-plugin";
 
@@ -123,6 +124,41 @@ public abstract class AbstractServerMojo extends AbstractMojo {
     protected String configFile;
 
     /**
+     * @parameter
+     */
+    protected Map<String, String> ports;
+
+    /**
+     * @parameter
+     */
+    protected List<String> bootstrapProperties;
+
+    /**
+     * @parameter
+     */
+    protected File bootstrapPropertiesFile;
+
+    /**
+     * @parameter
+     */
+    protected List<String> glassfishProperties;
+
+    /**
+     * @parameter
+     */
+    protected File glassfishPropertiesFile;
+
+    /**
+     * @parameter
+     */
+    protected List<String> systemProperties;
+
+    /**
+     * @parameter
+     */
+    protected File systemPropertiesFile;
+
+    /**
      * @parameter expression="${autoDelete}"
      */
     protected Boolean autoDelete;
@@ -137,7 +173,7 @@ public abstract class AbstractServerMojo extends AbstractMojo {
     protected MavenProject project;
 
     /**
-     *  @parameter default-value="${plugin.artifacts}"
+     * @parameter default-value="${plugin.artifacts}"
      */
     private java.util.List<Artifact> artifacts; // pluginDependencies
 
@@ -291,23 +327,14 @@ public abstract class AbstractServerMojo extends AbstractMojo {
         return classLoader;
     }
 
-    protected Properties getBootStrapProperties() {
+    protected Properties getGlassFishProperties() {
         Properties props = new Properties();
-        props.setProperty("GlassFish_Platform", "Static");
 
-//        installRoot = installRoot != null ? installRoot : getDefaultInstallRoot();
-//        instanceRoot = instanceRoot != null ? instanceRoot : getDefaultInstanceRoot(installRoot);
-
-        if (installRoot != null) {
-            props.setProperty(INSTALL_ROOT_PROP_NAME, new File(installRoot).getAbsolutePath());
-            props.setProperty(INSTALL_ROOT_URI_PROP_NAME,
-                    new File(installRoot).toURI().toString());
-        }
         if (instanceRoot != null) {
-            props.setProperty(INSTANCE_ROOT_PROP_NAME, new File(instanceRoot).getAbsolutePath());
-            props.setProperty(INSTANCE_ROOT_URI_PROP_NAME,
-                    new File(instanceRoot).toURI().toString());
+            props.setProperty(INSTANCE_ROOT_PROP_NAME,
+                    new File(instanceRoot).getAbsolutePath());
         }
+
         if (configFile != null) {
             try {
                 // if it is a java.net.URI pointing to file: or jar: or http: then use it as is.
@@ -319,12 +346,90 @@ public abstract class AbstractServerMojo extends AbstractMojo {
         }
 
         if (port != -1 && configFile == null) {
-            props.setProperty(HTTP_PORT + "port", String.valueOf(port));
-            props.setProperty(HTTP_PORT + "enabled", "true");
+            String httpListener = String.format(NETWORK_LISTENER_KEY, "http-listener");
+            props.setProperty(httpListener + ".port", String.valueOf(port));
+            props.setProperty(httpListener + ".enabled", "true");
         }
 
-        // TODO :: take care of other config props containerType, autoDelete
+        if (ports != null) {
+            for (String listenerName : ports.keySet()) {
+                String portNumber = ports.get(listenerName);
+                if (portNumber != null && portNumber.trim().length() > 0) {
+                    String networkListener = String.format(NETWORK_LISTENER_KEY, listenerName);
+                    props.setProperty(networkListener + ".port", portNumber);
+                    props.setProperty(networkListener + ".enabled", "true");
+                }
+            }
+        }
+
+        load(glassfishPropertiesFile, props);
+        load(glassfishProperties, props);
+
         return props;
+    }
+
+    protected Properties getBootStrapProperties() {
+        setSystemProperties();
+        Properties props = new Properties();
+        props.setProperty(PLATFORM_KEY, "Static");
+        if (installRoot != null) {
+            props.setProperty(INSTALL_ROOT_PROP_NAME,
+                    new File(installRoot).getAbsolutePath());
+        }
+        load(bootstrapPropertiesFile, props);
+        load(bootstrapProperties, props);
+        return props;
+    }
+
+    private void load(List<String> stringList, Properties p) {
+        if (p == null || stringList == null) {
+            return;
+        }
+        for (String prop : stringList) {
+            try {
+                p.load(new StringReader(prop));
+            } catch (Exception ex) {
+                System.err.println(ex);
+            }
+        }
+    }
+
+    private void load(File propertiesFile, Properties p) {
+        if (propertiesFile == null || p == null) {
+            return;
+        }
+        FileInputStream stream = null;
+        try {
+            stream = new FileInputStream(propertiesFile);
+            p.load(stream);
+        } catch (Exception ex) {
+            System.err.println(ex);
+        } finally {
+            if (stream != null) {
+                try {
+                    stream.close();
+                } catch (Exception ex) {
+                    System.err.println(ex);
+                }
+            }
+        }
+    }
+
+    private void setSystemProperties() {
+        Properties sysProps = new Properties();
+        load(systemPropertiesFile, sysProps);
+        load(systemProperties, sysProps);
+        for (Object obj : sysProps.keySet()) {
+            String key = (String) obj;
+            String currentVal = System.getProperty(key);
+            if (currentVal == null) {
+                String value = sysProps.getProperty(key);
+                if (value != null && value.trim().length() > 0) {
+                    System.setProperty(key, value);
+                    System.out.println("Set system property [" + key + " = " + value + "]");
+                }
+            }
+        }
     }
 
 //    private String getDefaultInstallRoot() {
@@ -339,6 +444,5 @@ public abstract class AbstractServerMojo extends AbstractMojo {
 //        String fs = File.separator;
 //        return new File(installRoot, "domains" + fs + "domain1").getAbsolutePath();
 //    }
-
 
 }

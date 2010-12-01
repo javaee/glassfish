@@ -60,7 +60,7 @@ public class RunMojo extends AbstractDeployMojo {
             // Try deploying, even if deployment fails the server startup might have succeeded.
             try {
                 doDeploy(serverID, getClassLoader(), getBootStrapProperties(),
-                        new File(getApp()), getDeploymentParameters());
+                        getGlassFishProperties(), new File(getApp()), getDeploymentParameters());
             } catch (Exception ex) {
                 System.err.println(ex.getMessage());
             }
@@ -75,7 +75,7 @@ public class RunMojo extends AbstractDeployMojo {
             // User can try redeploying.
             try {
                 doUndeploy(serverID, getClassLoader(), getBootStrapProperties(),
-                        name, new String[0]);
+                        getGlassFishProperties(), name, new String[0]);
             } catch (Exception ex) {
                 System.err.println(ex.getMessage());
             }
