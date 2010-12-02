@@ -106,6 +106,7 @@ public class ChangeMasterPasswordCommand extends LocalDomainCommand {
                 throw new CommandException(strings.get("incorrect.mp"));
             ParamModelData nmpo = new ParamModelData("New_Master_Password",
                 String.class, false, null);
+            nmpo.description = strings.get("NewMasterPassword");
             nmpo.param._password = true;
             String nmp = super.getPassword(nmpo, null, true);
             if (nmp == null)
