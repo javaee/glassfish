@@ -200,6 +200,7 @@ public final class EmbeddedWebContainer extends Embedded implements PostConstruc
         context.setManagerChecksFrequency(1);
         context.setServerContext(serverContext);
         context.setWebModuleConfig(wmInfo);
+        context.setDefaultWebXml(defaultWebXmlLocation);
         if (embeddedDirectoryListing) {
             context.setDirectoryListing(embeddedDirectoryListing);
         }

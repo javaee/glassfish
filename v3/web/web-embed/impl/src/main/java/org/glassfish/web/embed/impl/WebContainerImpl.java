@@ -182,10 +182,14 @@ public class WebContainerImpl implements WebContainer {
             init();
         }
         this.config = config;
-        final WebContainerConfig webConfig = config;
-        com.sun.enterprise.config.serverbeans.VirtualServer vsBean =
-                httpService.getVirtualServerByName(config.getVirtualServerId());
         try {
+            VirtualServer vs = getVirtualServer(config.getVirtualServerId());
+            if (vs != null) {
+                ((StandardHost)vs).setDefaultWebXmlLocation(config.getDefaultWebXml().getPath());
+            }
+            final WebContainerConfig webConfig = config;
+            com.sun.enterprise.config.serverbeans.VirtualServer vsBean =
+                httpService.getVirtualServerByName(config.getVirtualServerId());
             if (vsBean!=null) {
                 ConfigSupport.apply(new SingleConfigCode<com.sun.enterprise.config.serverbeans.VirtualServer>() {
                     public Object run(com.sun.enterprise.config.serverbeans.VirtualServer avs)
@@ -196,6 +200,10 @@ public class WebContainerImpl implements WebContainer {
                         }
                         avs.setHosts(webConfig.getHostNames());
                         avs.setNetworkListeners(webConfig.getListenerName());
+                        Property property = avs.createChild(Property.class);
+                        property.setName("default-web-xml");
+                        property.setValue(webConfig.getDefaultWebXml().getPath());
+                        avs.getProperty().add(property);
                         return avs;
                     }
                 }, vsBean);
@@ -206,6 +214,12 @@ public class WebContainerImpl implements WebContainer {
                 Port port = ports.createPort(webConfig.getPort());
                 bind(port, null);
             }
+            WebListener listener = getWebListener(config.getPort());
+            if (listener.getId().equals(config.getListenerName())) {
+                listener.setId(config.getListenerName());
+            }
+            EmbeddedWebArchivist archivist = habitat.getComponent(EmbeddedWebArchivist.class);
+            archivist.setDefaultWebXml(config.getDefaultWebXml());
         }  catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -445,6 +459,12 @@ public class WebContainerImpl implements WebContainer {
             }
             VirtualServer vs = getVirtualServer(defaultvs);
             context = (WebModule) ((StandardHost)vs).findChild(appName);
+            if (classLoader != null) {
+                context.setParentClassLoader(classLoader);
+            } else {
+                context.setParentClassLoader(serverContext.getSharedClassLoader());
+            }
+            context.setDefaultWebXml(config.getDefaultWebXml().getPath());
             if (context != null) {
                 ((StandardHost)vs).removeChild(context);
             }

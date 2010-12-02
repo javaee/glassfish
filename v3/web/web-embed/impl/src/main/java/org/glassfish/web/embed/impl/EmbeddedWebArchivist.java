@@ -99,13 +99,25 @@ public class EmbeddedWebArchivist extends WebArchivist {
             public Set getElements() {
                 return elements;
             }
-        };
+
+    };
+
+
+    private URL defaultWebXmlLocation = null;
+
+    protected void setDefaultWebXml(URL defaultWebXml) {
+        defaultWebXmlLocation = defaultWebXml;
+    }
 
     @Override
     protected URL getDefaultWebXML() throws IOException {
-        URL defaultWebXml = super.getDefaultWebXML();
-        return defaultWebXml == null ? getClass().getClassLoader().getResource(
-                "org/glassfish/web/embed/default-web.xml") : defaultWebXml;
+        if (defaultWebXmlLocation != null) {
+            return defaultWebXmlLocation;
+        } else {
+            URL defaultWebXml = super.getDefaultWebXML();
+            return defaultWebXml == null ? getClass().getClassLoader().getResource(
+                    "org/glassfish/web/embed/default-web.xml") : defaultWebXml;
+        }
     }
 
     @Override

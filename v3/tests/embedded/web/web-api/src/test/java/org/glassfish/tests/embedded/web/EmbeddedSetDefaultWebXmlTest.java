@@ -67,6 +67,7 @@ public class EmbeddedSetDefaultWebXmlTest {
     static GlassFish glassfish;
     static WebContainer embedded;
     static File root;
+    static String contextRoot = "/test";
 
     @BeforeClass
     public static void setupServer() throws Exception {
@@ -81,7 +82,6 @@ public class EmbeddedSetDefaultWebXmlTest {
         File defaultWebXml = new File(root+"/org/glassfish/tests/webapi/my-default-web.xml");
         config.setDefaultWebXml(defaultWebXml.toURL());
         System.out.println("Using default-web.xml "+defaultWebXml.getAbsolutePath());
-        config.setListings(true);
         config.setDocRootDir(root);
         config.setPort(8080);
         System.out.println("Added Web with base directory "+root.getAbsolutePath());
@@ -91,7 +91,11 @@ public class EmbeddedSetDefaultWebXmlTest {
     @Test
     public void testEmbeddedWebAPIConfig() throws Exception {
 
-        URL servlet = new URL("http://localhost:8080");
+        Context context = embedded.createContext(root);
+        embedded.addContext(context, contextRoot);
+
+        // test if dir listing is getting picked up from default-web.xml
+        URL servlet = new URL("http://localhost:8080"+contextRoot);
         URLConnection yc = servlet.openConnection();
         BufferedReader in = new BufferedReader(
                                 new InputStreamReader(
