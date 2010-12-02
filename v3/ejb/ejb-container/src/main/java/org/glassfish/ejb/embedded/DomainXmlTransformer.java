@@ -89,15 +89,19 @@ public class DomainXmlTransformer {
     private static final String JMX_CONNECTOR = "jmx-connector";
     private static final String LAZY_INIT_ATTR = "lazy-init";
     private static final String DAS_CONFIG = "das-config";
+    private static final String JAVA_CONFIG = "java-config";
+    private static final String JVM_OPTIONS = "jvm-options";
+    private static final String INITIALIZE_ON_DEMAND = "-Dorg.glassfish.jms.InitializeOnDemand=true";
     private static final String DYNAMIC_RELOAD_ENABLED = "dynamic-reload-enabled";
     private static final String ENABLED = "enabled";
     private static final String FALSE = "false";
+    private static final String TRUE = "true";
 
     private static final Set<String> SKIP_ELEMENTS = new HashSet(Arrays.asList(VIRTUAL_SERVER));
     private static final Set<String> SKIP_ELEMENTS_KEEP_PORTS = new HashSet();
     private static final Set<String> EMPTY_ELEMENTS = new HashSet(Arrays.asList(NETWORK_LISTENERS, PROTOCOLS, APPLICATIONS));
     private static final Set<String> EMPTY_ELEMENTS_KEEP_PORTS = new HashSet(Arrays.asList(APPLICATIONS));
-    private static final Set<String> SKIP_SETTINGS_ELEMENTS = new HashSet(Arrays.asList(IIOP_LISTENER, JMS_HOST, DAS_CONFIG));
+    private static final Set<String> SKIP_SETTINGS_ELEMENTS = new HashSet(Arrays.asList(IIOP_LISTENER, DAS_CONFIG));
     private static final Set<String> DISABLE_ELEMENTS = new HashSet(Arrays.asList(JMX_CONNECTOR));
     private static final Set<String> DISABLE_SUB_ELEMENTS = new HashSet(Arrays.asList(LAZY_INIT_ATTR, DYNAMIC_RELOAD_ENABLED));
 
@@ -166,8 +170,16 @@ public class DomainXmlTransformer {
                         skip_to_end = true;
                     } else if (DISABLE_ELEMENTS.contains(name)) {
                         // Disable this element
-                        event  = getDisabledStartEvent(event);
+                        event  = getReplaceAttributeInStartEvent(event, ENABLED, FALSE);
                         skip_to_end = true;
+                    } else if (JMS_HOST.equals(name)) {
+                        // Set lazy-init to false
+                        event  = getReplaceAttributeInStartEvent(event, LAZY_INIT_ATTR, FALSE);
+                        skip_to_end = true;
+                    } else if (JAVA_CONFIG.equals(name)) {
+                        // Add jvm-options
+                        writer.add(event);
+                        event = getAddedEvent(event, writer, JVM_OPTIONS, INITIALIZE_ON_DEMAND);
                     }
 
                     if (skip_to_end) {
@@ -260,19 +272,32 @@ public class DomainXmlTransformer {
                 attributes.iterator(), oldStartEvent.getNamespaces());
     }
 
-    /** Create a new start element based on the original but that marks it as disabled
+    /** Create start element with the specified name and text
      */
-    private StartElement getDisabledStartEvent(XMLEvent event) {
+    private XMLEvent getAddedEvent(XMLEvent event, XMLEventWriter writer, String elementName, 
+            String text) throws XMLStreamException {
+        StartElement oldStartEvent = event.asStartElement();
+        StartElement newStartEvent = xmlEventFactory.createStartElement(new QName(elementName),
+                null, oldStartEvent.getNamespaces());
+
+        writer.add(newStartEvent);
+        writer.add(xmlEventFactory.createCharacters(text));
+        return xmlEventFactory.createEndElement(newStartEvent.getName(), newStartEvent.getNamespaces());
+    }
+
+    /** Create a new start element based on the original but that replaces attribute value
+     */
+    private StartElement getReplaceAttributeInStartEvent(XMLEvent event, String attr_name, String attr_value) {
         Set attributes = new HashSet();
 
         for(java.util.Iterator i = event.asStartElement().getAttributes(); i.hasNext();) {
             Attribute a = (Attribute) i.next();
-            if( !a.getName().getLocalPart().equals(ENABLED) ) {
+            if( !a.getName().getLocalPart().equals(attr_name) ) {
                 attributes.add(a);
             }
         }
 
-        Attribute newAttribute = xmlEventFactory.createAttribute(ENABLED, FALSE);
+        Attribute newAttribute = xmlEventFactory.createAttribute(attr_name, attr_value);
         attributes.add(newAttribute);
 
         StartElement oldStartEvent = event.asStartElement();
