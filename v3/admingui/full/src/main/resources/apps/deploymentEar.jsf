@@ -48,7 +48,8 @@
         createMap(result="#{pageSession.ear}")
         mapPut(map="#{pageSession.deployMap}", key="ear", value="#{pageSession.ear}");
         mapPut(map="#{pageSession.ear}", key="convertToFalseList", value={"enabled", "precompilejsp" , "availabilityEnabled", "verify", "force", "keepState", "PROPERTY-keepSessions" "PROPERTY-$constant{org.glassfish.deployment.client.DFDeploymentProperties.DEPLOY_OPTION_JAVA_WEB_START_ENABLED}", "PROPERTY-preserveAppScopedResources"} );
-     />
+        mapPut(map="#{pageSession.ear}", key="PROPERTY-$constant{org.glassfish.deployment.client.DFDeploymentProperties.DEPLOY_OPTION_JAVA_WEB_START_ENABLED}" , value="true" );
+    />
     <!afterCreate
         getClientId(component="$this{component}" clientId=>$page{earId});
     />
