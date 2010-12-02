@@ -51,6 +51,7 @@ import org.glassfish.apf.HandlerProcessingResult;
 import org.glassfish.apf.AnnotationInfo;
 import org.glassfish.apf.AnnotationProcessorException;
 import com.sun.enterprise.deployment.annotation.context.ResourceContainerContext;
+import java.util.logging.Level;
 import org.jvnet.hk2.annotations.Service;
 
 /**
@@ -78,6 +79,15 @@ public class EJBsHandler extends EJBHandler {
         EJBs ejbsAnnotation = (EJBs) ainfo.getAnnotation();
         
         EJB[] ejbAnnotations = ejbsAnnotation.value();
+
+        if(ejbAnnotations.length == 0) {
+            String localizedMsg = localStrings.getLocalString(
+                    "enterprise.deployment.annotation.handlers.emptyEJBs",
+                    "No @EJB elements in @EJBs on " + ainfo.getAnnotatedElement(),
+                    new Object[]{ejbsAnnotation, ainfo.getAnnotatedElement()});
+            logger.log(Level.WARNING, localizedMsg);
+        }
+
         List<HandlerProcessingResult> results = new ArrayList<HandlerProcessingResult>();
 
         for(EJB ejb : ejbAnnotations) {
