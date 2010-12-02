@@ -152,7 +152,7 @@
         <wsdl4j.version>1.6.2</wsdl4j.version>
         <gmbal.version>3.1.0-b001</gmbal.version>
         <glassfish-management-api.version>3.1.0-b001</glassfish-management-api.version>
-        <mimepull.version>1.4</mimepull.version>
+        <mimepull.version>1.5</mimepull.version>
         <findbugs.exclude></findbugs.exclude>
         <btrace.version>1.0.5</btrace.version>
         <opendmk.version>1.0-b01-ea</opendmk.version>
