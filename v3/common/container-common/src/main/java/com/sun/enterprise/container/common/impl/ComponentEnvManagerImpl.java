@@ -413,7 +413,8 @@ public class ComponentEnvManagerImpl
                    obj  = new java.net.URL(physicalJndiName);
                 }
                 catch(MalformedURLException e) {
-                    e.printStackTrace();
+                    // no need to print the stack trace, this is allowed
+                    //e.printStackTrace();
                 }
                 NamingObjectFactory factory = namingUtils.createSimpleNamingObjectFactory(name, obj);
                 value = namingUtils.createCloningNamingObjectFactory(name, factory);
