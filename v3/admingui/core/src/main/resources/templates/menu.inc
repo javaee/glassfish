@@ -163,7 +163,6 @@
     <sc:menuItem value="Forums" url="#{request.contextPath}/layouttest.jsf?page=Forums" />
     <sc:menuItem value="Report a Problem" url="#{request.contextPath}/layouttest.jsf?page=Report+a+Problem" />
     <!-- FIXME: registration link should toggle w/ rss page -->
-    <sc:menuItem value="Register" url="#{request.contextPath}/sysnet/registration.jsf" />
     <sc:menuItem value="About Plugins..." url="#{request.contextPath}/layouttest.jsf?page=About+Plugins..." />
     <sc:menuItem value="About..." url="#{request.contextPath}/layouttest.jsf?page=About..." />
 </sc:subMenu>

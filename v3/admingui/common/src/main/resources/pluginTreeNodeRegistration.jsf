@@ -43,15 +43,6 @@
 <!-- pluginTreeNodeRegistration.jsf -->
 
 <!--  ===================================== Registration  ======================  -->
-<sun:treeNode id="registration"
-	rendered="#{sessionScope.showRegTreeNode}"
-	text="$resource{i18n.tree.registration}"
-	url="/common/sysnet/registration.jsf">
-    <!facet image>
-	<sun:imageHyperlink imageURL="/resource/images/registration.gif" url="/common/sysnet/registration.jsf"
-	    alt="$resource{i18n.tree.registration}" border="0" immediate="true" />
-    </facet>
-</sun:treeNode>
 
 <sun:treeNode
 	id="support"

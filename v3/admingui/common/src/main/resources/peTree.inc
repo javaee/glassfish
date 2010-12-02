@@ -60,7 +60,6 @@ Connector Service   750
 monitoring     web  800
 
     // Parent == "tree" priorities:
-    100: pluginTreeNodeRegistration.jsf
     200: pluginTreeNodeServer.jsf
     300: pluginTreeNodeApps.jsf
     400: pluginTreeNodeResources.jsf

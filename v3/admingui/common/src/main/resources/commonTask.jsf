@@ -45,10 +45,8 @@
 <!initPage
     setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
     setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
-    getProductInstanceURN();
-#include "/common/sysnet/regInit.inc"
 />
-<!composition template="/templates/default.layout" guiTitle="$resource{i18n.commonTasks.title}" guiOnLoad="if (#{askRegistration}) {initReminderBox();}; if (frameOnload) {frameOnload();};">
+<!composition template="/templates/default.layout" guiTitle="$resource{i18n.commonTasks.title}" guiOnLoad="if (frameOnload) {frameOnload();};">
 <!define name="guiExtraHead">
 <f:verbatim>
     <style type="text/css">
@@ -66,11 +64,6 @@
       <sun:form id="form"> 
         <sun:commonTasksSection id="commonTasksSection" helpText="$resource{i18n.commonTasks.help}"  title="$resource{i18n.commonTasks.title}" columns="$int{2}" style="visibility: #{commonTaskVisibility}">
           <sun:commonTasksGroup  title="$resource{i18n.commonTasks.task.regAndSupport}">
-            <sun:commonTask rendered="#{sessionScope.showRegTreeNode}"
-                            text="$resource{i18n.tree.registration}"
-                            toolTip="registration"
-                            onClick="return admingui.woodstock.commonTaskHandler('treeForm:tree:registration','#{request.contextPath}/common/sysnet/registration.jsf');">
-            </sun:commonTask>
             <sun:commonTask rendered="#{!sessionScope._noNetwork}"
                             text="$resource{i18n.tree.support}"
                             toolTip="$resource{i18n.tree.support}"
@@ -111,7 +104,6 @@
           includeIntegrations(type="org.glassfish.admingui:commonTask" root="#{component}");
           />
         </event>
-#include "/common/sysnet/regReminder.inc"
         <sun:hidden id="helpKey" value="$resource{help_common.commonTask}" />
       </sun:form>
     "</div>

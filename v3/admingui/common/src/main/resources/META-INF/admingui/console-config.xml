@@ -107,15 +107,7 @@
                 parentId="propSheetSection"
                 content="configuration/systemPropsConfigurationLink.jsf"
         />
-
-
 	<!-- navNode IPs -->
-        <integration-point
-                id="common_reg"
-                type="org.glassfish.admingui:navNode"
-                priority="100"
-                parentId="tree"
-                content="pluginTreeNodeRegistration.jsf" />
         <integration-point
                 id="common_domain"
                 type="org.glassfish.admingui:navNode"

@@ -112,24 +112,7 @@
             <version>${project.version}</version>
 	    <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>org.glassfish.registration</groupId>
-            <artifactId>registration-api</artifactId>
-            <version>${project.version}</version>
-	    <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.registration</groupId>
-            <artifactId>registration-impl</artifactId>
-            <version>${project.version}</version>
-	    <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.registration</groupId>
-            <artifactId>glassfish-registration</artifactId>
-            <version>${project.version}</version>
-	    <scope>provided</scope>
-        </dependency>
+
         <!-- Woodstock dependency -->
         <dependency>
             <groupId>com.sun.woodstock</groupId>

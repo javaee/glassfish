@@ -60,14 +60,6 @@
                 // and will be stored in #{sessionScope.fieldLengths}
                 getFieldLengths(bundle="#{tmpLengths}" result="#{sessionScope.fieldLengths}");
             }
-            setShowRegTreeNode();
-            <!--
-            checkSupport(supportCluster=>$session{supportCluster});
-            if ($session{supportCluster}) {
-                initClusterSessionAttribute();
-            }
-            -->
-
             // Set expand / collapse preferences...
             getPreference(default="#{false}", root="glassfish/layout", key="hideLeft", value="#{sessionScope.hideLeft}");
             getPreference(default="#{false}", root="glassfish/layout", key="hideRight", value="#{sessionScope.hideRight}");
