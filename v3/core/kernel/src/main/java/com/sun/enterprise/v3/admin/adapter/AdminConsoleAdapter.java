@@ -169,6 +169,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     private static final String INSTALL_ROOT = "com.sun.aas.installRoot";
     static final String ADMIN_APP_NAME = ServerEnvironmentImpl.DEFAULT_ADMIN_CONSOLE_APP_NAME;
     private boolean isRestStarted = false;
+    private boolean isRestBeingStarted = false;
 
     /**
      * Constructor.
@@ -245,7 +246,36 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
             return;
         }
         res.setContentType("text/html; charset=UTF-8");
+        
+        // simple get request use via javascript to give back the console status (starting with :::)
+        // as a simple string.
+        // see usage in status.html
+        if ("/testifbackendisready.html".equals(req.getRequestURI())) {
 
+            // Replace state token
+            String status = getStateMsg().getI18NKey();
+            try {
+                // Try to get a localized version of this key
+                status = bundle.getString(status);
+            } catch (MissingResourceException ex) {
+                // Use the non-localized String version of the status
+                status = getStateMsg().toString();
+            }
+            try {
+                GrizzlyOutputBuffer ob = getOutputBuffer(res);
+
+                byte[] bytes = (":::" + status).getBytes("UTF-8");
+                res.setContentLength(bytes.length);
+                ob.write(bytes, 0, bytes.length);
+                ob.flush();
+
+            } catch (IOException ex) {
+                Logger.getLogger(AdminConsoleAdapter.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+
+            return;
+        }
         if (isApplicationLoaded()) {
             // Let this pass to the admin console (do nothing)
             handleLoadedState();
@@ -257,12 +287,12 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
             if ("/favicon.ico".equals(req.getRequestURI())) {
                 return;
             }
-
-	    synchronized(this) {
-		
                 if (!isRestStarted) {
                     forceRestModuleLoad(req);
                 }
+	    synchronized(this) {
+		
+
 		if (isInstalling()) {
 		    sendStatusPage(req, res);
 		} else {
@@ -306,6 +336,10 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
      * then close the stream and move on.
      */
     private void forceRestModuleLoad(final GrizzlyRequest req) {
+        if (isRestBeingStarted==true){
+            return;
+        }
+        isRestBeingStarted = true;
         Thread thread = new Thread() {
             @Override
             public void run() {
@@ -316,6 +350,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
                     is = conn.getInputStream();
                     isRestStarted = true;
                 } catch (Exception ex) {
+                    ex.printStackTrace();
                 } finally {
                     if (is != null) {
                         try {
@@ -328,7 +363,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
             }
         };
         thread.setDaemon(true);
-        thread.run();
+        thread.start();
     }
 
     private String getContentType(String resource) {
