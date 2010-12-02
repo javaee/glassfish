@@ -101,17 +101,9 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <id>start</id>
-                        <phase>pre-integration-test</phase>
                         <goals>
                             <goal>start</goal>
                             <goal>deploy</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>stop</id>
-                        <phase>post-integration-test</phase>
-                        <goals>
                             <goal>undeploy</goal>
                             <goal>stop</goal>
                         </goals>
