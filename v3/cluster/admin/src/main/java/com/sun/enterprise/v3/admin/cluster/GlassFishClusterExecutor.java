@@ -147,14 +147,14 @@ public class GlassFishClusterExecutor implements ClusterExecutor, PostConstruct 
         //only if the target is not "server" or "domain"
         if( (runtimeTypes.contains(RuntimeType.ALL)) ||
             ((!CommandTarget.DAS.isValid(habitat, targetName)) && (!CommandTarget.DOMAIN.isValid(habitat, targetName))) ) {
-            //If the target is a cluster and dynamic reconfig enabled is false, no replication
-            if(targetService.isCluster(targetName)) {
+            //If the target is a cluster and dynamic reconfig enabled is false and RuntimeType is not ALL, no replication
+            if (targetService.isCluster(targetName) && !runtimeTypes.contains(RuntimeType.ALL)) {
                 String dynRecfg = targetService.getClusterConfig(targetName).getDynamicReconfigurationEnabled();
                 if(Boolean.FALSE.equals(Boolean.valueOf(dynRecfg))) {
                     ActionReport aReport = context.getActionReport().addSubActionsReport();
                     aReport.setActionExitCode(ActionReport.ExitCode.WARNING);
                     aReport.setMessage(strings.getLocalString("glassfish.clusterexecutor.dynrecfgdisabled",
-                            "WARNING : The command was not replicated to all cluster instances because the" +
+                            "WARNING: The command was not replicated to all cluster instances because the" +
                                     " dynamic-reconfig-enabled flag is set to false for cluster {0}", targetName));
                     for(Server s : targetService.getInstances(targetName)) {
                         instanceState.setState(s.getName(), InstanceState.StateType.RESTART_REQUIRED, false);
@@ -163,9 +163,35 @@ public class GlassFishClusterExecutor implements ClusterExecutor, PostConstruct 
                     return ActionReport.ExitCode.WARNING;
                 }
             }
-            List<Server> instancesForReplication = (runtimeTypes.contains(RuntimeType.ALL)) ?
-                                                        targetService.getAllInstances() :
-                                                            targetService.getInstances(targetName);
+
+            List<Server> instancesForReplication = new ArrayList<Server>();
+
+            if (runtimeTypes.contains(RuntimeType.ALL)) {
+                List<Server> allInstances = targetService.getAllInstances();
+                Set<String> clusterNoReplication = new HashSet<String>();
+                for (Server s : allInstances) {
+                    String dynRecfg = s.getConfig().getDynamicReconfigurationEnabled();
+                    if (Boolean.TRUE.equals(Boolean.valueOf(dynRecfg))) {
+                        instancesForReplication.add(s);
+                    } else {
+                        clusterNoReplication.add(s.getCluster().getName());
+                        instanceState.setState(s.getName(), InstanceState.StateType.RESTART_REQUIRED, false);
+                        instanceState.addFailedCommandToInstance(s.getName(), commandName, parameters);
+                    }
+                }
+
+                if (!clusterNoReplication.isEmpty()) {
+                    ActionReport aReport = context.getActionReport().addSubActionsReport();
+                    aReport.setActionExitCode(ActionReport.ExitCode.WARNING);
+                    aReport.setMessage(strings.getLocalString("glassfish.clusterexecutor.dynrecfgdisabled",
+                            "WARNING: The command was not replicated to all cluster instances because the"
+                            + " dynamic-reconfiguration-enabled flag is set to false for cluster(s) {0}", clusterNoReplication));
+                }
+
+            } else {
+                instancesForReplication = targetService.getInstances(targetName);
+            }
+
             if(instancesForReplication.size() == 0) {
                 ActionReport aReport = context.getActionReport().addSubActionsReport();
                 aReport.setActionExitCode(ActionReport.ExitCode.SUCCESS);
