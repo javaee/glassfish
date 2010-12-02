@@ -169,7 +169,7 @@ public class ApplicationHandlers {
                 oneRow.put("hasAppClientLaunch", false);
                 oneRow.put("sniffers", snifferList.toString());
 
-                if (snifferList.contains("web") &&  AppUtil.isApplicationEnabled(appName, "server")) {
+                if (snifferList.contains("web")) {
                     String endpoint =  GuiUtil.getSessionValue("REST_URL") + "/applications/application/get-context-root.xml?appname="
                             + encodedAppName + "&modulename=" + encodedModuleName;
                     Map map = (Map)RestUtil.restRequest(endpoint, null, "GET", null, false).get("data");
