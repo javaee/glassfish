@@ -95,7 +95,7 @@ public class DataSourceDefinitionHandler extends AbstractResourceHandler {
                 }
 
             Set<DataSourceDefinitionDescriptor> dsdDescs = context.getDataSourceDefinitionDescriptors();
-            DataSourceDefinitionDescriptor desc = getDescriptor(dataSourceDefnAn);
+            DataSourceDefinitionDescriptor desc = createDescriptor(dataSourceDefnAn);
             if(isDefinitionAlreadyPresent(dsdDescs, desc)){
                 merge(dsdDescs, dataSourceDefnAn);
             }else{
@@ -302,8 +302,9 @@ public class DataSourceDefinitionHandler extends AbstractResourceHandler {
                 }
 
                 //try only when URL or standard properties are not set
-                if (desc.getUrl() == null && ((desc.getPortNumber() == -1) && (desc.getServerName() == null) &&
-                        (desc.getDatabaseName() == null))) {
+                if (desc.getUrl() == null &&
+                        !(desc.getPortNumber() != -1 && desc.getServerName() != null &&
+                                (desc.getDatabaseName() != null))) {
                     if (defn.url() != null && !defn.url().equals("")) {
                         desc.setUrl(defn.url());
                     }
@@ -396,7 +397,7 @@ public class DataSourceDefinitionHandler extends AbstractResourceHandler {
     }
 
 
-    private DataSourceDefinitionDescriptor getDescriptor(DataSourceDefinition defn) {
+    private DataSourceDefinitionDescriptor createDescriptor(DataSourceDefinition defn) {
 
         DataSourceDefinitionDescriptor desc = new DataSourceDefinitionDescriptor();
         desc.setMetadataSource(MetadataSource.ANNOTATION);
@@ -421,8 +422,8 @@ public class DataSourceDefinitionHandler extends AbstractResourceHandler {
             desc.setDatabaseName(defn.databaseName());
         }
 
-        if ((desc.getPortNumber() != -1 || desc.getDatabaseName() != null || desc.getServerName() != null)) {
-            //do nothing
+        if ((desc.getPortNumber() != -1 && desc.getDatabaseName() != null && desc.getServerName() != null)) {
+            //standard properties are set, ignore URL
         } else {
             if (defn.url() != null && !defn.url().equals("")) {
                 desc.setUrl(defn.url());
