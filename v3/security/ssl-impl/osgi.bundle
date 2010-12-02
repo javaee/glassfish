@@ -41,3 +41,6 @@
 -exportcontents: \
                         com.sun.enterprise.security.ssl.manager; \
                         com.sun.enterprise.server.pluggable; version=${project.osgi.version}
+Import-Package: \
+                        com.sun.logging.enterprise.system.core.security, \
+                        *
