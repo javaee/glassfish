@@ -175,7 +175,7 @@
         </dependency>
         <dependency>
             <groupId>com.sun.woodstock.dependlibs</groupId>
-            <artifactId>dojo-ajax</artifactId>
+            <artifactId>dojo-ajax-nodemo</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
