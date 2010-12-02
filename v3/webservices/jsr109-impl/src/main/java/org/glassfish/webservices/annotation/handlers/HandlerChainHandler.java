@@ -259,6 +259,9 @@ public class HandlerChainHandler extends AbstractHandler {
             try {
                 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                 factory.setNamespaceAware(true);
+                factory.setExpandEntityReferences(false);
+                factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+                
                 DocumentBuilder builder = factory.newDocumentBuilder();
                 document = builder.parse(handlerFileStream);
             } catch (SAXParseException spe) {
