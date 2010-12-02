@@ -205,12 +205,6 @@ public class InstanceDeployCommand extends InstanceDeployCommandParameters imple
                     throw e;
                 }
             } 
-
-            if (report.getActionExitCode()==ActionReport.ExitCode.FAILURE) {
-                String msg = localStrings.getLocalString("failToLoadOnInstance",  "Failed to load the application on instance {0} : {1}", server.getName(), report.getMessage());
-                report.setMessage(msg); 
-            }
-
         } catch (Throwable e) {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setMessage(e.getMessage());
