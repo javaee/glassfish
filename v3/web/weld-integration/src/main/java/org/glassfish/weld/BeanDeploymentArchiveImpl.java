@@ -52,8 +52,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
+import static java.util.logging.Level.*;
 import java.util.logging.Logger;
+
+import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.InjectionTarget;
 
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.archive.ReadableArchive;
@@ -64,9 +67,6 @@ import org.jboss.weld.bootstrap.api.helpers.SimpleServiceRegistry;
 import org.jboss.weld.bootstrap.spi.BeanDeploymentArchive;
 import org.jboss.weld.bootstrap.spi.BeansXml;
 import org.jboss.weld.ejb.spi.EjbDescriptor;
-
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.InjectionTarget;
 
 
 /*
@@ -99,7 +99,11 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
     public String bdaType;
 
     private DeploymentContext context;
-    private final Map<AnnotatedType<?>, InjectionTarget<?>> itMap = new HashMap<AnnotatedType<?>, InjectionTarget<?>>();
+    private final Map<AnnotatedType<?>, InjectionTarget<?>> itMap 
+                    = new HashMap<AnnotatedType<?>, InjectionTarget<?>>();
+    
+    //workaround
+    private ClassLoader moduleClassLoaderForBDA = null;
 
 
     /**
@@ -129,6 +133,8 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
         this.archive = null;
     }
 
+    //These are for empty BDAs that do not model Bean classes in the current 
+    //deployment unit -- for example: BDAs for portable Extensions.
     public BeanDeploymentArchiveImpl(String id, List<Class<?>> wClasses, List<URL> wUrls,
         Collection<com.sun.enterprise.deployment.EjbDescriptor> ejbs, DeploymentContext ctx) {
         this.id = id;
@@ -142,6 +148,9 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
             EjbDescriptorImpl wbEjbDesc = new EjbDescriptorImpl(next);
             ejbDescImpls.add(wbEjbDesc);
         }
+        
+        //set to the current TCL
+        this.moduleClassLoaderForBDA = Thread.currentThread().getContextClassLoader();
     }
 
 
@@ -150,12 +159,15 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
     }
 
     public Collection<String> getBeanClasses() {
-        //TODO
         List<String> s  = new ArrayList<String>();
         for (Iterator<Class<?>> iterator = wClasses.iterator(); iterator.hasNext();) {
             String classname = iterator.next().getName();
             s.add(classname);
         }
+        //This method is called during BeanDeployment.deployBeans, so this would
+        //be the right time to place the module classloader for the BDA as the TCL
+        Thread.currentThread().setContextClassLoader(this.moduleClassLoaderForBDA);
+        //The TCL is unset at the end of deployment of CDI beans in WeldDeployer.event 
         return s;
     }
     
@@ -202,13 +214,20 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
         return id;
     }
 
+    //A graphical representation of the BDA hierarchy
     public String toString() {
-        String val = "ID: "+getId()+" CLASSES: "+getBeanClasses()+"\n"; 
-        Collection <BeanDeploymentArchive> bdas = getBeanDeploymentArchives();
+        String val = "|ID: " + getId() + ", bdaType= " + bdaType 
+                        +  ", Bean Classes #: " + getBeanClasses().size() + "\n";
+        Collection<BeanDeploymentArchive> bdas = getBeanDeploymentArchives();
         Iterator<BeanDeploymentArchive> iter = bdas.iterator();
         while (iter.hasNext()) {
-            BeanDeploymentArchive bda = (BeanDeploymentArchive)iter.next();
-            val += "   ID: "+bda.getId()+" CLASSES: "+bda.getBeanClasses();
+            BeanDeploymentArchive bda = (BeanDeploymentArchive) iter.next();
+            String embedBDAType = ""; 
+            if (bda instanceof BeanDeploymentArchiveImpl) {
+                embedBDAType = ((BeanDeploymentArchiveImpl)bda).getBDAType();
+            }
+            val += "|---->ID: " + bda.getId() + ", bdaType= " + embedBDAType 
+                +  ", Bean Classes #: " + bda.getBeanClasses().size() + "\n";
         }
         return val;
     }
@@ -220,6 +239,8 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
     private void populate() {
         try {
             if (archive.exists(WEB_INF_BEANS_XML)) {
+                logger.log(FINE, "-processing " + archive.getName() 
+                                        + "as it has WEB-INF/beans.xml");
                 bdaType = WAR;
                 Enumeration<String> entries = archive.entries();
                 while (entries.hasMoreElements()) {
@@ -244,32 +265,42 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
             //  beans.xml in the jar archive
 
             if (archive.exists(WEB_INF_LIB)) {
+                logger.log(FINE, "-processing WEB-INF/lib in" 
+                        + archive.getName());
                 bdaType = WAR;
                 Enumeration<String> entries = archive.entries(WEB_INF_LIB);
                 while (entries.hasMoreElements()) {
                     String entry = (String)entries.nextElement();
                     if (entry.endsWith(JAR_SUFFIX) &&
                         entry.indexOf(SEPARATOR_CHAR, WEB_INF_LIB.length() + 1 ) == -1 ) {
+                        logger.log(FINE, "-processing " + entry);
                         ReadableArchive jarArchive = archive.getSubArchive(entry);
                         if (jarArchive.exists(META_INF_BEANS_XML)) {
                             collectJarInfo(jarArchive);
+                        } else {
+                            logger.log(FINE, "-skipping " + archive.getName() 
+                                                + " as it doesn't have beans.xml");
                         }
                     }
                }
             }
 
             if (archive.exists(META_INF_BEANS_XML)) {
+                logger.log(FINE, "-processing " + archive.getName() 
+                        + "as a jar since it has META-INF/beans.xml");
                 bdaType = JAR;
                 collectJarInfo(archive);
             }
         } catch(IOException e) {
-            logger.log(Level.SEVERE, e.getLocalizedMessage(), e);
+            logger.log(SEVERE, e.getLocalizedMessage(), e);
         } catch(ClassNotFoundException cne) {
-            logger.log(Level.SEVERE, cne.getLocalizedMessage(), cne);
+            logger.log(SEVERE, cne.getLocalizedMessage(), cne);
         }
     }   
 
-    private void collectJarInfo(ReadableArchive archive) throws IOException, ClassNotFoundException {
+    private void collectJarInfo(ReadableArchive archive) 
+                        throws IOException, ClassNotFoundException {
+        logger.log(FINE, "-collecting jar info for " + archive.getName());
         Enumeration<String> entries = archive.entries();
         while (entries.hasMoreElements()) {
             String entry = entries.nextElement();
@@ -295,11 +326,20 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
     }
 
     private ClassLoader getClassLoader() {
-        if (Thread.currentThread().getContextClassLoader() != null) {
-            return Thread.currentThread().getContextClassLoader();
+        ClassLoader cl;
+        if (this.context.getClassLoader() != null) {
+            cl = this.context.getClassLoader();
+        } else if (Thread.currentThread().getContextClassLoader() != null) {
+            logger.log(FINE, "Using TCL");
+            cl = Thread.currentThread().getContextClassLoader();
         } else {
-            return DeploymentImpl.class.getClassLoader();
+            logger.log(FINE, "TCL is null. Using DeploymentImpl's classloader");
+            cl = BeanDeploymentArchiveImpl.class.getClassLoader();
         }
+        
+        //cache the moduleClassLoader for this BDA
+        this.moduleClassLoaderForBDA = cl; 
+        return cl;
     }
 
     public InjectionTarget<?> getInjectionTarget(AnnotatedType<?> annotatedType) {

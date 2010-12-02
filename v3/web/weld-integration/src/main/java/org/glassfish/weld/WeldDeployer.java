@@ -155,6 +155,8 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
                 if (_logger.isLoggable(Level.FINE)) {
                     _logger.fine(deploymentImpl.toString());
                 }
+                //get Current TCL
+                ClassLoader oldTCL = Thread.currentThread().getContextClassLoader();
                 try {
                     bootstrap.startContainer(Environments.SERVLET, deploymentImpl/*, new ConcurrentHashMapBeanStore()*/);
                     bootstrap.startInitialization();
@@ -164,6 +166,13 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
                     DeploymentException de = new DeploymentException(t.getMessage());
                     de.initCause(t);
                     throw(de);
+                } finally {
+                    //The TCL is originally the EAR classloader
+                    //and is reset during Bean deployment to the 
+                    //corresponding module classloader in BeanDeploymentArchiveImpl.getBeans
+                    //for Bean classloading to succeed. The TCL is reset
+                    //to its old value here.
+                    Thread.currentThread().setContextClassLoader(oldTCL);
                 }
             }
         } else if ( event.is(org.glassfish.internal.deployment.Deployment.APPLICATION_STARTED) ) {
