@@ -68,3 +68,9 @@
     />
     </sun:tab>
 </sun:tabSet>
+<event>
+    <!afterCreate
+        includeIntegrations(type="org.glassfish.admingui:domainTab");
+    />
+</event>
+
