@@ -972,6 +972,9 @@ AS_ADMIN_MASTERPASSWORD=changeit
         <param name="line" value="start-local-instance --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} ${testServer}"/>
     </antcall>
     <exec executable="${ASADMIN}" failonerror="true">
+        <arg line="list-instances --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile}"/>
+    </exec>
+    <exec executable="${ASADMIN}" failonerror="true">
         <arg line="create-resource-ref --target ${testServer} jdbc/__default"/>
     </exec>
 
@@ -987,6 +990,9 @@ AS_ADMIN_MASTERPASSWORD=changeit
     </exec>
     <echo message="Running... asadmin start-cluster"/>
     <antcall target="startCluster"/>
+    <exec executable="${ASADMIN}" failonerror="true">
+        <arg line="list-instances --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile}"/>
+    </exec>
     <exec executable="${ASADMIN}" failonerror="true">
         <arg line="create-resource-ref --target ${testCluster} jdbc/__default"/>
     </exec>
