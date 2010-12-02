@@ -663,6 +663,24 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
      */
     public void readRuntimeDeploymentDescriptor(ReadableArchive archive, T descriptor)
             throws IOException, SAXParseException {
+        readRuntimeDeploymentDescriptor(archive, descriptor, true);
+    }
+
+    /**
+     * Read the runtime deployment descriptors (can contained in one or
+     * many file) set the corresponding information in the passed descriptor.
+     * By default, the runtime deployment descriptors are all contained in
+     * the xml file characterized with the path returned by
+     *
+     * @param archive the archive
+     * @param descriptor the initialized deployment descriptor
+     * @param warnIfMultipleDDs whether to log warnings if both the GlassFish and the legacy Sun descriptors are present
+     * @link getRuntimeDeploymentDescriptorPath
+     */
+    public void readRuntimeDeploymentDescriptor(ReadableArchive archive, T descriptor,
+            final boolean warnIfMultipleDDs)
+            throws IOException, SAXParseException {
+
 
         String ddFileEntryName = getRuntimeDeploymentDescriptorPath();
         // if we are not supposed to handle runtime info, just pass
@@ -686,7 +704,7 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
             }
 
             if (is != null && confDD != null) {
-                if (is2 != null) {
+                if (is2 != null && warnIfMultipleDDs) {
                     logger.log(Level.WARNING, "gf.counterpart.configdd.exists",
                         new Object[] {
                         sunConfDD.getDeploymentDescriptorPath(),
@@ -978,16 +996,16 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
                 out.closeEntry();
             }
 
-            // Legacy Sun Runtime DDs
-            DeploymentDescriptorFile sunConfDD = getSunConfigurationDDFile();
-            if (sunConfDD != null) {
-                OutputStream os = out.putNextEntry(
-                        sunConfDD.getDeploymentDescriptorPath());
-                sunConfDD.write(desc, os);
-                out.closeEntry();
+                // Legacy Sun Runtime DDs
+                DeploymentDescriptorFile sunConfDD = getSunConfigurationDDFile();
+                if (sunConfDD != null) {
+                    OutputStream os = out.putNextEntry(
+                            sunConfDD.getDeploymentDescriptorPath());
+                    sunConfDD.write(desc, os);
+                    out.closeEntry();
+                }
             }
         }
-    }
 
     /**
      * writes the WL runtime deployment descriptors to an abstract archive

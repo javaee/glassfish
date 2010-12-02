@@ -171,7 +171,7 @@ public class FacadeLaunchable implements Launchable {
 
     protected synchronized static AppClientArchivist getArchivist(final Habitat habitat) {
         if (facadeArchivist == null) {
-            facadeArchivist = habitat.getComponent(AppClientArchivist.class);
+            facadeArchivist = habitat.getComponent(ACCAppClientArchivist.class);
         }
         return facadeArchivist;
     }
