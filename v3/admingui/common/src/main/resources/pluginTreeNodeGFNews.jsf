@@ -40,10 +40,7 @@
 
 -->
 
-<!-- pluginTreeNodeRegistration.jsf -->
-
-<!--  ===================================== Registration  ======================  -->
-
+<!-- pluginTreeNodeGFNews.jsf -->
 <sun:treeNode
 	id="support"
 	rendered="#{!sessionScope._noNetwork}"
