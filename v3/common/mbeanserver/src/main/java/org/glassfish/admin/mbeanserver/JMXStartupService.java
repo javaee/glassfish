@@ -187,12 +187,14 @@ public final class JMXStartupService implements PostStartup, PostConstruct {
         }
 
         void shutdown() {
-            if (starter instanceof RMIConnectorStarter) {
+            if (starter != null && starter instanceof RMIConnectorStarter) {
                 ((RMIConnectorStarter) starter).stopAndUnexport();
             }
             try {
-                mMBeanServer.unregisterMBean(connObjectName);
-                connObjectName = null;
+                if(connObjectName != null) {
+                    mMBeanServer.unregisterMBean(connObjectName);
+                    connObjectName = null;
+                }
             } catch (MBeanRegistrationException ex) {
                 Util.getLogger().log(Level.SEVERE, null, ex);
             } catch (InstanceNotFoundException ex) {
