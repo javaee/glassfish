@@ -93,13 +93,13 @@ public class ShoalBackingStoreProxy
     @Override
     public void postConstruct() {
         BackingStoreFactoryRegistry.register("replicated", this);
-        Logger.getLogger(ShoalBackingStoreProxy.class.getName()).log(Level.INFO, "Registered SHOAL BackingStore Proxy with persistence-type = replicated");
+        Logger.getLogger(ShoalBackingStoreProxy.class.getName()).log(Level.FINE, "Registered SHOAL BackingStore Proxy with persistence-type = replicated");
         EventListener glassfishEventListener = new EventListener() {
             @Override
             public void event(Event event) {
                 if (event.is(EventTypes.SERVER_SHUTDOWN)) {
                     BackingStoreFactoryRegistry.unregister("replicated");
-                    Logger.getLogger(ShoalBackingStoreProxy.class.getName()).log(Level.INFO, "Unregistered SHOAL BackingStore Proxy with persistence-type = replicated");                                                            
+                    Logger.getLogger(ShoalBackingStoreProxy.class.getName()).log(Level.FINE, "Unregistered SHOAL BackingStore Proxy with persistence-type = replicated");
                 } // else if (event.is(EventTypes.SERVER_READY)) {  }
             }
         };
