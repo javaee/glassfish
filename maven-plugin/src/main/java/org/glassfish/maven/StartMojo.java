@@ -53,6 +53,7 @@ import java.util.Properties;
  *
  * @author bhavanishankar@dev.java.net
  * @goal start
+ * @phase pre-integration-test
  */
 public class StartMojo extends AbstractServerMojo {
 

@@ -44,12 +44,12 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
 import java.io.File;
-import java.util.HashMap;
 
 
 /**
  * @author bhavanishankar@dev.java.net
  * @goal deploy
+ * @phase pre-integration-test 
  */
 public class DeployMojo extends AbstractDeployMojo {
 

@@ -46,11 +46,11 @@ import org.apache.maven.plugin.MojoFailureException;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
-import java.util.HashMap;
 
 /**
  * @author bhavanishankar@dev.java.net
  * @goal run
+ * @phase pre-integration-test
  */
 public class RunMojo extends AbstractDeployMojo {
 

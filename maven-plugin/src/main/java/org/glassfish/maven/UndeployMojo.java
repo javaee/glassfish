@@ -43,11 +43,10 @@ package org.glassfish.maven;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
-import java.util.HashMap;
-
 /**
  * @author bhavanishankar@dev.java.net
  * @goal undeploy
+ * @phase post-integration-test 
  */
 
 public class UndeployMojo extends AbstractDeployMojo {

@@ -44,13 +44,13 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
 import java.lang.reflect.Method;
-import java.util.Properties;
 
 /**
  * Mojo for running the administration commands.
  *
  * @author bhavanishankar@dev.java.net
  * @goal admin
+ * @phase pre-integration-test
  */
 public class AdminMojo extends AbstractServerMojo {
 

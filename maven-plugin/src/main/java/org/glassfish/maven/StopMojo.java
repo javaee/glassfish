@@ -48,6 +48,7 @@ import java.lang.reflect.Method;
 /**
  * @author bhavanishankar@dev.java.net
  * @goal stop
+ * @phase post-integration-test 
  */
 
 public class StopMojo extends AbstractServerMojo {
