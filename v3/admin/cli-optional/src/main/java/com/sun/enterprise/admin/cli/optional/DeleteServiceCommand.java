@@ -67,7 +67,7 @@ import static com.sun.enterprise.util.StringUtils.ok;
  * @author Byron Nevins
  * @since November 18, 2010
  */
-@org.jvnet.hk2.annotations.Service(name = "delete-service")
+@org.jvnet.hk2.annotations.Service(name = "_delete-service")
 @Scoped(PerLookup.class)
 public final class DeleteServiceCommand extends CLICommand {
     @Param(name = "name", optional = true)
