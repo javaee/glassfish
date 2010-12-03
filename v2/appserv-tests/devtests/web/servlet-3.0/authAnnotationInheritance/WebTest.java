@@ -80,18 +80,18 @@ public class WebTest {
     public void run() throws Exception {
         String contextPath = contextRoot + "/myurl";
         boolean ok = doWebMethod("POST", host, port, contextPath, false, 200, "p:Hello, null");
-        ok = ok && doWebMethod("TRACE", host, port, contextPath, false, 200, "t:Hello");
+        ok = ok && doWebMethod("OPTIONS", host, port, contextPath, false, 200, "o:Hello");
 
         contextPath = contextRoot + "/myurl2";
         ok = ok && doWebMethod("PUT", host, port, contextPath, true, 200, "put:Hello, javaee");
         ok = ok && doWebMethod("GET", host, port, contextPath, true, 403, null);
         ok = ok && doWebMethod("POST", host, port, contextPath, true, 200, "p:Hello, javaee");
-        ok = ok && doWebMethod("TRACE", host, port, contextPath, true, 403, null);
+        ok = ok && doWebMethod("OPTIONS", host, port, contextPath, true, 403, null);
 
         contextPath = contextRoot + "/myurl2b";
         ok = ok && doWebMethod("GET", host, port, contextPath, true, 403, null);
         ok = ok && doWebMethod("POST", host, port, contextPath, true, 200, "p:Hello, javaee");
-        ok = ok && doWebMethod("TRACE", host, port, contextPath, true, 403, null);
+        ok = ok && doWebMethod("OPTIONS", host, port, contextPath, true, 403, null);
 
         stat.addStatus(TEST_NAME, ((ok)? stat.PASS : stat.FAIL));
     }

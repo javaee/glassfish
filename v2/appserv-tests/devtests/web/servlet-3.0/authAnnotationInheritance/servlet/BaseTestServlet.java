@@ -51,7 +51,7 @@ import static javax.servlet.annotation.ServletSecurity.EmptyRoleSemantic.*;
 
 @ServletSecurity(httpMethodConstraints={
         @HttpMethodConstraint(value="POST", rolesAllowed={ "javaee" }),
-        @HttpMethodConstraint(value="TRACE", emptyRoleSemantic=DENY)
+        @HttpMethodConstraint(value="OPTIONS", emptyRoleSemantic=DENY)
         } )
 public class BaseTestServlet extends HttpServlet {
     public void doPost(HttpServletRequest req, HttpServletResponse res)
@@ -61,10 +61,10 @@ public class BaseTestServlet extends HttpServlet {
         writer.write("p:Hello, " + req.getRemoteUser() + "\n");
     }
 
-    protected void doTrace(HttpServletRequest req, HttpServletResponse res)
+    protected void doOptions(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
 
         PrintWriter writer = res.getWriter();
-        writer.write("t:Hello, " + req.getRemoteUser() + "\n");
+        writer.write("o:Hello, " + req.getRemoteUser() + "\n");
     }
 }

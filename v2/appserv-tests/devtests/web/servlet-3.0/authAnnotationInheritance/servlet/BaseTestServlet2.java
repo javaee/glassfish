@@ -54,7 +54,7 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/myurl2b")
 @ServletSecurity(value=@HttpConstraint(rolesAllowed={ "javaee" }),
         httpMethodConstraints={ @HttpMethodConstraint(value="GET", rolesAllowed={ "noSuchRole" }),
-        @HttpMethodConstraint(value="TRACE", emptyRoleSemantic=EmptyRoleSemantic.DENY) })
+        @HttpMethodConstraint(value="OPTIONS", emptyRoleSemantic=EmptyRoleSemantic.DENY) })
 public class BaseTestServlet2 extends HttpServlet {
     public void doGet(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
@@ -70,10 +70,10 @@ public class BaseTestServlet2 extends HttpServlet {
         writer.write("p:Hello, " + req.getRemoteUser() + "\n");
     }
 
-    protected void doTrace(HttpServletRequest req, HttpServletResponse res)
+    protected void doOptions(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
 
         PrintWriter writer = res.getWriter();
-        writer.write("t:Hello, " + req.getRemoteUser() + "\n");
+        writer.write("o:Hello, " + req.getRemoteUser() + "\n");
     }
 }

@@ -51,12 +51,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @WebServlet("/myurl")
-@ServletSecurity(httpMethodConstraints={ @HttpMethodConstraint("TRACE") })
+@ServletSecurity(httpMethodConstraints={ @HttpMethodConstraint("OPTIONS") })
 public class TestServlet extends BaseTestServlet {
-    protected void doTrace(HttpServletRequest req, HttpServletResponse res)
+    protected void doOptions(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
 
         PrintWriter writer = res.getWriter();
-        writer.write("t:Hello");
+        writer.write("o:Hello");
     }
 }
