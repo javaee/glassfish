@@ -1597,7 +1597,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             Properties deploymentProperties) {
         List<Result<WebModule>> results = new ArrayList<Result<WebModule>>();
         String vsIDs = wmInfo.getVirtualServers();
-        List vsList = StringUtils.parseStringList(vsIDs, " ,");
+        List<String> vsList = StringUtils.parseStringList(vsIDs, " ,");
         if (vsList == null || vsList.isEmpty()) {
             _logger.log(Level.INFO,
                     "webcontainer.webModuleNotLoadedNoVirtualServers",
@@ -1610,11 +1610,21 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     wmInfo.getName() + " to virtual servers " + vsIDs);
         }
 
+        List<String> nonProcessedVSList = new ArrayList<String>(vsList);
         Container[] vsArray = getEngine().findChildren();
         for (Container aVsArray : vsArray) {
             if (aVsArray instanceof VirtualServer) {
                 VirtualServer vs = (VirtualServer) aVsArray;
-                if (vsList.contains(vs.getID()) || verifyAlias(vsList, vs)) {
+                boolean eqVS = vsList.contains(vs.getID());
+                if (eqVS) {
+                    nonProcessedVSList.remove(vs.getID());
+                }
+                Set<String> matchedAliases = matchAlias(vsList, vs);
+                boolean hasMatchedAlias = (matchedAliases.size() > 0);
+                if (hasMatchedAlias) {
+                    nonProcessedVSList.removeAll(matchedAliases);
+                }
+                if (eqVS || hasMatchedAlias) {
                     WebModule ctx = null;
                     try {
                         ctx = loadWebModule(vs, wmInfo, j2eeApplication,
@@ -1630,6 +1640,20 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             }
         }
 
+        if (nonProcessedVSList.size() > 0) {
+            StringBuilder sb = new StringBuilder();
+            boolean follow = false;
+            for (String alias : nonProcessedVSList) {
+                 if (follow) {
+                     sb.append(",");
+                 }
+                 sb.append(alias);
+                 follow = true;
+            }
+            Object[] params = {wmInfo.getName(), sb.toString()};
+            _logger.log(Level.SEVERE, "webcontainer.moduleNotLoadedToVS",
+                            params);
+        }
         return results;
     }
 
@@ -1637,13 +1661,28 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     /**
      * Deploy on aliases as well as host.
      */
-    private boolean verifyAlias(List vsList, VirtualServer vs) {
+    private boolean verifyAlias(List<String> vsList, VirtualServer vs) {
         for (int i = 0; i < vs.getAliases().length; i++) {
             if (vsList.contains(vs.getAliases()[i])) {
                 return true;
             }
         }
         return false;
+    }
+
+    /**
+     * Find all matched aliases.
+     * This is more expensive than verifyAlias.
+     */
+    private Set<String> matchAlias(List<String> vsList, VirtualServer vs) {
+        Set<String> matched = new HashSet<String>();
+        for (String alias : vs.getAliases()) {
+            if (vsList.contains(alias)) {
+                matched.add(alias);
+            }
+        }
+
+        return matched;
     }
 
 
@@ -2140,7 +2179,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             contextRoot = "";
         }
 
-        List hostList = StringUtils.parseStringList(virtualServers, " ,");
+        List<String> hostList = StringUtils.parseStringList(virtualServers, " ,");
         boolean unloadFromAll = hostList == null || hostList.isEmpty();
         boolean hasBeenUndeployed = false;
         VirtualServer host = null;
@@ -2233,7 +2272,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                                     String appName,
                                     String hosts) {
         boolean hasBeenSuspended = false;
-        List hostList = StringUtils.parseStringList(hosts, " ,");
+        List<String> hostList = StringUtils.parseStringList(hosts, " ,");
         if (hostList == null || hostList.isEmpty()) {
             return hasBeenSuspended;
         }
