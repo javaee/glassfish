@@ -6,4 +6,5 @@
 - portable extensions: registering a bean (16.6), wrapping an annotated type (16.7), wrapping an injectiontarget (16.8), context interface
 - use of CDI in embedded (refer issue 12658 for usecase)
 - automated stress test (memory leaks and permgen issues) by deploy-use-undeploy of WicketExamples.war referred to in 11668
+- automate test in http://java.net/jira/browse/GLASSFISH-11825
 
