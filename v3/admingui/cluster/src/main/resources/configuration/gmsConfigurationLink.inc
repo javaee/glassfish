@@ -55,9 +55,5 @@
             if ("!(server-config=#{pageSession.configName})") {
                 setPageSessionAttribute(key="gmsShowIt" value="$boolean{true}");
             }
-            println("DD configName=${configName}");
-            println("XX page configName=#{pageSession.configName}");
-            println("YY configName=#{configName}");
-            println("gmsShowIt=#{pageSession.gmsShowIt}");
-        />
+    />
 </sun:property>
