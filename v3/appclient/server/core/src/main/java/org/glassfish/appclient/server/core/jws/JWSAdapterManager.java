@@ -491,7 +491,7 @@ public class JWSAdapterManager implements PostConstruct {
                 contributor.dc().getAppProps());
     }
 
-    private static String userFriendlyContextRoot(
+    public static String userFriendlyContextRoot(
             final ApplicationClientDescriptor acDesc, final Properties p) {
 
         String ufContextRoot = NamingConventions.defaultUserFriendlyContextRoot(

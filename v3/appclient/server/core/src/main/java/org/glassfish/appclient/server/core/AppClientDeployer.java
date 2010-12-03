@@ -70,6 +70,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Singleton;
 import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.appclient.server.core.jws.JWSAdapterManager;
 import org.glassfish.deployment.common.Artifacts;
 import org.glassfish.deployment.common.DeploymentUtils;
 /**
@@ -299,9 +300,23 @@ public class AppClientDeployer
             DeployCommandParameters params = dc.getCommandParameters(DeployCommandParameters.class);
             addArtifactsToDownloads(helper, dc);
             addArtifactsToGeneratedFiles(helper, dc);
+            recordUserFriendlyContextRoot(helper, dc);
         } catch (Exception ex) {
             throw new DeploymentException(ex);
         }
+    }
+
+    /**
+     * Records the user-friendly path as a property for the app client module.
+     * This is primarily for ease-of-lookup from GetRelativeJWSURICommand.
+     * 
+     * @param helper
+     * @param dc
+     */
+    private void recordUserFriendlyContextRoot(final AppClientDeployerHelper helper,
+            final DeploymentContext dc) {
+        final String path = JWSAdapterManager.userFriendlyContextRoot(helper.appClientDesc(), dc.getAppProps());
+        dc.getModuleProps().put("jws.user.friendly.path", path);
     }
 
     private void addArtifactsToDownloads(
