@@ -82,17 +82,17 @@ public class WebTest {
         String contextPath = contextRoot + "/newServlet";
         boolean ok = doWebMethod("GET", host, port, contextPath, false, 200, "g:Hello");
         ok = ok && doWebMethod("POST", host, port, contextPath, true, 200, "p:Hello, javaee");
-        ok = ok && doWebMethod("TRACE", host, port, contextPath, true, 403, null);
+        ok = ok && doWebMethod("OPTIONS", host, port, contextPath, true, 403, null);
 
         String contextPath2 = contextRoot + "/newServlet2";
         ok = doWebMethod("GET", host, port, contextPath2, false, 200, "g2:Hello");
         ok = ok && doWebMethod("POST", host, port, contextPath2, true, 200, "p2:Hello, javaee");
-        ok = ok && doWebMethod("TRACE", host, port, contextPath2, true, 403, null);
+        ok = ok && doWebMethod("OPTIONS", host, port, contextPath2, true, 403, null);
 
         String contextPath3 = contextRoot + "/newServlet2_1";
         ok = doWebMethod("GET", host, port, contextPath3, true, 403, null);
         ok = ok && doWebMethod("POST", host, port, contextPath3, true, 200, "p2:Hello, javaee");
-        ok = ok && doWebMethod("TRACE", host, port, contextPath3, false, 200, "t2:Hello, null");
+        ok = ok && doWebMethod("OPTIONS", host, port, contextPath3, false, 200, "o2:Hello, null");
 
         return ok;
     }

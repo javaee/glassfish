@@ -77,11 +77,11 @@ public class NewServlet extends HttpServlet {
         writer.write("p:Hello, " + req.getRemoteUser() + "\n");
     }
 
-    protected void doTrace(HttpServletRequest req, HttpServletResponse res)
+    protected void doOptions(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
 
         PrintWriter writer = res.getWriter();
-        writer.write("t:Hello, " + req.getRemoteUser() + "\n");
+        writer.write("o:Hello, " + req.getRemoteUser() + "\n");
     }
 
     public void setMyParameter(String value) {

@@ -70,7 +70,7 @@ public class MyListener implements ServletContextListener {
             methodConstraints.add(new HttpMethodConstraintElement("GET"));
             methodConstraints.add(new HttpMethodConstraintElement("POST",
                     new HttpConstraintElement(TransportGuarantee.NONE, new String[] {"javaee"})));
-            methodConstraints.add(new HttpMethodConstraintElement("TRACE",
+            methodConstraints.add(new HttpMethodConstraintElement("OPTIONS",
                     new HttpConstraintElement(EmptyRoleSemantic.DENY)));
             ServletSecurityElement servletSecurityElement =
                 new ServletSecurityElement(constraint, methodConstraints);
@@ -93,7 +93,7 @@ public class MyListener implements ServletContextListener {
             List<HttpMethodConstraintElement> methodConstraint2_1 = new ArrayList<HttpMethodConstraintElement>();
             methodConstraint2_1.add(new HttpMethodConstraintElement("GET",
                     new HttpConstraintElement(EmptyRoleSemantic.DENY)));
-            methodConstraint2_1.add(new HttpMethodConstraintElement("TRACE"));
+            methodConstraint2_1.add(new HttpMethodConstraintElement("OPTIONS"));
             ServletSecurityElement servletSecurityElement2_1 =
                 new ServletSecurityElement(constraint2_1, methodConstraint2_1);
             sr2_1.setServletSecurity(servletSecurityElement2_1);

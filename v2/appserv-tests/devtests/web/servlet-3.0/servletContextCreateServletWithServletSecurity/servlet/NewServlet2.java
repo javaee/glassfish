@@ -52,7 +52,7 @@ import javax.servlet.http.HttpServletResponse;
 
 @ServletSecurity(value=@HttpConstraint(rolesAllowed={ "javaee" }),
     httpMethodConstraints={ @HttpMethodConstraint("GET"),
-        @HttpMethodConstraint(value="TRACE", emptyRoleSemantic=ServletSecurity.EmptyRoleSemantic.DENY) })
+        @HttpMethodConstraint(value="OPTIONS", emptyRoleSemantic=ServletSecurity.EmptyRoleSemantic.DENY) })
 public class NewServlet2 extends HttpServlet {
     private String initParamValue;
     private String myParamValue;
@@ -84,11 +84,11 @@ public class NewServlet2 extends HttpServlet {
         writer.write("p2:Hello, " + req.getRemoteUser() + "\n");
     }
 
-    protected void doTrace(HttpServletRequest req, HttpServletResponse res)
+    protected void doOptions(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
 
         PrintWriter writer = res.getWriter();
-        writer.write("t2:Hello, " + req.getRemoteUser() + "\n");
+        writer.write("o2:Hello, " + req.getRemoteUser() + "\n");
     }
 
     public void setMyParameter(String value) {
