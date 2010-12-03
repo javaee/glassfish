@@ -40,10 +40,10 @@
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ COMMON STUFF ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+PRODUCT_NAME=GlassFish Server Open Source Edition-Webprofil
 
-PRODUCT_NAME=GlassFish v3-Webprofil-Vorschau
+app_title=GlassFish Server Open Source Edition-Webprofil
 
-app_title=GlassFish v3-Webprofil-Vorschau
 # Text for Buttons
 btnCancel_text=Abbrechen
 btnExit_text=Beenden
@@ -60,20 +60,20 @@ bottom_left_image=/templates/community-logo.png
 icon_image=/templates/glassfishserver.gif
 
 # L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
-leftpanel_font=SanSerif-BOLD-13
+leftpanel_font=SansSerif-BOLD-14
 
 # Dynamic panel
 # L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
-dynamic_content_font=SanSerif-PLAIN-13
+dynamic_content_font=SansSerif-BOLD-14
 dynamic_component_background=WEISS
-dynamic_component_foreground=666666
+dynamic_component_foreground=SCHWARZ
 dynamic_component_border_color=SCHWARZ
 
 # Font for titles
 # L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
-title1_font=SanSerif-BOLD-18
+title1_font=SansSerif-BOLD-18
 # L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
-title2_font=SanSerif-BOLD-20
+title2_font=SansSerif-BOLD-20
 
 # Text color for titles
 title1_color=587993
@@ -88,16 +88,20 @@ contentpanel_bgcolor=e8e9ed
 
 btnpanel_bgcolor=e8e9ed
 
+
 # Font for Buttons
 # L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
-button_font=SanSerif-PLAIN-11
+button_font=SansSerif-BOLD-14
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~W E L C O M E   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Welcome_WELCOME_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Willkommen zur ${PRODUCT_NAME}-Installation.&lt;BR&gt;&lt;BR&gt;Klicken Sie zum Installieren der gesamten ${PRODUCT_NAME} auf Weiter. &lt;BR&gt;&lt;BR&gt;&lt;/BODY&gt;&lt;/HTML&gt;
+Welcome_WELCOME_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Willkommen zur ${PRODUCT_NAME}-Installation.&lt;BR&gt;&lt;BR&gt;Das GlassFish-Projekt ist eine strukturierte Umgebung zur Entwicklung des Open &lt;BR&gt;Source-Anwendungsservers. Die Einrichtung des GlassFish-Projekts geh\u00f6rt &&lt;BR&gt;zu den umfassenden Bem\u00fchungen von Oracle, gro\u00dfe Teile seines Codes zur Verwendung und Verbesserung durch die Community als Open &lt;BR&gt;Source freizugeben. Das GlassFish-Projekt ist eines der &&lt;BR&gt;zahlreichen auf java.net gehosteten Community-basierten Projekte. &lt;BR&gt;&lt;BR&gt;Weitere Informationen finden Sie auf der &lt;a href=https://glassfish.dev.java.net&gt; GlassFish-Projektseite&lt;/a&gt;. &&lt;BR&gt;&lt;BR&gt;;Klicken Sie zum Fortfahren auf "Weiter". &lt;BR&gt;&lt;BR&gt;
+                        &lt;/BODY&gt;&lt;/HTML&gt;
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~L I C E N S E   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 License_LICENSE_TEXT1=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Bevor Sie dieses Produkt installieren, m\u00fcssen Sie diesen Vertrag lesen und akzeptieren, unter dem dieses Produkt zur Verwendung lizenziert ist.&lt;/BODY&gt;&lt;/HTML&gt;
 
+
+License_LICENSE_TEXT2=
 
 License_LICENSE_TEXT3=&lt;HTML&gt; &lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Haben Sie s\u00e4mtliche Bedingungen des vorstehenden &lt;BR&gt;Softwarelizenzvertrags gelesen und akzeptiert? Wenn Sie auf &lt;B&gt;Abbrechen&lt;/B&gt; klicken, wird das Installationsprogramm&lt;BR&gt;abgebrochen, ohne Produktdateien zu installieren.&lt;BR&gt;&lt;/BODY&gt;&lt;/HTML&gt;
 
@@ -127,7 +131,7 @@ L10N_HOME_TEXT=&lt;HTML&gt;&lt;BODY&gt;W\u00e4hlen Sie aus der folgenden Liste e
 L10N_CHOICE_TEXT=Installieren Sie Sprachen, f\u00fcr die ausgew\u00e4hlten Produkte.
 INSTALL_L10N_TOOLTIP=W\u00e4hlen Sie diese Option, um Sprachen f\u00fcr die ausgew\u00e4hlten Produkte zu installieren.
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~J D K  S E L E C T I O N  P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-JDK_HOME_TEXT=&lt;HTML&gt;&lt;BODY&gt;W\u00e4hlen Sie aus der folgenden Liste eine Option aus:&lt;/BODY&gt;&lt;/HTML&gt;
+JDK_HOME_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;W\u00e4hlen Sie aus der folgenden Liste eine Option aus:&lt;/BODY&gt;&lt;/HTML&gt;
 
 
 JDK_HOME=JDK-Home
@@ -143,21 +147,30 @@ JDK_TYPE_IN_TOOLTIP=Geben Sie in diesem Feld einen Speicherort f\u00fcr Java(TM)
 AVAILABLE_JDK=Verf\u00fcgbare Java(TM) SDKs 
 ALTERNATE_JDK=Alternativer Speicherort f\u00fcr Java(TM) SDK
 
-UPDATETOOL_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Wenn eine Verbindung steht, versucht das Installationsprogramm das Aktualisierungstool f\u00fcr diese Installation herunterzuladen und zu konfigurieren.&lt;BR&gt;&lt;/BODY&gt;&lt;/HTML&gt;
+UPDATETOOL_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt; Wenn eine Verbindung besteht, versucht das Installationsprogramm, das &lt;BR&gt;Aktualisierungstool f\u00fcr diese Installation herunterzuladen und zu konfigurieren.&lt;BODY&gt;&lt;HTML&gt;
 
-UPDATE_TOOL_PRIVACY_NOTICE=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Das Aktualisierungstool sucht regelm\u00e4\u00dfig nach Updates und erfasst einige Systemdaten. Weitere Informationen zu den erfassten Daten finden Sie auf der &lt;a href=http://wiki.glassfish.java.net/Wiki.jsp?page=UsageMetricsV3&gt;GlassFish Usage Metrics&lt;/a&gt;-Seite (http://wiki.glassfish.java.net/Wiki.jsp?page=UsageMetricsV3).&lt;BR&gt;&lt;/BODY&gt;&lt;/HTML&gt;
+UPDATE_TOOL_PRIVACY_NOTICE=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt; Das Aktualisierungstool sucht regelm\u00e4\u00dfig nach Updates und erfasst einige&lt;BR&gt;Systemdaten. Weitere Informationen finden Sie unter &lt;a href=http://wiki.glassfish.java.net/Wiki.jsp?page=UsageMetricsV3&gt; GlassFish Usage Metrics&lt;/a&gt; &lt;BR&gt;page, http://wiki.glassfish.java.net/Wiki.jsp?page=UsageMetricsV3.&lt;BODY&gt;&lt;HTML&gt;
 
-ADMINISTRATION_TOP_TEXT=&lt;HTML&gt;&lt;BODY;font face='Sans-Serif'&gt;Konfigurieren Sie die Verwaltungseinstellungen f\u00fcr den Server. Geben Sie Benutzernamen und Passwort f\u00fcr den Server an. Sie k\u00f6nnen das Passwortfeld leer lassen, wenn Sie den Server f\u00fcr nicht authentifizierte Anmeldungen konfigurieren m\u00f6chten&lt;/font&gt;&lt;/p&gt;&lt;/BODY&gt;&lt;/HTML&gt;
 
-#ADMINISTRATION_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;\
-Configure die Administrationseinstellungen f\u00fcr den Server. &lt;BR&gt;&lt;/BODY&gt;&lt;/HTML&gt;
+ADMINISTRATION_SERVICE_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Geben Sie den Namen des Windows-Diensts oder eines Solaris SMF-Diensts an.&lt;BODY&gt;&lt;HTML&gt;
+
+ADMINISTRATION_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt; &lt;BR&gt;Konfigurieren Sie die Verwaltungseinstellungen f\u00fcr den Server. Geben Sie &lt;BR&gt;den Benutzernamen und das Passwort f\u00fcr den Server an. Sie k\u00f6nnen die Passwortfelder &lt;BR&gt;leer lassen, wenn Sie den Server f\u00fcr nicht authentifizierte Anmeldungen konfigurieren m\u00f6chten. &lt;/BODY&gt;&lt;HTML&gt;
 
 ANONYMOUS=Als anonymer Benutzer konfigurieren
 NON_ANONYMOUS= Benutzername und Passwort angeben 
+DOMAIN_NAME_TOOL_TIP=Geben Sie den Dom\u00e4nennamen ein
 ADMIN_PORT_TOOL_TIP=Geben Sie den Administrationsanschluss ein
 HTTP_PORT_TOOL_TIP=Geben Sie den HTTP-Zielger\u00e4tanschluss ein
 ADMIN_USER_TOOL_TIP=Geben Sie den Administratorbenutzername ein
 ADMIN_PASSWORD_TOOL_TIP=Geben Sie das Administratorkennwort ein
+ADMIN_SERVICE_CHOICE_TOOL_TIP=W\u00e4hlen Sie diese Option aus, um einen Betriebssystemdienst f\u00fcr die Standarddom\u00e4ne (domain1) zu erstellen
+ADMIN_SERVICE_CHOICE_TEXT=Betriebssystemdienst f\u00fcr domain1 erstellen
+INSTANCE_SERVICE_CHOICE_TEXT=Betriebssystemdienst f\u00fcr diese Instanz erstellen 
+INSTANCE_SERVICE_CHOICE_TOOL_TIP=W\u00e4hlen Sie diese Option aus, um einen Betriebssystemdienst f\u00fcr diese Instanz zu erstellen
+ADMIN_SERVICE_NAME_TEXT=Dienstname
+ADMIN_SERVICE_NAME_TOOL_TIP=Name des zu erstellenden Diensts; Standardeinstellung: "domain1Service"
+START_SERVER_CHOICE_TEXT=Dom\u00e4ne nach dem Erstellen starten
+START_SERVER_CHOICE_TOOL_TIP=W\u00e4hlen Sie diese Option aus, wenn Sie mit der Konfiguration dieser Dom\u00e4ne fortfahren m\u00f6chten
 
 
 
@@ -184,12 +197,14 @@ CONFIGURE_SELECTED_COMPONENTS_MSG=Konfiguriert die ausgew\u00e4hlten Softwarekom
 ADMIN_USER_TEXT=Benutzername
 ADMIN_PASSWORD_TEXT=Passwort
 ADMIN_PORT_TEXT=Admin-Port
+DOMAIN_NAME_TEXT=Dom\u00e4nenname
 HTTP_PORT_TEXT=HTTP-Port
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~U P D A T E T O O L   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 INSTALL_UPDATE_TOOL_TEXT=Aktualisierungstool installieren
 ENABLE_UPDATE_TOOL_TEXT=Aktualisierungstool aktivieren
 PROXY_HOST_TEXT=Proxy-Host
 PROXY_PORT_TEXT=Proxy-Port
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ACCOUNT CREATION PAGE FOR PRODUCT REGISTRATION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 EMAIL=E-Mail-Adresse
 PASSWORD=Passwort
@@ -198,12 +213,80 @@ FIRSTNAME=Vorname
 LASTNAME=Nachname
 COUNTRY=Land
 COMPANYNAME=Company Name
-ACCOUNT_CREATION_HEADER_TEXT=${BODY_START}Geben Sie die folgenden Informationen zur Erstellung eines Sun-Onlinekontos ein. Alle Felder m\u00fcssen ausgef\u00fcllt werden.${BODY_END}
-ACCOUNT_CREATION_FOOTER_TEXT=${BODY_START}&lt;a href=http://www.sun.com/privacy/&gt;Datenschutzrichtlinien von Sun&lt;/a&gt;.${BODY_END}
+ACCOUNT_CREATION_HEADER_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Geben Sie die folgenden Informationen zur Erstellung eines Sun-Onlinekontos an Alle Feldwerte&lt;BR&gt;m\u00fcssen angegeben werden.&lt;BODY&gt;&lt;HTML&gt;
+ACCOUNT_CREATION_FOOTER_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;&lt;a href=http://www.sun.com/privacy/&gt;Datenschutzrichtlinien von Sun&lt;BODY&gt;&lt;HTML&gt;
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~USER TYPE OPTIONS PAGE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+INSTALLUSERTYPE_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Dieses Programm unterst\u00fctzt sowohl eine &lt;i&gt;TYPISCHE&lt;/i&gt; als auch &lt;i&gt;BENUTZERDEFINIERTE Installation, je nach&lt;/i&gt; &lt;BR&gt;Grad der vorzunehmenden Anpassungen&lt;BR&gt;. W\u00e4hlen Sie eine passende Option aus.&lt;BODY&gt;&lt;HTML&gt;
+
+BASIC_USER_FOOTER_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;W\u00e4hlen Sie diese Option, um Binaries zu installieren, einen Dom\u00e4nenadministrationsserver&lt;BR&gt;mit dem Namen "domain1" zu erstellen und GlassFish so zu konfigurieren, dass JDK unter &lt;BR&gt; $JAVA_HOME verwendet werden kann. Stellen Sie sicher, dass die Anschl\u00fcsse 4848 und 8080 frei sind.&lt;BODY&gt;&lt;HTML&gt;
+
+ADVANCED_USER_FOOTER_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Durch Auswahl dieser Option k\u00f6nnen Sie ganz flexibel die Binaries installieren&lt;BR&gt;und die Konfiguration bei Bedarf \u00fcberspringen. Ebenfalls k\u00f6nnen Sie zus\u00e4tzlich zum Cluster einen Dom\u00e4nenadministrationsserver&lt;BR&gt oder eine eigenst\u00e4ndige oder Cluster-Instanz erstellen&lt;BR&gt;. Sie k\u00f6nnen auch eine bestehende Installation von GlassFish konfigurieren.&lt;BODY&gt;&lt;HTML&gt;
+
+BASIC_USER=Typische Installation
+ADVANCED_USER=Benutzerdefinierte Installation
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~INSTALLATION/CONFIGUARATION OPTIONS PAGE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+INSTALL_CONFIG_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Dieses Programm kann eine Neuinstallation und -konfiguration von GlassFish vornehmen&lt;BR&gt; oder bestehende installierte Binaries zur Durchf\u00fchrung der erforderlichen Konfiguration verwenden.&lt;BR&gt; Es ist ebenfalls m\u00f6glich, nur die Binaries zu installieren und die Konfiguration zu \u00fcberspringen.&&lt;BR&gt;; W\u00e4hlen Sie eine Option aus, die Ihren Bed\u00fcrfnissen entspricht.&lt;BODY&gt;&lt;HTML&gt; 
+
+INSTALL_ONLY_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;W\u00e4hlen Sie diese Option, um eine Installation ohne Konfiguration durchzuf\u00fchren.&lt;BR&gt;Die Konfiguration k\u00f6nnen Sie sp\u00e4ter vornehmen, indem Sie dieses Programm erneut ausf\u00fchren und die Option &lt;BR&gt; 'Bestehende Installation konfigurieren' ausw\u00e4hlen.&lt;BODY&gt;&lt;HTML&gt; 
+
+INSTALL_AND_CONFIG_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;W\u00e4hlen Sie diese Option, um das Produkt in dieser Sitzung zu installieren und zu konfigurieren.&lt;BODY&gt;&lt;HTML&gt; 
+
+CONFIG_ONLY_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;W\u00e4hlen Sie diese Option, um eine vorinstallierte Version dieses Produkts zu konfigurieren.&lt;BODY&gt;&lt;HTML&gt; 
+
+INSTALL_AND_CONFIG=Installation und Konfiguration
+INSTALL_ONLY=Ohne Konfiguration installieren
+CONFIG_ONLY=Bestehende Installation konfigurieren 
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CONFIGURATION ONLY SUMMARY PANEL PAGE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+SUMMARY_HEADER_EXECUTING=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Warten Sie, bis dieses Tool Ihre Umgebung konfiguriert hat.&lt;BODY&gt;&lt;HTML&gt;
+SUMMARY_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Dieses Tool hat die erforderliche Konfiguration anhand Ihrer Eingaben durchgef\u00fchrt.  &lt;BR&gt;\u00dcberpr\u00fcfen Sie die Daten- und Protokollausgaben, um die Richtigkeit der Angaben sicherzustellen.&lt;BR&gt; M\u00f6glicherweise m\u00fcssen Sie das Programm von neuem ausf\u00fchren, um Glassfish erneut zu konfigurieren. &lt;BODY&gt;&lt;HTML&gt; 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CONFIGURATION OPTIONS PAGE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+CONFIG_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Dieses Programm kann Ihren Computer als GlassFish-Dom\u00e4ne oder als&lt;BR&gt; eigenst\u00e4ndige oder Cluster-Instanz konfigurieren. W\u00e4hlen Sie eine passende Option aus.&lt;BODY&gt;&lt;HTML&gt; 
+
+DOMAIN_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;W\u00e4hlen Sie diese Option, um einen Dom\u00e4nenadministrationsserver ohne &lt;BR&gt;verbundene Instanzen zu erstellen. &lt;BODY&gt;&lt;HTML&gt; 
+
+STANDALONEINSTANCE_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;W\u00e4hlen Sie diese Option, um eine lokale Instanz zu erstellen, die mit einem&lt;BR&gt;Dom\u00e4nenadministrationsserver kommunizieren kann. Stellen Sie sicher, dass der Server ausgef\u00fchrt wird.&lt;BODY&gt;&lt;HTML&gt; 
+
+CLUSTEREDINSTANCE_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;W\u00e4hlen Sie diese Option, um eine Cluster-Instanz zu erstellen, die mit&lt;BR&gt; einem Dom\u00e4nenadministrationsserver kommunizieren kann. Diese Instanz kann zu einem bestehenden &lt;BR&gt;Cluster hinzugef\u00fcgt werden. Dieser Cluster kann bei Bedarf erstellt werden. Stellen Sie sicher, dass der Server&lt;BR&gt;ausgef\u00fchrt wird.&lt;BODY&gt;&lt;HTML&gt; 
+
+
+NOCONFIG_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;W\u00e4hlen Sie diese Option, um die Konfiguration zu \u00fcberspringen und nur die Binaries zu installieren.&lt;BODY&gt;&lt;HTML&gt; 
+
+CREATE_DOMAIN=Serverdom\u00e4ne erstellen
+CREATE_STANDALONEINSTANCE=Eigenst\u00e4ndige Serverinstanz erstellen 
+CREATE_CLUSTEREDINSTANCE=Cluster-Serverinstanz erstellen
+NO_CONFIGURATION=Konfiguration \u00fcberspringen
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~INSTANCE INFORMATION PAGE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+CONFIGURATION_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Geben Sie die Informationen an, die zum Erstellen einer Serverinstanz, die mit der Installation einer Remote-Server-Dom\u00e4ne &lt;BR&gt;kommunizieren kann, ben\u00f6tigt werden. Stellen Sie sicher, dass der Server&lt;BR&gt; auf dem angegebenen Host/Anschluss ausgef\u00fchrt wird.&lt;BODY&gt;&lt;HTML&gt; 
+
+CLUSTERED_CONFIGURATION_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Geben Sie die zum Erstellen einer lokalen Serverinstanz ben\u00f6tigten Informationen an. Sie k\u00f6nnen&lt;BR&gt; diese Instanz auch zum Cluster hinzuf\u00fcgen.&lt;BODY&gt;&lt;HTML&gt; 
+
+INSTANCE_NAME_TEXT=Objektname
+INSTANCE_NAME_TOOL_TIP=Geben Sie den Namen der zu erstellenden Instanz an. Standardeinstellung: "instance1"
+
+SERVER_ADMIN_PORT_TEXT=Administrationsanschluss 
+SERVER_ADMIN_PORT_TOOL_TIP=Geben Sie den Dom\u00e4nenadministrationsanschluss an
+
+SERVER_HOST_NAME_TEXT=Server-Hostname 
+SERVER_HOST_NAME_TOOL_TIP=Geben Sie den Namen des Hosts an, auf dem die Dom\u00e4ne liegt
+
+CREATE_CLUSTER_INFO_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Geben Sie den Namen des Clusters an, zu dem diese Instanz geh\u00f6rt. Sie k\u00f6nnen&lt;BR&gt; das Cluster auch erstellen, wenn es nicht vorhanden ist. &lt;BODY&gt;&lt;HTML&gt;
+
+CREATE_CLUSTER_CHOICE_TEXT=Cluster erstellen
+
+PART_OF_CLUSTER_CHOICE_TOOL_TIP=
+
+CLUSTER_NAME_TEXT=Name des Clusters
+
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~REGISTRATION OPTIONS PAGE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-REGISTRATION_OPTIONS_HEADER=${BODY_START}Warum registrieren? Sie erhalten bequemen Zugriff auf Vorteile wie z.B. :&lt;UL&gt;&lt;LI&gt;Patch-Information und Aktualisierungen zu Bugs&lt;/LI&gt;&lt;LI&gt;Screencasts und Tutorials,&lt;/LI&gt;&lt;LI&gt;Support und Schulungsangebote&lt;/LI&gt;&lt;/UL&gt;${BODY_END}
+REGISTRATION_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Warum registrieren? Sie erhalten bequemen Zugriff auf Vorteile wie z.B.: &lt;UL&gt;&lt;LI&gt;Patch-Information und Aktualisierungen zu Bugs&lt;/LI&gt;&lt;LI&gt;Screencasts und Tutorials,&lt;/LI&gt;&lt;LI&gt;Support und Schulungsangebote&lt;/LI&gt;&lt;/UL&gt;&lt;BODY&gt;&lt;HTML&gt;
+
 CREATE_NEWACCT=Ich habe kein Sun-Onlinekonto. Registrieren.
 USE_EXISTINGACCT=Ich habe bereits ein Sun-Onlinekonto.
 USERNAME=Benutzername
@@ -222,7 +305,6 @@ UPGRADE_DECLINE_TOOLTIP=W\u00e4hlen Sie diese Option aus, um die Software nicht 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~P R O G R E S S   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # L10n: only translate the "Please wait" string.  leave the rest unchanged.
 PROGRESS_WAIT=Bitte warten...
-              
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~S U M M A R Y   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 REGISTRATION_PROGRESS=Registrierungsfortschritt
