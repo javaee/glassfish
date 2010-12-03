@@ -166,7 +166,7 @@ public class WebServiceTesterServlet extends HttpServlet implements MessageListe
             return;
         }
         
-        initializePort(req);
+        initializePort(req,res);
         Class clientSEI = gsiClasses.get(requestURL);
         
         out.print("<HTML><HEAD><TITLE>"+
@@ -210,7 +210,7 @@ public class WebServiceTesterServlet extends HttpServlet implements MessageListe
             out.print(m.toString());
             out.print("<BR>");
             out.print("<INPUT TYPE=SUBMIT NAME=action value="+m.getName()+">");        
-//            out.print("<BUTTON TYPE=SUBMIT TITLE=Invoke NAME=\"submit\" VALUE="+m.getName()+">" + m.getName()+"</BUTTON>");            
+
             out.print(" (");
             Class[] parameters = m.getParameterTypes();
             for (int i=0;i<parameters.length;i++) {
@@ -252,7 +252,7 @@ public class WebServiceTesterServlet extends HttpServlet implements MessageListe
 
             Class clientSEI = gsiClasses.get(requestURL);
             if (clientSEI==null) {
-                initializePort(req);
+                initializePort(req,res);
                 clientSEI = gsiClasses.get(requestURL);
             }
             Object port = ports.get(requestURL);
@@ -369,15 +369,7 @@ public class WebServiceTesterServlet extends HttpServlet implements MessageListe
         out.write(value);
         
         out.print("</pre></blockquote><HR>");
-        /*
-        baos = new ByteArrayOutputStream();
-        sr = new StreamResult(baos);
-        bais.reset();
-        transformer.transform(ss, sr);
-        StringReader reader = new StringReader(xsl);        
-        transformer = factory.newTransformer(new StreamSource(reader));
-        out.write(baos.toString());
-        */        
+
     }    
     
     private MessageTrace request = null;
@@ -480,7 +472,29 @@ public class WebServiceTesterServlet extends HttpServlet implements MessageListe
         out.close();          
     }
 
-    private void initializePort(HttpServletRequest req) 
+     private void wsImportError(URL wsdlUrl, PrintWriter out) {
+
+        out.print(localStrings.getLocalString(
+		    	   "enterprise.webservice.monitoring.WsImportError",
+                           "<HTML><HEAD><TITLE>WsImport error for the the following wsdl</TITLE></HEAD>"));
+        out.print("<BODY>");
+        out.print(localStrings.getLocalString(
+		    	   "enterprise.webservice.monitoring.WsImportError2",
+                           "Error generating artifacts for the following WSDL {0}",
+                           new Object[] {wsdlUrl}));
+        out.print("<br><br>");
+         out.print(localStrings.getLocalString(
+		    	   "enterprise.webservice.monitoring.WsImportError3",
+                           "Possible causes can be" +
+                                   "invoking https when the application is not configured for security",
+                           new Object[] {wsdlUrl}));
+
+        out.print("</BODY>");
+        out.print("</HTML>");
+        out.close();
+    }
+
+    private void initializePort(HttpServletRequest req,HttpServletResponse res)
         throws ServletException, IOException {
 
         String requestURL = req.getRequestURL().toString();
@@ -506,6 +520,10 @@ public class WebServiceTesterServlet extends HttpServlet implements MessageListe
             URL wsdlUrl = new URL(sb.toString());
             // create client artifacts
             classesDir = wsImport(wsdlUrl);
+            if (classesDir == null) {
+                wsImportError(wsdlUrl,res.getWriter());
+                return;
+            }
             urls[0] = (new File(classesDir)).toURL();
         } catch(MalformedURLException mue) {
             throw new ServletException(mue);
@@ -562,13 +580,7 @@ public class WebServiceTesterServlet extends HttpServlet implements MessageListe
     
     private String wsImport(URL wsdlLocation) throws IOException {
 
-        ClassLoader parentCl = Thread.currentThread().getContextClassLoader();
-       /* URL urlforjavaee =   new File("javax.javaee-10.0-SNAPSHOT.jar").toURL();
-        URL[] urls = new URL[1];
-        urls[0]= urlforjavaee;
-        URLClassLoader urlClassLoader = new  URLClassLoader(urls,parentCl);
-        Thread.currentThread().setContextClassLoader(urlClassLoader);
-       */ File classesDir = new File(System.getProperty("java.io.tmpdir"));
+        File classesDir = new File(System.getProperty("java.io.tmpdir"));
 
 
         /**
@@ -601,7 +613,7 @@ public class WebServiceTesterServlet extends HttpServlet implements MessageListe
         classesDir = File.createTempFile("jax-ws", "tester", classesDir);
         classesDir.delete();
         classesDir.mkdirs();
-        
+
         String[] wsimportArgs = new String[7];
         wsimportArgs[0]="-d";
         wsimportArgs[1]=classesDir.getAbsolutePath();
@@ -617,7 +629,7 @@ public class WebServiceTesterServlet extends HttpServlet implements MessageListe
         } else {
             System.out.println("Invoking wsimport with " + wsdlLocation);
         }
-        
+
         if (success) {
             if (logger!=null)
                 logger.log(Level.INFO, "wsimport successful");
