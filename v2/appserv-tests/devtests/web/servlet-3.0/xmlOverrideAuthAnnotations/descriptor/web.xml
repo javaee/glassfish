@@ -53,7 +53,7 @@
     <web-resource-collection>
       <web-resource-name>wrc2</web-resource-name>
       <url-pattern>/myurl</url-pattern>
-      <http-method>TRACE</http-method>
+      <http-method>OPTIONS</http-method>
     </web-resource-collection>
     <auth-constraint>
       <role-name>javaee</role-name>

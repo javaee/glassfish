@@ -80,14 +80,14 @@ public class WebTest {
 
     public boolean run() throws Exception {
         String contextPath = contextRoot + "/myurl";
-        boolean ok = doWebMethod("TRACE", host, port, contextPath, true, 200, "t:Hello, javaee");
+        boolean ok = doWebMethod("OPTIONS", host, port, contextPath, true, 200, "o:Hello, javaee");
         ok = ok && doWebMethod("GET", host, port, contextPath, true, 403, null);
         ok = ok && doWebMethod("POST", host, port, contextPath, false, 200, "p:Hello, null");
 
         contextPath = contextRoot + "/myurl2";
         ok = ok && doWebMethod("GET", host, port, contextPath, false, 200, "g:Hello");
         ok = ok && doWebMethod("POST", host, port, contextPath, true, 200, "p:Hello, javaee");
-        ok = ok && doWebMethod("TRACE", host, port, contextPath, true, 403, null);
+        ok = ok && doWebMethod("OPTIONS", host, port, contextPath, true, 403, null);
         return ok;
     }
 
