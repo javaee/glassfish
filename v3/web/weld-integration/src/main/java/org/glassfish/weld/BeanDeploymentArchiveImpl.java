@@ -239,8 +239,8 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
     private void populate() {
         try {
             if (archive.exists(WEB_INF_BEANS_XML)) {
-                logger.log(FINE, "-processing " + archive.getName() 
-                                        + "as it has WEB-INF/beans.xml");
+                logger.log(FINE, "-processing " + archive.getURI() 
+                                        + " as it has WEB-INF/beans.xml");
                 bdaType = WAR;
                 Enumeration<String> entries = archive.entries();
                 while (entries.hasMoreElements()) {
@@ -265,20 +265,21 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
             //  beans.xml in the jar archive
 
             if (archive.exists(WEB_INF_LIB)) {
-                logger.log(FINE, "-processing WEB-INF/lib in" 
-                        + archive.getName());
+                logger.log(FINE, "-processing WEB-INF/lib in " 
+                        + archive.getURI());
                 bdaType = WAR;
                 Enumeration<String> entries = archive.entries(WEB_INF_LIB);
                 while (entries.hasMoreElements()) {
                     String entry = (String)entries.nextElement();
                     if (entry.endsWith(JAR_SUFFIX) &&
                         entry.indexOf(SEPARATOR_CHAR, WEB_INF_LIB.length() + 1 ) == -1 ) {
-                        logger.log(FINE, "-processing " + entry);
                         ReadableArchive jarArchive = archive.getSubArchive(entry);
                         if (jarArchive.exists(META_INF_BEANS_XML)) {
+                            logger.log(FINE, "-WEB-INF/lib: considering " + entry 
+                                    + " as a bean archive as it has beans.xml");
                             collectJarInfo(jarArchive);
                         } else {
-                            logger.log(FINE, "-skipping " + archive.getName() 
+                            logger.log(FINE, "-WEB-INF/lib: skipping " + archive.getName() 
                                                 + " as it doesn't have beans.xml");
                         }
                     }
@@ -286,11 +287,11 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
             }
 
             if (archive.exists(META_INF_BEANS_XML)) {
-                logger.log(FINE, "-processing " + archive.getName() 
-                        + "as a jar since it has META-INF/beans.xml");
+                logger.log(FINE, "-JAR processing: " + archive.getURI() 
+                        + " as a jar since it has META-INF/beans.xml");
                 bdaType = JAR;
                 collectJarInfo(archive);
-            }
+            } 
         } catch(IOException e) {
             logger.log(SEVERE, e.getLocalizedMessage(), e);
         } catch(ClassNotFoundException cne) {
@@ -300,7 +301,7 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
 
     private void collectJarInfo(ReadableArchive archive) 
                         throws IOException, ClassNotFoundException {
-        logger.log(FINE, "-collecting jar info for " + archive.getName());
+        logger.log(FINE, "-collecting jar info for " + archive.getURI());
         Enumeration<String> entries = archive.entries();
         while (entries.hasMoreElements()) {
             String entry = entries.nextElement();

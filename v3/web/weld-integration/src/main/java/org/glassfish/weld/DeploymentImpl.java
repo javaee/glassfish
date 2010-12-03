@@ -198,6 +198,7 @@ public class DeploymentImpl implements Deployment {
                     while (libJarIter.hasNext()) {
                         BeanDeploymentArchive libJarBDA = (BeanDeploymentArchive)libJarIter.next();
                         jarBDA.getBeanDeploymentArchives().add(libJarBDA);
+                        modifiedArchive = true;
                     }
                 }
 
