@@ -41,12 +41,11 @@ if [ -z "$DEPL_TARGET"]
 then
     $S1AS_HOME/bin/asadmin stop-domain
 fi
-if [ ! -r client.log ]
-then
-    exit 1
-fi
 egrep '\[FAILED|UNKNOWN\]' client.log >> /dev/null
-if [ $? -eq 0 ]
+#no match -> 1 for the status value
+if [ $? -eq 1 ]
 then
+  exit 0
+else
   exit 1
 fi
