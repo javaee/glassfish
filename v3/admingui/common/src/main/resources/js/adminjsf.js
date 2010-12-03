@@ -1656,19 +1656,6 @@ function leapYear(year) {
 	}
 	return false;
 }
-/*
-function checkObjectName(componentId) {
-    var val = document.getElementById(componentId);
-    var val = formField.value;
-    var result = (val != '') && 
-        isInCharSet(val, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-.");
-    if (result == false){
-        formField.select();
-    }
-    return result;
-}
-
-*/
 
 var lastSelectedIndex = 0;
 
@@ -2630,7 +2617,13 @@ var globalEvalNextScript = function(scriptQueue) {
 
 var globalEval = function(src) {
     if (window.execScript) {
-        window.execScript(src);
+        try {
+            window.execScript(src);
+        } catch (error) {
+            if (console && console.log) {
+                console.log(error);
+            }
+        }
         return;
     }
     var fn = function() {
