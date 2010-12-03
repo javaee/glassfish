@@ -1734,6 +1734,10 @@ public class VirtualServer extends StandardHost
      */
     public void addContext(Context context, String contextRoot)
         throws ConfigException, GlassFishException {
+
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE, "Virtual server "+getName()+" added context "+contextRoot);
+        }
         if (!contextRoot.startsWith("/")) {
             contextRoot = "/"+ contextRoot;
         }

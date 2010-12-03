@@ -48,10 +48,8 @@ import java.net.URLConnection;
 import java.util.logging.Level;
 import java.util.ArrayList;
 import java.util.List;
-import javax.servlet.Servlet;
-import javax.servlet.ServletRegistration;
 import org.glassfish.embeddable.*;
-import org.glassfish.embeddable.web.*;
+import org.glassfish.embeddable.web.*;  
 import org.glassfish.embeddable.web.config.*;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -59,54 +57,100 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- * Tests WebContainer#setConfiguration(WebContainerConfig)
+ * Tests WebContainer
  * 
  * @author Amy Roh
  */
-public class EmbeddedSetConfigurationTest {
+public class EmbeddedWebTest {
 
     static GlassFish glassfish;
     static WebContainer embedded;
-    static File root;
     static int newPort = 9090;
-
+    static String contextRoot = "test";
+    static File root;
+    static WebContainerConfig config;
+    
     @BeforeClass
-    public static void setupServer() throws GlassFishException {
+    public static void setupServer() throws Exception {
+
         glassfish = GlassFishRuntime.bootstrap().newGlassFish();
         glassfish.start();
         embedded = glassfish.getService(WebContainer.class);
-        System.out.println("================ EmbeddedSetDocRoot Test");
+        System.out.println("================ EmbeddedWeb Test");
         System.out.println("Starting Web "+embedded);
-        embedded.setLogLevel(Level.INFO);
-        WebContainerConfig config = new WebContainerConfig();
-        config.setListings(true);
         root = new File(System.getProperty("buildDir"));
-        config.setDocRootDir(root);
-        config.setPort(8080);
-        config.setHostNames("localhost");
-        System.out.println("Added Web with base directory "+root.getAbsolutePath());
-        embedded.setConfiguration(config);
+        configure();
+        
     }
-    
+
+    private static void configure() throws Exception {
+
+        config = new WebContainerConfig();
+        embedded.setLogLevel(Level.INFO);
+        config.setDocRootDir(root);
+        System.out.println("Added Web with base directory "+root.getAbsolutePath());
+        config.setListenerName("embedded-listener");
+        config.setPort(8080);
+        File defaultWebXml = new File(root+"/org/glassfish/tests/webapi/my-default-web.xml");
+        config.setDefaultWebXml(defaultWebXml.toURL());
+        System.out.println("Using default-web.xml "+defaultWebXml.getAbsolutePath());
+        config.setVirtualServerId("server");
+        embedded.setConfiguration(config);
+
+    }
+
     @Test
-    public void testEmbeddedWebAPIConfig() throws Exception {
-        WebListener listener = embedded.createWebListener("test-listener", HttpListener.class);
-        listener.setPort(newPort);
-        embedded.addWebListener(listener);
+    public void test() throws Exception {
 
-        URL servlet = new URL("http://localhost:"+newPort);
+        WebListener testListener = embedded.createWebListener("test-listener", HttpListener.class);
+        testListener.setPort(newPort);
+        WebListener[] webListeners = new HttpListener[1];
+        webListeners[0] = testListener;
+
+        String virtualServerId = "embedded-server";
+        VirtualServer virtualServer = (VirtualServer)
+                embedded.createVirtualServer(virtualServerId, root, webListeners);
+        embedded.addVirtualServer(virtualServer);
+
+        config.setVirtualServerId(virtualServerId);
+        config.setHostNames("localhost");
+        embedded.setConfiguration(config);
+
+        ArrayList<WebListener> listenerList = new ArrayList(embedded.getWebListeners());
+        System.out.println("Network listener size after creation " + listenerList.size());
+        Assert.assertTrue(listenerList.size()==2);
+        for (WebListener listener : embedded.getWebListeners())
+            System.out.println("Web listener "+listener.getId()+" "+listener.getPort());
+
+        VirtualServer vs = embedded.getVirtualServer(virtualServerId);
+        Assert.assertEquals(virtualServerId,vs.getID());                     
+
+        Context context = (Context) embedded.createContext(root);
+        //embedded.addContext(context, contextRoot);
+        virtualServer.addContext(context, contextRoot);
+ 
+        URL servlet = new URL("http://localhost:"+newPort+"/"+contextRoot+"/hello");
         URLConnection yc = servlet.openConnection();
-        BufferedReader in = new BufferedReader(
-                                new InputStreamReader(
-                                yc.getInputStream()));
-
+        BufferedReader in = new BufferedReader(new InputStreamReader(yc.getInputStream()));
         StringBuilder sb = new StringBuilder();
         String inputLine;
         while ((inputLine = in.readLine()) != null){
             sb.append(inputLine);
         }
         in.close();
-     }
+        System.out.println(inputLine);
+        Assert.assertEquals("Hello World!", sb.toString());
+
+        System.out.println("Removing web listener "+testListener.getId());
+        embedded.removeWebListener(testListener);                       
+
+        listenerList = new ArrayList(embedded.getWebListeners());
+        System.out.println("Network listener size after deletion " + listenerList.size());
+        Assert.assertTrue(listenerList.size()==1);
+        for (WebListener listener : embedded.getWebListeners())
+            System.out.println("Web listener "+listener.getId()+" "+listener.getPort());     
+
+    } 
 
     @AfterClass
     public static void shutdownServer() throws GlassFishException {
@@ -117,6 +161,5 @@ public class EmbeddedSetConfigurationTest {
             glassfish = null;
         }
     }
-    
     
 }

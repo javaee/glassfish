@@ -54,7 +54,7 @@ public class WebContainerConfig {
 
     private URL defaultWebXml;
     private File docRoot;
-    private String hostNames = "localhost";
+    private String hostNames = "${com.sun.aas.hostName}";
     private String  listenerName = "embedded-listener";
     private boolean listings = false;
     private int port = 8080;    
