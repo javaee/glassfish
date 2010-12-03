@@ -82,12 +82,12 @@ public class WebTest {
         String contextPath = contextRoot + "/myurl";
         boolean ok = doWebMethod("GET", host, port, contextPath, false, 200, "g:Hello");
         ok = ok && doWebMethod("POST", host, port, contextPath, true, 200, "p:Hello, javaee");
-        ok = ok && doWebMethod("TRACE", host, port, contextPath, true, 403, null);
+        ok = ok && doWebMethod("OPTIONS", host, port, contextPath, true, 403, null);
 
         contextPath = contextRoot + "/myurl2";
         ok = ok && doWebMethod("GET", host, port, contextPath, true, 200, "g:Hello, javaee");
         ok = ok && doWebMethod("POST", host, port, contextPath, true, 403, null);
-        ok = ok && doWebMethod("TRACE", host, port, contextPath, false, 200, "t:Hello");
+        ok = ok && doWebMethod("OPTIONS", host, port, contextPath, false, 200, "o:Hello");
         ok = ok && doWebMethod("PUT", host, port, contextPath, true, 403, null);
 
         contextPath = contextRoot + "/myurl3";
