@@ -127,14 +127,10 @@
             <param name="operand.props" value="testHttpSAM"/>
         </antcall>
 
-        <!--
         <antcall target="stop-server"/>
-        -->
-        <delete file="${appserver.instance.dir}/lib/test-${appname}-provider.jar" failonerror="false"/>
-        <!--
         <sleep seconds="5"/>
+        <delete file="${appserver.instance.dir}/lib/test-${appname}-provider.jar" failonerror="false"/>
         <antcall target="start-server"/>
-        -->
     </target>
 
     <target name="usage">
