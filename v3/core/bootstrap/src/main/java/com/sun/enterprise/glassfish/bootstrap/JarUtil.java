@@ -91,7 +91,7 @@ public class JarUtil {
      */
     public static final String DEFAULT_JMS_ADAPTER = "jmsra";
 
-    public static String RAR_EXTENSION = ".rar";
+    public static final String RAR_EXTENSION = ".rar";
 
     public static final List<String> systemRarNames = Collections.unmodifiableList(
             Arrays.asList(
@@ -103,7 +103,7 @@ public class JarUtil {
                     DEFAULT_JMS_ADAPTER
             ));
 
-    private static Logger _logger = Logger.getAnonymousLogger();
+    private static final Logger _logger = Logger.getAnonymousLogger();
 
     private static String getSystemModuleLocation(String installDir, String rarName) {
         return installDir + File.separator + "lib" +
