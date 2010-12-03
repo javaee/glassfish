@@ -60,6 +60,7 @@ import org.glassfish.quality.ToDo;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Max;
+import javax.validation.constraints.Pattern;
 
 /**
  *
@@ -75,6 +76,11 @@ import javax.validation.constraints.Max;
  @RestRedirect(opType = RestRedirect.OpType.DELETE, commandName = "delete-jms-host")
 })
 public interface JmsHost extends ConfigBeanProxy, Injectable, PropertyBag {
+
+    final static String PORT_PATTERN = "\\$\\{[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*\\}"
+            + "|[1-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9][0-9][0-9]"
+            + "|[1-5][0-9][0-9][0-9][0-9]|6[0-4][0-9][0-9][0-9]"
+            + "|65[0-4][0-9][0-9]|655[0-2][0-9]|6553[0-5]";
 
     /**
      * Gets the value of the name property.
@@ -122,8 +128,10 @@ public interface JmsHost extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="7676")
-    @Min(value=1)
-    @Max(value=65535)
+    @Pattern(regexp=PORT_PATTERN,
+            message="must be between 1 and 65535, " +
+                    "or reference a system property using the form" +
+                    " ${SYSTEM_PROPERTY_NAME}")   
     String getPort();
 
     /**
