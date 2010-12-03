@@ -60,7 +60,7 @@ bottom_left_image=/templates/community-logo.png
 icon_image=/templates/glassfishserver.gif
 
 # L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
-leftpanel_font=SansSerif-BOLD-14
+leftpanel_font=Sans-Serif-BOLD-14
 
 # Dynamic panel
 # L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -71,7 +71,7 @@ dynamic_component_border_color=BLACK
 
 # Font for titles
 # L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
-title1_font=SansSerif-BOLD-18
+title1_font=Sans-Serif-BOLD-18
 # L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
 title2_font=SansSerif-BOLD-20
 
@@ -91,7 +91,7 @@ btnpanel_bgcolor=e8e9ed
 
 # Font for Buttons
 # L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
-button_font=SansSerif-BOLD-14
+button_font=Sans-Serif-BOLD-14
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~W E L C O M E   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Welcome_WELCOME_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;\u6b61\u8fce\u4f7f\u7528 ${PRODUCT_NAME} \u5b89\u88dd\u3002&lt;BR&gt;&lt;BR&gt;GlassFish \u5c08\u6848\u662f\u7528\u4ee5\u958b\u767c\u958b\u653e&lt;BR&gt;\u539f\u59cb\u78bc\u61c9\u7528\u7a0b\u5f0f\u4f3a\u670d\u5668\u7684\u7d50\u69cb\u5316\u74b0\u5883\u3002GlassFish \u5c08\u6848\u7684\u5efa\u7acb\uff0c\u662f Oracle \u5728\u5c07\u672c\u8eab\u5927\u90e8\u5206\u7a0b\u5f0f\u78bc\u63d0\u4f9b\u7d66\u958b\u653e\u539f\u59cb\u78bc\u4ee5\u4f9b\u793e\u7fa4\u904b\u7528\u548c\u6539\u826f\u65b9\u9762\u66f4\u5927\u898f\u6a21\u884c\u52d5\u7684\u4e00\u90e8\u5206\u3002GlassFish \u5c08\u6848&lt;BR&gt;\u662f java.net \u63d0\u4f9b\u7684\u591a\u500b\u4ee5\u793e\u7fa4\u70ba\u57fa\u790e\u7684\u5c08\u6848\u4e4b\u4e00\u3002&lt;BR&gt;&lt;BR&gt;\u5982\u9700\u66f4\u591a\u8cc7\u8a0a\uff0c\u8acb\u81f3&lt;a href=https://glassfish.dev.java.net&gt; GlassFish \u5c08\u6848\u9801\u9762&lt;/a&gt;\u3002&lt;BR&gt;&lt;BR&gt;\u8acb\u6309 [\u4e0b\u4e00\u6b65] \u7e7c\u7e8c\u3002&lt;BR&gt;&lt;BR&gt;

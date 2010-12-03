@@ -60,24 +60,24 @@ bottom_left_image=/templates/community-logo.png
 icon_image=/templates/glassfishserver.gif
 
 # L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
-leftpanel_font=Arial-BOLD-14
+leftpanel_font=Sans-Serif-BOLD-14
 
 # Dynamic panel
 # L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
-dynamic_content_font=Arial-BOLD-14
-dynamic_component_background=BIANCO
-dynamic_component_foreground=NERO
-dynamic_component_border_color=NERO
+dynamic_content_font=Sans-Serif-BOLD-14
+dynamic_component_background=WHITE
+dynamic_component_foreground=BLACK
+dynamic_component_border_color=BLACK
 
 # Font for titles
 # L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
-title1_font=Arial-BOLD-18
+title1_font=Sans-Serif-BOLD-18
 # L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
-title2_font=Arial Narrow-BOLD-20
+title2_font=Sans-Serif-BOLD-20
 
 # Text color for titles
 title1_color=587993
-title2_color=NERO
+title2_color=BLACK
 
 # Text for titles
 title1_text=Introduzione a
@@ -91,7 +91,7 @@ btnpanel_bgcolor=e8e9ed
 
 # Font for Buttons
 # L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
-button_font=Arial-BOLD-14
+button_font=Sans-Serif-BOLD-14
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~W E L C O M E   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Welcome_WELCOME_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Introduzione all'installazione di ${PRODUCT_NAME}.&lt;BR&gt;&lt;BR&gt;Il progetto GlassFish \u00e8 un ambiente strutturato per lo sviluppo del server applicazioni open &lt;BR&gt;source. L'istituzione del progetto GlassFish fa parte di &lt;BR&gt;un'iniziativa di pi\u00f9 ampio respiro promossa da Oracle per rilasciare parti fondamentali del codice affinch\u00e9 siano utilizzate e migliorate dalla community open &lt;BR&gt;source. Il progetto GlassFish \u00e8 &lt;BR&gt;uno dei diversi progetti di community ospitati su java.net. &lt;BR&gt;&lt;BR&gt;Per ulteriori informazioni, visitare la &lt;a href=https://glassfish.dev.java.net&gt; pagina del progetto GlassFishPage&lt;/a&gt;. &lt;BR&gt;&lt;BR&gt;Fare clic su Avanti per continuare. &lt;BR&gt;&lt;BR&gt;

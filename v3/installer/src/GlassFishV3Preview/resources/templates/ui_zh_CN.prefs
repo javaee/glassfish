@@ -60,18 +60,18 @@ bottom_left_image=/templates/community-logo.png
 icon_image=/templates/glassfishserver.gif
 
 # L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
-leftpanel_font=Arial-BOLD-14
+leftpanel_font=Sans-Serif-BOLD-14
 
 # Dynamic panel
 # L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
-dynamic_content_font=Arial-BOLD-14
+dynamic_content_font=Sans-Serif-BOLD-14
 dynamic_component_background=WHITE
 dynamic_component_foreground=BLACK
 dynamic_component_border_color=BLACK
 
 # Font for titles
 # L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
-title1_font=SansSerif-BOLD-18
+title1_font=Sans-Serif-BOLD-18
 # L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
 title2_font=SansSerif-BOLD-20
 
@@ -91,7 +91,7 @@ btnpanel_bgcolor=e8e9ed
 
 # Font for Buttons
 # L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
-button_font=Arial-BOLD-14
+button_font=Sans-Serif-BOLD-14
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~W E L C O M E   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Welcome_WELCOME_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;\u6b22\u8fce\u4f7f\u7528 ${PRODUCT_NAME} \u5b89\u88c5\u3002&lt;BR&gt;&lt;BR&gt;GlassFish \u9879\u76ee\u662f\u7528\u4e8e\u5f00\u53d1\u5f00\u6e90\u5e94\u7528\u670d\u52a1\u5668&lt;BR&gt;\u7684\u7ed3\u6784\u5316\u73af\u5883\u3002\u4e3a\u4e86\u4ee5\u5f00\u6e90\u65b9\u5f0f\u53d1\u5e03\u5176\u4ee3\u7801\u7684\u4e3b\u8981\u90e8\u5206&lt;BR&gt;\u4ee5\u4f9b\u793e\u533a\u4f7f\u7528\u548c\u6539\u8fdb\uff0cOracle \u505a\u4e86\u5f88\u591a\u52aa\u529b\uff0c&lt;BR&gt;GlassFish \u9879\u76ee\u7684\u8bbe\u7acb\u5c31\u662f\u5176\u4e2d\u4e00\u90e8\u5206\u3002GlassFish \u9879\u76ee\u662f &lt;BR&gt;java.net \u4e0a\u6258\u7ba1\u7684\u4f17\u591a\u57fa\u4e8e\u793e\u533a\u7684\u9879\u76ee\u4e4b\u4e00\u3002&lt;BR&gt;&lt;BR&gt;\u6709\u5173\u66f4\u591a\u4fe1\u606f\uff0c\u8bf7\u8bbf\u95ee &lt;a href=https://glassfish.dev.java.net&gt; GlassFish \u9879\u76ee\u9875\u9762&lt;/a&gt;\u3002&lt;BR&gt;&lt;BR&gt;\u8bf7\u5355\u51fb\u201c\u4e0b\u4e00\u6b65\u201d\u7ee7\u7eed\u3002&lt;BR&gt;&lt;BR&gt;

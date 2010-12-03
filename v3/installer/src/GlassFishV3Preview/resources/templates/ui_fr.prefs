@@ -60,18 +60,18 @@ bottom_left_image=/templates/community-logo.png
 icon_image=/templates/glassfishserver.gif
 
 # L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
-leftpanel_font=Arial-BOLD-14
+leftpanel_font=Sans-Serif-BOLD-14
 
 # Dynamic panel
 # L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
-dynamic_content_font=Arial-BOLD-14
+dynamic_content_font=Sans-Serif-BOLD-14
 dynamic_component_background=WHITE
 dynamic_component_foreground=BLACK
 dynamic_component_border_color=BLACK
 
 # Font for titles
 # L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
-title1_font=SansSerif-BOLD-18
+title1_font=Sans-Serif-BOLD-18
 # L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
 title2_font=SansSerif-BOLD-20
 
@@ -91,7 +91,7 @@ btnpanel_bgcolor=e8e9ed
 
 # Font for Buttons
 # L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
-button_font=Arial-BOLD-14
+button_font=Sans-Serif-BOLD-14
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~W E L C O M E   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Welcome_WELCOME_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Bienvenue sur l\u2019assistant d\u2019installation de ${PRODUCT_NAME}.&lt;BR&gt;&lt;BR&gt;Le projet GlassFish est un environnement structur\u00e9 pour le d\u00e9veloppement du serveur d\u2019application Open Source. Il s\u2019inscrit dans la continuit\u00e9 des efforts d\u00e9ploy\u00e9s par Oracle pour mettre \u00e0 disposition d\u2019importantes portions de son code afin que la communaut\u00e9 Open Source en tire le meilleur parti. En plus du projet GlassFish, d\u2019autres projets communautaires sont h\u00e9berg\u00e9s sur java.net. &lt;BR&gt;&lt;BR&gt;Rendez-vous sur &lt;a href=https://glassfish.dev.java.net&gt; GlassFish Project Page&lt;/a&gt; pour plus d\u2019informations. &lt;BR&gt;&lt;BR&gt;Cliquez sur Suivant pour continuer. &lt;BR&gt;&lt;BR&gt;
