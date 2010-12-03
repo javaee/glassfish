@@ -222,8 +222,8 @@ public class UpdateFileUser implements AdminCommand {
         //TODO: check and enclose the code below inside ConfigSupport.apply(...)
         FileRealm fr = null;
         try {
-            realmsManager.createRealms(securityService);
-            fr = (FileRealm) realmsManager.getFromLoadedRealms(authRealmName);
+            realmsManager.createRealms(config);
+            fr = (FileRealm) realmsManager.getFromLoadedRealms(config.getName(),authRealmName);
             if (fr == null) {
                 throw new NoSuchRealmException(authRealmName);
             }

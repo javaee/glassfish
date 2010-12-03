@@ -247,8 +247,8 @@ public class ListFileGroup implements AdminCommand {
         // We have the right impl so let's try to remove one
         FileRealm fr = null;
         try {
-            realmsManager.createRealms(securityService);
-            fr = (FileRealm) realmsManager.getFromLoadedRealms(authRealmName);
+            realmsManager.createRealms(config);
+            fr = (FileRealm) realmsManager.getFromLoadedRealms(config.getName(),authRealmName);
             if (fr == null) {
                 throw new NoSuchRealmException(authRealmName);
             }

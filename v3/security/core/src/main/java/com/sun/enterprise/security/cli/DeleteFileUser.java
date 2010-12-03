@@ -203,8 +203,8 @@ public class DeleteFileUser implements /*UndoableCommand*/ AdminCommand {
                 public Object run(SecurityService param)
                         throws PropertyVetoException, TransactionFailure {
                     try {
-                        realmsManager.createRealms(securityService);
-                        final FileRealm fr = (FileRealm) realmsManager.getFromLoadedRealms(authRealmName);
+                        realmsManager.createRealms(config);
+                        final FileRealm fr = (FileRealm) realmsManager.getFromLoadedRealms(config.getName(),authRealmName);
                         fr.removeUser(userName);
                         //fr.writeKeyFile(keyFile);
                         if (Util.isEmbeddedServer()) {

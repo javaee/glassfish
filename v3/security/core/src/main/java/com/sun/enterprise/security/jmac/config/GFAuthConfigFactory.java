@@ -61,6 +61,7 @@ import javax.security.auth.message.config.AuthConfigProvider;
 import javax.security.auth.message.config.RegistrationListener;
 
 import com.sun.logging.LogDomains;
+import java.util.Set;
     
 /**
  * This class implements methods in the abstract class AuthConfigFactory.
@@ -684,7 +685,21 @@ public class GFAuthConfigFactory extends AuthConfigFactory {
 	    className = p.getClass().getName();
 	}
         if (ctx.isPersistent()) {
-            regStore.store(className, ctx, properties);
+            Map<String, String> props = new HashMap<String, String>();
+            if (properties != null) {
+                Set<Map.Entry<Object, Object>> eset = properties.entrySet();
+                for (Map.Entry<Object, Object> e : eset) {
+                    String key = (String) e.getKey();
+                    Object val = e.getValue();
+                    String strVal = (val != null) ? val.toString() : null;
+                    if (strVal != null) {
+                        props.put(key, strVal);
+                    }
+
+                }
+
+            }
+            regStore.store(className, ctx, props);
         }
     }
 

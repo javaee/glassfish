@@ -46,10 +46,13 @@ import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.logging.LogDomains;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.api.admin.ServerEnvironment;
@@ -70,7 +73,10 @@ import org.jvnet.hk2.config.types.Property;
 @Scoped(Singleton.class)
 public class RealmsManager {
     //per domain list of loaded Realms
-    private final Hashtable<String, Realm> loadedRealms = new Hashtable<String, Realm>();
+    //Wanted to get rid of Hashtable but the API exporting  Enumeration<String> is preventing
+    // it for now.
+    private final Map<String, Hashtable<String, Realm>> loadedRealms = 
+            Collections.synchronizedMap(new HashMap<String, Hashtable<String, Realm>>());
 
     // Keep track of name of default realm for this domain. This is updated during startup
     // using value from server.xml
@@ -98,7 +104,7 @@ public class RealmsManager {
         if(name == null){
             return false;
         } else {
-            return loadedRealms.containsKey(name);
+            return configContainsRealm(name, config.getName());
         }
     }
     
@@ -107,13 +113,13 @@ public class RealmsManager {
      * @return set of realm names
      */
     public  Enumeration<String>	getRealmNames() {
-	return loadedRealms.keys();
+	return getRealmNames(config.getName());
     }
     
 
     Realm _getInstance(String name) {
 	Realm retval = null;
-	retval = (Realm) loadedRealms.get (name);
+	retval = configGetRealmInstance(config.getName(), name);
 
         // Some tools as well as numerous other locations assume that
         // getInstance("default") always works; keep them from breaking
@@ -123,27 +129,32 @@ public class RealmsManager {
         // a Subject always containing realm='default' so this notion
         // needs to be fixed/handled.
         if ( (retval == null) && (Realm.RI_DEFAULT.equals(name)) ) {
-            retval = (Realm) loadedRealms.get (getDefaultRealmName());
+            retval = configGetRealmInstance(config.getName(),getDefaultRealmName());
         }
 
         return retval;
     }
 
     public void removeFromLoadedRealms(String realmName) {
-        Realm r = loadedRealms.remove(realmName);
+        Realm r = removeFromLoadedRealms(config.getName(), realmName);
         if (r != null) {
             probeProvider.realmRemovedEvent(realmName);
         }
     }
 
     void putIntoLoadedRealms(String realmName, Realm realm) {
-        loadedRealms.put(realmName, realm);
+        putIntoLoadedRealms(config.getName(), realmName, realm);
         probeProvider.realmAddedEvent(realmName);
     }
     
     public Realm getFromLoadedRealms(String realmName) {
-        return loadedRealms.get(realmName);
+        return configGetRealmInstance(config.getName(),realmName);
     }
+
+    public Realm getFromLoadedRealms(String configName, String realmName) {
+        return configGetRealmInstance(configName,realmName);
+    }
+
     public synchronized String getDefaultRealmName() {
         return defaultRealmName;
     }
@@ -178,7 +189,14 @@ public class RealmsManager {
    }
 
    public void createRealms() {
-       createRealms(config.getSecurityService());
+       createRealms(config.getSecurityService(), config);
+   }
+
+   public void createRealms(Config cfg) {
+       if (cfg == null) {
+           return;
+       }
+       createRealms(cfg.getSecurityService(), cfg);
    }
 
    private void setDefaultDigestAlgorithm() {
@@ -214,9 +232,9 @@ public class RealmsManager {
      * <P>This method superceeds the RI RealmManager.createRealms() method.
      *
      * */
-    public void createRealms(SecurityService securityBean) {
+    private void createRealms(SecurityService securityBean, Config cfg) {
         //check if realms are already loaded by admin GUI ?
-        if (realmsAlreadyLoaded()) {
+        if (realmsAlreadyLoaded(cfg.getName())) {
             return;
         }
 
@@ -227,7 +245,7 @@ public class RealmsManager {
             }
 
             if (securityBean == null) {
-                securityBean = config.getSecurityService();
+                securityBean = cfg.getSecurityService();
                 assert (securityBean != null);
             }
 
@@ -238,21 +256,47 @@ public class RealmsManager {
             List<AuthRealm> realms = securityBean.getAuthRealm();
             assert (realms != null);
 
-            RealmConfig.createRealms(defaultRealm, realms);
+            RealmConfig.createRealms(defaultRealm, realms, cfg.getName());
 
         } catch (Exception e) {
             _logger.log(Level.SEVERE, "realmconfig.nogood", e);
         }
     }
 
-    private boolean realmsAlreadyLoaded() {
-
-        Enumeration en = getRealmNames();
-        if (en.hasMoreElements()) {
-            return true;
-        }
-
-        return false;
+    private boolean realmsAlreadyLoaded(String cfgName) {
+        Enumeration<String> en = getRealmNames(cfgName);
+        return (en != null && en.hasMoreElements()) ? true : false;
     }
 
+    private boolean configContainsRealm(String name, String configName) {
+        Hashtable<String, Realm> containedRealms = loadedRealms.get(configName);
+        return (containedRealms != null) ? containedRealms.containsKey(name) : false;
+    }
+
+    private Enumeration<String> getRealmNames(String configName) {
+        Hashtable<String, Realm> containedRealms = loadedRealms.get(configName);
+        return (containedRealms != null) ? containedRealms.keys() : null;
+    }
+
+    private Realm configGetRealmInstance(String configName, String realm) {
+        Hashtable<String, Realm> containedRealms = loadedRealms.get(configName);
+	return  (containedRealms != null) ? (Realm) containedRealms.get(realm) : null;
+    }
+
+    private Realm removeFromLoadedRealms (String configName, String realmName) {
+         Hashtable<String, Realm> containedRealms = loadedRealms.get(configName);
+         return (containedRealms != null) ?(Realm)containedRealms.remove(realmName) : null;
+    }
+
+    public void putIntoLoadedRealms (String configName, String realmName, Realm realm) {
+         Hashtable<String, Realm> containedRealms = loadedRealms.get(configName);
+         if (containedRealms == null) {
+             containedRealms = new Hashtable<String, Realm>();
+             if (configName == null) {
+                 configName = config.getName();
+             }
+             loadedRealms.put(configName, containedRealms);
+         }
+         containedRealms.put(realmName, realm);
+    }
 }

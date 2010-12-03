@@ -117,8 +117,6 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
     
     private static Map statsProviders = new HashMap();
     
-
-    
     private static WebSecurityDeployerStatsProvider webStatsProvider = null;
         
     private static final LocalStringManagerImpl _localStrings =

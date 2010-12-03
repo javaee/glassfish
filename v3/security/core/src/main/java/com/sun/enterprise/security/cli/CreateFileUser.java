@@ -237,10 +237,10 @@ public class CreateFileUser implements /*UndoableCommand*/ AdminCommand {
                 public Object run(SecurityService param)
                         throws PropertyVetoException, TransactionFailure {
                     try {
-                        realmsManager.createRealms(securityService);
+                        realmsManager.createRealms(config);
                         //If the (shared) keyfile is updated by an external process, load the users first
                         refreshRealm(authRealmName);
-                        final FileRealm fr = (FileRealm) realmsManager.getFromLoadedRealms(authRealmName);
+                        final FileRealm fr = (FileRealm) realmsManager.getFromLoadedRealms(config.getName(),authRealmName);
                         CreateFileUser.handleAdminGroup(authRealmName, groups);
                         String[] groups1 = groups.toArray(new String[groups.size()]);
                         try {

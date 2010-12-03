@@ -193,9 +193,42 @@ public abstract class Realm implements Comparable {
         
         Realm realmClass = _getInstance(name);
         if(realmClass == null) {
-            return doInstantiate(name, className, props);
+            Realm r = doInstantiate(name, className, props);
+            RealmsManager mgr = getRealmsManager();
+            mgr.putIntoLoadedRealms(name, r);
         }
         return realmClass;
+    }
+
+    /**
+     * Instantiate a Realm with the given name and properties using the
+     * Class name given. This method is used by iAS and not RI.
+     *
+     * @param name Name of the new realm.
+     * @param className Java Class name of the realm to create.
+     * @param props Properties containing values of the Property element
+     *     from server.xml
+     * @param configName the config to which this realm belongs
+     * @returns Reference to the new Realm. The Realm class keeps an internal
+     *     list of all instantiated realms.
+     * @throws BadRealmException If the requested realm cannot be instantiated.
+     *
+     */
+    public static synchronized Realm instantiate(String name, String className,
+                                    Properties props, String configName)
+        throws BadRealmException
+    {
+        //Register the realm provider
+        registerRealmStatsProvier();
+
+        Realm realmClass = _getInstance(name);
+        if(realmClass == null) {
+            Realm r = doInstantiate(name, className, props);
+            RealmsManager mgr = getRealmsManager();
+            mgr.putIntoLoadedRealms(configName, name, r);
+        }
+        return realmClass;
+
     }
 
     private static void registerRealmStatsProvier() {
@@ -215,7 +248,9 @@ public abstract class Realm implements Comparable {
      * Instantiate a Realm with the given name, loading properties from
      * the given file. This method is only used by RI and is not called
      * anywhere in iAS.
-     *
+     * Note : this method stands unused in V3.1 but keeping it since it is a 
+     * public method.
+     * @deprecated
      * @param realmName Name of the new realm.
      * @param f File containing Properties for the new realm.
      */
@@ -301,7 +336,6 @@ public abstract class Realm implements Comparable {
                 if (mgr == null) {
                     throw new BadRealmException("Unable to locate RealmsManager Service");
                 }
-                mgr.putIntoLoadedRealms(name, r);
                 _logger.log(Level.INFO,"realm.loaded.successfully" ,new Object[]{name, className});
                 return r;
             } else {
