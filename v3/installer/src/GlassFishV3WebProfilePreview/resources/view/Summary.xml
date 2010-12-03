@@ -188,10 +188,19 @@ void run ()  {
 			File.separator + "registration" + File.separator + "registration.html";
 
     // Generate registration landing html page.
+    // On windows replace "\" with "\\"
     try {
+         if (System.getProperty("os.name").toLowerCase().startsWith("windows")) {
+           RelayService relayService = new RelayService(regFilePath.replace("\\","\\\\"));
+           relayService.generateRegistrationPage(regPagePath.replace("\\","\\\\"));
+        }
+	else {
            RelayService relayService = new RelayService(regFilePath);
            relayService.generateRegistrationPage(regPagePath);
+        }
+
         } catch (Exception ex) {
+		System.out.println(ex.getMessage());
 		LOGGER.log(Level.WARNING,ex.getMessage());
         }
 	
