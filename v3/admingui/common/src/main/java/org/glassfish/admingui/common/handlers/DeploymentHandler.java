@@ -82,9 +82,6 @@ import org.glassfish.admingui.common.util.TargetUtil;
  */
 public class DeploymentHandler {
 
-    //should be the same as in DeploymentProperties in deployment/common
-    public static final String KEEP_SESSIONS = "keepSessions";
-
     @Handler(id = "deploy",
     input = {
         @HandlerInput(name = "filePath", type = String.class),
@@ -250,7 +247,6 @@ public class DeploymentHandler {
              }
              Properties props = new Properties();
              _setProps(deployMap, props, DFDeploymentProperties.DEPLOY_OPTION_JAVA_WEB_START_ENABLED);
-             _setProps(deployMap, props, "keepSessions");
              _setProps(deployMap, props, "preserveAppScopedResources");
              deploymentProps.setProperties(props);
 

@@ -58,13 +58,10 @@
         mapPut(map="#{pageSession.deployMap}", key="appName", value="#{pageSession.appName}");
         setPageSessionAttribute(key="convertToFalse" value={"precompilejsp", "verify"})
 
-        //we want to show/preserver java-web-start-enabled, keepSessions and preserveAppsScopedResourcs
+        //we want to show/preserver java-web-start-enabled, and preserveAppsScopedResourcs
         gf.restRequest(endpoint="#{pageSession.selfUrl}/property.json" method="GET" result="#{requestScope.propTable}");
         setPageSessionAttribute(key="listOfProps" value="#{requestScope.propTable.data.extraProperties.properties}");
         foreach(var="oneProp" list="#{pageSession.listOfProps}"){
-            if ("#{requestScope.oneProp.name}=keepSessions"){
-                mapPut(map="#{pageSession.deployMap}" key="keepSessions" value="#{requestScope.oneProp.value}")
-            }
             if ("#{requestScope.oneProp.name}=preserveAppScopedResources"){
                 mapPut(map="#{pageSession.deployMap}" key="preserveAppScopedResources" value="#{requestScope.oneProp.value}")
             }
@@ -140,9 +137,6 @@
             </sun:property>
             <sun:property id="v2" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.run}" helpText="$resource{i18n.deploy.runHelp}">
                     <sun:checkbox id="ver2" label="$resource{i18n.common.Enabled}" selected="#{pageSession.deployMap['verify']}" selectedValue="true" />
-            </sun:property>
-            <sun:property id="keepSessionProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}"  label="$resource{i18n.redeploy.keepSessions}" helpText="$resource{i18n.redeploy.keepSessionsHelp}" >
-                <sun:checkbox selected="#{pageSession.deployMap['keepSessions']}" selectedValue="true" label=" " />
             </sun:property>
             <sun:property id="keepStateProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}"  label="$resource{i18n.redeploy.keepState}" helpText="$resource{i18n.redeploy.keepStateHelp}" >
                 <sun:checkbox selected="#{pageSession.deployMap['keepState']}" selectedValue="true" label=" " />

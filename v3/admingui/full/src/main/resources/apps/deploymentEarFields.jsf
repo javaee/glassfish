@@ -94,10 +94,6 @@
 <sun:property id="force" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.forceRedeploy}" helpText="$resource{i18n.deploy.forceRedeployHelp}">
         <sun:checkbox id="force"  label=" " selected="#{pageSession.ear['force']}" selectedValue="true" />
 </sun:property>
-        
-<sun:property id="keepSessions" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.redeploy.keepSessions}" helpText="$resource{i18n.redeploy.keepSessionsHelp}">
-        <sun:checkbox id="keepSessions" label=" " selected="#{pageSession.ear['PROPERTY-keepSessions']}" selectedValue="true" />
-</sun:property>
 
 <sun:property id="keepState" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.redeploy.keepState}" helpText="$resource{i18n.redeploy.keepStateHelp}">
         <sun:checkbox id="keepState"  label=" " selected="#{pageSession.ear['keepState']}" selectedValue="true" />
