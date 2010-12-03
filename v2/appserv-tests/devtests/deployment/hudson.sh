@@ -29,7 +29,7 @@ cd "$APS_HOME"
 cd "$APS_HOME/devtests/deployment"
 
 antTarget="all-ee"
-if [ -z "$DEPL_TARGET"]
+if [ -z "$DEPL_TARGET" ]
 then
     $S1AS_HOME/bin/asadmin start-domain
     antTarget="all"
@@ -37,7 +37,7 @@ fi
 
 time ant $antTarget
 
-if [ -z "$DEPL_TARGET"]
+if [ -z "$DEPL_TARGET" ]
 then
     $S1AS_HOME/bin/asadmin stop-domain
 fi
