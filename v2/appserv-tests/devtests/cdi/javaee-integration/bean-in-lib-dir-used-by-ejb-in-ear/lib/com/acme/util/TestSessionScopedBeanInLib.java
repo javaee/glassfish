@@ -38,18 +38,16 @@
  * holder.
  */
 
-package com.acme;
+package com.acme.util;
 
 import java.io.Serializable;
 
 import javax.enterprise.context.SessionScoped;
 
-
 @SessionScoped
-public class TestBeanWARImpl implements TestBean, Serializable {
-    @Override
-    public void m1() {
-        System.out.println("TestBean::m1");
+public class TestSessionScopedBeanInLib implements Serializable{
+    public void m1(){
+        System.out.println("TestSessionScopedBeanInLib:m1");
     }
 
 }

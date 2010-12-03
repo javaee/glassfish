@@ -38,18 +38,25 @@
  * holder.
  */
 
-package com.acme;
+package com.acme.util;
 
-import java.io.Serializable;
+import javax.enterprise.inject.Produces;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
-import javax.enterprise.context.SessionScoped;
-
-
-@SessionScoped
-public class TestBeanWARImpl implements TestBean, Serializable {
-    @Override
-    public void m1() {
-        System.out.println("TestBean::m1");
+@Singleton
+public class ResourcesProducer {
+    @Produces
+    @PersistenceContext(unitName = "pu1")
+    @TestDatabase
+    EntityManager customerDatabasePersistenceUnit;
+    
+    @Inject
+    TestDependentBeanInLib foo;
+    
+    public boolean isInjectionSuccessful(){
+        return (foo != null);
     }
-
 }

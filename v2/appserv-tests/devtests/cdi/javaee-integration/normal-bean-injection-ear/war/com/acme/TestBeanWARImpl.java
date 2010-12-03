@@ -44,7 +44,7 @@ import javax.enterprise.context.SessionScoped;
 
 
 @SessionScoped
-public class TestBeanWARImpl implements TestBean {
+public class TestBeanWARImpl implements TestBean,java.io.Serializable {
     @Override
     public void m1() {
         System.out.println("TestBean::m1");

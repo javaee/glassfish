@@ -100,6 +100,9 @@
             <ant dir="simple-managed-bean-interceptor-noargconstructor-missing" target="${javaee-int-target}"/>
             <ant dir="simple-managed-bean-interceptor-nonnull-package" target="${javaee-int-target}"/>
             <ant dir="no-interface-local-view-proxy-serializable" target="${javaee-int-target}"/>
+            <ant dir="normal-bean-injection-ear" target="${javaee-int-target}"/>
+            <ant dir="programmatic-lookup-ear" target="${javaee-int-target}"/>
+            <ant dir="bean-in-lib-dir-used-by-ejb-in-ear" target="${javaee-int-target}"/>
         <record name="javaee-int.output" action="stop" />
     </target>
 

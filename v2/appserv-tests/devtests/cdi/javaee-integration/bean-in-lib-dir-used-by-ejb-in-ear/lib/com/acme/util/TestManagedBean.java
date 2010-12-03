@@ -38,18 +38,24 @@
  * holder.
  */
 
-package com.acme;
+package com.acme.util;
 
-import java.io.Serializable;
+import javax.annotation.ManagedBean;
+import javax.inject.Inject;
 
-import javax.enterprise.context.SessionScoped;
+@ManagedBean
+public class TestManagedBean {
+    @Inject
+    private TestDependentBeanInLib tdb;
 
+    @Inject
+    private TestSessionScopedBeanInLib tssil;
 
-@SessionScoped
-public class TestBeanWARImpl implements TestBean, Serializable {
-    @Override
-    public void m1() {
-        System.out.println("TestBean::m1");
+    public boolean isInjectionSuccessful(){
+        System.out.println("TestManagedBean:isInjectionSuccessful");
+        System.out.println("TestDependentBean:" + tdb);
+        System.out.println("TestSessionScopedBean:" + tssil);
+        return (tdb != null) && (tssil != null);
     }
 
 }
