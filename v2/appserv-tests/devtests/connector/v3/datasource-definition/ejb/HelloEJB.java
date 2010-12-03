@@ -16,6 +16,15 @@ import java.sql.Connection;
 
 @DataSourceDefinitions(
         value = {
+                //pure annotation that has url and no standard properties
+                //test-case for issue-14918
+		@DataSourceDefinition(name="java:app/jdbc/appds_driver",
+       	 		className="org.apache.derby.jdbc.ClientDriver",
+        		user="dbuser",
+        		password="dbpassword",
+        		transactional=false,
+        		url="jdbc:derby://localhost:1527/testdb;create=true"
+		),
 
                 @DataSourceDefinition(name = "java:global/env/HelloEJB_DataSource",
                         className = "org.apache.derby.jdbc.EmbeddedXADataSource",
@@ -45,9 +54,16 @@ import java.sql.Connection;
                         password = "APP",
                         databaseName = "hello-ejb-module",
                         properties = {"connectionAttributes=;create=true"}
-                )
-
-
+                ),
+                // annotation + DD where URL specified in annotation wins
+                //test-case for issue-14918
+		@DataSourceDefinition(name="java:module/env/HelloEJB_DataSource_driver",
+        		className="org.apache.derby.jdbc.ClientDriver",
+        		user="dbuser",
+        		password="dbpassword",
+        		transactional=false,
+        		url="jdbc:derby://localhost:1527/testdb;create=true"
+		)
         }
 )
 
@@ -55,6 +71,9 @@ import java.sql.Connection;
 public class HelloEJB implements Hello {
 
     public void hello() {
+
+        boolean appDSDriver = lookupDataSource("java:app/jdbc/appds_driver", true);
+        boolean moduleDSDriver= lookupDataSource("java:module/env/HelloEJB_DataSource_driver", true);
 
         boolean global = lookupDataSource("java:global/env/HelloEJB_DataSource", true);
         boolean comp = lookupDataSource("java:comp/env/HelloEJB_DataSource", true);
@@ -79,7 +98,7 @@ public class HelloEJB implements Hello {
         boolean compHello_DD_DataSource = lookupDataSource("java:comp/env/HelloEJB_DD_DataSource", false);
 
 
-        if (global && comp && globalHelloStatefulEJB && !compHelloStatefulEJB && globalServlet
+        if (appDSDriver && moduleDSDriver && global && comp && globalHelloStatefulEJB && !compHelloStatefulEJB && globalServlet
                 && !compServlet && appServletDataSource && globalServlet_DD_DataSource && !compServlet_DD_DataSource
                 && globalHelloStateful_DD_DataSource && !compHelloStateful_DD_DataSource &&
                 globalHello_DD_DataSource && compHello_DD_DataSource && appHelloStatefulEjb &&

@@ -24,6 +24,8 @@
         </antcall>
     </target>
 
+
+
     <target name="build" depends="compile">
         <!--build and package .war first so it doesn't contain ejb bean !-->
         <!--classes that have @Stateless/@Stateul !-->
