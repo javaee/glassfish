@@ -62,6 +62,7 @@ import com.sun.ejb.codegen.StaticRmiStubGenerator;
 import com.sun.ejb.containers.EjbContainerUtilImpl;
 import com.sun.ejb.containers.EJBTimerService;
 import com.sun.logging.LogDomains;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import org.glassfish.api.admin.config.ReferenceContainer;
 import org.glassfish.api.deployment.DeploymentContext;
@@ -140,6 +141,9 @@ public class EjbDeployer
     private static final Logger _logger =
                 LogDomains.getLogger(EjbDeployer.class, LogDomains.EJB_LOGGER);
 
+    private static final LocalStringManagerImpl localStrings = 
+                new LocalStringManagerImpl(EjbDeployer.class);
+
     private final EjbSecurityProbeProvider probeProvider = new EjbSecurityProbeProvider();
 
     /**
@@ -182,8 +186,8 @@ public class EjbDeployer
         EjbBundleDescriptor ejbBundle = dc.getModuleMetaData(EjbBundleDescriptor.class);
 
         if( ejbBundle == null ) {
-            throw new RuntimeException("Unable to load EJB module.  DeploymentContext does not contain any EJB " +
-                    " Check archive to ensure correct packaging for " + dc.getSourceDir());
+            String errMsg = localStrings.getLocalString("context.contains.no.ejb", "DeploymentContext does not contain any EJB", dc.getSourceDir());
+            throw new RuntimeException(errMsg);
         }
 
         // Get application-level properties (*not* module-level)
