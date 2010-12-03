@@ -98,7 +98,7 @@ public class InstanceStateService implements Startup {
             stateProcessor = new InstanceStateFileProcessor(instanceStates,
                         stateFile);
         } catch (IOException ioe) {
-            logger.log(Level.WARNING, "unable to read instance state file " + stateFile + ", recreating", ioe);
+            logger.log(Level.INFO, "unable to read instance state file {0}, recreating", stateFile);
             instanceStates = new HashMap<String, InstanceState>();
             // Even though instances may already exist, do not populate the
             // instancesStates array because it will be repopulated as it is
@@ -119,7 +119,7 @@ public class InstanceStateService implements Startup {
         try {
             stateProcessor.addNewServer(instanceName);
         } catch (Exception e) {
-            logger.severe("Error while adding new server state to instance state: " + e.getLocalizedMessage());
+            logger.log(Level.SEVERE, "Error while adding new server state to instance state: {0}", e.getLocalizedMessage());
         }
     }
 
@@ -137,7 +137,7 @@ public class InstanceStateService implements Startup {
                 stateProcessor.addFailedCommand(instance, cmdDetails);
             }
         } catch (Exception e) {
-            logger.severe("Error while adding failed command to instance state: " + e.getLocalizedMessage());
+            logger.log(Level.SEVERE, "Error while adding failed command to instance state: {0}", e.getLocalizedMessage());
         }
     }
 
@@ -150,7 +150,7 @@ public class InstanceStateService implements Startup {
                 stateProcessor.removeFailedCommands(instance);
             }
         } catch (Exception e) {
-            logger.severe("Error while removing failed commands from instance state: " + e.getLocalizedMessage());
+            logger.log(Level.SEVERE, "Error while removing failed commands from instance state: {0}", e.getLocalizedMessage());
         }
     }
 
@@ -185,7 +185,7 @@ public class InstanceStateService implements Startup {
             // only an instance restart can move this instance out of RESTART_REQD state
             updateXML = false;
             ret = currState;
-        } else if (currState == InstanceState.StateType.NEVER_STARTED &&
+        } else if (!force && currState == InstanceState.StateType.NEVER_STARTED &&
                     (newState == InstanceState.StateType.NOT_RUNNING ||
                      newState == InstanceState.StateType.RESTART_REQUIRED ||
                      newState == InstanceState.StateType.NO_RESPONSE)) {
@@ -199,11 +199,11 @@ public class InstanceStateService implements Startup {
         }
 
         try {
-            if (force || updateXML) {
+            if (updateXML) {
                 stateProcessor.updateState(name, newState.getDescription());
             }
         } catch (Exception e) {
-            logger.severe("Error while setting instance state: " + e.getLocalizedMessage());
+            logger.log(Level.SEVERE, "Error while setting instance state: {0}", e.getLocalizedMessage());
         }
         return ret;
     }
@@ -214,7 +214,7 @@ public class InstanceStateService implements Startup {
         try {
             stateProcessor.removeInstanceNode(name);
         } catch (Exception e) {
-            logger.severe("Error while removing instance: " + e.getLocalizedMessage());
+            logger.log(Level.SEVERE, "Error while removing instance: {0}", e.getLocalizedMessage());
         }
     }
 
