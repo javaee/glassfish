@@ -18,6 +18,10 @@ wget -q -O revision-under-test.html http://${REHudson}/hudson/job/gf-trunk-build
 grep 'Build #' revision-under-test.html
 time wget -q -O glassfish.zip http://${REHudson}/hudson/job/gf-trunk-build-continuous/lastSuccessfulBuild/artifact/bundles/glassfish.zip
 unzip -q glassfish.zip
+if [ $? -ne 0 ]
+then
+  exit 1
+fi
 export S1AS_HOME="$ROOT/glassfish3/glassfish"
 export APS_HOME="$ROOT/appserv-tests"
 cd "$APS_HOME"
@@ -36,6 +40,10 @@ time ant $antTarget
 if [ -z "$DEPL_TARGET"]
 then
     $S1AS_HOME/bin/asadmin stop-domain
+fi
+if [ ! -r client.log ]
+then
+    exit 1
 fi
 egrep '\[FAILED|UNKNOWN\]' client.log >> /dev/null
 if [ $? -eq 0 ]
