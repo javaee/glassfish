@@ -262,7 +262,14 @@ public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
      */
     public static void authRealmDeleted(AuthRealm instance) {
         try {
-            
+            //the listener firing has been unpredictable earlier
+            //after a CLI delete the listener's were not firing in time
+            //so we added explicit calls to this method from CLI
+            //now with latest builds it looks like listeners also fire
+            //causing a NoSuchRealmException
+            if (!Realm.isValidRealm(instance.getName())) {
+                return;
+            }
             Realm.unloadInstance(instance.getName());
         } catch (NoSuchRealmException ex) {
             throw new RuntimeException(ex);
