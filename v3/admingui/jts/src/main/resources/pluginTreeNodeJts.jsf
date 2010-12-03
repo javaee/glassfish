@@ -44,7 +44,7 @@
     id="transactionService"
     text="$resource{i18n_jts.tree.transactionService}"
     url="/jts/transactionService.jsf?configName=${configName}"
-    imageURL="/resource/jts/newImages/transactionService.gif"
+    imageURL="/resource/common/images/transactionService.gif"
     alt="image"
 >
 <!beforeCreate
