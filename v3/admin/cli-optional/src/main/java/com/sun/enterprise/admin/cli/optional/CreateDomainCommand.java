@@ -101,7 +101,7 @@ public final class CreateDomainCommand extends CLICommand {
     @Param(name = PORTBASE_OPTION, optional = true)
     private String portBase;
 
-    @Param(name = "profile", optional = true)
+    @Param(obsolete=true, name = "profile", optional = true)
     private String profile;
 
     @Param(name = "template", optional = true)
