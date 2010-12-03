@@ -45,6 +45,7 @@ import com.sun.enterprise.config.serverbeans.customvalidators.NotDuplicateTarget
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.net.NetUtils;
 import com.sun.enterprise.util.io.FileUtils;
+import com.sun.enterprise.util.StringUtils;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
@@ -341,32 +342,37 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
         @Override
         public void decorate(AdminCommandContext context, final Node instance) throws TransactionFailure, PropertyVetoException {
 
-            if (nodedir != null && nodedir !="")
-                instance.setNodeDir(nodedir);
-            if(installdir != null && installdir != "")
-                instance.setInstallDir(installdir);
-            if (nodehost != null && nodehost !="")
-                instance.setNodeHost(nodehost);
+            // If these options were passed a value of the empty string then
+            // we want to make sure they are null in the Node. The
+            // admin console often passes the empty string instead of null.
+            // See bug 14873
+            if ( !StringUtils.ok(nodedir))
+                instance.setNodeDir(null);
+            if ( !StringUtils.ok(installdir))
+                instance.setInstallDir(null);
+            if  (!StringUtils.ok(nodehost))
+                instance.setNodeHost(null);
+
             //only create-node-ssh and update-node-ssh should be changing the type to SSH
             instance.setType(type);
             
             SshConnector sshC = instance.createChild(SshConnector.class);
-            if (sshPort != "-1" && sshPort != "" )
+            if (StringUtils.ok(sshPort) && ! sshPort.equals("-1") )
                 sshC.setSshPort(sshPort);
 
-            if (sshHost != null && sshHost != "")
+            if (StringUtils.ok(sshHost))
                 sshC.setSshHost(sshHost);
 
             if (sshuser != null || sshkeyfile != null || sshpassword != null ||
                 sshkeypassphrase != null) {
                 SshAuth sshA = sshC.createChild(SshAuth.class);
-                if (sshuser != null && sshuser != "")
+                if (StringUtils.ok(sshuser))
                     sshA.setUserName(sshuser);
-                if (sshkeyfile != null && sshkeyfile != "")
+                if (StringUtils.ok(sshkeyfile))
                     sshA.setKeyfile(sshkeyfile);
-                if (sshpassword != null && sshpassword != "")
+                if (StringUtils.ok(sshpassword))
                     sshA.setPassword(sshpassword);
-                if (sshkeypassphrase != null && sshkeypassphrase != "")
+                if (StringUtils.ok(sshkeypassphrase))
                     sshA.setKeyPassphrase(sshkeypassphrase);
                 sshC.setSshAuth(sshA);
             }
