@@ -93,12 +93,6 @@
 			<version>${project.version}</version>
 		</dependency>
 
-                <dependency>
-                        <groupId>org.glassfish.appclient.server</groupId>
-                        <artifactId>appclient-server-core</artifactId>
-                        <version>${project.version}</version>
-                </dependency>
-		
         <dependency>
             <groupId>org.glassfish.security</groupId>
             <artifactId>security</artifactId>
