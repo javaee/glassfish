@@ -222,6 +222,11 @@
             <artifactId>schema2beans-repackaged</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <!-- mimepull - shared dependency of metro and jersey -->
+        <dependency>
+            <groupId>org.jvnet</groupId>
+            <artifactId>mimepull</artifactId>
+        </dependency>
 
         <!-- embedded shell fragment -->
         <dependency>
