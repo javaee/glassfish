@@ -339,7 +339,8 @@ public class CreateInstanceCommand implements AdminCommand {
 
     public void createInstanceFilesystem(AdminCommandContext context) {
         ActionReport report = ctx.getActionReport();
-       
+        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+
         NodeUtils nodeUtils = new NodeUtils(habitat, logger);
         Server dasServer =
                 servers.getServer(SystemPropertyConstants.DAS_SERVER_NAME);
@@ -375,7 +376,6 @@ public class CreateInstanceCommand implements AdminCommand {
             String msg = Strings.get("create.instance.config",
                     instance, humanCommand);
             msg = StringUtils.cat(NL, registerInstanceMessage, msg );
-            report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
             report.setMessage(msg);
             return;
         }
@@ -391,6 +391,9 @@ public class CreateInstanceCommand implements AdminCommand {
                 humanCommand, output);
 
         if (report.getActionExitCode() != ActionReport.ExitCode.SUCCESS) {
+            // something went wrong with the nonlocal command don't continue but set status to success
+            // because config was updated correctly or we would not be here.
+            report.setActionExitCode(ActionReport.ExitCode.SUCCESS);            
             return;
         }
 
@@ -409,6 +412,9 @@ public class CreateInstanceCommand implements AdminCommand {
         } else {
             bootstrapSecureAdminRemotely();
         }
+             // something went wrong with the nonlocal command don't continue but set status to success
+            // because config was updated correctly or we would not be here.
+            report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
 
     private String makeCommandHuman(List<String> command) {
