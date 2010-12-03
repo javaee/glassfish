@@ -469,7 +469,6 @@ delete-instance
 
             
     private static final Map<String, String> configBeanToDELETECommand = new HashMap<String, String>() {{
-        put("AmxPref", "GENERIC-DELETE");
         put("AdminObjectResource", "delete-admin-object");
         put("AuditModule", "delete-audit-module");
         put("AuthRealm", "delete-auth-realm");
@@ -481,7 +480,6 @@ delete-instance
         put("ConnectorResource", "delete-connector-resource");
         put("CustomResource", "delete-custom-resource");
         put("ExternalJndiResource", "delete-jndi-resource");
-        put("GroupMap", "GENERIC-DELETE");
         put("HttpListener", "delete-http-listener");
         put("Http", "delete-http");
         put("IiopListener", "delete-iiop-listener");
@@ -491,10 +489,7 @@ delete-instance
         put("LbConfig", "delete-http-lb-config");
         put("LoadBalancer", "delete-http-lb");
         put("NetworkListener", "delete-network-listener");
-        put("Principal", "GENERIC-DELETE");
-        put("PrincipalMap", "GENERIC-DELETE");
         put("Profiler", "delete-profiler");
-        put("Property", "GENERIC-DELETE");
         put("Protocol", "delete-protocol");
         put("ProtocolFilter", "delete-protocol-filter");
         put("ProtocolFinder", "delete-protocol-finder");
@@ -504,8 +499,7 @@ delete-instance
         put("Ssl", "delete-ssl");
         put("Transport", "delete-transport");
         put("ThreadPool", "delete-threadpool");
-        put("UserGroup", "GENERIC-DELETE");
-        put("VirtualServer", "delete-virtual-server");     
+        put("VirtualServer", "delete-virtual-server");
         put("WorkSecurityMap", "delete-connector-work-security-map");    
     }};
 

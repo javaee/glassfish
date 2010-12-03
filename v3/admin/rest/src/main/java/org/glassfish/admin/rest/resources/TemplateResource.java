@@ -88,7 +88,6 @@ public class TemplateResource {
     protected Dom entity;  //may be null when not created yet...
     protected Dom parent;
     protected String tagName;
-    protected boolean entityNeedsToBeCreated = false;
     protected ConfigModel childModel; //good model even if the child entity is null
     public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(TemplateResource.class);
     final private static List<String> attributesToSkip = new ArrayList<String>() {
@@ -138,32 +137,16 @@ public class TemplateResource {
                 data.remove("operation");
                 return delete(data);
             }
-            if (entityNeedsToBeCreated) {//create if in the tree
-                Class<? extends ConfigBeanProxy> proxy = TemplateListOfResource.getElementTypeByName(parent, tagName);
-                ConfigBean theParent = (ConfigBean) parent;
-                //need to change from camel case to xml !!!createAndSet works on xml names
-                HashMap<String, String> xmldata = new HashMap<String, String>();
-                Set<String> keys = data.keySet();
-                Iterator<String> iterator = keys.iterator();
-                String key;
-                while (iterator.hasNext()) {
-                    key = iterator.next();
-                    xmldata.put(theParent.model.camelCaseToXML(key), data.get(key));
-                }
-                ConfigSupport.createAndSet(theParent, proxy, xmldata);
-                entity = parent.nodeElement(tagName);
-                entityNeedsToBeCreated = false;
-            } else { //just update it.
-                data = ResourceUtil.translateCamelCasedNamesToXMLNames(data);
-                ActionReporter ar = applyChanges(data);
-                if(ar.getActionExitCode() != ActionReport.ExitCode.SUCCESS) {
-                    //TODO better error handling.
-                    return Response.status(400).entity(ResourceUtil.getActionReportResult(400, "Could not apply changes" + ar.getMessage(), requestHeaders, uriInfo)).build();
-                }
-
+            //just update it.
+            data = ResourceUtil.translateCamelCasedNamesToXMLNames(data);
+            ActionReporter ar = applyChanges(data);
+            if(ar.getActionExitCode() != ActionReport.ExitCode.SUCCESS) {
+                //TODO better error handling.
+                return Response.status(400).entity(ResourceUtil.getActionReportResult(400, "Could not apply changes" + ar.getMessage(), requestHeaders, uriInfo)).build();
             }
+
             String successMessage = localStrings.getLocalString("rest.resource.update.message",
-                    "\"{0}\" updated successfully.", new Object[]{uriInfo.getAbsolutePath()});
+                    "\"{0}\" updated successfully.", uriInfo.getAbsolutePath());
             return Response.ok(ResourceUtil.getActionReportResult(200, successMessage, requestHeaders, uriInfo)).build();
         } catch (Exception ex) {
             if (ex.getCause() instanceof ValidationException) {
@@ -305,23 +288,9 @@ public class TemplateResource {
         this.tagName = tagName;
         entity = parent.nodeElement(tagName);
         if (entity == null) {
-            try {
-                Class<? extends ConfigBeanProxy> proxy = TemplateListOfResource.getElementTypeByName(parent, tagName);
-                ConfigBean theParent = (ConfigBean) parent;
-                // we quickly crate one just to get it smodel.
-                // but the real one might be created later, if the user wants it!
-                entityNeedsToBeCreated = true;
-                entity = theParent.allocate(proxy);
-                childModel = entity.model;
-                entity = null;
-
-            } catch (Exception e) {
-                throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
-            }
-
+            throw new WebApplicationException(new Exception("Trying to create an entity using generic create"),Response.Status.INTERNAL_SERVER_ERROR);
         } else {
             childModel = entity.model;
-
         }
     }
 
