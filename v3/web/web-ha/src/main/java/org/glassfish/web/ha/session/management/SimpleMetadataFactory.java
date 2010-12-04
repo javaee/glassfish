@@ -40,12 +40,15 @@
 
 package org.glassfish.web.ha.session.management;
 
+import org.glassfish.ha.store.util.SimpleMetadata;
+
 /**
  * @author Mahesh Kannan
  * @author Rajiv Mordani
  * 
  */
-public class SimpleMetadataFactory {
+public class
+        SimpleMetadataFactory {
 
     //Full save
     public static SimpleMetadata createSimpleMetadata(long version, long lastAccessTime,
@@ -56,7 +59,7 @@ public class SimpleMetadataFactory {
     //Full save
     //updateTimeStamp
     public static SimpleMetadata createSimpleMetadata(long version, long lastAccessTime) {
-        return new SimpleMetadata(version, lastAccessTime);
+        return new SimpleMetadata(version, lastAccessTime, 0, null);
     }
 
 

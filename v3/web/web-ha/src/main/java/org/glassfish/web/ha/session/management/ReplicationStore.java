@@ -56,6 +56,7 @@ import org.apache.catalina.Session;
 import org.apache.catalina.Loader;
 import org.glassfish.ha.store.api.BackingStore;
 import org.glassfish.ha.store.api.BackingStoreException;
+import org.glassfish.ha.store.util.SimpleMetadata;
 
 import java.io.*;
 import java.util.logging.Level;
@@ -427,9 +428,8 @@ public class ReplicationStore extends HAStoreBase {
             _logger.fine("ReplicationStore>>updateLastAccessTime: replicator: " + backingStore);                       
         }         
         try {
-            SimpleMetadata smd = SimpleMetadataFactory.createSimpleMetadata(session.getVersion(),
+            backingStore.updateTimestamp(session.getIdInternal(), ""+session.getVersion(),
                     ((BaseHASession)session).getLastAccessedTimeInternal());
-            backingStore.save(session.getIdInternal(), smd, !((HASession) session).isPersistent()); //version
         } catch (BackingStoreException ex) {
             //FIXME
         }

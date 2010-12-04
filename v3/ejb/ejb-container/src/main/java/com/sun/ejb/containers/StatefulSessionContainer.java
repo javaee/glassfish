@@ -83,8 +83,6 @@ import com.sun.ejb.spi.container.SFSBContainerCallback;
 import com.sun.ejb.spi.container.StatefulEJBContext;
 import com.sun.ejb.spi.container.SFSBContainerInitialization;
 
-import com.sun.ejb.spi.sfsb.store.SFSBBeanState;
-
 import com.sun.ejb.spi.sfsb.util.CheckpointPolicy;
 import com.sun.ejb.spi.sfsb.util.SFSBUUIDUtil;
 import com.sun.ejb.spi.sfsb.util.SFSBVersionManager;
@@ -110,6 +108,7 @@ import com.sun.ejb.monitoring.probes.EjbCacheProbeProvider;
 import org.glassfish.flashlight.provider.ProbeProviderFactory;
 import org.glassfish.ha.store.api.BackingStore;
 import org.glassfish.ha.store.api.BackingStoreException;
+import org.glassfish.ha.store.util.SimpleMetadata;
 
 /**
  * This class provides container functionality specific to stateful
@@ -157,7 +156,7 @@ public final class StatefulSessionContainer
     private int containerTrimCount = 0;
 
     private LruSessionCache sessionBeanCache;
-    private BackingStore<Serializable, SFSBBeanState> backingStore;
+    private BackingStore<Serializable, SimpleMetadata> backingStore;
     private SFSBUUIDUtil uuidGenerator;
     private ArrayList scheduledTimerTasks = new ArrayList();
 
@@ -1913,9 +1912,9 @@ public final class StatefulSessionContainer
         }
     }
 
-    SFSBBeanState getSFSBBeanState(SessionContextImpl sc) {
+    SimpleMetadata getSFSBBeanState(SessionContextImpl sc) {
         //No need to synchronize
-        SFSBBeanState sfsbBeanState = null;
+        SimpleMetadata simpleMetadata = null;
         try {
 
             if ((containerState != CONTAINER_STARTED) && (containerState != CONTAINER_STOPPED)) {
@@ -1940,10 +1939,10 @@ public final class StatefulSessionContainer
                     sc.setLastPersistedAt(System.currentTimeMillis());
                     long newCtxVersion = sc.incrementAndGetVersion();
                     byte[] serializedState = IOUtils.serializeObject(sc, true);
-                    sfsbBeanState = new SFSBBeanState(
-                            (Serializable) sc.getInstanceKey(), System.currentTimeMillis(),
-                            !sc.existsInStore(), serializedState, sc.getVersion());
-                    sfsbBeanState.setVersion(newCtxVersion);
+                    simpleMetadata = new SimpleMetadata(sc.getVersion(),
+                            System.currentTimeMillis(),
+                            removalGracePeriodInSeconds*1000, serializedState);
+                    simpleMetadata.setVersion(newCtxVersion);
                     interceptorManager.intercept(
                             CallbackType.POST_ACTIVATE, sc);
                     //Do not set sc.setExistsInStore() here
@@ -1979,7 +1978,7 @@ public final class StatefulSessionContainer
             _logger.log(Level.WARNING, "sfsb checkpoint error", th);
         }
 
-        return sfsbBeanState;
+        return simpleMetadata;
     }
 
     void txCheckpointCompleted(SessionContextImpl sc) {
@@ -2933,12 +2932,12 @@ public final class StatefulSessionContainer
     }
 
     @Override
-    public BackingStore<Serializable, SFSBBeanState> getBackingStore() {
+    public BackingStore<Serializable, SimpleMetadata> getBackingStore() {
         return backingStore;
     }
 
     @Override
-    public void setBackingStore(BackingStore<Serializable, SFSBBeanState> store) {
+    public void setBackingStore(BackingStore<Serializable, SimpleMetadata> store) {
         this.backingStore = store;
     }
 
@@ -2985,12 +2984,12 @@ public final class StatefulSessionContainer
                     try {
                         long newCtxVersion = sc.incrementAndGetVersion();
                         serializedState = IOUtils.serializeObject(sc, true);
-                        SFSBBeanState beanState =
-                               new SFSBBeanState(
-                                        (Serializable) sc.getInstanceKey(), sc.getLastAccessTime(),
-                                        !sc.existsInStore(), serializedState, sc.getVersion());
+                        SimpleMetadata beanState =
+                               new SimpleMetadata(
+                                        sc.getVersion(), sc.getLastAccessTime(),
+                                        removalGracePeriodInSeconds*1000, serializedState);
                         beanState.setVersion(newCtxVersion);
-                        backingStore.save(beanState.getSessionId(), beanState, beanState.isNew());
+                        backingStore.save((Serializable) sc.getInstanceKey(), beanState, !sc.existsInStore());
 
                         //Now that we have successfully stored.....
 

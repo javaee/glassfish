@@ -43,13 +43,12 @@ package com.sun.ejb.containers;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import com.sun.ejb.spi.sfsb.store.SFSBBeanState;
-
 import java.util.logging.*;
 
 import com.sun.logging.*;
 import org.glassfish.ha.store.api.BackingStore;
 import org.glassfish.ha.store.api.BackingStoreException;
+import org.glassfish.ha.store.util.SimpleMetadata;
 
 /**
  * A class to checkpoint HA enabled SFSBs as a single transactional unit.
@@ -83,9 +82,10 @@ public class SFSBTxCheckpointCoordinator {
             SessionContextImpl ctx = contexts[i];
             StatefulSessionContainer container =
                     (StatefulSessionContainer) ctx.getContainer();
-            SFSBBeanState beanState = container.getSFSBBeanState(ctx);
+            SimpleMetadata beanState = container.getSFSBBeanState(ctx);
             if (beanState != null) {
-                states.add(new StoreAndBeanState(container.getBackingStore(), beanState));
+                states.add(new StoreAndBeanState((Serializable) ctx.getInstanceKey(),
+                        container.getBackingStore(), beanState, !ctx.existsInStore()));
             }
         }
 
@@ -94,7 +94,7 @@ public class SFSBTxCheckpointCoordinator {
 
             try {
                 for (StoreAndBeanState st : states) {
-                    st.store.save(st.state.getSessionId(), st.state, st.state.isNew());
+                    st.store.save(st.key, st.state, st.isNew);
                 }
             } catch (BackingStoreException sfsbEx) {
                 _logger.log(Level.WARNING, "Exception during checkpointSave",
@@ -114,12 +114,18 @@ public class SFSBTxCheckpointCoordinator {
     }
 
     private static final class StoreAndBeanState {
-        BackingStore<Serializable, SFSBBeanState> store;
-        SFSBBeanState state;
+        Serializable key;
+        BackingStore<Serializable, SimpleMetadata> store;
+        SimpleMetadata state;
+        boolean isNew;
 
-        StoreAndBeanState(BackingStore<Serializable, SFSBBeanState> store, SFSBBeanState state) {
+        StoreAndBeanState(Serializable key,
+                          BackingStore<Serializable, SimpleMetadata> store, SimpleMetadata state,
+                          boolean isNew) {
+            this.key = key;
             this.store = store;
             this.state = state;
+            this.isNew = isNew;
         }
     }
 
