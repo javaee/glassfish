@@ -281,6 +281,10 @@ public class EjbContainerUtilImpl
     }
 
     public  EJBTimerService getEJBTimerService(String target) {
+        return getEJBTimerService(target, true);
+    }
+
+    public  EJBTimerService getEJBTimerService(String target, boolean force) {
         if (!_ejbTimerServiceVerified) {
             deployEJBTimerService(target);
 
@@ -299,6 +303,10 @@ public class EjbContainerUtilImpl
                         _logger.log(Level.INFO, "<== ... Timers Restored.");
                     }
                 }
+            } else if (!force) {
+                // If it was a request with force == false, and we failed to load the service,
+                // do not mark it as verified
+                _ejbTimerServiceVerified = false;
             }
         }
         return _ejbTimerService;
@@ -548,7 +556,7 @@ public class EjbContainerUtilImpl
                                 _logger.log(Level.INFO, "ejb.timer_service_started", new Object[] { resourceName } );
                             }
                         } else {
-                            _logger.log (Level.WARNING, "Cannot deploy or load EJBTimerService: Timer resource for target " 
+                            _logger.log (Level.WARNING, "Cannot start EJBTimerService: Timer resource for target " 
                                     + target + " is not available");
                         }
 
@@ -634,7 +642,7 @@ public class EjbContainerUtilImpl
     }
 
     private String getTimerResource(String target) {
-        String resource = EjbContainerUtil.TIMER_RESOURCE_JNDI;
+        String resource = null;
         EjbTimerService ejbt = getEjbTimerService(target);
         if (ejbt != null) {
             if (ejbt.getTimerDatasource() != null) {
@@ -642,6 +650,8 @@ public class EjbContainerUtilImpl
                 if (_logger.isLoggable(Level.FINE)) {
                     _logger.fine("Found Timer Service resource name " + resource);
                 }
+            } else {
+                resource = EjbContainerUtil.TIMER_RESOURCE_JNDI;
             }
         }
         return resource;
@@ -658,13 +668,15 @@ public class EjbContainerUtilImpl
             if (_logger.isLoggable(Level.FINE)) {
                 _logger.fine("Looking for " + target + " ejb-container config");
             }
-            ReferenceContainer rc  =  domain.getReferenceContainerNamed(target);
-            Config config = domain.getConfigNamed(rc.getReference());
-            if (_logger.isLoggable(Level.FINE)) {
-                _logger.fine("Found " + config);
-            }
-            if (config != null) {
-                ejbt = config.getEjbContainer().getEjbTimerService();
+            ReferenceContainer rc =  domain.getReferenceContainerNamed(target);
+            if (rc != null) {
+                Config config = domain.getConfigNamed(rc.getReference());
+                if (_logger.isLoggable(Level.FINE)) {
+                    _logger.fine("Found " + config);
+                }
+                if (config != null) {
+                    ejbt = config.getEjbContainer().getEjbTimerService();
+                }
             }
         }
 

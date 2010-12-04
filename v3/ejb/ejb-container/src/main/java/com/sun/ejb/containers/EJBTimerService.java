@@ -492,14 +492,19 @@ public class EJBTimerService
                 } else {
                     logger.log(Level.INFO, "There are no EJB Timers owned by this server");
                 }
+                rc = true;
             }
         } catch (Exception ex) {
-            logger.log(Level.SEVERE, "Exception restoring EJB Timers", ex);
+            // Problem accessing timer service so disable it.
+            ejbContainerUtil.setEJBTimerService(null);
+
+            logger.log(Level.WARNING, "ejb.timer_service_init_error", ex);
+
         }
         return rc;
     }
 
-    void restoreTimers() throws Exception {
+    private void restoreTimers() throws Exception {
 
         // Optimization.  Skip timer restoration if there aren't any
         // applications with timed objects deployed.  
@@ -520,16 +525,6 @@ public class EJBTimerService
             // cost to generating the SQL for the underlying
             // jpql queries the first time any TimerBean query is called.
             _restoreTimers(timerLocal_.findActiveTimersOwnedByThisServer());
-        } catch(Exception e) {
-
-            // Problem accessing timer service so disable it.
-            ejbContainerUtil.setEJBTimerService(null);
-
-            logger.log(Level.WARNING, "ejb.timer_service_init_error", e);
-
-            // No need to propagate exception.  EJB Timer Service is disabled
-            // but that won't affect the rest of the EJB container services.
-            return;
 
         } finally {
             // try to commit regardless of success or failure. 
