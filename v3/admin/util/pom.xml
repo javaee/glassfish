@@ -53,7 +53,7 @@
     </parent>
     <artifactId>admin-util</artifactId>
     <packaging>hk2-jar</packaging>
-    <name>Admin Utilities classes</name>
+    <name>admin-util</name>
     <description>Admin Utilities</description>
 
     <developers>
