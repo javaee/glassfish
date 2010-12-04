@@ -167,8 +167,8 @@ class LogFile {
         } catch( LogException le ) {
 			_logger.log(Level.SEVERE,"jts.log_error",le.toString());
 			 String msg = LogFormatter.getLocalizedMessage(_logger,"jts.log_error",
-			 							new java.lang.Object[] {le.toString()});
-			throw  new org.omg.CORBA.INTERNAL(msg);
+                                        new java.lang.Object[] {le.toString()});
+			 throw (org.omg.CORBA.INTERNAL) (new org.omg.CORBA.INTERNAL(msg)).initCause(le);
             //if( recordLSN != null )
             //recordLSN.copy(LogLSN.NULL_LSN);
             //result = false;

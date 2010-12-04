@@ -62,6 +62,8 @@
 
 package com.sun.jts.CosTransactions;
 
+import com.sun.enterprise.util.i18n.StringManager;
+
 /**A class which contains exception information for errors in the log.
  *
  * @version 0.01
@@ -77,7 +79,8 @@ package com.sun.jts.CosTransactions;
 //   0.01  SAJH   Initial implementation.
 //------------------------------------------------------------------------------
 
-class LogException extends Throwable {
+class LogException extends Exception {
+    private static final StringManager sm = StringManager.getManager(LogException.class);
 
     /**Constants which define error codes from the logger classes.
      */
@@ -114,35 +117,35 @@ class LogException extends Throwable {
     /**Strings which contain error messages from the log.
      */
     private static final String[] statusStrings = 
-    { "LOG-000: Operation successful"/*#Frozen*/,
-      "LOG-001: Log not initialised"/*#Frozen*/,
-      "LOG-002: Open failure"/*#Frozen*/,
-      "LOG-003: Read failure"/*#Frozen*/,
-      "LOG-004: Data corrupted"/*#Frozen*/,
-      "LOG-005: Invalid file descriptor"/*#Frozen*/,
-      "LOG-006: Lock failure"/*#Frozen*/,
-      "LOG-007: Write failure"/*#Frozen*/,
-      "LOG-008: Close failure"/*#Frozen*/,
-      "LOG-009: Too many input buffers"/*#Frozen*/,
-      "LOG-010: Record too large"/*#Frozen*/,
-      "LOG-011: No space in filesystem"/*#Frozen*/,
-      "LOG-012: Insufficient memory"/*#Frozen*/,
-      "LOG-013: Force failure"/*#Frozen*/,
-      "LOG-014: Invalid LSN value"/*#Frozen*/,
-      "LOG-015: New tail LSN too high"/*#Frozen*/,
-      "LOG-016: New tail LSN too low"/*#Frozen*/,
-      "LOG-017: Invalid tail LSN value"/*#Frozen*/,
-      "LOG-018: Internal error"/*#Frozen*/,
-      "LOG-019: No restart record present"/*#Frozen*/,
-      "LOG-020: Invalid cursor value"/*#Frozen*/,
-      "LOG-021: End of cursor reached"/*#Frozen*/,
-      "LOG-022: Filesystem access failure"/*#Frozen*/,
-      "LOG-023: Invalid process"/*#Frozen*/,
-      "LOG-024: Log is read only"/*#Frozen*/,
-      "LOG-025: Invalid record type specified"/*#Frozen*/,
-      "LOG-026: Extent file open failure"/*#Frozen*/,
-      "LOG-027: Invalid write mode specified"/*#Frozen*/,
-      "LOG-028: Invalid status specified"/*#Frozen*/ };
+    { "jts.LOG_000_Operation_successful"/*#Frozen*/,
+      "jts.LOG_001_Log_not_initialised"/*#Frozen*/,
+      "jts.LOG_002_Open_failure"/*#Frozen*/,
+      "jts.LOG_003_Read_failure"/*#Frozen*/,
+      "jts.LOG_004_Data_corrupted"/*#Frozen*/,
+      "jts.LOG_005_Invalid_file_descriptor"/*#Frozen*/,
+      "jts.LOG_006_Lock_failure"/*#Frozen*/,
+      "jts.LOG_007_Write_failure"/*#Frozen*/,
+      "jts.LOG_008_Close_failure"/*#Frozen*/,
+      "jts.LOG_009_Too_many_input_buffers"/*#Frozen*/,
+      "jts.LOG_010_Record_too_large"/*#Frozen*/,
+      "jts.LOG_011_No_space_in_filesystem"/*#Frozen*/,
+      "jts.LOG_012_Insufficient_memory"/*#Frozen*/,
+      "jts.LOG_013_Force_failure"/*#Frozen*/,
+      "jts.LOG_014_Invalid_LSN_value"/*#Frozen*/,
+      "jts.LOG_015_New_tail_LSN_too_high"/*#Frozen*/,
+      "jts.LOG_016_New_tail_LSN_too_low"/*#Frozen*/,
+      "jts.LOG_017_Invalid_tail_LSN_value"/*#Frozen*/,
+      "jts.LOG_018_Internal_error"/*#Frozen*/,
+      "jts.LOG_019_No_restart_record_present"/*#Frozen*/,
+      "jts.LOG_020_Invalid_cursor_value"/*#Frozen*/,
+      "jts.LOG_021_End_of_cursor_reached"/*#Frozen*/,
+      "jts.LOG_022_Filesystem_access_failure"/*#Frozen*/,
+      "jts.LOG_023_Invalid_process"/*#Frozen*/,
+      "jts.LOG_024_Log_is_read_only"/*#Frozen*/,
+      "jts.LOG_025_Invalid_record_type_specified"/*#Frozen*/,
+      "jts.LOG_026_Extent_file_open_failure"/*#Frozen*/,
+      "jts.LOG_027_Invalid_write_mode_specified"/*#Frozen*/,
+      "jts.LOG_028_Invalid_status_specified"/*#Frozen*/ };
 
     /**Instance members
      */
@@ -163,8 +166,7 @@ class LogException extends Throwable {
     LogException(Object dummy /* COMMENT(Ram J) - used to be trace object */,
                   int   err,
                   int   point ) {
-        super(new String("Log exception at point "+point+":\n"+
-                         statusStrings[err>MAX_RESPONSE_VALUE?MAX_RESPONSE_VALUE+1:err]/*#Frozen*/));
+        super(getMessageFromErrorCode(null, err, point));
         errorCode = err;
         throwPoint = point;
     }
@@ -184,10 +186,21 @@ class LogException extends Throwable {
                   int    err,
                   int    point,
                   Object extra ) {
-        super(new String("Log exception at point "+point+":\n"+
-                         statusStrings[err>MAX_RESPONSE_VALUE?MAX_RESPONSE_VALUE+1:err]/*#Frozen*/));
+        super(getMessageFromErrorCode(null, err, point));
         errorCode = err;
         throwPoint = point;
         extraInfo = extra;
+    }
+
+    LogException(int err, int point, String msg, Throwable cause) {
+        super(getMessageFromErrorCode(msg, err, point), cause);
+        this.errorCode = err;
+        this.throwPoint = point;
+    }
+
+    private static String getMessageFromErrorCode(String extraMsg, int err, int point) {
+        String key = statusStrings[err > MAX_RESPONSE_VALUE ? MAX_RESPONSE_VALUE + 1 : err];
+        return sm.getString("jts.log_exception", sm.getString(key), point,
+                 (extraMsg == null) ? "" : extraMsg);
     }
 }

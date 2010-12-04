@@ -232,8 +232,8 @@ class Log {
         catch( LogException le ) {
 			_logger.log(Level.SEVERE,"jts.log_error",le);
 			 String msg = LogFormatter.getLocalizedMessage(_logger,"jts.log_error",
-			 							new java.lang.Object[] {le.toString()});
-			  throw  new org.omg.CORBA.INTERNAL(msg);
+			 			new java.lang.Object[] {le.toString()});
+			 throw  (org.omg.CORBA.INTERNAL) (new org.omg.CORBA.INTERNAL(msg)).initCause(le);
         }
 
         return logFile;

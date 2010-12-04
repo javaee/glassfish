@@ -64,7 +64,7 @@ package com.sun.jts.CosTransactions;
 
 // Import required classes.
 
-import java.util.*;
+import com.sun.enterprise.util.i18n.StringManager;
 
 /**Contains information for an open cursor.
  *
@@ -82,6 +82,8 @@ import java.util.*;
 //-----------------------------------------------------------------------------
 
 class LogCursor {
+    private static final StringManager sm = StringManager.getManager(LogCursor.class);
+
     /**Constants used to identify browse direction.
      */
     final static int ASCENDING  = 0;
@@ -264,7 +266,8 @@ class LogCursor {
                 bytesRead = logEDP.fileHandle.fileRead(headerBytes); 
             } catch( LogException le ) {
                 logEDP.lastAccess = LogExtent.ACCESSTYPE_UNKNOWN;
-                throw new LogException(null,LogException.LOG_READ_FAILURE,8);
+                throw new LogException(LogException.LOG_READ_FAILURE, 8,
+                        sm.getString("jts.log_read_header_failed"), le);
             }
 
             logRH = new LogRecordHeader(headerBytes,0);
@@ -312,7 +315,7 @@ class LogCursor {
             bytesRead = logEDP.fileHandle.readVector(readVect);
         } catch( LogException le ) {
             logEDP.lastAccess = LogExtent.ACCESSTYPE_UNKNOWN;
-            throw new LogException(null,le.errorCode,11);
+            throw new LogException(le.errorCode, 11, sm.getString("jts.log_readvector_failed"), le);
         }
         logEDP.cursorPosition += bytesRead;
 

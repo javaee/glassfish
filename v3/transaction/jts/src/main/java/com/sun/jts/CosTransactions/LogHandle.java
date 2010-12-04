@@ -64,6 +64,7 @@ package com.sun.jts.CosTransactions;
 
 // Import required classes.
 
+import com.sun.enterprise.util.i18n.StringManager;
 import java.util.*;
 import java.io.*;
 
@@ -83,7 +84,8 @@ import java.io.*;
 //-----------------------------------------------------------------------------
 
 class LogHandle {
-
+    private static final StringManager sm = StringManager.getManager(LogHandle.class);
+    
     // WriteMode identifies the mode in which a system journal record
     // is to be written, and affects the performance overhead of the write.
 
@@ -395,7 +397,8 @@ class LogHandle {
             } catch( LogException le ) {
                 extentTable.remove(new Integer(logControlDescriptor.headLSN.extent));
                 nextEDP.doFinalize();
-                throw new LogException(null,LogException.LOG_WRITE_FAILURE,10);
+                throw new LogException(LogException.LOG_WRITE_FAILURE, 10, 
+                        sm.getString("jts.log_add_link_failed"), le);
             }
 
             // Set its 'extent written' flag to TRUE
@@ -520,7 +523,7 @@ class LogHandle {
                             if( cushionFreed )
                                 restoreCushion(false);
 
-                            throw new LogException(null,LogException.LOG_NO_SPACE,11);
+                            throw new LogException(LogException.LOG_NO_SPACE,11, null, le);
                         }
 
                         try {
@@ -538,8 +541,10 @@ class LogHandle {
             //   Unlock the log file latch
             //   Return LOG_WRITE_FAILURE
 
-            if( !allocateSuccess )
-                throw new LogException(null,LogException.LOG_WRITE_FAILURE,12);
+            if (!allocateSuccess) {
+                throw new LogException(LogException.LOG_WRITE_FAILURE, 12,
+                        sm.getString("jts.log_allocate_failed"), (Throwable) null);
+            }
 
             // SET ChunkRemaining to the Grabbed size - RecordSize
 
@@ -575,8 +580,9 @@ class LogHandle {
                     try {
                         nextEDP.fileHandle.fileSync();
                         nextEDP.writtenSinceLastForce = false;
-                    } catch( LogException le ) {
-                        throw new LogException(null,LogException.LOG_ERROR_FORCING_LOG,14);
+                    } catch (LogException le) {
+                        throw new LogException(LogException.LOG_ERROR_FORCING_LOG, 14,
+                                sm.getString("jts.log_file_sync_failed"), le);
                     }
             }
         }
@@ -688,9 +694,10 @@ class LogHandle {
         int bytesRead = 0;
         try {
             bytesRead = logEDP.fileHandle.fileRead(headerBytes);
-        } catch( LogException le ) {
+        } catch (LogException le) {
             logEDP.lastAccess = LogExtent.ACCESSTYPE_UNKNOWN;
-            throw new LogException(null,le.errorCode,6);
+            throw new LogException(le.errorCode, 6,
+                    sm.getString("jts.log_read_header_failed"), le);
         }
 
         LogRecordHeader logRH = new LogRecordHeader(headerBytes,0);
@@ -723,7 +730,7 @@ class LogHandle {
             bytesRead = logEDP.fileHandle.readVector(readVect);
         } catch( LogException le ) {
             logEDP.lastAccess = LogExtent.ACCESSTYPE_UNKNOWN;
-            throw new LogException(null,le.errorCode,9);
+            throw new LogException(le.errorCode,9, sm.getString("jts.log_readvector_failed"), le);
         }
 
         LogRecordEnding logRE = new LogRecordEnding(readVect[1],0);
@@ -1179,9 +1186,10 @@ class LogHandle {
 
             try {
                 bytesRead = logEDP.fileHandle.fileRead(headerBytes);
-            } catch( LogException le ) {
+            } catch (LogException le) {
                 logEDP.lastAccess = LogExtent.ACCESSTYPE_UNKNOWN;
-                throw new LogException(null,LogException.LOG_READ_FAILURE,11);
+                throw new LogException(LogException.LOG_READ_FAILURE, 11,
+                        sm.getString("jts.log_read_header_failed"), le);
             }
 
             logEDP.cursorPosition += bytesRead;
@@ -1596,7 +1604,7 @@ class LogHandle {
                     extent.doFinalize();
                 }
 
-                throw new LogException(null,LogException.LOG_READ_FAILURE,3);
+                throw new LogException(LogException.LOG_READ_FAILURE,3, null, le);
             }
 
             extent.cursorPosition = currentLSN.offset + extra;
@@ -1685,7 +1693,7 @@ class LogHandle {
                         upcallTarget.upcall(CALLBACK_REASON_SOS);
                         upcallInProgress = false;
                     }
-                    throw new LogException(null,LogException.LOG_OPEN_FAILURE,3);
+                    throw new LogException(LogException.LOG_OPEN_FAILURE,3, null, le);
                 }
 
                 // Use Log_AllocFileStorage to create a file the
@@ -1719,7 +1727,7 @@ class LogHandle {
                         upcallInProgress = false;
                     }
                     cushionExists = false;
-                    throw new LogException(null,LogException.LOG_OPEN_FAILURE,4);
+                    throw new LogException(LogException.LOG_OPEN_FAILURE,4, null, le);
                 }
 
                 // CLOSE the cushion file
@@ -1764,9 +1772,7 @@ class LogHandle {
                     nextEDP.fileHandle.fileSync();
                     nextEDP.writtenSinceLastForce = false;
                 } catch (LogException le) {
-                    throw new LogException(null,
-                                           LogException.LOG_ERROR_FORCING_LOG,
-                                           14);
+                    throw new LogException(LogException.LOG_ERROR_FORCING_LOG, 14, null, le);
                 }
             }
         }
