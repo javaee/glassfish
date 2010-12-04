@@ -346,19 +346,6 @@ public final class CreateDomainCommand extends CLICommand {
             validatePassword(masterPassword, masterPasswordOption);
         }
 
-        /*
-         * Decide whether to save the master password.
-         * Normally this is based on the --savemasterpassword command
-         * line option, but if we're using the default master password
-         * we always save it.  This means, in the default case, start-domain
-         * will always find the master password and will never need to
-         * prompt for it.
-         */
-        if (masterPassword != null &&
-                masterPassword.equals(DEFAULT_MASTER_PASSWORD)) {
-            saveMasterPassword = true;
-        }
-
         try {
             // verify admin port is valid if specified on command line
             if (adminPort != null) {
