@@ -128,10 +128,10 @@
         <glassfish-corba.version>3.1.0-b017</glassfish-corba.version>
         <uc-pkg-client.version>1.122-38.2791</uc-pkg-client.version>
         <uc-pkg-bootstrap.version>1.122-38.2791</uc-pkg-bootstrap.version>
-        <webservices.version>2.1-b18</webservices.version>
+        <webservices.version>2.1-b19</webservices.version>
         <woodstox.version>3.2.1.1</woodstox.version>
-        <jaxb-api.version>2.2.2-promoted-b95</jaxb-api.version>
-        <jaxb.version>2.2.2-promoted-b95</jaxb.version>
+        <jaxb-api.version>2.2.2-promoted-b98</jaxb-api.version>
+        <jaxb.version>2.2.2-promoted-b98</jaxb.version>
         <jaxrpc.api.version>1.1-b01</jaxrpc.api.version>
 
         <javax-persistence-api.version>2.0.2</javax-persistence-api.version>
