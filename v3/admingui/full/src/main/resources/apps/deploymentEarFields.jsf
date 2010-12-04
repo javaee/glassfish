@@ -91,6 +91,10 @@
         <sun:checkbox id="ver2" label=" " selected="#{pageSession.ear['verify']}" selectedValue="true" />
 </sun:property>
 
+<sun:property id="compatibility" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.compatibility}" helpText="$resource{i18n.deploy.compatibilityHelp}">
+        <sun:checkbox id="compatibility" label=" " selected="#{pageSession.ear['PROPERTY-compatibility']}" selectedValue="v2" />
+</sun:property>
+
 <sun:property id="force" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.forceRedeploy}" helpText="$resource{i18n.deploy.forceRedeployHelp}">
         <sun:checkbox id="force"  label=" " selected="#{pageSession.ear['force']}" selectedValue="true" />
 </sun:property>

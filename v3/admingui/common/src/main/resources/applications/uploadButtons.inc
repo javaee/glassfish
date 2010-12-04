@@ -64,7 +64,7 @@
     <!command
         compare(obj1="#{uploadRdBtn}" obj2="client" objEqual=>$attribute{needUpload});
         if (${needUpload}){
-            println("===== needUploadToTempfile");
+            println("===== GUI deployment: needUploadToTempfile ======");
             uploadFileToTempDir(file="#{uploadedFile}" uploadedTempFile="#{requestScope.filePath}", origPath="#{requestScope.origPath}");
             println("===== filePath=#{requestScope.filePath} origPath=#{requestScope.origPath}");
         }
