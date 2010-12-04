@@ -119,7 +119,8 @@ public class ServiceReferenceDescriptor extends EnvironmentProperty
 
     //Support for JAXWS 2.2 features
     //@MTOM for WebserviceRef
-    private boolean mtomEnabled ;
+    // Boolean instead of boolean for tri-value - true/false/not-set
+    private Boolean mtomEnabled ;
 
     //Support for JAXWS 2.2 features
     //@RespectBinding for WebserviceRef
@@ -165,12 +166,16 @@ public class ServiceReferenceDescriptor extends EnvironmentProperty
         this.respectBinding = respectBinding;
     }
 
+    public boolean hasMtomEnabled() {
+        return mtomEnabled != null;
+    }
+
     public boolean isMtomEnabled() {
-        return mtomEnabled;
+        return mtomEnabled != null && mtomEnabled.booleanValue();
     }
 
     public void setMtomEnabled(boolean mtomEnabled) {
-        this.mtomEnabled = mtomEnabled;
+        this.mtomEnabled = Boolean.valueOf(mtomEnabled);
     }
 
     public boolean isAddressingEnabled() {

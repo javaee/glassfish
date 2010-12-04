@@ -40,8 +40,6 @@
 
 package org.glassfish.webservices.annotation.handlers;
 
-import javax.xml.ws.WebServiceRef;
-
 import java.lang.reflect.AnnotatedElement;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
@@ -49,10 +47,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import java.util.Iterator;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.logging.Level;
 
 import javax.xml.ws.*;
 import javax.xml.ws.RespectBinding;
@@ -60,26 +57,21 @@ import javax.xml.ws.spi.WebServiceFeatureAnnotation;
 import javax.xml.ws.soap.MTOM;
 import javax.xml.ws.soap.Addressing;
 
-import org.glassfish.apf.AnnotationHandler;
 import org.glassfish.apf.AnnotatedElementHandler;
 import org.glassfish.apf.AnnotationInfo;
-import org.glassfish.apf.ProcessingContext;
 import org.glassfish.apf.ResultType;
 import org.glassfish.apf.HandlerProcessingResult;
 import org.glassfish.apf.AnnotationProcessorException;
 import org.glassfish.apf.impl.HandlerProcessingResultImpl;
-import org.glassfish.internal.api.Globals;
 
 import com.sun.enterprise.deployment.annotation.context.AppClientContext;
-import com.sun.enterprise.deployment.annotation.context.WebBundleContext;
-import com.sun.enterprise.deployment.annotation.context.EjbContext;
-import com.sun.enterprise.deployment.annotation.context.EjbBundleContext;
 import com.sun.enterprise.deployment.annotation.context.ServiceReferenceContainerContext;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.types.ServiceReferenceContainer;
 import org.jvnet.hk2.annotations.Service;
 import com.sun.enterprise.deployment.annotation.handlers.AbstractHandler;
-import com.sun.istack.NotNull;
+
+import static com.sun.enterprise.util.StringUtils.ok;
 
 /**
  * This annotation handler is responsible for processing the javax.jws.WebServiceRef annotation type.
@@ -89,23 +81,7 @@ import com.sun.istack.NotNull;
 @Service
 public class WebServiceRefHandler extends AbstractHandler  {
 
-
-    private javax.xml.ws.soap.MTOM mtom;
-
-    private javax.xml.ws.soap.Addressing addressing;
-
-    private javax.xml.ws.RespectBinding respectBinding;
-
-    /**
-     * Other annotations like SchemaValidation etc to be passed on to ServiceReferenceDescriptor
-     */
-   private Map<Class<? extends Annotation>, Annotation> otherAnnotations =
-            new HashMap<Class<? extends Annotation>, Annotation>();
-    /** Creates a new instance of WebServiceRefHandler */
-    public WebServiceRefHandler() {
-
-    }
-    
+    @Override
     public Class<? extends Annotation> getAnnotationType() {
         return javax.xml.ws.WebServiceRef.class;
     }
@@ -115,6 +91,7 @@ public class WebServiceRefHandler extends AbstractHandler  {
      * require to be processed (if present) before it processes it's own
      * annotation type.
      */
+    @Override
     public Class<? extends Annotation>[] getTypeDependencies() {
         // it is easier if we return the array of component type. That
         // way, the @WebServiceRef is processed after the component
@@ -122,41 +99,23 @@ public class WebServiceRefHandler extends AbstractHandler  {
         // on the context stack. It won't hurt when @WebServiceRef
         // is used in appclients or web app since references are
         // declared at the bundle level.
-        //todo BM add javax.persistence.Entity
         return getEjbAndWebAnnotationTypes();
     }
 
-    protected HandlerProcessingResult processAWsRef(AnnotationInfo annInfo, WebServiceRef annotation)
-                throws AnnotationProcessorException {
-        AnnotatedElementHandler annCtx = annInfo.getProcessingContext().getHandler();
+    protected HandlerProcessingResult processAWsRef(AnnotationInfo annInfo,
+                WebServiceRef annotation) throws AnnotationProcessorException {
+        AnnotatedElementHandler annCtx =
+            annInfo.getProcessingContext().getHandler();
         AnnotatedElement annElem = annInfo.getAnnotatedElement();
-        
+
         Class annotatedType = null;
         Class declaringClass = null;
-        //Fix for 6925544
-        //Make sure these fields are initialized to null
-        //Clean up the local variables since by default the scope is Singleton
-        //Note Also tried @Scoped(PerLookup) but that did not work
-        mtom = null;
-        addressing = null;
-        respectBinding = null;
-        String serviceRefName = annotation.name();
+        InjectionTarget target = null;
+        String defaultServiceRefName = null;
+
         if (annInfo.getElementType().equals(ElementType.FIELD)) {
             // this is a field injection
             Field annotatedField = (Field) annElem;
-            for (Annotation a : annotatedField.getAnnotations()) {
-               if (!(a.annotationType().isAnnotationPresent(WebServiceFeatureAnnotation.class))) {
-                    continue;
-                } else  if (a instanceof MTOM) {
-                    mtom = (MTOM)a;
-                } else if (a instanceof Addressing) {
-                    addressing = (Addressing) a;
-                } else if (a instanceof RespectBinding) {
-                    respectBinding = (RespectBinding) a;
-                } else {
-                    add(a);
-                }
-            }
 
             // check this is a valid field
             if (annCtx instanceof AppClientContext){
@@ -171,13 +130,12 @@ public class WebServiceRefHandler extends AbstractHandler  {
             
             annotatedType = annotatedField.getType();
             declaringClass = annotatedField.getDeclaringClass();
-            // applying with default
-            if (serviceRefName.equals("")) {
-                serviceRefName = declaringClass.getName()
-                + "/" + annotatedField.getName();
-            }
+            defaultServiceRefName = declaringClass.getName() + "/" +
+                                        annotatedField.getName();
+            target = new InjectionTarget();
+            target.setFieldName(annotatedField.getName());
+            target.setClassName(annotatedField.getDeclaringClass().getName());
         } else if (annInfo.getElementType().equals(ElementType.METHOD)) {
-            
             // this is a method injection
             Method annotatedMethod = (Method) annElem;
             validateInjectionMethod(annotatedMethod, annInfo);
@@ -194,18 +152,18 @@ public class WebServiceRefHandler extends AbstractHandler  {
             
             annotatedType = annotatedMethod.getParameterTypes()[0];
             declaringClass = annotatedMethod.getDeclaringClass();
-            if (serviceRefName == null || serviceRefName.equals("")) {
-                // Derive javabean property name.
-                String propertyName =
-                    getInjectionMethodPropertyName(annotatedMethod, annInfo);
-                // prefixing with fully qualified type name
-                serviceRefName = declaringClass.getName()
-                    + "/" + propertyName;
-            }
-        } else if (annInfo.getElementType().equals(ElementType.TYPE))
-        {
+            // Derive javabean property name.
+            String propertyName =
+                getInjectionMethodPropertyName(annotatedMethod, annInfo);
+            // prefixing with fully qualified type name
+            defaultServiceRefName = declaringClass.getName() + "/" +
+                                        propertyName;
+            target = new InjectionTarget();
+            target.setMethodName(annotatedMethod.getName());
+            target.setClassName(annotatedMethod.getDeclaringClass().getName());
+        } else if (annInfo.getElementType().equals(ElementType.TYPE)) {
             // name must be specified.
-            if (serviceRefName==null || serviceRefName.length()==0) {
+            if (!ok(annotation.name())) {
                 throw new AnnotationProcessorException(
                         localStrings.getLocalString(
                         "enterprise.deployment.annotation.handlers.nonametypelevel",
@@ -214,7 +172,7 @@ public class WebServiceRefHandler extends AbstractHandler  {
             // this is a dependency declaration, we need the service interface
             // to be specified
             annotatedType = annotation.type();
-            if (annotatedType==null || annotatedType==Object.class  ) {
+            if (annotatedType == null || annotatedType == Object.class) {
                 throw new AnnotationProcessorException(
                         localStrings.getLocalString(
                         "enterprise.deployment.annotation.handlers.typenotfound",
@@ -222,36 +180,47 @@ public class WebServiceRefHandler extends AbstractHandler  {
                          annInfo);
             }
             declaringClass = (Class) annElem;
-            for (Annotation a : declaringClass.getAnnotations()) {
-                if (!(a.annotationType().isAnnotationPresent(WebServiceFeatureAnnotation.class))) {
-                    continue;
-                } else  if (a instanceof MTOM) {
-                    mtom = (MTOM)a;
-                } else if (a instanceof Addressing) {
-                    addressing = (Addressing) a;
-                } else if (a instanceof RespectBinding) {
-                    respectBinding = (RespectBinding) a;
-                } else {
-                    add(a);
-                }
-            }
-
-
         } else {    
-                throw new AnnotationProcessorException(
-                        localStrings.getLocalString(
-                        "enterprise.deployment.annotation.handlers.invalidtype",
-                        "annotation not allowed on this element."),  annInfo);
+            throw new AnnotationProcessorException(
+                    localStrings.getLocalString(
+                    "enterprise.deployment.annotation.handlers.invalidtype",
+                    "annotation not allowed on this element."),  annInfo);
             
         }
-        
+
+        MTOM mtom = null;
+        Addressing addressing = null;
+        RespectBinding respectBinding = null;
+        // Other annotations like SchemaValidation etc to be passed on to
+        // ServiceReferenceDescriptor
+        Map<Class<? extends Annotation>, Annotation> otherAnnotations =
+                new HashMap<Class<? extends Annotation>, Annotation>();
+
+        for (Annotation a : annElem.getAnnotations()) {
+            if (!(a.annotationType().isAnnotationPresent(
+                                        WebServiceFeatureAnnotation.class)))
+                continue;
+            if (a instanceof MTOM) {
+                mtom = (MTOM)a;
+            } else if (a instanceof Addressing) {
+                addressing = (Addressing)a;
+            } else if (a instanceof RespectBinding) {
+                respectBinding = (RespectBinding)a;
+            } else {
+                if (!otherAnnotations.containsKey(a.getClass())) {
+                    otherAnnotations.put(a.getClass(), a);
+                }
+            }
+        }
+
+        String serviceRefName = !ok(annotation.name()) ?
+                    defaultServiceRefName : annotation.name();
         ServiceReferenceContainer[] containers = null;
-        ServiceReferenceDescriptor aRef =null;
         if (annCtx instanceof ServiceReferenceContainerContext) {
             containers = ((ServiceReferenceContainerContext) annCtx).getServiceRefContainers();
         }
 
-        if (containers==null || containers.length==0) {
+        if (containers == null || containers.length == 0) {
             annInfo.getProcessingContext().getErrorHandler().fine(
                     new AnnotationProcessorException(
                     localStrings.getLocalString(
@@ -260,150 +229,125 @@ public class WebServiceRefHandler extends AbstractHandler  {
                     annInfo));
             return HandlerProcessingResultImpl.getDefaultResult(getAnnotationType(), ResultType.PROCESSED);
         }
-        
+
         // now process the annotation for all the containers.
         for (ServiceReferenceContainer container : containers) {
+            ServiceReferenceDescriptor aRef = null;
             try {
-                aRef =container.getServiceReferenceByName(serviceRefName);
+                aRef = container.getServiceReferenceByName(serviceRefName);
             } catch(Throwable t) {} // ignore
-            
-            if (aRef== null && hasLookupName(annotation.lookup())) {
-                //another try with lookup.
-                //There is a possiblity that there is a descriptor with lookup-name
-                //specified and also a WebserviceRef annotation which does not have
-                //name in that case still retry because the ServiceReferenceDescriptor
-                //will have the non default value
-                try {
-                    String serviceRefName2 =  serviceRefName.replace('/','.');
-                    aRef = container.getServiceReferenceByName(serviceRefName2);
-                } catch(Throwable t) {} //ignore
-            }
-            //Last attempt
-            if (aRef==null) {
+
+            if (aRef == null) {
                 // time to create it...
                 aRef = new ServiceReferenceDescriptor();
                 aRef.setName(serviceRefName);
-                if (mtom != null ) {
-                    aRef.setMtomEnabled( mtom.enabled());
-                    aRef.setMtomThreshold(mtom.threshold());
-                }
-                //Check Addressing Annotation
-
-                if (addressing != null) {
-                    com.sun.enterprise.deployment.Addressing add =
-                            new com.sun.enterprise.deployment.Addressing(addressing.enabled(),
-                                 addressing.required(), addressing.responses().toString() );
-
-                    aRef.setAddressing(add);
-
-                }
-                //Check RespectBinding Annotation
-
-                if (respectBinding != null) {
-                    com.sun.enterprise.deployment.RespectBinding rb =
-                            new com.sun.enterprise.deployment.RespectBinding(respectBinding.enabled());
-
-                    aRef.setRespectBinding(rb);
-                }
-
-                aRef.setOtherAnnotations(otherAnnotations);
-
-                //}
                 container.addServiceReferenceDescriptor(aRef);
             }
 
-            // Store mapped name that is specified
-            if(aRef.getMappedName() == null) {
-                if(annotation.mappedName() != null && annotation.mappedName().length() != 0) {
-                    aRef.setMappedName(annotation.mappedName());
+            // merge other annotations
+            Map<Class<? extends Annotation>, Annotation> oa =
+                aRef.getOtherAnnotations();
+            if (oa == null)
+                aRef.setOtherAnnotations(otherAnnotations);
+            else {
+                for (Map.Entry<Class<? extends Annotation>, Annotation> entry :
+                        otherAnnotations.entrySet()) {
+                    if (!oa.containsKey(entry.getKey()))
+                        oa.put(entry.getKey(), entry.getValue());
                 }
             }
 
-            String wsrefAnLookup = annotation.lookup();
-            // Store lookup name that is specified
-            if(!aRef.hasLookupName()) {
-                aRef.setLookupName(wsrefAnLookup);
+            // merge wsdlLocation
+            if (!ok(aRef.getWsdlFileUri()) && ok(annotation.wsdlLocation()))
+                aRef.setWsdlFileUri(annotation.wsdlLocation());
+
+            if (!aRef.hasMtomEnabled() && mtom != null) {
+                aRef.setMtomEnabled(mtom.enabled());
+                aRef.setMtomThreshold(mtom.threshold());
             }
 
+            // check Addressing annotation
+            if (aRef.getAddressing() == null && addressing != null) {
+                aRef.setAddressing(new com.sun.enterprise.deployment.Addressing(
+                                        addressing.enabled(),
+                                        addressing.required(),
+                                        addressing.responses().toString()));
+            }
 
+            // check RespectBinding annotation
+            if (aRef.getRespectBinding() == null && respectBinding != null) {
+                aRef.setRespectBinding(
+                        new com.sun.enterprise.deployment.RespectBinding(
+                                respectBinding.enabled()));
+            }
+
+            // Store mapped name that is specified
+            if (!ok(aRef.getMappedName()) && ok(annotation.mappedName()))
+                    aRef.setMappedName(annotation.mappedName());
+
+            // Store lookup name that is specified
+            if (!aRef.hasLookupName() &&
+                    ok(getLookupValue(annotation, annInfo)))
+                aRef.setLookupName(getLookupValue(annotation, annInfo));
 
             aRef.setInjectResourceType("javax.jws.WebServiceRef");
-            
-            if (!annInfo.getElementType().equals(ElementType.TYPE)) {
-                InjectionTarget target = new InjectionTarget();
-                if (annInfo.getElementType().equals(ElementType.FIELD)) {
-                    // this is a field injection
-                    Field annotatedField = (Field) annElem;
-                    target.setFieldName(annotatedField.getName());
-                    target.setClassName(annotatedField.getDeclaringClass().getName());
-                } else {
-                    if (annInfo.getElementType().equals(ElementType.METHOD)) {
-                        // this is a method injection
-                        Method annotatedMethod = (Method) annElem;
-                        target.setMethodName(annotatedMethod.getName());
-                        target.setClassName(annotatedMethod.getDeclaringClass().getName());
-                    }
-                }
+
+            if (target != null)
                 aRef.addInjectionTarget(target);
-            }
-            
-            if (!Object.class.equals(annotation.value()) && (!javax.xml.ws.Service.class.equals(annotation.value()))) {
+ 
+            // Read the WebServiceClient annotation for the service name space
+            // uri and wsdl (if required)
+            WebServiceClient wsclientAnn;
+
+            // The JAX-WS 2.1 default value was "Object", the JAX-WS 2.2
+            // default value is "Service".  Check whether the value is one
+            // of these default values.
+            if (!Object.class.equals(annotation.value()) &&
+                    (!javax.xml.ws.Service.class.equals(annotation.value()))) {
                 // a value was provided, which should be the Service
                 // interface, the requested injection is therefore on the
                 // port.
-                if (aRef.getServiceInterface()==null) {
+                if (aRef.getServiceInterface() == null) {
                     aRef.setServiceInterface(annotation.value().getName());
                 }
                 
-                if (aRef.getPortInfoBySEI(annotatedType.getName())==null) {
+                if (aRef.getPortInfoBySEI(annotatedType.getName()) == null) {
                     ServiceRefPortInfo portInfo = new ServiceRefPortInfo();
                     portInfo.setServiceEndpointInterface(annotatedType.getName());
                     aRef.addPortInfo(portInfo);
                 }
                 // set the port type requested for injection
-                if (aRef.getInjectionTargetType()==null) {
+                if (aRef.getInjectionTargetType() == null) {
                     aRef.setInjectionTargetType(annotatedType.getName());
                 }
-            }
-            
-            // watch the override order
-            if(aRef.getName()==null || aRef.getName().length()==0) {
-                aRef.setName(annotation.name());
-            }
-            if (aRef.getWsdlFileUri()==null) {
-                if (annotation.wsdlLocation()==null || annotation.wsdlLocation().length()!=0) {
-                    aRef.setWsdlFileUri(annotation.wsdlLocation());
-                }
-            }
-            
-            // Read the WebServiceClient annotation for the service name space uri and wsdl (if required)
-            WebServiceClient wsclientAnn;
-            if (Object.class.equals(annotation.value()) || javax.xml.ws.Service.class.equals(annotation.value())) {
-                wsclientAnn =  (WebServiceClient) annotatedType.getAnnotation(WebServiceClient.class);
+                wsclientAnn = (WebServiceClient)
+                    annotation.value().getAnnotation(WebServiceClient.class);
             } else {
-                wsclientAnn = (WebServiceClient) annotation.value().getAnnotation(WebServiceClient.class);
+                // no value provided in the annotation
+                wsclientAnn = (WebServiceClient)
+                    annotatedType.getAnnotation(WebServiceClient.class);
             }
-            if (wsclientAnn==null) {
+            if (wsclientAnn == null) {
                 throw new AnnotationProcessorException(
                         localStrings.getLocalString(
                         "enterprise.deployment.annotation.handlers.classnotannotated",
                         "Class must be annotated with a {1} annotation\n symbol : {1}\n location: {0}",
                         new Object[] { annotatedType.toString(), WebServiceClient.class.toString() }));
             }
-            
-            // If wsdl file was not specified in a descriptor and not in the annotation, get it from WebServiceClient
-            // annotation
-            if (aRef.getWsdlFileUri()==null) {
+
+            // If wsdl file was not specified in a descriptor and not in the
+            // annotation, get it from WebServiceClient annotation
+            if (aRef.getWsdlFileUri() == null) {
                 aRef.setWsdlFileUri(wsclientAnn.wsdlLocation());
             }
 
             // Set service name space URI and service local part
-            if(aRef.getServiceName() == null) {
+            if (aRef.getServiceName() == null) {
                 aRef.setServiceNamespaceUri(wsclientAnn.targetNamespace());
                 aRef.setServiceLocalPart(wsclientAnn.name());
             }
 
-            if (aRef.getServiceInterface()==null) {
+            if (aRef.getServiceInterface() == null) {
                 aRef.setServiceInterface(annotatedType.getName());
             }
         }
@@ -416,6 +360,7 @@ public class WebServiceRefHandler extends AbstractHandler  {
         return HandlerProcessingResultImpl.getDefaultResult(getAnnotationType(), ResultType.PROCESSED);        
     }
     
+    @Override
     public HandlerProcessingResult processAnnotation(AnnotationInfo annInfo)
             throws AnnotationProcessorException {
         WebServiceRef annotation = (WebServiceRef) annInfo.getAnnotation();
@@ -423,18 +368,31 @@ public class WebServiceRefHandler extends AbstractHandler  {
     }
 
     /**
-     * Adds a feature to the list if it's not already added.
+     * Return the value of the "lookup" element of the WebServiceRef annotation.
+     * This method handles the case where the WebServiceRef class is an older
+     * version before the lookup element was added; in that case access to
+     * the lookup element will cause a NoSuchMethodError, which is caught
+     * and ignored (with a warning message).
+     *
+     * @return the value of the lookup element
      */
-    public void add(Annotation f) {
-        if (!otherAnnotations.containsKey(f.getClass())) {
-            otherAnnotations.put(f.getClass(), f);
+    private String getLookupValue(WebServiceRef annotation,
+                                            AnnotationInfo ainfo) {
+        String lookupValue = "";
+        try {
+            lookupValue = annotation.lookup();
+        } catch(NoSuchMethodError nsme) {
+            // Probably means lib endorsed dir is not set and an older version
+            // of Resource is being picked up from JDK.
+            // Don't treat this as a fatal error.
+            try {
+                log(Level.WARNING, ainfo,
+                    localStrings.getLocalString(
+                "enterprise.deployment.annotation.handlers.wrongresourceclass",
+                        "Incorrect @Resource annotation class definition - " +
+                        "missing lookup attribute"));
+            } catch (AnnotationProcessorException ex) { }
         }
+        return lookupValue;
     }
-
-    public boolean hasLookupName(String lookupName) {
-        return (lookupName != null && lookupName.length() > 0);
-    }
-
-
-
 }
