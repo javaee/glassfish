@@ -76,9 +76,7 @@
         <sun:title id="propertyContentPage" title="$resource{i18n_web.grizzly.sslPageTitle}" helpText="$resource{i18n_web.grizzly.sslPageTitleHelp}">
 #include "/common/shared/sslButtons.inc"
         </sun:title>
-        "<br><br>
 #include "/common/shared/sslAttrs.inc"
-
 	<sun:hidden id="helpKey" value="$resource{help_web.protocolSSLEdit}" />
 </sun:form>
 #include "/common/shared/changeButtonsJS.inc"

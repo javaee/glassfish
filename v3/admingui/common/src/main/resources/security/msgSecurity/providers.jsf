@@ -79,6 +79,8 @@
                  helpText="$resource{i18nc.msgSecProvider.ListPageHelp}" />
 		 
  <sun:propertySheet id="propertySheet">
+#include "/common/shared/configNameSection.inc"
+
      <sun:propertySheetSection id="propertySheetSection">
          <sun:property id="AuthLayerProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.msgSecurity.authLayerLabel}" >
              <sun:staticText escape="true" id="AuthLayer" text="#{pageSession.Name}" />

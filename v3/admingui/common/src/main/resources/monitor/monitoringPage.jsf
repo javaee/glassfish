@@ -86,6 +86,7 @@
     </facet>
 </sun:title>
 <sun:propertySheet id="propertySheet">
+#include "/common/shared/configNameSection.inc"
     <sun:propertySheetSection id="propertSectionTextField">
         <sun:property id="monServiceProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{common.monitoring.monService}"  helpText="$resource{common.monitoring.monServiceHelp}">
             <sun:checkbox id="momServiceCheckbox"  label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['monitoringEnabled']}" selectedValue="true" />

@@ -79,6 +79,7 @@
 #include "/common/shared/editPageButtons.inc"
     </sun:title>
         <sun:propertySheet id="propertySheet">
+#include "/common/shared/configNameSection.inc"
             <sun:propertySheetSection id="propertSectionTextField">
                 <sun:property id="fdMax"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.gms.fdMax}" helpText="$resource{i18ncs.gms.fdMaxHelp}">
                     <sun:textField id="fdMax" styleClass="integer" columns="$int{10}" maxLength="#{sessionScope.fieldLengths['maxLength.gms.protocolMaxTries']}" text="#{pageSession.valueMap2['maxMissedHeartbeats']}" />

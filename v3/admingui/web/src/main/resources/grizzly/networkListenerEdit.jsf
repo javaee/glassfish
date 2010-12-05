@@ -94,6 +94,7 @@
 #include "/common/shared/editPageButtons.inc"
                 </sun:title>
 <sun:propertySheet id="propertySheet">
+#include "/common/shared/configNameSection.inc"
     <sun:propertySheetSection id="propertSectionTextField">
 
     <sun:property id="name"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.common.name}">

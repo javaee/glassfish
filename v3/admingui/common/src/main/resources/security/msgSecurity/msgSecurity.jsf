@@ -71,7 +71,8 @@
 #include "/common/shared/alertMsg.inc"
      <sun:title id="propertyContentPage" title="$resource{i18nc.msgSecurity.ListPageTitle}"
                  helpText="$resource{i18nc.msgSecurity.ListPageHelp}" />
-		 "<br /> <br />
+
+#include "/common/shared/configNameSection.inc"
 
 <sun:table id="configs" title="#{tableTitle}"
     deselectMultipleButton="$boolean{true}"

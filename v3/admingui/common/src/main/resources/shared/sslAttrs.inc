@@ -43,6 +43,7 @@
 <!-- sslAttrs.inc -->
 
 <sun:propertySheet id="propertySheet">
+#include "/common/shared/configNameSection.inc"
 <sun:propertySheetSection id="propertySheetSection">
     <!beforeCreate
         getRequestValue(key="configName" value=>$page{configName}  default="server-config")

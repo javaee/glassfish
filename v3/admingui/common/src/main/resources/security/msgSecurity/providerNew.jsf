@@ -69,8 +69,9 @@
         <sun:title id="propertyContentPage" title="$resource{i18nc.msgSecProvider.NewPageTitle}" helpText="$resource{i18nc.msgSecProvider.NewPageTitleHelp}">
 #include "providerButtons.inc"
         </sun:title>
-        "<br><br>
         <sun:propertySheet id="propertySheet">
+#include "/common/shared/configNameSection.inc"
+
 #include "providerAttr.inc"
 #include "providerAttr_2.inc"
          </sun:propertySheet>

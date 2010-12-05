@@ -80,6 +80,7 @@
 #include "/common/shared/editPageButtons.inc"
     </sun:title>
         <sun:propertySheet id="propertySheet">
+#include "/common/shared/configNameSection.inc"
             <sun:propertySheetSection id="propertSectionTextField">
                 <sun:property id="AvailabilityEnabledProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.availability.availabilityService}" helpText="$resource{i18njms.availability.jmsAvailabilityInfoHelp}">
                     <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['availabilityEnabled']}" selectedValue="true" />

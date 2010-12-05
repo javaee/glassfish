@@ -127,7 +127,7 @@
 #include "/common/shared/alertMsg.inc"
      <sun:title id="propertyContentPage" title="$resource{i18n_web.grizzly.protocolsPageTitle}"
      helpText="$resource{i18n_web.grizzly.protocolsPageTitleHelp}" />
-		 "<br /> <br />
+#include "/common/shared/configNameSection.inc"
 <sun:table id="configs" title="#{tableTitle}"
             deselectMultipleButton="$boolean{true}"
             deselectMultipleButtonOnClick="setTimeout('admingui.table.changeOneTableButton(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0)"

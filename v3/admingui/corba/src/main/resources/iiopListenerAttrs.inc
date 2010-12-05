@@ -42,7 +42,8 @@
 
 <!-- iiopListener.inc  -->
 
-<sun:propertySheet id="propertySheet">			 
+<sun:propertySheet id="propertySheet">
+#include "/common/shared/configNameSection.inc"
     <!-- General Settings section -->
     <sun:propertySheetSection id="generalSettingsSetion">
         <sun:property id="IiopNameProp"  rendered="#{pageSession.edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}" >

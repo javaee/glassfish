@@ -79,7 +79,6 @@
         <sun:title id="propertyContentPage" title="$resource{i18nc.security.Security}" helpText="$resource{i18nc.security.SecurityPageHelp}">
 #include "/common/shared/editPageButtons.inc"
         </sun:title>
-        "<br><br>
 #include "/common/security/securityAttrs.inc"
 #include "/common/shared/propertyDescTable.inc"
 

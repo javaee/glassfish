@@ -78,6 +78,7 @@
 #include "/common/shared/editPageButtons.inc"
 </sun:title>
 
+#include "/common/shared/configNameSection.inc"
 #include "/common/shared/propertyDescTable.inc"
     	<sun:hidden id="helpKey" value="$resource{help_web.webContainerGeneral}" />
 </sun:form>

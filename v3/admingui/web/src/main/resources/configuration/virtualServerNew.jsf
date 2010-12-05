@@ -78,7 +78,6 @@
 #include "/common/shared/editPageLoadDefaultButton.inc"
 #include "/web/configuration/virtualServerButtons.inc"
     </sun:title>
-    "<br>
 #include "/web/configuration/virtualServerAttrs.inc"
 #include "/common/shared/propertyDescTable.inc"
     <sun:title id="title2">

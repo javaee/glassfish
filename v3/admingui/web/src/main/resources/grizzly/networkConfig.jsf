@@ -42,17 +42,22 @@
 
 <!initPage
     setResourceBundle(key="i18n_web" bundle="org.glassfish.web.admingui.Strings");
-	setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
+    setResourceBundle(key="help_web" bundle="org.glassfish.web.admingui.Helplinks");
 />
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18n_web.grizzly.networkConfigPageTitle}" >
 <!define name="content">
+    <event>
+    <!beforeCreate
+        getRequestValue(key="configName" value=>$page{configName});
+     />
+     </event>
 
             <sun:form id="propertyForm">
 #include "/common/shared/alertMsg.inc"
                  <sun:title id="propertyContentPage" title="$resource{i18n_web.grizzly.networkConfigPageTitle}"
                  helpText="$resource{i18n_web.grizzly.networkConfigPageTitleHelp}" />
-		 "<br /> <br />
-<sun:propertySheet id="propertySheet">
+    <sun:propertySheet id="propertySheet">
+#include "/common/shared/configNameSection.inc"
     <sun:propertySheetSection>
 <sun:property>
     <sun:hyperlink 

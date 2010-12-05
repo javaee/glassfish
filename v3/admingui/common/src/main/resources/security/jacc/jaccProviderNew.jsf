@@ -72,7 +72,6 @@
         <sun:title id="propertyContentPage" title="$resource{i18nc.jacc.NewPageTitle}" helpText="$resource{i18nc.jacc.NewPageHelp}">
 #include "/common/shared/editPageButtons.inc"
         </sun:title>
-        "<br><br>
 #include "/common/security/jacc/jaccProvider.inc"
 #include "/common/shared/propertyDescTable.inc"
 

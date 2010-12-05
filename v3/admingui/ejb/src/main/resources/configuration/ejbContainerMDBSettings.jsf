@@ -81,6 +81,7 @@
      <!-- PropertySheet .... -->
      <sun:propertySheet id="propertySheet">
          <!-- Text Field section -->
+#include "/common/shared/configNameSection.inc"
          <sun:propertySheetSection id="propertySectionTextField">
              <sun:property id="MinSizeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_ejbLite.ejbSettings.minSizeLabel}" helpText="$resource{i18n_ejbLite.ejbSettings.minSizeHelp}">
                  <sun:textField id="MinSize" styleClass="integer" columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.ejbSettings.minSize']}" text="#{pageSession.valueMap['steadyPoolSize']}" />

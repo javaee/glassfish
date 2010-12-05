@@ -121,10 +121,8 @@
         </sun:panelGroup>
     </facet>
         </sun:title>
-        "<br><br>
 
 #include "/web/grizzly/networkListenerAttr.inc"
-
 
 	<sun:hidden id="helpKey" value="$resource{help_web.networkListenerNew}" />
     </sun:form>

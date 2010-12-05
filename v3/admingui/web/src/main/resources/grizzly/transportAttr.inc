@@ -43,8 +43,8 @@
 <!-- grizzly/transportAttr.inc -->
 
 <sun:propertySheet id="propertySheet">
+#include "/common/shared/configNameSection.inc"
     <sun:propertySheetSection id="propertSectionTextField">
-
 
     <sun:property id="name"  rendered="#{edit}"   labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.transport.transportName}">
         <sun:staticText id="name" text="#{pageSession.Name}" />

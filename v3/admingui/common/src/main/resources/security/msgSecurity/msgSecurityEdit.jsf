@@ -81,8 +81,9 @@
         <sun:title id="propertyContentPage" title="$resource{i18nc.msgSecurity.EditMsgSecurity}" helpText="$resource{i18nc.msgSecurity.EditMsgSecurityInfo}">
 #include "/common/shared/editPageButtons.inc"
         </sun:title>
-        "<br>
         <sun:propertySheet id="propertySheet">
+#include "/common/shared/configNameSection.inc"
+
              <sun:propertySheetSection id="propertySheetSection">
                  <sun:property id="AuthLayerProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.msgSecurity.authLayerLabel}" >
                      <sun:staticText escape="true" id="AuthLayer" text="#{pageSession.Name}" />

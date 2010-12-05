@@ -44,6 +44,7 @@
 
 
 <sun:propertySheet id="propertySheet">
+#include "/common/shared/configNameSection.inc"
     <!-- Text Field section -->
     <sun:propertySheetSection id="propertSectionTextField">
 

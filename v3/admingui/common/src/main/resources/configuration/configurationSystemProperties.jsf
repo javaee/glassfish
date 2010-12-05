@@ -89,7 +89,7 @@
         />
     </event>
     <sun:form id="propertyForm">
-        <sun:title id="propertyContentPage" title="$resource{i18n.systemProps.systemProps} - #{pageSession.configName}" >
+        <sun:title id="propertyContentPage" title="$resource{i18n.systemProps.systemProps}" >
             <!facet pageButtonsTop>
                 <sun:panelGroup id="topButtons">
 #include "configSystemPropertiesButtons.jsf"
@@ -98,6 +98,7 @@
         </sun:title>
 #include "/common/shared/alertMsg.inc"
         <sun:propertySheet id="propertySheet1" >
+#include "/common/shared/configNameSection.inc"
             <sun:propertySheetSection id="reconfigSheet">
                 <sun:property id="dynaReconfigProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.systemProps.dynamicReconfigLabel}" >
                     <sun:checkbox id="dynaReconfig" value="#{pageSession.dynaReconfig}" selectedValue="true"/>

@@ -86,8 +86,8 @@
     <!-- PropertySheet .... -->
     <sun:propertySheet id="propertySheet">
         <!-- Text Field section -->
+#include "/common/shared/configNameSection.inc"
         <sun:propertySheetSection id="propertSectionTextField">
-
             <sun:property id="NativeLibraryPathPrefixProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.NativeLibraryPathPrefix}" helpText="$resource{i18nc.jvm.NativeLibraryPathPrefixHelp}">
                 <sun:textArea id="NativeLibraryPathPrefix" rows="$int{4}" columns="$int{75}" maxLength="#{sessionScope.fieldLengths['maxLength.jvm.NativeLibraryPathPrefix']}" text="#{pageSession.valueMap['nativeLibraryPathPrefix']}"/>
             </sun:property>

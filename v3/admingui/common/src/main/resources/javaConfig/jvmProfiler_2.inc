@@ -103,6 +103,8 @@
         <!-- PropertySheet .... -->
         <sun:propertySheet id="propertySheet">
             <!-- Text Field section -->
+#include "/common/shared/configNameSection.inc"
+
             <sun:propertySheetSection id="propertSectionTextField">
                 <sun:property id="profilerNameProp" rendered="#{!edit}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.ProfilerName}">
                     <sun:textField id="ProfilerName"  styleClass="required" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.jvm.ProfilerName']}" text="#{pageSession.valueMap['name']}" required="#{true}"/>
@@ -122,6 +124,7 @@
                 "<br /><br />
             </sun:propertySheetSection>
         </sun:propertySheet>
+"<br/>
 #include "/common/javaConfig/jvmOptionsTable.inc"
                 
 	<sun:hidden id="helpKey" value="$resource{help_common.serverInstProfiler}" />

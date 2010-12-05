@@ -95,6 +95,7 @@
 </sun:title>
 
 <sun:propertySheet id="general">
+#include "/common/shared/configNameSection.inc"
     <sun:propertySheetSection id="sheetSection">
           <sun:property id="writeSystemLogEnabledProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.log.WriteSystemLog}" helpText="$resource{i18nc.log.WriteSystemlogHelp}">
                 <sun:checkbox id="writeSystemLogEnabled" label="$resource{i18n.common.Enabled}" selected="#{pageSession.logAttributes['com.sun.enterprise.server.logging.SyslogHandler.useSystemLogging']}" selectedValue="true" />

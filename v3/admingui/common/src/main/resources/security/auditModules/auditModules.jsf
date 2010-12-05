@@ -74,6 +74,7 @@
      <sun:title id="propertyContentPage" title="$resource{i18nc.auditModule.PageTitle}"
                  helpText="$resource{i18nc.auditModule.PageHelp}" />
 		 "<br /> <br />
+#include "/common/shared/configNameSection.inc"
 
 <sun:table id="configs" title="#{tableTitle}"
     deselectMultipleButton="$boolean{true}"

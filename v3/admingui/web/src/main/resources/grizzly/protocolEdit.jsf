@@ -80,6 +80,7 @@
 #include "/common/shared/editPageButtons.inc"
                     </sun:title>
     <sun:propertySheet id="propertySheet">
+#include "/common/shared/configNameSection.inc"
 #include "/web/grizzly/protocolAttr.inc"
     </sun:propertySheet>
 "<br><br>

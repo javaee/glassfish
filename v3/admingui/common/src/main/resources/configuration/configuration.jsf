@@ -63,12 +63,8 @@
             <!afterCreate
                     getClientId(component="$this{component}" clientId=>$attribute{sheetId});
                 />
-            <sun:propertySheetSection id="configNameSheet">
-                <sun:property id="configName"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="Configuration Name: " >
-                <sun:staticText id="configName" style="padding: 8pt" text="#{pageSession.configName}"/>
-            </sun:property>
-            </sun:propertySheetSection>
-                <sun:propertySheetSection id="propSheetSection">
+#include "/common/shared/configNameSection.inc"
+            <sun:propertySheetSection id="propSheetSection">
                 </sun:propertySheetSection>
         </sun:propertySheet>
         <event>

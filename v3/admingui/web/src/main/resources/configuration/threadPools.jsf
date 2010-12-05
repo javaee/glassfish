@@ -76,7 +76,7 @@
 #include "/common/shared/alertMsg.inc"
                  <sun:title id="propertyContentPage" title="$resource{i18n_web.configuration.threadPoolPageTitle}"
                  helpText="$resource{i18n_web.configuration.threadPoolPageTitleHelp}" />
-		 "<br /> <br />
+#include "/common/shared/configNameSection.inc"
 
 <sun:table id="configs" title="#{tableTitle}"
     deselectMultipleButton="$boolean{true}"

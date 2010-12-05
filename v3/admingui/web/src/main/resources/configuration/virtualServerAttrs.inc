@@ -43,6 +43,7 @@
 <!-- web/configuration/virtualServerAttrs.inc -->
 #include "/common/applications/applicationHandlers.inc"
 <sun:propertySheet id="propertySheet">
+#include "/common/shared/configNameSection.inc"
     <sun:propertySheetSection id="propertSectionTextField">
         <sun:property id="IdStaticProp"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.vs.Id}" >
             <sun:staticText id="IdStatic" text="#{pageSession.Name}"/>

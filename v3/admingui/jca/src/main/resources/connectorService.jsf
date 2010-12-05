@@ -72,6 +72,7 @@
     </sun:title>
 
 <sun:propertySheet id="propertySheet" >
+#include "/common/shared/configNameSection.inc"
     <sun:propertySheetSection id="propertSectionTextField">
 
         <sun:property id="timeout"   labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.connectorService.shutdownTimeout}" helpText="$resource{i18njca.connectorService.shutdownTimeoutHelp}">

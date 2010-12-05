@@ -45,7 +45,7 @@
     setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
     setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18nc.SystemPropertiesTitle} - #{pageSession.configName}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.instanceValues.PageTitle}" >
 <!define name="content">
     <event>
         <!beforeCreate
@@ -126,7 +126,7 @@
             </facet>
         </sun:title>
 #include "/common/shared/alertMsg.inc"
-
+#include "/common/shared/configNameSection.inc"
         <sun:table id="basicTable"  style="padding: 10pt" title="$resource{i18n.common.AdditionalProperties}">
             <!afterCreate
                 getClientId(component="$this{component}" clientId=>$page{tableId});

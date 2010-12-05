@@ -71,7 +71,7 @@
 #include "/common/shared/alertMsg.inc"
      <sun:title id="propertyContentPage" title="$resource{i18nc.realm.PageTitle}"
                  helpText="$resource{i18nc.realm.PageHelp}" />
-		 "<br /> <br />
+#include "/common/shared/configNameSection.inc"
 
 <sun:table id="realmsTable" title="#{tableTitle}"
     deselectMultipleButton="$boolean{true}"

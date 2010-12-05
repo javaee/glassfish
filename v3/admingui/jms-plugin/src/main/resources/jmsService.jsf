@@ -107,7 +107,8 @@
 
                     <!-- PropertySheet .... -->
                     <sun:propertySheet id="propertySheet">			 
-                        <!-- Text Field section -->               
+                        <!-- Text Field section -->
+#include "/common/shared/configNameSection.inc"
                         <sun:propertySheetSection id="propertSectionTextField">
                             <event>
                               <!beforeCreate

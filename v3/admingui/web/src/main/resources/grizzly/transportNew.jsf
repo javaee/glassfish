@@ -76,7 +76,6 @@
         <sun:title id="propertyContentPage" title="$resource{i18n_web.transport.newPageTitle}" helpText="$resource{i18n_web.transport.newPageTitleHelp}">
 #include "/common/shared/editPageButtons.inc"
         </sun:title>
-        "<br><br>
 #include "transportAttr.inc"
 	<sun:hidden id="helpKey" value="$resource{help_web.transportNew}" />
 </sun:form>

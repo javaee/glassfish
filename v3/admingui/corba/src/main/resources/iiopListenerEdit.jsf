@@ -80,7 +80,6 @@
         <sun:title id="propertyContentPage" title="$resource{i18n_corba.iiopListener.editPageTitle}" helpText="$resource{i18n_corba.iiopListener.editPageTitleHelp}">
 #include "/common/shared/editPageButtons.inc"
         </sun:title>
-        "<br><br>
 #include "/corba/iiopListenerAttrs.inc"
 #include "/common/shared/propertyDescTable.inc"
 

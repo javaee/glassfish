@@ -78,6 +78,8 @@
 </sun:title>
 
     <sun:propertySheet id="sessionPropSheet" requiredFields="#{hasRequiredFields}">
+#include "/common/shared/configNameSection.inc"
+"<br/>
     <sun:propertySheetSection id="sessionPropSheetSection">
         <sun:property id="SessionTimeoutProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.webSession.sessionTimeoutLabel}" helpText="$resource{i18n_web.webSession.sessionTimeoutHelp}">
             <sun:textField id="SessionTimeout" styleClass="integer" columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.webSession.sessionTimeout']}" text="#{pageSession.valueMap['timeoutInSeconds']}" />

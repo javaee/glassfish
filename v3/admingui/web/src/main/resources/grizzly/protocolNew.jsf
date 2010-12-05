@@ -85,6 +85,7 @@
 #include "protocolNewButtons.inc"
     </sun:title>
     <sun:propertySheet id="propertySheet">
+#include "/common/shared/configNameSection.inc"
 #include "/web/grizzly/protocolAttr.inc"
 #include "/web/grizzly/fileCacheAttrs.inc"
 #include "/web/grizzly/httpAttr.inc"

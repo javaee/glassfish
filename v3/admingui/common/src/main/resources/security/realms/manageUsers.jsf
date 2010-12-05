@@ -85,9 +85,9 @@
 
                     </sun:panelGroup>
                     </facet>                       
-                    "<br /> <br />
                 </sun:title>
-                 <sun:propertySheet id="propertySheet">             
+                 <sun:propertySheet id="propertySheet">
+#include "/common/shared/configNameSection.inc"
                 <sun:propertySheetSection id="propertySectionTextField">
                     <sun:property id="NameProp"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.realm.realmName}" >
                         <sun:staticText id="NameStatic" text="#{Name}"/>

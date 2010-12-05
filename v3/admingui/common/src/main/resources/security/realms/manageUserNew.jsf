@@ -96,7 +96,8 @@
                     </facet>                     
                 </sun:title>
                     <!-- PropertySheet .... -->
-                    <sun:propertySheet id="propertySheet" requiredFields="true">			 
+                    <sun:propertySheet id="propertySheet" requiredFields="true">
+#include "/common/shared/configNameSection.inc"
                         <!-- Text Field section -->               
                         <sun:propertySheetSection id="propertSectionTextField">
                             <sun:property id="NameProp"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.realm.realmName}" >

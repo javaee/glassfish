@@ -78,7 +78,8 @@
     </facet>
 </sun:title>
 <!-- PropertySheet .... -->
-<sun:propertySheet id="propertySheet">			 
+<sun:propertySheet id="propertySheet">
+#include "/common/shared/configNameSection.inc"
     <sun:propertySheetSection id="propertSectionTextField">
         <sun:property id="JmsHostStaticProp"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.edJmsHost.jmsHostNameLabel}" >
             <sun:staticText escape="true" id="JmsHostStatic" text="#{pageSession.valueMap['name']}"/>
