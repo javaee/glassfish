@@ -101,8 +101,7 @@ import org.jvnet.hk2.component.Habitat;
  */
 @Service
 @Scoped(PerLookup.class)
-public class
-        StatefulContainerBuilder
+public class StatefulContainerBuilder
         extends BaseContainerBuilder {
     private static final Level TRACE_LEVEL = Level.FINE;
 
