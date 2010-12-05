@@ -36,7 +36,7 @@
 
 package test.com.sun.jaspic.config;
 
-import com.sun.jaspic.config.factory.AuthConfigFileFactory;
+import com.sun.jaspic.config.factory.AuthConfFileFactory;
 import com.sun.jaspic.config.servlet.JAASServletAuthConfigProvider;
 import java.io.IOException;
 import java.util.HashMap;
@@ -111,7 +111,7 @@ public class RuntimeSurrogate {
             }
         }
 
-        AuthConfigFactory.setFactory(new AuthConfigFileFactory());
+        AuthConfigFactory.setFactory(new AuthConfFileFactory());
         final AuthConfigFactory f = AuthConfigFactory.getFactory();
 
         final AuthConfigProvider p = new JAASServletAuthConfigProvider(providerProperties, f);
@@ -151,7 +151,7 @@ public class RuntimeSurrogate {
 
     public static void testFactory() {
 
-        AuthConfigFactory.setFactory(new AuthConfigFileFactory());
+        AuthConfigFactory.setFactory(new AuthConfFileFactory());
 
         for (int i = 0; i < threads.length; i++) {
             threads[i] = new TestThread();
