@@ -35,9 +35,11 @@
  */
 package test.com.sun.jaspic.config;
 
+import com.sun.jaspic.config.factory.AuthConfigFileFactory;
+import com.sun.jaspic.config.factory.BaseAuthConfigFactory;
+import com.sun.jaspic.config.factory.RegStoreFileParser;
 import java.security.Security;
 import org.junit.After;
-import com.sun.jaspic.config.factory.GFAuthConfigFactory;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -70,8 +72,8 @@ public class FactoryTest {
     /** switch definition of default test factory to test native factory
      * will also need to configure proper dependencies
      */
-    // private static final String DEFAULT_TEST_FACTORY_CLASS_NAME = "com.sun.enterprise.security.jmac.config.GFAuthConfigFactory";
-    private static final String DEFAULT_TEST_FACTORY_CLASS_NAME = GFAuthConfigFactory.class.getName();
+    // private static final String DEFAULT_TEST_FACTORY_CLASS_NAME = "com.sun.enterprise.security.jmac.config.SaveAuthConfigFactory";
+    private static final String DEFAULT_TEST_FACTORY_CLASS_NAME = AuthConfigFileFactory.class.getName();
     private static String testFactoryClassName = DEFAULT_TEST_FACTORY_CLASS_NAME;
     public static final String DEFAULT_FACTORY_SECURITY_PROPERTY =
             "authconfigprovider.factory";
@@ -184,6 +186,10 @@ public class FactoryTest {
         new FactoryTest().afterTest();
 
         new FactoryTest().beforeTest();
+        new FactoryTest().testOverrideForDefaultEntries();
+        new FactoryTest().afterTest();
+
+        new FactoryTest().beforeTest();
         new FactoryTest().testRemoveRegistration();
         new FactoryTest().afterTest();
 
@@ -237,6 +243,109 @@ public class FactoryTest {
     }
 
     @Test
+    public void testOverrideForDefaultEntries() {
+        logger.info("BEGIN overrideGetDefaultEntries TEST");
+        AuthConfigFactory f = new _ExtendsBaseAuthConfigFactory();
+        f = new _Extends_ExtendsAuthConfigFactory();
+    }
+
+    static class _ExtendsBaseAuthConfigFactory extends BaseAuthConfigFactory {
+
+        // regStore MUST hide regStore of bade class
+        private static RegStoreFileParser regStore = null;
+
+        /**
+         * To specialize the defaultEntries passed to the RegStoreFileParser,
+         * construct EntryInfo objects within this constructor.
+         * THE EentyInfo OBJECTS MUST ONLY BE CONSTRCTED USING THE FOLLOWING
+         * CONSTRUCTOR: EntryInfo(String className, Map<String, String> properties)
+         * NO Entries are passed by this test, because to do so, the parent
+         * test class would need to import EntryInfo (which it can't).
+         */
+        public _ExtendsBaseAuthConfigFactory() {
+            rLock.lock();
+            try {
+                if (regStore != null) {
+                    return;
+                }
+            } finally {
+                rLock.unlock();
+            }
+            String userDir = System.getProperty("user.dir");
+            wLock.lock();
+            try {
+                if (regStore == null) {
+                    regStore = new RegStoreFileParser(userDir,
+                            BaseAuthConfigFactory.CONF_FILE_NAME, null);
+                    _loadFactory();
+                }
+            } finally {
+                wLock.unlock();
+            }
+            RegStoreFileParser rS = getRegStore();
+            assertTrue(rS == _ExtendsBaseAuthConfigFactory.regStore);
+        }
+
+        @Override
+        protected RegStoreFileParser getRegStore() {
+            rLock.lock();
+            try {
+                return regStore;
+            } finally {
+                rLock.unlock();
+            }
+        }
+    }
+
+    static class _Extends_ExtendsAuthConfigFactory extends _ExtendsBaseAuthConfigFactory {
+
+        // regStore MUST hide regStore of base class
+        private static RegStoreFileParser regStore = null;
+
+        /**
+         * To specialize the defaultEntries passed to the RegStoreFileParser,
+         * construct EntryInfo objects within this constructor.
+         * THE EentyInfo OBJECTS MUST ONLY BE CONSTRCTED USING THE FOLLOWING
+         * CONSTRUCTOR: EntryInfo(String className, Map<String, String> properties)
+         * NO Entries are passed by this test, because to do so, the parent
+         * test class would need to import EntryInfo (which it can't).
+         */
+        public _Extends_ExtendsAuthConfigFactory() {
+            rLock.lock();
+            try {
+                if (regStore != null) {
+                    return;
+                }
+            } finally {
+                rLock.unlock();
+            }
+            String userDir = System.getProperty("user.dir");
+            wLock.lock();
+            try {
+                if (regStore == null) {
+                    regStore = new RegStoreFileParser(userDir,
+                            BaseAuthConfigFactory.CONF_FILE_NAME, null);
+                    _loadFactory();
+                }
+            } finally {
+                wLock.unlock();
+            }
+            RegStoreFileParser rS = getRegStore();
+            assertTrue(rS == _Extends_ExtendsAuthConfigFactory.regStore);
+        }
+
+        @Override
+        protected RegStoreFileParser getRegStore() {
+            rLock.lock();
+            try {
+                return regStore;
+            } finally {
+                rLock.unlock();
+            }
+        }
+    }
+    
+    @Test
     public void testRemoveRegistration() {
         logger.info("BEGIN Remove Registration TEST");
         final AuthConfigFactory f = AuthConfigFactory.getFactory();
@@ -246,7 +355,7 @@ public class FactoryTest {
         RegistrationContext rc;
         String[] rids = f.getRegistrationIDs(p);
         boolean removed;
-        assertTrue("provider did not self register",rids != null && rids.length>0);
+        assertTrue("provider did not self register", rids != null && rids.length > 0);
         for (String i : rids) {
             rc = f.getRegistrationContext(i);
             removed = f.removeRegistration(i);
@@ -265,27 +374,27 @@ public class FactoryTest {
         rc = f.getRegistrationContext(rid);
         removed = f.removeRegistration(rid);
         assertTrue("testing null provider - expected true from removeRegistration - rid: " + rid,
-                    rc != null && removed);
+                rc != null && removed);
         //testing for interferece with null provider
         rc = f.getRegistrationContext(rid);
         removed = f.removeRegistration(rid);
         assertTrue("testing null provider - expected false from removeRegistration - rid: " + rid,
-                    rc == null && !removed);
+                rc == null && !removed);
         rid = f.registerConfigProvider(null, null, null, "null registration");
         //temporary to force call to decomposeRegId in getEffectedListeners
-        p = f.getConfigProvider(null, null, new _Listener(null,null,false));
+        p = f.getConfigProvider(null, null, new _Listener(null, null, false));
         rc = f.getRegistrationContext(rid);
         assertTrue("testing null provider - getRegistrationContext - rid: " + rid,
-                    rid != null);
+                rid != null);
         String badRid = "someInvalidId";
         rc = f.getRegistrationContext(badRid);
         removed = f.removeRegistration(badRid);
         assertTrue("expected false from removeRegistration - rid: " + badRid,
-                    rc == null && !removed);
+                rc == null && !removed);
         rc = f.getRegistrationContext(rid);
         removed = f.removeRegistration(rid);
         assertTrue("testing null provider - expected true from removeRegistration - rid: " + rid,
-                    rc != null && removed);
+                rc != null && removed);
     }
 
     @Test
@@ -427,7 +536,6 @@ public class FactoryTest {
             return notified;
         }
 
-
         void check(String l, String c) {
             boolean shouldHaveBeenNotified = false;
             if ((l == null || layer.equals(l)) && (c == null || appContext.equals(c))) {
@@ -449,8 +557,8 @@ public class FactoryTest {
             synchronized (this) {
                 notified = true;
             }
-            boolean validNotification = (layer == l || layer.equals(l)) &&
-                    (appContext == c || appContext.equals(c));
+            boolean validNotification = (layer == l || layer.equals(l))
+                    && (appContext == c || appContext.equals(c));
             String msg = "listener notified at wrong layer: " + l + " or context: " + c;
             assertTrue(msg, validNotification);
             if (validNotification && reRegister) {
@@ -733,4 +841,7 @@ public class FactoryTest {
         public void refresh() {
         }
     }
+
+    
+
 }

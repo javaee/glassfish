@@ -8,7 +8,7 @@ package com.sun.jaspic.config.factory;
  *
  * @author ronmonzillo
  */
-public class GFAuthConfigFactory extends BaseAuthConfigFactory {
+public class AuthConfigFileFactory extends BaseAuthConfigFactory {
 
     // MUST "hide" regStore in derived class.
     protected static RegStoreFileParser regStore = null;
@@ -30,7 +30,7 @@ public class GFAuthConfigFactory extends BaseAuthConfigFactory {
      * EntryInfo(String className, Map<String, String> properties);
      *
      */
-    public GFAuthConfigFactory() {
+    public AuthConfigFileFactory() {
         rLock.lock();
         try {
             if (regStore != null) {
