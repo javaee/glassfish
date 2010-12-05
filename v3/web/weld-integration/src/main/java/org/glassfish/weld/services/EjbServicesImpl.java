@@ -44,6 +44,8 @@ import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -71,17 +73,21 @@ import com.sun.enterprise.deployment.EjbSessionDescriptor;
 import com.sun.enterprise.deployment.LifecycleCallbackDescriptor;
 
 /**
+ * An implementation of th <code>EJBServices</code> Weld SPI. The Weld 
+ * implementation uses this SPI to resolve EJB and register CDI Interceptors
+ * for EJBs. 
  */
 public class EjbServicesImpl implements EjbServices
 {
 
     private Habitat habitat;
+    private Logger logger = Logger.getLogger(EjbServicesImpl.class.getName());
+
 
     public EjbServicesImpl(Habitat h) {
         habitat = h;
     }
 
-   
    /**
     * Request a reference to an EJB session object from the container. If the
     * EJB being resolved is a stateful session bean, the container should ensure
@@ -97,7 +103,6 @@ public class EjbServicesImpl implements EjbServices
         // All we need to do is create a reference based on one of the beans'
         // client views, so just choose one and get its corresponding portable
         // JNDI name.
-
         String globalJndiName = getDefaultGlobalJndiName(ejbDescriptor);
         if( globalJndiName != null ) {
             try {
@@ -154,21 +159,17 @@ public class EjbServicesImpl implements EjbServices
                 ((EjbDescriptorImpl) ejbDesc).getEjbDescriptor();
 
         // Convert to EjbInterceptor
-
         // First create master list of EjbInterceptor descriptors
         for(Interceptor next : interceptorBindings.getAllInterceptors()) {
-
+            logger.log(Level.FINE, "trying to register:" + next);
             // Add interceptor to list all interceptors in ejb descriptor
-            if( glassfishEjbDesc.hasInterceptorClass(next.getBeanClass().getName())) {
-                // TODO temporarily work around bug that registerInterceptors() is called more than once for
-                // each bean.   If we encounter an interceptor that has already been registered just
-                // return.
-                return;
+            if( !(glassfishEjbDesc.hasInterceptorClass(next.getBeanClass().getName()))) {
+                logger.log(Level.FINE, "Adding interceptor: " 
+                        + next.getBeanClass().getName() + " for EJB:" 
+                        + glassfishEjbDesc.getEjbClassName());
+                EjbInterceptor ejbInt = makeEjbInterceptor(next, glassfishEjbDesc.getEjbBundleDescriptor());
+                glassfishEjbDesc.addInterceptorClass(ejbInt);
             }
-
-            EjbInterceptor ejbInt = makeEjbInterceptor(next, glassfishEjbDesc.getEjbBundleDescriptor());
-            glassfishEjbDesc.addInterceptorClass(ejbInt);
-
         }
 
         // Create ordered list of EjbInterceptor for each lifecycle interception type and append to
@@ -207,7 +208,6 @@ public class EjbServicesImpl implements EjbServices
         try {
             ClassLoader cl = glassfishEjbDesc.getEjbBundleDescriptor().getClassLoader();
             ejbBeanClass = cl.loadClass(glassfishEjbDesc.getEjbClassName());
-
         } catch(ClassNotFoundException cnfe) {
             throw new IllegalStateException("Cannot load bean class " + glassfishEjbDesc.getEjbClassName(),
                     cnfe);
@@ -330,20 +330,16 @@ public class EjbServicesImpl implements EjbServices
 
     private EjbInterceptor getEjbInterceptorByClassName(Set<EjbInterceptor> allInterceptors, String name) {
 
-
-
         for(EjbInterceptor next : allInterceptors) {
-
             if( next.getInterceptorClassName().equals(name) ) {
                 return next;
             }
         }
-
         throw new IllegalArgumentException("No interceptor with class name " + name);
     }
 
     public void cleanup() {
-
+        //Nothing to do here.
     }
 
 }
