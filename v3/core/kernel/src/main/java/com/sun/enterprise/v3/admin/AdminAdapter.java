@@ -305,27 +305,13 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
         /*
          * Admin requests through this adapter are assumed to change the
          * configuration, which means the access granted needs to be FULL.
-         * Anything less is
          */
         switch (access)  {
             case FULL:
                 return true;
 
             case MONITORING:
-                reportAuthFailure(res, report, "adapter.auth.notOnInstance",
-                        "Configuration access to an instance is not allowed; please connect to the domain admin server instead to make configuration changes",
-                        HttpURLConnection.HTTP_FORBIDDEN);
-
-                break;
-
             case NONE:
-                /*
-                 * If this is an instance we
-                 * do NOT want to give an intruder one response (forbidden) if
-                 * the credentials were OK but we're refusing the request because
-                 * this is an instance and a different response (an auth challenge)
-                 * if the credentials are invalid.
-                 */
                 if (env.isDas()) {
                     reportAuthFailure(res, report, "adapter.auth.userpassword",
                         "Invalid user name or password",
@@ -340,7 +326,7 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
 
         }
 
-        return access != AdminAccessController.Access.NONE;
+        return access == AdminAccessController.Access.FULL;
     }
 
     private void reportAuthFailure(final GrizzlyResponse res,

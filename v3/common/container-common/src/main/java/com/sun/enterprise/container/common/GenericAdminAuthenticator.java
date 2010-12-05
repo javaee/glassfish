@@ -202,25 +202,13 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
             logger.log(Level.FINE, "Authenticated as trusted sender");
             return AdminAccessController.Access.FULL;
         }
-        /*
-         * Accept remote admin requests that are authenticated with username/password
-         * only if secure admin is enabled.
-         */
-        if ( ! NetUtils.isThisHostLocal(originHost) &&
-             ! SecureAdmin.Util.isEnabled(secureAdmin) ) {
-            logger.log(Level.INFO,
-                    lsm.getLocalString("remote.login.while.secure.admin.disabled",
-                        "Remote admin log-in attempt from host {0} with username \"{1}\" rejected because secure admin is disabled",
-                        originHost, user));
-            return AdminAccessController.Access.NONE;
-        }
         if (as.usesFileRealm()) {
             result = handleFileRealm(user, password);
             logger.log(Level.FINE, "Not a \"trusted sender\"; file realm user authentication {1} for admin user {0}",
                     new Object[] {user, result ? "passed" : "failed"});
             final Access access;
             if (result) {
-                 access = chooseAccess();
+                 access = chooseAccess(originHost);
                 logger.log(Level.FINE, "Authorized {0} access for user {1}",
                         new Object[] {access, user});
 
@@ -229,7 +217,7 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
             }
             return access;
         } else {
-            //now, deleate to the security service
+            //now, delegate to the security service
             ClassLoader pc = null;
             boolean hack = false;
             boolean authenticated = false;
@@ -248,8 +236,7 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
                         (as.getAssociatedAuthRealm().getGroupMapping() == null)
                         || ensureGroupMembership(user, realm));
                 return isConsideredInAdminGroup
-                    ?  (serverEnv.isDas() ? AdminAccessController.Access.FULL :
-                        AdminAccessController.Access.MONITORING)
+                    ?  chooseAccess(originHost)
                     : AdminAccessController.Access.NONE;
            } catch(Exception e) {
 //              LoginException le = new LoginException("login failed!");
@@ -266,15 +253,24 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
     /**
      * Chooses what level of admin access to grant an authenticated user.
      * <p>
-     * Currently we grant full access if this is the DAS and monitoring-only
-     * access otherwise.
+     * If the current node is not the DAS, then we grant only monitoring access.
+     * (We do not permit full admin access to instances.)
+     *
+     * If the current node is the DAS, then we grant full admin access only
+     * if the request came from the same host or if secure admin is enabled.
      * 
      * @return the access to be granted to the authenticated user
      */
-    private Access chooseAccess() {
-        return serverEnv.isDas()
-                        ? AdminAccessController.Access.FULL
-                        : AdminAccessController.Access.MONITORING;
+    private Access chooseAccess(final String originHost) {
+        Access grantedAccess = Access.MONITORING;
+        if (serverEnv.isDas()) {
+            if ( NetUtils.isThisHostLocal(originHost) 
+                 ||
+                 SecureAdmin.Util.isEnabled(secureAdmin) ) {
+                grantedAccess = Access.FULL;
+            }
+        }
+        return grantedAccess;
     }
 
     /**
