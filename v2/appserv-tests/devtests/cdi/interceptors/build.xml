@@ -102,6 +102,8 @@
             <ant dir="interceptors-multiple-interceptor-binding-annotations" target="${interceptors-target}"/>
             <ant dir="interceptors-multiple-interceptors-for-a-binding-type" target="${interceptors-target}"/>
             <ant dir="interceptors-use-of-at-interceptors" target="${interceptors-target}"/>
+            <ant dir="interceptors-use-of-interceptors-in-ejbs-through-at-interceptors" target="${interceptors-target}"/>
+            <ant dir="interceptors-use-of-interceptors-in-ejbs-through-interceptor-bindings" target="${interceptors-target}"/>
         <record name="interceptors.output" action="stop" />
     </target>
 

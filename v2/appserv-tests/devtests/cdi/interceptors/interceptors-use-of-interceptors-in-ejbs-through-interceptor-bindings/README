@@ -1,0 +1,5 @@
+Test
+- Use of business method interceptors to EJBs that specify interceptors through
+CDI interceptor bindings.
+Related issue: GLASSFISH-14831 
+    
