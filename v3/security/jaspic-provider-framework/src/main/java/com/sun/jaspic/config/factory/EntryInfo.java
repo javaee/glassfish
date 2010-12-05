@@ -55,7 +55,7 @@ import javax.security.auth.message.config.AuthConfigFactory.RegistrationContext;
  *
  * @author Bobby Bissett
  */
-final class EntryInfo {
+public final class EntryInfo {
     private final String className;
     private final Map<String, String> properties;
     private List<RegistrationContext> regContexts;
@@ -69,7 +69,7 @@ final class EntryInfo {
      * defaultEntries because they can create persisted registration entries which
      * are not appropriate as defaultEntries.
      */
-    EntryInfo(String className, Map<String, String> properties) {
+    public EntryInfo(String className, Map<String, String> properties) {
         if (className == null) {
             throw new IllegalArgumentException(
                 "Class name for registration entry cannot be null");

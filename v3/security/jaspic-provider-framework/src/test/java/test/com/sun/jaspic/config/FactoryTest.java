@@ -35,6 +35,9 @@
  */
 package test.com.sun.jaspic.config;
 
+import java.util.ArrayList;
+import java.util.List;
+import com.sun.jaspic.config.factory.EntryInfo;
 import com.sun.jaspic.config.factory.AuthConfigFileFactory;
 import com.sun.jaspic.config.factory.BaseAuthConfigFactory;
 import com.sun.jaspic.config.factory.RegStoreFileParser;
@@ -275,8 +278,11 @@ public class FactoryTest {
             wLock.lock();
             try {
                 if (regStore == null) {
+                    EntryInfo e = new EntryInfo(_AuthConfigProvider.class.getName(),null);
+                    List<EntryInfo> defaultEntries = new ArrayList<EntryInfo>();
+                    defaultEntries.add(e);
                     regStore = new RegStoreFileParser(userDir,
-                            BaseAuthConfigFactory.CONF_FILE_NAME, null);
+                            BaseAuthConfigFactory.CONF_FILE_NAME,defaultEntries);
                     _loadFactory();
                 }
             } finally {
@@ -323,8 +329,11 @@ public class FactoryTest {
             wLock.lock();
             try {
                 if (regStore == null) {
+                    EntryInfo e = new EntryInfo(_AuthConfigProvider.class.getName(),null);
+                    List<EntryInfo> defaultEntries = new ArrayList<EntryInfo>();
+                    defaultEntries.add(e);
                     regStore = new RegStoreFileParser(userDir,
-                            BaseAuthConfigFactory.CONF_FILE_NAME, null);
+                            BaseAuthConfigFactory.CONF_FILE_NAME,defaultEntries);
                     _loadFactory();
                 }
             } finally {
