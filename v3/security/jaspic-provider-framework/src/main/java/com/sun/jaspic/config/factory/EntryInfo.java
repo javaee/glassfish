@@ -63,6 +63,11 @@ final class EntryInfo {
     /*
      * This will create a constructor entry. The className
      * must not be null.
+     * 
+     * ONLY CONSTRUCTOR that should be used used to construct defaultEntries (passed
+     * RegStoreFileParser construction). DO NOT USE OTHER CONSTRUCTORS to define
+     * defaultEntries because they can create persisted registration entries which
+     * are not appropriate as defaultEntries.
      */
     EntryInfo(String className, Map<String, String> properties) {
         if (className == null) {

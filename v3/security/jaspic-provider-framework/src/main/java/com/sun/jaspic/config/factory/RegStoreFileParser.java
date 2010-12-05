@@ -81,16 +81,17 @@ public final class RegStoreFileParser {
 
     private final File confFile;
     private List<EntryInfo> entries;
+    private List<EntryInfo> defaultEntries;
 
     /*
      * Loads the configuration file from the given filename.
      * If a file is not found, then the default entries
-     * stored in GFAuthConfigFactory are used. Otherwise,
-     * the file is parsed to load the entries.
+     * are used. Otherwise the file is parsed to load the entries.
      *
      */
-    RegStoreFileParser(String pathParent, String pathChild) {
+    public RegStoreFileParser(String pathParent, String pathChild,List<EntryInfo> defaultEntries) {
         confFile = new File(pathParent, pathChild);
+        this.defaultEntries = defaultEntries == null ? new ArrayList<EntryInfo>() : defaultEntries;
         try {
             loadEntries();
         } catch (IOException ioe) {
@@ -248,20 +249,17 @@ public final class RegStoreFileParser {
             logger.log(Level.WARNING, "jmac.factory_cannot_write_file",
                     confFile.getPath());
         }
-        boolean entriesToWrite = !entries.isEmpty();
-        clearExistingFile(entriesToWrite);
-        if (entriesToWrite) {
-            PrintWriter out = new PrintWriter(confFile);
-            int indent = 0;
-            for (EntryInfo info : entries) {
-                if (info.isConstructorEntry()) {
-                    writeConEntry(info, out, indent);
-                } else {
-                    writeRegEntry(info, out, indent);
-                }
+        clearExistingFile();
+        PrintWriter out = new PrintWriter(confFile);
+        int indent = 0;
+        for (EntryInfo info : entries) {
+            if (info.isConstructorEntry()) {
+                writeConEntry(info, out, indent);
+            } else {
+                writeRegEntry(info, out, indent);
             }
-            out.close();
         }
+        out.close();
     }
 
     /*
@@ -325,14 +323,16 @@ public final class RegStoreFileParser {
         out.println(INDENT[--i] + "}");
     }
 
-    private void clearExistingFile(boolean recreate) throws IOException {
-        if (confFile.exists()) {
+    private void clearExistingFile() throws IOException {
+        boolean newCreation = !confFile.exists();
+        if (!newCreation) {
             confFile.delete();
-        } else if (recreate) {
+        } 
+        if (newCreation) {
             logger.log(Level.INFO, "jmac.factory_creating_conf_file",
                     confFile.getPath());
-            confFile.createNewFile();
-        } 
+        }
+        confFile.createNewFile(); 
     }
 
     /*
@@ -342,8 +342,8 @@ public final class RegStoreFileParser {
      */
     private void loadEntries() throws IOException {
         synchronized (confFile) {
+            entries = new ArrayList<EntryInfo>();
             if (confFile.exists()) {
-                entries = new ArrayList<EntryInfo>();
                 BufferedReader reader = new BufferedReader(new FileReader(confFile));
                 String line = reader.readLine();
                 while (line != null) {
@@ -356,13 +356,15 @@ public final class RegStoreFileParser {
                     line = reader.readLine();
                 }
             } else {
-                 entries = GFAuthConfigFactory.getDefaultProviders();
-                 if (logger.isLoggable(Level.FINER)) {
+                if (logger.isLoggable(Level.FINER)) {
                     logger.log(Level.FINER, "jmac.factory_file_not_found",
                             confFile.getParent() + File.pathSeparator
                             + confFile.getPath());
                     
-                 }
+                }
+                for (EntryInfo e : defaultEntries) {
+                    entries.add(new EntryInfo(e));
+                }
             }
         }
     }
