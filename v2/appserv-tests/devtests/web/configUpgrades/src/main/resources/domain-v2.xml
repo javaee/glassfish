@@ -169,7 +169,7 @@
       <jms-service addresslist-behavior="random" addresslist-iterations="3" default-jms-host="default_JMS_host"
       init-timeout-in-seconds="60" reconnect-attempts="3" reconnect-enabled="true" reconnect-interval-in-seconds="5"
       type="EMBEDDED">
-        <jms-host admin-password="admin" admin-user-name="admin" host="mandarb" name="default_JMS_host" port="7676" />
+        <jms-host admin-password="admin" admin-user-name="admin" host="localhost" name="default_JMS_host" port="7676" />
       </jms-service>
       <log-service alarms="false" file="${com.sun.aas.instanceRoot}/logs/server.log"
       log-rotation-limit-in-bytes="2000000" log-rotation-timelimit-in-minutes="0" log-to-console="false"
