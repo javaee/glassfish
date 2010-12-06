@@ -46,7 +46,7 @@
 #include "/common/shared/configNameSection.inc"
         <sun:propertySheetSection id="propertySectionTextField">
             <sun:property id="NameProp"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.realm.realmName}" >
-                <sun:staticText id="NameStatic" text="#{pageSession.Name},,#{pageSession.configName}"/>
+                <sun:staticText id="NameStatic" text="#{pageSession.Name}"/>
             </sun:property> 
 
             <sun:property id="NameTextProp"  rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}">
