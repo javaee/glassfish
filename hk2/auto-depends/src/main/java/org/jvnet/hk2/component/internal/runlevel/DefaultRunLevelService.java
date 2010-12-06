@@ -403,7 +403,7 @@ public class DefaultRunLevelService implements RunLevelService<Void>, Enableable
    * @return
    */
   protected boolean accept(Inhabitant<?> i, RunLevel rl, int activeRunLevel) {
-    return (rl.value() == activeRunLevel && rl.environment() == targetEnv && !i.isInstantiated());
+    return (rl.value() == activeRunLevel && rl.environment() == targetEnv);
   }
   
   /**

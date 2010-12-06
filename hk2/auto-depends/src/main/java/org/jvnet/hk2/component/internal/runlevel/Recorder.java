@@ -43,7 +43,6 @@ import java.util.Stack;
 
 import org.jvnet.hk2.annotations.RunLevel;
 import org.jvnet.hk2.component.ComponentException;
-import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.InhabitantListener;
 
@@ -62,7 +61,6 @@ import com.sun.hk2.component.AbstractInhabitantImpl;
  * 
  * @since 3.1
  */
-// TODO: when Habitat.MANAGED_INJECTION_POINTS enabled, we don't need recorders any more
 /*public*/ class Recorder implements InhabitantListener {
 
   private final int runLevel;

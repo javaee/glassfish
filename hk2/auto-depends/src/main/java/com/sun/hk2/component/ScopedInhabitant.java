@@ -88,4 +88,7 @@ public class ScopedInhabitant<T> extends AbstractCreatorInhabitantImpl<T> {
         return scope.current().get(this)!=null;
     }
 
+    public void release() {
+        // noop
+    }
 }
