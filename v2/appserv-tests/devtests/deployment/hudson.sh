@@ -36,10 +36,15 @@ then
 fi
 
 time ant $antTarget
+antStatus=$?
 
 if [ -z "$DEPL_TARGET" ]
 then
     $S1AS_HOME/bin/asadmin stop-domain
+fi
+if [ $antStatus -ne 0 ]
+then
+    exit $antStatus
 fi
 egrep '\[FAILED|UNKNOWN\]' client.log >> /dev/null
 #no match -> 1 for the status value
