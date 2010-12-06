@@ -64,6 +64,9 @@ import com.sun.enterprise.connectors.jms.util.JmsRaUtil;
 public class JMSConfigListener implements ConfigListener{
     // Injecting @Configured type triggers the corresponding change
     // events to be sent to this instance
+    @Inject
+    private JmsHost jmshost;
+
     @Inject 
 	private JmsService jmsservice;
    
@@ -98,7 +101,7 @@ public class JMSConfigListener implements ConfigListener{
 
         if(thisServer.isDas() || thisServer.getCluster() == null)
         {
-            _logger.log(Level.INFO,"JMSConfigListerner server is either das or a stand-alone instance - hence ignoring");
+            _logger.log(Level.FINE,"JMSConfigListerner server is either das or a stand-alone instance - hence ignoring");
             return null;
         }
         for (int i=0; i< events.length; i++) {
