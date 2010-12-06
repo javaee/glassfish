@@ -51,16 +51,28 @@
     &testproperties;
     &reporting;
 
-    <target name="all" depends="build,setup,deploy,run,undeploy,unsetup,dev-report"/>
+    <target name="all" depends="clean-results,all-embedded,all-local,dev-report"/>
+    <target name="all-local" depends="build,setup-local,deploy,run,undeploy,unsetup"/>
+    <target name="all-embedded" depends="build,setup-embedded,deploy,run,undeploy,unsetup"/>
 
-    <target name="setup" depends="init-common">
-      <antcall target="clean-results"/>
-      <antcall target="start-database"/>
-      <ant target="startDomain"/>
-      <antcall target="setup-database"/>
+    <target name="setup-local" depends="init-common">
+      <antcall target="setup-common"/>
       <antcall target="setup-cluster">
          <param name="type" value="LOCAL"/>
       </antcall>
+    </target>
+
+    <target name="setup-embedded" depends="init-common">
+      <antcall target="setup-common"/>
+      <antcall target="setup-cluster">
+         <param name="type" value="EMBEDDED"/>
+      </antcall>
+    </target>
+
+    <target name="setup-common" depends="init-common">
+      <antcall target="start-database"/>
+      <ant target="startDomain"/>
+      <antcall target="setup-database"/>
     </target>
 
     <target name="setup-database" depends="init-common">
