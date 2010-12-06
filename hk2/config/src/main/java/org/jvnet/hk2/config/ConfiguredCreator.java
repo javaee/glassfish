@@ -97,6 +97,5 @@ class ConfiguredCreator<T> extends AbstractInhabitantImpl<T> implements Creator<
 
     public void release() {
         core.release();
-        super.release();
     }
 }

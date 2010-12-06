@@ -69,8 +69,6 @@ import java.util.logging.Logger;
  */
 public class Hk2Runner extends Runner {
 
-    static Hk2TestServices singleton;
-    
     final Class<?> testClass;
     final Description description;
     final Map<Description, Method> testMethods = 
@@ -80,8 +78,6 @@ public class Hk2Runner extends Runner {
     final List<Method> afterMethods =
         new ArrayList<Method>();
 
-    @SuppressWarnings("unchecked")
-    private Creator creator;
     private Object instance;
 
     private final Hk2RunnerOptions options;
@@ -138,6 +134,7 @@ public class Hk2Runner extends Runner {
             }
         }
 
+        
         boolean reinitPerTest = (null != options) ? options.reinitializePerTest() : false;
         try {
             creatorInit();
@@ -174,7 +171,7 @@ public class Hk2Runner extends Runner {
             }
             
             notifier.fireTestFinished(testDescription);
-            
+
             try {
                 runAfters(notifier);
             } catch (Throwable e1) {
@@ -183,7 +180,6 @@ public class Hk2Runner extends Runner {
             
             if (reinitPerTest && iter.hasNext()) {
                 try {
-                    release();
                     creatorInit();
                 } catch (ComponentException e) {
                     notifier.fireTestFailure(new Failure(getDescription(),e));
@@ -192,8 +188,6 @@ public class Hk2Runner extends Runner {
             }
         }
 
-        release();
-        
         // Run the @AfterClass methods.
         for (Method m : testClass.getMethods()) {
             int mod = m.getModifiers();
@@ -210,12 +204,6 @@ public class Hk2Runner extends Runner {
                 }
             }
         }
-    }
-
-    protected void release() {
-      creator.release();
-      creator = null;
-      instance = null;
     }
 
     private void runMethods(RunNotifier notifier, List<Method> methods) throws Throwable {
@@ -253,9 +241,8 @@ public class Hk2Runner extends Runner {
                 null == options ? true : options.enableDefaultRunLevelService());
 
         Habitat habitat = singleton.getHabitat();
-
         // so far we don't support extra meta-data on our tests.
-        creator = Creators.create(testClass, habitat, new MultiMap<String, String>());
+        Creator creator = Creators.create(testClass, habitat, new MultiMap<String, String>());
         instance = creator.create(creator);
         try {
             Hk2Test.Populator populator = Hk2Test.Populator.class.cast(instance);
@@ -269,4 +256,5 @@ public class Hk2Runner extends Runner {
         creator.initialize(instance, creator);
     }
 
+    static Hk2TestServices singleton;
 }

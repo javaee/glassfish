@@ -39,9 +39,7 @@ package com.sun.hk2.component;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Array;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.logging.Logger;
 
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.ComponentException;
@@ -54,8 +52,6 @@ import org.jvnet.tiger_types.Types;
  */
 public class InjectInjectionResolver extends InjectionResolver<Inject> {
 
-    public static final boolean MANAGED_ENABLED = Habitat.MANAGED_INJECTION_POINTS_ENABLED;
-  
     final Habitat habitat;
 
     public InjectInjectionResolver(Habitat habitat) {
@@ -77,7 +73,7 @@ public class InjectInjectionResolver extends InjectionResolver<Inject> {
                 Type genericType,
                 Class<V> type) throws ComponentException {
         V result;
-
+        
         if (type.isArray()) {
             result = getArrayInjectValue(habitat, component, onBehalfOf, target, genericType, type);
         } else {
@@ -93,7 +89,7 @@ public class InjectInjectionResolver extends InjectionResolver<Inject> {
           }
         }
         
-        return validate(component, onBehalfOf, result);
+        return validate(component, result);
     }
 
     protected <V> V getArrayInjectValue(Habitat habitat,
@@ -107,15 +103,14 @@ public class InjectInjectionResolver extends InjectionResolver<Inject> {
   
         Collection<?> instances;
         if (habitat.isContract(ct)) {
-            instances = getAllByContract(onBehalfOf, habitat, ct);
+            instances = habitat.getAllByContract(ct);
         } else {
-            instances = getAllByType(onBehalfOf, habitat, ct);
+            instances = habitat.getAllByType(ct);
         }
         result = type.cast(instances.toArray((Object[]) Array.newInstance(ct, instances.size())));
-        // TODO: validate() here too
         return result;
     }
-
+    
     protected <V> V getHolderInjectValue(Habitat habitat,
               Object component,
               Inhabitant<?> onBehalfOf,
@@ -126,7 +121,7 @@ public class InjectInjectionResolver extends InjectionResolver<Inject> {
       Type t = Types.getTypeArgument(((java.lang.reflect.Field) target).getGenericType(), 0);
       Class<?> finalType = Types.erasure(t);
       if (habitat.isContract(finalType)) {
-          return type.cast(getInhabitants(onBehalfOf, habitat, finalType, inject.name()));
+          return type.cast(habitat.getInhabitants(finalType, inject.name()));
       }
       try {
           if (finalType.cast(component)!=null) {
@@ -135,8 +130,7 @@ public class InjectInjectionResolver extends InjectionResolver<Inject> {
       } catch(ClassCastException e) {
           // ignore
       }
-      V result = type.cast(getInhabitantByType(onBehalfOf, habitat, finalType));
-      // TODO: validate() here too
+      V result = type.cast(habitat.getInhabitantByType(finalType));
       return result;
     }
 
@@ -147,24 +141,10 @@ public class InjectInjectionResolver extends InjectionResolver<Inject> {
               Type genericType,
               Class<V> type,
               Inject inject) throws ComponentException {
-      V result = null;
-      Inhabitant<?> i = manage(onBehalfOf, habitat.getInhabitant(type, inject.name()));
-      if (null != i) {
-        Object service = i.get();
-        try {
-            result = type.cast(service);
-        } catch (ClassCastException e) {
-            Logger.getAnonymousLogger().severe("ClassCastException between contract " + type + " and service " + service);
-            Logger.getAnonymousLogger().severe("Contract class loader " + type.getClassLoader());
-            Logger.getAnonymousLogger().severe("Service class loader " + service.getClass().getClassLoader());
-            i.release();
-            throw e;
-        }
-      }
-      return result;
+        V result = habitat.getComponent(type, inject.name());
+        return result;
     }
-
-    @SuppressWarnings("unchecked")
+    
     protected <V> V getComponentInjectValue(Habitat habitat,
               Object component,
               Inhabitant<?> onBehalfOf,
@@ -173,11 +153,8 @@ public class InjectInjectionResolver extends InjectionResolver<Inject> {
               Class<V> type,
               Inject inject) throws ComponentException {
         // ideally we should check if type has @Service or @Configured
-      Inhabitant<?> i = manage(onBehalfOf, habitat.getInhabitantByType(type));
-      if (null != i) {
-        return (V)i.get();
-      }
-      return null;
+        V result = habitat.getByType(type);
+        return result;
     }
 
     /**
@@ -186,65 +163,9 @@ public class InjectInjectionResolver extends InjectionResolver<Inject> {
      * @param component the target component to be injected
      * @param toBeInjected the injected value
      */
-    protected <V> V validate(Object component, Inhabitant<?> onBehalfOf, V toBeInjected) {
-      Inhabitants.validate(component, toBeInjected); // will toss exception if there is a problem
-      return toBeInjected;
+    protected <V> V validate(Object component, V toBeInjected) {
+        Inhabitants.validate(component, toBeInjected); // will toss exception if there is a problem
+        return toBeInjected;
     }
 
-    protected Inhabitant<?> manage(Inhabitant<?> onBehalfOf, Inhabitant<?> inhabitant) {
-      if (null == inhabitant || null == onBehalfOf || !MANAGED_ENABLED) {
-        return inhabitant;
-      }
-      Inhabitant<?> scopedClone = inhabitant.scopedClone();
-      onBehalfOf.manage(scopedClone);
-      return scopedClone;
-    }
-
-    @SuppressWarnings("unchecked")
-    protected Iterable<Inhabitant<?>> manage(Inhabitant<?> onBehalfOf, Iterable<?> inhabitants) {
-      if (null == inhabitants || null == onBehalfOf || !MANAGED_ENABLED) {
-        return (Iterable<Inhabitant<?>>)inhabitants;
-      }
-      
-      ArrayList<Inhabitant<?>> managed = new ArrayList<Inhabitant<?>>();
-      for (Object iObj : inhabitants) {
-        Inhabitant<?> i = (Inhabitant<?>)iObj;
-        managed.add(manage(onBehalfOf, i));
-      }
-      
-      return managed;
-    }
-    
-    protected Inhabitant<?> getInhabitantByType(Inhabitant<?> onBehalfOf, Habitat habitat, Class<?> finalType) {
-//      return habitat.getInhabitantByType(finalType);
-      return manage(onBehalfOf, habitat.getInhabitantByType(finalType));
-    }
-
-    protected Iterable<Inhabitant<?>> getInhabitants(Inhabitant<?> onBehalfOf, Habitat habitat, Class<?> finalType, String name) {
-      Iterable<?> inhabitants = habitat.getInhabitants(finalType, name);
-      return manage(onBehalfOf, inhabitants);
-    }
-    
-    @SuppressWarnings("unchecked")
-    protected <V> Collection<V> getAllByType(Inhabitant<?> onBehalfOf, Habitat habitat, Class<V> ct) {
-//      return habitat.getAllByType(ct);
-      Iterable<Inhabitant<?>> iterable = manage(onBehalfOf, habitat.getAllInhabitantsByType(ct));
-      Collection<V> services = new ArrayList<V>();
-      for (Inhabitant<?> i : iterable) {
-        services.add((V)i.get());
-      }
-      return services;
-    }
-
-    @SuppressWarnings("unchecked")
-    protected <V> Collection<V> getAllByContract(Inhabitant<?> onBehalfOf, Habitat habitat, Class<V> ct) {
-//      return habitat.getAllByContract(ct);
-      Iterable<Inhabitant<?>> iterable = manage(onBehalfOf, habitat.getAllInhabitantsByContract(ct.getName()));
-      Collection<V> services = new ArrayList<V>();
-      for (Inhabitant<?> i : iterable) {
-        services.add((V)i.get());
-      }
-      return services;
-    }
-    
 }

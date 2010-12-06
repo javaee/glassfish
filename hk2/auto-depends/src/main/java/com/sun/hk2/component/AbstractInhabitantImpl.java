@@ -47,11 +47,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectStreamClass;
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Partial implementation of {@link Inhabitant} that defines methods whose
@@ -60,12 +57,8 @@ import java.util.logging.Logger;
  * @author Kohsuke Kawaguchi
  */
 @SuppressWarnings("unchecked")
-public abstract class AbstractInhabitantImpl<T> implements Inhabitant<T> {
-    protected static final Logger logger = Logger.getLogger(ScopeInstance.class.getName());
-
+public abstract class AbstractInhabitantImpl<T> implements Inhabitant<T>  {
     private Collection<Inhabitant> companions;
-
-    private Collection<Inhabitant<?>> managed;
 
     @Override
     public String toString() {
@@ -73,7 +66,6 @@ public abstract class AbstractInhabitantImpl<T> implements Inhabitant<T> {
             "(" + typeName() + ")";
     }
     
-    @Override
     public final T get() {
         try {
             if (TracingUtilities.isEnabled())
@@ -85,7 +77,6 @@ public abstract class AbstractInhabitantImpl<T> implements Inhabitant<T> {
         }
     }
 
-    @Override
     public <T> T getSerializedMetadata(final Class<T> type, String key) {
         String v = metadata().getOne(key);
         if(v==null)     return null;
@@ -116,69 +107,21 @@ public abstract class AbstractInhabitantImpl<T> implements Inhabitant<T> {
         }
     }
 
-    @Override
     public final <T> T getSerializedMetadata(Class<T> type) {
         return getSerializedMetadata(type,type.getName());
     }
 
-    @Override
     public Inhabitant lead() {
         return null;
     }
 
-    @Override
     public final Collection<Inhabitant> companions() {
         if(companions==null)    return Collections.emptyList();
         else                    return companions;
     }
 
-    @Override
     public final void setCompanions(Collection<Inhabitant> companions) {
         this.companions = companions;
-    }
-    
-    @Override
-    public Inhabitant<T> scopedClone() {
-      return new ReferenceCountedLazyInhabitant<T>(this);
-    }
-
-    @Override
-    public void manage(Inhabitant<?> managedInhabitant) {
-      assert(null != managedInhabitant);
-      assert(this != managedInhabitant);
-      if (null == managed) {
-        managed = new ArrayList<Inhabitant<?>>();
-      }
-      managed.add(managedInhabitant);
-    }
-
-    @Override
-    public void release() {
-      if (null != managed) {
-        releaseManaged();
-      }
-    }
-    
-    protected void releaseManaged() {
-      if (null != managed) {
-        RuntimeException lastException = null;
-        
-        for (Inhabitant<?> i : managed) {
-          logger.log(Level.FINER, "releasing {0} on behalf of {1}", new Object[] {i, this});
-          try {
-            i.release();
-          } catch (RuntimeException e) {
-            logger.log(Level.FINE, "error encountered", e);
-            lastException = e;
-          }
-        }
-        
-        managed = null;
-        
-        if (null != lastException) {
-          throw lastException;
-        }
-      }
     }
     
     public <V extends Annotation> V getAnnotation(Class<V> annotation) {

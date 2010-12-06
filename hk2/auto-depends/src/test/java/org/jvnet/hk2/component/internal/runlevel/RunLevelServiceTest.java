@@ -25,16 +25,11 @@ import org.jvnet.hk2.component.InhabitantSorter;
 import org.jvnet.hk2.component.RunLevelListener;
 import org.jvnet.hk2.component.RunLevelService;
 import org.jvnet.hk2.component.RunLevelState;
+import org.jvnet.hk2.component.UnsatisfiedDependencyException;
 import org.jvnet.hk2.component.internal.runlevel.DefaultRunLevelService;
 import org.jvnet.hk2.component.internal.runlevel.Recorder;
 import org.jvnet.hk2.junit.Hk2Runner;
 import org.jvnet.hk2.junit.Hk2RunnerOptions;
-import org.jvnet.hk2.test.impl.OneSimple;
-import org.jvnet.hk2.test.impl.PerLookupService;
-import org.jvnet.hk2.test.impl.PerLookupServiceNested1;
-import org.jvnet.hk2.test.impl.PerLookupServiceNested2;
-import org.jvnet.hk2.test.impl.PerLookupServiceNested3;
-import org.jvnet.hk2.test.impl.TwoSimple;
 import org.jvnet.hk2.test.runlevel.ExceptionRunLevelManagedService;
 import org.jvnet.hk2.test.runlevel.ExceptionRunLevelManagedService2b;
 import org.jvnet.hk2.test.runlevel.InterruptRunLevelManagedService1a;
@@ -151,10 +146,6 @@ public class RunLevelServiceTest {
 
     assertEquals(5, defRLS.getCurrentRunLevel());
     assertEquals(null, defRLS.getPlannedRunLevel());
-
-    assertInhabitantsState(5);
-    assertListenerState(false, true, false);
-    assertRecorderState();
   }
 
   @Test
@@ -227,24 +218,6 @@ public class RunLevelServiceTest {
 
   @Test
   public void proceedUpTo49ThenDownTo11() {
-    PerLookupService.constructs = 0;
-    PerLookupService.destroys = 0;
-    
-    PerLookupServiceNested1.constructs = 0;
-    PerLookupServiceNested1.destroys = 0;
-    
-    PerLookupServiceNested2.constructs = 0;
-    PerLookupServiceNested2.destroys = 0;
-    
-    PerLookupServiceNested3.constructs = 0;
-    PerLookupServiceNested3.destroys = 0;
-    
-    OneSimple.constructs = 0;
-    OneSimple.destroys = 0;
-    
-    TwoSimple.constructs = 0;
-    TwoSimple.destroys = 0;
-    
     installTestRunLevelService(false);
     rls.proceedTo(49);
     assertInhabitantsState(49);
@@ -263,32 +236,6 @@ public class RunLevelServiceTest {
     assertInhabitantsState(11);
     assertListenerState(true, true, false);
     assertRecorderState();
-    
-    // additional check ensuring that perLookup scoped services are also destroyed for us
-    if (Habitat.MANAGED_INJECTION_POINTS_ENABLED) {
-      assertEquals("PerLookup PostConstruct(s)", 1, PerLookupService.constructs);
-      assertEquals("PerLookup PostConstruct(s)", 1, PerLookupServiceNested1.constructs);
-      assertEquals("PerLookup PostConstruct(s)", 1, PerLookupServiceNested2.constructs);
-      assertEquals("PerLookup PostConstruct(s)", 1, PerLookupServiceNested3.constructs);
-      assertEquals("PerLookup PreDestroy(s)", 1, PerLookupService.destroys);
-      assertEquals("PerLookup PreDestroy(s)", 1, PerLookupServiceNested1.destroys);
-      assertEquals("PerLookup PreDestroy(s)", 1, PerLookupServiceNested2.destroys);
-      assertEquals("PerLookup PreDestroy(s)", 1, PerLookupServiceNested3.destroys);
-    } else {
-      assertEquals("PerLookup PostConstructs(s)", 1, PerLookupService.constructs);
-      assertEquals("PerLookup PostConstructs(s)", 1, PerLookupServiceNested1.constructs);
-      assertEquals("PerLookup PostConstructs(s)", 1, PerLookupServiceNested2.constructs);
-      assertEquals("PerLookup PostConstructs(s)", 1, PerLookupServiceNested3.constructs);
-      assertEquals("PerLookup PreDestroy(s)", 0, PerLookupService.destroys);
-      assertEquals("PerLookup PreDestroy(s)", 0, PerLookupServiceNested1.destroys);
-      assertEquals("PerLookup PreDestroy(s)", 0, PerLookupServiceNested2.destroys);
-      assertEquals("PerLookup PreDestroy(s)", 0, PerLookupServiceNested3.destroys);
-    }
-
-    assertEquals("Singleton PostConstruct(s)", 1, OneSimple.constructs);
-    assertEquals("PerLookup PostPostConstruct(s)", 1, TwoSimple.constructs);
-    assertEquals("Singleton PostPreDestroy(s)", 0, OneSimple.destroys);
-    assertEquals("PerLookup PostPreDestroy(s)", 0, TwoSimple.destroys);
   }
   
   @Ignore // TODO: has been intermittently failing

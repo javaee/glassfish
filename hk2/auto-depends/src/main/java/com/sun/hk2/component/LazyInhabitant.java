@@ -138,11 +138,4 @@ public class LazyInhabitant<T> extends EventPublishingInhabitant<T> implements C
         return Creators.create(c,habitat,metadata);
     }
 
-    @Override
-    public Inhabitant<T> scopedClone() {
-      if (null == real) {
-        fetch();
-      }
-      return real.scopedClone();
-    }
 }
