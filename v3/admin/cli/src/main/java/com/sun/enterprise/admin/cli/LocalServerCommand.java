@@ -183,6 +183,11 @@ public abstract class LocalServerCommand extends CLICommand {
         // only tries to open the keystore
         FileInputStream fis = null;
         try {
+            //issue : 14971, should ideally use javax.net.ssl.keyStore and
+            //javax.net.ssl.keyStoreType system props here but they are
+            //unavailable to asadmin start-domain hence falling back to
+            //cacerts.jks instead of keystore.jks. Since the truststore
+            //is less-likely to be Non-JKS
             fis = new FileInputStream(getJKS());
             KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
             ks.load(fis, mpv.toCharArray());
@@ -491,7 +496,7 @@ public abstract class LocalServerCommand extends CLICommand {
         if (serverDirs == null)
             return null;
 
-        File mp = new File(new File(serverDirs.getServerDir(), "config"), "keystore.jks");
+        File mp = new File(new File(serverDirs.getServerDir(), "config"), "cacerts.jks");
         if (!mp.canRead())
             return null;
         return mp;
