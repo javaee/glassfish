@@ -76,8 +76,6 @@ public class ListPersistenceTypesCommand implements AdminCommand {
     private static final String EOL = "\n";
     private static final String SEPARATOR=EOL;
 
-    private static final String[] predefinedPersistenceTypes = { "memory", "replicated", "file"};
-
     @Override
     public void execute(AdminCommandContext context) {
         report = context.getActionReport();
@@ -88,17 +86,14 @@ public class ListPersistenceTypesCommand implements AdminCommand {
         if (logger.isLoggable(Level.FINE)){
             logger.log(Level.FINE, Strings.get("list.persistence.types.called", containerType));
         }
-        Set<String> allPersistenceTypes = new TreeSet<String>();
-        for (String predefined :  predefinedPersistenceTypes) {
-            allPersistenceTypes.add(predefined);
-        }
 
-        Set<String> userDefinedTypes = BackingStoreFactoryRegistry.getRegisteredTypes();
-        allPersistenceTypes.addAll(userDefinedTypes);
+        Set<String> allPersistenceTypes = BackingStoreFactoryRegistry.getRegisteredTypes();
         allPersistenceTypes.remove("noop"); // implementation detail.  do not expose to users.
                                             // "noop" is functionally equivalent to "memory".
+        if (containerType.equals("ejb") ) {
+            allPersistenceTypes.remove("memory");  // ejb did not have "memory" in glassfish v2.x.
+        }
         
-
         StringBuilder sb = new StringBuilder("");
         boolean removeTrailingSeparator = false;
         for (String type : allPersistenceTypes) {
