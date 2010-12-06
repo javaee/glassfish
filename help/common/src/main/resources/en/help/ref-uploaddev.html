@@ -4,7 +4,7 @@ Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-uploaddev"></a><h4>Deploy Applications or Modules</h4>
-<a name="indexterm-172"></a><a name="indexterm-173"></a><a name="indexterm-174"></a><a name="indexterm-175"></a><a name="indexterm-176"></a><a name="indexterm-177"></a><a name="indexterm-178"></a><a name="indexterm-179"></a><a name="indexterm-180"></a><a name="indexterm-181"></a><a name="indexterm-182"></a><a name="indexterm-183"></a><p>Use the Deploy Applications or Modules page to deploy an application.</p>
+<a name="indexterm-173"></a><a name="indexterm-174"></a><a name="indexterm-175"></a><a name="indexterm-176"></a><a name="indexterm-177"></a><a name="indexterm-178"></a><a name="indexterm-179"></a><a name="indexterm-180"></a><a name="indexterm-181"></a><a name="indexterm-182"></a><a name="indexterm-183"></a><a name="indexterm-184"></a><p>Use the Deploy Applications or Modules page to deploy an application.</p>
 
 <p>The Deploy Applications or Modules page contains the following options for all applications.
 Additional options appear only after you specify the Location field for the application.</p>
@@ -92,7 +92,7 @@ Additional options appear only after you specify the Location field for the appl
 <dt>Application Name</dt>
 <dd><p>The name of the application.</p>
 
-<p>The name can include an optional version identifier, which follows the name and is separated from the name by a colon (<tt>:</tt>). The version identifier must begin with a letter or number. It can contain alphanumeric characters plus underscore (<tt>_</tt>), dash (<tt>-</tt>), and period (<tt>.</tt>) characters. For more information about module and application versions, see the <a href="http://docs.sun.com/doc/821-2417/gkhhv?a=view">Module and Application Versions in <i>Oracle GlassFish Server 3.1 Application Deployment Guide</i></a>.</p>
+<p>The name can include an optional version identifier, which follows the name and is separated from the name by a colon (<tt>:</tt>). The version identifier must begin with a letter or number. It can contain alphanumeric characters plus underscore (<tt>_</tt>), dash (<tt>-</tt>), and period (<tt>.</tt>) characters. For more information about module and application versions, see the <a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2417">Module and Application Versions in <i>Oracle GlassFish Server 3.1 Application Deployment Guide</i></a>.</p>
 
 </dd>
 <dt>Virtual Servers</dt>
@@ -108,17 +108,41 @@ Additional options appear only after you specify the Location field for the appl
 <dt>Availability</dt>
 <dd><p>If the Enabled checkbox is selected, high-availability is enabled for web sessions and for stateful session bean (SFSB) checkpointing and potentially passivation. If set to false (default) all web session saving and SFSB checkpointing is disabled for the specified application, web application, or EJB module. If set to true, the specified application or module is enabled for high-availability. Set this option to true only if high availability is configured and enabled at higher levels, such as the server and container levels.</p>
 
+<p>This option appears if clusters or stand-alone server instances aside from the default server instance (<tt>server</tt>) exist.</p>
+
 </dd>
 <dt>Precompile JSPs</dt>
 <dd><p>If this option is selected, JavaServer Pages (JSP) files are precompiled. If this option is disabled, JSP files are compiled at runtime when they are first accessed. This option is disabled by default.</p>
 
 </dd>
 <dt>Run Verifier</dt>
-<dd><p>If this option is selected, the verifier is run before deployment. If verification fails, deployment is not performed. The verifier examines the structure and content of the file. Verification of large applications is often time-consuming. This option is disabled by default.</p>
+<dd><p>If this option is selected, deployment descriptors are verified before deployment. If verification fails, deployment is not performed. The verifier examines the structure and content of the deployment descriptors. Verification of large applications is often time-consuming. This option is disabled by default.</p>
+
+<p>Verifier packages must be installed from the Update Tool or a warning is logged and this option is ignored.</p>
 
 </dd>
 <dt>Force Redeploy</dt>
 <dd><p>If this option is selected, the application is redeployed if it is already deployed. If this option is not selected, an attempt to deploy an application that is already deployed results in an error. This option is disabled by default.</p>
+
+</dd>
+<dt>Keep State</dt>
+<dd><p>This option controls whether web sessions, SFSB instances, and persistently created EJB timers are retained between redeployments.</p>
+
+<p>This option is disabled by default. This option is supported only on the default server instance, named <tt>server</tt>. It is not supported and ignored for any other target.</p>
+
+<p>Some changes to an application between redeployments prevent this feature from working properly. For example, do not change the set of instance variables in the SFSB bean class.</p>
+
+<p>For web applications, this feature is applicable only if in the <tt>glassfish-web-app.xml</tt> file the <tt>persistence-type</tt> attribute of the <tt>session-manager</tt> element is <tt>file</tt>.</p>
+
+<p>For stateful session bean instances, the persistence type without high availability is set in the server (the SFSB Persistence Type option) and must be set to <tt>file</tt>, which is the default and recommended value.</p>
+
+<p>If any active web session, SFSB instance, or EJB timer fails to be preserved or restored, <b>none</b> of these will be available when the redeployment is complete. However, the redeployment continues and a warning is logged.</p>
+
+<p>To preserve active state data, GlassFish Server serializes the data and saves it in memory. To restore the data, the class loader of the newly redeployed application deserializes the data that was previously saved.</p>
+
+</dd>
+<dt>Preserve Application Scoped Resources</dt>
+<dd><p>If checked, preserves any application-scoped resources and restores them during redeployment. This option is not checked by default.</p>
 
 </dd>
 <dt>Libraries</dt>
@@ -136,7 +160,7 @@ Additional options appear only after you specify the Location field for the appl
 <dl><dt>Application Name</dt>
 <dd><p>The name of the application.</p>
 
-<p>The name can include an optional version identifier, which follows the name and is separated from the name by a colon (<tt>:</tt>). The version identifier must begin with a letter or number. It can contain alphanumeric characters plus underscore (<tt>_</tt>), dash (<tt>-</tt>), and period (<tt>.</tt>) characters. For more information about module and application versions, see the <a href="http://docs.sun.com/doc/821-2417/gkhhv?a=view">Module and Application Versions in <i>Oracle GlassFish Server 3.1 Application Deployment Guide</i></a>.</p>
+<p>The name can include an optional version identifier, which follows the name and is separated from the name by a colon (<tt>:</tt>). The version identifier must begin with a letter or number. It can contain alphanumeric characters plus underscore (<tt>_</tt>), dash (<tt>-</tt>), and period (<tt>.</tt>) characters. For more information about module and application versions, see the <a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2417">Module and Application Versions in <i>Oracle GlassFish Server 3.1 Application Deployment Guide</i></a>.</p>
 
 </dd>
 <dt>Virtual Servers</dt>
@@ -149,8 +173,14 @@ Additional options appear only after you specify the Location field for the appl
 <dd><p>If this option is selected, the application is enabled. This option is selected by default.</p>
 
 </dd>
+<dt>Java Web Start</dt>
+<dd><p>If this option is selected, Java Web Start access is permitted for an application client module. This option is disabled by default.</p>
+
+</dd>
 <dt>Availability</dt>
 <dd><p>If the Enabled checkbox is selected, high-availability is enabled for web sessions and for stateful session bean (SFSB) checkpointing and potentially passivation. If set to false (default) all web session saving and SFSB checkpointing is disabled for the specified application, web application, or EJB module. If set to true, the specified application or module is enabled for high-availability. Set this option to true only if high availability is configured and enabled at higher levels, such as the server and container levels.</p>
+
+<p>This option appears if clusters or stand-alone server instances aside from the default server instance (<tt>server</tt>) exist.</p>
 
 </dd>
 <dt>Precompile JSPs</dt>
@@ -158,15 +188,39 @@ Additional options appear only after you specify the Location field for the appl
 
 </dd>
 <dt>Run Verifier</dt>
-<dd><p>If this option is selected, the verifier is run before deployment. If verification fails, deployment is not performed. The verifier examines the structure and content of the file. Verification of large applications is often time-consuming. This option is disabled by default.</p>
+<dd><p>If this option is selected, deployment descriptors are verified before deployment. If verification fails, deployment is not performed. The verifier examines the structure and content of the deployment descriptors. Verification of large applications is often time-consuming. This option is disabled by default.</p>
+
+<p>Verifier packages must be installed from the Update Tool or a warning is logged and this option is ignored.</p>
 
 </dd>
 <dt>Force Redeploy</dt>
 <dd><p>If this option is selected, the application is redeployed if it is already deployed. If this option is not selected, an attempt to deploy an application that is already deployed results in an error. This option is disabled by default.</p>
 
 </dd>
-<dt>Java Web Start</dt>
-<dd><p>If this option is selected, Java Web Start access is permitted for an application client module. This option is disabled by default.</p>
+<dt>Keep State</dt>
+<dd><p>This option controls whether web sessions, SFSB instances, and persistently created EJB timers are retained between redeployments.</p>
+
+<p>This option is disabled by default. This option is supported only on the default server instance, named <tt>server</tt>. It is not supported and ignored for any other target.</p>
+
+<p>Some changes to an application between redeployments prevent this feature from working properly. For example, do not change the set of instance variables in the SFSB bean class.</p>
+
+<p>For web applications, this feature is applicable only if in the <tt>glassfish-web-app.xml</tt> file the <tt>persistence-type</tt> attribute of the <tt>session-manager</tt> element is <tt>file</tt>.</p>
+
+<p>For stateful session bean instances, the persistence type without high availability is set in the server (the SFSB Persistence Type option) and must be set to <tt>file</tt>, which is the default and recommended value.</p>
+
+<p>If any active web session, SFSB instance, or EJB timer fails to be preserved or restored, <b>none</b> of these will be available when the redeployment is complete. However, the redeployment continues and a warning is logged.</p>
+
+<p>To preserve active state data, GlassFish Server serializes the data and saves it in memory. To restore the data, the class loader of the newly redeployed application deserializes the data that was previously saved.</p>
+
+</dd>
+<dt>Preserve Application Scoped Resources</dt>
+<dd><p>If checked, preserves any application-scoped resources and restores them during redeployment. This option is not checked by default.</p>
+
+</dd>
+<dt>Compatibility</dt>
+<dd><p>If checked, uses GlassFish Server v2 JAR visibility requirements for applications instead of the stricter Java EE 6 requirements implemented in GlassFish Server v3 releases, including 3.1. This option is not checked by default.</p>
+
+<p>The Java EE 6 platform specification imposes stricter requirements than Java EE 5 did on which JAR files can be visible to various modules within an EAR file. In particular, application clients must not have access to EJB JAR files or other JAR files in the EAR file unless references use the standard Java SE mechanisms (extensions, for example) or the Java EE library-directory mechanism. Checking this box removes these Java EE 6 restrictions.</p>
 
 </dd>
 <dt>Libraries</dt>
@@ -184,19 +238,21 @@ Additional options appear only after you specify the Location field for the appl
 <dl><dt>Application Name</dt>
 <dd><p>The name of the application.</p>
 
-<p>The name can include an optional version identifier, which follows the name and is separated from the name by a colon (<tt>:</tt>). The version identifier must begin with a letter or number. It can contain alphanumeric characters plus underscore (<tt>_</tt>), dash (<tt>-</tt>), and period (<tt>.</tt>) characters. For more information about module and application versions, see the <a href="http://docs.sun.com/doc/821-2417/gkhhv?a=view">Module and Application Versions in <i>Oracle GlassFish Server 3.1 Application Deployment Guide</i></a>.</p>
-
-</dd>
-<dt>Run Verifier</dt>
-<dd><p>If this option is selected, the verifier is run before deployment. If verification fails, deployment is not performed. The verifier examines the structure and content of the file. Verification of large applications is often time-consuming. This option is disabled by default.</p>
-
-</dd>
-<dt>Force Redeploy</dt>
-<dd><p>If this option is selected, the application is redeployed if it is already deployed. If this option is not selected, an attempt to deploy an application that is already deployed results in an error. This option is disabled by default.</p>
+<p>The name can include an optional version identifier, which follows the name and is separated from the name by a colon (<tt>:</tt>). The version identifier must begin with a letter or number. It can contain alphanumeric characters plus underscore (<tt>_</tt>), dash (<tt>-</tt>), and period (<tt>.</tt>) characters. For more information about module and application versions, see the <a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2417">Module and Application Versions in <i>Oracle GlassFish Server 3.1 Application Deployment Guide</i></a>.</p>
 
 </dd>
 <dt>Java Web Start</dt>
 <dd><p>If this option is selected, Java Web Start access is permitted for an application client module. This option is disabled by default.</p>
+
+</dd>
+<dt>Run Verifier</dt>
+<dd><p>If this option is selected, deployment descriptors are verified before deployment. If verification fails, deployment is not performed. The verifier examines the structure and content of the deployment descriptors. Verification of large applications is often time-consuming. This option is disabled by default.</p>
+
+<p>Verifier packages must be installed from the Update Tool or a warning is logged and this option is ignored.</p>
+
+</dd>
+<dt>Force Redeploy</dt>
+<dd><p>If this option is selected, the application is redeployed if it is already deployed. If this option is not selected, an attempt to deploy an application that is already deployed results in an error. This option is disabled by default.</p>
 
 </dd>
 <dt>Description</dt>
@@ -210,7 +266,7 @@ Additional options appear only after you specify the Location field for the appl
 <dl><dt>Application Name</dt>
 <dd><p>The name of the application.</p>
 
-<p>The name can include an optional version identifier, which follows the name and is separated from the name by a colon (<tt>:</tt>). The version identifier must begin with a letter or number. It can contain alphanumeric characters plus underscore (<tt>_</tt>), dash (<tt>-</tt>), and period (<tt>.</tt>) characters. For more information about module and application versions, see the <a href="http://docs.sun.com/doc/821-2417/gkhhv?a=view">Module and Application Versions in <i>Oracle GlassFish Server 3.1 Application Deployment Guide</i></a>.</p>
+<p>The name can include an optional version identifier, which follows the name and is separated from the name by a colon (<tt>:</tt>). The version identifier must begin with a letter or number. It can contain alphanumeric characters plus underscore (<tt>_</tt>), dash (<tt>-</tt>), and period (<tt>.</tt>) characters. For more information about module and application versions, see the <a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2417">Module and Application Versions in <i>Oracle GlassFish Server 3.1 Application Deployment Guide</i></a>.</p>
 
 </dd>
 <dt>Status</dt>
@@ -218,11 +274,17 @@ Additional options appear only after you specify the Location field for the appl
 
 </dd>
 <dt>Run Verifier</dt>
-<dd><p>If this option is selected, the verifier is run before deployment. If verification fails, deployment is not performed. The verifier examines the structure and content of the file. Verification of large applications is often time-consuming. This option is disabled by default.</p>
+<dd><p>If this option is selected, deployment descriptors are verified before deployment. If verification fails, deployment is not performed. The verifier examines the structure and content of the deployment descriptors. Verification of large applications is often time-consuming. This option is disabled by default.</p>
+
+<p>Verifier packages must be installed from the Update Tool or a warning is logged and this option is ignored.</p>
 
 </dd>
 <dt>Force Redeploy</dt>
 <dd><p>If this option is selected, the application is redeployed if it is already deployed. If this option is not selected, an attempt to deploy an application that is already deployed results in an error. This option is disabled by default.</p>
+
+</dd>
+<dt>Preserve Application Scoped Resources</dt>
+<dd><p>If checked, preserves any application-scoped resources and restores them during redeployment. This option is not checked by default.</p>
 
 </dd>
 <dt>Description</dt>
@@ -236,7 +298,7 @@ Additional options appear only after you specify the Location field for the appl
 <dl><dt>Application Name</dt>
 <dd><p>The name of the application.</p>
 
-<p>The name can include an optional version identifier, which follows the name and is separated from the name by a colon (<tt>:</tt>). The version identifier must begin with a letter or number. It can contain alphanumeric characters plus underscore (<tt>_</tt>), dash (<tt>-</tt>), and period (<tt>.</tt>) characters. For more information about module and application versions, see the <a href="http://docs.sun.com/doc/821-2417/gkhhv?a=view">Module and Application Versions in <i>Oracle GlassFish Server 3.1 Application Deployment Guide</i></a>.</p>
+<p>The name can include an optional version identifier, which follows the name and is separated from the name by a colon (<tt>:</tt>). The version identifier must begin with a letter or number. It can contain alphanumeric characters plus underscore (<tt>_</tt>), dash (<tt>-</tt>), and period (<tt>.</tt>) characters. For more information about module and application versions, see the <a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2417">Module and Application Versions in <i>Oracle GlassFish Server 3.1 Application Deployment Guide</i></a>.</p>
 
 </dd>
 <dt>Status</dt>
@@ -246,13 +308,43 @@ Additional options appear only after you specify the Location field for the appl
 <dt>Availability</dt>
 <dd><p>If the Enabled checkbox is selected, high-availability is enabled for web sessions and for stateful session bean (SFSB) checkpointing and potentially passivation. If set to false (default) all web session saving and SFSB checkpointing is disabled for the specified application, web application, or EJB module. If set to true, the specified application or module is enabled for high-availability. Set this option to true only if high availability is configured and enabled at higher levels, such as the server and container levels.</p>
 
+<p>This option appears if clusters or stand-alone server instances aside from the default server instance (<tt>server</tt>) exist.</p>
+
 </dd>
 <dt>Run Verifier</dt>
-<dd><p>If this option is selected, the verifier is run before deployment. If verification fails, deployment is not performed. The verifier examines the structure and content of the file. Verification of large applications is often time-consuming. This option is disabled by default.</p>
+<dd><p>If this option is selected, deployment descriptors are verified before deployment. If verification fails, deployment is not performed. The verifier examines the structure and content of the deployment descriptors. Verification of large applications is often time-consuming. This option is disabled by default.</p>
+
+<p>Verifier packages must be installed from the Update Tool or a warning is logged and this option is ignored.</p>
 
 </dd>
 <dt>Force Redeploy</dt>
 <dd><p>If this option is selected, the application is redeployed if it is already deployed. If this option is not selected, an attempt to deploy an application that is already deployed results in an error. This option is disabled by default.</p>
+
+</dd>
+<dt>Keep State</dt>
+<dd><p>This option controls whether web sessions, SFSB instances, and persistently created EJB timers are retained between redeployments.</p>
+
+<p>This option is disabled by default. This option is supported only on the default server instance, named <tt>server</tt>. It is not supported and ignored for any other target.</p>
+
+<p>Some changes to an application between redeployments prevent this feature from working properly. For example, do not change the set of instance variables in the SFSB bean class.</p>
+
+<p>For web applications, this feature is applicable only if in the <tt>glassfish-web-app.xml</tt> file the <tt>persistence-type</tt> attribute of the <tt>session-manager</tt> element is <tt>file</tt>.</p>
+
+<p>For stateful session bean instances, the persistence type without high availability is set in the server (the SFSB Persistence Type option) and must be set to <tt>file</tt>, which is the default and recommended value.</p>
+
+<p>If any active web session, SFSB instance, or EJB timer fails to be preserved or restored, <b>none</b> of these will be available when the redeployment is complete. However, the redeployment continues and a warning is logged.</p>
+
+<p>To preserve active state data, GlassFish Server serializes the data and saves it in memory. To restore the data, the class loader of the newly redeployed application deserializes the data that was previously saved.</p>
+
+</dd>
+<dt>Preserve Application Scoped Resources</dt>
+<dd><p>If checked, preserves any application-scoped resources and restores them during redeployment. This option is not checked by default.</p>
+
+</dd>
+<dt>Compatibility</dt>
+<dd><p>If checked, uses GlassFish Server v2 JAR visibility requirements for applications instead of the stricter Java EE 6 requirements implemented in GlassFish Server v3 releases, including 3.1. This option is not checked by default.</p>
+
+<p>The Java EE 6 platform specification imposes stricter requirements than Java EE 5 did on which JAR files can be visible to various modules within an EAR file. In particular, application clients must not have access to EJB JAR files or other JAR files in the EAR file unless references use the standard Java SE mechanisms (extensions, for example) or the Java EE library-directory mechanism. Checking this box removes these Java EE 6 restrictions.</p>
 
 </dd>
 <dt>Libraries</dt>
@@ -270,7 +362,7 @@ Additional options appear only after you specify the Location field for the appl
 <dl><dt>Application Name</dt>
 <dd><p>The name of the application.</p>
 
-<p>The name can include an optional version identifier, which follows the name and is separated from the name by a colon (<tt>:</tt>). The version identifier must begin with a letter or number. It can contain alphanumeric characters plus underscore (<tt>_</tt>), dash (<tt>-</tt>), and period (<tt>.</tt>) characters. For more information about module and application versions, see the <a href="http://docs.sun.com/doc/821-2417/gkhhv?a=view">Module and Application Versions in <i>Oracle GlassFish Server 3.1 Application Deployment Guide</i></a>.</p>
+<p>The name can include an optional version identifier, which follows the name and is separated from the name by a colon (<tt>:</tt>). The version identifier must begin with a letter or number. It can contain alphanumeric characters plus underscore (<tt>_</tt>), dash (<tt>-</tt>), and period (<tt>.</tt>) characters. For more information about module and application versions, see the <a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2417">Module and Application Versions in <i>Oracle GlassFish Server 3.1 Application Deployment Guide</i></a>.</p>
 
 </dd>
 <dt>Virtual Servers</dt>
@@ -286,21 +378,41 @@ Additional options appear only after you specify the Location field for the appl
 <dt>Availability</dt>
 <dd><p>If the Enabled checkbox is selected, high-availability is enabled for web sessions and for stateful session bean (SFSB) checkpointing and potentially passivation. If set to false (default) all web session saving and SFSB checkpointing is disabled for the specified application, web application, or EJB module. If set to true, the specified application or module is enabled for high-availability. Set this option to true only if high availability is configured and enabled at higher levels, such as the server and container levels.</p>
 
+<p>This option appears if clusters or stand-alone server instances aside from the default server instance (<tt>server</tt>) exist.</p>
+
+</dd>
+<dt>OSGI Type</dt>
+<dd><p>If this option is selected, it specifies a hybrid OSGi/Java-EE module. This option only appears if the Type selected is Other.</p>
+
 </dd>
 <dt>Precompile JSPs</dt>
 <dd><p>If this option is selected, JavaServer Pages (JSP) files are precompiled. If this option is disabled, JSP files are compiled at runtime when they are first accessed. This option is disabled by default.</p>
 
 </dd>
 <dt>Run Verifier</dt>
-<dd><p>If this option is selected, the verifier is run before deployment. If verification fails, deployment is not performed. The verifier examines the structure and content of the file. Verification of large applications is often time-consuming. This option is disabled by default.</p>
+<dd><p>If this option is selected, deployment descriptors are verified before deployment. If verification fails, deployment is not performed. The verifier examines the structure and content of the deployment descriptors. Verification of large applications is often time-consuming. This option is disabled by default.</p>
+
+<p>Verifier packages must be installed from the Update Tool or a warning is logged and this option is ignored.</p>
 
 </dd>
 <dt>Force Redeploy</dt>
 <dd><p>If this option is selected, the application is redeployed if it is already deployed. If this option is not selected, an attempt to deploy an application that is already deployed results in an error. This option is disabled by default.</p>
 
 </dd>
-<dt>OSGI Type</dt>
-<dd><p>If this option is selected, it specifies a hybrid OSGi/Java-EE module. This option only appears if the Type selected is Other.</p>
+<dt>Keep State</dt>
+<dd><p>This option controls whether web sessions, SFSB instances, and persistently created EJB timers are retained between redeployments.</p>
+
+<p>This option is disabled by default. This option is supported only on the default server instance, named <tt>server</tt>. It is not supported and ignored for any other target.</p>
+
+<p>Some changes to an application between redeployments prevent this feature from working properly. For example, do not change the set of instance variables in the SFSB bean class.</p>
+
+<p>For web applications, this feature is applicable only if in the <tt>glassfish-web-app.xml</tt> file the <tt>persistence-type</tt> attribute of the <tt>session-manager</tt> element is <tt>file</tt>.</p>
+
+<p>For stateful session bean instances, the persistence type without high availability is set in the server (the SFSB Persistence Type option) and must be set to <tt>file</tt>, which is the default and recommended value.</p>
+
+<p>If any active web session, SFSB instance, or EJB timer fails to be preserved or restored, <b>none</b> of these will be available when the redeployment is complete. However, the redeployment continues and a warning is logged.</p>
+
+<p>To preserve active state data, GlassFish Server serializes the data and saves it in memory. To restore the data, the class loader of the newly redeployed application deserializes the data that was previously saved.</p>
 
 </dd>
 <dt>Libraries</dt>
@@ -355,13 +467,13 @@ Additional options appear only after you specify the Location field for the appl
 </li></ul>
 <h5>Related <tt>asadmin</tt> Commands</h5>
 
-<ul><li><p><a href="http://docs.sun.com/doc/821-2433/deploy-1?a=view"><tt>deploy</tt>(1)</a></p>
+<ul><li><p><a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2433"><tt>deploy</tt>(1)</a></p>
 
 </li>
-<li><p><a href="http://docs.sun.com/doc/821-2433/redeploy-1?a=view"><tt>redeploy</tt>(1)</a></p>
+<li><p><a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2433"><tt>redeploy</tt>(1)</a></p>
 
 </li>
-<li><p><a href="http://docs.sun.com/doc/821-2433/list-applications-1?a=view"><tt>list-applications</tt>(1)</a></p>
+<li><p><a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2433"><tt>list-applications</tt>(1)</a></p>
 
 </li></ul>
 

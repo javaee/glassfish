@@ -227,6 +227,10 @@
     <indexitem target="ref-setadminpassword" text="changing administrator (reference)"></indexitem>
     <indexitem target="task-setadminpassword" text="changing administrator (task)"></indexitem>
     <indexitem target="task-changeadminpasswd" text="changing for user in admin realm"></indexitem></indexitem>
+ <indexitem text="password aliases">
+    <indexitem target="ref-pswdaliasnew" text="creating (reference)"></indexitem><indexitem target="ref-pswdaliasedit" text="creating (reference)"></indexitem>
+    <indexitem target="ref-pswdaliases" text="deleting (reference)"></indexitem>
+    <indexitem target="ref-pswdaliases" text="listing (reference)"></indexitem></indexitem>
  <indexitem text="properties">
     <indexitem target="ref-auditmoduleprop" text="audit modules"></indexitem>
     <indexitem target="ref-editcertrealm" text="certificate realm"></indexitem>
@@ -253,8 +257,6 @@
     <indexitem target="ref-realms" text="viewing and configuring"></indexitem></indexitem>
  <indexitem target="ref-redeploy" text="redeploying applications (reference)"></indexitem>
  <indexitem target="task-appredeploy" text="redeploying applications (task)"></indexitem>
- <indexitem target="ref-registrationpage" text="registering GlassFish Server (reference)"></indexitem>
- <indexitem target="task-register" text="registering GlassFish Server (task)"></indexitem>
  <indexitem target="ref-serverinstappsconfig" text="reload settings for applications (reference)"></indexitem>
  <indexitem target="task-setadvanceappconfig" text="reload settings for applications (task)"></indexitem>
  <indexitem target="task-apprestart" text="reloading applications"></indexitem>
@@ -282,7 +284,6 @@
     <indexitem target="task-jmxconnectorssledit" text="JMX connector (task)"></indexitem></indexitem>
  <indexitem target="ref-sysinstancevalues" text="standalone instances, system properties (reference)"></indexitem>
  <indexitem target="task-subscriptions" text="Subscriptions page, viewing"></indexitem>
- <indexitem target="task-register" text="Sun Online Account"></indexitem>
  <indexitem text="system properties">
     <indexitem target="ref-sysinstancevalues" text="clustered instances (reference)"></indexitem>
     <indexitem target="ref-configurationsystemproperties" text="configurations (reference)"></indexitem>

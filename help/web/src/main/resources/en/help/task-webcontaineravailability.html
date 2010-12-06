@@ -12,8 +12,8 @@ Use is subject to License Terms  -->
 <li><b>On the Availability Service page, click the Web Container Availability tab.</b><p>The Web Container Availability page opens.</p></li>
 <li><b>In the Availability Service field, check the Enabled box to enable availability for
 the web container.</b><p>To disable availability, remove the check from the Availability Service Enabled box.</p></li>
-<li><b>In the Persistence Type field, type the persistence mechanism.</b><ul>
-<li><b>If Availability Service Enabled is <b>not</b> checked, type one of the following:</b>
+<li><b>From the Persistence Type drop-down list, select the persistence mechanism.</b><ul>
+<li><b>If Availability Service Enabled is <b>not</b> checked, select one of the following:</b>
 <ul><li><p><tt>memory</tt> for no session persistence</p>
 
 </li>
@@ -21,8 +21,8 @@ the web container.</b><p>To disable availability, remove the check from the Avai
 
 </li></ul>
 </li>
-<li><b>If Availability Service Enabled is checked, type <tt>replicated</tt> for session persistence based
-on cluster failover that is highly available.</b></li></ul></li>
+<li><b>If Availability Service Enabled is checked, select <tt>replicated</tt> for session persistence based on
+cluster failover that is highly available.</b></li></ul></li>
 <li><b>From the Persistence Frequency drop-down list, select the frequency at which the HTTP
 session is stored:</b>
 <ul><li><p><tt>web-method</tt> &#8212; The session state is stored at the end of each web request prior to sending a response back to the client. This mode provides the best guarantee that the session state is fully updated in case of failure. This is the default.</p>
