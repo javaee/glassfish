@@ -21,10 +21,44 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --target
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command runs successfully and the option is ignored.
+         This option is valid only in domains that are configured
+         to  support  clusters,  such as domains that are created
+         with the cluster profile or the enterprise profile.
+
+         This option specifies the target from which you want  to
+         remove the connector resource. Valid targets are:
+
+         Note -
+
+           Resources are always created for a domain as  a  whole
+           but   are   only   active  for  targets  for  which  a
+           <resource-ref> has been  created  using  the  --target
+           option  when the resource was created. This means that
+           deleting a resource only  deletes  the  <resource-ref>
+           element  for  the  specified  --target,  and  does not
+           delete the resource from the domain as a whole  unless
+           domain is specified as the --target for the deletion.
+
+         server
+
+             Deletes the  connector  resource  from  the  default
+             server instance. This is the default value.
+
+         domain
+             Deletes the connector resource from the domain.
+
+Java EE 6           Last change: 14 Sep 2010                    1
+
+asadmin Utility Subcommands          delete-connector-resource(1)
+
+         cluster_name
+
+             Deletes the connector  resource  from  every  server
+             instance in the cluster.
+
+         instance_name
+             Deletes the  connector  resource  from  a  specified
+             server instance.
 
 OPERANDS
      jndi_name
@@ -42,10 +76,6 @@ EXAMPLES
 
 EXIT STATUS
      0                           subcommand executed successfully
-
-Java EE 6           Last change: 14 Sep 2010                    1
-
-asadmin Utility Subcommands          delete-connector-resource(1)
 
      1                           error in executing  the  subcom-
                                  mand

@@ -23,33 +23,58 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --target
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command runs successfully and the option is ignored.
+         This option helps specify the target to  which  you  are
+         deploying.
 
-     --restype
+         Valid values for target are described below.
 
-         The JNDI resource type. Valid values are topic or queue.
+         Note -
 
-     --factoryclass
-         The class that creates the JNDI resource.
+           The resource is always created for  the  domain  as  a
+           whole, but the <resource-ref> element for the resource
+           is only created for the specified --target. This means
+           that  although  the  resource is defined at the domain
+           level, it is only active at the specified --target.
 
-     --jndilookupname
+         server
 
-         The lookup name that the external container uses.
+             Creates  the  resource  for   the   default   server
+             instance. This value is the default.
 
-     --enabled
-         Determines whether the resource is enabled  at  runtime.
-         Default is true.
+         domain
+             Creates the resource for the domain
 
-     --description
+         cluster_name
 
-         The text that provides details about the JNDI resource.
+             Creates the resource for every  server  instance  in
+             the cluster
 
 Java EE 6           Last change: 10 Sep 2010                    1
 
 asadmin Utility Subcommands               create-jndi-resource(1)
+
+         instance_name
+
+             Creates  the  resource  for  a   particular   server
+             instance
+
+     --restype
+         The JNDI resource type. Valid values are topic or queue.
+
+     --factoryclass
+
+         The class that creates the JNDI resource.
+
+     --jndilookupname
+         The lookup name that the external container uses.
+
+     --enabled
+
+         Determines whether the resource is enabled  at  runtime.
+         Default is true.
+
+     --description
+         The text that provides details about the JNDI resource.
 
      --property
 
@@ -71,6 +96,11 @@ asadmin Utility Subcommands               create-jndi-resource(1)
 
          orb-listener-1-port
              Specifies the ORB listener port for IIOP connections
+
+Java EE 6           Last change: 10 Sep 2010                    2
+
+asadmin Utility Subcommands               create-jndi-resource(1)
+
              that orb-listener-1 listens on.
 
          IIOP_SSL_LISTENER_PORT
@@ -94,10 +124,6 @@ OPERANDS
      jndi_name
          The unique name of the JNDI resource to be created.
 
-Java EE 6           Last change: 10 Sep 2010                    2
-
-asadmin Utility Subcommands               create-jndi-resource(1)
-
 EXAMPLES
      Example 1 Creating a JNDI Resource
 
@@ -115,10 +141,14 @@ EXIT STATUS
      1                           error in executing  the  subcom-
                                  mand
 
+Java EE 6           Last change: 10 Sep 2010                    3
+
+asadmin Utility Subcommands               create-jndi-resource(1)
+
 SEE ALSO
      delete-jndi-resource(1), list-jndi-resources(1)
 
      asadmin(1M)
 
-Java EE 6           Last change: 10 Sep 2010                    3
+Java EE 6           Last change: 10 Sep 2010                    4
 

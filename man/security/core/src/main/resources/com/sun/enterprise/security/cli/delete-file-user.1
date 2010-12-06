@@ -5,9 +5,8 @@ NAME
      delete-file-user - removes the named file user
 
 SYNOPSIS
-     delete-file-user
-     [--help]
-     [ --authrealmname  auth_realm_name]
+     delete-file-user [--help][--authrealmname auth_realm_name]
+     [--target target]
      username
 
 DESCRIPTION
@@ -26,10 +25,32 @@ OPTIONS
 
      --target
 
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command runs successfully and the option is ignored.
+          This is the name of the target  on  which  the  command
+         operates.  This option is valid only in domains that are
+         configured to support clusters, such as domains that are
+         created  with the cluster profile or the enterprise pro-
+         file. The valid targets are:
+
+         server
+             Deletes  the  file  user  on  the   default   server
+             instance. This is the default value
+
+         domain
+
+             Deletes the file user in the domain.
+
+         cluster_name
+             Deletes the file user from every server instance  in
+             the cluster.
+
+         instance_name
+
+             Deletes the  file  user  from  a  particular  server
+             instance.
+
+Java EE 6         Last change: 01 December 2010                 1
+
+asadmin Utility Subcommands                   delete-file-user(1)
 
 OPERANDS
      username                    This is the name of file user to
@@ -38,18 +59,18 @@ OPERANDS
 EXAMPLES
      Example 1 Deleting a User From a File Realm
 
+     The  following  example  shows  how  to  delete  user  named
+     sample_user from a file realm.
+
        asadmin> delete-file-user
         sample_user
        Command delete-file-user executed successfully
 
 EXIT STATUS
-     0                           command executed successfully
+     0                           subcommand executed successfully
 
-Java EE 6          Last change: 28 August 2009                  1
-
-asadmin Utility Subcommands                   delete-file-user(1)
-
-     1                           error in executing the command
+     1                           error in executing  the  subcom-
+                                 mand
 
 SEE ALSO
      create-file-user(1),    list-file-users(1),     update-file-
@@ -57,5 +78,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6          Last change: 28 August 2009                  2
+Java EE 6         Last change: 01 December 2010                 2
 

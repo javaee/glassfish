@@ -36,9 +36,21 @@ OPTIONS
          Creates the JMS resource only for the specified  target.
          Valid values are as follows:
 
+         Note -
+
+           The resource is always created for  the  domain  as  a
+           whole, but the <resource-ref> element for the resource
+           is only created for the specified --target. This means
+           that  although  the  resource is defined at the domain
+           level, it is only active at the specified --target.
+
          server
              Creates the JMS  resource  for  the  default  server
              instance. This is the default value.
+
+Java EE 6           Last change: 22 Oct 2010                    1
+
+asadmin Utility Subcommands                create-jms-resource(1)
 
          configuration-name
 
@@ -48,10 +60,6 @@ OPTIONS
          cluster-name
              Creates the JMS resource for every  server  instance
              in the specified cluster.
-
-Java EE 6           Last change: 22 Oct 2010                    1
-
-asadmin Utility Subcommands                create-jms-resource(1)
 
          instance-name
 
@@ -89,6 +97,11 @@ asadmin Utility Subcommands                create-jms-resource(1)
              default  value  is an address list composed from the
              JMS hosts defined in the server's JMS service confi-
              guration.  The  default  value  is localhost and the
+
+Java EE 6           Last change: 22 Oct 2010                    2
+
+asadmin Utility Subcommands                create-jms-resource(1)
+
              default port number is 7676. The client will attempt
              a  connection  to a broker on port 7676 of the local
              host.
@@ -98,23 +111,18 @@ asadmin Utility Subcommands                create-jms-resource(1)
              The  user  name  for  the  connection  factory.  The
              default value is guest.
 
-Java EE 6           Last change: 22 Oct 2010                    2
-
-asadmin Utility Subcommands                create-jms-resource(1)
-
          Password
-
              The password for the connection factory. The default
              value is guest.
 
          ReconnectEnabled
+
              A value of true indicates that  the  client  runtime
              attempts  to  reconnect  to a message server (or the
              list of addresses in the AddressList) when a connec-
              tion is lost. The default value is false.
 
          ReconnectAttempts
-
              The number of attempts to connect (or reconnect) for
              each  address  in  the AddressList before the client
              runtime tries the next address in the list. A  value
@@ -124,6 +132,7 @@ asadmin Utility Subcommands                create-jms-resource(1)
              The default value is 6.
 
          ReconnectInterval
+
              The  interval  in  milliseconds  between   reconnect
              attempts.  This  applies to attempts on each address
              in the AddressList and for successive  addresses  in
@@ -133,27 +142,27 @@ asadmin Utility Subcommands                create-jms-resource(1)
              The default value is 30,000 milliseconds.
 
          AddressListBehavior
-
              Specifies whether connection  attempts  are  in  the
              order  of addresses in the AddressList (PRIORITY) or
              in a random order (RANDOM). PRIORITY means that  the
              reconnect  will  always  try to connect to the first
              server address  in  the  AddressList  and  will  use
-             another  one  only if the first broker is not avail-
-             able. If you have many clients attempting a  connec-
-             tion using the same connection factory, specify RAN-
-             DOM to prevent them from all being connected to  the
-             same  address. The default value is the AddressList-
-             Behavior value of the server's  JMS  service  confi-
-             guration.
-
-         AddressListIterations
-             The number of  times  the  client  runtime  iterates
+             another   one  only  if  the  first  broker  is  not
 
 Java EE 6           Last change: 22 Oct 2010                    3
 
 asadmin Utility Subcommands                create-jms-resource(1)
 
+             available. If you have  many  clients  attempting  a
+             connection   using   the  same  connection  factory,
+             specify RANDOM to prevent them from all  being  con-
+             nected to the same address. The default value is the
+             AddressListBehavior value of the server's  JMS  ser-
+             vice configuration.
+
+         AddressListIterations
+
+             The number of  times  the  client  runtime  iterates
              through  the  AddressList  in an effort to establish
              (or re-establish) a connection). A value of -1 indi-
              cates  that the number of attempts is unlimited. The
@@ -163,7 +172,6 @@ asadmin Utility Subcommands                create-jms-resource(1)
          tion resource:
 
          Name
-
              The name of the physical destination  to  which  the
              resource  will  refer.  The  physical destination is
              created automatically when you  run  an  application
@@ -176,11 +184,11 @@ asadmin Utility Subcommands                create-jms-resource(1)
              an underscore).
 
          Description
+
              A description of the physical destination.
 
 OPERANDS
      jndi_name
-
          The JNDI name of the JMS resource to be created.
 
 EXAMPLES
@@ -191,6 +199,11 @@ EXAMPLES
      resource of type javax.jms.ConnectionFactory whose JNDI name
      is jms/DurableConnectionFactory. The ClientId property  sets
      a client ID on the connection factory so that it can be used
+
+Java EE 6           Last change: 22 Oct 2010                    4
+
+asadmin Utility Subcommands                create-jms-resource(1)
+
      for durable subscriptions. The JNDI name for a JMS  resource
      customarily includes the jms/ naming subcontext.
 
@@ -198,10 +211,6 @@ EXAMPLES
        --description "connection factory for durable subscriptions"
        --property ClientId=MyID jms/DurableConnectionFactory
        Command create-jms-resource executed successfully.
-
-Java EE 6           Last change: 22 Oct 2010                    4
-
-asadmin Utility Subcommands                create-jms-resource(1)
 
      Example 2 Creating a JMS destination resource
 

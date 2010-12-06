@@ -316,20 +316,39 @@ asadmin Utility Subcommands              create-local-instance(1)
 
              This property specifies the port number of the  port
              that is used for secure IIOP connections with client
-             authentication.
+             authentication. Valid values are 1-65535.  On  UNIX,
+             creating   sockets   that  listen  on  ports  1-1024
+             requires superuser privileges.
+
+         JAVA_DEBUGGER_PORT
+             This property specifies the port number of the  port
+             that  is  used  for connections to the Java Platform
+             Debugger Architecture (JPDA) debugger. Valid  values
+             are  1-65535.  On UNIX, creating sockets that listen
+             on ports 1-1024 requires superuser privileges.
 
          JMS_PROVIDER_PORT
+
              This property specifies the port number for the Java
              Message  Service provider. Valid values are 1-65535.
              On UNIX,  creating  sockets  that  listen  on  ports
              1-1024 requires superuser privileges.
 
          JMX_SYSTEM_CONNECTOR_PORT
-
              This property specifies the port number on which the
              JMX  connector listens. Valid values are 1-65535. On
              UNIX, creating sockets that listen on  ports  1-1024
              requires superuser privileges.
+
+         OSGI_SHELL_TELNET_PORT
+
+             This property specifies the port number of the  port
+             that  is  used  for  connections to the Apache Felix
+             Remote Shell. This shell uses the Felix  shell  ser-
+             vice  to  interact  with the OSGi  module management
+             subsystem. Valid values are 1-65535. On UNIX, creat-
+             ing  sockets  that  listen  on ports 1-1024 requires
+             superuser privileges.
 
 OPERANDS
      instance-name
@@ -337,6 +356,10 @@ OPERANDS
          instance  in  a  domain  must have a name that is unique
          across all nodes, GlassFish Server instances,  clusters,
          and named configurations.
+
+Java EE 6            Last change: 8 Sep 2010                    7
+
+asadmin Utility Subcommands              create-local-instance(1)
 
 EXAMPLES
      Example 1 Creating a Standalone GlassFish Server Instance
@@ -356,10 +379,6 @@ EXAMPLES
 
        The instance has rendezvoused with the DAS and will be using host
        localhost port 4848 for future communication.
-
-Java EE 6            Last change: 8 Sep 2010                    7
-
-asadmin Utility Subcommands              create-local-instance(1)
 
        Port Assignments for server instance il3:
        JMX_SYSTEM_CONNECTOR_PORT=28691
@@ -389,6 +408,10 @@ asadmin Utility Subcommands              create-local-instance(1)
        Attempting to rendezvous with DAS on host localhost port 4848
        Uptime: 5 hours, 6 minutes, 6 seconds
 
+Java EE 6            Last change: 8 Sep 2010                    8
+
+asadmin Utility Subcommands              create-local-instance(1)
+
        The instance has rendezvoused with the DAS and will be using host
        localhost port 4848 for future communication.
        Port Assignments for server instance ymli1:
@@ -405,10 +428,6 @@ asadmin Utility Subcommands              create-local-instance(1)
 
 EXIT STATUS
      0                           command executed successfully
-
-Java EE 6            Last change: 8 Sep 2010                    8
-
-asadmin Utility Subcommands              create-local-instance(1)
 
      1                           error in executing the command
 

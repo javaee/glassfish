@@ -69,9 +69,9 @@ asadmin Utility Subcommands                           redeploy(1)
      --verify
 
          If set to true and the required  verifier  packages  are
-         installed  from the Update Center, the syntax and seman-
-         tics of the deployment descriptor is  verified.  Default
-         is false.
+         installed from the Update Tool, the syntax and semantics
+         of the deployment descriptor  is  verified.  Default  is
+         false.
 
      --name
          Name of the deployable component.
@@ -212,9 +212,11 @@ Java EE 6           Last change: 19 Nov 2010                    4
 asadmin Utility Subcommands                           redeploy(1)
 
          instances,  and  persistently  created  EJB  timers  are
-         retained between redeployments. The  default  is  false.
-         This  option is not supported and ignored in a clustered
-         environment.
+         retained between redeployments.
+
+         The default is false. This option is supported  only  on
+         the  default  server  instance,  named server. It is not
+         supported and ignored for any other target.
 
          Some changes to  an  application  between  redeployments
          prevent this feature from working properly. For example,
@@ -257,15 +259,15 @@ asadmin Utility Subcommands                           redeploy(1)
              Deploys the component to the default server instance
              server and is the default value.
 
-         domain
-             Deploys the component to the domain.  If  domain  is
-             the   target   for   an   initial   deployment,  the
-
 Java EE 6           Last change: 19 Nov 2010                    5
 
 asadmin Utility Subcommands                           redeploy(1)
 
-             application is deployed to the domain, but no server
+         domain
+
+             Deploys the component to the domain.  If  domain  is
+             the  target  for an initial deployment, the applica-
+             tion is  deployed  to  the  domain,  but  no  server
              instances  or clusters reference the application. If
              domain is the target for a redeployment, and dynamic
              reconfiguration  is  enabled  for  the  clusters  or
@@ -279,20 +281,20 @@ asadmin Utility Subcommands                           redeploy(1)
              tarted.
 
          cluster_name
-
              Deploys the component to every  server  instance  in
              the cluster.
 
          instance_name
+
              Deploys the component to  a  particular  stand-alone
              server instance.
 
      --type
-
          The packaging archive type  of  the  component  that  is
          being deployed. Possible values are as follows:
 
          osgi
+
              The component is packaged as an OSGi  Alliance  bun-
              dle.
 
@@ -300,7 +302,6 @@ asadmin Utility Subcommands                           redeploy(1)
          aged as a regular archive, omit this option.
 
      --properties or --property
-
          Optional keyword-value  pairs  that  specify  additional
          properties  for the deployment. The available properties
          are determined by the implementation  of  the  component
@@ -309,12 +310,12 @@ asadmin Utility Subcommands                           redeploy(1)
          use either option regardless of the number of properties
          that you specify.
 
-         You can specify the following properties for  a  deploy-
-         ment:
-
 Java EE 6           Last change: 19 Nov 2010                    6
 
 asadmin Utility Subcommands                           redeploy(1)
+
+         You can specify the following properties for  a  deploy-
+         ment:
 
          jar-signing-alias
 
@@ -362,16 +363,15 @@ asadmin Utility Subcommands                           redeploy(1)
          keepSessions={false|true}
              Superseded by the --keepstate option.
 
-             This property can by used to specify whether  active
-             sessions of the application that is being redeployed
-             are   preserved   and   then   restored   when   the
-
 Java EE 6           Last change: 19 Nov 2010                    7
 
 asadmin Utility Subcommands                           redeploy(1)
 
-             redeployment  is  complete. Applies to HTTP sessions
-             in a web container. Default is false.
+             This property can by used to specify whether  active
+             sessions of the application that is being redeployed
+             are preserved and then restored when  the  redeploy-
+             ment  is complete. Applies to HTTP sessions in a web
+             container. Default is false.
 
              false
 
@@ -416,13 +416,12 @@ OPERANDS
              o    An     archive     file,      for      example,
                   /export/JEE_apps/hello.war.
 
-                  If the --upload option is set to true, this  is
-                  the  path  to  the deployable file on the local
-
 Java EE 6           Last change: 19 Nov 2010                    8
 
 asadmin Utility Subcommands                           redeploy(1)
 
+                  If the --upload option is set to true, this  is
+                  the  path  to  the deployable file on the local
                   client machine. If the --upload option  is  set
                   to false, this is the absolute path to the file
                   on the server machine.
@@ -466,12 +465,13 @@ EXAMPLES
      application was originally deployed from a directory.
 
        asadmin> redeploy --name hellodir
-       Application deployed successfully with name hellodir.
-       Command redeploy executed successfully
 
 Java EE 6           Last change: 19 Nov 2010                    9
 
 asadmin Utility Subcommands                           redeploy(1)
+
+       Application deployed successfully with name hellodir.
+       Command redeploy executed successfully
 
 EXIT STATUS
      0                           subcommand executed successfully

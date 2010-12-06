@@ -27,6 +27,17 @@ OPTIONS
          Deletes the JMS resource only from the specified target.
          Valid values are as follows:
 
+         Note -
+
+           Resources are always created for a domain as  a  whole
+           but   are   only   active  for  targets  for  which  a
+           <resource-ref> has been  created  using  the  --target
+           option  when the resource was created. This means that
+           deleting a resource only  deletes  the  <resource-ref>
+           element  for  the  specified  --target,  and  does not
+           delete the resource from the domain as a whole  unless
+           domain is specified as the --target for the deletion.
+
          server
 
              Deletes the JMS resource  from  the  default  server
@@ -36,6 +47,10 @@ OPTIONS
              Deletes the JMS resource from the  specified  confi-
              guration.
 
+Java EE 6           Last change: 22 Oct 2010                    1
+
+asadmin Utility Subcommands                delete-jms-resource(1)
+
          cluster-name
 
              Deletes the JMS resource from every server  instance
@@ -44,10 +59,6 @@ OPTIONS
          instance-name
              Deletes the JMS resource from the  specified  server
              instance.
-
-Java EE 6           Last change: 22 Oct 2010                    1
-
-asadmin Utility Subcommands                delete-jms-resource(1)
 
 OPERANDS
      jndi_name

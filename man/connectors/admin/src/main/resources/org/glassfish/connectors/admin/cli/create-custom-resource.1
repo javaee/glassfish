@@ -25,10 +25,34 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --target
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command runs successfully and the option is ignored.
+         The target on which the custom resource you are creating
+         will be available. Valid values are:
+
+         Note -
+
+           The resource is always created for  the  domain  as  a
+           whole, but the <resource-ref> element for the resource
+           is only created for the specified --target. This means
+           that  although  the  resource is defined at the domain
+           level, it is only active at the specified --target.
+
+         server           The resource will be available on   the
+                          default server instance and all domains
+                          hosted on the  instance.  This  is  the
+                          default value.
+
+         domain           The resource will be available  on  the
+                          specified domain only.
+
+         cluster_name     The resource will be available on every
+                          server instance in the cluster.
+
+Java EE 6           Last change: 10 Sep 2010                    1
+
+asadmin Utility Subcommands             create-custom-resource(1)
+
+         instance_name    The resource will be available  on  the
+                          specified server instance only.
 
      --restype
 
@@ -46,23 +70,18 @@ OPTIONS
          Determines whether the custom resource is enable at run-
          time. Default is true.
 
-Java EE 6           Last change: 10 Sep 2010                    1
-
-asadmin Utility Subcommands             create-custom-resource(1)
-
      --description
-
          Text providing details about the custom  resource.  This
          description  is a string value and can include a maximum
          of 250 characters.
 
      --property
+
          Optional attribute name/value pairs for configuring  the
          resource.
 
 OPERANDS
      jndi-name
-
          The JNDI name of this resource.
 
 EXAMPLES
@@ -73,6 +92,10 @@ EXAMPLES
        asadmin> create-custom-resource --restype topic
        --factoryclass com.imq.topic mycustomresource
        Command create-custom-resource executed successfully.
+
+Java EE 6           Last change: 10 Sep 2010                    2
+
+asadmin Utility Subcommands             create-custom-resource(1)
 
 EXIT STATUS
      0                           subcommand executed successfully
@@ -85,5 +108,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 10 Sep 2010                    2
+Java EE 6           Last change: 10 Sep 2010                    3
 

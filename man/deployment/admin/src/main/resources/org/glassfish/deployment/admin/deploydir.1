@@ -106,9 +106,9 @@ asadmin Utility Subcommands                          deploydir(1)
      --verify
 
          If set to true and the required  verifier  packages  are
-         installed  from the Update Center, the syntax and seman-
-         tics of the deployment descriptor is  verified.  Default
-         is false.
+         installed from the Update Tool, the syntax and semantics
+         of the deployment descriptor  is  verified.  Default  is
+         false.
 
      --name
          Name of the deployable component.
@@ -239,9 +239,11 @@ asadmin Utility Subcommands                          deploydir(1)
      --keepstate
          This  option  controls  whether   web   sessions,   SFSB
          instances,  and  persistently  created  EJB  timers  are
-         retained between redeployments. The  default  is  false.
-         This  option is not supported and ignored in a clustered
-         environment.
+         retained between redeployments.
+
+         The default is false. This option is supported  only  on
+         the  default  server  instance,  named server. It is not
+         supported and ignored for any other target.
 
          Some changes to  an  application  between  redeployments
          prevent this feature from working properly. For example,
@@ -253,13 +255,13 @@ asadmin Utility Subcommands                          deploydir(1)
          attribute of the session-manager element is file.
 
          For stateful session  bean  instances,  the  persistence
-         type without high availability is set in the server (the
-         sfsb-persistence-type attribute)  and  must  be  set  to
 
 Java EE 6           Last change: 19 Nov 2010                    5
 
 asadmin Utility Subcommands                          deploydir(1)
 
+         type without high availability is set in the server (the
+         sfsb-persistence-type attribute)  and  must  be  set  to
          file, which is the default and recommended value.
 
          If any active web session, SFSB instance, or  EJB  timer
@@ -305,26 +307,25 @@ asadmin Utility Subcommands                          deploydir(1)
              the application until the  clustered  or  standalone
              server instances are restarted.
 
+Java EE 6           Last change: 19 Nov 2010                    6
+
+asadmin Utility Subcommands                          deploydir(1)
+
          cluster_name
 
              Deploys the component to every  server  instance  in
              the cluster.
 
-Java EE 6           Last change: 19 Nov 2010                    6
-
-asadmin Utility Subcommands                          deploydir(1)
-
          instance_name
-
              Deploys the component to  a  particular  stand-alone
              server instance.
 
      --type
+
          The packaging archive type  of  the  component  that  is
          being deployed. Possible values are as follows:
 
          osgi
-
              The component is packaged as an OSGi  Alliance  bun-
              dle.
 
@@ -332,6 +333,7 @@ asadmin Utility Subcommands                          deploydir(1)
          aged as a regular archive, omit this option.
 
      --properties or --property
+
          Optional keyword-value  pairs  that  specify  additional
          properties  for the deployment. The available properties
          are determined by the implementation  of  the  component
@@ -344,7 +346,6 @@ asadmin Utility Subcommands                          deploydir(1)
          ment:
 
          jar-signing-alias
-
              Specifies the alias  for  the  security  certificate
              with which the application client container JAR file
              is signed. Java Web Start will  not  run  code  that
@@ -357,16 +358,17 @@ asadmin Utility Subcommands                          deploydir(1)
              trust  the  code  and  displays the GlassFish Server
              certificate information.  To sign this JAR file with
              a  different certificate, add the certificate to the
-             domain keystore, then use this property.  For  exam-
-             ple,  you  can  use  a  certificate  from  a trusted
-             authority, which avoids the Java Web  Start  prompt,
-             or  from your own company, which users know they can
-             trust. Default is s1as,  the  alias  for  the  self-
-             signed certificate created for every domain.
+             domain  keystore,  then  use  this  property.    For
 
 Java EE 6           Last change: 19 Nov 2010                    7
 
 asadmin Utility Subcommands                          deploydir(1)
+
+             example,  you  can  use a certificate from a trusted
+             authority, which avoids the Java Web  Start  prompt,
+             or  from your own company, which users know they can
+             trust. Default is s1as,  the  alias  for  the  self-
+             signed certificate created for every domain.
 
          java-web-start-enabled
 
@@ -411,6 +413,11 @@ asadmin Utility Subcommands                          deploydir(1)
                  and restored.
 
                  If any active session of the  application  fails
+
+Java EE 6           Last change: 19 Nov 2010                    8
+
+asadmin Utility Subcommands                          deploydir(1)
+
                  to  be  preserved  or restored, none of the ses-
                  sions will be available when the redeployment is
                  complete.  However,  the  redeployment continues
@@ -418,11 +425,6 @@ asadmin Utility Subcommands                          deploydir(1)
 
                  To preserve active  sessions,  GlassFish  Server
                  serializes   the  sessions  and  saves  them  in
-
-Java EE 6           Last change: 19 Nov 2010                    8
-
-asadmin Utility Subcommands                          deploydir(1)
-
                  memory.  To  restore  the  sessions,  the  class
                  loader   of  the  newly  redeployed  application
                  deserializes any sessions that  were  previously
@@ -460,15 +462,14 @@ EXAMPLES
 EXIT STATUS
      0                           subcommand executed successfully
 
-     1                           error in executing  the  subcom-
-                                 mand
-
-SEE ALSO
-
 Java EE 6           Last change: 19 Nov 2010                    9
 
 asadmin Utility Subcommands                          deploydir(1)
 
+     1                           error in executing  the  subcom-
+                                 mand
+
+SEE ALSO
      deploy(1), , redeploy(1), undeploy(1)
 
      asadmin(1M)

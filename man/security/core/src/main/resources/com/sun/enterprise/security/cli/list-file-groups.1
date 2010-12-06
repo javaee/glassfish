@@ -6,12 +6,13 @@ NAME
 
 SYNOPSIS
      list-file-groups [--help] [--name username] [--authrealmname auth_realm_name]
+     [--target target]
 
 DESCRIPTION
-     Use this subcommand to view file users and groups  supported
-     by  the  file  realm  authentication.  This subcommand lists
-     available groups in the file user. If the --name  option  is
-     not specified, all groups are listed.
+     The list-file-groups subcommand lists  the  file  users  and
+     groups supported by the file realm authentication. This sub-
+     command lists available groups in the file user. If  the  --
+     name option is not specified, all groups are listed.
 
      This subcommand is supported in remote mode only.
 
@@ -30,29 +31,42 @@ OPTIONS
          The name of the authentication realm for which  to  list
          available groups.
 
-OPERANDS
-     target
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command runs successfully and the option is ignored.
+     --target
+         This option specifies which configurations you can list.
+         Valid targets are:
+
+         server
+
+             Lists the file groups in the current server. This is
+             the default value.
+
+         cluster_name
+             Lists the file groups in a cluster.
+
+         instance_name
+
+             Lists the file groups for a particular instance.
+
+Java EE 6         Last change: 01 December 2010                 1
+
+asadmin Utility Subcommands                   list-file-groups(1)
 
 EXAMPLES
      Example 1 Listing Groups in all File Realms
+
+     This example list all file  realm  groups  defined  for  the
+     server.
 
        asadmin> list-file-groups
        staff
        manager
        Command list-file-groups executed successfully
 
-Java EE 6          Last change: 28 August 2009                  1
-
-asadmin Utility Subcommands                   list-file-groups(1)
-
 EXIT STATUS
-     0                           command executed successfully
+     0                           subcommand executed successfully
 
-     1                           error in executing the command
+     1                           error in executing  the  subcom-
+                                 mand
 
 SEE ALSO
      delete-file-user(1),    update-file-user(1),    create-file-
@@ -60,5 +74,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6          Last change: 28 August 2009                  2
+Java EE 6         Last change: 01 December 2010                 2
 

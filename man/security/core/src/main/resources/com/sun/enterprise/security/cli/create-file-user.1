@@ -5,11 +5,12 @@ NAME
      create-file-user - creates a new file user
 
 SYNOPSIS
-     create-file-user [--help] [--authrealmname auth_realm_name]
+     create-file-user[--help] [--authrealmname auth_realm_name]
+     [--target target
      [--groups user_groups[:user_groups]*] user_name
 
 DESCRIPTION
-     The create-file-user subcommand creates an entry in the key-
+     Thecreate-file-user subcommand creates an entry in the  key-
      file with the specified username, password, and groups. Mul-
      tiple groups can be created by separating them with a  colon
      (:).  If  auth_realm_name  is  not  specified,  an  entry is
@@ -26,10 +27,13 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --target
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command runs successfully and the option is ignored.
+         This is the name of the  target  on  which  the  command
+         operates.  The valid targets are config, instance, clus-
+         ter, or server. By default, the target is the server.
+
+         This option is valid only in domains that are configured
+         to  support  clusters,  such as domains that are created
+         with the cluster profile or the enterprise profile.
 
      --groups
 
@@ -42,14 +46,15 @@ OPERANDS
      user_name                   This is the name of file user to
                                  be created.
 
-EXAMPLES
-     Example 1 Creating a User in the File Realm
-
-Java EE 6          Last change: 28 August 2009                  1
+Java EE 6         Last change: 01 December 2010                 1
 
 asadmin Utility Subcommands                   create-file-user(1)
 
-     It is assumed that an authentication realm has already  been
+EXAMPLES
+     Example 1 Creating a User in the File Realm
+
+     This example creates a file realm user named sample_user. It
+     is  assumed  that  an  authentication realm has already been
      created using the create-auth-realm subcommand.
 
        asadmin> create-file-user
@@ -57,12 +62,11 @@ asadmin Utility Subcommands                   create-file-user(1)
        --authrealmname auth-realm1 sample_user
        Command create-file-user executed successfully
 
-     Where, the sample_user is the file user created.
-
 EXIT STATUS
-     0                           command executed successfully
+     0                           subcommand executed successfully
 
-     1                           error in executing the command
+     1                           error in executing  the  subcom-
+                                 mand
 
 SEE ALSO
      create-auth-realm(1),    delete-file-user(1),     list-file-
@@ -70,5 +74,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6          Last change: 28 August 2009                  2
+Java EE 6         Last change: 01 December 2010                 2
 

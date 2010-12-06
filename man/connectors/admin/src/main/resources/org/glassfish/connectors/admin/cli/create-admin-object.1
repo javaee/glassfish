@@ -29,10 +29,38 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --target
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command runs successfully and the option is ignored.
+         Specifies the target  on  which  you  are  creating  the
+         administered object. Valid values are as follows:
+
+         Note -
+
+           The resource is always created for  the  domain  as  a
+           whole, but the <resource-ref> element for the resource
+           is only created for the specified --target. This means
+           that  although  the  resource is defined at the domain
+           level, it is only active at the specified --target.
+
+         server
+
+             Creates the  administered  object  for  the  default
+             server instance server and is the default value.
+
+         configuration_name
+             Creates the administered object for the named confi-
+             guration.
+
+Java EE 6            Last change: 9 Sep 2010                    1
+
+asadmin Utility Subcommands                create-admin-object(1)
+
+         cluster_name
+
+             Creates the administered  object  for  every  server
+             instance in the cluster.
+
+         instance_name
+             Creates the administered  object  for  a  particular
+             server instance.
 
      --restype
 
@@ -45,10 +73,6 @@ OPTIONS
          Specifies the class name  of  the  administered  object.
          Required  if  multiple administered objects use the same
          interface definition.
-
-Java EE 6            Last change: 9 Sep 2010                    1
-
-asadmin Utility Subcommands                create-admin-object(1)
 
       --raname
 
@@ -73,6 +97,10 @@ OPERANDS
 
          JNDI name of the administered object to be created.
 
+Java EE 6            Last change: 9 Sep 2010                    2
+
+asadmin Utility Subcommands                create-admin-object(1)
+
 EXAMPLES
      Example 1 Creating an Administered Object
 
@@ -90,10 +118,6 @@ EXIT STATUS
 
      1                           error in executing  the  subcom-
                                  mand
-
-Java EE 6            Last change: 9 Sep 2010                    2
-
-asadmin Utility Subcommands                create-admin-object(1)
 
 SEE ALSO
      delete-admin-object(1), list-admin-objects(1)

@@ -86,9 +86,9 @@ OPTIONS
 
      --verify
          If set to true and the required  verifier  packages  are
-         installed  from the Update Center, the syntax and seman-
-         tics of the deployment descriptor is  verified.  Default
-         is false.
+         installed from the Update Tool, the syntax and semantics
+         of the deployment descriptor  is  verified.  Default  is
+         false.
 
      --name
 
@@ -236,9 +236,11 @@ asadmin Utility Subcommands                             deploy(1)
 
          This  option  controls  whether   web   sessions,   SFSB
          instances,  and  persistently  created  EJB  timers  are
-         retained between redeployments. The  default  is  false.
-         This  option is not supported and ignored in a clustered
-         environment.
+         retained between redeployments.
+
+         The default is false. This option is supported  only  on
+         the  default  server  instance,  named server. It is not
+         supported and ignored for any other target.
 
          Some changes to  an  application  between  redeployments
          prevent this feature from working properly. For example,
@@ -261,12 +263,13 @@ asadmin Utility Subcommands                             deploy(1)
 
          To preserve active state data, GlassFish Server  serial-
          izes  the  data  and  saves it in memory. To restore the
-         data, the class loader of the newly redeployed  applica-
-         tion deserializes the data that was previously saved.
 
 Java EE 6           Last change: 19 Nov 2010                    5
 
 asadmin Utility Subcommands                             deploy(1)
+
+         data, the class loader of the newly redeployed  applica-
+         tion deserializes the data that was previously saved.
 
      --libraries
 
@@ -310,17 +313,16 @@ asadmin Utility Subcommands                             deploy(1)
              Deploys the component to  a  particular  stand-alone
              sever instance.
 
+Java EE 6           Last change: 19 Nov 2010                    6
+
+asadmin Utility Subcommands                             deploy(1)
+
      --type
 
          The packaging archive type  of  the  component  that  is
          being deployed. Possible values are as follows:
 
-Java EE 6           Last change: 19 Nov 2010                    6
-
-asadmin Utility Subcommands                             deploy(1)
-
          osgi
-
              The component is packaged as an OSGi  Alliance  bun-
              dle.
 
@@ -328,6 +330,7 @@ asadmin Utility Subcommands                             deploy(1)
          aged as a regular archive, omit this option.
 
      --properties or --property
+
          Optional keyword-value  pairs  that  specify  additional
          properties  for the deployment. The available properties
          are determined by the implementation  of  the  component
@@ -340,7 +343,6 @@ asadmin Utility Subcommands                             deploy(1)
          ment:
 
          jar-signing-alias
-
              Specifies the alias  for  the  security  certificate
              with which the application client container JAR file
              is signed. Java Web Start will  not  run  code  that
@@ -361,21 +363,21 @@ asadmin Utility Subcommands                             deploy(1)
              signed certificate created for every domain.
 
          java-web-start-enabled
+
              Specifies whether Java Web Start access is permitted
              for an application client module. Default is true.
-
-         compatibility
-
-             Specifies the GlassFish Server release with which to
-             be  backward  compatible  in terms of JAR visibility
-             requirements  for  applications.  The  only  allowed
 
 Java EE 6           Last change: 19 Nov 2010                    7
 
 asadmin Utility Subcommands                             deploy(1)
 
-             value  is v2, which refers to Sun GlassFishTM Enter-
-             prise Server version 2 or Sun JavaTM System Applica-
+         compatibility
+
+             Specifies the GlassFish Server release with which to
+             be  backward  compatible  in terms of JAR visibility
+             requirements  for  applications.  The  onlyTMallowed
+             value  is v2, which refers to Sun TMassFish   Enter-
+             prise Server version 2 or Sun Java   System Applica-
              tion  Server  version  9.1  or 9.1.1.  The Java EE 6
              platform specification imposes stricter requirements
              than Java EE 5 did on which JAR files can be visible
@@ -388,7 +390,6 @@ asadmin Utility Subcommands                             deploy(1)
              removes these Java EE 6 restrictions.
 
          keepSessions={false|true}
-
              Superseded by the --keepstate option.
 
              If the --force option is set to true, this  property
@@ -399,11 +400,11 @@ asadmin Utility Subcommands                             deploy(1)
              tainer. Default is false.
 
              false
+
                  Active  sessions  of  the  application  are  not
                  preserved and restored (default).
 
              true
-
                  Active sessions of the application are preserved
                  and restored.
 
@@ -420,14 +421,14 @@ asadmin Utility Subcommands                             deploy(1)
                  deserializes any sessions that  were  previously
                  saved.
 
-             preserveAppScopedResources
-                 If set to true, preserves any application-scoped
-                 resources and restores them during redeployment.
-
 Java EE 6           Last change: 19 Nov 2010                    8
 
 asadmin Utility Subcommands                             deploy(1)
 
+             preserveAppScopedResources
+
+                 If set to true, preserves any application-scoped
+                 resources and restores them during redeployment.
                  Default is false.
 
              Other available properties  are  determined  by  the
@@ -436,7 +437,6 @@ asadmin Utility Subcommands                             deploy(1)
 
 OPERANDS
      file_archive |filepath
-
          The path to the archive that  contains  the  application
          that is being deployed. This path can be a relative path
          or an absolute path.
@@ -471,12 +471,12 @@ EXAMPLES
        Application deployed successfully with name Cart.
        Command deploy executed successfully
 
-     Example 2 Deploying a Web Application With the Default  Con-
-     text Root
-
 Java EE 6           Last change: 19 Nov 2010                    9
 
 asadmin Utility Subcommands                             deploy(1)
+
+     Example 2 Deploying a Web Application With the Default  Con-
+     text Root
 
      This example deploys the web application  in  the  hello.war
      file  to the default server instance server. You can use the
@@ -512,14 +512,14 @@ asadmin Utility Subcommands                             deploy(1)
        Application deployed successfully with name EmployeeEJB.
        Command deploy executed successfully
 
+Java EE 6           Last change: 19 Nov 2010                   10
+
+asadmin Utility Subcommands                             deploy(1)
+
      Example 5 Deploying a Connector Module
 
      This example deploys a connector module that is packaged  in
      an RAR file.
-
-Java EE 6           Last change: 19 Nov 2010                   10
-
-asadmin Utility Subcommands                             deploy(1)
 
      This example uses the --target option. The  target  in  this
      example  is an existing standalone server instance that does
