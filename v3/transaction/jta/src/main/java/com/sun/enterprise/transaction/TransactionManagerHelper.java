@@ -232,12 +232,6 @@ public class TransactionManagerHelper implements TransactionManager, Transaction
 
     /** {@inheritDoc}
     */
-    public String getTxLogLocation() {
-        return transactionManager.getTxLogLocation();
-    }
-
-    /** {@inheritDoc}
-    */
     public void registerRecoveryResourceHandler(XAResource xaResource) {
         transactionManager.registerRecoveryResourceHandler(xaResource);
     }
