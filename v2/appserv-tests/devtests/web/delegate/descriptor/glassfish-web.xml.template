@@ -34,7 +34,7 @@
  only if the new code is made subject to such option by the copyright
  holder.
 -->
-<!DOCTYPE glassfish-web-app PUBLIC "-//GlassFish.org//DTD GlassFish Application Server 3.0 Servlet 3.0//EN" "http://glassfish.org/dtds/glassfish-web-app_3_0-0.dtd">
+<!DOCTYPE glassfish-web-app PUBLIC "-//GlassFish.org//DTD GlassFish Application Server 3.0 Servlet 3.0//EN" "http://glassfish.org/dtds/glassfish-web-app_3_0-1.dtd">
 
 <glassfish-web-app>
     <description>tomcat-test</description>
