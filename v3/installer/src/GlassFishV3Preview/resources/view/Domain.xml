@@ -125,7 +125,7 @@
                  serviceName = wizard.getComponentByName(content, "SERVICE_NAME");
                  if(option.isSelected()) {
 		// Currently service related entries are enabled only on w2k and solaris.
-     		if (System.getProperty("os.name").toLowerCase().startsWith("sunos") || System.getProperty("os.name").toLowerCase().startsWith("windows")) 
+     		if (System.getProperty("os.name").toLowerCase().startsWith("sunos") || System.getProperty("os.name").toLowerCase().startsWith("windows") || System.getProperty("os.name").toLowerCase().startsWith("linux")) 
                    serviceName.setEnabled(true);
                  }
                  else {
@@ -366,7 +366,7 @@ run() {
      serviceOption = wizard.getComponentByName(content, "CREATE_SERVICE");
      startOption = wizard.getComponentByName(content, "START_SERVER");
 	 ConfigHelper.setValue("Domain.Configuration.STARTUP_TYPE", "AUTOMATIC");
-     if (System.getProperty("os.name").toLowerCase().startsWith("sunos") || System.getProperty("os.name").toLowerCase().startsWith("windows"))  
+     if (System.getProperty("os.name").toLowerCase().startsWith("sunos") || System.getProperty("os.name").toLowerCase().startsWith("windows") || System.getProperty("os.name").toLowerCase().startsWith("linux"))  
                    serviceOption.setEnabled(true);
 	else 
 		  serviceOption.setEnabled(false);
