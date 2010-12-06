@@ -42,6 +42,7 @@ if [ -z "$DEPL_TARGET" ]
 then
     $S1AS_HOME/bin/asadmin stop-domain
 fi
+echo DEPL_TARGET is $DEPL_TARGET
 if [ $antStatus -ne 0 ]
 then
     exit $antStatus
