@@ -66,8 +66,10 @@
           <sun:commonTasksGroup  title="$resource{i18n.commonTasks.task.regAndSupport}">
             <sun:commonTask rendered="#{!sessionScope._noNetwork}"
                             text="$resource{i18n.tree.support}"
-                            toolTip="$resource{i18n.tree.support}"
-                            onClick="return admingui.woodstock.commonTaskHandler('treeForm:tree:support','#{request.contextPath}/common/sysnet/support.jsf');">
+                            toolTip="$resource{i18n.tree.support}">
+                <!command
+                    gf.redirect('#{request.contextPath}/common/sysnet/support.jsf');
+                />
             </sun:commonTask>
             <sun:commonTask
               text="$resource{i18n.commonTasks.task.subscriptions}"
@@ -113,6 +115,8 @@
     admingui.nav.clearTreeSelection(admingui.nav.TREE_ID);
 </f:verbatim>
 </sun:script>
+
+
 
       <!--  Customizing pe bottom frame -->
           <event>
