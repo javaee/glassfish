@@ -62,6 +62,11 @@
                     getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                     getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
                     saveMsgProviderInfo(edit="false" attrMap="#{pageSession.valueMap}" configName="#{pageSession.configName}" propList="$attribute{newList}" )
+                    removeEmptyProps(props="#{pageSession.tableList}" modifiedProps="#{pageSession.tableList}");
+                    javaToJSON(obj="#{pageSession.tableList}" json="#{requestScope.tmpJSON}");
+                    setPageSessionAttribute(key="selfUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/security-service/message-security-config/#{pageSession.msgSecurityName}/provider-config/#{pageSession.valueMap['Name']}");
+                    gf.restRequest(endpoint="#{pageSession.selfUrl}/property.json"
+                                   method="POST" data="#{requestScope.tmpJSON}" result="#{requestScope.restResponse}");
                     gf.redirect(page="#{pageSession.parentPage}");
                 />
             </sun:button>

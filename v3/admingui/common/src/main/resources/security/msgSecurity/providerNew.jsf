@@ -54,6 +54,7 @@
         getRequestValue(key="configName" value="#{pageSession.configName}" default="server-config");
         getRequestValue(key="msgSecurityName" value="#{pageSession.msgSecurityName}");
         createMap(result="#{pageSession.valueMap}")
+        createList(size="0", result="#{pageSession.tableList}");
         mapPut(map="#{pageSession.valueMap}" key="msgSecurityName" value="#{pageSession.msgSecurityName}");
         mapPut(map="#{pageSession.valueMap}" key="configName" value="#{pageSession.configName}");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/common/security/msgSecurity/providers.jsf?name=#{pageSession.msgSecurityName}&configName=#{pageSession.configName}");

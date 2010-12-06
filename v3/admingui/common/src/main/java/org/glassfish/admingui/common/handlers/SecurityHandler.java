@@ -659,14 +659,13 @@ public class SecurityHandler {
                 RestUtil.sendUpdateRequest(endpoint, providerMap, null, null, null);
             }
         }else{
+            endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + configName +
+                                "/security-service/message-security-config";
             Map attrs = new HashMap();
-            attrs.put("providerId", attrMap.get("Name"));
-            attrs.put("className", attrMap.get("ClassName"));
-            attrs.put("providerType", attrMap.get("ProviderType"));
-            if (propList.size() > 0){
-                Map[] propMaps = (Map[])propList.toArray(new Map[propList.size()]);
-                attrs.put("property", propMaps);
-            }
+            attrs.put("id", attrMap.get("Name"));
+            attrs.put("classname", attrMap.get("ClassName"));
+            attrs.put("providertype", attrMap.get("ProviderType"));
+            attrs.put("layer", attrMap.get("msgSecurityName"));
             RestUtil.sendCreateRequest(endpoint, attrs, null, null, null);
         }
 
