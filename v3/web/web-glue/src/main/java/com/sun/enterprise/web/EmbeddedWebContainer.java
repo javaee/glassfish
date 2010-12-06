@@ -262,6 +262,7 @@ public final class EmbeddedWebContainer extends Embedded implements PostConstruc
     /**
      * Return the list of engines created (from Embedded API)
      */
+    @Override
     public Engine[] getEngines() {
         return engines;
     }
@@ -287,6 +288,7 @@ public final class EmbeddedWebContainer extends Embedded implements PostConstruc
      * @param port Port number to listen to
      * @param protocol the http protocol to use.
      */
+    @Override
     public Connector createConnector(String address, int port,
 				     String protocol) {
 
@@ -340,6 +342,7 @@ public final class EmbeddedWebContainer extends Embedded implements PostConstruc
      * Do not create the JAAS default realm since all children will
      * have their own.
      */
+    @Override
     public Engine createEngine() {
 
         StandardEngine engine = new WebEngine(webContainer);
@@ -367,6 +370,7 @@ public final class EmbeddedWebContainer extends Embedded implements PostConstruc
             this.webContainer = webContainer;
         }
 
+        @Override
         public Realm getRealm(){
             return null;
         }
