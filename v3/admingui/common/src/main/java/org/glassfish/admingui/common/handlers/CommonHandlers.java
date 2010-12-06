@@ -67,6 +67,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.text.SimpleDateFormat;
 
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
@@ -493,6 +494,33 @@ public class CommonHandlers {
         MiscUtil.setValueExpression((String) handlerCtx.getHandler().getInputValue("expression"), 
                 (Object) handlerCtx.getInputValue("value"));
     }
+
+    
+    @Handler(id = "gf.convertDateTime",
+        input = {
+            @HandlerInput(name = "dateTime", type = String.class, required = true),
+            @HandlerInput(name = "format", type = String.class)},
+    output={
+        @HandlerOutput(name="result", type=String.class)})
+        
+    public static void convertDateTimeFormat(HandlerContext handlerCtx) {
+        String dateTime = (String)handlerCtx.getInputValue("dateTime");
+        String result = "";
+        if (!GuiUtil.isEmpty(dateTime)) {
+            try {
+                long longValue = Long.valueOf(dateTime);
+                String format = (String)handlerCtx.getHandler().getInputValue("format");
+                if (format == null)
+                    format = "yyyy-MM-dd HH:mm:ss z";
+                result = new SimpleDateFormat(format).format(new Date(longValue));
+            } catch (NumberFormatException ex) {
+                //ignore
+            }
+        }
+        handlerCtx.setOutputValue("result", result);
+    }
+
+
     
     /**
      *	<p> This handler checks if particular feature is supported  </p>
