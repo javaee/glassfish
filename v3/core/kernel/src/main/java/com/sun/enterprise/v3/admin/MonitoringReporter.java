@@ -220,10 +220,25 @@ public class MonitoringReporter extends V2DottedNameSupport {
         while (it.hasNext()) {
             obj = it.next();
             String s = obj.toString();
+            s = HIDEOUS_KLUDGE(s);
             ActionReport.MessagePart part = report.getTopMessagePart().addChild();
             part.setMessage(s.replace(SLASH, "/") + " = " + map.get(obj));
         }
         setSuccess();
+    }
+
+    // I won't apologize for this -- this code is maintenance-hostile!
+    private String HIDEOUS_KLUDGE(String in) {
+        if (isDas())
+            return in;
+
+        String iname = serverEnv.getInstanceName();
+        String junk = iname + ".server";
+
+        if (in.startsWith(junk))
+            return StringUtils.replace(in, junk, iname);
+
+        return in;
     }
 
     private void doList(String localPattern, List<org.glassfish.flashlight.datatree.TreeNode> ltn) {
