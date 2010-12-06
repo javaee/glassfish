@@ -77,7 +77,7 @@ public class ListJMSHosts implements AdminCommand {
     @Param(name="target", optional=true)
     String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
 
-    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    //@Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Config config;
 
     @Inject
@@ -91,7 +91,10 @@ public class ListJMSHosts implements AdminCommand {
     public void execute(AdminCommandContext context) {
 
         final ActionReport report = context.getActionReport();
-
+        Config targetConfig = domain.getConfigNamed(target);
+                if (targetConfig != null)
+                    config = targetConfig;
+                
         Server targetServer = domain.getServerNamed(target);
         //String configRef = targetServer.getConfigRef();
         if (targetServer!=null) {
