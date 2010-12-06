@@ -83,7 +83,7 @@ public class DeleteJMSHost implements AdminCommand {
     @Param(name="jms_host_name", primary=true)
     String jmsHostName;
 
-    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    //@Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Config config;
 
     @Inject
@@ -97,6 +97,11 @@ public class DeleteJMSHost implements AdminCommand {
     public void execute(AdminCommandContext context) {
 
         final ActionReport report = context.getActionReport();
+
+        Config targetConfig = domain.getConfigNamed(target);
+                if (targetConfig != null)
+                    config = targetConfig;
+
 
         Server targetServer = domain.getServerNamed(target);
         if (targetServer!=null) {
