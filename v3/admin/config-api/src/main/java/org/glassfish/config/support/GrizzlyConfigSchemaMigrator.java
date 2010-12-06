@@ -515,17 +515,17 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
             return;
         }
         for (Protocol protocol : config.getProtocols().getProtocol()) {
-            if (protocol.getHttp() == null) {
-                continue;
+            final Http http = protocol.getHttp();
+            if(http != null) {
+                ConfigSupport.apply(new SingleConfigCode<Http>() {
+                    @Override
+                    public Object run(Http param) {
+                        param.setMaxConnections(keepAlive.getMaxConnections());
+                        param.setTimeoutSeconds(keepAlive.getTimeoutInSeconds());
+                        return null;
+                    }
+                }, http);
             }
-            ConfigSupport.apply(new SingleConfigCode<Http>() {
-                @Override
-                public Object run(Http http) {
-                    http.setMaxConnections(keepAlive.getMaxConnections());
-                    http.setTimeoutSeconds(keepAlive.getTimeoutInSeconds());
-                    return null;
-                }
-            }, protocol.getHttp());
         }
         ConfigSupport.apply(new SingleConfigCode<HttpService>() {
             @Override
@@ -562,16 +562,16 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
             }, listener);
         }
         for (Protocol protocol : config.getProtocols().getProtocol()) {
-            if (protocol.getHttp() == null) {
-                continue;
+            final Http http = protocol.getHttp();
+            if(http != null) {
+                ConfigSupport.apply(new SingleConfigCode<Http>() {
+                    @Override
+                    public Object run(Http param) {
+                        param.setHeaderBufferLengthBytes(request.getHeaderBufferLengthInBytes());
+                        return null;
+                    }
+                }, http);
             }
-            ConfigSupport.apply(new SingleConfigCode<Http>() {
-                @Override
-                public Object run(Http http) {
-                    http.setHeaderBufferLengthBytes(request.getHeaderBufferLengthInBytes());
-                    return null;
-                }
-            }, protocol.getHttp());
         }
         ConfigSupport.apply(new SingleConfigCode<HttpService>() {
             @Override
@@ -780,16 +780,16 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
 
     private void updateHttp(NetworkConfig config, final ConnectionPool pool) throws TransactionFailure {
         for (Protocol protocol : config.getProtocols().getProtocol()) {
-            if (protocol.getHttp() == null) {
-                continue;
+            final Http http = protocol.getHttp();
+            if(http != null) {
+                ConfigSupport.apply(new SingleConfigCode<Http>() {
+                    @Override
+                    public Object run(Http param) {
+                        param.setSendBufferSizeBytes(pool.getSendBufferSizeInBytes());
+                        return null;
+                    }
+                }, http);
             }
-            ConfigSupport.apply(new SingleConfigCode<Http>() {
-                @Override
-                public Object run(Http http) {
-                    http.setSendBufferSizeBytes(pool.getSendBufferSizeInBytes());
-                    return null;
-                }
-            }, protocol.getHttp());
         }
     }
 
