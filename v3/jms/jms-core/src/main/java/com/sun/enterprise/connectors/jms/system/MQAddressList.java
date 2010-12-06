@@ -312,11 +312,13 @@ public class MQAddressList {
          if (masterBrokerInstanceName != null){
              masterBrokerInstance = domain.getServerNamed(masterBrokerInstanceName);
          }
-        Server[] buddies = getServersInCluster(cluster);
-        // return the first valid host
+         else{
+            Server[] buddies = getServersInCluster(cluster);
+            // return the first valid host
 			// there may be hosts attached to an NA that is down
-        if (buddies != null && buddies.length > 0){
-            masterBrokerInstance = buddies[0];
+            if (buddies != null && buddies.length > 0){
+                masterBrokerInstance = buddies[0];
+            }
         }
         final JmsHost copy	  = getResolvedJmsHost(masterBrokerInstance);
 	    if (copy != null)
