@@ -67,6 +67,8 @@ public class WeldSniffer extends GenericSniffer implements Sniffer {
     private static final String META_INF_BEANS_XML = "META-INF" + SEPARATOR_CHAR + "beans.xml";
     private static final String JAR_SUFFIX = ".jar";
     private static final String EXPANDED_JAR_SUFFIX = "_jar";
+    private static final String RAR_SUFFIX = ".rar";
+    private static final String EXPANDED_RAR_SUFFIX = "_rar";
 
     public WeldSniffer() {
         // We do not haGenericSniffer(String containerName, String appStigma, String urlPattern
@@ -106,6 +108,10 @@ public class WeldSniffer extends GenericSniffer implements Sniffer {
             isWeldArchive = true;
         }     
 
+        if (!isWeldArchive && archiveName != null && archiveName.endsWith(EXPANDED_RAR_SUFFIX)) {
+            isWeldArchive = isEntryPresent(archive, META_INF_BEANS_XML);
+        }
+        
         return isWeldArchive;
     }
 

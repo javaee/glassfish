@@ -84,6 +84,8 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
     private static final String META_INF_BEANS_XML = "META-INF" + SEPARATOR_CHAR + "beans.xml";
     private static final String CLASS_SUFFIX = ".class";
     private static final String JAR_SUFFIX = ".jar";
+    private static final String RAR_SUFFIX = ".rar";
+    private static final String EXPANDED_RAR_SUFFIX = "_rar";
 
     private ReadableArchive archive;
     private String id;
@@ -131,6 +133,10 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
         } catch (Exception e) {
         }
         this.archive = null;
+        
+        //set to the current TCL
+        this.moduleClassLoaderForBDA = Thread.currentThread().getContextClassLoader();
+
     }
 
     //These are for empty BDAs that do not model Bean classes in the current 
@@ -166,6 +172,7 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
         }
         //This method is called during BeanDeployment.deployBeans, so this would
         //be the right time to place the module classloader for the BDA as the TCL
+        logger.log(FINER, "set TCL for " + this.id + " to " + this.moduleClassLoaderForBDA);
         Thread.currentThread().setContextClassLoader(this.moduleClassLoaderForBDA);
         //The TCL is unset at the end of deployment of CDI beans in WeldDeployer.event 
         return s;
@@ -286,12 +293,21 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
                }
             }
 
+            //Handle RARs. RARs are packaged differently from EJB-JARs or WARs.
+            //see 20.2 of Connectors 1.6 specification
+            //The resource adapter classes are in a jar file within the
+            //RAR archive
+            if (archive.getName().endsWith(RAR_SUFFIX) || archive.getName().endsWith(EXPANDED_RAR_SUFFIX)) {
+                collectRarInfo(archive);
+            }
+            
             if (archive.exists(META_INF_BEANS_XML)) {
                 logger.log(FINE, "-JAR processing: " + archive.getURI() 
                         + " as a jar since it has META-INF/beans.xml");
                 bdaType = JAR;
                 collectJarInfo(archive);
             } 
+            
         } catch(IOException e) {
             logger.log(SEVERE, e.getLocalizedMessage(), e);
         } catch(ClassNotFoundException cne) {
@@ -305,16 +321,35 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
         Enumeration<String> entries = archive.entries();
         while (entries.hasMoreElements()) {
             String entry = entries.nextElement();
-            if (entry.endsWith(CLASS_SUFFIX)) {
-                String className = filenameToClassname(entry);
-                wClasses.add(getClassLoader().loadClass(className));
-            } else if (entry.endsWith("beans.xml")) {
-                URL beansXmlUrl = Thread.currentThread().getContextClassLoader().getResource(entry);
-                wUrls.add(beansXmlUrl);
-            }
+            handleEntry(entry);
         }
     }
 
+    private void handleEntry(String entry) throws ClassNotFoundException {
+        if (entry.endsWith(CLASS_SUFFIX)) {
+            String className = filenameToClassname(entry);
+            wClasses.add(getClassLoader().loadClass(className));
+        } else if (entry.endsWith("beans.xml")) {
+            URL beansXmlUrl = Thread.currentThread().getContextClassLoader().getResource(entry);
+            wUrls.add(beansXmlUrl);
+        }
+    }
+
+    private void collectRarInfo(ReadableArchive archive) throws IOException,
+            ClassNotFoundException {
+        logger.log(FINE, "-collecting rar info for " + archive.getURI());
+        Enumeration<String> entries = archive.entries();
+        while (entries.hasMoreElements()) {
+            String entry = entries.nextElement();
+            if (entry.endsWith(JAR_SUFFIX)){
+                ReadableArchive jarArchive = archive.getSubArchive(entry);
+                collectJarInfo(jarArchive);
+            } else {
+                handleEntry(entry);
+            }
+        }
+    }
+    
     private static String filenameToClassname(String filename) {
         String className = null;
         if (filename.indexOf(File.separatorChar) >= 0) {
