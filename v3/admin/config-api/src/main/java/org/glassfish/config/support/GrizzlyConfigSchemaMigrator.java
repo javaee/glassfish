@@ -515,6 +515,9 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
             return;
         }
         for (Protocol protocol : config.getProtocols().getProtocol()) {
+            if (protocol.getHttp() == null) {
+                continue;
+            }
             ConfigSupport.apply(new SingleConfigCode<Http>() {
                 @Override
                 public Object run(Http http) {
@@ -559,6 +562,9 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
             }, listener);
         }
         for (Protocol protocol : config.getProtocols().getProtocol()) {
+            if (protocol.getHttp() == null) {
+                continue;
+            }
             ConfigSupport.apply(new SingleConfigCode<Http>() {
                 @Override
                 public Object run(Http http) {
@@ -774,6 +780,9 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
 
     private void updateHttp(NetworkConfig config, final ConnectionPool pool) throws TransactionFailure {
         for (Protocol protocol : config.getProtocols().getProtocol()) {
+            if (protocol.getHttp() == null) {
+                continue;
+            }
             ConfigSupport.apply(new SingleConfigCode<Http>() {
                 @Override
                 public Object run(Http http) {
