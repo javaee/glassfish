@@ -277,12 +277,19 @@ public class MetroContainer implements PostConstruct, Container, WebServiceDeplo
     private void initializeWsTxRuntime() {
         final String serverName = serverContext.getInstanceName();            
         final Config config  = serverContext.getConfigBean().getConfig();
+        
+        final WSATRuntimeConfig.TxlogLocationProvider txlogLocationProvider = new WSATRuntimeConfig.TxlogLocationProvider() {
+            @Override
+            public String getTxLogLocation() {
+                return txManager.getTxLogLocation();
+            }                    
+        };
                         
         WSATRuntimeConfig.initializer()
                 .hostName(getHostName())
                 .httpPort(getHttpPort(false, serverName, config))
                 .httpsPort(getHttpPort(true, serverName, config))
-                .txLogLocation(txManager.getTxLogLocation())
+                .txLogLocation(txlogLocationProvider)
                 .done();
         
         final WSATRuntimeConfig.RecoveryEventListener metroListener = WSATRuntimeConfig.getInstance().new WSATRecoveryEventListener();
