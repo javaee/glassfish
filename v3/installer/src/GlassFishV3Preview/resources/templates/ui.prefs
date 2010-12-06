@@ -59,24 +59,25 @@ top_left_image=/templates/glassfish_logo.png
 bottom_left_image=/templates/community-logo.png
 icon_image=/templates/glassfishserver.gif
 
-# L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
+# Do not translate 
 leftpanel_font=Sans-Serif-BOLD-14
 
 # Dynamic panel
-# L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
+# Do not translate this section 
 dynamic_content_font=Sans-Serif-BOLD-14
 dynamic_component_background=WHITE
 dynamic_component_foreground=BLACK
 dynamic_component_border_color=BLACK
 
 # Font for titles
-# L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
+# Do not translate 
 title1_font=Sans-Serif-BOLD-18
-# L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
+# Do not translate 
 title2_font=Sans-Serif-BOLD-20
 
 # Text color for titles
 title1_color=587993
+# Do not translate 
 title2_color=BLACK
 
 # Text for titles
@@ -90,7 +91,7 @@ btnpanel_bgcolor=e8e9ed
 
 
 # Font for Buttons
-# L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
+# Do not translate 
 button_font=Sans-Serif-BOLD-14
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~W E L C O M E   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
