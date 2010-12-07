@@ -38,7 +38,7 @@ package test.com.sun.jaspic.config;
 import java.util.ArrayList;
 import java.util.List;
 import com.sun.jaspic.config.factory.EntryInfo;
-import com.sun.jaspic.config.factory.AuthConfFileFactory;
+import com.sun.jaspic.config.factory.AuthConfigFileFactory;
 import com.sun.jaspic.config.factory.BaseAuthConfigFactory;
 import com.sun.jaspic.config.factory.RegStoreFileParser;
 import java.security.Security;
@@ -76,7 +76,7 @@ public class FactoryTest {
      * will also need to configure proper dependencies
      */
     // private static final String DEFAULT_TEST_FACTORY_CLASS_NAME = "com.sun.enterprise.security.jmac.config.SaveAuthConfigFactory";
-    private static final String DEFAULT_TEST_FACTORY_CLASS_NAME = AuthConfFileFactory.class.getName();
+    private static final String DEFAULT_TEST_FACTORY_CLASS_NAME = AuthConfigFileFactory.class.getName();
     private static String testFactoryClassName = DEFAULT_TEST_FACTORY_CLASS_NAME;
     public static final String DEFAULT_FACTORY_SECURITY_PROPERTY =
             "authconfigprovider.factory";

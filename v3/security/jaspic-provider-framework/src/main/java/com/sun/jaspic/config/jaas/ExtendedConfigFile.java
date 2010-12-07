@@ -41,6 +41,7 @@
 
 package com.sun.jaspic.config.jaas;
 
+import com.sun.jaspic.config.helper.JASPICLogManager;
 import com.sun.security.auth.login.ConfigFile;
 import java.lang.reflect.Field;
 import java.net.URI;
@@ -60,7 +61,7 @@ import javax.security.auth.login.AppConfigurationEntry;
 public class ExtendedConfigFile extends ConfigFile {
 
     private static final Logger logger =
-            Logger.getLogger(ExtendedConfigFile.class.getName());
+            JASPICLogManager.getLogger(ExtendedConfigFile.class);
     //may be more than one delegate for a given jaas config file
 
     public ExtendedConfigFile() {

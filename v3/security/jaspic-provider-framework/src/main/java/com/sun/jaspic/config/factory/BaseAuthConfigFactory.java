@@ -40,6 +40,7 @@
 
 package com.sun.jaspic.config.factory;
 
+import com.sun.jaspic.config.helper.JASPICLogManager;
 import java.lang.reflect.Constructor;
 
 import java.util.ArrayList;
@@ -67,7 +68,7 @@ import javax.security.auth.message.config.RegistrationListener;
 public abstract class BaseAuthConfigFactory extends AuthConfigFactory {
 
     private static final Logger logger =
-            Logger.getLogger(BaseAuthConfigFactory.class.getName());
+            JASPICLogManager.getLogger(BaseAuthConfigFactory.class);
 
     private static final ReadWriteLock rwLock = new ReentrantReadWriteLock(true);
     public static final Lock rLock = rwLock.readLock();
@@ -132,7 +133,7 @@ public abstract class BaseAuthConfigFactory extends AuthConfigFactory {
     public AuthConfigProvider
             getConfigProvider(String layer, String appContext,
 	    RegistrationListener listener) {
-
+        
 	AuthConfigProvider provider = null;
         String regisID = getRegistrationID(layer, appContext);
         String matchedID = null;
@@ -493,8 +494,8 @@ public abstract class BaseAuthConfigFactory extends AuthConfigFactory {
             } catch (Throwable t) {
                 Throwable cause = t.getCause();
                 logger.log(Level.WARNING,
-                        "jmac.factory_unable_to_load_provider class: {0} exception: {1} cause {2}",
-                        new Object[]{ className, t.toString(), (cause == null ? null : cause.toString())});
+                        "jmac.factory_unable_to_load_provider",
+                        new Object[]{ className, t.toString(), (cause == null ? "cannot determine" : cause.toString())});
             }
         }
         return provider;

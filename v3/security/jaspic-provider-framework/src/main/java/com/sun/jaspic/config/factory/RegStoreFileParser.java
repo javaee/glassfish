@@ -40,6 +40,7 @@
 
 package com.sun.jaspic.config.factory;
 
+import com.sun.jaspic.config.helper.JASPICLogManager;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -68,7 +69,7 @@ import javax.security.auth.message.config.AuthConfigFactory.RegistrationContext;
 public final class RegStoreFileParser {
 
     private static final Logger logger =
-            Logger.getLogger(RegStoreFileParser.class.getName());
+            JASPICLogManager.getLogger(RegStoreFileParser.class);
 
     private static final String SEP = ":";
     private static final String CON_ENTRY = "con-entry";
