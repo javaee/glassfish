@@ -17,6 +17,7 @@ rm -rf glassfishv3
 wget -q -O revision-under-test.html http://${REHudson}/hudson/job/gf-trunk-build-continuous/lastSuccessfulBuild
 grep 'Build #' revision-under-test.html
 time wget -q -O glassfish.zip http://${REHudson}/hudson/job/gf-trunk-build-continuous/lastSuccessfulBuild/artifact/bundles/glassfish.zip
+rm -fR glassfish3
 unzip -q glassfish.zip
 if [ $? -ne 0 ]
 then
