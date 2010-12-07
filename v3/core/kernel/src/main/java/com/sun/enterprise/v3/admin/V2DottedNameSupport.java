@@ -195,7 +195,7 @@ public class V2DottedNameSupport {
                         // so instead of jumping one dotted name token, we may need to jump multiple tokens
                         // until we find the next delimiter, let's find this first.
                         String delim = (String) patternToken.nextElement();
-                        if (dottedName.lastIndexOf('.')==-1) {
+                        if (dottedName.lastIndexOf('.') == -1) {
                             // more pattern, but no more dotted names.
                             // unless the pattern is "*", we don't have a match
                             if (delim.equals("*")) {
@@ -206,8 +206,8 @@ public class V2DottedNameSupport {
                         }
                         // we are not going to check if the delim is a attribute, it has to be an element name.
                         // we will leave the attribute checking to someone else.
-                        if (dottedName.contains(delim)) {
-                            String remaining = dottedName.substring(dottedName.lastIndexOf(delim));
+                        if (dottedName.contains("." + delim)) {
+                            String remaining = dottedName.substring(dottedName.indexOf("." + delim) + 1);
                             return matches(remaining,
                                     pattern.substring(token.length()+1));
                         } else {
@@ -291,7 +291,7 @@ public class V2DottedNameSupport {
         // let's get the potential aliased element name
         String name;
         String newPrefix;
-        if (prefix.indexOf('.')!=-1) {
+        if (prefix.indexOf('.') != -1) {
             name = prefix.substring(0, prefix.indexOf('.'));
             newPrefix = prefix.substring(name.length()+1);
         } else {
@@ -302,7 +302,7 @@ public class V2DottedNameSupport {
         // check for resources
         if ((newPrefix != null) && (newPrefix.startsWith("resources"))) {
             String relativeName = newPrefix;
-            if (newPrefix.indexOf('.')!=-1) {
+            if (newPrefix.indexOf('.') != -1) {
                 String str = newPrefix.substring(0, newPrefix.indexOf('.'));
                 relativeName = newPrefix.substring(str.length() + 1);
             }
@@ -341,7 +341,8 @@ public class V2DottedNameSupport {
         }
 
         return new TreeNode[] {
-            new TreeNode(Dom.unwrap(domain),"", prefix)
+            //new TreeNode(Dom.unwrap(domain), name, newPrefix)
+            new TreeNode(Dom.unwrap(domain), "domain", prefix)
         };
     }
 

@@ -39,18 +39,12 @@
  */
 package com.sun.enterprise.v3.admin;
 
-import com.sun.enterprise.admin.util.ClusterOperationUtil;
 import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.v3.common.PropsFileActionReporter;
 import org.glassfish.api.ActionReport;
-import org.glassfish.api.ActionReport.ExitCode;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
-import org.glassfish.external.statistics.Statistic;
-import org.glassfish.external.statistics.Stats;
-import org.glassfish.external.statistics.impl.StatisticImpl;
 import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
 import org.glassfish.internal.api.Target;
 import org.jvnet.hk2.annotations.Inject;
@@ -62,11 +56,9 @@ import org.jvnet.hk2.config.Dom;
 import org.jvnet.hk2.config.types.Property;
 
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Proxy;
 import java.net.URLEncoder;
 import java.util.*;
 
-import static com.sun.enterprise.util.SystemPropertyConstants.SLASH;
 
 /**
  * User: Jerome Dochez
@@ -98,6 +90,7 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
     final private static LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(GetCommand.class);
 
+    @Override
     public void execute(AdminCommandContext context) {
 
         ActionReport report = context.getActionReport();
@@ -138,10 +131,6 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
 
         // first let's get the parent for this pattern.
         TreeNode[] parentNodes = getAliasedParent(domain, pattern);
-        Map<Dom, String> dottedNames = new HashMap<Dom, String>();
-        for (TreeNode parentNode : parentNodes) {
-            dottedNames.putAll(getAllDottedNodes(parentNode.node));
-        }
 
         // reset the pattern.
         String prefix = "";
@@ -150,13 +139,21 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
         }
         pattern = parentNodes[0].relativeName;
 
-        Map<Dom, String> matchingNodes = getMatchingNodes(dottedNames, pattern);
+        String targetName = prefix + pattern;
+
+        Map<Dom, String> matchingNodes;
+        Map<Dom, String> dottedNames = new HashMap<Dom, String>();
+        for (TreeNode parentNode : parentNodes) {
+            dottedNames.putAll(getAllDottedNodes(parentNode.node));
+            dottedNames.put(parentNode.node, parentNode.name);
+        }
+        matchingNodes = getMatchingNodes(dottedNames, pattern);
         if (matchingNodes.isEmpty() && pattern.lastIndexOf('.') != -1) {
             // it's possible the user is just looking for an attribute, let's remove the
             // last element from the pattern.
             matchingNodes = getMatchingNodes(dottedNames, pattern.substring(0, pattern.lastIndexOf(".")));
         }
-
+        
         //No matches found - report the failure and return
         if (matchingNodes.isEmpty()) {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);

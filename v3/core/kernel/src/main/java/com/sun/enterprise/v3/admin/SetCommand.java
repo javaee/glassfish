@@ -44,12 +44,15 @@ import com.sun.enterprise.admin.util.ClusterOperationUtil;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import org.glassfish.api.ActionReport;
+import java.beans.PropertyVetoException;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
 import org.glassfish.api.admin.config.LegacyConfigurationUpgrade;
 import org.glassfish.internal.api.Target;
+import org.glassfish.api.ActionReport;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -58,9 +61,12 @@ import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.config.*;
 import org.jvnet.hk2.config.types.Property;
+import org.jvnet.tiger_types.Types;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Proxy;
+import java.lang.reflect.Type;
 import java.util.*;
 
 /**
@@ -160,7 +166,8 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand, Pos
         // reset the pattern.
         String prefix;
         boolean lookAtSubNodes = true;
-        if (parentNodes[0].relativeName.length() == 0) {
+        if (parentNodes[0].relativeName.length() == 0 ||
+            parentNodes[0].relativeName.indexOf('.') == -1) {
             // handle the case where the pattern references an attribute of the top-level node
             prefix = "";
             // pattern is already set properly
@@ -242,6 +249,7 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand, Pos
 
         Map<ConfigBean, Map<String, String>> changes = new HashMap<ConfigBean, Map<String, String>>();
 
+        boolean setElementSuccess = false;
         boolean delPropertySuccess = false;
         boolean delProperty = false;
         Map<String, String> attrChanges = new HashMap<String, String>();
@@ -309,6 +317,28 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand, Pos
                     }
                 }
             }
+
+            for (String name : targetNode.model.getLeafElementNames()) {
+                String finalDottedName = node.getValue() + "." + name;
+                if (matches(finalDottedName, pattern)) {
+                    if (attrName.equals(name) ||
+                            attrName.replace('_', '-').equals(name.replace('_', '-')))  {
+                        if (isDeprecatedAttr(targetNode, name)) {
+                           warning(context, localStrings.getLocalString("admin.set.elementdeprecated",
+                                   "Warning: The element {0} is deprecated.", finalDottedName));
+                        }
+                        try {
+                            setLeafElement((ConfigBean)targetNode, name, value);
+                        } catch (TransactionFailure ex) {
+                            fail(context, localStrings.getLocalString("admin.set.badelement", "Cannot change the element: {0}",
+                                    ex.getMessage()), ex);
+                            return false;
+                        }
+                        setElementSuccess = true;
+                        break;
+                    }
+                }
+            }
         }
         if (!changes.isEmpty()) {
             try {
@@ -323,17 +353,74 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand, Pos
                 return false;
             }
 
+        } else if (delPropertySuccess || setElementSuccess) {
+            success(context, targetName, value);
         } else {
-            if (delPropertySuccess) {
-                success(context, targetName, value);
-            } else {
-                fail(context, localStrings.getLocalString("admin.set.configuration.notfound", "No configuration found for {0}", targetName));
-                return false;
-            }
+            fail(context, localStrings.getLocalString("admin.set.configuration.notfound", "No configuration found for {0}", targetName));
+            return false;
         }
         if (targetService.isThisDAS() && !replicateSetCommand(context, targetName, value))
             return false;
         return true;
+    }
+
+    public static void setLeafElement (
+                final ConfigBean node,
+                final String elementName,
+                final String values)
+        throws TransactionFailure {
+
+        ConfigBeanProxy readableView = node.getProxy(node.getProxyType());
+        ConfigSupport.apply(new SingleConfigCode<ConfigBeanProxy>() {
+
+            /**
+             * Runs the following command passing the configuration object. The code will be run
+             * within a transaction, returning true will commit the transaction, false will abort
+             * it.
+             *
+             * @param param is the configuration object protected by the transaction
+             * @return any object that should be returned from within the transaction code
+             * @throws java.beans.PropertyVetoException
+             *          if the changes cannot be applied
+             *          to the configuration
+             */
+            @Override
+            public Object run(ConfigBeanProxy param) throws PropertyVetoException, TransactionFailure {
+
+                WriteableView writeableParent = (WriteableView)Proxy.getInvocationHandler(param);
+
+                StringTokenizer st = new StringTokenizer(values, ",");
+                List<String> valList = new ArrayList<String>();
+                while (st.hasMoreTokens()) valList.add(st.nextToken());
+
+                ConfigBean bean = writeableParent.getMasterView();
+                for (Method m : writeableParent.getProxyType().getMethods()) {
+                    // Check to see if the method is a setter for the element
+                    // An element setter has to have the right name, take a single
+                    // collection parameter that parameterized with the right type
+                    Class argClasses[] = m.getParameterTypes();
+                    Type argTypes[] = m.getGenericParameterTypes();
+                    if (!bean.model.toProperty(m).xmlName().equals(elementName) ||
+                            argClasses.length != 1 ||
+                            !Collection.class.isAssignableFrom(argClasses[0]) ||
+                            argTypes.length != 1 ||
+                            !(argTypes[0] instanceof ParameterizedType) ||
+                            !Types.erasure(Types.getTypeArgument(argTypes[0], 0)).isAssignableFrom(values.getClass())) {
+                        continue;
+                    }
+                    // we have the right method.  Now call it
+                    try {
+                        m.invoke(writeableParent.getProxy(writeableParent.<ConfigBeanProxy>getProxyType()), valList);
+                    } catch (IllegalAccessException e) {
+                        throw new TransactionFailure("Exception while setting element", e);
+                    } catch (InvocationTargetException e) {
+                        throw new TransactionFailure("Exception while setting element", e);
+                    }
+                    return node;
+                }
+                throw new TransactionFailure("No method found for setting element");
+            }
+        }, readableView);
     }
 
     /*
@@ -371,33 +458,50 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand, Pos
     }
 
     private boolean replicateSetCommand(AdminCommandContext context, String targetName, String value) {
-        String firstElementOfName = targetName.substring(0, targetName.indexOf('.'));
-        Integer targetElementLocation = targetLevel.get(firstElementOfName);
-        if (targetElementLocation == null)
-            targetElementLocation = 1;
+        // "domain." on the front of the attribute name is optional.  So if it is
+        // there, strip it off. 
         List<Server> replicationInstances = null;
-        if (targetElementLocation == 0) {
-            if ("resources".equals(firstElementOfName)) {
+        String tName;
+        if (targetName.startsWith("domain.")) {
+            tName = targetName.substring("domain.".length());
+            if (tName.indexOf('.') == -1) {
+                // This is a domain-level attribute, replicate to all instances
                 replicationInstances = targetService.getAllInstances();
             }
-            if ("applications".equals(firstElementOfName)) {
-                String appName = getElementFromString(targetName, 3);
-                if (appName == null) {
-                    fail(context, localStrings.getLocalString("admin.set.invalid.appname",
-                            "Unable to extract application name from {0}", targetName));
+        }
+        else {
+            tName = targetName;
+        }
+        if (replicationInstances == null) {
+            int dotIdx = tName.indexOf('.');
+            String firstElementOfName = dotIdx != -1 ? tName.substring(0, dotIdx) : tName;
+            Integer targetElementLocation = targetLevel.get(firstElementOfName);
+            if (targetElementLocation == null)
+                targetElementLocation = 1;
+            if (targetElementLocation == 0) {
+                if ("resources".equals(firstElementOfName)) {
+                    replicationInstances = targetService.getAllInstances();
+                }
+                if ("applications".equals(firstElementOfName)) {
+                    String appName = getElementFromString(tName, 3);
+                    if (appName == null) {
+                        fail(context, localStrings.getLocalString("admin.set.invalid.appname",
+                                "Unable to extract application name from {0}", targetName));
+                        return false;
+                    }
+                    replicationInstances = targetService.getInstances(domain.getAllReferencedTargetsForApplication(appName));
+                }
+            } else {
+                String target = getElementFromString(tName, targetElementLocation);
+                if (target == null) {
+                    fail(context, localStrings.getLocalString("admin.set.invalid.target",
+                            "Unable to extract replication target from {0}", targetName));
                     return false;
                 }
-                replicationInstances = targetService.getInstances(domain.getAllReferencedTargetsForApplication(appName));
+                replicationInstances = targetService.getInstances(target);
             }
-        } else {
-            String target = getElementFromString(targetName, targetElementLocation);
-            if (target == null) {
-                fail(context, localStrings.getLocalString("admin.set.invalid.target",
-                        "Unable to extract replication target from {0}", targetName));
-                return false;
-            }
-            replicationInstances = targetService.getInstances(target);
         }
+
         if (!replicationInstances.isEmpty()) {
             ParameterMap params = new ParameterMap();
             params.set("DEFAULT", targetName + "=" + value);

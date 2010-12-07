@@ -95,7 +95,8 @@ public class InstanceCommandExecutor extends ServerRemoteAdminCommand implements
             executeCommand(params);
             aReport.setActionExitCode(ActionReport.ExitCode.SUCCESS);
             if(StringUtils.ok(getCommandOutput()))
-                aReport.setMessage(getServer().getName() + " :\n" + getCommandOutput() + "\n");
+                aReport.setMessage(strings.getLocalString("ice.successmessage", 
+                        "{0}:\n{1}\n", getServer().getName(), getCommandOutput()));
             Map<String, String> attributes = this.getAttributes();
             for(String key : attributes.keySet()) {
                 if(key.endsWith("_value"))
