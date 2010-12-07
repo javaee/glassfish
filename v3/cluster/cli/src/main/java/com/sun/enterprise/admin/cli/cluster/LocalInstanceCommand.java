@@ -146,6 +146,12 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
         nodeDirRoot = new File(nodeDirRootPath);
         mkdirs(nodeDirRoot);
 
+        if (ok(nodeDir)) {
+            // Ensure later uses of nodeDir get an absolute path
+            // See bug 15014
+            nodeDir = FileUtils.safeGetCanonicalPath(nodeDirRoot);
+        }
+
         if (!isDirectory(nodeDirRoot)) {
             throw new CommandException(
                     Strings.get("Instance.badNodeDir", nodeDirRoot));
