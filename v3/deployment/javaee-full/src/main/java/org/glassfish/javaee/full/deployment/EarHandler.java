@@ -41,6 +41,8 @@
 package org.glassfish.javaee.full.deployment;
 
 import com.sun.enterprise.deployment.deploy.shared.InputJarArchive;
+import java.net.URI;
+import java.util.logging.Logger;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.deployment.archive.Archive;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
@@ -161,6 +163,7 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
                 String moduleUri = md.getArchiveUri();
                 ReadableArchive subArchive = null;
                 WritableArchive subTarget = null;
+                ReadableArchive subArchiveToExpand = null;
                 try {
                     subArchive = source2.getSubArchive(moduleUri);
                     if (subArchive == null) {
@@ -189,8 +192,9 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
                          * in which case we don't need to expand it because the developer
                          * already did so before packaging.
                          */
-                        if ( ! subTarget.getURI().equals(subArchive.getURI())) {
-                            subHandler.expand(subArchive, subTarget, context);
+                        subArchiveToExpand = chooseSubArchiveToExpand(moduleUri, subTarget, subArchive, source2);
+                        if (subArchiveToExpand != null) {
+                            subHandler.expand(subArchiveToExpand, subTarget, context);
                         } else {
                             /*
                              * The target for expansion is the same URI as the
@@ -220,11 +224,18 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
                     _logger.log(Level.FINE, "Exception while processing " + 
                         moduleUri, ioe);
                 } finally {
-                    if (subArchive != null) {
-                        subArchive.close();
-                    }
-                    if (subTarget != null) {
-                        subTarget.close();
+                    try {
+                        if (subArchive != null) {
+                            subArchive.close();
+                        }
+                        if (subTarget != null) {
+                            subTarget.close();
+                        }
+                        if (subArchiveToExpand != null) {
+                            subArchiveToExpand.close();
+                        }
+                    } catch (IOException ioe) {
+                        // ignore
                     }
                 }
             }
@@ -233,6 +244,49 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
                 source2.close();
             }
         }
+    }
+
+    private ReadableArchive chooseSubArchiveToExpand(
+            final String moduleURI,
+            final WritableArchive subTarget,
+            final ReadableArchive subArchive,
+            final ReadableArchive expandedOriginalArchive) throws IOException {
+        /*
+         * The subArchive will normally be xxx.jar (or .rar, etc.)
+         * In this case, its URI differs from the URI of the target (which
+         * will be xxx_jar) and we should expand subArchive into subTarget.
+         * But the developer might have pre-expanded the archive in which case
+         * subArchive and subTarget will both be xxx_jar.  In such a case
+         * we do not want to expand the directory onto itself.
+         *
+         * Yet, on Windows, it is possible that the xxx_jar directory is left
+         * over from a previous expansion from xxx.jar to xxx_jar, in which case
+         * we DO want to expand xxx.jar into xxx_jar.  
+         */
+        if (! subTarget.getURI().equals(subArchive.getURI())) {
+            /*
+             * The URIs are not the same, so the subArchive is probably xxx.jar
+             * and the target is probably xxx_jar.
+             */
+            return subArchive;
+        }
+
+        /*
+         * Try to find the xxx.jar entry in the file archive that is the expanded
+         * version of the original archive.  If that entry exists, then the
+         * xxx_jar entry in the already-expanded directory is probably
+         * a left-over from a previous deployment and we should expand the
+         * original subarchive into it.  If, on the other hand, the xxx.jar
+         * entry does not exist in the expansion, then the developer probably
+         * packaged the EAR with a pre-expanded module directory instead of
+         * the module JAR; in that case there is no need to expand the
+         * pre-expanded directory into itself.
+         */
+        if (expandedOriginalArchive.exists(moduleURI)) {
+            final URI unexpandedSubArchiveURI = expandedOriginalArchive.getURI().resolve(moduleURI);
+            return archiveFactory.openArchive(unexpandedSubArchiveURI);
+        }
+        return null;
     }
 
     private static boolean areSameStorageType(final Archive arch1, final Archive arch2) {
