@@ -36,7 +36,6 @@
 
 package test.util;
 
-import javax.enterprise.context.ConversationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;

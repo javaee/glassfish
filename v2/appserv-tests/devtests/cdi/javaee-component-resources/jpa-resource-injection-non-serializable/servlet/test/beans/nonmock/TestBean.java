@@ -38,7 +38,7 @@ package test.beans.nonmock;
 
 import java.io.Serializable;
 
-import javax.enterprise.context.ConversationScoped;
+import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityManager;
@@ -48,7 +48,7 @@ import test.beans.artifacts.Preferred;
 import test.beans.artifacts.TestDatabase;
 
 
-@ConversationScoped //a passivating scope
+@SessionScoped //a passivating scope
 @Preferred
 public class TestBean implements TestBeanInterface, Serializable{
     public static boolean testBeanInvoked = false;

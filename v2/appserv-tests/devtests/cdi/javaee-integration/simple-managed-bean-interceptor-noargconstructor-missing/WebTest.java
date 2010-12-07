@@ -83,7 +83,7 @@ public class WebTest {
             (new URL(url)).openConnection();
 
         int code = conn.getResponseCode();
-        if (code == 404) {
+        if (code == 404|| code == 500) {
             stat.addStatus(TEST_NAME, stat.PASS);
         } else {
             InputStream is = null;

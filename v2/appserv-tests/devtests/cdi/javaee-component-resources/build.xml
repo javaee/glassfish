@@ -102,7 +102,9 @@
             <ant dir="jpa-resource-injection-with-singleton-ejb-producer" target="${javaee-comp-target}"/>
             <ant dir="no-interface-ejb" target="${javaee-comp-target}"/>
             <ant dir="jms-resource-producer-field" target="${javaee-comp-target}"/>
+<!-- TODO: Investigate 
             <ant dir="jms-resource-producer-field-in-library-jar" target="${javaee-comp-target}"/>
+-->
             <ant dir="em-resource-injection" target="${javaee-comp-target}"/>
             <ant dir="em-injection-no-interface-ejb" target="${javaee-comp-target}"/>
             <ant dir="em-resource-injection-with-resource-declaration-in-another-jar" target="${javaee-comp-target}"/>
