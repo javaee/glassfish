@@ -99,7 +99,7 @@ public class J2EEServerImpl extends J2EELogicalServerImplBase
     public String getserverVersion()
     {
         Issues.getAMXIssues().notDone("How to get the server version");
-        return "Glassfish V3";
+        return "Glassfish V3.1";
     }
 
     public String getserverVendor()

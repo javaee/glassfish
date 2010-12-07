@@ -185,8 +185,8 @@ public abstract class J2EEManagedObjectImplBase extends AMXImplBase {
         {
             final ObjectName ancestor = ancestors.get(i);
             final String ancestorType = ancestor.getKeyProperty(J2EETypes.J2EE_TYPE_KEY);
-            final String ancestorName = ancestor.getKeyProperty(J2EETypes.NAME_KEY);
-            final String ancestorProp = Util.makeProp( ancestorType, ancestorName );
+            final String ancestorName = Util.unquoteIfNeeded(ancestor.getKeyProperty(J2EETypes.NAME_KEY));
+            final String ancestorProp = Util.makeProp( ancestorType, Util.quoteIfNeeded(ancestorName ));
             props = Util.concatenateProps( props, ancestorProp);
 
             if ( ancestorType.equals(J2EE_APPLICATION) )

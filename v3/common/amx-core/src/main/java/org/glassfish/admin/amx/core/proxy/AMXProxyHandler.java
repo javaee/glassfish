@@ -965,7 +965,7 @@ public final class AMXProxyHandler extends MBeanProxyHandler
 
     public String parentPath()
     {
-        return getObjectName().getKeyProperty(PARENT_PATH_KEY);
+        return Util.unquoteIfNeeded(getObjectName().getKeyProperty(PARENT_PATH_KEY));
     }
 
     public String type()
@@ -1005,7 +1005,7 @@ public final class AMXProxyHandler extends MBeanProxyHandler
         }
 
         final ObjectName on = getObjectName();
-        final String parentPath = Util.getParentPathProp(on);
+        final String parentPath = Util.unquoteIfNeeded(Util.getParentPathProp(on));
 
         final String type = Util.getTypeProp(on);
         return PathnameParser.path(parentPath, type, singleton() ? null : Util.getNameProp(on));
@@ -1093,7 +1093,7 @@ public final class AMXProxyHandler extends MBeanProxyHandler
         final Map<String, T> m = new HashMap<String, T>();
         for (final ObjectName objectName : childrenOfType(type))
         {
-            m.put( Util.getNameProp(objectName), getProxy(objectName, intf));
+            m.put( Util.unquoteIfNeeded(Util.getNameProp(objectName)), getProxy(objectName, intf));
         }
         return m;
     }

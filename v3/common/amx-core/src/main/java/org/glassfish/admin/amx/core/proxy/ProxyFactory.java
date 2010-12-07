@@ -75,6 +75,7 @@ import javax.management.Descriptor;
 import org.glassfish.external.arc.Stability;
 import org.glassfish.external.arc.Taxonomy;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
+import org.glassfish.admin.amx.core.Util;
 import static org.glassfish.external.amx.AMX.*;
 import org.glassfish.external.amx.AMXGlassfish;
 
@@ -741,7 +742,8 @@ public final class ProxyFactory implements NotificationListener
 		
 		for( final ObjectName objectName : objectNames )
 		{
-            final String key = objectName.getKeyProperty(NAME_KEY);
+            final String key = Util.unquoteIfNeeded(objectName.getKeyProperty(NAME_KEY));
+
             final AMXProxy	proxy	= getProxy( objectName, intf);
             if ( proxy != null )
             {
