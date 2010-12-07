@@ -964,6 +964,10 @@ AS_ADMIN_MASTERPASSWORD=changeit
 
 <target name="setupInstance">
     <echo message="Running... asadmin create-instance"/>
+<echo>But first, try asadmin uptime</echo>
+<exec executable="${ASADMIN}" failonerror="true">
+  <arg value="uptime"/>
+</exec>
     <exec executable="${ASADMIN}" failonerror="true">
         <arg line="create-local-instance --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} --systemproperties HTTP_LISTENER_PORT=${deploy.serverinstance.httpport}:HTTP_SSL_LISTENER_PORT=2100:IIOP_LISTENER_PORT=${deploy.serverinstance.orbport}:IIOP_SSL_LISTENER_PORT=2300:IIOP_SSL_MUTUALAUTH_PORT=2400:JMX_SYSTEM_CONNECTOR_PORT=2500:JMS_PROVIDER_PORT=2600:ASADMIN_LISTENER_PORT=2700 ${testServer}"/>
     </exec>
