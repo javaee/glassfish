@@ -1328,7 +1328,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         vs.configureState();
         vs.configureRemoteAddressFilterValve();
         vs.configureRemoteHostFilterValve();
-        vs.configureSingleSignOn(globalSSOEnabled, webContainerFeatureFactory);
+        vs.configureSingleSignOn(globalSSOEnabled, webContainerFeatureFactory, isSsoFailoverEnabled());
         vs.configureRedirect();
         vs.configureErrorPage();
         vs.configureErrorReportValve();
@@ -2771,7 +2771,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         for (Property prop : props) {
             updateHostProperties(vsBean, prop.getName(), prop.getValue(), securityService, vs);
         }
-        vs.configureSingleSignOn(globalSSOEnabled, webContainerFeatureFactory);
+        vs.configureSingleSignOn(globalSSOEnabled, webContainerFeatureFactory, isSsoFailoverEnabled());
         vs.reconfigureAccessLog(globalAccessLogBufferSize, globalAccessLogWriteInterval, habitat, domain,
                 globalAccessLoggingEnabled);
 
@@ -2959,7 +2959,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                 || "denyRemoteAddress".equals(name)) {
             vs.configureRemoteAddressFilterValve();
         } else if (Constants.SSO_ENABLED.equals(name)) {
-            vs.configureSingleSignOn(globalSSOEnabled, webContainerFeatureFactory);
+            vs.configureSingleSignOn(globalSSOEnabled, webContainerFeatureFactory, isSsoFailoverEnabled());
         } else if ("authRealm".equals(name)) {
             vs.configureAuthRealm(securityService);
         } else if (name.startsWith("send-error")) {
@@ -2973,6 +2973,13 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
     }
 
+    private boolean isSsoFailoverEnabled() {
+        boolean webContainerAvailabilityEnabled =
+            serverConfigLookup.getWebContainerAvailabilityEnabledFromConfig();
+        boolean isSsoFailoverEnabled =
+            serverConfigLookup.isSsoFailoverEnabledFromConfig();
+        return isSsoFailoverEnabled && webContainerAvailabilityEnabled;
+    }
 
     /**
      * Processes an update to the http-service element, by updating each
@@ -2998,7 +3005,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         for (com.sun.enterprise.config.serverbeans.VirtualServer virtualServer : virtualServers) {
             final VirtualServer vs = (VirtualServer) getEngine().findChild(virtualServer.getId());
             if (vs != null) {
-                vs.configureSingleSignOn(globalSSOEnabled, webContainerFeatureFactory);
+                vs.configureSingleSignOn(globalSSOEnabled, webContainerFeatureFactory, isSsoFailoverEnabled());
                 vs.reconfigureAccessLog(globalAccessLogBufferSize, globalAccessLogWriteInterval, habitat, domain,
                         globalAccessLoggingEnabled);
                 updateHost(virtualServer);

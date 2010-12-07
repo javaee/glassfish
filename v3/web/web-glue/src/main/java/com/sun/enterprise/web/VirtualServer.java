@@ -1244,7 +1244,9 @@ public class VirtualServer extends StandardHost
      * Configures the SSO valve of this VirtualServer.
      */
     void configureSingleSignOn(boolean globalSSOEnabled,
-            WebContainerFeatureFactory webContainerFeatureFactory) {
+            WebContainerFeatureFactory webContainerFeatureFactory,
+            boolean ssoFailoverEnabled) {
+
 
         if (!isSSOEnabled(globalSSOEnabled)) {
             /*
@@ -1282,12 +1284,15 @@ public class VirtualServer extends StandardHost
 
             GlassFishSingleSignOn sso = null;
 
-            //find existing SSO (if any), in case of a reconfig
-            GlassFishValve[] valves = getValves();
-            for (int i=0; valves!=null && i<valves.length; i++) {
-                if (valves[i] instanceof GlassFishSingleSignOn) {
-                    sso = (GlassFishSingleSignOn)valves[i];
-                    break;
+            //Create HASingleSignOn if sso-failover-enabled is true
+            if (!ssoFailoverEnabled) {
+                //find existing SSO (if any), in case of a reconfig
+                GlassFishValve[] valves = getValves();
+                for (int i=0; valves!=null && i<valves.length; i++) {
+                    if (valves[i] instanceof GlassFishSingleSignOn) {
+                        sso = (GlassFishSingleSignOn)valves[i];
+                        break;
+                    }
                 }
             }
 
@@ -1800,7 +1805,8 @@ public class VirtualServer extends StandardHost
         this.config = config;
         configureSingleSignOn(config.isSsoEnabled(), 
                 Globals.getDefaultHabitat().getComponent(
-                PEWebContainerFeatureFactoryImpl.class));
+                PEWebContainerFeatureFactoryImpl.class),
+                false);
         if (config.isAccessLoggingEnabled()) {
             enableAccessLogging();
         } else {
