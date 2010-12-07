@@ -54,7 +54,10 @@ import java.util.HashMap;
 import java.util.Properties;
 import java.util.Iterator;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import com.sun.ejb.containers.EjbContainerUtilImpl;
 import com.sun.logging.LogDomains;
 
 /**
@@ -62,11 +65,15 @@ import com.sun.logging.LogDomains;
  * Generic in-memory, abstract cache 
  */
 public class BaseCache implements Cache {
-    
+
+    protected static final Logger _logger =
+            EjbContainerUtilImpl.getInstance().getLogger();
     /**
      * The resource bundle containing the localized message strings.
      */
     protected static ResourceBundle _rb = null;
+
+    private static int MAX_BUCKETS = 1 << 16;
 
     static final int MAX_ENTRIES = 1 << 30;
     static final float DEFAULT_LOAD_FACTOR = 0.75f;
@@ -119,7 +126,24 @@ public class BaseCache implements Cache {
     protected boolean[]   refreshFlags;
     
     protected ArrayList listeners = new ArrayList();
-    
+
+    static {
+        try {
+            String maxBucketStr = System.getProperty("com.sun.ejb.containers.MAX_BUCKETS");
+            if (maxBucketStr != null) {
+                int maxBucketVal = Integer.parseInt(maxBucketStr);
+                if (maxBucketVal > 0) {
+                    MAX_BUCKETS = maxBucketVal;
+                    _logger.log(Level.INFO, "EJBContainer.BaseCache will use MAX_BUCKETS = " + MAX_BUCKETS);
+                } else {
+                    _logger.log(Level.WARNING, "EJBContainer.BaseCache will use (default) MAX_BUCKETS = " + MAX_BUCKETS);
+                }
+            }
+        } catch (Exception ex) {
+            //Ignore
+        }
+
+    }
     /**
      * default constructor for the basic cache
      */
@@ -189,9 +213,13 @@ public class BaseCache implements Cache {
 
         // find a power of 2 >= maxEntries
         maxBuckets = 1;
-        while (maxBuckets < maxEntries) {
+        while (maxBuckets < maxEntries && maxBuckets < MAX_BUCKETS) {
             maxBuckets <<= 1;
         }
+
+
+        _logger.log(Level.FINE, "EJBContainer.BaseCache about to create maxBuckets = " + maxBuckets 
+                + "; MAX_BUCKETS = " + MAX_BUCKETS + "; maxEntries = " + maxEntries);
 
         /** initialize the threshold; a zero value for maxEntries
          *  implies no caching.
