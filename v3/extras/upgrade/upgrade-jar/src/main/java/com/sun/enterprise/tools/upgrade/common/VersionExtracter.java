@@ -72,16 +72,20 @@ public class VersionExtracter {
      */
     public String extractVersionFromConfigFile(String cfgFilename) {
         String verEdStr = null;
-        String versionString = null;
         File configFile = new File(cfgFilename);
         if (!configFile.exists() || !configFile.isFile()) {
-            return verEdStr;
+            return null;
         }
 
         UpgradeUtils upgrUtils = UpgradeUtils.getUpgradeUtils(common);
-        Document adminServerDoc = upgrUtils.getDomainDocumentElement(configFile.toString());
+        Document adminServerDoc =
+            upgrUtils.getDomainDocumentElement(cfgFilename);
+        if (adminServerDoc == null) {
+            return null;
+        }
 
         try {
+            String versionString = null;
             String publicID = adminServerDoc.getDoctype().getPublicId();
             String appservString = stringManager.getString(
                 "common.versionextracter.appserver.string");

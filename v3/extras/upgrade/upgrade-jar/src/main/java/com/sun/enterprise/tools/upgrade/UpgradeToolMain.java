@@ -124,7 +124,9 @@ public class UpgradeToolMain {
         try{
 			cliParse(args);
         }catch(Exception e){
-            logger.log(Level.INFO, sm.getString("enterprise.tools.upgrade.unexpected_parsing"),e);
+            logger.log(Level.INFO, sm.getString(
+                "enterprise.tools.upgrade.unexpected_parsing",
+                e.toString()));
             System.exit(1);
         }
         this.upgrade();

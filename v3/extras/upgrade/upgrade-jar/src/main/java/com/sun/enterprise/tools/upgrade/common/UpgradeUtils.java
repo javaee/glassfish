@@ -224,7 +224,8 @@ public class UpgradeUtils {
             resultDoc = builder.parse(new File(domainFileName));
         } catch (Exception ex) {
             logger.log(Level.WARNING,
-                stringManager.getString("upgrade.common.iiop_port_domain_doc"), ex);
+                stringManager.getString("upgrade.common.could_not_create_doc",
+                    new Object [] {domainFileName, ex.toString()}));
         }
         return resultDoc;
     }
