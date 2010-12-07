@@ -82,7 +82,7 @@ public interface EjbContainerAvailability extends ConfigBeanProxy, Injectable,
      * @return possible object is
      *         {@link String }
      */
-    @Attribute
+    @Attribute(defaultValue="true")
     String getAvailabilityEnabled();
 
     /**
@@ -103,7 +103,7 @@ public interface EjbContainerAvailability extends ConfigBeanProxy, Injectable,
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="ha")
+    @Attribute (defaultValue="replicated")
     String getSfsbHaPersistenceType();
 
     /**
