@@ -50,6 +50,7 @@ package org.glassfish.web.ha.authenticator;
 import com.sun.enterprise.container.common.spi.util.JavaEEIOUtils;
 import com.sun.enterprise.web.ServerConfigLookup;
 import com.sun.enterprise.web.SSOFactory;
+import com.sun.enterprise.web.session.PersistenceType;
 import com.sun.enterprise.security.web.GlassFishSingleSignOn;
 
 import org.glassfish.gms.bootstrap.GMSAdapterService;
@@ -92,8 +93,7 @@ public class HASSOFactory implements SSOFactory {
     @Override
     public GlassFishSingleSignOn createSingleSignOnValve(String virtualServerName) {
         if (isSsoFailoverEnabled()) {
-            //XXX hard code as there is no other alternative in this moment
-            String persistenceType = "replication";
+            String persistenceType = PersistenceType.REPLICATED.getType();
             return new HASingleSignOn(ioUtils,
                     getSsoEntryMetadataBackingStore(persistenceType, STORE_NAME, habitat));
         } else {
