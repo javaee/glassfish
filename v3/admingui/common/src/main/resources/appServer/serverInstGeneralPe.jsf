@@ -125,7 +125,21 @@
                 </sun:property>
 
                 <sun:property id="statusProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.status}">
-                    <sun:staticText id="status" text="#{pageSession.statusString}" />
+                    <h:panelGroup id="statusRestart" rendered="#{sessionScope.restartRequired}">
+                        <sun:hyperlink id="restartLink"
+                                       text="$resource{i18nc.status.REQUIRES_RESTART}"
+                                       toolTip="$resource{i18nc.status.REQUIRES_RESTART}"
+                                       onMouseOver="window.status='$resource{i18nc.status.REQUIRES_RESTART}'; return true"
+                                       onMouseOut="window.status=''; return true"
+                                       onBlur="window.status=''; return true"
+                                       onFocus="window.status='$resource{i18nc.status.REQUIRES_RESTART}'; return true"
+                                       url="#{request.contextPath}/common/appServer/restart.jsf">
+                        </sun:hyperlink>
+                        "&#160;
+                        <sun:image id="alertImage" alt="$resource{i18nc.status.REQUIRES_RESTART}" icon="ALERT_WARNING_MEDIUM"/>
+                    </h:panelGroup>
+
+                    <sun:staticText id="status" rendered="#{!sessionScope.restartRequired}" text="$resource{i18nc.status.RUNNING} $resource{i18nc.status.image.RUNNING}" />
                 </sun:property>
 
                 <sun:property id="jvmProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.JVMLabel}">
