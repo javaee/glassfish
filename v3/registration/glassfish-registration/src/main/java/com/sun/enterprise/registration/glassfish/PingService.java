@@ -109,7 +109,8 @@ public class PingService implements PostStartup, PostConstruct {
                     ArrayList<String> pkgs = 
                             new ArrayList<String>();
                     for (Image.FmriState fs : list) {
-                        pkgs.add(fs.fmri.getName());
+                        if (fs.upgradable)
+                            pkgs.add(fs.fmri.getName());
                     }
                     Image.ImagePlan ip = img.makeInstallPlan(pkgs.toArray(new String[0]));
                     int numUpdates = ip.getProposedFmris().length;
