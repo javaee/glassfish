@@ -47,6 +47,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.AdminCommand;
@@ -119,6 +120,11 @@ public class ValidateRemoteDirDeploymentCommand extends DeployCommandParameters
         }
 
         final File source = new File(archive.getURI().getSchemeSpecificPart());
+        try {
+            archive.close();
+        } catch (IOException ex) {
+            report.failure(logger, ex.getLocalizedMessage(), ex);
+        }
         if ( ! source.isDirectory()) {
             /*
              * This is not a directory deployment, so we're done.
