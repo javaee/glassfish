@@ -184,7 +184,8 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
             Thread.currentThread().setContextClassLoader(oldCl);
             WebServicesContainer container = habitat.getComponent(WebServicesContainer.class);
             WebServicesDeploymentMBean bean = container.getDeploymentBean();
-            bean.deploy(app);
+            WebServiceDeploymentNotifier notifier = getDeploymentNotifier();
+            bean.deploy(app,notifier);
             return true;
         } catch (Exception ex) {
             // re-throw all the exceptions as runtime exceptions
@@ -670,7 +671,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
          * Combining code from <code>com.sun.enterprise.deployment.backend.WebServiceDeployer</code>
          * in v2
          */
-        final WebServiceDeploymentNotifier notifier = getDeploymentNotifier();
+
         Collection<WebServiceEndpoint> endpoints =
             webBunDesc.getWebServices().getEndpoints();
         ClassLoader cl = webBunDesc.getClassLoader();
@@ -705,9 +706,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
                         "org.glassfish.webservices.JAXRPCServlet";
                 }
                 webComp.setWebComponentImplementation(containerServlet);
-                if (notifier != null) {
-                    notifier.notifyDeployed(nextEndpoint);
-                }
+
             } catch(ClassNotFoundException cex) {
                 throw new DeploymentException( format(rb.getString(
                         "enterprise.deployment.backend.cannot_find_servlet"),

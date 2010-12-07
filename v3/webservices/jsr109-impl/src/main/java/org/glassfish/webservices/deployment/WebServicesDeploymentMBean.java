@@ -44,6 +44,7 @@ import com.sun.enterprise.deployment.WebService;
 import com.sun.enterprise.deployment.WebServiceEndpoint;
 import org.glassfish.external.probe.provider.annotations.ProbeParam;
 import org.glassfish.gmbal.*;
+import org.glassfish.webservices.WebServiceDeploymentNotifier;
 
 import java.util.*;
 
@@ -293,10 +294,11 @@ public class WebServicesDeploymentMBean {
         }
     }
 
-    public synchronized void deploy(com.sun.enterprise.deployment.Application app) {
+    public synchronized void deploy(com.sun.enterprise.deployment.Application app, WebServiceDeploymentNotifier notifier) {
         for(WebService svc : app.getWebServiceDescriptors()) {
             for(WebServiceEndpoint endpoint : svc.getEndpoints()) {
                 deploy(endpoint);
+                notifier.notifyDeployed(endpoint);
             }
         }
     }
