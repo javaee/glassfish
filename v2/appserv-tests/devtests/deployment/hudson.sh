@@ -34,6 +34,8 @@ then
     $S1AS_HOME/bin/asadmin start-domain
     antTarget="all"
 fi
+# Get rid of any lingering password file from an earlier run
+rm ~/.asadminpass
 
 time ant $antTarget
 antStatus=$?
