@@ -41,13 +41,11 @@
 
 package com.sun.enterprise.admin.cli.cluster;
 
-import com.sun.enterprise.config.serverbeans.Node;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.io.FileListerRelative;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.zip.ZipFileException;
 import com.sun.enterprise.util.zip.ZipWriter;
-import com.sun.enterprise.util.OS;
 import com.trilead.ssh2.SCPClient;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.CommandException;
@@ -349,8 +347,7 @@ public class InstallNodeCommand extends SSHCommandsBase {
         boolean res = false;
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         try {
-            String asAdmin = OS.isWindows() ? "asadmin.bat" : "asadmin";
-            String cmd = installDir + "/glassfish/bin/" + asAdmin + " version --local --terse";
+            String cmd = installDir + "/glassfish/bin/asadmin version --local --terse";
             int status = sshLauncher.runCommand(cmd, outStream);
             if (status == 0){
                 logger.finer(host + ":'" + cmd + "'" + " returned ["+ outStream.toString() + "]");
