@@ -307,8 +307,15 @@ public class NodeTest extends AdminBaseDevTest {
         // Create a config node
         report(testNamePrefix + "create", asadmin("create-node-config", nodeName));
 
-        // Validate node and add nodehost and installdir
+        // Validate node and add nodehost, installdir and nodedir
         report(testNamePrefix + "_validate_add_host", asadmin("_validate-node",
+                "--nodehost", NODE_HOST,
+                "--installdir", INSTALL_DIR,
+                "--nodedir", NODE_DIR,
+                nodeName));
+
+        // Second call should validate fields.
+        report(testNamePrefix + "_validate_validate_all", asadmin("_validate-node",
                 "--nodehost", NODE_HOST,
                 "--installdir", INSTALL_DIR,
                 "--nodedir", NODE_DIR,
@@ -317,25 +324,29 @@ public class NodeTest extends AdminBaseDevTest {
         // If hostname changes case that's OK
         report(testNamePrefix + "_validate_ok_host", asadmin("_validate-node",
                 "--nodehost", NODE_HOST_2,
-                nodeName));
-
-        // Install dir no change
-        report(testNamePrefix + "_validate_ok_installdir", asadmin("_validate-node",
                 "--installdir", INSTALL_DIR,
-                nodeName));
-
-        report(testNamePrefix + "_validate_ok_installdir", asadmin("_validate-node",
                 "--nodedir", NODE_DIR,
                 nodeName));
 
         // If hostname changes that's not OK
         report(testNamePrefix + "_validate_bad_host", ! asadmin("_validate-node",
                 "--nodehost", "fffoobar.com",
+                "--installdir", INSTALL_DIR,
+                "--nodedir", NODE_DIR,
                 nodeName));
 
         // If installdir changes that's not OK
         report(testNamePrefix + "_validate_bad_installdir", ! asadmin("_validate-node",
+                "--nodehost", NODE_HOST,
                 "--installdir", "/fooooooo/bar",
+                "--nodedir", NODE_DIR,
+                nodeName));
+
+        // If nodedir changes that's not OK
+        report(testNamePrefix + "_validate_bad_nodedir", ! asadmin("_validate-node",
+                "--nodehost", NODE_HOST,
+                "--installdir", INSTALL_DIR,
+                "--nodedir", "/foooo/bar",
                 nodeName));
 
         // If node doesn't exist that is not OK
