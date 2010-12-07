@@ -46,20 +46,19 @@ import java.io.*;
 import java.text.*;
 
 import com.sun.enterprise.registration.RegistrationException;
+import com.sun.enterprise.registration.impl.environment.EnvironmentInformation;
 import java.util.logging.Logger;
 import java.util.logging.Level;
-import com.sun.scn.servicetags.EnvironmentInformation;
 import java.net.InetAddress;
-//import com.sun.scn.servicetags.SystemEnvironment;
 import java.util.Formatter;
 //import com.sun.scn.servicetags.contrib.STClientRegistryHelper;
 
 public class RelayService {
 
     private static final Logger logger = RegistrationLogger.getLogger();
-    private static final String ENV_TOKEN = "@@@ENVIRONMENT@@@";
-    private static final String TAG_TOKEN = "@@@SERVICE_TAGS@@@";
-    private static final String PRODUCTNAME = "@@@PRODUCTNAME@@@";
+    private static final String ENV_TOKEN   =   "@@@ENVIRONMENT@@@";
+    private static final String TAG_TOKEN   =   "@@@SERVICE_TAGS@@@";
+    private static final String PRODUCTNAME_TOKEN =   "@@@PRODUCTNAME@@@";
     private static final String TEMPLATE_FILE = "com/sun/enterprise/registration/impl/relay-template.html";
 
     private RepositoryManager rm;
@@ -94,8 +93,8 @@ public class RelayService {
                 line = line.replaceAll(ENV_TOKEN, env);
             if (line.indexOf(TAG_TOKEN) >= 0)
                 line = line.replaceAll(TAG_TOKEN, tags);
-            if (line.indexOf(PRODUCTNAME) >= 0)
-                line = line.replaceAll(PRODUCTNAME, productName);
+            if (line.indexOf(PRODUCTNAME_TOKEN) >= 0)
+                line = line.replaceAll(PRODUCTNAME_TOKEN, productName);
             bw.write(line);
             bw.newLine();
         }
@@ -119,14 +118,9 @@ public class RelayService {
 
     private String  getEnvironmentInformation() throws RegistrationException {
         StringBuilder html = new StringBuilder();
-        String hostName = "";
-        try {
-            hostName = InetAddress.getLocalHost().getHostName();
-        } catch(Exception ex) {
-            logger.log(Level.WARNING, ex.getMessage());
-        }
-        EnvironmentInformation se = new EnvironmentInformation(
-                hostName, "", // hostID
+        EnvironmentInformation se = new EnvironmentInformation();
+/*
+        hostName, "", // hostID
                 System.getProperty("os.name"),
                 System.getProperty("os.version"),
                 System.getProperty("os.arch"),
@@ -134,6 +128,8 @@ public class RelayService {
                 "", //systemManuf.
                 "", //cpuManuf
                 "");
+ *
+ */
 
 /*
         SystemEnvironment se = SystemEnvironment.getSystemEnvironment();
@@ -151,16 +147,16 @@ public class RelayService {
         fmt.format("<cpuManufacturer>%s</cpuManufacturer>\r\n",se.getCpuManufacturer());
         fmt.format("<serialNumber>%s</serialNumber>\r\n",se.getSerialNumber());
 
-/*
-        fmt.format("<physmem>500</physmem>\r\n");
+
+        fmt.format("<physmem>%s</physmem>\r\n", se.getPhysMem());
         fmt.format("<cpuinfo>\r\n");
-        fmt.format("<sockets>20</sockets>\r\n");
-        fmt.format("<cores>3</cores>\r\n");
-        fmt.format("<virtcpus>4</virtcpus>\r\n");
-        fmt.format("<name>Atom</name>\r\n");
-        fmt.format("<clockrate>500</clockrate>\r\n");
+        fmt.format("<sockets>%s</sockets>\r\n", se.getSockets());
+        fmt.format("<cores>%s</cores>\r\n", se.getCores());
+        fmt.format("<virtcpus>%s</virtcpus>\r\n", se.getVirtCpus());
+        fmt.format("<name>%s</name>\r\n", se.getCpuName());
+        fmt.format("<clockrate>%s</clockrate>\r\n", se.getClockRate());
         fmt.format("</cpuinfo>\r\n");
-*/
+
         html.append("</environment>\r\n");
         return html.toString();
     }
