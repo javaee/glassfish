@@ -74,6 +74,11 @@
 	    <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>scattered-archive-api</artifactId>
+	    <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.sun.enterprise</groupId>
             <artifactId>hk2</artifactId>
         </dependency>
