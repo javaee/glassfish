@@ -73,32 +73,35 @@ public class CLIBootstrapTest {
         System.setProperty(CLIBootstrap.ENV_VAR_PROP_PREFIX + "JAVA_HOME", "");
         System.setProperty(CLIBootstrap.ENV_VAR_PROP_PREFIX + "PATH",
                 System.getenv("PATH"));
+        System.setProperty(CLIBootstrap.ENV_VAR_PROP_PREFIX + "_AS_INSTALL",
+                "/Users/Tim/asgroup/v3/H/publish/glassfish3/glassfish");
     }
 
     @After
     public void tearDown() {
     }
 
-    @Ignore @Test
+    @Ignore
+    @Test
     public void testChooseJavaASJAVAAsCurrent() {
-        /*
-         * Use the java that's on the path.
-         */
-        runTestUsingPathJava("AS_JAVA");
+        runTest("AS_JAVA");
     }
 
-    @Ignore @Test
+    @Ignore
+    @Test
     public void testChooseJavaJAVAHOMEAsCurrent() {
-        runTestUsingPathJava("JAVA_HOME");
+        runTest("JAVA_HOME");
     }
 
 
-    @Ignore @Test
+    @Ignore
+    @Test
     public void testChooseJavaASJAVAAsBad() {
         runTestUsingBadLocation("AS_JAVA");
     }
     
-    @Ignore @Test
+    @Ignore
+    @Test
     public void testChooseJAVAHOMEAsBad() {
         runTestUsingBadLocation("JAVA_HOME");
     }
@@ -108,9 +111,8 @@ public class CLIBootstrapTest {
             final CLIBootstrap boot = new CLIBootstrap();
             System.setProperty(CLIBootstrap.ENV_VAR_PROP_PREFIX + envVarName,
                         "shouldnotexistanywhere");
-            boot.reset();
-            CLIBootstrap.JavaSelector js = boot.chooseJava();
-            fail("Expected exception but chose " + js.name());
+            CLIBootstrap.JavaInfo javaInfo = boot.initJava();
+            
         } catch (UserError ex) {
             /*
              * We expect this exception because we tried to use a non-sensical
@@ -119,20 +121,19 @@ public class CLIBootstrapTest {
         }
     }
 
-    private void runTestUsingPathJava(final String envVarName) {
+    private void runTest(final String envVarName) {
         System.setProperty(CLIBootstrap.ENV_VAR_PROP_PREFIX + envVarName,
                        System.getProperty("java.home"));
         try {
             final CLIBootstrap boot = new CLIBootstrap();
-            boot.reset();
-            CLIBootstrap.JavaSelector js = boot.chooseJava();
-            if (js == null) {
+            CLIBootstrap.JavaInfo javaInfo = boot.initJava();
+            if (javaInfo == null) {
                 fail("chooseJava found no match; expected to match on " + envVarName);
             }
-            if ( ! js.toString().equals(envVarName)) {
-                fail("Expected to choose " + envVarName + " but chose " + js.toString() + " instead");
+            if ( ! javaInfo.toString().equals(envVarName)) {
+                fail("Expected to choose " + envVarName + " but chose " + javaInfo.toString() + " instead");
             }
-            if ( ! js.isValid()) {
+            if ( ! javaInfo.isValid()) {
                 fail("Correctly chose " + envVarName + " but it should have been valid, derived as it was from PATH, but was not");
             }
         } catch (UserError ex) {

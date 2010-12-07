@@ -42,10 +42,12 @@ package org.glassfish.appclient.client;
 
 import com.sun.enterprise.util.LocalStringManager;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.logging.LogDomains;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.glassfish.appclient.client.acc.UserError;
@@ -81,7 +83,7 @@ public class CLIBootstrap {
 
     private final static boolean isDebug = System.getenv("AS_DEBUG") != null;
     private final static String INPUT_ARGS = System.getenv("inputArgs");
-    
+
     final static String ENV_VAR_PROP_PREFIX = "acc.";
 
     private final static String JAVA_NAME = (File.separatorChar == '/' ? "java" : "java.exe");
@@ -106,11 +108,16 @@ public class CLIBootstrap {
     private final static String[] ENV_VARS = {
         "_AS_INSTALL", "APPCPATH", "VMARGS", "AS_JAVA", "JAVA_HOME", "PATH"};
 
+    private final static String EXT_DIRS_INTRODUCER = "-Djava.ext.dirs";
+    private final static String ENDORSED_DIRS_INTRODUCER = "-Djava.endorsed.dirs";
+
     private static final LocalStringManager localStrings = new LocalStringManagerImpl(CLIBootstrap.class);
 
-    private JavaSelector java;
+    private JavaInfo java;
 
     private GlassFishInfo gfInfo;
+
+    private UserVMArgs userVMArgs;
 
     /**
      * set up during init with various subtypes of command line elements
@@ -184,6 +191,9 @@ public class CLIBootstrap {
             final String value = System.getenv(envVar);
             if (value != null) {
                 System.setProperty(ENV_VAR_PROP_PREFIX + envVar, value);
+                if (isDebug) {
+                    System.err.println(ENV_VAR_PROP_PREFIX + envVar + " set to " + value);
+                }
             }
         }
     }
@@ -193,20 +203,23 @@ public class CLIBootstrap {
         }
 
     private void init() throws UserError {
-        java = chooseJava();
+        java = initJava();
         gfInfo = new GlassFishInfo();
+        userVMArgs = new UserVMArgs(System.getProperty(ENV_VAR_PROP_PREFIX + "VMARGS"));
 
         /*
          * Assign the various command line element matchers.  See the
          * descriptions of each subtype for what each is used for.
          */
         extDirs = new OverridableDefaultedPathBasedOption(
-            "-Djava.ext.dirs",
+            EXT_DIRS_INTRODUCER,
+            userVMArgs.evExtDirs,
             java.ext().getAbsolutePath(),
             gfInfo.extPaths());
 
         endorsedDirs = new OverridableDefaultedPathBasedOption(
-            "-Djava.endorsed.dirs",
+            ENDORSED_DIRS_INTRODUCER,
+            userVMArgs.evEndorsedDirs,
             java.endorsed().getAbsolutePath(),
             gfInfo.endorsedPaths());
 
@@ -214,11 +227,12 @@ public class CLIBootstrap {
 
         accUnvaluedOptions = new ACCUnvaluedOption(ACC_UNVALUED_OPTIONS_PATTERN);
 
-        jvmPropertySettings = new JVMOption("-D.*");
+        jvmPropertySettings = new JVMOption("-D.*", userVMArgs.evJVMPropertySettings);
 
-        jvmValuedOptions = new JVMValuedOption(JVM_VALUED_OPTIONS_PATTERN);
+        jvmValuedOptions = new JVMValuedOption(JVM_VALUED_OPTIONS_PATTERN,
+                userVMArgs.evJVMValuedOptions);
 
-        otherJVMOptions = new JVMOption("-.*");
+        otherJVMOptions = new JVMOption("-.*", userVMArgs.evOtherJVMOptions);
 
         arguments = new CommandLineElement(".*");
 
@@ -441,11 +455,19 @@ public class CLIBootstrap {
      * A JVM command-line option. Only JVM options which appear before the
      * main class setting are propagated to the output command line as
      * JVM options.
+     * <p>
+     * This type of command line element can include values specified using
+     * the VMARGS environment variable.
      *
      */
     private class JVMOption extends Option {
-        JVMOption(final String patternString) {
+        
+        JVMOption(final String patternString,
+                final CommandLineElement vmargsJVMOptionElement) {
             super(patternString);
+            if (vmargsJVMOptionElement != null) {
+                values.addAll(vmargsJVMOptionElement.values);
+            }
         }
 
         @Override
@@ -533,8 +555,12 @@ public class CLIBootstrap {
 
     private class JVMValuedOption extends ValuedOption {
 
-        JVMValuedOption(final String patternString) {
+        JVMValuedOption(final String patternString,
+                final CommandLineElement vmargsJVMValuedOption) {
             super(patternString);
+            if (vmargsJVMValuedOption != null) {
+                values.addAll(vmargsJVMValuedOption.values);
+            }
         }
 
         @Override
@@ -714,21 +740,54 @@ public class CLIBootstrap {
 
         private final String defaultValue;
         private final List<String> gfValues;
-        private final String patternString;
+        private final String introducer;
+        private boolean hasCommandLineValueAppeared = false;
         
-        OverridableDefaultedPathBasedOption(final String pattern,
+        OverridableDefaultedPathBasedOption(final String introducer,
+                final CommandLineElement settingsFromEnvVar,
                 final String defaultValue,
                 final String... gfValues) {
-            super(pattern);
-            patternString = pattern;
+            super(introducer + "=.*", null);
+            /*
+             * Preload the values for this option from the ones the user
+             * provides in the environment variable, if any.  These values
+             * will be overwritten if the user also provides values on the
+             * command line.
+             */
+            if (settingsFromEnvVar != null) {
+                values.addAll(settingsFromEnvVar.values);
+            }
+            this.introducer = introducer;
             this.defaultValue = defaultValue;
             this.gfValues = Arrays.asList(gfValues);
         }
-        
+
+        @Override
+        int processValue(String[] args, int slot) throws UserError {
+            /*
+             * Once we see a user-provided value on the command line itself
+             * for the first time, clear out any pre-loaded values from the
+             * environment variable.
+             */
+            if ( ! hasCommandLineValueAppeared) {
+                values.clear();
+                hasCommandLineValueAppeared = true;
+            }
+            /*
+             * Strip off the introducing (pattern)= to extract the value.
+             */
+            for (String pathElement : args[slot++].substring(introducer.length() + 1).split(File.pathSeparator)) {
+                values.add(pathElement);
+                }
+            return slot;
+        }
         
         @Override
         StringBuilder format(final StringBuilder commandLine) {
             final List<String> combinedValues = new ArrayList<String>();
+            /*
+             *
+             */
             if (values.isEmpty()) {
                 /*
                  * The user did not specify this property, so we use
@@ -741,9 +800,10 @@ public class CLIBootstrap {
                  * The user did specify this property, so we use
                  * the user's value plus the GlassFish value(s).
                  */
+                combinedValues.addAll(values);
                 combinedValues.addAll(gfValues);
             }
-            commandLine.append(patternString).append("=");
+            commandLine.append(introducer).append("=");
             boolean needSep = false;
             for (String value : combinedValues) {
                 if (needSep) {
@@ -780,7 +840,7 @@ public class CLIBootstrap {
     private String run(String[] args) throws UserError {
 
 
-        java = chooseJava();
+        java = initJava();
         gfInfo = new GlassFishInfo();
 
         final String[] augmentedArgs = new String[args.length + 2];
@@ -908,102 +968,43 @@ public class CLIBootstrap {
         }
     }
 
-    /**
-     * Returns a JavaSelector for AS_JAVA, JAVA_HOME, or the PATH, based on
-     * which of those environment variables was set and whether the setting
-     * actually seems like a valid Java home directory.
-     * <p>
-     * Note that we look in that order, and if the user specifies AS_JAVA or
-     * JAVA_HOME we will use that setting, even if it does not correspond to
-     * a valid Java installation but there is one on the path.
-     *
-     * @return which Java was selected
-     * @throws UserError
-     */
-    JavaSelector chooseJava() throws UserError {
-        for (JavaSelector js : possibleJavaLocations) {
-            js.init();
-            if (js.isSpecifiedByUser()) {
-                if ( ! js.isValid()) {
-                    final String msg = localStrings.getLocalString(
-                            CLIBootstrap.class,
-                            "appclient.boot.noJavaWhereSpecified",
-                            "Could not find an executable java {0} using {1}={2}",
-                            new Object[] {
-                                js.javaExe.getAbsolutePath(),
-                                js.name(),
-                                js.selectorValue});
-                    throw new UserError(msg);
-                }
-                return js;
-            }
-        }
-        throw new UserError("JAVA??");
+    JavaInfo initJava() {
+        return new JavaInfo();
     }
 
     /**
-     * Describes the possible ways we can choose a Java instance for the user.
+     * Collects information about the current Java implementation.
+     * <p>
+     * The user might have defined AS_JAVA or JAVA_HOME, or simply relied on
+     * the current PATH setting to choose which Java to use.  Regardless, once
+     * this code is running SOME Java has been successfully chosen.  Use
+     * the java.home property to find the JRE's home, which we need for the
+     * library directory (for example).
      */
-    enum JavaSelector {
-        AS_JAVA(),
-        JAVA_HOME(),
-        PATH() {
+    class JavaInfo {
 
-            @Override
-            File javaExe(final String where) {
-                final String[] pathElements = where.split(File.pathSeparator);
-                for (String pathElement : pathElements) {
-                    final File javaFile = new File(pathElement, JAVA_NAME);
-                    if (javaFile.canExecute()) {
-                        return javaFile;
-                    }
-                }
-                /*
-                 * Use a false but helpful name for error reporting
-                 * if we didn't find java[.exe] anywhere on the path...which
-                 * seems unlikely since this program itself is running.
-                 */
-                return new File("PATH", JAVA_NAME);
-            }
-        };
-
-        
-        protected String selectorValue;
         protected File javaExe;
         protected File javaHome;
 
-        private JavaSelector() {
+        private JavaInfo() {
             init();
         }
 
         protected void init() {
-            selectorValue = System.getProperty(ENV_VAR_PROP_PREFIX + name());
-            if (isSpecifiedByUser()) {
-                javaExe = javaExe(selectorValue);
-                javaHome = isValid() ? javaExe.getParentFile().getParentFile() : null ;
-            } else {
-                javaExe = null;
-                javaHome = null;
-            }
-        }
-
-        protected boolean isSpecifiedByUser() {
-            return selectorValue != null && selectorValue.length() > 0;
+            javaHome = new File(System.getProperty("java.home"));
+            javaExe = javaExe();
         }
 
         protected boolean isValid() {
             return javaExe != null && javaExe.canExecute();
         }
 
-        protected File javaBinDir(final String home) {
-            return new File(home, "bin");
+        protected File javaBinDir() {
+            return new File(javaHome, "bin");
         }
 
-        File javaExe(final String where) {
-            if (where == null) {
-                return null;
-            }
-            return new File(javaBinDir(where), JAVA_NAME);
+        File javaExe() {
+            return new File(javaBinDir(), JAVA_NAME);
         }
 
         File endorsed() {
@@ -1019,17 +1020,81 @@ public class CLIBootstrap {
         }
     }
 
-    final JavaSelector[] possibleJavaLocations =
-        {JavaSelector.AS_JAVA, JavaSelector.JAVA_HOME, JavaSelector.PATH};
-
-
     /**
-     * Primarily for testing.  Causes the enum selectors to reinitialize to
-     * account for any changes in system property settings.
+     * Handles user-specified VM arguments passed by the environment variable
+     * VMARGS.
+     * <p>
+     * This is very much like the handling of the arguments on the more
+     * general command line, except that we expect only valid VM arguments
+     * here.
+     * <p>
+     * Some of the "main" CommandLineElements processed earlier in the class will
+     * use the inner command line elements here to augment the values they process.
      */
-    void reset() throws UserError {
-        java = chooseJava();
-        init();
-    }
+    class UserVMArgs {
 
+        private CommandLineElement evExtDirs, evEndorsedDirs,
+                evJVMPropertySettings, evJVMValuedOptions, evOtherJVMOptions;
+
+        private final List<CommandLineElement> evElements = new ArrayList<CommandLineElement>();
+
+        UserVMArgs(final String vmargs) throws UserError {
+
+            if (isDebug) {
+                System.err.println("VMARGS = " + (vmargs == null ? "null" : vmargs));
+            }
+            evExtDirs = new OverridableDefaultedPathBasedOption(
+                EXT_DIRS_INTRODUCER,
+                null,
+                java.ext().getAbsolutePath(),
+                gfInfo.extPaths());
+
+            evEndorsedDirs = new OverridableDefaultedPathBasedOption(
+                ENDORSED_DIRS_INTRODUCER,
+                null,
+                java.endorsed().getAbsolutePath(),
+                gfInfo.endorsedPaths());
+
+            evJVMPropertySettings = new JVMOption("-D.*", null);
+
+            evJVMValuedOptions = new JVMValuedOption(JVM_VALUED_OPTIONS_PATTERN, null);
+
+            evOtherJVMOptions = new JVMOption("-.*", null);
+
+            initEVCommandLineElements();
+
+            if (vmargs == null) {
+                return;
+            }
+            
+            processEVCommandLineElements(convertInputArgsVariable(vmargs));
+        }
+
+        private void initEVCommandLineElements() {
+            evElements.add(evExtDirs);
+            evElements.add(evEndorsedDirs);
+            evElements.add(evJVMPropertySettings);
+            evElements.add(evJVMValuedOptions);
+            evElements.add(evOtherJVMOptions);
+        }
+
+        private void processEVCommandLineElements(final String[] envVarJVMArgs) throws UserError {
+            /*
+             * Process each command-line argument by the first CommandLineElement
+             * which matches the argument.
+             */
+            for (int i = 0; i < envVarJVMArgs.length; ) {
+                boolean isMatched = false;
+                for (CommandLineElement cle : evElements) {
+                    if (isMatched = cle.matches(envVarJVMArgs[i])) {
+                        i = cle.processValue(envVarJVMArgs, i);
+                        break;
+                    }
+                }
+                if ( ! isMatched) {
+                    throw new UserError("arg " + i + " = " + envVarJVMArgs[i] + " not recognized");
+                }
+            }
+        }
+    }
 }

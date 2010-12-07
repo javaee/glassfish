@@ -53,35 +53,36 @@ rem Sets javaSearchType to tell which was used to look for java,
 rem javaSearchTarget to the location (or path), and
 rem JAVA to the found java executable.
 
-   if NOT "%AS_JAVA%x" == "x" (
+    if "%AS_JAVA%x" == "x" goto :checkJAVA_HOME
        set javaSearchType=AS_JAVA
        set javaSearchTarget="%AS_JAVA%"
        set JAVA=%AS_JAVA%\bin\java.exe
-   ) else (
-       if NOT "%JAVA_HOME%x" == "x" (
-           set javaSearchType=JAVA_HOME
-           set javaSearchTarget="%JAVA_HOME%"
-           set JAVA=%JAVA_HOME%\bin\java.exe
-       ) else (
-           set JAVA=java
-           call :seekJavaOnPath
-           set javaSearchType=PATH
-           set javaSearchTarget="%PATH%"
-       )
-   )
+       goto :verifyJava
 
+:checkJAVA_HOME
+    if "%JAVA_HOME%x" == "x" goto :checkPATH
+       set javaSearchType=JAVA_HOME
+       set javaSearchTarget="%JAVA_HOME%"
+       set JAVA=%JAVA_HOME%\bin\java.exe
+       goto :verifyJava
+
+:checkPATH
+    set JAVA=java
+    call :seekJavaOnPath
+    set javaSearchType=PATH
+    set javaSearchTarget="%PATH%"
+
+:verifyJava
 rem
 rem Make sure java really exists where we were told to look.  If not
 rem display how we tried to find it and then try to run it, letting the shell
 rem issue the error so we don't have to do i18n of our own message from the script.
-
-   if NOT EXIST "%JAVA%" (
-       echo
-       echo %javaSearchType%=%javaSearchTarget%
-       echo
-       "%JAVA%"
-       exit/b %ERRORLEVEL%
-   )
+    if EXIST "%JAVA%" goto :EOF
+    echo
+    echo %javaSearchType%=%javaSearchTarget%
+    echo
+    "%JAVA%"
+    exit/b %ERRORLEVEL%
 goto :EOF
 
 :main
@@ -98,5 +99,7 @@ rem it great troubles.
 rem
 for %%a in ("%JAVA%") do set XJAVA=%%~sa%
 for %%a in ("%_AS_INSTALL%/lib/gf-client.jar") do set XCLASSPATH=%%~sa
-for /F "usebackq tokens=*" %%a in (`%XJAVA% -classpath %XCLASSPATH% org.glassfish.appclient.client.CLIBootstrap`) do set javaCmd=%%a
+for /F "usebackq tokens=*" %%a in (`%XJAVA% -classpath %XCLASSPATH% org.glassfish.appclient.client.CLIBootstrap`) do set
+
+javaCmd=%%a
 %javaCmd%
