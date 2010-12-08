@@ -57,19 +57,17 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.glassfish.grizzly.GrizzlyFuture;
-import org.glassfish.grizzly.Result;
+import com.sun.enterprise.util.Result;
+import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.config.GrizzlyListener;
 import org.glassfish.grizzly.http.server.HttpRequestProcessor;
 import org.glassfish.grizzly.http.server.StaticResourcesService;
 import org.glassfish.grizzly.http.server.util.Mapper;
 import org.glassfish.grizzly.impl.FutureImpl;
-import org.glassfish.grizzly.impl.SafeFutureImpl;
+import org.glassfish.grizzly.impl.UnsafeFutureImpl;
 
 /**
  * This class is responsible for configuring Grizzly.
@@ -300,57 +298,20 @@ public class GrizzlyProxy implements NetworkProxy {
     }
 
     @Override
-    public Future<Result<Thread>> start() {
-        final FutureImpl<Result> future = SafeFutureImpl.<Result>create();
+    public Future<Result<Thread>> start() throws IOException {
+        final FutureImpl<Result<Thread>> future = UnsafeFutureImpl.<Result<Thread>>create();
         final long t1 = System.currentTimeMillis();
-        final Thread thread = new Thread() {
-            @Override
-            public void run() {
-                try {
-                    final Thread t = Thread.currentThread();                    
-                    grizzlyListener.initEndpoint();
-                    grizzlyListener.getController().addStateListener(new ControllerStateListener() {
-                        @Override
-                        public void onStarted() {
-                        }
 
-                        @Override
-                        public void onReady() {
-                            if (logger.isLoggable(Level.INFO)){
-                                logger.info("Grizzly Framework " + Grizzly.getRawVersion() + " started in: "
-                                        + (System.currentTimeMillis() - t1)
-                                        + "ms - bound to [" 
-                                        + grizzlyListener.getListener().getAddress()
-                                        + ':' + grizzlyListener.getPort() + ']');
-                            }
+        grizzlyListener.start();
 
-                            future.setResult(new Result<Thread>(t));
-                        }
+        if (logger.isLoggable(Level.INFO)) {
+            logger.log(Level.INFO, "Grizzly Framework {0} started in: {1}ms - bound to [{2}{3}{4}{5}",
+                    new Object[]{Grizzly.getDotedVersion(),
+                    System.currentTimeMillis() - t1,
+                    grizzlyListener.getAddress(), ':', grizzlyListener.getPort(), ']'});
+        }
 
-                        @Override
-                        public void onStopped() {
-                        }
-
-                        @Override
-                        public void onException(Throwable throwable) {
-                            future.setResult(new Result<Thread>(throwable));
-                        }
-                    });
-
-                    grizzlyListener.startEndpoint();
-                } catch (InstantiationException e) {
-                    logger.log(Level.SEVERE, "Cannot start grizzly listener", e);
-                } catch (IOException e) {
-                    logger.log(Level.SEVERE, "Cannot start grizzly listener", e);
-                } catch (RuntimeException e) {
-                    logger.log(Level.INFO, "Exception in grizzly thread", e);
-                } catch (Throwable e) {
-                    logger.log(Level.INFO, e.getMessage(), e);
-                }
-            }
-        };
-        thread.setPriority(Thread.MAX_PRIORITY);
-        thread.start();
+        future.result(new Result<Thread>(Thread.currentThread()));
         return future;
     }
 

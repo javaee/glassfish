@@ -63,6 +63,7 @@ import com.sun.enterprise.config.serverbeans.JmsService;
 import com.sun.enterprise.util.Result;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.v3.services.impl.monitor.GrizzlyMonitoring;
+import java.io.IOException;
 import org.glassfish.grizzly.config.dom.NetworkConfig;
 import org.glassfish.grizzly.config.dom.NetworkListener;
 import org.glassfish.grizzly.config.dom.NetworkListeners;
@@ -77,7 +78,9 @@ import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.flashlight.provider.ProbeProviderFactory;
 import org.glassfish.grizzly.http.server.HttpRequestProcessor;
 import org.glassfish.grizzly.http.server.util.Mapper;
+import org.glassfish.grizzly.impl.FutureImpl;
 import org.glassfish.grizzly.impl.ReadyFutureImpl;
+import org.glassfish.grizzly.impl.UnsafeFutureImpl;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -182,7 +185,13 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
      */
     public boolean removeNetworkProxy(NetworkProxy proxy) {
         if (proxy != null) {
-            proxy.stop();
+            try {
+                proxy.stop();
+            } catch (IOException e) {
+                logger.log(Level.WARNING,
+                        "GrizzlyService stop-proxy problem", e);
+            }
+            
             proxy.destroy();
             proxies.remove(proxy);
             return true;
@@ -430,54 +439,64 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
         final boolean ajpListener = ConfigBeansUtilities.toBoolean(listener.getJkEnabled());
         // create the proxy for the port.
         GrizzlyProxy proxy = new GrizzlyProxy(this, listener);
-        proxy.initialize();
-        
-        if (!ajpListener && !"light-weight-listener".equals(listener.getProtocol())) {
-            final NetworkConfig networkConfig = listener.getParent(NetworkListeners.class).getParent(NetworkConfig.class);
-            // attach all virtual servers to this port
-            for (VirtualServer vs : networkConfig.getParent(Config.class).getHttpService().getVirtualServer()) {
-                List<String> vsListeners = 
-                    StringUtils.parseStringList(vs.getNetworkListeners(), " ,");
-                if (vsListeners == null || vsListeners.isEmpty() ||
-                        vsListeners.contains(listener.getName())) {
-                    if (!hosts.contains(vs.getId())){
-                        hosts.add(vs.getId());
-                    }
-                }            
-            }
-            addChangeListener(listener);
-            addChangeListener(listener.findThreadPool());
-            addChangeListener(listener.findTransport());
 
-            final Protocol protocol = listener.findHttpProtocol();
-            if (protocol != null) {
-                addChangeListener(protocol);
-                addChangeListener(protocol.getHttp());
-                addChangeListener(protocol.getHttp().getFileCache());
-                addChangeListener(protocol.getSsl());
-            }
-        }
+        Future<Result<Thread>> future;
 
-        Future<Result<Thread>> future = null;
-        if (!ajpListener) {
-            future = proxy.start();
-        } else {
-            // we need to create a proxy for AJP based listeners, however, we
-            // don't want Grizzly to actually handle the request since the
-            // webcontainer will start a separate listener implementation to
-            // handle such requests.  So the Future needs to return a
-            // non-null value here to prevent issues elsewhere.
-            future = ReadyFutureImpl.create(new Result<Thread>(
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
+        try {
+            proxy.initialize();
+
+            if (!ajpListener && !"light-weight-listener".equals(listener.getProtocol())) {
+                final NetworkConfig networkConfig = listener.getParent(NetworkListeners.class).getParent(NetworkConfig.class);
+                // attach all virtual servers to this port
+                for (VirtualServer vs : networkConfig.getParent(Config.class).getHttpService().getVirtualServer()) {
+                    List<String> vsListeners =
+                            StringUtils.parseStringList(vs.getNetworkListeners(), " ,");
+                    if (vsListeners == null || vsListeners.isEmpty()
+                            || vsListeners.contains(listener.getName())) {
+                        if (!hosts.contains(vs.getId())) {
+                            hosts.add(vs.getId());
                         }
-            })));
-        }
+                    }
+                }
+                addChangeListener(listener);
+                addChangeListener(listener.findThreadPool());
+                addChangeListener(listener.findTransport());
 
-        // add the new proxy to our list of proxies.
-        proxies.add(proxy);
-        futures.add(future);
+                final Protocol protocol = listener.findHttpProtocol();
+                if (protocol != null) {
+                    addChangeListener(protocol);
+                    addChangeListener(protocol.getHttp());
+                    addChangeListener(protocol.getHttp().getFileCache());
+                    addChangeListener(protocol.getSsl());
+                }
+            }
+
+            if (!ajpListener) {
+                future = proxy.start();
+            } else {
+                // we need to create a proxy for AJP based listeners, however, we
+                // don't want Grizzly to actually handle the request since the
+                // webcontainer will start a separate listener implementation to
+                // handle such requests.  So the Future needs to return a
+                // non-null value here to prevent issues elsewhere.
+                future = ReadyFutureImpl.create(new Result<Thread>(
+                        new Thread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                    }
+                })));
+            }
+
+            // add the new proxy to our list of proxies.
+            proxies.add(proxy);
+            futures.add(future);
+        } catch (IOException e) {
+            final FutureImpl<Result<Thread>> errorFuture = UnsafeFutureImpl.<Result<Thread>>create();
+            errorFuture.failure(e);
+            future = errorFuture;
+        }
+        
         return future;
     }
 
@@ -513,7 +532,12 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
      */
     public void preDestroy() {
         for (NetworkProxy proxy : proxies) {
-            proxy.stop();
+            try {
+                proxy.stop();
+            } catch (IOException e) {
+                logger.log(Level.WARNING,
+                        "GrizzlyService stop-proxy problem", e);
+            }
         }
         unregisterMonitoringStatsProviders();
     }
@@ -639,7 +663,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
         InetAddress address = a.getListenAddress();
         List<String> vs     = a.getVirtualServers();
         String cr           = a.getContextRoot();
-        registerEndpoint(cr, address, port, vs, a, null);
+        registerEndpoint(cr, address, port, vs, a.getHttpService(), null);
     }
 
     // get the ports from the http listeners that are associated with 
