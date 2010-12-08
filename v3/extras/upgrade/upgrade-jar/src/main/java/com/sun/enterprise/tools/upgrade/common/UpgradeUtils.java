@@ -62,7 +62,7 @@ public class UpgradeUtils {
     private static UpgradeUtils upgradeUtils;
     private static CommonInfoModel common;
 	
-    /**
+    /*
      * UpgradeUtils private constructor
      */
     private UpgradeUtils(CommonInfoModel common) {
@@ -129,85 +129,7 @@ public class UpgradeUtils {
             }
         }
     }
-	
 
-    /**
-     * Copy directories and files that are not on the exclude list from
-     * the src to the target location.
-     *
-     * @param srcDir
-     * @param trgDir
-     */
-    public void copyUserLibFiles(File srcDir, File trgDir) {
-        //- get the appropriate list of lib files to exclude
-        String osName = System.getProperty("os.name");
-        String pkgName = this.getClass().getPackage().getName();
-        String excludeFile = pkgName + ".unixV2LibExcludeList";
-        if (osName.indexOf("Windows") != -1) {
-            excludeFile = pkgName + ".winV2LibExcludeList";
-        } else if (osName.indexOf("Mac") != -1) {
-            excludeFile = pkgName + ".macV2LibExcludeList";
-        }
-        String verEd = CommonInfoModel.getInstance().getSource().getVersionEdition();
-        if (verEd.startsWith(UpgradeConstants.VERSION_3_0)) {
-            excludeFile = excludeFile.replaceFirst("V2", "V3");
-        }
-
-        try {
-            String excludeF = excludeFile.replace('.', '/') + ".properties";
-            UpgradeFileFilter fs = new UpgradeFileFilter(excludeF);
-            File[] l = srcDir.listFiles(fs);
-
-            for (File tmpF : l) {
-                if (tmpF.isDirectory()) {
-                    try {
-                        File tmpDir = new File(trgDir, tmpF.getName());
-                        tmpDir.mkdir();
-                        copyDirectory(tmpF, tmpDir);
-                        logger.log(Level.INFO,
-                            stringManager.getString("upgrade.common.copied_dir", tmpDir.getName()));
-                    } catch (IOException ioe) {
-                        logger.log(Level.SEVERE,
-                            stringManager.getString("upgrade.common.lib_copy_error", ioe));
-                    }
-                } else {
-                    try {
-                        File tmpFile = new File(trgDir, tmpF.getName());
-                        copyFile(tmpF.getCanonicalPath(), tmpFile.getCanonicalPath());
-                        logger.log(Level.INFO,
-                            stringManager.getString("upgrade.common.copied_file", tmpFile.getName()));
-                    } catch (IOException ioe) {
-                        logger.log(Level.SEVERE,
-                            stringManager.getString("upgrade.common.lib_copy_error", ioe));
-                    }
-                }
-            }
-        } catch (FileNotFoundException e) {
-            logger.log(Level.SEVERE,
-                stringManager.getString("upgrade.common.lib_exclude_error", e));
-        } catch (IOException io) {
-            logger.log(Level.SEVERE,
-                stringManager.getString("upgrade.common.lib_exclude_error", io));
-        } catch (NullPointerException ne) {
-            logger.log(Level.SEVERE,
-                stringManager.getString("upgrade.common.lib_exclude_error", ne.toString()));
-        }
-    }
-
-    public static boolean deleteDirectory(File dir) {
-        if (dir.isDirectory()) {
-            String[] subDirs = dir.list();
-            for (int i = 0; i < subDirs.length; i++) {
-                boolean success = deleteDirectory(new File(dir, subDirs[i]));
-                if (!success) {
-                    return false;
-                }
-            }
-        }
-        //Delete the empty directory
-        return dir.delete();
-    }
-	
 	/*
 	 * We don't need to validate the xml document now as that is the
 	 * job of the upgrade code in the application server. We're only
