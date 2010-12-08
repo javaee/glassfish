@@ -68,7 +68,8 @@ import javax.security.auth.message.config.RegistrationListener;
 public abstract class BaseAuthConfigFactory extends AuthConfigFactory {
 
     private static final Logger logger =
-            JASPICLogManager.getLogger(BaseAuthConfigFactory.class);
+            Logger.getLogger(BaseAuthConfigFactory.class.getName(), JASPICLogManager.RES_BUNDLE);
+
 
     private static final ReadWriteLock rwLock = new ReentrantReadWriteLock(true);
     public static final Lock rLock = rwLock.readLock();
@@ -133,7 +134,7 @@ public abstract class BaseAuthConfigFactory extends AuthConfigFactory {
     public AuthConfigProvider
             getConfigProvider(String layer, String appContext,
 	    RegistrationListener listener) {
-        
+
 	AuthConfigProvider provider = null;
         String regisID = getRegistrationID(layer, appContext);
         String matchedID = null;

@@ -69,7 +69,7 @@ import javax.security.auth.message.config.AuthConfigFactory.RegistrationContext;
 public final class RegStoreFileParser {
 
     private static final Logger logger =
-            JASPICLogManager.getLogger(RegStoreFileParser.class);
+            Logger.getLogger(RegStoreFileParser.class.getName(), JASPICLogManager.RES_BUNDLE);
 
     private static final String SEP = ":";
     private static final String CON_ENTRY = "con-entry";

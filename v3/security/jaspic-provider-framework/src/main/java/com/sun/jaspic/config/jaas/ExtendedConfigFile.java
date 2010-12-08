@@ -61,7 +61,7 @@ import javax.security.auth.login.AppConfigurationEntry;
 public class ExtendedConfigFile extends ConfigFile {
 
     private static final Logger logger =
-            JASPICLogManager.getLogger(ExtendedConfigFile.class);
+            Logger.getLogger(ExtendedConfigFile.class.getName(), JASPICLogManager.RES_BUNDLE);
     //may be more than one delegate for a given jaas config file
 
     public ExtendedConfigFile() {
