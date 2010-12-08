@@ -331,7 +331,7 @@
            <param name="log-dir" value=""/>
        </antcall>
 
-        <echo message="Verifying results"/>
+        <echo message="Verifying xa results"/>
         <java  fork="on"
               failonerror="true"
               classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/modules/gf-client.jar:${env.APS_HOME}/lib/reportbuilder.jar:${build.classes.dir}"
@@ -344,7 +344,7 @@
     </target>
 
     <target name="kill-database">
-      <echo message="Killing in1"/>
+      <echo message="Killing database"/>
        <sleep seconds="20"/>
        <exec executable="./kill_database.sh" failonerror="true"/>
     </target>
