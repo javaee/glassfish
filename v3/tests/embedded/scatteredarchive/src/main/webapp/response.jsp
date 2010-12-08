@@ -1,9 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
-
+<%--
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -38,21 +36,37 @@
     and therefore, elected the GPL Version 2 license, then the option applies
     only if the new code is made subject to such option by the copyright
     holder.
+--%>
 
--->
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>org.glassfish.tests</groupId>
-    <artifactId>embedded</artifactId>
-    <version>3.1-SNAPSHOT</version>
-    <packaging>pom</packaging>
-    <name>GlassFish Embedded Tests</name>  
-    <modules>
-    	<module>basic</module>
-    	<module>ejb</module>
-    	<module>scatteredarchive</module>
-    	<module>maven-plugin</module>
-    </modules>
-</project>
+<%@ page import="javax.servlet.http.*" %>
+
+<%
+    String user = (String)request.getParameter("username");
+    HttpSession httpSession = request.getSession();
+    String users = (String)httpSession.getAttribute("users");
+    if ( users == null ) {
+	users = user;
+    }
+    else {
+	users = users + ", " + user;
+    }
+    httpSession.setAttribute("users", users);
+%>
+
+
+<h2><font color="black"><fmt:message key="greeting_response" bundle="${resourceBundle}"/>, <%= users %>!</font></h2>
+
+
+
+
+
+
+
+
+
+
+
+
+

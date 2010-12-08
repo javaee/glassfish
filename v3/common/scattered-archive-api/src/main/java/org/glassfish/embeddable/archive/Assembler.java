@@ -62,8 +62,8 @@ class Assembler {
 
     public URI assemble(ScatteredArchive archive) {
         try {
-            return assemble(archive.name, archive.topDir, archive.classpaths,
-                    archive.resourcespath, archive.metadatas, archive.type);
+            return assemble(archive.name, archive.rootDirectory, archive.classpaths,
+                    archive.metadatas, archive.type);
         } catch (Exception ex) {
             ex.printStackTrace();
             return null;
@@ -73,7 +73,7 @@ class Assembler {
     public URI assemble(ScatteredEnterpriseArchive archive) {
         try {
             return assemble(archive.name, null, archive.archives,
-                    null, archive.metadatas, archive.type);
+                    archive.metadatas, archive.type);
         } catch (Exception ex) {
             ex.printStackTrace();
             return null;
@@ -81,7 +81,7 @@ class Assembler {
     }
 
 
-    public URI assemble(String name, File topDir, List<File> classpaths, File resources,
+    public URI assemble(String name, File rootDirectory, List<File> classpaths,
                         Map<String, File> metadatas, String type) throws Exception {
         File archive = new File(System.getProperty("java.io.tmpdir"), name + "." + type);
 //        archive.deleteOnExit();
@@ -90,12 +90,12 @@ class Assembler {
 
         boolean isWar = "war".equals(type);
         boolean isEar = "ear".equals(type);
-        String baseDir = isWar ? "WEB-INF/" : "";
+        String baseDir = "";
         String classesDir = isWar ? "WEB-INF/classes/" : "";
         String libDir = isWar ? "WEB-INF/lib/" : "";
 
-        transferDir(topDir, jos, classesDir);
-        transferDir(resources, jos, baseDir);
+        transferDir(rootDirectory, jos, baseDir);
+//        transferDir(resources, jos, classesDir);
         for (String key : metadatas.keySet()) {
             tranferFile(metadatas.get(key), jos, key, false);
         }

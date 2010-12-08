@@ -69,8 +69,6 @@ import java.util.Map;
  * <a name="l62">        ScatteredArchive archive = </span><span class="s2">new </span><span class="s1">ScatteredArchive(</span><span class="s4">&quot;testapp&quot;</span><span class="s1">, ScatteredArchive.Type.WAR);
  * <a name="l63">        </span><span class="s0">// target/classes directory contains my complied servlets</span><span class="s1">
  * <a name="l64">        archive.addClassPath(</span><span class="s4">&quot;target/classes&quot;</span><span class="s1">);
- * <a name="l65">        </span><span class="s0">// myresources directory contains my static files such as .jsp, .png, .htm files.</span><span class="s1">
- * <a name="l66">        archive.setResourcePath(</span><span class="s4">&quot;myresources&quot;</span><span class="s1">);
  * <a name="l67">        </span><span class="s0">// /tmp/sun-web.xml is my META-INF/sun-web.xml</span><span class="s1">
  * <a name="l68">        archive.addMetadata(</span><span class="s4">&quot;META-INF/sun-web.xml&quot;</span><span class="s1">, </span><span class="s4">&quot;/tmp/sun-web.xml&quot;</span><span class="s1">);
  * <a name="l69">
@@ -86,9 +84,9 @@ public class ScatteredArchive {
 
     String name;
     String type;
-    File topDir;
+    File rootDirectory;
     List<File> classpaths = new ArrayList<File>();
-    File resourcespath;
+//    File resourcespath;
     Map<String, File> metadatas = new HashMap<String, File>();
 
     /**
@@ -110,57 +108,60 @@ public class ScatteredArchive {
     }
 
     /**
-     * Construct a new scattered archive with all the contents from the topDir.
+     * Construct a new scattered archive with all the contents from the rootDirectory.
      * <p/>
      * By default, a scattered archive is not different from any other
      * archive where all the files are located under a top level
-     * directory (topDir).
+     * directory (rootDirectory).
      * <p/>
-     * For example, In case of a WAR type archive, the topDir should look like this:
+     * For example, In case of a WAR type archive, the rootDirectory should look like this:
      * <pre>
-     *      topDir/WEB-INF/classes/org/myorg/FooServlet.class
-     *      topDir/WEB-INF/classes/org/myorg/Bar.class
-     *      topDir/WEB-INF/web.xml
-     *      topDir/WEB-INF/lib/myjar.jar
+     *      rootDirectory/WEB-INF/classes/org/myorg/FooServlet.class
+     *      rootDirectory/WEB-INF/classes/org/myorg/Bar.class
+     *      rootDirectory/WEB-INF/web.xml
+     *      rootDirectory/WEB-INF/lib/myjar.jar
+     *      rootDirectory/index.jsp
+     *      rootDirectory/theme.css
+     *      rootDirectory/helper.js
      * </pre>
      * Some files can then be scattered in different locations and be specified
-     * through the appropriate add/set methods of this class.
+     * through the appropriate add methods of this class.
      * <p/>
      *
-     * @param name   Name of the archive.
-     * @param type   Type of the archive
-     * @param topDir Top level directory.
-     * @throws NullPointerException     if name, type or topDir is null.
-     * @throws IllegalArgumentException if topDir does not exist or is not a directory.
+     * @param name          Name of the archive.
+     * @param type          Type of the archive
+     * @param rootDirectory Top level directory.
+     * @throws NullPointerException     if name, type or rootDirectory is null.
+     * @throws IllegalArgumentException if rootDirectory does not exist or is not a directory.
      */
-    public ScatteredArchive(String name, Type type, String topDir) {
-        this(name, type, topDir != null ? new File(topDir) : null);
+    public ScatteredArchive(String name, Type type, String rootDirectory) {
+        this(name, type, rootDirectory != null ? new File(rootDirectory) : null);
     }
 
     /**
-     * Construct a new scattered archive with all the contents from the topDir.
+     * Construct a new scattered archive with all the contents from the rootDirectory.
      * <p/>
      * Follows the same semantics as {@link ScatteredArchive(String, ScatteredArchive.Type, String)} constructor.
      */
-    public ScatteredArchive(String name, Type type, File topDir) {
+    public ScatteredArchive(String name, Type type, File rootDirectory) {
         if (name == null) {
             throw new NullPointerException("name must not be null.");
         }
         if (type == null) {
             throw new NullPointerException("type must not be null.");
         }
-        if (topDir == null) {
-            throw new NullPointerException("topDir must not be null.");
+        if (rootDirectory == null) {
+            throw new NullPointerException("rootDirectory must not be null.");
         }
-        if (!topDir.exists()) {
-            throw new IllegalArgumentException(topDir + " does not exist.");
+        if (!rootDirectory.exists()) {
+            throw new IllegalArgumentException(rootDirectory + " does not exist.");
         }
-        if (!topDir.isDirectory()) {
-            throw new IllegalArgumentException(topDir + " is not a directory.");
+        if (!rootDirectory.isDirectory()) {
+            throw new IllegalArgumentException(rootDirectory + " is not a directory.");
         }
         this.name = name;
         this.type = (type == Type.WAR) ? "war" : "jar";
-        this.topDir = topDir;
+        this.rootDirectory = rootDirectory;
     }
 
     /**
@@ -314,27 +315,27 @@ public class ScatteredArchive {
      * @throws NullPointerException     if resourcepath is null.
      * @throws IllegalArgumentException if resourcespath is not found or is not a directory.
      */
-    public void setResourcePath(String resourcespath) {
-        setResourcePath(resourcespath != null ? new File(resourcespath) : null);
-    }
+//    public void setResourcePath(String resourcespath) {
+//        setResourcePath(resourcespath != null ? new File(resourcespath) : null);
+//    }
 
     /**
      * Set the location of resources files to this scattered archive.
      * <p/>
      * Follows the same semantics as {@link #setResourcePath(String)} method.
      */
-    public void setResourcePath(File resourcespath) {
-        if (resourcespath == null) {
-            throw new NullPointerException("resourcespath must not be null.");
-        }
-        if (!resourcespath.exists()) {
-            throw new IllegalArgumentException(resourcespath + " does not exist.");
-        }
-        if (!resourcespath.isDirectory()) {
-            throw new IllegalArgumentException(resourcespath + " is not a directory");
-        }
-        this.resourcespath = resourcespath;
-    }
+//    public void setResourcePath(File resourcespath) {
+//        if (resourcespath == null) {
+//            throw new NullPointerException("resourcespath must not be null.");
+//        }
+//        if (!resourcespath.exists()) {
+//            throw new IllegalArgumentException(resourcespath + " does not exist.");
+//        }
+//        if (!resourcespath.isDirectory()) {
+//            throw new IllegalArgumentException(resourcespath + " is not a directory");
+//        }
+//        this.resourcespath = resourcespath;
+//    }
 
     /**
      * Get the deployable URI for this scattered archive.

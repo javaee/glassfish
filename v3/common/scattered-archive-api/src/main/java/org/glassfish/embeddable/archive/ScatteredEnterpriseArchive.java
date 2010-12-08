@@ -69,8 +69,6 @@ import java.util.Map;
  * <a name="l62">        ScatteredArchive webmodule = </span><span class="s2">new </span><span class="s1">ScatteredArchive(</span><span class="s4">&quot;testweb&quot;</span><span class="s1">, ScatteredArchive.Type.WAR);
  * <a name="l63">        </span><span class="s0">// target/classes directory contains my complied servlets</span><span class="s1">
  * <a name="l64">        webmodule.addClassPath(</span><span class="s4">&quot;target/classes&quot;</span><span class="s1">);
- * <a name="l65">        </span><span class="s0">// src/main/resources directory contains my static files such as .jsp, .img, .htm files.</span><span class="s1">
- * <a name="l66">        webmodule.setResourcePath(</span><span class="s4">&quot;src/main/resources&quot;</span><span class="s1">);
  * <a name="l67">        </span><span class="s0">// /tmp/sun-web.xml is my META-INF/sun-web.xml</span><span class="s1">
  * <a name="l68">        webmodule.addMetadata(</span><span class="s4">&quot;META-INF/sun-web.xml&quot;</span><span class="s1">, </span><span class="s4">&quot;/tmp/sun-web.xml&quot;</span><span class="s1">);
  * <a name="l69">
