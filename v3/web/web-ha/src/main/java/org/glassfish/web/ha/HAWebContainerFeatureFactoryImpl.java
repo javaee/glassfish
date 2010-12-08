@@ -41,6 +41,8 @@
 package org.glassfish.web.ha;
 
 import com.sun.enterprise.web.PEWebContainerFeatureFactoryImpl;
+import com.sun.enterprise.web.PESSOFactory;
+import com.sun.enterprise.web.ServerConfigLookup;
 import com.sun.enterprise.web.SSOFactory;
 import org.glassfish.web.ha.authenticator.HASSOFactory;
 
@@ -59,8 +61,29 @@ public class HAWebContainerFeatureFactoryImpl extends PEWebContainerFeatureFacto
     @Inject
     private Habitat habitat;
 
+    @Inject
+    private ServerConfigLookup serverConfigLookup;
+
     @Override
     public SSOFactory getSSOFactory() {
-        return habitat.getComponent(HASSOFactory.class);
+        if (isSsoFailoverEnabled()) {
+            return habitat.getComponent(HASSOFactory.class);
+        } else {
+            return new PESSOFactory();
+        }
+    }
+
+    /**
+     * check sso-failover-enabled in web-container-availability
+     * @return return true only if the value of sso-failover-enabled is "true"
+     * and availability-enabled in web-container-availability is "true"
+     * otherwise, return false.
+     */
+    private boolean isSsoFailoverEnabled() {
+        boolean webContainerAvailabilityEnabled =
+            serverConfigLookup.getWebContainerAvailabilityEnabledFromConfig();        
+        boolean isSsoFailoverEnabled =
+            serverConfigLookup.isSsoFailoverEnabledFromConfig();
+        return isSsoFailoverEnabled && webContainerAvailabilityEnabled;
     }
 }

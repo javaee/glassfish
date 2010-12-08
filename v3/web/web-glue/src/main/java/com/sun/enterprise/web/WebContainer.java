@@ -324,7 +324,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      */
     protected boolean globalSSOEnabled = true;
 
-    protected WebContainerFeatureFactory webContainerFeatureFactory;
+    protected volatile WebContainerFeatureFactory webContainerFeatureFactory;
 
     /**
      * The value of the instance-level session property named "enableCookies"
@@ -405,10 +405,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         instanceName = _serverContext.getInstanceName();
 
-        String featureFactoryName =
-                (serverConfigLookup.getWebContainerAvailabilityEnabledFromConfig() ? "ha" : "pe");
-        webContainerFeatureFactory = habitat.getComponent(
-                WebContainerFeatureFactory.class, featureFactoryName);
+        webContainerFeatureFactory = getWebContainerFeatureFactory();
 
         configureDynamicReloadingSettings();
         setDebugLevel();
@@ -858,6 +855,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         if (_logger.isLoggable(Level.INFO)) {
             _logger.log(Level.INFO, "webContainer.HTTP.listenerAndPort", new Object[]{listener.getName(), listener.getAddress(), listener.getPort()});
+            Thread.currentThread().dumpStack();
         }
 
         connector.setName(listener.getName());
@@ -3000,6 +2998,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         globalAccessLogBufferSize = httpService.getAccessLog().getBufferSizeBytes();
         globalAccessLoggingEnabled = ConfigBeansUtilities.toBoolean(httpService.getAccessLoggingEnabled());
 
+        // for availability-service.web-container-availability
+        webContainerFeatureFactory = getWebContainerFeatureFactory();
+
         List<com.sun.enterprise.config.serverbeans.VirtualServer> virtualServers =
                 httpService.getVirtualServer();
         for (com.sun.enterprise.config.serverbeans.VirtualServer virtualServer : virtualServers) {
@@ -3341,5 +3342,16 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             msg = MessageFormat.format(msg, clazz.getName());
             throw new IllegalArgumentException(msg);
         }
+    }
+
+    /**
+     * Return the WebContainerFeatureFactory according to the configuration.
+     * @return WebContainerFeatuerFactory
+     */
+    private WebContainerFeatureFactory getWebContainerFeatureFactory() {
+        String featureFactoryName =
+                    (serverConfigLookup.getWebContainerAvailabilityEnabledFromConfig() ? "ha" : "pe");
+        return webContainerFeatureFactory = habitat.getComponent(
+                    WebContainerFeatureFactory.class, featureFactoryName);
     }
 }

@@ -215,6 +215,7 @@ public class VirtualServer extends StandardHost
 
     private ServerContext serverContext;
 
+    private boolean ssoFailoverEnabled = false;
 
     // ------------------------------------------------------------- Properties
 
@@ -1269,6 +1270,7 @@ public class VirtualServer extends StandardHost
                 }
             }
 
+            this.ssoFailoverEnabled = ssoFailoverEnabled;
             if (hasExistingSSO) {
                 setSingleSignOnForChildren(null);
             }
@@ -1284,22 +1286,26 @@ public class VirtualServer extends StandardHost
 
             GlassFishSingleSignOn sso = null;
 
-            //Create HASingleSignOn if sso-failover-enabled is true
-            if (!ssoFailoverEnabled) {
-                //find existing SSO (if any), in case of a reconfig
-                GlassFishValve[] valves = getValves();
-                for (int i=0; valves!=null && i<valves.length; i++) {
-                    if (valves[i] instanceof GlassFishSingleSignOn) {
-                        sso = (GlassFishSingleSignOn)valves[i];
-                        break;
-                    }
+            //find existing SSO (if any), in case of a reconfig
+            GlassFishValve[] valves = getValves();
+            for (int i=0; valves!=null && i<valves.length; i++) {
+                if (valves[i] instanceof GlassFishSingleSignOn) {
+                    sso = (GlassFishSingleSignOn)valves[i];
+                    break;
                 }
+            }
+
+            if (sso != null && this.ssoFailoverEnabled != ssoFailoverEnabled) {
+                removeValve(sso);
+                sso = null;
+                // then SSO Valve will be recreated
             }
 
             if (sso == null) {
                 SSOFactory ssoFactory =
                     webContainerFeatureFactory.getSSOFactory();
                 sso = ssoFactory.createSingleSignOnValve(getName());
+                this.ssoFailoverEnabled = ssoFailoverEnabled;
                 setSingleSignOnForChildren(sso);
                 addValve((GlassFishValve) sso);
             }
