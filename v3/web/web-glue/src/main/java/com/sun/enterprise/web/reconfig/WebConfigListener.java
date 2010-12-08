@@ -39,7 +39,7 @@
  */
 
 package com.sun.enterprise.web.reconfig;
-
+                                                    
 import com.sun.enterprise.config.serverbeans.AccessLog;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.ManagerProperties;
@@ -48,6 +48,7 @@ import com.sun.enterprise.config.serverbeans.WebContainerAvailability;
 import com.sun.enterprise.v3.services.impl.MapperUpdateListener;
 import com.sun.enterprise.web.WebContainer;
 import com.sun.grizzly.config.dom.NetworkListener;
+import com.sun.grizzly.config.dom.NetworkListeners;
 import com.sun.grizzly.util.http.mapper.Mapper;
 import org.apache.catalina.LifecycleException;
 import org.jvnet.hk2.annotations.Inject;
@@ -117,7 +118,15 @@ public class WebConfigListener implements ConfigListener, MapperUpdateListener {
                     logger.fine("Web container config changed "+type+" "+tClass+" "+t);
                 }
                 try {
-                    if (t instanceof VirtualServer) {
+                    if (t instanceof NetworkListener) {
+                        if (type==TYPE.ADD) {
+                            container.addConnector((NetworkListener) t, httpService, true);
+                        } else if (type==TYPE.REMOVE) {
+                            container.deleteConnector((NetworkListener) t);
+                        } else if (type==TYPE.CHANGE) {
+                            container.updateConnector((NetworkListener) t, httpService);
+                        }
+                    } else if (t instanceof VirtualServer) {
                         if (type==TYPE.ADD) {
                             container.createHost((VirtualServer) t, httpService, null);
                             container.loadDefaultWebModule((VirtualServer) t);
@@ -126,15 +135,18 @@ public class WebConfigListener implements ConfigListener, MapperUpdateListener {
                         } else if (type==TYPE.CHANGE) {
                             container.updateHost((VirtualServer)t);
                         }
-                        return null;
                     } else if (t instanceof AccessLog) {
                         container.updateAccessLog(httpService);
                     } else if (t instanceof ManagerProperties) {
                         return new NotProcessed("ManagerProperties requires restart");
                     } else if (t instanceof WebContainerAvailability) {
-                        // container.updateHttpService handles SingleSignOn valve configuration 
+                        // container.updateHttpService handles SingleSignOn valve configuration
+                        container.updateHttpService(httpService);
+                    } else if (t instanceof NetworkListeners) {
+                        // skip updates
+                    } else {
+                        container.updateHttpService(httpService);
                     }
-                    container.updateHttpService(httpService);
                 } catch (LifecycleException le) {
                     logger.log(Level.SEVERE, "webcontainer.exceptionConfigHttpService", le);
                 }
