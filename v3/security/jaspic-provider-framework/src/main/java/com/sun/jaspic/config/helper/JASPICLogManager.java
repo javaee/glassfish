@@ -71,5 +71,5 @@ public class JASPICLogManager {
      */
     public static final String JASPIC_LOGGER = "enterprise.system.jaspic.security";
 
-    public static final String RES_BUNDLE = PACKAGE_ROOT + "." + JASPIC_LOGGER + "." + RESOURCE_BUNDLE;
+    public static final String RES_BUNDLE = PACKAGE_ROOT + JASPIC_LOGGER + "." + RESOURCE_BUNDLE;
 }
