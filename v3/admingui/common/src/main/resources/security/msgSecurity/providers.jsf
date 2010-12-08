@@ -69,6 +69,8 @@
         setPageSessionAttribute(key="editLink" value="#{request.contextPath}/common/security/msgSecurity/providerEdit.jsf");
         setPageSessionAttribute(key="tableTitle" value="$resource{i18nc.msgSecProvider.TableTitle}");
         setPageSessionAttribute(key="deleteKey" value="providerId");
+        setPageSessionAttribute(key="disableNewButton" value="#{false}");
+
     />
     </event>
 

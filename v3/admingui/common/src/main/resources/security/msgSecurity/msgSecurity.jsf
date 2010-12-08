@@ -63,6 +63,11 @@
         setPageSessionAttribute(key="editLink" value="#{request.contextPath}/common/security/msgSecurity/msgSecurityEdit.jsf");
         setPageSessionAttribute(key="tableTitle" value="$resource{i18nc.msgSecurity.TableTitle}");
         setPageSessionAttribute(key="deleteKey" value="layer");
+        setPageSessionAttribute(key="disableNewButton" value="#{false}");
+	setAttribute(key="lsize" value="#{requestScope.listOfRows.size()}");
+        if( #{requestScope.lsize}=$int{2} ){
+            setPageSessionAttribute(key="disableNewButton" value="#{true}");
+        }
     />
     </event>
 "    <script type="text/javascript">admingui.nav.selectTreeNodeById(admingui.nav.TREE_ID+":configurations:#{pageSession.configName}:security:messageSecurity");</script>
