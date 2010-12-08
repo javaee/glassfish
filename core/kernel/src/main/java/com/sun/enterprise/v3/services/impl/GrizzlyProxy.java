@@ -40,7 +40,6 @@
 
 package com.sun.enterprise.v3.services.impl;
 
-import com.sun.enterprise.util.Result;
 import com.sun.enterprise.v3.services.impl.monitor.GrizzlyMonitoring;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
 import org.jvnet.hk2.config.types.Property;
@@ -63,9 +62,14 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.grizzly.GrizzlyFuture;
+import org.glassfish.grizzly.Result;
+import org.glassfish.grizzly.config.GrizzlyListener;
 import org.glassfish.grizzly.http.server.HttpRequestProcessor;
 import org.glassfish.grizzly.http.server.StaticResourcesService;
 import org.glassfish.grizzly.http.server.util.Mapper;
+import org.glassfish.grizzly.impl.FutureImpl;
+import org.glassfish.grizzly.impl.SafeFutureImpl;
 
 /**
  * This class is responsible for configuring Grizzly.
@@ -74,9 +78,10 @@ import org.glassfish.grizzly.http.server.util.Mapper;
  * @author Jeanfrancois Arcand
  */
 public class GrizzlyProxy implements NetworkProxy {
-    protected GrizzlyListener grizzlyListener;
     final Logger logger;
     final NetworkListener networkListener;
+
+    protected GrizzlyListener grizzlyListener;
     private int portNumber;
 
     public final static String LEADER_FOLLOWER
@@ -103,7 +108,7 @@ public class GrizzlyProxy implements NetworkProxy {
      * Create a <code>GrizzlyServiceListener</code> based on a NetworkListener
      * configuration object.
      */
-    public void initialize() {
+    public void initialize() throws IOException {
         String port = networkListener.getPort();
         portNumber = 8080;
         if (port == null) {
@@ -121,92 +126,105 @@ public class GrizzlyProxy implements NetworkProxy {
             logger.log(Level.SEVERE, "Unknown address " + address, ex);
         }
 
-        if(!"light-weight-listener".equals(networkListener.getProtocol())) {
-            registerMonitoringStatsProviders();
+        createGrizzlyListener(networkListener);
+
+        grizzlyListener.configure(networkListener);
+    }
+
+    protected void createGrizzlyListener(final NetworkListener networkListener) {
+        if("light-weight-listener".equals(networkListener.getProtocol())) {
+            createServiceInitializerListener(networkListener);
+        } else {
+            createGlassfishListener(networkListener);
         }
+    }
 
-        grizzlyListener =
-                new GrizzlyListener(grizzlyService.getMonitoring(), networkListener);
-        grizzlyListener.configureListener(networkListener, grizzlyService.habitat);
+    protected void createGlassfishListener(final NetworkListener networkListener) {
+        grizzlyListener = new GlassfishNetworkListener();
 
-        if(!grizzlyListener.isGenericListener()) {
-            final Protocol httpProtocol = networkListener.findHttpProtocol();
+        registerMonitoringStatsProviders();
 
-            if (httpProtocol != null) {
-                final V3Mapper mapper = new V3Mapper(logger);
-                mapper.setPort(portNumber);
-                mapper.setId(networkListener.getName());
+        final Protocol httpProtocol = networkListener.findHttpProtocol();
 
-                final ContainerMapper containerMapper = new ContainerMapper(
-                        grizzlyService, grizzlyListener);
-                containerMapper.setMapper(mapper);
-                containerMapper.setDefaultHost(grizzlyListener.getDefaultVirtualServer());
-                containerMapper.configureMapper();
-                embeddedHttp.setAdapter(containerMapper);
+        if (httpProtocol != null) {
+            final V3Mapper mapper = new V3Mapper(logger);
+            mapper.setPort(portNumber);
+            mapper.setId(networkListener.getName());
+
+            final ContainerMapper containerMapper = new ContainerMapper(
+                    grizzlyService, grizzlyListener);
+            containerMapper.setMapper(mapper);
+            containerMapper.setDefaultHost(grizzlyListener.getDefaultVirtualServer());
+            containerMapper.configureMapper();
+            embeddedHttp.setAdapter(containerMapper);
 
 //                String ct = httpProtocol.getHttp().getDefaultResponseType();
 //                containerMapper.setDefaultContentType(ct);
-                final Collection<VirtualServer> list = grizzlyService.getHabitat().getAllByContract(VirtualServer.class);
-                final String vsName = httpProtocol.getHttp().getDefaultVirtualServer();
-                for (VirtualServer virtualServer : list) {
-                    if (virtualServer.getId().equals(vsName)) {
-                        vs = virtualServer;
-                        embeddedHttp.setWebAppRootPath(vs.getDocroot());
+            final Collection<VirtualServer> list = grizzlyService.getHabitat().getAllByContract(VirtualServer.class);
+            final String vsName = httpProtocol.getHttp().getDefaultVirtualServer();
+            for (VirtualServer virtualServer : list) {
+                if (virtualServer.getId().equals(vsName)) {
+                    vs = virtualServer;
+                    embeddedHttp.setWebAppRootPath(vs.getDocroot());
 
-                        if (!grizzlyService.hasMapperUpdateListener() &&
-                                vs.getProperty() != null && !vs.getProperty().isEmpty()) {
-                            for (Property p: vs.getProperty()){
-                                String name = p.getName();
-                                if (name.startsWith("alternatedocroot")){
-                                    String value = p.getValue();
-                                    String[] mapping = value.split(" ");
+                    if (!grizzlyService.hasMapperUpdateListener()
+                            && vs.getProperty() != null && !vs.getProperty().isEmpty()) {
+                        for (Property p : vs.getProperty()) {
+                            String name = p.getName();
+                            if (name.startsWith("alternatedocroot")) {
+                                String value = p.getValue();
+                                String[] mapping = value.split(" ");
 
-                                    if (mapping.length != 2){
-                                        logger.log(Level.WARNING, "Invalid alternate_docroot " + value);
-                                        continue;
-                                    }
-
-                                    String docBase = mapping[1].substring("dir=".length());
-                                    String urlPattern = mapping[0].substring("from=".length());
-                                    try {
-                                        final StaticResourcesService staticResourceService =
-                                                new StaticResourcesService(docBase);
-                                        ArrayList<String> al = toArray(vs.getHosts(),";");
-                                        al.add(grizzlyListener.getDefaultVirtualServer());
-                                        registerEndpoint(urlPattern,al , staticResourceService, null);
-                                    } catch (EndpointRegistrationException ex) {
-                                        logger.log(Level.SEVERE, "Unable to set alternate_docroot", ex);
-                                    }
-
+                                if (mapping.length != 2) {
+                                    logger.log(Level.WARNING, "Invalid alternate_docroot {0}", value);
+                                    continue;
                                 }
+
+                                String docBase = mapping[1].substring("dir=".length());
+                                String urlPattern = mapping[0].substring("from=".length());
+                                try {
+                                    final StaticResourcesService staticResourceService =
+                                            new StaticResourcesService(docBase);
+                                    ArrayList<String> al = toArray(vs.getHosts(), ";");
+                                    al.add(grizzlyListener.getDefaultVirtualServer());
+                                    registerEndpoint(urlPattern, al, staticResourceService, null);
+                                } catch (EndpointRegistrationException ex) {
+                                    logger.log(Level.SEVERE, "Unable to set alternate_docroot", ex);
+                                }
+
                             }
                         }
-                        break;
                     }
+                    break;
                 }
+            }
 
-                containerMapper.addRootFolder(embeddedHttp.getWebAppRootPath());
-                
-                Inhabitant<Mapper> onePortMapper = new ExistingSingletonInhabitant<Mapper>(mapper);
-                grizzlyService.getHabitat().addIndex(onePortMapper,
-                        Mapper.class.getName(), (networkListener.getAddress() + networkListener.getPort()));
-                grizzlyService.notifyMapperUpdateListeners(networkListener, mapper);
-            }
-            
-            boolean autoConfigure = false;
-            // Avoid overriding the default with false
-            if (System.getProperty(AUTO_CONFIGURE) != null){
-                autoConfigure = true;
-            }
-            embeddedHttp.getController().setAutoConfigure(autoConfigure);
+            containerMapper.addRootFolder(embeddedHttp.getWebAppRootPath());
 
-            boolean leaderFollower = false;
-            // Avoid overriding the default with false
-            if (System.getProperty(LEADER_FOLLOWER) != null){
-                leaderFollower = true;
-            }
-            embeddedHttp.getController().useLeaderFollowerStrategy(leaderFollower);
+            Inhabitant<Mapper> onePortMapper = new ExistingSingletonInhabitant<Mapper>(mapper);
+            grizzlyService.getHabitat().addIndex(onePortMapper,
+                    Mapper.class.getName(), (networkListener.getAddress() + networkListener.getPort()));
+            grizzlyService.notifyMapperUpdateListeners(networkListener, mapper);
         }
+
+        boolean autoConfigure = false;
+        // Avoid overriding the default with false
+        if (System.getProperty(AUTO_CONFIGURE) != null) {
+            autoConfigure = true;
+        }
+        embeddedHttp.getController().setAutoConfigure(autoConfigure);
+
+        boolean leaderFollower = false;
+        // Avoid overriding the default with false
+        if (System.getProperty(LEADER_FOLLOWER) != null) {
+            leaderFollower = true;
+        }
+        embeddedHttp.getController().useLeaderFollowerStrategy(leaderFollower);
+        
+    }
+
+    protected void createServiceInitializerListener(final NetworkListener networkListener) {
+        grizzlyListener = new ServiceInitializerListener(grizzlyService.getHabitat(), logger);
     }
 
     static ArrayList<String> toArray(String list, String token){
@@ -217,7 +235,7 @@ public class GrizzlyProxy implements NetworkProxy {
      * Stops the Grizzly service.
      */
     @Override
-    public void stop() {
+    public void stop() throws IOException {
         grizzlyListener.stop();
     }
 
@@ -283,7 +301,7 @@ public class GrizzlyProxy implements NetworkProxy {
 
     @Override
     public Future<Result<Thread>> start() {
-        final GrizzlyFuture future = new GrizzlyFuture();
+        final FutureImpl<Result> future = SafeFutureImpl.<Result>create();
         final long t1 = System.currentTimeMillis();
         final Thread thread = new Thread() {
             @Override
@@ -369,42 +387,4 @@ public class GrizzlyProxy implements NetworkProxy {
         monitoring.unregisterFileCacheStatsProvider(name);
         monitoring.unregisterConnectionQueueStatsProvider(name);
     }
-    
-
-//    public static final class GrizzlyFuture implements Future<Result<Thread>> {
-//        Result<Thread> result;
-//        CountDownLatch latch = new CountDownLatch(1);
-//
-//        public void setResult(Result<Thread> result) {
-//            this.result = result;
-//            latch.countDown();
-//        }
-//
-//        @Override
-//        public boolean cancel(boolean mayInterruptIfRunning) {
-//            return false;
-//        }
-//
-//        @Override
-//        public boolean isCancelled() {
-//            return false;
-//        }
-//
-//        @Override
-//        public boolean isDone() {
-//            return latch.getCount() == 0;
-//        }
-//
-//        @Override
-//        public Result<Thread> get() throws InterruptedException {
-//            latch.await();
-//            return result;
-//        }
-//
-//        @Override
-//        public Result<Thread> get(long timeout, TimeUnit unit) throws InterruptedException {
-//            latch.await(timeout, unit);
-//            return result;
-//        }
-//    }
 }

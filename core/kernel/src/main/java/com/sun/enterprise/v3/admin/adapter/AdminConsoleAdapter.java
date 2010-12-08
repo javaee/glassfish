@@ -223,6 +223,11 @@ public final class AdminConsoleAdapter extends HttpRequestProcessor implements A
         return epd.getGuiContextRoot(); //default is /admin
     }
 
+    @Override
+    public final HttpRequestProcessor getHttpService() {
+        return this;
+    }
+
     /**
      *
      */

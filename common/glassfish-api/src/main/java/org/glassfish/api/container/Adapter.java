@@ -55,7 +55,14 @@ import org.jvnet.hk2.annotations.Contract;
  *
  */
 @Contract
-public abstract class Adapter extends HttpRequestProcessor {
+public interface Adapter {
+
+    /**
+     * Get the underlying Grizzly HttpService.
+     * 
+     * @return the underlying Grizzly HttpService.
+     */
+    public abstract HttpRequestProcessor getHttpService();
 
     /**
      * Returns the context root for this adapter

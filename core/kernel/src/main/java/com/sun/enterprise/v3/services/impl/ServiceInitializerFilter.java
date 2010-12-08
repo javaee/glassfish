@@ -41,36 +41,91 @@
 package com.sun.enterprise.v3.services.impl;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
+import java.nio.channels.SelectableChannel;
+import java.util.Collection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import org.glassfish.grizzly.Context;
-import org.glassfish.grizzly.config.dom.ProtocolFilter;
+import org.glassfish.grizzly.filterchain.BaseFilter;
+import org.glassfish.grizzly.filterchain.FilterChainContext;
+import org.glassfish.grizzly.filterchain.NextAction;
+import org.glassfish.grizzly.nio.NIOConnection;
+import org.glassfish.grizzly.nio.NIOTransport;
+import org.glassfish.internal.grizzly.LazyServiceInitializer;
+import org.jvnet.hk2.component.Habitat;
 
 /**
- * This is just a place holder filter for LWL; the requests should never come here
+ * The {@link Filter} implementation, which lazily initializes custom service
+ * on the first accepted connection and passes connection there.
+ *
+ * @author Vijay Ramachandran
  */
-public class ServiceInitializerFilter /*implements ProtocolFilter, ReinvokeAware*/ {
+public class ServiceInitializerFilter extends BaseFilter {
+    private volatile LazyServiceInitializer targetInitializer = null;
+    private Collection<LazyServiceInitializer> initializerImplList = null;
+    
+    protected final Logger logger;
 
-    boolean continousExecution;
+    private final Habitat habitat;
 
-    public boolean execute(Context ctx) throws IOException {
-        return execute(ctx, null);
+    private final ServiceInitializerListener listener;
+
+    private final Object LOCK_OBJ = new Object();
+//    private long timeout = 60000;
+
+    public ServiceInitializerFilter(final ServiceInitializerListener listener,
+            final Habitat habitat, final Logger logger) {
+        initializerImplList = habitat.getAllByContract(LazyServiceInitializer.class);
+
+        if (initializerImplList == null) {
+            throw new IllegalStateException("NO Lazy Initialiser was found for port = " +
+                    listener.getPort());
+        }
+
+        this.logger = logger;
+        this.habitat = habitat;
+        this.listener = listener;
     }
 
-    protected boolean execute(Context ctx, ByteBuffer byteBuffer) throws IOException {
-        return false;
-    }
+    @Override
+    public NextAction handleAccept(final FilterChainContext ctx) throws IOException {
+        final NIOConnection nioConnection = (NIOConnection) ctx.getConnection();
+        final SelectableChannel channel = nioConnection.getChannel();
+        if(targetInitializer == null) {
+            synchronized(LOCK_OBJ) {
+                if(targetInitializer == null) {
+                    for(final LazyServiceInitializer initializer : initializerImplList) {
+                        String listenerName = listener.getName();
+                        if(listenerName.equalsIgnoreCase(initializer.getServiceName())) {
+                            targetInitializer = initializer;
+                            break;
+                        }
+                    }
+                }
+                if(targetInitializer == null) {
+                    logger.log(Level.SEVERE, "NO Lazy Initialiser implementation was found for port = {0}",
+                            listener.getPort());
+                    nioConnection.close();
 
-    public boolean postExecute(Context ctx) throws IOException {
-        return true;
-    }
+                    return ctx.getStopAction();
+                }
+                if(!targetInitializer.initializeService()) {
+                    targetInitializer = null;
+                    logger.log(Level.SEVERE, "Lazy Service initialization failed for port = {0}",
+                            listener.getPort());
 
-    public void setContinuousExecution(boolean continousExecution){
-        this.continousExecution = continousExecution;
-    }
+                    nioConnection.close();
 
-    public boolean isContinuousExecution(){
-        return continousExecution;
+                    return ctx.getStopAction();
+                }
+            }
+        }
+        if (channel != null) {
+            targetInitializer.handleRequest(channel);
+        }
+
+        nioConnection.detachSelectorRunner();
+//        nioConnection.
+        return ctx.getSuspendAction();
     }
 }
-

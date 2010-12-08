@@ -41,6 +41,7 @@
 package com.sun.enterprise.v3.services.impl;
 
 import com.sun.enterprise.util.Result;
+import java.io.IOException;
 import org.glassfish.grizzly.http.server.HttpRequestProcessor;
 
 import java.net.InetAddress;
@@ -62,13 +63,13 @@ public interface NetworkProxy extends EndpointMapper<HttpRequestProcessor>{
     /** 
      * Stop the proxy. 
      */
-    void stop();
+    void stop() throws IOException;
     
     
     /** 
      * Start the proxy. 
      */
-    Future<Result<Thread>> start();
+    Future<Result<Thread>> start() throws IOException;
 
 
     /**

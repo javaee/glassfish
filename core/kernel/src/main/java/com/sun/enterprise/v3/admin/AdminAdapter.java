@@ -84,6 +84,7 @@ import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.Events;
 import org.glassfish.api.event.RestrictTo;
+import org.glassfish.grizzly.http.server.HttpRequestProcessor;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.grizzly.http.server.StaticResourcesService;
@@ -164,6 +165,11 @@ public abstract class AdminAdapter extends StaticResourcesService implements Ada
     protected AdminAdapter(Class<? extends Privacy> privacyClass) {
         super(null);
         this.privacyClass = privacyClass;
+    }
+
+    @Override
+    public final HttpRequestProcessor getHttpService() {
+        return this;
     }
 
     public void postConstruct() {

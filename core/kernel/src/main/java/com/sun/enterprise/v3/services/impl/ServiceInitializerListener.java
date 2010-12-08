@@ -39,11 +39,10 @@
  */
 package com.sun.enterprise.v3.services.impl;
 
-import java.beans.PropertyChangeEvent;
-import java.io.IOException;
+import java.util.logging.Logger;
 
-import com.sun.enterprise.v3.services.impl.monitor.GrizzlyMonitoring;
-import org.glassfish.grizzly.config.dom.NetworkListener;
+import org.glassfish.grizzly.config.dom.Protocol;
+import org.glassfish.grizzly.filterchain.FilterChain;
 import org.jvnet.hk2.component.Habitat;
 
 /**
@@ -52,106 +51,107 @@ import org.jvnet.hk2.component.Habitat;
  *
  * @author Vijay Ramachandran
  */
-public class GrizzlyListener extends org.glassfish.grizzly.config.GrizzlyListener {
-    private boolean isGenericListener = false;
-    private ServiceInitializerThread serviceInitializer;
-    private NetworkListener listener;
+public class ServiceInitializerListener extends org.glassfish.grizzly.config.GenericGrizzlyListener {
+    private final Logger logger;
+    private final Habitat habitat;
+//    private boolean isGenericListener = false;
 
-    public GrizzlyListener(GrizzlyMonitoring monitoring, NetworkListener controller) {
-//        super(controller);
+//    private String name;
+
+    public ServiceInitializerListener(final Habitat habitat, final Logger logger) {
+        this.habitat = habitat;
+        this.logger = logger;
     }
+
+//    private NetworkListener listener;
+
+
+//    public ServiceInitializerListener(GrizzlyMonitoring monitoring, NetworkListener controller) {
+//        super(controller);
+//    }
+
+//    @Override
+//    public void configure(final NetworkListener networkListener) throws IOException {
+//        setName(networkListener.getName());
+//
+//        setPort(Integer.parseInt(networkListener.getPort()));
+//
+//        try {
+//            setAddress(InetAddress.getByName(networkListener.getAddress()));
+//        } catch (UnknownHostException e) {
+//            logger.log(Level.WARNING, "Invalid address for {0}: {1}",
+//                    new Object[]{
+//                        networkListener.getName(),
+//                        networkListener.getAddress()
+//                    });
+//            throw e;
+//        }
+//
+//        configureDelayedExecutor();
+//        configureTransport(networkListener.findTransport());
+//        configureProtocol(networkListener.findProtocol(), rootFilterChain);
+//        configureThreadPool(networkListener.findThreadPool());
+//    }
+
+
+    @Override
+    protected void configureProtocol(final Protocol protocol, final FilterChain filterChain) {
+        filterChain.add(new ServiceInitializerFilter(this, habitat, logger));
+    }
+
 
     /**
      * Configures the given grizzlyListener.
      */
-    @Override
-    public void configureListener(NetworkListener networkListener, Habitat habitat) {
-        this.listener = networkListener;
-        if ("light-weight-listener".equals(networkListener.getProtocol())) {
-            isGenericListener = true;
-        }
-        if (!isGenericListener) {
-            super.configureListener(networkListener);
-        } else {
-            initializeListener(networkListener, habitat);
-            setName(networkListener.getName());
-        }
-    }
-
-    private void initializeListener(NetworkListener networkListener, Habitat habitat) {
-        serviceInitializer = new ServiceInitializerThread(this, habitat);
-        serviceInitializer.setController(this.getController());
-        serviceInitializer.configure(networkListener);
-    }
-
-    public NetworkListener getListener() {
-        return this.listener;
-    }
-
-    @Override
-    public void start() throws IOException, InstantiationException {
-        if (isGenericListener) {
-            serviceInitializer.initController();
-            serviceInitializer.startEndpoint();
-        } else {
-            getEmbeddedHttp().initEndpoint();
-            getEmbeddedHttp().startEndpoint();
-        }
-    }
-
-    @Override
-    public void stop() {
-        if (isGenericListener) {
-            serviceInitializer.stopEndpoint();
-        } else {
-            getEmbeddedHttp().stopEndpoint();
-        }
-    }
-
-    public void initEndpoint() throws IOException, InstantiationException {
-        if (isGenericListener) {
-            serviceInitializer.initEndpoint();
-        } else {
-            getEmbeddedHttp().initEndpoint();
-        }
-    }
-
-    @Override
-    public Controller getController() {
-        if (isGenericListener) {
-            return serviceInitializer.getController();
-        } else {
-            return getEmbeddedHttp().getController();
-        }
-    }
-
-    public void startEndpoint() throws IOException, InstantiationException {
-        if (isGenericListener) {
-            serviceInitializer.startEndpoint();
-        } else {
-            getEmbeddedHttp().startEndpoint();
-        }
-    }
-
-    public boolean isGenericListener() {
-        return isGenericListener;
-    }
-
-    @Override
-    public int getPort() {
-        return isGenericListener ? serviceInitializer.getPort() : super.getPort();
-    }
-
-    public void processDynamicConfigurationChange(PropertyChangeEvent[] events) {
-//        for (PropertyChangeEvent event : events) {
-//            if ("comet-support-enabled".equals(event.getPropertyName())) {
-//                processDynamicCometConfiguration(event);
-//                break;
-//            }
+//    @Override
+//    public void configureListener(NetworkListener networkListener, Habitat habitat) {
+//        this.listener = networkListener;
+//        if ("light-weight-listener".equals(networkListener.getProtocol())) {
+//            isGenericListener = true;
 //        }
-    }
-    // --------------------------------------------------------- Private Methods
+//        if (!isGenericListener) {
+//            super.configureListener(networkListener);
+//        } else {
+//        initializeListener(networkListener, habitat);
+//        }
+//    }
 
+//    private void initializeListener(NetworkListener networkListener, Habitat habitat) {
+//        serviceInitializer = new ServiceInitializerThread(this, habitat);
+//        serviceInitializer.setController(this.getController());
+//        serviceInitializer.configure(networkListener);
+//    }
+
+//    public NetworkListener getListener() {
+//        return this.listener;
+//    }
+
+//    @Override
+//    public void start() throws IOException, InstantiationException {
+//        serviceInitializer.initController();
+//        serviceInitializer.startEndpoint();
+//    }
+//
+//    @Override
+//    public void stop() {
+//        serviceInitializer.stopEndpoint();
+//    }
+//
+//    @Override
+//    public int getPort() {
+//        return serviceInitializer.getPort();
+//    }
+//
+//    @Override
+//    public String getName() {
+//        return name;
+//    }
+//
+//    public void setName(String name) {
+//        this.name = name;
+//    }
+    
+    // --------------------------------------------------------- Private Methods
 //    private void processDynamicCometConfiguration(PropertyChangeEvent event) {
 //        final boolean enableComet = Boolean.valueOf(event.getNewValue().toString());
 //        if (enableComet) {
@@ -160,7 +160,6 @@ public class GrizzlyListener extends org.glassfish.grizzly.config.GrizzlyListene
 //            disableComet();
 //        }
 //    }
-
 //    private void enableComet() {
 //        AsyncFilter cometFilter = createCometAsyncFilter();
 //        if (cometFilter == null) {
@@ -206,7 +205,6 @@ public class GrizzlyListener extends org.glassfish.grizzly.config.GrizzlyListene
 //        }
 //    }
     // ---------------------------------------------------------- Nested Classes
-
     /**
      * This ProtocolChainInstanceHandler will be used to prevent GrizzlyEmbeddedHttp from caching the default PCIH that
      * isn't based on the async configuration change (i.e., if comet is enabled, the current PCIH will not handle async
@@ -233,4 +231,3 @@ public class GrizzlyListener extends org.glassfish.grizzly.config.GrizzlyListene
 //
 //    } // END NonCachingInstanceHandler
 }
-

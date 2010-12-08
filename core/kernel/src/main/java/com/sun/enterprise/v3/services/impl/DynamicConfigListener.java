@@ -162,7 +162,7 @@ public class DynamicConfigListener implements ConfigListener {
                     if (dynamic) {
                         GrizzlyProxy proxy = (GrizzlyProxy) grizzlyService.lookupNetworkProxy(listener);
                         if (proxy != null) {
-                            GrizzlyListener netListener = proxy.getUnderlyingListener();
+                            ServiceInitializerListener netListener = proxy.getUnderlyingListener();
                             netListener.processDynamicConfigurationChange(changedProperties);
                             return null;
                         }
