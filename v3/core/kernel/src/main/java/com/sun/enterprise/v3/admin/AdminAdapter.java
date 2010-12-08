@@ -48,6 +48,7 @@ import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.common_impl.LogHelper;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.net.NetUtils;
 import com.sun.grizzly.tcp.Request;
 import com.sun.logging.LogDomains;
 import java.security.Principal;
@@ -149,6 +150,8 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
 
     @Inject
     GenericJavaConfigListener listener;
+    
+    private SecureAdmin secureAdmin;
 
     final Class<? extends Privacy> privacyClass;
 
@@ -167,6 +170,7 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
         registerDynamicReconfigListeners();
         this.setHandleStaticResources(true);
         this.addRootFolder(env.getProps().get(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY) + "/asadmindocroot/");
+        secureAdmin = habitat.getComponent(SecureAdmin.class);
     }
 
     /**
@@ -301,6 +305,16 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
 
     private boolean authenticate(GrizzlyRequest req, ActionReport report, GrizzlyResponse res)
             throws Exception {
+        
+        if ( ! SecureAdmin.Util.isEnabled(secureAdmin) &&
+             ! NetUtils.isThisHostLocal(req.getRemoteHost())) {
+            reportAuthFailure(res, report, 
+                    "adapter.auth.remoteReqSecAdminOff",
+                    "Remote configuration is currently disabled",
+                    HttpURLConnection.HTTP_FORBIDDEN);
+            return false;
+        }
+        
         AdminAccessController.Access access = authenticate(req);
         /*
          * Admin requests through this adapter are assumed to change the
