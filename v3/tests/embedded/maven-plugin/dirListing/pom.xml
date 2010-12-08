@@ -49,6 +49,7 @@
     <artifactId>dirListing</artifactId>
     <packaging>war</packaging>
     <version>3.1-SNAPSHOT</version>
+    <name>Directory Listing Test (maven-plugin/dirListing)</name>
 
     <build>
         <defaultGoal>install</defaultGoal>

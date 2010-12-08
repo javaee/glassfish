@@ -48,6 +48,7 @@
     <artifactId>applicationDispatcher</artifactId>
     <packaging>war</packaging>
     <version>3.1-SNAPSHOT</version>
+    <name>Application Dispatcher Test (maven-plugin/applicationDispatcher)</name>
 
     <build>
         <defaultGoal>install</defaultGoal>

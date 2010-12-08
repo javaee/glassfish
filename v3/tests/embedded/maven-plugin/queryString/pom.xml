@@ -49,6 +49,7 @@
     <artifactId>queryString</artifactId>
     <packaging>war</packaging>
     <version>3.1-SNAPSHOT</version>
+    <name>Query String Test (maven-plugin/queryString)</name>
 
     <build>
         <defaultGoal>install</defaultGoal>

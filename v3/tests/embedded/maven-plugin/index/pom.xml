@@ -49,6 +49,7 @@
     <artifactId>index</artifactId>
     <packaging>pom</packaging>
     <version>3.1-SNAPSHOT</version>
+    <name>Index Page Test (maven-plugin/index)</name>
 
     <build>
         <defaultGoal>install</defaultGoal>

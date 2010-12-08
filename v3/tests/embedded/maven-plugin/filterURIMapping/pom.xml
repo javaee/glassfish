@@ -49,6 +49,7 @@
     <artifactId>filterURIMapping</artifactId>
     <packaging>war</packaging>
     <version>3.1-SNAPSHOT</version>
+    <name>Filter URI Mapping Test (maven-plugin/filterURIMapping)</name>
 
     <build>
         <defaultGoal>install</defaultGoal>

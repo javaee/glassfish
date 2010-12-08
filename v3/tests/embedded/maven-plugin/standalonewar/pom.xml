@@ -49,6 +49,7 @@
     <artifactId>standalonewar</artifactId>
     <packaging>war</packaging>
     <version>3.1-SNAPSHOT</version>
+    <name>Standalone WAR Test (maven-plugin/standalonewar)</name>
 
     <build>
         <defaultGoal>install</defaultGoal>

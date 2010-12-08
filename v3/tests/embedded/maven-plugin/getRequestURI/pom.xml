@@ -49,6 +49,7 @@
     <artifactId>getRequestURI</artifactId>
     <packaging>war</packaging>
     <version>3.1-SNAPSHOT</version>
+    <name>Get Request URI Test (maven-plugin/getRequestURI)</name>
 
     <build>
         <defaultGoal>install</defaultGoal>

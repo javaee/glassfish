@@ -49,6 +49,7 @@
     <artifactId>websockets</artifactId>
     <packaging>war</packaging>
     <version>3.1-SNAPSHOT</version>
+    <name>WebSocket Test (maven-plugin/websockets)</name>
 
     <build>
         <defaultGoal>install</defaultGoal>

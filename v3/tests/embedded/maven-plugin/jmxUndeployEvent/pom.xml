@@ -49,6 +49,7 @@
     <artifactId>jmxUndeployEvent</artifactId>
     <packaging>war</packaging>
     <version>3.1-SNAPSHOT</version>
+    <name>JMX Undeployment Event Test (maven-plugin/jmsUndeploymentTest)</name>
 
     <build>
         <defaultGoal>install</defaultGoal>

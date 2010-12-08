@@ -50,6 +50,7 @@
     <artifactId>webservice</artifactId>
     <packaging>war</packaging>
     <version>3.1-SNAPSHOT</version>
+    <name>WebService Test (maven-plugin/webservice)</name>
 
     <build>
         <defaultGoal>install</defaultGoal>
