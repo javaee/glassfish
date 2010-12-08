@@ -295,9 +295,9 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
                 }
             } else {
                 // Should be a caught by verifier. So, just log a message
-                String msg = localStrings.getString("puinfo.referenced_jar_not_found",
-                        new Object[]{absolutePuRoot, jarFileName, jarFile});
-                logger.log(Level.WARNING, msg);
+                if (logger.isLoggable(Level.WARNING)) {
+                    logger.log(Level.WARNING, "puinfo.referenced_jar_not_found", new Object[]{absolutePuRoot, jarFileName, jarFile});
+                }
             }
         }
         return jarFiles;

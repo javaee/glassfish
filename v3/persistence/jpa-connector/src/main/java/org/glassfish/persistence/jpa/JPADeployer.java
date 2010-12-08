@@ -41,8 +41,8 @@
 package org.glassfish.persistence.jpa;
 
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
-import com.sun.appserv.connectors.internal.api.ResourceNamingService;
 import com.sun.enterprise.deployment.*;
+import com.sun.logging.LogDomains;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.Events;
@@ -50,8 +50,6 @@ import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.data.ApplicationRegistry;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
-import org.glassfish.javaee.services.DataSourceDefinitionProxy;
-import org.glassfish.resource.common.ResourceInfo;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
@@ -63,10 +61,10 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
-
-import javax.naming.NamingException;
 import javax.persistence.EntityManagerFactory;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -90,6 +88,8 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPApplicationConta
 
     @Inject
     private ApplicationRegistry applicationRegistry;
+
+    private static Logger logger = LogDomains.getLogger(PersistenceUnitLoader.class, LogDomains.PERSISTENCE_LOGGER);
 
     /** Key used to get/put emflists in transientAppMetadata */
     private static final String EMF_KEY = EntityManagerFactory.class.toString();
@@ -202,17 +202,29 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPApplicationConta
 
     @Override
     public void event(Event event) {
+        if(logger.isLoggable(Level.FINEST)) {
+            logger.finest("Received event:" + event.name());
+        }
         if (event.is(Deployment.APPLICATION_PREPARED) ) {
             ExtendedDeploymentContext context = (ExtendedDeploymentContext)event.hook();
-            Map<String, ExtendedDeploymentContext> deploymentContexts = context.getModuleDeploymentContexts();
-
-            for (DeploymentContext deploymentContext : deploymentContexts.values()) {
-                //bundle level pus
-                iterateInitializedPUsAtApplicationPrepare(deploymentContext);
+            OpsParams params = context.getCommandParameters(OpsParams.class);
+            if(logger.isLoggable(Level.FINE)) {
+                logger.fine("Handling event: APPLICATION_PREPARED origin is:" + params.origin);
             }
-            //app level pus
-            iterateInitializedPUsAtApplicationPrepare(context);
+            if(!params.origin.isCreateAppRef()) {
+                // When create-application-ref is called for an already deployed app, APPLICATION_PREPARED will be sent on DAS
+                // Obviously there is no new emf created for this even and we need not do java2db also. Ignore the event
+                Map<String, ExtendedDeploymentContext> deploymentContexts = context.getModuleDeploymentContexts();
+
+                for (DeploymentContext deploymentContext : deploymentContexts.values()) {
+                    //bundle level pus
+                    iterateInitializedPUsAtApplicationPrepare(deploymentContext);
+                }
+                //app level pus
+                iterateInitializedPUsAtApplicationPrepare(context);
+            }
         } else if(event.is(Deployment.APPLICATION_DISABLED)) {
+            logger.fine("Handling event: APPLICATION_DISABLED");
             // APPLICATION_DISABLED will be generated when an app is disabled/undeployed/appserver goes down.
             //close all the emfs created for this app
             ApplicationInfo appInfo = (ApplicationInfo) event.hook();
@@ -257,6 +269,7 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPApplicationConta
 
                     // Save emf in ApplicationInfo so that it can be retrieved and closed for cleanup
                     // The PUs
+                    @SuppressWarnings("unchecked") //Suppress warning required as there is no way to pass equivalent of List<EMF>.class to the method
                     List<EntityManagerFactory> emfsCreatedForThisApp = appInfo.getTransientAppMetaData(EMF_KEY, List.class );
                     if(emfsCreatedForThisApp == null) {
                         //First EMF for this app, initialize
