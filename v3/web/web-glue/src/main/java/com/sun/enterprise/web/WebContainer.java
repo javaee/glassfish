@@ -855,7 +855,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         if (_logger.isLoggable(Level.INFO)) {
             _logger.log(Level.INFO, "webContainer.HTTP.listenerAndPort", new Object[]{listener.getName(), listener.getAddress(), listener.getPort()});
-            Thread.currentThread().dumpStack();
         }
 
         connector.setName(listener.getName());
