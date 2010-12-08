@@ -40,7 +40,9 @@
 package com.sun.enterprise.v3.admin;
 
 import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.JavaConfig;
+import static com.sun.enterprise.util.StringUtils.ok;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
@@ -63,6 +65,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
+import org.jvnet.hk2.config.types.Property;
 import static org.glassfish.api.ActionReport.ExitCode.SUCCESS;
 
 /**
@@ -74,7 +77,7 @@ import static org.glassfish.api.ActionReport.ExitCode.SUCCESS;
 @Scoped(PerLookup.class)
 @CommandLock(CommandLock.LockType.NONE)
 @ExecuteOn({RuntimeType.INSTANCE})
-@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTERED_INSTANCE})
+@TargetType({CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTERED_INSTANCE})
 public class RuntimeInfo implements AdminCommand {
     public RuntimeInfo() {
     }
@@ -103,7 +106,6 @@ public class RuntimeInfo implements AdminCommand {
             final Method jm = osBean.getClass().getMethod("getTotalPhysicalMemorySize");
             AccessController.doPrivileged(
                     new PrivilegedExceptionAction() {
-
                         public Object run() throws Exception {
                             if (!jm.isAccessible()) {
                                 jm.setAccessible(true);
@@ -123,9 +125,30 @@ public class RuntimeInfo implements AdminCommand {
         RuntimeMXBean rmxb = ManagementFactory.getRuntimeMXBean();
         top.addProperty("startTimeMillis", "" + rmxb.getStartTime());
         top.addProperty("pid", "" + rmxb.getName());
-
+        checkDtrace();
+        setDasName();
         reportMessage.append(Strings.get("runtime.info.debug", jpdaEnabled ? "enabled" : "not enabled"));
         report.setMessage(reportMessage.toString());
+    }
+
+    private void checkDtrace() {
+        try {
+            Class.forName("com.sun.tracing.ProviderFactory");
+            top.addProperty("dtrace", "true");
+        }
+        catch (Exception ex) {
+            top.addProperty("dtrace", "false");
+        }
+    }
+
+    private void setDasName() {
+        try {
+            String name = env.getInstanceRoot().getName();
+            top.addProperty("domain_name", name);
+        }
+        catch (Exception ex) {
+            // ignore
+        }
     }
 
     private int parsePort(String s) {
@@ -146,6 +169,8 @@ public class RuntimeInfo implements AdminCommand {
         }
         return port;
     }
+    @Inject
+    ServerEnvironment env;
     @Inject
     private StartupContext ctx;
     @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
