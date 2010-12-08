@@ -64,7 +64,9 @@ public class MyBean {
         DataSource ds1 = (DataSource) initCtx.lookup(DEF_RESOURCE);
         DataSource ds2 = (DataSource) initCtx.lookup(XA_RESOURCE);
 
+        System.err.println("Insert in DEF_RESOURCE");
         boolean res1 = test(id, ds1, true);
+        System.err.println("Insert in XA_RESOURCE");
         boolean res2 = test(id, ds2, true);
         return res1 && res2;
     }

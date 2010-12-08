@@ -30,6 +30,7 @@ public class TestServlet extends HttpServlet {
 	resp.setContentType("text/html");
 
         String type = req.getQueryString();
+        System.err.println("RT: " + type);
         out.println("<html>");
             out.println("<head>");
             out.println("<title>Servlet TestServlet</title>");

@@ -286,7 +286,7 @@
     </target>
 
     <target name="kill-instance">
-      <sleep seconds="20"/>
+      <sleep seconds="40"/>
       <exec executable="./kill_instance.sh" failonerror="true">
         <arg line="${in}"/>
       </exec>
