@@ -46,7 +46,9 @@
         gf.updateEntity(endpoint="#{pageSession.selfUrl}", attrs="#{pageSession.valueMap}", skipAttrs="#{pageSession.skipAttrsList}",
             convertToFalse="#{pageSession.convertToFalseList}"
         );
-        gf.updateEntity(endpoint="#{pageSession.resourceRefUrl}", attrs="#{pageSession.resourceRef}", convertToFalse={"enabled"});
+        if(#{pageSession.resourceRefUrl}) {
+            gf.updateEntity(endpoint="#{pageSession.resourceRefUrl}", attrs="#{pageSession.resourceRef}", convertToFalse={"enabled"});
+        }
 
         removeEmptyProps(props="#{newList}" modifiedProps="#{newList}");
         javaToJSON(obj="#{pageSession.tableList}" json="#{requestScope.tmpJSON}");
