@@ -50,7 +50,7 @@
     <artifactId>securewebapp</artifactId>
     <packaging>war</packaging>
     <version>3.1-SNAPSHOT</version>
-    <name>Test secure port and other maven plugin configurations</name>
+    <name>Test https and other plugin configurations (maven-plugin/secureWebApp)</name>
 
     <build>
         <defaultGoal>install</defaultGoal>

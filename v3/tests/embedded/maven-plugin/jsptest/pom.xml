@@ -50,7 +50,7 @@
     <artifactId>jsptest</artifactId>
     <packaging>war</packaging>
     <version>3.1-SNAPSHOT</version>
-    <name>Test web application containing JSPs/JSTLs in Embedded GlassFish</name>
+    <name>Test web app containing JSPs/JSTLs (maven-plugin/jsptest)</name>
 
     <build>
         <defaultGoal>install</defaultGoal>
