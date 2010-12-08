@@ -137,21 +137,24 @@ public class InstallNodeCommand extends SSHCommandsBase {
     @Override
     protected int executeCommand() throws CommandException {
         Globals.setDefaultHabitat(habitat);
+        File zipFile = null;
         try {
 
             String baseRootValue = getSystemProperty(SystemPropertyConstants.PRODUCT_ROOT_PROPERTY) ;
             ArrayList<String>  binDirFiles = new ArrayList<String>();
-            File zipFile = createZipFileIfNeeded(baseRootValue, binDirFiles);
-            copyToHosts(zipFile, binDirFiles);
-            if (!save && delete) {
-                zipFile.delete();
-            }
+            zipFile = createZipFileIfNeeded(baseRootValue, binDirFiles);
+            copyToHosts(zipFile, binDirFiles);            
         } catch (IOException ioe) {
             throw new CommandException(ioe);
         } catch (ZipFileException ze) {
             throw new CommandException(ze);
         } catch (InterruptedException e) {
             throw new CommandException(e);
+        } finally {
+            if (!save && delete) {
+                if (zipFile != null)
+                    zipFile.delete();
+            }
         }
 
         return SUCCESS;
