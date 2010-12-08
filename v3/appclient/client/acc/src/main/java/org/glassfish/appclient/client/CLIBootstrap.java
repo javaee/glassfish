@@ -871,6 +871,7 @@ public class CLIBootstrap {
 
         addProperties(command);
 
+        jvmValuedOptions.format(command);
         jvmPropertySettings.format(command);
         otherJVMOptions.format(command);
         extDirs.format(command);
