@@ -169,6 +169,7 @@ public class V2ToV3ConfigUpgrade implements ConfigurationUpgrade, PostConstruct 
         "-Dfelix.fileinstall.log.level=2",
         "-Djavax.management.builder.initial=com.sun.enterprise.v3.admin.AppServerMBeanServerBuilder",
         "-Dorg.glassfish.web.rfc2109_cookie_names_enforced=false",
+        "-Djava.ext.dirs=${com.sun.aas.javaRoot}/lib/ext${path.separator}${com.sun.aas.javaRoot}/jre/lib/ext${path.separator}${com.sun.aas.instanceRoot}/lib/ext",
     };
 
     // these are added to DAS only
