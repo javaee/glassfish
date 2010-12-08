@@ -167,7 +167,7 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand, Pos
         String prefix;
         boolean lookAtSubNodes = true;
         if (parentNodes[0].relativeName.length() == 0 ||
-            parentNodes[0].relativeName.indexOf('.') == -1) {
+                parentNodes[0].relativeName.equals("domain")) {
             // handle the case where the pattern references an attribute of the top-level node
             prefix = "";
             // pattern is already set properly

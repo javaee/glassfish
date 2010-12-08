@@ -134,10 +134,15 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
 
         // reset the pattern.
         String prefix = "";
-        if (!pattern.startsWith(parentNodes[0].relativeName)) {
-            prefix = pattern.substring(0, pattern.indexOf(parentNodes[0].relativeName));
+        if (pattern.startsWith("domain.")) {
+            // prefix and pattern are set correctly
         }
-        pattern = parentNodes[0].relativeName;
+        else if(!pattern.startsWith(parentNodes[0].relativeName)) {
+            prefix = pattern.substring(0, pattern.indexOf(parentNodes[0].relativeName));
+            pattern = parentNodes[0].relativeName;
+        } else {
+            pattern = parentNodes[0].relativeName;
+        }
 
         String targetName = prefix + pattern;
 
@@ -145,7 +150,9 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
         Map<Dom, String> dottedNames = new HashMap<Dom, String>();
         for (TreeNode parentNode : parentNodes) {
             dottedNames.putAll(getAllDottedNodes(parentNode.node));
-            dottedNames.put(parentNode.node, parentNode.name);
+            if (parentNode.name.equals("")) {
+                dottedNames.put(parentNode.node, "domain");
+            }
         }
         matchingNodes = getMatchingNodes(dottedNames, pattern);
         if (matchingNodes.isEmpty() && pattern.lastIndexOf('.') != -1) {

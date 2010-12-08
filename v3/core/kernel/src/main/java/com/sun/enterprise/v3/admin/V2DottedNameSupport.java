@@ -342,7 +342,7 @@ public class V2DottedNameSupport {
 
         return new TreeNode[] {
             //new TreeNode(Dom.unwrap(domain), name, newPrefix)
-            new TreeNode(Dom.unwrap(domain), "domain", prefix)
+            new TreeNode(Dom.unwrap(domain), "", prefix)
         };
     }
 
