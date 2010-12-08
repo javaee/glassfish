@@ -116,6 +116,9 @@ public final class CreateDomainCommand extends CLICommand {
     @Param(name = SAVE_MASTER_PASSWORD, optional = true, defaultValue = "false")
     private boolean saveMasterPassword = false;
 
+    @Param(name = "usemasterpassword", optional = true, defaultValue = "false")
+    private boolean useMasterPassword = false;
+
     @Param(name = DOMAIN_PROPERTIES, optional = true, separator = ':')
     private Properties domainProperties;
 
@@ -314,10 +317,8 @@ public final class CreateDomainCommand extends CLICommand {
         if (!ok(adminUser)) {
             adminUser = SystemPropertyConstants.DEFAULT_ADMIN_USER;
             adminPassword = SystemPropertyConstants.DEFAULT_ADMIN_PASSWORD;
-            masterPassword = DEFAULT_MASTER_PASSWORD;
         } else if (noPassword) {
             adminPassword = SystemPropertyConstants.DEFAULT_ADMIN_PASSWORD;
-            masterPassword = DEFAULT_MASTER_PASSWORD;
         } else {
             /*
              * If the admin password was supplied in the password
@@ -337,14 +338,15 @@ public final class CreateDomainCommand extends CLICommand {
                 adminPassword = getAdminPassword();
             }
             validatePassword(adminPassword, adminPasswordOption);
-            if (haveAdminPwd)
-                masterPassword = passwords.get(MASTER_PASSWORD);
-            else
-                masterPassword = getMasterPassword();
-            if (masterPassword == null)
-                masterPassword = DEFAULT_MASTER_PASSWORD;
-            validatePassword(masterPassword, masterPasswordOption);
         }
+
+        if (saveMasterPassword)
+            useMasterPassword = true;
+        if (useMasterPassword)
+            masterPassword = getMasterPassword();
+        if (masterPassword == null)
+            masterPassword = DEFAULT_MASTER_PASSWORD;
+        validatePassword(masterPassword, masterPasswordOption);
 
         try {
             // verify admin port is valid if specified on command line
