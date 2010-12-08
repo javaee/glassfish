@@ -42,12 +42,10 @@ package org.glassfish.appclient.client;
 
 import com.sun.enterprise.util.LocalStringManager;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.logging.LogDomains;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.glassfish.appclient.client.acc.UserError;
@@ -69,13 +67,21 @@ import org.glassfish.appclient.client.acc.UserError;
  * <pre>
  * {@code
  * java \
- *   (user-specified JVM options except classpath, cp, jar) \
+ *   (user-specified JVM options except -jar) \
  *   (settings for java.ext.dirs and java.endorsed.dirs) \
  *   -javaagent:(path-to-gf-client.jar)=(option string for our agent) \
  *   (main class setting: "-jar x.jar" or "a.b.Main" or "path-to-file.class")
  *   (arguments to be passed to the client)
  * }</pre>
  * <p>
+ * The general design of this class uses several inner classes, CommandLineElement
+ * and its extensions.  These classes have slightly different behavior depending
+ * on the specific type of command line element each represents.  Each has
+ * a regex pattern which it uses to decide whether it recognizes a particular
+ * command line element or not.  Each also implements (or inherits) the
+ * processValue method which actually consumes the command line element being
+ * handled -- and sometimes the next one as well if the element takes a value
+ * (such as -classpath).
  * 
  * @author Tim Quinn
  */
@@ -106,7 +112,7 @@ public class CLIBootstrap {
             "-Djava.system.class.loader=org.glassfish.appclient.client.acc.agent.ACCAgentClassLoader";
 
     private final static String[] ENV_VARS = {
-        "_AS_INSTALL", "APPCPATH", "VMARGS", "AS_JAVA", "JAVA_HOME", "PATH"};
+        "_AS_INSTALL", "APPCPATH", "VMARGS"};
 
     private final static String EXT_DIRS_INTRODUCER = "-Djava.ext.dirs";
     private final static String ENDORSED_DIRS_INTRODUCER = "-Djava.endorsed.dirs";
@@ -157,6 +163,10 @@ public class CLIBootstrap {
             if (isDebug) {
                 System.err.println(outputCommandLine);
             }
+            /*
+             * Write the generated java command to System.out.  The calling
+             * shell script will execute this command.
+             */
             System.out.println(outputCommandLine);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -309,11 +319,6 @@ public class CLIBootstrap {
      */
     private class CommandLineElement {
 
-        private class OptionValue {
-            private String optionName;
-            private String value;
-        }
-
         private final Pattern pattern;
         Matcher matcher;
 
@@ -334,12 +339,15 @@ public class CLIBootstrap {
         }
 
         /**
-         * Processes the command line element at args[slot], possibly
-         * consuming the next array element as well if appropriate.
+         * Processes the command line element at args[slot].
+         * <p>
+         * Subclass implementations might consume the next element as well.
          * @param args
          * @param slot
-         * @return
-         * @throws UserError
+         * @return next slot to be processed
+         * @throws UserError if the user specified an option that requires a
+         * value but provided no value (either the next command line element is
+         * another option or there is no next element)
          */
         int processValue(String[] args, int slot) throws UserError {
             values.add(args[slot++]);
@@ -415,12 +423,23 @@ public class CLIBootstrap {
             boolean needSep = false;
             for (String value : values) {
                 if (needSep) {
-                    commandLine.append(',');
+                    commandLine.append(valueSep());
                 }
                 format(commandLine, useQuotes, value);
+                needSep = true;
             }
             commandLine.append(' ');
             return commandLine;
+        }
+
+        /**
+         * Returns the separator character to be inserted in the emitted
+         * command line between values stored in the same instance of this
+         * command line element.
+         * @return
+         */
+        char valueSep() {
+            return ' ';
         }
 
         /**
@@ -454,7 +473,8 @@ public class CLIBootstrap {
     /**
      * A JVM command-line option. Only JVM options which appear before the
      * main class setting are propagated to the output command line as
-     * JVM options.
+     * JVM options.  If they appear after the main class setting then they
+     * are treated as arguments to the client.
      * <p>
      * This type of command line element can include values specified using
      * the VMARGS environment variable.
@@ -486,6 +506,11 @@ public class CLIBootstrap {
      * see "-jar xxx" in which case we impose the Java-style restriction that
      * anything which follows the specification of the main class is an
      * argument to be passed to the application.
+     * <p>
+     * We do not impose the same restriction if the user specified -client xxx.jar
+     * in order to preserve backward compatibility with earlier releases, in
+     * which ACC options and client arguments could be intermixed anywhere on
+     * the command line.
      */
     private class ACCUnvaluedOption extends Option {
         ACCUnvaluedOption(final String patternString) {
