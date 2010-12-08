@@ -47,10 +47,9 @@ import com.sun.enterprise.util.SystemPropertyConstants;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.ExecuteOn;
-import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.api.admin.*;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -79,8 +78,10 @@ import java.util.Properties;
 * (logger_name=logging_value)[:logger_name=logging_value]*
 *
 */
-@ExecuteOn({RuntimeType.DAS, RuntimeType.INSTANCE})
+@ExecuteOn({RuntimeType.DAS})
+@TargetType({CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER, CommandTarget.CONFIG})
 @Service(name = "set-log-levels")
+@CommandLock(CommandLock.LockType.NONE)
 @Scoped(PerLookup.class)
 @I18n("set.log.levels")
 public class SetLogLevel implements AdminCommand {
@@ -158,6 +159,7 @@ public class SetLogLevel implements AdminCommand {
                     if (targetServer.getConfigRef().equals(target)) {
                         isDas = true;
                     }
+                    targetServer = null;
                 } else {
                     Server targetServer = domain.getServerNamed(target);
 
