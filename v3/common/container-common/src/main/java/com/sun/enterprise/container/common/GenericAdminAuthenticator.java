@@ -213,6 +213,9 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
                         new Object[] {access, user});
 
             } else {
+                String msg = lsm.getLocalString("authentication.failed",
+                        "User [{0}] from host {1} does not have administration access", user, originHost);
+                logger.log(Level.INFO, msg);
                 access = Access.NONE;
             }
             return access;
@@ -520,7 +523,7 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
             AdminAccessController.Access result = this.loginAsAdmin(user, password, realm, host);
             if (result == AdminAccessController.Access.NONE) {
                 String msg = lsm.getLocalString("authentication.failed",
-                        "User [{0}] does not have administration access", user);
+                        "User [{0}] from host {1} does not have administration access", user, host);
                 throw new SecurityException(msg);
             }
             // TODO Do we need to build a Subject so JMX can enforce monitor-only vs. manage permissions?
