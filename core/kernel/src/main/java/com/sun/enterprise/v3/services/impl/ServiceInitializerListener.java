@@ -43,7 +43,6 @@ import java.util.logging.Logger;
 
 import org.glassfish.grizzly.config.dom.Protocol;
 import org.glassfish.grizzly.filterchain.FilterChain;
-import org.jvnet.hk2.component.Habitat;
 
 /**
  * This class extends Grizzly's GrizzlyServiceListener class to customize it for GlassFish and enable a single listener
@@ -53,13 +52,14 @@ import org.jvnet.hk2.component.Habitat;
  */
 public class ServiceInitializerListener extends org.glassfish.grizzly.config.GenericGrizzlyListener {
     private final Logger logger;
-    private final Habitat habitat;
+    private final GrizzlyService grizzlyService;
 //    private boolean isGenericListener = false;
 
 //    private String name;
 
-    public ServiceInitializerListener(final Habitat habitat, final Logger logger) {
-        this.habitat = habitat;
+    public ServiceInitializerListener(final GrizzlyService grizzlyService,
+            final Logger logger) {
+        this.grizzlyService = grizzlyService;
         this.logger = logger;
     }
 
@@ -96,7 +96,7 @@ public class ServiceInitializerListener extends org.glassfish.grizzly.config.Gen
 
     @Override
     protected void configureProtocol(final Protocol protocol, final FilterChain filterChain) {
-        filterChain.add(new ServiceInitializerFilter(this, habitat, logger));
+        filterChain.add(new ServiceInitializerFilter(this, grizzlyService.getHabitat(), logger));
     }
 
 

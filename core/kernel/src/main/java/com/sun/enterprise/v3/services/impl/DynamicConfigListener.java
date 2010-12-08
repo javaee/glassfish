@@ -69,6 +69,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.ReentrantLock;
 import org.glassfish.grizzly.Grizzly;
+import org.glassfish.grizzly.config.GrizzlyListener;
 import org.glassfish.grizzly.impl.FutureImpl;
 import org.glassfish.grizzly.impl.SafeFutureImpl;
 
@@ -162,7 +163,7 @@ public class DynamicConfigListener implements ConfigListener {
                     if (dynamic) {
                         GrizzlyProxy proxy = (GrizzlyProxy) grizzlyService.lookupNetworkProxy(listener);
                         if (proxy != null) {
-                            ServiceInitializerListener netListener = proxy.getUnderlyingListener();
+                            final GrizzlyListener netListener = proxy.getUnderlyingListener();
                             netListener.processDynamicConfigurationChange(changedProperties);
                             return null;
                         }

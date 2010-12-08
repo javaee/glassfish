@@ -80,7 +80,7 @@ public class ContainerMapper extends HttpRequestProcessor {
     private static final Logger LOGGER = Logger.getLogger(ContainerMapper.class.getName());
     private final static String ROOT = "";
     private Mapper mapper;
-    private GrizzlyListener listener;
+    private final GrizzlyListener listener;
     private String defaultHostName = "server";
     private final GrizzlyService grizzlyService;
     protected final static Note<MappingData> MAPPING_DATA =
@@ -94,8 +94,9 @@ public class ContainerMapper extends HttpRequestProcessor {
      */
     private boolean mapMultipleAdapter;
 
-    public ContainerMapper(GrizzlyService service, GrizzlyListener embeddedHttp) {
-        listener = embeddedHttp;
+    public ContainerMapper(final GrizzlyService service,
+            final GrizzlyListener grizzlyListener) {
+        listener = grizzlyListener;
 //        urlDecoder = embeddedHttp.getUrlDecoder();
         grizzlyService = service;
 
@@ -166,7 +167,7 @@ public class ContainerMapper extends HttpRequestProcessor {
                 }
             }
 
-            DataChunk decodedURI = request.getRequest().getRequestURIRef().getDecodedRequestURIBC();
+            final DataChunk decodedURI = request.getRequest().getRequestURIRef().getDecodedRequestURIBC();
             mappingData = request.getNote(MAPPING_DATA);
             if (mappingData == null) {
                 mappingData = new MappingData();

@@ -40,16 +40,10 @@
 
 package com.sun.enterprise.v3.services.impl;
 
-import com.sun.enterprise.v3.services.impl.monitor.GrizzlyMonitoring;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
-import org.jvnet.hk2.config.types.Property;
 import org.glassfish.grizzly.config.dom.NetworkListener;
-import org.glassfish.grizzly.config.dom.Protocol;
-import com.sun.hk2.component.ExistingSingletonInhabitant;
 import org.glassfish.api.container.EndpointRegistrationException;
 import org.glassfish.api.deployment.ApplicationContainer;
-import org.glassfish.internal.grizzly.V3Mapper;
-import org.jvnet.hk2.component.Inhabitant;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -64,8 +58,6 @@ import com.sun.enterprise.util.Result;
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.config.GrizzlyListener;
 import org.glassfish.grizzly.http.server.HttpRequestProcessor;
-import org.glassfish.grizzly.http.server.StaticResourcesService;
-import org.glassfish.grizzly.http.server.util.Mapper;
 import org.glassfish.grizzly.impl.FutureImpl;
 import org.glassfish.grizzly.impl.UnsafeFutureImpl;
 
@@ -131,98 +123,18 @@ public class GrizzlyProxy implements NetworkProxy {
 
     protected void createGrizzlyListener(final NetworkListener networkListener) {
         if("light-weight-listener".equals(networkListener.getProtocol())) {
-            createServiceInitializerListener(networkListener);
+            createServiceInitializerListener();
         } else {
-            createGlassfishListener(networkListener);
+            createGlassfishListener();
         }
     }
 
-    protected void createGlassfishListener(final NetworkListener networkListener) {
-        grizzlyListener = new GlassfishNetworkListener();
-
-        registerMonitoringStatsProviders();
-
-        final Protocol httpProtocol = networkListener.findHttpProtocol();
-
-        if (httpProtocol != null) {
-            final V3Mapper mapper = new V3Mapper(logger);
-            mapper.setPort(portNumber);
-            mapper.setId(networkListener.getName());
-
-            final ContainerMapper containerMapper = new ContainerMapper(
-                    grizzlyService, grizzlyListener);
-            containerMapper.setMapper(mapper);
-            containerMapper.setDefaultHost(grizzlyListener.getDefaultVirtualServer());
-            containerMapper.configureMapper();
-            embeddedHttp.setAdapter(containerMapper);
-
-//                String ct = httpProtocol.getHttp().getDefaultResponseType();
-//                containerMapper.setDefaultContentType(ct);
-            final Collection<VirtualServer> list = grizzlyService.getHabitat().getAllByContract(VirtualServer.class);
-            final String vsName = httpProtocol.getHttp().getDefaultVirtualServer();
-            for (VirtualServer virtualServer : list) {
-                if (virtualServer.getId().equals(vsName)) {
-                    vs = virtualServer;
-                    embeddedHttp.setWebAppRootPath(vs.getDocroot());
-
-                    if (!grizzlyService.hasMapperUpdateListener()
-                            && vs.getProperty() != null && !vs.getProperty().isEmpty()) {
-                        for (Property p : vs.getProperty()) {
-                            String name = p.getName();
-                            if (name.startsWith("alternatedocroot")) {
-                                String value = p.getValue();
-                                String[] mapping = value.split(" ");
-
-                                if (mapping.length != 2) {
-                                    logger.log(Level.WARNING, "Invalid alternate_docroot {0}", value);
-                                    continue;
-                                }
-
-                                String docBase = mapping[1].substring("dir=".length());
-                                String urlPattern = mapping[0].substring("from=".length());
-                                try {
-                                    final StaticResourcesService staticResourceService =
-                                            new StaticResourcesService(docBase);
-                                    ArrayList<String> al = toArray(vs.getHosts(), ";");
-                                    al.add(grizzlyListener.getDefaultVirtualServer());
-                                    registerEndpoint(urlPattern, al, staticResourceService, null);
-                                } catch (EndpointRegistrationException ex) {
-                                    logger.log(Level.SEVERE, "Unable to set alternate_docroot", ex);
-                                }
-
-                            }
-                        }
-                    }
-                    break;
-                }
-            }
-
-            containerMapper.addRootFolder(embeddedHttp.getWebAppRootPath());
-
-            Inhabitant<Mapper> onePortMapper = new ExistingSingletonInhabitant<Mapper>(mapper);
-            grizzlyService.getHabitat().addIndex(onePortMapper,
-                    Mapper.class.getName(), (networkListener.getAddress() + networkListener.getPort()));
-            grizzlyService.notifyMapperUpdateListeners(networkListener, mapper);
-        }
-
-        boolean autoConfigure = false;
-        // Avoid overriding the default with false
-        if (System.getProperty(AUTO_CONFIGURE) != null) {
-            autoConfigure = true;
-        }
-        embeddedHttp.getController().setAutoConfigure(autoConfigure);
-
-        boolean leaderFollower = false;
-        // Avoid overriding the default with false
-        if (System.getProperty(LEADER_FOLLOWER) != null) {
-            leaderFollower = true;
-        }
-        embeddedHttp.getController().useLeaderFollowerStrategy(leaderFollower);
-        
+    protected void createGlassfishListener() {
+        grizzlyListener = new GlassfishNetworkListener(grizzlyService, logger);
     }
 
-    protected void createServiceInitializerListener(final NetworkListener networkListener) {
-        grizzlyListener = new ServiceInitializerListener(grizzlyService.getHabitat(), logger);
+    protected void createServiceInitializerListener() {
+        grizzlyListener = new ServiceInitializerListener(grizzlyService, logger);
     }
 
     static ArrayList<String> toArray(String list, String token){
@@ -239,11 +151,7 @@ public class GrizzlyProxy implements NetworkProxy {
 
     @Override
     public void destroy() {
-        if(!grizzlyListener.isGenericListener()) {
-            grizzlyService.getHabitat().removeIndex(Mapper.class.getName(),
-                        (networkListener.getAddress() + networkListener.getPort()));
-            unregisterMonitoringStatsProviders();
-        }
+        grizzlyListener.destroy();
     }
 
     @Override
@@ -268,10 +176,6 @@ public class GrizzlyProxy implements NetworkProxy {
             HttpRequestProcessor endpointService,
             ApplicationContainer container) throws EndpointRegistrationException {
         
-        if(grizzlyListener.isGenericListener()) {
-            return;
-        }
-
         // e.g., there is no admin service in an instance
         if (contextRoot == null) {
             return;
@@ -281,8 +185,11 @@ public class GrizzlyProxy implements NetworkProxy {
             throw new EndpointRegistrationException(
                 "The endpoint adapter is null");
         }
-        ((ContainerMapper) grizzlyListener.getEmbeddedHttp().getAdapter())
-            .register(contextRoot, vsServers, endpointService, container);
+
+        final HttpAdapter httpAdapter = grizzlyListener.getAdapter(HttpAdapter.class);
+        if (httpAdapter != null) {
+            httpAdapter.getMapper().register(contextRoot, vsServers, endpointService, container);
+        }
     }
 
     /**
@@ -290,11 +197,10 @@ public class GrizzlyProxy implements NetworkProxy {
      */
     @Override
     public void unregisterEndpoint(String contextRoot, ApplicationContainer app) throws EndpointRegistrationException {
-        if(grizzlyListener.isGenericListener()) {
-            return;
+        final HttpAdapter httpAdapter = grizzlyListener.getAdapter(HttpAdapter.class);
+        if (httpAdapter != null) {
+            httpAdapter.getMapper().unregister(contextRoot);
         }
-        ((ContainerMapper) grizzlyListener.getEmbeddedHttp().getAdapter())
-            .unregister(contextRoot);
     }
 
     @Override
@@ -327,25 +233,5 @@ public class GrizzlyProxy implements NetworkProxy {
 
     public GrizzlyListener getUnderlyingListener() {
         return grizzlyListener;
-    }
-
-    protected void registerMonitoringStatsProviders() {
-        final String name = networkListener.getName();
-        final GrizzlyMonitoring monitoring = grizzlyService.getMonitoring();
-
-        monitoring.registerThreadPoolStatsProvider(name);
-        monitoring.registerKeepAliveStatsProvider(name);
-        monitoring.registerFileCacheStatsProvider(name);
-        monitoring.registerConnectionQueueStatsProvider(name);
-    }
-
-    protected void unregisterMonitoringStatsProviders() {
-        final String name = networkListener.getName();
-        final GrizzlyMonitoring monitoring = grizzlyService.getMonitoring();
-
-        monitoring.unregisterThreadPoolStatsProvider(name);
-        monitoring.unregisterKeepAliveStatsProvider(name);
-        monitoring.unregisterFileCacheStatsProvider(name);
-        monitoring.unregisterConnectionQueueStatsProvider(name);
     }
 }
