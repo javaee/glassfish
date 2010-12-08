@@ -182,12 +182,7 @@ public class JAXWSServlet extends HttpServlet {
                 return;
             }
             if (endpt != null && Boolean.parseBoolean(endpt.getDescriptor().getDebugging())) {
-                /* ClassLoader loader =  endpt.getDescriptor().getBundleDescriptor().getExtraAttribute("WEBLOADER");
-                if (loader != null) {
-                    endpt.getDescriptor().getBundleDescriptor().setClassLoader(loader.getClassLoader());
-                    endpt.getDescriptor().getBundleDescriptor().removeExtraAttribute("WEBLOADER");
-                }*/
-                //TODO BM fixe me
+
                 WebServiceTesterServlet.invoke(request, response,
                         endpt.getDescriptor());
 

@@ -257,16 +257,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
                 logger.severe(errorMessage);
                 throw new DeploymentException(errorMessage);
             }
-        } /*JAX-WS runtime takes care of generating/publishing the wsdl and hence the following code is unnecessary 
-                else {
-
-
-                    //make required dirs in case they are not present
-                    wsdlFileUri = JAXBRIContext.mangleNameToClassName(ws.getName()) + ".wsdl";
-                    wsdlDir.mkdirs();
-                    wsdlFile = new File(wsdlDir, wsdlFileUri);
-
-            }    */
+        }
     }
 
     /**
@@ -644,11 +635,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
 
                 // Create the generated WSDL in the generated directory; for that create the directories first
                 File genXmlDir =  dc.getScratchDir("xml");
-                /*if(!app.isVirtual()) {
-                    // Add module name to the generated xml dir for apps
-                    String subDirName = next.getBundleDescriptor().getModuleDescriptor().getArchiveUri();
-                    genXmlDir = new File(genXmlDir, subDirName.replaceAll("\\.", "_"));
-                }*/
+
                 String wsdlFileDir = next.getWsdlFileUri().substring(0, next.getWsdlFileUri().lastIndexOf('/'));
                 (new File(genXmlDir, wsdlFileDir)).mkdirs();
                 File genWsdlFile = new File(genXmlDir, next.getWsdlFileUri());
@@ -772,12 +759,6 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
     @Override
     public void clean(DeploymentContext dc) {
         super.clean(dc);
-        /*
-        UndeployCommandParameters params = dc.getCommandParameters(UndeployCommandParameters.class);
-        if (params != null)  {
-            final Artifacts generatedArtifacts = DeploymentUtils.generatedArtifacts(dc);
-            generatedArtifacts.clearArtifacts() ;
-        } */
 
         WebServicesContainer container = habitat.getComponent(WebServicesContainer.class);
         WebServicesDeploymentMBean bean = container.getDeploymentBean();
