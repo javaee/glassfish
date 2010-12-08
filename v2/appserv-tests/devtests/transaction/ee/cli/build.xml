@@ -57,6 +57,18 @@
     <property name="db.host" value="localhost"/>
     <property name="db.port" value="1527"/>
 
+    <property name="derby-type" value="default"/>
+
+    <condition property="derby.class" value="DerbyControl" else="NetworkServerControl">
+      <equals arg1="${derby-type}" arg2="default"/>
+    </condition>
+
+    <condition property="ntwk.derby">
+      <not>
+         <equals arg1="${derby-type}" arg2="default"/>
+      </not>
+    </condition>
+
     <target name="all" depends="build,setup,run,unsetup,dev-report"/>
 
     <target name="setup" depends="init-common">
@@ -180,13 +192,13 @@
     </target>
 
     <target name="start-database" depends="init-common">
-        <echo message="Starting database"/>
         <antcall target="startNtwDerby"/>
+        <antcall target="start-derby"/>
     </target>
 
     <target name="stop-database" depends="init-common">
-        <echo message="Stopping database"/>
         <antcall target="stopNtwDerby"/>
+        <antcall target="stop-derby"/>
     </target>
 
     <target name="build" depends="compile-war">
@@ -344,9 +356,11 @@
     </target>
 
     <target name="kill-database">
-      <echo message="Killing database"/>
+      <echo message="Killing database using ${derby.class}"/>
        <sleep seconds="20"/>
-       <exec executable="./kill_database.sh" failonerror="true"/>
+       <exec executable="./kill_database.sh" failonerror="true">
+          <arg line="${derby.class}"/>
+        </exec>
     </target>
 
     <target name="kill-instance">
@@ -406,6 +420,7 @@
     </target>
 
     <target name="usage">
+        <echo message="Running with ${derby.class} Derby ntwk.derby is set to .${ntwk.derby}"/>
         <antcall target="usage-common"/>
     </target>
 
@@ -423,7 +438,7 @@
         </antcall>
     </target>
 
-    <target name="startNtwDerby" depends="init-common">
+    <target name="startNtwDerby" depends="init-common" if="ntwk.derby">
         <echo message="Starting Derby in the Network Mode on port ${db.port}"/>
         <java classname="org.apache.derby.drda.NetworkServerControl"
           classpath="${db.classpath}" fork="true" spawn="true">
@@ -431,12 +446,29 @@
         </java>
     </target>
 
-    <target name="stopNtwDerby" depends="init-common">
-        <echo message="Stopping Derby DB servers on port ${db.port}"/>
+    <target name="stopNtwDerby" depends="init-common" if="ntwk.derby">
+        <echo message="Stopping Network Derby DB servers on port ${db.port}"/>
         <java classname="org.apache.derby.drda.NetworkServerControl"
           classpath="${db.classpath}" failonerror="false" fork="true">
           <arg line="-h ${db.host} -p ${db.port} shutdown"/>
         </java>
     </target>
+
+    <target name="start-derby" depends="init-common" unless="ntwk.derby">
+        <echo message="Starting database"/>
+        <echo message="${ASADMIN}"/>
+        <!-- spawn is added to prevent a hang on Windows -->
+        <exec spawn="true" executable="${ASADMIN}" failonerror="false">
+          <arg line="start-database"/>
+        </exec>
+    </target>
+
+    <target name="stop-derby" depends="init-common" unless="ntwk.derby">
+        <echo message="Stopping database"/>
+        <exec executable="${ASADMIN}" failonerror="false">
+          <arg line="stop-database"/>
+        </exec>
+    </target>
+
 
 </project>
