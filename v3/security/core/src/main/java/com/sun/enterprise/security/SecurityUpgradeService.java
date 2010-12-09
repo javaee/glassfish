@@ -43,8 +43,11 @@ package com.sun.enterprise.security;
 import com.sun.enterprise.config.serverbeans.AuthRealm;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Configs;
+import com.sun.enterprise.config.serverbeans.IiopListener;
+import com.sun.enterprise.config.serverbeans.IiopService;
 import com.sun.enterprise.config.serverbeans.JaccProvider;
 import com.sun.enterprise.config.serverbeans.SecurityService;
+import com.sun.grizzly.config.dom.Ssl;
 import com.sun.logging.LogDomains;
 import java.beans.PropertyVetoException;
 import java.io.File;
@@ -99,6 +102,7 @@ public class SecurityUpgradeService implements ConfigurationUpgrade, PostConstru
 
     private static final String JDBC_REALM_CLASSNAME = "com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm";
     public static final String PARAM_DIGEST_ALGORITHM = "digest-algorithm";
+    private static final String GF_SSL_IMPL_NAME = "com.sun.enterprise.security.ssl.GlassfishSSLImpl";
     private static final Logger _logger = LogDomains.getLogger(SecurityUpgradeService.class, LogDomains.SECURITY_LOGGER);
 
 
@@ -110,6 +114,7 @@ public class SecurityUpgradeService implements ConfigurationUpgrade, PostConstru
             if (service != null) {
                 upgradeJACCProvider(service);
             }
+            populateSSLElement(config);
         }
 
         //Clear up the old policy files for applications
@@ -167,37 +172,6 @@ public class SecurityUpgradeService implements ConfigurationUpgrade, PostConstru
 
         if (requiresSecureAdmin()) {
 
-            //Extract the keystore and truststore files from security.jar and write them to the config directory
-            //Commenting these changes currently, since manual copying is documented as a part of the instruction set
-
-            /*    InputStream keyIStream = SecurityUpgradeService.class.getResourceAsStream("/config/" + KEYSTORE);
-            InputStream trustIStream = SecurityUpgradeService.class.getResourceAsStream("/config/" + TRUSTSTORE);
-
-            File keyFile = new File(configDir, KEYSTORE);
-            File trustFile = new File(configDir, TRUSTSTORE);
-
-            try {
-
-            if (!keyFile.exists()) {
-            keyFile.createNewFile();
-            }
-            if (!trustFile.exists()) {
-            trustFile.createNewFile();
-            }
-            OutputStream keyOStream = new FileOutputStream(keyFile);
-            OutputStream trustOStream = new FileOutputStream(trustFile);
-
-            while (keyIStream != null && keyIStream.available() > 0) {
-            keyOStream.write(keyIStream.read());
-            }
-            while (trustIStream != null && trustIStream.available() > 0) {
-            trustOStream.write(trustIStream.read());
-
-            }catch (IOException ex) {
-            _logger.log(Level.SEVERE, null, ex);
-            }
-             */
-
             _logger.log(Level.SEVERE, "AutoUpgrade from v2 EE edition to v3 is not currently supported."
                     + "Please refer to the instructions in http://wikihome.sfbay.sun.com/security/Wiki.jsp?page=V2.XEEToV3.1NSSUpgrade "
                     + "for upgrading manually");
@@ -225,6 +199,28 @@ public class SecurityUpgradeService implements ConfigurationUpgrade, PostConstru
         }
 
         return false;
+    }
+
+    private void populateSSLElement(Config config) {
+        IiopService iiopService = config.getIiopService();
+        for (IiopListener listener : iiopService.getIiopListener()) {
+            Ssl sslElement = listener.getSsl();
+            if (sslElement != null) {
+                try {
+                    ConfigSupport.apply(new SingleConfigCode<Ssl>() {
+                        public Object run(Ssl ssl) throws PropertyVetoException,
+                                TransactionFailure {
+                            ssl.setClassname(GF_SSL_IMPL_NAME);
+                            return null;
+                        }
+                    }, sslElement);
+                } catch (TransactionFailure tf) {
+                    _logger.log(Level.SEVERE, "security_upgrade_service_exception", tf);
+                    throw new RuntimeException(tf);
+                }
+            }
+        }
+        
     }
 
     private void upgradeJACCProvider(SecurityService securityService) {
