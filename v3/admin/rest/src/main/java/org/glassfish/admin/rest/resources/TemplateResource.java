@@ -157,12 +157,34 @@ public class TemplateResource {
         }
     }
 
+    /**
+     * Apply changes passed in <code>data</code> using CLI "set".
+     * @param data The set of changes to be applied
+     * @return ActionReporter containing result of "set" execution
+     */
     private ActionReporter applyChanges(HashMap<String, String> data) {
         List<PathSegment> pathSegments = uriInfo.getPathSegments();
-        List<PathSegment> pathSegmentsDiscardingFirstSegment = pathSegments.subList(1, pathSegments.size());
+
+        // Discard the last segment if it is empty. This happens if some one accesses the resource
+        // with trailing '/' at end like in htto://host:port/mangement/domain/.../pathelement/
+        PathSegment lastSegment = pathSegments.get(pathSegments.size() - 1);
+        if(lastSegment.getPath().isEmpty()) {
+            pathSegments = pathSegments.subList(0, pathSegments.size() - 1);
+        }
+
+        List<PathSegment> candidatePathSegment = null;
+        if(pathSegments.size() != 1) {
+            // Discard "domain"
+            candidatePathSegment = pathSegments.subList(1, pathSegments.size());
+        } else {
+            // We are being called for a config change at domain level.
+            // CLI "set" requires name to be of form domain.<attribute-name>. 
+            // Preserve "domain"
+            candidatePathSegment = pathSegments;
+        }
 
         StringBuilder setBasePath = new StringBuilder();
-        for(PathSegment pathSegment :  pathSegmentsDiscardingFirstSegment) {
+        for(PathSegment pathSegment :  candidatePathSegment) {
             setBasePath.append(pathSegment.getPath());
             setBasePath.append('.');
         }
