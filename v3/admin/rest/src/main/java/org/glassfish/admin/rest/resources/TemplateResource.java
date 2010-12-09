@@ -310,7 +310,7 @@ public class TemplateResource {
         this.tagName = tagName;
         entity = parent.nodeElement(tagName);
         if (entity == null) {
-            throw new WebApplicationException(new Exception("Trying to create an entity using generic create"),Response.Status.INTERNAL_SERVER_ERROR);
+            //throw new WebApplicationException(new Exception("Trying to create an entity using generic create"),Response.Status.INTERNAL_SERVER_ERROR);
         } else {
             childModel = entity.model;
         }
