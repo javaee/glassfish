@@ -29,7 +29,7 @@ public class MyBean {
     @Resource(name="jms/MyQueueConnectionFactory", mappedName="jms/ejb_mdb_QCF")
     QueueConnectionFactory fInject;
 
-    @Resource(mappedName="jms/ejb_mdb_OutQueue")
+    @Resource(mappedName="jms/ejb_mdb_Queue")
     Queue qInject;
 
     public void record(String msg) throws Exception {

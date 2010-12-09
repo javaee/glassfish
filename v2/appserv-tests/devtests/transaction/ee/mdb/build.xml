@@ -241,9 +241,6 @@
            <antcall target="kill-instance"/>
         </parallel>
 
-        <!-- Let GMS do the work 
-        <sleep seconds="85"/>
--->
         <exec executable="${ASADMIN}" failonerror="false">
           <arg line="start-local-instance"/>
           <arg line="in1"/>
@@ -261,12 +258,24 @@
            <arg line="recover"/>
         </java>
 
-<!--
-        <exec executable="${ASADMIN}" failonerror="false">
-          <arg line="start-local-instance"/>
-          <arg line="in1"/>
-        </exec>
--->
+    </target>
+
+   <target name="run-no-failures" depends="init-common">
+        <antcall target="insert-data">
+            <param name="port" value="28080"/>
+            <param name="operation" value="insert_xa_data"/>
+        </antcall>
+
+        <echo message="Verifying results"/>
+        <java  fork="on"
+              failonerror="true"
+              classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/lib/gf-client.jar:${env.APS_HOME}/lib/reportbuilder.jar:${build.classes.dir}"
+              classname="${se.client}">
+           <arg line="verify_xa"/>
+           <arg line="${appname}-web"/>
+           <arg line="28080"/>
+           <arg line="recover"/>
+        </java>
     </target>
 
     <target name="kill-instance">

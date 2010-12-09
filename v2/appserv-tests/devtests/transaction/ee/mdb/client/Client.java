@@ -87,17 +87,14 @@ public class Client extends AdminBaseDevTest {
             asadmin("create-local-instance", "--cluster", CLUSTER_NAME, INSTANCE2_NAME);
             System.out.println("Creating JMS resources");
             asadmin("create-jms-resource", "--target", CLUSTER_NAME, "--restype", "javax.jms.QueueConnectionFactory", "jms/ejb_mdb_QCF");
-            asadmin("create-jmsdest", "--target", CLUSTER_NAME, "--desttype", "ejb_mdb_InQueue");
-            asadmin("create-jmsdest", "--target", CLUSTER_NAME, "--desttype", "ejb_mdb_OutQueue");
-            asadmin("create-jms-resource", "--target", CLUSTER_NAME, "--restype", "javax.jms.Queue", "--property", "imqDestinationName=ejb_mdb_InQueue", "jms/ejb_mdb_InQueue");
-            asadmin("create-jms-resource", "--target", CLUSTER_NAME, "--restype", "javax.jms.Queue", "--property", "imqDestinationName=ejb_mdb_OutQueue", "jms/ejb_mdb_OutQueue");
+            asadmin("create-jmsdest", "--target", CLUSTER_NAME, "--desttype", "ejb_mdb_Queue");
+            asadmin("create-jms-resource", "--target", CLUSTER_NAME, "--restype", "javax.jms.Queue", "--property", "imqDestinationName=ejb_mdb_Queue", "jms/ejb_mdb_Queue");
             System.out.println("Finished creating JMS resources");
 
             asadmin("start-cluster", CLUSTER_NAME);
             asadmin("create-resource-ref", "--target", CLUSTER_NAME, XA_RESOURCE);
             asadmin("create-resource-ref", "--target", CLUSTER_NAME, "jms/ejb_mdb_QCF");
-            asadmin("create-resource-ref", "--target", CLUSTER_NAME, "jms/ejb_mdb_InQueue");
-            asadmin("create-resource-ref", "--target", CLUSTER_NAME, "jms/ejb_mdb_OutQueue");
+            asadmin("create-resource-ref", "--target", CLUSTER_NAME, "jms/ejb_mdb_Queue");
             System.out.println("Started cluster.");
 
         } catch (Exception e) {
@@ -134,10 +131,8 @@ public class Client extends AdminBaseDevTest {
     public void clean(String name) {
         try {
             asadmin("delete-jms-resource", "--target", CLUSTER_NAME, "jms/ejb_mdb_QCF");
-            asadmin("delete-jms-resource", "--target", CLUSTER_NAME, "jms/ejb_mdb_InQueue");
-            asadmin("delete-jms-resource", "--target", CLUSTER_NAME, "jms/ejb_mdb_OutQueue");
-            asadmin("delete-jmsdest", "--target", CLUSTER_NAME, "ejb_mdb_InQueue");
-            asadmin("delete-jmsdest", "--target", CLUSTER_NAME, "ejb_mdb_OutQueue");
+            asadmin("delete-jms-resource", "--target", CLUSTER_NAME, "jms/ejb_mdb_Queue");
+            asadmin("delete-jmsdest", "--target", CLUSTER_NAME, "ejb_mdb_Queue");
             System.out.println("Deleted JMS resources.");
 
             asadmin("stop-local-instance", INSTANCE1_NAME);
