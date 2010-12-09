@@ -170,6 +170,7 @@ public class MonitoringReporter extends V2DottedNameSupport {
 
         String localPattern = prependServerDot(pattern);
 
+
         // Weird -- but this is how it works internally!
         if (!isDas())
             localPattern = serverEnv.getInstanceName() + "." + localPattern;
@@ -281,10 +282,21 @@ public class MonitoringReporter extends V2DottedNameSupport {
     }
 
     private String prependServerDot(String s) {
-        if (s.startsWith(SERVERDOT))
+        // Issue#15054
+        // this is pretty intricate but this is what we want to happen for these samples:
+        //asadmin get -m network.thread-pool.totalexecutedtasks-count ==> ERROR no target
+        // asadmin get -m server.network.thread-pool.totalexecutedtasks-count ==> OK, return DAS's data
+        // asadmin get -m *.network.thread-pool.totalexecutedtasks-count ==> OK return DAS and instances' data
+        // asadmin get -m i1.network.thread-pool.totalexecutedtasks-count ==> OK return data for i1
+        // asadmin get -m i1.server.network.thread-pool.totalexecutedtasks-count ==> no data for "server...."
+
+        // So -- if they give "i1.server.blah" we add yet another '.server' to force it to fail!
+
+
+        if (s.startsWith(SERVERDOT) && isDas())
             return s;
-        else
-            return SERVERDOT + s;
+
+        return SERVERDOT + s;
     }
 
     private boolean validate() {
