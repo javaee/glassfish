@@ -55,12 +55,15 @@ import org.jvnet.hk2.config.types.PropertyBag;
 import org.glassfish.api.admin.RestRedirects;
 import org.glassfish.api.admin.RestRedirect;
 import com.sun.grizzly.config.dom.Ssl;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.quality.ToDo;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import javax.validation.Payload;
+
 /**
  *
  */
@@ -75,7 +78,7 @@ import javax.validation.constraints.Pattern;
  @RestRedirect(opType = RestRedirect.OpType.POST, commandName = "create-iiop-listener"),
  @RestRedirect(opType = RestRedirect.OpType.DELETE, commandName = "delete-iiop-listener")
 })
-public interface IiopListener extends ConfigBeanProxy, Injectable, PropertyBag {
+public interface IiopListener extends ConfigBeanProxy, Injectable, PropertyBag, Payload {
 
     final static String PORT_PATTERN = "\\$\\{[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*\\}"
             + "|[1-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9][0-9][0-9]"
@@ -134,9 +137,8 @@ public interface IiopListener extends ConfigBeanProxy, Injectable, PropertyBag {
      */
     @Attribute (defaultValue="1072")
     @Pattern(regexp=PORT_PATTERN,
-            message="must be between 1 and 65535, " +
-                    "or reference a system property using the form" +
-                    " ${SYSTEM_PROPERTY_NAME}")
+            message="{port-pattern}",
+            payload=IiopListener.class)
     String getPort();
 
     /**
