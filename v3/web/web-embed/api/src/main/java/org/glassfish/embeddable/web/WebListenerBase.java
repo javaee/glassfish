@@ -79,6 +79,9 @@ public class WebListenerBase implements WebListener  {
      */
     public void setConfig(WebListenerConfig config) throws ConfigException {
         this.config = config;
+        setId(config.getId());
+        setPort(config.getPort());
+        setProtocol(config.getProtocol());
     }
 
     /**

@@ -47,7 +47,55 @@ package org.glassfish.embeddable.web.config;
  */
 public class WebListenerConfig {
 
+    private String id;
+
+    private int port;
+
+    private String protocol;
+
     private boolean traceEnabled;
+
+    /**
+     * Sets the id used for configuring <tt>WebListener</tt>.
+     */
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    /**
+     * Gets the id used for configuring <tt>WebListener</tt>.
+     */
+    public String getId() {
+        return id;
+    }
+
+    /**
+     * Sets the port number used for configuring <tt>WebListener</tt>.
+     */
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    /**
+     * Gets the port number used for configuring <tt>WebListener</tt>.
+     */
+    public int getPort() {
+        return port;
+    }
+
+    /**
+     * Sets the protocol used for configuring <tt>WebListener</tt>.
+     */
+    public void setProtocol(String protocol) {
+        this.protocol = protocol;
+    }
+
+    /**
+     * Gets the protocol used for configuring <tt>WebListener</tt>.
+     */
+    public String getProtocol() {
+        return protocol;
+    }
 
     /**
      * Enables or disables support for TRACE requests.
