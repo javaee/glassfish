@@ -42,8 +42,11 @@
 package org.glassfish.osgijavaeebase;
 
 import org.osgi.framework.*;
+import org.osgi.util.tracker.BundleTracker;
+import org.osgi.util.tracker.BundleTrackerCustomizer;
 
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -53,53 +56,46 @@ import java.util.logging.Logger;
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class JavaEEExtender implements Extender, SynchronousBundleListener {
+public class JavaEEExtender implements Extender {
     /*
      * Implementation Note: All methods are synchronized, because we don't allow the extender to stop while it
      * is deploying or undeploying something. Similarly, while it is being stopped, we don't want it to deploy
      * or undeploy something.
-     * This is a synchronous bundle listener because it listens to LAZY_ACTIVATION event.
      * After receiving the event, it spwans a separate thread to carry out the task so that we don't
      * spend long time in the synchronous event listener. More over, that can lead to deadlocks as observed
      * in https://glassfish.dev.java.net/issues/show_bug.cgi?id=14313.
      */
-
-    // TODO(Sahoo): We should consider using a BundleTracker instead of event listener.
 
     private OSGiContainer c;
     private static final Logger logger =
             Logger.getLogger(JavaEEExtender.class.getPackage().getName());
     private BundleContext context;
     private ServiceRegistration reg;
+    private BundleTracker tracker;
+    private ExecutorService executorService;
 
     public JavaEEExtender(BundleContext context) {
         this.context = context;
     }
 
     public synchronized void start() {
+        executorService = Executors.newSingleThreadExecutor();
         c = new OSGiContainer(context);
         c.init();
         reg = context.registerService(OSGiContainer.class.getName(), c, null);
-        context.addBundleListener(this);
+        tracker = new BundleTracker(context, Bundle.ACTIVE | Bundle.STARTING, new HybridBundleTrackerCustomizer());
+        tracker.open();
     }
 
     public synchronized void stop() {
         if (c == null) return;
-        context.removeBundleListener(this);
-        if (c != null) c.shutdown();
+        c.shutdown();
         c = null;
+        if (tracker != null) tracker.close();
+        tracker = null;
         reg.unregister();
         reg = null;
-    }
-
-    public void bundleChanged(final BundleEvent event) {
-        // handle the event in a new thread to avoid deadlocks
-        new Thread("Java EE Extender Thread") {
-            @Override
-            public void run() {
-                handleEvent(event);
-            }
-        }.start();
+        executorService.shutdownNow();
     }
 
     private void handleEvent(BundleEvent event) {
@@ -158,5 +154,42 @@ public class JavaEEExtender implements Extender, SynchronousBundleListener {
 
     private synchronized boolean isStarted() {
         return c!= null;
+    }
+
+    private class HybridBundleTrackerCustomizer implements BundleTrackerCustomizer {
+        public Object addingBundle(final Bundle bundle, BundleEvent event) {
+            final int state = bundle.getState();
+            if (isReady(event, state)) {
+                executorService.submit(new Runnable() {
+                    public void run() {
+                        deploy(bundle);
+                    }
+                });
+                return bundle;
+            }
+            return null;
+        }
+
+        /**
+         * Bundle is ready when its state is ACTIVE or, when a lazy activation policy is used, STARTING
+         * @param event
+         * @param state
+         * @return
+         */
+        private boolean isReady(BundleEvent event, int state) {
+            return state == Bundle.ACTIVE ||
+                    (state == Bundle.STARTING && (event != null && event.getType() == BundleEvent.LAZY_ACTIVATION));
+        }
+
+        public void modifiedBundle(Bundle bundle, BundleEvent event, Object object) {
+        }
+
+        public void removedBundle(final Bundle bundle, BundleEvent event, Object object) {
+            executorService.submit(new Runnable() {
+                public void run() {
+                    undeploy(bundle);
+                }
+            });
+        }
     }
 }
