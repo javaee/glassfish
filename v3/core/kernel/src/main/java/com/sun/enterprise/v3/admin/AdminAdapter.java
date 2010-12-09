@@ -306,15 +306,6 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
     private boolean authenticate(GrizzlyRequest req, ActionReport report, GrizzlyResponse res)
             throws Exception {
         
-        if ( ! SecureAdmin.Util.isEnabled(secureAdmin) &&
-             ! NetUtils.isThisHostLocal(req.getRemoteHost())) {
-            reportAuthFailure(res, report, 
-                    "adapter.auth.remoteReqSecAdminOff",
-                    "Remote configuration is currently disabled",
-                    HttpURLConnection.HTTP_FORBIDDEN);
-            return false;
-        }
-        
         AdminAccessController.Access access = authenticate(req);
         /*
          * Admin requests through this adapter are assumed to change the
@@ -325,6 +316,19 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
                 return true;
 
             case MONITORING:
+                /*
+                 * The request authenticated OK but it is remote and this is the DAS;
+                 * that's why MONITORING rather than FULL came back.
+                 * 
+                 * For user-friendliness respond with Forbidden.
+                 */
+                reportAuthFailure(res, report,
+                        "adapter.auth.remoteReqSecAdminOff",
+                        "Remote configuration is currently disabled",
+                        HttpURLConnection.HTTP_FORBIDDEN);
+
+                break;
+
             case NONE:
                 if (env.isDas()) {
                     reportAuthFailure(res, report, "adapter.auth.userpassword",
