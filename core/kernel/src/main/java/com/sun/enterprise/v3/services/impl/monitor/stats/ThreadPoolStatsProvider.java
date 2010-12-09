@@ -49,7 +49,7 @@ import org.glassfish.gmbal.AMXMetadata;
 import org.glassfish.gmbal.Description;
 import org.glassfish.gmbal.ManagedAttribute;
 import org.glassfish.gmbal.ManagedObject;
-import org.glassfish.grizzly.threadpool.SyncThreadPool;
+import org.glassfish.grizzly.threadpool.ThreadPoolConfig;
 
 /**
  * Thread Pool statistics
@@ -69,7 +69,7 @@ public class ThreadPoolStatsProvider implements StatsProvider {
     protected final CountStatisticImpl currentThreadCount = new CountStatisticImpl("CurrentThreadCount", "count", "Provides the number of request processing threads currently in the listener thread pool");
     protected final CountStatisticImpl currentThreadsBusy = new CountStatisticImpl("CurrentThreadsBusy", "count", "Provides the number of request processing threads currently in use in the listener thread pool serving requests");
 
-    protected volatile SyncThreadPool threadPool;
+    protected volatile ThreadPoolConfig threadPoolConfig;
 
     public ThreadPoolStatsProvider(String name) {
         this.name = name;
@@ -77,15 +77,15 @@ public class ThreadPoolStatsProvider implements StatsProvider {
 
     @Override
     public Object getStatsObject() {
-        return threadPool;
+        return threadPoolConfig;
     }
 
     @Override
     public void setStatsObject(Object object) {
-        if (object instanceof SyncThreadPool) {
-            threadPool = (SyncThreadPool) object;
+        if (object instanceof ThreadPoolConfig) {
+            threadPoolConfig = (ThreadPoolConfig) object;
         } else {
-            threadPool = null;
+            threadPoolConfig = null;
         }
     }
 
@@ -188,11 +188,11 @@ public class ThreadPoolStatsProvider implements StatsProvider {
 
     @Reset
     public void reset() {
-        if (threadPool != null) {
-            maxThreadsCount.setCount(threadPool.getConfig().getMaxPoolSize());
-            coreThreadsCount.setCount(threadPool.getConfig().getCorePoolSize());
-            currentThreadCount.setCount(threadPool.getCurrentPoolSize());
-            currentThreadsBusy.setCount(threadPool.getActiveThreadsCount());
+        if (threadPoolConfig != null) {
+            maxThreadsCount.setCount(threadPoolConfig.getMaxPoolSize());
+            coreThreadsCount.setCount(threadPoolConfig.getCorePoolSize());
+            currentThreadCount.setCount(0);
+            currentThreadsBusy.setCount(0);
         }
 
         totalExecutedTasksCount.setCount(0);

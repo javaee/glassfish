@@ -43,6 +43,7 @@ import com.sun.enterprise.config.serverbeans.VirtualServer;
 import com.sun.enterprise.v3.services.impl.monitor.FileCacheMonitor;
 import com.sun.enterprise.v3.services.impl.monitor.GrizzlyMonitoring;
 import com.sun.enterprise.v3.services.impl.monitor.KeepAliveMonitor;
+import com.sun.enterprise.v3.services.impl.monitor.ThreadPoolMonitor;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -53,12 +54,15 @@ import java.util.logging.Logger;
 import org.glassfish.grizzly.config.GenericGrizzlyListener;
 import org.glassfish.grizzly.config.dom.Http;
 import org.glassfish.grizzly.config.dom.NetworkListener;
+import org.glassfish.grizzly.config.dom.ThreadPool;
 import org.glassfish.grizzly.filterchain.FilterChain;
 import org.glassfish.grizzly.http.KeepAlive;
 import org.glassfish.grizzly.http.server.HttpRequestProcessor;
 import org.glassfish.grizzly.http.server.StaticResourcesService;
 import org.glassfish.grizzly.http.server.filecache.FileCache;
 import org.glassfish.grizzly.http.server.util.Mapper;
+import org.glassfish.grizzly.threadpool.ThreadPoolConfig;
+import org.glassfish.grizzly.threadpool.ThreadPoolProbe;
 import org.glassfish.internal.grizzly.V3Mapper;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.config.types.Property;
@@ -180,6 +184,15 @@ public class GlassfishNetworkListener extends GenericGrizzlyListener {
         
         return fileCache;
     }
+
+    @Override
+    protected ThreadPoolConfig configureThreadPoolConfig(ThreadPool threadPool) {
+        final ThreadPoolConfig config = super.configureThreadPoolConfig(threadPool);
+        config.getInitialMonitoringConfig().addProbes(new ThreadPoolMonitor(
+                grizzlyService.getMonitoring(), name, config));
+        return config;
+    }
+
 
 
     protected void registerMonitoringStatsProviders() {
