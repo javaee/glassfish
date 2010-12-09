@@ -70,6 +70,7 @@ import org.glassfish.api.admin.config.Named;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.ReferenceContainer;
 import org.glassfish.quality.ToDo;
+import static org.glassfish.config.support.Constants.*;
 
 import java.beans.PropertyVetoException;
 import java.util.List;
@@ -78,7 +79,7 @@ import java.util.Iterator;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
+import javax.validation.Payload;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Pattern;
 
@@ -97,7 +98,7 @@ import org.glassfish.api.admin.CommandRunner;
 @Configured
 @SuppressWarnings("unused")
 @NotDuplicateTargetName
-public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named, SystemPropertyBag, ReferenceContainer, RefContainer {
+public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named, SystemPropertyBag, ReferenceContainer, RefContainer, Payload {
 
     String lbEnabledSystemProperty = "org.glassfish.lb-enabled-default";
 
@@ -106,7 +107,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
     public void setName(String value) throws PropertyVetoException;
 
     @NotTargetKeyword
-    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")
+    @Pattern(regexp=NAME_SERVER_REGEX, message="{server.invalid.name}", payload=Server.class)
     @Override
     public String getName();
 
@@ -121,7 +122,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      */
     @Attribute
     @NotTargetKeyword
-    @Pattern(regexp = "[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")
+    @Pattern(regexp = NAME_SERVER_REGEX)
     String getConfigRef();
 
     /**

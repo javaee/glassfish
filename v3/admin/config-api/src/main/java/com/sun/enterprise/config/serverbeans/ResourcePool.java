@@ -42,6 +42,7 @@ package com.sun.enterprise.config.serverbeans;
 
 import com.sun.enterprise.config.serverbeans.customvalidators.ResourceNameConstraint;
 import org.jvnet.hk2.config.Attribute;
+import static org.glassfish.config.support.Constants.NAME_APP_REGEX;
 
 import java.beans.PropertyVetoException;
 
@@ -58,7 +59,7 @@ public interface ResourcePool extends Resource {
      */
     @Attribute(key=true)
     @NotNull
-    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#:]*")
+    @Pattern(regexp=NAME_APP_REGEX)
     public String getName();
 
     /**

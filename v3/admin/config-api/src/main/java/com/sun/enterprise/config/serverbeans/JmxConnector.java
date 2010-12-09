@@ -50,6 +50,7 @@ import javax.validation.constraints.Pattern;
 import org.jvnet.hk2.config.types.Property;
 import org.jvnet.hk2.config.types.PropertyBag;
 import org.glassfish.api.admin.config.Named;
+import static org.glassfish.config.support.Constants.NAME_REGEX;
 import com.sun.grizzly.config.dom.Ssl;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.quality.ToDo;
@@ -190,7 +191,7 @@ public interface JmxConnector extends ConfigBeanProxy, Injectable, Named, Proper
     @Deprecated
     @Attribute
     @NotNull
-    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")
+    @Pattern(regexp=NAME_REGEX)
     String getAuthRealmName();
 
     /**

@@ -51,6 +51,7 @@ import java.util.List;
 
 import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.config.PropertiesDesc;
+import static org.glassfish.config.support.Constants.NAME_REGEX;
 import org.jvnet.hk2.config.types.Property;
 import org.jvnet.hk2.config.types.PropertyBag;
 
@@ -87,7 +88,7 @@ public interface ProviderConfig extends ConfigBeanProxy, Injectable, PropertyBag
      *         {@link String }
      */
     @Attribute(key=true)
-    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")
+    @Pattern(regexp=NAME_REGEX)
     @NotNull
     public String getProviderId();
 

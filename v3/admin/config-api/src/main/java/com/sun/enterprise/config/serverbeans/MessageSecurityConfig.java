@@ -55,6 +55,7 @@ import javax.validation.constraints.Pattern;
 
 import org.glassfish.api.admin.RestRedirects;
 import org.glassfish.api.admin.RestRedirect;
+import static org.glassfish.config.support.Constants.NAME_REGEX;
 
 /**
  * Defines the message layer specific provider configurations of the application
@@ -110,7 +111,7 @@ public interface MessageSecurityConfig extends ConfigBeanProxy, Injectable  {
      *         {@link String }
      */
     @Attribute
-    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")
+    @Pattern(regexp=NAME_REGEX)
     public String getDefaultProvider();
 
     /**
@@ -131,7 +132,7 @@ public interface MessageSecurityConfig extends ConfigBeanProxy, Injectable  {
      *         {@link String }
      */
     @Attribute
-    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")
+    @Pattern(regexp=NAME_REGEX)
     public String getDefaultClientProvider();
 
     /**

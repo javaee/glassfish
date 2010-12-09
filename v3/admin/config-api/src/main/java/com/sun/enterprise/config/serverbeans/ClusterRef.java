@@ -42,6 +42,7 @@ package com.sun.enterprise.config.serverbeans;
 
 import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.*;
+import static org.glassfish.config.support.Constants.NAME_SERVER_REGEX;
 
 import java.beans.PropertyVetoException;
 
@@ -70,7 +71,7 @@ public interface ClusterRef extends ConfigBeanProxy, Injectable, Ref  {
     @Override
     @Attribute(key=true)
     @NotNull
-    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")
+    @Pattern(regexp=NAME_SERVER_REGEX)
     public String getRef();
 
     /**

@@ -54,6 +54,7 @@ import org.jvnet.hk2.config.types.Property;
 import org.jvnet.hk2.config.types.PropertyBag;
 import org.glassfish.api.admin.RestRedirects;
 import org.glassfish.api.admin.RestRedirect;
+import static org.glassfish.config.support.Constants.NAME_REGEX;
 import com.sun.grizzly.config.dom.Ssl;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.quality.ToDo;
@@ -96,7 +97,7 @@ public interface IiopListener extends ConfigBeanProxy, Injectable, PropertyBag, 
      */
     @Attribute(key=true)
     @NotNull
-    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")
+    @Pattern(regexp=NAME_REGEX)
     String getId();
 
     /**

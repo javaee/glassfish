@@ -40,27 +40,12 @@
 
 package org.glassfish.config.support;
 
-import com.sun.enterprise.config.serverbeans.Cluster;
-import com.sun.enterprise.config.serverbeans.ServerRef;
-import com.sun.enterprise.universal.i18n.LocalStringsImpl;
-import com.sun.enterprise.util.EarlyLogger;
-import com.sun.enterprise.util.StringUtils;
-import java.io.*;
-import java.net.*;
-import java.util.*;
-import java.util.logging.Level;
-import javax.xml.stream.XMLInputFactory;
-import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import org.jvnet.hk2.component.Habitat;
-
 /**
- * Shared constants for this package
+ * Shared constants for config-beans packages
  * @author Byron Nevins
  */
 
-class Constants {
+public class Constants {
     static final String SERVERS = "servers";
     static final String SERVER = "server";
     static final String CLUSTERS = "clusters";
@@ -71,4 +56,7 @@ class Constants {
     static final String CONFIGS = "configs";
     static final String CONFIG_REF = "config-ref";
     static final String NAME = "name";
+    public static final String NAME_REGEX =        "[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_\\./;#]*";
+    public static final String NAME_SERVER_REGEX = "[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_\\.;]*";
+    public static final String NAME_APP_REGEX =    "[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_\\./;:#]*";
 }

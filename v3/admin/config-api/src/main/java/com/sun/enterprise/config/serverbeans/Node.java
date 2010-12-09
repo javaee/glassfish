@@ -52,6 +52,7 @@ import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.config.support.*;
+import static org.glassfish.config.support.Constants.*;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -89,7 +90,7 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
     public void setName(String value) throws PropertyVetoException;
 
     @NotTargetKeyword
-    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*",
+    @Pattern(regexp=NAME_SERVER_REGEX,
              message="Invalid node name. Name must start with a letter or number and may contain only letters, numbers, and certain other characters.")
     @Override
     public String getName();
@@ -119,7 +120,7 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
      */
 
     @Attribute
-    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")                        
+    @Pattern(regexp=NAME_REGEX)
     String getNodeHost();
 
     /**

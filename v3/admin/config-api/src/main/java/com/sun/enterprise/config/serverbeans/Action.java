@@ -49,6 +49,7 @@ import java.beans.PropertyVetoException;
 
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.NotNull;
+import static org.glassfish.config.support.Constants.NAME_REGEX;
 
 /**
  * Defines the action MBean associated with the event.
@@ -62,7 +63,7 @@ public interface Action extends ConfigBeanProxy, Injectable {
      */
     @Attribute(key=true)
     @NotNull
-    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")
+    @Pattern(regexp=NAME_REGEX)
     public String getActionMbeanName();
 
     /**

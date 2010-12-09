@@ -54,6 +54,7 @@ import com.sun.enterprise.config.util.ServerHelper;
 import com.sun.grizzly.config.dom.NetworkConfig;
 import com.sun.grizzly.config.dom.NetworkListener;
 import org.glassfish.api.admin.config.*;
+import static org.glassfish.config.support.Constants.NAME_SERVER_REGEX;
 import org.jvnet.hk2.config.types.Property;
 import org.jvnet.hk2.config.types.PropertyBag;
 import org.glassfish.config.support.datatypes.Port;
@@ -112,7 +113,7 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      */
     @NotNull
     @NotTargetKeyword
-    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")
+    @Pattern(regexp=NAME_SERVER_REGEX)
     @Override
     String getName();
 

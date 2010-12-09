@@ -51,6 +51,8 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
 import org.glassfish.config.support.*;
+import static org.glassfish.config.support.Constants.NAME_SERVER_REGEX;
+
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -74,6 +76,7 @@ import org.jvnet.hk2.config.types.PropertyBag;
 
 import org.glassfish.quality.ToDo;
 
+import javax.validation.Payload;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -86,7 +89,7 @@ import javax.validation.constraints.Pattern;
 @Configured
 @SuppressWarnings("unused")
 @NotDuplicateTargetName
-public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named, SystemPropertyBag, ReferenceContainer, RefContainer {
+public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named, SystemPropertyBag, ReferenceContainer, RefContainer, Payload {
 
     /**
      * Sets the cluster name
@@ -98,7 +101,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
     public void setName(String value) throws PropertyVetoException;
 
     @NotTargetKeyword
-    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")
+    @Pattern(regexp=NAME_SERVER_REGEX, message="{cluster.invalid.name}", payload=Cluster.class)
     @Override
     public String getName();
 
@@ -110,7 +113,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
      */
     @Attribute
     @NotNull
-    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")         
+    @Pattern(regexp=NAME_SERVER_REGEX)
     String getConfigRef();
 
     /**

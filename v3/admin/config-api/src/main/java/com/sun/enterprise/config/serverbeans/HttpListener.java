@@ -51,6 +51,7 @@ import org.glassfish.api.admin.config.PropertyDesc;
 import org.glassfish.api.admin.RestRedirects;
 import org.glassfish.api.admin.RestRedirect;
 import org.glassfish.config.support.datatypes.NonNegativeInteger;
+import static org.glassfish.config.support.Constants.NAME_REGEX;
 import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.ConfigBeanProxy;
@@ -82,7 +83,7 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
      */
     @Attribute(key=true)
     @NotNull
-    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")
+    @Pattern(regexp=NAME_REGEX)
     String getId();
 
     /**
@@ -402,7 +403,7 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
         description="Comma-separated list of protocols that can use the same port. " + 
         "For example, if you set this property to http,https and set the port to 4567, " +
         "you can access the port with either http://host:4567/ or https://host:4567/. " +
-        " Specifying this property at the “http-service�? on page 42 level overrides settings at the http-listener level. " +
+        " Specifying this property at the “http-service�? on page 42 level overrides settings at the http-listener level. " +
         "If this property is not set at either level, this feature is disabled"),
         
     @PropertyDesc(name="bufferSize", defaultValue="4096", dataType=NonNegativeInteger.class,
