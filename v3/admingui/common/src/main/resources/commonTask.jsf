@@ -64,12 +64,11 @@
       <sun:form id="form"> 
         <sun:commonTasksSection id="commonTasksSection" helpText="$resource{i18n.commonTasks.help}"  title="$resource{i18n.commonTasks.title}" columns="$int{2}" style="visibility: #{commonTaskVisibility}">
           <sun:commonTasksGroup  title="$resource{i18n.commonTasks.task.regAndSupport}">
-            <sun:commonTask rendered="#{!sessionScope._noNetwork}"
-                            text="$resource{i18n.tree.support}"
-                            toolTip="$resource{i18n.tree.support}">
-                <!command
-                    gf.redirect('#{request.contextPath}/common/sysnet/support.jsf');
-                />
+            <sun:commonTask
+                rendered="#{!sessionScope._noNetwork}"
+                text="$resource{i18n.tree.support}"
+                toolTip="$resource{i18n.tree.support}"
+                onClick="javascript:var win=window.open('#{request.contextPath}/common/sysnet/support.jsf','_blank');if (win) {win.focus();}; return false;">
             </sun:commonTask>
             <sun:commonTask
               text="$resource{i18n.commonTasks.task.subscriptions}"
