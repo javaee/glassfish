@@ -40,6 +40,7 @@
 package com.sun.enterprise.v3.services.impl;
 
 import com.sun.enterprise.config.serverbeans.VirtualServer;
+import com.sun.enterprise.v3.services.impl.monitor.FileCacheMonitor;
 import com.sun.enterprise.v3.services.impl.monitor.GrizzlyMonitoring;
 import com.sun.enterprise.v3.services.impl.monitor.KeepAliveMonitor;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
@@ -56,6 +57,7 @@ import org.glassfish.grizzly.filterchain.FilterChain;
 import org.glassfish.grizzly.http.KeepAlive;
 import org.glassfish.grizzly.http.server.HttpRequestProcessor;
 import org.glassfish.grizzly.http.server.StaticResourcesService;
+import org.glassfish.grizzly.http.server.filecache.FileCache;
 import org.glassfish.grizzly.http.server.util.Mapper;
 import org.glassfish.internal.grizzly.V3Mapper;
 import org.jvnet.hk2.component.Inhabitant;
@@ -168,6 +170,15 @@ public class GlassfishNetworkListener extends GenericGrizzlyListener {
         keepAlive.getMonitoringConfig().addProbes(new KeepAliveMonitor(
                 grizzlyService.getMonitoring(), name, keepAlive));
         return keepAlive;
+    }
+
+    @Override
+    protected FileCache configureHttpFileCache(final org.glassfish.grizzly.config.dom.FileCache cache) {
+        final FileCache fileCache = super.configureHttpFileCache(cache);
+        fileCache.getMonitoringConfig().addProbes(new FileCacheMonitor(
+                grizzlyService.getMonitoring(), name, fileCache));
+        
+        return fileCache;
     }
 
 
