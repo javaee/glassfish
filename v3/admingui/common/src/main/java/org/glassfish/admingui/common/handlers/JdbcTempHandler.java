@@ -148,6 +148,7 @@ public class JdbcTempHandler {
                         extra.put("DSList", "");
                         extra.put("DatasourceClassnameField", "");
                         extra.put("dsClassname", Boolean.FALSE);
+                        extra.put("driverClassname", dslName);
                     } else {
                         extra.put("DSList", dsl);
                         extra.put("DList", "");
