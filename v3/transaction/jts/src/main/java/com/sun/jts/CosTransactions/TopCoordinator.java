@@ -1988,12 +1988,8 @@ public class TopCoordinator extends CoordinatorImpl {
                 // added (Ram J) for memory leak fix
                 // if subordinate, send out afterCompletion. This will
                 // destroy the CoordinatorSynchronization and coordinator.
-                // Note: the after_completion status is "unknown", since
-                // at this point we do not know if the tx completed sucessfully,
-                // as the sync objects are being called before the root
-                // actually completes.
                 if (!root) {
-                    afterCompletion(Status.StatusUnknown);
+                    afterCompletion(Status.StatusCommitted);
                 }
             } else if (overallResult == Vote.VoteCommit) {
 
