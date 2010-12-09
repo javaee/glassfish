@@ -356,7 +356,10 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
             final NetworkConfig config = server.getParent().getParent(Config.class).getNetworkConfig();
             List<NetworkListener> list = new ArrayList<NetworkListener>();
             for (String name : strings) {
-                list.add(config.getNetworkListener(name));
+                final NetworkListener networkListener = config.getNetworkListener(name);
+                if (networkListener != null) {
+                    list.add(networkListener);
+                }
             }
             return list;
         }
@@ -411,7 +414,7 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
                         + "If this property is specified, the remote hostname must not match for this request to be accepted. "
                         + "If this property is not specified, request acceptance is governed solely by the 'allowRemoteHost' property"),
             @PropertyDesc(name = "authRealm",
-                description = "Specifies the name attribute of an “auth-realm�? on page 23 element, which overrides "
+                description = "Specifies the name attribute of an “auth-realm�? on page 23 element, which overrides "
                     + "the server instance's default realm for stand-alone web applications deployed to this virtual server. "
                     + "A realm defined in a stand-alone web application's web.xml file overrides the virtual server's realm"),
             @PropertyDesc(name = "securePagesWithPragma", defaultValue = "true", dataType = Boolean.class,
@@ -456,7 +459,7 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
              * the alternate docroot's physical location (directory). Spaces are allowed in the dir
              * component.
              * <p>
-             * You can set this property for a specific web application. For details, see “sun-web-app�?
+             * You can set this property for a specific web application. For details, see “sun-web-app�?
              * in Sun GlassFish Enterprise Server v3 Prelude Application Deployment Guide.
              */
             @PropertyDesc(name = "alternatedocroot_*", description = "The '*' denotes a positive integer. Example: "
