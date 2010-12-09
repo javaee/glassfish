@@ -99,6 +99,17 @@ public class GlassfishNetworkListener extends GenericGrizzlyListener {
     }
 
     @Override
+    public <T> T getAdapter(Class<T> adapterClass) {
+        if (HttpAdapter.class.equals(adapterClass)) {
+            return (T) httpAdapter;
+        }
+
+        return super.getAdapter(adapterClass);
+    }
+
+
+
+    @Override
     protected void configureHttpProtocol(final Http http, final FilterChain filterChain) {
         registerMonitoringStatsProviders();
 

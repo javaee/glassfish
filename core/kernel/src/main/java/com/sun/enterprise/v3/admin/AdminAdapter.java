@@ -72,6 +72,7 @@ import com.sun.enterprise.v3.admin.adapter.AdminEndpointDecider;
 import com.sun.enterprise.v3.admin.listener.GenericJavaConfigListener;
 import com.sun.enterprise.v3.admin.listener.SystemPropertyListener;
 import com.sun.logging.LogDomains;
+import java.util.Set;
 import org.glassfish.admin.payload.PayloadImpl;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.AdminCommand;
@@ -163,7 +164,7 @@ public abstract class AdminAdapter extends StaticResourcesService implements Ada
     CountDownLatch latch = new CountDownLatch(1);
 
     protected AdminAdapter(Class<? extends Privacy> privacyClass) {
-        super(null);
+        super((Set) null);
         this.privacyClass = privacyClass;
     }
 
