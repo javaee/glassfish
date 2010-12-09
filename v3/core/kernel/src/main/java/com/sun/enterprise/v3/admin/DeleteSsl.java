@@ -97,9 +97,6 @@ public class DeleteSsl implements AdminCommand {
 
     @Inject
     NetworkListeners networkListeners;
-
-   // @Inject
-   // IiopService iiopService;
     
     @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Config config;
@@ -123,7 +120,7 @@ public class DeleteSsl implements AdminCommand {
         if (newConfig!=null) {
             config = newConfig;
         }
-        IiopService iiopService = newConfig.getIiopService();
+        IiopService iiopService = config.getIiopService();
 
         if (!type.equals("iiop-service")) {
             if (listenerId == null) {
