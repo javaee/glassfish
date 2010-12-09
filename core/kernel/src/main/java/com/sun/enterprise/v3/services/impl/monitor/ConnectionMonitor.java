@@ -40,48 +40,72 @@
 
 package com.sun.enterprise.v3.services.impl.monitor;
 
-import com.sun.grizzly.http.SelectorThread;
-import com.sun.grizzly.http.SelectorThreadKeyHandler;
-import com.sun.grizzly.util.Copyable;
-import java.nio.channels.SelectionKey;
+import org.glassfish.grizzly.Buffer;
+import org.glassfish.grizzly.Connection;
+import org.glassfish.grizzly.ConnectionProbe;
+import org.glassfish.grizzly.IOEvent;
+import org.glassfish.grizzly.Transport;
 
 /**
- * Monitoring aware {@link SelectorThreadKeyHandler} implementation.
  *
- * @author Alexey Stashok
+ * @author oleksiys
  */
-public class MonitorableSelectionKeyHandler extends SelectorThreadKeyHandler {
-    // The GrizzlyMonitoring objects, which encapsulates Grizzly probe emitters
-    private GrizzlyMonitoring grizzlyMonitoring;
-    private String monitoringId;
+public class ConnectionMonitor implements ConnectionProbe {
+    private final GrizzlyMonitoring grizzlyMonitoring;
+    private final String monitoringId;
 
-    public MonitorableSelectionKeyHandler(GrizzlyMonitoring grizzlyMonitoring,
-            String monitoringId) {
-        this(grizzlyMonitoring, monitoringId, null);
-    }
-
-    public MonitorableSelectionKeyHandler(GrizzlyMonitoring grizzlyMonitoring,
-            String monitoringId, SelectorThread selectorThread) {
-        super(selectorThread);
+    public ConnectionMonitor(GrizzlyMonitoring grizzlyMonitoring,
+            String monitoringId, Transport transport) {
         this.grizzlyMonitoring = grizzlyMonitoring;
         this.monitoringId = monitoringId;
     }
-
+    
     @Override
-    public void copyTo(Copyable copy) {
-        super.copyTo(copy);
-
-        MonitorableSelectionKeyHandler copyHandler = (MonitorableSelectionKeyHandler) copy;
-        copyHandler.grizzlyMonitoring = grizzlyMonitoring;
-        copyHandler.monitoringId = monitoringId;
+    public void onAcceptEvent(final Connection connection) {
+        grizzlyMonitoring.getConnectionQueueProbeProvider().connectionAcceptedEvent(
+                monitoringId, connection.hashCode(),
+                connection.getPeerAddress().toString());
     }
 
     @Override
-    public void cancel(SelectionKey key) {
-        grizzlyMonitoring.getConnectionQueueProbeProvider().connectionClosedEvent(
-                monitoringId, key.channel().hashCode());
+    public void onConnectEvent(final Connection connection) {
+        grizzlyMonitoring.getConnectionQueueProbeProvider().connectionConnectedEvent(
+                monitoringId, connection.hashCode(),
+                connection.getPeerAddress().toString());
+    }
 
-        super.cancel(key);
+    @Override
+    public void onCloseEvent(Connection connection) {
+        grizzlyMonitoring.getConnectionQueueProbeProvider().connectionClosedEvent(
+                monitoringId, connection.hashCode());
+    }
+
+    @Override
+    public void onBindEvent(Connection connection) {
+    }
+
+    @Override
+    public void onReadEvent(Connection connection, Buffer data, int size) {
+    }
+
+    @Override
+    public void onWriteEvent(Connection connection, Buffer data, int size) {
+    }
+
+    @Override
+    public void onErrorEvent(Connection connection, Throwable error) {
+    }
+
+    @Override
+    public void onIOEventReadyEvent(Connection connection, IOEvent ioEvent) {
+    }
+
+    @Override
+    public void onIOEventEnableEvent(Connection connection, IOEvent ioEvent) {
+    }
+
+    @Override
+    public void onIOEventDisableEvent(Connection connection, IOEvent ioEvent) {
     }
 
 }

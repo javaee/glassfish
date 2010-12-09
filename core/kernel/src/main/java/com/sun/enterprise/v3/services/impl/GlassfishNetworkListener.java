@@ -40,6 +40,7 @@
 package com.sun.enterprise.v3.services.impl;
 
 import com.sun.enterprise.config.serverbeans.VirtualServer;
+import com.sun.enterprise.v3.services.impl.monitor.ConnectionMonitor;
 import com.sun.enterprise.v3.services.impl.monitor.FileCacheMonitor;
 import com.sun.enterprise.v3.services.impl.monitor.GrizzlyMonitoring;
 import com.sun.enterprise.v3.services.impl.monitor.KeepAliveMonitor;
@@ -55,6 +56,7 @@ import org.glassfish.grizzly.config.GenericGrizzlyListener;
 import org.glassfish.grizzly.config.dom.Http;
 import org.glassfish.grizzly.config.dom.NetworkListener;
 import org.glassfish.grizzly.config.dom.ThreadPool;
+import org.glassfish.grizzly.config.dom.Transport;
 import org.glassfish.grizzly.filterchain.FilterChain;
 import org.glassfish.grizzly.http.KeepAlive;
 import org.glassfish.grizzly.http.server.HttpRequestProcessor;
@@ -62,7 +64,6 @@ import org.glassfish.grizzly.http.server.StaticResourcesService;
 import org.glassfish.grizzly.http.server.filecache.FileCache;
 import org.glassfish.grizzly.http.server.util.Mapper;
 import org.glassfish.grizzly.threadpool.ThreadPoolConfig;
-import org.glassfish.grizzly.threadpool.ThreadPoolProbe;
 import org.glassfish.internal.grizzly.V3Mapper;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.config.types.Property;
@@ -167,6 +168,14 @@ public class GlassfishNetworkListener extends GenericGrizzlyListener {
     protected HttpRequestProcessor getHttpService(Http http) {
         return httpAdapter.getMapper();
     }
+
+    @Override
+    protected void configureTransport(Transport transportConfig) {
+        super.configureTransport(transportConfig);
+        transport.getConnectionMonitoringConfig().addProbes(new ConnectionMonitor(
+                grizzlyService.getMonitoring(), name, transport));
+    }
+
 
     @Override
     protected KeepAlive configureKeepAlive(final Http http) {

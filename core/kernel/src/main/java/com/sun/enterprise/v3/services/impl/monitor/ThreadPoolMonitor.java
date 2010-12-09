@@ -40,6 +40,7 @@
 
 package com.sun.enterprise.v3.services.impl.monitor;
 
+import com.sun.enterprise.v3.services.impl.monitor.stats.ConnectionQueueStatsProvider;
 import com.sun.enterprise.v3.services.impl.monitor.stats.ThreadPoolStatsProvider;
 import org.glassfish.grizzly.threadpool.AbstractThreadPool;
 import org.glassfish.grizzly.threadpool.ThreadPoolConfig;
@@ -59,13 +60,21 @@ public class ThreadPoolMonitor implements ThreadPoolProbe {
         this.monitoringId = monitoringId;
 
         if (grizzlyMonitoring != null) {
-            final ThreadPoolStatsProvider statsProvider =
+            final ThreadPoolStatsProvider threadPoolStatsProvider =
                     grizzlyMonitoring.getThreadPoolStatsProvider(monitoringId);
-            if (statsProvider != null) {
-                statsProvider.setStatsObject(config);
+            if (threadPoolStatsProvider != null) {
+                threadPoolStatsProvider.setStatsObject(config);
             }
 
-            statsProvider.reset();
+            threadPoolStatsProvider.reset();
+
+            final ConnectionQueueStatsProvider connectionQueueStatsProvider =
+                    grizzlyMonitoring.getConnectionQueueStatsProvider(monitoringId);
+            if (connectionQueueStatsProvider != null) {
+                connectionQueueStatsProvider.setStatsObject(config);
+            }
+
+            connectionQueueStatsProvider.reset();
         }
     }
 
@@ -99,14 +108,12 @@ public class ThreadPoolMonitor implements ThreadPoolProbe {
     }
 
     @Override
-    public void onTaskQueueEvent(AbstractThreadPool threadPool, Runnable task) {
-    }
-
-    @Override
     public void onTaskDequeueEvent(AbstractThreadPool threadPool, Runnable task) {
         grizzlyMonitoring.getThreadPoolProbeProvider().threadDispatchedFromPoolEvent(
                 monitoringId, threadPool.getConfig().getPoolName(),
                 Thread.currentThread().getName());
+        grizzlyMonitoring.getConnectionQueueProbeProvider().onTaskDequeuedEvent(
+                monitoringId, task.toString());
     }
 
     @Override
@@ -117,6 +124,14 @@ public class ThreadPoolMonitor implements ThreadPoolProbe {
     }
 
     @Override
+    public void onTaskQueueEvent(AbstractThreadPool threadPool, Runnable task) {
+        grizzlyMonitoring.getConnectionQueueProbeProvider().onTaskQueuedEvent(
+                monitoringId, task.toString());
+    }
+
+    @Override
     public void onTaskQueueOverflowEvent(AbstractThreadPool threadPool) {
+        grizzlyMonitoring.getConnectionQueueProbeProvider().onTaskQueueOverflowEvent(
+                monitoringId);
     }
 }
