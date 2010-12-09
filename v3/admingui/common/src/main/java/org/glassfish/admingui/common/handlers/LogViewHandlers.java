@@ -67,6 +67,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
 
 import org.glassfish.admingui.common.util.GuiUtil;
 
@@ -560,10 +561,18 @@ public class LogViewHandlers {
           if ((timeStamp == null) || "".equals(timeStamp)) {
 	      date = new Date(System.currentTimeMillis());
           } else {
-              if (addHour != null) {
-		  date = new Date(Long.parseLong(timeStamp) + ONE_HOUR);
-              } else {
-		  date = new Date(Long.parseLong(timeStamp));
+              try{
+                  if (addHour != null) {
+                      date = new Date(Long.parseLong(timeStamp) + ONE_HOUR);
+                  } else {
+                      date = new Date(Long.parseLong(timeStamp));
+                  }
+              }catch(Exception ex){
+                  GuiUtil.getLogger().info(GuiUtil.getCommonMessage("log.error.dateFormat") + ex.getLocalizedMessage());
+                  if (GuiUtil.getLogger().isLoggable(Level.FINE)){
+                        ex.printStackTrace();
+                  }
+                  date = new Date(System.currentTimeMillis());
               }
           }
           DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, GuiUtil.getLocale());

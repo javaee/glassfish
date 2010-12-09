@@ -112,7 +112,7 @@ public class RestApiHandlers {
         String key = (String) handlerCtx.getInputValue("key");
         String endpoint = (String) handlerCtx.getInputValue("endpoint");
         Map<String, Object> currentMap = (Map<String, Object>) handlerCtx.getInputValue("currentMap");
-        Map<String, Object> valueMap = null;
+        Map<String, Object> valueMap = new HashMap();
 
         try {
             valueMap = RestUtil.getEntityAttrs(endpoint, key);
@@ -194,7 +194,12 @@ public class RestApiHandlers {
         String method = (String) handlerCtx.getInputValue("method");
         boolean quiet = (Boolean) handlerCtx.getInputValue("quiet");
         boolean throwException = (Boolean) handlerCtx.getInputValue("throwException");
-        handlerCtx.setOutputValue("result",  RestUtil.restRequest(endpoint, attrs, method, handlerCtx, quiet, throwException));
+        //refer to bug#6942284. Some of the faulty URL may get here with endpoint set to null
+        if (GuiUtil.isEmpty(endpoint)){
+            handlerCtx.setOutputValue("result", new HashMap());
+        }else{
+            handlerCtx.setOutputValue("result",  RestUtil.restRequest(endpoint, attrs, method, handlerCtx, quiet, throwException));
+        }
     }
 
     /**

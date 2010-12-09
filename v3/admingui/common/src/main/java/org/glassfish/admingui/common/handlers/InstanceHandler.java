@@ -60,6 +60,7 @@ import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.HashMap;
 
 import org.glassfish.admingui.common.util.GuiUtil;
@@ -83,8 +84,11 @@ public class InstanceHandler {
             ArrayList<String> list = getJvmOptions(handlerCtx);
             handlerCtx.setOutputValue("result", GuiUtil.convertArrayToListOfMap(list.toArray(), "value"));
         }catch (Exception ex){
-            ex.printStackTrace();
             handlerCtx.setOutputValue("result", new HashMap());
+            GuiUtil.getLogger().info(GuiUtil.getCommonMessage("log.error.getJvmOptionsValues") + ex.getLocalizedMessage());
+            if (GuiUtil.getLogger().isLoggable(Level.FINE)){
+                ex.printStackTrace();
+            }
         }
     }
     

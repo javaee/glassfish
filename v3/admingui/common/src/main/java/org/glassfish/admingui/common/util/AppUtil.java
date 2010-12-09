@@ -51,6 +51,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 
 /**
@@ -117,7 +118,10 @@ public class AppUtil {
                 }
             }
         }catch(Exception ex){
-            ex.printStackTrace();
+            GuiUtil.getLogger().info(GuiUtil.getCommonMessage("log.error.wsException") + ex.getLocalizedMessage());
+            if (GuiUtil.getLogger().isLoggable(Level.FINE)){
+                ex.printStackTrace();
+            }
         }
         return wsAppMap;
     }

@@ -212,10 +212,11 @@ public class GuiUtil {
             }
         } catch (Exception nfe) {
             ((HttpServletRequest) request).getSession().setMaxInactiveInterval(-1);
-            nfe.printStackTrace();
+            GuiUtil.getLogger().info(GuiUtil.getCommonMessage("log.error.initSession") + nfe.getLocalizedMessage());
+            if (GuiUtil.getLogger().isLoggable(Level.FINE)){
+                nfe.printStackTrace();
+            }
         }
-
-
     }
 
 
@@ -404,8 +405,10 @@ public class GuiUtil {
     public static void prepareException(HandlerContext handlerCtx, Throwable ex) {
         Throwable rootException = getRootCause(ex);
         prepareAlert("error", GuiUtil.getMessage("msg.Error"), rootException.getMessage());
-	GuiUtil.getLogger().log(Level.SEVERE,
-                GuiUtil.getMessage(COMMON_RESOURCE_NAME, "LOG_EXCEPTION_OCCURED"), ex);
+        GuiUtil.getLogger().info(GuiUtil.getCommonMessage("LOG_EXCEPTION_OCCURED") + ex.getLocalizedMessage());
+        if (GuiUtil.getLogger().isLoggable(Level.FINE)){
+            ex.printStackTrace();
+        }
     }
 
     /* This method sets up the attributes of the <sun:alert> message box so that any
@@ -430,7 +433,10 @@ public class GuiUtil {
             attrMap.put("alertSummary", isEmpty(summary) ? "" : URLEncoder.encode(summary, "UTF-8"));
         } catch (UnsupportedEncodingException ex) {
             //we'll never get here.
-            ex.printStackTrace();
+            GuiUtil.getLogger().info(GuiUtil.getCommonMessage("log.error.prepareAlert") + ex.getLocalizedMessage());
+            if (GuiUtil.getLogger().isLoggable(Level.FINE)){
+                ex.printStackTrace();
+            }
         }
 
     }

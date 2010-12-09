@@ -63,6 +63,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.Map;
 import java.util.Iterator;
 import java.util.Collection;
@@ -90,14 +91,12 @@ public class ApplicationHandlers {
     @Handler(id = "gf.getDeployedAppsInfo",
         input = {
             @HandlerInput(name = "appPropsMap", type = Map.class, required=true),
-            @HandlerInput(name = "serverName", type = String.class, defaultValue="server"),
             @HandlerInput(name = "filterValue", type = String.class)},
         output = {
             @HandlerOutput(name = "filters", type = java.util.List.class),
             @HandlerOutput(name = "result", type = java.util.List.class)})
 
     public static void getDeployedAppsInfo(HandlerContext handlerCtx) {
-        String serverName = (String) handlerCtx.getInputValue("serverName");
         Map<String, String> appPropsMap = (Map) handlerCtx.getInputValue("appPropsMap");
         String filterValue = (String) handlerCtx.getInputValue("filterValue");
         Set filters = new TreeSet();
@@ -136,7 +135,10 @@ public class ApplicationHandlers {
 
             result.add(oneRow);
           }catch(Exception ex){
-            ex.printStackTrace();
+            GuiUtil.getLogger().info(GuiUtil.getCommonMessage("log.error.getDeployedAppsInfo") + ex.getLocalizedMessage());
+            if (GuiUtil.getLogger().isLoggable(Level.FINE)){
+                ex.printStackTrace();
+            }
           }
         }
         handlerCtx.setOutputValue("result", result);
@@ -189,7 +191,10 @@ public class ApplicationHandlers {
                 getSubComponentDetail(appName, moduleName, snifferList, result);
             }
           }catch(Exception ex){
-              ex.printStackTrace();
+            GuiUtil.getLogger().info(GuiUtil.getCommonMessage("log.error.getSubComponents") + ex.getLocalizedMessage());
+            if (GuiUtil.getLogger().isLoggable(Level.FINE)){
+                ex.printStackTrace();
+            }
           }
           handlerCtx.setOutputValue("result", result);
     }
@@ -233,7 +238,10 @@ public class ApplicationHandlers {
                 }
             }
         }catch(Exception ex){
-            ex.printStackTrace();
+            GuiUtil.getLogger().info(GuiUtil.getCommonMessage("log.error.getSubComponentDetail") + ex.getLocalizedMessage());
+            if (GuiUtil.getLogger().isLoggable(Level.FINE)){
+                ex.printStackTrace();
+            }
         }
         return result;
     }
@@ -265,7 +273,10 @@ public class ApplicationHandlers {
                 oneRow.put("enableURL", DeployUtil.getTargetEnableInfo(name, true, true));
                 result.add(oneRow);
             }catch(Exception ex){
-                ex.printStackTrace();
+                GuiUtil.getLogger().info(GuiUtil.getCommonMessage("log.error.getLifecyclesInfo") + ex.getLocalizedMessage());
+                if (GuiUtil.getLogger().isLoggable(Level.FINE)){
+                    ex.printStackTrace();
+                }
             }
         }
         handlerCtx.setOutputValue("result", result);
@@ -719,7 +730,10 @@ public class ApplicationHandlers {
             vsInConfig = RestUtil.getChildMap(ep);
 
         }catch (Exception ex){
-            ex.printStackTrace();
+            GuiUtil.getLogger().info(GuiUtil.getCommonMessage("log.error.getURLs") + ex.getLocalizedMessage());
+                if (GuiUtil.getLogger().isLoggable(Level.FINE)){
+                    ex.printStackTrace();
+                }
         }
         String localHostName = null;
         try {

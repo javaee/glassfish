@@ -80,6 +80,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Map;
+import java.util.logging.Level;
+
 import javax.faces.component.UIViewRoot;
 
 
@@ -527,8 +529,11 @@ public class UtilHandlers {
             String output=URLDecoder.decode(str, scheme);
             handlerCtx.setOutputValue("output", output);
         }catch(UnsupportedEncodingException ex) {
-            ex.printStackTrace();
             handlerCtx.setOutputValue("output", str);
+            GuiUtil.getLogger().info(GuiUtil.getCommonMessage("log.error.decodeString") + ex.getLocalizedMessage());
+            if (GuiUtil.getLogger().isLoggable(Level.FINE)){
+                ex.printStackTrace();
+            }
         }
      }
 
@@ -547,8 +552,11 @@ public class UtilHandlers {
             String output = (input==null)? "": df.format(input);
             handlerCtx.setOutputValue("output", output);
         }catch (Exception ex){
-            ex.printStackTrace();
             handlerCtx.setOutputValue("output", "");
+            GuiUtil.getLogger().info(GuiUtil.getCommonMessage("log.error.roundTo2DecimalPoint") + ex.getLocalizedMessage());
+            if (GuiUtil.getLogger().isLoggable(Level.FINE)){
+                ex.printStackTrace();
+            }
         }
     }
 

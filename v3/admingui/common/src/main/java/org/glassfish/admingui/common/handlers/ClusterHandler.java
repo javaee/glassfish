@@ -61,10 +61,9 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-
+import java.util.logging.Level;
 import java.util.Map;
 import java.util.List;
-import javax.faces.context.FacesContext;
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.RestUtil;
 
@@ -111,8 +110,11 @@ public class ClusterHandler {
             handlerCtx.setOutputValue( "numRunning" , GuiUtil.getMessage(CLUSTER_RESOURCE_NAME, "cluster.number.instance.running", new String[]{""+running}));
             handlerCtx.setOutputValue( "numNotRunning" , GuiUtil.getMessage(CLUSTER_RESOURCE_NAME, "cluster.number.instance.notRunning", new String[]{""+notRunning}));
         }catch(Exception ex){
-             ex.printStackTrace();
-             handlerCtx.setOutputValue("numRunning", GuiUtil.getMessage(CLUSTER_RESOURCE_NAME, "cluster.status.unknown"));
+            handlerCtx.setOutputValue("numRunning", GuiUtil.getMessage(CLUSTER_RESOURCE_NAME, "cluster.status.unknown"));
+            GuiUtil.getLogger().info(GuiUtil.getCommonMessage("log.error.getClusterStatusSummary") + ex.getLocalizedMessage());
+            if (GuiUtil.getLogger().isLoggable(Level.FINE)){
+                ex.printStackTrace();
+            }
          }
      }
 
@@ -221,7 +223,7 @@ public class ClusterHandler {
             try {
                 Thread.sleep(5000);
             } catch (InterruptedException e) {
-                //e.printStackTrace();
+                //noop.
             }
         }
      }
@@ -424,7 +426,9 @@ public class ClusterHandler {
             }
         }catch(Exception ex){
             GuiUtil.getLogger().info(GuiUtil.getCommonMessage("LOG_GET_CLUSTERNAME_FOR_INSTANCE"));
-            ex.printStackTrace();
+            if (GuiUtil.getLogger().isLoggable(Level.FINE)){
+                ex.printStackTrace();
+            }
         }
     }
 

@@ -58,6 +58,7 @@ import java.text.NumberFormat;
 import java.util.Locale;
 import java.util.Date;
 import java.util.ListIterator;
+import java.util.logging.Level;
 
 import org.glassfish.admingui.common.util.RestResponse;
 import org.glassfish.admingui.common.util.RestUtil;
@@ -505,7 +506,10 @@ public class MonitoringHandlers {
                 }
             }
         } catch (UnsupportedEncodingException ex) {
-            ex.printStackTrace();
+            GuiUtil.getLogger().info(GuiUtil.getCommonMessage("log.error.getWebStatsUrl" )+ ex.getLocalizedMessage());
+            if (GuiUtil.getLogger().isLoggable(Level.FINE)){
+                ex.printStackTrace();
+            }
         }
         handlerCtx.setOutputValue("webServletUrl", webServletUrl);
         handlerCtx.setOutputValue("webServletType", statType);
@@ -539,7 +543,10 @@ public class MonitoringHandlers {
                     statUrl = statUrl  + "/" + URLEncoder.encode(str, "UTF-8");
                 }                
             } catch (UnsupportedEncodingException ex) {
+                GuiUtil.getLogger().info(GuiUtil.getCommonMessage("log.error.getStatsUrl") + ex.getLocalizedMessage());
+            if (GuiUtil.getLogger().isLoggable(Level.FINE)){
                 ex.printStackTrace();
+            }
             }
 
             if (RestUtil.doesProxyExist(statUrl)) {

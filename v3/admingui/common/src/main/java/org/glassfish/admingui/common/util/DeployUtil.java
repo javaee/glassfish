@@ -60,6 +60,7 @@ import java.net.URI;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.logging.Level;
 import java.util.Map;
 import javax.enterprise.deploy.spi.Target;
 /**
@@ -197,7 +198,10 @@ public class DeployUtil {
             }
 
         }catch(Exception ex){
-            ex.printStackTrace();
+            GuiUtil.getLogger().info(GuiUtil.getCommonMessage("log.error.appTarget") + ex.getLocalizedMessage());
+            if (GuiUtil.getLogger().isLoggable(Level.FINE)){
+                ex.printStackTrace();
+            }
         }
         return targets;
     }
@@ -229,7 +233,10 @@ public class DeployUtil {
                 }
             }
         }catch(Exception ex){
-            ex.printStackTrace();
+            GuiUtil.getLogger().info(GuiUtil.getCommonMessage("log.error.getRefEndpoints")+ ex.getLocalizedMessage());
+            if (GuiUtil.getLogger().isLoggable(Level.FINE)){
+                ex.printStackTrace();
+            }
         }
         return endpoints;
     }

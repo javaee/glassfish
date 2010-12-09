@@ -53,6 +53,7 @@ import java.util.HashSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import org.glassfish.admingui.common.handlers.RestUtilHandlers;
 
 /**
@@ -97,8 +98,10 @@ public class TargetUtil {
         try{
             clusters.addAll(RestUtil.getChildMap(GuiUtil.getSessionValue("REST_URL") + "/clusters/cluster").keySet());
         }catch (Exception ex){
-            GuiUtil.getLogger().severe("Error in getClusters;");
-            ex.printStackTrace();
+            GuiUtil.getLogger().info(GuiUtil.getCommonMessage("log.error.getClusters") + ex.getLocalizedMessage());
+            if (GuiUtil.getLogger().isLoggable(Level.FINE)){
+                ex.printStackTrace();
+            }
         }
         return clusters;
     }
@@ -129,7 +132,10 @@ public class TargetUtil {
             }
             return endpoint;
         }catch(Exception ex){
-            ex.printStackTrace();
+            GuiUtil.getLogger().info(GuiUtil.getCommonMessage("log.error.getTargetEndpoint") + ex.getLocalizedMessage());
+            if (GuiUtil.getLogger().isLoggable(Level.FINE)){
+                ex.printStackTrace();
+            }
             return "";
         }
     }

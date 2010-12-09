@@ -172,7 +172,10 @@ public class JdbcTempHandler {
                         handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("wizardPoolProperties", noprops);
                     }
                 } catch (Exception ex) {
-                    ex.printStackTrace();
+                    GuiUtil.getLogger().info(GuiUtil.getCommonMessage("log.error.updateJDBCPoolWizardStep1" + ex.getLocalizedMessage()));
+                    if (GuiUtil.getLogger().isLoggable(Level.FINE)){
+                        ex.printStackTrace();
+                    }
                 }
             } else {
                 // Allow user to provide DataSource ClassName when resourceType is not of type Driver

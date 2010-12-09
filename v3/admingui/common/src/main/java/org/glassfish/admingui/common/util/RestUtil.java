@@ -248,11 +248,14 @@ public class RestUtil {
                 Map responseMap = response.getResponse();
                 if ((status != 200) && (status != 201)) {
                     if (!quiet) {
-                        GuiUtil.getLogger().log(
-                            Level.SEVERE,
-                            GuiUtil.getCommonMessage( "LOG_REQUEST_FAILED", new Object[]{endpoint, attrs, response.getResponseBody()}));
+                        GuiUtil.getLogger().severe(GuiUtil.getCommonMessage( "LOG_REQUEST_FAILED", new Object[]{endpoint, attrs}));
+                        GuiUtil.getLogger().finest("response.getResponseBody(): " + response.getResponseBody());
                     }
-                    message = (String)((Map)responseMap.get("data")).get("message");
+                    if (responseMap.get("data") == null){
+                        message = null;
+                    }else {
+                        message = (String)((Map)responseMap.get("data")).get("message");
+                    }
                     if (message == null) {
                         Object msgs = responseMap.get("message");
 
@@ -283,13 +286,13 @@ public class RestUtil {
                             throw new RuntimeException(message);
                         }
                     }
+                    return new HashMap();
                 }
                 return responseMap;
             } catch (Exception ex) {
                 if (!quiet) {
-                    GuiUtil.getLogger().log(
-                        Level.SEVERE,
-                        GuiUtil.getCommonMessage("LOG_REQUEST_FAILED", new Object[]{endpoint, attrs, response.getResponseBody()}));
+                    GuiUtil.getLogger().severe(GuiUtil.getCommonMessage("LOG_REQUEST_FAILED", new Object[]{endpoint, attrs}));
+                    GuiUtil.getLogger().finest("response.getResponseBody(): " + response.getResponseBody());
                 }
                 if (handlerCtx != null) {
                     //If this is called from the jsf as handler, we want to stop processing and show error
