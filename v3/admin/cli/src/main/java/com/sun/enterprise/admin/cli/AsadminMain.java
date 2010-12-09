@@ -88,18 +88,15 @@ public class AsadminMain {
     private static final LocalStringsImpl strings =
                                 new LocalStringsImpl(AsadminMain.class);
 
+    /*
+     * Read asenv.conf and copy all values to System properties.
+     */
     static {
         Map<String, String> systemProps = new ASenvPropertyReader().getProps();
-        final String ir = SystemPropertyConstants.INSTALL_ROOT_PROPERTY;
-        final String cr = SystemPropertyConstants.CONFIG_ROOT_PROPERTY;
-        final String irVal = systemProps.get(ir);
-        final String crVal = systemProps.get(cr);
-
-        if (ok(irVal))
-            System.setProperty(ir, irVal);
-
-        if (ok(crVal))
-            System.setProperty(cr, crVal);
+        for (Map.Entry<String, String> entry : systemProps.entrySet()) {
+            if (System.getProperty(entry.getKey()) == null)
+                System.setProperty(entry.getKey(), entry.getValue());
+        }
     }
 
     /**
