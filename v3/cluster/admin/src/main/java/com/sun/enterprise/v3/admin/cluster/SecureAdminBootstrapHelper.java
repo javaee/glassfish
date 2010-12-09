@@ -52,6 +52,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Calendar;
 import java.util.TimeZone;
 import java.util.logging.Level;
@@ -204,9 +205,15 @@ public abstract class SecureAdminBootstrapHelper {
             this.dasInstanceDir = dasInstanceDir;
             this.instance = instance;
             this.logger = logger;
-            remoteNodeDir = remoteNodeDir(node, remoteNodeDir);
-            remoteNodeDirURI = URI.create(remoteNodeDir);
-            remoteInstanceURI = remoteInstanceURI(remoteNodeDir);
+
+            try {
+                remoteNodeDir = remoteNodeDir(node, remoteNodeDir);
+                //remoteNodeDirURI = URI.create(remoteNodeDir);
+                remoteNodeDirURI = new URI("file", remoteNodeDir, null);
+                remoteInstanceURI = remoteInstanceURI(remoteNodeDir);
+            } catch (URISyntaxException ex) {
+                throw new BootstrapException(ex);
+            }
             domainXMLTimestamp = dasDomainXMLTimestamp(dasInstanceDir);
             launcher = habitat.getComponent(SSHLauncher.class);
             launcher.init(node, logger);
@@ -240,13 +247,14 @@ public abstract class SecureAdminBootstrapHelper {
                     .append(node.getName())).toString());
         }
 
-        private URI remoteInstanceURI(final String remoteNodeDirPath) {
+        private URI remoteInstanceURI(final String remoteNodeDirPath)
+            throws URISyntaxException {
             final StringBuilder remoteInstancePath = new StringBuilder(remoteNodeDirPath);
             if ( ! remoteNodeDirPath.endsWith("/")) {
                 remoteInstancePath.append("/");
             }
             remoteInstancePath.append(instance).append("/");
-            return URI.create(remoteInstancePath.toString().replaceAll("\\\\","/"));
+            return new URI("file", remoteInstancePath.toString().replaceAll("\\\\","/"), null);
         }
 
         @Override

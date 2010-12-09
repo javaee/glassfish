@@ -214,8 +214,12 @@ public class InstallNodeCommand extends SSHCommandsBase {
             
             String zip = zipFile.getCanonicalPath();
             try {
-                logger.info("Copying " + zip + " (" + zipFile.length() +" bytes)" + " to " + host + ":" + installDir);
-                scpClient.put(zipFile.getAbsolutePath(), installDir);
+                logger.info("Copying " + zip + " (" + zipFile.length() +" bytes)" +
+                            " to " + host + ":" + installDir);
+                // Looks like we need to quote the paths to scp in case they
+                // contain spaces.
+                scpClient.put(FileUtils.quoteString(zipFile.getAbsolutePath()),
+                              FileUtils.quoteString(installDir));
                 logger.finer("Copied " + zip + " to " + host + ":" + installDir);
             } catch (IOException ex){
                 logger.info (Strings.get("cannot.copy.zip.file", zip, host));
@@ -224,7 +228,7 @@ public class InstallNodeCommand extends SSHCommandsBase {
 
             try {
                 logger.info("Installing " + archiveName + " into " + host + ":" + installDir);
-                String unzipCommand = "cd " + installDir + "; jar -xvf " + archiveName;
+                String unzipCommand = "cd '" + installDir + "'; jar -xvf " + archiveName;
                 int status = sshLauncher.runCommand(unzipCommand, outStream);
                 if (status != 0){
                     logger.info (Strings.get("jar.failed", host, outStream.toString()));
@@ -251,7 +255,7 @@ public class InstallNodeCommand extends SSHCommandsBase {
             try {
                 if (binDirFiles.isEmpty()) {
                     //binDirFiles can be empty if the archive isn't a fresh one
-                    String cmd = "cd " + installDir + "/glassfish/bin; chmod 0755 *";
+                    String cmd = "cd '" + installDir + "/glassfish/bin'; chmod 0755 *";
                     int status = sshLauncher.runCommand(cmd, outStream);
                     if (status != 0){
                         logger.info (Strings.get("jar.failed", host, outStream.toString()));
@@ -358,7 +362,7 @@ public class InstallNodeCommand extends SSHCommandsBase {
         boolean res = false;
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         try {
-            String cmd = installDir + "/glassfish/bin/asadmin version --local --terse";
+            String cmd = "'" + installDir + "/glassfish/bin/asadmin' version --local --terse";
             int status = sshLauncher.runCommand(cmd, outStream);
             if (status == 0){
                 logger.finer(host + ":'" + cmd + "'" + " returned ["+ outStream.toString() + "]");

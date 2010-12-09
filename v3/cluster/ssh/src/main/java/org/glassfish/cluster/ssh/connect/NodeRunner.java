@@ -225,11 +225,6 @@ public class NodeRunner  {
             throw new IllegalArgumentException("Node does not have an installDir");
         }
 
-        // Since we pass the command as a string to SSHLauncher we must
-        // make sure to escape any spaces in the installDir with backslashes
-        // XXX need a more general solution to this problem
-        installDir = encodeSpaces(installDir);
-
         List<String> fullcommand = new ArrayList<String>();
 
         // We can just use "asadmin" even on Windows since the SSHD provider
@@ -245,7 +240,7 @@ public class NodeRunner  {
             sshL.init(node, logger);
 
             ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-            commandStatus = sshL.runCommand(lastCommandRun, outStream, stdinLines);
+            commandStatus = sshL.runCommand(fullcommand, outStream, stdinLines);
             String results = outStream.toString();
             output.append(outStream.toString());
             return commandStatus;              
@@ -283,14 +278,6 @@ public class NodeRunner  {
 
     private void trace(String s) {
         logger.fine(String.format("%s: %s", this.getClass().getSimpleName(), s));
-    }
-
-    /**
-     * Escape all spaces in the string with a backslash.
-     */
-    private String encodeSpaces(String s) {
-        // This replaces all spaces with a backslash-space
-        return s.replaceAll(" ", "\\\\ ");
     }
 
     private String commandListToString(List<String> command) {

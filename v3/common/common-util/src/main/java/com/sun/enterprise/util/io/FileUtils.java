@@ -819,6 +819,36 @@ public class FileUtils {
         return (inputStr.replace('\\', '/'));
     }
 
+    /**
+     * Given a string (typically a path), quote the string such that spaces
+     * are protected from interpretation by a Unix or Windows command shell.
+     * Note that this method does not handle quoting for all styles of special
+     * characters. Just for the basic case of strings with spaces.
+     *
+     * @param s input string
+     * @return a String which is quoted to protect spaces
+     */
+    public static String quoteString(String s) {
+        if (s == null) {
+            throw new IllegalArgumentException("null string");
+        }
+
+        if (!s.contains("\'")) {
+            return("\'" + s + "\'");
+        } else if(!s.contains("\"")) {
+            return("\"" + s + "\"");
+        } else {
+            // Contains a single quote and a double quote. Use backslash
+            // On Unix. Double quotes on Windows. This method does not claim
+            // to support this case well if at all
+            if (OS.isWindows()) {
+                return("\"" + s + "\"");
+            } else {
+                return(s.replaceAll("\040", "\134 "));
+            }
+        }
+    }
+
     ///////////////////////////////////////////////////////////////////////////
 
     public static String getIllegalFilenameCharacters() {

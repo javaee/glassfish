@@ -141,7 +141,6 @@ public class SSHLauncher {
     @Inject
     private Habitat habitat;
 
-
     public void init(Node node, Logger logger) {
         this.logger = logger;
         int port;
@@ -310,6 +309,38 @@ public class SSHLauncher {
 
     }
 
+    /**
+     * Executes a command on the remote system via ssh, optionally sending
+     * lines of data to the remote process's System.in.
+     *
+     * @param command the command to execute in the form of an argv style list
+     * @param os stream to receive the output from the command
+     * @param stdinLines optional data to be sent to the process's System.in
+     *        stream; null if no input should be sent
+     * @return
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public int runCommand(List<String> command, OutputStream os,
+            List<String> stdinLines) throws IOException,
+                                            InterruptedException
+    {
+        return runCommand(commandListToQuotedString(command), os, stdinLines);
+    }
+
+    public int runCommand(List<String> command, OutputStream os)
+                                            throws IOException,
+                                            InterruptedException
+    {
+        return runCommand(command, os, null);
+    }
+
+    /**
+     * WARNING! This method does not handle paths with spaces in them.
+     * To use this method you must make sure all paths in the command string
+     * are quoted correctly.  Otherwise use the methods that take command as
+     * a list instead.
+     */
     public int runCommand(String command, OutputStream os) throws IOException,
                                             InterruptedException
     {
@@ -319,6 +350,11 @@ public class SSHLauncher {
     /**
      * Executes a command on the remote system via ssh, optionally sending
      * lines of data to the remote process's System.in.
+     *
+     * WARNING! This method does not handle paths with spaces in them.
+     * To use this method you must make sure all paths in the command string
+     * are quoted correctly.  Otherwise use the methods that take command as
+     * a list instead.
      *
      * @param command the command to execute
      * @param os stream to receive the output from the command
@@ -837,5 +873,33 @@ public class SSHLauncher {
         return String.format("host=%s port=%d user=%s password=%s keyFile=%s keyPassPhrase=%s authType=%s knownHostFile=%s",
             host, port, userName, displayPassword, keyFile,
             displayKeyPassPhrase, authType, knownHostsPath);
+    }
+
+    /**
+     * Take a command in the form of a list and convert it to a command string.
+     * If any string in the list has spaces then the string is quoted before
+     * being added to the final command string.
+     *
+     * @param command
+     * @return
+     */
+    private static String commandListToQuotedString(List<String> command) {
+        StringBuilder commandBuilder  = new StringBuilder();
+        boolean first = true;
+
+        for (String s : command) {
+            if (!first) {
+                commandBuilder.append(" ");
+            } else {
+                first = false;
+            }
+            if (s.contains(" ")) {
+                // Quote parts of the command that contain a space
+                commandBuilder.append(FileUtils.quoteString(s));
+            } else {
+                commandBuilder.append(s);
+            }
+        }
+        return commandBuilder.toString();
     }
 }

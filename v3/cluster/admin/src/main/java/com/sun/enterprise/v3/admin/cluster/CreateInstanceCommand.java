@@ -47,6 +47,7 @@ import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.Servers;
 import com.sun.enterprise.config.serverbeans.ServerRef;
 import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.util.ExceptionUtil;
 import java.io.IOException;
 import org.glassfish.api.ActionReport;
 import com.sun.enterprise.util.io.InstanceDirs;
@@ -323,12 +324,17 @@ public class CreateInstanceCommand implements AdminCommand {
             bootHelper.bootstrapInstance();
             return 0;
         } catch (Exception ex) {
+            String exmsg = ex.getMessage();
+            if (exmsg == null) {
+                // The root cause message is better than no message at all
+                exmsg = ExceptionUtil.getRootCause(ex).toString();
+            }
             String msg = Strings.get(
                     "create.instance.remote.boot.failed",
                     instance,
                     (ex instanceof SecureAdminBootstrapHelper.BootstrapException ? 
                         ((SecureAdminBootstrapHelper.BootstrapException)ex).sshSettings() : null),
-                    ex.getMessage(),
+                    exmsg,
                     nodeHost);
             logger.severe(msg);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
