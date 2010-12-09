@@ -42,12 +42,14 @@ package org.glassfish.web.admin.cli;
 
 import java.beans.PropertyVetoException;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.Level;
 
+import org.glassfish.internal.api.Target;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.HttpService;
+import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
@@ -60,15 +62,14 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.ActionReport.ExitCode;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
+import org.glassfish.api.admin.ExecuteOn;
+import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.CommandRunner;
-import org.glassfish.api.admin.ExecuteOn;
-import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.config.support.CommandTarget;
 import org.glassfish.config.support.TargetType;
-import org.glassfish.internal.api.Target;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -135,15 +136,12 @@ public class CreateHttpListener implements AdminCommand {
      * @param context information
      */
     public void execute(AdminCommandContext context) {
-        final ActionReport report = context.getActionReport();
-        if(!validateInputs(report)) {
-            return;
-        }
         Target targetUtil = habitat.getComponent(Target.class);
         Config newConfig = targetUtil.getConfig(target);
         if (newConfig!=null) {
             config = newConfig;
         }
+        final ActionReport report = context.getActionReport();
         networkConfig = config.getNetworkConfig();
         HttpService httpService = config.getHttpService();
         if (!(verifyUniqueName(report, networkConfig) && verifyUniquePort(report, networkConfig)
@@ -277,15 +275,6 @@ public class CreateHttpListener implements AdminCommand {
         return true;
     }
 
-    private boolean validateInputs(final ActionReport report) {
-        if(Integer.parseInt(acceptorThreads) < 1) {
-            report.setMessage(localStrings.getLocalString("acceptor.threads.too.low",
-                "The acceptor threads must be at least 1", listenerId));
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            return false;
-        }
-        return true;
-    }
     private boolean verifyUniqueName(ActionReport report, NetworkConfig networkConfig) {
         // ensure we don't already have one of this name
         for (NetworkListener listener : networkConfig.getNetworkListeners().getNetworkListener()) {
