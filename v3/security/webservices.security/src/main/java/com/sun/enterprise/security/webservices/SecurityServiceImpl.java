@@ -192,8 +192,9 @@ public class SecurityServiceImpl implements SecurityService {
                 sendAuthenticationEvents(false, hreq.getRequestURI(), webPrincipal);
                 _logger.fine("authentication failed for " + endpointName);
             } else {
+                sendAuthenticationEvents(true, hreq.getRequestURI(), webPrincipal);
             }
-            sendAuthenticationEvents(true, hreq.getRequestURI(), webPrincipal);
+            
             if (epInfo instanceof Ejb2RuntimeEndpointInfo) {
                 // For JAXRPC based EJb endpoints the rest of the steps are not needed
                 return authenticated;
