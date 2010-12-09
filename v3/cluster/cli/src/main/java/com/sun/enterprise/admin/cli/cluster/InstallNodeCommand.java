@@ -275,9 +275,7 @@ public class InstallNodeCommand extends SSHCommandsBase {
         File installRoot = new File(baseRootValue); 
 
         File zipFileLocation = null;
-        File glassFishZipFile = null;
-
-        
+        File glassFishZipFile = null;        
 
         if (archive != null) {
             archive = archive.replaceAll("\\\\","/");
@@ -309,20 +307,30 @@ public class InstallNodeCommand extends SSHCommandsBase {
         List<String> resultFiles1 = Arrays.asList(files);
         ArrayList<String> resultFiles = new ArrayList<String>(resultFiles1);
 
+        logger.finer("Number of files to be zipped = " + resultFiles.size());
+
         Iterator<String> iter = resultFiles.iterator();
         while(iter.hasNext()) {
             String fileName = iter.next();
+            String fPath = fileName.substring(fileName.lastIndexOf("/") + 1);            
+            if (fPath.equals(glassFishZipFile.getName())) {
+                logger.finer("Removing file = " + fileName);
+                iter.remove();
+                continue;
+            }
             if (fileName.contains("domains") || fileName.contains("nodes")) {
                 iter.remove();
             } else if (fileName.startsWith("bin") || fileName.startsWith("glassfish/bin")) {
                 binDirFiles.add(fileName);
             }
         }
+        
+        logger.finer("Final number of files to be zipped = " +resultFiles.size());
 
         String [] filesToZip = new String[resultFiles.size()];
         filesToZip = resultFiles.toArray(filesToZip);
 
-        ZipWriter writer = new ZipWriter(glassFishZipFile.getCanonicalPath(), installRoot.toString(), filesToZip);
+        ZipWriter writer = new ZipWriter(FileUtils.safeGetCanonicalPath(glassFishZipFile), installRoot.toString(), filesToZip);
         writer.safeWrite();
         logger.info("Created installation zip " + glassFishZipFile.getCanonicalPath());
 
