@@ -52,7 +52,7 @@
     <groupId>org.glassfish.security</groupId>
     <artifactId>jaspic.provider.framework</artifactId>
     <name>JSR-196 Provider Framework Reference Implementation</name>
-    <packaging>jar</packaging>
+    <packaging>hk2-jar</packaging>
     <dependencies>
         <dependency>
             <groupId>org.glassfish</groupId>

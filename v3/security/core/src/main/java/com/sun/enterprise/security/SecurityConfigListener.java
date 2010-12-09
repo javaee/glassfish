@@ -52,19 +52,17 @@ import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.config.serverbeans.AuthRealm;
 import com.sun.enterprise.config.serverbeans.JaccProvider;
 import com.sun.enterprise.config.serverbeans.AuditModule;
+import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.MessageSecurityConfig;
 
 import com.sun.enterprise.security.audit.AuditManager;
 import com.sun.enterprise.security.auth.realm.Realm;
 import com.sun.enterprise.security.auth.realm.RealmsManager;
-import com.sun.enterprise.security.embedded.EmbeddedSecurityUtil;
-import com.sun.enterprise.server.pluggable.SecuritySupport;
 import java.beans.PropertyChangeEvent;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
 import javax.security.auth.login.Configuration;
-import org.glassfish.internal.api.Globals;
 import org.jvnet.hk2.component.PostConstruct;
 
 /**
@@ -237,7 +235,7 @@ public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
     }, logger);
      return null;
 }
-    
+
     /**
      * New auth realm created.
      * It is called whenever a AuthRealmEvent with action of
@@ -251,7 +249,46 @@ public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
-    } 
+    }
+
+    /**
+     * New auth realm created.
+     * It is called whenever a AuthRealmEvent with action of
+     * AuthRealmEvent.ACTION_CREATE is received.
+     * @throws AdminEventListenerException when the listener is unable to
+     *         process the event.
+     */
+    public static void authRealmCreated(Config config, AuthRealm instance){
+        try {
+            createRealm(config, instance);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    /**
+     * Auth realm deleted.
+     * It is called whenever a AuthRealmEvent with action of
+     * AuthRealmEvent.ACTION_DELETE is received.
+     * @throws AdminEventListenerException when the listener is unable to
+     *         process the event.
+     */
+    public static void authRealmDeleted(Config config, AuthRealm instance) {
+        try {
+            //the listener firing has been unpredictable earlier
+            //after a CLI delete the listener's were not firing in time
+            //so we added explicit calls to this method from CLI
+            //now with latest builds it looks like listeners also fire
+            //causing a NoSuchRealmException
+            if (!Realm.isValidRealm(config.getName(), instance.getName())) {
+                return;
+            }
+            Realm.unloadInstance(config.getName(), instance.getName());
+        } catch (NoSuchRealmException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
 
     /**
      * Auth realm deleted.
@@ -293,6 +330,22 @@ public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
     }
 
     /**
+     * Auth realm updated (attributes change).
+     * It is called whenever a AuthRealmEvent with action of
+     * AuthRealmEvent.ACTION_UPDATE is received.
+     * @throws AdminEventListenerException when the listener is unable to
+     *         process the event.
+     */
+    public void authRealmUpdated(Config config, AuthRealm instance) {
+        try {
+            realmsManager.removeFromLoadedRealms(config.getName(),instance.getName());
+            createRealm(config, instance);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    /**
      * This method will create or replace existing realm with a new one
      * in cache.
      * @param event
@@ -310,6 +363,27 @@ public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
             }
         }
         Realm.instantiate(authRealm.getName(), className, props);
+        Configuration.getConfiguration().refresh();
+    }
+
+    /**
+     * This method will create or replace existing realm with a new one
+     * in cache.
+     * @param event
+     * @exception for instance, BadRealmException, ConfigException,
+     *            SynchronizationException
+     */
+    private static void createRealm(Config config, AuthRealm authRealm) throws Exception {
+        //authRealm cannot be null here
+        String className = authRealm.getClassname();
+        List<Property> elementProps = authRealm.getProperty();
+        Properties props = new Properties();
+        if (elementProps != null) {
+            for (Property p : elementProps) {
+                props.setProperty(p.getName(), p.getValue());
+            }
+        }
+        Realm.instantiate(authRealm.getName(), className, props, config.getName());
         Configuration.getConfiguration().refresh();
     }
 

@@ -221,7 +221,7 @@ public abstract class Realm implements Comparable {
         //Register the realm provider
         registerRealmStatsProvier();
 
-        Realm realmClass = _getInstance(name);
+        Realm realmClass = _getInstance(configName, name);
         if(realmClass == null) {
             Realm r = doInstantiate(name, className, props);
             RealmsManager mgr = getRealmsManager();
@@ -450,6 +450,24 @@ public abstract class Realm implements Comparable {
         _logger.log(Level.INFO, "Realm " + realmName + " successfully deleted.");
     }
 
+     /**
+     * Remove realm with given name from cache.
+     * @param realmName
+     * @exception NoSuchRealmException
+     */
+    public static synchronized void unloadInstance(String configName, String realmName) throws NoSuchRealmException {
+        //make sure instance exist
+        //getInstance(configName, realmName);
+        RealmsManager mgr = getRealmsManager();
+        if (mgr != null) {
+             mgr.removeFromLoadedRealms(configName, realmName);
+        } else {
+           throw new RuntimeException("Unable to locate RealmsManager Service");
+        }
+        _logger.log(Level.INFO, "Realm " + realmName + " successfully deleted.");
+    }
+
+
 
     /**
      * Set a realm property.
@@ -523,7 +541,31 @@ public abstract class Realm implements Comparable {
      
 	return retval;
     }
-    
+
+    /**
+     * Returns the realm identified by the name which is passed
+     * as a parameter.  This function knows about all the realms
+     * which exist; it is not possible to store (or create) one
+     * which is not accessible through this routine.
+     *
+     * @param name identifies the realm
+     * @return the requested realm
+     * @exception NoSuchRealmException if the realm is invalid
+     * @exception BadRealmException if realm data structures are bad
+     */
+    public static synchronized Realm getInstance(String configName, String name) throws NoSuchRealmException
+    {
+	Realm retval = _getInstance(configName, name);
+
+        if (retval == null) {
+            throw new NoSuchRealmException(
+                localStrings.getLocalString("realm.no_such_realm",
+                name + " realm does not exist.",
+                new Object[] { name }));
+        }
+
+	return retval;
+    }
     
     /**
      * This is a private method for getting realm instance.
@@ -541,7 +583,21 @@ public abstract class Realm implements Comparable {
         }
     }
 
-
+    /**
+     * This is a private method for getting realm instance.
+     * If realm does not exist, then it will not return null rather than
+     * throw exception.
+     * @param name identifies the realm
+     * @return the requested realm
+     */
+    private static synchronized Realm _getInstance(String configName, String name) {
+        RealmsManager mgr = getRealmsManager();
+        if (mgr != null) {
+            return mgr._getInstance(configName, name);
+        } else  {
+           throw new RuntimeException("Unable to locate RealmsManager Service");
+        }
+    }
     
 
     /**
@@ -630,6 +686,19 @@ public abstract class Realm implements Comparable {
         RealmsManager mgr = getRealmsManager();
         if (mgr != null) {
             return mgr.isValidRealm(name);
+        }
+        throw new RuntimeException("Unable to locate RealmsManager Service");
+    }
+
+    /**
+     * Checks if the given realm name is loaded/valid.
+     * @param String name of the realm to check.
+     * @return true if realm present, false otherwise.
+     */
+    public static boolean isValidRealm(String configName, String name) {
+        RealmsManager mgr = getRealmsManager();
+        if (mgr != null) {
+            return mgr.isValidRealm(configName, name);
         }
         throw new RuntimeException("Unable to locate RealmsManager Service");
     }

@@ -239,7 +239,7 @@ public class CreateFileUser implements /*UndoableCommand*/ AdminCommand {
                     try {
                         realmsManager.createRealms(config);
                         //If the (shared) keyfile is updated by an external process, load the users first
-                        refreshRealm(authRealmName);
+                        refreshRealm(config.getName(),authRealmName);
                         final FileRealm fr = (FileRealm) realmsManager.getFromLoadedRealms(config.getName(),authRealmName);
                         CreateFileUser.handleAdminGroup(authRealmName, groups);
                         String[] groups1 = groups.toArray(new String[groups.size()]);
@@ -316,11 +316,12 @@ public class CreateFileUser implements /*UndoableCommand*/ AdminCommand {
        }
        return password;
    } */
-   public static void refreshRealm(String realmName){
+
+   public static void refreshRealm(String configName, String realmName){
       if(realmName != null && realmName.length()  >0){
          try{
-            Realm realm = Realm.getInstance(realmName);
-       
+            Realm realm = Realm.getInstance(configName, realmName);
+
 	    if(realm != null){
 	       realm.refresh();
 	    }

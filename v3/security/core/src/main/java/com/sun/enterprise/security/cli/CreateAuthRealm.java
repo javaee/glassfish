@@ -188,7 +188,7 @@ public class CreateAuthRealm implements AdminCommand {
                     param.getAuthRealm().add(newAuthRealm);
                     //In case of cluster instances, this is required to
                     //avoid issues with the listener's callback method
-                    SecurityConfigListener.authRealmCreated(newAuthRealm);
+                    SecurityConfigListener.authRealmCreated(config, newAuthRealm);
                     return newAuthRealm;
                     
                 }

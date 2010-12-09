@@ -212,7 +212,7 @@ public class DeleteFileUser implements /*UndoableCommand*/ AdminCommand {
                         } else {
                             fr.writeKeyFile(kFile);
                         }
-                        CreateFileUser.refreshRealm(authRealmName);
+                        CreateFileUser.refreshRealm(config.getName(),authRealmName);
                         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
                     } catch (NoSuchUserException e) {
                         report.setMessage(

@@ -95,7 +95,7 @@ public class RealmsManager {
     public RealmsManager() {
         
     }
-     /**
+    /**
      * Checks if the given realm name is loaded/valid.
      * @param String name of the realm to check.
      * @return true if realm present, false otherwise.
@@ -107,6 +107,19 @@ public class RealmsManager {
             return configContainsRealm(name, config.getName());
         }
     }
+
+    /**
+     * Checks if the given realm name is loaded/valid.
+     * @param String name of the realm to check.
+     * @return true if realm present, false otherwise.
+     */
+    public  boolean isValidRealm(String configName, String name){
+        if(name == null){
+            return false;
+        } else {
+            return configContainsRealm(name, configName);
+        }
+    }
     
     /**
      * Returns the names of accessible realms.
@@ -115,11 +128,10 @@ public class RealmsManager {
     public  Enumeration<String>	getRealmNames() {
 	return getRealmNames(config.getName());
     }
-    
 
-    Realm _getInstance(String name) {
+    Realm _getInstance(String configName, String name) {
 	Realm retval = null;
-	retval = configGetRealmInstance(config.getName(), name);
+	retval = configGetRealmInstance(configName, name);
 
         // Some tools as well as numerous other locations assume that
         // getInstance("default") always works; keep them from breaking
@@ -129,10 +141,14 @@ public class RealmsManager {
         // a Subject always containing realm='default' so this notion
         // needs to be fixed/handled.
         if ( (retval == null) && (Realm.RI_DEFAULT.equals(name)) ) {
-            retval = configGetRealmInstance(config.getName(),getDefaultRealmName());
+            retval = configGetRealmInstance(configName,getDefaultRealmName());
         }
 
         return retval;
+    }
+
+    Realm _getInstance(String name) {
+        return _getInstance(config.getName(), name);
     }
 
     public void removeFromLoadedRealms(String realmName) {
@@ -283,7 +299,7 @@ public class RealmsManager {
 	return  (containedRealms != null) ? (Realm) containedRealms.get(realm) : null;
     }
 
-    private Realm removeFromLoadedRealms (String configName, String realmName) {
+    public Realm removeFromLoadedRealms (String configName, String realmName) {
          Hashtable<String, Realm> containedRealms = loadedRealms.get(configName);
          return (containedRealms != null) ?(Realm)containedRealms.remove(realmName) : null;
     }
