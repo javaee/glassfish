@@ -51,7 +51,9 @@
     setResourceBundle(key="help_jdbc" bundle="org.glassfish.jdbc.admingui.Helplinks")
 />
 
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18njdbc.jdbcConnectionPool.Step2PageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18njdbc.jdbcConnectionPool.Step2PageTitle}"
+        guiTemplateOnLoad="document.onkeypress =stopRKey;"
+>
 <!define name="content">
     <event>
     <!beforeCreate
@@ -130,6 +132,13 @@
         }
         return true;
     }
+
+   function stopRKey(evt) {
+        var evt = (evt) ? evt : ((event) ? event : null);
+        var node = (evt.target) ? evt.target : ((evt.srcElement) ? evt.srcElement : null);
+        if ((evt.keyCode == 13) && (node.type=="text"))  {return false;}
+    }
+
     </script>
 </f:verbatim>
 
