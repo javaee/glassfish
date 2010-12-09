@@ -77,7 +77,7 @@
 </sun:script>
 
 <sun:html id="html2">
-<sun:head id="propertyhead" title="$resource{i18nc.logViewer.PageTitle}" debug="false" parseOnLoad="false">
+<sun:head id="propertyhead" title="$resource{i18nc.support.PageTitle}" debug="false" parseOnLoad="false">
     <sun:script url="/resource/common/js/adminjsf.js" />
 </sun:head>
 <sun:body  id="body3">
