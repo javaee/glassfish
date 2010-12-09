@@ -48,6 +48,7 @@
 
 package org.glassfish.osgijpa.dd;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.net.URL;
@@ -122,7 +123,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
     "persistenceUnit"
 })
 @XmlRootElement(name = "persistence")
-public class Persistence {
+public class Persistence implements Serializable{
 
     @XmlElement(name = "persistence-unit", required = true)
     protected List<Persistence.PersistenceUnit> persistenceUnit;
@@ -146,6 +147,7 @@ public class Persistence {
      */
     @XmlTransient
     private String PURoot;
+    private static final long serialVersionUID = -436183641556036668L;
 
     public URL getUrl() {
         return url;
@@ -291,7 +293,7 @@ public class Persistence {
         "validationMode",
         "properties"
     })
-    public static class PersistenceUnit {
+    public static class PersistenceUnit implements java.io.Serializable {
 
         protected String description;
         protected String provider;
@@ -316,6 +318,7 @@ public class Persistence {
         protected String name;
         @XmlAttribute(name = "transaction-type")
         protected PersistenceUnitTransactionType transactionType;
+        private static final long serialVersionUID = -8420298339689129735L;
 
         /**
          * Gets the value of the description property.
@@ -677,9 +680,10 @@ public class Persistence {
         @XmlType(name = "", propOrder = {
             "property"
         })
-        public static class Properties {
+        public static class Properties implements java.io.Serializable {
 
             protected List<Persistence.PersistenceUnit.Properties.Property> property;
+            private static final long serialVersionUID = 643365821766930807L;
 
             /**
              * Gets the value of the property property.
@@ -731,12 +735,13 @@ public class Persistence {
              */
             @XmlAccessorType(XmlAccessType.FIELD)
             @XmlType(name = "")
-            public static class Property {
+            public static class Property implements Serializable{
 
                 @XmlAttribute(name = "name", required = true)
                 protected String name;
                 @XmlAttribute(name = "value", required = true)
                 protected String value;
+                private static final long serialVersionUID = 6875723373651840367L;
 
                 /**
                  * Gets the value of the name property.
