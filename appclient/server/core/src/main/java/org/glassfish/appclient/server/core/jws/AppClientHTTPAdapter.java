@@ -42,15 +42,13 @@ package org.glassfish.appclient.server.core.jws;
 
 import com.sun.enterprise.config.serverbeans.IiopListener;
 import com.sun.enterprise.config.serverbeans.IiopService;
-import com.sun.grizzly.tcp.http11.GrizzlyRequest;
-import com.sun.grizzly.tcp.http11.GrizzlyResponse;
-import com.sun.grizzly.util.http.MimeType;
 import com.sun.logging.LogDomains;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.net.URLDecoder;
 import java.util.Date;
 import java.util.HashMap;
@@ -62,6 +60,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.glassfish.appclient.server.core.jws.servedcontent.ACCConfigContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.DynamicContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.StaticContent;
+import org.glassfish.grizzly.http.server.Request;
+import org.glassfish.grizzly.http.server.Response;
+import org.glassfish.grizzly.http.server.util.MimeType;
 
 /**
  * GrizzlyAdapter for serving static and dynamic content.
@@ -81,6 +82,7 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
     private static final String DEFAULT_ORB_LISTENER_ID = "orb-listener-1";
 
     private final static String LINE_SEP = System.getProperty("line.separator");
+    private static final String NEW_LINE = "\r\n";
 
     private final static Logger logger = LogDomains.getLogger(AppClientHTTPAdapter.class,
             LogDomains.ACC_LOGGER);
@@ -137,7 +139,7 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
      * @param gResp
      */
     @Override
-    public void service(GrizzlyRequest gReq, GrizzlyResponse gResp) {
+    public void service(Request gReq, Response gResp) {
         final String relativeURIString =
                 relativizeURIString(contextRoot(), gReq.getRequestURI());
         if (relativeURIString == null) {
@@ -177,7 +179,7 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
 
     private void processDynamicContent(final Properties tokens,
             final String relativeURIString,
-            final GrizzlyRequest gReq, final GrizzlyResponse gResp) throws IOException {
+            final Request gReq, final Response gResp) throws IOException {
         final DynamicContent dc = dynamicContent.get(relativeURIString);
         if (dc == null) {
             respondNotFound(gResp);
@@ -248,7 +250,7 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
      */
     private Properties prepareRequestPlaceholders(
             final Properties adapterTokens,
-            GrizzlyRequest request) throws FileNotFoundException, IOException {
+            Request request) throws FileNotFoundException, IOException {
         final Properties answer = new Properties(adapterTokens);
 
         answer.setProperty("request.scheme", request.getScheme());
@@ -304,7 +306,7 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
         return indent + "<property name=\"" + name + "\" value=\"" + value + "\"/>" + LINE_SEP;
     }
 
-    private String getPathInfo(final GrizzlyRequest gReq) {
+    private String getPathInfo(final Request gReq) {
         return gReq.getRequestURI();
     }
 
@@ -369,20 +371,21 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
      * @param res
      */
     private void writeData(final String data,
-            final GrizzlyResponse res) {
+            final Response res) {
         try {
             res.setStatus(HttpServletResponse.SC_OK);
 
 
             res.setContentLength(data.length());
-            res.getResponse().sendHeaders();
+            res.flush();
 
-            PrintWriter pw = res.getWriter();
-            pw.println(data);
+            Writer pw = res.getWriter();
+            pw.write(data);
+            pw.write(NEW_LINE);
             pw.flush();
         } catch (Exception e) {
             res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            res.getResponse().setErrorException(e);
+            res.setError();
             return;
         }
     }

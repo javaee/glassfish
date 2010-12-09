@@ -37,12 +37,8 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.appclient.server.core.jws;
 
-import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
-import com.sun.grizzly.tcp.http11.GrizzlyRequest;
-import com.sun.grizzly.tcp.http11.GrizzlyResponse;
 import com.sun.logging.LogDomains;
 import java.io.File;
 import java.io.IOException;
@@ -53,37 +49,37 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletResponse;
 import org.glassfish.appclient.server.core.jws.servedcontent.Content;
 import org.glassfish.appclient.server.core.jws.servedcontent.StaticContent;
+import org.glassfish.grizzly.http.server.HttpRequestProcessor;
+import org.glassfish.grizzly.http.server.Request;
+import org.glassfish.grizzly.http.server.Response;
+import org.glassfish.grizzly.http.server.StaticResourcesService;
 
 /**
  *
  * @author tjquinn
  */
-public class RestrictedContentAdapter extends GrizzlyAdapter {
+public class RestrictedContentAdapter extends HttpRequestProcessor {
 
     protected final static String LAST_MODIFIED_HEADER_NAME = "Last-Modified";
     protected final static String DATE_HEADER_NAME = "Date";
     protected final static String IF_MODIFIED_SINCE = "If-Modified-Since";
-
     private final static String LINE_SEP = System.getProperty("line.separator");
-    
     private final Logger logger = LogDomains.getLogger(
             RestrictedContentAdapter.class, LogDomains.ACC_LOGGER);
 
     private enum State {
+
         RESUMED,
         SUSPENDED
     }
-
     private volatile State state = State.RESUMED;
-
     private final String contextRoot;
-
-    private final ConcurrentHashMap<String,StaticContent> content =
-            new ConcurrentHashMap<String,StaticContent>();
+    private final ConcurrentHashMap<String, StaticContent> content =
+            new ConcurrentHashMap<String, StaticContent>();
 
     public RestrictedContentAdapter(
             final String contextRoot,
-            final Map<String,StaticContent> content) throws IOException {
+            final Map<String, StaticContent> content) throws IOException {
         this(contextRoot);
         this.content.putAll(content);
         /*
@@ -96,11 +92,11 @@ public class RestrictedContentAdapter extends GrizzlyAdapter {
          * Preloading the cache with the known static content lets the Grizzly
          * logic serve the files we want, from whereever they are.
          */
-        for (Map.Entry<String,StaticContent> sc : content.entrySet()) {
-            cache.put(sc.getKey(), sc.getValue().file());
-        }
-        logger.fine(logPrefix() + "Initial static content loaded " +
-                dumpContent());
+//        for (Map.Entry<String, StaticContent> sc : content.entrySet()) {
+//            cache.put(sc.getKey(), sc.getValue().file());
+//        }
+        logger.fine(logPrefix() + "Initial static content loaded "
+                + dumpContent());
     }
 
     public RestrictedContentAdapter(final String contextRoot) {
@@ -111,14 +107,14 @@ public class RestrictedContentAdapter extends GrizzlyAdapter {
          */
         this.contextRoot = contextRoot;
 //        this.userFriendlyContextRoot = userFriendlyContextRoot;
-        setHandleStaticResources(false);
+//        setHandleStaticResources(false);
 
-        setUseSendFile(false);
-        commitErrorResponse = true;
+//        setUseSendFile(false);
+//        commitErrorResponse = true;
     }
 
     @Override
-    public void service(GrizzlyRequest gReq, GrizzlyResponse gResp) {
+    public void service(Request gReq, Response gResp) {
         try {
             if (!serviceContent(gReq, gResp)) {
                 respondNotFound(gResp);
@@ -135,30 +131,28 @@ public class RestrictedContentAdapter extends GrizzlyAdapter {
 //    public String userFriendlyContextRoot() {
 //        return userFriendlyContextRoot;
 //    }
-
     public synchronized void addContentIfAbsent(final String relativeURIString,
             final StaticContent newContent) throws IOException {
         final StaticContent existingContent = content.get(relativeURIString);
         if (existingContent != null) {
-            if ( ! existingContent.equals(newContent)) {
+            if (!existingContent.equals(newContent)) {
                 logger.log(Level.FINE, "enterprise.deployment.appclient.jws.staticContentCollision",
-                        new Object[] {relativeURIString, newContent.toString()});
+                        new Object[]{relativeURIString, newContent.toString()});
             }
             return;
         }
         this.content.put(relativeURIString, newContent);
-        this.cache.put(relativeURIString, newContent.file());
-        logger.fine(logPrefix() + "adding static content " +
-                relativeURIString + " " + newContent.toString());
+//        this.cache.put(relativeURIString, newContent.file());
+        logger.fine(logPrefix() + "adding static content "
+                + relativeURIString + " " + newContent.toString());
     }
 
     public synchronized void addContentIfAbsent(
-            final Map<String,StaticContent> staticContent) throws IOException {
-        for (Map.Entry<String,StaticContent> entry : staticContent.entrySet()) {
+            final Map<String, StaticContent> staticContent) throws IOException {
+        for (Map.Entry<String, StaticContent> entry : staticContent.entrySet()) {
             addContentIfAbsent(entry.getKey(), entry.getValue());
         }
     }
-
 
 //    protected String relativizeURIString(final String uriString) {
 //        String result;
@@ -171,10 +165,9 @@ public class RestrictedContentAdapter extends GrizzlyAdapter {
 //        }
 //        return result;
 //    }
-
     protected String relativizeURIString(final String candidateContextRoot,
             final String uriString) {
-        if ( ! uriString.startsWith(candidateContextRoot)) {
+        if (!uriString.startsWith(candidateContextRoot)) {
             return null;
         }
         /*
@@ -189,7 +182,7 @@ public class RestrictedContentAdapter extends GrizzlyAdapter {
         return uriString.substring(candidateContextRoot.length() + 1);
     }
 
-    protected boolean serviceContent(GrizzlyRequest gReq, GrizzlyResponse gResp) throws IOException {
+    protected boolean serviceContent(Request gReq, Response gResp) throws IOException {
 
         String relativeURIString = relativizeURIString(contextRoot, gReq.getRequestURI());
 
@@ -230,15 +223,15 @@ public class RestrictedContentAdapter extends GrizzlyAdapter {
             finishErrorResponse(gResp, contentStateToResponseStatus(sc));
             final String scString = (sc == null ? "null" : sc.toString());
             final String scStateString = (sc == null ? "null" : sc.state().toString());
-            logger.fine(logPrefix() + "Found static content for " + gReq.getMethod() +
-                    ": " + relativeURIString + " -> " + scString +
-                    " but could not serve it; its state is " + scStateString);
+            logger.fine(logPrefix() + "Found static content for " + gReq.getMethod()
+                    + ": " + relativeURIString + " -> " + scString
+                    + " but could not serve it; its state is " + scStateString);
             return true;
         }
     }
 
     private void processContent(final String relativeURIString,
-            final GrizzlyRequest gReq, final GrizzlyResponse gResp) {
+            final Request gReq, final Response gResp) {
         try {
             final StaticContent sc = content.get(relativeURIString);
 
@@ -264,31 +257,32 @@ public class RestrictedContentAdapter extends GrizzlyAdapter {
             /*
              * Delegate to the Grizzly implementation.
              */
-            super.service(relativeURIString, gReq.getRequest(), gResp.getResponse());
+            StaticResourcesService.sendFile(gResp, fileToSend);
             final int status = gResp.getStatus();
             if (status != HttpServletResponse.SC_OK) {
-                logger.fine(logPrefix() + "Could not serve content for " +
-                        relativeURIString + " - status = " + status);
+                logger.fine(logPrefix() + "Could not serve content for "
+                        + relativeURIString + " - status = " + status);
             } else {
-                logger.fine(logPrefix() + "Served static content for " + gReq.getMethod() +
-                        ":" + sc.toString());
+                logger.fine(logPrefix() + "Served static content for " + gReq.getMethod()
+                        + ":" + sc.toString());
             }
+
             finishResponse(gResp, status);
         } catch (Exception e) {
 //            gResp.getResponse().setErrorException(e);
-//            finishErrorResponse(gResp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            finishErrorResponse(gResp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             logger.log(Level.SEVERE, logPrefix() + relativeURIString, e);
         }
     }
 
     protected boolean returnIfClientCacheIsCurrent(final String relativeURIString,
-            final GrizzlyRequest gReq,
+            final Request gReq,
             final long contentTimestamp) {
         final long ifModifiedSinceTime = gReq.getDateHeader(IF_MODIFIED_SINCE);
         boolean result;
-        if (result = (ifModifiedSinceTime != -1) &&
-            (ifModifiedSinceTime >= contentTimestamp)) {
-            finishSuccessResponse(gReq.getResponse(), 
+        if (result = (ifModifiedSinceTime != -1)
+                && (ifModifiedSinceTime >= contentTimestamp)) {
+            finishSuccessResponse(gReq.getResponse(),
                     HttpServletResponse.SC_NOT_MODIFIED);
             logger.fine(logPrefix() + relativeURIString + " is already current on the client; no downloaded needed");
         }
@@ -303,12 +297,12 @@ public class RestrictedContentAdapter extends GrizzlyAdapter {
             status = HttpServletResponse.SC_OK;
         } else {
             status = (content.state() == Content.State.SUSPENDED
-                        ? HttpServletResponse.SC_FORBIDDEN
-                        : HttpServletResponse.SC_NOT_FOUND);
+                    ? HttpServletResponse.SC_FORBIDDEN
+                    : HttpServletResponse.SC_NOT_FOUND);
         }
         return status;
     }
-    
+
     public void suspend() {
         state = State.SUSPENDED;
     }
@@ -320,44 +314,43 @@ public class RestrictedContentAdapter extends GrizzlyAdapter {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder(logPrefix()).append(LINE_SEP);
-        for (Map.Entry<String,StaticContent> entry : content.entrySet()) {
+        for (Map.Entry<String, StaticContent> entry : content.entrySet()) {
             sb.append("  ").append(entry.toString()).append(LINE_SEP);
         }
         return sb.toString();
     }
 
-
-    protected void finishResponse(final GrizzlyResponse gResp, final int status) {
+    protected void finishResponse(final Response gResp, final int status) {
         gResp.setStatus(status);
         try {
-            gResp.finishResponse();
+            gResp.finish();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    protected void respondNotFound(final GrizzlyResponse gResp) {
+    protected void respondNotFound(final Response gResp) {
         finishErrorResponse(gResp, HttpServletResponse.SC_NOT_FOUND);
     }
 
-    protected void finishSuccessResponse(final GrizzlyResponse gResp, final int status) {
+    protected void finishSuccessResponse(final Response gResp, final int status) {
         finishResponse(gResp, status, false);
     }
 
-    private void finishResponse(final GrizzlyResponse gResp, final int status,
+    private void finishResponse(final Response gResp, final int status,
             final boolean treatAsError) {
         gResp.setStatus(status);
         try {
-            if (treatAsError && commitErrorResponse) {
-                customizedErrorPage(gResp.getRequest().getRequest(), gResp.getResponse());
+            if (treatAsError /* && commitErrorResponse */) {
+                customizedErrorPage(gResp.getRequest(), gResp);
             }
-            gResp.finishResponse();
+            gResp.finish();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    protected void finishErrorResponse(final GrizzlyResponse gResp, final int status) {
+    protected void finishErrorResponse(final Response gResp, final int status) {
         finishResponse(gResp, status, true);
     }
 
@@ -369,7 +362,7 @@ public class RestrictedContentAdapter extends GrizzlyAdapter {
             return "  Static content: empty" + LINE_SEP;
         }
         final StringBuilder sb = new StringBuilder(LINE_SEP).append("  Static content");
-        for (Map.Entry<String,StaticContent> entry : content.entrySet()) {
+        for (Map.Entry<String, StaticContent> entry : content.entrySet()) {
             sb.append("  ").append(entry.getKey()).append(" : ").
                     append(entry.getValue().toString()).append(LINE_SEP);
         }
