@@ -399,6 +399,7 @@ public abstract class SecureAdminCommand implements AdminCommand {
                 http_w = t.enroll(http);
             }
             http_w.setDefaultVirtualServer(ASADMIN_VIRTUAL_SERVER_NAME);
+            http_w.setEncodedSlashEnabled("true");
             
             final FileCache cache = http_w.createChild(FileCache.class);
 //            cache.setEnabled("false");
