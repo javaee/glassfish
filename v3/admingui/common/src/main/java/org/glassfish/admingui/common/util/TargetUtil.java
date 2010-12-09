@@ -154,10 +154,10 @@ public class TargetUtil {
             String hostName = null;
             String ep = (String)GuiUtil.getSessionValue("REST_URL") + "/servers/server/" + instance;
             String node =
-                    (String)RestUtil.getAttributesMap(ep).get("node");
+                    (String)RestUtil.getAttributesMap(ep).get("nodeRef");
             if (node != null) {
                 ep = (String)GuiUtil.getSessionValue("REST_URL") + "/nodes/node/" + node;
-                hostName =  (String)RestUtil.getAttributesMap(ep).get("node-host");
+                hostName =  (String)RestUtil.getAttributesMap(ep).get("nodeHost");
             }
             if (hostName == null)
                 hostName = "localhost";
