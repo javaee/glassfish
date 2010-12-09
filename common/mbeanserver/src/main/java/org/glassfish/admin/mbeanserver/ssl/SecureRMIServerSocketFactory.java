@@ -40,7 +40,6 @@
 
 package org.glassfish.admin.mbeanserver.ssl;
 
-import org.glassfish.grizzly.config.SSLConfigHolder;
 import org.glassfish.grizzly.config.dom.Ssl;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -55,6 +54,7 @@ import javax.net.ssl.SSLServerSocket;
 import javax.rmi.ssl.SslRMIServerSocketFactory;
 import org.glassfish.admin.mbeanserver.JMXSslConfigHolder;
 import org.glassfish.admin.mbeanserver.Util;
+import org.glassfish.grizzly.config.SSLConfigurator;
 
 /**
  *
@@ -116,8 +116,7 @@ import org.glassfish.admin.mbeanserver.Util;
                 throw new IllegalStateException(ssle);
             }
 
-            sslConfigHolder.configureSSL();
-            final SSLContext context = sslConfigHolder.getSSLContext();
+            final SSLContext context = sslConfigHolder.getSslContext();
             SSLServerSocket sslSocket =
                     (SSLServerSocket) context.getServerSocketFactory().
                     createServerSocket(port, backlog, mAddress);
@@ -132,7 +131,7 @@ import org.glassfish.admin.mbeanserver.Util;
         }
 
         private void configureSSLSocket(SSLServerSocket sslSocket,
-                SSLConfigHolder sslConfigHolder) {
+                SSLConfigurator sslConfigHolder) {
             if (sslConfigHolder.getEnabledCipherSuites() != null) {
                 if (enabledCipherSuites == null) {
                     synchronized (cipherSuitesSync) {

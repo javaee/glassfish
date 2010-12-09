@@ -39,17 +39,14 @@
  */
 package org.glassfish.admin.mbeanserver;
 
-import org.glassfish.grizzly.config.SSLConfigHolder;
 import org.glassfish.grizzly.config.dom.Ssl;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.rmi.AccessException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.management.MBeanServer;
 
 import java.net.ServerSocket;
@@ -75,18 +72,10 @@ import java.rmi.registry.LocateRegistry;
 
 import java.rmi.server.UnicastRemoteObject;
 import java.security.Security;
-import java.util.ArrayList;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLException;
-import javax.net.ssl.SSLServerSocket;
-import javax.net.ssl.SSLServerSocketFactory;
-import javax.net.ssl.SSLSocket;
 import javax.rmi.ssl.SslRMIClientSocketFactory;
-import javax.rmi.ssl.SslRMIServerSocketFactory;
 import org.glassfish.admin.mbeanserver.ssl.SSLClientConfigurator;
 import org.glassfish.admin.mbeanserver.ssl.SSLParams;
-import org.glassfish.internal.api.Globals;
-import org.glassfish.admin.mbeanserver.ssl.SecureRMIClientSocketFactory;
 import org.glassfish.admin.mbeanserver.ssl.SecureRMIServerSocketFactory;
 import org.jvnet.hk2.component.*;
 
