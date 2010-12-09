@@ -41,6 +41,7 @@ package com.sun.enterprise.v3.services.impl;
 
 import com.sun.enterprise.config.serverbeans.VirtualServer;
 import com.sun.enterprise.v3.services.impl.monitor.GrizzlyMonitoring;
+import com.sun.enterprise.v3.services.impl.monitor.KeepAliveMonitor;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -52,6 +53,7 @@ import org.glassfish.grizzly.config.GenericGrizzlyListener;
 import org.glassfish.grizzly.config.dom.Http;
 import org.glassfish.grizzly.config.dom.NetworkListener;
 import org.glassfish.grizzly.filterchain.FilterChain;
+import org.glassfish.grizzly.http.KeepAlive;
 import org.glassfish.grizzly.http.server.HttpRequestProcessor;
 import org.glassfish.grizzly.http.server.StaticResourcesService;
 import org.glassfish.grizzly.http.server.util.Mapper;
@@ -158,6 +160,14 @@ public class GlassfishNetworkListener extends GenericGrizzlyListener {
     @Override
     protected HttpRequestProcessor getHttpService(Http http) {
         return httpAdapter.getMapper();
+    }
+
+    @Override
+    protected KeepAlive configureKeepAlive(final Http http) {
+        final KeepAlive keepAlive = super.configureKeepAlive(http);
+        keepAlive.getMonitoringConfig().addProbes(new KeepAliveMonitor(
+                grizzlyService.getMonitoring(), name, keepAlive));
+        return keepAlive;
     }
 
 

@@ -64,8 +64,8 @@ public class KeepAliveStatsProvider implements StatsProvider {
     private final String name;
     protected final CountStatisticImpl maxRequestsCount = new CountStatisticImpl("MaxRequests", "count", "Maximum number of requests allowed on a single keep-alive connection");
     protected final CountStatisticImpl timeoutInSeconds = new CountStatisticImpl("SecondsTimeouts", "seconds", "Keep-alive timeout value in seconds");
+    protected final CountStatisticImpl totalKeepAliveConnectionsCount = new CountStatisticImpl("TotalCountConnections", "count", "Total number of keep-alive connections that were accepted");
     protected final CountStatisticImpl keepAliveConnectionsCount = new CountStatisticImpl("CountConnections", "count", "Number of connections in keep-alive mode");
-    protected final CountStatisticImpl flushesCount = new CountStatisticImpl("CountFlushes", "count", "Number of keep-alive connections that were closed");
     protected final CountStatisticImpl hitsCount = new CountStatisticImpl("CountHits", "count", "Number of requests received by connections in keep-alive mode");
     protected final CountStatisticImpl refusalsCount = new CountStatisticImpl("CountRefusals", "count", "Number of keep-alive connections that were rejected");
     protected final CountStatisticImpl timeoutsCount = new CountStatisticImpl("CountTimeouts", "count", "Number of keep-alive connections that timed out");
@@ -110,7 +110,14 @@ public class KeepAliveStatsProvider implements StatsProvider {
     @ManagedAttribute(id = "countflushes")
     @Description("Number of keep-alive connections that were closed")
     public CountStatistic getFlushesCount() {
-        return flushesCount;
+        final CountStatisticImpl stats = new CountStatisticImpl(
+                "CountFlushes",
+                "count",
+                "Number of keep-alive connections that were closed"
+                );
+        stats.setCount(Math.max(0, totalKeepAliveConnectionsCount.getCount() - timeoutsCount.getCount()));
+
+        return stats;
     }
 
     @ManagedAttribute(id = "counthits")
@@ -153,6 +160,7 @@ public class KeepAliveStatsProvider implements StatsProvider {
     public void incrementCountConnectionsEvent(@ProbeParam("listenerName") String listenerName) {
         if (name.equals(listenerName)) {
             keepAliveConnectionsCount.increment();
+            totalKeepAliveConnectionsCount.increment();
         }
     }
 
@@ -165,9 +173,9 @@ public class KeepAliveStatsProvider implements StatsProvider {
 
     @ProbeListener("glassfish:kernel:connections-keep-alive:incrementCountFlushesEvent")
     public void incrementCountFlushesEvent(@ProbeParam("listenerName") String listenerName) {
-        if (name.equals(listenerName)) {
-            flushesCount.increment();
-        }
+//        if (name.equals(listenerName)) {
+//            flushesCount.increment();
+//        }
     }
 
     @ProbeListener("glassfish:kernel:connections-keep-alive:incrementCountHitsEvent")
@@ -199,7 +207,7 @@ public class KeepAliveStatsProvider implements StatsProvider {
         }
 
         keepAliveConnectionsCount.setCount(0);
-        flushesCount.setCount(0);
+        totalKeepAliveConnectionsCount.setCount(0);
         hitsCount.setCount(0);
         refusalsCount.setCount(0);
         timeoutsCount.setCount(0);
