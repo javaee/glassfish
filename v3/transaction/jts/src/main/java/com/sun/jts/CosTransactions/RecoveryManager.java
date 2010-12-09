@@ -197,7 +197,7 @@ public class RecoveryManager {
 				_logger.logp(Level.FINE,"RecoveryManager","initialise()",
 						"Before starting ResyncThread ");
 	    	}
-            resyncThread.start();
+            //resyncThread.start();
         } else {
 
             // If the process is non-recoverable, but there is a valid server
@@ -926,10 +926,12 @@ public class RecoveryManager {
         /*  This method has been newly added - Ram Jeyaraman */
 
         Enumeration xaResources = RecoveryManager.uniqueRMSet;
+/**
         if (xaResources == null) {
             // TODO - check that automatic recovery works in a clustered instance
             return;
         }
+**/
 
         String manualRecovery =
             Configuration.getPropertyValue(Configuration.MANUAL_RECOVERY);
@@ -1433,6 +1435,7 @@ public class RecoveryManager {
             }
         }
     }
+
     static void addToIncompleTx(CoordinatorImpl coord, boolean commit) {
         inCompleteTxMap.put(coord, new Boolean(commit));
     }
@@ -1653,6 +1656,16 @@ public class RecoveryManager {
     }
 
     /**
+     * Start resync thread
+     */
+    public static void startResyncThread() {
+        if (resyncThread == null) {
+            initialise();
+        }
+        resyncThread.start();
+    }
+
+    /**
      * Reports the contents of the RecoveryManager tables.
      * $Only required for debug.
      *
@@ -1813,15 +1826,16 @@ class ResyncThread extends Thread  {
                     RecoveryManager.resync();
                 }
             }
-            RecoveryManager.resyncComplete(false,false);// Extra Gaurd
         } catch (Throwable ex) {
+            _logger.log(Level.SEVERE,"jts.log_exception_at_recovery",ex);
+        } finally {
             try {
                 RecoveryManager.resyncComplete(false,false);
             } catch (Throwable tex) {tex.printStackTrace();} // forget any exeception in resyncComplete
-            _logger.log(Level.SEVERE,"jts.log_exception_at_recovery",ex);
         }
         if(RecoveryManager.getTransactionRecoveryFence() != null)
             RecoveryManager.getTransactionRecoveryFence().lowerFence();
+
     }
 
 

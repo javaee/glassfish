@@ -98,6 +98,10 @@ public class ResourceRecoveryManagerImpl implements PostConstruct, ResourceRecov
 
 
     public void postConstruct() {
+        if (configured) {
+            _logger.log(Level.WARNING, "", new IllegalStateException());
+            return;
+        }
         // Recover XA resources if the auto-recovery flag in tx service is set to true
         recoverXAResources();
     }

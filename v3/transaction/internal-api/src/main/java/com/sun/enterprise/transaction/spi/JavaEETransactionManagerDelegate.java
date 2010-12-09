@@ -199,6 +199,13 @@ public interface JavaEETransactionManagerDelegate {
     public void recover(XAResource[] resourceList);
 
     /**
+     * Initialize recovery framework.
+     *
+     * Is a no-op if a delegate doesn't support this functionality.
+     */
+    public void initRecovery(boolean force);
+
+    /**
      * This is used by importing transactions via the Connector contract.
      * Should not be called
      *

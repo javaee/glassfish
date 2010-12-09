@@ -209,6 +209,13 @@ public interface JavaEETransactionManager extends TransactionManager {
 
     public void recover(XAResource[] resourceList);
 
+    /**
+     * Initialize recovery framework
+     * @param force if true, forces initialization, otherwise relies on the TimerService 
+     * configuration.
+     */
+    public void initRecovery(boolean force);
+
     public void begin(int timeout)
         throws NotSupportedException, SystemException;
 

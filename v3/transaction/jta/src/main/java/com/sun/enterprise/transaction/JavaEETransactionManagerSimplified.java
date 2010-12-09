@@ -283,6 +283,10 @@ public class JavaEETransactionManagerSimplified
         return getDelegate().isNullTransaction();
     }
 
+    public void initRecovery(boolean force) {
+        getDelegate().initRecovery(force);
+    }
+
     public void recover(XAResource[] resourceList) {
         getDelegate().recover(resourceList);
     }
