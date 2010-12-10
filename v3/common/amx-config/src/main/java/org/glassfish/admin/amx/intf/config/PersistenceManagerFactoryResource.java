@@ -40,16 +40,25 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-/**
-Configuration for the &lt;persistence-manager-factory-resource&gt; element.
- */
-public interface PersistenceManagerFactoryResource extends Resource
-{
+
+public interface PersistenceManagerFactoryResource
+        extends Resource {
+
+
+    public String getEnabled();
+
+    public void setEnabled(String param1);
+
+    public String getDescription();
+
+    public void setDescription(String param1);
+
     public String getFactoryClass();
 
-    public void setFactoryClass(final String factoryClass);
+    public void setFactoryClass(String param1);
 
-    public String getJDBCResourceJNDIName();
+    public String getJdbcResourceJndiName();
 
-    public void setJDBCResourceJNDIName(final String jdbcResourceJNDIName);
+    public void setJdbcResourceJndiName(String param1);
+
 }

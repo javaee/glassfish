@@ -42,35 +42,53 @@ package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.base.Singleton;
 
+import java.util.List;
 import java.util.Map;
 
-
-/**
-	 Configuration for the &lt;http-service&gt; element.
- */
 public interface HttpService
-	extends ConfigElement, PropertiesAccess, Singleton
-{
-	/**
-		@return Map of all VirtualServer proxies, keyed by the name of the virtual server.
+        extends Singleton, ConfigElement, PropertiesAccess {
 
-	 */
-	public Map<String,VirtualServer>		getVirtualServer();
 
-	/**
-		Get the AccessLog.
-	 */
-	public AccessLog	getAccessLog();
-    
-    public String getKeepAlive();
-    
-    public String getHttpProtocol();
+    public void setKeepAlive(KeepAlive param1);
+
+    public KeepAlive getKeepAlive();
+
+    public Map<String, VirtualServer> getVirtualServer();
+
+    public AccessLog getAccessLog();
+
+    public HttpProtocol getHttpProtocol();
+
     public String getSsoEnabled();
+
     public String getAccessLoggingEnabled();
-    
+
     public ConnectionPool getConnectionPool();
-    
-    public HttpFileCache  getHttpFileCache();
-    public Map<String,HttpListener>  getHttpListener();
-    public RequestProcessing  getRequestProcessing();
+
+    public HttpFileCache getHttpFileCache();
+
+    public Map<String, HttpListener> getHttpListener();
+
+    public RequestProcessing getRequestProcessing();
+
+    public void setSsoEnabled(String param1);
+
+    public void setAccessLoggingEnabled(String param1);
+
+    public void setAccessLog(AccessLog param1);
+
+    public void setRequestProcessing(RequestProcessing param1);
+
+    public void setConnectionPool(ConnectionPool param1);
+
+    public void setHttpProtocol(HttpProtocol param1);
+
+    public void setHttpFileCache(HttpFileCache param1);
+
+    public VirtualServer getVirtualServerByName(String param1);
+
+    public List getNonAdminVirtualServerList();
+
+    public HttpListener getHttpListenerById(String param1);
+
 }

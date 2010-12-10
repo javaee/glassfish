@@ -42,19 +42,32 @@ package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 
-/**
-Configuration for the &lt;node-agent&gt; element.
- */
 public interface NodeAgent
-        extends AMXConfigProxy, PropertiesAccess
-{
+        extends AMXConfigProxy, PropertiesAccess {
+
+
+    public String getName();
+
+    public void setName(String param1);
+
     public JmxConnector getJmxConnector();
-
-    public String getStartServersInStartup();
-
-    public void setStartServersInStartup(String start);
 
     public String getSystemJmxConnectorName();
 
-    public void setSystemJmxConnectorName(String name);
+    public void setSystemJmxConnectorName(String param1);
+
+    public LogService getLogService();
+
+    public String getStartServersInStartup();
+
+    public void setStartServersInStartup(String param1);
+
+    public AuthRealm getAuthRealm();
+
+    public void setLogService(LogService param1);
+
+    public void setJmxConnector(JmxConnector param1);
+
+    public void setAuthRealm(AuthRealm param1);
+
 }

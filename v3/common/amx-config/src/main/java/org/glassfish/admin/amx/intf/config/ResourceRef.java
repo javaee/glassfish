@@ -41,12 +41,16 @@
 package org.glassfish.admin.amx.intf.config;
 
 
-/**
-	 Configuration for the &lt;resource-ref&gt; element.
-*/
+public interface ResourceRef
+        extends Ref {
 
 
-public interface ResourceRef extends Ref
-{
+    public String getRef();
+
+    public String getEnabled();
+
+    public void setEnabled(String param1);
+
+    public void setRef(String param1);
 
 }

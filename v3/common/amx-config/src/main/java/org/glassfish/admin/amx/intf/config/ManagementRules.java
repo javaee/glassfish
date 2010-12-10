@@ -42,28 +42,16 @@ package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.base.Singleton;
 
-
 import java.util.Map;
-import java.util.Properties;
 
-/**
-Manipulates management rules.
-
-@since Appserver 9.0
- */
 public interface ManagementRules
-        extends ConfigElement, Enabled, Singleton
-{
+        extends Singleton, ConfigElement, Enabled {
+
+
+    public String getEnabled();
+
+    public void setEnabled(String param1);
+
+    public Map<String, ManagementRule> getManagementRule();
+
 }
-
-
-
-
-
-
-
-
-
-
-
-

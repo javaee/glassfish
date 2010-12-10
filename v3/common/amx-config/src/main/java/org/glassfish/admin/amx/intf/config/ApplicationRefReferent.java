@@ -41,10 +41,9 @@
 package org.glassfish.admin.amx.intf.config;
 
 /**
-Referent: "the object of a reference", in this case a marker 
-interface denoting that the item may be referred to by a
-{@link DeployedItemRefConfig}.
+ * Referent: "the object of a reference", in this case a marker
+ * interface denoting that the item may be referred to by a
+ * {@link DeployedItemRefConfig}.
  */
-public interface ApplicationRefReferent extends RefReferent
-{
+public interface ApplicationRefReferent extends RefReferent {
 }

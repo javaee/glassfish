@@ -40,15 +40,21 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-/**
-Configuration for the &lt;audit-module&gt; element.
- */
-public interface AuditModule extends NamedConfigElement, PropertiesAccess
-{
-    /** boolean property */
+
+public interface AuditModule
+        extends NamedConfigElement, PropertiesAccess {
+    /**
+     * boolean property
+     */
     public static final String AUDIT_ON_PROPERTY = "auditOn";
+
+
+    public String getName();
+
+    public void setName(String param1);
 
     public String getClassname();
 
-    public void setClassname(String value);
+    public void setClassname(String param1);
+
 }

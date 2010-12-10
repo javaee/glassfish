@@ -42,67 +42,48 @@ package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.base.Singleton;
 
-/**
+public interface DasConfig
+        extends Singleton, ConfigElement, PropertiesAccess {
 
-Configuration for the &lt;das-config&gt; element.
 
-The name is confusing, this item actually lives inside an <admin-service>,
-which is in turn inside a <config>
- */
-public interface DasConfig extends ConfigElement, PropertiesAccess, Singleton
-{
-    
     public String getAdminSessionTimeoutInMinutes();
 
-    public void setAdminSessionTimeoutInMinutes(String value);
+    public void setAdminSessionTimeoutInMinutes(String param1);
 
     public String getAutodeployDir();
 
-    public void setAutodeployDir(String value);
+    public void setAutodeployDir(String param1);
 
-    
     public String getAutodeployEnabled();
 
-    public void setAutodeployEnabled(String value);
+    public void setAutodeployEnabled(String param1);
 
-    
     public String getAutodeployJspPrecompilationEnabled();
 
-    public void setAutodeployJspPrecompilationEnabled(String value);
+    public void setAutodeployJspPrecompilationEnabled(String param1);
 
-    
     public String getAutodeployPollingIntervalInSeconds();
 
-    public void setAutodeployPollingIntervalInSeconds(String value);
+    public void setAutodeployPollingIntervalInSeconds(String param1);
 
-    
     public String getAutodeployVerifierEnabled();
 
-    public void setAutodeployVerifierEnabled(String value);
+    public void setAutodeployVerifierEnabled(String param1);
 
-    /**
-    @since Glassfish V3
-     */
-    
     public String getAutodeployRetryTimeout();
 
-    /**
-    @since Glassfish V3
-     */
-    public void setAutodeployRetryTimeout(String value);
+    public void setAutodeployRetryTimeout(String param1);
 
-    /**
-    See {@link ValidationLevelValues}.  Read-only.
-     */
     public String getDeployXmlValidation();
 
-    
     public String getDynamicReloadEnabled();
 
-    public void setDynamicReloadEnabled(String value);
+    public void setDynamicReloadEnabled(String param1);
 
-    
     public String getDynamicReloadPollIntervalInSeconds();
 
-    public void setDynamicReloadPollIntervalInSeconds(String value);
+    public void setDynamicReloadPollIntervalInSeconds(String param1);
+
+    public void setDeployXmlValidation(String param1);
+
 }

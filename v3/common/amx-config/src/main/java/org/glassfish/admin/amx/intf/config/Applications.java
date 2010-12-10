@@ -40,18 +40,23 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-/**
-Configuration for the &lt;applications&gt; element; it is an internal "node" which
-groups all applications under itself.
-@since Glassfish V3
- */
-public interface Applications extends ApplicationsBase
-{
+import java.util.List;
+import java.util.Map;
+
+public interface Applications
+        extends ApplicationsBase {
+
+
+    public Application getApplication(String param1);
+
+    public List getApplications();
+
+    public Object getModule(Class param1, String param2);
+
+    public Map<String, Module> getModules(Class param1);
+
+    public Map<String, Application> getApplicationsWithSnifferType(String param1);
+
+    public Map<String, Application> getApplicationsWithSnifferType(String param1, boolean param2);
+
 }
-
-
-
-
-
-
-

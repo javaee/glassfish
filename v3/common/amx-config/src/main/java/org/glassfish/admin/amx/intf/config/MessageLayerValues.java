@@ -41,12 +41,12 @@
 package org.glassfish.admin.amx.intf.config;
 
 /**
-Values as defined in DTD by ENTITY &lt;message-layer>.
-@since Appserver 9.0
-@see MessageSecurityConfig
+ * Values as defined in DTD by ENTITY &lt;message-layer>.
+ *
+ * @see MessageSecurityConfig
+ * @since Appserver 9.0
  */
-public final class MessageLayerValues
-{
+public final class MessageLayerValues {
 
     public static final String AMX_TYPE = "access-log";
     public static final String SOAP = "SOAP";

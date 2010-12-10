@@ -40,21 +40,19 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.base.Singleton;
+import org.glassfish.admin.amx.config.AMXConfigProxy;
 
-/**
-Configuration for the &lt;store-properties&gt; element.
- */
-public interface StoreProperties extends AMXConfigProxy, PropertiesAccess, Singleton
-{
+public interface StoreProperties
+        extends Singleton, AMXConfigProxy, PropertiesAccess {
+
+
+    public String getReapIntervalInSeconds();
+
+    public void setReapIntervalInSeconds(String param1);
 
     public String getDirectory();
 
-    public void setDirectory(final String value);
+    public void setDirectory(String param1);
 
-    
-    public String getReapIntervalInSeconds();
-
-    public void setReapIntervalInSeconds(final String value);
 }

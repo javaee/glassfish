@@ -41,29 +41,28 @@
 package org.glassfish.admin.amx.intf.config;
 
 /**
-Configuration for a &lt;thread-pool&gt; element.
+ * Configuration for a &lt;thread-pool&gt; element.
  */
-public interface ThreadPool extends NamedConfigElement, PropertiesAccess
-{
+public interface ThreadPool extends NamedConfigElement, PropertiesAccess {
     public String getThreadPoolId();
-    
+
     public String getIdleThreadTimeoutSeconds();
 
     public void setIdleThreadTimeoutSeconds(String value);
 
-    
+
     public String getMinThreadPoolSize();
 
     public void setMinThreadPoolSize(String value);
 
-    
+
     public String getMaxThreadPoolSize();
 
     public void setMaxThreadPoolSize(String value);
 
     public String getName();
 
-    
+
     public String getMaxQueueSize();
 
     public void setMaxQueueSize(String value);
@@ -71,5 +70,5 @@ public interface ThreadPool extends NamedConfigElement, PropertiesAccess
     public String getClassname();
 
     public void setClassname(String classname);
-    
+
 }

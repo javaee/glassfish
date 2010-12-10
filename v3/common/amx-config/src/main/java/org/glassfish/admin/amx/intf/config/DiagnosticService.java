@@ -42,118 +42,40 @@ package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.base.Singleton;
 
-
-/**
- * Configuration for the &lt;diagnostic-service&gt; for a &lt;config&gt; in
- * a domain. This element controls the output of the diagnostic information
- * collected when requested by the management clients. The actual information
- * collected is documented in product documentation.
- * @since Appserver 9.0
-*/
 public interface DiagnosticService
-    extends PropertiesAccess, ConfigElement, Singleton
-{
-    /**
-        @return true if the diagnostic service is computing the checksum for the data
-     */
-    
+        extends Singleton, ConfigElement, PropertiesAccess {
+
+
     public String getComputeChecksum();
-    
-    /**
-        See {@link #getComputeChecksum}.
-     */
-    public void setComputeChecksum(final String value);
-    
-    /**
-     @return true if installation log is collected for diagnosis, false otherwise
-     */
-    
+
+    public void setComputeChecksum(String param1);
+
     public String getCaptureInstallLog();
-    
-    /**
-        See {@link #getCaptureInstallLog}.
-     */
-    public void setCaptureInstallLog(final String value);
-    
-    /**
-     @return true if operating system information is being collected, false otherwise
-     */
+
+    public void setCaptureInstallLog(String param1);
+
     public String getCaptureSystemInfo();
-    
-    /** Set capturing system information to specified value.
-     */
-    public void setCaptureSystemInfo(final String value);
-    
-    /**
-        @return true if HA data-base information is being collected, false otherwise
-     */
-    
-    public String getCaptureHADBInfo();
-    
-    /**
-        See {@link #getCaptureHADBInfo}.
-     */
-    public void setCaptureHADBInfo(final String value);
 
-    /**
-        @return true if app deployment descriptor data is being collected, false otherwise
-     */
-    
-    public String getCaptureAppDD();
-    
-    /**
-        See {@link #getCaptureAppDD}.
-     */
-    public void setCaptureAppDD(final String value);
-    
-    /**
-        The level at which the messages for diagnostic services will
-        be retrieved. All the messages at a level equal to or more than this
-        level will be captured.
-        @return the log level of the messages for diagnostic service
-        @see java.util.logging.Level
-     */
+    public void setCaptureSystemInfo(String param1);
+
     public String getMinLogLevel();
-    
-    /**
-        See {@link #getMinLogLevel}.
-        The specified value must be a valid {@link java.util.logging.Level}.
-     */
-    public void setMinLogLevel(final String level);
-    
-    /**
-        @return number of log entries to be read from the log
-        file. Defaults to 500.
-     */
+
+    public void setMinLogLevel(String param1);
+
     public String getMaxLogEntries();
-    
-    /**
-        See {@link #getMaxLogEntries}.
-     */
-    
-    public void setMaxLogEntries(final String entries);
-    
-    /**                    
-        Indicates whether output of verify-config asadmin command is
-        included in the diagnostic report.                                               
-     */
-    
-    public String  getVerifyConfig();
-    
-    /**
-        See {@link #getVerifyConfig}
-     */
-    public void     setVerifyConfig( String verify );
+
+    public void setMaxLogEntries(String param1);
+
+    public String getVerifyConfig();
+
+    public void setVerifyConfig(String param1);
+
+    public String getCaptureHadbInfo();
+
+    public void setCaptureHadbInfo(String param1);
+
+    public String getCaptureAppDd();
+
+    public void setCaptureAppDd(String param1);
+
 }
-
-
-
-
-
-
-
-
-
-
-
-

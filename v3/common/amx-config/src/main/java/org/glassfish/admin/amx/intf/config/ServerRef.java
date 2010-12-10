@@ -40,39 +40,28 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-/**
- * represents the &lt;server-ref&gt; element.
- */
-public interface ServerRef extends Ref, HealthCheckerCR
-{
+public interface ServerRef
+        extends HealthCheckerCR, Ref {
 
-    /**
-    returns the time, in minutes, that it takes this application to reach
-    a quiescent state after having been disabled
-     */
-    
+
+    public String getRef();
+
+    public String getEnabled();
+
+    public void setEnabled(String param1);
+
+    public String getLbEnabled();
+
+    public void setLbEnabled(String param1);
+
     public String getDisableTimeoutInMinutes();
 
-    /**
-    Set the time, in minutes, that it takes this application to reach
-    a quiescent state after having been disabled
-     */
-    public void setDisableTimeoutInMinutes(final String timeoutInMins);
+    public void setDisableTimeoutInMinutes(String param1);
 
-    /**
-    <b>EE only</b>
-    Return the boolean flag that causes any and all load-balancers using
-    this application to consider this application unavailable to
-    them. Defaults to unavailable (false).
-     */
-    
-    public String getLBEnabled();
+    public void setRef(String param1);
 
-    /**
-    <b>EE only</b>
-    Set the boolean flag that causes any and all load-balancers using
-    this application to consider this application unavailable to
-    them.
-     */
-    public void setLBEnabled(final String enabled);
+    public HealthChecker getHealthChecker();
+
+    public void setHealthChecker(HealthChecker param1);
+
 }

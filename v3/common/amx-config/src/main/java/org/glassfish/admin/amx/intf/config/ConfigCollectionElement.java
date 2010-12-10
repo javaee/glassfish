@@ -41,12 +41,11 @@
 package org.glassfish.admin.amx.intf.config;
 
 /**
-   Marker interface stating the AMXConfig MBean is a collection of items, possibly of varying subtypes,
-   and  that is has no attributes or properties of its own eg it's an "internal node" only.
-   For example,  {@link ResourcesConfig} is a collection of {@link ResourceConfig}.  
-*/
-public interface ConfigCollectionElement
-{
+ * Marker interface stating the AMXConfig MBean is a collection of items, possibly of varying subtypes,
+ * and  that is has no attributes or properties of its own eg it's an "internal node" only.
+ * For example,  {@link ResourcesConfig} is a collection of {@link ResourceConfig}.
+ */
+public interface ConfigCollectionElement {
 }
 
 

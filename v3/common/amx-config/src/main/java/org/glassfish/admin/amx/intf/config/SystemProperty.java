@@ -40,9 +40,21 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-/**
-Configuration for the &lt;system-property> element.
- */
-public interface SystemProperty extends AnyProperty
-{
+
+public interface SystemProperty
+        extends AnyProperty {
+
+
+    public String getName();
+
+    public String getValue();
+
+    public void setName(String param1);
+
+    public void setValue(String param1);
+
+    public String getDescription();
+
+    public void setDescription(String param1, String param2);
+
 }

@@ -44,75 +44,45 @@ import org.glassfish.admin.amx.base.Singleton;
 
 import java.util.Map;
 
-/**
-Configuration for the &lt;security-service&gt; element.
- */
-public interface SecurityService extends
-        PropertiesAccess, ConfigElement, Singleton
-{
+public interface SecurityService
+        extends Singleton, ConfigElement, PropertiesAccess {
+
+
     public String getAnonymousRole();
-    public void setAnonymousRole(String val);
-    
+
+    public void setAnonymousRole(String param1);
+
     public String getAuditEnabled();
 
-    public void setAuditEnabled(String value);
+    public void setAuditEnabled(String param1);
 
     public String getAuditModules();
 
-    public void setAuditModules(String value);
+    public void setAuditModules(String param1);
 
     public String getDefaultPrincipalPassword();
 
-    public void setDefaultPrincipalPassword(String value);
+    public void setDefaultPrincipalPassword(String param1);
 
     public String getDefaultPrincipal();
 
-    public void setDefaultPrincipal(String value);
+    public void setDefaultPrincipal(String param1);
 
     public String getDefaultRealm();
 
-    public void setDefaultRealm(String value);
+    public void setDefaultRealm(String param1);
 
     public String getJacc();
 
-    public void setJacc(String value);
+    public void setJacc(String param1);
 
-    /**                                               
-    This attribute is used to customize the
-    java.security.Principal implementation class used in the
-    default principal to role mapping. This attribute is
-    optional. When it is not specified,
-    com.sun.enterprise.deployment.Group implementation of
-    java.security.Principal is used. The value of this attribute
-    is only relevant when the activate-default
-    principal-to-role-mapping attribute is set to true.
-    @since AppServer 9.0
-     */
     public String getMappedPrincipalClass();
 
-    /**
-    @see #getMappedPrincipalClass
-    @since AppServer 9.0
-     */
-    public void setMappedPrincipalClass(String theClass);
+    public void setMappedPrincipalClass(String param1);
 
-    /**                                                     
-    Causes the appserver to apply a default principal to role
-    mapping, to any application that does not have an application
-    specific mapping defined. Every role is mapped to a
-    same-named (as the role) instance of a
-    java.security.Principal implementation class (see
-    mapped-principal-class). This behavior is similar to that of
-    Tomcat servlet container. It is off by default.
-    @since AppServer 9.0
-     */
     public String getActivateDefaultPrincipalToRoleMapping();
 
-    /**
-    @see #getActivateDefaultPrincipalToRoleMapping
-    @since AppServer 9.0
-     */
-    public void setActivateDefaultPrincipalToRoleMapping(String enabled);
+    public void setActivateDefaultPrincipalToRoleMapping(String param1);
 
     public Map<String, JaccProvider> getJaccProvider();
 
@@ -121,8 +91,5 @@ public interface SecurityService extends
     public Map<String, AuditModule> getAuditModule();
 
     public Map<String, MessageSecurityConfig> getMessageSecurityConfig();
+
 }
-
-
-
-

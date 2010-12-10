@@ -42,16 +42,16 @@ package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.base.Singleton;
 
-
-import java.util.Map;
-
-/**
-Configuration for the &lt;session-manager&gt; element.
- */
 public interface SessionManager
-        extends ConfigElement, Singleton
-{
+        extends Singleton, ConfigElement {
+
+
     public ManagerProperties getManagerProperties();
 
     public StoreProperties getStoreProperties();
+
+    public void setManagerProperties(ManagerProperties param1);
+
+    public void setStoreProperties(StoreProperties param1);
+
 }

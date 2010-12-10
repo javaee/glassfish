@@ -40,55 +40,50 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-
 import org.glassfish.admin.amx.base.Singleton;
 
-
-import java.util.Map;
-
-/**
-	Configuration for the &lt;log-service&gt; element.
-	 
-	@see ModuleLogLevelsConfigKeys
- */
 public interface LogService
-	extends ConfigElement, Singleton
-{
-	public String	getAlarms();
-	public void	setAlarms( String value );
+        extends Singleton, ConfigElement {
 
-	public String	getFile();
-	public void	setFile( String value );
 
-	public String	getLogFilter();
-	public void	setLogFilter( String value );
+    public String getFile();
 
-	public String	getLogHandler();
-	public void	setLogHandler( String value );
+    public String getAlarms();
 
-    /** Note bad spelling to match bug in config 'Timelimit'.
-        See https://glassfish.dev.java.net/issues/show_bug.cgi?id=10114
-    */
-	public String	getLogRotationTimelimitInMinutes();
-	public void	setLogRotationTimelimitInMinutes( String value );
-    
-	public String	getLogRotationLimitInBytes();
-	public void	setLogRotationLimitInBytes( String value );
+    public void setAlarms(String param1);
 
-    
-	public String	getLogToConsole();
-	public void	setLogToConsole( String value );
+    public void setFile(String param1);
 
-    
-	public String	getUseSystemLogging();
-	public void	setUseSystemLogging( String value );
-	
-    
-	public String  getRetainErrorStatisticsForHours();
-	public void    setRetainErrorStatisticsForHours( String hours );
-	
-	/**
-		Get the ModuleLogLevels MBean.
-	 */
-	public ModuleLogLevels getModuleLogLevels();
+    public String getLogFilter();
+
+    public void setLogFilter(String param1);
+
+    public String getLogHandler();
+
+    public void setLogHandler(String param1);
+
+    public String getLogRotationTimelimitInMinutes();
+
+    public void setLogRotationTimelimitInMinutes(String param1);
+
+    public String getLogRotationLimitInBytes();
+
+    public void setLogRotationLimitInBytes(String param1);
+
+    public String getLogToConsole();
+
+    public void setLogToConsole(String param1);
+
+    public String getUseSystemLogging();
+
+    public void setUseSystemLogging(String param1);
+
+    public String getRetainErrorStatisticsForHours();
+
+    public void setRetainErrorStatisticsForHours(String param1);
+
+    public ModuleLogLevels getModuleLogLevels();
+
+    public void setModuleLogLevels(ModuleLogLevels param1);
+
 }

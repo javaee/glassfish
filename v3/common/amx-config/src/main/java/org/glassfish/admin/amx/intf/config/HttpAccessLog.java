@@ -40,18 +40,17 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-/**
-Configuration for the &lt;http-access-log&gt; element.
-@deprecated  Grizzly variants now exist
- */
-public interface HttpAccessLog extends ConfigElement
-{
-    
-    public String getIPOnly();
 
-    public void setIPOnly(final String value);
+public interface HttpAccessLog
+        extends ConfigElement {
+
 
     public String getLogDirectory();
 
-    public void setLogDirectory(final String value);
+    public void setLogDirectory(String param1);
+
+    public String getIponly();
+
+    public void setIponly(String param1);
+
 }

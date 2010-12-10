@@ -40,22 +40,43 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-import org.glassfish.admin.amx.base.Singleton;
 import org.glassfish.admin.amx.core.AMXMBeanMetadata;
 
-/**
-Configuration for the &lt;configs&gt; element; it is an internal "node" which
-groups all config elements under itself.
-@since Glassfish V3
- */
+import java.util.Map;
+
 @AMXMBeanMetadata
-public interface LbConfig extends NamedConfigElement
-{
+public interface LbConfig
+        extends NamedConfigElement {
+
+
+    public String getName();
+
+    public void setName(String param1);
+
+    public String getMonitoringEnabled();
+
+    public void setMonitoringEnabled(String param1);
+
+    public String getResponseTimeoutInSeconds();
+
+    public void setResponseTimeoutInSeconds(String param1);
+
+    public String getHttpsRouting();
+
+    public void setHttpsRouting(String param1);
+
+    public String getReloadPollIntervalInSeconds();
+
+    public void setReloadPollIntervalInSeconds(String param1);
+
+    public String getRouteCookieEnabled();
+
+    public void setRouteCookieEnabled(String param1);
+
+    public Map<String, ClusterRef> getClusterRefOrServerRef();
+
+    public Map<String, Ref> getRefs(Class param1);
+
+    public Object getRefByRef(Class param1, String param2);
+
 }
-
-
-
-
-
-
-

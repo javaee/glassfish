@@ -42,139 +42,136 @@ package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.base.Singleton;
 
-
 import java.util.Map;
 
-/**
-Configuration for the &lt;module-log-levels&gt; element.
+public interface ModuleLogLevels
+        extends Singleton, ConfigElement, PropertiesAccess {
 
-Values are those defined in {@link LogLevelValues}.
- */
-public interface ModuleLogLevels extends PropertiesAccess, ConfigElement, Singleton
-{
-
-
-    public String getRoot();
-
-    public void setRoot(String value);
 
     public String getServer();
 
-    public void setServer(String value);
+    public String getWebContainer();
 
     public String getEjbContainer();
 
-    public void setEjbContainer(String value);
-
-    public String getCmpContainer();
-
-    public void setCmpContainer(String value);
-
     public String getMdbContainer();
-
-    public void setMdbContainer(String value);
-
-    public String getWebContainer();
-
-    public void setWebContainer(String value);
-
-    public String getClassloader();
-
-    public void setClassloader(String value);
-
-    public String getConfiguration();
-
-    public void setConfiguration(String value);
-
-    public String getNaming();
-
-    public void setNaming(String value);
-
-    public String getSecurity();
-
-    public void setSecurity(String value);
-
-    public String getJts();
-
-    public void setJts(String value);
-
-    public String getJta();
-
-    public void setJta(String value);
-
-    public String getAdmin();
-
-    public void setAdmin(String value);
-
-    public String getDeployment();
-
-    public void setDeployment(String value);
-
-    public String getVerifier();
-
-    public void setVerifier(String value);
-
-    public String getJaxr();
-
-    public void setJaxr(String value);
-
-    public String getJaxrpc();
-
-    public void setJaxrpc(String value);
-
-    public String getSaaj();
-
-    public void setSaaj(String value);
-
-    public String getCorba();
-
-    public void setCorba(String value);
-
-    public String getJavamail();
-
-    public void setJavamail(String value);
-
-    public String getJms();
-
-    public void setJms(String value);
-
-    public String getConnector();
-
-    public void setConnector(String value);
-
-    public String getJdo();
-
-    public void setJdo(String value);
-
-    public String getCmp();
-
-    public void setCmp(String value);
-
-    public String getUtil();
-
-    public void setUtil(String value);
-
-    public String getResourceAdapter();
-
-    public void setResourceAdapter(String value);
-
-    public String getSynchronization();
-
-    public void setSynchronization(String value);
-
-    public String getNodeAgent();
-
-    public void setNodeAgent(String value);
-
-    public String getSelfManagement();
-
-    public void setSelfManagement(String value);
 
     public String getGroupManagementService();
 
-    public void setGroupManagementService(String value);
+    public String getRoot();
+
+    public void setRoot(String param1);
+
+    public void setServer(String param1);
+
+    public void setEjbContainer(String param1);
+
+    public String getCmpContainer();
+
+    public void setCmpContainer(String param1);
+
+    public void setMdbContainer(String param1);
+
+    public void setWebContainer(String param1);
+
+    public String getClassloader();
+
+    public void setClassloader(String param1);
+
+    public String getConfiguration();
+
+    public void setConfiguration(String param1);
+
+    public String getNaming();
+
+    public void setNaming(String param1);
+
+    public String getSecurity();
+
+    public void setSecurity(String param1);
+
+    public String getJts();
+
+    public void setJts(String param1);
+
+    public String getJta();
+
+    public void setJta(String param1);
+
+    public String getAdmin();
+
+    public void setAdmin(String param1);
+
+    public String getDeployment();
+
+    public void setDeployment(String param1);
+
+    public String getVerifier();
+
+    public void setVerifier(String param1);
+
+    public String getJaxr();
+
+    public void setJaxr(String param1);
+
+    public String getJaxrpc();
+
+    public void setJaxrpc(String param1);
+
+    public String getSaaj();
+
+    public void setSaaj(String param1);
+
+    public String getCorba();
+
+    public void setCorba(String param1);
+
+    public String getJavamail();
+
+    public void setJavamail(String param1);
+
+    public String getJms();
+
+    public void setJms(String param1);
+
+    public String getConnector();
+
+    public void setConnector(String param1);
+
+    public String getJdo();
+
+    public void setJdo(String param1);
+
+    public String getCmp();
+
+    public void setCmp(String param1);
+
+    public String getUtil();
+
+    public void setUtil(String param1);
+
+    public String getResourceAdapter();
+
+    public void setResourceAdapter(String param1);
+
+    public String getSynchronization();
+
+    public void setSynchronization(String param1);
+
+    public String getNodeAgent();
+
+    public void setNodeAgent(String param1);
+
+    public String getSelfManagement();
+
+    public void setSelfManagement(String param1);
+
+    public void setGroupManagementService(String param1);
 
     public String getManagementEvent();
 
-    public void setManagementEvent(String value);
+    public void setManagementEvent(String param1);
+
+    public Map getAllLogLevels();
+
 }

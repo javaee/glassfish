@@ -40,14 +40,9 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-import org.glassfish.admin.amx.base.Singleton;
-import org.glassfish.admin.amx.core.AMXMBeanMetadata;
-import java.util.Map;
-
-
-public interface ContainerMonitoring extends NamedConfigElement
-{
+public interface ContainerMonitoring extends NamedConfigElement {
     public String getLevel();
+
     public void setLevel(String val);
 }
 

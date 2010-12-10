@@ -40,25 +40,17 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-import org.glassfish.admin.amx.base.Singleton;
-import org.glassfish.admin.amx.core.AMXMBeanMetadata;
-import java.util.Map;
+
+public interface ListenerConfig
+        extends NamedConfigElement, PropertiesAccess {
 
 
-public interface ListenerConfig extends NamedConfigElement, PropertiesAccess
-{
-    String getListenerClassName();
-    public void setListenerClassName(String name);
-    
-    String getSubscribeListenerWith();
-    public void setSubscribeListenerWith(String name);
+    public String getListenerClassName();
+
+    public void setListenerClassName(String param1);
+
+    public String getSubscribeListenerWith();
+
+    public void setSubscribeListenerWith(String param1);
+
 }
-
-
-
-
-
-
-
-
-

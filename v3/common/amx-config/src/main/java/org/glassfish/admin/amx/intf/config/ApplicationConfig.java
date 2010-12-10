@@ -41,77 +41,8 @@
 package org.glassfish.admin.amx.intf.config;
 
 
-
-
-import java.util.Map;
-
-/**
-	 Configuration for the &lt;application&gt; element.
-     <p>
-     Containees may include unspecified (runtime-determined)
-     sub-interfaces of {@link ApplicationConfigConfig}.
-     <p>
-     To find all Containees of a specific type, eg {@link ApplicationConfigConfig},
-        use {@link org.glassfish.admin.amx.base.Util#filterAMX}:
-     <pre>
-     ApplicationConfig ac = ...;
-     Set<AMX> containees = ac.getContaineeSet();
-     Set<ApplicationConfigConfig> s = Util.filterAMX(containees, ApplicationConfigConfig.class);
-     <pre>
-     Alternately, containees may be filtered by j2eeType eg amx.getJ2EEType(), if the j2eeType
-     is known specifically.
-     
-     @since Glassfish V3
-*/
-
 public interface ApplicationConfig
-    extends AbstractModule, Libraries
-{
-	/**
-	The ContextRoot must match the pattern for the hpath production  
-	in RFC 1738 which can be found at:                            
-	http://www.w3.org/Addressing/rfc1738.txt. This is flattened   
-	to the following regular expression in XML Schema's pattern   
-	language:
+        extends AbstractModule, Libraries {
 
-	<pre>                                     
-	([a-zA-Z0-9$\-_.+!*'(),]|%[0-9A-Fa-f][0-9A-Fa-f]|;|:|&|=)*(/([
-	-zA-Z0-9$\-_.+!*'(),]|%[0-9A-Fa-f][0-9A-Fa-f]|;|:|&|=)*)*
-	</pre>
-	  
-	Note that this includes the null or empty context root and    
-	permits but does not require a context root to start with the 
-	'/' character (including a context root which is simply the   
-	'/' character).
-	@see #setContextRoot                                       
-	*/
-      
-	public String	getContextRoot();
-	
-	/**
-	@see #getContextRoot                                       
-	*/
-	public void		setContextRoot( String value );
 
-	/**
-		Controls whether availability is enabled    
-		for HTTP Session Persistence. If this is "false", then all    
-		session persistence is disabled for the given web module. If  
-		it is "true" (and providing that all the availability-enabled 
-		attributes above in precedence are also "true", then the web  
-		module may be ha enabled. Finer-grained control exists at     
-		lower level (see sun-web.xml).                               
-
-		@see #setAvailabilityEnabled
-	 */
-    
-	public String	getAvailabilityEnabled();
-
-	/**
-		@see #getAvailabilityEnabled
-	*/       
-	public void		setAvailabilityEnabled( String enabled );
 }
-
-
-

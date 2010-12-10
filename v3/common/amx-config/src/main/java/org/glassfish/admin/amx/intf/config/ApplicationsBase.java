@@ -40,26 +40,22 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-import java.util.Map;
-
 import org.glassfish.admin.amx.base.Singleton;
 
-import org.glassfish.admin.amx.annotation.ManagedAttribute;
-
 /**
-Configuration for the &lt;applications&gt; element; it is an internal "node" which
-groups all resources under itself.
-@since Glassfish V3
+ * Configuration for the &lt;applications&gt; element; it is an internal "node" which
+ * groups all resources under itself.
+ *
+ * @since Glassfish V3
  */
 public interface ApplicationsBase
-        extends ConfigElement, ConfigCollectionElement, Singleton
-{
+        extends ConfigElement, ConfigCollectionElement, Singleton {
 
     /**
-    @return Map, keyed by name of the item
+     @return Map, keyed by name of the item
 
-    @since Appserver V3
-    public Map<String, Application> getApplication();
+     @since Appserver V3
+     public Map<String, Application> getApplication();
      */
 }
 

@@ -40,187 +40,28 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-import java.util.Map;
-
-/**
-Configuration for the &lt;availability-service&gt; element.
- */
 public interface AvailabilityService
-        extends ConfigElement, PropertiesAccess
-{
-    /**
-    Get the EJBContainerAvailability MBean.
-     */
-    EjbContainerAvailability getEJBContainerAvailability();
+        extends ConfigElement, PropertiesAccess {
 
-    /**
-    Get the WebContainerAvailability MBean.
-     */
-    WebContainerAvailability getWebContainerAvailability();
 
-    
-    String getAvailabilityEnabled();
+    public String getAvailabilityEnabled();
 
-    void setAvailabilityEnabled(String enabled);
+    public void setAvailabilityEnabled(String param1);
 
-    /**
-     * If set to true, the lifecycle of the highly available store   
-     * is matched with the lifecycle of the highly available         
-     * cluster. The store is started or stopped with the cluster. It 
-     * is removed when the cluster is deleted. When set to false,    
-     * the store lifecycle would have to manually managed by the     
-     * administrator.                   
-     * @return the value of auto-manage-ha-store
-     * @since AppServer 9.0
-     */
-    
-    String getAutoManageHaStore();
+    public WebContainerAvailability getWebContainerAvailability();
 
-    /**
-     * If set to true, the lifecycle of the highly available store   
-     * is matched with the lifecycle of the highly available         
-     * cluster. The store is started or stopped with the cluster. It 
-     * is removed when the cluster is deleted. When set to false,    
-     * the store lifecycle would have to manually managed by the     
-     * administrator.
-     * @param enabled sets the value of auto-manage-ha-store
-     * @since AppServer 9.0
-     */
-    void setAutoManageHaStore(String enabled);
+    public String getStorePoolName();
 
-    /**
-     * This is the jndi-name for the JDBC Connection Pool used       
-     * potentially by both the Web Container and the EJB Stateful    
-     * Session Bean Container for use in checkpointing/passivation   
-     * when persistence-type = "ha". See sfsb-ha-persistence-type    
-     * and sfsb-persistence-type for more details. It will default   
-     * to "jdbc/hastore". This attribute can be over-ridden in       
-     * either web-container-availability (with                       
-     * http-session-store-pool-name) and/or in                       
-     * ejb-container-availability (with sfsb-store-pool-name). If    
-     * store-pool-name is not over-ridden then both containers will  
-     * share the same connection pool. If either container           
-     * over-rides then it may have its own dedicated pool. In this   
-     * case there must also be a new corresponding JDBC Resource and 
-     * JDBC Connection Pool defined for this new pool name.
-     * @return the jndi-name
-     * @since AppServer 9.0
-     */
-    String getStorePoolName();
-
-    /**
-     * This is the jndi-name for the JDBC Connection Pool used       
-     * potentially by both the Web Container and the EJB Stateful    
-     * Session Bean Container for use in checkpointing/passivation   
-     * when persistence-type = "ha". See sfsb-ha-persistence-type    
-     * and sfsb-persistence-type for more details. It will default   
-     * to "jdbc/hastore". This attribute can be over-ridden in       
-     * either web-container-availability (with                       
-     * http-session-store-pool-name) and/or in                       
-     * ejb-container-availability (with sfsb-store-pool-name). If    
-     * store-pool-name is not over-ridden then both containers will  
-     * share the same connection pool. If either container           
-     * over-rides then it may have its own dedicated pool. In this   
-     * case there must also be a new corresponding JDBC Resource and 
-     * JDBC Connection Pool defined for this new pool name.
-     * @param storePoolName the jndi-name
-     * @since AppServer 9.0
-     */
-    void setStorePoolName(String storePoolName);
-
-    /**
-     * comma-delimited list of server host names or IP addresses     
-     * where high availability store management agents are running.  
-     * For HADB the list must consist of an even number of hosts separated
-     * by commas.  E.g. <b>host1,host2,host2,host1</b> 
-     * @return the stored hostnames or IP addresses 
-     * @since AppServer 9.0
-     */
-    String getHaAgentHosts();
-
-    /**
-     * comma-delimited list of server host names or IP addresses     
-     * where high availability store management agents are running.  
-     * 
-     * @param value the stored hostnames or IP addresses 
-     * @since AppServer 9.0
-     */
-    void setHaAgentHosts(String value);
-
-    /**
-     * port number where highly available store management agents    
-     * can be contacted.  The default for HADB is 1862                                              
-     * @return the port number
-     * @since AppServer 9.0
-     */
-    
-    String getHaAgentPort();
-
-    /**
-     * port number where highly available store management agents    
-     * can be contacted.  The default for HADB is 1862                                              
-     * @param value the port number 
-     * @since AppServer 9.0
-     */
-    void setHaAgentPort(String value);
-
-    /**
-     * @since AppServer 9.0
-     */
-    String getHaAgentPassword();
-
-    /**
-     * @since AppServer 9.0
-     */
-    void setHaAgentPassword(String password);
-
-    /**
-     * The periodicity at which store health is checked.
-     * @return the interval time in seconds
-     * @since AppServer 9.0
-     */
-    
-    String getHaStoreHealthcheckIntervalInSeconds();
-
-    /**
-     * The periodicity at which store health is checked.
-     * @param value the interval time in seconds 
-     * @since AppServer 9.0
-     */
-    void setHaStoreHealthcheckIntervalInSeconds(String value);
-
-    /**
-     * Name of the session store.  In HADB this corresponds to the name of 
-     * the HADB instance.  The default is the cluster-name.
-     * @return the store name
-     * @since AppServer 9.0
-     */
-    String getHaStoreName();
-
-    /**
-     * Name of the session store.  In HADB this corresponds to the name of 
-     * the HADB instance.  The default is the cluster-name.
-     * @param value the new store name 
-     * @since AppServer 9.0
-     */
-    void setHaStoreName(String value);
-
-    /**
-     * Application server stops saving session state when the store  
-     * service does not function properly or is is not accessible    
-     * for any reason. When this attribute is set to true, periodic  
-     * checking is done to detect if the store service has become    
-     * available again. If healthcheck succeeds the session state    
-     * saving is resumed. Defaults to false.                      
-     * @return the value of the flag 
-     * @since AppServer 9.0
-     */
-    String getHaStoreHealthcheckEnabled();
-
-    void setHaStoreHealthcheckEnabled(String value);
+    public void setStorePoolName(String param1);
 
     public JmsAvailability getJmsAvailability();
+
+    public void setWebContainerAvailability(WebContainerAvailability param1);
+
+    public EjbContainerAvailability getEjbContainerAvailability();
+
+    public void setEjbContainerAvailability(EjbContainerAvailability param1);
+
+    public void setJmsAvailability(JmsAvailability param1);
+
 }
-
-
-

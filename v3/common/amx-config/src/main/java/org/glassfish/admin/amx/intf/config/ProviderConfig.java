@@ -40,35 +40,28 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-import java.util.Map;
-
-/**
-Configuration for the &lt;provider-config&gt; element.
- */
 public interface ProviderConfig
-        extends NamedConfigElement, PropertiesAccess
-{
+        extends NamedConfigElement, PropertiesAccess {
+
+
     public String getClassName();
 
-    public void setClassName(final String value);
+    public void setClassName(String param1);
 
     public String getProviderId();
 
-    /** Returns {@link #PROVIDER_TYPE_CLIENT} or {@link #PROVIDER_TYPE_SERVER} */
     public String getProviderType();
 
-    /** Use {@link #PROVIDER_TYPE_CLIENT} or {@link #PROVIDER_TYPE_SERVER} */
-    public void setProviderType(final String value);
+    public void setProviderType(String param1);
 
-    /**
-    Get the RequestPolicy MBean.
-     */
-    RequestPolicy getRequestPolicy();
+    public RequestPolicy getRequestPolicy();
 
-    /**
-    Get the ResponsePolicy MBean.
-     */
-    ResponsePolicy getResponsePolicy();
+    public ResponsePolicy getResponsePolicy();
+
+    public void setProviderId(String param1);
+
+    public void setRequestPolicy(RequestPolicy param1);
+
+    public void setResponsePolicy(ResponsePolicy param1);
+
 }
-
-

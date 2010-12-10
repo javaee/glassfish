@@ -41,9 +41,8 @@
 package org.glassfish.admin.amx.intf.config;
 
 /**
-Configuration for the &lt;server&gt; element that belongs to 
-a cluster.
+ * Configuration for the &lt;server&gt; element that belongs to
+ * a cluster.
  */
-public interface ClusteredServer extends Server
-{
+public interface ClusteredServer extends Server {
 }

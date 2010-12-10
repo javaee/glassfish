@@ -40,8 +40,7 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-public interface EnvEntry extends NamedConfigElement
-{
+public interface EnvEntry extends NamedConfigElement {
     public String getDescription();
 
     public void setDescription(String value);

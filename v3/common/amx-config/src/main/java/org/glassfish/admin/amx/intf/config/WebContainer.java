@@ -42,13 +42,16 @@ package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.base.Singleton;
 
-/**
-Configuration for the &lt;web-container&gt; element.
- */
 public interface WebContainer
-        extends PropertiesAccess, ConfigElement, Singleton
-{
+        extends Singleton, ConfigElement, PropertiesAccess {
+
+
     public SessionConfig getSessionConfig();
-    
+
     public String getJspCachingEnabled();
+
+    public void setSessionConfig(SessionConfig param1);
+
+    public void setJspCachingEnabled(String param1);
+
 }

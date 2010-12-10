@@ -40,13 +40,21 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-/**
-Configuration for the &lt;connector-resource&gt; element.
- */
-public interface ConnectorResource extends Resource
-{
+
+public interface ConnectorResource
+        extends Resource {
+
+
+    public String getEnabled();
+
+    public void setEnabled(String param1);
+
+    public String getDescription();
+
+    public void setDescription(String param1);
 
     public String getPoolName();
 
-    public void setPoolName(final String poolName);
+    public void setPoolName(String param1);
+
 }

@@ -41,133 +41,129 @@
 package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.base.Singleton;
-
 import org.glassfish.admin.amx.util.SetUtil;
 
-import java.util.Set;
-import java.util.Map;
-import java.util.HashMap;
 import javax.management.Attribute;
 import javax.management.AttributeList;
+import java.util.Map;
+import java.util.Set;
 
 import static org.glassfish.external.amx.AMX.*;
 
-/**
-Configuration for the &lt;module-monitoring-levels&gt; element.
-
-Each monitoring level can be one of the values defined in
-{@link ModuleMonitoringLevelValues}.
- */
-public interface ModuleMonitoringLevels extends ConfigElement, PropertiesAccess, Singleton
-{
+public interface ModuleMonitoringLevels
+        extends Singleton, ConfigElement, PropertiesAccess {
     /**
-    Value indicating the maximum level of monitoring is enabled.
+     * Value indicating the maximum level of monitoring is enabled.
      */
     public final static String HIGH = "HIGH";
     /**
-    Value indicating some level of monitoring is enabled.s
+     * Value indicating some level of monitoring is enabled.s
      */
     public final static String LOW = "LOW";
     /**
-    Value indicating that monitoring is disabled.
+     * Value indicating that monitoring is disabled.
      */
     public final static String OFF = "OFF";
 
-    public String getJvm();
-
-    public void setJvm(final String value);
-
-    public String getConnectorService();
-
-    public void setConnectorService(final String value);
-
-    public String getJmsService();
-
-    public void setJmsService(final String value);
-
-    public String getConnectorConnectionPool();
-
-    public void setConnectorConnectionPool(final String value);
-
-    public String getEjbContainer();
-
-    public void setEjbContainer(final String value);
-
-    public String getHttpService();
-
-    public void setHttpService(final String value);
-
-    public String getJdbcConnectionPool();
-
-    public void setJdbcConnectionPool(final String value);
-
-    public String getOrb();
-
-    public void setOrb(final String value);
 
     public String getThreadPool();
 
-    public void setThreadPool(final String value);
-
-    public String getTransactionService();
-
-    public void setTransactionService(final String value);
+    public String getHttpService();
 
     public String getWebContainer();
 
-    public void setWebContainer(final String value);
-    
+    public String getEjbContainer();
+
+    public String getJmsService();
+
+    public String getTransactionService();
+
+    public String getConnectorService();
+
+    public String getOrb();
+
+    public void setEjbContainer(String param1);
+
+    public void setWebContainer(String param1);
+
     public String getSecurity();
-    public void setSecurity(final String value);
-    
+
+    public void setSecurity(String param1);
+
+    public String getDeployment();
+
+    public void setDeployment(String param1);
+
+    public String getJvm();
+
+    public void setJvm(String param1);
+
+    public void setConnectorService(String param1);
+
+    public void setJmsService(String param1);
+
+    public String getConnectorConnectionPool();
+
+    public void setConnectorConnectionPool(String param1);
+
+    public void setHttpService(String param1);
+
+    public String getJdbcConnectionPool();
+
+    public void setJdbcConnectionPool(String param1);
+
+    public void setOrb(String param1);
+
+    public void setThreadPool(String param1);
+
+    public void setTransactionService(String param1);
+
     public String getWebServicesContainer();
-    public void setWebServicesContainer(final String value);
-    
+
+    public void setWebServicesContainer(String param1);
+
     public String getJpa();
-    public void setJpa(final String value);
-    
+
+    public void setJpa(String param1);
+
     public String getJersey();
-    public void setJersey(final String value);
-    
-    public static final class Helper {
-        private Helper() {}
-        
-        /** set all monitoring levels to the specified one.
-          Return a Map keyed by attribute name of the previous values that changed
-          */
+
+    public void setJersey(String value);
+
+    public final class Helper {
+        private Helper() {
+        }
+
+        /**
+         * set all monitoring levels to the specified one.
+         * Return a Map keyed by attribute name of the previous values that changed
+         */
         public static AttributeList setAllMonitoringLevel(
-            final ModuleMonitoringLevels levels,
-            final String newLevel)
-        {
+                final ModuleMonitoringLevels levels,
+                final String newLevel) {
             final Set<String> excluded =
-                SetUtil.newUnmodifiableStringSet(ATTR_NAME, ATTR_PARENT, ATTR_CHILDREN, "Property");
-            
-            final Map<String,Object>  attrs = levels.attributesMap();
+                    SetUtil.newUnmodifiableStringSet(ATTR_NAME, ATTR_PARENT, ATTR_CHILDREN, "Property");
+
+            final Map<String, Object> attrs = levels.attributesMap();
             final AttributeList attributeList = new AttributeList();
             final AttributeList originalValues = new AttributeList();
-            for( final String attrName : attrs.keySet() )
-            {
+            for (final String attrName : attrs.keySet()) {
                 final Object originalValue = attrs.get(attrName);
-                if ( excluded.contains(attrName) || originalValue == null || !(originalValue instanceof String))
-                {
+                if (excluded.contains(attrName) || originalValue == null || !(originalValue instanceof String)) {
                     continue;
                 }
-                
+
                 final String strValue = "" + originalValue;
-                if ( ! strValue.equals(newLevel) )
-                {
-                    attributeList.add( new Attribute(attrName, newLevel) );
-                    originalValues.add( new Attribute(attrName, originalValue) );
+                if (!strValue.equals(newLevel)) {
+                    attributeList.add(new Attribute(attrName, newLevel));
+                    originalValues.add(new Attribute(attrName, originalValue));
                 }
             }
-            if ( attributeList.size() != 0 )
-            {
-                try
-                {
-                    levels.extra().setAttributes( attributeList );
+            if (attributeList.size() != 0) {
+                try {
+                    levels.extra().setAttributes(attributeList);
                 }
-                catch( final Exception e )
-                {
+                catch (final Exception e) {
                     throw new RuntimeException(e);
                 }
             }

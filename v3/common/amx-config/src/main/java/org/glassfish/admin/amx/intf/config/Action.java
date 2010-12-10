@@ -40,21 +40,13 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-/**
-Represents the &lt;action&gt; element.
-<p>
-@since Appserver 9.0
-@see ManagementRuleConfig
-@see EventConfig
-@deprecated
- */
-public interface Action extends ConfigElement
-{
-    /**
-    Identifies the classname of the action MBean as given
-    by CustomMBeanConfig.getName().
-     */
-    public String getActionMBeanName();
 
-    public void setActionMBeanName(String name);
+public interface Action
+        extends ConfigElement {
+
+
+    public String getActionMbeanName();
+
+    public void setActionMbeanName(String param1);
+
 }

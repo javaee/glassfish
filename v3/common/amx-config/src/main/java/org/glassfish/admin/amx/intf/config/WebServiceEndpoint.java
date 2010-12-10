@@ -43,61 +43,27 @@ package org.glassfish.admin.amx.intf.config;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Config AMX MBean for Web Service Endpoint's config
- * 
- * @since AppServer 9.0
- */
-public interface WebServiceEndpoint extends NamedConfigElement
-{
+public interface WebServiceEndpoint
+        extends NamedConfigElement {
 
-    /**
-     * Get the web service name.
-     */
+
     public String getName();
 
-    /**
-     * visibility of this endoint as a service in JBI
-     */
-    
-    public String getJBIEnabled();
+    public void setName(String param1);
 
-    /**
-     * visibility of this endoint as a service in JBI
-     */
-    public void setJBIEnabled(String enabled);
-
-    /**
-     * Get the web service' monitoring level can be OFF, LOW or HIGH.
-    @see ModuleMonitoringLevelValues
-     */
-    public String getMonitoringLevel();
-
-    /**
-     * Sets the web service' monitoring level can be OFF, LOW or HIGH.
-    @see ModuleMonitoringLevelValues
-     */
-    public void setMonitoringLevel(String level);
-
-    /**
-     * Gets the web service' max history size. Number of statistics stored in
-     * memory.
-     */
-    
     public String getMaxHistorySize();
 
-    /**
-     * Sets the web service' max history size. Number of statistics stored in
-     * memory.
-     *
-     * @param maxSize max size of stored statistics in memory
-     */
-    public void setMaxHistorySize(String maxSize);
+    public void setMaxHistorySize(String param1);
 
-    /**
-    @since Appserver 9.0
-     */
     public Map<String, RegistryLocation> getRegistryLocation();
+
+    public String getMonitoring();
+
+    public void setMonitoring(String param1);
+
+    public String getJbiEnabled();
+
+    public void setJbiEnabled(String param1);
 
 
     /**

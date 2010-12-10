@@ -41,10 +41,10 @@
 package org.glassfish.admin.amx.intf.config;
 
 /**
-    Supports creation and removal of health checker configurations.
-*/
+ * Supports creation and removal of health checker configurations.
+ */
 public interface HealthCheckerCR {
-    
+
 //     /**
 //       Creates a new health-checker.
 //       @param url 
@@ -69,10 +69,10 @@ public interface HealthCheckerCR {
 //       Removes a health checker config from the container config element
 //      */
 //     public void removeHealthChecker();
-    
+
     /**
-      @return A proxy to the HealthChecker MBean.
-      Could be null because the HealthChecker may not be present.
+     * @return A proxy to the HealthChecker MBean.
+     *         Could be null because the HealthChecker may not be present.
      */
     public HealthChecker getHealthChecker();
 }

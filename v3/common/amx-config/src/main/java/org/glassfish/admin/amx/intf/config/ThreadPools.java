@@ -42,24 +42,10 @@ package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.base.Singleton;
 
-
 import java.util.Map;
 
-/**
-Configuration for the &lt;thread-pools&gt; element; it is an internal "node" which
-groups all resources under itself.
-@since Glassfish V3
- */
 public interface ThreadPools
-        extends ConfigElement, ConfigCollectionElement, Singleton
-{
+        extends Singleton, ConfigCollectionElement, ConfigElement {
     public Map<String, ThreadPool> getThreadPool();
 
 }
-
-
-
-
-
-
-

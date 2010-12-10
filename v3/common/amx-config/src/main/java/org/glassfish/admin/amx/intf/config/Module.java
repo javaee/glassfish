@@ -41,14 +41,16 @@
 package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.config.AMXConfigProxy;
-import java.util.Map;
 
-/**
- * Config AMX MBean for Module's config
- * @since Glassfish V3
- *
- */
-public interface Module extends AMXConfigProxy, PropertiesAccess
-{
-   // public Map<String, Engine> getEngine();
+public interface Module
+        extends AMXConfigProxy, PropertiesAccess {
+
+
+    /*public Resources getResources();
+
+    public Engine getEngine(String param1);
+
+    public void setResources(Resources param1);
+
+    public Map<String, Engine> getEngines();  */
 }

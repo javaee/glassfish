@@ -40,55 +40,24 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-/**
- * represents the &lt;server-ref&gt; element.
- */
-public interface ClusterRef extends Ref, HealthCheckerCR
-{
-    /**
-    @since Appserver 9.0
-     */
-    public String getReferencedClusterName();
+public interface ClusterRef
+        extends HealthCheckerCR, Ref {
 
-    /**
-    @since Appserver 9.0
-     */
-    public void setReferencedClusterName(String clusterName);
 
-    /**
-    <b>EE only</b>
-    Load balancing policy to be used for this cluster. Possible
-    values are round-robin , weighted-round-robin or
-    user-defined. round-robin is the default. For
-    weighted-round-robin, the weights of the instance are
-    considered while load balancing. For user-defined, the policy
-    is implemented by a shared library which is loaded by the
-    load balancer and the instance selected is delegated to the
-    loaded module.
+    public String getRef();
 
-    Return load balancing policy to be used for this cluster. Possible
-    values are: See {@link LbPolicyTypeValues}.
-     */
-    public String getLBPolicy();
+    public void setRef(String param1);
 
-    /**
-    <b>EE only</b>
-    Set the load balancing policy to be used for this cluster.
-    See {@link org.glassfish.admin.amx.intf.config.LbPolicyTypeValues}.
-     */
-    public void setLBPolicy(final String value);
+    public HealthChecker getHealthChecker();
 
-    /**
-    <b>EE only</b>
-    Returns the absolute path to the shared library
-    implementing the {@link LbPolicyTypeValues#USER_DEFINED} policy.
-     */
-    public String getLBPolicyModule();
+    public void setHealthChecker(HealthChecker param1);
 
-    /**
-    <b>EE only</b>
-    Sets the absolute path to the shared library implementing the
-    {@link LbPolicyTypeValues#USER_DEFINED} policy.
-     */
-    public void setLBPolicyModule(final String lbPolicyModule);
+    public String getLbPolicy();
+
+    public void setLbPolicy(String param1);
+
+    public String getLbPolicyModule();
+
+    public void setLbPolicyModule(String param1);
+
 }

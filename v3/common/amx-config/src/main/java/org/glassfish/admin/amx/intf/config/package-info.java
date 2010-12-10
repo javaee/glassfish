@@ -39,17 +39,16 @@
  */
 
 /**
-    Specific AMX MBean proxy interfaces for config MBeans (domain.xml elements).  These interfaces
-    offer for the convenience of using more specialized proxies as created by {@link ProxyFactory},
-    but {@link AMXConfigProxy} can be used generically for all config MBeans.
-    @see AMXProxy
-    @see AMXConfigProxy
+ Specific AMX MBean proxy interfaces for config MBeans (domain.xml elements).  These interfaces
+ offer for the convenience of using more specialized proxies as created by {@link ProxyFactory},
+ but {@link AMXConfigProxy} can be used generically for all config MBeans.
+ @see AMXProxy
+ @see AMXConfigProxy
  */
-@Taxonomy(stability = Stability.UNCOMMITTED)
-package org.glassfish.admin.amx.intf.config;
+@Taxonomy(stability = Stability.UNCOMMITTED) package org.glassfish.admin.amx.intf.config;
 
-import org.glassfish.external.arc.Taxonomy;
 import org.glassfish.external.arc.Stability;
+import org.glassfish.external.arc.Taxonomy;
 
 
 

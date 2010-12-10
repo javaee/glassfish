@@ -40,23 +40,67 @@
 
 package org.glassfish.admin.amx.intf.config;
 
+import org.glassfish.admin.amx.intf.config.grizzly.Ssl;
 
-/**
-@deprecated
-*/
-public interface HttpListener extends NamedConfigElement
-{
-    // don't list any attributes, discourage use
+
+public interface HttpListener
+        extends NamedConfigElement {
+
+
+    public String getAddress();
+
+    public String getId();
+
+    public String getPort();
+
+    public String getEnabled();
+
+    public void setEnabled(String param1);
+
+    public void setAddress(String param1);
+
+    public Ssl getSsl();
+
+    public void setPort(String param1);
+
+    public String getSecurityEnabled();
+
+    public void setSecurityEnabled(String param1);
+
+    public String getRedirectPort();
+
+    public void setRedirectPort(String param1);
+
+    public String getServerName();
+
+    public void setServerName(String param1);
+
+    public String getXpoweredBy();
+
+    public void setXpoweredBy(String param1);
+
+    public String getDefaultVirtualServer();
+
+    public void setDefaultVirtualServer(String param1);
+
+    public String getAcceptorThreads();
+
+    public void setAcceptorThreads(String param1);
+
+    public void setSsl(Ssl param1);
+
+    public void setId(String param1);
+
+    public String getExternalPort();
+
+    public void setExternalPort(String param1);
+
+    public String getFamily();
+
+    public void setFamily(String param1);
+
+    public String getBlockingEnabled();
+
+    public void setBlockingEnabled(String param1);
+
 }
-
-
-
-
-
-
-
-
-
-
-
-

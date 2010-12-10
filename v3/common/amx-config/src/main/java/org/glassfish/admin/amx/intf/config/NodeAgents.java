@@ -40,29 +40,11 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-import org.glassfish.admin.amx.intf.config.NodeAgent;
-
 import java.util.Map;
 
-/**
-Configuration for the &lt;node-agents&gt; element; it is an internal "node" which
-groups all resources under itself.
-@since Glassfish V3
- */
 public interface NodeAgents
-        extends ConfigElement, ConfigCollectionElement
-{
-    /**
-    Calls Container.getContaineeMap( XTypes.NODE_AGENT_CONFIG ).
-    @return Map of items, keyed by name.
+        extends ConfigCollectionElement, ConfigElement {
 
-     */
+
     public Map<String, NodeAgent> getNodeAgent();
 }
-
-
-
-
-
-
-

@@ -41,13 +41,12 @@
 package org.glassfish.admin.amx.intf.config;
 
 /**
-Facts out commonality between PropertyConfig and SystemPropertyConfig.
+ * Facts out commonality between PropertyConfig and SystemPropertyConfig.
  */
-public interface AnyProperty extends NamedConfigElement, Description
-{
+public interface AnyProperty extends NamedConfigElement, Description {
 
     /**
-    @return value of this property
+     * @return value of this property
      */
     String getValue();
 

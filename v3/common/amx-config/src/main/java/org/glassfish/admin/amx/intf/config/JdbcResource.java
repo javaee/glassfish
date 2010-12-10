@@ -40,14 +40,21 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-/**
-Configuration for the &lt;jdbc-resource&gt; element.
- */
+
 public interface JdbcResource
-        extends Resource
-{
-    public String getJndiName();
-    
+        extends Resource {
+
+
+    public String getEnabled();
+
+    public void setEnabled(String param1);
+
+    public String getDescription();
+
+    public void setDescription(String param1);
+
     public String getPoolName();
-    public void setPoolName(String value);
+
+    public void setPoolName(String param1);
+
 }

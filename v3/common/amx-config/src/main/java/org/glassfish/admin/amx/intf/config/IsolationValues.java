@@ -42,18 +42,18 @@ package org.glassfish.admin.amx.intf.config;
 
 
 /**
-	Values which are legal to pass for 'isolation'
-	
-	See {@link JDBCConnectionPoolConfig#setTransactionIsolationLevel} and
-	{@link ResourcesConfig#createJDBCConnectionPoolConfig}.
-	@see JDBCConnectionPoolConfigKeys#TRANSACTION_ISOLATION_LEVEL_KEY
+ * Values which are legal to pass for 'isolation'
+ * <p/>
+ * See {@link JDBCConnectionPoolConfig#setTransactionIsolationLevel} and
+ * {@link ResourcesConfig#createJDBCConnectionPoolConfig}.
+ *
+ * @see JDBCConnectionPoolConfigKeys#TRANSACTION_ISOLATION_LEVEL_KEY
  */
-public final class IsolationValues
-{
+public final class IsolationValues {
 
-    private IsolationValues()
-    {
+    private IsolationValues() {
     }
+
     public static final String READ_UNCOMMITTED = "read-uncommitted";
     public static final String READ_COMMITTED = "read-committed";
     public static final String REPEATABLE_READ = "repeatable-read";

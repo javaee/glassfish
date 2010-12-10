@@ -39,57 +39,77 @@
  */
 
 package org.glassfish.admin.amx.intf.config;
+
+import java.util.List;
 import java.util.Map;
 
-import org.glassfish.admin.amx.annotation.ChildGetter;
-
-
-/**
-	 Configuration for the &lt;cluster&gt; element.
- */
 public interface Cluster
-	extends PropertiesAccess, SystemPropertiesAccess,
-	NamedConfigElement
-{    
-	/**
-		Get the name of the config element referenced by this cluster.
-	 */
-	public String	getConfigRef();
+        extends NamedConfigElement, PropertiesAccess, SystemPropertiesAccess {
 
-	public Map<String,ServerRef>	getServerRef();
-	
-	public Map<String,ResourceRef>	getResourceRef();
-	
-	public Map<String,ApplicationRef>	getDeployedItemRef();
+    public Map<String, ServerRef> getServerRef();
 
-	
-	/**
-	 * Return the port used by GMS for group events.	
-	 * @since AppServer 9.0
-	*/
-    
-	public String getHeartbeatPort();
-	/**
-	 * @since AppServer 9.0
-	*/
-	public void setHeartbeatPort(final String port);
+    public boolean isInstance();
 
-	/**
-	 * @since AppServer 9.0
-	*/
-    
-	public String getHeartbeatEnabled();
-	/**
-	 * @since AppServer 9.0
-	*/
-	public void setHeartbeatEnabled(final String enabled);
+    public Map<String, ResourceRef> getResourceRef();
 
-	/**
-	 * @since AppServer 9.0
-	*/
-	public String getHeartbeatAddress();
-	/**
-	 * @since AppServer 9.0
-	*/
-	public void setHeartbeatAddress(final String address);
+    public String getName();
+
+    public Map<String, ApplicationRef> getDeployedItemRef();
+
+    public void setName(String param1);
+
+    public String getConfigRef();
+
+    public ResourceRef getResourceRef(String param1);
+
+    public String getHeartbeatPort();
+
+    public void setHeartbeatPort(String param1);
+
+    public String getHeartbeatEnabled();
+
+    public void setHeartbeatEnabled(String param1);
+
+    public String getHeartbeatAddress();
+
+    public void setHeartbeatAddress(String param1);
+
+    public ApplicationRef getApplicationRef(String param1);
+
+    public void setConfigRef(String param1);
+
+    public String getGmsEnabled();
+
+    public void setGmsEnabled(String param1);
+
+    public String getGmsMulticastPort();
+
+    public void setGmsMulticastPort(String param1);
+
+    public String getGmsMulticastAddress();
+
+    public void setGmsMulticastAddress(String param1);
+
+    public String getGmsBindInterfaceAddress();
+
+    public void setGmsBindInterfaceAddress(String param1);
+
+    public String getReference();
+
+    public List getInstances();
+
+    public ServerRef getServerRefByRef(String param1);
+
+    /*public boolean isCluster();
+
+    public boolean isServer();
+
+    public boolean isDas();*/
+
+    public boolean isResourceRefExists(String param1);
+
+    public void createResourceRef(String param1, String param2);
+
+    public void deleteResourceRef(String param1);
+
 }

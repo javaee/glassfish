@@ -40,23 +40,27 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-/**
-Configuration for the &lt;auth-realm&gt; element.
- */
-public interface AuthRealm extends PropertiesAccess, NamedConfigElement
-{
+
+public interface AuthRealm
+        extends NamedConfigElement, PropertiesAccess {
     /**
-    Classname of the default implementing class.
+     * Classname of the default implementing class.
      */
     public static final String DEFAULT_REALM_CLASSNAME =
             "com.sun.enterprise.security.auth.realm.file.FileRealm";
     /**
-    When using {@link #DEFAULT_REALM_CLASSNAME} implementation, append
-    a file name to this prefix and specify it via {@link #KEY_FILE_PROPERTY_KEY}.
+     * When using {@link #DEFAULT_REALM_CLASSNAME} implementation, append
+     * a file name to this prefix and specify it via {@link #KEY_FILE_PROPERTY_KEY}.
      */
     public static final String KEY_FILE_PREFIX = "${com.sun.aas.instanceRoot}/config/";
 
+
+    public String getName();
+
+    public void setName(String param1);
+
     public String getClassname();
 
-    public void setClassname(String value);
+    public void setClassname(String param1);
+
 }

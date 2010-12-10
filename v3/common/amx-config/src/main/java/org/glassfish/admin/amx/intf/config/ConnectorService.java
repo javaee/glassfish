@@ -40,17 +40,17 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-/**
-Configuration for the &lt;connector-service&gt; element.
- */
-public interface ConnectorService extends ConfigElement, PropertiesAccess
-{
-    
+
+public interface ConnectorService
+        extends ConfigElement, PropertiesAccess {
+
+
     public String getShutdownTimeoutInSeconds();
 
-    public void setShutdownTimeoutInSeconds(final String value);
+    public void setShutdownTimeoutInSeconds(String param1);
 
     public String getClassLoadingPolicy();
 
-    public void setClassLoadingPolicy(final String value);
+    public void setClassLoadingPolicy(String param1);
+
 }

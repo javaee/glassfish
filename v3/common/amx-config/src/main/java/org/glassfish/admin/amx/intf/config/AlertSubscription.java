@@ -40,23 +40,20 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-import org.glassfish.admin.amx.base.Singleton;
-import org.glassfish.admin.amx.core.AMXMBeanMetadata;
-
 import java.util.Map;
 
-public interface AlertSubscription extends NamedConfigElement
-{
-    public Map<String,ListenerConfig> getListenerConfig();
-    
-    public Map<String,FilterConfig> getFilterConfig();
+public interface AlertSubscription
+        extends NamedConfigElement {
+    public Map<String, ListenerConfig> getListenerConfig();
+
+    public Map<String, FilterConfig> getFilterConfig();
+
+    public String getName();
+
+    public void setName(String param1);
+
+    public void setListenerConfig(ListenerConfig param1);
+
+    public void setFilterConfig(FilterConfig param1);
+
 }
-
-
-
-
-
-
-
-
-

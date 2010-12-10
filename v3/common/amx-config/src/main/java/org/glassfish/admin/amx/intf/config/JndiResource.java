@@ -41,11 +41,11 @@
 package org.glassfish.admin.amx.intf.config;
 
 /**
-Configuration for the &lt;jndi-resource&gt; element.
+ * Configuration for the &lt;jndi-resource&gt; element.
  */
-public interface JndiResource extends Resource
-{
+public interface JndiResource extends Resource {
     String getJndiLookupName();
+
     void setJndiLookupName(final String jndiLookupName);
 
     String getResType();

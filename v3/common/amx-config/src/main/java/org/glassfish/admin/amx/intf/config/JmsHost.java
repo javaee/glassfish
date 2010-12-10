@@ -40,27 +40,33 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-/**
-Configuration for the &lt;jms-host&gt; element.
- */
-public interface JmsHost extends NamedConfigElement, PropertiesAccess
-{
-    public String getAdminPassword();
 
-    public void setAdminPassword(String value);
+public interface JmsHost
+        extends NamedConfigElement, PropertiesAccess {
 
-    public String getAdminUserName();
 
-    public void setAdminUserName(String value);
+    public String getName();
+
+    public void setName(String param1);
 
     public String getHost();
 
-    public void setHost(String value);
-
-    public String getLazyInit();
-    public void setLazyInit(String value);
-    
     public String getPort();
 
-    public void setPort(String value);
+    public String getLazyInit();
+
+    public void setLazyInit(String param1);
+
+    public void setPort(String param1);
+
+    public String getAdminPassword();
+
+    public void setAdminPassword(String param1);
+
+    public String getAdminUserName();
+
+    public void setAdminUserName(String param1);
+
+    public void setHost(String param1);
+
 }

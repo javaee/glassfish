@@ -40,22 +40,13 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-import org.glassfish.admin.amx.base.Singleton;
-import org.glassfish.admin.amx.core.AMXMBeanMetadata;
-import java.util.Map;
+
+public interface FilterConfig
+        extends NamedConfigElement, PropertiesAccess {
 
 
-public interface FilterConfig extends NamedConfigElement, PropertiesAccess
-{
-    String getFilterClassName();
-    public void setFilterClassName(String name);
+    public String getFilterClassName();
+
+    public void setFilterClassName(String param1);
+
 }
-
-
-
-
-
-
-
-
-

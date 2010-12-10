@@ -41,23 +41,22 @@
 package org.glassfish.admin.amx.intf.config;
 
 /**
-Factors out the meaning of the "ObjectType" Attribute.
-
-See {@link ObjectTypeValues}
+ * Factors out the meaning of the "ObjectType" Attribute.
+ * <p/>
+ * See {@link ObjectTypeValues}
  */
-public interface ObjectType
-{
+public interface ObjectType {
 
     /**
-    @return the ObjectType as defined by {@link ObjectTypeValues}
+     * @return the ObjectType as defined by {@link ObjectTypeValues}
      */
     public String getObjectType();
 
     /**
-    INTERNAL USE ONLY
-
-    @param objectType the ObjectType as defined by {@link ObjectTypeValues}
-    @see ObjectTypeValues
+     * INTERNAL USE ONLY
+     *
+     * @param objectType the ObjectType as defined by {@link ObjectTypeValues}
+     * @see ObjectTypeValues
      */
     public void setObjectType(final String objectType);
 }

@@ -40,90 +40,92 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-import java.util.List;
-import java.util.Map;
-import javax.management.MBeanOperationInfo;
-import javax.management.ObjectName;
+import org.glassfish.admin.amx.annotation.Description;
 import org.glassfish.admin.amx.annotation.ManagedAttribute;
 import org.glassfish.admin.amx.annotation.ManagedOperation;
 import org.glassfish.admin.amx.annotation.Param;
-import org.glassfish.admin.amx.annotation.Description;
 import org.glassfish.admin.amx.base.Singleton;
-import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.core.AMXMBeanMetadata;
+import org.glassfish.admin.amx.core.AMXProxy;
+
+import javax.management.MBeanOperationInfo;
+import javax.management.ObjectName;
+import java.util.List;
+import java.util.Map;
 
 /**
-    Server-side helper methods for config MBeans.
+ * Server-side helper methods for config MBeans.
  */
-@AMXMBeanMetadata(leaf=true, singleton=true)
-public interface ConfigTools extends AMXProxy, Singleton
-{
+@AMXMBeanMetadata(leaf = true, singleton = true)
+public interface ConfigTools extends AMXProxy, Singleton {
     /**
      * Create Property sub-elements on the specified MBean, transactionally (all or none).
-     <p>
+     * <p/>
      * Each Map correspond to one property, and its keys should be Name/Value/Description,
      * though the Description may be omitted.
-     * @param parent Parent MBean in which the new elements should reside
-     * @param props  List of Maps, each Map keying Name/Value/Description
+     *
+     * @param parent   Parent MBean in which the new elements should reside
+     * @param props    List of Maps, each Map keying Name/Value/Description
      * @param clearAll whether to remove all existing properties first
      */
-    @ManagedOperation(impact=MBeanOperationInfo.ACTION)
+    @ManagedOperation(impact = MBeanOperationInfo.ACTION)
     @Description("Create Property sub-elements, transactionally (all or none)")
-    public void  setProperties(
-        @Description("Parent MBean in which the new elements should reside")
-        @Param(name="parent")
-        final ObjectName parent,
-        
-        @Description("List of Maps, each Map keying Name/Value/Description")
-        @Param(name="props")
-        final List<Map<String,String>>  props,
-        
-        @Description("List of Maps, each Map keying Name/Value/Description")
-        @Param(name="clearAll")
-        final boolean clearAll);
+    public void setProperties(
+            @Description("Parent MBean in which the new elements should reside")
+            @Param(name = "parent")
+            final ObjectName parent,
 
-    @ManagedOperation(impact=MBeanOperationInfo.ACTION)
+            @Description("List of Maps, each Map keying Name/Value/Description")
+            @Param(name = "props")
+            final List<Map<String, String>> props,
+
+            @Description("List of Maps, each Map keying Name/Value/Description")
+            @Param(name = "clearAll")
+            final boolean clearAll);
+
+    @ManagedOperation(impact = MBeanOperationInfo.ACTION)
     @Description("transactionally remove all 'property' children")
     public void clearProperties(final ObjectName objectName);
-        
+
     /**
      * Create SystemProperty sub-elements, transactionally (all or none).
-     <p>
+     * <p/>
      * Each Map correspond to one property, and its keys should be Name/Value/Description,
      * though the Description may be omitted.
-     * @param parent Parent MBean in which the new elements should reside
-     * @param props  List of Maps, each Map keying Name/Value/Description
+     *
+     * @param parent   Parent MBean in which the new elements should reside
+     * @param props    List of Maps, each Map keying Name/Value/Description
      * @param clearAll whether to remove all existing properties first
      */
-    @ManagedOperation(impact=MBeanOperationInfo.ACTION)
+    @ManagedOperation(impact = MBeanOperationInfo.ACTION)
     @Description("Create SystemProperty sub-elements, transactionally (all or none)")
-    public void  setSystemProperties(
-        @Description("Parent MBean in which the new elements should reside")
-        @Param(name="parent")
-        final ObjectName parent,
-        
-        @Description("List of Maps, each Map keying Name/Value/Description")
-        @Param(name="props")
-        final List<Map<String,String>>  props,
-        
-        @Description("List of Maps, each Map keying Name/Value/Description")
-        @Param(name="clearAll")
-        final boolean clearAll);
-        
-    @ManagedOperation(impact=MBeanOperationInfo.ACTION)
+    public void setSystemProperties(
+            @Description("Parent MBean in which the new elements should reside")
+            @Param(name = "parent")
+            final ObjectName parent,
+
+            @Description("List of Maps, each Map keying Name/Value/Description")
+            @Param(name = "props")
+            final List<Map<String, String>> props,
+
+            @Description("List of Maps, each Map keying Name/Value/Description")
+            @Param(name = "clearAll")
+            final boolean clearAll);
+
+    @ManagedOperation(impact = MBeanOperationInfo.ACTION)
     @Description("remove all 'system-property' children")
     public void clearSystemProperties(final ObjectName objectName);
-        
-    
+
+
     @ManagedAttribute
     @Description("return all element types that are Named")
     public String[] getConfigNamedTypes();
-    
+
     @ManagedAttribute
     @Description("return all element types that are Resource")
     public String[] getConfigResourceTypes();
-    
-    @ManagedOperation(impact=MBeanOperationInfo.ACTION)
+
+    @ManagedOperation(impact = MBeanOperationInfo.ACTION)
     public Object test();
 }
 

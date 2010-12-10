@@ -41,9 +41,8 @@
 package org.glassfish.admin.amx.intf.config;
 
 /**
-Configuration for the &lt;server&gt; element.
+ * Configuration for the &lt;server&gt; element.
  */
 public interface StandaloneServer
-        extends Server
-{
+        extends Server {
 }

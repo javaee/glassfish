@@ -42,18 +42,16 @@ package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.base.Singleton;
 
-/**
-Configuration for the &lt;request-policy&gt; element.
- */
-public interface RequestPolicy extends ConfigElement, Singleton
-{
-    /** "before-content" or "after-content" */
+public interface RequestPolicy
+        extends Singleton, ConfigElement {
+
+
     public String getAuthRecipient();
 
-    public void setAuthRecipient(final String value);
+    public void setAuthRecipient(String param1);
 
-    /** "sender " or "content" */
     public String getAuthSource();
 
-    public void setAuthSource(final String value);
+    public void setAuthSource(String param1);
+
 }

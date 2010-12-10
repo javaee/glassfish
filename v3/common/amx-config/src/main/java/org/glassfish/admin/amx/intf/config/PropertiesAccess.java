@@ -40,19 +40,18 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-import java.util.Map;
-
-import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 
+import java.util.Map;
+
 /**
-    All MBeans that have Property should extend this interface.
+ * All MBeans that have Property should extend this interface.
  */
-public interface PropertiesAccess extends AMXConfigProxy
-{
+public interface PropertiesAccess extends AMXConfigProxy {
     /**
-    Return all Property MBeans, keyed by property name.
-    @since Glassfish V3
+     * Return all Property MBeans, keyed by property name.
+     *
+     * @since Glassfish V3
      */
     public Map<String, Property> getProperty();
 }

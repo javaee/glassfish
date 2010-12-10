@@ -42,19 +42,28 @@ package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.base.Singleton;
 
-/**
-@deprecated
-*/
-public interface RequestProcessing extends Singleton
-{
+public interface RequestProcessing
+        extends Singleton {
+
+
+    public String getThreadCount();
+
+    public void setThreadCount(String param1);
+
+    public String getInitialThreadCount();
+
+    public void setInitialThreadCount(String param1);
+
+    public String getThreadIncrement();
+
+    public void setThreadIncrement(String param1);
+
+    public String getRequestTimeoutInSeconds();
+
+    public void setRequestTimeoutInSeconds(String param1);
+
+    public String getHeaderBufferLengthInBytes();
+
+    public void setHeaderBufferLengthInBytes(String param1);
+
 }
-
-
-
-
-
-
-
-
-
-

@@ -41,22 +41,21 @@
 package org.glassfish.admin.amx.intf.config;
 
 /**
-@since AppServer 9.0
+ * @since AppServer 9.0
  */
-public interface JavaWebStart
-{
-    /**              
-    Indicates whether Java Web Start access is
-    permitted to eligible application client(s.
-
-    @since Appserver 9.0
+public interface JavaWebStart {
+    /**
+     * Indicates whether Java Web Start access is
+     * permitted to eligible application client(s.
+     *
+     * @since Appserver 9.0
      */
-    
+
     public String getJavaWebStartEnabled();
 
     /**
-    @see #getJavaWebStartEnabled
-    @since Appserver 9.0
+     * @see #getJavaWebStartEnabled
+     * @since Appserver 9.0
      */
     public void setJavaWebStartEnabled(String enabled);
 }

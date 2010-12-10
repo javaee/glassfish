@@ -42,22 +42,10 @@ package org.glassfish.admin.amx.intf.config;
 
 import java.util.Map;
 
-/**
-Configuration for the &lt;clusters&gt; element; it is an internal "node" which
-groups all resources under itself.
-@since Glassfish V3
- */
 public interface Clusters
-        extends ConfigElement, ConfigCollectionElement
-{
+        extends ConfigCollectionElement, ConfigElement {
     public Map<String, Cluster> getCluster();
+
+    public Cluster getCluster(String param1);
+
 }
-
-
-
-
-
-
-
-
-

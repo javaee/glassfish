@@ -41,11 +41,10 @@
 package org.glassfish.admin.amx.intf.config;
 
 /**
-Everything having a settable description should extend this
-interface.
+ * Everything having a settable description should extend this
+ * interface.
  */
-public interface Description
-{
+public interface Description {
     public String getDescription();
 
     public void setDescription(String description);

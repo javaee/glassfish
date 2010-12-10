@@ -44,65 +44,58 @@ import org.glassfish.admin.amx.base.Singleton;
 
 import java.util.Map;
 
-/**
-Configuration for the &lt;jms-service&gt; element.
- */
 public interface JmsService
-        extends ConfigElement, PropertiesAccess, Singleton
-{
+        extends Singleton, ConfigElement, PropertiesAccess {
 
-    public String getAddresslistBehavior();
-
-    public void setAddresslistBehavior(final String value);
-
-    public String getAddresslistIterations();
-
-    public void setAddresslistIterations(final String value);
-    
-    public String getDefaultJmsHost();
-
-    public void setDefaultJmsHost(final String value);
-
-    
-    public String getInitTimeoutInSeconds();
-
-    public void setInitTimeoutInSeconds(final String value);
-
-    public String getMqScheme();
-
-    public void setMqScheme(final String value);
-
-    public String getMqService();
-
-    public void setMqService(final String value);
-
-    
-    public String getReconnectAttempts();
-
-    public void setReconnectAttempts(final String value);
-
-    
-    public String getReconnectEnabled();
-
-    public void setReconnectEnabled(final String value);
-
-    public String getReconnectIntervalInSeconds();
-
-    public void setReconnectIntervalInSeconds(final String value);
-
-    public String getStartArgs();
-
-    public void setStartArgs(final String value);
 
     public String getType();
 
-    public void setType(final String value);
+    public void setType(String param1);
+
+    public String getAddresslistBehavior();
+
+    public void setAddresslistBehavior(String param1);
+
+    public String getAddresslistIterations();
+
+    public void setAddresslistIterations(String param1);
+
+    public String getDefaultJmsHost();
+
+    public void setDefaultJmsHost(String param1);
+
+    public String getInitTimeoutInSeconds();
+
+    public void setInitTimeoutInSeconds(String param1);
+
+    public String getMqScheme();
+
+    public void setMqScheme(String param1);
+
+    public String getMqService();
+
+    public void setMqService(String param1);
+
+    public String getReconnectAttempts();
+
+    public void setReconnectAttempts(String param1);
+
+    public String getReconnectEnabled();
+
+    public void setReconnectEnabled(String param1);
+
+    public String getReconnectIntervalInSeconds();
+
+    public void setReconnectIntervalInSeconds(String param1);
+
+    public String getStartArgs();
+
+    public void setStartArgs(String param1);
+
+    public String getMasterBroker();
+
+    public void setMasterBroker(String param1);
 
     public Map<String, JmsHost> getJmsHost();
+
 }
-
-
-
-
-
-

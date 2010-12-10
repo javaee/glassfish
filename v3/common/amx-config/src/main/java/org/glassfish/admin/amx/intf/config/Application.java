@@ -40,73 +40,78 @@
 
 package org.glassfish.admin.amx.intf.config;
 
+import java.io.File;
 import java.util.Map;
 
-/**
-Configuration for the &lt;application&gt; element.
-<p>
-Containees may include unspecified (runtime-determined)
-sub-interfaces of {@link ApplicationConfigConfig}.
-
-@since Glassfish V3
- */
 public interface Application
-        extends AbstractModule, Libraries
-{
+        extends AbstractModule, Libraries {
 
-    /**
-    The ContextRoot must match the pattern for the hpath production
-    in RFC 1738 which can be found at:
-    http://www.w3.org/Addressing/rfc1738.txt. This is flattened
-    to the following regular expression in XML Schema's pattern
-    language:
 
-    <pre>
-    ([a-zA-Z0-9$\-_.+!*'(),]|%[0-9A-Fa-f][0-9A-Fa-f]|;|:|&|=)*(/([
-    -zA-Z0-9$\-_.+!*'(),]|%[0-9A-Fa-f][0-9A-Fa-f]|;|:|&|=)*)*
-    </pre>
+    public Resources getResources();
 
-    Note that this includes the null or empty context root and
-    permits but does not require a context root to start with the
-    '/' character (including a context root which is simply the
-    '/' character).
-    @see #setContextRoot
-     */
+    public String getLocation();
+
+    public String getDirectoryDeployed();
+
+    public String getEnabled();
+
+    public void setEnabled(String param1);
+
+    public String getDescription();
+
+    public void setDescription(String param1);
+
+    public String getObjectType();
+
+    public void setObjectType(String param1);
+
     public String getContextRoot();
 
-    /**
-    @see #getContextRoot
-     */
-    public void setContextRoot(String value);
+    public void setContextRoot(String param1);
 
-    /**
-    Controls whether availability is enabled
-    for HTTP Session Persistence. If this is "false", then all
-    session persistence is disabled for the given web module. If
-    it is "true" (and providing that all the availability-enabled
-    attributes above in precedence are also "true", then the web
-    module may be ha enabled. Finer-grained control exists at
-    lower level (see sun-web.xml).
-
-    @see #setAvailabilityEnabled
-     */
     public String getAvailabilityEnabled();
 
-    /**
-    @see #getAvailabilityEnabled
-     */
-    public void setAvailabilityEnabled(String enabled);
+    public void setAvailabilityEnabled(String param1);
 
     public String getAsyncReplication();
 
-    public void setAsyncReplication(String value);
+    public void setAsyncReplication(String param1);
 
-    public Map<String,Module> getModule();
-    
-    public Map<String,Engine> getEngine();
-    
-    public Map<String,WebServiceEndpoint> getWebServiceEndpoint();
+    public Map<String, Module> getModule();
+
+    public Module getModule(String param1);
+
+    public Map<String, Engine> getEngine();
+
+    public Map<String, WebServiceEndpoint> getWebServiceEndpoint();
+
+
+    public String getLibraries();
+
+    public void setLibraries(String param1);
+
+    public void setLocation(String param1);
+
+    public void setDirectoryDeployed(String param1);
+
+    public void setResources(Resources param1);
+
+    //public List getDeployProperties();
+
+    public Map getModulePropertiesMap();
+
+    public boolean isStandaloneModule();
+
+    public boolean containsSnifferType(String param1);
+
+    public boolean isLifecycleModule();
+
+    public boolean isOSGiModule();
+
+    public void recordFileLocations(File param1, File param2);
+
+    public File application();
+
+    public File deploymentPlan();
+
 }
-
-
-

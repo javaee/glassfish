@@ -45,21 +45,11 @@ import org.glassfish.admin.amx.core.AMXMBeanMetadata;
 
 import java.util.Map;
 
-/**
-Configuration for the &lt;configs&gt; element; it is an internal "node" which
-groups all config elements under itself.
-@since Glassfish V3
- */
-@AMXMBeanMetadata(globalSingleton=true)
+@AMXMBeanMetadata
 public interface LoadBalancers
-        extends ConfigElement, ConfigCollectionElement, Singleton
-{
+        extends Singleton, ConfigCollectionElement, ConfigElement {
     public Map<String, LoadBalancer> getLoadBalancer();
+
+    public LoadBalancer getLoadBalancer(String param1);
+
 }
-
-
-
-
-
-
-

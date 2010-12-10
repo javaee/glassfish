@@ -42,23 +42,14 @@ package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.base.Singleton;
 
-
 import java.util.Map;
 
-/**
-Configuration for the &lt;servers&gt; element; it is an internal "node" which
-groups all resources under itself.
-@since Glassfish V3
- */
 public interface Servers
-        extends ConfigElement, ConfigCollectionElement, Singleton
-{
+        extends Singleton, ConfigCollectionElement, ConfigElement {
     public Map<String, Server> getServer();
+
+    public Server getServer(String param1);
+
+    public Map<String, Server> getServersOnNode(Node param1);
+
 }
-
-
-
-
-
-
-

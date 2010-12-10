@@ -40,16 +40,15 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.base.Singleton;
+import org.glassfish.admin.amx.config.AMXConfigProxy;
 
-/**
-Configuration for the &lt;session-properties&gt; element.
- */
-public interface SessionProperties extends AMXConfigProxy, PropertiesAccess, Singleton
-{
+public interface SessionProperties
+        extends Singleton, AMXConfigProxy, PropertiesAccess {
+
 
     public String getTimeoutInSeconds();
 
-    public void setTimeoutInSeconds(final String value);
+    public void setTimeoutInSeconds(String param1);
+
 }

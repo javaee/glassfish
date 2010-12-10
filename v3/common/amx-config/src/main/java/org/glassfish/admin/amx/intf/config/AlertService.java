@@ -41,19 +41,13 @@
 package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.base.Singleton;
-import org.glassfish.admin.amx.core.AMXMBeanMetadata;
+
 import java.util.Map;
 
-
-public interface AlertService extends PropertiesAccess, Singleton
-{
-    public Map<String,AlertSubscription> getAlertSubscription();
+public interface AlertService
+        extends Singleton, PropertiesAccess {
+    public Map<String, AlertSubscription> getAlertSubscription();
 }
-
-
-
-
-
 
 
 

@@ -40,21 +40,28 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-/**
-Represents the &lt;management-rule> element.
-
-@since Appserver 9.0
-@see ManagementRulesConfig
- */
 public interface ManagementRule
-        extends NamedConfigElement, Description, Enabled
-{
+        extends Description, Enabled, NamedConfigElement {
+
+
+    public String getName();
+
+    public void setName(String param1);
+
+    public String getEnabled();
+
+    public void setEnabled(String param1);
+
+    public String getDescription();
+
+    public void setDescription(String param1);
+
     public Event getEvent();
 
-    /**
-    @return the Action, or null if none
-     */
     public Action getAction();
-//     public Action  createActionConfig( String actionMBeanName );
-//     public void          removeAction();
+
+    public void setEvent(Event param1);
+
+    public void setAction(Action param1);
+
 }

@@ -43,9 +43,8 @@ package org.glassfish.admin.amx.intf.config;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 
 /**
-Marker interface indicating that this item represents
-a configuration element in domain.xml.
+ * Marker interface indicating that this item represents
+ * a configuration element in domain.xml.
  */
-public interface ConfigElement extends AMXConfigProxy
-{
+public interface ConfigElement extends AMXConfigProxy {
 }

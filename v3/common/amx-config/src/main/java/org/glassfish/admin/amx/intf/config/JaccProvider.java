@@ -40,21 +40,21 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-/**
-Configuration for the &lt;jacc-provider&gt; element.
 
- */
 public interface JaccProvider
-        extends PropertiesAccess, ConfigElement
-{
+        extends ConfigElement, PropertiesAccess {
+
 
     public String getName();
 
+    public void setName(String param1);
+
     public String getPolicyConfigurationFactoryProvider();
 
-    public void setPolicyConfigurationFactoryProvider(String value);
+    public void setPolicyConfigurationFactoryProvider(String param1);
 
     public String getPolicyProvider();
 
-    public void setPolicyProvider(String value);
+    public void setPolicyProvider(String param1);
+
 }

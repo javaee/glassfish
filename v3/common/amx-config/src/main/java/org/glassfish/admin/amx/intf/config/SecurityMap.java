@@ -40,25 +40,26 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-/**
-Represents the &lt;security-map> element.
-<p>
-Perform mapping from principal received during Servlet/EJB        
-authentication, to credentials accepted by the EIS. This mapping  
-is optional.It is possible to map multiple (server) principal to  
-the same backend principal.    
+import java.util.List;
 
-@since Appserver 9.0
- */
 public interface SecurityMap
-        extends ConfigElement
-{
+        extends ConfigElement {
 
-    public String[] getPrincipal();
-    public void setPrincipal(String[] names);
 
-    public String[] getUserGroup();
-    public void setUserGroup(String[] names);
+    public String getName();
+
+    public void setName(String param1);
+
+    public List getPrincipal();
+
+    public void setPrincipal(List param1);
+
+    public List getUserGroup();
+
+    public void setUserGroup(List param1);
 
     public BackendPrincipal getBackendPrincipal();
+
+    public void setBackendPrincipal(BackendPrincipal param1);
+
 }

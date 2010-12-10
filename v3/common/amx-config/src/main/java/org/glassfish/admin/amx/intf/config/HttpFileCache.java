@@ -40,25 +40,50 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-
 import org.glassfish.admin.amx.base.Singleton;
 
-/**
-@deprecated
-*/
-public interface HttpFileCache extends Singleton
-{
-    // don't list any attributes, discourage use
+public interface HttpFileCache
+        extends Singleton {
+
+
+    public String getMaxFilesCount();
+
+    public void setMaxFilesCount(String param1);
+
+    public String getGloballyEnabled();
+
+    public void setGloballyEnabled(String param1);
+
+    public String getFileCachingEnabled();
+
+    public void setFileCachingEnabled(String param1);
+
+    public String getMaxAgeInSeconds();
+
+    public void setMaxAgeInSeconds(String param1);
+
+    public String getMediumFileSizeLimitInBytes();
+
+    public void setMediumFileSizeLimitInBytes(String param1);
+
+    public String getMediumFileSpaceInBytes();
+
+    public void setMediumFileSpaceInBytes(String param1);
+
+    public String getSmallFileSizeLimitInBytes();
+
+    public void setSmallFileSizeLimitInBytes(String param1);
+
+    public String getSmallFileSpaceInBytes();
+
+    public void setSmallFileSpaceInBytes(String param1);
+
+    public String getFileTransmissionEnabled();
+
+    public void setFileTransmissionEnabled(String param1);
+
+    public String getHashInitSize();
+
+    public void setHashInitSize(String param1);
+
 }
-
-
-
-
-
-
-
-
-
-
-
-

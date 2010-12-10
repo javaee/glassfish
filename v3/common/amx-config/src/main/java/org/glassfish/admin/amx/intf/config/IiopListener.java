@@ -38,39 +38,41 @@
  * holder.
  */
 
-/**
-*/
-
 package org.glassfish.admin.amx.intf.config;
-
-
-import org.glassfish.admin.amx.base.Singleton;
-
 
 import org.glassfish.admin.amx.intf.config.grizzly.Ssl;
 
 
-/**
-	 Configuration for the &lt;iiop-listener&gt; element.
-*/
-
 public interface IiopListener
-	extends PropertiesAccess, NamedConfigElement, Enabled, SslContainer
-{
-    public String getId();
-    
-    public String getLazyInit();
-	public void	setLazyInit( String value );
-    
-	public String	getAddress();
-	public void	setAddress( String value );
-    
-    public Ssl getSsl();
-    
-	public String	getPort();
-	public void	setPort( String value );
+        extends Enabled, NamedConfigElement, PropertiesAccess, SslContainer {
 
-	public String	getSecurityEnabled();
-	public void	setSecurityEnabled( String value );
+
+    public java.lang.String getAddress();
+
+    public java.lang.String getId();
+
+    public java.lang.String getPort();
+
+    public java.lang.String getEnabled();
+
+    public void setEnabled(java.lang.String param1);
+
+    public java.lang.String getLazyInit();
+
+    public void setAddress(java.lang.String param1);
+
+    public Ssl getSsl();
+
+    public void setPort(java.lang.String param1);
+
+    public java.lang.String getSecurityEnabled();
+
+    public void setSecurityEnabled(java.lang.String param1);
+
+    public void setSsl(Ssl param1);
+
+    public void setId(java.lang.String param1);
+
+    public void String(boolean param1);
 
 }

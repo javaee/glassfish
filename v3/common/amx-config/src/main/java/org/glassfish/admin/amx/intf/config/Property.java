@@ -41,8 +41,7 @@
 package org.glassfish.admin.amx.intf.config;
 
 /**
-Configuration for the &lt;property> element.
+ * Configuration for the &lt;property> element.
  */
-public interface Property extends AnyProperty
-{
+public interface Property extends AnyProperty {
 }

@@ -40,71 +40,59 @@
 
 package org.glassfish.admin.amx.intf.config;
 
+import org.glassfish.admin.amx.base.Singleton;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 
-import org.glassfish.admin.amx.base.Singleton;
+public interface EjbContainer
+        extends Singleton, AMXConfigProxy, PropertiesAccess {
 
 
-import org.glassfish.admin.amx.annotation.ChildGetter;
+    public String getMaxPoolSize();
 
-/**
-Configuration for the &lt;ejb-container&gt; element.
- */
-public interface EjbContainer extends
-        AMXConfigProxy, PropertiesAccess, Singleton
-{
-    
-    String getCacheIdleTimeoutInSeconds();
+    public void setMaxPoolSize(String param1);
 
-    void setCacheIdleTimeoutInSeconds(final String value);
+    public String getPoolResizeQuantity();
 
-    public EjbTimerService  getEjbTimerService();
-    
-    String getCacheResizeQuantity();
+    public void setPoolResizeQuantity(String param1);
 
-    void setCacheResizeQuantity(final String value);
+    public String getSteadyPoolSize();
 
-    String getCommitOption();
+    public void setSteadyPoolSize(String param1);
 
-    void setCommitOption(final String value);
+    public String getCacheIdleTimeoutInSeconds();
 
-    
-    String getMaxCacheSize();
+    public void setCacheIdleTimeoutInSeconds(String param1);
 
-    void setMaxCacheSize(final String value);
+    public EjbTimerService getEjbTimerService();
 
-    
-    String getMaxPoolSize();
+    public String getCacheResizeQuantity();
 
-    void setMaxPoolSize(final String value);
+    public void setCacheResizeQuantity(String param1);
 
-    
-    String getPoolIdleTimeoutInSeconds();
+    public String getCommitOption();
 
-    void setPoolIdleTimeoutInSeconds(final String value);
+    public void setCommitOption(String param1);
 
-    
-    String getPoolResizeQuantity();
+    public String getMaxCacheSize();
 
-    void setPoolResizeQuantity(final String value);
+    public void setMaxCacheSize(String param1);
 
-    
-    String getRemovalTimeoutInSeconds();
+    public String getPoolIdleTimeoutInSeconds();
 
-    void setRemovalTimeoutInSeconds(final String value);
+    public void setPoolIdleTimeoutInSeconds(String param1);
 
-    String getSessionStore();
+    public String getRemovalTimeoutInSeconds();
 
-    void setSessionStore(final String value);
+    public void setRemovalTimeoutInSeconds(String param1);
 
-    
-    String getSteadyPoolSize();
+    public String getSessionStore();
 
-    void setSteadyPoolSize(final String value);
+    public void setSessionStore(String param1);
 
-    String getVictimSelectionPolicy();
+    public String getVictimSelectionPolicy();
 
-    void setVictimSelectionPolicy(final String value);
+    public void setVictimSelectionPolicy(String param1);
+
+    public void setEjbTimerService(EjbTimerService param1);
+
 }
-
-

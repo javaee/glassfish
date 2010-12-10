@@ -40,29 +40,27 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.base.Singleton;
+import org.glassfish.admin.amx.config.AMXConfigProxy;
 
-/**
-Configuration for the &lt;manager-properties&gt; element.
- */
-public interface ManagerProperties extends AMXConfigProxy, PropertiesAccess, Singleton
-{
-    
+public interface ManagerProperties
+        extends Singleton, AMXConfigProxy, PropertiesAccess {
+
+
     public String getMaxSessions();
 
-    public void setMaxSessions(final String value);
+    public void setMaxSessions(String param1);
 
-    
     public String getReapIntervalInSeconds();
 
-    public void setReapIntervalInSeconds(final String value);
+    public void setReapIntervalInSeconds(String param1);
 
     public String getSessionFileName();
 
-    public void setSessionFileName(final String value);
+    public void setSessionFileName(String param1);
 
     public String getSessionIdGeneratorClassname();
 
-    public void setSessionIdGeneratorClassname(final String value);
+    public void setSessionIdGeneratorClassname(String param1);
+
 }

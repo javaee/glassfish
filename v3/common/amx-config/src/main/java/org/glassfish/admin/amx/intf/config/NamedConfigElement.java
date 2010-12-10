@@ -41,9 +41,8 @@
 package org.glassfish.admin.amx.intf.config;
 
 /**
-Marker interface for a ConfigElement that has a name.
+ * Marker interface for a ConfigElement that has a name.
  */
-public interface NamedConfigElement extends ConfigElement
-{
+public interface NamedConfigElement extends ConfigElement {
     public String getName();
 }

@@ -40,19 +40,17 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-/**
-Configuration for the &lt;backend-principal> element.
-@since Appserver 9.0
-@see SecurityMapConfig
- */
-public interface BackendPrincipal
-        extends ConfigElement
-{
-    public String getUserName();
 
-    public void setUserName(String username);
+public interface BackendPrincipal
+        extends ConfigElement {
+
+
+    public String getUserName();
 
     public String getPassword();
 
-    public void setPassword(String newPassword);
+    public void setUserName(String param1);
+
+    public void setPassword(String param1);
+
 }

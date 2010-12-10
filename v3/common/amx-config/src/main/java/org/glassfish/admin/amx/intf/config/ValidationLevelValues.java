@@ -41,16 +41,15 @@
 package org.glassfish.admin.amx.intf.config;
 
 /**
-Values which are legal to pass for the validation-level.
-
-See {@link DASConfig#getDeployXMLValidation}.
+ * Values which are legal to pass for the validation-level.
+ * <p/>
+ * See {@link DASConfig#getDeployXMLValidation}.
  */
-public final class ValidationLevelValues
-{
+public final class ValidationLevelValues {
 
-    private ValidationLevelValues()
-    {
+    private ValidationLevelValues() {
     }
+
     public static final String FULL = "full";
     public static final String PARSING = "parsing";
     public static final String NONE = "none";

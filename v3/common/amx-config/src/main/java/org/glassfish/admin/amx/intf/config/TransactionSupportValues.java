@@ -41,15 +41,14 @@
 package org.glassfish.admin.amx.intf.config;
 
 /**
-@see ConnectorConnectionPoolConfigKeys#TRANSACTION_SUPPORT_KEY
-@see ConnectorConnectionPoolConfig#setTransactionSupport
+ * @see ConnectorConnectionPoolConfigKeys#TRANSACTION_SUPPORT_KEY
+ * @see ConnectorConnectionPoolConfig#setTransactionSupport
  */
-public final class TransactionSupportValues
-{
+public final class TransactionSupportValues {
 
-    private TransactionSupportValues()
-    {
+    private TransactionSupportValues() {
     }
+
     public static final String XA = "XATransaction";
     public static final String LOCAL = "LocalTransaction";
     public static final String NONE = "NoTransaction";

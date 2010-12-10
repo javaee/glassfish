@@ -40,45 +40,25 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-/**
-Represents the &lt;event-config> element.<p>
-Contained in {@link ManagementRuleConfig}.
 
-@since Appserver 9.0
-@see ManagementRuleConfig
-@see ActionConfig
- */
 public interface Event
-        extends ConfigElement, Description, PropertiesAccess
-{
+        extends ConfigElement, Description, PropertiesAccess {
 
-    /**
-    @see EventTypeValues
-     */
+
     public String getType();
 
-    /**
-    Value must be one of the types given by {@link EventTypeValues}.
-    @see EventTypeValues
-     */
-    public void setType(String type);
+    public String getDescription();
 
-    /**
-    Specifies whether the occurance of the event is to be logged
-    or not. By default this would be true. If no action is
-    specified, the event would be recorded.
-     */
-    public String getRecordEvent();
+    public void setDescription(String param1);
 
-    /* @see #getRecordEvent */
-    public void setRecordEvent(String recordIt);
+    public void setType(String param1);
 
-    /**
-    Specifies at what level to record the event occurance in
-    server log file. Default value is INFO.
-     */
     public String getLevel();
 
-    /* @see #getLevel */
-    public void setLevel(String level);
+    public void setLevel(String param1);
+
+    public String getRecordEvent();
+
+    public void setRecordEvent(String param1);
+
 }

@@ -40,16 +40,25 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-/**
-Configuration for the &lt;custom-resource&gt; element.
- */
-public interface CustomResource extends Resource
-{
-    String getResType();
 
-    void setResType(final String resType);
+public interface CustomResource
+        extends Resource {
 
-    String getFactoryClass();
 
-    void setFactoryClass(final String classname);
+    public String getEnabled();
+
+    public void setEnabled(String param1);
+
+    public String getDescription();
+
+    public void setDescription(String param1);
+
+    public String getResType();
+
+    public void setResType(String param1);
+
+    public String getFactoryClass();
+
+    public void setFactoryClass(String param1);
+
 }

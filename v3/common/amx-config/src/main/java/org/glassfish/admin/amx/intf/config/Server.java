@@ -41,58 +41,63 @@
 package org.glassfish.admin.amx.intf.config;
 
 import java.util.Map;
-import org.glassfish.admin.amx.core.AMXProxy;
 
-import org.glassfish.admin.amx.intf.config.grizzly.NetworkConfig;
-
-
-/**
-Base interface for server configuration for the &lt;server&gt; element.
-Does not provide ability to access resource or application-ref; see
-{@link StandaloneServerConfig} and {@link ClusteredServerConfig}.
- */
 public interface Server
-        extends PropertiesAccess, SystemPropertiesAccess, NamedConfigElement
-{
-    public NetworkConfig getNetworkConfig();
+        extends NamedConfigElement, PropertiesAccess, SystemPropertiesAccess {
 
-    /**
-    Get the name of the config element referenced by this server.
-    @since Glassfish V3
-     */
+
+    //public boolean isInstance();
+
+    public String getName();
+
+    public void setName(String param1);
+
+    public Config getConfig();
+
     public String getConfigRef();
 
-    /**
-    Get the name of the node element referenced by this server.
-    @since Glassfish 3.1
-     */
+    public ResourceRef getResourceRef(String param1);
+
     public String getNodeRef();
 
-    /**
-    Get the name of the node-agent element referenced by this server.
-    @since Glassfish V3
-     */
-    @Deprecated
     public String getNodeAgentRef();
+
+    public ApplicationRef getApplicationRef(String param1);
 
     public Map<String, ApplicationRef> getApplicationRef();
 
-   
-    public Map<String, ResourceRef> getResourceRef();
-
-    /**
-    <b>EE only</b>
-    Return the load balancer weight for this server.
-    This is used by both IIOP and HTTP load balancer. Default value is 1.
-    @since AppServer 9.0
-     */
-    
     public String getLbWeight();
 
-    /**
-    <b>EE only</b>
-    Set the load balancer weight for this server to the specified value.
-    @since AppServer 9.0
-     */
-    public void setLbWeight(final String weight);
+    public void setLbWeight(String param1);
+
+    public Map<String, ResourceRef> getResourceRef();
+
+    public Cluster getCluster();
+
+    public void setConfigRef(String param1);
+
+    public String getReference();
+
+    /*public boolean isCluster();
+
+    public boolean isServer();
+
+    public boolean isDas();*/
+
+    public boolean isResourceRefExists(String param1);
+
+    public void createResourceRef(String param1, String param2);
+
+    public void deleteResourceRef(String param1);
+
+    public void setNodeAgentRef(String param1);
+
+    public void setNodeRef(String param1);
+
+    public String getAdminHost();
+
+    public int getAdminPort();
+
+    public boolean isRunning();
+
 }

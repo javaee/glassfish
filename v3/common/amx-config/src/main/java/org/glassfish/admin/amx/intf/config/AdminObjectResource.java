@@ -40,25 +40,29 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-/**
-Represents the &lt;admin-object-resource&gt; element.
-<p>
- */
-public interface AdminObjectResource extends Resource
-{
 
-    public String getResType();
+public interface AdminObjectResource
+        extends Resource {
 
-    /**
-
-     */
-    public String getResAdapter();
 
     public String getClassName();
 
-    public void setResType(final String resType);
+    public String getEnabled();
 
-    public void setResAdapter(final String resAdapter);
+    public void setEnabled(String param1);
 
-    public void setClassName(final String className);
+    public String getDescription();
+
+    public void setDescription(String param1);
+
+    public String getResType();
+
+    public String getResAdapter();
+
+    public void setResType(String param1);
+
+    public void setResAdapter(String param1);
+
+    public void setClassName(String param1);
+
 }

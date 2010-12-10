@@ -42,26 +42,32 @@ package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.base.Singleton;
 
-
 import java.util.Map;
 
-/**
-Configuration for the &lt;monitoring-service&gt; element.
- */
 public interface MonitoringService
-        extends PropertiesAccess, ConfigElement, Singleton
-{
+        extends Singleton, ConfigElement, PropertiesAccess {
+
+
     public ModuleMonitoringLevels getModuleMonitoringLevels();
-    
+
     public String getDtraceEnabled();
-    public void setDtraceEnabled(String val);
-    
+
+    public void setDtraceEnabled(String param1);
+
     public String getMonitoringEnabled();
-    public void setMonitoringEnabled(String val);
-    
+
+    public void setMonitoringEnabled(String param1);
+
     public String getMbeanEnabled();
-    public void setMbeanEnabled(String val);
-    
-    public Map<String,ContainerMonitoring> getContainerMonitoring();
-    
+
+    public void setMbeanEnabled(String param1);
+
+    public Map<String, ContainerMonitoring> getContainerMonitoring();
+
+    public ContainerMonitoring getContainerMonitoring(String param1);
+
+    public String getMonitoringLevel(String param1);
+
+    public void setModuleMonitoringLevels(ModuleMonitoringLevels param1);
+
 }

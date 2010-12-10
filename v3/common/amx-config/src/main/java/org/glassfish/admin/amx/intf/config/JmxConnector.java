@@ -42,31 +42,41 @@ package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.intf.config.grizzly.Ssl;
 
-/**
-Configuration for the &lt;jmx-connector&gt; element.
- */
-public interface JmxConnector
-        extends Enabled, NamedConfigElement, PropertiesAccess, SslContainer
-{
-    public Ssl getSsl();
-    
-    public String getProtocol();
 
-    public void setProtocol(String value);
+public interface JmxConnector
+        extends Enabled, NamedConfigElement, PropertiesAccess, SslContainer {
+
 
     public String getAddress();
 
-    
+    public String getProtocol();
+
     public String getPort();
 
-    
-    public String getAcceptAll();
+    public String getEnabled();
 
-    public void setAcceptAll(final String value);
+    public void setEnabled(String param1);
 
     public String getAuthRealmName();
 
-    
+    public void setAuthRealmName(String param1);
+
+    public void setAddress(String param1);
+
+    public Ssl getSsl();
+
+    public void setPort(String param1);
+
     public String getSecurityEnabled();
-    public void setSecurityEnabled(final String value);
+
+    public void setSecurityEnabled(String param1);
+
+    public void setProtocol(String param1);
+
+    public String getAcceptAll();
+
+    public void setAcceptAll(String param1);
+
+    public void setSsl(Ssl param1);
+
 }

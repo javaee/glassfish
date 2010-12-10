@@ -41,22 +41,21 @@
 package org.glassfish.admin.amx.intf.config;
 
 /**
-Values which are legal to pass for the object-type.
-
-object-type  defines the type of the resource. It can be:
-system-all       These are system resources for all instances and DAS
-system-admin     These are system resources only in DAS
-system-instance  These are system resources only in instances (and not DAS)
-user             User resources (This is the default for all elements)
-
-@see ObjectType
+ * Values which are legal to pass for the object-type.
+ * <p/>
+ * object-type  defines the type of the resource. It can be:
+ * system-all       These are system resources for all instances and DAS
+ * system-admin     These are system resources only in DAS
+ * system-instance  These are system resources only in instances (and not DAS)
+ * user             User resources (This is the default for all elements)
+ *
+ * @see ObjectType
  */
-public final class ObjectTypeValues
-{
+public final class ObjectTypeValues {
 
-    private ObjectTypeValues()
-    {
+    private ObjectTypeValues() {
     }
+
     public static final String SYSTEM_ALL = "system-all";
     public static final String SYSTEM_ADMIN = "system-admin";
     public static final String SYSTEM_INSTANCE = "system-instance";

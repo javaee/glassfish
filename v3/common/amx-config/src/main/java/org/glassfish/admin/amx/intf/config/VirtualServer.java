@@ -41,57 +41,76 @@
 package org.glassfish.admin.amx.intf.config;
 
 
-/**
-Configuration for the &lt;virtual-server&gt; element.
- */
+import org.glassfish.admin.amx.intf.config.grizzly.NetworkListener;
+
+import java.util.List;
+
 public interface VirtualServer
-        extends NamedConfigElement, PropertiesAccess
-{
+        extends NamedConfigElement, PropertiesAccess {
+
+
     public String getId();
-    
-    public String getDefaultWebModule();
-
-    public void setDefaultWebModule(String value);
-
-    public String getHosts();
-
-    public void setHosts(String value);
-
-    public String getHttpListeners();
-
-    public void setHttpListeners(String value);
-
-    //** default: "${com.sun.aas.instanceRoot}/logs/server.log" */
-    public String getLogFile();
-
-    public void setLogFile(String value);
 
     public String getState();
 
-    public void setState(String value);
+    public void setState(String param1);
+
+    public String getAccessLog();
+
+    public String getSsoEnabled();
+
+    public String getAccessLoggingEnabled();
+
+    public String getDefaultWebModule();
+
+    public void setDefaultWebModule(String param1);
+
+    public String getHosts();
+
+    public void setHosts(String param1);
+
+    public String getHttpListeners();
+
+    public void setHttpListeners(String param1);
+
+    public String getLogFile();
+
+    public void setLogFile(String param1);
 
     public String getDocroot();
 
-    public void setDocroot(String value);
-    
-    /** @since GlassFish V3 */
-    public String getSsoEnabled();
-    public void setSsoEnabled(String value);
-    
-    /** @since GlassFish V3 */
-    public String getAccessLoggingEnabled();
-    public void setAccessLoggingEnabled(String value);
-    
-    /** @since GlassFish V3 */
-    public String getAccessLog();
-    public void setAccessLog(String value);
-    
-    /** @since GlassFish V3 */
+    public void setDocroot(String param1);
+
+    public void setSsoEnabled(String param1);
+
+    public void setAccessLoggingEnabled(String param1);
+
+    public void setAccessLog(String param1);
+
     public String getNetworkListeners();
-    public void setNetworkListeners(String value);
-    
+
+    public void setNetworkListeners(String param1);
+
     public String getSsoCookieSecure();
-    public void setSsoCookieSecure(String val);
-    
+
+    public void setSsoCookieSecure(String param1);
+
     public HttpAccessLog getHttpAccessLog();
+
+    public List findNetworkListeners();
+
+    public void setId(String param1);
+
+    public void setHttpAccessLog(HttpAccessLog param1);
+
+    public String getSsoCookieHttpOnly();
+
+    public void setSsoCookieHttpOnly(String param1);
+
+    public void addNetworkListener(String param1);
+
+    public void removeNetworkListener(String param1);
+
+    public NetworkListener findNetworkListener(String param1);
+
 }

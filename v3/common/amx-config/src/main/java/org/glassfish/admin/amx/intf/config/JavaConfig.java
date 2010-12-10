@@ -42,84 +42,78 @@ package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.base.Singleton;
 
+import java.util.List;
 
-import java.util.Map;
-
-/**
-Configuration for the &lt;java-config&gt; element.
- */
 public interface JavaConfig
-        extends ConfigElement, PropertiesAccess, Singleton, AnonymousElementList
-{
+        extends Singleton, AnonymousElementList, ConfigElement, PropertiesAccess {
+
+
     public String getBytecodePreprocessors();
 
-    public void setBytecodePreprocessors(String value);
+    public void setBytecodePreprocessors(String param1);
 
     public String getClasspathPrefix();
 
-    public void setClasspathPrefix(String value);
+    public void setClasspathPrefix(String param1);
 
     public String getClasspathSuffix();
 
-    public void setClasspathSuffix(String value);
+    public void setClasspathSuffix(String param1);
 
-    
     public String getDebugEnabled();
 
-    public void setDebugEnabled(String value);
+    public void setDebugEnabled(String param1);
 
     public String getDebugOptions();
 
-    public void setDebugOptions(String value);
+    public void setDebugOptions(String param1);
 
     public String getEnvClasspathIgnored();
 
-    public void setEnvClasspathIgnored(String value);
+    public void setEnvClasspathIgnored(String param1);
 
     public String getJavaHome();
 
-    public void setJavaHome(String value);
+    public void setJavaHome(String param1);
 
     public String getJavacOptions();
 
-    public void setJavacOptions(String value);
+    public void setJavacOptions(String param1);
 
-    /**
-    @since AppServer 9.0
-     */
     public String getSystemClasspath();
 
-    /**
-    @since AppServer 9.0
-     */
-    public void setSystemClasspath(String classpath);
+    public void setSystemClasspath(String param1);
 
     public String[] getJvmOptions();
 
     /**
-    Add jvm options.
-    <p>
-    If a JVM option contains a space or tab, you must enclose
-    it in quotes eg </code>"C:Program Files\dir"</code>
-
+     * Add jvm options.
+     * <p/>
+     * If a JVM option contains a space or tab, you must enclose
+     * it in quotes eg </code>"C:Program Files\dir"</code>
      */
     public void setJvmOptions(String[] value);
 
     public String getNativeLibraryPathPrefix();
 
-    public void setNativeLibraryPathPrefix(String value);
+    public void setNativeLibraryPathPrefix(String param1);
 
     public String getNativeLibraryPathSuffix();
 
-    public void setNativeLibraryPathSuffix(String value);
+    public void setNativeLibraryPathSuffix(String param1);
 
     public String getRmicOptions();
 
-    public void setRmicOptions(String value);
+    public void setRmicOptions(String param1);
 
     public String getServerClasspath();
 
-    public void setServerClasspath(String value);
+    public void setServerClasspath(String param1);
 
     public Profiler getProfiler();
+
+    public void setProfiler(Profiler param1);
+
+    public List getJavacOptionsAsList();
+
 }

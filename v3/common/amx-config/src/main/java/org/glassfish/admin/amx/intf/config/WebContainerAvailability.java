@@ -40,51 +40,37 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-/**
-Configuration for the &lt;web-container-availability> element.
- */
-public interface WebContainerAvailability extends ConfigElement, PropertiesAccess
-{
+
+public interface WebContainerAvailability
+        extends ConfigElement, PropertiesAccess {
+
+
     public String getAvailabilityEnabled();
 
-    public void setAvailabilityEnabled(final String value);
+    public void setAvailabilityEnabled(String param1);
 
     public String getHttpSessionStorePoolName();
 
-    public void setHttpSessionStorePoolName(final String value);
+    public void setHttpSessionStorePoolName(String param1);
 
-    
     public String getPersistenceFrequency();
 
-    /**
-    See {@link SessionSaveFrequencyValues}.
-     */
-    public void setPersistenceFrequency(final String value);
+    public void setPersistenceFrequency(String param1);
 
-    /**
-    See {@link SessionSaveScopeValues}.
-     */
     public String getPersistenceScope();
 
-    /**
-    See {@link SessionSaveScopeValues}.
-     */
-    public void setPersistenceScope(final String value);
+    public void setPersistenceScope(String param1);
 
-    
     public String getPersistenceStoreHealthCheckEnabled();
 
-    public void setPersistenceStoreHealthCheckEnabled(final String value);
+    public void setPersistenceStoreHealthCheckEnabled(String param1);
 
     public String getPersistenceType();
 
-    /**
-    See {@link PersistenceTypeValues}.
-     */
-    public void setPersistenceType(final String value);
+    public void setPersistenceType(String param1);
 
-    
     public String getSsoFailoverEnabled();
 
-    public void setSsoFailoverEnabled(final String value);
+    public void setSsoFailoverEnabled(String param1);
+
 }

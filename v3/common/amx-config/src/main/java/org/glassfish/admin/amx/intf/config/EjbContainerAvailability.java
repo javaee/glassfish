@@ -40,37 +40,33 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-/**
-Configuration for the &lt;ejb-container-availability&gt; element.
- */
-public interface EjbContainerAvailability extends ConfigElement, PropertiesAccess
-{
-    
+
+public interface EjbContainerAvailability
+        extends ConfigElement, PropertiesAccess {
+
+
     public String getAvailabilityEnabled();
 
-    public void setAvailabilityEnabled(final String value);
+    public void setAvailabilityEnabled(final String param1);
 
     public String getSfsbHaPersistenceType();
 
-    /**
-    Legal values are those defined in {@link SFSBPersistenceTypeValues}.
-     */
-    public void setSfsbHaPersistenceType(final String value);
+    public void setSfsbHaPersistenceType(final String param1);
 
     public String getSfsbPersistenceType();
 
-    /**
-    Legal values are those defined in {@link SFSBPersistenceTypeValues}.
-     */
-    public void setSfsbPersistenceType(final String value);
+    public void setSfsbPersistenceType(final String param1);
 
     public String getSfsbStorePoolName();
 
-    public void setSfsbStorePoolName(final String value);
+    public void setSfsbStorePoolName(final String param1);
 
-    /** @deprecated do not use */
     public String getSfsbQuickCheckpointEnabled();
 
-    /** @deprecated do not use */
     public String getSfsbCheckpointEnabled();
+
+    public void setSfsbCheckpointEnabled(String param1);
+
+    public void setSfsbQuickCheckpointEnabled(String param1);
+
 }

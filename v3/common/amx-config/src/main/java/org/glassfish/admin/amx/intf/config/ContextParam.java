@@ -40,13 +40,14 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-public interface ContextParam extends NamedConfigElement
-{
+public interface ContextParam extends NamedConfigElement {
     public String getDescription();
 
     public void setDescription(String value);
 
-    /** same as getName */
+    /**
+     * same as getName
+     */
     public String getParamName();
 
     public String getParamValue();
