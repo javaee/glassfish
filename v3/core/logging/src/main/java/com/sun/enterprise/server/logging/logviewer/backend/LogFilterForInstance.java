@@ -153,10 +153,11 @@ public class LogFilterForInstance {
 
         // helper method to get all log file names for given instance
         String sNode = targetServer.getNodeRef();
+        Node node = domain.getNodes().getNode(sNode);
         Vector instanceLogFileNames = new Vector();
         Vector instanceLogFileNamesAsString = new Vector();
 
-        if (sNode.equals("localhost") || sNode.equals("127.0.0.1")) {
+        if (node.isLocal()) {
             String sourceDir = System.getProperty("com.sun.aas.instanceRoot") + File.separator + ".." + File.separator + ".."
                     + File.separator + "nodes" + File.separator + sNode
                     + File.separator + instanceName + File.separator + "logs";
@@ -179,8 +180,6 @@ public class LogFilterForInstance {
         } else {
 
             SSHLauncher sshL = getSSHL(habitat);
-            Nodes nodes = domain.getNodes();
-            Node node = nodes.getNode(sNode);
             sshL.init(node, logger);
 
             SFTPClient sftpClient = sshL.getSFTPClient();

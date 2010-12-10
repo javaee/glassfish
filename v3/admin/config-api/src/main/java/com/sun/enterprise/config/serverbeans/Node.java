@@ -210,6 +210,13 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
     boolean nodeInUse();
 
     /**
+     * True if this is the default local node. Example: localhost-domain1
+     * @return
+     */
+    @DuckTyped
+    boolean isDefaultLocalNode();
+
+    /**
      * True if the node's nodeHost is local to this
      * @return
      */
@@ -256,9 +263,20 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
             return nodeDirAbsolute.replaceAll("\\\\","/");
         }
 
+        public static boolean isDefaultLocalNode(Node node) {
+            Dom serverDom = Dom.unwrap(node);
+            Domain domain = serverDom.getHabitat().getComponent(Domain.class);
+            if (node.getName().equals("localhost-" + domain.getName())) {
+                return true;
+            }
+            return false;
+        }
+
         public static boolean isLocal(Node node) {
             // Short circuit common case for efficiency
-            if (node.getName().equals("localhost")) {
+            Dom serverDom = Dom.unwrap(node);
+            Domain domain = serverDom.getHabitat().getComponent(Domain.class);
+            if (node.getName().equals("localhost-" + domain.getName())) {
                 return true;
             }
             String nodeHost = node.getNodeHost();
@@ -405,7 +423,7 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
             final ActionReport report = context.getActionReport();
             String nodeName = child.getName();
             
-            if (nodeName.equals("localhost"))  { // can't delete localhost node
+            if (nodeName.equals("localhost-" + domain.getName()))  { // can't delete localhost node
                 final String msg = localStrings.getLocalString(
                  "Node.localhost",
                  "Cannot remove Node {0}. ",child.getName() );

@@ -345,7 +345,9 @@ public class IiopFolbGmsClient implements CallBack {
         String hostName = null ;
 
         String nodeName = server.getNodeRef() ;
-        if (nodeName.equals("localhost")) {
+        Node node = null;
+        if (nodes != null) nodes.getNode(nodeName);
+        if (node != null && node.isLocal()) {
             try {
                 hostName = InetAddress.getLocalHost().getHostName() ;
             } catch (UnknownHostException exc) {
@@ -353,7 +355,6 @@ public class IiopFolbGmsClient implements CallBack {
                     exc )  ;
             }
         } else if (nodes != null) {
-            Node node = nodes.getNode(nodeName) ;
             if (node != null) {
                 hostName = node.getNodeHost() ;
             }

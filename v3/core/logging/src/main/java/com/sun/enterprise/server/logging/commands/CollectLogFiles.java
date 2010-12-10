@@ -42,6 +42,7 @@ package com.sun.enterprise.server.logging.commands;
 
 import com.sun.common.util.logging.LoggingConfigImpl;
 import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.Node;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.server.logging.logviewer.backend.LogFilterForInstance;
 import com.sun.enterprise.util.LocalStringManagerImpl;
@@ -203,6 +204,7 @@ public class CollectLogFiles implements AdminCommand {
 
             String instanceName = targetServer.getName();
             String serverNode = targetServer.getNodeRef();
+            Node node = domain.getNodes().getNode(serverNode);
             File tempDirectory = null;
             String zipFile = "";
             File targetDir = null;
@@ -221,7 +223,7 @@ public class CollectLogFiles implements AdminCommand {
             }
 
             try {
-                if (serverNode.equals("localhost") || serverNode.equals("127.0.0.1")) {
+                if (node.isLocal()) {
                     String sourceDir = env.getInstanceRoot().getAbsolutePath() + File.separator + ".." + File.separator + ".."
                             + File.separator + "nodes" + File.separator + serverNode
                             + File.separator + instanceName + File.separator + "logs";
@@ -310,11 +312,12 @@ public class CollectLogFiles implements AdminCommand {
                 // downloading log files for all instances which is part of cluster under temp directory.
                 String instanceName = instance.getName();
                 String serverNode = instance.getNodeRef();
+                Node node = domain.getNodes().getNode(serverNode);
                 boolean errorOccur = false;
                 instanceCount++;
                 try {
 
-                    if (serverNode.equals("localhost") || serverNode.equals("127.0.0.1")) {
+                    if (node.isLocal()) {
                         String sourceDir = env.getInstanceRoot().getAbsolutePath() + File.separator + ".." + File.separator
                                 + ".." + File.separator + "nodes" + File.separator + serverNode
                                 + File.separator + instanceName + File.separator + "logs";

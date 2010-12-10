@@ -276,7 +276,7 @@ public class CreateNodeSshCommand implements AdminCommand  {
         int exit = -1;
         
         List<String> fullcommand = new ArrayList<String>();
-        String installDir = nodes.getNode("localhost").getInstallDirUnixStyle() + "/glassfish";
+        String installDir = nodes.getDefaultLocalNode().getInstallDirUnixStyle() + "/glassfish";
         if (!StringUtils.ok(installDir)) {
             throw new IllegalArgumentException(Strings.get("create.node.ssh.no.installdir"));
         }

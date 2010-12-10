@@ -174,7 +174,7 @@ public class MQAddressList {
          {
             if (node.getNodeHost() != null) return node.getNodeHost();
             //localhostNode
-            else if ("localhost".equals(node.getName()))
+            else if (node.isDefaultLocalNode())
             {
                  String hostName = getHostNameFromDasProperties();
                  if ("localhost".equals(hostName))

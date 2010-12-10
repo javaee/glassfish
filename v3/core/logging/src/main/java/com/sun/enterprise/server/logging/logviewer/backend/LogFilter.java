@@ -41,6 +41,7 @@
 package com.sun.enterprise.server.logging.logviewer.backend;
 
 import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.Node;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.SystemPropertyConstants;
@@ -237,8 +238,8 @@ public class LogFilter {
             // Right now user needs to go through this URL to setup and configure ssh http://wikis.sun.com/display/GlassFish/3.1SSHSetup
 
             String serverNode = targetServer.getNodeRef();
-
-            if (serverNode.equals("localhost") || serverNode.equals("127.0.0.1")) {
+            Node node = domain.getNodes().getNode(serverNode);
+            if (node.isLocal()) {
 
                 instanceLogFile = new File(env.getInstanceRoot().getAbsolutePath() + File.separator + ".." + File.separator
                         + ".." + File.separator + "nodes" + File.separator + serverNode

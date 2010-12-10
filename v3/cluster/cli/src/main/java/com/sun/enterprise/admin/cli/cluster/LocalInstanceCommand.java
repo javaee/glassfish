@@ -100,6 +100,7 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
     protected File nodeDirRoot;         // the parent dir of all node(s)
     protected File nodeDirChild;        // the specific node dir
     protected File instanceDir;         // the specific instance dir
+    protected String domainName;
     private InstanceDirs instanceDirs;
 
     @Override
@@ -491,7 +492,7 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
             }
             String hostname = InetAddress.getLocalHost().getHostName();
             if (hostname.equals(dashost) || NetUtils.isThisHostLocal(dashost)) {
-                hostname = "localhost";
+                hostname = "localhost" + "-" + domainName;
             }
             File f = new File(parent, hostname);
 

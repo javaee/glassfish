@@ -246,7 +246,9 @@ public class ClusterHandler {
 
         for (Map oneRow : rows) {
             String nodeName = (String) oneRow.get("name");
-            if (nodeName.equals("localhost")){
+            //TODO fix
+            //if (nodeName.equals("localhost-" + domainName)){
+            if (nodeName.startsWith("localhost-")){
                 GuiUtil.prepareAlert("error",  GuiUtil.getMessage("msg.Error"),
                         GuiUtil.getMessage(CLUSTER_RESOURCE_NAME, "node.error.removeLocalhost"));
                 return;

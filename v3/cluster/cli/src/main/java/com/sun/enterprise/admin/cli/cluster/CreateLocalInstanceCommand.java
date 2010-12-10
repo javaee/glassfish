@@ -124,16 +124,15 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
             validateNode(node, getProductRootPath(), getInstanceHostName(true));
         }
 
+        if (!rendezvousWithDAS()) {
+            throw new CommandException(
+                    Strings.get("Instance.rendezvousFailed", DASHost, "" + DASPort));
+        }
+        setDomainName();
         setDasDefaultsOnly = false;
         super.validate();  // instanceName is validated and set in super.validate(), directories created
         INSTANCE_DOTTED_NAME = "servers.server." + instanceName;
         RENDEZVOUS_DOTTED_NAME = INSTANCE_DOTTED_NAME + ".property." + RENDEZVOUS_PROPERTY_NAME;
-
-        if (!rendezvousWithDAS()) {
-            instanceDir.delete();
-            throw new CommandException(
-                    Strings.get("Instance.rendezvousFailed", DASHost, "" + DASPort));
-        }
 
         _rendezvousOccurred = rendezvousOccurred();
         if (_rendezvousOccurred) {
@@ -436,6 +435,12 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
             }
         }
         return instanceHostName;
+    }
+
+    private void setDomainName() throws CommandException {
+        RemoteCommand rc = new RemoteCommand("_get-runtime-info", this.programOpts, this.env);
+        Map<String, String> map = rc.executeAndReturnAttributes("_get-runtime-info", "--target", "server");
+        this.domainName = map.get("domain_name_value");
     }
 
     @Override

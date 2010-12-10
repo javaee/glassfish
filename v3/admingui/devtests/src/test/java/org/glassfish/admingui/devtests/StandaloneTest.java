@@ -72,7 +72,7 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
         assertTrue(selenium.isTextPresent(instanceName));
         assertEquals(instanceName, selenium.getText(prefix + "col1:link"));
         assertEquals(instanceName+"-config", selenium.getText(prefix + "col3:configlink"));
-        assertEquals("localhost", selenium.getText(prefix + "col5:nodeAgentlink"));
+        assertEquals("localhost-domain1", selenium.getText(prefix + "col5:nodeAgentlink"));
         assertEquals("Stopped", selenium.getText(prefix + "col6"));
         assertEquals("100", selenium.getValue(prefix + "col2:weight"));
 
