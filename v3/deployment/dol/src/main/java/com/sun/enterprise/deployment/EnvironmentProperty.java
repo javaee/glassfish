@@ -274,6 +274,7 @@ public class EnvironmentProperty extends Descriptor implements InitializationPar
         if (type == null && this.isBoundsChecking()) {
             return String.class.getName();
         } else {
+            type = convertPrimitiveTypes(type);
             return type;
         }
     }
