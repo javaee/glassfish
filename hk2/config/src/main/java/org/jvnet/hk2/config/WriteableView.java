@@ -95,6 +95,7 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
 
                 ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
                 ValidatorContext validatorContext = validatorFactory.usingContext();
+                validatorContext.messageInterpolator(new MessageInterpolatorImpl());
                     beanValidator = validatorContext.traversableResolver(
                             traversableResolver).getValidator();
             } finally {
