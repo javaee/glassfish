@@ -153,7 +153,7 @@ public final class PersistenceType {
      * in the string.  Default back into passed-in parameter
      */
     public static PersistenceType parseType(String type, PersistenceType defaultType) {
-        // Default persistence type is defaultTypee
+        // Default persistence type is defaultType
         PersistenceType pType = defaultType;
         if (type != null) {
             if (type.equalsIgnoreCase(MEMORY.getType()))
