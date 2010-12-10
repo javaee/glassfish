@@ -80,7 +80,14 @@ public class Connector implements WSTCPConnector {
     }
 
     public void process(ByteBuffer buffer, SocketChannel channel) throws IOException {
-        processor.process(buffer, channel);
+        final Thread currentThread = Thread.currentThread();
+        final ClassLoader oldClassLoader = currentThread.getContextClassLoader();
+        try {
+            currentThread.setContextClassLoader(processor.getClass().getClassLoader());
+            processor.process(buffer, channel);
+        } finally {
+            currentThread.setContextClassLoader(oldClassLoader);
+        }
     }
 
     public void notifyConnectionClosed(SocketChannel channel) {
