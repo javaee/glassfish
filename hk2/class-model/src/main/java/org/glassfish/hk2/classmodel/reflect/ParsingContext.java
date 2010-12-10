@@ -62,7 +62,7 @@ public class ParsingContext {
      * Context builder
      */
     public static class Builder {
-        Logger logger=Logger.getLogger("org.glassfish.classmodel");
+        Logger logger=Logger.getLogger("org.glassfish.hk2.classmodel");
         ExecutorService executorService=null;
         ArchiveSelector archiveSelector=null;
         ParsingConfig config=null;
