@@ -58,6 +58,7 @@
                     gf.createEntity(endpoint="#{pageSession.createProfilerUrl}"
                             attrs="#{pageSession.valueMap}"
                             convertToFalse="#{pageSession.convertToFalseList}"
+                            onlyUseAttrs="#{pageSession.onlyUseAttrs}"
                             result => $attribute{objStr});
                     getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                     getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
