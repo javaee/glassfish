@@ -39,13 +39,12 @@
  */
 
 /**
-    General-purpose JMX utilities.
+ General-purpose JMX utilities.
  */
-@Taxonomy(stability = Stability.UNCOMMITTED)
-package org.glassfish.admin.amx.intf.config.grizzly;
+@Taxonomy(stability = Stability.UNCOMMITTED) package org.glassfish.admin.amx.intf.config.grizzly;
 
-import org.glassfish.external.arc.Taxonomy;
 import org.glassfish.external.arc.Stability;
+import org.glassfish.external.arc.Taxonomy;
 
 
 

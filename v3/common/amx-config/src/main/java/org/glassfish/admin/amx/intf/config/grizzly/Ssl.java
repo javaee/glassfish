@@ -45,68 +45,87 @@ import org.glassfish.admin.amx.intf.config.ConfigElement;
 import org.glassfish.admin.amx.intf.config.PropertiesAccess;
 
 /**
-Note: attribute getters/setters are not included in this interface; use generic approach.
+ * Note: attribute getters/setters are not included in this interface; use generic approach.
  */
-public interface Ssl extends Singleton, ConfigElement, PropertiesAccess
-{
-	public String	getCertNickname();
-	public void	setCertNickname( String value );
+public interface Ssl extends Singleton, ConfigElement, PropertiesAccess {
+    public String getCertNickname();
 
-	public String	getClientAuthEnabled();
-	public void	setClientAuthEnabled( String value );
+    public void setCertNickname(String value);
 
-	public String	getSsl2Ciphers();
-	public void	setSsl2Ciphers( String value );
+    public String getClientAuthEnabled();
 
-	public String	getSsl2Enabled();
-	public void	setSsl2Enabled( String value );
+    public void setClientAuthEnabled(String value);
 
-	public String	getSsl3Enabled();
-	public void	setSsl3Enabled( String value );
+    public String getSsl2Ciphers();
 
-	public String	getSsl3TlsCiphers();
-	public void	setSsl3TlsCiphers( String value );
+    public void setSsl2Ciphers(String value);
 
-	public String	getTlsEnabled();
-	public void	setTlsEnabled( String value );
+    public String getSsl2Enabled();
 
-	public String	getTlsRollbackEnabled();
-	public void	setTlsRollbackEnabled( String value );
-    
+    public void setSsl2Enabled(String value);
+
+    public String getSsl3Enabled();
+
+    public void setSsl3Enabled(String value);
+
+    public String getSsl3TlsCiphers();
+
+    public void setSsl3TlsCiphers(String value);
+
+    public String getTlsEnabled();
+
+    public void setTlsEnabled(String value);
+
+    public String getTlsRollbackEnabled();
+
+    public void setTlsRollbackEnabled(String value);
+
     public String getKeyStorePassword();
-    public void   setKeyStorePassword(String val);
-    
+
+    public void setKeyStorePassword(String val);
+
     public String getKeyStore();
-    public void   setKeyStore(String val);
-   
+
+    public void setKeyStore(String val);
+
     public String getKeyStoreType();
-    public void   setKeyStoreType(String val);
-   
+
+    public void setKeyStoreType(String val);
+
     public String getTrustStore();
-    public void   setTrustStore(String val);
-   
+
+    public void setTrustStore(String val);
+
     public String getTrustStoreType();
-    public void   setTrustStoreType(String val);
-   
+
+    public void setTrustStoreType(String val);
+
     public String getTrustAlgorithm();
-    public void   setTrustAlgorithm(String val);
-   
+
+    public void setTrustAlgorithm(String val);
+
     public String getClassname();
-    public void   setClassname(String val);
-   
+
+    public void setClassname(String val);
+
     public String getTrustMaxCertLength();
-    public void   setTrustMaxCertLength(String val);
-   
+
+    public void setTrustMaxCertLength(String val);
+
     public String getClientAuth();
-    public void   setClientAuth(String val);
-   
+
+    public void setClientAuth(String val);
+
     public String getAllowLazyInit();
-    public void   setAllowLazyInit(String val);
-   
+
+    public void setAllowLazyInit(String val);
+
     public String getCrlFile();
-    public void   setCrlFile(String val);
-   
+
+    public void setCrlFile(String val);
+
     public String getTrustStorePassword();
-    public void   setTrustStorePassword(String val);
+
+    public void setTrustStorePassword(String val);
 }
 

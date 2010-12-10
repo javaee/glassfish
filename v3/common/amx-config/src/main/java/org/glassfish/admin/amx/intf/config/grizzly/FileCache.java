@@ -44,20 +44,23 @@ import org.glassfish.admin.amx.base.Singleton;
 import org.glassfish.admin.amx.intf.config.PropertiesAccess;
 
 /**
-Note: attribute getters/setters are not included in this interface; use generic approach.
+ * Note: attribute getters/setters are not included in this interface; use generic approach.
  */
-public interface FileCache extends Singleton, PropertiesAccess
-{
+public interface FileCache extends Singleton, PropertiesAccess {
     public String getEnabled();
+
     public void setEnabled(String val);
-    
+
     public String getMaxFilesCount();
+
     public void setMaxFilesCount(String val);
-    
+
     public String getMaxAgeSeconds();
+
     public void setMaxAgeSeconds(String val);
-    
+
     public String getMaxCacheSizeBytes();
+
     public void setMaxCacheSizeBytes(String val);
 }
 

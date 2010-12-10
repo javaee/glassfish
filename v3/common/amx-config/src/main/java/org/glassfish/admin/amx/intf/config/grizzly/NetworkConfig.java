@@ -44,10 +44,9 @@ import org.glassfish.admin.amx.base.Singleton;
 import org.glassfish.admin.amx.intf.config.PropertiesAccess;
 
 /**
-Note: attribute getters/setters are not included in this interface; use generic approach.
+ * Note: attribute getters/setters are not included in this interface; use generic approach.
  */
-public interface NetworkConfig extends Singleton, PropertiesAccess
-{
+public interface NetworkConfig extends Singleton, PropertiesAccess {
     public Protocols getProtocols();
 
     public Transports getTransports();

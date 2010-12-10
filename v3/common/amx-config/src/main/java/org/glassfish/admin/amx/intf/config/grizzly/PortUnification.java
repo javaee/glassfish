@@ -40,14 +40,14 @@
 
 package org.glassfish.admin.amx.intf.config.grizzly;
 
-import java.util.Map;
 import org.glassfish.admin.amx.intf.config.NamedConfigElement;
 
+import java.util.Map;
+
 /**
-Note: attribute getters/setters are not included in this interface; use generic approach.
+ * Note: attribute getters/setters are not included in this interface; use generic approach.
  */
-public interface PortUnification extends NamedConfigElement
-{
+public interface PortUnification extends NamedConfigElement {
     public Map<String, ProtocolFinder> getProtocolFinder();
 }
 
