@@ -174,7 +174,7 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
      * @return AdminAcessController.Access level of access to grant
      * @throws LoginException
      */
-    public AdminAccessController.Access loginAsAdmin(String user, String password, String realm,
+    public synchronized AdminAccessController.Access loginAsAdmin(String user, String password, String realm,
             final String originHost, final Map<String,String> authRelatedHeaders,
             final Principal requestPrincipal) throws LoginException {
         boolean isLocal = isLocalPassword(user, password); //local password gets preference
