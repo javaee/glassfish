@@ -82,17 +82,6 @@
 </sun:head>
 <sun:body  id="body3">
 
-<sun:form id="propertyForm">
-    <!beforeCreate
-        
-        getSupportImages(count="5", imageList=>$page{imageList});
-        getIssueQueryString(query=>$page{IssueQuery});
-    />
-    <!-- Page Title -->
-    //<sun:title id="propertyContentPage" title="$resource{i18nc.support.PageTitle}" helpText="$resource{i18nc.support.PageTitleHelp}">
-    //</sun:title>
-    <sun:hidden id="helpKey" value="$resource{help_common.support}" />
-</sun:form>
 <f:verbatim>
     <link rel="stylesheet" type="text/css" href="#{request.contextPath}/resource/common/sysnet/support.css"/>
     <style type="text/css">
@@ -241,22 +230,6 @@
                 </div>
                 <p>
 
-                <div id="box" class="md1">
-                    <div class="hd">
-                        <h2>$resource{i18nc.support.gfIssues}</h2>
-
-                    </div>
-                    <div id="boxbd" class="bd">
-                        <div class="innerbox">
-                            <font face=arial size=-1>$resource{i18nc.support.bugList}</font>
-    </f:verbatim>
-                            <jmaki:widget name="jmaki.blockList" id="issues" args="{count:5}" service="/xhp?key=issues&count=20" template="/resources/jmaki/blockList/issues.htm" />
-    <f:verbatim>
-                            <br clear="all">
-                            <div class="moreInfo"><a href="#{IssueQuery}" target="_blank">$resource{i18nc.support.moreIssues}</a></div>
-                        </div>
-                    </div>
-                </div>
             </div>
             <div id="rightcolumn">
                 <div id="box" class="md1">
