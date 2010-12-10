@@ -198,23 +198,14 @@
 
                 <div id="box" class="md1">
                     <div class="hd">
-                        <h2>$resource{i18nc.support.sunDevNews}</h2>
+                        <h2>$resource{i18nc.support.podcast}</h2>
                     </div>
                     <div id="boxbd" class="bd">
                         <div class="innerbox">
-                            <img src="#{request.contextPath}/resource/common/images/squares/#{imageList[3]}" alt="" border=0 align="right" style="float:right; margin:2px 20px 0px 20px;">
-    <!--
-                            <h3>Enterprise Java</h3>
     </f:verbatim>
-                            <jmaki:widget name="jmaki.blockList" service="/xhp?key=sdnEENews" args="{count:2}" template="/resources/jmaki/blockList/sdndevnews.htm" />
+                            <jmaki:widget name="jmaki.blockList" id="podcast" args="{count:1}" service="/xhp?key=podcast" template="/resources/jmaki/blockList/podcast.htm" />
     <f:verbatim>
-                            <br><br><center><hr></center><p>
-                            <h3> All SDN News</h3>
-    -->
-    </f:verbatim>
-                            <jmaki:widget name="jmaki.blockList" id="sdndevnews" service="/xhp?key=sdndevnews" args="{count:2}" template="/resources/jmaki/blockList/sdndevnews.htm" />
-    <f:verbatim>
-                            <br clear="all"><div class="moreInfo"><a href="$resource{i18nc.support.devNewsLink}" target="_blank">$resource{i18nc.support.sunDevNews}</a></div>
+                            <br clear="all"><div class="moreInfo"><a href="$resource{i18nc.support.podcastLink}" target="_blank">$resource{i18nc.support.morePodCast}</a></div>
                         </div>
                     </div>
                 </div>
@@ -295,19 +286,6 @@
                 </div>
                 <p>
 
-                <div id="box" class="md1">
-                    <div class="hd">
-                        <h2>$resource{i18nc.support.podcast}</h2>
-                    </div>
-                    <div id="boxbd" class="bd">
-                        <div class="innerbox">
-    </f:verbatim>
-                            <jmaki:widget name="jmaki.blockList" id="podcast" args="{count:1}" service="/xhp?key=podcast" template="/resources/jmaki/blockList/podcast.htm" />
-    <f:verbatim>
-                            <br clear="all"><div class="moreInfo"><a href="$resource{i18nc.support.podcastLink}" target="_blank">$resource{i18nc.support.morePodCast}</a></div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
