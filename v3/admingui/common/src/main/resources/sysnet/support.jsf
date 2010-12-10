@@ -81,6 +81,17 @@
     <sun:script url="/resource/common/js/adminjsf.js" />
 </sun:head>
 <sun:body  id="body3">
+<sun:form id="propertyForm">
+    <!beforeCreate
+
+        getSupportImages(count="5", imageList=>$page{imageList});
+    />
+    <!-- Page Title -->
+    //<sun:title id="propertyContentPage" title="$resource{i18nc.support.PageTitle}" helpText="$resource{i18nc.support.PageTitleHelp}">
+    //</sun:title>
+
+    <sun:hidden id="helpKey" value="$resource{help_common.support}" />
+</sun:form>
 
 <f:verbatim>
     <link rel="stylesheet" type="text/css" href="#{request.contextPath}/resource/common/sysnet/support.css"/>
@@ -146,28 +157,7 @@
         <p>
         <div id="twocolumn">
             <div id="leftcolumn">
-                <div id="box" class="md1">
-                    <div class="hd">
-                        <h2>$resource{i18nc.support.events}</h2>
-                    </div>
-                    <div id="boxbd" class="bd">
-                        <div class="innerbox">
-                            <image src="#{request.contextPath}/resource/common/images/squares/#{imageList[0]}" alt="" border=0 align="right"  style="float:right; margin:5px 20px 0px 20px;" >
-                            <font face=arial size=-1> $resource{i18nc.support.techDays}<br>$resource{i18nc.support.techDaysDesc}</font>
-    </f:verbatim>
-                            <jmaki:widget name="jmaki.blockList" service="/xhp?key=events" args="{count:2}" template="/resources/jmaki/blockList/events.htm" />
-    <f:verbatim>
-                            <br clear="all"><center><hr></center>
-    </f:verbatim>
-                            <jmaki:widget name="jmaki.blockList" service="/xhp?key=sdnevents" args="{count:2}" template="/resources/jmaki/blockList/sdn.htm" />
-    <f:verbatim>
-                            <br clear="all">
-                            <div class="moreInfo"><a href="$resource{i18nc.support.eventsLink}" target="_blank">$resource{i18nc.support.moreDevEvents}</a></div>
-                        </div>
-                    </div>
-                </div>
-                <p>
-
+\
                 <div id="box" class="md1">
                     <div class="hd">
                         <h2>$resource{i18nc.support.techTips}</h2>
