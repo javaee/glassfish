@@ -46,11 +46,6 @@ import com.sun.enterprise.module.common_impl.LogHelper;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.v3.admin.AdminAdapter;
 import com.sun.enterprise.v3.admin.adapter.AdminEndpointDecider;
-import com.sun.grizzly.tcp.Request;
-import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
-import com.sun.grizzly.tcp.http11.GrizzlyRequest;
-import com.sun.grizzly.tcp.http11.GrizzlyResponse;
-import com.sun.grizzly.util.http.Cookie;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -81,6 +76,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 import org.glassfish.admin.rest.CliFailureException;
 import org.glassfish.admin.rest.provider.ActionReportResultHtmlProvider;
 import org.glassfish.admin.rest.provider.ActionReportResultJsonProvider;
@@ -88,6 +84,10 @@ import org.glassfish.admin.rest.provider.ActionReportResultXmlProvider;
 import org.glassfish.admin.rest.provider.BaseProvider;
 import org.glassfish.admin.rest.results.ActionReportResult;
 import org.glassfish.admin.rest.utils.xml.RestActionReporter;
+import org.glassfish.grizzly.http.Cookie;
+import org.glassfish.grizzly.http.server.HttpRequestProcessor;
+import org.glassfish.grizzly.http.server.Request;
+import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.internal.api.AdminAccessController;
 import org.glassfish.internal.api.ServerContext;
 
@@ -96,7 +96,7 @@ import org.glassfish.internal.api.ServerContext;
  * Adapter for REST interface
  * @author Rajeshwar Patil, Ludovic Champenois
  */
-public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, PostConstruct, EventListener {
+public abstract class RestAdapter extends HttpRequestProcessor implements Adapter, PostConstruct, EventListener {
 
     public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(RestAdapter.class);
 
@@ -120,6 +120,9 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
     @Inject
     ServerEnvironment serverEnvironment;
 
+    @Inject
+    private Logger logger;
+
     private Map<Integer, String> httpStatus = new HashMap<Integer, String>() {{
         put(404, "Resource not found");
         put(500, "A server error occurred. Please check the server logs.");
@@ -136,9 +139,13 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
         events.register(this);
     }
 
+    @Override
+    public HttpRequestProcessor getHttpService() {
+        return this;
+    }
 
     @Override
-    public void service(GrizzlyRequest req, GrizzlyResponse res) {
+    public void service(Request req, Response res) {
         LogHelper.getDefaultLogger().finer("Rest adapter !");
         LogHelper.getDefaultLogger().finer("Received resource request: " + req.getRequestURI());
 
@@ -151,7 +158,7 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
             } else {
 
                 if(serverEnvironment.isInstance()) {
-                    if(!"GET".equalsIgnoreCase(req.getRequest().method().getString() ) ) {
+                    if(!"GET".equalsIgnoreCase(req.getMethod() ) ) {
                         String msg = localStrings.getLocalString("rest.resource.only.GET.on.instance", "Only GET requests are allowed on an instance that is not DAS.");
                         reportError(req, res, HttpURLConnection.HTTP_FORBIDDEN, msg);
                         return;
@@ -168,7 +175,7 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
 
                 //Use double checked locking to lazily initialize adapter
                 if (adapter == null) {
-                    synchronized(com.sun.grizzly.tcp.Adapter.class) {
+                    synchronized(HttpRequestProcessor.class) {
                         if(adapter == null) {
                             exposeContext();  //Initializes adapter
                         }
@@ -177,7 +184,7 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
                 }
 
                 //delegate to adapter managed by Jersey.
-                ((GrizzlyAdapter)adapter).service(req, res);
+                ((HttpRequestProcessor)adapter).service(req, res);
                 int status = res.getStatus();
                 if (status < 200 || status > 299) {
                     String message = httpStatus.get(status);
@@ -216,7 +223,7 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
         }
     }
 
-    private boolean authenticate(GrizzlyRequest req) throws LoginException, IOException {
+    private boolean authenticate(Request req) throws LoginException, IOException {
         boolean authenticated = authenticateViaAnonymousUser(req);
 
         if (!authenticated) {
@@ -224,7 +231,7 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
 	    if (!authenticated) {
 		authenticated = authenticateViaRestToken(req);
 		if (!authenticated) {
-		    authenticated = authenticateViaAdminRealm(req.getRequest());
+		    authenticated = authenticateViaAdminRealm(req);
 		}
 	    }
 	}
@@ -245,7 +252,7 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
      *	    this case, the user should not be prompted for a username &amp;
      *	    password, but instead access should be automatically granted.</p>
      */
-    private boolean authenticateViaAnonymousUser(GrizzlyRequest req) {
+    private boolean authenticateViaAnonymousUser(Request req) {
 // FIXME: Implement according to JavaDoc above...
 	/*
 	if (anonymousUser) {
@@ -257,7 +264,7 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
 	return false;
     }
 
-    private boolean authenticateViaRestToken(GrizzlyRequest req) { 
+    private boolean authenticateViaRestToken(Request req) { 
         boolean authenticated = false;
         Cookie[] cookies = req.getCookies();
         String restToken = null;
@@ -275,7 +282,7 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
         return authenticated;
     }
 
-    private boolean authenticateViaLocalPassword(GrizzlyRequest req) {
+    private boolean authenticateViaLocalPassword(Request req) {
         Cookie[] cookies = req.getCookies();
         boolean authenticated = false;
         String uid = RestService.getRestUID();
@@ -311,10 +318,10 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
      * Finish the response and recycle the request/response tokens. Base on
      * the connection header, the underlying socket transport will be closed
      */
-    @Override
-    public void afterService(GrizzlyRequest req, GrizzlyResponse res) throws Exception {
-
-    }
+//    @Override
+//    public void afterService(GrizzlyRequest req, GrizzlyResponse res) throws Exception {
+//
+//    }
 
 
     /**
@@ -380,7 +387,7 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
 
     protected abstract Set<Class<?>> getResourcesConfig();
 
-    private String getAcceptedMimeType(GrizzlyRequest req) {
+    private String getAcceptedMimeType(Request req) {
         String type = null;
         String requestURI = req.getRequestURI();
         Set<String> acceptableTypes = new HashSet<String>() {{ add("html"); add("xml"); add("json"); }};
@@ -434,14 +441,14 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
         if ((context != null) || (!"".equals(context))) {
             Set<Class<?>> classes = getResourcesConfig();
             adapter = LazyJerseyInit.exposeContext(classes, sc, habitat);
-            ((GrizzlyAdapter) adapter).setResourcesContextPath(context);
+//            ((HttpRequestProcessor) adapter).setResourcesContextPath(context);
             
             logger.info("Listening to REST requests at context: " + context + "/domain");
         }
     }
 
 
-    private void reportError(GrizzlyRequest req, GrizzlyResponse res, int statusCode, String msg) {
+    private void reportError(Request req, Response res, int statusCode, String msg) {
         try {
             // TODO: There's a lot of arm waving and flailing here.  I'd like this to be cleaner, but I don't
             // have time at the moment.  jdlee 8/11/10
@@ -463,13 +470,13 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
             res.setStatus(statusCode);
             res.getOutputStream().write(provider.getContent(new ActionReportResult(report)).getBytes());
             res.getOutputStream().flush();
-            res.finishResponse();
+            res.finish();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    private volatile com.sun.grizzly.tcp.Adapter adapter = null;
+    private volatile HttpRequestProcessor adapter = null;
     private boolean isRegistered = false;
     private AdminEndpointDecider epd = null;
 }

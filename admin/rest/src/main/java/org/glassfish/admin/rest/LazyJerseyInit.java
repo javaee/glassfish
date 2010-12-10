@@ -42,11 +42,9 @@ package org.glassfish.admin.rest;
 
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
 import com.sun.jersey.api.container.ContainerFactory;
 import com.sun.jersey.api.core.ResourceConfig;
 import org.glassfish.api.container.EndpointRegistrationException;
-import com.sun.grizzly.tcp.Adapter;
 import com.sun.jersey.api.container.filter.LoggingFilter;
 import com.sun.jersey.api.core.DefaultResourceConfig;
 import com.sun.jersey.spi.inject.SingletonTypeInjectableProvider;
@@ -55,6 +53,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import org.glassfish.admin.rest.adapter.Reloader;
 import org.glassfish.admin.rest.resources.ReloadResource;
+import org.glassfish.grizzly.http.server.HttpRequestProcessor;
 import org.glassfish.internal.api.ServerContext;
 import org.jvnet.hk2.component.Habitat;
 
@@ -78,11 +77,11 @@ public class LazyJerseyInit {
      * @return the correct GrizzlyAdapter
      * @throws EndpointRegistrationException
      */
-    public static GrizzlyAdapter exposeContext(Set classes, ServerContext sc, Habitat habitat)
+    public static HttpRequestProcessor exposeContext(Set classes, ServerContext sc, Habitat habitat)
             throws EndpointRegistrationException {
         
 
-        Adapter adapter = null;
+        HttpRequestProcessor adapter = null;
         Reloader r = new Reloader();
         ResourceConfig rc = new DefaultResourceConfig(classes);
         rc.getMediaTypeMappings().put("xml", MediaType.APPLICATION_XML_TYPE);
@@ -119,13 +118,13 @@ public class LazyJerseyInit {
         try {
             ClassLoader apiClassLoader = sc.getCommonClassLoader();
             Thread.currentThread().setContextClassLoader(apiClassLoader);
-            adapter = ContainerFactory.createContainer(com.sun.grizzly.tcp.Adapter.class, rc);
+            adapter = ContainerFactory.createContainer(HttpRequestProcessor.class, rc);
         } finally {
             Thread.currentThread().setContextClassLoader(originalContextClassLoader);
         }
         //add a rest config listener for possible reload of Jersey
         new RestConfigChangeListener(habitat, r ,rc , sc);
-        return (GrizzlyAdapter) adapter;
+        return (HttpRequestProcessor) adapter;
     }
     
     
