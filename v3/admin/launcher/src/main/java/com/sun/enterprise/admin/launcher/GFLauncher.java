@@ -51,6 +51,7 @@ import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.universal.process.ProcessStreamDrainer;
 import com.sun.enterprise.universal.xml.MiniXmlParserException;
 import com.sun.enterprise.util.OS;
+import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.net.NetUtils;
 import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
 import com.sun.enterprise.universal.xml.MiniXmlParser;
@@ -156,6 +157,7 @@ public abstract class GFLauncher {
         info.setAdminAddresses(parser.getAdminAddresses());
         javaConfig = new JavaConfig(parser.getJavaConfig());
         setupProfilerAndJvmOptions(parser);
+        setupUpgradeSecurity();
         setupMonitoring(parser);
         sysPropsFromXml = parser.getSystemProperties();
         asenvProps.put(INSTANCE_ROOT_PROPERTY, getInfo().getInstanceRootDir().getPath());
@@ -664,6 +666,31 @@ public abstract class GFLauncher {
             rawJvmOptions.addAll(profiler.getJvmOptions());
         }
         jvmOptions = new JvmOptions(rawJvmOptions);
+    }
+
+    private void setupUpgradeSecurity() throws GFLauncherException {
+        // If this is an upgrade and the security manager is on,
+        // copy the current server.policy file to the domain
+        // before the upgrade.
+        if (info.isUpgrade() &&
+            jvmOptions.sysProps.containsKey("java.security.manager")) {
+
+            GFLauncherLogger.info(strings.get("copy_server_policy"));
+
+            File source = new File(new File(new File(info.installDir, "lib"),
+                "templates"), "server.policy");
+            File target = new File(info.getConfigDir(), "server.policy");
+
+            try {
+                FileUtils.copyFile(source, target);
+            } catch (IOException ioe) {
+                // the actual error is wrapped differently depending on
+                // whether the problem was with the source or target
+                Throwable cause = ioe.getCause() == null ? ioe : ioe.getCause();
+                throw new GFLauncherException(strings.get(
+                    "copy_server_policy_error", cause.getMessage()));
+            }
+        }
     }
 
     private void setupMonitoring(MiniXmlParser parser) throws GFLauncherException {
