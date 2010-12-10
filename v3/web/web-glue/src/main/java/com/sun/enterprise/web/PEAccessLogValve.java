@@ -807,6 +807,14 @@ public final class PEAccessLogValve
 	    format = ConfigBeansUtilities.getDefaultFormat();
         }
         setPattern(format);
+
+        // write-interval-seconds
+        int interval = 0;
+        if (accessLogConfig != null) {
+            String s = accessLogConfig.getWriteIntervalSeconds();
+            interval = Integer.parseInt(s); 
+            setWriterInterval(interval);
+        }
                        
         // rotation-enabled
         if (accessLogConfig != null) {
@@ -816,7 +824,7 @@ public final class PEAccessLogValve
                 ConfigBeansUtilities.getDefaultRotationEnabled()));
         }
         // rotation-interval
-        int interval = 0;
+        interval = 0;
         if (accessLogConfig != null) {
             String s = accessLogConfig.getRotationIntervalInMinutes();
             interval = Integer.parseInt(s) * 60;
