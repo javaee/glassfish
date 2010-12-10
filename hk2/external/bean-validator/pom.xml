@@ -108,8 +108,12 @@
                            <!-- 
                                even though we bundle slf4j api, we want to import it optionally as well. 
                                read previous comments.
+                               bean validator has optional dependency on JPA API. More over, it relies on
+                               JPA 2.0, as it tries to dynamically load javax.persistence.PersistenceUtil.class,
+                               which is a JPA 2 class.
                            -->
                            org.slf4j; org.slf4j.spi; org.slf4j.helpers; version=${slf4j.version}; resolution:=optional,
+                           javax.persistence.*; version="2.0"; resolution:=optional,
                            *
                        </Import-Package>
                        <Implementation-Version>
