@@ -61,6 +61,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Pattern;
+import javax.validation.Payload;
 
 /**
  *
@@ -75,7 +76,7 @@ import javax.validation.constraints.Pattern;
  @RestRedirect(opType = RestRedirect.OpType.POST, commandName = "create-jms-host"),
  @RestRedirect(opType = RestRedirect.OpType.DELETE, commandName = "delete-jms-host")
 })
-public interface JmsHost extends ConfigBeanProxy, Injectable, PropertyBag {
+public interface JmsHost extends ConfigBeanProxy, Injectable, PropertyBag, Payload {
 
     final static String PORT_PATTERN = "\\$\\{[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*\\}"
             + "|[1-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9][0-9][0-9]"
@@ -129,9 +130,8 @@ public interface JmsHost extends ConfigBeanProxy, Injectable, PropertyBag {
      */
     @Attribute (defaultValue="7676")
     @Pattern(regexp=PORT_PATTERN,
-            message="must be between 1 and 65535, " +
-                    "or reference a system property using the form" +
-                    " ${SYSTEM_PROPERTY_NAME}")   
+            message="{port-pattern}",
+            payload=JmsHost.class)   
     String getPort();
 
     /**
