@@ -108,6 +108,8 @@ class OSGiWebDeploymentContext extends OSGiDeploymentContext {
          * It overrides loadClass(), getResource() and getResources() as opposed to
          * their findXYZ() equivalents so that the OSGi export control mechanism
          * is enforced even for classes and resources available in the system/boot class loader.
+         * The only time this class loader is defining class loader for some classes is when this class loader
+         * is used by containers like CDI or EJB to define generated classes.
          */
 
         final BundleClassLoader delegate1 = new BundleClassLoader(bundle);
@@ -122,6 +124,8 @@ class OSGiWebDeploymentContext extends OSGiDeploymentContext {
         @Override
         protected synchronized Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException
         {
+            Class c = findLoadedClass(name); // this class loader may be the defining loader for a proxy or generated class 
+            if (c != null) return c;
             // mojarra uses Thread's context class loader (which is us) to look up custom annotation provider.
             // since we don't export our package and in fact hide our provider, we need to load them using
             // current loader.
