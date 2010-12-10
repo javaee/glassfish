@@ -65,7 +65,7 @@
                 onClick=" if ( checkPSW('#{ps1}', '#{ps2}', '$resource{i18n.msg.JS.manageUser.passwordNotMatch}', '$resource{i18nc.msg.JS.confirmEmptyPswdForPswdAlias}') ){ return submitAndDisable(this, '$resource{i18n.button.Processing}'); } return false; " >
                <!command
                     gf.restRequest(
-                        endpoint="http://localhost:4848/management/domain/update-password-alias"
+                        endpoint="#{sessionScope.REST_URL}/update-password-alias"
                         method="POST"
                         attrs="#{pageSession.valueMap}"
                         result="#{pageSession.createResult}");

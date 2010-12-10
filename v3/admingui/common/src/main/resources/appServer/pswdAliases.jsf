@@ -102,7 +102,7 @@
                 foreach(var="oneRow" list="#{requestScope.selectedRows}"){
                     mapPut(map="#{requestScope.deleteMap}" key="id" value="#{requestScope.oneRow.name}");
                     gf.restRequest(
-                        endpoint="http://localhost:4848/management/domain/delete-password-alias"
+                        endpoint="#{sessionScope.REST_URL}/delete-password-alias"
                         method="POST"
                         attrs="#{requestScope.deleteMap}"
                         result="#{pageSession.deleteResult}" );

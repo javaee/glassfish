@@ -65,7 +65,7 @@
                         { return submitAndDisable(this, '$resource{i18n.button.Processing}'); }} return false; " >
                <!command
                     gf.restRequest(
-                        endpoint="http://localhost:4848/management/domain/create-password-alias"
+                        endpoint="#{sessionScope.REST_URL}/create-password-alias"
                         method="POST"
                         attrs="#{pageSession.valueMap}"
                         result="#{pageSession.createResult}");
