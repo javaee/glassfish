@@ -85,12 +85,16 @@ public class NodeAgentConfigUpgrade implements ConfigurationUpgrade, PostConstru
     public void postConstruct() {
 
         final NodeAgents nodeAgents = domain.getNodeAgents();
-        if (nodeAgents == null)
+        if (nodeAgents == null) {
+            createDefaultNodeList();
             return;
+        }
 
         final List<NodeAgent> agList= nodeAgents.getNodeAgent();
-        if (agList.size() == 0)
+        if (agList.size() == 0) {
+            createDefaultNodeList();
             return;
+        }
         try {
             ConfigSupport.apply(new SingleConfigCode<Domain>() {
                 public Object run(Domain d) throws PropertyVetoException, TransactionFailure {
@@ -119,6 +123,10 @@ public class NodeAgentConfigUpgrade implements ConfigurationUpgrade, PostConstru
                         }
                         nodes.getNode().add(node);
                     }
+
+                    // Now add the builtin localhost node
+                    createDefaultNode(d, nodes);
+
                     d.setNodes(nodes);
 
                     List<Server> serverList=servers.getServer();
@@ -145,8 +153,43 @@ public class NodeAgentConfigUpgrade implements ConfigurationUpgrade, PostConstru
 
     }
 
+    /**
+     * If the domain.xml has no node agents, then create the default node list
+     * with the localhost node.
+     */
+
+    private void createDefaultNodeList() {
+        try {
+            ConfigSupport.apply(new SingleConfigCode<Domain>() {
+                public Object run(Domain d) throws PropertyVetoException, TransactionFailure {
+
+                    Nodes nodes=d.createChild(Nodes.class);
+                    Transaction t = Transaction.getTransaction(d);
+                    if (t==null)
+                        return null;
+
+                    createDefaultNode(d, nodes);
+                    d.setNodes(nodes);
+                    return null;
+                }
+        }, domain);
+        } catch (Exception e) {
+            Logger.getAnonymousLogger().log(Level.SEVERE,
+                "Failure while creating default localhost node during V2 to V3 upgrade.", e);
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    private void createDefaultNode(Domain d, Nodes nodes)
+            throws TransactionFailure, PropertyVetoException {
+        Property domainProp = d.getProperty("administrative.domain.name");
+        String domainName = domainProp.getValue();
+        Node node = nodes.createChild(Node.class);
+        node.setName("localhost" + "-" + domainName);
+        node.setType("CONFIG");
+        node.setNodeHost("localhost");
+        node.setInstallDir("${com.sun.aas.productRoot}");
+        nodes.getNode().add(node);
+    }
 }
-
-
-
-
