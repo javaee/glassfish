@@ -40,6 +40,8 @@
 
 package com.sun.web.security;
 
+import com.sun.enterprise.config.serverbeans.MessageSecurityConfig;
+import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.security.auth.digest.impl.HttpAlgorithmParameterImpl;
 import com.sun.enterprise.security.web.integration.WebSecurityManager;
 import com.sun.enterprise.security.web.integration.WebSecurityManagerFactory;
@@ -90,6 +92,7 @@ import com.sun.enterprise.deployment.RunAsIdentityDescriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.WebComponentDescriptor;
 //import com.sun.enterprise.deployment.interfaces.SecurityRoleMapper;
+import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 import com.sun.enterprise.deployment.web.LoginConfiguration;
 import com.sun.enterprise.security.SecurityContext;
 import com.sun.enterprise.security.SecurityUtil;
@@ -117,6 +120,7 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
 import static com.sun.enterprise.security.auth.digest.api.Constants.A1;
 import com.sun.enterprise.security.authorize.PolicyContextHandlerImpl;
+import java.io.File;
 import javax.security.jacc.PolicyContext;
 import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.component.PostConstruct;
@@ -199,11 +203,17 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
     private boolean isSystemApp;
     //private String jmacProviderRegisID = null;
     private HttpServletHelper helper = null;
+    //PERF Fix.
+    //there maybe a race condition but since its a boolean it does not matter.
+    //as all threads would evaluate the same result.
+    private Boolean secExtEnabled = null;
 
     @Inject
     private ServerContext serverContext;
     @Inject 
     private Habitat habitat;
+    @Inject
+    private SecurityService secService;
     
     public RealmAdapter() {
         //used during Injection in WebContainer (glue code)
@@ -479,6 +489,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
             success = false;
             if (_logger.isLoggable(Level.WARNING)) {
                 _logger.log(Level.WARNING,"web.login.failed", le.toString());
+                _logger.log(Level.WARNING,"Exception", le);
             }
         }
         if (success) {
@@ -1023,7 +1034,6 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
  	    !isSecurityExtensionEnabled()) {
             return null;
         }
-
         SecurityConstraint[] constraints = RealmAdapter.emptyConstraints;
         return constraints;
     }
@@ -1234,18 +1244,73 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
         return result;
     }
 
+    protected static final String CONF_FILE_NAME = "auth.conf";
+    protected static final String HTTP_SERVLET_LAYER ="HttpServlet";
     /**
      * Return <tt>true</tt> if a Security Extension is available.
      * @return <tt>true</tt> if a Security Extension is available. 1171
      */
     public boolean isSecurityExtensionEnabled() {
-        if (helper == null) {
-            initConfigHelper();
+        
+        if (this.secExtEnabled != null) {
+            return this.secExtEnabled.booleanValue();
         }
-        try {
-            return (helper.getServerAuthConfig() != null);
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
+        /**
+         * get the default provider id for system apps if one has been established.
+         * the default provider for system apps is established by defining
+         * a system property.
+         */
+        if (this.isSystemApp && this.getDefaultSystemProviderID() != null) {
+            this.secExtEnabled = new Boolean(true);
+            return true;
+        }
+        //now check if there is a globally enabled ServletLayer Provider
+        List<MessageSecurityConfig> cfgs = this.secService.getMessageSecurityConfig();
+        if (cfgs != null) {
+            for (MessageSecurityConfig mc : cfgs) {
+                if (HTTP_SERVLET_LAYER.equals(mc.getAuthLayer()) && mc.getDefaultProvider() != null) {
+                    this.secExtEnabled = new Boolean(true);
+                    return true;
+                }
+            }
+        }
+        if (this.webDesc != null) {
+            //check
+            SunWebApp sw = webDesc.getSunDescriptor();
+            if (sw == null) {
+                this.secExtEnabled = new Boolean(false);
+                return false;
+            }
+            String SAM = sw.getAttributeValue(
+                    webDesc.getSunDescriptor().HTTPSERVLET_SECURITY_PROVIDER);
+            if (SAM != null) {
+                this.secExtEnabled = new Boolean(true);
+                return true;
+            }
+            //now check if "auth.conf" file exists in user.dir and is non empty
+            String userDir = System.getProperty("user.dir");
+            if (userDir != null) {
+                File f = new File(userDir, CONF_FILE_NAME);
+                if (f.exists() && f.length() > 0) {
+                    //return true since we are unsure
+                    //don't want to parse the file here
+                    this.secExtEnabled = new Boolean(true);
+                    return true;
+                }
+            }
+            this.secExtEnabled = new Boolean(false);
+            return false;
+        } else {
+            if (helper == null) {
+                initConfigHelper();
+            }
+            try {
+                boolean flag = (helper.getServerAuthConfig() != null);
+                this.secExtEnabled = new Boolean(flag);
+                return flag;
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
         }
     }
 

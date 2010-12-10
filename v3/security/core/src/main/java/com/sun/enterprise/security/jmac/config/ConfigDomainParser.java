@@ -212,8 +212,8 @@ public class ConfigDomainParser implements ConfigParser {
 		} catch (ExpandException ee) {
 		    // log warning and give the provider a chance to 
 		    // interpret value itself.
-		    if (_logger.isLoggable(Level.WARNING)) {
-			_logger.warning("jmac.unexpandedproperty");
+		    if (_logger.isLoggable(Level.FINE)) {
+			_logger.log(Level.FINE, "jmac.unexpandedproperty");
 		    }
 		    options.put(property.getName(),property.getValue());
 		}
