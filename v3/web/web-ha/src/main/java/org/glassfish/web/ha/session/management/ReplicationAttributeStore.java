@@ -69,11 +69,6 @@ import java.util.logging.Logger;
 public class ReplicationAttributeStore extends ReplicationStore {
     
 
-    /**
-     * The logger to use for logging ALL web container related messages.
-     */
-    //protected static final Logger _logger 
-    //    = LogDomains.getLogger(LogDomains.WEB_LOGGER);
     private static final Logger _logger 
         = LogDomains.getLogger(ReplicationAttributeStore.class, LogDomains.WEB_LOGGER);    
     
@@ -126,8 +121,6 @@ public class ReplicationAttributeStore extends ReplicationStore {
         haSess.setDirty(false);        
     }
     
-    //methods copied from ReplicationStore
-    //must be modified for modified-attribute usage
     
     /**
      * Save the specified Session into this Store.  Any previously saved
@@ -157,9 +150,7 @@ public class ReplicationAttributeStore extends ReplicationStore {
         }        
         ReplicationManagerBase mgr
             = (ReplicationManagerBase)this.getManager();
-//        BackingStore replicator = mgr.getCompositeBackingStore();
-        BackingStore replicator = mgr.getBackingStore();
-        System.out.println("ReplicationAttributeStore>>save: replicator: " + replicator);                    
+        BackingStore replicator = mgr.getBackingStore();                    
         if(_logger.isLoggable(Level.FINE)) {
             _logger.fine("ReplicationAttributeStore>>save: replicator: " + replicator);                    
         }         
@@ -196,7 +187,6 @@ public class ReplicationAttributeStore extends ReplicationStore {
                 = (ModifiedAttributeHASession)session;
         ReplicationManagerBase mgr
             = (ReplicationManagerBase)this.getManager();
-//        BackingStore replicator = mgr.getCompositeBackingStore();
         BackingStore replicator = mgr.getBackingStore();
         System.out.println("in do save");
         if(_logger.isLoggable(Level.FINE)) {
@@ -219,7 +209,6 @@ public class ReplicationAttributeStore extends ReplicationStore {
     private BackingStore getCompositeBackingStore() {
         ReplicationManagerBase mgr
                 = (ReplicationManagerBase) this.getManager();
-//        BackingStore backingStore = mgr.getCompositeBackingStore();
         BackingStore backingStore = mgr.getBackingStore();
         return backingStore;
     }
@@ -272,96 +261,6 @@ public class ReplicationAttributeStore extends ReplicationStore {
         }
     }
 
-    /**
-    * Load and return the Session associated with the specified session
-    * identifier from this Store, without removing it.  If there is no
-    * such stored Session, return <code>null</code>.
-    *
-    * @param id Session identifier of the session to load
-    *
-    * @exception ClassNotFoundException if a deserialization error occurs
-    * @exception IOException if an input/output error occurs
-    */
-/*
-    public Metadata __load(String id, String version) throws BackingStoreException {
-        CompositeMetadata result = null;
-        if(id == null) {
-            return result;
-        }
-        ReplicationManagerBase repMgr =
-            (ReplicationManagerBase)this.getManager();
-        //ReplicationState localCachedState = repMgr.getFromReplicationCache(id);
-        ReplicationState localCachedState = repMgr.transferFromReplicationCache(id);
-        if(_logger.isLoggable(Level.FINE)) {
-            _logger.fine("ReplicationAttributeStore>>__load:localCachedState=" + localCachedState);
-        } 
-        //check if we got a hit from our own replica cache
-        //and if so return it immediately
-        if(version != null && localCachedState != null) {
-            long versionLong = ReplicationUtil.parseLong(version);
-            if(localCachedState.getVersion() == versionLong) {
-                return ReplicationState.createCompositeMetadataFrom(localCachedState);
-            }            
-        }        
-        ReplicationState broadcastResultState = findSessionViaBroadcast(id, version);
-        ReplicationState bestState
-            = ReplicationState.getBestResult(localCachedState, broadcastResultState);
-        if(_logger.isLoggable(Level.FINE)) {
-            _logger.fine("ReplicationAttributeStore>>__load:broadcastResultState from broadcast=" +
-                    broadcastResultState + ", bestState = " + bestState);
-        }
-        result = ReplicationState.createCompositeMetadataFrom(bestState);
-        return result;
-    } 
-*/
-
-/*
-    private ReplicationState findSessionViaBroadcast(String id, String version)
-            throws BackingStoreException{
-        if(_logger.isLoggable(Level.FINER)) {
-            _logger.entering("ReplicationAttributeStore",
-                             "findSessionViaBroadcast",
-                             new Object[]{id, version});                       
-        }          
-        ReplicationManagerBase mgr
-            = (ReplicationManagerBase)this.getManager();
-        BackingStore replicator = mgr.getCompositeBackingStore();
-        JxtaBackingStoreImpl jxtaReplicator = null;
-        if(replicator instanceof JxtaBackingStoreImpl) {
-            jxtaReplicator = (JxtaBackingStoreImpl)replicator;
-        }        
-        if(_logger.isLoggable(Level.FINE)) {
-            _logger.fine("ReplicationAttributeStore>>findSessionViaBroadcast: replicator: " + replicator);                       
-        }
-        ReplicationState queryResult = jxtaReplicator != null ?
-                jxtaReplicator.__load(id, version) : null;
-        return queryResult;
-    }
-*/
-
-    /**
-    * Given a byte[] containing session data, return a session
-    * object
-    * note we use the trunkState to get the basic session
-    * this over-rides the inherited getSession method behavior
-    *
-    * @param replicationState
-    *   The byte[] with the session data
-    *
-    * @return
-    *   A newly created session for the given session data, and associated
-    *   with this Manager
-    */
-/*
-    @Override
-    public Session getSession(ReplicationState replicationState) throws IOException {
-        if (replicationState == null || replicationState.getState() == null) {
-            return null;
-        } else {
-            return getSession(ReplicationState.createCompositeMetadataFrom(replicationState));
-        }
-    }
-*/
 
     public Session getSession(CompositeMetadata metadata)
         throws IOException 
@@ -380,7 +279,6 @@ public class ReplicationAttributeStore extends ReplicationStore {
         java.security.Principal pal=null; //MERGE chg added
         String ssoId = null;
         long version = 0L;
-//        IOUtilsCaller utilsCaller = null;
             
         try
         {
@@ -404,20 +302,6 @@ public class ReplicationAttributeStore extends ReplicationStore {
                 classLoader = loader.getClassLoader();
             }
             
-            //Bug 4832603 : EJB Reference Failover
-            //HERCULES FIXME: for now reverting back
-            //need to look at new EJBUtils and related serialization code
-            /*
-          if (classLoader != null) {
-            ois = new CustomObjectInputStream(bis, classLoader);
-          }
-          else {
-            ois = new ObjectInputStream(bis);
-          }
-          
-            //ois = EJBUtils.getInputStream(bis, classLoader, true, true);
-            //end - Bug 4832603  
-             */          
             if (classLoader != null) {
 
                 try {
@@ -498,53 +382,6 @@ public class ReplicationAttributeStore extends ReplicationStore {
         return _session;
     }
     
-    //FIXME might not be needed - can make a no-ope
-/*
-    protected void associate(String ssoId, Session _session) {
-        if (_debug > 0) {
-            debug("Inside associate() -- HAStore");
-        }
-        Container parent = manager.getContainer();
-        SingleSignOn sso = null;
-        while ((sso == null) && (parent != null)) {
-            if (_debug > 0) {
-                 debug("Inside associate()  while loop -- HAStore");
-            }
-        if (!(parent instanceof Pipeline)) {
-            if (_debug > 0) {
-                 debug("Inside associate()  parent instanceof Pipeline -- HAStore");
-            }
-            parent = parent.getParent();
-            continue;
-        }
-        Valve valves[] = ((Pipeline) parent).getValves();
-        for (int i = 0; i < valves.length; i++) {
-            if (valves[i] instanceof SingleSignOn) {
-                 if (_debug > 0) {
-                    debug("Inside associate()  valves[i] instanceof SingleSignOn -- HAStore");
-                 }
-                 sso = (SingleSignOn) valves[i];
-                 break;
-             }
-        }
-        if (sso == null)
-            parent = parent.getParent();
-        }
-        if (sso != null) {
-            if (_debug > 0) {
-                debug("Inside associate() sso != null");
-            }
-            //SingleSignOnEntry ssoEntry = ((ReplicationSingleSignOn)sso).lookup(ssoId);
-            SingleSignOnEntry ssoEntry = ((ReplicationSingleSignOn)sso).lookupEntry(ssoId);
-                if(_logger.isLoggable(Level.FINEST)) {
-                    _logger.finest("Inside associate() ssoEntry = "+ssoEntry);
-                }
-                if(ssoEntry!=null)
-                    ssoEntry.addSession(sso, _session);
-        }
-
-    }   
-*/
 
     //metadata related
     
@@ -606,9 +443,6 @@ public class ReplicationAttributeStore extends ReplicationStore {
                 modAttrSession.getLastAccessedTimeInternal(),
                 modAttrSession.getMaxInactiveInterval(),
                 entries, trunkState, null);
-                //,
-                //trunkState);
-//                ,modAttrSession.getSsoId()); //ssoId is the extraParam here
         return result;
     }
     
@@ -659,14 +493,6 @@ public class ReplicationAttributeStore extends ReplicationStore {
         byte[] obs;
         try {
             bos = new ByteArrayOutputStream();
-            //HERCULES FIXME - for now reverting back
-            //need to re-examine EJBUtils and related serialization classes
-            //Bug 4832603 : EJB Reference Failover
-            /*  was this
-            oos = new ObjectOutputStream(new BufferedOutputStream(bos));
-             end was this */
-              //oos = EJBUtils.getOutputStream(new BufferedOutputStream(bos), true);	
-            //end - Bug 4832603 
             
 
             try {
@@ -727,20 +553,6 @@ public class ReplicationAttributeStore extends ReplicationStore {
                 classLoader = loader.getClassLoader();
             }
             
-            //Bug 4832603 : EJB Reference Failover
-            //HERCULES FIXME: for now reverting back
-            //need to look at new EJBUtils and related serialization code
-            /*
-          if (classLoader != null) {
-            ois = new CustomObjectInputStream(bis, classLoader);
-          }
-          else {
-            ois = new ObjectInputStream(bis);
-          }
-          
-            //ois = EJBUtils.getInputStream(bis, classLoader, true, true);
-            //end - Bug 4832603  
-             */          
             if (classLoader != null) {
 
                 try {
@@ -770,7 +582,7 @@ public class ReplicationAttributeStore extends ReplicationStore {
         }
         catch(ClassNotFoundException e)
         {
-            // FIXME Evaluate logging level for exception.
+
             if (_logger.isLoggable(Level.FINE)) {
                 _logger.log(Level.FINE, "ClassNotFoundException occurred in getAttributeValue", e);
             }
@@ -778,7 +590,6 @@ public class ReplicationAttributeStore extends ReplicationStore {
         }
         catch(IOException e)
         {
-            //System.err.println("getAttributeValue IOException :"+e.getMessage());
             throw e;
         }      
 
@@ -803,14 +614,6 @@ public class ReplicationAttributeStore extends ReplicationStore {
         byte[] obs;
         try {
             bos = new ByteArrayOutputStream();
-            //HERCULES FIXME - for now reverting back
-            //need to re-examine EJBUtils and related serialization classes
-            //Bug 4832603 : EJB Reference Failover
-            /*  was this
-            oos = new ObjectOutputStream(new BufferedOutputStream(bos));
-             end was this */
-              //oos = EJBUtils.getOutputStream(new BufferedOutputStream(bos), true);	
-            //end - Bug 4832603 
             
 
             try {
@@ -878,20 +681,6 @@ public class ReplicationAttributeStore extends ReplicationStore {
                 classLoader = loader.getClassLoader();
             }
             
-            //Bug 4832603 : EJB Reference Failover
-            //HERCULES FIXME: for now reverting back
-            //need to look at new EJBUtils and related serialization code
-            /*
-          if (classLoader != null) {
-            ois = new CustomObjectInputStream(bis, classLoader);
-          }
-          else {
-            ois = new ObjectInputStream(bis);
-          }
-          
-            //ois = EJBUtils.getInputStream(bis, classLoader, true, true);
-            //end - Bug 4832603  
-             */          
             if (classLoader != null) {
 
                 try {
@@ -910,11 +699,6 @@ public class ReplicationAttributeStore extends ReplicationStore {
                     if(whatIsIt instanceof Integer) {
                         entriesSize = ((Integer)whatIsIt).intValue();
                     }
-                    //int entriesSize = ((Integer) ois.readObject()).intValue();
-                    //attributeValueList = new ArrayList(entriesSize);
-                    //if (_logger.isLoggable(Level.FINE)) {
-                    //    _logger.fine("first obj: " + whatIsIt + " entriesSize=" + entriesSize);
-                    //}
                     for (int i = 0; i < entriesSize; i++) {
                         Object nextAttributeValue = ois.readObject();
                         attributeValueList.add(nextAttributeValue);
@@ -934,7 +718,6 @@ public class ReplicationAttributeStore extends ReplicationStore {
         }
         catch(ClassNotFoundException e)
         {
-            // FIXME Evaluate logging level for exception.
             if (_logger.isLoggable(Level.FINE)) {
                 _logger.log(Level.FINE, "ClassNotFoundException occurred in getAttributeValueCollection", e);
             }
@@ -942,7 +725,6 @@ public class ReplicationAttributeStore extends ReplicationStore {
         }
         catch(IOException e)
         {
-            //System.err.println("getAttributeValue IOException :"+e.getMessage());
             throw e;
         }      
 
@@ -1000,53 +782,6 @@ public class ReplicationAttributeStore extends ReplicationStore {
     } 
     
 
-    /**
-    * create a ReplicationState representing compositeMetadata
-    *
-    * @param id
-    *   The session id
-    *
-    * @param compositeMetadata
-    *   The CompositeMetadata
-    *
-    * @return
-    *   A newly created ReplicationState object for the given compositeMetadata
-    */ 
-/*
-    private ReplicationState createReplicationStateFrom(String id, CompositeMetadata compositeMetadata, String command) {
-        Object containerExtraParams
-            //FIXED: Was   = compositeMetadata.getContainerExtraParam();
-            = compositeMetadata.getExtraParam();
-        byte[] containerExtraParamState = null;
-        if(containerExtraParams != null) {
-            try {
-                containerExtraParamState 
-                    = getByteArray(containerExtraParams);
-            } catch (IOException ex) {
-                ;   //deliberate no-op
-            }
-        }
-        String extraParamString 
-            = ReplicationState.extractExtraParamStringFrom(MODE_WEB, containerExtraParams);
-        
-        ReplicationState result 
-            = new ReplicationState(MODE_WEB,    //mode
-                id,                             //id
-                this.getApplicationId(),        //appid
-                compositeMetadata.getVersion(), //version
-                compositeMetadata.getLastAccessTime(), //lastAccess
-                compositeMetadata.getMaxInactiveInterval(), //maxInactive
-                //compositeMetadata.getExtraParam(), //extraParam
-                extraParamString,   //extraParam
-                null,                               //queryResult
-                null,                               //instanceName
-                command,                               //command
-                this.serializeStatesCollection(compositeMetadata.getEntries()), //data 
-                compositeMetadata.getState(),          //trunkData
-                containerExtraParamState);          //containerExtraParamsData
-        return result;
-    }
-*/
 
     private byte[] serializeStatesCollection(Collection entries) {
         byte[] result = null;
@@ -1064,29 +799,6 @@ public class ReplicationAttributeStore extends ReplicationStore {
         return result;
     }    
     
-    /**
-    * create a CompositeMetadata representing ReplicationState state
-    *
-    * @param state
-    *   The ReplicationState
-    *
-    * @return
-    *   A newly created CompositeMetadata object for the given state
-    */ 
-/*
-    private CompositeMetadata createCompositeMetadataFrom(ReplicationState state) {
-        Collection entries = this.deserializeStatesCollection(state.getState());
-        CompositeMetadata result
-            = new CompositeMetadata(
-                state.getVersion(),  //version
-                state.getLastAccess(), //lastAccess
-                state.getMaxInactiveInterval(), //maxInactive
-                entries,                        //entries
-                state.getTrunkState(),          //trunkState
-                state.getExtraParam());     //extraParam      
-        return result;
-    } 
-*/
 
     private Collection deserializeStatesCollection(byte[] entriesState) {
         Collection result = new ArrayList();
