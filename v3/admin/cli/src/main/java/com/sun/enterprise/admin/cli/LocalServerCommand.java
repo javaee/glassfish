@@ -507,7 +507,7 @@ public abstract class LocalServerCommand extends CLICommand {
         if (serverDirs == null)
             return null;
 
-        File mp = new File(serverDirs.getServerDir(), "master-password");
+        File mp = new File(serverDirs.getAgentDir(), "master-password");
         if (!mp.canRead())
             return null;
 

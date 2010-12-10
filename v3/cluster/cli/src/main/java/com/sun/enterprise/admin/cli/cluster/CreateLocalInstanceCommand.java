@@ -253,7 +253,7 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
      * @throws CommandException
      */
     protected void createMasterPasswordFile(String masterPassword) throws CommandException {
-        final File pwdFile = new File(this.getServerDirs().getServerDir(), MASTER_PASSWORD_ALIAS);
+        final File pwdFile = new File(this.getServerDirs().getAgentDir(), MASTER_PASSWORD_ALIAS);
         try {
             PasswordAdapter p = new PasswordAdapter(pwdFile.getAbsolutePath(),
                 MASTER_PASSWORD_ALIAS.toCharArray());

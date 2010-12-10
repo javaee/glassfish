@@ -72,6 +72,9 @@ public class ChangeMasterPasswordCommand extends LocalDomainCommand {
     @Param(name = "domain_name", primary = true, optional = true)
     private String domainName0;
 
+    @Param(name = "node_dir", optional = true)
+    private String nodeDir;
+
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(ChangeMasterPasswordCommand.class);
 

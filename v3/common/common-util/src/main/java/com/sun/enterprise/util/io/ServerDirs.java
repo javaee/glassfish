@@ -89,6 +89,7 @@ public class ServerDirs {
     public ServerDirs() {
         serverName = null;
         serverDir = null;
+        agentDir = null;
         parentDir = null;
         grandParentDir = null;
         configDir = null;
@@ -146,6 +147,7 @@ public class ServerDirs {
         }
 
         // bnevins May 17 -- perhaps we should have a NodeAgentDirs ???
+        agentDir = new File(parentDir, "agent");
         dasPropertiesFile = new File(parentDir, "agent/config/das.properties");
         valid = true;
     }
@@ -187,6 +189,12 @@ public class ServerDirs {
         if (!valid)
             return null;
         return serverDir;
+    }
+
+    public final File getAgentDir(){
+         if (!valid)
+            return null;
+        return agentDir;
     }
 
     public final File getServerParentDir() {
@@ -251,6 +259,7 @@ public class ServerDirs {
     private final String serverName;
     private final File serverDir;
     private final File parentDir;
+    private final File agentDir;
     private final File grandParentDir;
     private final File configDir;
     private final File domainXml;
