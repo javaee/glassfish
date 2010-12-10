@@ -309,7 +309,7 @@ public class ResourceReferenceDescriptor extends EnvironmentProperty
      * @return true if the resource is a URL object, false otherwise.
      */
     public boolean isURLResource() {
-        return this.getType().equals(URL_RESOURCE_TYPE);
+        return (this.getType() != null && this.getType().equals(URL_RESOURCE_TYPE));
     }
 
     /**
@@ -502,6 +502,14 @@ public class ResourceReferenceDescriptor extends EnvironmentProperty
     ** if the class of type "type" does not exist
     */
     public void checkType() {
+        if (rType == null) {
+	    if (this.isBoundsChecking()) {
+	        throw new IllegalArgumentException(localStrings.getLocalString(
+                "enterprise.deployment.exceptiontypenotallowedpropertytype", 
+                "{0} is not an allowed property value type", 
+                new Object[] {"null"}));
+            }
+        }
 	if (rType != null) {
 	    Class typeClass = null;
 	    // is it loadable ?
