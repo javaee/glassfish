@@ -45,9 +45,10 @@ import org.testng.Assert;
 
 import javax.management.ObjectName;
 
+import java.lang.Exception;
 import java.lang.reflect.Method;
 import java.util.Set;
-import java.util.HashSet;
+import java.util.*;
 import java.util.Map;
 import java.util.List;
 import java.util.HashMap;
@@ -90,26 +91,6 @@ public final class AMXOtherTests extends AMXTestBase
     {
         final ConnectorRuntimeAPIProvider api = getDomainRootProxy().getExt().getConnectorRuntimeAPIProvider();
         assert api != null;
-        
-        final Map<String,JdbcConnectionPool> pools = getDomainConfig().getResources().getJdbcConnectionPool();
-        for ( final String poolName :  pools.keySet() )
-        {
-            final JdbcConnectionPool pool = pools.get(poolName);
-            final String datasourceClassname = pool.getDatasourceClassname();
-            final Map<String,Object> props = api.getConnectionDefinitionPropertiesAndDefaults( datasourceClassname, pool.getResType());
-            //System.out.println( "Props for " + poolName +": " + props );
-            
-            final Map<String,Object> pingResults = api.pingJDBCConnectionPool(poolName);
-            assert pingResults != null;
-            assert pingResults.get(ConnectorRuntimeAPIProvider.PING_CONNECTION_POOL_KEY) != null || pingResults.get(REASON_FAILED_KEY) != null;
-            //System.out.println( "pingResults for: " + poolName + ": " + pingResults );
-        }
-
-        final Map<String,Object> customResources = api.getBuiltInCustomResources();
-        //System.out.println( "BuiltInCustomResources: " + customResources );
-        
-        final Map<String,Object> systemConnectors = api.getSystemConnectorsAllowingPoolCreation();
-        //System.out.println( "SystemConnectorsAllowingPoolCreation: " + MapUtil.toString(systemConnectors) );
     }
     
     @Test
