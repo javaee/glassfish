@@ -105,7 +105,7 @@ public class InstallNodeCommand extends SSHCommandsBase {
 
     @Override
     protected void validate() throws CommandException {
-        installDir = resolver.resolve(installDir);      
+        installDir = resolver.resolve(installDir);
         if (!force) {
             for (String host: hosts) {
                 if(checkIfNodeExistsForHost(host)) {
@@ -218,8 +218,7 @@ public class InstallNodeCommand extends SSHCommandsBase {
                             " to " + host + ":" + installDir);
                 // Looks like we need to quote the paths to scp in case they
                 // contain spaces.
-                scpClient.put(FileUtils.quoteString(zipFile.getAbsolutePath()),
-                              FileUtils.quoteString(installDir));
+                scpClient.put(zipFile.getAbsolutePath(), FileUtils.quoteString(installDir));
                 logger.finer("Copied " + zip + " to " + host + ":" + installDir);
             } catch (IOException ex){
                 logger.info (Strings.get("cannot.copy.zip.file", zip, host));
