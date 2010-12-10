@@ -299,10 +299,11 @@ public class TransactionServiceProperties {
                         interval = Integer.parseInt(value);
                     }
                     new RecoveryHelperThread(habitat, interval).start();
-                    _logger.log(Level.INFO,"[JTS] Started RecoveryHelperThread");
-                    RecoveryManager.startResyncThread();
-                    _logger.log(Level.INFO,"[JTS] Started ResyncThread");
                 }
+                // Release all locks
+                RecoveryManager.startResyncThread();
+                if (_logger.isLoggable(Level.FINE))
+                    _logger.log(Level.FINE,"[JTS] Started ResyncThread");
             }
         }
     }
@@ -340,8 +341,8 @@ public class TransactionServiceProperties {
                 return;
             }
 
-            if (_logger.isLoggable(Level.FINE)) {
-               _logger.log(Level.FINE,"Asynchronous thread for incomplete "
+            if (_logger.isLoggable(Level.INFO)) {
+               _logger.log(Level.INFO,"Asynchronous thread for incomplete "
                        + "tx is enabled with interval " + interval);
             }
             int prevSize = 0;

@@ -1662,7 +1662,9 @@ public class RecoveryManager {
         if (resyncThread == null) {
             initialise();
         }
-        resyncThread.start();
+        if (Configuration.isRecoverable()) {
+            resyncThread.start();
+        }
     }
 
     /**
