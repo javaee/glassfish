@@ -48,7 +48,7 @@ import com.sun.enterprise.web.WebModule;
 import com.sun.enterprise.web.connector.extension.GrizzlyConfig;
 import com.sun.enterprise.web.pwc.connector.coyote.PwcCoyoteRequest;
 import org.glassfish.grizzly.config.dom.*;
-import com.sun.grizzly.util.IntrospectionUtils;
+import org.glassfish.grizzly.http.server.util.IntrospectionUtils;
 import com.sun.logging.LogDomains;
 import org.apache.catalina.*;
 import org.apache.catalina.connector.Connector;

@@ -59,11 +59,11 @@
 package org.apache.catalina;
 
 
-import com.sun.grizzly.util.buf.MessageBytes;
-
-import javax.servlet.http.Cookie;
 import java.security.Principal;
 import java.util.Locale;
+import javax.servlet.http.Cookie;
+
+import org.glassfish.grizzly.http.util.DataChunk;
 
 /**
  * An <b>HttpRequest</b> is the Catalina internal facade for an
@@ -85,7 +85,7 @@ public interface HttpRequest extends Request {
      *
      * @param cookie The new cookie
      */
-    public void addCookie(Cookie cookie);
+    void addCookie(Cookie cookie);
 
 
     /**
@@ -94,7 +94,7 @@ public interface HttpRequest extends Request {
      * @param name The new header name
      * @param value The new header value
      */
-    public void addHeader(String name, String value);
+    void addHeader(String name, String value);
 
 
     /**
@@ -103,7 +103,7 @@ public interface HttpRequest extends Request {
      *
      * @param locale The new preferred Locale
      */
-    public void addLocale(Locale locale);
+    void addLocale(Locale locale);
 
 
     /**
@@ -114,31 +114,31 @@ public interface HttpRequest extends Request {
      * @param name Name of this request parameter
      * @param values Corresponding values for this request parameter
      */
-    public void addParameter(String name, String values[]);
+    void addParameter(String name, String values[]);
 
 
     /**
      * Clear the collection of Cookies associated with this Request.
      */
-    public void clearCookies();
+    void clearCookies();
 
 
     /**
      * Clear the collection of Headers associated with this Request.
      */
-    public void clearHeaders();
+    void clearHeaders();
 
 
     /**
      * Clear the collection of Locales associated with this Request.
      */
-    public void clearLocales();
+    void clearLocales();
 
 
     /**
      * Clear the collection of parameters associated with this Request.
      */
-    public void clearParameters();
+    void clearParameters();
 
 
     /**
@@ -148,7 +148,7 @@ public interface HttpRequest extends Request {
      *
      * @param type The authentication type used
      */
-    public void setAuthType(String type);
+    void setAuthType(String type);
 
 
     /**
@@ -156,7 +156,7 @@ public interface HttpRequest extends Request {
      *
      * @param method The request method
      */
-    public void setMethod(String method);
+    void setMethod(String method);
 
 
     /**
@@ -165,7 +165,7 @@ public interface HttpRequest extends Request {
      *
      * @param query The query string
      */
-    public void setQueryString(String query);
+    void setQueryString(String query);
 
 
     /**
@@ -175,7 +175,7 @@ public interface HttpRequest extends Request {
      *
      * @param path The path information
      */
-    public void setPathInfo(String path);
+    void setPathInfo(String path);
 
 
     /**
@@ -183,7 +183,7 @@ public interface HttpRequest extends Request {
      * 
      * @return the request path
      */
-    public MessageBytes getRequestPathMB();
+    DataChunk getRequestPathMB();
 
 
     /**
@@ -193,7 +193,7 @@ public interface HttpRequest extends Request {
      *
      * @param flag The new flag
      */
-    public void setRequestedSessionCookie(boolean flag);
+    void setRequestedSessionCookie(boolean flag);
 
 
     /**
@@ -202,7 +202,7 @@ public interface HttpRequest extends Request {
      *
      * @param id The new session id
      */
-    public void setRequestedSessionId(String id);
+    void setRequestedSessionId(String id);
 
 
     /**
@@ -212,7 +212,7 @@ public interface HttpRequest extends Request {
      *
      * @param flag The new flag
      */
-    public void setRequestedSessionURL(boolean flag);
+    void setRequestedSessionURL(boolean flag);
 
 
     /**
@@ -221,7 +221,7 @@ public interface HttpRequest extends Request {
      *
      * @param uri The request URI
      */
-    public void setRequestURI(String uri);
+    void setRequestURI(String uri);
 
 
     /**
@@ -229,7 +229,7 @@ public interface HttpRequest extends Request {
      * 
      * @return the URL decoded request URI
      */
-    public String getDecodedRequestURI();
+    String getDecodedRequestURI();
 
 
     /**
@@ -239,7 +239,7 @@ public interface HttpRequest extends Request {
      *
      * @param path The servlet path
      */
-    public void setServletPath(String path);
+    void setServletPath(String path);
 
 
     /**
@@ -249,7 +249,7 @@ public interface HttpRequest extends Request {
      *
      * @param principal The user Principal
      */
-    public void setUserPrincipal(Principal principal);
+    void setUserPrincipal(Principal principal);
 
 
 }

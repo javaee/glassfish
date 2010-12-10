@@ -67,9 +67,9 @@ import java.util.Properties;
 import java.util.logging.*;
 
 import org.apache.catalina.util.HexUtils;
-import com.sun.grizzly.tcp.Request;
-import com.sun.grizzly.tcp.RequestInfo;
-import com.sun.grizzly.tcp.Response;
+import org.glassfish.grizzly.http.server.Request;
+import org.glassfish.grizzly.http.server.RequestInfo;
+import org.glassfish.grizzly.http.server.Response;
 import com.sun.grizzly.tcp.Constants;
 import org.apache.jk.core.JkHandler;
 import org.apache.jk.core.Msg;

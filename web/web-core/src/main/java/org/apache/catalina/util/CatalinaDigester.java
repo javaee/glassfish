@@ -59,7 +59,7 @@
 package org.apache.catalina.util;
 
 
-import com.sun.grizzly.util.IntrospectionUtils;
+import org.glassfish.grizzly.http.server.util.IntrospectionUtils;
 import org.apache.tomcat.util.digester.Digester;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;

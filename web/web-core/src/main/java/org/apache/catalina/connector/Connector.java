@@ -61,7 +61,7 @@ package org.apache.catalina.connector;
 import com.sun.appserv.ProxyHandler;
 import com.sun.grizzly.tcp.Adapter;
 import com.sun.grizzly.tcp.ProtocolHandler;
-import com.sun.grizzly.util.IntrospectionUtils;
+import org.glassfish.grizzly.http.server.util.IntrospectionUtils;
 import com.sun.grizzly.util.http.mapper.Mapper;
 import org.apache.catalina.*;
 import org.apache.catalina.core.StandardEngine;

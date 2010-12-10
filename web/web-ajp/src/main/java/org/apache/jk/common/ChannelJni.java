@@ -66,7 +66,7 @@ import org.apache.jk.core.Msg;
 import org.apache.jk.core.MsgContext;
 import org.apache.jk.core.JkChannel;
 
-import com.sun.grizzly.tcp.Request;
+import org.glassfish.grizzly.http.server.Request;
 /** Pass messages using jni 
  *
  * @author Costin Manolache

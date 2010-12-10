@@ -58,20 +58,69 @@
 
 package org.apache.catalina.connector;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.URLDecoder;
+import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.SocketChannel;
+import java.nio.charset.UnsupportedCharsetException;
+import java.security.AccessController;
+import java.security.Principal;
+import java.security.PrivilegedAction;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.EventListener;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.TimeZone;
+import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.security.auth.Subject;
+import javax.servlet.AsyncContext;
+import javax.servlet.DispatcherType;
+import javax.servlet.FilterChain;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.ServletInputStream;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletRequestAttributeEvent;
+import javax.servlet.ServletRequestAttributeListener;
+import javax.servlet.ServletResponse;
+import javax.servlet.SessionCookieConfig;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.servlet.http.Part;
+
 import com.sun.appserv.ProxyHandler;
 import com.sun.enterprise.security.integration.RealmInitializer;
-import com.sun.grizzly.tcp.ActionCode;
-import com.sun.grizzly.tcp.CompletionHandler;
-import com.sun.grizzly.util.buf.B2CConverter;
-import com.sun.grizzly.util.buf.ByteChunk;
-import com.sun.grizzly.util.buf.CharChunk;
-import com.sun.grizzly.util.buf.MessageBytes;
-import com.sun.grizzly.util.http.Cookies;
-import com.sun.grizzly.util.http.FastHttpDateFormat;
-import com.sun.grizzly.util.http.Parameters;
-import com.sun.grizzly.util.http.ServerCookie;
-import com.sun.grizzly.util.http.mapper.MappingData;
-import org.apache.catalina.*;
+import org.apache.catalina.Context;
+import org.apache.catalina.Globals;
+import org.apache.catalina.Host;
+import org.apache.catalina.HttpRequest;
+import org.apache.catalina.HttpResponse;
+import org.apache.catalina.Manager;
+import org.apache.catalina.Pipeline;
+import org.apache.catalina.Realm;
+import org.apache.catalina.Session;
+import org.apache.catalina.Wrapper;
 import org.apache.catalina.authenticator.AuthenticatorBase;
 import org.apache.catalina.authenticator.SingleSignOn;
 import org.apache.catalina.core.ApplicationHttpRequest;
@@ -88,29 +137,14 @@ import org.apache.catalina.util.ParameterMap;
 import org.apache.catalina.util.RequestUtil;
 import org.apache.catalina.util.StringManager;
 import org.apache.catalina.util.StringParser;
+import org.glassfish.grizzly.http.Cookies;
+import org.glassfish.grizzly.http.server.util.MappingData;
+import org.glassfish.grizzly.http.util.B2CConverter;
+import org.glassfish.grizzly.http.util.CharChunk;
+import org.glassfish.grizzly.http.util.DataChunk;
+import org.glassfish.grizzly.http.util.MessageBytes;
+import org.glassfish.grizzly.http.util.Parameters;
 import org.glassfish.web.valve.GlassFishValve;
-
-import javax.security.auth.Subject;
-import javax.servlet.*;
-import javax.servlet.http.*;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.InetAddress;
-import java.net.Socket;
-import java.net.URLDecoder;
-import java.net.UnknownHostException;
-import java.nio.ByteBuffer;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.SocketChannel;
-import java.nio.charset.UnsupportedCharsetException;
-import java.security.*;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Wrapper object for the Coyote request.
@@ -265,7 +299,7 @@ public class Request
     /**
      * Request parameters parsed flag.
      */
-    protected boolean requestParametersParsed = false;
+//    protected boolean requestParametersParsed = false;
     /**
      * Cookies parsed flag.
      */
@@ -402,7 +436,7 @@ public class Request
     /**
      * Coyote request.
      */
-    protected com.sun.grizzly.tcp.Request coyoteRequest;
+    protected org.glassfish.grizzly.http.server.Request coyoteRequest;
     /**
      * The facade associated with this request.
      */
@@ -485,7 +519,7 @@ public class Request
      * 
      * @param coyoteRequest The Coyote request
      */
-    public void setCoyoteRequest(com.sun.grizzly.tcp.Request coyoteRequest) {
+    public void setCoyoteRequest(org.glassfish.grizzly.http.server.Request coyoteRequest) {
         this.coyoteRequest = coyoteRequest;
         inputBuffer.setRequest(coyoteRequest);
     }
@@ -493,8 +527,8 @@ public class Request
     /**
      * Get the Coyote request.
      */
-    public com.sun.grizzly.tcp.Request getCoyoteRequest() {
-        return (this.coyoteRequest);
+    public org.glassfish.grizzly.http.server.Request getCoyoteRequest() {
+        return this.coyoteRequest;
     }
 
     /**
@@ -533,7 +567,7 @@ public class Request
         userPrincipal = null;
         subject = null;
         sessionParsed = false;
-        requestParametersParsed = false;
+//        requestParametersParsed = false;
         cookiesParsed = false;
         locales.clear();
         localesParsed = false;
@@ -614,7 +648,7 @@ public class Request
      * Return the authorization credentials sent with this request.
      */
     public String getAuthorization() {
-        return (coyoteRequest.getHeader(Constants.AUTHORIZATION_HEADER));
+        return coyoteRequest.getHeader(Constants.AUTHORIZATION_HEADER);
     }
 
     /**
@@ -783,7 +817,7 @@ public class Request
      * Return the Response with which this Request is associated.
      */
     public org.apache.catalina.Response getResponse() {
-        return (this.response);
+        return this.response;
     }
 
     /**
@@ -803,7 +837,7 @@ public class Request
      * an SSLSocket.
      */
     public Socket getSocket() {
-        return (socket);
+        return socket;
     }
 
     /**
@@ -909,7 +943,7 @@ public class Request
      * @param name Name of the note to be returned
      */
     public Object getNote(String name) {
-        return (notes.get(name));
+        return notes.get(name);
     }
 
     /**
@@ -917,7 +951,7 @@ public class Request
      * that exist for this request.
      */
     public Iterator getNoteNames() {
-        return (notes.keySet().iterator());
+        return notes.keySet().iterator();
     }
 
     /**
@@ -1005,7 +1039,7 @@ public class Request
      * @param name The server name
      */
     public void setServerName(String name) {
-        coyoteRequest.serverName().setString(name);
+        coyoteRequest.setServerName(name);
     }
 
     /**
@@ -1046,22 +1080,22 @@ public class Request
     public Object getAttribute(String name) {
 
         if (name.equals(Globals.DISPATCHER_TYPE_ATTR)) {
-            return (dispatcherTypeAttr == null)
+            return dispatcherTypeAttr == null
                     ? DispatcherType.REQUEST
                     : dispatcherTypeAttr;
         } else if (name.equals(Globals.DISPATCHER_REQUEST_PATH_ATTR)) {
-            return (requestDispatcherPath == null)
+            return requestDispatcherPath == null
                     ? getRequestPathMB().toString()
                     : requestDispatcherPath.toString();
         } else if (name.equals(Globals.CONSTRAINT_URI)) {
-            return (getRequestPathMB() != null)
+            return getRequestPathMB() != null
                     ? getRequestPathMB().toString() : null;
         }
 
         Object attr = attributes.get(name);
 
         if (attr != null) {
-            return (attr);
+            return attr;
         }
 
         attr = coyoteRequest.getAttribute(name);
@@ -1070,7 +1104,7 @@ public class Request
         }
         // XXX Should move to Globals
         if (Constants.SSL_CERTIFICATE_ATTR.equals(name)) {
-            coyoteRequest.action(ActionCode.ACTION_REQ_SSL_CERTIFICATE, null);
+            coyoteRequest.action(/*ActionCode.ACTION_REQ_SSL_CERTIFICATE, null*/);
             attr = getAttribute(Globals.CERTIFICATES_ATTR);
             if (attr != null) {
                 attributes.put(name, attr);
@@ -1126,7 +1160,7 @@ public class Request
      */
     @Override
     public String getCharacterEncoding() {
-        return (coyoteRequest.getCharacterEncoding());
+        return coyoteRequest.getCharacterEncoding();
     }
 
     /**
@@ -1134,14 +1168,14 @@ public class Request
      */
     @Override
     public int getContentLength() {
-        return (coyoteRequest.getContentLength());
+        return coyoteRequest.getContentLength();
     }
 
     /**
      * Return the content type for this Request.
      */
     public String getContentType() {
-        return (coyoteRequest.getContentType());
+        return coyoteRequest.getContentType();
     }
 
     /**
@@ -1182,9 +1216,9 @@ public class Request
         }
 
         if (locales.size() > 0) {
-            return ((Locale) locales.get(0));
+            return (Locale) locales.get(0);
         } else {
-            return (defaultLocale);
+            return defaultLocale;
         }
 
     }
@@ -1203,11 +1237,11 @@ public class Request
         }
 
         if (locales.size() > 0) {
-            return (new Enumerator(locales));
+            return new Enumerator(locales);
         }
         ArrayList results = new ArrayList();
         results.add(defaultLocale);
-        return (new Enumerator(results));
+        return new Enumerator(results);
     }
 
     /**
@@ -1220,11 +1254,13 @@ public class Request
     @Override
     public String getParameter(String name) {
 
+/*
         if (!requestParametersParsed) {
             parseRequestParameters();
         }
+*/
 
-        return coyoteRequest.getParameters().getParameter(name);
+        return coyoteRequest.getParameter(name);
     }
 
     /**
@@ -1260,10 +1296,12 @@ public class Request
      */
     @Override
     public Enumeration<String> getParameterNames() {
+/*
         if (!requestParametersParsed) {
             parseRequestParameters();
         }
-        return coyoteRequest.getParameters().getParameterNames();
+*/
+        return coyoteRequest.getParameterNames();
     }
 
     /**
@@ -1274,10 +1312,12 @@ public class Request
      */
     @Override
     public String[] getParameterValues(String name) {
+/*
         if (!requestParametersParsed) {
             parseRequestParameters();
         }
-        return coyoteRequest.getParameters().getParameterValues(name);
+*/
+        return coyoteRequest.getParameterValues(name);
     }
 
     /**
@@ -1285,7 +1325,7 @@ public class Request
      */
     @Override
     public String getProtocol() {
-        return coyoteRequest.protocol().toString();
+        return coyoteRequest.getProtocol().toString();
     }
 
     /**
@@ -1334,9 +1374,9 @@ public class Request
             return null;
         } else {
             try {
-                return (servletContext.getRealPath(path));
+                return servletContext.getRealPath(path);
             } catch (IllegalArgumentException e) {
-                return (null);
+                return null;
             }
         }
     }
@@ -1493,9 +1533,9 @@ public class Request
 
         // If the path is already context-relative, just pass it through
         if (path == null) {
-            return (null);
+            return null;
         } else if (path.startsWith("/")) {
-            return (servletContext.getRequestDispatcher(path));
+            return servletContext.getRequestDispatcher(path);
         }
 
         // Convert a request-relative path to a context-relative one
@@ -1523,7 +1563,7 @@ public class Request
             relative = requestPath + path;
         }
 
-        return (servletContext.getRequestDispatcher(relative));
+        return servletContext.getRequestDispatcher(relative);
 
     }
 
@@ -1541,7 +1581,7 @@ public class Request
         }
         // END S1AS 6170450
 
-        return (coyoteRequest.scheme().toString());
+        return coyoteRequest.scheme().toString();
     }
 
     /**
@@ -1549,7 +1589,7 @@ public class Request
      */
     @Override
     public String getServerName() {
-        return (coyoteRequest.serverName().toString());
+        return coyoteRequest.serverName().toString();
     }
 
     /**
@@ -1567,10 +1607,10 @@ public class Request
                 // No port number provided with Host header, use default
                 return 443;
             } else {
-                return (coyoteRequest.getServerPort());
+                return coyoteRequest.getServerPort();
             }
         } else {
-            return (coyoteRequest.getServerPort());
+            return coyoteRequest.getServerPort();
         }
         // END SJSAS 6586658
     }
@@ -1715,7 +1755,7 @@ public class Request
      * 
      * @param enc      <code>String</code> containing the name of
      *                 the character encoding.
-     * @throws         java.io.UnsupportedEncodingException if this
+     * @throws         UnsupportedEncodingException if this
      *                 ServletRequest is still in a state where a
      *                 character encoding may be set, but the specified
      *                 encoding is invalid
@@ -1729,7 +1769,7 @@ public class Request
         // START SJSAS 4936855
         if (requestParametersParsed || usingReader) {
             String contextName =
-                    (getContext() != null ? getContext().getName() : "UNKNOWN");
+                getContext() != null ? getContext().getName() : "UNKNOWN";
             log.warning(sm.getString("coyoteRequest.setCharacterEncoding.ise",
                     enc, contextName));
             return;
@@ -1848,7 +1888,7 @@ public class Request
                 try {
                     if (Globals.IS_SECURITY_ENABLED) {
                         Boolean ret = (Boolean) AccessController.doPrivileged(new PrivilegedAction() {
-                            public java.lang.Object run() {
+                            public Object run() {
                                 try {
                                     return new Boolean(realm.invokeAuthenticateDelegate(req, (HttpResponse) getResponse(), context, (AuthenticatorBase) authBase, true));
                                 } catch (IOException ex) {
@@ -1875,7 +1915,7 @@ public class Request
     @Override
     public void login(final String username, final String password)
             throws ServletException {
-        login(username, ((password != null) ? password.toCharArray() : null));
+        login(username, password != null ? password.toCharArray() : null);
     }
 
     public void login(final String username, final char[] password)
@@ -1891,7 +1931,7 @@ public class Request
         }
 
         LoginConfig loginConfig = context.getLoginConfig();
-        String authMethod = (loginConfig != null) ? loginConfig.getAuthMethod() : "";
+        String authMethod = loginConfig != null ? loginConfig.getAuthMethod() : "";
         final Realm realm = context.getRealm();
         if (realm == null) {
             return;
@@ -1907,7 +1947,7 @@ public class Request
             Principal webPrincipal = null;
             if (Globals.IS_SECURITY_ENABLED) {
                 webPrincipal = (Principal) AccessController.doPrivileged(new PrivilegedAction() {
-                    public java.lang.Object run() {
+                    public Object run() {
                         return realm.authenticate(username, password);
                     }
                 });
@@ -2216,8 +2256,8 @@ public class Request
 
         if (SecurityUtil.isPackageProtectionEnabled()) {
             HttpSession session = getSession(false);
-            if ((subject != null) &&
-                    (!subject.getPrincipals().contains(principal))) {
+            if (subject != null &&
+                !subject.getPrincipals().contains(principal)) {
                 subject.getPrincipals().add(principal);
             } else if (session != null &&
                     session.getAttribute(Globals.SUBJECT_ATTR) == null) {
@@ -2237,7 +2277,7 @@ public class Request
      * Return the authentication type used for this Request.
      */
     public String getAuthType() {
-        return (authType);
+        return authType;
     }
 
     /**
@@ -2278,7 +2318,7 @@ public class Request
             return null;
         }
 
-        return (cookies.toArray(new Cookie[cookies.size()]));
+        return cookies.toArray(new Cookie[cookies.size()]);
     }
 
     /**
@@ -2308,12 +2348,12 @@ public class Request
 
         String value = getHeader(name);
         if (value == null) {
-            return (-1L);
+            return -1L;
         }
 
         // Attempt to convert the date header in a variety of formats
         long result = FastHttpDateFormat.parseDate(value, formats);
-        if (result != (-1L)) {
+        if (result != -1L) {
             return result;
         }
         throw new IllegalArgumentException(value);
@@ -2364,9 +2404,9 @@ public class Request
 
         String value = getHeader(name);
         if (value == null) {
-            return (-1);
+            return -1;
         } else {
-            return (Integer.parseInt(value));
+            return Integer.parseInt(value);
         }
 
     }
@@ -2395,13 +2435,13 @@ public class Request
     public String getPathTranslated() {
 
         if (servletContext == null) {
-            return (null);
+            return null;
         }
 
         if (getPathInfo() == null) {
-            return (null);
+            return null;
         } else {
-            return (servletContext.getRealPath(getPathInfo()));
+            return servletContext.getRealPath(getPathInfo());
         }
 
     }
@@ -2414,7 +2454,7 @@ public class Request
         String queryString = coyoteRequest.queryString().toString();
 
         if (queryString == null || queryString.equals("")) {
-            return (null);
+            return null;
         } else {
             return queryString;
         }
@@ -2427,9 +2467,9 @@ public class Request
     @Override
     public String getRemoteUser() {
         if (userPrincipal != null) {
-            return (userPrincipal.getName());
+            return userPrincipal.getName();
         } else {
-            return (null);
+            return null;
         }
     }
 
@@ -2438,8 +2478,8 @@ public class Request
      * 
      * @return the request path
      */
-    public MessageBytes getRequestPathMB() {
-        return (mappingData.requestPath);
+    public DataChunk getRequestPathMB() {
+        return mappingData.requestPath;
     }
 
     /**
@@ -2447,7 +2487,7 @@ public class Request
      */
     @Override
     public String getRequestedSessionId() {
-        return (requestedSessionId);
+        return requestedSessionId;
     }
 
     /**
@@ -2467,16 +2507,16 @@ public class Request
      */
     public String getRequestURI(boolean maskDefaultContextMapping) {
         if (maskDefaultContextMapping) {
-            return coyoteRequest.requestURI().toString();
+            return coyoteRequest.getRequestURI();
         } else {
             if (requestURI == null) {
                 // START GlassFish 1024
                 if (isDefaultContext) {
                     requestURI = getContextPath() +
-                            coyoteRequest.requestURI().toString();
+                        coyoteRequest.getRequestURI();
                 } else {
                     // END GlassFish 1024
-                    requestURI = coyoteRequest.requestURI().toString();
+                    requestURI = coyoteRequest.getRequestURI();
                     // START GlassFish 1024
                 }
                 // END GlassFish 1024
@@ -2516,13 +2556,13 @@ public class Request
         url.append(scheme);
         url.append("://");
         url.append(getServerName());
-        if ((scheme.equals("http") && (port != 80)) || (scheme.equals("https") && (port != 443))) {
+        if (scheme.equals("http") && port != 80 || scheme.equals("https") && port != 443) {
             url.append(':');
             url.append(port);
         }
         url.append(getRequestURI(maskDefaultContextMapping));
 
-        return (url);
+        return url;
 
     }
 
@@ -2582,9 +2622,9 @@ public class Request
     public boolean isRequestedSessionIdFromCookie() {
 
         if (requestedSessionId != null) {
-            return (requestedSessionCookie);
+            return requestedSessionCookie;
         } else {
-            return (false);
+            return false;
         }
 
     }
@@ -2597,9 +2637,9 @@ public class Request
     public boolean isRequestedSessionIdFromURL() {
 
         if (requestedSessionId != null) {
-            return (requestedSessionURL);
+            return requestedSessionURL;
         } else {
-            return (false);
+            return false;
         }
 
     }
@@ -2613,7 +2653,7 @@ public class Request
      */
     @Override
     public boolean isRequestedSessionIdFromUrl() {
-        return (isRequestedSessionIdFromURL());
+        return isRequestedSessionIdFromURL();
     }
 
     /**
@@ -2642,10 +2682,10 @@ public class Request
      */
     public boolean isRequestedSessionIdValid() {
         if (requestedSessionId == null) {
-            return (false);
+            return false;
         }
         if (context == null) {
-            return (false);
+            return false;
         }
 
         if (session != null &&
@@ -2655,7 +2695,7 @@ public class Request
 
         Manager manager = context.getManager();
         if (manager == null) {
-            return (false);
+            return false;
         }
         Session localSession = null;
         try {
@@ -2668,10 +2708,10 @@ public class Request
         } catch (IOException e) {
             localSession = null;
         }
-        if ((localSession != null) && localSession.isValid()) {
-            return (true);
+        if (localSession != null && localSession.isValid()) {
+            return true;
         } else {
-            return (false);
+            return false;
         }
 
     }
@@ -2695,16 +2735,16 @@ public class Request
 
         // Have we got an authenticated principal at all?
         if (userPrincipal == null) {
-            return (false);
+            return false;
         }
 
         // Identify the Realm we will use for checking role assignments
         if (context == null) {
-            return (false);
+            return false;
         }
         Realm realm = context.getRealm();
         if (realm == null) {
-            return (false);
+            return false;
         }
 
         // Check for a role alias defined in a <security-role-ref> element
@@ -2712,19 +2752,19 @@ public class Request
             String realRole = wrapper.findSecurityReference(role);
 
             //START SJSAS 6232464
-            if ((realRole != null) &&
+            if (realRole != null &&
                     //realm.hasRole(userPrincipal, realRole))
                     realm.hasRole(this, (HttpResponse) response,
                     userPrincipal, realRole)) {
-                return (true);
+                return true;
             }
         }
 
         // Check for a role defined directly as a <security-role>
 
         //return (realm.hasRole(userPrincipal, role));
-        return (realm.hasRole(this, (HttpResponse) response,
-                userPrincipal, role));
+        return realm.hasRole(this, (HttpResponse) response,
+                userPrincipal, role);
         //END SJSAS 6232464
     }
 
@@ -2733,7 +2773,7 @@ public class Request
      */
     @Override
     public Principal getUserPrincipal() {
-        return (userPrincipal);
+        return userPrincipal;
     }
 
     /**
@@ -2807,15 +2847,15 @@ public class Request
 
         // There cannot be a session if no context has been assigned yet
         if (context == null) {
-            return (null);
+            return null;
         }
 
         // Return the current session if it exists and is valid
-        if ((session != null) && !session.isValid()) {
+        if (session != null && !session.isValid()) {
             session = null;
         }
         if (session != null) {
-            return (session);
+            return session;
         }
 
         // Return the requested session if it exists and is valid
@@ -2824,7 +2864,7 @@ public class Request
             manager = context.getManager();
         }
         if (manager == null) {
-            return (null);      // Sessions are not supported
+            return null;      // Sessions are not supported
         }
         if (requestedSessionId != null) {
             if (!checkUnsuccessfulSessionFind || !unsuccessfulSessionFind) {
@@ -2847,20 +2887,20 @@ public class Request
                     session = null;
                 }
             }
-            if ((session != null) && !session.isValid()) {
+            if (session != null && !session.isValid()) {
                 session = null;
             }
             if (session != null) {
                 session.access();
-                return (session);
+                return session;
             }
         }
 
         // Create a new session if requested and the response is not committed
         if (!create) {
-            return (null);
+            return null;
         }
-        if ((context != null) && (response != null) &&
+        if (context != null && response != null &&
                 context.getCookies() &&
                 response.getResponse().isCommitted()) {
             throw new IllegalStateException(sm.getString("coyoteRequest.sessionCreateCommitted"));
@@ -2920,7 +2960,7 @@ public class Request
         // END GlassFish 896
 
         // Creating a new session cookie based on the newly created session
-        if ((session != null) && (getContext() != null)) {
+        if (session != null && getContext() != null) {
 
             if (getContext().getCookies()) {
                 String jvmRoute = ((StandardContext) getContext()).getJvmRoute();
@@ -2943,9 +2983,9 @@ public class Request
 
         if (session != null) {
             session.access();
-            return (session);
+            return session;
         } else {
-            return (null);
+            return null;
         }
 
     }
@@ -2956,7 +2996,6 @@ public class Request
      * @param cookie The JSESSIONID cookie to be configured
      */
     protected void configureSessionCookie(Cookie cookie) {
-        Context context = getContext();
         cookie.setMaxAge(-1);
         String contextPath = null;
         // START GlassFish 1024
@@ -2970,7 +3009,7 @@ public class Request
                 contextPath = context.getPath();
                 // END OF SJSAS 6231069
             }
-            if ((contextPath != null) && (contextPath.length() > 0)) {
+            if (contextPath != null && contextPath.length() > 0) {
                 cookie.setPath(contextPath);
             } else {
                 cookie.setPath("/");
@@ -3015,8 +3054,8 @@ public class Request
 
         cookiesParsed = true;
 
-        Cookies serverCookies = coyoteRequest.getCookies();
-        int count = serverCookies.getCookieCount();
+        org.glassfish.grizzly.http.Cookie[] serverCookies = coyoteRequest.getCookies();
+        int count = serverCookies.length;
         if (count <= 0) {
             return;
         }
@@ -3024,7 +3063,7 @@ public class Request
         cookies.clear();
 
         for (int i = 0; i < count; i++) {
-            ServerCookie scookie = serverCookies.getCookie(i);
+            org.glassfish.grizzly.http.Cookie scookie = serverCookies[i];
             try {
                 /* GlassFish 898
                 Cookie cookie = new Cookie(scookie.getName().toString(),
@@ -3033,11 +3072,11 @@ public class Request
                 // START GlassFish 898
                 Cookie cookie = makeCookie(scookie);
                 // END GlassFish 898
-                cookie.setPath(scookie.getPath().toString());
+                cookie.setPath(scookie.getPath());
                 cookie.setVersion(scookie.getVersion());
-                String domain = scookie.getDomain().toString();
+                String domain = scookie.getDomain();
                 if (domain != null) {
-                    cookie.setDomain(scookie.getDomain().toString());
+                    cookie.setDomain(scookie.getDomain());
                 }
                 cookies.add(cookie);
             } catch (IllegalArgumentException e) {
@@ -3047,14 +3086,14 @@ public class Request
     }
 
     // START GlassFish 898
-    protected Cookie makeCookie(ServerCookie scookie) {
+    protected Cookie makeCookie(org.glassfish.grizzly.http.Cookie scookie) {
         return makeCookie(scookie, false);
     }
 
-    protected Cookie makeCookie(ServerCookie scookie, boolean decode) {
+    protected Cookie makeCookie(org.glassfish.grizzly.http.Cookie scookie, boolean decode) {
 
-        String name = scookie.getName().toString();
-        String value = scookie.getValue().toString();
+        String name = scookie.getName();
+        String value = scookie.getValue();
 
         if (decode) {
             try {
@@ -3106,7 +3145,7 @@ public class Request
             return;
         }
 
-        if (!getMethod().equalsIgnoreCase("POST")) {
+        if (!"POST".equalsIgnoreCase(getMethod())) {
             return;
         }
 
@@ -3120,7 +3159,7 @@ public class Request
         } else {
             contentType = contentType.trim();
         }
-        if (!("application/x-www-form-urlencoded".equals(contentType))) {
+        if (!"application/x-www-form-urlencoded".equals(contentType)) {
             return;
         }
 
@@ -3128,7 +3167,7 @@ public class Request
 
         if (len > 0) {
             int maxPostSize = ((Connector) connector).getMaxPostSize();
-            if ((maxPostSize > 0) && (len > maxPostSize)) {
+            if (maxPostSize > 0 && len > maxPostSize) {
                 log(sm.getString("coyoteRequest.postTooLarge"));
                 throw new IllegalStateException("Post too large");
             }
@@ -3201,7 +3240,7 @@ public class Request
                 return offset;
             }
             offset += inputLen;
-        } while ((len - offset) > 0);
+        } while (len - offset > 0);
         return len;
     }
 
@@ -3241,7 +3280,7 @@ public class Request
             int len = value.length();
             for (int i = 0; i < len; i++) {
                 char ch = value.charAt(i);
-                if ((ch != ' ') && (ch != '\t')) {
+                if (ch != ' ' && ch != '\t') {
                     sb.append(ch);
                 }
             }
@@ -3349,7 +3388,7 @@ public class Request
 
         for (int i = 0; i < value.length(); i++) {
             char c = value.charAt(i);
-            if (!((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))) {
+            if (!(c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z')) {
                 return false;
             }
         }
@@ -3395,7 +3434,7 @@ public class Request
             int jrouteIndex = sessionId.lastIndexOf(':');
             if (jrouteIndex > 0) {
                 setRequestedSessionId(sessionId.substring(0, jrouteIndex));
-                if (jrouteIndex < (sessionId.length() - 1)) {
+                if (jrouteIndex < sessionId.length() - 1) {
                     setJrouteId(sessionId.substring(jrouteIndex + 1));
                 }
             } else {
@@ -3467,7 +3506,7 @@ public class Request
                 for (int i = 0; i < end - start - semicolon2; i++) {
                     buf[start + semicolon + i] = buf[start + i + semicolon2];
                 }
-                uriBC.setBytes(buf, start, semicolon + (end - start - semicolon2));
+                uriBC.setBytes(buf, start, semicolon + end - start - semicolon2);
             }
         }
     }
@@ -3805,13 +3844,13 @@ public class Request
                     }
                 };
 
-            org.apache.catalina.connector.Response res =
-                (org.apache.catalina.connector.Response)
+            Response res =
+                (Response)
                     coyoteRequest.getResponse().getNote(
                         CoyoteAdapter.ADAPTER_NOTES);
             coyoteRequest.getResponse().suspend(asyncContext.getTimeout(),
                     this, requestCompletionHandler,
-                    new RequestAttachment<org.apache.catalina.connector.Request>(
+                    new RequestAttachment<Request>(
                     asyncContext.getTimeout(), this, requestCompletionHandler,
                     res));
         }
@@ -4118,24 +4157,24 @@ public class Request
     }
 
     private boolean isSessionVersioningSupported() {
-        return (context != null &&
+        return context != null &&
             context.getManager() != null &&
-            context.getManager().isSessionVersioningSupported());
+            context.getManager().isSessionVersioningSupported();
     }
 
     /**
      * This class will be invoked by Grizzly when a suspended operation is
-     * resumed {@link com.sun.grizzly.tcp.Response#resume} or has timed out.
-     * See {@link com.sun.grizzly.tcp.Response.ResponseAttachment} for details.
+     * resumed {@link org.glassfish.grizzly.http.server.Response#resume} or has timed out.
+     * See {@link org.glassfish.grizzly.http.server.Response.ResponseAttachment} for details.
      */
     private final static class RequestAttachment<A> extends
-            com.sun.grizzly.tcp.Response.ResponseAttachment {
+            org.glassfish.grizzly.http.server.Response.ResponseAttachment {
 
-        private org.apache.catalina.connector.Response res;
+        private Response res;
 
         public RequestAttachment(Long timeout, A attachment,
                 CompletionHandler<? super A> completionHandler,
-                org.apache.catalina.connector.Response res) {
+                Response res) {
             super(timeout, attachment, completionHandler, res.getCoyoteResponse());
             this.res = res;
         }

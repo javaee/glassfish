@@ -67,8 +67,8 @@ import java.util.logging.*;
 
 import com.sun.grizzly.tcp.ActionCode;
 import com.sun.grizzly.tcp.ActionHook;
-import com.sun.grizzly.tcp.Request;
-import com.sun.grizzly.tcp.Response;
+import org.glassfish.grizzly.http.server.Request;
+import org.glassfish.grizzly.http.server.Response;
 
 import com.sun.grizzly.util.buf.C2BConverter;
 import com.sun.grizzly.util.buf.MessageBytes;
@@ -434,7 +434,7 @@ public class MsgContext implements ActionHook {
 
     private void logTime(Request req, Response res ) {
         // called after the request
-        //            com.sun.grizzly.tcp.Request req=(com.sun.grizzly.tcp.Request)param;
+        //            org.glassfish.grizzly.http.server.Request req=(org.glassfish.grizzly.http.server.Request)param;
         //            Response res=req.getResponse();
         String uri=req.requestURI().toString();
         if( uri.indexOf( ".gif" ) >0 ) return;

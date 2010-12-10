@@ -59,7 +59,7 @@
 package org.apache.tomcat.util.digester;
 
 
-import com.sun.grizzly.util.IntrospectionUtils;
+import org.glassfish.grizzly.http.server.util.IntrospectionUtils;
 import org.xml.sax.Attributes;
 
 import java.util.logging.Level;

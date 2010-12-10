@@ -133,10 +133,12 @@
             <artifactId>security</artifactId>
             <version>${project.version}</version>
         </dependency>
+<!--
         <dependency>
             <groupId>org.glassfish.grizzly</groupId>
             <artifactId>grizzly-comet</artifactId>
         </dependency>
+-->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

@@ -58,16 +58,6 @@
 
 package org.apache.catalina.connector;
 
-
-import com.sun.grizzly.tcp.ActionCode;
-import com.sun.grizzly.util.buf.ByteChunk;
-import com.sun.grizzly.util.buf.C2BConverter;
-import org.apache.catalina.Globals;
-import org.apache.catalina.Session;
-import org.apache.catalina.core.StandardContext;
-import org.apache.catalina.util.RequestUtil;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.Writer;
 import java.security.AccessController;
@@ -76,7 +66,15 @@ import java.security.PrivilegedExceptionAction;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpSession;
 
+import org.apache.catalina.Globals;
+import org.apache.catalina.Session;
+import org.apache.catalina.core.StandardContext;
+import org.apache.catalina.util.RequestUtil;
+import org.glassfish.grizzly.http.util.ByteChunk;
+import org.glassfish.grizzly.http.util.C2BConverter;
 
 /**
  * The buffer used by Tomcat response. This is a derivative of the Tomcat 3.3
@@ -95,7 +93,7 @@ public class OutputBuffer extends Writer
 
     private static final String SET_COOKIE_HEADER = "Set-Cookie";
     public static final String DEFAULT_ENCODING = 
-        com.sun.grizzly.tcp.Constants.DEFAULT_CHARACTER_ENCODING;
+        org.glassfish.grizzly.http.server.Constants.DEFAULT_CHARACTER_ENCODING;
     public static final int DEFAULT_BUFFER_SIZE = 8*1024;
     static final int debug = 0;
 
@@ -173,7 +171,7 @@ public class OutputBuffer extends Writer
     /**
      * Associated Coyote response.
      */
-    private com.sun.grizzly.tcp.Response response;
+    private org.glassfish.grizzly.http.server.Response response;
     private Response coyoteResponse;
 
     /**
@@ -241,14 +239,14 @@ public class OutputBuffer extends Writer
      * 
      * @param response Associated Coyote response
      */
-    public void setResponse(com.sun.grizzly.tcp.Response response) {
+    public void setResponse(org.glassfish.grizzly.http.server.Response response) {
 	this.response = response;
     }
 
 
     public void setCoyoteResponse(Response coyoteResponse) {
         this.coyoteResponse = coyoteResponse;
-        setResponse((com.sun.grizzly.tcp.Response) coyoteResponse.getCoyoteResponse());
+        setResponse((org.glassfish.grizzly.http.server.Response) coyoteResponse.getCoyoteResponse());
     }
 
 
@@ -257,7 +255,7 @@ public class OutputBuffer extends Writer
      * 
      * @return the associated Coyote response
      */
-    public com.sun.grizzly.tcp.Response getResponse() {
+    public org.glassfish.grizzly.http.server.Response getResponse() {
         return this.response;
     }
 
@@ -366,7 +364,7 @@ public class OutputBuffer extends Writer
         doFlush = true;
         if (initial){
             addSessionCookies();
-            response.sendHeaders();
+            response.flush();
             initial = false;
         }
         if (bb.getLength() > 0) {
@@ -379,8 +377,7 @@ public class OutputBuffer extends Writer
             // If some exception occurred earlier, or if some IOE occurred
             // here, notify the servlet with an IOE
             if (response.isExceptionPresent()) {
-                throw new ClientAbortException
-                    (response.getErrorException());
+                throw new ClientAbortException(response.getErrorException());
             }
         }
 

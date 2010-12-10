@@ -66,7 +66,7 @@ import java.util.logging.*;
 
 import org.apache.jk.core.Msg;
 import org.apache.jk.core.MsgContext;
-import com.sun.grizzly.util.IntrospectionUtils;
+import org.glassfish.grizzly.http.server.util.IntrospectionUtils;
 
 /** Shm implementation using JDK1.4 nio.
  *

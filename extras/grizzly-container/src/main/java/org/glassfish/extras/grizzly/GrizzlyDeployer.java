@@ -41,7 +41,7 @@
 package org.glassfish.extras.grizzly;
 
 import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
-import com.sun.grizzly.util.IntrospectionUtils;
+import org.glassfish.grizzly.http.server.util.IntrospectionUtils;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.glassfish.api.deployment.Deployer;

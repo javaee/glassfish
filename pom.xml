@@ -849,11 +849,13 @@
                 <version>${grizzly.version}</version>
             </dependency>
 
+<!--
             <dependency>
                 <groupId>org.glassfish.grizzly</groupId>
                 <artifactId>grizzly-comet</artifactId>
                 <version>${grizzly.version}</version>
             </dependency>
+-->
 
             <dependency>
                 <groupId>org.glassfish.grizzly</groupId>

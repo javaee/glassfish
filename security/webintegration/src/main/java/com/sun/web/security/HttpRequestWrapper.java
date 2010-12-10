@@ -40,15 +40,13 @@
 
 package com.sun.web.security;
 
-import com.sun.grizzly.util.buf.MessageBytes;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.Socket;
 import java.security.Principal;
 import java.util.Iterator;
 import java.util.Locale;
-
-import javax.servlet.FilterChain; 
+import javax.servlet.FilterChain;
 import javax.servlet.ServletInputStream;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.Cookie;
@@ -62,6 +60,7 @@ import org.apache.catalina.HttpRequest;
 import org.apache.catalina.Response;
 import org.apache.catalina.Session;
 import org.apache.catalina.Wrapper;
+import org.glassfish.grizzly.http.util.DataChunk;
 
 class HttpRequestWrapper extends HttpServletRequestWrapper 
         implements HttpRequest {
@@ -137,7 +136,7 @@ class HttpRequestWrapper extends HttpServletRequestWrapper
         httpRequest.setPathInfo(path);
     }
 
-    public MessageBytes getRequestPathMB() {
+    public DataChunk getRequestPathMB() {
         return httpRequest.getRequestPathMB();
     }
 

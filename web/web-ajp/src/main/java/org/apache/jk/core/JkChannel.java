@@ -60,7 +60,7 @@ package org.apache.jk.core;
 
 import java.io.IOException;
 
-import com.sun.grizzly.tcp.Request;
+import org.glassfish.grizzly.http.server.Request;
 
 /**
  * A Channel represents a connection point to the outside world.

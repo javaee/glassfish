@@ -58,20 +58,19 @@
 
 package com.sun.enterprise.web.connector.grizzly;
 
-import com.sun.grizzly.tcp.Adapter;
-import com.sun.grizzly.tcp.ProtocolHandler;
-import com.sun.grizzly.tcp.http11.Constants;
-import com.sun.grizzly.util.net.SSLImplementation;
-import com.sun.grizzly.util.net.ServerSocketFactory;
-import com.sun.grizzly.util.res.StringManager;
-
-import javax.management.MBeanRegistration;
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
 import java.util.Hashtable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.management.MBeanRegistration;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
 
+import com.sun.grizzly.tcp.ProtocolHandler;
+import org.glassfish.grizzly.config.ssl.SSLImplementation;
+import org.glassfish.grizzly.config.ssl.ServerSocketFactory;
+import org.glassfish.grizzly.http.server.Constants;
+import org.glassfish.grizzly.http.server.HttpRequestProcessor;
+import org.glassfish.grizzly.http.util.StringManager;
 
 /**
  * Abstract the protocol implementation, including threading, etc.
@@ -161,11 +160,11 @@ public class CoyoteConnectorLauncher implements ProtocolHandler, MBeanRegistrati
 
     /** The adapter, used to call the connector 
      */
-    public void setAdapter(Adapter adapter) {
+    public void setAdapter(HttpRequestProcessor adapter) {
         this.adapter=adapter;
     }
 
-    public Adapter getAdapter() {
+    public HttpRequestProcessor getAdapter() {
         return adapter;
     }
 
@@ -203,7 +202,7 @@ public class CoyoteConnectorLauncher implements ProtocolHandler, MBeanRegistrati
     private String reportedname;
     protected int socketCloseDelay=-1;
     protected boolean disableUploadTimeout = true;
-    protected Adapter adapter;
+    protected HttpRequestProcessor adapter;
     
     // START OF SJSAS PE 8.1 6172948
     /**

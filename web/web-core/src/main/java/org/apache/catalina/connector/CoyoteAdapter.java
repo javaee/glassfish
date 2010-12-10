@@ -58,27 +58,27 @@
 
 package org.apache.catalina.connector;
 
-import com.sun.appserv.ProxyHandler;
-import org.glassfish.grizzly.config.ContextRootInfo;
-import com.sun.grizzly.tcp.ActionCode;
-import com.sun.grizzly.tcp.Adapter;
-import com.sun.grizzly.util.buf.ByteChunk;
-import com.sun.grizzly.util.buf.CharChunk;
-import com.sun.grizzly.util.buf.MessageBytes;
-import com.sun.grizzly.util.http.mapper.MappingData;
-import org.apache.catalina.*;
-import org.apache.catalina.core.ContainerBase;
-import org.apache.catalina.util.ServerInfo;
-import org.apache.catalina.util.StringManager;
-import org.glassfish.web.valve.GlassFishValve;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.sun.appserv.ProxyHandler;
+import com.sun.grizzly.tcp.Adapter;
+import org.apache.catalina.Container;
+import org.apache.catalina.Context;
+import org.apache.catalina.Globals;
+import org.apache.catalina.Host;
+import org.apache.catalina.Wrapper;
+import org.apache.catalina.core.ContainerBase;
+import org.apache.catalina.util.ServerInfo;
+import org.apache.catalina.util.StringManager;
+import org.glassfish.grizzly.config.ContextRootInfo;
+import org.glassfish.grizzly.http.server.HttpRequestProcessor;
+import org.glassfish.web.valve.GlassFishValve;
 
 /**
  * Implementation of a request processor which delegates the processing to a
@@ -89,9 +89,7 @@ import java.util.logging.Logger;
  * @version $Revision: 1.34 $ $Date: 2007/08/24 18:38:28 $
  */
 
-public class CoyoteAdapter
-    implements Adapter 
- {
+public class CoyoteAdapter extends HttpRequestProcessor {
     private static Logger log = Logger.getLogger(CoyoteAdapter.class.getName());
 
     // -------------------------------------------------------------- Constants
@@ -102,20 +100,20 @@ public class CoyoteAdapter
             System.getProperty("java.specification.version") + ")";
 
 
-    protected boolean v3Enabled = 
-        Boolean.valueOf(System.getProperty("v3.grizzly.useMapper", "true")).booleanValue();
+    protected boolean v3Enabled =
+        Boolean.valueOf(System.getProperty("v3.grizzly.useMapper", "true"));
     
     
     public static final int ADAPTER_NOTES = 1;
 
     static final String JVM_ROUTE = System.getProperty("jvmRoute");
 
-    protected static final boolean ALLOW_BACKSLASH = 
-        Boolean.valueOf(System.getProperty("com.sun.grizzly.tcp.tomcat5.CoyoteAdapter.ALLOW_BACKSLASH", "false")).booleanValue();
+    protected static final boolean ALLOW_BACKSLASH =
+        Boolean.valueOf(System.getProperty("com.sun.grizzly.tcp.tomcat5.CoyoteAdapter.ALLOW_BACKSLASH", "false"));
 
     private static final boolean COLLAPSE_ADJACENT_SLASHES =
         Boolean.valueOf(System.getProperty(
-            "com.sun.enterprise.web.collapseAdjacentSlashes", "true")).booleanValue();
+            "com.sun.enterprise.web.collapseAdjacentSlashes", "true"));
 
     /**
      * When mod_jk is used, the adapter must be invoked the same way 
@@ -174,8 +172,8 @@ public class CoyoteAdapter
      * Service method.
      */
     @Override
-    public void service(com.sun.grizzly.tcp.Request req,
-                        com.sun.grizzly.tcp.Response res)
+    public void service(org.glassfish.grizzly.http.server.Request req,
+                        org.glassfish.grizzly.http.server.Response res)
             throws Exception {
 
         res.setAllowCustomReasonPhrase(Constants.USE_CUSTOM_STATUS_MSG_IN_HEADER);
@@ -188,7 +186,7 @@ public class CoyoteAdapter
         // requestStartEvent probe, so that the mapping data will be
         // available to any probe event listener via standard
         // ServletRequest APIs (such as getContextPath())
-        MappingData md = (MappingData)req.getNote(MAPPING_DATA);
+        org.glassfish.grizzly.http.server.util.MappingData md = (org.glassfish.grizzly.http.server.util.MappingData)req.getNote(MAPPING_DATA);
         if (md == null){
             v3Enabled = false;
         } else {
@@ -238,9 +236,9 @@ public class CoyoteAdapter
     }
 
 
-    private void doService(com.sun.grizzly.tcp.Request req,
+    private void doService(org.glassfish.grizzly.http.server.Request req,
                            Request request,
-                           com.sun.grizzly.tcp.Response res,
+                           org.glassfish.grizzly.http.server.Response res,
                            Response response)
             throws Exception {
         
@@ -352,8 +350,8 @@ public class CoyoteAdapter
      * header.
      */
     @Override
-    public void afterService(com.sun.grizzly.tcp.Request req,
-                             com.sun.grizzly.tcp.Response res)
+    public void afterService(org.glassfish.grizzly.http.server.Request req,
+                             org.glassfish.grizzly.http.server.Response res)
             throws Exception{
 
         Request request = (Request) req.getNote(ADAPTER_NOTES);
@@ -387,21 +385,21 @@ public class CoyoteAdapter
     /**
      * Parse additional request parameters.
      */
-    protected boolean postParseRequest(com.sun.grizzly.tcp.Request req,
+    protected boolean postParseRequest(org.glassfish.grizzly.http.server.Request req,
                                        Request request,
-                                       com.sun.grizzly.tcp.Response res,
+                                       org.glassfish.grizzly.http.server.Response res,
                                        Response response)
         throws Exception {
         // XXX the processor may have set a correct scheme and port prior to this point, 
         // in ajp13 protocols dont make sense to get the port from the connector...
         // otherwise, use connector configuration
-        if (! req.scheme().isNull()) {
+        if (req.getScheme() != null) {
             // use processor specified scheme to determine secure state
-            request.setSecure(req.scheme().equals("https"));
+            request.setSecure("https".equals(req.getScheme()));
         } else {
             // use connector scheme and secure configuration, (defaults to
             // "http" and false respectively)
-            req.scheme().setString(connector.getScheme());
+            req.setScheme(connector.getScheme());
             request.setSecure(connector.getSecure());
         }
 
@@ -416,11 +414,11 @@ public class CoyoteAdapter
             req.setServerPort(proxyPort);
         }
         if (proxyName != null) {
-            req.serverName().setString(proxyName);
+            req.setServerName(proxyName);
         }
 
         // URI decoding
-        MessageBytes decodedURI = req.decodedURI();
+        org.glassfish.grizzly.http.util.MessageBytes decodedURI = req.getDecodedRequestURI();
         if (compatWithTomcat || !v3Enabled) {           
             decodedURI.duplicate(req.requestURI());
             try {
