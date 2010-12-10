@@ -170,8 +170,7 @@ public class SecurityHandler {
             handlerCtx.setOutputValue("classnameOption", "input");
             attrMap.put("predefinedClassname", Boolean.FALSE);
             attrMap.put("classnameInput", classname);
-            skipRealmPropsList = new ArrayList();
-            List props = getChildrenMapForTableList(origProps, "property", skipRealmPropsList);
+            List props = getChildrenMapForTableList(origProps, "property", null);
             handlerCtx.setOutputValue("properties", props);
         }
 
