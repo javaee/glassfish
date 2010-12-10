@@ -168,8 +168,9 @@ public class GuiUtil {
             //should never get here.
             sessionMap.put("hostName", "");
         }
-        
-        sessionMap.put("domainName", RestUtil.getPropValue((String)(sessionMap.get("REST_URL")), "administrative.domain.name", null));
+        final String domainName = RestUtil.getPropValue((String) (sessionMap.get("REST_URL")), "administrative.domain.name", null);
+        sessionMap.put("domainName", domainName);
+        sessionMap.put("localhostNodeName", "localhost-"+domainName);
         sessionMap.put("_noNetwork", (System.getProperty("com.sun.enterprise.tools.admingui.NO_NETWORK", "false").equals("true"))? Boolean.TRUE: Boolean.FALSE);
         sessionMap.put("supportCluster", Boolean.FALSE);
         Map version = RestUtil.restRequest(sessionMap.get("REST_URL")+"/version", null, "GET" ,null, false);

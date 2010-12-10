@@ -246,11 +246,10 @@ public class ClusterHandler {
 
         for (Map oneRow : rows) {
             String nodeName = (String) oneRow.get("name");
-            //TODO fix
-            //if (nodeName.equals("localhost-" + domainName)){
-            if (nodeName.startsWith("localhost-")){
+            final String localhostNodeName = (String) GuiUtil.getSessionValue("localhostNodeName");
+            if (nodeName.equals(localhostNodeName)){
                 GuiUtil.prepareAlert("error",  GuiUtil.getMessage("msg.Error"),
-                        GuiUtil.getMessage(CLUSTER_RESOURCE_NAME, "node.error.removeLocalhost"));
+                        GuiUtil.getMessage(CLUSTER_RESOURCE_NAME, "node.error.removeLocalhost" , new String[]{localhostNodeName}));
                 return;
             }
             List instancesList = (List)nodeInstanceMap.get(nodeName);
