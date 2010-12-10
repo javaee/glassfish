@@ -467,12 +467,14 @@ public class DFDeploymentStatus implements java.io.Serializable {
         public static void parseDeploymentStatus(DFDeploymentStatus status, 
             PrintWriter pw) {
             if (status != null) {
-                status = status.getMainStatus();
-                
                 // if it's falure case, print all exceptions
                 if (status.getStatus() == DFDeploymentStatus.Status.FAILURE) {
                     for (Iterator itr = getAllStageStatusForLevel(status, DFDeploymentStatus.Status.FAILURE); itr.hasNext();) {
                         DFDeploymentStatus stage = (DFDeploymentStatus) itr.next();
+                        if (stage.getParent() == null) {
+                            // don't print the message from the outmost level
+                            continue;
+                        }
                         printFailure(pw, stage);
                     }
                 } 
@@ -481,6 +483,10 @@ public class DFDeploymentStatus implements java.io.Serializable {
                 else if (status.getStatus() == DFDeploymentStatus.Status.WARNING) {
                     for (Iterator itr = getAllStageStatusForLevel(status, DFDeploymentStatus.Status.WARNING); itr.hasNext();) {
                         DFDeploymentStatus stage = (DFDeploymentStatus) itr.next();
+                        if (stage.getParent() == null) {
+                            // don't print the message from the outmost level
+                            continue;
+                        }
                         String msg = stage.getStageStatusMessage();
                         if (msg != null) {
                             pw.println(msg);
