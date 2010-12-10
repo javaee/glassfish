@@ -51,9 +51,18 @@
             <sun:staticText id="name" text="#{pageSession.Name}"  rendered="#{Edit}" />
         </sun:property>
 
-        <sun:property id="nameNew"  rendered="#{!edit}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.resourceAdapterConfig.Name}">
-            <sun:dropDown id="resAdaptorProp" selected="#{pageSession.valueMap['name']}" labels="$pageSession{connectorList}"
-                    required="#{true}" submitForm="#{true}" immediate="#{true}" >
+        <sun:property id="nameNewDropDown"  rendered="#{!edit}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.resourceAdapterConfig.Name}" helpText="$resource{i18njca.resourceAdapterConfig.NameHelp}" >
+            <!afterCreate
+                getClientId(component="$this{component}" clientId=>$page{propId});
+            />
+            <sun:hidden id="option" value="#{pageSession.myOption}">
+                <!afterCreate
+                    getClientId(component="$this{component}" clientId=>$page{optionId});
+                />
+            </sun:hidden>
+            <sun:radioButton id="optA"  rendered="#{!edit}" name="dropDownOption" onClick="navigateToPage('#{pageSession.nameDropDown}', 'dropdown');"/>
+            <sun:dropDown id="resAdaptorProp" selected="#{pageSession.nameDropDown}" labels="$pageSession{connectorList}"
+                    submitForm="#{true}" immediate="#{true}" >
                 <!beforeCreate
                      setPageSessionAttribute(key="snifferType" value="connector");
                      gfr.getApplicationsBySnifferType();
@@ -64,10 +73,22 @@
                 <!command
                     setAttribute(key="click" value="$this{component}");
                     setAttribute(key="name" value="#{click.selected}");
+                    getUIComponent(clientId="#{pageSession.textId}", component=>$attribute{textIdComp});
+                    getUIComponentProperty(component="$attribute{textIdComp}", name="value", value=>$attribute{nameText});
                     setAttribute(key="reload" value="#{true}" );
                     gf.navigate(page="#{pageSession.selfPage}");
                 />
+                <!afterCreate
+                    getClientId(component="$this{component}" clientId=>$page{dropdownTextId});
+                />
            </sun:dropDown>
+           "<br />
+           <sun:radioButton id="optB"  rendered="#{!edit}" name="textOption" onClick="navigateToPage('#{pageSession.nameDropDown}', 'text');" />
+            <sun:textField id="nameNewText" rendered="#{!edit}" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.resourceAdapterConfig.Name']}" text="#{pageSession.nameText}" >
+                <!afterCreate
+                    getClientId(component="$this{component}" clientId=>$page{textId});
+                />
+            </sun:textField>
         </sun:property>
 
         <sun:property id="threadPoolsIdProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.resourceAdapterConfig.threadPoolId}"
