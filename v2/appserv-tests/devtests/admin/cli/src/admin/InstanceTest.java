@@ -76,7 +76,7 @@ public class InstanceTest extends AdminBaseDevTest {
         domainHome = new File(glassFishHome, "domains/domain1");    // yes it is hard-coded!!
         // it does NOT need to exist -- do not insist!
         nodeDir = new File(glassFishHome, "nodes");
-        instancesHome = new File(nodeDir, host);
+        instancesHome = new File(nodeDir, host + "-domain1");
         printf("GF HOME = " + glassFishHome);
     }
 
@@ -228,7 +228,7 @@ public class InstanceTest extends AdminBaseDevTest {
         printf("Call remote AdminCommand create-instance");
         String iname = "sugar";
         report("create-instance-success", asadmin("create-instance",
-            "--node", "localhost", iname));
+            "--node", "localhost-domain1", iname));
         report("create-instance-regdas", asadminWithOutput("get", "servers.server." + iname));
         report("create-instance-config", asadminWithOutput("get", "configs.config." + iname + "-config"));
 
@@ -241,7 +241,7 @@ public class InstanceTest extends AdminBaseDevTest {
         report("create-instance-node", success);
 
         report("create-instance-existsAlready", !asadmin("create-instance",
-            "--node", "localhost", iname));
+            "--node", "localhost-domain1", iname));
 
         createAdminCommandSystemProperties();
         createAdminCommandClusterConfig();
@@ -252,7 +252,7 @@ public class InstanceTest extends AdminBaseDevTest {
         String iname = "instancewithsysprops";
 
         report("create-instance-sysprops", asadminWithOutput("create-instance",
-                "--node", "localhost",
+                "--node", "localhost-domain1",
                 "--systemproperties", "prop1=valA:prop2=valB:prop3=valC", iname));
 
         AsadminReturn ret = asadminWithOutput("get", "servers.server." + iname + ".system-property.prop1.name");
@@ -281,7 +281,7 @@ public class InstanceTest extends AdminBaseDevTest {
         report("create-instance-cluster", asadmin("create-cluster", "jencluster"));
 
         report("create-instance-forcluster", asadmin("create-instance",
-                "--node", "localhost", "--cluster", "jencluster", iname));
+                "--node", "localhost-domain1", "--cluster", "jencluster", iname));
 
         AsadminReturn ret = asadminWithOutput("get", "servers.server." + iname + ".config-ref");
         boolean success = ret.outAndErr.indexOf("servers.server." + iname + ".config-ref=jencluster-config") >= 0;
@@ -305,11 +305,11 @@ public class InstanceTest extends AdminBaseDevTest {
         report("create-instance-nosuchnode", !asadmin("create-instance",
             "--node", "bogus", iname));
         report("create-instance-nosuchcluster", !asadmin("create-instance",
-            "--node", "localhost", "--cluster", "nosuchcluster", iname));
+            "--node", "localhost-domain1", "--cluster", "nosuchcluster", iname));
         report("create-instance-nosuchconfig", !asadmin("create-instance",
-            "--node", "localhost", "--config", "nosuchconfig", iname));
+            "--node", "localhost-domain1", "--config", "nosuchconfig", iname));
         report("create-instance-clusterandconfig", !asadmin("create-instance",
-            "--node", "localhost", "--cluster", "c1", "--config", "config1", iname));
+            "--node", "localhost-domain1", "--cluster", "c1", "--config", "config1", iname));
     }
 
     private void deleteAdminCommandFail() {
@@ -334,7 +334,7 @@ public class InstanceTest extends AdminBaseDevTest {
         String instance = "upgradeinstance";
         cleanup(); //remove locahost dir so we can see it gets created here.
         report("register-instance-upgrade", asadmin("_register-instance",
-            "--node", "localhost", instance));
+            "--node", "localhost-domain1", instance));
         report("upgradeinstance-registered", asadminWithOutput("get", "servers.server."+instance));
         report("create-local-instance-upgrade", asadmin("create-local-instance", instance));
         report("das-properties-exists-upgrade", checkDasProperties());

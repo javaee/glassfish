@@ -105,7 +105,7 @@ public class DynamicSyncBrokerListTest extends AdminBaseDevTest {
         asadmin("start-cluster", CLUSTER_NAME);
 
         asadmin("create-local-instance",
-                "--node", "localhost","--cluster", CLUSTER_NAME, "--systemproperties",
+                "--node", "localhost-domain1","--cluster", CLUSTER_NAME, "--systemproperties",
                 "HTTP_LISTENER_PORT=28080:HTTP_SSL_LISTENER_PORT=38181:IIOP_SSL_LISTENER_PORT=33800:IIOP_LISTENER_PORT=33700:JMX_SYSTEM_CONNECTOR_PORT=37676:IIOP_SSL_MUTUALAUTH_PORT=33801:JMS_PROVIDER_PORT=38686:ASADMIN_LISTENER_PORT=34848",
                 INSTANCE3_NAME);
 

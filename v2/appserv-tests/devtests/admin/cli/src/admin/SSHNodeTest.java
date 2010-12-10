@@ -68,6 +68,7 @@ public class SSHNodeTest extends AdminBaseDevTest {
 
     private static final String NL = System.getProperty("line.separator");
     private static final String LOCALHOST = "localhost";
+    private static final String LOCALHOST_NODE = "localhost-domain1";
     private static final String SSH_HOST_PROP = "ssh.host";
     private static final String SSH_INSTALLDIR_PROP = "ssh.installdir";
 
@@ -162,7 +163,7 @@ public class SSHNodeTest extends AdminBaseDevTest {
                         INAME1));
 
         report("ssh-node-create-instance2", asadmin("create-instance",
-                        "--node", LOCALHOST,
+                        "--node", LOCALHOST_NODE,
                         "--cluster", CNAME,
                         INAME2));
 

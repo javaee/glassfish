@@ -971,7 +971,7 @@ public class ClusterTest extends AdminBaseDevTest {
 
         // create an instance
         report(tn + "create-instance-"+i1name, asadmin("create-instance",
-                "--node", "localhost", "--cluster", cname,
+                "--node", "localhost-domain1", "--cluster", cname,
                 "--systemproperties", "GMS-BIND-INTERFACE-ADDRESS-"+cname+"=192.168.10.1:GMS_LISTENER_PORT-"+cname+"=9492",
                 i1name));
 

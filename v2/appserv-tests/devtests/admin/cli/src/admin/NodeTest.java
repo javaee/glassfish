@@ -56,7 +56,6 @@ public class NodeTest extends AdminBaseDevTest {
 
     private String thisHost = null;
     private String thisUser = null;
-    private String localHost = "localhost";
     private File productInstallRoot = null;
 
     // This table maps command line options to property names. The property
@@ -216,7 +215,7 @@ public class NodeTest extends AdminBaseDevTest {
     }
 
     private void testLocalHostNode() {
-        final String LOCALHOST = "localhost";
+        final String LOCALHOST = "localhost-domain1";
 
         // Verify localhost node exists
         report("check-for-node-localhost", asadmin("get", propPrefix +
@@ -228,11 +227,11 @@ public class NodeTest extends AdminBaseDevTest {
         AsadminReturn ret = asadminWithOutput("get", property);
         // Parse the asadmin output to get the property value
         String propertyValue = getPropertyValue(property, ret.out);
-        if (propertyValue.equals(LOCALHOST)) {
+        if (propertyValue.equals("localhost")) {
             report(testName, true);
         } else {
             System.out.printf("ERROR: node %s: %s == %s. Expected %s\n",
-                    LOCALHOST, property, propertyValue, LOCALHOST);
+                    LOCALHOST, property, propertyValue, "localhost");
             report(testName, false);
         }
 
@@ -246,7 +245,7 @@ public class NodeTest extends AdminBaseDevTest {
     }
 
     private void testBasicCluster() {
-        final String LOCALHOST = "localhost";
+        final String LOCALHOST = "localhost-domain1";
         final String CNAME = "ccc_node_test_1";
         final String INAME1 = "iii_node_test_1";
         final String INAME2 = "iii_node_test_2";

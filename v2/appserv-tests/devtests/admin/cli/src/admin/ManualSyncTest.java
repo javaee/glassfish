@@ -54,7 +54,7 @@ public class ManualSyncTest extends AdminBaseDevTest {
         domainHome = new File(glassFishHome, "domains/domain1");
         // it does NOT need to exist -- do not insist!
         nodeDir = new File(glassFishHome, "nodes");
-        instancesHome = new File(nodeDir, host);
+        instancesHome = new File(nodeDir, DEFAULT_LOCAL_NODE);
         syncDir = new File(domainHome, "sync");
         curDir = new File(System.getProperty("user.dir"));
 
@@ -87,7 +87,7 @@ public class ManualSyncTest extends AdminBaseDevTest {
         String bundleName = i + "-sync-bundle.zip";
         File bundle = new File(syncDir, bundleName);
         
-        report("create-instance-"+i, asadmin("create-instance", "--node", "localhost", i));
+        report("create-instance-"+i, asadmin("create-instance", "--node", DEFAULT_LOCAL_NODE, i));
         report("export-sync-bundle-"+i, asadmin("export-sync-bundle", "--target", i));
         report("check-bundle-"+i, bundle.isFile());
 
@@ -102,7 +102,7 @@ public class ManualSyncTest extends AdminBaseDevTest {
         File mybundleDir = new File(glassFishHome, "mybundles");
         bundle = new File(mybundleDir, bundleName);
         
-        report("create-instance-"+i, asadmin("create-instance", "--node", "localhost", i));
+        report("create-instance-"+i, asadmin("create-instance", "--node", DEFAULT_LOCAL_NODE, i));
         report("export-sync-bundle-"+i, asadmin("export-sync-bundle", "--target", i, bundle.getPath()));
         report("check-bundle-"+i, bundle.isFile());
 
@@ -118,7 +118,7 @@ public class ManualSyncTest extends AdminBaseDevTest {
         mybundleDir.mkdir(); //mybundles directory must exist, otherwise it will be exported to a file called 'mybundles'
         bundle = new File(mybundleDir, bundleName);
 
-        report("create-instance-"+i, asadmin("create-instance", "--node", "localhost", i));
+        report("create-instance-"+i, asadmin("create-instance", "--node", DEFAULT_LOCAL_NODE, i));
         report("export-sync-bundle-"+i, asadmin("export-sync-bundle", "--target", i, mybundleDir.getPath()));
         report("check-bundle-"+i, bundle.isFile());
 
@@ -132,7 +132,7 @@ public class ManualSyncTest extends AdminBaseDevTest {
         bundleName = i + "-my-bundle.zip";
         bundle = new File(domainHome, "config/" + bundleName);
 
-        report("create-instance-"+i, asadmin("create-instance", "--node", "localhost", i));
+        report("create-instance-"+i, asadmin("create-instance", "--node", DEFAULT_LOCAL_NODE, i));
         report("export-sync-bundle-"+i, asadmin("export-sync-bundle", "--target", i, bundleName));
         report("check-bundle-"+i, bundle.isFile());
 
@@ -152,7 +152,7 @@ public class ManualSyncTest extends AdminBaseDevTest {
         File bundle = new File(curDir, bundleName);
         
         /*retrieve bundle in current working directory */
-        report("create-instance-"+i, asadmin("create-instance", "--node", "localhost", i));
+        report("create-instance-"+i, asadmin("create-instance", "--node", DEFAULT_LOCAL_NODE, i));
         report("export-sync-bundle-"+i, asadmin("export-sync-bundle", "--target", i, "--retrieve", "true"));
         report("check-bundle-"+i, bundle.isFile());
 
@@ -165,7 +165,7 @@ public class ManualSyncTest extends AdminBaseDevTest {
         bundleName = i + "-my-bundle.zip";
         bundle = new File(glassFishHome, bundleName); //parent dir must exist, if it doesn't exist will put in the next parent that exists
 
-        report("create-instance-"+i, asadmin("create-instance", "--node", "localhost", i));
+        report("create-instance-"+i, asadmin("create-instance", "--node", DEFAULT_LOCAL_NODE, i));
         report("export-sync-bundle-"+i, asadmin("export-sync-bundle", "--target", i, "--retrieve", "true", bundle.getPath()));
         report("check-bundle-"+i, bundle.isFile());
 
@@ -178,7 +178,7 @@ public class ManualSyncTest extends AdminBaseDevTest {
         bundleName = i + "-sync-bundle.zip";
         bundle = new File(glassFishHome, bundleName);
 
-        report("create-instance-"+i, asadmin("create-instance", "--node", "localhost", i));
+        report("create-instance-"+i, asadmin("create-instance", "--node", DEFAULT_LOCAL_NODE, i));
         report("export-sync-bundle-"+i, asadmin("export-sync-bundle", "--target", i, glassFishHome.getPath()));
         report("check-bundle-"+i, bundle.isFile());
 
@@ -197,7 +197,7 @@ public class ManualSyncTest extends AdminBaseDevTest {
 
         report("create-cluster-"+c, asadmin("create-cluster", c));
         report("export-sync-bundle-bad"+i, !asadmin("export-sync-bundle", "--target", c));
-        report("create-instance-"+i, asadmin("create-instance", "--node", "localhost", "--cluster", c, i));
+        report("create-instance-"+i, asadmin("create-instance", "--node", DEFAULT_LOCAL_NODE, "--cluster", c, i));
         report("export-sync-bundle-"+i, asadmin("export-sync-bundle", "--target", c));
         report("check-bundle-"+i, bundle.isFile());
 
@@ -218,10 +218,10 @@ public class ManualSyncTest extends AdminBaseDevTest {
         String bundleName = i + "-sync-bundle.zip";
         bundle = new File(syncDir, bundleName);
         File dasDomainXml = new File(domainHome, "config/domain.xml");
-        File instDomainXml = new File(glassFishHome, "nodes/localhost/"+i+"/config/domain.xml");
+        File instDomainXml = new File(glassFishHome, "nodes/"+DEFAULT_LOCAL_NODE+"/"+i+"/config/domain.xml");
 
         report("check-dasdomainxml-"+i, dasDomainXml.exists());
-        report("create-instance-"+i, asadmin("create-instance", "--node", "localhost", i));
+        report("create-instance-"+i, asadmin("create-instance", "--node", DEFAULT_LOCAL_NODE, i));
         long dasDomainXmlTS = dasDomainXml.lastModified();
         report("export-sync-bundle-"+i, asadmin("export-sync-bundle", "--target", i));
         report("check-bundle-"+i, bundle.isFile());
@@ -243,10 +243,10 @@ public class ManualSyncTest extends AdminBaseDevTest {
         String bundleName = i + "-sync-bundle.zip";
         File bundle = new File(syncDir, bundleName);
         File dasDomainXml = new File(domainHome, "config/domain.xml");
-        File instDomainXml = new File(glassFishHome, "nodes/localhost/"+i+"/config/domain.xml");
+        File instDomainXml = new File(glassFishHome, "nodes/"+DEFAULT_LOCAL_NODE+"/"+i+"/config/domain.xml");
 
         report("check-dasdomainxml-"+i, dasDomainXml.exists());
-        report("create-instance-"+i, asadmin("create-instance", "--node", "localhost", i));
+        report("create-instance-"+i, asadmin("create-instance", "--node", DEFAULT_LOCAL_NODE, i));
         long dasDomainXmlTS = dasDomainXml.lastModified();
         report("export-sync-bundle-"+i, asadmin("export-sync-bundle", "--target", i));
         report("check-bundle-"+i, bundle.isFile());
@@ -282,7 +282,7 @@ public class ManualSyncTest extends AdminBaseDevTest {
         File dasFile = new File(nodeDirChild, "agent/config/das.properties");
 
         report("check-dasdomainxml-"+i, dasDomainXml.exists());
-        report("create-instance-"+i, asadmin("create-instance", "--node", "localhost", i));
+        report("create-instance-"+i, asadmin("create-instance", "--node", DEFAULT_LOCAL_NODE, i));
         long dasDomainXmlTS = dasDomainXml.lastModified();
         report("export-sync-bundle-"+i, asadmin("export-sync-bundle", "--target", i));
         report("check-bundle-"+i, bundle.isFile());
@@ -320,7 +320,7 @@ public class ManualSyncTest extends AdminBaseDevTest {
         File dasFile = new File(nodeDirChild, "agent/config/das.properties");
 
         report("check-dasdomainxml-"+i, dasDomainXml.exists());
-        report("create-instance-"+i, asadmin("create-instance", "--node", "localhost", i));
+        report("create-instance-"+i, asadmin("create-instance", "--node", DEFAULT_LOCAL_NODE, i));
         long dasDomainXmlTS = dasDomainXml.lastModified();
         report("export-sync-bundle-"+i, asadmin("export-sync-bundle", "--target", i));
         report("check-bundle-"+i, bundle.isFile());
@@ -348,12 +348,12 @@ public class ManualSyncTest extends AdminBaseDevTest {
         String bundleName = i + "-sync-bundle.zip";
         File bundle = new File(syncDir, bundleName);
         File dasDomainXml = new File(domainHome, "config/domain.xml");
-        File instDomainXml = new File(glassFishHome, "nodes/localhost/"+i+"/config/domain.xml");
+        File instDomainXml = new File(glassFishHome, "nodes/"+DEFAULT_LOCAL_NODE+"/"+i+"/config/domain.xml");
         File webapp = new File("resources", "helloworld.war");
         final String i1url = "http://localhost:18080/";
 
         report("check-dasdomainxml-"+i, dasDomainXml.exists());
-        report("create-instance-"+i, asadmin("create-instance", "--node", "localhost", "--systemproperties",
+        report("create-instance-"+i, asadmin("create-instance", "--node", DEFAULT_LOCAL_NODE, "--systemproperties",
                 "HTTP_LISTENER_PORT=18080", i));
 
         report("deploy-"+i, asadmin("deploy", "--target", i, webapp.getAbsolutePath()));
@@ -419,4 +419,5 @@ public class ManualSyncTest extends AdminBaseDevTest {
     private final File domainHome;
     private final File syncDir;
     private final File curDir;
+    private final String DEFAULT_LOCAL_NODE = "localhost-domain1";
 }
