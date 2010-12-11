@@ -300,11 +300,12 @@ public class V2DottedNameSupport {
         }
 
         // check for resources
-        if ((newPrefix != null) && (newPrefix.startsWith("resources"))) {
+        if (newPrefix.startsWith("resources")) {
             String relativeName = newPrefix;
             if (newPrefix.indexOf('.') != -1) {
                 String str = newPrefix.substring(0, newPrefix.indexOf('.'));
                 relativeName = newPrefix.substring(str.length() + 1);
+                name += "." + str;
             }
             TreeNode [] result = new TreeNode[1];
             result[0] = new TreeNode(Dom.unwrap(domain.getResources()), name, relativeName);

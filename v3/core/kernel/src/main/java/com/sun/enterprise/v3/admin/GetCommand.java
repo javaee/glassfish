@@ -134,10 +134,7 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
 
         // reset the pattern.
         String prefix = "";
-        if (pattern.startsWith("domain.")) {
-            // prefix and pattern are set correctly
-        }
-        else if(!pattern.startsWith(parentNodes[0].relativeName)) {
+        if(!pattern.startsWith(parentNodes[0].relativeName)) {
             prefix = pattern.substring(0, pattern.indexOf(parentNodes[0].relativeName));
             pattern = parentNodes[0].relativeName;
         } else {
