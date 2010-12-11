@@ -255,10 +255,13 @@ public class ConnectionPoolStatsProviderBootstrap implements PostConstruct,
                         "for [ " + raName + " ] with monitoring-stats-registry.");
                 }
 
+                /* no need to create multiple probe provider instances, one per pool will
+                   work for multiple stats providers 
                 PoolLifeCycleListenerRegistry poolLifeCycleListenerRegistry = registerPool(
                         poolInfo, getProbeProviderUtil().getJcaProbeProvider());
-                connectorServicePoolStatsProvider.setPoolRegistry(poolLifeCycleListenerRegistry);
+                */
 
+                connectorServicePoolStatsProvider.setPoolRegistry(registry);
                 ccStatsProviders.add(connectorServicePoolStatsProvider);
             }
         }
