@@ -68,6 +68,7 @@ import com.sun.enterprise.tools.verifier.tests.ComponentNameConstructor;
 public class FilterMapping extends WebTest {
     Result result;
     ComponentNameConstructor compName;
+
     /**
      * Check that the mappings for all filters are correct
      * 
@@ -120,6 +121,10 @@ public class FilterMapping extends WebTest {
                     }
                 }
                 List<String> servletsInFilter = filterMapper.getServletNames();
+                // Section SRV.18.0.2 Filter All Dispatches of Servlet 2.5 spec allows "*"
+                // to be specified as Servlet name to allow filtering of requests for all servlets.
+                final String ALL_SERVLETS_NAME = "*";
+                servletsInFilter.remove(ALL_SERVLETS_NAME);
                 List<String> servletsInWAR = new ArrayList<String>();
 
                 if(servletsInFilter.size() > 0) {
