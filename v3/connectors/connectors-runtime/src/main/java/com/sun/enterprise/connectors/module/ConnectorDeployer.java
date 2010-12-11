@@ -154,6 +154,9 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
         if (connDesc != null) {
             connDesc.setClassLoader(context.getClassLoader());
         }
+        if(_logger.isLoggable(Level.FINEST)){
+            _logger.finest("connector-descriptor during load : " + connDesc);
+        }
 
         boolean isEmbedded = ConnectorsUtil.isEmbedded(context);
         ConnectorClassFinder ccf = null;
@@ -208,14 +211,10 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
      * @param context      of the undeployment
      */
     public void unload(ConnectorApplication appContainer, DeploymentContext context) {
-        File sourceDir = context.getSourceDir();
-        String moduleName = sourceDir.getName();
+
+        String moduleName = appContainer.getModuleName();
 
         try {
-            if (ConnectorsUtil.isEmbedded(context)) {
-                String applicationName = ConnectorsUtil.getApplicationName(context);
-                moduleName = ConnectorsUtil.getEmbeddedRarModuleName(applicationName, moduleName);
-            }
             runtime.destroyActiveResourceAdapter(moduleName);
         } catch (ConnectorRuntimeException e) {
             Object params[] = new Object[]{moduleName, e};
