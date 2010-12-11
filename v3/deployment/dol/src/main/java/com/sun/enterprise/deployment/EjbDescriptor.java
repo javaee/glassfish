@@ -40,7 +40,12 @@
 
 package com.sun.enterprise.deployment;
 
-import static com.sun.enterprise.deployment.LifecycleCallbackDescriptor.CallbackType;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.sun.enterprise.deployment.runtime.IASEjbExtraDescriptors;
 import com.sun.enterprise.deployment.types.*;
 import com.sun.enterprise.deployment.util.*;
@@ -48,13 +53,7 @@ import com.sun.enterprise.deployment.util.InterceptorBindingTranslator.Translati
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.internal.api.Globals;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.*;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static com.sun.enterprise.deployment.LifecycleCallbackDescriptor.CallbackType;
 
 /**
  * This abstract class encapsulates the meta-information describing
@@ -106,6 +105,10 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
             new HashSet<LifecycleCallbackDescriptor>();
     private Set<LifecycleCallbackDescriptor> preDestroyDescs =
             new HashSet<LifecycleCallbackDescriptor>();
+
+    // if non-null, refer all environment refs here
+    private WritableJndiNameEnvironment env;
+
     private Set<LifecycleCallbackDescriptor> aroundInvokeDescs =
             new HashSet<LifecycleCallbackDescriptor>();
     private Set<LifecycleCallbackDescriptor> aroundTimeoutDescs =
@@ -238,7 +241,7 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
         this.transactionType = other.transactionType;
         this.ejbClassName = other.ejbClassName;
         this.usesCallerIdentity = other.usesCallerIdentity;
-        this.bundleDescriptor = other.bundleDescriptor;
+        setEjbBundleDescriptor(other.bundleDescriptor);
         this.timerSchedules = new ArrayList(other.timerSchedules);
         this.timerMethodDescriptors = new ArrayList(other.timerMethodDescriptors);
     }
@@ -403,68 +406,6 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
 
     public List<ScheduledTimerDescriptor> getScheduledTimerDescriptors() {
         return timerSchedules;
-    }
-
-    public Set<LifecycleCallbackDescriptor>
-    getPostConstructDescriptors() {
-        return postConstructDescs;
-    }
-
-    public void addPostConstructDescriptor(LifecycleCallbackDescriptor
-            postConstructDesc) {
-        String className = postConstructDesc.getLifecycleCallbackClass();
-        boolean found = false;
-        for (LifecycleCallbackDescriptor next :
-                getPostConstructDescriptors()) {
-            if (next.getLifecycleCallbackClass().equals(className)) {
-                found = true;
-                break;
-            }
-        }
-        if (!found) {
-            getPostConstructDescriptors().add(postConstructDesc);
-        }
-    }
-
-    public LifecycleCallbackDescriptor
-    getPostConstructDescriptorByClass(String className) {
-        return bundleDescriptor.getPostConstructDescriptorByClass
-                (className, this);
-    }
-
-    public boolean hasPostConstructMethod() {
-        return (getPostConstructDescriptors().size() > 0);
-    }
-
-    public Set<LifecycleCallbackDescriptor>
-    getPreDestroyDescriptors() {
-        return preDestroyDescs;
-    }
-
-    public void addPreDestroyDescriptor(LifecycleCallbackDescriptor
-            preDestroyDesc) {
-        String className = preDestroyDesc.getLifecycleCallbackClass();
-        boolean found = false;
-        for (LifecycleCallbackDescriptor next :
-                getPreDestroyDescriptors()) {
-            if (next.getLifecycleCallbackClass().equals(className)) {
-                found = true;
-                break;
-            }
-        }
-        if (!found) {
-            getPreDestroyDescriptors().add(preDestroyDesc);
-        }
-    }
-
-    public LifecycleCallbackDescriptor
-    getPreDestroyDescriptorByClass(String className) {
-        return bundleDescriptor.getPreDestroyDescriptorByClass
-                (className, this);
-    }
-
-    public boolean hasPreDestroyMethod() {
-        return (getPreDestroyDescriptors().size() > 0);
     }
 
     public Set<LifecycleCallbackDescriptor> getAroundInvokeDescriptors() {
@@ -1512,40 +1453,141 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
     }
 
 
+    // BEGIN WritableJndiNameEnvironment methods
+
     /**
      * Return the set of ejb references this ejb declares.
      */
+    @Override
     public Set<EjbReference> getEjbReferenceDescriptors() {
-        return ejbReferences;
+        if (env != null)
+            return env.getEjbReferenceDescriptors();
+        else
+            return ejbReferences;
     }
 
     /**
      * Adds a reference to another ejb to me.
      */
-
+    @Override
     public void addEjbReferenceDescriptor(EjbReference ejbReference) {
         try {
-            EjbReference existing = this.getEjbReferenceByName(ejbReference.getName());
+            EjbReference existing = getEjbReference(ejbReference.getName());
             for(InjectionTarget next : ejbReference.getInjectionTargets() ) {
                 existing.addInjectionTarget(next);
             }
         } catch(IllegalArgumentException e) {
-            ejbReferences.add(ejbReference);
+            if (env != null)
+                env.addEjbReferenceDescriptor(ejbReference);
+            else
+                ejbReferences.add(ejbReference);
             ejbReference.setReferringBundleDescriptor(getEjbBundleDescriptor());
         }
     }
 
+    @Override
     public void removeEjbReferenceDescriptor(EjbReference ejbReference) {
-        ejbReferences.remove(ejbReference);
+        if (env != null)
+            env.removeEjbReferenceDescriptor(ejbReference);
+        else
+            ejbReferences.remove(ejbReference);
         ejbReference.setReferringBundleDescriptor(null);
     }
 
-    public Set<DataSourceDefinitionDescriptor> getDataSourceDefinitionDescriptors() {
-        return datasourceDefinitionDescs;
+    @Override
+    public Set<LifecycleCallbackDescriptor> getPostConstructDescriptors() {
+        if (env != null)
+            return env.getPostConstructDescriptors();
+        else
+            return postConstructDescs;
     }
 
+    @Override
+    public void addPostConstructDescriptor(LifecycleCallbackDescriptor
+            postConstructDesc) {
+        if (env != null) {
+            env.addPostConstructDescriptor(postConstructDesc);
+            return;
+        }
+        String className = postConstructDesc.getLifecycleCallbackClass();
+        boolean found = false;
+        for (LifecycleCallbackDescriptor next :
+                getPostConstructDescriptors()) {
+            if (next.getLifecycleCallbackClass().equals(className)) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            getPostConstructDescriptors().add(postConstructDesc);
+        }
+    }
 
-    public void addDataSourceDefinitionDescriptor(DataSourceDefinitionDescriptor reference) {
+    @Override
+    public LifecycleCallbackDescriptor
+            getPostConstructDescriptorByClass(String className) {
+        if (env != null)
+            return env.getPostConstructDescriptorByClass(className);
+        else
+            return bundleDescriptor.
+                            getPostConstructDescriptorByClass(className, this);
+    }
+
+    @Override
+    public Set<LifecycleCallbackDescriptor> getPreDestroyDescriptors() {
+        if (env != null)
+            return env.getPreDestroyDescriptors();
+        else
+            return preDestroyDescs;
+    }
+
+    @Override
+    public void addPreDestroyDescriptor(LifecycleCallbackDescriptor
+            preDestroyDesc) {
+        if (env != null) {
+            env.addPreDestroyDescriptor(preDestroyDesc);
+            return;
+        }
+        String className = preDestroyDesc.getLifecycleCallbackClass();
+        boolean found = false;
+        for (LifecycleCallbackDescriptor next :
+                getPreDestroyDescriptors()) {
+            if (next.getLifecycleCallbackClass().equals(className)) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            getPreDestroyDescriptors().add(preDestroyDesc);
+        }
+    }
+
+    @Override
+    public LifecycleCallbackDescriptor
+            getPreDestroyDescriptorByClass(String className) {
+        if (env != null)
+            return env.getPreDestroyDescriptorByClass(className);
+        else
+            return bundleDescriptor.
+                                getPreDestroyDescriptorByClass(className, this);
+    }
+
+    @Override
+    public Set<DataSourceDefinitionDescriptor>
+            getDataSourceDefinitionDescriptors() {
+        if (env != null)
+            return env.getDataSourceDefinitionDescriptors();
+        else
+            return datasourceDefinitionDescs;
+    }
+
+    @Override
+    public void addDataSourceDefinitionDescriptor(
+                                    DataSourceDefinitionDescriptor reference) {
+        if (env != null) {
+            env.addDataSourceDefinitionDescriptor(reference);
+            return;
+        }
         for(Iterator itr = this.getDataSourceDefinitionDescriptors().iterator(); itr.hasNext();){
             DataSourceDefinitionDescriptor desc = (DataSourceDefinitionDescriptor)itr.next();
             if(desc.getName().equals(reference.getName())){
@@ -1558,16 +1600,25 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
         getDataSourceDefinitionDescriptors().add(reference);
     }
 
-    public void removeDataSourceDefinitionDescriptor(DataSourceDefinitionDescriptor reference) {
-        this.getDataSourceDefinitionDescriptors().remove(reference);
+    @Override
+    public void removeDataSourceDefinitionDescriptor(
+                                    DataSourceDefinitionDescriptor reference) {
+        if (env != null)
+            env.removeDataSourceDefinitionDescriptor(reference);
+        else
+            this.getDataSourceDefinitionDescriptors().remove(reference);
     }
 
+    @Override
     public Set<ServiceReferenceDescriptor> getServiceReferenceDescriptors() {
-        return serviceReferences;
+        if (env != null)
+            return env.getServiceReferenceDescriptors();
+        else
+            return serviceReferences;
     }
 
-    public void addServiceReferenceDescriptor(ServiceReferenceDescriptor
-            serviceRef) {
+    public void addServiceReferenceDescriptor(
+                                    ServiceReferenceDescriptor serviceRef) {
         try {
             ServiceReferenceDescriptor existing =
                     this.getServiceReferenceByName(serviceRef.getName());
@@ -1576,21 +1627,31 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
             }
 
         } catch(IllegalArgumentException e) {
+            if (env != null)
+                env.addServiceReferenceDescriptor(serviceRef);
+            else
+                serviceReferences.add(serviceRef);
             serviceRef.setBundleDescriptor(getEjbBundleDescriptor());
-            serviceReferences.add(serviceRef);
         }
     }
 
-    public void removeServiceReferenceDescriptor(ServiceReferenceDescriptor
-            serviceRef) {
-        serviceReferences.remove(serviceRef);
+    @Override
+    public void removeServiceReferenceDescriptor(
+                                    ServiceReferenceDescriptor serviceRef) {
+        if (env != null)
+            env.removeServiceReferenceDescriptor(serviceRef);
+        else
+            serviceReferences.remove(serviceRef);
     }
 
     /**
      * Looks up an service reference with the given name.
      * Throws an IllegalArgumentException if it is not found.
      */
+    @Override
     public ServiceReferenceDescriptor getServiceReferenceByName(String name) {
+        if (env != null)
+            return env.getServiceReferenceByName(name);
         for (Iterator itr = this.getServiceReferenceDescriptors().iterator();
              itr.hasNext();) {
             ServiceReferenceDescriptor srd = (ServiceReferenceDescriptor)
@@ -1605,40 +1666,57 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
                 new Object[]{getName(), name}));
     }
 
-    public Set<MessageDestinationReferenceDescriptor> getMessageDestinationReferenceDescriptors() {
-        return messageDestReferences;
+    @Override
+    public Set<MessageDestinationReferenceDescriptor>
+            getMessageDestinationReferenceDescriptors() {
+        if (env != null)
+            return env.getMessageDestinationReferenceDescriptors();
+        else
+            return messageDestReferences;
     }
 
-    public void addMessageDestinationReferenceDescriptor
-            (MessageDestinationReferenceDescriptor messageDestRef) {
+    @Override
+    public void addMessageDestinationReferenceDescriptor(
+                        MessageDestinationReferenceDescriptor messageDestRef) {
 
         try {
             MessageDestinationReferenceDescriptor existing =
-                    this.getMessageDestinationReferenceByName(messageDestRef.getName());
+                    getMessageDestinationReferenceByName(
+                                                    messageDestRef.getName());
             for(InjectionTarget next : messageDestRef.getInjectionTargets()) {
                 existing.addInjectionTarget(next);
             }
         } catch(IllegalArgumentException e) {
+            if (env != null)
+                env.addMessageDestinationReferenceDescriptor(messageDestRef);
+            else
+                messageDestReferences.add(messageDestRef);
             if (getEjbBundleDescriptor() != null) {
-                messageDestRef.setReferringBundleDescriptor
-                        (getEjbBundleDescriptor());
+                messageDestRef.setReferringBundleDescriptor(
+                                                    getEjbBundleDescriptor());
             }
-            messageDestReferences.add(messageDestRef);
         }
     }
 
-    public void removeMessageDestinationReferenceDescriptor
-            (MessageDestinationReferenceDescriptor msgDestRef) {
-        messageDestReferences.remove(msgDestRef);
+    @Override
+    public void removeMessageDestinationReferenceDescriptor(
+                            MessageDestinationReferenceDescriptor msgDestRef) {
+        if (env != null)
+            env.removeMessageDestinationReferenceDescriptor(msgDestRef);
+        else
+            messageDestReferences.remove(msgDestRef);
     }
 
     /**
      * Looks up an message destination reference with the given name.
      * Throws an IllegalArgumentException if it is not found.
      */
+    @Override
     public MessageDestinationReferenceDescriptor
-    getMessageDestinationReferenceByName(String name) {
+            getMessageDestinationReferenceByName(String name) {
 
+        if (env != null)
+            return env.getMessageDestinationReferenceByName(name);
         for (MessageDestinationReferenceDescriptor mdr : messageDestReferences) {
             if (mdr.getName().equals(name)) {
                 return mdr;
@@ -1653,77 +1731,114 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
     /**
      * Return the set of JMS destination references this ejb declares.
      */
-    public Set<JmsDestinationReferenceDescriptor> getJmsDestinationReferenceDescriptors() {
-        return jmsDestReferences;
+    @Override
+    public Set<JmsDestinationReferenceDescriptor>
+            getJmsDestinationReferenceDescriptors() {
+        if (env != null)
+            return env.getJmsDestinationReferenceDescriptors();
+        else
+            return jmsDestReferences;
     }
 
-    public void addJmsDestinationReferenceDescriptor(JmsDestinationReferenceDescriptor jmsDestReference) {
+    @Override
+    public void addJmsDestinationReferenceDescriptor(
+                        JmsDestinationReferenceDescriptor jmsDestReference) {
 
         try {
-            JmsDestinationReferenceDescriptor existing = this.getJmsDestinationReferenceByName(jmsDestReference.getName());
-            for(InjectionTarget next : jmsDestReference.getInjectionTargets() ) {
+            JmsDestinationReferenceDescriptor existing =
+                getJmsDestinationReferenceByName(jmsDestReference.getName());
+            for (InjectionTarget next : jmsDestReference.getInjectionTargets()) {
                 existing.addInjectionTarget(next);
             }
         } catch(IllegalArgumentException e) {
-            jmsDestReferences.add(jmsDestReference);
+            if (env != null)
+                env.addJmsDestinationReferenceDescriptor(jmsDestReference);
+            else
+                jmsDestReferences.add(jmsDestReference);
         }
 
     }
 
-    public void removeJmsDestinationReferenceDescriptor(JmsDestinationReferenceDescriptor jmsDestReference) {
-        jmsDestReferences.remove(jmsDestReference);
+    @Override
+    public void removeJmsDestinationReferenceDescriptor(
+                        JmsDestinationReferenceDescriptor jmsDestReference) {
+        if (env != null)
+            env.removeJmsDestinationReferenceDescriptor(jmsDestReference);
+        else
+            jmsDestReferences.remove(jmsDestReference);
+    }
+
+    @Override
+    public JmsDestinationReferenceDescriptor getJmsDestinationReferenceByName(
+                                                                String name) {
+        for (Iterator itr = getJmsDestinationReferenceDescriptors().iterator();
+                itr.hasNext();) {
+            JmsDestinationReferenceDescriptor jdr =
+                (JmsDestinationReferenceDescriptor) itr.next();
+            if (jdr.getName().equals(name)) {
+                return jdr;
+            }
+        }
+        throw new IllegalArgumentException(localStrings.getLocalString(
+                "enterprise.deployment.exceptionbeanhasnojmsdestrefbyname",
+                "This bean {0} has no resource environment reference by the name of {1}",
+                new Object[] {getName(), name}));
     }
 
     /**
      * Return the set of resource references this ejb declares.
      */
+    @Override
     public Set<ResourceReferenceDescriptor> getResourceReferenceDescriptors() {
-        return resourceReferences;
+        if (env != null)
+            return env.getResourceReferenceDescriptors();
+        else
+            return resourceReferences;
     }
 
     /**
      * Adds a resource reference to me.
      */
-    public void addResourceReferenceDescriptor(ResourceReferenceDescriptor resourceReference) {
+    @Override
+    public void addResourceReferenceDescriptor(
+                            ResourceReferenceDescriptor resourceReference) {
 
         try {
-            ResourceReferenceDescriptor existing = this.getResourceReferenceByName(resourceReference.getName());
+            ResourceReferenceDescriptor existing =
+                getResourceReferenceByName(resourceReference.getName());
             for(InjectionTarget next : resourceReference.getInjectionTargets() ) {
                 existing.addInjectionTarget(next);
             }
 
         } catch(IllegalArgumentException e) {
-            resourceReferences.add(resourceReference);
+            if (env != null)
+                env.addResourceReferenceDescriptor(resourceReference);
+            else
+                resourceReferences.add(resourceReference);
         }
     }
 
     /**
      * Removes the given resource reference from me.
      */
-    public void removeResourceReferenceDescriptor(ResourceReferenceDescriptor resourceReference) {
-        resourceReferences.remove(resourceReference);
-    }
-
-
-    /**
-     * Return the set of resource references this ejb declares that have been resolved..
-     */
-    public Set<ResourceReferenceDescriptor> getResourceReferenceDescriptors(boolean resolved) {
-        Set<ResourceReferenceDescriptor> toReturn = new HashSet<ResourceReferenceDescriptor>();
-        for (Iterator itr = this.getResourceReferenceDescriptors().iterator(); itr.hasNext();) {
-            ResourceReferenceDescriptor next = (ResourceReferenceDescriptor) itr.next();
-            if (next.isResolved() == resolved) {
-                toReturn.add(next);
-            }
-        }
-        return toReturn;
+    @Override
+    public void removeResourceReferenceDescriptor(
+                            ResourceReferenceDescriptor resourceReference) {
+        if (env != null)
+            env.removeResourceReferenceDescriptor(resourceReference);
+        else
+            resourceReferences.remove(resourceReference);
     }
 
     /**
      * Returns the environment property object searching on the supplied key.
-     * throws an illegal argument exception if no such environment property exists.
+     * throws an illegal argument exception if no such environment property
+     * exists.
      */
+    @Override
     public EnvironmentProperty getEnvironmentPropertyByName(String name) {
+        if (env != null)
+            return env.getEnvironmentPropertyByName(name);
         for (Iterator itr = this.getEnvironmentProperties().iterator(); itr.hasNext();) {
             EnvironmentProperty ev = (EnvironmentProperty) itr.next();
             if (ev.getName().equals(name)) {
@@ -1737,122 +1852,65 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
     }
 
     /**
-     * Return a reference to another ejb by the same name or throw an IllegalArgumentException.
+     * Return a copy of the structure holding the environment properties.
      */
-    public EjbReference getEjbReference(String name) {
-        for (Iterator itr = this.getEjbReferenceDescriptors().iterator(); itr.hasNext();) {
-            EjbReference er = (EjbReference) itr.next();
-            if (er.getName().equals(name)) {
-                return er;
-            }
+    @Override
+    public Set<EnvironmentProperty> getEnvironmentProperties() {
+        if (env != null)
+            return env.getEnvironmentProperties();
+        else
+            return environmentProperties;
+    }
+
+    /**
+     * Add the supplied environment property to the ejb descriptor's list.
+     */
+    @Override
+    public void addEnvironmentProperty(
+                                    EnvironmentProperty environmentProperty) {
+        if (env != null) {
+            env.addEnvironmentProperty(environmentProperty);
+            return;
         }
-        throw new IllegalArgumentException(localStrings.getLocalString(
-                "enterprise.deployment.exceptionbeanhasnoejbrefbyname",
-                "This bean {0} has no ejb reference by the name of {1}",
-                new Object[]{getName(), name}));
-    }
-
-
-    /**
-     * Return a reference to another ejb by the same name or throw an IllegalArgumentException.
-     */
-    public EjbReferenceDescriptor getEjbReferenceByName(String name) {
-        return (EjbReferenceDescriptor) getEjbReference(name);
-    }
-
-    /**
-     * Return a reference to another ejb by the same name or throw an IllegalArgumentException.
-     */
-    public JmsDestinationReferenceDescriptor getJmsDestinationReferenceByName(String name) {
-        for (Iterator itr = this.getJmsDestinationReferenceDescriptors().iterator(); itr.hasNext();) {
-            JmsDestinationReferenceDescriptor jdr = (JmsDestinationReferenceDescriptor) itr.next();
-            if (jdr.getName().equals(name)) {
-                return jdr;
-            }
+        if (environmentProperties.contains(environmentProperty)) {
+            // XXX - this makes no sense!
+            removeEnvironmentProperty(environmentProperty);
+            addEnvironmentProperty(environmentProperty);
+        } else {
+            environmentProperties.add(environmentProperty);
         }
-        throw new IllegalArgumentException(localStrings.getLocalString(
-                "enterprise.deployment.exceptionbeanhasnojmsdestrefbyname",
-                "This bean {0} has no resource environment reference by the name of {1}",
-                new Object[] {getName(), name}));
-    }
-
-    /**
-     * Replaces the an environment proiperty with another one.
-     */
-
-    public void replaceEnvironmentProperty(EnvironmentProperty oldOne, EnvironmentProperty newOne) {
-        environmentProperties.remove(oldOne);
-        environmentProperties.add(newOne);
     }
 
     /**
      * Removes the given environment property from me.
      */
-
-    public void removeEnvironmentProperty(EnvironmentProperty environmentProperty) {
-        this.getEnvironmentProperties().remove(environmentProperty);
-
+    @Override
+    public void removeEnvironmentProperty(
+                                EnvironmentProperty environmentProperty) {
+        if (env != null)
+            env.removeEnvironmentProperty(environmentProperty);
+        else
+            this.getEnvironmentProperties().remove(environmentProperty);
     }
 
-
-    void removeRole(Role role) {
-        //this.getPermissionedRoles().remove(role);
-        this.getPermissionedMethodsByPermission().remove(new MethodPermission(role));
-        Set roleReferences = new HashSet(this.getRoleReferences());
-        for (Iterator itr = roleReferences.iterator(); itr.hasNext();) {
-            RoleReference roleReference = (RoleReference) itr.next();
-            if (roleReference.getRole().equals(role)) {
-                roleReference.setValue("");
-            }
-        }
-    }
-
-    /**
-     * Return the resource object corresponding to the supplied name or throw an illegal argument exception.
-     */
-    public ResourceReferenceDescriptor getResourceReferenceByName(String name) {
-        for (Iterator itr = this.getResourceReferenceDescriptors().iterator(); itr.hasNext();) {
-            ResourceReferenceDescriptor next = (ResourceReferenceDescriptor) itr.next();
-            if (next.getName().equals(name)) {
-                return next;
-            }
-        }
-        throw new IllegalArgumentException(localStrings.getLocalString(
-                "enterprise.deployment.exceptionbeanhasnoresourcerefbyname",
-                "This bean {0} has no resource reference by the name of {1}",
-                new Object[]{getName(), name}));
-    }
-
-    /**
-     * Returns true if this ejb descriptor has resource references that are resolved.
-     */
-    public boolean hasResolvedResourceReferences() {
-        if (!this.getResourceReferenceDescriptors().isEmpty()) {
-            return false;
-        } else {
-            for (Iterator itr = this.getResourceReferenceDescriptors().iterator(); itr.hasNext();) {
-                ResourceReferenceDescriptor resourceReference = (ResourceReferenceDescriptor) itr.next();
-                if (resourceReference.isResolved()) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-
+    @Override
     public Set<EntityManagerFactoryReferenceDescriptor>
-    getEntityManagerFactoryReferenceDescriptors() {
-
-        return entityManagerFactoryReferences;
+            getEntityManagerFactoryReferenceDescriptors() {
+        if (env != null)
+            return env.getEntityManagerFactoryReferenceDescriptors();
+        else
+            return entityManagerFactoryReferences;
     }
 
     /**
      * Return the entity manager factory reference descriptor corresponding to
      * the given name.
      */
+    @Override
     public EntityManagerFactoryReferenceDescriptor
-    getEntityManagerFactoryReferenceByName(String name) {
+            getEntityManagerFactoryReferenceByName(String name) {
+        if (env != null)
+            return env.getEntityManagerFactoryReferenceByName(name);
         for (EntityManagerFactoryReferenceDescriptor next :
                 getEntityManagerFactoryReferenceDescriptors()) {
 
@@ -1866,37 +1924,46 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
                 new Object[]{getName(), name}));
     }
 
-    public void addEntityManagerFactoryReferenceDescriptor
-            (EntityManagerFactoryReferenceDescriptor reference) {
+    @Override
+    public void addEntityManagerFactoryReferenceDescriptor(
+                        EntityManagerFactoryReferenceDescriptor reference) {
 
         try {
             EntityManagerFactoryReferenceDescriptor existing =
-                    this.getEntityManagerFactoryReferenceByName(reference.getName());
+                    getEntityManagerFactoryReferenceByName(reference.getName());
             for( InjectionTarget next : reference.getInjectionTargets() ) {
                 existing.addInjectionTarget(next);
             }
-        } catch(IllegalArgumentException e) {
-
+        } catch (IllegalArgumentException e) {
             if (getEjbBundleDescriptor() != null) {
                 reference.setReferringBundleDescriptor
                         (getEjbBundleDescriptor());
             }
-            entityManagerFactoryReferences.add(reference);
+            if (env != null)
+                env.addEntityManagerFactoryReferenceDescriptor(reference);
+            else
+                entityManagerFactoryReferences.add(reference);
         }
     }
 
+    @Override
     public Set<EntityManagerReferenceDescriptor>
-    getEntityManagerReferenceDescriptors() {
-
-        return entityManagerReferences;
+            getEntityManagerReferenceDescriptors() {
+        if (env != null)
+            return env.getEntityManagerReferenceDescriptors();
+        else
+            return entityManagerReferences;
     }
 
     /**
      * Return the entity manager factory reference descriptor corresponding to
      * the given name.
      */
-    public EntityManagerReferenceDescriptor
-    getEntityManagerReferenceByName(String name) {
+    @Override
+    public EntityManagerReferenceDescriptor getEntityManagerReferenceByName(
+                                                                String name) {
+        if (env != null)
+            return env.getEntityManagerReferenceByName(name);
         for (EntityManagerReferenceDescriptor next :
                 getEntityManagerReferenceDescriptors()) {
 
@@ -1910,6 +1977,7 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
                 new Object[]{getName(), name}));
     }
 
+    @Override
     public void addEntityManagerReferenceDescriptor
             (EntityManagerReferenceDescriptor reference) {
 
@@ -1924,40 +1992,148 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
                 reference.setReferringBundleDescriptor
                     (getEjbBundleDescriptor());
             }
-            this.getEntityManagerReferenceDescriptors().add(reference);
+            if (env != null)
+                env.addEntityManagerReferenceDescriptor(reference);
+            else
+                getEntityManagerReferenceDescriptors().add(reference);
         }
 
     }
 
-
-    /**
-     * Return a copy of the structure holding the environ,ent properties.
-     */
-    public Set<EnvironmentProperty> getEnvironmentProperties() {
-        return environmentProperties;
+    @Override
+    public List<InjectionCapable>
+            getInjectableResourcesByClass(String className) {
+        if (env != null)
+            return env.getInjectableResourcesByClass(className);
+        else
+            return bundleDescriptor.
+                            getInjectableResourcesByClass(className, this);
     }
 
+    @Override
+    public InjectionInfo getInjectionInfoByClass(Class clazz) {
+        if (env != null)
+            return env.getInjectionInfoByClass(clazz);
+        else
+            return bundleDescriptor.getInjectionInfoByClass(clazz, this);
+    }
+
+    // END WritableJndiNameEnvirnoment methods
+
+    // BEGIN methods closely related to WritableJndiNameEnvironment
+
+    public boolean hasPostConstructMethod() {
+        return (getPostConstructDescriptors().size() > 0);
+    }
+
+    public boolean hasPreDestroyMethod() {
+        return (getPreDestroyDescriptors().size() > 0);
+    }
 
     /**
-     * Add the supplied environment property to the ejb descriptor's list.
+     * Return the set of resource references this ejb declares that
+     * have been resolved.
      */
-    public void addEnvironmentProperty(EnvironmentProperty environmentProperty) {
-        if (environmentProperties.contains(environmentProperty)) {
-            replaceEnvironmentProperty(environmentProperty, environmentProperty);
+    public Set<ResourceReferenceDescriptor>
+            getResourceReferenceDescriptors(boolean resolved) {
+        Set<ResourceReferenceDescriptor> toReturn =
+            new HashSet<ResourceReferenceDescriptor>();
+        for (Iterator itr = getResourceReferenceDescriptors().iterator();
+                itr.hasNext();) {
+            ResourceReferenceDescriptor next =
+                (ResourceReferenceDescriptor) itr.next();
+            if (next.isResolved() == resolved) {
+                toReturn.add(next);
+            }
+        }
+        return toReturn;
+    }
+
+    /**
+     * Return the resource object corresponding to the supplied name or
+     * throw an illegal argument exception.
+     */
+    @Override   // ResourceReferenceContainer
+    public ResourceReferenceDescriptor getResourceReferenceByName(String name) {
+        for (Iterator itr = getResourceReferenceDescriptors().iterator();
+                itr.hasNext();) {
+            ResourceReferenceDescriptor next =
+                (ResourceReferenceDescriptor) itr.next();
+            if (next.getName().equals(name)) {
+                return next;
+            }
+        }
+        throw new IllegalArgumentException(localStrings.getLocalString(
+                "enterprise.deployment.exceptionbeanhasnoresourcerefbyname",
+                "This bean {0} has no resource reference by the name of {1}",
+                new Object[]{getName(), name}));
+    }
+
+    /**
+     * Returns true if this ejb descriptor has resource references that are
+     * resolved.
+     */
+    public boolean hasResolvedResourceReferences() {
+        if (!this.getResourceReferenceDescriptors().isEmpty()) {
+            return false;
         } else {
-            environmentProperties.add(environmentProperty);
+            for (Iterator itr = getResourceReferenceDescriptors().iterator();
+                    itr.hasNext();) {
+                ResourceReferenceDescriptor resourceReference =
+                    (ResourceReferenceDescriptor) itr.next();
+                if (resourceReference.isResolved()) {
+                    return true;
+                }
+            }
         }
+        return false;
     }
 
-    public void addOrMergeEnvironmentProperty(EnvironmentProperty environmentProperty) {
+    private void addOrMergeEnvironmentProperty(
+                                    EnvironmentProperty environmentProperty) {
         try {
-            EnvironmentProperty existing = this.getEnvironmentPropertyByName(environmentProperty.getName());
-            for(InjectionTarget next : environmentProperty.getInjectionTargets()) {
+            EnvironmentProperty existing =
+                getEnvironmentPropertyByName(environmentProperty.getName());
+            for (InjectionTarget next :
+                    environmentProperty.getInjectionTargets()) {
                 existing.addInjectionTarget(next);
             }
 
         } catch(IllegalArgumentException e) {
-            environmentProperties.add(environmentProperty);
+            addEnvironmentProperty(environmentProperty);
+        }
+    }
+
+    // END methods closely related to WritableJndiNameEnvironment
+
+    /**
+     * Return a reference to another ejb by the same name or throw an
+     * IllegalArgumentException.
+     */
+    @Override   // EjbReferenceContainer
+    public EjbReference getEjbReference(String name) {
+        for (Iterator itr = getEjbReferenceDescriptors().iterator();
+                itr.hasNext();) {
+            EjbReference er = (EjbReference) itr.next();
+            if (er.getName().equals(name)) {
+                return er;
+            }
+        }
+        throw new IllegalArgumentException(localStrings.getLocalString(
+                "enterprise.deployment.exceptionbeanhasnoejbrefbyname",
+                "This bean {0} has no ejb reference by the name of {1}",
+                new Object[]{getName(), name}));
+    }
+
+    void removeRole(Role role) {
+        //this.getPermissionedRoles().remove(role);
+        this.getPermissionedMethodsByPermission().remove(new MethodPermission(role));
+        Set roleReferences = new HashSet(this.getRoleReferences());
+        for (Iterator itr = roleReferences.iterator(); itr.hasNext();) {
+            RoleReference roleReference = (RoleReference) itr.next();
+            if (roleReference.getRole().equals(role)) {
+                roleReference.setValue("");
+            }
         }
     }
 
@@ -2003,16 +2179,6 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
         return null;
     }
 
-    public List<InjectionCapable>
-    getInjectableResourcesByClass(String className) {
-        return bundleDescriptor.getInjectableResourcesByClass
-                (className, this);
-    }
-
-    public InjectionInfo getInjectionInfoByClass(Class clazz) {
-        return bundleDescriptor.getInjectionInfoByClass(clazz, this);
-    }
-
     /**
      * Gets the containing ejb bundle descriptor..
      */
@@ -2022,6 +2188,19 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
 
     public void setEjbBundleDescriptor(EjbBundleDescriptor bundleDescriptor) {
         this.bundleDescriptor = bundleDescriptor;
+        /*
+         * If this EjbDescriptor corresponds to an EJB that's part of a
+         * web bundle, we want to refer all environment references back
+         * to the environment stored in the web bundle, rather than the
+         * environment stored in the EJB descriptor.
+         */
+        env = null;
+        if (bundleDescriptor != null) {
+            Descriptor d = bundleDescriptor.getModuleDescriptor().
+                                                getDescriptor();
+            if (d instanceof WebBundleDescriptor)
+                env = (WritableJndiNameEnvironment)d;
+        }
     }
 
     /**
