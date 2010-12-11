@@ -76,7 +76,9 @@ public class AVKPersistenceUnitInfoImpl extends PersistenceUnitInfoImpl
 
             public ClassLoader getTempClassloader()
             {
-                return null;
+                // EclipseLink has started to use this even if we are just validating the PU.
+                // See issue 15112 for a test case.
+                return (ClassLoader)classLoader;
             }
 
             public void addTransformer(ClassTransformer transformer)
