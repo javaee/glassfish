@@ -54,7 +54,7 @@ public class Client extends AdminBaseDevTest {
     public static final String DEF_RESOURCE = "jdbc/xa2"; //__default";
     public static final String XA_RESOURCE = "jdbc/xa";
     public static final String TXID = "0000000000000001_00";
-    public static final String TXID_MONITOR = "server.transaction-service.activeids-current";
+    public static final String TXID_MONITOR = "transaction-service.activeids-current";
 
     private static SimpleReporterAdapter stat =
         new SimpleReporterAdapter("appserv-tests");
@@ -148,7 +148,7 @@ public class Client extends AdminBaseDevTest {
             AsadminReturn result = null;
             if (location != null && location.length() > 0) {
                 String txLog = new StringBuffer(location).append(File.separator)
-                        .append("nodes").append(File.separator).append("localhost")
+                        .append("nodes").append(File.separator).append("localhost-domain1")
                         .append(File.separator).append(INSTANCE1_NAME).append(File.separator)
                         .append("logs").append(File.separator).append(INSTANCE1_NAME)
                         .append(File.separator).append("tx").toString();
