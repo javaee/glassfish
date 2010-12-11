@@ -864,33 +864,33 @@ public class AppTest extends TestCase {
     }
 
     public void testCommitOnePhaseWithHeuristicRlbExc() {
-        _testCommitOnePhaseWithExc(XAException.XA_HEURRB, HeuristicRollbackException.class);
+        _testCommitOnePhaseWithExc(XAException.XA_HEURRB, HeuristicRollbackException.class, false, true);
     }
 
     public void testCommitOnePhaseWithHeuristicMixedExc() {
-        _testCommitOnePhaseWithExc(XAException.XA_HEURMIX, HeuristicMixedException.class);
+        _testCommitOnePhaseWithExc(XAException.XA_HEURMIX, HeuristicMixedException.class, false, true);
     }
 
     public void testCommitOnePhaseWithRlbExc() {
         System.out.println("**Testing XAER_NOTA in 1PC ===>");
-        _testCommitOnePhaseWithExc(XAException.XAER_NOTA, RollbackException.class);
+        _testCommitOnePhaseWithExc(XAException.XAER_NOTA, RollbackException.class, false, false);
 
         System.out.println("**Testing XAER_RMERR in 1PC ===>");
-        _testCommitOnePhaseWithExc(XAException.XAER_RMERR, RollbackException.class, false);
+        _testCommitOnePhaseWithExc(XAException.XAER_RMERR, RollbackException.class, false, false);
 
         System.out.println("**Testing XA_RBROLLBACK in rollback part of 1PC ===>");
-        _testCommitOnePhaseWithExc(XAException.XA_RBROLLBACK, RollbackException.class, true);
+        _testCommitOnePhaseWithExc(XAException.XA_RBROLLBACK, RollbackException.class, true, false);
 
         System.out.println("**Testing XAER_RMERR in rollback part of 1PC ===>");
-        _testCommitOnePhaseWithExc(XAException.XAER_RMERR, RollbackException.class, true);
+        _testCommitOnePhaseWithExc(XAException.XAER_RMERR, RollbackException.class, true, false);
 
         System.out.println("**Testing XAER_RMFAIL in rollback part of 1PC ===>");
-        _testCommitOnePhaseWithExc(XAException.XAER_RMFAIL, RollbackException.class, true);
+        _testCommitOnePhaseWithExc(XAException.XAER_RMFAIL, RollbackException.class, true, false);
     }
 
     public void testCommitOnePhaseWithXAExc() {
         System.out.println("**Testing TM with failed 1PC commit ===>");
-        _testCommitOnePhaseWithExc(XAException.XAER_RMFAIL, SystemException.class);
+        _testCommitOnePhaseWithExc(XAException.XAER_RMFAIL, SystemException.class, false, false);
     }
 
     public void testRollbackWithErrorNoExc() {
@@ -907,14 +907,11 @@ public class AppTest extends TestCase {
         _testXARollbackWithError(XAException.XAER_RMFAIL);
     }
 
-    private void _testCommitOnePhaseWithExc(int errorCode, Class exType) {
-        _testCommitOnePhaseWithExc(errorCode, exType, false);
-    }
-
-    private void _testCommitOnePhaseWithExc(int errorCode, Class exType, boolean setRollbackOnly) {
+    private void _testCommitOnePhaseWithExc(int errorCode, Class exType, boolean setRollbackOnly, boolean isHeuristic) {
         System.out.println("**Testing TM with " + exType.getName() + " during 1PC commit ===>");
         ((JavaEETransactionManagerSimplified)t).getLogger().setLevel(Level.SEVERE);
         LogDomains.getLogger(OTSResourceImpl.class, LogDomains.TRANSACTION_LOGGER).setLevel(Level.SEVERE);
+        TestResource theResource = new TestResource();
         try {
             System.out.println("**Starting transaction ....");
             t.begin();
@@ -924,7 +921,6 @@ public class AppTest extends TestCase {
             // Create and set invMgr
             createUtx();
             Transaction tx = t.getTransaction();
-            TestResource theResource = new TestResource();
             t.enlistResource(tx, new TestResourceHandle(theResource));
             if (setRollbackOnly) {
                 theResource.setRollbackErrorCode(errorCode);
@@ -952,7 +948,14 @@ public class AppTest extends TestCase {
                 } catch (Exception ex1) {
                     ex1.printStackTrace();
                 }
-                assert (true);
+
+                boolean status = true;
+                if (isHeuristic) {
+                   status = theResource.forgetCalled();
+                   System.out.println("**Forget was called: " + status);
+                }
+
+                assert (status);
             } else {
                 ex.printStackTrace();
                 assert (false);
@@ -995,19 +998,19 @@ public class AppTest extends TestCase {
         _testCommit2PCWithXAExc(XAException.XAER_RMFAIL, 9999, SystemException.class);
 
         System.out.println("**Testing TM with both XA_HEURRB 2PC commit ===>");
-        _testCommit2PCWithXAExc(XAException.XA_HEURRB, XAException.XA_HEURRB, HeuristicRollbackException.class);
+        _testCommit2PCWithXAExc(XAException.XA_HEURRB, XAException.XA_HEURRB, HeuristicRollbackException.class, true);
 
         System.out.println("**Testing TM with 1 XA_HEURRB & 1 XA_HEURMIX 2PC commit ===>");
-        _testCommit2PCWithXAExc(XAException.XA_HEURRB, XAException.XA_HEURMIX, HeuristicMixedException.class);
+        _testCommit2PCWithXAExc(XAException.XA_HEURRB, XAException.XA_HEURMIX, HeuristicMixedException.class, true);
 
         System.out.println("**Testing TM with 1 XA_HEURRB & 1 XA_HEURCOM 2PC commit ===>");
-        _testCommit2PCWithXAExc(XAException.XA_HEURRB, XAException.XA_HEURCOM, HeuristicMixedException.class);
+        _testCommit2PCWithXAExc(XAException.XA_HEURRB, XAException.XA_HEURCOM, HeuristicMixedException.class, true);
 
         System.out.println("**Testing TM with 1 XA_HEURCOM & 1 XA_HEURRB 2PC commit ===>");
-        _testCommit2PCWithXAExc(XAException.XA_HEURCOM, XAException.XA_HEURRB, HeuristicMixedException.class);
+        _testCommit2PCWithXAExc(XAException.XA_HEURCOM, XAException.XA_HEURRB, HeuristicMixedException.class, true);
 
         System.out.println("**Testing TM with 1 XA_HEURRB 2PC commit ===>");
-        _testCommit2PCWithXAExc(XAException.XA_HEURRB, 9999, HeuristicMixedException.class);
+        _testCommit2PCWithXAExc(XAException.XA_HEURRB, 9999, HeuristicMixedException.class, true);
 
         System.out.println("**Testing TM with 2nd XAER_PROTO in *prepare* of 2PC commit ===>");
         _testCommit2PCWithXAExc(9999, XAException.XAER_PROTO, false, SystemException.class);
@@ -1024,11 +1027,21 @@ public class AppTest extends TestCase {
     }
 
     private void _testCommit2PCWithXAExc(int errorCode1, int errorCode2, Class exType) {
-        _testCommit2PCWithXAExc(errorCode1, errorCode2, true, exType);
+        _testCommit2PCWithXAExc(errorCode1, errorCode2, true, exType, false);
     }
 
     private void _testCommit2PCWithXAExc(int errorCode1, int errorCode2, boolean failOnCommit, Class exType) {
+        _testCommit2PCWithXAExc(errorCode1, errorCode2, failOnCommit, exType, false);
+    }
+
+    private void _testCommit2PCWithXAExc(int errorCode1, int errorCode2, Class exType, boolean isHeuristic) {
+        _testCommit2PCWithXAExc(errorCode1, errorCode2, true, exType, isHeuristic);
+    }
+
+    private void _testCommit2PCWithXAExc(int errorCode1, int errorCode2, boolean failOnCommit, Class exType, boolean isHeuristic) {
         System.out.println("**Testing TM with " + exType.getName() + " during failed 2PC commit ===>");
+        TestResource theResource1 = new TestResource();
+        TestResource theResource2 = new TestResource();
         try {
             System.out.println("**Starting transaction ....");
             t.begin();
@@ -1038,8 +1051,6 @@ public class AppTest extends TestCase {
             // Create and set invMgr
             createUtx();
             Transaction tx = t.getTransaction();
-            TestResource theResource1 = new TestResource();
-            TestResource theResource2 = new TestResource();
             t.enlistResource(tx, new TestResourceHandle(theResource1));
             t.enlistResource(tx, new TestResourceHandle(theResource2));
 
@@ -1069,7 +1080,14 @@ public class AppTest extends TestCase {
                     System.out.println("**Caught exception checking for status ...");
                     ex1.printStackTrace();
                 }
-                assert (true);
+                boolean status = true;
+                if (isHeuristic) {
+                   status = theResource1.forgetCalled() && theResource2.forgetCalled();
+                   System.out.println("**Forget 1 was called: " + theResource1.forgetCalled());
+                   System.out.println("**Forget 2 was called: " + theResource2.forgetCalled());
+                }
+
+                assert (status);
             } else {
                 System.out.println("**Caught NOT a " + exType.getName() + " during 2PC...");
                 ex.printStackTrace();
@@ -1138,6 +1156,8 @@ public class AppTest extends TestCase {
     
       // allow only one resource in use at a time
       private boolean inUse;
+      private boolean _forgetCalled = false;
+      private boolean _isHeuristic = false;
     
       private int commitErrorCode = 9999;
       private int rollbackErrorCode = 9999;
@@ -1146,16 +1166,27 @@ public class AppTest extends TestCase {
       // to test different xaexception error codes
       public void setCommitErrorCode(int errorCode) {
         this.commitErrorCode = errorCode;
+        setHeuristic(errorCode);
       }
     
       public void setRollbackErrorCode(int errorCode) {
         this.rollbackErrorCode = errorCode;
+        setHeuristic(errorCode);
       }
     
       public void setPrepareErrorCode(int errorCode) {
         this.prepareErrorCode = errorCode;
       }
     
+      private void setHeuristic(int errorCode) {
+          if (errorCode == XAException.XA_HEURCOM ||
+                errorCode == XAException.XA_HEURHAZ || 
+                errorCode == XAException.XA_HEURMIX ||
+                errorCode == XAException.XA_HEURRB) {
+             _isHeuristic = true;
+          }
+      }
+
       public void commit(Xid xid, boolean onePhase) throws XAException{
         // test goes here
         System.out.println("in XA commit");
@@ -1201,6 +1232,7 @@ public class AppTest extends TestCase {
         }
        public void forget(Xid xid)
             throws XAException {
+            _forgetCalled = true;
             inUse = false;
         }
     
@@ -1222,6 +1254,11 @@ public class AppTest extends TestCase {
             throws XAException {
             return null;
         }
+
+       public boolean forgetCalled() {
+            return !_isHeuristic || _forgetCalled;
+       }
+
     
     }
   

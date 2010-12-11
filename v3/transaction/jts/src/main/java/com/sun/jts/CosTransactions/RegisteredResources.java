@@ -807,12 +807,17 @@ class RegisteredResources {
                         exceptionThrown = false;
                     } catch (Throwable exc) {
 
-                        if (exc instanceof HeuristicCommit) {
+                        if (exc instanceof HeuristicCommit || 
+                            // Work around the fact that org.omg.CosTransactions.ResourceOperations#commit
+                            // does not declare HeuristicCommit exception
+                            (exc instanceof HeuristicHazard && exc.getCause() instanceof XAException && 
+                                ((XAException)exc.getCause()).errorCode == XAException.XA_HEURCOM)) {
 
                             // If the exception is Heuristic Commit, remember
                             // that a heuristic exception has been raised.
                             heuristicException = true;
                             heuristicRaised = true;
+                            heuristicMixed = true;
                             exceptionThrown = false;
 
                         } else if (exc instanceof HeuristicRollback ||

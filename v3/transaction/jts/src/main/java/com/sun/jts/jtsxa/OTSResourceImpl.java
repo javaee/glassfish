@@ -132,8 +132,13 @@ public class OTSResourceImpl extends OTSResourcePOA implements OTSResource {
                 throw new HeuristicMixed(ex.getMessage());
             if (e.errorCode == XAException.XA_RBPROTO)
                 throw new NotPrepared(ex.getMessage());
-            if (e.errorCode == XAException.XA_HEURCOM)
-                return;
+            if (e.errorCode == XAException.XA_HEURCOM) {
+                // Can't throw HeuristicCommit exception because org.omg.CosTransactions.ResourceOperations#commit
+                // doesn't declare it
+                HeuristicHazard hh = new HeuristicHazard(ex.getMessage());
+                hh.initCause(ex);
+                throw hh;
+            }
             if ((e.errorCode == XAException.XA_RETRY) || 
 		(e.errorCode == XAException.XA_RBTRANSIENT) || 
 		(e.errorCode == XAException.XA_RBCOMMFAIL)) 
@@ -191,9 +196,9 @@ public class OTSResourceImpl extends OTSResourcePOA implements OTSResource {
             if (e.errorCode >= XAException.XA_RBBASE &&
                 e.errorCode <= XAException.XA_RBEND)
 				return;
-			**/
             if (e.errorCode == XAException.XA_HEURCOM)
 				return;
+			**/
             if ((e.errorCode == XAException.XA_RETRY) || 
 					(e.errorCode == XAException.XA_RBTRANSIENT) || 
 					(e.errorCode == XAException.XA_RBCOMMFAIL)) 
@@ -201,8 +206,8 @@ public class OTSResourceImpl extends OTSResourcePOA implements OTSResource {
 
             // Use HeuristicHazard as a temp exception because CosTransactions.idl Resource
             // has commit_one_phase() defined to throw only HeuristicHazard 
-            if (e.errorCode >= XAException.XA_RBBASE &&
-                e.errorCode <= XAException.XA_RBEND || e.errorCode == XAException.XA_HEURMIX) {
+            if (e.errorCode >= XAException.XA_RBBASE && e.errorCode <= XAException.XA_RBEND || 
+                e.errorCode == XAException.XA_HEURMIX || e.errorCode == XAException.XA_HEURCOM) {
 				HeuristicHazard hazex = new HeuristicHazard();
 				((Throwable)hazex).initCause((Throwable)ex);
 				throw hazex;
@@ -345,8 +350,6 @@ public class OTSResourceImpl extends OTSResourcePOA implements OTSResource {
                 throw new HeuristicHazard(ex.getMessage());
             if (e.errorCode == XAException.XA_HEURMIX)
                 throw new HeuristicMixed(ex.getMessage());
-            if (e.errorCode == XAException.XA_HEURCOM)
-                return;
             if ((e.errorCode == XAException.XA_RETRY) || 
 		(e.errorCode == XAException.XA_RBTRANSIENT) || 
 		(e.errorCode == XAException.XA_RBCOMMFAIL)) 
