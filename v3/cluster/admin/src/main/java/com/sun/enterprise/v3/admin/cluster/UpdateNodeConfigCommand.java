@@ -107,6 +107,14 @@ public class UpdateNodeConfigCommand implements AdminCommand  {
             return;
         }
 
+        if (node.isDefaultLocalNode()) {
+            String m = Strings.get("update.node.config.defaultnode", name);
+            logger.warning(m);
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage(m);
+            return;
+        }
+
         // After updating the config node it needs to have a host
         if (!StringUtils.ok(nodehost) && !StringUtils.ok(node.getNodeHost())) {
             String m = Strings.get("update.node.config.missing.attribute",
