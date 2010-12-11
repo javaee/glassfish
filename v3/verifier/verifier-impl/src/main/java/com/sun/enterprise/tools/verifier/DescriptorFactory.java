@@ -144,6 +144,9 @@ public class DescriptorFactory
             ClassLoader cl = archiveHandler.getClassLoader(parentCl, context);
             Archivist archivist = archivistFactory.getArchivist(
                 archive, cl);
+            if (archivist == null) {
+                throw new IOException("Cannot determine the Java EE module type for " + archive.getURI());
+            }
             archivist.setAnnotationProcessingRequested(true);
             String xmlValidationLevel = dasConfig.getDeployXmlValidation();
             archivist.setXMLValidationLevel(xmlValidationLevel);

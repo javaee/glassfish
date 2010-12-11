@@ -375,21 +375,13 @@ public class Verifier implements org.glassfish.internal.deployment.Verifier
         //InstalledLibrariesResolver class itself.
         //But any way, we don't have a choice but to make this work around in our code.
         InstalledLibrariesResolver.initializeInstalledLibRegistry(env.getLibPath().getAbsolutePath());
-        try
-        {
-            DescriptorFactory.ResultHolder result =
-                descriptorFactory.createApplicationDescriptor(
-                    new File(jarFile),
-                    new File(explodeDirName),
-                    clh.getCommonClassLoader());
-            verifierFrameworkContext.setApplication(result.application);
-            verifierFrameworkContext.setArchive(result.archive);
-        }
-        catch (IOException e)
-        {
-            log("Problem in creating application descriptor", e);
-            throw e;
-        }
+        DescriptorFactory.ResultHolder result =
+            descriptorFactory.createApplicationDescriptor(
+                new File(jarFile),
+                new File(explodeDirName),
+                clh.getCommonClassLoader());
+        verifierFrameworkContext.setApplication(result.application);
+        verifierFrameworkContext.setArchive(result.archive);
     }
 
     private void runVerifier(BaseVerifier baseVerifier)
