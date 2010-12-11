@@ -66,5 +66,6 @@
         <module>webservice</module>
         <module>secureWebApp</module>
         <module>jsptest</module>
+        <module>jsftest</module>
     </modules>
 </project>
