@@ -55,7 +55,6 @@ import javax.faces.validator.FacesValidator;
 import javax.servlet.ServletContext;
 import java.lang.annotation.Annotation;
 import java.net.URI;
-import java.net.URL;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -79,7 +78,7 @@ public class OSGiFacesAnnotationScanner extends AnnotationProvider {
     }
 
     @Override
-    public Map<Class<? extends Annotation>, Set<Class<?>>> getAnnotatedClasses(Set<URL> urls) {
+    public Map<Class<? extends Annotation>, Set<Class<?>>> getAnnotatedClasses(Set<URI> uris) {
         Map<Class<? extends Annotation>, Set<Class<?>>> result =
                 (Map<Class<? extends Annotation>, Set<Class<?>>>) sc.getAttribute(Constants.FACES_ANNOTATED_CLASSES);
         sc.setAttribute(Constants.FACES_ANNOTATED_CLASSES, null); // clear it

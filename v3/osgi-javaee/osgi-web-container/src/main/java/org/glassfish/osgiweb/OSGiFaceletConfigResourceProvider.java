@@ -60,10 +60,10 @@ import java.util.logging.Logger;
  */
 public class OSGiFaceletConfigResourceProvider implements com.sun.faces.spi.FaceletConfigResourceProvider, com.sun.faces.spi.ConfigurationResourceProvider {
     private static Logger logger = Logger.getLogger(OSGiFaceletConfigResourceProvider.class.getPackage().getName()); 
-    public Collection<URL> getResources(ServletContext context) {
-        Collection<URL> urls = (Collection<URL>) context.getAttribute(Constants.FACELET_CONFIG_ATTR);
-        if (urls == null) return Collections.EMPTY_LIST;
-        logger.info("Facelet Config urls = " + urls); // TODO(Sahoo): change to debug level statement
-        return urls;
+    public Collection<URI> getResources(ServletContext context) {
+        Collection<URI> uris = (Collection<URI>) context.getAttribute(Constants.FACELET_CONFIG_ATTR);
+        if (uris == null) return Collections.EMPTY_LIST;
+        logger.info("Facelet Config urls = " + uris); // TODO(Sahoo): change to debug level statement
+        return uris;
     }
 }

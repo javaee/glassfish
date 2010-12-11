@@ -56,7 +56,6 @@ import java.lang.annotation.Annotation;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.MalformedURLException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -111,8 +110,8 @@ public class OSGiWebModuleDecorator implements WebModuleDecorator
     }
 
     private void populateFacesInformation(WebModule module, BundleContext bctx, ServletContext sc) {
-        Collection<URL> facesConfigs = new ArrayList<URL>();
-        Collection<URL> faceletConfigs = new ArrayList<URL>();
+        Collection<URI> facesConfigs = new ArrayList<URI>();
+        Collection<URI> faceletConfigs = new ArrayList<URI>();
         discoverJSFConfigs(bctx.getBundle(), facesConfigs, faceletConfigs);
         sc.setAttribute(Constants.FACES_CONFIG_ATTR, facesConfigs);
         sc.setAttribute(Constants.FACELET_CONFIG_ATTR, faceletConfigs);
@@ -154,20 +153,16 @@ public class OSGiWebModuleDecorator implements WebModuleDecorator
      * reported in https://glassfish.dev.java.net/issues/show_bug.cgi?id=12914, we only find faces config resources
      * that ends with .faces-config.xml.
      */
-    private void discoverJSFConfigs(Bundle b, Collection<URL> facesConfigs, Collection<URL> faceletConfigs) {
+    private void discoverJSFConfigs(Bundle b, Collection<URI> facesConfigs, Collection<URI> faceletConfigs) {
         OSGiBundleArchive archive = new OSGiBundleArchive(b);
         for (BundleResource r : archive) {
             final String path = r.getPath();
             if (path.startsWith("META-INF/")) {
-                try {
-                    final URL url = r.getUri().toURL();
-                    if (path.endsWith(".taglib.xml")) {
-                        faceletConfigs.add(url);
-                    } else if (path.endsWith(".faces-config.xml")) { // this check automatically excludes META-INF/faces-config.xml
-                        facesConfigs.add(url);
-                    }
-                } catch (MalformedURLException e) {
-                    e.printStackTrace(); // ignore and continue
+                final URI url = r.getUri();
+                if (path.endsWith(".taglib.xml")) {
+                    faceletConfigs.add(url);
+                } else if (path.endsWith(".faces-config.xml")) { // this check automatically excludes META-INF/faces-config.xml
+                    facesConfigs.add(url);
                 }
             }
         }

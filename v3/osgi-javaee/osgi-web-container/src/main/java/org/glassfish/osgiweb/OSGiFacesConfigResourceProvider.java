@@ -41,12 +41,9 @@
 package org.glassfish.osgiweb;
 
 import javax.servlet.ServletContext;
-import java.net.URL;
 import java.net.URI;
-import java.net.MalformedURLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.ArrayList;
 import java.util.logging.Logger;
 
 /**
@@ -61,10 +58,10 @@ import java.util.logging.Logger;
  */
 public class OSGiFacesConfigResourceProvider implements com.sun.faces.spi.FacesConfigResourceProvider, com.sun.faces.spi.ConfigurationResourceProvider {
     private static Logger logger = Logger.getLogger(OSGiFacesConfigResourceProvider.class.getPackage().getName());
-    public Collection<URL> getResources(ServletContext context) {
-        Collection<URL> urls = (Collection<URL>) context.getAttribute(Constants.FACES_CONFIG_ATTR);
-        if (urls == null) return Collections.EMPTY_LIST;
-        logger.info("Faces Config urls excluding the ones named as faces-config.xml = " + urls); // TODO(Sahoo): change to finer
-        return urls;
+    public Collection<URI> getResources(ServletContext context) {
+        Collection<URI> uris = (Collection<URI>) context.getAttribute(Constants.FACES_CONFIG_ATTR);
+        if (uris == null) return Collections.EMPTY_LIST;
+        logger.info("Faces Config urls excluding the ones named as faces-config.xml = " + uris); // TODO(Sahoo): change to finer
+        return uris;
     }
 }

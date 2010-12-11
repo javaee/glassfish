@@ -40,18 +40,24 @@
 
 package org.glassfish.weld.jsf;
 
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
 
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.web.WebModule;
 import com.sun.faces.spi.FacesConfigResourceProvider;
+import com.sun.logging.LogDomains;
+import java.net.URI;
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
+import org.glassfish.weld.WeldApplicationContainer;
 import org.glassfish.weld.WeldDeployer;
 import org.jvnet.hk2.component.Habitat;
 
@@ -65,9 +71,11 @@ public class WeldFacesConfigProvider implements FacesConfigResourceProvider {
             "org.glassfish.servlet.habitat";
     private InvocationManager invokeMgr;
 
+    private Logger _logger = LogDomains.getLogger(WeldApplicationContainer.class, LogDomains.CORE_LOGGER);
+
     private static final String SERVICES_FACES_CONFIG = "META-INF/services/faces-config.xml";
 
-    public Collection<URL> getResources(ServletContext context) {
+    public Collection<URI> getResources(ServletContext context) {
 
         Habitat defaultHabitat = (Habitat)context.getAttribute(
                 HABITAT_ATTRIBUTE);
@@ -76,7 +84,7 @@ public class WeldFacesConfigProvider implements FacesConfigResourceProvider {
         WebModule webModule = (WebModule)inv.getContainer();
         WebBundleDescriptor wdesc = webModule.getWebBundleDescriptor();
 
-        List<URL> list = new ArrayList<URL>(1);
+        List<URI> list = new ArrayList<URI>(1);
 
         if (!wdesc.hasExtensionProperty(WeldDeployer.WELD_EXTENSION)) {
             return list;
@@ -86,7 +94,22 @@ public class WeldFacesConfigProvider implements FacesConfigResourceProvider {
         // be available from the same classloader that loaded this instance.
         // Doing so allows us to be more OSGi friendly.
         ClassLoader loader = this.getClass().getClassLoader();
-        list.add(loader.getResource(SERVICES_FACES_CONFIG));
+        URL resource = loader.getResource(SERVICES_FACES_CONFIG);
+        if (null != resource) {
+            URI toAdd = null;
+            try {
+                toAdd = new URI(resource.toExternalForm());
+            } catch (URISyntaxException ex) {
+                if (_logger.isLoggable(Level.SEVERE)) {
+                    String message = "Unable to create URI for URL " +
+                            resource.toExternalForm();
+                    _logger.log(Level.SEVERE, message, ex);
+                }
+            }
+            if (null != toAdd) {
+                list.add(toAdd);
+            }
+        }
         return list;
     }
 

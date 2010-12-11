@@ -44,12 +44,16 @@ import com.sun.enterprise.container.common.spi.JCDIService;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.container.common.spi.util.InjectionException;
 import com.sun.enterprise.container.common.spi.util.InjectionManager;
+import com.sun.enterprise.web.ServerConfigLookup;
 import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.InjectionInfo;
 import com.sun.enterprise.deployment.JndiNameEnvironment;
 import com.sun.faces.spi.DiscoverableInjectionProvider;
+import com.sun.faces.spi.AnnotationScanner;
+import com.sun.faces.spi.AnnotationScanner.ScannedAnnotation;
 import com.sun.faces.spi.InjectionProviderException;
 import com.sun.faces.util.FacesLogger;
+import java.net.URI;
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
 import org.jvnet.hk2.component.Habitat;
@@ -57,15 +61,24 @@ import org.jvnet.hk2.component.Habitat;
 import javax.servlet.ServletContext;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.hk2.classmodel.reflect.AnnotationModel;
+import org.glassfish.hk2.classmodel.reflect.Type;
+import org.glassfish.hk2.classmodel.reflect.Types;
 
 /**
  * <p>This <code>InjectionProvider</code> is specific to the
  * GlassFish/SJSAS 9.x PE/EE application servers.</p>
  */
-public class GlassFishInjectionProvider extends DiscoverableInjectionProvider {
+public class GlassFishInjectionProvider extends DiscoverableInjectionProvider implements AnnotationScanner {
 
     private static final Logger LOGGER = FacesLogger.APPLICATION.getLogger();
     private static final String HABITAT_ATTRIBUTE =
@@ -74,6 +87,7 @@ public class GlassFishInjectionProvider extends DiscoverableInjectionProvider {
     private InjectionManager injectionManager;
     private InvocationManager invokeMgr;
     private JCDIService jcdiService;
+    private ServerConfigLookup serverConfigLookup;
 
     /**
      * <p>Constructs a new <code>GlassFishInjectionProvider</code> instance.</p>
@@ -86,7 +100,72 @@ public class GlassFishInjectionProvider extends DiscoverableInjectionProvider {
         compEnvManager = defaultHabitat.getByContract(ComponentEnvManager.class);
         invokeMgr = defaultHabitat.getByContract(InvocationManager.class);
         injectionManager = defaultHabitat.getByContract(InjectionManager.class);
-        jcdiService = defaultHabitat.getByContract(JCDIService.class);    
+        jcdiService = defaultHabitat.getByContract(JCDIService.class);
+        serverConfigLookup = defaultHabitat.getComponent(ServerConfigLookup.class);
+        
+    }
+
+    @Override
+    public Map<String, List<ScannedAnnotation>> getAnnotatedClassesInCurrentModule(ServletContext servletContext)
+    throws InjectionProviderException {
+
+        DeploymentContext dc = serverConfigLookup.getDeploymentContext(servletContext);
+        Types types = dc.getModuleMetaData(Types.class);
+        Collection<Type> allTypes = types.getAllTypes();
+        Collection<AnnotationModel> annotations = null;
+        Map<String, List<ScannedAnnotation>> classesByAnnotation = 
+                new HashMap<String, List<ScannedAnnotation>>();
+        List<ScannedAnnotation> classesWithThisAnnotation = null;
+        for (final Type cur : allTypes) {
+            annotations = cur.getAnnotations();
+            ScannedAnnotation toAdd = null;
+            for (AnnotationModel curAnnotation : annotations) {
+                String curAnnotationName = curAnnotation.getType().getName();
+                if (null == (classesWithThisAnnotation = classesByAnnotation.get(curAnnotationName))) {
+                    classesWithThisAnnotation = new ArrayList<ScannedAnnotation>();
+                    classesByAnnotation.put(curAnnotationName, classesWithThisAnnotation);
+                }
+                toAdd = new ScannedAnnotation() {
+
+                    @Override
+                    public boolean equals(Object obj) {
+                        boolean result = false;
+                        if (obj instanceof ScannedAnnotation) {
+                            String otherName = ((ScannedAnnotation)obj).getFullyQualifiedClassName();
+                            if (null != otherName) {
+                                result = cur.getName().equals(otherName);
+                            }
+                        }
+
+                        return result;
+                    }
+
+                    @Override
+                    public int hashCode() {
+                        String str = getFullyQualifiedClassName();
+                        Collection<URI> obj = getDefiningURIs();
+                        int result = str != null ? str.hashCode() : 0;
+                        result = 31 * result + (obj != null ? obj.hashCode() : 0);
+                        return result;
+                    }
+
+                    @Override
+                    public String getFullyQualifiedClassName() {
+                        return cur.getName();
+                    }
+
+                    @Override
+                    public Collection<URI> getDefiningURIs() {
+                        return cur.getDefiningURIs();
+                    }
+
+                };
+                if (!classesWithThisAnnotation.contains(toAdd)) {
+                    classesWithThisAnnotation.add(toAdd);
+                }
+            }
+        }
+        return classesByAnnotation;
     }
     
     /**
