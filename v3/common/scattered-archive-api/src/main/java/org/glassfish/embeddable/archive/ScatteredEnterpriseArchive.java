@@ -41,6 +41,8 @@
 package org.glassfish.embeddable.archive;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -62,41 +64,43 @@ import java.util.Map;
  * .s4 { color: rgb(255,0,255); }
  * </style>
  * <pre>
- * <a name="l58">        GlassFish glassfish = GlassFishRuntime.bootstrap().newGlassFish();
- * <a name="l59">        glassfish.start();
- * <a name="l60">
- * <a name="l61">        </span><span class="s0">// Create a scattered web module</span><span class="s1">
- * <a name="l62">        ScatteredArchive webmodule = </span><span class="s2">new </span><span class="s1">ScatteredArchive(</span><span class="s4">&quot;testweb&quot;</span><span class="s1">, ScatteredArchive.Type.WAR);
- * <a name="l63">        </span><span class="s0">// target/classes directory contains my complied servlets</span><span class="s1">
- * <a name="l64">        webmodule.addClassPath(</span><span class="s4">&quot;target/classes&quot;</span><span class="s1">);
- * <a name="l67">        </span><span class="s0">// /tmp/sun-web.xml is my META-INF/sun-web.xml</span><span class="s1">
- * <a name="l68">        webmodule.addMetadata(</span><span class="s4">&quot;META-INF/sun-web.xml&quot;</span><span class="s1">, </span><span class="s4">&quot;/tmp/sun-web.xml&quot;</span><span class="s1">);
- * <a name="l69">
- * <a name="l70">        </span><span class="s0">// Create a scattered enterprise archive.</span><span class="s1">
- * <a name="l71">        ScatteredEnterpriseArchive archive = </span><span class="s2">new </span><span class="s1">ScatteredEnterpriseArchive(</span><span class="s4">&quot;testapp&quot;</span><span class="s1">);
- * <a name="l72">        </span><span class="s0">// Add scattered web module to the scattered enterprise archive.</span><span class="s1">
- * <a name="l73">        archive.addArchive(webmodule.toURI());
- * <a name="l74">        </span><span class="s0">// /tmp/mylibrary.jar is a library JAR file.</span><span class="s1">
- * <a name="l75">        archive.addArchive(</span><span class="s4">&quot;/tmp/mylibrary.jar&quot;</span><span class="s1">);
- * <a name="l76">        </span><span class="s0">// target/myejb.jar is a EJB module.</span><span class="s1">
- * <a name="l77">        archive.addArchive(</span><span class="s4">&quot;target/myejb.jar&quot;</span><span class="s1">);
- * <a name="l78">        </span><span class="s0">// src/application.xml is my META-INF/application.xml</span><span class="s1">
- * <a name="l79">        archive.addMetadata(</span><span class="s4">&quot;META-INF/application.xml&quot;</span><span class="s1">, </span><span class="s4">&quot;src/application.xml&quot;</span><span class="s1">);
- * <a name="l80">
- * <a name="l81">        Deployer deployer = glassfish.getDeployer();
- * <a name="l82">        </span><span class="s0">// Deploy my scattered enterprise application</span><span class="s1">
- * <a name="l83">        deployer.deploy(archive.toURI());
+ * <a name="l56">        GlassFish glassfish = GlassFishRuntime.bootstrap().newGlassFish();
+ * <a name="l57">        glassfish.start();
+ * <a name="l58">
+ * <a name="l59">        </span><span class="s0">// Create a scattered web application.</span><span class="s1">
+ * <a name="l60">        ScatteredArchive webmodule = </span><span class="s2">new </span><span class="s1">ScatteredArchive(</span><span class="s4">&quot;testweb&quot;</span><span class="s1">, ScatteredArchive.Type.WAR);
+ * <a name="l61">        </span><span class="s0">// target/classes directory contains my complied servlets</span><span class="s1">
+ * <a name="l62">        webmodule.addClassPath(</span><span class="s2">new </span><span class="s1">File(</span><span class="s4">&quot;target&quot;</span><span class="s1">, </span><span class="s4">&quot;classes&quot;</span><span class="s1">));
+ * <a name="l63">        </span><span class="s0">// resources/sun-web.xml is my WEB-INF/sun-web.xml</span><span class="s1">
+ * <a name="l64">        webmodule.addMetadata(</span><span class="s2">new </span><span class="s1">File(</span><span class="s4">&quot;resources&quot;</span><span class="s1">, </span><span class="s4">&quot;sun-web.xml&quot;</span><span class="s1">));
+ * <a name="l65">
+ * <a name="l66">        </span><span class="s0">// Create a scattered enterprise archive.</span><span class="s1">
+ * <a name="l67">        ScatteredEnterpriseArchive archive = </span><span class="s2">new </span><span class="s1">ScatteredEnterpriseArchive(</span><span class="s4">&quot;testapp&quot;</span><span class="s1">);
+ * <a name="l68">        </span><span class="s0">// src/application.xml is my META-INF/application.xml</span><span class="s1">
+ * <a name="l69">        archive.addMetadata(</span><span class="s2">new </span><span class="s1">File(</span><span class="s4">&quot;src&quot;</span><span class="s1">, </span><span class="s4">&quot;application.xml&quot;</span><span class="s1">));
+ * <a name="l70">        </span><span class="s0">// Add scattered web module to the scattered enterprise archive.</span><span class="s1">
+ * <a name="l71">        </span><span class="s0">// src/application.xml references Web module as &quot;scattered.war&quot;. Hence specify the name while adding the archive.</span><span class="s1">
+ * <a name="l72">        archive.addArchive(webmodule.toURI(), </span><span class="s4">&quot;scattered.war&quot;</span><span class="s1">);
+ * <a name="l73">        </span><span class="s0">// lib/mylibrary.jar is a library JAR file.</span><span class="s1">
+ * <a name="l74">        archive.addArchive(</span><span class="s2">new </span><span class="s1">File(</span><span class="s4">&quot;lib&quot;</span><span class="s1">, </span><span class="s4">&quot;mylibrary.jar&quot;</span><span class="s1">));
+ * <a name="l75">        </span><span class="s0">// target/ejbclasses contain my compiled EJB module.</span><span class="s1">
+ * <a name="l76">        </span><span class="s0">// src/application.xml references EJB module as &quot;ejb.jar&quot;. Hence specify the name while adding the archive.</span><span class="s1">
+ * <a name="l77">        archive.addArchive(</span><span class="s2">new </span><span class="s1">File(</span><span class="s4">&quot;target&quot;</span><span class="s1">, </span><span class="s4">&quot;ejbclasses&quot;</span><span class="s1">), </span><span class="s4">&quot;ejb.jar&quot;</span><span class="s1">);
+ * <a name="l78">
+ * <a name="l79">        Deployer deployer = glassfish.getDeployer();
+ * <a name="l80">        </span><span class="s0">// Deploy my scattered web application</span><span class="s1">
+ * <a name="l81">        deployer.deploy(webmodule.toURI());
  * </pre>
  *
- * @author bhavanishankar@dev.net
+ * @author bhavanishankar@java.net
  */
 public class ScatteredEnterpriseArchive {
 
     String name;
     static final String type = "ear";
-    List<File> archives = new ArrayList<File>();
+    Map<String, File> archives = new HashMap<String, File>();
     Map<String, File> metadatas = new HashMap<String, File>();
-    
+
     /**
      * Construct a new scattered enterprise archive.
      *
@@ -113,20 +117,72 @@ public class ScatteredEnterpriseArchive {
     /**
      * Add a module or a library to this scattered enterprise archive.
      * <p/>
-     * The specified archive location should be one of the following:
+     * The addArchive(archiveURI) method has the same effect as:
+     * <pre>
+     *      addMetadata(archiveURI, null)
+     * </pre>
+     * Follows the same semantics as {@link #addArchive(URI, String)} method.
+     */
+    public void addArchive(URI archiveURI) throws IOException {
+        addArchive(archiveURI, null);
+    }
+
+    /**
+     * Add a module or a library to this scattered enterprise archive.
+     * <p/>
+     * The specified archiveURI must be one of the following:
      * <pre>
      *      ScatteredArchive URI obtained via {@link ScatteredArchive#toURI()}.
-     *      Location of a library JAR file.
-     *      Location of a Java EE module.
+     *      Location of a library JAR file. Must be a File URI.
+     *      Location of a Java EE module. Must be a File URI.
      * </pre>
-     * Refer to the example above.
+     * If the specified name is null, then the name is computed as the name of the
+     * File as located by archiveURI.
      *
      * @param archiveURI Module or library archive URI.
-     * @throws NullPointerException          if archiveURI is null
-     * @throws IllegalArgumentException if the archiveURI location is not found.
+     * @param name       name of the module/library as specified in META-INF/application.xml
+     * @throws NullPointerException if archiveURI is null
+     * @throws IOException          if the archiveURI location is not found.
      */
-    public void addArchive(URI archiveURI) {
-        addArchive(archiveURI != null ? new File(archiveURI) : null);
+    public void addArchive(URI archiveURI, String name) throws IOException {
+        addArchive(archiveURI != null ? new File(archiveURI) : null, name);
+    }
+
+    /**
+     * Add a module or a library to this scattered enterprise archive.
+     * <p/>
+     * The addArchive(archive) method has the same effect as:
+     * <pre>
+     *      addArchive(archive, null)
+     * </pre>
+     * Follows the same semantics as {@link #addArchive(File, String)} method.
+     * archive must be a file location.
+     */
+//    public void addArchive(String archive) {
+//        addArchive(archive, null);
+//    }
+
+    /**
+     * Add a module or a library to this scattered enterprise archive.
+     * <p/>
+     * Follows the same semantics as {@link #addArchive(File, String)} method.
+     * archive must be a file location.
+     */
+//    public void addArchive(String archive, String name) {
+//        addArchive(archive != null ? new File(archive) : null, name);
+//    }
+
+    /**
+     * Add a module or a library to this scattered enterprise archive.
+     * <p/>
+     * The addArchive(archive) method has the same effect as:
+     * <pre>
+     *      addArchive(archive, null)
+     * </pre>
+     * Follows the same semantics as {@link #addArchive(File, String)} method.
+     */
+    public void addArchive(File archive) throws IOException {
+        addArchive(archive, null);
     }
 
     /**
@@ -137,78 +193,108 @@ public class ScatteredEnterpriseArchive {
      *      Location of a library JAR file.
      *      Location of a Java EE module.
      * </pre>
-     * Refer to the example above.
+     * If the specified name is null, then the name is computed as archive.getName()
      *
-     * @param archive Location of module or library archive. Must be a File location.
-     * @throws NullPointerException          if archive is null
-     * @throws IllegalArgumentException if the archive file is not found or archive file is a directory.
+     * @param archive Location of module or library archive.
+     * @param name    name of the module/library as specified in META-INF/application.xml
+     * @throws NullPointerException if archive is null
+     * @throws IOException          if the archive file is not found
      */
-    public void addArchive(String archive) {
-        addArchive(archive != null ? new File(archive) : null);
+    public void addArchive(File archive, String name) throws IOException {
+        if (archive == null) {
+            throw new NullPointerException("archive must not be null.");
+        }
+        if (!archive.exists()) {
+            throw new FileNotFoundException(archive + " does not exist.");
+        }
+//        if (archive.isDirectory()) {
+//            throw new IllegalArgumentException(archive + " is a directory.");
+//        }
+        if (name == null) {
+            name = archive.getName();
+        }
+        this.archives.put(name, archive);
     }
 
     /**
-     * Add a module or a library to this scattered enterprise archive.
+     * Add a new metadata to this scattered enterprise archive.
      * <p/>
-     * Follows the same semantics as {@link #addArchive(String)} method.
+     * The addMetadata(metadata) method has the same effect as:
+     * <pre>
+     *      addMetadata(metadata, null)
+     * </pre>
+     * Follows the same semantics as {@link #addMetadata(String, String)} method.
      */
-    public void addArchive(File archive) {
-        if(archive == null) {
-            throw new NullPointerException("archive must not be null.");
-        }
-        if(!archive.exists()) {
-            throw new IllegalArgumentException(archive + " does not exist.");
-        }
-        if(archive.isDirectory()) {
-            throw new IllegalArgumentException(archive + " is a directory.");
-        }
-        this.archives.add(archive);
+//    public void addMetadata(String metadata) {
+//        addMetadata(metadata, null);
+//    }
+
+    /**
+     * Add a new metadata to this scattered enterprise archive.
+     * <p/>
+     * The addMetadata(metadata) method has the same effect as:
+     * <pre>
+     *      addMetadata(metadata, null)
+     * </pre>
+     * Follows the same semantics as {@link #addMetadata(File, String)} method.
+     */
+    public void addMetadata(File metadata) throws IOException {
+        addMetadata(metadata, null);
     }
+
+    /**
+     * Add a new metadata to this enterprise archive.
+     * <p/>
+     * Follows the same semantics as {@link #addMetadata(File, String)} method.
+     * metatdata must be a file location.
+     */
+//    public void addMetadata(String metadata, String name) {
+//        addMetadata(metadata != null ? new File(metadata) : null, name);
+//    }
 
     /**
      * Add a new metadata to this enterprise archive.
      * <p/>
      * A metadata is identified by its name (e.g., META-INF/application.xml)
+     * If the specified name is null, then the name is computed as
+     * "META-INF/" + metadata.getName()
      * <p/>
      * If the scattered enterprise archive already contains the metadata with
      * the same name, the old value is replaced.
      *
-     * @param metadataName name of the metadata (e.g., META-INF/application.xml)
-     * @param metadata     Location of metdata. Must be a File location.
-     * @throws NullPointerException          if metadataName or metadata is null
-     * @throws IllegalArgumentException if the metadata is not found or metadata is a directory. 
+     * @param metadata location of metdata.
+     * @param name     name of the metadata (e.g., META-INF/application.xml)
+     * @throws NullPointerException     if metadata is null
+     * @throws IOException              if metadata is not found
+     * @throws IllegalArgumentException if metadata is a directory.
      */
-    public void addMetadata(String metadataName, String metadata) {
-        addMetadata(metadataName, metadata != null ? new File(metadata) : null);
-    }
 
-    /**
-     * Add a new metadata to this enterprise archive.
-     * <p/>
-     * Follows the same semantics as {@link #addMetadata(String, String)} method.
-     */
-    public void addMetadata(String metadataName, File metadata) {
-        if(metadataName == null) {
-            throw new NullPointerException("metadataName must not be null.");
-        }
-        if(metadata == null) {
+    public void addMetadata(File metadata, String name) throws IOException {
+        if (metadata == null) {
             throw new NullPointerException("metadata must not be null.");
         }
-        if(!metadata.exists()) {
-            throw new IllegalArgumentException(metadata + " does not exist.");
+        if (!metadata.exists()) {
+            throw new IOException(metadata + " does not exist.");
         }
-        if(metadata.isDirectory()) {
+        if (metadata.isDirectory()) {
             throw new IllegalArgumentException(metadata + " is a directory.");
         }
-        this.metadatas.put(metadataName, metadata);
+        if (name == null) {
+            name = "META-INF/" + metadata.getName();
+        }
+        this.metadatas.put(name, metadata);
     }
 
     /**
      * Get the deployable URI for this scattered enterprise archive.
+     * <p/>
+     * <i>Note : java.io.tmpdir is used while building the URI.</i>
      *
      * @return Deployable scattered enterprise Archive URI.
+     * @throws IOException if any I/O error happens while building the URI
+     *                     or while reading metadata, archives.
      */
-    public URI toURI() {
+    public URI toURI() throws IOException {
         return new Assembler().assemble(this);
     }
 }

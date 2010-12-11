@@ -41,6 +41,7 @@
 package org.glassfish.embeddable.archive;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -62,38 +63,42 @@ import java.util.Map;
  * .s4 { color: rgb(255,0,255); }
  * </style>
  * <pre>
- * <a name="l58">        GlassFish glassfish = GlassFishRuntime.bootstrap().newGlassFish();
- * <a name="l59">        glassfish.start();
- * <a name="l60">
- * <a name="l61">        </span><span class="s0">// Create a scattered web application.</span><span class="s1">
- * <a name="l62">        ScatteredArchive archive = </span><span class="s2">new </span><span class="s1">ScatteredArchive(</span><span class="s4">&quot;testapp&quot;</span><span class="s1">, ScatteredArchive.Type.WAR);
- * <a name="l63">        </span><span class="s0">// target/classes directory contains my complied servlets</span><span class="s1">
- * <a name="l64">        archive.addClassPath(</span><span class="s4">&quot;target/classes&quot;</span><span class="s1">);
- * <a name="l67">        </span><span class="s0">// /tmp/sun-web.xml is my META-INF/sun-web.xml</span><span class="s1">
- * <a name="l68">        archive.addMetadata(</span><span class="s4">&quot;META-INF/sun-web.xml&quot;</span><span class="s1">, </span><span class="s4">&quot;/tmp/sun-web.xml&quot;</span><span class="s1">);
- * <a name="l69">
- * <a name="l70">        Deployer deployer = glassfish.getDeployer();
- * <a name="l71">        </span><span class="s0">// Deploy my scattered web application</span><span class="s1">
- * <a name="l72">        deployer.deploy(archive.toURI());
+ * <a name="l56">        GlassFish glassfish = GlassFishRuntime.bootstrap().newGlassFish();
+ * <a name="l57">        glassfish.start();
+ * <a name="l58">
+ * <a name="l59">        </span><span class="s0">// Create a scattered web application.</span><span class="s1">
+ * <a name="l60">        ScatteredArchive archive = </span><span class="s2">new </span><span class="s1">ScatteredArchive(</span><span class="s4">&quot;testapp&quot;</span><span class="s1">, ScatteredArchive.Type.WAR);
+ * <a name="l61">        </span><span class="s0">// target/classes directory contains my complied servlets</span><span class="s1">
+ * <a name="l62">        archive.addClassPath(</span><span class="s2">new </span><span class="s1">File(</span><span class="s4">&quot;target&quot;</span><span class="s1">, </span><span class="s4">&quot;classes&quot;</span><span class="s1">));
+ * <a name="l63">        </span><span class="s0">// resources/sun-web.xml is my WEB-INF/sun-web.xml</span><span class="s1">
+ * <a name="l64">        archive.addMetadata(</span><span class="s2">new </span><span class="s1">File(</span><span class="s4">&quot;resources&quot;</span><span class="s1">, </span><span class="s4">&quot;sun-web.xml&quot;</span><span class="s1">));
+ * <a name="l65">        </span><span class="s0">// resources/MyLogFactory is my META-INF/services/org.apache.commons.logging.LogFactory</span><span class="s1">
+ * <a name="l66">        archive.addMetadata(</span><span class="s2">new </span><span class="s1">File(</span><span class="s4">&quot;resources&quot;</span><span class="s1">, </span><span class="s4">&quot;MyLogFactory&quot;</span><span class="s1">),
+ * <a name="l67">                </span><span class="s4">&quot;META-INF/services/org.apache.commons.logging.LogFactory&quot;</span><span class="s1">);
+ * <a name="l68">
+ * <a name="l69">        Deployer deployer = glassfish.getDeployer();
+ * <a name="l70">        </span><span class="s0">// Deploy my scattered web application</span><span class="s1">
+ * <a name="l71">        deployer.deploy(archive.toURI());
  * </pre>
  *
  * @author Jerome Dochez
- * @author bhavanishankar@dev.net
+ * @author bhavanishankar@java.net
  */
 public class ScatteredArchive {
 
     String name;
-    String type;
+    Type type;
     File rootDirectory;
     List<File> classpaths = new ArrayList<File>();
 //    File resourcespath;
     Map<String, File> metadatas = new HashMap<String, File>();
+    String metadataEntryPrefix;
 
     /**
      * Construct a new empty scattered archive.
      *
-     * @param name Name of the archive.
-     * @param type Type of the archive
+     * @param name name of the archive.
+     * @param type type of the archive
      * @throws NullPointerException if name or type is null
      */
     public ScatteredArchive(String name, Type type) {
@@ -104,8 +109,19 @@ public class ScatteredArchive {
             throw new NullPointerException("type must not be null.");
         }
         this.name = name;
-        this.type = (type == Type.WAR) ? "war" : "jar";
+        this.type = type;
+        this.metadataEntryPrefix = (type == Type.WAR) ? "WEB-INF/" : "META-INF/";
     }
+
+    /**
+     * Construct a new scattered archive with all the contents from the rootDirectory.
+     * <p/>
+     * Follows the same semantics as {@link ScatteredArchive(String, ScatteredArchive.Type, File)} constructor.
+     * rootDirectory must be a File location.
+     */
+//    public ScatteredArchive(String name, Type type, String rootDirectory) {
+//        this(name, type, rootDirectory != null ? new File(rootDirectory) : null);
+//    }
 
     /**
      * Construct a new scattered archive with all the contents from the rootDirectory.
@@ -128,41 +144,39 @@ public class ScatteredArchive {
      * through the appropriate add methods of this class.
      * <p/>
      *
-     * @param name          Name of the archive.
-     * @param type          Type of the archive
-     * @param rootDirectory Top level directory.
+     * @param name          name of the archive.
+     * @param type          type of the archive
+     * @param rootDirectory root directory.
      * @throws NullPointerException     if name, type or rootDirectory is null.
-     * @throws IllegalArgumentException if rootDirectory does not exist or is not a directory.
+     * @throws IOException              if rootDirectory does not exist.
+     * @throws IllegalArgumentException if rootDirectory is not a directory.
      */
-    public ScatteredArchive(String name, Type type, String rootDirectory) {
-        this(name, type, rootDirectory != null ? new File(rootDirectory) : null);
-    }
-
-    /**
-     * Construct a new scattered archive with all the contents from the rootDirectory.
-     * <p/>
-     * Follows the same semantics as {@link ScatteredArchive(String, ScatteredArchive.Type, String)} constructor.
-     */
-    public ScatteredArchive(String name, Type type, File rootDirectory) {
-        if (name == null) {
-            throw new NullPointerException("name must not be null.");
-        }
-        if (type == null) {
-            throw new NullPointerException("type must not be null.");
-        }
+    public ScatteredArchive(String name, Type type, File rootDirectory)
+            throws IOException {
+        this(name, type);
         if (rootDirectory == null) {
             throw new NullPointerException("rootDirectory must not be null.");
         }
         if (!rootDirectory.exists()) {
-            throw new IllegalArgumentException(rootDirectory + " does not exist.");
+            throw new IOException(rootDirectory + " does not exist.");
         }
         if (!rootDirectory.isDirectory()) {
             throw new IllegalArgumentException(rootDirectory + " is not a directory.");
         }
-        this.name = name;
-        this.type = (type == Type.WAR) ? "war" : "jar";
         this.rootDirectory = rootDirectory;
     }
+
+    /**
+     * Construct a new scattered archive with a set of classpaths.
+     *
+     * Follows the same semantics as
+     * {@link ScatteredArchive(String, ScatteredArchive.Type, String, File[])}  constructor.
+     *
+     * All classpaths[] must be File locations.
+     */
+//    public ScatteredArchive(String name, Type type, String[] classpaths) {
+//
+//    }
 
     /**
      * Construct a new scattered archive with a set of classpaths.
@@ -182,22 +196,18 @@ public class ScatteredArchive {
      * @throws NullPointerException          if name, type or classpaths is null
      * @throws IllegalArgumentException if any of the classpaths is not found.
      */
-//    public ScatteredArchive(String name, Type type, String[] classpaths) {
+//    public ScatteredArchive(String name, Type type, File[] classpaths) {
 //
 //    }
 
     /**
-     * Construct a new scattered archive with a set of classpaths.
-     *
-     * The permitted values and their meanings are as specified for the
-     * {@link ScatteredArchive(String, ScatteredArchive.Type, String, String[])}  constructor.
-     *
-     * @param name Name of the archive
-     * @param type Type of the archive
-     * @param classpaths Directory or JAR file locations.
+     * Add a directory or a JAR file to this scattered archive.
+     * <p/>
+     * Follows the same semantics as {@link #addClassPath(File)} method.
+     * classpath must be a File location.
      */
-//    public ScatteredArchive(String name, Type type, File[] classpaths) {
-//
+//    public void addClassPath(String classpath) {
+//        addClassPath(classpath != null ? new File(classpath) : null);
 //    }
 
     /**
@@ -239,24 +249,15 @@ public class ScatteredArchive {
      * available in the deployed scattered archive application.
      *
      * @param classpath A directory or a JAR file.
-     * @throws NullPointerException     if classpath is null
-     * @throws IllegalArgumentException if the classpath is not found.
+     * @throws NullPointerException if classpath is null
+     * @throws IOException          if the classpath is not found.
      */
-    public void addClassPath(String classpath) {
-        addClassPath(classpath != null ? new File(classpath) : null);
-    }
-
-    /**
-     * Add a directory or a JAR file to this scattered archive.
-     * <p/>
-     * Follows the same semantics as {@link #addClassPath(String)} method.
-     */
-    public void addClassPath(File classpath) {
+    public void addClassPath(File classpath) throws IOException {
         if (classpath == null) {
             throw new NullPointerException("classpath must not be null.");
         }
         if (!classpath.exists()) {
-            throw new IllegalArgumentException(classpath + " does not exist.");
+            throw new IOException(classpath + " does not exist.");
         }
         this.classpaths.add(classpath);
     }
@@ -264,41 +265,85 @@ public class ScatteredArchive {
     /**
      * Add a new metadata to this scattered archive.
      * <p/>
-     * A metadata is identified by its name (e.g., META-INF/ejb.xml)
-     * <p/>
-     * If the scattered archive already contains the metadata with the same name,
-     * then the old value is replaced.
-     *
-     * @param metadataName name of the metadata (e.g.,
-     *                     META-INF/ejb.xml or META-INF/sun-ejb-jar.xml)
-     * @param metadata     Metadata location. Must be a File location.
-     * @throws NullPointerException     if metadataName or metadata is null
-     * @throws IllegalArgumentException if the metadata does not exist or metadata is a directory.
+     * The addMetadata(metadata) method has the same effect as:
+     * <pre>
+     *      addMetadata(metadata, null)
+     * </pre>
+     * Follows the same semantics as {@link #addMetadata(String, String)} method.
      */
-    public void addMetadata(String metadataName, String metadata) {
-        addMetadata(metadataName, metadata != null ? new File(metadata) : null);
+//    public void addMetadata(String metadata) {
+//        addMetadata(metadata != null ? new File(metadata) : null);
+//    }
+
+    /**
+     * Add a new metadata to this scattered archive.
+     * <p/>
+     * The addMetadata(metadata) method has the same effect as:
+     * <pre>
+     *      addMetadata(metadata, null)
+     * </pre>
+     * Follows the same semantics as {@link #addMetadata(File, String)} method.
+     */
+    public void addMetadata(File metadata) throws IOException {
+        addMetadata(metadata, null);
     }
 
     /**
      * Add a new metadata to this scattered archive.
      * <p/>
-     * Follows the same semantics as {@link #addMetadata(String, String)} method.
+     * Follows the same semantics as {@link #addMetadata(File, String)} method.
+     * metadata must be a file location.
      */
-    public void addMetadata(String metadataName, File metadata) {
-        if (metadataName == null) {
-            throw new NullPointerException("metadataName must not be null.");
-        }
+//    public void addMetadata(String metadata, String name) {
+//        addMetadata(metadata != null ? new File(metadata) : null, name);
+//    }
+
+    /**
+     * Add a new metadata to this scattered archive.
+     * <p/>
+     * A metadata is identified by its name (e.g., META-INF/ejb.xml).
+     * <p/>
+     * If the specified name is null, then the metadata is considered as a
+     * deployment descriptor metadata and the name is computed as:
+     * <pre>
+     *      "WEB-INF/" + metadata.getName() for WAR type archive.
+     *      "META-INF/" + metadata.getName() for other type of archive.
+     * </pre>
+     * If the scattered archive already contains the metadata with the same name,
+     * then the old value is replaced.
+     *
+     * @param metadata location of the metadata
+     * @param name     name of the metadata (e.g.,
+     *                 META-INF/ejb.xml or META-INF/sun-ejb-jar.xml)
+     * @throws NullPointerException     if metadata is null
+     * @throws IOException              if metadata does not exist.
+     * @throws IllegalArgumentException if metadata is a directory.
+     */
+    public void addMetadata(File metadata, String name) throws IOException {
         if (metadata == null) {
             throw new NullPointerException("metadata must not be null.");
         }
         if (!metadata.exists()) {
-            throw new IllegalArgumentException(metadata + " does not exist.");
+            throw new IOException(metadata + " does not exist.");
         }
-        if(metadata.isDirectory()) {
+        if (metadata.isDirectory()) {
             throw new IllegalArgumentException(metadata + " is a directory.");
         }
-        this.metadatas.put(metadataName, metadata);
+        if (name == null) {
+            name = metadataEntryPrefix + metadata.getName();
+        }
+        this.metadatas.put(name, metadata);
     }
+
+    /**
+     * Set the location of resources files to this scattered archive.
+     * <p/>
+     * Follows the same semantics as {@link #setResourcePath(File)} method.
+     * resourcespath must be a File location.
+     */
+//    public void setResourcePath(String resourcespath) {
+//        setResourcePath(resourcespath != null ? new File(resourcespath) : null);
+//    }
 
     /**
      * Set the location of resources files to this scattered archive.
@@ -315,15 +360,6 @@ public class ScatteredArchive {
      * @throws NullPointerException     if resourcepath is null.
      * @throws IllegalArgumentException if resourcespath is not found or is not a directory.
      */
-//    public void setResourcePath(String resourcespath) {
-//        setResourcePath(resourcespath != null ? new File(resourcespath) : null);
-//    }
-
-    /**
-     * Set the location of resources files to this scattered archive.
-     * <p/>
-     * Follows the same semantics as {@link #setResourcePath(String)} method.
-     */
 //    public void setResourcePath(File resourcespath) {
 //        if (resourcespath == null) {
 //            throw new NullPointerException("resourcespath must not be null.");
@@ -339,10 +375,14 @@ public class ScatteredArchive {
 
     /**
      * Get the deployable URI for this scattered archive.
+     * <p/>
+     * <i>Note : java.io.tmpdir is used while building the URI.</i>
      *
      * @return Deployable scattered archive URI.
+     * @throws IOException if any I/O error happens while building the URI
+     *                     or while reading metadata, classpath elements, rootDirectory.
      */
-    public URI toURI() {
+    public URI toURI() throws IOException {
         return new Assembler().assemble(this);
     }
 
@@ -353,20 +393,16 @@ public class ScatteredArchive {
      */
     public enum Type {
         /**
-         * The module is an Enterprise Java Bean archive.
+         * The module is an Enterprise Java Bean or Application Client archive.
          */
-        EJB,
+        JAR,
         /**
-         * The module is an Web Application archive.
+         * The module is a Web Application archive.
          */
         WAR,
         /**
-         * The module is an Connector archive.
+         * The module is a Connector archive.
          */
         RAR,
-        /**
-         * The module is an Client Application archive.
-         */
-        CAR
     }
 }
