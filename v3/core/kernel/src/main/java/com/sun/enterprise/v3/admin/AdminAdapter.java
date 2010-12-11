@@ -451,6 +451,13 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
                 // todo : needs to be changed, we should reuse adminCommand
                 CommandRunner.CommandInvocation inv = commandRunner.getCommandInvocation(command, report);
                 inv.parameters(parameters).inbound(inboundPayload).outbound(outboundPayload).execute();
+                try {
+                    // note it has become extraordinarily difficult to change the reporter!
+                    CommandRunnerImpl.ExecutionContext inv2 = (CommandRunnerImpl.ExecutionContext) inv;
+                    report = inv2.report();
+                }
+                catch(Exception e) {
+                }
             } else {
                 report.failure( logger,
                                 adminStrings.getLocalString("adapter.wrongprivacy",

@@ -804,7 +804,7 @@ public class CommandRunnerImpl implements CommandRunner {
             model = new CommandModelImpl(command.getClass());
         }
         UploadedFilesManager ufm = null;
-        final ActionReport report = inv.report();
+        ActionReport report = inv.report();
         ParameterMap parameters;
         final AdminCommandContext context = new AdminCommandContext(
                 LogDomains.getLogger(command.getClass(), LogDomains.ADMIN_LOGGER),
@@ -842,7 +842,7 @@ public class CommandRunnerImpl implements CommandRunner {
                         ufm.optionNameToFileMap()
                         );
                 if(injectParameters(model, command, injectionTarget, context).equals(ActionReport.ExitCode.SUCCESS))
-                    doCommand(model, command, context);
+                    inv.setReport(doCommand(model, command, context));
                 return;
             }
 
@@ -1058,7 +1058,8 @@ public class CommandRunnerImpl implements CommandRunner {
                     (serverEnv.isInstance() && runtimeTypes.contains(RuntimeType.INSTANCE)) ) {
                     logger.fine(adminStrings.getLocalString("dynamicreconfiguration.diagnostics.maincommand",
                             "Command execution stage 3 : Calling main command implementation for " + inv.name()));
-                    doCommand(model, command, context);
+                     report = doCommand(model, command, context);
+                     inv.setReport(report);
                 }
 
                 if(!FailurePolicy.applyFailurePolicy(fp,
@@ -1076,7 +1077,8 @@ public class CommandRunnerImpl implements CommandRunner {
                     }
                 }
             } else
-                doCommand(model, command, context);
+                report = doCommand(model, command, context);
+                inv.setReport(report);
             
             } catch (AdminCommandLockTimeoutException ex) {
                 lockTimedOut = true;
@@ -1208,10 +1210,10 @@ public class CommandRunnerImpl implements CommandRunner {
      * defines a command excecution context like the requested
      * name of the command to execute, the parameters of the command, etc.
      */
-    private class ExecutionContext implements CommandInvocation {
+      class ExecutionContext implements CommandInvocation {
 
         protected final String name;
-        protected final ActionReport report;
+        protected ActionReport report;
         protected ParameterMap params;
         protected CommandParameters paramObject;
         protected Payload.Inbound inbound;
@@ -1249,13 +1251,16 @@ public class CommandRunnerImpl implements CommandRunner {
         private ParameterMap parameters() { return params; }
         private CommandParameters typedParams() { return paramObject; }
         private String name() { return name; }
-        private ActionReport report() { return report; }
+        ActionReport report() { return report; }
+        private void setReport(ActionReport ar) { report = ar; }
         private Payload.Inbound inboundPayload() { return inbound; }
         private Payload.Outbound outboundPayload() { return outbound; }
 
         public void execute(AdminCommand command) {
             CommandRunnerImpl.this.doCommand(this, command);
 
+            // bnevins
+            ActionReport r = report;
         }
     }
 

@@ -43,6 +43,7 @@ import com.sun.enterprise.admin.util.ClusterOperationUtil;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.v3.common.PlainTextActionReporter;
 import com.sun.enterprise.v3.common.PropsFileActionReporter;
 import java.lang.reflect.Proxy;
 import java.util.*;
@@ -206,8 +207,11 @@ public class MonitoringReporter extends V2DottedNameSupport {
         else if (outputType == OutputType.LIST)
             doList(localPattern, ltn);
 
-        if (isCli)
-            report.setMessage(cliOutput.toString());
+        if (isCli) {
+            PlainTextActionReporter ptar = new PlainTextActionReporter();
+            context.setActionReport(ptar);
+            ptar.setMessage(cliOutput.toString());
+        }
     }
 
     // Byron Nevins -- copied from original implementation
