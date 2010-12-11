@@ -446,8 +446,10 @@ public class ResourceManager implements PostStartup, PostConstruct, PreDestroy, 
                 ResourceRef ref = (ResourceRef)instance;
                 BindableResource resource = (BindableResource)
                         domain.getResources().getResourceByName(BindableResource.class, ref.getRef());
-                ResourceInfo resourceInfo = new ResourceInfo(resource.getJndiName());
-                resourcesBinder.deployResource(resourceInfo, resource);
+                if(Boolean.valueOf(ref.getEnabled()) && Boolean.valueOf(resource.getEnabled())){
+                    ResourceInfo resourceInfo = new ResourceInfo(resource.getJndiName());
+                    resourcesBinder.deployResource(resourceInfo, resource);
+                }
             }
             return np;
         }
