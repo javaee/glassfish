@@ -245,6 +245,10 @@ public class AppTest extends TestCase {
         try {
             t.begin();
             tx = t.getTransaction();
+            System.out.println("**Calling Tx enlistResource ===>");
+            TestResource theResource = new TestResource();
+            t.enlistResource(tx, new TestResourceHandle(theResource));
+            t.delistResource(tx, new TestResourceHandle(theResource), XAResource.TMSUCCESS);
             t.commit();
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -276,6 +280,21 @@ public class AppTest extends TestCase {
             ex.printStackTrace();
             assert (false);
         }
+
+/**
+        try {
+            System.out.println("**Calling resume(tx) ===>");
+            t.resume(tx);
+            System.out.println("**WRONG: resume(tx) successful <===");
+            assert (false);
+        } catch (InvalidTransactionException ex) {
+            System.out.println("**Caught InvalidTransactionException <===");
+            assert (true);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            assert (false);
+        }
+**/
 
         try {
             System.out.println("**Calling Tx setRollbackOnly ===>");

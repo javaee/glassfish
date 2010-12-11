@@ -402,6 +402,12 @@ public final class JavaEETransactionImpl extends TimerTask implements
             } finally {
                 ((JavaEETransactionManagerSimplified) javaEETM).clearThreadTx();
                 onTxCompletion(true);
+                try {
+                    localTxStatus = jtsTx.getStatus();
+                } catch (Exception e) {
+                    localTxStatus = Status.STATUS_NO_TRANSACTION;
+                }
+                jtsTx = null;
             }
 
         } else { // local tx
@@ -487,10 +493,6 @@ public final class JavaEETransactionImpl extends TimerTask implements
                 if ( jtsTx != null ) {
                     jtsTx.commit();
 
-                    //IASRI START 4731186
-                    localTxStatus = Status.STATUS_COMMITTED;
-                    //IASRI END 4731186
-
                     // Note: JTS will not call afterCompletions in this case,
                     // because no syncs have been registered with JTS.
                     // So afterCompletions are called in finally block below.
@@ -500,9 +502,9 @@ public final class JavaEETransactionImpl extends TimerTask implements
                     if ( nonXAResource != null )
                         nonXAResource.getXAResource().commit(xid, true);
 
-                    // V2-XXX should this be STATUS_NO_TRANSACTION ?
-                    localTxStatus = Status.STATUS_COMMITTED;
                 }
+                // V2-XXX should this be STATUS_NO_TRANSACTION ?
+                localTxStatus = Status.STATUS_COMMITTED;
 
             } catch ( RollbackException ex ) {
                 localTxStatus = Status.STATUS_ROLLEDBACK; // V2-XXX is this correct ?
@@ -541,6 +543,7 @@ public final class JavaEETransactionImpl extends TimerTask implements
                 }
 
                 onTxCompletion(true);
+                jtsTx = null;
             }
         }
     }
@@ -569,13 +572,18 @@ public final class JavaEETransactionImpl extends TimerTask implements
                 if ( nonXAResource != null )
                     nonXAResource.getXAResource().rollback(xid);
 
-                // V2-XXX should this be STATUS_NO_TRANSACTION ?
-                localTxStatus = Status.STATUS_ROLLEDBACK;
             }
 
+        } catch ( SystemException ex ) {
+            throw ex;
+        } catch ( IllegalStateException ex ) {
+            throw ex;
         } catch ( Exception ex ) {
-            localTxStatus = Status.STATUS_ROLLEDBACK; // V2-XXX is this correct ?
+            _logger.log(Level.WARNING, "enterprise_distributedtx.some_excep", ex);
         } finally {
+            // V2-XXX should this be STATUS_NO_TRANSACTION ?
+            localTxStatus = Status.STATUS_ROLLEDBACK;
+
             ((JavaEETransactionManagerSimplified) javaEETM).clearThreadTx();
             if ( jtsTx == null ) {
                 for ( int i=0; i<interposedSyncs.size(); i++ ) {
@@ -600,6 +608,7 @@ public final class JavaEETransactionImpl extends TimerTask implements
 
             }
             onTxCompletion(false);
+            jtsTx = null;
         }
     }
 

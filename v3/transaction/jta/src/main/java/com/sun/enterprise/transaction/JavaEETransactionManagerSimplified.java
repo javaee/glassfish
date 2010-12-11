@@ -1286,8 +1286,12 @@ public class JavaEETransactionManagerSimplified
                             delistResource(tran, h, flag);
                         }
                     } catch (IllegalStateException ex) {
+                        if (_logger.isLoggable(Level.FINE))
+                            _logger.log(Level.FINE,"TM: Exception in delistResource", ex);
                         // ignore error due to tx time out
                     }catch(Exception ex){
+                        if (_logger.isLoggable(Level.FINE))
+                            _logger.log(Level.FINE,"TM: Exception in delistResource", ex);
                         it.remove();
                         handleResourceError(h, ex, tran);
                     }
@@ -1531,7 +1535,7 @@ public class JavaEETransactionManagerSimplified
     }
 
     public boolean isInvocationStackEmpty() {
-        return invMgr.isInvocationStackEmpty();
+        return (invMgr == null || invMgr.isInvocationStackEmpty());
     }
 
     public void setTransactionCompeting(boolean b) {
