@@ -43,6 +43,7 @@ import com.sun.enterprise.admin.util.ClusterOperationUtil;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.v3.common.PropsFileActionReporter;
 import java.lang.reflect.Proxy;
 import java.util.*;
 import org.glassfish.api.ActionReport;
@@ -123,7 +124,7 @@ public class MonitoringReporter extends V2DottedNameSupport {
         outputType = type;
         context = c;
         report = context.getActionReport();
-
+        isCli = report instanceof PropsFileActionReporter;
         // DAS runs the show on this command.  If we are running in an
         // instance -- that means we should call runLocally() AND it also
         // means that the pattern is already perfect!
@@ -204,50 +205,66 @@ public class MonitoringReporter extends V2DottedNameSupport {
             doGet(localPattern, ltn);
         else if (outputType == OutputType.LIST)
             doList(localPattern, ltn);
-        // else error!!!
+
+        if (isCli)
+            report.setMessage(cliOutput.toString());
     }
 
     // Byron Nevins -- copied from original implementation
     private void doGet(String localPattern, List<org.glassfish.flashlight.datatree.TreeNode> ltn) {
         TreeMap map = new TreeMap();
+
         for (org.glassfish.flashlight.datatree.TreeNode tn1 : sortTreeNodesByCompletePathName(ltn)) {
             if (!tn1.hasChildNodes()) {
                 insertNameValuePairs(map, tn1, localPattern);
             }
         }
 
+        ActionReport.MessagePart topPart = report.getTopMessagePart();
         Iterator it = map.keySet().iterator();
-        Object obj;
+
         while (it.hasNext()) {
-            obj = it.next();
-            String s = obj.toString();
-            s = HIDEOUS_KLUDGE(s);
-            ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-            part.setMessage(s.replace(SLASH, "/") + " = " + map.get(obj));
+            Object obj = it.next();
+            String line = possiblyRemoveServerString(obj.toString());
+            line = line.replace(SLASH, "/") + " = " + map.get(obj);
+
+            if (isCli)
+                cliOutput.append(line).append('\n');
+            else {
+                ActionReport.MessagePart part = topPart.addChild();
+                part.setMessage(line);
+            }
         }
         setSuccess();
     }
 
-    // I won't apologize for this -- this code is maintenance-hostile!
-    private String HIDEOUS_KLUDGE(String in) {
+    private String possiblyRemoveServerString(String in) {
         if (isDas())
             return in;
 
         String iname = serverEnv.getInstanceName();
-        String junk = iname + ".server";
+        String inameAndServer = iname + ".server";
 
-        if (in.startsWith(junk))
-            return StringUtils.replace(in, junk, iname);
+        if (in.startsWith(inameAndServer))
+            return StringUtils.replace(in, inameAndServer, iname);
 
         return in;
     }
 
     private void doList(String localPattern, List<org.glassfish.flashlight.datatree.TreeNode> ltn) {
         // list means only print things that have children.  Don't print the children.
+        ActionReport.MessagePart topPart = report.getTopMessagePart();
+
         for (org.glassfish.flashlight.datatree.TreeNode tn1 : ltn) {
             if (tn1.hasChildNodes()) {
-                ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-                part.setMessage(tn1.getCompletePathName());
+                String line = tn1.getCompletePathName();
+
+                if (isCli)
+                    cliOutput.append(line).append('\n');
+                else {
+                    ActionReport.MessagePart part = topPart.addChild();
+                    part.setMessage(line);
+                }
             }
         }
         setSuccess();
@@ -493,12 +510,16 @@ public class MonitoringReporter extends V2DottedNameSupport {
     }
 
     private void appendMessage(String newMessage) {
-        String oldMessage = report.getMessage();
+        if (isCli)
+            cliOutput.append(newMessage).append('\n');
+        else {
+            String oldMessage = report.getMessage();
 
-        if (oldMessage == null)
-            report.setMessage(newMessage);
-        else
-            report.setMessage(oldMessage + "\n" + newMessage);
+            if (oldMessage == null)
+                report.setMessage(newMessage);
+            else
+                report.setMessage(oldMessage + "\n" + newMessage);
+        }
     }
 
     private boolean hasError() {
@@ -573,4 +594,6 @@ public class MonitoringReporter extends V2DottedNameSupport {
     private OutputType outputType;
     private final static String DOTTED_NAME = ".dotted-name";
     private static final String SERVERDOT = "server.";
+    private final StringBuilder cliOutput = new StringBuilder();
+    private boolean isCli;
 }
