@@ -106,7 +106,7 @@ usage() {
   ${CAT} <<EOF
 Usage: <GlassFish uninstallation program.> [-options]
 where options include:
-    -l <Log Directory>
+    -l <Complete path to Log Directory>
         log information goes to this directory
     -q Logging level set to WARNING
     -v Logging level set to FINEST

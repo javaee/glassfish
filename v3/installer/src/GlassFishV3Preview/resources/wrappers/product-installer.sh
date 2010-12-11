@@ -105,7 +105,7 @@ Usage: <GlassFish installation program.> [-options]
 where options include:
     -a <answerfile>
         run this program in silent mode using the answerfile provided, should be used with -s option.
-    -l <Log Directory>
+    -l <Complete path to Log Directory>
         log information goes to this directory
     -q Logging level set to WARNING
     -v Logging level set to FINEST
