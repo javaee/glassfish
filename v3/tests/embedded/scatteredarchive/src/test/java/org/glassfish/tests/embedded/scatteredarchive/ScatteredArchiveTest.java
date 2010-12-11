@@ -53,10 +53,15 @@ import org.junit.Test;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 /**
  * @author bhavanishankar@dev.java.net
@@ -72,18 +77,20 @@ public class ScatteredArchiveTest {
         GlassFish glassfish = GlassFishRuntime.bootstrap().newGlassFish(props);
         glassfish.start();
 
-        // Build Scattered Archive
+        // Test Scattered Web Archive
         ScatteredArchive sa = new ScatteredArchive("scatteredarchive",
-                ScatteredArchive.Type.WAR, "src/main/webapp");
+                ScatteredArchive.Type.WAR, new File("src/main/webapp"));
         sa.addClassPath(new File("target/classes"));
-        sa.addClassPath("src/main/resources");
-        URI archive = sa.toURI();
+        sa.addClassPath(new File("src/main/resources"));
+        URI warURI = sa.toURI();
+        printContents(warURI);
 
         // Deploy archive
         Deployer deployer = glassfish.getDeployer();
-        String appname = deployer.deploy(archive);
+        String appname = deployer.deploy(warURI);
         System.out.println("Deployed [" + appname + "]");
-        
+        Assert.assertEquals(appname, "scatteredarchive");
+
         // Now create a http listener and access the app.
         WebContainer webcontainer = glassfish.getService(WebContainer.class);
         HttpListener listener = new HttpListener();
@@ -99,11 +106,27 @@ public class ScatteredArchiveTest {
 
         deployer.undeploy(appname);
 
+        // Test Scattered RA
+        ScatteredArchive rar = new ScatteredArchive("scatteredra",
+                ScatteredArchive.Type.RAR);
+        rar.addClassPath(new File("target/classes"));
+        rar.addMetadata(new File("src/main/config/ra.xml"));
+        URI rarURI = rar.toURI();
+        printContents(rarURI);
+        appname = deployer.deploy(rarURI);
+        System.out.println("Deployed RAR [" + appname + "]");
+        Assert.assertEquals(appname, "scatteredra");
+
+        // Test Scattered Enterprise Archive.
         ScatteredEnterpriseArchive ear = new ScatteredEnterpriseArchive("sear");
-        ear.addArchive(archive);
-        ear.addMetadata("META-INF/application.xml", "src/main/config/application.xml");
-        appname = deployer.deploy(ear.toURI());
+        ear.addArchive(warURI, "sa.war");
+        ear.addArchive(rarURI);
+        ear.addMetadata(new File("src/main/config/application.xml"));
+        URI earURI = ear.toURI();
+        printContents(earURI);
+        appname = deployer.deploy(earURI);
         System.out.println("Deployed [" + appname + "]");
+        Assert.assertEquals(appname, "sear");
 
         get("http://localhost:9090/satest", "Hi, my name is Bhavani. What's yours?");
         get("http://localhost:9090/satest/ScatteredArchiveTestServlet",
@@ -131,5 +154,17 @@ public class ScatteredArchiveTest {
         }
         Assert.assertTrue(found);
         System.out.println("\n***** SUCCESS **** Found [" + result + "] in the response.*****\n");
+    }
+
+    void printContents(URI jarURI) throws IOException {
+        JarFile jarfile = new JarFile(new File(jarURI));
+        System.out.println("\n\n[" + jarURI + "] contents : \n");
+        Enumeration<JarEntry> entries = jarfile.entries();
+        while (entries.hasMoreElements()) {
+            JarEntry entry = entries.nextElement();
+            System.out.println(entry.getSize() + "\t" + new Date(entry.getTime()) +
+                    "\t" + entry.getName());
+        }
+        System.out.println();
     }
 }

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<connector xmlns="http://java.sun.com/xml/ns/j2ee"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           version="1.5">
+
+    <display-name>Scattered Archive Test RA</display-name>
+    <vendor-name>Oracle Corporation</vendor-name>
+    <eis-type>ScatteredArchiveTestRA</eis-type>
+    <resourceadapter-version>1.0</resourceadapter-version>
+
+    <resourceadapter>
+
+        <resourceadapter-class>
+            org.glassfish.tests.embedded.scatteredarchive.ScatteredArchiveTestRA
+        </resourceadapter-class>
+    </resourceadapter>
+
+
+</connector>
