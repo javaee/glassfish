@@ -85,17 +85,21 @@ public class AsadminMain {
     private final static String DEBUG_FLAG = "Debug";
     private final static String ENV_DEBUG_FLAG = "AS_DEBUG";
 
+    private static final String[] copyProps = {
+        SystemPropertyConstants.INSTALL_ROOT_PROPERTY,
+        SystemPropertyConstants.CONFIG_ROOT_PROPERTY,
+        SystemPropertyConstants.PRODUCT_ROOT_PROPERTY
+    };
+
     private static final LocalStringsImpl strings =
                                 new LocalStringsImpl(AsadminMain.class);
 
-    /*
-     * Read asenv.conf and copy all values to System properties.
-     */
     static {
         Map<String, String> systemProps = new ASenvPropertyReader().getProps();
-        for (Map.Entry<String, String> entry : systemProps.entrySet()) {
-            if (System.getProperty(entry.getKey()) == null)
-                System.setProperty(entry.getKey(), entry.getValue());
+        for (String prop : copyProps) {
+            String val = systemProps.get(prop);
+            if (ok(val))
+                System.setProperty(prop, val);
         }
     }
 
