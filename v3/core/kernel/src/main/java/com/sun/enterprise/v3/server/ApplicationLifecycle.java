@@ -987,7 +987,7 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
         }
     }
 
-    protected ApplicationInfo unload(ApplicationInfo info, ExtendedDeploymentContext context) {
+    public ApplicationInfo unload(ApplicationInfo info, ExtendedDeploymentContext context) {
         ActionReport report = context.getActionReport();
         if (info==null) {
             report.failure(context.getLogger(), "Application not registered", null);
