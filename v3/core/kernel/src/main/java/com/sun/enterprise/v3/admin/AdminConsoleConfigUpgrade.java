@@ -56,6 +56,7 @@ import java.beans.PropertyVetoException;
 import java.util.List;
 import java.util.logging.Level;
 
+
 /**
  * Adds the needed message-security-config information to domain.xml
  * during an upgrade from a v2.X server. For more information see:
@@ -85,38 +86,17 @@ public class AdminConsoleConfigUpgrade
 
     @Override
     public void postConstruct() {
-        for (Config config : configs.getConfig()) {
-            // we only want to handle configs that have an admin listener
-            try {
-                if (config.getAdminListener() == null) {
-                    EarlyLogger.add(Level.FINE, String.format(
-                        "Skipping config %s. No admin listener.",
-                        config.getName()));
-                    continue;
-                }
-            } catch (IllegalStateException ise) {
-                /*
-                 * I've only seen the exception rather than
-                 * getAdminListener returning null. This should
-                 * typically happen for any config besides
-                 * <server-config>, but we'll proceed if any
-                 * config has an admin listener.
-                 */
-                EarlyLogger.add(Level.FINE, String.format(
-                    "Skipping config %s. getAdminListener threw: %s",
-                    config.getName(), ise.getLocalizedMessage()));
-                continue;
-            }
+        Config config = configs.getConfigByName("server-config");
+        if (config != null) {
             SecurityService s = config.getSecurityService();
-            if (s == null) {
-                continue;
-            }
-            try {
-                ConfigSupport.apply(new AdminConsoleConfigCode(), s);
-            } catch (TransactionFailure tf) {
-                EarlyLogger.add(Level.SEVERE,
-                    "Could not upgrade security service for admin console: " +
-                    tf);
+            if (s != null) {
+                try {
+                    ConfigSupport.apply(new AdminConsoleConfigCode(), s);
+                } catch (TransactionFailure tf) {
+                    EarlyLogger.add(Level.SEVERE,
+                        "Could not upgrade security service for admin console: " +
+                        tf);
+                }
             }
         }
     }
