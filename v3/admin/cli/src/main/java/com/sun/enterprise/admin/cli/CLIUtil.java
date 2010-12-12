@@ -102,7 +102,7 @@ public class CLIUtil {
      * to the specified command.
      */
     public static void displayClosestMatch(final String commandName,
-                               final String[] commands, final String msg)
+                               String[] commands, final String msg)
                                throws InvalidCommandException {
         try {
             // remove leading "*" and ending "*" chars
@@ -114,6 +114,15 @@ public class CLIUtil {
                 endIndex = commandName.length() - 1;
             final String trimmedCommandName =
                     commandName.substring(beginIndex, endIndex);
+
+            // if pattern doesn't start with "_", remove hidden commands
+            if (!trimmedCommandName.startsWith("_")) {
+                List<String> ncl = new ArrayList<String>();
+                for (String cmd : Arrays.asList(commands))
+                    if (!cmd.startsWith("_"))
+                        ncl.add(cmd);
+                commands = ncl.toArray(new String[ncl.size()]);
+            }
 
             // sort commands in alphabetical order
             Arrays.sort(commands);
@@ -133,10 +142,10 @@ public class CLIUtil {
             } else {
                 // find the closest distance
                 final String nearestString = StringEditDistance.findNearest(
-                        commandName, commands);
+                        trimmedCommandName, commands);
                 // don't display the string if the edit distance is too large
                 if (StringEditDistance.editDistance(
-                        commandName, nearestString) < 5) {
+                        trimmedCommandName, nearestString) < 5) {
                     System.out.println(msg != null? msg :
                                        strings.get("ClosestMatchedCommands"));
                     System.out.println("    " + nearestString);
@@ -150,16 +159,12 @@ public class CLIUtil {
 
     /**
      * Return all the commands that include pattern (just a literal
-     * string, not really a pattern) as a substring.  Don't match
-     * hidden commands (starting with "_") unless the pattern also
-     * starts with "_".
+     * string, not really a pattern) as a substring.
      */
     private static String[] getMatchedCommands(final String pattern,
                                 final String[] commands) {
         List<String> matchedCommands = new ArrayList<String>();
         for (int i = 0; i < commands.length; i++) {
-            if (commands[i].startsWith("_") && !pattern.startsWith("_"))
-		continue;
             if (commands[i].indexOf(pattern) >= 0)
                 matchedCommands.add(commands[i]);
         }
