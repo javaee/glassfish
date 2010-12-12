@@ -116,7 +116,8 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
                 Strings.get("Sync.noDASConfigured", dasProperties.toString()));
             return false;
         }
-
+        validateDasOptions(programOpts.getHost(), String.valueOf(programOpts.getPort()),
+                    String.valueOf(programOpts.isSecure()), dasProperties);
         setDasDefaults(dasProperties);
 
         /*

@@ -99,6 +99,8 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
         dasPropsFile = new File(agentConfigDir, "das.properties");
 
         if (dasPropsFile.isFile()) {
+            validateDasOptions(programOpts.getHost(), String.valueOf(programOpts.getPort()),
+                    String.valueOf(programOpts.isSecure()), dasPropsFile);
             setDasDefaults(dasPropsFile);
             if (!setDasDefaultsOnly) {
                 String nodeDirChildName = nodeDirChild != null ? nodeDirChild.getName() : "";

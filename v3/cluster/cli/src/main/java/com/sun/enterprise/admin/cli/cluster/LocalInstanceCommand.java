@@ -209,59 +209,96 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
      * Set the programOpts based on the das.properties file.
      */
     protected final void setDasDefaults(File propfile) throws CommandException {
+        Properties dasprops = getDasProperties(propfile);
+
+        // read properties and set them in programOpts
+        // properties are:
+        // agent.das.port
+        // agent.das.host
+        // agent.das.isSecure
+        // agent.das.user           XXX - not in v2?
+        String p;
+        p = dasprops.getProperty("agent.das.host");
+        if (p != null) {
+            programOpts.setHost(p);
+        }
+        p = dasprops.getProperty("agent.das.port");
+        int port = -1;
+        if (p != null) {
+            port = Integer.parseInt(p);
+        }
+        p = dasprops.getProperty("agent.das.protocol");
+        if (p != null && p.equals("rmi_jrmp")) {
+            programOpts.setPort(updateDasPort(dasprops, port, propfile));
+        } else if (p == null || p.equals("http")) {
+            programOpts.setPort(port);
+        } else {
+            throw new CommandException(Strings.get("Instance.badProtocol",
+                    propfile.toString(), p));
+        }
+        p = dasprops.getProperty("agent.das.isSecure");
+        if (p != null) {
+            programOpts.setSecure(Boolean.parseBoolean(p));
+        }
+        p = dasprops.getProperty("agent.das.user");
+        if (p != null) {
+            programOpts.setUser(p);
+        }
+        // XXX - what about the DAS admin password?
+    }
+
+    /**
+     * Checks if programOpts values match das.properties file.
+     */
+    protected final void validateDasOptions(String hostOption, String portOption,
+            String isSecureOption, File propfile) throws CommandException {
+        if (propfile != null) {
+            Properties dasprops = getDasProperties(propfile);
+            if (!dasprops.isEmpty()) {
+                String errorMsg = "";
+                String nodeName = nodeDirChild != null ? nodeDirChild.getName() : "";
+                String hostProp = dasprops.getProperty("agent.das.host");
+                String portProp = dasprops.getProperty("agent.das.port");
+                String secureProp = dasprops.getProperty("agent.das.isSecure");
+                if (hostProp != null && !hostProp.equals(hostOption)) {
+                    errorMsg = errorMsg + Strings.get("Instance.DasHostInvalid", hostOption, nodeName) + "\n";
+                }
+                if (portProp != null && !portProp.equals(portOption)) {
+                    errorMsg = errorMsg + Strings.get("Instance.DasPortInvalid", portOption, nodeName) + "\n";
+                }
+                if (secureProp != null && !secureProp.equals(isSecureOption)) {
+                    errorMsg = errorMsg + Strings.get("Instance.DasIsSecureInvalid", isSecureOption, nodeName) + "\n";
+                }
+                if (!errorMsg.isEmpty()) {
+                    errorMsg = errorMsg + Strings.get("Instance.DasConfig", nodeName, hostProp, portProp, secureProp);
+                    throw new CommandException(errorMsg);
+                }
+            }
+        }
+    }
+
+    final protected Properties getDasProperties(File propfile) throws CommandException {
         Properties dasprops = new Properties();
         FileInputStream fis = null;
         try {
-            // read properties and set them in programOpts
-            // properties are:
-            // agent.das.port
-            // agent.das.host
-            // agent.das.isSecure
-            // agent.das.user           XXX - not in v2?
             fis = new FileInputStream(propfile);
             dasprops.load(fis);
             fis.close();
             fis = null;
-            String p;
-            p = dasprops.getProperty("agent.das.host");
-            if (p != null)
-                programOpts.setHost(p);
-            p = dasprops.getProperty("agent.das.port");
-            int port = -1;
-            if (p != null)
-                port = Integer.parseInt(p);
-            p = dasprops.getProperty("agent.das.protocol");
-            if (p != null && p.equals("rmi_jrmp")) {
-                programOpts.setPort(updateDasPort(dasprops, port, propfile));
-            }
-            else if (p == null || p.equals("http"))
-                programOpts.setPort(port);
-            else
-                throw new CommandException(Strings.get("Instance.badProtocol",
-                        propfile.toString(), p));
-            p = dasprops.getProperty("agent.das.isSecure");
-            if (p != null)
-                programOpts.setSecure(Boolean.parseBoolean(p));
-            p = dasprops.getProperty("agent.das.user");
-            if (p != null)
-                programOpts.setUser(p);
-            // XXX - what about the DAS admin password?
-        }
-        catch (IOException ioex) {
+        } catch (IOException ioex) {
             throw new CommandException(
                     Strings.get("Instance.cantReadDasProperties",
                     propfile.getPath()));
-        }
-        finally {
+        } finally {
             if (fis != null) {
                 try {
                     fis.close();
-                }
-                catch (IOException cex) {
+                } catch (IOException cex) {
                     // ignore it
                 }
             }
         }
+        return dasprops;
     }
 
     final protected void whackFilesystem() throws CommandException {

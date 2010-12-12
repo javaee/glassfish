@@ -193,6 +193,11 @@ public class CreateInstanceCommand implements AdminCommand {
             return;
         }
 
+        if (!validateDasOptions(context)) {
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
+        }
+
         // First, update domain.xml by calling _register-instance
         CommandInvocation ci = cr.getCommandInvocation("_register-instance", report);
         ParameterMap map = new ParameterMap();
@@ -421,6 +426,53 @@ public class CreateInstanceCommand implements AdminCommand {
              // something went wrong with the nonlocal command don't continue but set status to success
             // because config was updated correctly or we would not be here.
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+    }
+
+    public boolean validateDasOptions(AdminCommandContext context) {
+        boolean isDasOptionsValid = true;
+        if (theNode.isLocal() || (!theNode.isLocal() && !theNode.getType().equals("SSH"))) {
+            ActionReport report = ctx.getActionReport();
+            report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+
+            NodeUtils nodeUtils = new NodeUtils(habitat, logger);
+            Server dasServer =
+                    servers.getServer(SystemPropertyConstants.DAS_SERVER_NAME);
+            String dasHost = dasServer.getAdminHost();
+            String dasPort = Integer.toString(dasServer.getAdminPort());
+
+            ArrayList<String> command = new ArrayList<String>();
+            String humanCommand = null;
+
+            if (!theNode.isLocal()) {
+            // Only specify the DAS host if the node is remote. See issue 13993
+                command.add("--host");
+                command.add(dasHost);
+            }
+
+            command.add("--port");
+            command.add(dasPort);
+
+            command.add("_validate-das-options");
+
+            if (nodeDir != null) {
+                command.add("--nodedir");
+                command.add(nodeDir); //XXX escape spaces?
+            }
+
+            command.add("--node");
+            command.add(node);
+
+            command.add(instance);
+
+            // Run the command on the node
+            nodeUtils.runAdminCommandOnNode(theNode, command, ctx, "", null, null);
+
+            if (report.getActionExitCode() != ActionReport.ExitCode.SUCCESS) {
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                isDasOptionsValid = false;
+            }
+        }
+        return isDasOptionsValid;
     }
 
     private String makeCommandHuman(List<String> command) {
