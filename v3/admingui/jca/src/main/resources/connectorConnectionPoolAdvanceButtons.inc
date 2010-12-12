@@ -48,6 +48,9 @@
     <sun:button id="saveButton"  text="$resource{i18n.button.Save}"
             onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
         <!command
+            if ("#{pageSession.valueMap['lazyConnectionAssociation']}") {
+                setValueExpression(expression="#{pageSession.valueMap['lazyConnectionEnlistment']}", value="true");
+            }
             gf.updateEntity(endpoint="#{pageSession.selfUrl}"  attrs="#{pageSession.valueMap}"
                 skipAttrs="#{pageSession.skipAttrsList}"
                 convertToFalse="#{pageSession.convertToFalseList}"
