@@ -69,6 +69,7 @@ import java.net.URLEncoder;
 import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
+import java.io.File;
 
 import java.io.UnsupportedEncodingException;
 import javax.faces.context.ExternalContext;
@@ -133,11 +134,7 @@ public class GuiUtil {
     private static String formatMessage(String msg, Object[] args){
         if (args != null) {
             MessageFormat mf = new MessageFormat(msg);
-            Object[] mfArgs = new Object[args.length];
-            for (int i = 0; i < args.length; i++) {
-                mfArgs[i] = getMessage((args[i] != null) ? args[i].toString() : "");
-            }
-            msg = mf.format(mfArgs);
+            msg = mf.format(args);
         }
         return msg;
     }
@@ -176,8 +173,9 @@ public class GuiUtil {
         Map version = RestUtil.restRequest(sessionMap.get("REST_URL")+"/version", null, "GET" ,null, false);
         sessionMap.put("appServerVersion", ((Map)version.get("data")).get("message"));
         Map locations = RestUtil.restRequest(sessionMap.get("REST_URL")+"/location", null, "GET" ,null, false);
-        sessionMap.put("installationDir", ((Map)((Map)locations.get("data")).get("properties")).get("Base-Root"));
-
+        final String installDir = (String)((Map) ((Map) locations.get("data")).get("properties")).get("Base-Root");
+        sessionMap.put("baseRootDir", installDir);
+        sessionMap.put("topDir", (new File (installDir)).getParent());
         Map runtimeInfoMap = RestUtil.restRequest(sessionMap.get("REST_URL")+"/get-runtime-info", null, "GET" ,null, false);
         String debugFlag = (String) ((Map)((Map)runtimeInfoMap.get("data")).get("properties")).get("debug");
         if("true".equals(debugFlag)){
