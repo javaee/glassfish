@@ -52,6 +52,10 @@ is to run the process for connecting to this node's host through
 SSH.</b><p>If you change the type of the node from CONFIG to SSH and
 leave this field empty, the User Name option is set to the
 user that is running the DAS process.</p></li>
+<li><b>Specify how the SSH user will be authenticated when logging in to
+this node's host.</b><ul>
+<li><b>To specify authentication through an SSH private key file, perform these steps:</b><ol style="list-style-type: lower-alpha">
+<li><b>From the SSH User Authentication drop-down list, select Key File.</b></li>
 <li><b>In the Key File field, type the absolute path to the SSH
 private key file for user that the User Name option specifies. </b>
 <hr><p><b>Note - </b>GlassFish Server also supports password authentication through the <tt>AS_ADMIN_SSHPASSWORD</tt> entry in the
@@ -72,7 +76,22 @@ a platform-dependent key file in the user's <tt>.ssh</tt> directory, for example
 <li><p><tt>identity</tt></p>
 
 </li></ul>
-</li>
+</li></ol></li>
+<li><b>To specify authentication through a password that is stored in the DAS
+configuration, perform these steps:</b>
+<hr><p><b>Caution - </b>This password is stored in clear text in the DAS configuration. For
+enhanced security, use a key file or a password alias </p>
+
+
+<hr>
+<ol style="list-style-type: lower-alpha">
+<li><b>From the SSH User Authentication drop-down list, select Password.</b></li>
+<li><b>In the SSH Password field, type the password that the SSH user
+will use when logging in to this node's host. </b></li>
+<li><b>In the Confirm SSH Password field, type the password again.</b></li></ol></li>
+<li><b>To specify authentication through a password alias, perform these steps:</b><ol style="list-style-type: lower-alpha">
+<li><b>From the SSH User Authentication drop-down list, select Password Alias.</b></li>
+<li><b>From the Password Alias drop-down list, select an existing alias.</b></li></ol></li></ul></li>
 <li><b>Click Save.</b></li></ol><h6>See Also</h6>
 <ul><li><p><a href="task-createnode.html">To Create a Node</a></p>
 

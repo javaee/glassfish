@@ -13,8 +13,9 @@ Use is subject to License Terms  -->
 pool that you are editing.</b><p>The Edit Connector Connection Pool page opens.</p></li>
 <li><b>On the Edit Connector Connection Pool page, click the Advanced tab.</b><p>The Edit Connector Connection Pool Advanced Attributes page opens.</p></li>
 <li><b>In the Validate At Most Once field, type the amount of time,
-in seconds, after which a connection is validated at most once.</b><p>A value of 0 indicates that connection validation is not enabled. The default value
-is 0.</p></li>
+in seconds, after which a connection is validated at most once.</b><p>Setting this attribute to an appropriate value minimizes the number of validation requests
+by a connection. Default value is 0, which means that the attribute is
+not enabled.</p></li>
 <li><b>In the Leak Timeout field, type the amount of time, in seconds, to
 trace connection leaks in a connection pool.</b><p>A value of 0 indicates that connection leak tracing is disabled. The default
 value is 0.</p></li>

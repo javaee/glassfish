@@ -26,9 +26,10 @@ of log messages for the SQL statements and helps administrators analyze the stat
 <li><b>Select the Wrap JDBC Objects Enabled checkbox for applications to get wrapped JDBC
 objects for <tt>Statement</tt>, <tt>PreparedStatement</tt>, <tt>CallableStatement</tt>, <tt>ResultSet</tt>, <tt>DatabaseMetaData</tt>. </b><p>This option is enabled by default.</p></li>
 <li><b>Select the Pooling checkbox to enable connection pooling for the pool.</b><p>This option is enabled by default.</p></li>
-<li><b>In the Validate At Most Once field, type the amount of time,
-in seconds, after which a connection is validated at most once.</b><p>This will help reduce the number of validation requests by a connection. The
-default value is 0.</p></li>
+<li><b>In the Validate At Most Once field, type the amount of time, in
+seconds, after which a connection is validated at most once.</b><p>Setting this attribute to an appropriate value minimizes the number of validation requests
+by a connection. Default value is 0, which means that the attribute is
+not enabled.</p></li>
 <li><b>In the Leak Timeout field, type the amount of time, in seconds, to
 trace connection leaks in a connection pool.</b><p>Use this field to detect potential connection leaks by the application. A connection
 that is not returned back to the pool by the application within the

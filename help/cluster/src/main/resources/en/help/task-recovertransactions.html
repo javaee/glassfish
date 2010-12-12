@@ -10,16 +10,17 @@ Use is subject to License Terms  -->
 <li><b>Under the expanded Clusters node, select the node for the cluster.</b><p>The General Information page for the cluster opens.</p></li>
 <li><b>On the General Information page, click the Instances tab. </b><p>The Clustered Server Instances page for the cluster opens.</p></li>
 <li><b>Select the instance requiring transaction recovery.</b><p>The General Information page for the server instance appears.</p></li>
-<li><b>Click the Recover Transaction button.</b><p>The Recover Transactions page appears.</p></li>
-<li><b>From the Destination Server drop-down list, select another server instance in the
-same cluster that can recover the transactions on the current server instance.</b></li>
-<li><b>In the Transaction Log Directory field, type the directory in which the
-transaction logs are stored.</b><p>The default is <tt>/logs/tx</tt> under the domain directory. Transaction logs are kept in
-the <tt>tx</tt> subdirectory of the directory specified by Transaction Log Location setting of
-the Transaction Service for the cluster configuration. The default Transaction Log Location
-value is the directory specified by the Log Root field of the Domain
-Attributes page, which is located under the Advanced tab of the GlassFish
-Server node.</p></li>
+<li><b>Click the Recover Transaction button.</b><p>The Recover Transactions page appears.</p><p>If the server instance is running, the Recover Transactions page contains only <b>Recovery performed by the running server itself</b>
+and the OK button.</p><p>If the server instance is not running, the Recover Transactions page contains additional
+options.</p></li>
+<li><b>From the Destination Server drop-down list, select another server instance in the same
+cluster that can recover the transactions on the current server instance.</b></li>
+<li><b>In the Transaction Log Directory field, type the directory in which the transaction
+logs are stored.</b><p>The default is <tt>/logs/tx</tt> under the domain directory. Transaction logs are kept in the
+<tt>tx</tt> subdirectory of the directory specified by Transaction Log Location setting of the
+Transaction Service for the cluster configuration. The default Transaction Log Location value is the
+directory specified by the Log Root field of the Domain Attributes page, which
+is located under the Advanced tab of the GlassFish Server node.</p></li>
 <li><b>Click OK.</b></li></ol><h6>See Also</h6>
 <ul><li><p><a href="task-create-clustered-instance.html">To Add a GlassFish Server Instance to a Cluster</a></p>
 

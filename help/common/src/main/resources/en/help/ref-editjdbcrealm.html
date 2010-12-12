@@ -56,8 +56,17 @@ JDBC realm option inside the configuration file.</p>
 
 </dd>
 <dt>Digest Algorithm</dt>
-<dd><p>The digest algorithm. The default is <tt>MD5</tt>. You can use any algorithm supported in the JDK, or <tt>none</tt>.</p>
+<dd><p>(Optional) Specifies the digest algorithm. The default is <tt>SHA-256</tt>. You can use any algorithm supported in the JDK, or none.</p>
 
+
+<hr><p><b>Note - </b>In versions of GlassFish Server prior to 3.1, the default algorithm was <tt>MD5</tt>. If you have applications that depend on the <tt>MD5</tt> algorithm, you can override the default <tt>SHA-25</tt> algorithm by using the <tt>asadmin set</tt> subcommand:</p>
+
+<pre>asadmin> <tt><b>set server.security-service.property.default-digest-algorithm=MD5</b></tt></pre><p>You can use the <tt>asadmin get</tt> subcommand to determine what algorithm is currently being used:</p>
+
+<pre>asadmin> <tt><b>get server.security-service.property.default-digest-algorithm</b></tt></pre><p>Also note that, to maintain backward compatibility, if an upgrade is performed from GlassFish Server v2.<i>x</i> or v3.0.<i> x</i> to GlassFish Server 3.1, the default algorithm is automatically set to <tt>MD5</tt> in cases where the digest algorithm had not been explicitly set in the older GlassFish Server version.</p>
+
+
+<hr>
 </dd>
 <dt>Encoding</dt>
 <dd><p>The encoding. Allowed values are <tt>Hex</tt> and <tt>Base64</tt>. If <tt>digest-algorithm</tt> is specified, the default is <tt>Hex</tt>. If <tt>digest-algorithm</tt> is not specified, by default no encoding is specified.</p>

@@ -88,8 +88,44 @@ A node must exist for every host on which GlassFish Server instances reside.
 <dd><p>The port to use for SSH connections to this node's host. The default is 22. If the Node Host option is set to <tt>localhost</tt>, the SSH port option is ignored.</p>
 
 </dd>
-<dt>User Name</dt>
+<dt>SSH User Name</dt>
 <dd><p>The user that is to run the process for connecting to this node's host through SSH. The default is the user that is running the DAS process. To ensure that the DAS can read this user's SSH private key file, specify the user that is running the DAS process. If the Node Host option is set to <tt>localhost</tt>, the User Name option is ignored.</p>
+
+</dd>
+<dt>SSH User Authentication</dt>
+<dd><p>Drop-down list to specify how the SSH user is authenticated when logging in to this node's host. The possible methods for authentication are as follows:</p>
+
+<dl><dt>Key File</dt>
+<dd><p>The SSH user is authenticated through an SSH private key file. If you select this option, specify the absolute path to the file in the Key File field.</p>
+
+</dd>
+<dt>Password</dt>
+<dd><p>The SSH user is authenticated through a password that is stored in the DAS configuration.</p>
+
+
+<hr><p><b>Caution - </b>This password is stored in clear text in the DAS configuration. For enhanced security, use a key file or a password alias </p>
+
+
+<hr>
+<p>If you select this option, the SSH Password field and the Confirm SSH Password field are activated to enable you to provide the password.</p>
+
+</dd>
+<dt>Password Alias</dt>
+<dd><p>The SSH user is authenticated through a password alias. If you select this option, select the password alias from the Password Alias drop-down list.</p>
+
+</dd>
+</dl>
+</dd>
+<dt>SSH Password</dt>
+<dd><p>The password that the SSH user will use when logging in to this node's host.</p>
+
+</dd>
+<dt>Confirm SSH Password</dt>
+<dd><p>Confirmation of the password that the SSH user will use when logging in to this node's host. The content of this field must match exactly the content of the SSH Password field.</p>
+
+</dd>
+<dt>Password Alias</dt>
+<dd><p>Drop-down list of password aliases that are defined for this domain.</p>
 
 </dd>
 <dt>Key File</dt>

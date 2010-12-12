@@ -9,8 +9,8 @@ Use is subject to License Terms  -->
 <li><b>In the navigation tree, select the Applications node.</b><p>The Applications page opens.</p></li>
 <li><b>From the Deployed Applications table, click the name of the application that you
 are editing.</b><p>The name can include an optional version identifier, which follows the name and
-is separated from the name by a colon (<tt>:</tt>). For more information about module
-and application versions, see the <a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2417">Module and Application Versions in <i>Oracle GlassFish Server 3.1 Application Deployment Guide</i></a>.</p><p>The Edit Application page opens.</p></li>
+is separated from the name by a colon (<tt>:</tt>). For more information about
+module and application versions, see the <a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2417">Module and Application Versions in <i>Oracle GlassFish Server 3.1 Application Deployment Guide</i></a>.</p><p>The Edit Application page opens.</p></li>
 <li><b>Deselect the Status Enabled checkbox to disable the application status so that it
 is unavailable.</b><p>By default, the status of an application is Enabled as soon as it
 is deployed. </p></li>
@@ -19,26 +19,26 @@ the application.</b><p>In the URL of the web application, the context root immed
 port number (<tt>http://</tt><i>host</i><tt>:</tt><i>port</i><tt>/</tt><i>context-root</i><tt>/...</tt>). Ensure that the context root starts with a forward slash,
 for example, <tt>/hello</tt>.</p></li>
 <li><b>Deselect the Availability Enabled checkbox to disable session persistence and SFSB checkpointing for the
-application.</b><p>If the Enabled checkbox is selected, high-availability is enabled for web sessions and for
-stateful session bean (SFSB) checkpointing and potentially passivation. If set to false (default)
-all web session saving and SFSB checkpointing is disabled for the specified application,
-web application, or EJB module. If set to true, the specified application or module
-is enabled for high-availability. Set this option to true only if high availability
-is configured and enabled at higher levels, such as the server and container
-levels.</p><p>This option appears if clusters or stand-alone server instances aside from the default
+application.</b><p>If the Enabled checkbox is selected, high-availability is enabled for web sessions and
+for stateful session bean (SFSB) checkpointing and potentially passivation. If set to false
+(default) all web session saving and SFSB checkpointing is disabled for the specified
+application, web application, or EJB module. If set to true, the specified application
+or module is enabled for high-availability. Set this option to true only if
+high availability is configured and enabled at higher levels, such as the server
+and container levels.</p><p>This option appears if clusters or stand-alone server instances aside from the default
 server instance (<tt>server</tt>) exist.</p></li>
 <li><b>From the Virtual Servers drop-down list, select the virtual server to be associated
-with this application.</b><p>The Virtual Servers option appears if only the default server instance, <tt>server</tt>, exists. If
-clusters or other stand-alone server instances exist, you can select virtual servers after
-deployment. Go to the Edit Application page, select the Target tab, and select
-Manage Virtual Servers for the desired target.</p></li>
+with this application.</b><p>The Virtual Servers option appears if only the default server instance, <tt>server</tt>, exists.
+If clusters or other stand-alone server instances exist, you can select virtual servers
+after deployment. Go to the Edit Application page, select the Target tab, and
+select Manage Virtual Servers for the desired target.</p></li>
 <li><b>In the Description field, type a description for this application.</b></li>
 <li><b>Select the Java Web Start Enabled checkbox to use Java Web Start software
 to deploy the application.</b></li>
 <li><b>By default the Status of an application is Enabled on all targets. Select
-the Targets tab to view the targets on which the application has been
-enabled. See <a href="task-appviewtargets.html">To View Application Targets</a> for instructions on how to enable or disable an application
-on one or multiple targets.</b></li>
+the Targets tab to view the targets on which the application has
+been enabled. See <a href="task-appviewtargets.html">To View Application Targets</a> for instructions on how to enable or disable an application on
+one or multiple targets.</b></li>
 <li><b>To view the list of module descriptors for the application, click the Description
 tab. For more details, see <a href="task-appviewdesc.html">To View Descriptors of an Application</a></b></li>
 <li><b>To view the targets on which the application has been enabled, click the

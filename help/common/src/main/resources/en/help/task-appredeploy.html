@@ -14,21 +14,21 @@ settings and other options with which the application was originally deployed.</
 <li><b>In the navigation tree, select the Applications node.</b><p>The Applications page opens.</p></li>
 <li><b>In the Deployed Applications table, click Redeploy in the row for the application
 that you are redeploying.</b><p>The application name can include an optional version identifier, which follows the name
-and is separated from the name by a colon (<tt>:</tt>). For more information about
-module and application versions, see the <a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2417">Module and Application Versions in <i>Oracle GlassFish Server 3.1 Application Deployment Guide</i></a>.</p><p>The Redeploy Applications or Modules page opens.</p></li>
+and is separated from the name by a colon (<tt>:</tt>). For more information
+about module and application versions, see the <a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2417">Module and Application Versions in <i>Oracle GlassFish Server 3.1 Application Deployment Guide</i></a>.</p><p>The Redeploy Applications or Modules page opens.</p></li>
 <li><b>Specify the location of the application to redeploy.</b><ul>
-<li><b>If the application is an archive file that resides on or is accessible
-from the client machine, select the option Packaged File to Be Uploaded to
-the Server.</b><p>The client machine is the host on which you are viewing the Administration
+<li><b>If the application is an archive file that resides on or is
+accessible from the client machine, select the option Packaged File to Be Uploaded
+to the Server.</b><p>The client machine is the host on which you are viewing the Administration
 Console through a browser.</p><p>Click Browse to browse to the file, or type the full path
 to the file.</p></li>
 <li><b>If the application is an archive file that resides on the server machine,
 or is an unpackaged application from an exploded directory, select the option Local
 Packaged File or Directory That Is Accessible From the GlassFish Server.</b><p>The server machine is the host that is running the domain administration server
-(DAS). </p><p>Click Browse Files to browse to a file, or Browse Folders to browse
-to a directory. Alternatively, type the full path name to the file or
-directory. Deploying from an exploded directory is for advanced developers and is not
-recommended for production environments.</p></li></ul></li>
+(DAS). </p><p>Click Browse Files to browse to a file, or Browse Folders to
+browse to a directory. Alternatively, type the full path name to the file
+or directory. Deploying from an exploded directory is for advanced developers and is
+not recommended for production environments.</p></li></ul></li>
 <li><b>Select the Precompile JSPs checkbox to precompile JavaServer Pages (JSP) files.</b><p>If this option is disabled, JSP files are compiled at runtime when they
 are first accessed. This option is disabled by default.</p></li>
 <li><b>Select the Run Verifier checkbox to verify deployment descriptors before redeployment.</b><p>If this option is selected and if verification fails, redeployment is not performed.
@@ -37,17 +37,17 @@ applications is often time-consuming. This option is disabled by default.</p><p>
 logged and this option is ignored.</p></li>
 <li><b>Select the Keep State checkbox to retain web sessions, SFSB instances, and persistently
 created EJB timers between redeployments.</b><p>This option is disabled by default. This option is supported only on the
-default server instance, named <tt>server</tt>. It is not supported and ignored for
-any other target.</p><p>Some changes to an application between redeployments prevent this feature from working properly.
+default server instance, named <tt>server</tt>. It is not supported and ignored for any other
+target.</p><p>Some changes to an application between redeployments prevent this feature from working properly.
 For example, do not change the set of instance variables in the SFSB
-bean class.</p><p>For web applications, this feature is applicable only if in the <tt>glassfish-web-app.xml</tt> file
-the <tt>persistence-type</tt> attribute of the <tt>session-manager</tt> element is <tt>file</tt>.</p><p>For stateful session bean instances, the persistence type without high availability is set
+bean class.</p><p>For web applications, this feature is applicable only if in the <tt>glassfish-web-app.xml</tt>
+file the <tt>persistence-type</tt> attribute of the <tt>session-manager</tt> element is <tt>file</tt>.</p><p>For stateful session bean instances, the persistence type without high availability is set
 in the server (the SFSB Persistence Type option) and must be set to
-<tt>file</tt>, which is the default and recommended value.</p><p>If any active web session, SFSB instance, or EJB timer fails to be
-preserved or restored, <b>none</b> of these will be available when the redeployment is
+<tt>file</tt>, which is the default and recommended value.</p><p>If any active web session, SFSB instance, or EJB timer fails to
+be preserved or restored, <b>none</b> of these will be available when the redeployment is
 complete. However, the redeployment continues and a warning is logged.</p><p>To preserve active state data, GlassFish Server serializes the data and saves it
-in memory. To restore the data, the class loader of the newly redeployed
-application deserializes the data that was previously saved.</p></li>
+in memory. To restore the data, the class loader of the newly
+redeployed application deserializes the data that was previously saved.</p></li>
 <li><b>Select the Preserve Application Scoped Resources checkbox to preserve any application-scoped resources and
 restore them during redeployment.</b><p>This option is disabled by default.</p></li>
 <li><b>Click OK.</b></li></ol><h6>See Also</h6>

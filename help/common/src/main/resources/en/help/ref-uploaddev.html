@@ -193,6 +193,12 @@ Additional options appear only after you specify the Location field for the appl
 <p>Verifier packages must be installed from the Update Tool or a warning is logged and this option is ignored.</p>
 
 </dd>
+<dt>Compatibility</dt>
+<dd><p>If checked, uses GlassFish Server v2 JAR visibility requirements for applications instead of the stricter Java EE 6 requirements implemented in GlassFish Server v3 releases, including 3.1. This option is not checked by default.</p>
+
+<p>The Java EE 6 platform specification imposes stricter requirements than Java EE 5 did on which JAR files can be visible to various modules within an EAR file. In particular, application clients must not have access to EJB JAR files or other JAR files in the EAR file unless references use the standard Java SE mechanisms (extensions, for example) or the Java EE library-directory mechanism. Checking this box removes these Java EE 6 restrictions.</p>
+
+</dd>
 <dt>Force Redeploy</dt>
 <dd><p>If this option is selected, the application is redeployed if it is already deployed. If this option is not selected, an attempt to deploy an application that is already deployed results in an error. This option is disabled by default.</p>
 
@@ -215,12 +221,6 @@ Additional options appear only after you specify the Location field for the appl
 </dd>
 <dt>Preserve Application Scoped Resources</dt>
 <dd><p>If checked, preserves any application-scoped resources and restores them during redeployment. This option is not checked by default.</p>
-
-</dd>
-<dt>Compatibility</dt>
-<dd><p>If checked, uses GlassFish Server v2 JAR visibility requirements for applications instead of the stricter Java EE 6 requirements implemented in GlassFish Server v3 releases, including 3.1. This option is not checked by default.</p>
-
-<p>The Java EE 6 platform specification imposes stricter requirements than Java EE 5 did on which JAR files can be visible to various modules within an EAR file. In particular, application clients must not have access to EJB JAR files or other JAR files in the EAR file unless references use the standard Java SE mechanisms (extensions, for example) or the Java EE library-directory mechanism. Checking this box removes these Java EE 6 restrictions.</p>
 
 </dd>
 <dt>Libraries</dt>
@@ -317,6 +317,12 @@ Additional options appear only after you specify the Location field for the appl
 <p>Verifier packages must be installed from the Update Tool or a warning is logged and this option is ignored.</p>
 
 </dd>
+<dt>Compatibility</dt>
+<dd><p>If checked, uses GlassFish Server v2 JAR visibility requirements for applications instead of the stricter Java EE 6 requirements implemented in GlassFish Server v3 releases, including 3.1. This option is not checked by default.</p>
+
+<p>The Java EE 6 platform specification imposes stricter requirements than Java EE 5 did on which JAR files can be visible to various modules within an EAR file. In particular, application clients must not have access to EJB JAR files or other JAR files in the EAR file unless references use the standard Java SE mechanisms (extensions, for example) or the Java EE library-directory mechanism. Checking this box removes these Java EE 6 restrictions.</p>
+
+</dd>
 <dt>Force Redeploy</dt>
 <dd><p>If this option is selected, the application is redeployed if it is already deployed. If this option is not selected, an attempt to deploy an application that is already deployed results in an error. This option is disabled by default.</p>
 
@@ -339,12 +345,6 @@ Additional options appear only after you specify the Location field for the appl
 </dd>
 <dt>Preserve Application Scoped Resources</dt>
 <dd><p>If checked, preserves any application-scoped resources and restores them during redeployment. This option is not checked by default.</p>
-
-</dd>
-<dt>Compatibility</dt>
-<dd><p>If checked, uses GlassFish Server v2 JAR visibility requirements for applications instead of the stricter Java EE 6 requirements implemented in GlassFish Server v3 releases, including 3.1. This option is not checked by default.</p>
-
-<p>The Java EE 6 platform specification imposes stricter requirements than Java EE 5 did on which JAR files can be visible to various modules within an EAR file. In particular, application clients must not have access to EJB JAR files or other JAR files in the EAR file unless references use the standard Java SE mechanisms (extensions, for example) or the Java EE library-directory mechanism. Checking this box removes these Java EE 6 restrictions.</p>
 
 </dd>
 <dt>Libraries</dt>

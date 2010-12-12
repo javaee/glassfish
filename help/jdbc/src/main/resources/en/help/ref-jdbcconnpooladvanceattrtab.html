@@ -42,7 +42,7 @@ diagnose connection leaks and improve ease-of&#8211;use.</p>
 
 </dd>
 <dt>Validate At Most Once</dt>
-<dd><p>The amount of time, in seconds, after which a connection is validated at most once. This will help reduce the number of validation requests by a connection. The default value is 0.</p>
+<dd><p>Specifies the time interval in seconds between successive requests to validate a connection at most once. Setting this attribute to an appropriate value minimizes the number of validation requests by a connection. Default value is 0, which means that the attribute is not enabled.</p>
 
 </dd>
 <dt>Leak Timeout</dt>
@@ -126,7 +126,7 @@ diagnose connection leaks and improve ease-of&#8211;use.</p>
 
 </dd>
 </dl>
-<h5>Related Tasks</h5>
+<a name="gkonw"></a><h5>Related Tasks</h5>
 
 <ul><li><p><a href="task-setdbaccess.html">To Set Up Database Access</a></p>
 
@@ -152,7 +152,7 @@ diagnose connection leaks and improve ease-of&#8211;use.</p>
 <li><p><a href="task-jdbcconnectionpooldelete.html">To Delete a JDBC Connection Pool</a></p>
 
 </li></ul>
-<h5>Related <tt>asadmin</tt> Commands</h5>
+<a name="gkoli"></a><h5>Related <tt>asadmin</tt> Commands</h5>
 
 <ul><li><p><a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2433"><tt>add-resources</tt>(1)</a></p>
 

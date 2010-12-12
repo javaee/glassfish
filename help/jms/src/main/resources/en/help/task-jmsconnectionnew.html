@@ -14,9 +14,8 @@ these objects under the Connectors node.</p>
 <li><b>Under the Resources node, expand the JMS Resources node.</b></li>
 <li><b>Under the JMS Resources node, select the JMS Connection Factories node.</b><p>The JMS Connection Factories page opens.</p></li>
 <li><b>On the JMS Connection Factories page, click New.</b><p>The New JMS Connection Factory page appears.</p></li>
-<li><b>In the JNDI Name field, type the JNDI name of the connection
-factory. </b><p>It is a recommended practice to use the naming subcontext prefix <tt>jms/</tt>
-for JMS resources. For example: <tt>jms/ConnectionFactory1</tt>.</p></li>
+<li><b>In the Pool Name field, type the unique name of the connection factory.
+</b><p>GlassFish Server sets the JNDI name of the connection factory to this value..</p></li>
 <li><b>From the Resource Type drop-down list, select either <tt>javax.jms.ConnectionFactory</tt>, <tt>javax.jms.QueueConnectionFactory</tt>, or <tt>javax.jms.TopicConnectionFactory</tt>.</b></li>
 <li><b>In the Description field, type a description of the connection factory.</b></li>
 <li><b>Select the Status Enabled checkbox to enable the resource at run time.</b><p>This option is enabled by default.</p></li>

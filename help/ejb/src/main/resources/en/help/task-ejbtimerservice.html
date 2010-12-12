@@ -8,8 +8,8 @@ Use is subject to License Terms  -->
 <a name="task-ejbtimerservice"></a><h4>To Configure the EJB Timer Service</h4><a name="indexterm-6"></a><a name="indexterm-7"></a><a name="indexterm-8"></a><p>The timer service is a persistent and transactional notification service that is provided
 by the enterprise bean container and is used to schedule notifications or events
 used by enterprise beans. All enterprise beans except stateful session beans can receive
-notifications from the timer service. Persistent imers set by the service are not
-destroyed when the server is shut down or restarted.</p>
+notifications from the timer service. Persistent imers set by the service are not destroyed
+when the server is shut down or restarted.</p>
 
 <ol>
 <li><b>In the navigation tree, expand the Configuration node.</b></li>
@@ -22,8 +22,8 @@ before the next timer expiration for a particular timer can occur.</b><p>Setting
 service makes to deliver a timer expiration due for exception or rollback.</b><p>The default value is 1.</p></li>
 <li><b>In the Redelivery Interval field, type the interval, in milliseconds, between redelivery attempts.</b><p>The default value is 5000.</p></li>
 <li><b>In the Timer Datasource field, type the JNDI name of the JDBC resource
-that will be used as the timer datasource.</b><p>If specified, this value overrides the default value of <tt>jdbc/__TimerPool</tt> for the timer service
-system application.</p></li>
+that will be used as the timer datasource.</b><p>If specified, this value overrides the default value of <tt>jdbc/__TimerPool</tt> for the timer
+service system application.</p></li>
 <li><b>Click Save.</b>
 <hr><p><b>Tip - </b>To return to the default settings, click the Load Defaults button, then click
 Save.</p>
