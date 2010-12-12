@@ -42,6 +42,7 @@ package org.glassfish.appclient.client;
 
 import com.sun.enterprise.util.LocalStringManager;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.OS;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -278,6 +279,20 @@ public class CLIBootstrap {
     }
 
     /**
+     * Quotes the string, on non-Windows systems quoting individually any
+     * $.  The shell will have replaced any env. var. placeholders with
+     * their values before invoking this program. Anything that looks like a
+     * placeholder now is an odd but legal name that should not be substituted
+     * again.
+     *
+     * @param s
+     * @return
+     */
+    private static String quoteSuppressTokenSubst(final String s) {
+        return (OS.isWindows() ? quote(s) : quote(s.replace("$", "\\$")));
+    }
+
+    /**
      * Manages the arguments which will be passed to the ACC Java agent.
      */
     private class AgentArgs {
@@ -287,7 +302,7 @@ public class CLIBootstrap {
         AgentArgs() {
             final String appcPath = System.getProperty(ENV_VAR_PROP_PREFIX + "APPCPATH");
             if (appcPath != null && appcPath.length() > 0) {
-                add("appcpath=" + quote(appcPath));
+                add("appcpath=" + quoteSuppressTokenSubst(appcPath));
             }
         }
 
@@ -455,7 +470,7 @@ public class CLIBootstrap {
             if (commandLine.length() > 0) {
                 commandLine.append(' ');
             }
-            commandLine.append((useQuotes ? quote(v) : v));
+            commandLine.append((useQuotes ? quoteSuppressTokenSubst(v) : v));
             return commandLine;
         }
     }
@@ -612,7 +627,7 @@ public class CLIBootstrap {
             final int result = super.processValue(args, slot);
             final OptionValue newOptionValue = optValues.get(optValues.size() - 1);
             agentArgs.addACCArg(newOptionValue.option);
-            agentArgs.addACCArg(quote(newOptionValue.value));
+            agentArgs.addACCArg(quoteSuppressTokenSubst(newOptionValue.value));
             return result;
         }
 
@@ -695,11 +710,11 @@ public class CLIBootstrap {
                          * a directory. Set the main class launch info to
                          * launch the ACC JAR.
                          */
-                        agentArgs.add("client=dir=" + quote(clientSpec.getAbsolutePath()));
+                        agentArgs.add("client=dir=" + quoteSuppressTokenSubst(clientSpec.getAbsolutePath()));
                         introducer = "-jar";
                         values.set(values.size() - 1, gfInfo.agentJarPath());
                     } else {
-                        agentArgs.add("client=jar=" + path);
+                        agentArgs.add("client=jar=" + quoteSuppressTokenSubst(path));
                         /*
                          * The client path is not a directory.  It should be a
                          * .jar or a .ear file.  If an EAR, then we want Java to
@@ -834,7 +849,7 @@ public class CLIBootstrap {
                 if (needSep) {
                     commandLine.append(File.pathSeparatorChar);
                 }
-                commandLine.append(quote(value));
+                commandLine.append(quoteSuppressTokenSubst(value));
                 needSep = true;
             }
             commandLine.append(' ');
