@@ -57,6 +57,8 @@ import com.sun.enterprise.config.serverbeans.AdminService;
 import com.sun.enterprise.security.ssl.SSLUtils;
 import com.sun.enterprise.util.net.NetUtils;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.security.KeyStoreException;
 import java.util.Map;
 import java.util.logging.Level;
@@ -213,8 +215,21 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
                         new Object[] {access, user});
 
             } else {
-                String msg = lsm.getLocalString("authentication.failed",
-                        "User [{0}] from host {1} does not have administration access", user, originHost);
+                /*
+                 * User did not authenticate. As a guard against a potential
+                 * attack encode the failed username.
+                 */
+                String msg;
+                String userToDisplay;
+                String extraMsg = "";
+                try {
+                    userToDisplay = URLEncoder.encode(user, "UTF-8");
+                } catch (UnsupportedEncodingException ex) {
+                    userToDisplay = "???";
+                    extraMsg = ex.getLocalizedMessage();
+                }
+                msg = lsm.getLocalString("authentication.failed", "User [{0}] from host {1} does not have administration access", 
+                            userToDisplay, originHost) + extraMsg;
                 logger.log(Level.INFO, msg);
                 access = Access.NONE;
             }
