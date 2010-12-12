@@ -450,7 +450,7 @@ public class MonitoringReporter extends V2DottedNameSupport {
         Object value = tn1.getValue();
         if (tn1.getParent() != null) {
             map.put(tn1.getParent().getCompletePathName() + DOTTED_NAME,
-                    tn1.getParent().getCompletePathName());
+                    tn1.getParent().getCompletePathName().replace(SLASH,"/"));
         }
         if (value instanceof Stats) {
             for (Statistic s : ((Stats) value).getStatistics()) {
