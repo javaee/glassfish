@@ -116,6 +116,11 @@ public class ResourceRefNode extends DeploymentDescriptorNode {
      * @param descriptor the new descriptor
      */    
     public void addDescriptor(Object newDescriptor) {    
+        if (descriptor == null) {
+            DOLUtils.getDefaultLogger().log(Level.WARNING, "enterprise.deployment.backend.addDescriptorFailure",
+                new Object[] {newDescriptor, this});
+            return;
+        }
         if (newDescriptor instanceof ResourcePrincipal) {
             descriptor.setResourcePrincipal((ResourcePrincipal) newDescriptor);
         } else if (newDescriptor instanceof MailConfiguration) {
