@@ -155,7 +155,7 @@
                 </sun:property>
 
                 <sun:property id="installProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.installDirLabel}">
-                    <sun:staticText id="installationDir" text="#{sessionScope.installationDir}"/>
+                    <sun:staticText id="baseRootDir" text="#{sessionScope.baseRootDir}"/>
                 </sun:property>
 
 

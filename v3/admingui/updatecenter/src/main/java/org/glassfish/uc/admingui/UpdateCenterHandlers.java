@@ -52,9 +52,11 @@ import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.Map;
 import java.util.Properties;
-
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 
 import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerOutput;
@@ -68,7 +70,8 @@ import com.sun.pkg.client.Manifest;
 import com.sun.pkg.client.SystemInfo;
 import com.sun.pkg.client.SystemInfo.UpdateCheckFrequency;
 import com.sun.pkg.client.Version;
-import java.util.logging.Level;
+import javax.servlet.http.HttpSession;
+
 
 import org.glassfish.admingui.common.util.GuiUtil;
 
@@ -77,12 +80,27 @@ import org.glassfish.admingui.common.util.GuiUtil;
  * @author anilam
  */
 public class UpdateCenterHandlers {
-    
-    
-//    getInstalledPath(result=>$attribute{installedPath});
-//        getAuthority(result=>$attribute{authority});
-//        getUcList(state="update", result=>$attribute{listOfRows} );
-//        updateCenterProcess(selectedRows="${selectedRows}" action="$attribute{action}" );
+
+   @Handler(id="checkConnectionInfo",
+        output={
+        @HandlerOutput(name="connectionInfo", type=String.class),
+        @HandlerOutput(name="noConnection", type=String.class)})
+    public static void checkConnectionInfo(HandlerContext handlerCtx) {
+        if (Boolean.TRUE.equals(GuiUtil.getSessionValue("_noNetwork"))){
+            handlerCtx.setOutputValue("connectionInfo",  GuiUtil.getMessage(BUNDLE, "noNetworkDetected"));
+            handlerCtx.setOutputValue("noConnection", "true");
+        }
+        /*
+        else if ("true".equals(GuiUtil.getSessionValue("_doNotPing"))){
+            handlerCtx.setOutputValue("connectionInfo",  GuiUtil.getMessage(BUNDLE, "noCheckPerformed"));
+            handlerCtx.setOutputValue("noConnection", "true");
+        }
+         */
+        else{
+            handlerCtx.setOutputValue("noConnection", "false");
+        }
+    }
+
 
     @Handler(id="getInstalledPath",
         output={
@@ -165,9 +183,12 @@ public class UpdateCenterHandlers {
         output={
         @HandlerOutput(name="result", type=java.util.List.class)})
     public static void getUcList(HandlerContext handlerCtx) {
-        
-        GuiUtil.setSessionValue(USER_OK, Boolean.TRUE);
+
         List result = new ArrayList();
+        if (Boolean.TRUE.equals(GuiUtil.getSessionValue("_noNetwork"))){
+            handlerCtx.setOutputValue("result", result);
+            return;
+        }
         try {
             Image img = getUpdateCenterImage();
             if (img == null){
@@ -207,11 +228,17 @@ public class UpdateCenterHandlers {
                     putInfo(oneRow, "tooltip", tooltip);
                     result.add(oneRow);
                 }catch(Exception ex){
-                    ex.printStackTrace();
+                    GuiUtil.getLogger().info("getUcList(): " +  ex.getLocalizedMessage());
+                    if (GuiUtil.getLogger().isLoggable(Level.FINE)){
+                        ex.printStackTrace();
+                    }
                 }
             }
         }catch(Exception ex1){
-            ex1.printStackTrace();
+            GuiUtil.getLogger().info("getUcList(): " +  ex1.getLocalizedMessage());
+            if (GuiUtil.getLogger().isLoggable(Level.FINE)){
+                ex1.printStackTrace();
+            }
         }
         handlerCtx.setOutputValue("result", result);
     }
@@ -403,6 +430,7 @@ public class UpdateCenterHandlers {
                 return tmpL;
             }
         }
+       GuiUtil.setSessionValue("_updateCountMsg", GuiUtil.getMessage(UpdateCenterHandlers.BUNDLE, "msg.updatesAvailable", new String[]{""+result.size()}));
        return result;
     }
     
@@ -432,7 +460,7 @@ public class UpdateCenterHandlers {
             }
             if (install){
                 image.installPackages(fList);
-                updateCountInSession(image);      //ensure the # of update component count is updated.
+                //updateCountInSession(image);   No need to update the update count since the count will not change.  Only installing new component is allowed.
             }else{
                 image.uninstallPackages(fList);
             }
@@ -470,43 +498,35 @@ public class UpdateCenterHandlers {
      }
         
      
-    //returns -1 for any error condition, otherwise the #of component that has update available.
-    @Handler(id = "getUpdateComponentCount", output = {
-        @HandlerOutput(name = "count", type = Integer.class)
-    })
+    @Handler(id = "getUpdateComponentCount")
     public static void getUpdateComponentCount(HandlerContext handlerCtx) {
-        Boolean userOK = (Boolean) GuiUtil.getSessionValue(USER_OK);
-        if (userOK == null){
-            UpdateCheckFrequency userPreference = SystemInfo.getUpdateCheckFrequency();
-            boolean donotping = userPreference == UpdateCheckFrequency.NEVER;
-            if(donotping){
-                GuiUtil.getLogger().info(GuiUtil.getMessage(BUNDLE,"noCheckPerformed"));
-                GuiUtil.setSessionValue(USER_OK, Boolean.FALSE);
-                handlerCtx.setOutputValue("count", -1);
-                return;
-            }else{
-                GuiUtil.setSessionValue(USER_OK, Boolean.TRUE);
-            }
+
+        boolean donotPing = false;
+        //If user set NO_NETWORK system properties, don't try to do anything.
+        boolean noNetwork = (Boolean) GuiUtil.getSessionValue("_noNetwork");
+        if (noNetwork){
+            GuiUtil.getLogger().info(GuiUtil.getMessage(BUNDLE,"noNetworkDetected"));
+            donotPing = true;
         }else{
-            if (! userOK.booleanValue()){
-                handlerCtx.setOutputValue("count", -1);
-                return;
-            } 
+            UpdateCheckFrequency userPreference = SystemInfo.getUpdateCheckFrequency();
+            if (userPreference == UpdateCheckFrequency.NEVER){
+                GuiUtil.getLogger().info(GuiUtil.getMessage(BUNDLE,"noCheckPerformed"));
+                GuiUtil.setSessionValue("_doNotPing", "true");
+                donotPing = true;
+            }
         }
-        Integer countInt = (Integer) GuiUtil.getSessionValue(UPDATE_COUNT);
-        if (countInt == null) {
-            Image image = getUpdateCenterImage();
-            countInt = updateCountInSession(image);
+        if (donotPing){
+            GuiUtil.setSessionValue("_hideUpdateMsg", Boolean.TRUE);
+            return;
         }
-        if(GuiUtil.getLogger().isLoggable(Level.FINE)){
-            String msg = GuiUtil.getMessage(BUNDLE, "updateCount") + countInt;
-            GuiUtil.getLogger().fine(msg);
-        }
-        handlerCtx.setOutputValue("count", countInt);
+        GuiUtil.setSessionValue("_hideUpdateMsg", Boolean.FALSE);
+        GuiUtil.setSessionValue("_updateCountMsg", GuiUtil.getMessage(BUNDLE,"checkingUpdate") );
+        UcThread thread = new UcThread((HttpSession)FacesContext.getCurrentInstance().getExternalContext().getSession(false));
+        thread.start();
     }
 
-     
-     private static Integer updateCountInSession(Image image){
+
+     public static Integer updateCountInSession(Image image){
 	 Integer countInt = new Integer(-1);
 	 if (image != null){
 	    List list = getUpdateDisplayList(image, true);
@@ -514,7 +534,6 @@ public class UpdateCenterHandlers {
 	 }else{
 	    GuiUtil.getLogger().warning(GuiUtil.getMessage(BUNDLE, "cannotGetImage"));
 	 }
-         GuiUtil.setSessionValue(UPDATE_COUNT, countInt);
          return countInt;
      }
      
@@ -565,50 +584,41 @@ public class UpdateCenterHandlers {
         String dateStr = version.toString().substring(begin+1, end);
         String result = dateStr.substring(0,4) + "/" + dateStr.substring(4,6) + "/" + dateStr.substring(6,8);
         return result;
-        
     }
+
     
-    
-    private static Image getUpdateCenterImage(){
-        String ucDir = (String) GuiUtil.getSessionValue(UCDIR);
-        if (ucDir == null){
-            String installDir = (String) GuiUtil.getSessionValue("installationDir");
-            //installDir will only give the glassfish installation. need to get its parent for UC info
-            ucDir = (new File (installDir)).getParent();
-            GuiUtil.setSessionValue(UCDIR, ucDir);
+    public static Image getUpdateCenterImage(){
+        if (Boolean.TRUE.equals(GuiUtil.getSessionValue("_noNetwork"))){
+            return null;
+        }else{
+         return getUpdateCenterImage((String)GuiUtil.getSessionValue("topDir"), false);
         }
+    }
+
+    public static Image getUpdateCenterImage(String ucDir, boolean force){
         Image image = null;
         try{
             image = new Image (new File (ucDir));
-            refreshCatalog(image);
-        }catch(Exception ex){
-            GuiUtil.getLogger().warning(GuiUtil.getMessage(BUNDLE, "NoImage", new String[]{ucDir}));
-        }
-        return image;
-    }
-   
-    private static synchronized void refreshCatalog (Image image){
-        try{
-            if (GuiUtil.getSessionValue(CATALOG_REFRESHED) == null){
+            if (force || (GuiUtil.getSessionValue(CATALOG_REFRESHED) == null)){
                 GuiUtil.setSessionValue(CATALOG_REFRESHED, "TRUE");
                 image.refreshCatalogs();
             }
         }catch(Exception ex){
-            GuiUtil.getLogger().warning( ex.getMessage());
-            GuiUtil.getLogger().warning(GuiUtil.getMessage(BUNDLE, "ProxySetupHelp"));
+            if(force){
+                GuiUtil.getLogger().warning(GuiUtil.getMessage(BUNDLE, "NoImage", new String[]{ucDir}));
+            }
         }
-    } 
+        return image;
+    }
 
+    
     final private static String CATEGORY = "info.classification";
     final private static String DESC_LONG = "description_long";
     final private static String PKG_DESC = "pkg.description";
     final private static String PKG_SUMMARY = "pkg.summary";
     final private static String DESC = "description";
-    final private static String UPDATE_COUNT = "__gui_uc_update_count";
     final private static String CATALOG_REFRESHED = "__gui_uc_catalog_refreshed";
-    final private static String UCDIR = "__gui_uc_installation_dir";
-    final private static String USER_OK = "__gui_uc_userok";
-    final private static String BUNDLE = "org.glassfish.updatecenter.admingui.Strings";
+    final public static String BUNDLE = "org.glassfish.updatecenter.admingui.Strings";
     final private static int MB = 1024*1024;
-    
+
 }

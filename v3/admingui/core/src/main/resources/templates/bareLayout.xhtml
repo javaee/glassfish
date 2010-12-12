@@ -88,6 +88,11 @@
                 setAttribute(key="reloadJS" value="if (!document.getElementById('Masthead:statusPanel:restartLink') || !document.getElementById('Masthead:logoutLink')) {reloadHeaderFrame();}");
             }
         }
+        if ("!(#{sessionScope._currentUpdateCountMsg}=#{sessionScope._updateCountMsg})"){
+            setAttribute(key="reloadJS" , value="reloadHeaderFrame();");
+            setSessionAttribute(key="_currentUpdateCountMsg", value="#{sessionScope._updateCountMsg}");
+        }
+
     </ui:event>
 </event>
 

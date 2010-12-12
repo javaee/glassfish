@@ -42,29 +42,31 @@
 
 <!-- updateCenter/udateCenterContent.inc -->
 
-
-            <sun:form id="propertyForm">
+<sun:form id="propertyForm">
 #include "/updateCenter/ucTabs.inc"
 #include "/common/shared/alertMsg.inc"
         <!-- Page Title -->
          <sun:title id="propertyContentPage" title="$attribute{pageTitle}" helpText="$attribute{pageTitleHelp}"/>
          <sun:propertySheet id="propertySheet">			 
             <sun:propertySheetSection id="propertySectionTextField">
-                <sun:property id="path"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nUC.updateCenter.installedPath}" >
-                    <staticText id="path" value="${installedPath}" />
+                <sun:property id="error"  rendered="#{pageSession.noConnection}" labelAlign="left" noWrap="#{true}" overlapLabel="#{true}"  >
+                    <staticText id="error" value="#{pageSession.connectionInfo}" />
                 </sun:property>
-                <!--
-                <sun:property id="auth"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nUC.updateCenter.authority}" >
-                    <staticText id="auth" value="${authority}" />
+
+                <sun:property id="path"  rendered="#{!pageSession.noConnection}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nUC.updateCenter.installedPath}" >
+                    <staticText id="path" value="#{pageSession.installedPath}" >
+                    <!beforeCreate
+                        getInstalledPath(result="#{pageSession.installedPath}");
+                    />
+                    </staticText>
                 </sun:property>
-                -->
             </sun:propertySheetSection>
         </sun:propertySheet> 
-        "<br /><br />
+        "<br />
 #include "/updateCenter/ucTable.jsf"
-         "<br /><br />
+         "<br />
 	<sun:hidden id="helpKey" value="$attribute{helpKey}" />
-            </sun:form>
+</sun:form>
 #include "/common/shared/changeButtonsJS.inc"
 <f:verbatim>
     <script type="text/javascript">

@@ -62,14 +62,12 @@
             setPageSessionAttribute(key="fromPage" value="#{request.contextPath}/updateCenter/addOn.jsf");
             setPageSessionAttribute(key="forInstall" value="true");
             setPageSessionAttribute(key="showNewVersion" value="#{false}");
-            setPageSessionAttribute(key="doReloadHeader" value="false");
             setPageSessionAttribute(key="versonColHeader" value="$resource{i18nUC.ucTable.version}");
             setPageSessionAttribute(key="sizeColHeader" value="$resource{i18nUC.ucTable.installSize}");
             setPageSessionAttribute(key="confirmMsg" value="$resource{i18nUC.msg.JS.confirmUpdateCenterInstall}");
             setPageSessionAttribute(key="successMsg" value="$resource{i18nUC.msg.addOnSuccess}")
-            getInstalledPath(result=>$attribute{installedPath});
-            getAuthority(result=>$attribute{authority});
-            getUcList(state="addOn", result=>$attribute{listOfRows} );
+            setPageSessionAttribute(key="state" value="addOn")
+            checkConnectionInfo(connectionInfo="#{pageSession.connectionInfo}"  noConnection="#{pageSession.noConnection}");
         />
     </event>
 #include "updateCenterContent.jsf"

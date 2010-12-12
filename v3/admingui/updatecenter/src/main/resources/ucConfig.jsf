@@ -50,7 +50,19 @@
 
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18nUC.updateCenter.ConfigPageTitle}" guiOnLoad="showSection('#{proxyGroup}'); admingui.help.pluginId = 'common';">
 <!define name="content">
- 
+<event>
+    <!beforeCreate
+        setSessionAttribute(key="ucTabs" value="config");
+        checkConnectionInfo(connectionInfo="#{pageSession.connectionInfo}"  noConnection="#{pageSession.noConnection}");
+        if ("!#{pageSession.noConnection}"){
+            setAttribute(key="tableTitle" value="$resource{i18nUC.updateCenter.config.tableTitle}");
+            getInstalledPath(result=>$attribute{installedPath});
+            getProxyInfo(connection=>$attribute{proxyGroup}, host=>$attribute{host}, port=>$attribute{port} );
+            getAuthList(result=>$attribute{listOfRows} );
+            setPageSessionAttribute(key="buttonText" value="$resource{i18n.button.Save}");
+        }
+    />
+</event>
             <sun:form id="propertyForm">
 #include "/updateCenter/ucTabs.inc"
 #include "/common/shared/alertMsg.inc"
@@ -58,7 +70,7 @@
  <sun:title id="propertyContentPage" title="$resource{i18nUC.updateCenter.ConfigPageTitle}" helpText="$resource{i18nUC.updateCenter.ConfigPageTitleHelp}" >
   <!facet pageButtonsTop>
      <sun:panelGroup id="topButtons">
-        <sun:button id="button" text="$resource{i18n.button.Save}"
+        <sun:button id="button" rendered="#{!pageSession.noConnection}" text="$resource{i18n.button.Save}"
             onClick="if (validateProxyField()) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
             <!command
                 prepareSuccessfulMsg();
@@ -70,16 +82,13 @@
     </facet>
 </sun:title>
         <sun:propertySheet id="propertySheet">
-            <!beforeCreate
-                setSessionAttribute(key="ucTabs" value="config");
-                setPageSessionAttribute(key="buttonText" value="$resource{i18n.button.Save}");
-                setAttribute(key="tableTitle" value="$resource{i18nUC.updateCenter.config.tableTitle}");
-                getInstalledPath(result=>$attribute{installedPath});
-                getAuthority(result=>$attribute{authority});
-                getProxyInfo(connection=>$attribute{proxyGroup}, host=>$attribute{host}, port=>$attribute{port} );
-                getAuthList(result=>$attribute{listOfRows} );
-            />
-            <sun:propertySheetSection id="propertySectionTextField">
+             <sun:propertySheetSection id="errorS"  rendered="#{pageSession.noConnection}">
+                <sun:property id="error"  rendered="#{pageSession.noConnection}" labelAlign="left" noWrap="#{true}" overlapLabel="#{true}"  >
+                    <staticText id="error" value="#{pageSession.connectionInfo}" />
+                </sun:property>
+             </sun:propertySheetSection>
+
+            <sun:propertySheetSection id="propertySectionTextField"  rendered="#{!pageSession.noConnection}">
                 <sun:property id="path"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nUC.updateCenter.installedPath}" >
                     <staticText id="path" value="${installedPath}" />
                 </sun:property>
@@ -112,7 +121,7 @@
             </sun:propertySheetSection>
         </sun:propertySheet>
         "<br /><br />
-        <sun:table id="ucTable" title="$attribute{tableTitle}" sortPanelToggleButton="#{false}" >
+        <sun:table id="ucTable" title="$attribute{tableTitle}" sortPanelToggleButton="#{false}" rendered="#{!pageSession.noConnection}">
             <sun:tableRowGroup id="rowGroup1" data={"$attribute{listOfRows}"} sourceVar="td">
                 <sun:tableColumn headerText="$resource{i18nUC.ucConfigTable.authority}" sort="authName" rowHeader="$boolean{true}" id="colc">
                     <staticText id="Colc" value="#{td.value.authName}" />

@@ -42,13 +42,16 @@
 
 <!-- updateCenter/ucTable.inc -->
 
-<sun:table id="ucTable" title="$attribute{tableTitle}" sortPanelToggleButton="#{false}" 
+<sun:table id="ucTable" rendered="#{!noConnection}" title="$attribute{tableTitle}" sortPanelToggleButton="#{false}"
         deselectMultipleButton="#{!readOnly}"
         deselectMultipleButtonOnClick="setTimeout('admingui.table.changeOneTableButton(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0)"
         selectMultipleButton="#{!readOnly}"
         selectMultipleButtonOnClick="setTimeout('admingui.table.changeOneTableButton(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0)" width="100%">
          <!afterCreate
             getClientId(component="$this{component}" clientId=>$page{tableId});
+        />
+        <!beforeCreate
+            getUcList(state="#{pageSession.state}", result=>$attribute{listOfRows} );
         />
     <!facet actionsTop>
          <sun:panelGroup id="topActionsGroup1" rendered="#{!readOnly}">
