@@ -63,7 +63,6 @@ pkg = {
     "depends" : {
                   "pkg:/glassfish-nucleus@3.0" : {"type" : "require" }
                   ,"pkg:/glassfish-common" : {"type" : "require" }
-                  ,"pkg:/metro@1.4" : {"type" : "require" }
                 },
     "licenses" : { "../../../../CDDL+GPL.txt" : {"license" : "CDDL and GPL v2 with classpath exception"}}
 }
