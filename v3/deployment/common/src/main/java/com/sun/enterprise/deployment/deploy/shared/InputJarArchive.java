@@ -89,6 +89,9 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
     private InputJarArchive parentArchive=null;
 
     private StringManager localStrings = StringManager.getManager(getClass());
+
+    // track entry enumerations to close them if needed when the archive is closed
+    private final List<EntryEnumeration> entryEnumerations = new ArrayList<EntryEnumeration>();
     
     /**
      * Get the size of the archive
@@ -113,7 +116,10 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
     /** 
      * close the abstract archive
      */
-    public void close() throws IOException {
+    public synchronized void close() throws IOException {
+        for (EntryEnumeration e : entryEnumerations) {
+            removeEntryEnumeration(e);
+        }
         if (jarFile!=null) {
             jarFile.close();
             jarFile=null;
@@ -122,6 +128,15 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
             jarIS.close();
             jarIS=null;
         }
+    }
+
+    private synchronized void removeEntryEnumeration(final EntryEnumeration e) {
+        entryEnumerations.remove(e);
+    }
+
+    private synchronized EntryEnumeration recordEntryEnumeration(final EntryEnumeration e) {
+        entryEnumerations.add(e);
+        return e;
     }
 
     /**
@@ -213,7 +228,7 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
                 uriToReadForEntries = new URI("file", getURI().getSchemeSpecificPart(), null);
             }
 
-            return createEntryEnumeration(uriToReadForEntries, topLevelDirectoriesOnly);
+            return recordEntryEnumeration(createEntryEnumeration(uriToReadForEntries, topLevelDirectoriesOnly));
         } catch (IOException ioe) {
             throw new RuntimeException(ioe);
         } catch (URISyntaxException use) {
@@ -485,7 +500,7 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
         /** look-ahead of one entry */
         private JarEntry nextMatchingEntry;
 
-        private final JarInputStream jis;
+        private JarInputStream jis;
         private boolean reachedEndOfStream = false;
 
     private EntryEnumeration(final URI archiveURI) throws MalformedURLException, IOException {
@@ -533,7 +548,7 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
             try {
                 final JarEntry result = jis.getNextJarEntry();
                 if (result == null) {
-                    jis.close();
+                    close();
                     reachedEndOfStream = true;
                 }
                 return result;
@@ -542,11 +557,23 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
             }
         }
 
+        void close() {
+            if (jis != null) {
+                try {
+                    jis.close();
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+                jis = null;
+            }
+            entryEnumerations.remove(this);
+        }
+
         @Override
         protected void finalize() throws Throwable {
             super.finalize();
             if ( ! reachedEndOfStream) {
-                jis.close();
+                close();
             }
         }
     }
