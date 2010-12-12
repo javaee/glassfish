@@ -14,6 +14,7 @@ then
   export CYGWIN=nontsec
 fi
 rm -rf glassfishv3
+rm revision-under-test.html
 wget -q -O revision-under-test.html http://${REHudson}/hudson/job/gf-trunk-build-continuous/lastSuccessfulBuild
 grep 'Build #' revision-under-test.html
 time wget -q -O glassfish.zip http://${REHudson}/hudson/job/gf-trunk-build-continuous/lastSuccessfulBuild/artifact/bundles/glassfish.zip
