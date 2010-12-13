@@ -122,9 +122,6 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
     @Inject
     Events events;
 
-    @Inject
-    ServerEnvironment env;
-
     @Inject(name=ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Server server;
 
@@ -168,27 +165,24 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
             }
 
             Domain domain = habitat.getComponent(Domain.class);
-            instanceName = env.getInstanceName();
-
-            isDas = env.isDas();
-            if (isDas) {
+            instanceName = server.getName();
+            cluster = server.getCluster();
+            if (cluster == null && clusters != null) {
+                // must be the DAS since it not direclty considered a member of cluster by domain.xml.
+                // iterate over all clusters to find the cluster that has name passed in.
                 for (Cluster clusterI : clusters.getCluster()) {
                     if (clusterName.compareTo(clusterI.getName()) == 0) {
                         cluster = clusterI;
                         break;
                     }
                 }
-
-                // only want to do this in the case of the DAS
-                initializeHealthHistory(cluster);
-            } else {
-                cluster = server.getCluster();
-                assert (clusterName.equals(cluster.getName()));
             }
-
             if (cluster == null) {
                 logger.log(Level.WARNING, "gmsservice.nocluster.warning");
                 return false;       //don't enable GMS
+            } else if (server.isDas()) {
+                // only want to do this in the case of the DAS
+                initializeHealthHistory(cluster);
             }
 
             clusterConfig = domain.getConfigNamed(clusterName + "-config");
@@ -528,7 +522,7 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                 registerFailureSuspectedListener(this);
 
                 //fix gf it 12905
-                if (testFailureRecoveryHandler && ! env.isDas()) {
+                if (testFailureRecoveryHandler && ! server.isDas()) {
 
                     // this must be here or appointed recovery server notification is not printed out for automated testing.
                     registerFailureRecoveryListener("GlassfishFailureRecoveryHandlerTest", this);

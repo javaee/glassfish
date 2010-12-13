@@ -236,7 +236,7 @@ public class GMSAdapterService implements Startup, PostConstruct, ConfigListener
 
     @Override
     public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
-        if (env.isDas()) {
+        if (server.isDas()) {
             return ConfigSupport.sortAndDispatch(events, new Changed() {
                 @Override
                 public <T extends ConfigBeanProxy> NotProcessed changed(TYPE type, Class<T> changedType, T changedInstance) {
