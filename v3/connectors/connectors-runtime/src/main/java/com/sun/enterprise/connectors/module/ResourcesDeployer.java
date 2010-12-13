@@ -300,7 +300,7 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
         }
     }
 
-    public static void createResources(DeploymentContext dc, boolean embedded) throws ResourceException {
+    public static void createResources(DeploymentContext dc, boolean embedded, boolean deployResources) throws ResourceException {
         String appName = getAppNameFromDeployCmdParams(dc);
         Application app = dc.getTransientAppMetaData(Application.APPLICATION, Application.class);
         Map<String, Map<String, List>> resourcesList =
@@ -459,7 +459,8 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
 
 
     private static void createAppScopedResources(Application app, List<org.glassfish.resource.common.Resource> resources,
-                                                 DeploymentContext dc, boolean embedded) throws ResourceException {
+                                                 DeploymentContext dc, boolean embedded)
+            throws ResourceException {
         try {
             if (resources != null) {
                 Application application = dc.getTransientAppMetaData(Application.APPLICATION, Application.class);
@@ -478,7 +479,6 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
                         createConfig(asc, resources, embedded);
                 String appName = app.getName();
                 preserveResources(asc, appName, appName);
-                deployResources(app.getName(), null, resourceConfigurations, embedded);
             }
         } catch (Exception e) {
             Object params[] = new Object[]{app.getName(), e};
@@ -503,10 +503,11 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
             resourceConfigurations.put(appName, allResources);
         }
     }
-
+                            
     private static void createModuleScopedResources(Application app, Module module,
                                                     List<org.glassfish.resource.common.Resource> resources,
-                                                    DeploymentContext dc, boolean embedded) throws ResourceException {
+                                                    DeploymentContext dc, boolean embedded)
+            throws ResourceException {
         try {
             if (resources != null) {
                 Resources msc = dc.getTransientAppMetaData(module.getName()+"-resources", Resources.class);
@@ -523,7 +524,6 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
                 Collection<Resource> resourceConfigurations =
                         createConfig(msc, resources, embedded);
                 preserveResources(msc, app.getName(), module.getName());
-                deployResources(app.getName(), module.getName(), resourceConfigurations, embedded);
             }
         } catch (Exception e) {
             Object params[] = new Object[]{module.getName(),app.getName(), e};
@@ -532,6 +532,41 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
         }
     }
 
+    public static void  deployResourcesFromConfiguration(String appName, boolean embedded) throws Exception {
+        Application application = applications.getApplication(appName);
+        ApplicationInfo appInfo = appRegistry.get(appName);
+        if(application != null && appInfo != null){
+            Resources appScopedResources = application.getResources();
+            if(appScopedResources != null){
+                deployResources(appName, null, appScopedResources.getResources(), embedded);
+            }
+
+            List<Module> modules = application.getModule();
+            if(modules != null){
+                for(Module module : modules){
+                    Resources moduleScopedResources = module.getResources();
+                    String moduleName = module.getName();
+                    if(moduleScopedResources != null){
+                        deployResources(appName, moduleName, moduleScopedResources.getResources(), embedded);
+                    }
+                }
+            }
+        }
+    }
+
+    public static void  deployResources(String applicationName, boolean embedded) throws Exception {
+        Map<String, Resources> allResources = resourceConfigurations.get(applicationName);
+        if(allResources != null){
+            for(String moduleName : allResources.keySet()){
+                Resources resources = allResources.get(moduleName);
+                if(applicationName.equals(moduleName)){
+                    deployResources(applicationName, null, resources.getResources(), embedded);
+                }else{
+                    deployResources(applicationName, moduleName, resources.getResources(), embedded);
+                }
+            }
+        }
+    }
     public static void deployResources(String applicationName, String moduleName,
                                 Collection<com.sun.enterprise.config.serverbeans.Resource> configBeanResources,
                                 boolean embedded) throws Exception {
@@ -734,7 +769,8 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
 
     private void processResources(DeploymentContext dc, DeployCommandParameters deployParams) {
         try{
-            if (deployParams.origin == OpsParams.Origin.deploy || deployParams.origin == OpsParams.Origin.deploy_instance) {
+            if (deployParams.origin == OpsParams.Origin.deploy || deployParams.origin == OpsParams.Origin.deploy_instance
+                    /*|| (deployParams.origin == OpsParams.Origin.create_application_ref && env.isInstance())*/) {
                 Properties properties = deployParams.properties;
                 if(properties != null){
                     //handle if "preserveAppScopedResources" property is set (during deploy --force=true)
@@ -752,9 +788,19 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
                         return ;
                     }
                 }
-
-                processArchive(dc);
-                createResources(dc, false);
+                Application app = dc.getTransientAppMetaData(Application.APPLICATION, Application.class);
+                String applicationName = getAppNameFromDeployCmdParams(dc);
+                if(app != null){
+                    //application is stored in transient meta data only during deployment.
+                    processArchive(dc);
+                    createResources(dc, false, true);
+                    createResources(dc, true, false);
+                    deployResources(applicationName, false);
+                }else{
+                    //application config is already present. Use the same.
+                    deployResourcesFromConfiguration(applicationName, false);
+                    populateResourceConfigInAppInfo(dc);
+                }
             }else if(deployParams.origin == OpsParams.Origin.load){
                 //during load event (ie., app/app-ref enable or server start, resource configuration
                 //is present in domain.xml. Use the configuration.
@@ -763,6 +809,10 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
         }catch(Exception e){
             // only DeploymentExceptions are propagated and result in deployment failure
             // in the event notification infrastructure
+            if(_logger.isLoggable(Level.FINEST)){
+                _logger.log(Level.FINEST, "Exception while processing archive of application" +
+                    " [ "+getAppNameFromDeployCmdParams(dc)+" ] for resources definitions : " + e.getCause());
+            }
             throw new DeploymentException(e);
         }
     }
@@ -877,7 +927,8 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
      */
     private void cleanupResources(String appName, OpsParams.Origin deploymentPhase){
         try{
-            if (deploymentPhase == OpsParams.Origin.deploy || deploymentPhase == OpsParams.Origin.deploy_instance) {
+            if (deploymentPhase == OpsParams.Origin.deploy || deploymentPhase == OpsParams.Origin.deploy_instance
+                    || deploymentPhase == OpsParams.Origin.create_application_ref) {
                 Map<String, Resources> allResources = resourceConfigurations.remove(appName);
                 if(allResources != null){
                     for(Map.Entry<String, Resources> entry : allResources.entrySet()){
@@ -941,7 +992,8 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
             final DeployCommandParameters deployCommandParameters =
                     dc.getCommandParameters(DeployCommandParameters.class);
             if (deployCommandParameters.origin == OpsParams.Origin.deploy ||
-                    deployCommandParameters.origin == OpsParams.Origin.deploy_instance) {
+                    deployCommandParameters.origin == OpsParams.Origin.deploy_instance || 
+                    deployCommandParameters.origin == OpsParams.Origin.create_application_ref) {
                 Properties properties = deployCommandParameters.properties;
                 String appName = deployCommandParameters.name();
                 cleanupPreservedResources(appName, properties);
