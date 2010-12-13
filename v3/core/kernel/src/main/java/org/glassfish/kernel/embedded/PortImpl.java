@@ -56,7 +56,7 @@ import com.sun.grizzly.config.dom.Transport;
 import com.sun.grizzly.config.dom.Transports;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.CommandRunner;
-import org.glassfish.api.embedded.Port;
+import org.glassfish.internal.embedded.Port;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;

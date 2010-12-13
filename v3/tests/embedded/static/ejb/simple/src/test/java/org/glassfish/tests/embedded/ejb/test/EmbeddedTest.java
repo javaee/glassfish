@@ -43,7 +43,7 @@ package org.glassfish.tests.embedded.ejb.test;
 import org.junit.Test;
 import org.junit.Assert;
 import org.glassfish.tests.embedded.ejb.SampleEjb;
-import org.glassfish.api.embedded.*;
+import org.glassfish.internal.embedded.*;
 
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.*;

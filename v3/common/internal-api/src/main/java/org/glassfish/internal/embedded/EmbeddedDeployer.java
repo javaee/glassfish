@@ -38,28 +38,80 @@
  * holder.
  */
 
-package org.glassfish.api.embedded;
+package org.glassfish.internal.embedded;
 
+import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.api.deployment.*;
 import org.jvnet.hk2.annotations.Contract;
 
+import java.io.File;
+
 /**
- * Listener type contract to be notified of embedded server creation and
- * destruction.
+ * Service to deploy applications to the embedded server.
  *
  * @author Jerome Dochez
  */
 @Contract
-public interface EmbeddedLifecycle {
+public interface EmbeddedDeployer {
+
+
+    // todo : is this still used ?
 
     /**
-     * Notification of embedded server creation
-     * @param server the newly created server
+     * Returns the location of the applications directory, where deployed applications
+     * are saved.
+     *
+     * @return the deployed application directory.
      */
-    public void creation(Server server);
+    public File getApplicationsDir();
 
     /**
-     * Notification of embedded server destruction
-     * @param server the stopped embedded server instance
+     * Returns the location of the auto-deploy directory.
+     *
+     * @return the auto-deploy directory
+     *
      */
-    public void destruction(Server server);
+    public File getAutoDeployDir();
+
+    /**
+     * Enables or disables the auto-deployment feature
+     *
+     * @param flag set to true to enable, false to disable
+     */
+    public void setAutoDeploy(boolean flag);
+
+    /**
+     * Deploys a file or directory to the servers passing the deployment command parameters
+     * Starts the server if it is not started yet.
+     *
+     * @param archive archive or directory of the application
+     * @param params deployment command parameters
+     * @return the deployed application name
+     */
+    public String deploy(File archive, DeployCommandParameters params);
+
+    /**
+     * Deploys an archive abstraction to the servers passing the deployment command parameters
+     *
+     * @param archive archive or directory of the application
+     * @param params deployment command parameters
+     * @return the deployed application name
+     */
+    public String deploy(ReadableArchive archive, DeployCommandParameters params);
+
+
+    // todo : add redeploy ?
+
+    /**
+     * Undeploys a previously deployed application
+     *
+     * @param name name returned by {@link EmbeddedDeployer#deploy(File, org.glassfish.api.deployment.DeployCommandParameters}
+     * @param params the undeployment parameters, can be null for default values
+     */
+    public void undeploy(String name, UndeployCommandParameters params);
+
+    /**
+     * Undeploys all deployed applications.
+     */
+    public void undeployAll();
 }

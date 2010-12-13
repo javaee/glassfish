@@ -40,10 +40,9 @@
 
 package org.glassfish.ejb.embedded;
 
-import org.glassfish.api.embedded.EmbeddedContainer;
-import org.glassfish.api.embedded.Port;
-import org.glassfish.api.embedded.Server;
-import org.glassfish.api.embedded.LifecycleException;
+import org.glassfish.internal.embedded.EmbeddedContainer;
+import org.glassfish.internal.embedded.Port;
+import org.glassfish.internal.embedded.LifecycleException;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.jvnet.hk2.annotations.Service;

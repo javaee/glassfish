@@ -38,28 +38,12 @@
  * holder.
  */
 
-package org.glassfish.api.embedded.admin;
-
-import org.glassfish.api.embedded.ContainerBuilder;
-import org.glassfish.api.embedded.Port;
-import org.glassfish.api.embedded.Server;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Inject;
+package org.glassfish.internal.embedded;
 
 /**
- * So far, the admin container does not require much configuration but we
- * could imagine that it will eventually support configuring wether or not
- * to start the AminGUI.
+ * BindException are thrown when port cannot be bound to a port number
  *
  * @author Jerome Dochez
  */
-@Service
-public class AdminInfo implements ContainerBuilder<EmbeddedAdminContainer> {
-    
-    @Inject
-    EmbeddedAdminContainer ctr;
-
-    public EmbeddedAdminContainer create(Server server) {
-        return ctr;
-    }
+public class BindException extends Exception {
 }

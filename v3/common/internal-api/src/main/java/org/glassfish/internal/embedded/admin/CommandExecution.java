@@ -38,35 +38,18 @@
  * holder.
  */
 
-package org.glassfish.api.embedded;
+package org.glassfish.internal.embedded.admin;
 
-import org.jvnet.hk2.annotations.Contract;
+import org.glassfish.api.ActionReport;
 
 /**
- *
- * Port abstraction, used to bind several containers to the same port.
- *
- * @author Jerome Dochez
+ *  Instance to follow command excecution.
  */
-@Contract
-public interface Port {
+public interface CommandExecution {
 
-    // default set of protocol we support
-    public final static String HTTP_PROTOCOL = "http";
-    public final static String HTTPS_PROTOCOL = "https";
-    public final static String IIOP_PROTOCOL = "iiop";
+    ActionReport getActionReport();
 
-    /**
-     * Returns the port number occupied by this instance.
-     *
-     * @return port number
-     */
-    public int getPortNumber();
+    ActionReport.ExitCode getExitCode();
 
-    /**
-     * Unbinds (close) this port instance, releasing network resources at portNumber
-     */
-    public void close();
-
-    // todo : return a list of protocols bound to this port.
+    String getMessage();
 }

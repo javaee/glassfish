@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,35 +38,52 @@
  * holder.
  */
 
-package org.glassfish.api.embedded;
+package org.glassfish.internal.embedded;
 
+import org.glassfish.api.container.Sniffer;
 import org.jvnet.hk2.annotations.Contract;
 
-import java.io.IOException;
-import java.util.Collection;
+import java.util.List;
 
 /**
- * Management interfaces for all embedded ports
+ * Embedded container definition, although most containers will be bound
+ * to a {@link Port} instance, it's not automatic, for instance JPA and
+ * other non network based containers might not.
  *
  * @author Jerome Dochez
  */
 @Contract
-public interface Ports {
-
+public interface EmbeddedContainer {
 
     /**
-     * Creates a port, binds it to a port number and returns it
-     * @param number the port number
-     * @return the bound port to the port number
-     * @throws IOException if the port is already taken or another network exception occurs
+     * Binds a port using a specific protocol to this container.
+     * @param port the port instance to bind
+     * @param protocol the protocol the port should be used for, can
+     * be null and the container can use the port for any protocol(s)
+     * it needs to.
      */
-    Port createPort(int number) throws IOException;
-
+    public void bind(Port port, String protocol);
 
     /**
-     * Returns the list of allocated ports
+     * Returns the list of sniffers associated with this container.
      *
-     * @return the allocated ports
+     * @return a list of sniffers that will be used when application are
+     * deployed to the embedded server.
      */
-    Collection<Port> getPorts();
+    public List<Sniffer> getSniffers();
+
+    /**
+     * Starts the embedded container instance
+     *
+     * @throws LifecycleException if the container cannot started
+     */
+    public void start() throws LifecycleException;
+
+    /**
+     * Stops the embedded container instance
+     * 
+     * @throws LifecycleException if the container cannot be stopped
+     */
+    public void stop() throws LifecycleException;
+
 }

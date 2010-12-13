@@ -38,52 +38,28 @@
  * holder.
  */
 
-package org.glassfish.api.embedded;
+package org.glassfish.internal.embedded;
 
-import org.glassfish.api.container.Sniffer;
 import org.jvnet.hk2.annotations.Contract;
 
-import java.util.List;
-
 /**
- * Embedded container definition, although most containers will be bound
- * to a {@link Port} instance, it's not automatic, for instance JPA and
- * other non network based containers might not.
+ * Listener type contract to be notified of embedded server creation and
+ * destruction.
  *
  * @author Jerome Dochez
  */
 @Contract
-public interface EmbeddedContainer {
+public interface EmbeddedLifecycle {
 
     /**
-     * Binds a port using a specific protocol to this container.
-     * @param port the port instance to bind
-     * @param protocol the protocol the port should be used for, can
-     * be null and the container can use the port for any protocol(s)
-     * it needs to.
+     * Notification of embedded server creation
+     * @param server the newly created server
      */
-    public void bind(Port port, String protocol);
+    public void creation(Server server);
 
     /**
-     * Returns the list of sniffers associated with this container.
-     *
-     * @return a list of sniffers that will be used when application are
-     * deployed to the embedded server.
+     * Notification of embedded server destruction
+     * @param server the stopped embedded server instance
      */
-    public List<Sniffer> getSniffers();
-
-    /**
-     * Starts the embedded container instance
-     *
-     * @throws LifecycleException if the container cannot started
-     */
-    public void start() throws LifecycleException;
-
-    /**
-     * Stops the embedded container instance
-     * 
-     * @throws LifecycleException if the container cannot be stopped
-     */
-    public void stop() throws LifecycleException;
-
+    public void destruction(Server server);
 }

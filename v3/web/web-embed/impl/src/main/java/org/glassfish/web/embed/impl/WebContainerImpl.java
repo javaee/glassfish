@@ -61,8 +61,8 @@ import com.sun.grizzly.config.dom.Transport;
 import com.sun.grizzly.config.dom.Transports;
 
 import org.glassfish.api.container.Sniffer;
-import org.glassfish.api.embedded.Port;
-import org.glassfish.api.embedded.Ports;
+import org.glassfish.internal.embedded.Port;
+import org.glassfish.internal.embedded.Ports;
 import org.glassfish.embeddable.Deployer;
 import org.glassfish.embeddable.GlassFishException;
 import org.glassfish.embeddable.web.ConfigException;

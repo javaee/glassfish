@@ -42,7 +42,7 @@ package org.glassfish.web.embed.impl;
 
 import org.glassfish.hk2.classmodel.reflect.Parser;
 import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.api.embedded.*;
+import org.glassfish.internal.embedded.*;
 import org.glassfish.apf.ProcessingResult;
 import org.glassfish.apf.AnnotationProcessorException;
 

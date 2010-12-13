@@ -38,7 +38,7 @@
  * holder.
  */
 
-package org.glassfish.api.embedded.admin;
+package org.glassfish.internal.embedded.admin;
 
 import java.util.*;
 import org.glassfish.api.admin.ParameterMap;

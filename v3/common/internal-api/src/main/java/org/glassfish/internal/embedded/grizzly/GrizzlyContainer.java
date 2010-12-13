@@ -38,56 +38,20 @@
  * holder.
  */
 
-package org.glassfish.api.embedded;
+package org.glassfish.internal.embedded.grizzly;
 
-import org.jvnet.hk2.annotations.Contract;
+import org.glassfish.internal.embedded.EmbeddedContainer;
+import org.glassfish.internal.embedded.Port;
+import org.glassfish.api.container.Adapter;
 
 /**
- * Defines the builder for an embdded container. This is mostly a
- * tag interface that will be implemented by the embedded container
- * main configuration element (like http-service for web, network-listener
- * for grizzly)
+ * Grizzly container, should probably be implemented using the GrizzlyWebServer object.
  *
  * @author Jerome Dochez
  */
-@Contract
-public interface ContainerBuilder<T extends EmbeddedContainer> {
+public interface GrizzlyContainer extends EmbeddedContainer {
 
-    /**
-     * Default sets of container that can be built.
-     * Other containers can be added not using one of this predefined types.
-     */
-    public enum Type {
-        /**
-         * ejb container type
-         */
-        ejb,
-        /**
-         * web container type
-         */
-        web,
-        /**
-         * jruby container type
-         */
-        jruby,
-        /**
-         * persistence container type 
-         */
-        jpa,
-        /**
-         * webservices container type
-         */
-        webservices,
-        /**
-         * all installed containers
-         */
-        all }
-    
-    /**
-     * Creates a embedded container
-     *
-     * @param server the embedded server in which the container resides.
-     * @return the embedded container instance
-     */
-    T create(Server server);
+    public void bind(Port port);    
+
+    public void add(Adapter adapter);
 }

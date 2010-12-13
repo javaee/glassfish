@@ -38,18 +38,27 @@
  * holder.
  */
 
-package org.glassfish.api.embedded.admin;
+package org.glassfish.internal.embedded.admin;
 
-import org.glassfish.api.ActionReport;
+import org.glassfish.internal.embedded.ContainerBuilder;
+import org.glassfish.internal.embedded.Server;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.annotations.Inject;
 
 /**
- *  Instance to follow command excecution.
+ * So far, the admin container does not require much configuration but we
+ * could imagine that it will eventually support configuring wether or not
+ * to start the AminGUI.
+ *
+ * @author Jerome Dochez
  */
-public interface CommandExecution {
+@Service
+public class AdminInfo implements ContainerBuilder<EmbeddedAdminContainer> {
+    
+    @Inject
+    EmbeddedAdminContainer ctr;
 
-    ActionReport getActionReport();
-
-    ActionReport.ExitCode getExitCode();
-
-    String getMessage();
+    public EmbeddedAdminContainer create(Server server) {
+        return ctr;
+    }
 }

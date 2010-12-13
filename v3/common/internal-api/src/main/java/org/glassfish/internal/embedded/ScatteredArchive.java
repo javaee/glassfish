@@ -38,7 +38,7 @@
  * holder.
  */
 
-package org.glassfish.api.embedded;
+package org.glassfish.internal.embedded;
 
 import org.glassfish.api.deployment.archive.ReadableArchiveAdapter;
 

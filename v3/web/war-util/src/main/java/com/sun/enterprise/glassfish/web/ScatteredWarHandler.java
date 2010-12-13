@@ -45,7 +45,7 @@ import org.apache.naming.resources.FileDirContext;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.api.embedded.ScatteredArchive;
+import org.glassfish.internal.embedded.ScatteredArchive;
 import org.glassfish.web.loader.WebappClassLoader;
 import org.jvnet.hk2.annotations.Service;
 

@@ -38,20 +38,35 @@
  * holder.
  */
 
-package org.glassfish.api.embedded.grizzly;
+package org.glassfish.internal.embedded;
 
-import org.glassfish.api.embedded.EmbeddedContainer;
-import org.glassfish.api.embedded.Port;
-import org.glassfish.api.container.Adapter;
+import org.jvnet.hk2.annotations.Contract;
 
 /**
- * Grizzly container, should probably be implemented using the GrizzlyWebServer object.
+ *
+ * Port abstraction, used to bind several containers to the same port.
  *
  * @author Jerome Dochez
  */
-public interface GrizzlyContainer extends EmbeddedContainer {
+@Contract
+public interface Port {
 
-    public void bind(Port port);    
+    // default set of protocol we support
+    public final static String HTTP_PROTOCOL = "http";
+    public final static String HTTPS_PROTOCOL = "https";
+    public final static String IIOP_PROTOCOL = "iiop";
 
-    public void add(Adapter adapter);
+    /**
+     * Returns the port number occupied by this instance.
+     *
+     * @return port number
+     */
+    public int getPortNumber();
+
+    /**
+     * Unbinds (close) this port instance, releasing network resources at portNumber
+     */
+    public void close();
+
+    // todo : return a list of protocols bound to this port.
 }

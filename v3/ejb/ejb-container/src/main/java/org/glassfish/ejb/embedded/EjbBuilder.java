@@ -40,14 +40,14 @@
 
 package org.glassfish.ejb.embedded;
 
+import org.glassfish.internal.embedded.ContainerBuilder;
+import org.glassfish.internal.embedded.Server;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 import org.jvnet.hk2.component.Habitat;
-import org.glassfish.api.embedded.Port;
-import org.glassfish.api.embedded.ContainerBuilder;
 import org.glassfish.api.admin.ServerEnvironment;
 import com.sun.enterprise.config.serverbeans.EjbContainer;
 import com.sun.enterprise.config.serverbeans.Config;
@@ -72,7 +72,7 @@ public class EjbBuilder implements ContainerBuilder<EmbeddedEjbContainer> {
     volatile EmbeddedEjbContainer instance=null;
     
 
-    public synchronized EmbeddedEjbContainer create(org.glassfish.api.embedded.Server server) {
+    public synchronized EmbeddedEjbContainer create(Server server) {
         if (instance==null) {
             instance =  new EmbeddedEjbContainer(this);
         }

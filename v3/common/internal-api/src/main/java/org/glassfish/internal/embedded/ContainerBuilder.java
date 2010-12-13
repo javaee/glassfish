@@ -38,82 +38,56 @@
  * holder.
  */
 
-package org.glassfish.api.embedded;
+package org.glassfish.internal.embedded;
 
-import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.api.deployment.*;
 import org.jvnet.hk2.annotations.Contract;
 
-import java.util.Properties;
-import java.util.Collection;
-import java.io.File;
-
 /**
- * Service to deploy applications to the embedded server.
+ * Defines the builder for an embdded container. This is mostly a
+ * tag interface that will be implemented by the embedded container
+ * main configuration element (like http-service for web, network-listener
+ * for grizzly)
  *
  * @author Jerome Dochez
  */
 @Contract
-public interface EmbeddedDeployer {
-
-
-    // todo : is this still used ?
+public interface ContainerBuilder<T extends EmbeddedContainer> {
 
     /**
-     * Returns the location of the applications directory, where deployed applications
-     * are saved.
-     *
-     * @return the deployed application directory.
+     * Default sets of container that can be built.
+     * Other containers can be added not using one of this predefined types.
      */
-    public File getApplicationsDir();
-
+    public enum Type {
+        /**
+         * ejb container type
+         */
+        ejb,
+        /**
+         * web container type
+         */
+        web,
+        /**
+         * jruby container type
+         */
+        jruby,
+        /**
+         * persistence container type 
+         */
+        jpa,
+        /**
+         * webservices container type
+         */
+        webservices,
+        /**
+         * all installed containers
+         */
+        all }
+    
     /**
-     * Returns the location of the auto-deploy directory.
+     * Creates a embedded container
      *
-     * @return the auto-deploy directory
-     *
+     * @param server the embedded server in which the container resides.
+     * @return the embedded container instance
      */
-    public File getAutoDeployDir();
-
-    /**
-     * Enables or disables the auto-deployment feature
-     *
-     * @param flag set to true to enable, false to disable
-     */
-    public void setAutoDeploy(boolean flag);
-
-    /**
-     * Deploys a file or directory to the servers passing the deployment command parameters
-     * Starts the server if it is not started yet.
-     *
-     * @param archive archive or directory of the application
-     * @param params deployment command parameters
-     * @return the deployed application name
-     */
-    public String deploy(File archive, DeployCommandParameters params);
-
-    /**
-     * Deploys an archive abstraction to the servers passing the deployment command parameters
-     *
-     * @param archive archive or directory of the application
-     * @param params deployment command parameters
-     * @return the deployed application name
-     */
-    public String deploy(ReadableArchive archive, DeployCommandParameters params);
-
-
-    // todo : add redeploy ?
-
-    /**
-     * Undeploys a previously deployed application
-     *
-     * @param name name returned by {@link EmbeddedDeployer#deploy(File, org.glassfish.api.deployment.DeployCommandParameters}
-     * @param params the undeployment parameters, can be null for default values
-     */
-    public void undeploy(String name, UndeployCommandParameters params);
-
-    /**
-     * Undeploys all deployed applications.
-     */
-    public void undeployAll();
+    T create(Server server);
 }

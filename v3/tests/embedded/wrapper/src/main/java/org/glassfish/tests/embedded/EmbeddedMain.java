@@ -40,7 +40,7 @@
 
 package org.glassfish.tests.embedded;
 
-import org.glassfish.api.embedded.*;
+import org.glassfish.internal.embedded.*;
 
 import java.io.File;
 

@@ -38,7 +38,7 @@
  * holder.
  */
 
-package org.glassfish.api.embedded;
+package org.glassfish.internal.embedded;
 
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import org.glassfish.api.container.Sniffer;
@@ -514,7 +514,7 @@ public class Server {
     }
 
     /**
-     * Returns the server name, as specified in {@link org.glassfish.api.embedded.Server.Builder#Builder(String)}
+     * Returns the server name, as specified in {@link Server.Builder#Builder(String)}
      *
      * @return container name
      */

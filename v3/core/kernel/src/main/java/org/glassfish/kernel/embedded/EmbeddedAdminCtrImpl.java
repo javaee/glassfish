@@ -42,12 +42,11 @@ package org.glassfish.kernel.embedded;
 
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
-import org.glassfish.api.embedded.admin.EmbeddedAdminContainer;
-import org.glassfish.api.embedded.admin.CommandExecution;
-import org.glassfish.api.embedded.admin.CommandParameters;
-import org.glassfish.api.embedded.Port;
-import org.glassfish.api.embedded.BindException;
-import org.glassfish.api.embedded.LifecycleException;
+import org.glassfish.internal.embedded.LifecycleException;
+import org.glassfish.internal.embedded.Port;
+import org.glassfish.internal.embedded.admin.CommandExecution;
+import org.glassfish.internal.embedded.admin.CommandParameters;
+import org.glassfish.internal.embedded.admin.EmbeddedAdminContainer;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.admin.ParameterMap;

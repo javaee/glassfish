@@ -60,7 +60,7 @@ import javax.ejb.spi.EJBContainerProvider;
 
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.api.embedded.*;
+import org.glassfish.internal.embedded.*;
 
 import org.glassfish.deployment.common.GenericAnnotationDetector;
 import org.glassfish.deployment.common.DeploymentUtils;

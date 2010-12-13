@@ -38,11 +38,10 @@
  * holder.
  */
 
-package org.glassfish.api.embedded.admin;
+package org.glassfish.internal.embedded.admin;
 
-import org.glassfish.api.embedded.EmbeddedContainer;
-import org.glassfish.api.embedded.Port;
-import org.glassfish.api.embedded.BindException;
+import org.glassfish.internal.embedded.EmbeddedContainer;
+import org.glassfish.internal.embedded.Port;
 import org.jvnet.hk2.annotations.Contract;
 
 

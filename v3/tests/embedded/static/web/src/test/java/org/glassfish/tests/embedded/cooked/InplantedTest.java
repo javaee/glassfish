@@ -44,7 +44,7 @@ import org.junit.Test;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.AfterClass;
-import org.glassfish.api.embedded.*;
+import org.glassfish.internal.embedded.*;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.admin.*;
 import org.jvnet.hk2.component.Habitat;

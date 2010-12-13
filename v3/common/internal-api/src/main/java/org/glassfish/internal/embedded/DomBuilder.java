@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,57 +38,26 @@
  * holder.
  */
 
-package org.glassfish.api.embedded;
+package org.glassfish.internal.embedded;
 
-/**
- * Exception thrown when a web container component fails to start or
- * stop.
- */
-public class LifecycleException extends Exception {
+import org.w3c.dom.Element;
 
-    /**
-     * Constructs a <tt>LifecycleException</tt> with no detail message.
-     * The cause is not initialized, and may subsequently be
-     * initialized by a call to {@link #initCause(Throwable) initCause}.
-     */
-    protected LifecycleException() { }
+final class DomBuilder {
+    private Element current;
 
-    /**
-     * Constructs a <tt>LifecycleException</tt> with the specified detail
-     * message. The cause is not initialized, and may subsequently be
-     * initialized by a call to {@link #initCause(Throwable) initCause}.
-     *
-     * @param message the detail message
-     */
-    protected LifecycleException(String message) {
-        super(message);
+    DomBuilder(Element current) {
+        this.current = current;
     }
 
-    /**
-     * Constructs a <tt>LifecycleException</tt> with the specified detail
-     * message and cause.
-     *
-     * @param  message the detail message
-     * @param  cause the cause (which is saved for later retrieval by the
-     *         {@link #getCause()} method)
-     */
-    public LifecycleException(String message, Throwable cause) {
-        super(message, cause);
+    DomBuilder addElement(String name) {
+        Element e = current.getOwnerDocument().createElement(name);
+        current.appendChild(e);
+        current = e;
+        return this;
     }
 
-    /**
-     * Constructs a <tt>LifecycleException</tt> with the specified cause.
-     * The detail message is set to:
-     * <pre>
-     *  (cause == null ? null : cause.toString())</pre>
-     * (which typically contains the class and detail message of
-     * <tt>cause</tt>).
-     *
-     * @param  cause the cause (which is saved for later retrieval by the
-     *         {@link #getCause()} method)
-     */
-    public LifecycleException(Throwable cause) {
-        super(cause);
+    DomBuilder attribute(String name, Object value) {
+        current.setAttribute(name,value.toString());
+        return this;
     }
-
 }

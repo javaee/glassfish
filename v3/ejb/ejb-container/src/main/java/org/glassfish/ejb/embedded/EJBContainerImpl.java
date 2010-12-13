@@ -59,10 +59,10 @@ import com.sun.ejb.containers.EjbContainerUtilImpl;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import com.sun.enterprise.util.io.FileUtils;
 
-import org.glassfish.api.embedded.EmbeddedDeployer;
-import org.glassfish.api.embedded.LifecycleException;
-import org.glassfish.api.embedded.Server;
-import org.glassfish.api.embedded.ScatteredArchive;
+import org.glassfish.internal.embedded.EmbeddedDeployer;
+import org.glassfish.internal.embedded.LifecycleException;
+import org.glassfish.internal.embedded.Server;
+import org.glassfish.internal.embedded.ScatteredArchive;
 import org.glassfish.api.deployment.DeployCommandParameters;
 
 import org.jvnet.hk2.component.Habitat;

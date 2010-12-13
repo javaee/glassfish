@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,12 +38,35 @@
  * holder.
  */
 
-package org.glassfish.api.embedded;
+package org.glassfish.internal.embedded;
+
+import org.jvnet.hk2.annotations.Contract;
+
+import java.io.IOException;
+import java.util.Collection;
 
 /**
- * BindException are thrown when port cannot be bound to a port number
+ * Management interfaces for all embedded ports
  *
  * @author Jerome Dochez
  */
-public class BindException extends Exception {
+@Contract
+public interface Ports {
+
+
+    /**
+     * Creates a port, binds it to a port number and returns it
+     * @param number the port number
+     * @return the bound port to the port number
+     * @throws IOException if the port is already taken or another network exception occurs
+     */
+    Port createPort(int number) throws IOException;
+
+
+    /**
+     * Returns the list of allocated ports
+     *
+     * @return the allocated ports
+     */
+    Collection<Port> getPorts();
 }

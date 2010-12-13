@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,26 +38,22 @@
  * holder.
  */
 
-package org.glassfish.api.embedded;
+package org.glassfish.internal.embedded.grizzly;
 
-import org.w3c.dom.Element;
+import org.glassfish.internal.embedded.ContainerBuilder;
 
-final class DomBuilder {
-    private Element current;
+import java.util.Properties;
 
-    DomBuilder(Element current) {
-        this.current = current;
+/**
+ * 
+ */
+public abstract class GrizzlyInfo implements ContainerBuilder<GrizzlyContainer> {
+
+    Properties props = new Properties();
+
+    public void setProperty(String key, String value) {
+        props.setProperty(key, value);
     }
+    
 
-    DomBuilder addElement(String name) {
-        Element e = current.getOwnerDocument().createElement(name);
-        current.appendChild(e);
-        current = e;
-        return this;
-    }
-
-    DomBuilder attribute(String name, Object value) {
-        current.setAttribute(name,value.toString());
-        return this;
-    }
 }
