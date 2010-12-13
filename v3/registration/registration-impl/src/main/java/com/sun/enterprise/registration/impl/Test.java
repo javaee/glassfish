@@ -67,27 +67,12 @@ public class Test {
             RelayService relay = new RelayService("/servicetag-registry.xml");
             relay.generateRegistrationPage("/test.html");
             
-            //File f = new File("C:\\ggg.lll");
-            //FileOutputStream fs = new FileOutputStream(f);
-            //fs.write(77);
-            //testSOA();
-            //testRegistration();
-            //testServiceTags();
-            //testRMRegistration();
-            //testAccountValidation();
-            //testForInstaller();
-
-            /* error tests */
-            //testBadConnectionWithSOA();
-            //testBadConnectionWithRegistration();
-            //testDuplicateSOA();
-            //testDuplicateRegistration();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    
+/*
     public static void testRegistration() {
         try {
             System.out.println("registering...");
@@ -163,7 +148,8 @@ public class Test {
             
                 
     }
-    /*
+
+
     public static void testSOA() {
         try {
 //            RegistrationHelper regHelper = new RegistrationHelper(
@@ -280,37 +266,6 @@ public class Test {
         rm.write(System.out);
     } 
     
-    private static void testForInstaller() throws RegistrationException {
-        SysnetRegistrationService rs = new SysnetRegistrationService(getRepositoryFile(),
-                "webcache.east.sun.com", 8080);
-
-        /* validate account */
-        HashMap map = new HashMap();
-        map.put(RegistrationAccount.USERID, "replaceme");
-        map.put(RegistrationAccount.PASSWORD, "replaceme");
-        SOAccount account = new SOAccount(map);
-        try {
-            System.out.println("is account valid : " + 
-                    rs.isRegistrationAccountValid(account));
-        } catch(Exception ex) {
-            ex.printStackTrace();
-        }
-        
-        try {
-            //rs.createRegistrationAccount(account);
-            Properties data = getServiceTagProps();
-            /* create ST */
-            ServiceTag st = new ServiceTag(data);
-            RepositoryManager rm = 
-                    new RepositoryManager(getRepositoryFile());
-            rm.add(st);
-
-            rs.register(account);      
-            System.out.println("Registered " + rm.getServiceTags().size() + " tags");
-        } catch(Exception ex) {
-            ex.printStackTrace();
-        }
-    }
     
 
     private static Properties getServiceTagProps() {

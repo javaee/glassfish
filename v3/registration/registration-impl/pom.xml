@@ -71,15 +71,5 @@
             <artifactId>registration-api</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.glassfish.external</groupId>
-            <artifactId>sysnet-registration-repackaged</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.external</groupId>
-            <artifactId>commons-codec-repackaged</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>        
     </dependencies>
 </project>

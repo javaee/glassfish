@@ -50,33 +50,9 @@ public interface RegistrationService {
     
     public boolean isRegistrationEnabled();
 
-    /**
-     * registers using the specified registration account
-     * 
-     * @param account the RegistrationAccount
-     * @throws RegistrationException for errors in registering
-     * 
-     */    
-    public void register(RegistrationAccount account) 
-        throws RegistrationException, ConnectException, UnknownHostException;
-    
-    /**
-     * creates a new registration account
-     * 
-     * @param account the RegistrationAccount
-     * @throws RegistrationException for errors in creating the account
-     * 
-     */    
-    public void createRegistrationAccount(RegistrationAccount account) 
-            throws RegistrationException;
-    public List<String> getAvailableCountries();
-    public List getAvailableCountries(Locale locale);
     public RegistrationStatus getRegistrationStatus() throws RegistrationException;
     public RegistrationReminder getRegistrationReminder() throws RegistrationException;
     public void setRegistrationReminder(RegistrationReminder reminder) throws RegistrationException;
-    public String getPasswordHelpURL();
-    public boolean isRegistrationAccountValid(RegistrationAccount account)
-            throws RegistrationException, UnknownHostException, ConnectException;
 
     public List<RegistrationDescriptor> getRegistrationDescriptors() throws RegistrationException;
     public List<RegistrationDescriptor> getRegistrationDescriptors(String productURN) throws RegistrationException;
