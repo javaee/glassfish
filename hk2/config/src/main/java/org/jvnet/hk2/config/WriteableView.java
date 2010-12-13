@@ -312,7 +312,7 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
         
         return currentTx==t;
     }
-                                                  \
+                                                  
      
     /** remove @ or <> eg "@foo" => "foo" or "<foo>" => "foo" */
     public static String stripMarkers(final String s ) {
