@@ -2022,6 +2022,7 @@ admingui.table = {
 admingui.ajax = {
     lastPageLoaded : '',
     ajaxCount: 0,
+    ajaxTimer: null,
 
     getXMLHttpRequestObject: function() {
 	var reqObj = null;
@@ -2069,6 +2070,11 @@ admingui.ajax = {
     },
     
     ajaxStart : function() {
+        document.getElementById('ajaxIndicator').style.visibility = "visible";
+        admingui.ajax.ajaxTimer = setTimeout("admingui.ajax._displayAjaxLoadingPanel()", 2000);
+    },
+    
+    _displayAjaxLoadingPanel : function() {
         var ajaxPanel = document.getElementById('ajaxPanel');
         if (ajaxPanel != null) {
             window.onscroll = function () { 
@@ -2081,11 +2087,14 @@ admingui.ajax = {
     },
     
     ajaxComplete : function() {
+        clearTimeout(admingui.ajax.ajaxTimer);
         var ajaxPanel = document.getElementById('ajaxPanel');
         if (ajaxPanel != null) {
             ajaxPanel.style.display = "none";
             ajaxPanel.style.visibility = "hidden";
         }
+        admingui.ajax.ajaxTimer = null;
+        document.getElementById('ajaxIndicator').style.visibility = "hidden";
     },
 
     loadPage : function (args) {

@@ -130,6 +130,7 @@
                   onLoad="admingui.ajax.processElement(window, document.getElementById('Masthead:statusPanel'), false);admingui.ajax.processElement(window, document.getElementById('leftNav'), false);admingui.ajax.processElement(window, document.getElementById('content'), false);document.getElementById('blank').style.display='none';#{guiOnLoad};#{guiTemplateOnLoad};">
 "<div id="blank" style="position:fixed; top:0px; left:0px; height:100%; width:100%; background-color: #FFF; z-index:99999;">&nbsp;</div>
 <f:verbatim>
+    <div id="ajaxIndicator" style="visibility: hidden"></div>
     <div id="ajaxPanel" style="visibility: hidden">
         <div class="modalBackground">
         </div>
@@ -137,7 +138,7 @@
             <div class="modal">
                 <div class="modalTop"><a href="javascript:admingui.ajax.ajaxComplete(); return false">[X]</a></div>
                 <div class="modalBody">
-                    <p>Processing. Please wait...</p>
+                    <p>A long-running process has been detected. Please wait...</p>
                 </div>
             </div>
         </div>

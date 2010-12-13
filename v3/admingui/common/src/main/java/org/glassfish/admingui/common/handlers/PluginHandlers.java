@@ -441,8 +441,7 @@ public class PluginHandlers {
 	if (!key.contains("://")) {
 	    key = "/" + point.getConsoleConfigId() + "/" + content;
 	}
-	LayoutDefinition def =
-	    LayoutDefinitionManager.getLayoutDefinition(ctx, key);
+	LayoutDefinition def = LayoutDefinitionManager.getLayoutDefinition(ctx, key);
 	LayoutViewHandler.buildUIComponentTree(ctx, parent, def);
     }
 
