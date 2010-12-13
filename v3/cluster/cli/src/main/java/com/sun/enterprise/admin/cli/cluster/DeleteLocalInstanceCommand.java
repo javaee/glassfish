@@ -111,8 +111,6 @@ public class DeleteLocalInstanceCommand extends LocalInstanceCommand {
         File dasProperties = getServerDirs().getDasPropertiesFile();
 
         if (dasProperties.isFile()) {
-            validateDasOptions(programOpts.getHost(), String.valueOf(programOpts.getPort()),
-                    String.valueOf(programOpts.isSecure()), dasProperties);
             setDasDefaults(dasProperties);
         }
 
