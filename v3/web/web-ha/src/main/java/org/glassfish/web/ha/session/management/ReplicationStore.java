@@ -334,7 +334,7 @@ public class ReplicationStore extends HAStoreBase {
      * that should be expired
      * @return number of removed sessions
      */    
-    public int removeExpiredSessions() {        
+    public int removeExpiredSessions() {
         if(_logger.isLoggable(Level.FINE)) {
             _logger.fine("IN ReplicationStore>>removeExpiredSessions");
         }
@@ -345,11 +345,12 @@ public class ReplicationStore extends HAStoreBase {
             return result;
         }
         BackingStore backingStore = mgr.getBackingStore();
-        try {
-            //XXX Need to get the idle for millis from settings somewhere
-            result = backingStore.removeExpired(30000);
-        } catch (BackingStoreException ex) {
-            _logger.log(Level.WARNING, "Exception during removing expired session from backing store", ex);
+        if (backingStore != null) {
+            try {
+                result = backingStore.removeExpired(mgr.getMaxInactiveInterval());
+            } catch (BackingStoreException ex) {
+                _logger.log(Level.WARNING, "Exception during removing expired session from backing store", ex);
+            }
         }
         if(_logger.isLoggable(Level.FINE)) {
             _logger.fine("ReplicationStore>>removeExpiredSessions():number of expired sessions = " + result);
