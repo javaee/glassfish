@@ -197,14 +197,22 @@ public class InstallNodeCommand extends SSHCommandsBase {
             //delete the installDir contents if non-empty
             try {
                 //get list of file in DAS installdir
-                File all = new File(resolver.resolve("${com.sun.aas.installRoot}"));
+                //File all = new File(resolver.resolve("${com.sun.aas.installRoot}"));
+                String ins = resolver.resolve("${com.sun.aas.installRoot}") + "/../";
+
+                File all = new File(ins);
                 Set files = FileUtils.getAllFilesAndDirectoriesUnder(all);
 
+                logger.finer("Total number of files under " + ins + " = " + files.size());
+                String remoteDir = installDir;
                 List<String> modList = new ArrayList<String>();
-                modList.add(installDir+"/glassfish");
+                if (!installDir.endsWith("/"))
+                    remoteDir = remoteDir + "/";
+
                 for (Object f:files) {
-                    modList.add(installDir+"/glassfish/"+((File)f).getPath());
+                    modList.add(remoteDir+FileUtils.makeForwardSlashes(((File)f).getPath()));
                 }
+            
                 deleteRemoteFiles(sftpClient, modList, installDir, force);
             } catch (IOException ex) {
                 logger.finer("Failed to remove installDir contents");

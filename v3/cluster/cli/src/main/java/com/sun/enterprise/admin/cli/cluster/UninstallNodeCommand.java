@@ -153,16 +153,24 @@ public class UninstallNodeCommand extends SSHCommandsBase {
                 throw new IOException (installDir + " Directory does not exist");
             }
             
-            File all = new File(resolver.resolve("${com.sun.aas.installRoot}"));
+            //File all = new File(resolver.resolve("${com.sun.aas.productRoot}"));
+            String ins = resolver.resolve("${com.sun.aas.installRoot}") + "/../";
+
+            File all = new File(ins);
             Set files = FileUtils.getAllFilesAndDirectoriesUnder(all);
 
+            logger.finer("Total number of files under " + ins + " = " + files.size());
+            String remoteDir = installDir;
             List<String> modList = new ArrayList<String>();
-            modList.add(installDir+"/glassfish");
+            if (!installDir.endsWith("/"))
+                remoteDir = remoteDir + "/";
+
             for (Object f:files) {
-                modList.add(installDir+"/glassfish/"+((File)f).getPath());
+                modList.add(remoteDir+FileUtils.makeForwardSlashes(((File)f).getPath()));
             }
-     
+            
             deleteRemoteFiles(sftpClient, modList, installDir, force);
+            
             if(sftpClient.ls(installDir).isEmpty()) {
                 sftpClient.rmdir(installDir);
             }
