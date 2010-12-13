@@ -70,7 +70,8 @@
 <!facet pageButtonsTop>
         <sun:panelGroup id="topButtons">
             <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save} "
-                    onClick="if (checkSSHPswd('#{pageSession.typeId}','#{pageSession.psSelectId}', '#{pageSession.ps1Id}', '#{pageSession.ps2Id}', '$resource{i18n.msg.JS.manageUser.passwordNotMatch}', '$resource{i18ncs.msg.JS.confirmEmptyPswd}'))
+                    onClick="if (checkSSHPswd('#{pageSession.typeId}','#{pageSession.nodeHostId}','#{pageSession.psSelectId}', '#{pageSession.ps1Id}', '#{pageSession.ps2Id}', 
+                        '$resource{i18n.msg.JS.manageUser.passwordNotMatch}', '$resource{i18ncs.msg.JS.confirmEmptyPswd}' , '$resource{i18ncs.msg.JS.nodeHostRequired}'))
                     {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" 
 		>
                 <!command
@@ -92,7 +93,8 @@
             </sun:button>
 
             <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
-                    onClick="if (checkSSHPswd('#{pageSession.typeId}','#{pageSession.psSelectId}', '#{pageSession.ps1Id}', '#{pageSession.ps2Id}', '$resource{i18n.msg.JS.manageUser.passwordNotMatch}', '$resource{i18ncs.msg.JS.confirmEmptyPswd}'))
+                    onClick="if (checkSSHPswd('#{pageSession.typeId}', '#{pageSession.nodeHostId}', '#{pageSession.psSelectId}', '#{pageSession.ps1Id}', '#{pageSession.ps2Id}', 
+                         '$resource{i18n.msg.JS.manageUser.passwordNotMatch}', '$resource{i18ncs.msg.JS.confirmEmptyPswd}', '$resource{i18ncs.msg.JS.nodeHostRequired}'))
                     {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" 
 	    >
             <!command
@@ -151,7 +153,11 @@
             </sun:property>
 
             <sun:property id="NodeHost"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.NodeHost}" helpText="$resource{i18ncs.node.NodeHostHelp}">
-                <sun:textField id="NodeHost" text="#{pageSession.valueMap['nodehost']}"  columns="$int{60}" maxLength="#{sessionScope.fieldLengths['maxLength.node.NodeHost']}" styleClass="required" required="#{true}"/>
+                <sun:textField id="NodeHost" text="#{pageSession.valueMap['nodehost']}"  columns="$int{60}" maxLength="#{sessionScope.fieldLengths['maxLength.node.NodeHost']}">
+                <!afterCreate
+                    getClientId(component="$this{component}" clientId="#{pageSession.nodeHostId}");
+                />
+                </sun:textField>
             </sun:property>
 
             <sun:property id="NodeHome"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.NodeDir}" helpText="$resource{i18ncs.node.NodeDirHelp}">
@@ -163,7 +169,7 @@
             </sun:property>
 
             <sun:property id="installdir2"  rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.InstallDir}" helpText="$resource{i18ncs.node.InstallDirHelp}">
-                <sun:textField id="installDir" text="#{pageSession.valueMap['installdir']}"  styleClass="required" required="#{true}" columns="$int{60}" maxLength="#{sessionScope.fieldLengths['maxLength.node.InstallDir']}"  />
+                <sun:textField id="installDir" text="#{pageSession.valueMap['installdir']}"  columns="$int{60}" maxLength="#{sessionScope.fieldLengths['maxLength.node.InstallDir']}"  />
             </sun:property>
 
 

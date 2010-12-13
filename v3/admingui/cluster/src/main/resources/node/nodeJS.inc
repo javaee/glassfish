@@ -78,12 +78,18 @@
         }
     }
 
-    function checkSSHPswd(typeId, psSelectId, ps1Id, ps2Id, notMatchMsg, emptyMsg){
+    function checkSSHPswd(typeId, nodeHostId, psSelectId, ps1Id, ps2Id, notMatchMsg, emptyMsg, nodeHostRequiredMsg){
 	if (! guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')){
 	    return false;
 	}
         if (document.getElementById(typeId).value == 'CONFIG'){
             return true;
+        }
+        var comp = document.getElementById(nodeHostId);
+        if (comp.value=='') {
+            comp.select();
+            comp.focus();
+            return showAlert(nodeHostRequiredMsg);
         }
         if ( document.getElementById(psSelectId).value == '2'){
             return checkPSW( ps1Id, ps2Id, notMatchMsg, emptyMsg);
