@@ -1251,67 +1251,16 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
      * @return <tt>true</tt> if a Security Extension is available. 1171
      */
     public boolean isSecurityExtensionEnabled() {
-        
-        if (this.secExtEnabled != null) {
-            return this.secExtEnabled.booleanValue();
+
+        if (helper == null) {
+            initConfigHelper();
         }
-        /**
-         * get the default provider id for system apps if one has been established.
-         * the default provider for system apps is established by defining
-         * a system property.
-         */
-        if (this.isSystemApp && this.getDefaultSystemProviderID() != null) {
-            this.secExtEnabled = new Boolean(true);
-            return true;
+        try {
+           return (helper.getServerAuthConfig() != null);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
         }
-        //now check if there is a globally enabled ServletLayer Provider
-        List<MessageSecurityConfig> cfgs = this.secService.getMessageSecurityConfig();
-        if (cfgs != null) {
-            for (MessageSecurityConfig mc : cfgs) {
-                if (HTTP_SERVLET_LAYER.equals(mc.getAuthLayer()) && mc.getDefaultProvider() != null) {
-                    this.secExtEnabled = new Boolean(true);
-                    return true;
-                }
-            }
-        }
-        if (this.webDesc != null) {
-            //check
-            SunWebApp sw = webDesc.getSunDescriptor();
-            if (sw == null) {
-                this.secExtEnabled = new Boolean(false);
-                return false;
-            }
-            String SAM = sw.getAttributeValue(
-                    webDesc.getSunDescriptor().HTTPSERVLET_SECURITY_PROVIDER);
-            if (SAM != null) {
-                this.secExtEnabled = new Boolean(true);
-                return true;
-            }
-            //now check if "auth.conf" file exists in user.dir and is non empty
-            String userDir = System.getProperty("user.dir");
-            if (userDir != null) {
-                File f = new File(userDir, CONF_FILE_NAME);
-                if (f.exists() && f.length() > 0) {
-                    //return true since we are unsure
-                    //don't want to parse the file here
-                    this.secExtEnabled = new Boolean(true);
-                    return true;
-                }
-            }
-            this.secExtEnabled = new Boolean(false);
-            return false;
-        } else {
-            if (helper == null) {
-                initConfigHelper();
-            }
-            try {
-                boolean flag = (helper.getServerAuthConfig() != null);
-                this.secExtEnabled = new Boolean(flag);
-                return flag;
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
-            }
-        }
+
     }
 
     /**
