@@ -3,7 +3,7 @@ asadmin Utility Subcommands             restart-local-instance(1)
 
 NAME
      restart-local-instance - restarts a running GlassFish Server
-     instance on the machine where the subcommand is run
+     instance on the host where the subcommand is run
 
 SYNOPSIS
      restart-local-instance [--help]
@@ -13,9 +13,9 @@ SYNOPSIS
 
 DESCRIPTION
      The restart-local-instance subcommand restarts  a  GlassFish
-     Server  instance on the machine where the subcommand is run.
+     Server  instance  on  the  host where the subcommand is run.
      This subcommand does not require secure shell  (SSH)  to  be
-     configured. You must run this command from the machine where
+     configured.  You  must  run this command from the host where
      the instance resides.
 
      The subcommand can restart any  GlassFish  Server  instance,
@@ -32,24 +32,30 @@ DESCRIPTION
      subcommand.
 
      When this subcommand restarts an instance, the DAS synchron-
-     izes the instance only with changes since the last synchron-
-     ization to the following files:
+     izes  the  instance with changes since the last synchroniza-
+     tion as follows:
 
-         o    All changes in the config directory
+         o    For the config directory, the DAS synchronizes  the
+              instance with all changes.
 
-         o    Changes to files only  in  the  top  level  of  the
-              applications directory and the docroot directory
+         o    For the applications directory and  docroot  direc-
+              tory,  only  a  change  to a top-level subdirectory
+              causes the DAS to synchronize all files under  that
+              subdirectory.
 
-              If a file below this level is  changed,  full  syn-
-              chronization  is  required.  In  normal  operation,
-              files below the top level of these directories  are
-              not  changed.  If  an  application  is deployed and
-              undeployed, full synchronization is  not  necessary
-              to update the instance with the change.
+              If a file below a top level subdirectory is changed
+              without  a  change  to a file in the top level sub-
+              directory, full  synchronization  is  required.  In
+              normal  operation,  files  below the top level sub-
+              directories of these directories are  not  changed.
+              If  an application is deployed and undeployed, full
 
 Java EE 6           Last change: 20 Oct 2010                    1
 
 asadmin Utility Subcommands             restart-local-instance(1)
+
+              synchronization is  not  necessary  to  update  the
+              instance with the change.
 
      If  different  synchronization  behavior  is  required,  the
      instance  must  be  stopped and restarted by using following
@@ -93,15 +99,16 @@ OPTIONS
              displayed.
 
          false
-             The instance is restarted with JPDA  debugging  dis-
-             abled (default).
-
-         The default is the current setting of  this  option  for
-         the instance that is being restarted.
+             The  instance  is  restarted  with  JPDA   debugging
 
 Java EE 6           Last change: 20 Oct 2010                    2
 
 asadmin Utility Subcommands             restart-local-instance(1)
+
+             disabled (default).
+
+         The default is the current setting of  this  option  for
+         the instance that is being restarted.
 
 OPERANDS
      instance-name
@@ -113,8 +120,8 @@ OPERANDS
 EXAMPLES
      Example 1 Restarting an Instance Locally
 
-     This example restarts the instance  ymlsa1  on  the  machine
-     where the subcommand is run.
+     This example restarts the instance ymlsa1 on the host  where
+     the subcommand is run.
 
        asadmin> restart-local-instance --node localhost ymlsa1
        Command restart-local-instance executed successfully.

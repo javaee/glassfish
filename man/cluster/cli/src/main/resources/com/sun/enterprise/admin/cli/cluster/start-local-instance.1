@@ -3,7 +3,7 @@ asadmin Utility Subcommands               start-local-instance(1)
 
 NAME
      start-local-instance - starts a GlassFish Server instance on
-     the machine where the subcommand is run
+     the host where the subcommand is run
 
 SYNOPSIS
      start-local-instance [--help]
@@ -14,9 +14,9 @@ SYNOPSIS
 
 DESCRIPTION
      The  start-local-instance  subcommand  starts  a   GlassFish
-     Server  instance on the machine where the subcommand is run.
+     Server  instance  on  the  host where the subcommand is run.
      This subcommand does not require secure shell  (SSH)  to  be
-     configured. You must run this command from the machine where
+     configured.  You  must  run this command from the host where
      the instance resides.
 
      The subcommand can  start  any  GlassFish  Server  instance,
@@ -87,24 +87,26 @@ asadmin Utility Subcommands               start-local-instance(1)
 
          normal
 
-             The DAS synchronizes the instance only with  changes
-             since  the  last  synchronization  to  the following
-             files:
+             The DAS synchronizes the instance with changes since
+             the last synchronization as follows:
 
-                 o    All changes in the config directory
+                 o    For the config directory, the DAS synchron-
+                      izes the instance with all changes.
 
-                 o    Changes to files only in the top  level  of
-                      the  applications directory and the docroot
-                      directory
-
-                      If a file below this level is changed, full
+                 o    For the applications directory and  docroot
+                      directory,  only  a  change  to a top-level
+                      subdirectory causes the DAS to  synchronize
+                      all files under that subdirectory.
 
 Java EE 6           Last change: 20 Oct 2010                    2
 
 asadmin Utility Subcommands               start-local-instance(1)
 
-                      synchronization   is  required.  In  normal
-                      operation, files below  the  top  level  of
+                      If a file below a top level subdirectory is
+                      changed  without  a change to a file in the
+                      top level subdirectory,  full  synchroniza-
+                      tion  is  required.  In  normal  operation,
+                      files below the top level subdirectories of
                       these  directories  are  not changed. If an
                       application  is  deployed  and  undeployed,
                       full  synchronization  is  not necessary to
@@ -113,11 +115,12 @@ asadmin Utility Subcommands               start-local-instance(1)
 
          full
 
-             The DAS synchronizes the instance with  all  changes
-             since  the  last  synchronization. This type of syn-
-             chronization might delay the startup of the instance
-             while  the  DAS  updates all files in the instance's
-             directories.
+             The DAS synchronizes the instance with  all  of  the
+             instance's  files,  regardless  of whether the files
+             have changed since the  last  synchronization.  This
+             type  of  synchronization might delay the startup of
+             the instance while the DAS updates all files in  the
+             instance's directories.
 
      --upgrade
          Specifies whether the configuration of the  instance  is
@@ -143,31 +146,32 @@ asadmin Utility Subcommands               start-local-instance(1)
       --verbose
      -v
 
-         Specifies  whether  detailed  information  is  displayed
-         while the instance is being started.
-
-         Possible values are as follows:
+         Specifies  whether  detailed   information   about   the
+         instance  is  displayed  in the console window where the
+         subcommand is run.
 
 Java EE 6           Last change: 20 Oct 2010                    3
 
 asadmin Utility Subcommands               start-local-instance(1)
 
+         Possible values are as follows:
+
          true
 
-             A console window is opened in which detailed startup
-             messages  and  log  messages are displayed until the
-             instance is started.  If the instance is later  res-
-             tarted  by  running  the restart-instance subcommand
-             from a different console window,  messages  continue
-             to be displayed in the original console window.
+             Detailed startup messages and log messages about the
+             instance  are  displayed in the console window where
+             the subcommand is run. If the instance is later res-
+             tarted by running the restart-local-instance(1) sub-
+             command from a different  console  window,  messages
+             continue  to  be  displayed  in the original console
+             window.
 
              You can kill the GlassFish Server process by  typing
-             CTRL-C in the console window that is opened.
+             CTRL-C in the console window.
 
              You can kill the GlassFish Server process and obtain
              a  thread  dump  for the server by typing one of the
-             following key combinations  in  the  console  window
-             that is opened:
+             following key combinations in the console window:
                                      TM
                  o    CTRL-\  on UNIX   systems
 
@@ -184,7 +188,7 @@ OPERANDS
 EXAMPLES
      Example 1 Starting an Instance Locally
 
-     This example starts the instance yml-i-sj01 on  the  machine
+     This example starts the  instance  yml-i-sj01  on  the  host
      where the subcommand is run.
 
        asadmin> start-local-instance --node sj01 yml-i-sj01
@@ -206,9 +210,10 @@ EXIT STATUS
 
 SEE ALSO
      create-instance(1),    create-local-instance(1),     delete-
-     instance(1),    delete-local-instance(1),   start-domain(1),
-     start-instance(1), stop-domain(1),  stop-instance(1),  stop-
-     local-instance(1)
+     instance(1),  delete-local-instance(1), restart-instance(1),
+     restart-local-instance(1),      start-domain(1),      start-
+     instance(1),  stop-domain(1),  stop-instance(1), stop-local-
+     instance(1)
 
      asadmin(1M)
 

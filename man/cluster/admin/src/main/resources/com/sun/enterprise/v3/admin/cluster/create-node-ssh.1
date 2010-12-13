@@ -12,6 +12,7 @@ SYNOPSIS
      [--sshport ssh-port] [--sshuser ssh-user]
      [--sshkeyfile ssh-keyfile]
      [--force={false|true}]
+     [--install={false|true}] [--archive archive]
      node-name
 
 DESCRIPTION
@@ -46,11 +47,12 @@ OPTIONS
      --nodehost
          The name of the host that the node represents. The  name
          of  the  host  must  be  specified.  Otherwise, an error
-         occurs.
 
-Java EE 6           Last change: 11 Oct 2010                    1
+Java EE 6           Last change: 10 Dec 2010                    1
 
 asadmin Utility Subcommands                    create-node-ssh(1)
+
+         occurs.
 
      --installdir
 
@@ -98,13 +100,14 @@ asadmin Utility Subcommands                    create-node-ssh(1)
            through the AS_ADMIN_SSHPASSWORD entry in the password
            file.  The  password  file  is  specified  in  the  --
            paswordfile option of the asadmin(1M) utility.
+
+Java EE 6           Last change: 10 Dec 2010                    2
+
+asadmin Utility Subcommands                    create-node-ssh(1)
+
          If  the  SSH  private  key  file  is  protected   by   a
          passphrase,   the   password   file   must  contain  the
          AS_ADMIN_SSHKEYPASSPHRASE entry.
-
-Java EE 6           Last change: 11 Oct 2010                    2
-
-asadmin Utility Subcommands                    create-node-ssh(1)
 
          The path to the key file must be reachable  by  the  DAS
          and  the  key file must be readable by the DAS. The path
@@ -136,6 +139,36 @@ asadmin Utility Subcommands                    create-node-ssh(1)
              The node is created even if validation of the node's
              parameters fails.
 
+     --install
+         Specifies  whether  the  GlassFish  Server  software  is
+         installed on host that the node represents.
+
+         Possible values are as follows:
+
+         false
+
+             The GlassFish Server software is  not  installed  on
+             the host (default).
+
+         true
+             The GlassFish Server software is  installed  on  the
+
+Java EE 6           Last change: 10 Dec 2010                    3
+
+asadmin Utility Subcommands                    create-node-ssh(1)
+
+             host.
+
+     --archive
+
+         The absolute path to the archive file of  the  GlassFish
+         Server  software that is to be installed. If this option
+         is omitted and the --install  is  true,  the  subcommand
+         creates  a  ZIP archive of the GlassFish Server software
+         from the installation where this subcommand is run.  The
+         archive  does  not  contain the domains directory or the
+         nodes directory.
+
 OPERANDS
      node-name
          The name of the node.
@@ -153,10 +186,6 @@ OPERANDS
                  o    Uppercase letters
 
                  o    Numbers
-
-Java EE 6           Last change: 11 Oct 2010                    3
-
-asadmin Utility Subcommands                    create-node-ssh(1)
 
                  o    Hyphen
 
@@ -176,6 +205,10 @@ asadmin Utility Subcommands                    create-node-ssh(1)
              o    The name must not be  domain,  server,  or  any
                   other  keyword  that  is  reserved by GlassFish
                   Server.
+
+Java EE 6           Last change: 10 Dec 2010                    4
+
+asadmin Utility Subcommands                    create-node-ssh(1)
 
 EXAMPLES
      This  example  creates   the   node   adc   for   the   host
@@ -206,10 +239,6 @@ EXAMPLES
 
        Command create-node-ssh executed successfully.
 
-Java EE 6           Last change: 11 Oct 2010                    4
-
-asadmin Utility Subcommands                    create-node-ssh(1)
-
 EXIT STATUS
      0                           command executed successfully
 
@@ -222,5 +251,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 11 Oct 2010                    5
+Java EE 6           Last change: 10 Dec 2010                    5
 

@@ -47,14 +47,19 @@ DESCRIPTION
      determine the node on which the instance resides,  the  sub-
      command  searches  the  directory  that  contains  the  node
 
-Java EE 6           Last change: 13 Sep 2010                    1
+Java EE 6            Last change: 7 Dec 2010                    1
 
 asadmin Utility Subcommands              delete-local-instance(1)
 
      directories. If multiple node directories  exist,  the  node
      must be specified as an option of the subcommand.
 
-     This subcommand is supported in local mode and remote mode.
+     If no operand is specified and only one instance resides  on
+     the  specified node, the subcommand deletes the instance. If
+     no operand is specified and multiple instances reside on the
+     node, an error occurs.
+
+     This subcommand is supported in remote mode only.
 
 OPTIONS
      --help
@@ -77,7 +82,9 @@ OPTIONS
 
 OPERANDS
      instance-name
-         The name of the instance to delete.
+         The name of the instance to delete. This operand may  be
+         omitted  if  only  one instance resides on the specified
+         node. Otherwise, this operand is required.
 
 EXAMPLES
      Example 1 Deleting an Instance
@@ -88,14 +95,14 @@ EXAMPLES
 
        Command delete-local-instance executed successfully.
 
+Java EE 6            Last change: 7 Dec 2010                    2
+
+asadmin Utility Subcommands              delete-local-instance(1)
+
 EXIT STATUS
      0                           command executed successfully
 
      1                           error in executing the command
-
-Java EE 6           Last change: 13 Sep 2010                    2
-
-asadmin Utility Subcommands              delete-local-instance(1)
 
 SEE ALSO
      create-instance(1),    create-local-instance(1),     delete-
@@ -104,5 +111,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 13 Sep 2010                    3
+Java EE 6            Last change: 7 Dec 2010                    3
 

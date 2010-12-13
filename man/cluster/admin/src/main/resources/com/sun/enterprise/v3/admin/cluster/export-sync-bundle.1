@@ -3,7 +3,7 @@ asadmin Utility Subcommands                 export-sync-bundle(1)
 
 NAME
      export-sync-bundle - exports the  configuration  data  of  a
-     cluster or standalone instance to a ZIP archive
+     cluster or standalone instance to an archive file
 
 SYNOPSIS
      export-sync-bundle [--help]
@@ -12,10 +12,21 @@ SYNOPSIS
      [file-name]
 
 DESCRIPTION
-     The export-sync-bundle exports the configuration data  of  a
-     cluster  or  standalone  instance  to a ZIP archive. The ZIP
-     archive can then be used with the import-sync-bundle(1) sub-
-     command to restore the configuration data.
+     The export-sync-bundle subcommand exports the  configuration
+     data of a cluster or standalone instance to an archive file.
+     The archive file can then  be  used  with  the  import-sync-
+     bundle(1) subcommand to restore the configuration data.
+
+     Importing an instance's  configuration  data  transfers  the
+     data  to  a  host  for  an instance without the need for the
+     instance to be able to communicate with the domain  adminis-
+     tration server (DAS).  Importing an instance's configuration
+     data  is typically required for the following reasons:
+
+         o    To reestablish the instance after an upgrade
+
+         o    To synchronize the instance manually with  the  DAS
+              when the instance cannot contact the DAS
 
      The subcommand creates an archive that contains the  follow-
      ing files and directories in the current domain directory:
@@ -39,6 +50,10 @@ DESCRIPTION
 
              o    lib
 
+Java EE 6            Last change: 7 Dec 2010                    1
+
+asadmin Utility Subcommands                 export-sync-bundle(1)
+
      This subcommand is supported in remote mode only.
 
 OPTIONS
@@ -49,38 +64,33 @@ OPTIONS
 
      --target
          The cluster or standalone instance for which  to  export
+         configuration data. The --target option is required.
 
-Java EE 6           Last change: 22 Oct 2010                    1
-
-asadmin Utility Subcommands                 export-sync-bundle(1)
-
-         configuration  data.  The  --target  option is required.
          This option  must  not  specify  a  clustered  GlassFish
          Server  instance.  If  this option specifies a clustered
-         GlassFish Server, an error occurs.
+         instance, an error occurs. To export configuration  data
+         for  a clustered instance, specify the name of the clus-
+         ter of which the instance is a member, not the instance.
 
      --retrieve
 
-         Specifies whether the ZIP archive is downloaded from the
-         DAS machine to the machine where the subcommand is run.
+         Specifies whether the archive file  is  downloaded  from
+         the DAS host to the host where the subcommand is run.
 
          Possible values are as follows:
 
          true
-             The ZIP archive is downloaded to the  machine  where
-             the  subcommand  is run. If the subcommand is run on
-             host where the instance resides, this option must be
-             true.
+             The archive file is downloaded to the host where the
+             subcommand is run.
 
          false
 
-             The ZIP archive is not downloaded and remains on the
-             DAS  machine  (default). If the subcommand is run on
-             the DAS host, this option must be false.
+             The archive file is not downloaded  and  remains  on
+             the DAS host (default).
 
 OPERANDS
      file-name
-         The file name and location of the ZIP archive  to  which
+         The file name and location of the archive file to  which
          to export the data.
 
          The default depends on the  setting  of  the  --retrieve
@@ -91,23 +101,30 @@ OPERANDS
                   domain directory.
 
              o    If --retrieve is true, the default  is  target-
-                  sync-bundle.zip in the user's home directory.
-         target is the cluster or standalone  instance  that  the
-         --target option specifies.
 
-         If a relative path is  specified,  the  ZIP  archive  is
-         created in the config subdirectory of the current domain
-         directory.
-
-         If  an  existing  directory  is  specified   without   a
-         filename,  the  file  name of the ZIP archive is target-
-         sync-bundle.zip,  where  target  is   the   cluster   or
-
-Java EE 6           Last change: 22 Oct 2010                    2
+Java EE 6            Last change: 7 Dec 2010                    2
 
 asadmin Utility Subcommands                 export-sync-bundle(1)
 
-         standalone instance that the --target option specifies.
+                  sync-bundle.zip  in  the current working direc-
+                  tory.
+         target is the cluster or standalone  instance  that  the
+         --target option specifies.
+
+         If a relative path is specified, the directory to  which
+         the  path  is  appended depends on the setting of the --
+         retrieve option:
+
+             o    If --retrieve is false, the path is appended to
+                  the  config  subdirectory of the current domain
+                  directory.
+
+             o    If --retrieve is true, the path is appended  to
+                  the current working directory.
+         If  an  existing  directory  is  specified   without   a
+         filename,  the  file name of the archive file is target-
+         sync-bundle.zip, where target is the  cluster  or  stan-
+         dalone instance that the --target option specifies.
 
 EXAMPLES
      Example 1 Exporting the Configuration Data of a Cluster
@@ -131,5 +148,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 22 Oct 2010                    3
+Java EE 6            Last change: 7 Dec 2010                    3
 

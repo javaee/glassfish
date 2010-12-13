@@ -48,7 +48,7 @@ OPTIONS
          exclusive.  If  both  options  are specified in the same
          command, an error occurs.
 
-Java EE 6           Last change: 20 Oct 2010                    1
+Java EE 6           Last change: 10 Dec 2010                    1
 
 asadmin Utility Subcommands                     list-instances(1)
 
@@ -74,9 +74,18 @@ asadmin Utility Subcommands                     list-instances(1)
                  o    The  name  of  the  cluster  of  which  the
                       instance is a member, if any
 
-                 o    The length of time that  the  instance  has
-                      been   running  or  a  statement  that  the
-                      instance is not running
+                 o    The state of the instance, which is running
+                      or not running
+
+                      When an instance is listed, some configura-
+                      tion  changes  in the domain administration
+                      server (DAS) for  the  instance  might  not
+                      have  been  applied to the instance itself.
+                      In this situation, the  commands  that  are
+                      required  to  apply  the changes are listed
+                      adjacent to the state of the instance.  The
+                      maximum  number of commands that are listed
+                      for an instance is 10.
 
          false
              Only the name of the instance and an  indication  of
@@ -93,23 +102,24 @@ asadmin Utility Subcommands                     list-instances(1)
          exclusive.  If  both  options  are specified in the same
          command, an error occurs.
 
+Java EE 6           Last change: 10 Dec 2010                    2
+
+asadmin Utility Subcommands                     list-instances(1)
+
          Valid values are as follows:
 
          true
+
              Information about whether instances are  running  is
              suppressed.  Only  the  name  of  each  instance  is
              displayed.
 
-Java EE 6           Last change: 20 Oct 2010                    2
-
-asadmin Utility Subcommands                     list-instances(1)
-
          false
-
              Information about whether instances are  running  is
              displayed (default).
 
      --standaloneonly
+
          Specifies whether only standalone instances are listed.
 
          The --standaloneonly option and the target  operand  and
@@ -120,16 +130,15 @@ asadmin Utility Subcommands                     list-instances(1)
          Valid values are as follows:
 
          true
-
              Only standalone instances are listed.
 
          false
+
              All instances in the  specified  target  are  listed
              (default).
 
 OPERANDS
      target
-
          Filters the list of GlassFish Server instances by speci-
          fying the target for which instances are listed.
 
@@ -141,27 +150,27 @@ OPERANDS
          Valid values are as follows:
 
          domain
+
               Lists all instances in the domain (default).
+
+Java EE 6           Last change: 10 Dec 2010                    3
+
+asadmin Utility Subcommands                     list-instances(1)
 
          cluster-name
 
              Lists the instances that are members of  the  speci-
              fied cluster.
 
-Java EE 6           Last change: 20 Oct 2010                    3
-
-asadmin Utility Subcommands                     list-instances(1)
-
          instance-name
-
              Lists only the specified instance.
 
          node-name
+
              Lists the instances that  reside  on  the  specified
              node.
 
          configuration-name
-
              Lists all instances whose configuration  is  defined
              by the specified named configuration.
 
@@ -189,17 +198,17 @@ EXAMPLES
 
        asadmin> list-instances --long=true
        NAME        HOST       PORT   PID    CLUSTER     STATE
+
+Java EE 6           Last change: 10 Dec 2010                    4
+
+asadmin Utility Subcommands                     list-instances(1)
+
        pmd-i-sj01  sj01       24848  31310  pmdcluster   running
        yml-i-sj01  sj01       24849  25355  ymlcluster   running
        pmdsa1      localhost  24848  -1     ---          not running
        pmd-i-sj02  sj02       24848  22498  pmdcluster   running
        yml-i-sj02  sj02       24849  20476  ymlcluster   running
        ymlsa1      localhost  24849  -1     ---          not running
-
-Java EE 6           Last change: 20 Oct 2010                    4
-
-asadmin Utility Subcommands                     list-instances(1)
-
        Command list-instances executed successfully.
 
      Example 3 Displaying the Status of an Instance
@@ -209,7 +218,6 @@ asadmin Utility Subcommands                     list-instances(1)
 
        asadmin> list-instances pmd-i-sj01
        pmd-i-sj01 running
-
        Command list-instances executed successfully.
 
      Example 4 Listing Only Standalone Instances in a Domain
@@ -219,7 +227,6 @@ asadmin Utility Subcommands                     list-instances(1)
 
        asadmin> list-instances --standaloneonly=true
        pmdsa1 not running
-
        Command list-instances executed successfully.
 
 EXIT STATUS
@@ -232,5 +239,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 20 Oct 2010                    5
+Java EE 6           Last change: 10 Dec 2010                    5
 

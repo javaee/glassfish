@@ -225,12 +225,12 @@ asadmin Utility Subcommands        create-jdbc-connection-pool(1)
 
      --validateatmostonceperiod
 
-         Specifies the time interval in seconds  within  which  a
-         connection  is  validated  at  most  once.  Setting this
-         attribute to an appropriate value minimizes  the  number
-         of  validation  requests  by  a  connection. The default
-         value is 0, which specifies that the connection is never
-         validated.
+         Specifies the time interval in seconds  between  succes-
+         sive  requests  to  validate  a connection at most once.
+         Setting this attribute to an appropriate value minimizes
+         the  number  of  validation  requests  by  a connection.
+         Default value is 0, which means  that the  attribute  is
+         not enabled.
 
      --leaktimeout
          Specifies the amount of time, in seconds, for which con-

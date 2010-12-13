@@ -6,7 +6,9 @@ NAME
      ication over SSH
 
 SYNOPSIS
-     delete-node-ssh [--help] node-name
+     delete-node-ssh [--help]
+     [--uninstall={false|true}] [--force={false|true}]
+     node-name
 
 DESCRIPTION
      The delete-node-ssh   subcommand  deletes  a  node  that  is
@@ -35,10 +37,70 @@ OPTIONS
 
          Displays the help text for the subcommand.
 
+     --uninstall
+         Specifies whether the GlassFish Server software is unin-
+         stalled from host that the node represents.
+
+         Possible values are as follows:
+
+         false
+
+             The GlassFish Server  software  is  not  uninstalled
+             from the host (default).
+
+Java EE 6           Last change: 10 Dec 2010                    1
+
+asadmin Utility Subcommands                    delete-node-ssh(1)
+
+         true
+
+             The GlassFish Server software  is  uninstalled  from
+             the  host. By default, if any node except the prede-
+             fined node localhost-domain-name resides on any host
+             from  which GlassFish Server software is being unin-
+             stalled, the  subcommand  fails.  To  uninstall  the
+             GlassFish  Server  software  from  a  host  on which
+             user-defined nodes reside, set the --force option to
+             true.  If the --force option is true, the subcommand
+             removes the entire content of the parent of the base
+             installation directory.
+
+     --force
+         If --uninstall is true, specifies whether the subcommand
+         uninstalls  the  GlassFish  Server  software from a host
+         even if a user-defined node resides on the host.  Possi-
+         ble values are as follows:
+
+         false
+
+             If a  user-defined  node  resides  on  a  host,  the
+             software is not uninstalled and the subcommand fails
+             (default).
+
+             If the  --force  option  is  false,  the  subcommand
+             removes  only  the  GlassFish Server software files.
+             Other content if the parent of the base installation
+             directory,  such  as  configuration  files,  are not
+             removed.
+
+         true
+             The  subcommand  uninstalls  the  GlassFish   Server
+             software  from  the host even if a user-defined node
+             resides on the host.
+
+             If  the  --force  option  is  true,  the  subcommand
+             removes the entire content of the parent of the base
+             installation directory.
+
 OPERANDS
      node-name
+
          The name of the node to delete. The  node  must  enabled
          for communication over SSH. Otherwise, an error occurs.
+
+Java EE 6           Last change: 10 Dec 2010                    2
+
+asadmin Utility Subcommands                    delete-node-ssh(1)
 
 EXAMPLES
      Example 1 Deleting a Node That Is Enabled for  Communication
@@ -47,12 +109,7 @@ EXAMPLES
      This example deletes the node eg1, which is enabled for com-
      munication over SSH.
 
-Java EE 6           Last change: 21 Sep 2010                    1
-
-asadmin Utility Subcommands                    delete-node-ssh(1)
-
        asadmin> delete-node-ssh eg1
-
        Command delete-node-ssh executed successfully.
 
 EXIT STATUS
@@ -67,5 +124,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 21 Sep 2010                    2
+Java EE 6           Last change: 10 Dec 2010                    3
 

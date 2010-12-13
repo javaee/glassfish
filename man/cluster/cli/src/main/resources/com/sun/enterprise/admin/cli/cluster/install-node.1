@@ -7,28 +7,31 @@ NAME
 
 SYNOPSIS
      install-node [--help]
-     [--archivedir archive-dir]
+     [--archive archive]
+     [--create={false|true}] [--save[={false|true}]
      [--installdir install-dir]
      [--sshport ssh-port] [--sshuser ssh-user]
      [--sshkeyfile ssh-keyfile]
+     [--force={false|true}]
      host-list
 
 DESCRIPTION
      The  install-node  subcommand  installs   GlassFish   Server
      software  on  the hosts that are specified as the operand of
      the subcommand. This subcommand requires secure shell  (SSH)
-     to be configured on the machine where the domain administra-
-     tion server (DAS) is running and  on  each  host  where  the
-     GlassFish Server software is being installed.
+     to be configured on the host where the subcommand is run and
+     on each host where the GlassFish Server  software  is  being
+     installed.
 
      If necessary, the subcommand creates a ZIP  archive  of  the
-     GlassFish  Server  software   from the DAS installation. The
-     archive does not contain the domains directory or the  nodes
-     directory.  These  directories are synchronized from the DAS
-     when instances on nodes that represent the hosts are created
-     and  started.  The  subcommand  does  not delete the archive
-     after installing the  GlassFish  Server  software  from  the
-     archive on the specified hosts.
+     GlassFish  Server software  from the installation where this
+     subcommand is run. The archive does not contain the  domains
+     directory or the nodes directory. These directories are syn-
+     chronized from the domain administration server  (DAS)  when
+     instances  on nodes that represent the hosts are created and
+     started. The subcommand does not delete  the  archive  after
+     installing the GlassFish Server software from the archive on
+     the specified hosts.
 
      If multiple hosts are specified, the  configuration  of  the
      following items is the same on all hosts:
@@ -47,12 +50,12 @@ DESCRIPTION
      subcommand to run noninteractively, the following conditions
      must be met:
 
-         o    The --interactive option of the asadmin(1M) utility
-              must be false.
-
-Java EE 6           Last change: 17 Oct 2010                    1
+Java EE 6           Last change: 10 Dec 2010                    1
 
 asadmin Utility Subcommands                       install-node(1)
+
+         o    The --interactive option of the asadmin(1M) utility
+              must be false.
 
          o    The --passwordfile option of  the  asadmin  utility
               must specify a password file.
@@ -70,51 +73,69 @@ OPTIONS
 
          Displays the help text for the subcommand.
 
-     --archivedir
-         The absolute path to the  directory  that  contains  the
-         archive  of  the GlassFish Server software that is to be
-         installed. If no archive file that is named glassfsh.zip
-         exists  in  the  directory,  the  subcommand  creates an
-         archive from the DAS installation.
+     --archive
+         The absolute path to the archive file of  the  GlassFish
+         Server  software  that is to be installed. If no archive
+         file is specified, the  subcommand  creates  an  archive
+         from  the installation of GlassFish Server software from
+         which the subcommand is run. This archive is created  in
+         the  home directory of the user that is running the com-
+         mand.
 
-         The user that is running the DAS must have write  access
-         to the specified directory. Otherwise, an error occurs.
+     --create
 
-         The default depends on whether parent of the  base  ins-
-         tallation  directory of the GlassFish Server software on
-         the DAS is writable:
+         Specifies  whether  the  subcommand  should  create   an
+         archive   file  of  the  GlassFish  Server  software  to
+         install.
 
-             o    If the parent of the base  installation  direc-
-                  tory  is writable, the default is the parent of
-                  the base installation directory.
+         false
+             No archive file is created. The subcommand  installs
+             the software from the existing archive file that the
+             --archive option specifies (default) .
 
-             o    If the parent of the base  installation  direc-
-                  tory is not writable, the default is the direc-
-                  tory that the  java.io.tmpdir  system  property
-                  specifies.
+         true
+
+             The subcommand creates an archive file from the ins-
+             tallation  of  GlassFish  Server software from which
+             the subcommand is run.
+
+Java EE 6           Last change: 10 Dec 2010                    2
+
+asadmin Utility Subcommands                       install-node(1)
+
+     --save
+
+         Specifies  whether  the  archive  file  from  which  the
+         software is installed is saved after installation.
+
+         false
+             The  archive  file  is  not  saved.  The  subcommand
+             deletes  the  file  after  installing  the  software
+             (default).
+
+         true
+
+             The archive file is saved.
 
      --installdir
-
          The absolute path to the parent of the base installation
          directory  where  the GlassFish Server software is to be
          installed     on     each     host,     for     example,
          /export/glassfish3/.  If  the  directory does not exist,
          the subcommand creates the directory.
 
-         The user that is running the DAS must have write  access
-         to the specified directory. Otherwise, an error occurs.
+         The user that is running this subcommand must have write
+         access  to  the specified directory. Otherwise, an error
+         occurs.
 
-Java EE 6           Last change: 17 Oct 2010                    2
-
-asadmin Utility Subcommands                       install-node(1)
-
-         The specified directory must not already contain an ins-
-         tallation  of  the GlassFish Server software. Otherwise,
-         an error occurs.
+         To overwrite an existing an installation of the  GlassF-
+         ish  Server software, set the --force option to true. If
+         the directory already contains an installation  and  the
+         --force option is false, an error occurs.
 
          The default is  the  parent  of  the  base  installation
-         directory  of  the  GlassFish Server software on the DAS
-         host.
+         directory  of  the GlassFish Server software on the host
+         where this subcommand is run.
 
      --sshport
 
@@ -126,9 +147,13 @@ asadmin Utility Subcommands                       install-node(1)
          The user that is  to  run  the  process  for  connecting
          through  SSH  to  the  host  where  the GlassFish Server
          software is to be installed. The  default  is  the  user
-         that  is running the DAS process. To ensure that the DAS
+         that  is running this subcommand. To ensure that the DAS
          can read this user's SSH private key file,  specify  the
          user that is running the DAS process.
+
+Java EE 6           Last change: 10 Dec 2010                    3
+
+asadmin Utility Subcommands                       install-node(1)
 
      --sshkeyfile
 
@@ -136,9 +161,10 @@ asadmin Utility Subcommands                       install-node(1)
          that  the  --sshuser option specifies. This file is used
          for authentication to the sshd daemon on the host.
 
-         The path to the key file must be reachable  by  the  DAS
-         and  the  key file must be readable by the DAS. The path
-         may contain Java properties of the form ${prop.name}.
+         The user that is running this subcommand must be able to
+         reach  the  path  to the key file and read the key file.
+         The  path  may  contain  Java  properties  of  the  form
+         ${prop.name}.
 
          The default is the a platform-dependent key file in  the
          user's .ssh directory, for example:
@@ -149,23 +175,55 @@ asadmin Utility Subcommands                       install-node(1)
 
              o    identity
 
+     --force
+         Specifies whether the subcommand overwrites an  existing
+         installation  of  the  GlassFish  Server software in the
+         directory that the --installdir option specifies. Possi-
+         ble values are as follows:
+
+         false
+
+             The  existing  installation   is   not   overwritten
+             (default).
+
+         true
+             The existing installation is overwritten.
+
 OPERANDS
      host-list
+
          A space-separated list of the names of the  hosts  where
          the GlassFish Server software is to be installed.
-
-Java EE 6           Last change: 17 Oct 2010                    3
-
-asadmin Utility Subcommands                       install-node(1)
 
 EXAMPLES
      Example  1  Installing  GlassFish  Server  Software  at  the
      Default Location
 
      This example installs GlassFish Server software on the hosts
-     sj03 and sj04 at the default location.
+     sj03.example.com  and  sj04.example.com at the default loca-
+     tion.
 
-       asadmin> install-node sj03 sj04
+Java EE 6           Last change: 10 Dec 2010                    4
+
+asadmin Utility Subcommands                       install-node(1)
+
+       asadmin> install-node sj03.example.com sj04.example.com
+       Created installation zip /home/gfuser/glassfish2339538623689073993.zip
+       Successfully connected to gfuser@sj03.example.com using keyfile /home/gfuser
+       /.ssh/id_rsa
+       Copying /home/gfuser/glassfish2339538623689073993.zip (81395008 bytes) to
+       sj03.example.com:/export/glassfish3
+       Installing glassfish2339538623689073993.zip into sj03.example.com:/export/glassfish3
+       Removing sj03.example.com:/export/glassfish3/glassfish2339538623689073993.zip
+       Fixing file permissions of all files under sj03.example.com:/export/glassfish3/bin
+       Successfully connected to gfuser@sj04.example.com using keyfile /home/gfuser
+       /.ssh/id_rsa
+       Copying /home/gfuser/glassfish2339538623689073993.zip (81395008 bytes) to
+       sj04.example.com:/export/glassfish3
+       Installing glassfish2339538623689073993.zip into sj04.example.com:/export/glassfish3
+       Removing sj04.example.com:/export/glassfish3/glassfish2339538623689073993.zip
+       Fixing file permissions of all files under sj04.example.com:/export/glassfish3/bin
+       Command install-node executed successfully
 
 EXIT STATUS
      0                           command executed successfully
@@ -177,5 +235,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 17 Oct 2010                    4
+Java EE 6           Last change: 10 Dec 2010                    5
 

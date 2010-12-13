@@ -14,8 +14,16 @@ DESCRIPTION
      Server instance. This subcommand requires secure shell (SSH)
      to be configured on the machine where the domain administra-
      tion  server  (DAS)  is running and on the machine where the
-     instance resides. You  may  run  this  subcommand  from  any
-     machine that can contact the DAS.
+     instance resides.
+
+     Note -
+
+       SSH is not required if the instance resides on a  node  of
+       type CONFIG that represents the local host. A node of type
+       CONFIG is not enabled for communication over SSH.
+
+     You may run this subcommand from any machine that  can  con-
+     tact the DAS.
 
      The subcommand can restart any  GlassFish  Server  instance,
      regardless  of  how  the  instance was created. For example,
@@ -23,20 +31,30 @@ DESCRIPTION
      using the create-local-instance(1) subcommand.
 
      When this subcommand restarts an instance, the DAS synchron-
-     izes the instance only with changes since the last synchron-
-     ization to the following files:
+     izes  the  instance with changes since the last synchroniza-
+     tion as follows:
 
-         o    All changes in the config directory
+         o    For the config directory, the DAS synchronizes  the
+              instance with all changes.
 
-         o    Changes to files only  in  the  top  level  of  the
-              applications directory and the docroot directory
+         o    For the applications directory and  docroot  direc-
+              tory,  only  a  change  to a top-level subdirectory
+              causes the DAS to synchronize all files under  that
+              subdirectory.
 
-              If a file below this level is  changed,  full  syn-
-              chronization  is  required.  In  normal  operation,
-              files below the top level of these directories  are
-              not  changed.  If  an  application  is deployed and
-              undeployed, full synchronization is  not  necessary
-              to update the instance with the change.
+              If a file below a top level subdirectory is changed
+              without  a  change  to a file in the top level sub-
+              directory, full  synchronization  is  required.  In
+              normal  operation,  files  below the top level sub-
+              directories of these directories are  not  changed.
+              If  an application is deployed and undeployed, full
+              synchronization is  not  necessary  to  update  the
+
+Java EE 6           Last change: 20 Oct 2010                    1
+
+asadmin Utility Subcommands                   restart-instance(1)
+
+              instance with the change.
 
      If  different  synchronization  behavior  is  required,  the
      instance  must  be  stopped and restarted by using following
@@ -47,10 +65,6 @@ DESCRIPTION
          2.   start-instance(1)
 
      This subcommand is supported in remote mode only.
-
-Java EE 6           Last change: 20 Oct 2010                    1
-
-asadmin Utility Subcommands                   restart-instance(1)
 
 OPTIONS
      --help
@@ -85,6 +99,11 @@ OPERANDS
          warning message and attempts to start the instance.
 
 EXAMPLES
+
+Java EE 6           Last change: 20 Oct 2010                    2
+
+asadmin Utility Subcommands                   restart-instance(1)
+
      Example 1 Restarting a GlassFish Server Instance
 
      This example restarts the GlassFish Server instance pmdsa1.
@@ -95,11 +114,6 @@ EXAMPLES
        Command restart-instance executed successfully.
 
 EXIT STATUS
-
-Java EE 6           Last change: 20 Oct 2010                    2
-
-asadmin Utility Subcommands                   restart-instance(1)
-
      0                           command executed successfully
 
      1                           error in executing the command

@@ -10,28 +10,31 @@ SYNOPSIS
      [--installdir install-dir]
      [--sshport ssh-port] [--sshuser ssh-user]
      [--sshkeyfile ssh-keyfile]
+     [--force={false|true}]
      host-list
 
 DESCRIPTION
-     The  install-node  subcommand  uninstalls  GlassFish  Server
+     The uninstall-node subcommand  uninstalls  GlassFish  Server
      software from the hosts that are specified as the operand of
      the subcommand. This subcommand requires secure shell  (SSH)
-     to be configured on the machine where the domain administra-
-     tion server (DAS) is running and  on  each  host  where  the
-     GlassFish Server software is being uninstalled.
+     to be configured on the host where the subcommand is run and
+     on each host where the GlassFish Server  software  is  being
+     uninstalled.
 
-     No nodes except the predefined node localhost must reside on
-     any host from which GlassFish Server software is being unin-
-     stalled. Otherwise, the  subcommand  fails.  Before  running
-     this subcommand, delete any nodes that reside on the host by
-     using, for example, the appropriate subcommand for  deleting
-     the  node,  such  as  delete-node-config(1)  or delete-node-
-     ssh(1).
+     By  default,  if  any  node  except  the   predefined   node
+     localhost-domain-name resides on any host from which GlassF-
+     ish Server software is  being  uninstalled,  the  subcommand
+     fails.  To  uninstall  the  GlassFish Server software from a
+     host on which user-defined nodes  reside,  set  the  --force
+     option  to  true. If the --force option is true, the subcom-
+     mand removes the entire content of the parent  of  the  base
+     installation directory.
 
      If multiple hosts are specified, the  configuration  of  the
      following items must be the same on all hosts:
 
-         o    Base installation directory
+         o    Parent of the base installation directory  for  the
+              GlassFish Server software
 
          o    SSH port
 
@@ -39,9 +42,14 @@ DESCRIPTION
 
          o    SSH key file
 
-     The subcommand does not modify the configuration of the DAS.
+     The subcommand does not  modify  the  configuration  of  the
+     domain administration server (DAS).
 
      This subcommand is supported in local mode only.
+
+Java EE 6           Last change: 10 Dec 2010                    1
+
+asadmin Utility Subcommands                     uninstall-node(1)
 
 OPTIONS
      --help
@@ -49,50 +57,52 @@ OPTIONS
 
          Displays the help text for the subcommand.
 
-Java EE 6           Last change: 17 Oct 2010                    1
-
-asadmin Utility Subcommands                     uninstall-node(1)
-
      --installdir
-
          The absolute path to the parent of the base installation
          directory   where   the  GlassFish  Server  software  is
          installed     on     each     host,     for     example,
          /export/glassfish3/.
 
-         The user that is running the DAS must have write  access
-         to the specified directory. Otherwise, an error occurs.
+         The user that is running this subcommand must have write
+         access  to  the specified directory. Otherwise, an error
+         occurs.
 
          The specified directory must contain the installation of
          the GlassFish Server software on the host. Otherwise, an
          error occurs.
 
          The default is  the  parent  of  the  base  installation
-         directory  of  the  GlassFish Server software on the DAS
-         host.
+         directory  of  the GlassFish Server software on the host
+         where this subcommand is run.
 
      --sshport
+
          The port to use for SSH connections to  the  host  where
          the  GlassFish Server software is to be uninstalled. The
          default is 22.
 
      --sshuser
-
          The SSH user that is to run the process  for  connecting
          to the host where the GlassFish Server software is to be
-         uninstalled. The default is the user that is running the
-         DAS process. To ensure that the DAS can read this user's
-         SSH private key file, specify the user that  is  running
-         the DAS process.
+         uninstalled. The default is the  user  that  is  running
+         this  subcommand.  To  ensure that the DAS can read this
+         user's SSH private key file, specify the  user  that  is
+         running the DAS process.
 
      --sshkeyfile
+
          The absolute path to the SSH private key file  for  user
          that  the  --sshuser option specifies. This file is used
          for authentication to the sshd daemon on the host.
 
-         The path to the key file must be reachable  by  the  DAS
-         and  the  key file must be readable by the DAS. The path
-         may contain Java properties of the form ${prop.name}.
+         The user that is running this subcommand must be able to
+         reach  the  path  to the key file and read the key file.
+         The  path  may  contain  Java  properties  of  the  form
+         ${prop.name}.
+
+Java EE 6           Last change: 10 Dec 2010                    2
+
+asadmin Utility Subcommands                     uninstall-node(1)
 
          The default is the a platform-dependent key file in  the
          user's .ssh directory, for example:
@@ -101,15 +111,38 @@ asadmin Utility Subcommands                     uninstall-node(1)
 
              o    id_dsa
 
-             o    identitylocation
+             o    identity
 
-Java EE 6           Last change: 17 Oct 2010                    2
+     --force
 
-asadmin Utility Subcommands                     uninstall-node(1)
+         Specifies whether the subcommand uninstalls the  GlassF-
+         ish  Server  software from a host even if a user-defined
+         node resides on the host. Possible values  are  as  fol-
+         lows:
+
+         false
+             If a  user-defined  node  resides  on  a  host,  the
+             software is not uninstalled and the subcommand fails
+             (default).
+
+             If the  --force  option  is  false,  the  subcommand
+             removes  only  the  GlassFish Server software files.
+             Other content if the parent of the base installation
+             directory,  such  as  configuration  files,  are not
+             removed.
+
+         true
+
+             The  subcommand  uninstalls  the  GlassFish   Server
+             software  from  the host even if a user-defined node
+             resides on the host.
+
+             If  the  --force  option  is  true,  the  subcommand
+             removes the entire content of the parent of the base
+             installation directory.
 
 OPERANDS
      host-list
-
          A space-separated list of the names of  the  hosts  from
          which  the  GlassFish  Server  software  is  to be unin-
          stalled.
@@ -118,20 +151,57 @@ EXAMPLES
      Example 1 Uninstalling GlassFish Server  Software  From  the
      Default Location
 
-     This example uninstalls GlassFish  Server  software  on  the
-     hosts sj03 and sj04 from the default location.
+Java EE 6           Last change: 10 Dec 2010                    3
 
-       asadmin> install-node sj03 sj04
+asadmin Utility Subcommands                     uninstall-node(1)
+
+     This example uninstalls GlassFish  Server  software  on  the
+     hosts sj03.example.com and sj04.example.com from the default
+     location.
+
+       asadmin> uninstall-node sj03 sj04
+       Successfully connected to gfuser@sj03.example.com using keyfile /home/gfuser
+       /.ssh/id_rsa
+       Successfully connected to gfuser@sj04.example.com using keyfile /home/gfuser
+       /.ssh/id_rsa
+       Command uninstall-node executed successfully.
+
+     Example 2 Forcibly Uninstalling GlassFish Server Software
+
+     This example uninstalls GlassFish  Server  software  on  the
+     host sj02.example.com.
+
+     The software is uninstalled  even  if  a  user-defined  node
+     resides   on   the   host.   The   entire   content  of  the
+     /export/glassfish3 directory is removed.
+
+     Some lines of output are omitted from this example for  rea-
+     dability.
+
+       asadmin> uninstall-node --force --installdir /export/glassfish3 sj02.example.com
+       Successfully connected to gfuser@sj02.example.com using keyfile /home/gfuser
+       /.ssh/id_rsa
+       Force removing file /export/glassfish3/mq/lib/help/en/add_overrides.htm
+       Force removing file /export/glassfish3/mq/lib/help/en/add_connfact.htm
+       ...
+       Force removing directory /export/glassfish3/glassfish/lib/appclient
+       Force removing directory /export/glassfish3/glassfish/lib
+       Force removing directory /export/glassfish3/glassfish
+       Command uninstall-node executed successfully.
 
 EXIT STATUS
      0                           command executed successfully
 
      1                           error in executing the command
 
+Java EE 6           Last change: 10 Dec 2010                    4
+
+asadmin Utility Subcommands                     uninstall-node(1)
+
 SEE ALSO
-     delete-node-config(1), delete-node-ssh(1), install-node(1)
+     install-node(1)
 
      asadmin(1M)
 
-Java EE 6           Last change: 17 Oct 2010                    3
+Java EE 6           Last change: 10 Dec 2010                    5
 

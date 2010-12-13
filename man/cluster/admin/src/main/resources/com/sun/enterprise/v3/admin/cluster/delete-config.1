@@ -10,13 +10,12 @@ SYNOPSIS
 DESCRIPTION
      The delete-config subcommand deletes an existing named  con-
      figuration  from the configuration of the domain administra-
-     tion server (DAS) in the domain.xml file. You can  delete  a
-     configuration  only if no server instances or clusters refer
-     to the configuration. A standalone configuration is automat-
-     ically  deleted  when  the  sever  instance  or cluster that
-     refers to it is deleted.  You  cannot  delete  the  default-
-     config  configuration  that  is  copied to create standalone
-     configurations.
+     tion server (DAS). You can delete a configuration only if no
+     GlassFish  Server  instances or clusters refer to the confi-
+     guration.  A  standalone  configuration   is   automatically
+     deleted  when  the  instance or cluster that refers to it is
+     deleted. You cannot delete the default-config  configuration
+     that is copied to create standalone configurations.
 
      This subcommand is supported in remote mode only.
 
@@ -44,16 +43,16 @@ EXIT STATUS
 
      1                           error in executing the command
 
-Java EE 6           Last change: 26 Aug 2010                    1
+Java EE 6            Last change: 7 Dec 2010                    1
 
 asadmin Utility Subcommands                      delete-config(1)
 
 SEE ALSO
-     copy-config(1),list-configs(1)
+     copy-config(1), list-configs(1)
 
      asadmin(1M)
 
      configuration(5ASC)
 
-Java EE 6           Last change: 26 Aug 2010                    2
+Java EE 6            Last change: 7 Dec 2010                    2
 

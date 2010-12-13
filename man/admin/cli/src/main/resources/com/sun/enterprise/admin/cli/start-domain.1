@@ -10,10 +10,10 @@ SYNOPSIS
 
 DESCRIPTION
      The start-domain subcommand starts the domain administration
-     server  (DAS)  of the specified domain. If the domain direc-
-     tory is not specified, the domain  in  the  default  domains
-     directory  is started. If the domains directory contains two
-     or more domains, the domain-name operand must be specified.
+     server  (DAS)  of  the  specified domain. If a domain is not
+     specified, the default domain is  assumed.  If  the  domains
+     directory  contains  two  or  more  domains, the domain-name
+     operand must be specified.
 
      Note -
 
@@ -46,16 +46,15 @@ OPTIONS
 
      --domaindir
 
-         Specifies the directory where the domain to  be  started
-         is located. If specified, the path must be accessible in
+         The domains directory that contains the directory of the
+         domain  that  is to be restarted. If specified, the path
 
 Java EE 6           Last change: 22 Oct 2010                    1
 
 asadmin Utility Subcommands                       start-domain(1)
 
-         the file system. If not specified,  the  domain  in  the
-         default    as-install/glassfish/domains   directory   is
-         started.
+         must be accessible  in  the  file  system.  The  default
+         domains directory is as-install/glassfish/domains.
 
      --upgrade
 
@@ -82,32 +81,31 @@ asadmin Utility Subcommands                       start-domain(1)
 
      --verbose
      -v
-         Specifies  whether  detailed  information  is  displayed
-         while the domain is being started.
+         Specifies whether detailed information about the  domain
+         is  displayed in the console window where the subcommand
+         is run.
 
          Possible values are as follows:
 
          true
 
-             A console window is opened in which detailed startup
-             messages  and  log  messages are displayed until the
-             domain is started.  If the domain is later restarted
-             by  running  the  restart-domain(1) subcommandfrom a
+             Detailed startup messages and log messages about the
+             domain are displayed in the console window where the
+             subcommand is run.  If the domain is later restarted
+             by  running  the restart-domain(1) subcommand from a
              different console window, messages  continue  to  be
              displayed in the original console window.
 
              You can kill the GlassFish Server process by  typing
-             CTRL-C in the console window that is opened.
+             CTRL-C in the console window.
 
              You can kill the GlassFish Server process and obtain
              a  thread  dump  for the server by typing one of the
-             following key combinations  in  the  console  window
+             following key combinations in the console window:
 
 Java EE 6           Last change: 22 Oct 2010                    2
 
 asadmin Utility Subcommands                       start-domain(1)
-
-             that is opened:
 
                  o    CTRL-\  on UNIXTM systems
 

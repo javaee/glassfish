@@ -14,6 +14,14 @@ DESCRIPTION
      with this subcommand are listed in See  Also  in  this  help
      page.
 
+     The --target option specifies the target for which  you  are
+     creating the resources. If this option specifies the domain,
+     the resources are added only to  the  configuration  of  the
+     domain administration server (DAS). If this option specifies
+     any other target, the resources are added to the  configura-
+     tion  of  the  DAS and references are added to the resources
+     from the specified target.
+
      The xml-file-name operand is the path to the XML  file  that
      contains  the  resources  to be created. The DOCTYPE must be
      specified      as       http://glassfish.org/dtds/glassfish-
@@ -29,41 +37,49 @@ OPTIONS
 
      --target
          Specifies the target for  which  you  are  creating  the
-         resources. Valid values are
+         resources.
+
+         Valid values are as follows:
 
          server
 
              Creates  the  resources  for  the   default   server
              instance server and is the default value.
 
+Java EE 6            Last change: 6 Dec 2010                    1
+
+asadmin Utility Subcommands                      add-resources(1)
+
          domain
+
              Creates the resources for the domain.
 
          cluster-name
-
              Creates the resources for every server  instance  in
              the cluster.
 
          instance-name
-             Creates  the  resources  for  a  particular   server
-
-Java EE 6           Last change: 29 Nov 2010                    1
-
-asadmin Utility Subcommands                      add-resources(1)
-
-             instance.
+                                                               TM
+             Creates the resources for a  particular  GlassFish
+             Server instance.
 
 OPERANDS
      xml-file-name
+         The path to the XML file  that  contains  the  resources
+         that  are  to  be  created.  You can specify an absolute
+         path, only the file name, or a relative path.
 
-         The path to the XML file that contains  the  resource(s)
-         to  be created. If you specify an absolute path, the XML
-         file can be anywhere. If you specify only the file, then
-         the    XML    file    must    reside    in    the    as-
-         install/domains/domain1/config   directory.    If    you
-         specify  a  relative  path, then the XML file must be in
-         the relative directory.
+             o    If you specify an absolute path, the  XML  file
+                  can be anywhere.
 
+             o    If you specify only the file name, the XML file
+                  must        reside       in       the       as-
+                  install/domains/domain1/config directory on the
+                  DAS  host. This requirement must be met even if
+                  you run the subcommand from another host.
+
+             o    If you specify a relative path,  the  XML  file
+                  must be in the relative directory.
          An example XML file follows.
 
        <?xml version="1.0" encoding="UTF-8"?>
@@ -81,6 +97,11 @@ OPERANDS
           datasource-classname="oracle.jdbc.pool.OracleDataSource">
          <property name="URL"
            value="jdbc:oracle:thin:@iasperfsol12:1521:specdb"/>
+
+Java EE 6            Last change: 6 Dec 2010                    2
+
+asadmin Utility Subcommands                      add-resources(1)
+
          <property name="User" value="spec"/>
          <property name="Password" value="spec"/>
          <property name="MaxStatements" value="200"/>
@@ -97,11 +118,6 @@ EXAMPLES
      file resource.xml.
 
        asadmin> add-resources resource.xml
-
-Java EE 6           Last change: 29 Nov 2010                    2
-
-asadmin Utility Subcommands                      add-resources(1)
-
        Command : Connector connection pool jms/testQFactoryPool created.
        Command : Administered object jms/testQ created.
        Command : Connector resource jms/testQFactory created.
@@ -126,5 +142,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 29 Nov 2010                    3
+Java EE 6            Last change: 6 Dec 2010                    3
 

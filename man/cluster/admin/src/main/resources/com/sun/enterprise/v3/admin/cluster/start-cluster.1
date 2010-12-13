@@ -12,16 +12,21 @@ DESCRIPTION
      The start-cluster subcommand starts a  cluster  by  starting
      all  GlassFish  Server instances in the cluster that are not
      already running. This subcommand requires secure shell (SSH)
-     to be configured on the machine where the domain administra-
-     tion server (DAS) is  running  and  on  all  machines  where
-     instances in the cluster reside. You may run this subcommand
-     from any machine that can contact the DAS.
+     to be configured on the host where the domain administration
+     server (DAS) is running and on all hosts where instances  in
+     the cluster reside.
 
      Note -
 
-       To start a cluster on machines where SSH  is  not  config-
-       ured,  run the start-local-instance(1) subcommand for each
-       instance from the machine where the instance resides.
+       If all instances reside on the same host as the  DAS,  SSH
+       is  not  required. You might require to start a cluster in
+       which instances reside on hosts where SSH is  not  config-
+       ured  that are remote from the DAS. In this situation, run
+       the start-local-instance(1) subcommand for  each  instance
+       from the host where the instance resides.
+
+     You may run this subcommand from any host that  can  contact
+     the DAS.
 
      This subcommand is supported in remote mode only.
 
@@ -44,21 +49,22 @@ OPTIONS
 
          Valid values are as follows:
 
+Java EE 6            Last change: 7 Dec 2010                    1
+
+asadmin Utility Subcommands                      start-cluster(1)
+
          true
+
              Displays the command to start each instance  in  the
              cluster  and  whether  the  attempt  to  start  each
              instance succeeded.
 
-Java EE 6           Last change: 24 Sep 2010                    1
-
-asadmin Utility Subcommands                      start-cluster(1)
-
          false
-
              Displays no additional status information (default).
 
 OPERANDS
      cluster-name
+
          The name of the cluster to start.
 
 EXAMPLES
@@ -87,5 +93,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 24 Sep 2010                    2
+Java EE 6            Last change: 7 Dec 2010                    2
 

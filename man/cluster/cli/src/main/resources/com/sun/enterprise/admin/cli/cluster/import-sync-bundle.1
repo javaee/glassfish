@@ -3,7 +3,8 @@ asadmin Utility Subcommands                 import-sync-bundle(1)
 
 NAME
      import-sync-bundle - imports the  configuration  data  of  a
-     clustered instance or standalone instance from a ZIP archive
+     clustered  instance  or  standalone instance from an archive
+     file
 
 SYNOPSIS
      import-sync-bundle [--help]
@@ -13,12 +14,22 @@ SYNOPSIS
 
 DESCRIPTION
      The import-sync-bundle subcommand imports the  configuration
-     data  of  a clustered instance or standalone instance from a
-     ZIP archive that was created  by  the  export-sync-bundle(1)
-     subcommand. The subcommand must be run on the host where the
-     instance resides.
+     data  of a clustered instance or standalone instance from an
+     archive file that was created by  the  export-sync-bundle(1)
+     subcommand.
 
-     Importing an instance's configuration data is  required  for
+     You must run this subcommand on the host where the  instance
+     resides.  To contact the domain administration server (DAS),
+     this subcommand requires the name of the host where the  DAS
+     is running. If a nondefault port is used for administration,
+     this subcommand also requires the port number. You must pro-
+     vide  this  information through the --host option and the --
+     port option of the asadmin(1M) utility.
+
+     Importing an instance's  configuration  data  transfers  the
+     data  to  a  host  for  an instance without the need for the
+     instance to be able to communicate with the  DAS.  Importing
+     an  instance's configuration data  is typically required for
      the following reasons:
 
          o    To reestablish the instance after an upgrade
@@ -37,20 +48,20 @@ DESCRIPTION
 
      If the attempt to register the instance with the DAS  fails,
      the  subcommand  does  not  fail.  Instead,  the  subcommand
+
+Java EE 6            Last change: 7 Dec 2010                    1
+
+asadmin Utility Subcommands                 import-sync-bundle(1)
+
      displays a warning that the attempt failed. The warning con-
      tains  the  command to run to register the instance with the
      DAS.
 
      The import-sync-bundle subcommand does not contact  the  DAS
-     to  determine  the  node  on  which the instance resides. To
-     determine the node on which the instance resides,  the  sub-
-     command searches the directory that contains the node direc-
-     tories. If multiple node directories exist, the node must be
-     specified as an option of the subcommand.
-
-Java EE 6           Last change: 22 Oct 2010                    1
-
-asadmin Utility Subcommands                 import-sync-bundle(1)
+     to  determine the node on which the instance resides. If the
+     node is not specified as an option of  the  subcommand,  the
+     subcommand determines the node from the DAS configuration in
+     the archive file.
 
      This subcommand is supported in local mode only.
 
@@ -62,9 +73,10 @@ OPTIONS
 
      --instance
          The instance  for  which  configuration  data  is  being
-         imported.  The  instance  must  already  exist.  The ZIP
-         archive from which the data is being imported must  con-
-         tain data for the specified instance.
+         imported.  The  instance  must  already exist in the DAS
+         configuration. The archive file from which the  data  is
+         being  imported  must  contain  data  for  the specified
+         instance.
 
      --nodedir
 
@@ -73,35 +85,36 @@ OPTIONS
          node directory. The default is as-install/nodes.
 
      --node
-         The node on which the instance resides. This option  may
-         be  omitted  only  if  the  directory that the --nodedir
-         option specifies contains only one node directory.  Oth-
-         erwise, this option is required.
+         The node on which the instance resides. If  this  option
+         is  omitted, the subcommand determines the node from the
+         DAS configuration in the archive file.
 
 OPERANDS
      file-name
 
          The name of the file, including the path, that  contains
-         the ZIP archive to import. This operand is required.
+         the archive file to import. This operand is required.
 
 EXAMPLES
      Example 1  Importing  Configuration  Data  for  a  Clustered
      Instance
 
-     This example imports the  configuration  for  the  clustered
-     instance pmd-i-sj01 on the node sj01 from the ZIP archive in
-     the                                                     file
-     /export/glassfish3/glassfish/domains/domain1/sync/pmdcluster-
-     sync-bundle.zip.
-
-       asadmin> import-sync-bundle --instance pmd-i-sj01 --node sj01
-       /export/glassfish3/glassfish/domains/domain1/sync/pmdcluster-sync-bundle.zip
-
-       Command import-sync-bundle executed successfully.
-
-Java EE 6           Last change: 22 Oct 2010                    2
+Java EE 6            Last change: 7 Dec 2010                    2
 
 asadmin Utility Subcommands                 import-sync-bundle(1)
+
+     This example imports the  configuration  for  the  clustered
+     instance  ymli2  on  the  node  sj02  from  the archive file
+     /export/glassfish3/glassfish/domains/domain1/sync/ymlcluster-
+     sync-bundle.zip.
+
+     The command is run on the host sj02, which is the host  that
+     the  node  sj02  represents.  The DAS is running on the host
+     sr04 and uses the default HTTP port for administration.
+
+       sj02# asadmin --host sr04 import-sync-bundle --node sj02 --instance ymli2
+       /export/glassfish3/glassfish/domains/domain1/sync/ymlcluster-sync-bundle.zip
+       Command import-sync-bundle executed successfully.
 
 EXIT STATUS
      0                           command executed successfully
@@ -113,5 +126,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 22 Oct 2010                    3
+Java EE 6            Last change: 7 Dec 2010                    3
 

@@ -10,8 +10,8 @@ SYNOPSIS
 DESCRIPTION
      The list-configs subcommand lists  named  configurations  in
      the  configuration of the domain administration server (DAS)
-     in the domain.xml file. The list can be filtered by  cluster
-     or instance.
+     in the domain.xml file. The list can be filtered by cluster,
+     instance, or named configuration.
 
      This subcommand is supported in remote mode only.
 
@@ -40,15 +40,20 @@ OPERANDS
              Lists the named configuration that defines the  con-
              figuration of the specified instance.
 
+         configuration-name
+             Lists the specified named  configuration.  Use  this
+             option  to  determine  whether a named configuration
+             exits.
+
+Java EE 6            Last change: 7 Dec 2010                    1
+
+asadmin Utility Subcommands                       list-configs(1)
+
 EXAMPLES
      Example 1 Listing All Named Configurations in a Domain
 
      This example lists all named configurations in  the  current
      domain.
-
-Java EE 6            Last change: 9 Sep 2010                    1
-
-asadmin Utility Subcommands                       list-configs(1)
 
        asadmin> list-configs
        server-config
@@ -74,5 +79,5 @@ SEE ALSO
 
      configuration(5ASC)
 
-Java EE 6            Last change: 9 Sep 2010                    2
+Java EE 6            Last change: 7 Dec 2010                    2
 

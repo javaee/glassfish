@@ -49,7 +49,7 @@ OPTIONS
          HTTP_LISTENER_PORT
              This property specifies the port number of the  port
 
-Java EE 6           Last change: 10 Nov 2010                    1
+Java EE 6            Last change: 7 Dec 2010                    1
 
 asadmin Utility Subcommands                        copy-config(1)
 
@@ -100,7 +100,7 @@ asadmin Utility Subcommands                        copy-config(1)
              Message  Service provider. Valid values are 1-65535.
              On UNIX,  creating  sockets  that  listen  on  ports
 
-Java EE 6           Last change: 10 Nov 2010                    2
+Java EE 6            Last change: 7 Dec 2010                    2
 
 asadmin Utility Subcommands                        copy-config(1)
 
@@ -129,10 +129,44 @@ OPERANDS
 
      destination-configuration-name
          The name of the configuration that you are  creating  by
-         copying  the  source  configuration.  This  name must be
-         unique within a domain and must not be  the  name  of  a
-         cluster,  a  GlassFishTM Server instance, another confi-
-         guration, or a node.
+         copying the source configuration.
+
+         The name must meet the following requirements:
+
+             o    The name must start with a letter, a number, or
+                  an underscore.
+
+             o    The name may contain only the following charac-
+                  ters:
+
+                 o    Lowercase letters
+
+                 o    Uppercase letters
+
+                 o    Numbers
+
+                 o    Hyphen
+
+                 o    Period
+
+                 o    Underscore
+
+Java EE 6            Last change: 7 Dec 2010                    3
+
+asadmin Utility Subcommands                        copy-config(1)
+
+                 o    Slash
+
+                 o    Hash
+
+             o    The name must be unique in the domain and  must
+                  not  be  the name of a another named configura-
+                  tion, a cluster, a GlassFishTM Server  instance
+                  , or a node.
+
+             o    The name must not be  domain,  server,  or  any
+                  other  keyword  that  is  reserved by GlassFish
+                  Server.
 
 EXAMPLES
      Example 1 Copying a Configuration
@@ -149,10 +183,6 @@ EXAMPLES
        --systemproperties HTTP_LISTENER_PORT=2000:HTTP_SSL_LISTENER_PORT=3000
        default-config pmdsaconfig
 
-Java EE 6           Last change: 10 Nov 2010                    3
-
-asadmin Utility Subcommands                        copy-config(1)
-
        Command copy-config executed successfully.
 
 EXIT STATUS
@@ -165,5 +195,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 10 Nov 2010                    4
+Java EE 6            Last change: 7 Dec 2010                    4
 

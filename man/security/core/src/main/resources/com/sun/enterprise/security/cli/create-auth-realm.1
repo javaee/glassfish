@@ -175,79 +175,109 @@ asadmin Utility Subcommands                  create-auth-realm(1)
 
          digest-algorithm
              (Optional)  Specifies  the  digest  algorithm.   The
-             default  is MD5. You can use any algorithm supported
-             in the JDK, or none.
+             default  is  SHA-256. You can use any algorithm sup-
+             ported in the JDK, or none.
 
-         encoding
+             Note -
 
-             (Optional) Specifies the  encoding.  Allowed  values
-             are  Hex  and  Base64. If digest-algorithm is speci-
-             fied, the default is Hex. If digest-algorithm is not
-             specified, by default no encoding is specified.
+               In versions of GlassFish Server prior to 3.1,  the
+               default  algorithm  was  MD5. If you have applica-
+               tions that depend on the MD5  algorithm,  you  can
+               override the default SHA-25 algorithm by using the
+               asadmin set subcommand:
 
-         charset
-             (Optional) Specifies  the  charset  for  the  digest
-             algorithm.
+                 asadmin> set server.security-service.property.default-digest-algorithm=MD5
 
-             o    You can specify the  following  properties  for
-                  LDAPRealm:
+                 You can use the asadmin get subcommand to deter-
+                 mine what algorithm is currently being used:
 
-         directory
+                   asadmin> get server.security-service.property.default-digest-algorithm
 
-             Specifies the LDAP URL to your server.
+                   Also note that, to maintain backward  compati-
+                   bility,   if  an  upgrade  is  performed  from
+                   GlassFish Server v2.x or v3.0.x  to  GlassFish
 
 Java EE 6           Last change: 20 Sep 2010                    4
 
 asadmin Utility Subcommands                  create-auth-realm(1)
 
-         base-dn
+                   Server 3.1, the default algorithm is automati-
+                   cally set to MD5 in  cases  where  the  digest
+                   algorithm  had  not been explicitly set in the
+                   older GlassFish Server version.
 
-             Specifies the LDAP base DN for the location of  user
-             data.  This  base  DN  can be at any level above the
-             user data, since a tree scope search  is  performed.
-             The  smaller the search tree, the better the perfor-
-             mance.
+               encoding
 
-         search-filter
-             (Optional) Specifies the search  filter  to  use  to
-             find  the user. The default is uid=%s (%s expands to
-             the subject name).
+                   (Optional)  Specifies  the  encoding.  Allowed
+                   values are Hex and Base64. If digest-algorithm
+                   is specified, the default is Hex.  If  digest-
+                   algorithm  is  not  specified,  by  default no
+                   encoding is specified.
 
-         group-base-dn
+               charset
+                   (Optional) Specifies the charset for the  dig-
+                   est algorithm.
 
-             (Optional) Specifies the base DN for the location of
-             groups  data. By default, it is same as the base-dn,
-             but it can be tuned, if necessary.
+                   o    You can specify the following  properties
+                        for LDAPRealm:
 
-         group-search-filter
-             (Optional) Specifies the search filter to find group
-             memberships   for   the   user.   The   default   is
-             uniquemember=%d (%d expands to the user elementDN).
+               directory
 
-         group-target
+                   Specifies the LDAP URL to your server.
 
-             (Optional) Specifies the LDAP  attribute  name  that
-             contains group name entries. The default is CN.
+               base-dn
+                   Specifies the LDAP base DN for the location of
+                   user  data.  This  base DN can be at any level
+                   above the user data, since a tree scope search
+                   is performed. The smaller the search tree, the
+                   better the performance.
 
-         search-bind-dn
-             (Optional) Specifies an optional DN used to  authen-
-             ticate  to  the directory for performing the search-
-             filter lookup. Only required for directories that do
-             not allow anonymous search.
+               search-filter
 
-         search-bind-password
+                   (Optional) Specifies the search filter to  use
+                   to  find  the  user. The default is uid=%s (%s
+                   expands to the subject name).
 
-             (Optional) Specifies the LDAP password  for  the  DN
-             given in search-bind-dn.
+               group-base-dn
+                   (Optional) Specifies the base DN for the loca-
+                   tion of groups data. By default, it is same as
+                   the base-dn, but it can be  tuned,  if  neces-
+                   sary.
+
+               group-search-filter
+
+                   (Optional) Specifies the search filter to find
+
+Java EE 6           Last change: 20 Sep 2010                    5
+
+asadmin Utility Subcommands                  create-auth-realm(1)
+
+                   group memberships for the user. The default is
+                   uniquemember=%d  (%d  expands  to   the   user
+                   elementDN).
+
+               group-target
+
+                   (Optional) Specifies the LDAP  attribute  name
+                   that  contains group name entries. The default
+                   is CN.
+
+               search-bind-dn
+                   (Optional) Specifies an optional  DN  used  to
+                   authenticate  to  the directory for performing
+                   the search-filter lookup.  Only  required  for
+                   directories   that   do  not  allow  anonymous
+                   search.
+
+               search-bind-password
+
+                   (Optional) Specifies the LDAP password for the
+                   DN given in search-bind-dn.
 
 OPERANDS
      auth_realm_name
          A short name for the realm. This name is used  to  refer
          to the realm from, for example, web.xml.
-
-Java EE 6           Last change: 20 Sep 2010                    5
-
-asadmin Utility Subcommands                  create-auth-realm(1)
 
 EXAMPLES
      Example 1 Creating a New Authentication Realm
@@ -262,6 +292,10 @@ EXAMPLES
 
      Where file is the authentication realm created.
 
+Java EE 6           Last change: 20 Sep 2010                    6
+
+asadmin Utility Subcommands                  create-auth-realm(1)
+
 EXIT STATUS
      0                           subcommand executed successfully
 
@@ -273,5 +307,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 20 Sep 2010                    6
+Java EE 6           Last change: 20 Sep 2010                    7
 

@@ -10,10 +10,18 @@ SYNOPSIS
 DESCRIPTION
      The delete-instance subcommand deletes  a  GlassFish  Server
      instance.  This subcommand requires secure shell (SSH) to be
-     configured on the machine where  the  domain  administration
-     server  (DAS)  is  running  and  on  the  machine  where the
-     instance resides. You  may  run  this  subcommand  from  any
-     machine that can contact the DAS.
+     configured on  the  host  where  the  domain  administration
+     server  (DAS) is running and on the host that is represented
+     by the node where the instance resides.
+
+     Note -
+
+       SSH is not required if the instance resides on a  node  of
+       type CONFIG that represents the local host. A node of type
+       CONFIG is not enabled for communication over SSH.
+
+     You may run this subcommand from any host that  can  contact
+     the DAS.
 
      The subcommand can delete  any  GlassFish  Server  instance,
      regardless  of  how  the  instance was created. For example,
@@ -38,6 +46,11 @@ DESCRIPTION
      If a standalone instance is deleted,  the  instance's  stan-
      dalone  configuration is also deleted. A standalone instance
      refers to a configuration that is named instance-name-config
+
+Java EE 6           Last change: 19 Aug 2010                    1
+
+asadmin Utility Subcommands                    delete-instance(1)
+
      to which no other clusters or unclustered instances refer.
 
      This subcommand is supported in remote mode only.
@@ -48,13 +61,8 @@ OPTIONS
 
          Displays the help text for the subcommand.
 
-Java EE 6           Last change: 19 Aug 2010                    1
-
-asadmin Utility Subcommands                    delete-instance(1)
-
 OPERANDS
      instance-name
-
          The name of the instance to delete.
 
 EXAMPLES
@@ -75,7 +83,7 @@ EXIT STATUS
 SEE ALSO
      create-instance(1), create-local-instance(1),  delete-local-
      instance(1),  setup-ssh(1),  start-instance(1), start-local-
-     instance(1), stop-instance(1) stop-local-instance(1)
+     instance(1), stop-instance(1), stop-local-instance(1)
 
      asadmin(1M)
 

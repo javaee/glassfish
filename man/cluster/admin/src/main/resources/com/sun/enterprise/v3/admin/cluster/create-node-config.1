@@ -12,18 +12,13 @@ SYNOPSIS
 
 DESCRIPTION
      The create-node-config subcommand creates a node that is not
-     enabled for remote communication.
+     enabled  for  remote  communication.  The create-node-config
+     subcommand does not require SSH to be configured  to  create
+     the node.
 
      A node represents a  host  on  which  the  GlassFish  Server
      software  is  installed. A node must exist for every host on
      which GlassFish Server instances reside.
-
-     All operations on a node that is not enabled for remote com-
-     munication  must  be  performed  on  the  host that the node
-     represents. The domain  administration  server  (DAS)  on  a
-     remote  host cannot contact the node. The create-node-config
-     subcommand does not require SSH to be configured  to  create
-     the node.
 
      Note -
 
@@ -32,45 +27,58 @@ DESCRIPTION
        fined node localhost is not enabled for remote  communica-
        tion.
 
+     All administration of  instances  on  a  node  that  is  not
+     enabled  for  remote  communication must be performed on the
+     host that the node  represents.  The  domain  administration
+     server  (DAS)  on  a remote host cannot contact the node. To
+     administer instances on a node that represents a  host  that
+     is  remote  from the DAS, you must use the following subcom-
+     mands:
+
+         o    create-local-instance(1)
+
+         o    delete-local-instance(1)
+
+         o    start-local-instance(1)
+
+     However,  you  may  use  stop-local-instance(1)   or   stop-
+     instance(1) to stop the instances.
+
      This subcommand is supported in remote mode only.
 
 OPTIONS
+
+Java EE 6            Last change: 9 Dec 2010                    1
+
+asadmin Utility Subcommands                 create-node-config(1)
+
      --help
      -?
 
          Displays the help text for the subcommand.
 
      --nodehost
-         The name of the host that the node  represents.  If  the
-         name  of  the  host is omitted, no host is specified for
-         the node.
+         The name of the host that the node represents.  If  this
+         option is omitted, no host is specified for the node.
 
      --installdir
 
          The full path to the parent  of  the  base  installation
-
-Java EE 6           Last change: 15 Oct 2010                    1
-
-asadmin Utility Subcommands                 create-node-config(1)
-
          directory  of the GlassFish Server software on the host,
-         for example, /export/glassfish3/.  The  default  is  the
-         parent of the default base installation directory of the
-         GlassFish Server software for the DAS. This  default  is
-         useful only if GlassFish Server is installed in the same
-         location on all hosts.
+         for example,  /export/glassfish3/.  If  this  option  is
+         omitted, no parent of the base installation directory of
+         the GlassFish Server software is specified for the node.
 
      --nodedir
-
          The path to the directory that is to  contain  GlassFish
-         Server  instances  that  are  created  on  the node. The
-         default is as-install/nodes,  where  as-install  is  the
-         base  installation  directory  of  the  GlassFish Server
-         software on the host. If a relative path  is  specified,
-         the path is relative to the as-install directory.
+         Server  instances  that  are  created  on the node. If a
+         relative path is specified, the path is relative to  the
+         as-install  directory.   If  this  option is omitted, no
+         directory for instances is specified for the node.
 
 OPERANDS
      node-name
+
          The name of the node.
 
          The name must meet the following requirements:
@@ -93,6 +101,10 @@ OPERANDS
 
                  o    Underscore
 
+Java EE 6            Last change: 9 Dec 2010                    2
+
+asadmin Utility Subcommands                 create-node-config(1)
+
                  o    Slash
 
                  o    Hash
@@ -103,11 +115,6 @@ OPERANDS
                   instance.
 
              o    The name must not be  domain,  server,  or  any
-
-Java EE 6           Last change: 15 Oct 2010                    2
-
-asadmin Utility Subcommands                 create-node-config(1)
-
                   other  keyword  that  is  reserved by GlassFish
                   Server.
 
@@ -129,11 +136,13 @@ EXIT STATUS
      1                           error in executing the command
 
 SEE ALSO
-     create-node-ssh(1), delete-node-config(1),  install-node(1),
-     list-nodes(1),   uninstall-node(1),   update-node-config(1),
+     create-local-instance(1), create-node-ssh(1),  delete-local-
+     instance(1),  delete-node-config(1),  install-node(1), list-
+     nodes(1), start-local-instance(1),  stop-instance(1),  stop-
+     local-instance(1), uninstall-node(1), update-node-config(1),
      update-node-ssh(1)
 
      asadmin(1M)
 
-Java EE 6           Last change: 15 Oct 2010                    3
+Java EE 6            Last change: 9 Dec 2010                    3
 

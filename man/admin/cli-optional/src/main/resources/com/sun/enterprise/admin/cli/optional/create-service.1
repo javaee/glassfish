@@ -6,9 +6,9 @@ NAME
      GlassFish Server instance on an unattended boot
 
 SYNOPSIS
-     create-service [--help] [--name name]
+     create-service [--help] [--name servicename]
      [--serviceproperties serviceproperties]
-     [--dry-run={false|true}] [--force[={false|true}]
+     [--dry-run={false|true}] [--force={false|true}]
      [--serviceuser serviceuser]
      [--domaindir domain-dir]
      [--nodedir node-dir] [--node node]
@@ -17,11 +17,14 @@ SYNOPSIS
 DESCRIPTION
      The create-service subcommand configures the starting  of  a
      domain  administration  server  (DAS)  or a GlassFish Server
-     instance on an unattended boot on Windows, Ubuntu Linux, and
-     Oracle Solaris systems.
+     instance on an unattended boot on Windows, Linux, and Oracle
+     Solaris systems.
 
-     If no arguments are specified, the subcommand configures the
-     starting of the default domain.
+     If no operand is specified and the  domains  directory  con-
+     tains  only one domain, the subcommand configures the start-
+     ing of the DAS for the default  domain.  If  no  operand  is
+     specified   and  the  domains  directory  contains  multiple
+     domains, an error occurs.
 
      If the operand specifies  an  instance,  the  create-service
      subcommand does not contact the domain administration server
@@ -31,8 +34,8 @@ DESCRIPTION
      directories.  If  multiple  node directories exist, the node
      must be specified as an option of the subcommand.
 
-     The subcommand can determine whether the supplied operand is
-     a DAS or an instance.
+     The subcommand contains internal logic to determine  whether
+     the supplied operand is a DAS or an instance.
 
      This subcommand is supported in local mode only.
 
@@ -43,13 +46,16 @@ DESCRIPTION
      Services  Manager  or the Windows Services Wrapper to start,
      stop, uninstall, or install the service.
 
+Java EE 6           Last change: 10 Dec 2010                    1
+
+asadmin Utility Subcommands                     create-service(1)
+
+     On Windows systems, this subcommand must be run as  the  OS-
+     level administrator user.
+
      The  subcommand  creates  the  following  Windows   Services
      Wrapper  files  for the service in the domain-dir\bin direc-
      tory or the instance-dir\bin directory:
-
-Java EE 6           Last change: 21 Oct 2010                    1
-
-asadmin Utility Subcommands                     create-service(1)
 
          o    Configuration file: service-nameService.xml
 
@@ -62,44 +68,53 @@ asadmin Utility Subcommands                     create-service(1)
      On Linux systems, the create-service  subcommand  creates  a
      System-V-style             initialization             script
      /etc/init.d/GlassFish_domain-or-instance-name and installs a
-     link  to  this  script.  After  this  subcommand creates the
-     script, you must use this script to start, stop, or  restart
-     the domain or instance.
+     link  to  this  script  in the /etc/rc?.d directories. After
+     this subcommand creates the script, you must use this script
+     to start, stop, or restart the domain or instance.
+
+     On Linux systems, this subcommand must be  run  as  the  OS-
+     level root user.
 
   Behavior of create-service on Oracle Solaris Systems
      On Oracle Solaris  systems,  the  create-service  subcommand
      creates  a  Service  Management  Facility  (SMF)  service to
-     represent the DAS or instance. After this subcommand creates
-     the  service,  you  must  use SMF commands to start, enable,
-     disable, delete, or stop the service.
+     represent  the  DAS  or  instance.   After  this  subcommand
+     creates  the  service,  you  must use SMF commands to start,
+     enable, disable, delete,  or  stop  the  service.  For  more
+     information  about  SMF, see the following documentation for
+     the Oracle Solaris operating system:
 
-     This subcommand must  be  run  as  the  OS-level  user  with
-     superuser  privileges. The configuration file for the DAS or
-     instance  must  be  stored  in  a  directory  to  which  the
-     superuser  has access and cannot be stored on a network file
-     system. The service that is created  is  controlled  by  the
-     OS-level user who owns the directory where the configuration
-     of the DAS or instance resides.
+         o    Chapter 18, Managing Services (Overview), in System
+              Administration Guide: Basic Administration
+
+         o    Chapter 19, Managing Services  (Tasks),  in  System
+              Administration Guide: Basic Administration
+
+     On Oracle Solaris systems, this subcommand must  be  run  as
+     the  OS-level user with superuser privileges. The configura-
+     tion file for the DAS or instance must be stored in a direc-
+     tory  to which the superuser has access and cannot be stored
+     on a network file system. The service  that  is  created  is
+     controlled by the OS-level user who owns the directory where
+     the configuration of the DAS or instance resides.
+
+Java EE 6           Last change: 10 Dec 2010                    2
+
+asadmin Utility Subcommands                     create-service(1)
+
+     On Oracle Solaris systems, the manifest file is  created  in
+     the following directory:
+
+       /var/svc/manifest/application/GlassFish/domain-or-instance-name_domain-or-instance-root-dir
 
      To run this subcommand, you must have solaris.smf.* authori-
      zation. For information about how to grant authorizations to
      users, see the useradd(1M) and usermod(1M) man pages.
 
-     On Oracle Solaris, the manifest file is created in the  fol-
-     lowing directory:
-
-       /var/svc/manifest/application/GlassFish/domain-or-instance-name_domain-or-instance-root-dir
-
-     You must also have write permission in  the  directory  tree
-     /var/svc/manifest/application/GlassFish.     Usually,    the
-     superuser has both these permissions. To run these  commands
-     as non-root user, the system administrator must be contacted
-     so that the relevant authorizations are granted.   You  must
-     also ensure that the following conditions are met:
-
-Java EE 6           Last change: 21 Oct 2010                    2
-
-asadmin Utility Subcommands                     create-service(1)
+     To run these commands as non-root user, the system  adminis-
+     trator must be contacted so that the relevant authorizations
+     are granted.  You must also ensure that the following condi-
+     tions are met:
 
          o    Oracle Solaris 10 administration commands  such  as
               svccfg(1M),  svcs(1),  and  auths(1)  are available
@@ -108,7 +123,8 @@ asadmin Utility Subcommands                     create-service(1)
               the command which svccfg in the shell.
 
          o    You  must  have  write  permission  for  the   path
-              /var/svc/manifest/application/GlassFish.
+              /var/svc/manifest/application/GlassFish.   Usually,
+              the superuser has write permission to this path.
 
      If you delete a  service  that  you  created  by  using  the
      create-service  subcommand,  you  must  delete the directory
@@ -131,6 +147,10 @@ OPTIONS
          tem. If a default is present, this  name  overrides  the
          default.
 
+Java EE 6           Last change: 10 Dec 2010                    3
+
+asadmin Utility Subcommands                     create-service(1)
+
      --serviceproperties
 
          (Oracle Solaris systems  only)   Specifies  a  colon(:)-
@@ -146,10 +166,6 @@ OPTIONS
          issues  and  the  outcome that will occur if you run the
          command without using the --dry-run option.  Nothing  is
          actually configured. Default is false.
-
-Java EE 6           Last change: 21 Oct 2010                    3
-
-asadmin Utility Subcommands                     create-service(1)
 
      --force
 
@@ -176,11 +192,15 @@ asadmin Utility Subcommands                     create-service(1)
      --domaindir
 
          The absolute path of the directory on the disk that con-
-         tains  the  configuration  of the domain. This is the If
-         this option is specified, the  operand  must  specify  a
-         domain.
+         tains the configuration of the domain. If this option is
+         specified, the operand must specify a domain.
+
+Java EE 6           Last change: 10 Dec 2010                    4
+
+asadmin Utility Subcommands                     create-service(1)
 
      --nodedir
+
          Specifies the directory  that  contains  the  instance's
          node  directory.  The instance's files are stored in the
          instance's  node   directory.   The   default   is   as-
@@ -188,16 +208,11 @@ asadmin Utility Subcommands                     create-service(1)
          must specify an instance.
 
      --node
-
          Specifies the node on which the instance  resides.  This
          option  may be omitted only if the directory that the --
          nodedir option specifies contains only one  node  direc-
          tory. Otherwise, this option is required. If this option
          is specified, the operand must specify an instance.
-
-Java EE 6           Last change: 21 Oct 2010                    4
-
-asadmin Utility Subcommands                     create-service(1)
 
 OPERANDS
      domain-or-instance-name
@@ -233,40 +248,31 @@ EXAMPLES
        root directory
        Command create-service executed successfully.
 
+Java EE 6           Last change: 10 Dec 2010                    5
+
+asadmin Utility Subcommands                     create-service(1)
+
      Example 2 Creating a Service on a Linux System
 
      This example creates a service for the default domain  on  a
      system that is running Linux.
 
        asadmin> create-service
-        Adding system startup for /etc/init.d/GlassFish_domain1 ...
-          /etc/rc0.d/K20GlassFish_domain1 -> ../init.d/GlassFish_domain1
-          /etc/rc1.d/K20GlassFish_domain1 -> ../init.d/GlassFish_domain1
-          /etc/rc6.d/K20GlassFish_domain1 -> ../init.d/GlassFish_domain1
-          /etc/rc2.d/S20GlassFish_domain1 -> ../init.d/GlassFish_domain1
-          /etc/rc3.d/S20GlassFish_domain1 -> ../init.d/GlassFish_domain1
-
-Java EE 6           Last change: 21 Oct 2010                    5
-
-asadmin Utility Subcommands                     create-service(1)
-
-          /etc/rc4.d/S20GlassFish_domain1 -> ../init.d/GlassFish_domain1
-          /etc/rc5.d/S20GlassFish_domain1 -> ../init.d/GlassFish_domain1
+       Found the Linux Service and successfully uninstalled it.
        The Service was created successfully. Here are the details:
        Name of the service:domain1
-       Type of the service:Instance
+       Type of the service:Domain
        Configuration location of the service:/etc/init.d/GlassFish_domain1
        User account that will run the service: root
-       You have created the service but you need to start it yourself.  Here
-       are the most typical Linux commands of interest:
+       You have created the service but you need to start it yourself.
+       Here are the most typical Linux commands of interest:
 
        * /etc/init.d/GlassFish_domain1 start
        * /etc/init.d/GlassFish_domain1 stop
        * /etc/init.d/GlassFish_domain1 restart
-       * update-rc.d GlassFish_domain1 remove // make sure to delete
-       /etc/init.d/GlassFish_domain1 first
+
        For your convenience this message has also been saved to this file:
-       /export/glassfish3/glassfish/nodes/localhost/domain1
+       /export/glassfish3/glassfish/domains/domain1/PlatformServices.log
        Command create-service executed successfully.
 
      Example 3 Creating a Service on an Oracle Solaris System
@@ -291,12 +297,12 @@ asadmin Utility Subcommands                     create-service(1)
        * /usr/sbin/svccfg delete domain1 // uninstall
        Command create-service executed successfully.
 
-EXIT STATUS
-     0                           subcommand executed successfully
-
-Java EE 6           Last change: 21 Oct 2010                    6
+Java EE 6           Last change: 10 Dec 2010                    6
 
 asadmin Utility Subcommands                     create-service(1)
+
+EXIT STATUS
+     0                           subcommand executed successfully
 
      1                           error in executing  the  subcom-
                                  mand
@@ -308,7 +314,12 @@ SEE ALSO
 
      svccfg(1M), useradd(1M), usermod(1M)
 
+     Chapter 18, Managing Services (Overview), in System Adminis-
+     tration  Guide:  Basic  Administration, Chapter 19, Managing
+     Services (Tasks),  in  System  Administration  Guide:  Basic
+     Administration
+
      Microsoft .NET Framework (http://www.microsoft.com/net/)
 
-Java EE 6           Last change: 21 Oct 2010                    7
+Java EE 6           Last change: 10 Dec 2010                    7
 

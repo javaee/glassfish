@@ -5,7 +5,8 @@ NAME
      delete-cluster - deletes a GlassFish Server cluster
 
 SYNOPSIS
-     delete-cluster [--help] [--autohadboverride={true|false}]
+     delete-cluster [--help]
+     [--autohadboverride={true|false}] [--node-agent=node-agent--name]
      cluster-name
 
 DESCRIPTION
@@ -15,9 +16,12 @@ DESCRIPTION
      are  deleting  contains  any  instances, stop and delete the
      instances before deleting the cluster.
 
-     If no other clusters or unclustered instances refer  to  the
-     cluster's  named configuration, the configuration is deleted
-     when the cluster is deleted.
+     If the cluster's named configuration was  created  automati-
+     cally  for  the cluster and no other clusters or unclustered
+     instances refer to the configuration, the  configuration  is
+     deleted when the cluster is deleted. A configuration that is
+     created automatically for a cluster is  named  cluster-name-
+     config, where cluster-name is the name of the cluster.
 
      This command is supported in remote mode only.
 
@@ -33,10 +37,20 @@ OPTIONS
          option, a syntax error does not occur. Instead, the sub-
          command runs successfully and the option is ignored.
 
+     --nodeagent
+
+         Do not specify this option. This option is retained  for
+         compatibility  with  other releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command runs successfully and the option is ignored.
+
 OPERANDS
      cluster-name
-
          The name of the cluster to delete.
+
+Java EE 6            Last change: 7 Dec 2010                    1
+
+asadmin Utility Subcommands                     delete-cluster(1)
 
 EXAMPLES
      Example 1 Deleting a GlassFish Server Cluster
@@ -46,10 +60,6 @@ EXAMPLES
 
        asadmin> delete-cluster adccluster
        Command delete-cluster executed successfully.
-
-Java EE 6           Last change: 11 Oct 2010                    1
-
-asadmin Utility Subcommands                     delete-cluster(1)
 
 EXIT STATUS
      0                           command executed successfully
@@ -63,5 +73,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 11 Oct 2010                    2
+Java EE 6            Last change: 7 Dec 2010                    2
 

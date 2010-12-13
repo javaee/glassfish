@@ -5,7 +5,7 @@ NAME
      list-jndi-entries - browses and queries the JNDI tree
 
 SYNOPSIS
-     list-jndi-entries[--help]
+     list-jndi-entries [--help]
      [--context context_name]
      [target]
 
@@ -35,7 +35,8 @@ OPERANDS
 
          server
              Browses the JNDI tree for  the  default  GlassFishTM
-             Server instance (default).
+             Server  instance  (default). The default instance is
+             the domain administration server (DAS).
 
          domain
 
@@ -44,14 +45,13 @@ OPERANDS
          cluster-name
              Browses the JNDI tree for the specified cluster.
 
-         instance-name
-
-             Browses the JNDI tree for  the  specified  GlassFish
-
-Java EE 6           Last change: 21 Oct 2010                    1
+Java EE 6            Last change: 7 Dec 2010                    1
 
 asadmin Utility Subcommands                  list-jndi-entries(1)
 
+         instance-name
+
+             Browses the JNDI tree for  the  specified  GlassFish
              Server instance.
 
 EXAMPLES
@@ -81,5 +81,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 21 Oct 2010                    2
+Java EE 6            Last change: 7 Dec 2010                    2
 
