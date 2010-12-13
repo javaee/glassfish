@@ -43,17 +43,15 @@ package org.glassfish.javaee.services;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.ContractProvided;
 import com.sun.grizzly.arp.AsyncFilter;
-import com.sun.grizzly.comet.CometAsyncFilter;
+import com.sun.grizzly.websockets.WebSocketAsyncFilter;
 
 /**
- * Comet service.
+ * Websockets service.
  *
- * @Author Jerome Dochez
- * Date: Apr 16, 2008
- * Time: 1:38:51 PM
+ * @Author Alexey Stashok
  */
-@Service(name="comet")
+@Service(name="websockets")
 @ContractProvided(AsyncFilter.class)
-public class CometAsyncFilterProvider extends CometAsyncFilter {
+public class WebSocketsAsyncFilterProvider extends WebSocketAsyncFilter {
 
 }
