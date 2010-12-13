@@ -121,13 +121,13 @@ public class JarUtil {
         for (String rarName : systemRarNames) {
             extracted = extracted & extractRar(installDir, rarName);
         }
-        
-        if (extracted) {
-            // TODO :: check if this is fine, although it works!
-            System.setProperty("com.sun.aas.imqLib",
-                    getSystemModuleLocation(installDir, DEFAULT_JMS_ADAPTER));
-        }
         return extracted;
+    }
+
+    public static void setEnv(String installDir) {
+        String imqLib =  System.getProperty("com.sun.aas.imqLib",
+                getSystemModuleLocation(installDir, DEFAULT_JMS_ADAPTER));
+        System.setProperty("com.sun.aas.imqLib", imqLib);
     }
 
     public static boolean extractRar(String installDir, String rarName) {

@@ -173,6 +173,8 @@ public class StaticGlassFishRuntime extends GlassFishRuntime {
             installRootValue = instanceRoot.getAbsolutePath();
             JarUtil.extractRars(installRootValue);
         }
+        JarUtil.setEnv(installRootValue);
+
         File installRoot = new File(installRootValue);
 
         // Some legacy code might depend on setting installRoot as system property.
