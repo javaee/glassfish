@@ -412,7 +412,7 @@ public class NodeUtils {
                 // Command ran, but didn't succeed. Log full information
                 msg2 = Strings.get("node.command.failed", nodeName,
                         nodeHost, output.toString().trim(), nr.getLastCommandRun());
-                logger.warning(StringUtils.cat(": ", msg1, msg2));
+                logger.warning(StringUtils.cat(": ", msg1, msg2, msg3));
                 // Don't expose command name to user in case it is a hidden command
                 msg2 = Strings.get("node.command.failed.short", nodeName,
                         nodeHost, output.toString().trim());
@@ -427,20 +427,20 @@ public class NodeUtils {
             String msg = Strings.get("node.command.failed.ssh.details",
                     nodeName, nodeHost, ec.getCommandRun(), ec.getMessage(),
                     ec.getSSHSettings());
-            logger.warning(StringUtils.cat(": ", msg1, msg));
+            logger.warning(StringUtils.cat(": ", msg1, msg, msg3));
         } catch (ProcessManagerException ex) {
             msg2 = Strings.get("node.command.failed.local.details",
                     ex.getMessage(), nr.getLastCommandRun());
-            logger.warning(StringUtils.cat(": ", msg1, msg2));
+            logger.warning(StringUtils.cat(": ", msg1, msg2, msg3));
             // User message doesn't have command that was run
             msg2 = Strings.get("node.command.failed.local.exception",
                     ex.getMessage());
         } catch (UnsupportedOperationException e) {
             msg2 = Strings.get("node.not.ssh", nodeName, nodeHost);
-            logger.warning(StringUtils.cat(": ", msg1, msg2));
+            logger.warning(StringUtils.cat(": ", msg1, msg2, msg3));
         } catch (IllegalArgumentException e) {
             msg2 = e.getMessage();
-            logger.warning(StringUtils.cat(": ", msg1, msg2));
+            logger.warning(StringUtils.cat(": ", msg1, msg2, msg3));
         }
 
         if (failure) {
