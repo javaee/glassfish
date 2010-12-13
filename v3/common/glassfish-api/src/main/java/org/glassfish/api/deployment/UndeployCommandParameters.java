@@ -71,7 +71,7 @@ public class UndeployCommandParameters extends OpsParams {
 
     //used for internal purposes only, not to expose to user 
     @Param(optional=true, defaultValue="false", name="_ignoreCascade")
-    public Boolean _ignoreCascade;
+    public Boolean _ignoreCascade = false;
 
     @Param(optional=true, separator=':')
     public Properties properties=null;
