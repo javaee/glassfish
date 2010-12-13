@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,84 +37,46 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package com.sun.enterprise.configapi.tests.validation;
 
-import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
+import com.sun.enterprise.config.serverbeans.AdminService;
 import com.sun.enterprise.configapi.tests.ConfigApiTest;
-import java.beans.PropertyVetoException;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
+import junit.framework.Assert;
 import org.junit.Test;
-import org.jvnet.hk2.config.ValidationException;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 
 import javax.validation.ConstraintViolationException;
+import java.beans.PropertyVetoException;
 
 /**
- *
- * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net)
+ * Test Field validation
  */
-public class JdbcConnectionPoolValidationTest extends ConfigApiTest {
 
-    private JdbcConnectionPool pool = null;
-    private static final String NAME = "test"; //same as the one in JdbcConnectionPoolValidation.xml
+public class FieldsValidationTest extends ConfigApiTest {
 
-    public JdbcConnectionPoolValidationTest() {
-    }
-
-    @Override
     public String getFileName() {
-        return ("JdbcConnectionPoolValidation");
-    }
-
-    @Before
-    public void setUp() {
-        pool = super.getHabitat().getComponent(JdbcConnectionPool.class, NAME);
-    }
-
-    @After
-    public void tearDown() {
-        pool = null;
-    }
-
-    // TODO add test methods here.
-    // The methods must be annotated with annotation @Test. For example:
-    //
-    @Test (expected= ConstraintViolationException.class)
-    public void testBooleanDoesNotTakeInteger1() throws Throwable {
-        try {
-            ConfigSupport.apply(new SingleConfigCode<JdbcConnectionPool>() {
-                public Object run(JdbcConnectionPool jdbcConnectionPool) throws PropertyVetoException, TransactionFailure {
-                    jdbcConnectionPool.setConnectionLeakReclaim("123"); //this method should only take boolean;
-                    return null;
-                }
-            }, pool);
-
-        } catch(TransactionFailure e) {
-            throw e.getCause().getCause();
-        }
-    }
-
+        return "DomainTest";
+    }    
 
     @Test
-    public void testBooleanTakesTrueFalse() {
+    public void testNotNullField() {
+        AdminService admin = super.getHabitat().getByType(AdminService.class);
+        Assert.assertNotNull(admin);
         try {
-            pool.setSteadyPoolSize("true"); //this only takes a boolean
-            pool.setSteadyPoolSize("false"); //this only takes a boolean
-            pool.setSteadyPoolSize("TRUE"); //this only takes a boolean
-            pool.setSteadyPoolSize("FALSE"); //this only takes a boolean
-            pool.setSteadyPoolSize("FALSE"); //this only takes a boolean
-        } catch(PropertyVetoException pv) {
-            //ignore?
+            ConfigSupport.apply(new SingleConfigCode<AdminService>() {
+                @Override
+                public Object run(AdminService wAdmin) throws PropertyVetoException, TransactionFailure {
+                    wAdmin.setDasConfig(null);
+                    return null;
+                }
+            }, admin);
+            Assert.fail("Exception not raised when setting a @NotNull annotated field with null");
+        } catch(TransactionFailure e) {
+            if (e.getCause()!=null) {
+                Assert.assertTrue(e.getCause() instanceof ConstraintViolationException);
+            }
         }
     }
 }
