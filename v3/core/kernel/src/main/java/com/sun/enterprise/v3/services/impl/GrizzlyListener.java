@@ -48,6 +48,7 @@ import com.sun.grizzly.ProtocolChainInstanceHandler;
 import com.sun.grizzly.arp.AsyncFilter;
 import com.sun.grizzly.arp.AsyncHandler;
 import com.sun.grizzly.arp.DefaultAsyncHandler;
+import com.sun.grizzly.config.GrizzlyEmbeddedHttp;
 import com.sun.grizzly.config.dom.NetworkListener;
 import org.jvnet.hk2.component.Habitat;
 
@@ -156,10 +157,11 @@ public class GrizzlyListener extends MonitorableServiceListener {
     }
 
 
-    public void processDynamicConfigurationChange(PropertyChangeEvent[] events) {
+    public void processDynamicConfigurationChange(Habitat habitat,
+            PropertyChangeEvent[] events) {
         for (PropertyChangeEvent event: events) {
             if ("comet-support-enabled".equals(event.getPropertyName())) {
-                processDynamicCometConfiguration(event);
+                processDynamicCometConfiguration(habitat, event);
                 break;
             }
         }
@@ -169,17 +171,18 @@ public class GrizzlyListener extends MonitorableServiceListener {
     // --------------------------------------------------------- Private Methods
 
 
-    private void processDynamicCometConfiguration(PropertyChangeEvent event) {
+    private void processDynamicCometConfiguration(Habitat habitat,
+            PropertyChangeEvent event) {
         final boolean enableComet = Boolean.valueOf(event.getNewValue().toString());
         if (enableComet) {
-            enableComet();
+            enableComet(habitat);
         } else {
             disableComet();
         }
     }
 
-    private void enableComet() {
-        AsyncFilter cometFilter = createCometAsyncFilter();
+    private void enableComet(final Habitat habitat) {
+        AsyncFilter cometFilter = GrizzlyEmbeddedHttp.loadCometAsyncFilter(habitat);
         if (cometFilter == null) {
             return;
         }
@@ -209,20 +212,6 @@ public class GrizzlyListener extends MonitorableServiceListener {
         }
         getEmbeddedHttp().setEnableAsyncExecution(false);
     }
-
-    @SuppressWarnings({"unchecked"})
-    private AsyncFilter createCometAsyncFilter() {
-        try {
-            Class<? extends AsyncFilter> c =
-                    (Class<? extends AsyncFilter>) Class.forName("com.sun.grizzly.comet.CometAsyncFilter",
-                                                                 true,
-                                                                 Thread.currentThread().getContextClassLoader());
-            return c.newInstance();
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
 
     // ---------------------------------------------------------- Nested Classes
 
