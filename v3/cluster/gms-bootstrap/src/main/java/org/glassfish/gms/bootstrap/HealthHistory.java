@@ -107,6 +107,9 @@ public final class HealthHistory implements ConfigListener {
         healthMap = new ConcurrentHashMap<String, InstanceHealth>(
             cluster.getInstances().size());
         for (Server server : cluster.getInstances()) {
+            if (server.isDas()) {
+                continue;
+            }
             if (logger.isLoggable(Level.FINE)) {
                 logger.log(Level.FINE, String.format(
                     "instance name in HealthHistory constructor %s",
