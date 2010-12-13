@@ -67,8 +67,14 @@
         setPageSessionAttribute(key="childType" value="jdbc-connection-pool");
         gf.buildResourceUrl(base="#{pageSession.parentUrl}/#{pageSession.childType}", resourceName="#{pageSession.Name}", url="#{pageSession.resourceUrl}");
 
+        setPageSessionAttribute(key="poolGeneralAttrs" value={"resType" "datasourceClassname"
+            "driverClassname" "ping" "description" "steadyPoolSize" "maxPoolSize" "poolResizeQuantity"
+            "idleTimeoutInSeconds" "maxWaitTimeInMillis" "nonTransactionalConnections"
+            "transactionIsolationLevel" "isIsolationLevelGuaranteed"});
+
         setPageSessionAttribute(key="rest-api" value="true");
         gf.getEntityAttrs(endpoint="#{pageSession.resourceUrl}.json", valueMap="#{pageSession.valueMap}");
+        gf.filterMap(map="#{pageSession.valueMap}" attrNames="#{pageSession.poolGeneralAttrs}" keep="#{false}" resultMap="#{pageSession.valueMap}");
 
         setPageSessionAttribute(key="convertToFalseList" value={"wrapJdbcObjects" "pooling" "connectionLeakReclaim"
                                                                 "lazyConnectionAssociation" "lazyConnectionEnlistment"

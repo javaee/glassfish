@@ -656,6 +656,40 @@ public class CommonHandlers {
         handlerCtx.setOutputValue("table", results);
     }
 
+    @Handler(id = "gf.filterMap",
+        input = {
+            @HandlerInput(name = "map", type = java.util.Map.class, required = true),
+            @HandlerInput(name = "attrNames", type = java.util.List.class, required = true),
+            @HandlerInput(name = "keep", type = java.lang.Boolean.class, defaultValue="true")
+        },
+        output = {
+            @HandlerOutput(name = "resultMap", type = java.util.Map.class)
+    })
+    public static void filterMap(HandlerContext handlerCtx) {
+        Map<String, String> map = (Map<String, String>) handlerCtx.getInputValue("map");
+        List<String> attrNames = (List<String>) handlerCtx.getInputValue("attrNames");
+        Boolean keep = (Boolean) handlerCtx.getInputValue("keep");
+        Map<String, String> resultMap = new HashMap<String, String>();
+        if (map != null) {
+            if (keep == null) {
+                keep = Boolean.TRUE;
+            }
+            if (attrNames == null) {
+                resultMap = map;
+            } else {
+                for (String key : map.keySet()) {
+                    if (attrNames.contains(key) && keep) {
+                        resultMap.put(key, map.get(key));
+                    } else if ((!attrNames.contains(key)) && (!keep)) {
+                        resultMap.put(key, map.get(key));
+                    }
+                }
+            }
+        }
+
+        handlerCtx.setOutputValue("resultMap", resultMap);
+    }
+
     /**
      * If the bare attribute is found in the query string and the value is "true",
      * then add "bare=true" to the specified url string.

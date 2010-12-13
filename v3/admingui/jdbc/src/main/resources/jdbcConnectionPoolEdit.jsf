@@ -62,8 +62,13 @@
         gf.buildResourceUrl(base="#{pageSession.parentUrl}/#{pageSession.childType}", resourceName="#{pageSession.Name}", url="#{pageSession.resourceUrl}");
 
         setPageSessionAttribute(key="rest-api" value="true");
+        setPageSessionAttribute(key="poolGeneralAttrs" value={"name" "resType" "datasourceClassname"
+            "driverClassname" "ping" "description" "steadyPoolSize" "maxPoolSize" "poolResizeQuantity"
+            "idleTimeoutInSeconds" "maxWaitTimeInMillis" "nonTransactionalConnections"
+            "transactionIsolationLevel" "isIsolationLevelGuaranteed"});
 
         gf.getEntityAttrs(endpoint="#{pageSession.resourceUrl}.json", valueMap="#{pageSession.valueMap}");
+        gf.filterMap(map="#{pageSession.valueMap}" attrNames="#{pageSession.poolGeneralAttrs}" resultMap="#{pageSession.valueMap}");
 
         setPageSessionAttribute(key="type" value="#{valueMap.resType}");
         setPageSessionAttribute(key="convertToFalseList" value={"ping" "isConnectionValidationRequired" "failAllConnections" "allowNonComponentCallers" "nonTransactionalConnections" "isIsolationLevelGuaranteed"});
