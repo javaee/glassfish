@@ -128,7 +128,7 @@ public class GMSAdapterService implements Startup, PostConstruct, ConfigListener
             }
         }
         if (clusters != null) {
-            if (server.isDas()) {
+            if (env.isDas()) {
                 checkAllClusters(clusters);
             } else {
                 Cluster cluster = server.getCluster();
@@ -236,7 +236,7 @@ public class GMSAdapterService implements Startup, PostConstruct, ConfigListener
 
     @Override
     public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
-        if (server.isDas()) {
+        if (env.isDas()) {
             return ConfigSupport.sortAndDispatch(events, new Changed() {
                 @Override
                 public <T extends ConfigBeanProxy> NotProcessed changed(TYPE type, Class<T> changedType, T changedInstance) {
