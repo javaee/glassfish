@@ -67,6 +67,7 @@ import org.glassfish.resource.common.PoolInfo;
 import org.glassfish.resource.common.ResourceInfo;
 import org.jvnet.hk2.config.types.Property;
 import org.jvnet.hk2.config.types.PropertyBag;
+import static com.sun.enterprise.util.SystemPropertyConstants.SLASH;
 
 /**
  * Util class for connector related classes
@@ -931,9 +932,18 @@ public class ConnectorsUtil {
                 resourceInfo.getName() != null && resourceInfo.getName().startsWith(ConnectorConstants.JAVA_MODULE_SCOPE_PREFIX);
     }
 
-    public static String getPoolMonitoringSubTreeRoot(PoolInfo poolInfo) {
+    public static String escapeResourceNameForMonitoring(String name){
+        return name.replaceAll("/", SLASH);
+    }
+
+    public static String getPoolMonitoringSubTreeRoot(PoolInfo poolInfo, boolean escapeSlashes) {
         String resourcesPrefix = "resources/";
         String suffix = poolInfo.getName();
+
+        if(escapeSlashes){
+            suffix = escapeResourceNameForMonitoring(suffix);
+        }
+
         String subTreeRoot = resourcesPrefix + suffix;
         if(ConnectorsUtil.isModuleScopedResource(poolInfo)){
             subTreeRoot = "applications/" + poolInfo.getApplicationName()+ "/" + poolInfo.getModuleName() + "/" +

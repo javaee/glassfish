@@ -316,7 +316,7 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
         PoolInfo poolInfo = conConnPool.getPoolInfo();
 
         propList.add(new ConnectorConfigProperty("PoolMonitoringSubTreeRoot",
-                ConnectorsUtil.getPoolMonitoringSubTreeRoot(poolInfo) + "",
+                ConnectorsUtil.getPoolMonitoringSubTreeRoot(poolInfo, true) + "",
                 "Pool Monitoring Sub Tree Root",
                 "java.lang.String"));
 

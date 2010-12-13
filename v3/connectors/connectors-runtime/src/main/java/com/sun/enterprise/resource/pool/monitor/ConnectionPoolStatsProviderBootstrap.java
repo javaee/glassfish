@@ -187,7 +187,7 @@ public class ConnectionPoolStatsProviderBootstrap implements PostConstruct,
             StatsProviderManager.register(
                     ContainerMonitoring.JDBC_CONNECTION_POOL,
                     PluginPoint.SERVER,
-                    ConnectorsUtil.getPoolMonitoringSubTreeRoot(poolInfo), jdbcPoolStatsProvider);
+                    ConnectorsUtil.getPoolMonitoringSubTreeRoot(poolInfo, true), jdbcPoolStatsProvider);
             //String jdbcPoolName = jdbcPoolStatsProvider.getJdbcPoolName();
             PoolLifeCycleListenerRegistry registry = registerPool(poolInfo, 
                     getProbeProviderUtil().getJdbcProbeProvider());
@@ -214,7 +214,7 @@ public class ConnectionPoolStatsProviderBootstrap implements PostConstruct,
             StatsProviderManager.register(
                     ContainerMonitoring.CONNECTOR_CONNECTION_POOL,
                     PluginPoint.SERVER,
-                    ConnectorsUtil.getPoolMonitoringSubTreeRoot(poolInfo), ccPoolStatsProvider);
+                    ConnectorsUtil.getPoolMonitoringSubTreeRoot(poolInfo, true), ccPoolStatsProvider);
 
             PoolLifeCycleListenerRegistry registry = registerPool(
                     poolInfo, getProbeProviderUtil().getJcaProbeProvider());
@@ -238,13 +238,14 @@ public class ConnectionPoolStatsProviderBootstrap implements PostConstruct,
                     monitoringModuleName =  ConnectorConstants.MONITORING_JMS_SERVICE_MODULE_NAME;
                     dottedNamesHierarchy = ConnectorConstants.MONITORING_JMS_SERVICE +
                         ConnectorConstants.MONITORING_SEPARATOR + ConnectorConstants.MONITORING_CONNECTION_FACTORIES
-                            + ConnectorConstants.MONITORING_SEPARATOR + poolInfo.getName();
+                            + ConnectorConstants.MONITORING_SEPARATOR +
+                            ConnectorsUtil.escapeResourceNameForMonitoring(poolInfo.getName());
 
                 }else{
                     monitoringModuleName =  ConnectorConstants.MONITORING_CONNECTOR_SERVICE_MODULE_NAME;
                     dottedNamesHierarchy = ConnectorConstants.MONITORING_CONNECTOR_SERVICE_MODULE_NAME +
                     ConnectorConstants.MONITORING_SEPARATOR + raName + ConnectorConstants.MONITORING_SEPARATOR +
-                    poolInfo.getName();
+                    ConnectorsUtil.escapeResourceNameForMonitoring(poolInfo.getName());
                 }
 
                 StatsProviderManager.register(monitoringModuleName, PluginPoint.SERVER,

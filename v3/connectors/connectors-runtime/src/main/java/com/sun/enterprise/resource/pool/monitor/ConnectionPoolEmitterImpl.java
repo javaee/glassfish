@@ -400,7 +400,8 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
             StatsProviderManager.register(
                     ContainerMonitoring.JDBC_CONNECTION_POOL,
                     PluginPoint.SERVER,
-                    "resources/" + poolName + "/" + appName, jdbcPoolAppStatsProvider);
+                    "resources/" + ConnectorsUtil.escapeResourceNameForMonitoring(poolName) + "/" + appName,
+                    jdbcPoolAppStatsProvider);
             jdbcPoolAppStatsProviders.add(jdbcPoolAppStatsProvider);
         } else if (pool instanceof ConnectorConnectionPool) {
             probeAppProvider = new ConnectorConnPoolAppProbeProvider();
@@ -409,7 +410,8 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
             StatsProviderManager.register(
                     ContainerMonitoring.CONNECTOR_CONNECTION_POOL,
                     PluginPoint.SERVER,
-                    "resources/" + poolName + "/" + appName, ccPoolAppStatsProvider);
+                    "resources/" + ConnectorsUtil.escapeResourceNameForMonitoring(poolName) + "/" + appName,
+                    ccPoolAppStatsProvider);
             ccPoolAppStatsProviders.add(ccPoolAppStatsProvider);
         }
         return probeAppProvider;
