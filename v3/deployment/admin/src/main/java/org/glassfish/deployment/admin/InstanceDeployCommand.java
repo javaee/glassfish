@@ -62,6 +62,7 @@ import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.internal.deployment.SnifferManager;
 import org.glassfish.deployment.common.DeploymentUtils;
+import org.glassfish.deployment.versioning.VersioningUtils;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
@@ -159,7 +160,7 @@ public class InstanceDeployCommand extends InstanceDeployCommandParameters imple
 
             // clean up any left over repository files
             if ( ! keepreposdir.booleanValue()) {
-                FileUtils.whack(new File(env.getApplicationRepositoryPath(), name));
+                FileUtils.whack(new File(env.getApplicationRepositoryPath(), VersioningUtils.getRepositoryName(name)));
             }
 
             ExtendedDeploymentContext deploymentContext = deployment.getBuilder(logger, this, report).source(archive).build();
