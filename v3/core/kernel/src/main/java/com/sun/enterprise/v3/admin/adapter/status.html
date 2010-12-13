@@ -119,7 +119,11 @@ h4 {font-style:normal;font-size:.9em;color:#666;}
                     {
                         var response = ""+xmlhttp.responseText;
                         if (response.startsWith(":::")){
-                            document.getElementById("STATUS").innerHTML= response.substring(3,response.length);
+                            fileLines=response.split("\n");
+
+                            document.getElementById("STATUS").innerHTML= fileLines[0].substring(3,fileLines[0].length);
+                            document.getElementById("WELCOME").innerHTML= "<b>"+ fileLines[1]+"</b>";
+                            
                           /// document.getElementById(cd).innerHTML = countdn+' times  ';
                             setTimeout('displayCount('+(countdn+1)+',\''+cd+'\');',999);
                         }else {
@@ -138,22 +142,28 @@ h4 {font-style:normal;font-size:.9em;color:#666;}
 	<div id="center" class="column">
 	    <!-- <div id="page_content"> -->
 	    <h1>%%%product.title%%%</h1>
-	    <p> <span class="subtitle">%%%status.pageTitle%%%</span>
-		<br>%%%status.text%%%</p>
+	    <p> 
+		<br><span id="WELCOME"> </span></p>
 	    <!-- don't change the names -->
 	    <form id="form1" name="form1" method="post" action="%%%MYURL%%%">
-		<h2>%%%status.loading%%%</h2>
-		<p> <img id="spin" class="progress" src="/asynch-1F.gif" border="0" alt="%%%status.spin.alt%%%" align="center" /></p>
-		<div id="fields">
-		    <p> <span class="subtitle">%%%status.current%%%</span>
-			<small><span id="STATUS">%%%STATUS%%%</span></small></p>
-		</div>
+		<p> 
+                    <table border="0">
+                        <tbody>
+                            <tr>
+                                <td><img id="spin"  src="asynch-1F.gif" border="0" alt="%%%status.spin.alt%%%"  /></td>
+                                <td><b>%%%status.current%%%</b>
+			<span id="STATUS">%%%STATUS%%%</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    </p>
 	    </form>
+            	    <p> 
+		<br>%%%status.text%%%</p>
             <span id="feedbackZone"></span>
 	</div>
    </div>
-   <div id="footer-wrapper">
-       <div id="footer">%%%thankYou%%%</div>
-    </div>
+
 </body>
 </html>

@@ -42,6 +42,8 @@ package com.sun.enterprise.v3.admin.adapter;
 
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.v3.admin.AdminConsoleConfigUpgrade;
+import com.sun.enterprise.v3.common.ActionReporter;
+import com.sun.enterprise.v3.common.PlainTextActionReporter;
 import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
 import com.sun.grizzly.tcp.http11.GrizzlyOutputBuffer;
 import com.sun.grizzly.tcp.http11.GrizzlyRequest;
@@ -83,6 +85,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.api.admin.CommandRunner;
+import org.glassfish.api.admin.ParameterMap;
 
 /**
  * An HK-2 Service that provides the functionality so that admin console access is handled properly.
@@ -250,6 +254,14 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
         // simple get request use via javascript to give back the console status (starting with :::)
         // as a simple string.
         // see usage in status.html
+        
+       CommandRunner cr = habitat.getComponent(CommandRunner.class);
+       ActionReporter ar = new PlainTextActionReporter();
+       ParameterMap p = new ParameterMap();
+
+        cr.getCommandInvocation("version", ar).parameters(p).execute();
+        String serverVersion = ar.getTopMessagePart().getMessage();
+        
         if ("/testifbackendisready.html".equals(req.getRequestURI())) {
 
             // Replace state token
@@ -261,6 +273,15 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
                 // Use the non-localized String version of the status
                 status = getStateMsg().toString();
             }
+            String wkey = AdapterState.WELCOME_TO.getI18NKey();
+                        try {
+                // Try to get a localized version of this key
+                serverVersion = bundle.getString(wkey)+" "+serverVersion;
+            } catch (MissingResourceException ex) {
+                // Use the non-localized String version of the status
+                serverVersion = AdapterState.WELCOME_TO.toString()+" "+serverVersion;
+            }
+            status +="\n"+serverVersion;
             try {
                 GrizzlyOutputBuffer ob = getOutputBuffer(res);
 
