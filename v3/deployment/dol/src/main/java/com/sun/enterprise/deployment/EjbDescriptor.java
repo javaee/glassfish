@@ -1496,19 +1496,12 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
 
     @Override
     public Set<LifecycleCallbackDescriptor> getPostConstructDescriptors() {
-        if (env != null)
-            return env.getPostConstructDescriptors();
-        else
-            return postConstructDescs;
+        return postConstructDescs;
     }
 
     @Override
     public void addPostConstructDescriptor(LifecycleCallbackDescriptor
             postConstructDesc) {
-        if (env != null) {
-            env.addPostConstructDescriptor(postConstructDesc);
-            return;
-        }
         String className = postConstructDesc.getLifecycleCallbackClass();
         boolean found = false;
         for (LifecycleCallbackDescriptor next :
@@ -1526,28 +1519,18 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
     @Override
     public LifecycleCallbackDescriptor
             getPostConstructDescriptorByClass(String className) {
-        if (env != null)
-            return env.getPostConstructDescriptorByClass(className);
-        else
-            return bundleDescriptor.
+        return bundleDescriptor.
                             getPostConstructDescriptorByClass(className, this);
     }
 
     @Override
     public Set<LifecycleCallbackDescriptor> getPreDestroyDescriptors() {
-        if (env != null)
-            return env.getPreDestroyDescriptors();
-        else
-            return preDestroyDescs;
+        return preDestroyDescs;
     }
 
     @Override
     public void addPreDestroyDescriptor(LifecycleCallbackDescriptor
             preDestroyDesc) {
-        if (env != null) {
-            env.addPreDestroyDescriptor(preDestroyDesc);
-            return;
-        }
         String className = preDestroyDesc.getLifecycleCallbackClass();
         boolean found = false;
         for (LifecycleCallbackDescriptor next :
@@ -1565,10 +1548,7 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
     @Override
     public LifecycleCallbackDescriptor
             getPreDestroyDescriptorByClass(String className) {
-        if (env != null)
-            return env.getPreDestroyDescriptorByClass(className);
-        else
-            return bundleDescriptor.
+        return bundleDescriptor.
                                 getPreDestroyDescriptorByClass(className, this);
     }
 
