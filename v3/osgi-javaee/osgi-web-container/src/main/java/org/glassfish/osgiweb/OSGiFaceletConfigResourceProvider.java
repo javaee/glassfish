@@ -63,7 +63,7 @@ public class OSGiFaceletConfigResourceProvider implements com.sun.faces.spi.Face
     public Collection<URI> getResources(ServletContext context) {
         Collection<URI> uris = (Collection<URI>) context.getAttribute(Constants.FACELET_CONFIG_ATTR);
         if (uris == null) return Collections.EMPTY_LIST;
-        logger.info("Facelet Config urls = " + uris); // TODO(Sahoo): change to debug level statement
+        logger.info("Facelet Config uris = " + uris); // TODO(Sahoo): change to debug level statement
         return uris;
     }
 }

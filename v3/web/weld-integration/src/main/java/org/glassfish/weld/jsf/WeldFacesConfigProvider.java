@@ -95,19 +95,15 @@ public class WeldFacesConfigProvider implements FacesConfigResourceProvider {
         // Doing so allows us to be more OSGi friendly.
         ClassLoader loader = this.getClass().getClassLoader();
         URL resource = loader.getResource(SERVICES_FACES_CONFIG);
-        if (null != resource) {
-            URI toAdd = null;
+        if (resource != null) {
             try {
-                toAdd = new URI(resource.toExternalForm());
+		list.add(resource.toURI());
             } catch (URISyntaxException ex) {
                 if (_logger.isLoggable(Level.SEVERE)) {
-                    String message = "Unable to create URI for URL " +
-                            resource.toExternalForm();
+		    String message = "Unable to create URI for URL " + 
+			resource.toExternalForm();
                     _logger.log(Level.SEVERE, message, ex);
                 }
-            }
-            if (null != toAdd) {
-                list.add(toAdd);
             }
         }
         return list;

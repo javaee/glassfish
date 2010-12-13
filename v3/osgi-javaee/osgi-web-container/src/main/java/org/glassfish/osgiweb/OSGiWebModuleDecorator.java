@@ -158,11 +158,11 @@ public class OSGiWebModuleDecorator implements WebModuleDecorator
         for (BundleResource r : archive) {
             final String path = r.getPath();
             if (path.startsWith("META-INF/")) {
-                final URI url = r.getUri();
+                final URI uri = r.getUri();
                 if (path.endsWith(".taglib.xml")) {
-                    faceletConfigs.add(url);
+                    faceletConfigs.add(uri);
                 } else if (path.endsWith(".faces-config.xml")) { // this check automatically excludes META-INF/faces-config.xml
-                    facesConfigs.add(url);
+                    facesConfigs.add(uri);
                 }
             }
         }

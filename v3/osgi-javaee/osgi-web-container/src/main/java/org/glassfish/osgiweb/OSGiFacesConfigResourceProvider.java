@@ -61,7 +61,7 @@ public class OSGiFacesConfigResourceProvider implements com.sun.faces.spi.FacesC
     public Collection<URI> getResources(ServletContext context) {
         Collection<URI> uris = (Collection<URI>) context.getAttribute(Constants.FACES_CONFIG_ATTR);
         if (uris == null) return Collections.EMPTY_LIST;
-        logger.info("Faces Config urls excluding the ones named as faces-config.xml = " + uris); // TODO(Sahoo): change to finer
+        logger.info("Faces Config uris excluding the ones named as faces-config.xml = " + uris); // TODO(Sahoo): change to finer
         return uris;
     }
 }
