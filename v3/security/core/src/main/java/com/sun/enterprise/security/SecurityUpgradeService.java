@@ -40,13 +40,7 @@
 
 package com.sun.enterprise.security;
 
-import com.sun.enterprise.config.serverbeans.AuthRealm;
-import com.sun.enterprise.config.serverbeans.Config;
-import com.sun.enterprise.config.serverbeans.Configs;
-import com.sun.enterprise.config.serverbeans.IiopListener;
-import com.sun.enterprise.config.serverbeans.IiopService;
-import com.sun.enterprise.config.serverbeans.JaccProvider;
-import com.sun.enterprise.config.serverbeans.SecurityService;
+import com.sun.enterprise.config.serverbeans.*;
 import com.sun.grizzly.config.dom.Ssl;
 import com.sun.logging.LogDomains;
 import java.beans.PropertyVetoException;
@@ -177,7 +171,34 @@ public class SecurityUpgradeService implements ConfigurationUpgrade, PostConstru
                     + "for upgrading manually");
         }
 
+        //Fix for issue 14950 the classname attribute
+        //should be added to jmx-connector elements
+        // of the admin-service in the v3 instance during an
+        // upgrade from v2, if the v2 instance had the ssl
+        // sub-elements to the jmx-connector elements (in the admin-service )
+        for (Config config : configs.getConfig()) {
+            AdminService service = config.getAdminService();
+            for( JmxConnector jmxConnector : service.getJmxConnector()){
+                Ssl sslElement = jmxConnector.getSsl();
+                if(sslElement != null) {
+                    try {
+                        ConfigSupport.apply(new SingleConfigCode<Ssl>() {
+                            public Object run(Ssl ssl) throws PropertyVetoException,
+                                    TransactionFailure {
+                                ssl.setClassname(GF_SSL_IMPL_NAME);
+                                return null;
+                            }
+                        }, sslElement);
+                    } catch (TransactionFailure tf) {
+                        _logger.log(Level.SEVERE, "security_upgrade_service_exception", tf);
+                        throw new RuntimeException(tf);
+                    }
+                }
+            }
+        }
+
     }
+
 
     /*
      * Method to detect an NSS install.
