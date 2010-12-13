@@ -45,12 +45,14 @@ import java.lang.annotation.ElementType;
 import java.util.*;
 
 import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import javax.validation.Path;
 import javax.validation.TraversableResolver;
 import javax.validation.Validation;
 import javax.validation.ValidatorFactory;
 import javax.validation.Validator;
 import javax.validation.ValidatorContext;
+import javax.validation.metadata.ConstraintDescriptor;
 
 /**
  * A WriteableView is a view of a ConfigBean object that allow access to the
@@ -66,6 +68,8 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
     private final Map<String, ProtectedList> changedCollections;
     Transaction currentTx;
     private static Validator beanValidator=null;
+
+    private final static ResourceBundle i18n = ResourceBundle.getBundle("org.jvnet.hk2.config.LocalStrings");
     
     public Transaction getTransaction() { return currentTx; }
     
@@ -95,7 +99,6 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
 
                 ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
                 ValidatorContext validatorContext = validatorFactory.usingContext();
-                validatorContext.messageInterpolator(new MessageInterpolatorImpl());
                     beanValidator = validatorContext.traversableResolver(
                             traversableResolver).getValidator();
             } finally {
@@ -174,7 +177,7 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
         
         // are we still in a transaction
         if (currentTx==null) {
-            throw new IllegalStateException("Not part of a transation");
+            throw new IllegalStateException("Not part of a transaction");
         }
         try {
             if (newValue != null)
@@ -293,24 +296,23 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
             beanValidator.validate(this.getProxy(this.getProxyType()));
 
         if (constraintViolations != null) {
-            Iterator it = constraintViolations.iterator();
+            Iterator<ConstraintViolation<ConfigBeanProxy>> it = constraintViolations.iterator();
             boolean violated = false;
-            String msg = "Constraints for this bean " +
-                   "violated. \n Message = ";
+            String msg = i18n.getString("bean.validation.failure");
             while (it.hasNext()) {
                 violated = true;
-                ConstraintViolation cv = (ConstraintViolation) it.next();
+                ConstraintViolation cv = it.next();
                 msg = msg + cv.getPropertyPath() + " " + cv.getMessage();
             }
             if (violated) {
                 bean.getLock().unlock();
-                throw new TransactionFailure(msg);
+                throw new TransactionFailure(msg, new ConstraintViolationException(constraintViolations));
             }
         }
         
         return currentTx==t;
     }
-
+                                                  \
      
     /** remove @ or <> eg "@foo" => "foo" or "<foo>" => "foo" */
     public static String stripMarkers(final String s ) {
@@ -642,44 +644,45 @@ private class ProtectedList extends AbstractList {
     }
     
     private void handleValidation(ConfigModel.Property property, Object value)
-    throws ValidationException { 
+    throws ConstraintViolationException {
 
         // First check for dataType constraints -- as was done for v3 Prelude
-        // see PrimitiveDataType.java
         // These validations could be transformed into BV custom annotations
         // such as AssertBoolean, AssertInteger etc. But since GUI and other
         // config clients such as AMX need dataType key in @Attribute it's been
         // decided to validate using existing annotation information
+        Set<ConstraintViolation<?>> constraintViolations = new HashSet<ConstraintViolation<?>>();
         if (property instanceof ConfigModel.AttributeLeaf) {
             ConfigModel.AttributeLeaf al = (ConfigModel.AttributeLeaf)property;
-            validateDataType(al, value.toString());
+            ConstraintViolation cv = validateDataType(al, value.toString());
+            if (cv!=null) {
+                constraintViolations.add(cv);
+            }
         }
 
-        Set constraintViolations =
+        constraintViolations.addAll(
             beanValidator.validateValue(
-                bean.getProxyType(), toCamelCase(property.xmlName()), value);
+                bean.getProxyType(), toCamelCase(property.xmlName()), value));
 
-        if (constraintViolations != null) {
-            Iterator it = constraintViolations.iterator();
+        if (!constraintViolations.isEmpty()) {
+            Iterator<ConstraintViolation<?>> it = constraintViolations.iterator();
             boolean violated = false;
-            String msg = "Constraints for this bean " +
-                   "violated. \n Message = ";
+            String msg = i18n.getString("bean.validation.failure");
             while (it.hasNext()) {
                 violated = true;
-                ConstraintViolation cv = (ConstraintViolation) it.next();
+                ConstraintViolation cv = it.next();
                 msg = msg + cv.getPropertyPath() + " " + cv.getMessage();
             }
             if (violated) {
-                throw new ValidationException(msg);
+                throw new ConstraintViolationException(msg, constraintViolations);
             }
         }
     }
 
-    private void validateDataType(ConfigModel.AttributeLeaf al, String value)
-    throws ValidationException {
-
+    private ConstraintViolation validateDataType(final ConfigModel.AttributeLeaf al, final String value)
+    {
         if (value.startsWith("${") && value.endsWith("}"))
-          return;
+          return null;
 
         boolean isValid = String.class.getName().equals(al.dataType);
         if ("int".equals(al.dataType) ||
@@ -694,8 +697,76 @@ private class ProtectedList extends AbstractList {
         if (!isValid) {
             String msg = "Validation Failed: " +
                          value + " is not of data type: " + al.dataType;
-            throw new ValidationException(msg);            
+            return new ConstraintViolation() {
+                @Override
+                public String getMessage() {
+                    return " is not of date type: " + al.dataType;
+                }
+
+                @Override
+                public String getMessageTemplate() {
+                    return null;  //To change body of implemented methods use File | Settings | File Templates.
+                }
+
+                @Override
+                public Object getRootBean() {
+                    return WriteableView.this;
+                }
+
+                @Override
+                public Class getRootBeanClass() {
+                    return WriteableView.this.getProxyType();
+                }
+
+                @Override
+                public Object getLeafBean() {
+                    return null;
+                }
+
+                @Override
+                public Path getPropertyPath() {
+                    final Set<Path.Node> nodes = new HashSet<Path.Node>();
+                    nodes.add(new Path.Node() {
+                        @Override
+                        public String getName() {
+                            return al.xmlName;
+                        }
+
+                        @Override
+                        public boolean isInIterable() {
+                            return false;
+                        }
+
+                        @Override
+                        public Integer getIndex() {
+                            return null;
+                        }
+
+                        @Override
+                        public Object getKey() {
+                            return null;
+                        }
+                    });
+                    return new javax.validation.Path() {
+                        @Override
+                        public Iterator<Node> iterator() {
+                            return nodes.iterator();
+                        }
+                    };
+                }
+
+                @Override
+                public Object getInvalidValue() {
+                    return value;
+                }
+
+                @Override
+                public ConstraintDescriptor<?> getConstraintDescriptor() {
+                    return null;
+                }
+            };
         }
+        return null;
     }
     
     private boolean representsBoolean(String value) {
