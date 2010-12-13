@@ -1148,22 +1148,22 @@ public class RemoteAdminCommand {
             NodeList opts = doc.getElementsByTagName("option");
             for (int i = 0; i < opts.getLength(); i++) {
                 Node n = opts.item(i);
-                NamedNodeMap attrs = n.getAttributes();
-                String sn = getAttr(attrs, "short");
-                String def = getAttr(attrs, "default");
-                String obs = getAttr(attrs, "obsolete");
-                String alias = getAttr(attrs, "alias");
+                NamedNodeMap attributes = n.getAttributes();
+                String sn = getAttr(attributes, "short");
+                String def = getAttr(attributes, "default");
+                String obs = getAttr(attributes, "obsolete");
+                String alias = getAttr(attributes, "alias");
                 ParamModelData opt = new ParamModelData(
-                        getAttr(attrs, "name"),
-                        typeOf(getAttr(attrs, "type")),
-                        Boolean.parseBoolean(getAttr(attrs, "optional")),
+                        getAttr(attributes, "name"),
+                        typeOf(getAttr(attributes, "type")),
+                        Boolean.parseBoolean(getAttr(attributes, "optional")),
                         def,
                         ok(sn) ? sn : null,
 			ok(obs) ? Boolean.parseBoolean(obs) : false,
 			alias);
-                if (getAttr(attrs, "type").equals("PASSWORD")) {
+                if (getAttr(attributes, "type").equals("PASSWORD")) {
                     opt.param._password = true;
-                    opt.description = getAttr(attrs, "description");
+                    opt.description = getAttr(attributes, "description");
                 }
                 cm.add(opt);
                 if (opt.getType() == File.class)
@@ -1173,19 +1173,19 @@ public class RemoteAdminCommand {
             opts = doc.getElementsByTagName("operand");
             for (int i = 0; i < opts.getLength(); i++) {
                 Node n = opts.item(i);
-                NamedNodeMap attrs = n.getAttributes();
-                Class<?> type = typeOf(getAttr(attrs, "type"));
+                NamedNodeMap attributes = n.getAttributes();
+                Class<?> type = typeOf(getAttr(attributes, "type"));
                 if (type == File.class)
                     sawFile = true;
-                int min = Integer.parseInt(getAttr(attrs, "min"));
-                String max = getAttr(attrs, "max");
+                int min = Integer.parseInt(getAttr(attributes, "min"));
+                String max = getAttr(attributes, "max");
                 boolean multiple = false;
                 if (max.equals("unlimited")) {
                     multiple = true;
                     type = List.class;
                 }
                 ParamModelData pm = new ParamModelData(
-                    getAttr(attrs, "name"), type, min == 0, null);
+                    getAttr(attributes, "name"), type, min == 0, null);
                 pm.param._primary = true;
                 pm.param._multiple = multiple;
                 cm.add(pm);
@@ -1233,8 +1233,8 @@ public class RemoteAdminCommand {
     /**
      * Return the value of a named attribute, or null if not set.
      */
-    private static String getAttr(NamedNodeMap attrs, String name) {
-        Node n = attrs.getNamedItem(name);
+    private static String getAttr(NamedNodeMap attributes, String name) {
+        Node n = attributes.getNamedItem(name);
         if (n != null)
             return n.getNodeValue();
         else
