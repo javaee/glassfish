@@ -127,6 +127,8 @@ public class RuntimeInfo implements AdminCommand {
         top.addProperty("pid", "" + rmxb.getName());
         checkDtrace();
         setDasName();
+        top.addProperty("java.vm.name", System.getProperty("java.vm.name"));
+
         reportMessage.append(Strings.get("runtime.info.debug", jpdaEnabled ? "enabled" : "not enabled"));
         report.setMessage(reportMessage.toString());
     }
