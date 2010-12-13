@@ -85,6 +85,7 @@ public class DomainXmlTransformer {
     private static final String IIOP_LISTENER = "iiop-listener";
     private static final String PROTOCOLS = "protocols";
     private static final String APPLICATIONS = "applications";
+    private static final String CLUSTERS = "clusters";
     private static final String JMS_HOST = "jms-host";
     private static final String JMX_CONNECTOR = "jmx-connector";
     private static final String LAZY_INIT_ATTR = "lazy-init";
@@ -99,7 +100,7 @@ public class DomainXmlTransformer {
 
     private static final Set<String> SKIP_ELEMENTS = new HashSet(Arrays.asList(VIRTUAL_SERVER));
     private static final Set<String> SKIP_ELEMENTS_KEEP_PORTS = new HashSet();
-    private static final Set<String> EMPTY_ELEMENTS = new HashSet(Arrays.asList(NETWORK_LISTENERS, PROTOCOLS, APPLICATIONS));
+    private static final Set<String> EMPTY_ELEMENTS = new HashSet(Arrays.asList(NETWORK_LISTENERS, PROTOCOLS, APPLICATIONS, CLUSTERS));
     private static final Set<String> EMPTY_ELEMENTS_KEEP_PORTS = new HashSet(Arrays.asList(APPLICATIONS));
     private static final Set<String> SKIP_SETTINGS_ELEMENTS = new HashSet(Arrays.asList(IIOP_LISTENER, DAS_CONFIG));
     private static final Set<String> DISABLE_ELEMENTS = new HashSet(Arrays.asList(JMX_CONNECTOR));
