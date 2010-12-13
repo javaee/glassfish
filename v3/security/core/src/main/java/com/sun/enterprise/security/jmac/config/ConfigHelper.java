@@ -355,11 +355,11 @@ public abstract class ConfigHelper /*implements RegistrationListener*/ {
             }
             if (factory != null) {
                 String[] ids = factory.detachListener(this.listener,layer,appCtxt);
-                if (ids != null) {
-                    for (int i=0; i < ids.length; i++) {
-                        factory.removeRegistration(ids[i]);
-                    }
-                }
+//                if (ids != null) {
+//                    for (int i=0; i < ids.length; i++) {
+//                        factory.removeRegistration(ids[i]);
+//                    }
+//                }
                 if (getJmacProviderRegisID() != null) {
                     factory.removeRegistration(getJmacProviderRegisID());
                 }
