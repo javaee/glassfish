@@ -60,8 +60,12 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.ResourceBundle;
+import java.util.regex.Pattern;
 import org.junit.AfterClass;
 import org.junit.Rule;
 import org.openqa.selenium.By;
@@ -79,9 +83,10 @@ public class BaseSeleniumTestClass {
 
     public static final String CURRENT_WINDOW = "selenium.browserbot.getCurrentWindow()";
     public static final String MSG_NEW_VALUES_SAVED = "New values successfully saved.";
-    public static final String TRIGGER_COMMON_TASKS = "Please Register";
+    public static final String TRIGGER_COMMON_TASKS = "Other Tasks";
     public static final String TRIGGER_REGISTRATION_PAGE = "Receive patch information and bug updates, screencasts and tutorials, support and training offerings, and more";
     public static final String MSG_ERROR_OCCURED = "An error has occurred";
+    private static final String AJAX_INDICATOR = "ajaxIndicator";
 
     @Rule
     public SpecificTestRule specificTestRule = new SpecificTestRule();
@@ -93,6 +98,12 @@ public class BaseSeleniumTestClass {
     private static String currentTestClass = "";
     protected static boolean debug = Boolean.parseBoolean(getParameter("debug", "false"));
     private boolean processingLogin = false;
+    
+    private static Map<String, String> bundles = new HashMap<String, String>() {{
+        put("i18n",  "org.glassfish.admingui.core.Strings"); // core
+        put("i18nc",  "org.glassfish.common.admingui.Strings"); // common -- apparently we use both in the app :|
+        put("i18ncs", "org.glassfish.cluster.admingui.Strings"); // cluster
+    }};
     
     @BeforeClass
     public static void setUp() throws Exception {
@@ -161,7 +172,7 @@ public class BaseSeleniumTestClass {
     @Before
     public void reset() {
         currentTestClass = this.getClass().getName();
-        clickAndWait("treeForm:tree:registration:registration_link", TRIGGER_REGISTRATION_PAGE);
+        clickAndWait("treeForm:tree:ct", TRIGGER_COMMON_TASKS);
     }
 
     protected String generateRandomString() {
@@ -217,6 +228,12 @@ public class BaseSeleniumTestClass {
         insureElementIsVisible(id);
         selenium.click(id);
         waitForPageLoad(triggerText, seconds);
+    }
+    
+    protected void clickAndWait(String id, WaitForLoadCallBack callback) {
+        insureElementIsVisible(id);
+        selenium.click(id);
+        waitForLoad(TIMEOUT, callback);
     }
 
     protected void clickAndWaitForElement(String clickId, final String elementId) {
@@ -279,7 +296,7 @@ public class BaseSeleniumTestClass {
             }
             */
             try {
-                RenderedWebElement ajaxPanel = (RenderedWebElement) driver.findElement(By.id("ajaxPanel"));
+                RenderedWebElement ajaxPanel = (RenderedWebElement) driver.findElement(By.id(AJAX_INDICATOR));
                 if (!ajaxPanel.isDisplayed()) {
                     if (callback.executeTest()) {
                         break;
@@ -512,8 +529,8 @@ public class BaseSeleniumTestClass {
 
     protected int addTableRow(String tableId, String buttonId, String countLabel) {
         int count = getTableRowCount(tableId);
-        clickAndWait(buttonId, countLabel + " (" + (++count) + ")");
-        return count;
+        clickAndWait(buttonId, new AddTableRowCallBack(tableId, count));
+        return ++count;
     }
 
     protected void assertTableRowCount(String tableId, int count) {
@@ -718,7 +735,27 @@ public class BaseSeleniumTestClass {
 
         public PageLoadCallBack(String triggerText, boolean textShouldBeMissing) {
             this.textShouldBeMissing = textShouldBeMissing;
-            this.triggerText = triggerText;
+            
+            int index = triggerText.indexOf(".");
+            if (index > -1) {
+                String bundleName = triggerText.substring(0, index);
+                String key = triggerText.substring(index+1);
+                String bundle = bundles.get(bundleName);
+                if (bundle != null) {
+                    ResourceBundle res = ResourceBundle.getBundle(bundle);
+                    if (res != null) {
+                        this.triggerText = res.getString(key);
+                        // Strip out HTML. Hopefully this will be robust enough
+                        this.triggerText = this.triggerText.replaceAll("<.*?>", "");
+                    } else {
+                        Logger.getLogger(BaseSeleniumTestClass.class.getName()).log(Level.WARNING, null, "An invalid resource bundle was specified: " + triggerText);
+                    }
+                } else {
+                    this.triggerText = triggerText;
+                }
+            } else {
+                this.triggerText = triggerText;
+            }
         }
 
         
@@ -733,9 +770,12 @@ public class BaseSeleniumTestClass {
                     if (selenium.isTextPresent(triggerText)) {
                         found = true;
                     }
-                } else {
-                    if (!selenium.isTextPresent(triggerText)) {
+                } else if (!selenium.isTextPresent(triggerText)) {
                         found = true;
+                    
+                } else {
+                    if (selenium.isTextPresent("RuntimeException")) {
+                        throw new RuntimeException("Exception detected on page. Please check the logs for details");
                     }
                 }
             } catch (SeleniumException se) {
@@ -771,6 +811,23 @@ public class BaseSeleniumTestClass {
         }
         
     }
+    
+    class AddTableRowCallBack implements WaitForLoadCallBack {
+        private final String tableId;
+        private final int initialCount;
+
+        public AddTableRowCallBack(String tableId, int initialCount) {
+            this.tableId = tableId;
+            this.initialCount = initialCount;
+        }
+        
+        @Override
+        public boolean executeTest() {
+            int count = getTableRowCount(tableId);
+            return count > initialCount;
+        }
+        
+    };
     
     class ButtonDisabledStateCallBack implements WaitForLoadCallBack {
         private String buttonId;
