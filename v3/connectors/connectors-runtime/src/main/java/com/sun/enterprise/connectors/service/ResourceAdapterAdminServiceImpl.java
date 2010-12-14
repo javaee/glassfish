@@ -54,6 +54,9 @@ import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.enterprise.config.serverbeans.ResourceAdapterConfig;
 
 import javax.naming.NamingException;
+import javax.resource.ResourceException;
+import javax.resource.spi.ResourceAdapter;
+import javax.resource.spi.ResourceAdapterAssociation;
 import java.util.logging.Level;
 import java.util.Set;
 import java.util.List;
@@ -344,6 +347,24 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
         createActiveResourceAdapter(connectorDescriptor, moduleName, moduleDir, loader);
     }
 
+
+    /**
+     * associates the given instance of ResourceAdapterAssociation with
+     * the ResourceAdapter java-bean of the specified RAR
+     * @param rarName resource-adapter-name
+     * @param raa Object that is an instance of ResourceAdapterAssociation
+     * @throws ResourceException when unable to associate the RA Bean with RAA instance.
+     */
+    public void associateResourceAdapter(String rarName, ResourceAdapterAssociation raa)
+            throws ResourceException {
+        ResourceAdapter ra = ConnectorRegistry.getInstance().
+                getActiveResourceAdapter(rarName).getResourceAdapter();
+        if(ra != null){
+            raa.setResourceAdapter(ra);
+        }else{
+            throw new ResourceException("RA Bean [ "+rarName+" ] not available");
+        }
+    }
 
 
     /**

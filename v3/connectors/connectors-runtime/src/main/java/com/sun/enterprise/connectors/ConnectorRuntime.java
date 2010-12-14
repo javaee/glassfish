@@ -56,6 +56,7 @@ import javax.naming.NamingException;
 import javax.resource.ResourceException;
 import javax.resource.spi.ConnectionManager;
 import javax.resource.spi.ManagedConnectionFactory;
+import javax.resource.spi.ResourceAdapterAssociation;
 import javax.resource.spi.XATerminator;
 import javax.resource.spi.work.WorkManager;
 import javax.security.auth.callback.CallbackHandler;
@@ -1535,4 +1536,11 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
         return enabled;
     }
 
+    /**
+     * @inheritDoc
+     */
+    public void associateResourceAdapter(String rarName, ResourceAdapterAssociation raa)
+            throws ResourceException{
+        resourceAdapterAdmService.associateResourceAdapter(rarName,raa);
+    }
 }
