@@ -71,7 +71,7 @@ public abstract class ProxyImpl implements Proxy {
 
     @Override
     public Properties proxyRequest(UriInfo sourceUriInfo, Client client, Habitat habitat) {
-        Properties proxiedResponse = null;
+        Properties proxiedResponse = new Properties();
         try {
             Domain domain = habitat.getComponent(Domain.class);
             String forwardInstanceName = extractTargetInstanceName(sourceUriInfo);
@@ -88,11 +88,9 @@ public abstract class ProxyImpl implements Proxy {
                     Map responseMap = MarshallingUtils.buildMapFromDocument(jsonDoc);
                     Map resultExtraProperties = (Map) responseMap.get("extraProperties");
                     if (resultExtraProperties != null) {
-                        proxiedResponse = new Properties();
-
                         Object entity = resultExtraProperties.get("entity");
                         if(entity != null) {
-                            proxiedResponse.put("entity", resultExtraProperties.get("entity"));
+                            proxiedResponse.put("entity", entity);
                         }
 
                         @SuppressWarnings({"unchecked"}) Map<String, String> childResources = (Map<String, String>) resultExtraProperties.get("childResources");
@@ -108,6 +106,14 @@ public abstract class ProxyImpl implements Proxy {
                             entry.setValue(targetURL);
                         }
                         proxiedResponse.put("childResources", childResources);
+                    }
+                    Object message = responseMap.get("message");
+                    if(message != null) {
+                        proxiedResponse.put("message", message);
+                    }
+                    Object properties = responseMap.get("properties");
+                    if(properties != null) {
+                        proxiedResponse.put("properties", properties);
                     }
                 }
             } else { // server == null
