@@ -42,6 +42,7 @@ import java.lang.reflect.Method;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
 import java.lang.annotation.ElementType;
+import java.text.MessageFormat;
 import java.util.*;
 
 import javax.validation.ConstraintViolation;
@@ -99,6 +100,7 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
 
                 ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
                 ValidatorContext validatorContext = validatorFactory.usingContext();
+                validatorContext.messageInterpolator(new MessageInterpolatorImpl());                
                     beanValidator = validatorContext.traversableResolver(
                             traversableResolver).getValidator();
             } finally {
@@ -299,10 +301,14 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
             Iterator<ConstraintViolation<ConfigBeanProxy>> it = constraintViolations.iterator();
             boolean violated = false;
             String msg = i18n.getString("bean.validation.failure");
+            String violationMsg = i18n.getString("bean.validation.constraintViolation");
             while (it.hasNext()) {
                 violated = true;
                 ConstraintViolation cv = it.next();
-                msg = msg + cv.getPropertyPath() + " " + cv.getMessage();
+                msg = msg + MessageFormat.format(violationMsg, cv.getMessage(), cv.getPropertyPath());
+                if (it.hasNext()) {
+                    msg = msg + i18n.getString("bean.validation.separator");
+                }
             }
             if (violated) {
                 bean.getLock().unlock();
@@ -668,10 +674,14 @@ private class ProtectedList extends AbstractList {
             Iterator<ConstraintViolation<?>> it = constraintViolations.iterator();
             boolean violated = false;
             String msg = i18n.getString("bean.validation.failure");
+            String violationMsg = i18n.getString("bean.validation.constraintViolation");
             while (it.hasNext()) {
                 violated = true;
                 ConstraintViolation cv = it.next();
-                msg = msg + cv.getPropertyPath() + " " + cv.getMessage();
+                msg = msg + MessageFormat.format(violationMsg, cv.getMessage(), cv.getPropertyPath());
+                if (it.hasNext()) {
+                    msg = msg + i18n.getString("bean.validation.separator");
+                }
             }
             if (violated) {
                 throw new ConstraintViolationException(msg, constraintViolations);
@@ -694,18 +704,16 @@ private class ProtectedList extends AbstractList {
         else if ("char".equals(al.dataType) ||
                  "java.lang.Character".equals(al.dataType))
             isValid = representsChar(value);        
-        if (!isValid) {
-            String msg = "Validation Failed: " +
-                         value + " is not of data type: " + al.dataType;
+        if (!isValid) {            
             return new ConstraintViolation() {
                 @Override
                 public String getMessage() {
-                    return " is not of date type: " + al.dataType;
+                    return i18n.getString("bean.validation.dataType.failure") + al.dataType;
                 }
 
                 @Override
                 public String getMessageTemplate() {
-                    return null;  //To change body of implemented methods use File | Settings | File Templates.
+                    return null; 
                 }
 
                 @Override
