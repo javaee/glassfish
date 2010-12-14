@@ -49,6 +49,7 @@ import org.glassfish.admin.rest.generator.ResourcesGenerator;
 import org.glassfish.admin.rest.resources.GeneratorResource;
 import org.glassfish.admin.rest.resources.StatusGenerator;
 
+import org.glassfish.admin.rest.resources.custom.ManagementProxyResource;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.config.ConfigModel;
 import org.jvnet.hk2.config.Dom;
@@ -87,6 +88,7 @@ public class RestManagementAdapter extends RestAdapter {
         //r.add(ActionReportResource.class);
 
         r.add(domainResourceClass);
+        r.add(ManagementProxyResource.class);
         r.add(org.glassfish.admin.rest.resources.SessionsResource.class); //TODO this needs to be added to all rest adapters that want to be secured. Decide on it after the discussion to unify RestAdapter is concluded
         r.add(org.glassfish.admin.rest.resources.StaticResource.class);
 

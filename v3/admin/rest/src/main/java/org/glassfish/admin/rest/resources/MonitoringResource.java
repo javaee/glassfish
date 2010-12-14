@@ -40,18 +40,12 @@
 
 package org.glassfish.admin.rest.resources;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.WebApplicationException;
-import com.sun.enterprise.config.serverbeans.SecureAdmin;
-import com.sun.enterprise.security.ssl.SSLUtils;
-import com.sun.jersey.api.client.WebResource;
+import org.glassfish.admin.rest.utils.ProxyImpl;
 import org.jvnet.hk2.component.Habitat;
 
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLSession;
+import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Context;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Properties;
 import java.util.TreeMap;
@@ -69,9 +63,6 @@ import javax.ws.rs.PathParam;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.client.urlconnection.HTTPSProperties;
-import org.glassfish.admin.rest.clientutils.MarshallingUtils;
 import org.glassfish.admin.rest.results.ActionReportResult;
 import org.glassfish.admin.rest.utils.xml.RestActionReporter;
 import org.glassfish.external.statistics.Statistic;
@@ -99,15 +90,10 @@ public class MonitoringResource {
     @Context
     protected Habitat habitat;
     
-    SecureAdmin secureAdmin; //Lazily inited
-    
-    SSLUtils sslUtils; //Lazily inited
-
     @Context
     protected Client client;
     
     @GET
-    //@Produces({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML,"text/html;qs=2"})
     public ActionReportResult getChildNodes() {
         List<TreeNode> list = new ArrayList<TreeNode>();
@@ -173,7 +159,9 @@ public class MonitoringResource {
         if(!path.startsWith(currentInstanceName)) {
             //TODO need to make sure we are actually running on DAS else do not try to forward.
             // forward the request to instance
-            proxyRequestForInstanceData(ar);
+            Properties proxiedResponse = new MonitoringProxyImpl().proxyRequest(uriInfo, client, habitat);
+
+            ar.setExtraProperties(proxiedResponse);
             return result;
         }
 
@@ -229,57 +217,6 @@ public class MonitoringResource {
         return result;
     }
 
-    private void proxyRequestForInstanceData(RestActionReporter ar) {
-        String targetInstanceName = path;
-        if (path.indexOf('/') != -1) {
-            targetInstanceName = path.substring(0, path.indexOf('/'));
-        }
-        try {
-            Domain domain = habitat.getComponent(Domain.class);
-            Server server = domain.getServerNamed(targetInstanceName);
-            if (server != null) {
-                //forward to URL that has same path as current request. Host and Port are replaced to that of targetInstanceName
-                String forwardURL = uriInfo.getAbsolutePathBuilder().host(server.getAdminHost()).port(server.getAdminPort()).build().toASCIIString();
-                WebResource.Builder resourceBuilder = client.resource(forwardURL).accept(MediaType.APPLICATION_JSON);
-                addAuthenticationInfo(client, resourceBuilder, server);
-                ClientResponse response = resourceBuilder.get(ClientResponse.class); //TODO if the target server is down, we get ClientResponseException. Need to handle it
-                ClientResponse.Status status = ClientResponse.Status.fromStatusCode(response.getStatus());
-                if (status.getFamily() == javax.ws.rs.core.Response.Status.Family.SUCCESSFUL) {
-                    String jsonDoc = response.getEntity(String.class);
-                    Map responseMap = MarshallingUtils.buildMapFromDocument(jsonDoc);
-                    Map resultExtraProperties = (Map) responseMap.get("extraProperties");
-                    if (resultExtraProperties != null) {
-                        Properties responseExtraProperties = ar.getExtraProperties();
-                        responseExtraProperties.put("entity", resultExtraProperties.get("entity"));
-                        @SuppressWarnings({"unchecked"}) Map<String, String> childResources = (Map<String, String>) resultExtraProperties.get("childResources");
-                        for (Map.Entry<String, String> entry : childResources.entrySet()) {
-                            String targetURL = null;
-                            try {
-                                URL originalURL = new URL(entry.getValue());
-                                //Construct targetURL which has host+port of DAS and path from originalURL
-                                targetURL = uriInfo.getBaseUriBuilder().replacePath(originalURL.getFile()).build().toASCIIString();
-                            } catch (MalformedURLException e) {
-                                //TODO There was an exception while parsing URL. Need to decide what to do. For now ignore the child entry
-                            }
-                            entry.setValue(targetURL);
-                        }
-                        responseExtraProperties.put("childResources", childResources);
-                    }
-                }
-            } else { // server == null
-                // TODO error to user. Can not locate server for whom data is being looked for
-
-            }
-        } catch (Exception ex){
-                throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
-        }finally {
-//  not needed as the client is now inject
- //           if (client != null) {
-//                client.destroy();
-//            }
-        }
-    }
-
     private void constructEntity(List<TreeNode> nodeList, RestActionReporter ar) {
         Map map = new TreeMap();
         for (TreeNode node : nodeList) {
@@ -333,55 +270,21 @@ public class MonitoringResource {
 
     }
 
+    private static class MonitoringProxyImpl extends ProxyImpl {
+        @Override
+        public UriBuilder constructTargetURLPath(UriInfo sourceUriInfo, URL responseURLReceivedFromTarget) {
+            return sourceUriInfo.getBaseUriBuilder().replacePath(responseURLReceivedFromTarget.getFile());
+        }
 
-    /**
-     * If SecureAdmin is enabled, use SSL to authenticate else add a special header that identifies the request as coming from DAS
-     */
-    private void addAuthenticationInfo(Client client, WebResource.Builder resourceBuilder, Server server) {
-        SecureAdmin secureAdmin = getSecureAdmin();
-        if (SecureAdmin.Util.isEnabled(secureAdmin)) {
-            //SecureAdmin is enabled, instruct Jersey to use HostNameVerifier and SSLContext provided by us.
-            HTTPSProperties httpsProperties = new HTTPSProperties(new BasicHostnameVerifier(server.getAdminHost()), getSSLUtils().getAdminSSLContext(SecureAdmin.Util.DASAlias(secureAdmin), "TLS" )); //TODO need to get hardcoded "TLS" from corresponding ServerRemoteAdminCommand constant
-            client.getProperties().put(HTTPSProperties.PROPERTY_HTTPS_PROPERTIES, httpsProperties);
-        } else {
-            resourceBuilder.header(SecureAdmin.Util.ADMIN_INDICATOR_HEADER_NAME, SecureAdmin.Util.configuredAdminIndicator(secureAdmin));
+        @Override
+        public UriBuilder constructForwardURLPath(UriInfo sourceUriInfo) {
+            //forward to URL that has same path as source request.
+            return sourceUriInfo.getAbsolutePathBuilder();
+        }
+
+        @Override
+        public String extractTargetInstanceName(UriInfo uriInfo) {
+            return uriInfo.getPathSegments().get(1).getPath(); //pathSegment[0] == "monitoring"
         }
     }
-
-    /**
-     * Encapsulate lazy init of SSLUtils
-     */
-    private SSLUtils getSSLUtils() {
-        if(sslUtils == null) {
-            sslUtils = habitat.getComponent(SSLUtils.class);
-        }
-        return sslUtils;
-    }
-
-    /**
-     * Encapsulate lazy init of SecureAdmin
-     */
-    private SecureAdmin getSecureAdmin() {
-        if(secureAdmin == null) {
-            secureAdmin = habitat.getComponent(SecureAdmin.class);
-        }
-        return secureAdmin;
-    }
-
-    /**
-     * TODO copied from HttpConnectorAddress. Need to refactor code there to reuse
-     */
-    private static class BasicHostnameVerifier implements HostnameVerifier {
-        private final String host;
-        public BasicHostnameVerifier(String host) {
-            if (host == null)
-                throw new IllegalArgumentException("null host");
-            this.host = host;
-        }
-
-        public boolean verify(String s, SSLSession sslSession) {
-            return host.equals(s);
-        }
-    }
-
 }
