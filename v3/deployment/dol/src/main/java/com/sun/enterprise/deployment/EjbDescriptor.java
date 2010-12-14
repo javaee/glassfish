@@ -2569,7 +2569,7 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
             aVisitor.accept(injectable);
         }
 
-        for (Iterator itr = ejbReferences.iterator(); itr.hasNext();) {
+        for (Iterator itr = getEjbReferenceDescriptors().iterator(); itr.hasNext();) {
             EjbReference aRef = (EjbReference) itr.next();
             aVisitor.accept(aRef);
         }
