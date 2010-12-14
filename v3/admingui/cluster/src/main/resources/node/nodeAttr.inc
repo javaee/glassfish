@@ -77,15 +77,18 @@
                 <!command
                     setAttribute(key="includeInstallDir" value="false");
                     if ("#{pageSession.valueMap['type']}=CONFIG"){
-                        setAttribute(key="attrsList" value={"nodehost", "nodedir"});
+                        setAttribute(key="attrsList" value={"nodehost", "nodedir" });
                         setAttribute(key="endpoint" value="nodes/node/#{pageSession.nodeName}/update-node-config");
+                        gfr.prepareNodeCmd();
+                        mapPut(map="#{pageSession.attrsMap}", key="installdir" value="#{pageSession.valueMap['installdirConfig']}");
                     }
                     if ("#{pageSession.valueMap['type']}=SSH"){
                         gfr.fixPswd();
-                        setAttribute(key="attrsList" value={"nodehost", "nodedir", "sshport", "sshuser", "sshpassword" "sshkeyfile", "force"});
+                        setAttribute(key="attrsList" value={"nodehost", "nodedir", "installdir", "sshport", "sshuser", "sshpassword" "sshkeyfile", "force"});
                         setAttribute(key="endpoint" value="nodes/node/#{pageSession.nodeName}/update-node-ssh");
+                        gfr.prepareNodeCmd();
                     }
-                    gfr.prepareNodeCmd();
+                    
                     gf.restRequest(endpoint="#{sessionScope.REST_URL}/#{requestScope.endpoint}" method="POST" attrs="#{pageSession.attrsMap}")
                     prepareSuccessfulMsg();
                     gf.redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
@@ -102,15 +105,18 @@
                 gfj.checkNameExist();
                 setAttribute(key="includeInstallDir" value="true");
                 if ("#{pageSession.valueMap['type']}=CONFIG"){
-                    setAttribute(key="attrsList" value={"id", "nodehost", "nodedir", "installdir"});
+                    setAttribute(key="attrsList" value={"id", "nodehost", "nodedir"});
                     setAttribute(key="endpoint" value="nodes/create-node-config");
+                    gfr.prepareNodeCmd();
+                    mapPut(map="#{pageSession.attrsMap}", key="installdir" value="#{pageSession.valueMap['installdirConfig']}");
                 }
                 if ("#{pageSession.valueMap['type']}=SSH"){
                     gfr.fixPswd();
                     setAttribute(key="attrsList" value={"id", "nodehost", "nodedir", "installdir", "sshport", "sshuser", "sshpassword" "sshkeyfile", "force"});
                     setAttribute(key="endpoint" value="nodes/create-node");
+                    gfr.prepareNodeCmd();
                 }
-                gfr.prepareNodeCmd();
+                
                 gf.restRequest( endpoint="#{sessionScope.REST_URL}/#{requestScope.endpoint}" attrs="#{pageSession.attrsMap}" method="POST" )
                 gf.redirect(page="#{request.contextPath}/cluster/node/nodes.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
              />
@@ -130,11 +136,17 @@
             setPageSessionAttribute(key="showSSH" value="#{false}");
             if ("#{pageSession.valueMap['type']}=SSH"){
                    setPageSessionAttribute(key="showSSH" value="#{true}")
+                   setPageSessionAttribute(key="showInstalldirSSH" value="#{true}");
+                   setPageSessionAttribute(key="showInstalldirConfig" value="#{false}");
+            }
+            if ("#{pageSession.valueMap['type']}=CONFIG"){
+                   setPageSessionAttribute(key="showSSH" value="#{false}")
+                   setPageSessionAttribute(key="showInstalldirSSH" value="#{false}");
+                   setPageSessionAttribute(key="showInstalldirConfig" value="#{true}");
             }
         />
     </event>
     <sun:propertySheet id="propertySheet">
-
         <sun:propertySheetSection id="propertSectionTextField">
             <sun:property id="nameProp"  rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}" helpText="$resource{i18ncs.node.NameHelp}">
                 <sun:textField id="name" text="#{pageSession.valueMap['id']}" columns="$int{60}" maxLength="#{sessionScope.fieldLengths['maxLength.node.Name']}" styleClass="required" required="#{true}" />
@@ -145,7 +157,7 @@
             </sun:property>
             <sun:property id="typeProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.type}" helpText="$resource{i18ncs.node.typeHelp}">
                 <sun:dropDown id="type" labels={"SSH" "CONFIG"}  selected="#{pageSession.valueMap['type']}"
-                              onChange="javascript:showSshSection(this.value, '#{pageSession.sshConnectorSectionId}');">
+                              onChange="javascript:showSshSection(this.value, '#{pageSession.sshConnectorSectionId}', '#{pageSession.installdirSshId}', '#{pageSession.installdirConfigId}');">
                 <!afterCreate
                     getClientId(component="$this{component}" clientId="#{pageSession.typeId}");
                 />
@@ -164,15 +176,22 @@
                 <sun:textField id="NodeHome"  text="#{pageSession.valueMap['nodedir']}" columns="$int{60}" maxLength="#{sessionScope.fieldLengths['maxLength.node.NodeDir']}" />
             </sun:property>
 
-            <sun:property id="installdir"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.InstallDir}" >
-                <sun:staticText id="IdStatic" text="#{pageSession.valueMap['installdir']}"/>
+
+            <sun:property id="installdir-ssh"  visible="#{pageSession.showInstalldirSSH}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.InstallDir}" helpText="$resource{i18ncs.node.InstallDirHelp}">
+                <sun:textField id="installDirssh" text="#{pageSession.valueMap['installdir']}"  columns="$int{60}" maxLength="#{sessionScope.fieldLengths['maxLength.node.InstallDir']}"  />
+                <!afterCreate
+                    getClientId(component="$this{component}" clientId="#{pageSession.installdirSshId}");
+                />
             </sun:property>
-
-            <sun:property id="installdir2"  rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.InstallDir}" helpText="$resource{i18ncs.node.InstallDirHelp}">
-                <sun:textField id="installDir" text="#{pageSession.valueMap['installdir']}"  columns="$int{60}" maxLength="#{sessionScope.fieldLengths['maxLength.node.InstallDir']}"  />
+                
+            <sun:property id="installdir-config" visible="#{pageSession.showInstalldirConfig}"   labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.node.InstallDir}" helpText="$resource{i18ncs.node.InstallDirHelp}">
+                <sun:textField id="installDirConfig" text="#{pageSession.valueMap['installdirConfig']}"  columns="$int{60}" maxLength="#{sessionScope.fieldLengths['maxLength.node.InstallDir']}"  />
+                 <!afterCreate
+                    getClientId(component="$this{component}" clientId="#{pageSession.installdirConfigId}");
+                />
+                 
             </sun:property>
-
-
+               
             <sun:property>
                 <sun:staticText text=" "/>
             </sun:property>

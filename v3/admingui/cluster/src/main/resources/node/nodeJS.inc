@@ -42,15 +42,20 @@
 
 <f:verbatim>
     <script type="text/javascript">
-    function showSshSection(type, sheet1){
+    function showSshSection(type, sheet1, sshDirId, configDirId ){
          var sheet1 = document.getElementById(sheet1);
          if (type == 'CONFIG'){
-             style = 'none';
+             sheet1.style.display = 'none';
+             webui.suntheme.common.setVisible(sshDirId, false);
+             webui.suntheme.common.setVisible(configDirId, true);
+             //document.getElementById(sshDirId).style.display = 'none';
+             //document.getElementById(configDirId).style.display = 'block';
          }else{
-             style = 'block';
-         }
-         if (sheet1 != null){
-             sheet1.style.display = style;
+             sheet1.style.display = 'block';
+             webui.suntheme.common.setVisible(sshDirId, true);
+             webui.suntheme.common.setVisible(configDirId, false);
+             //document.getElementById(sshDirId).style.display = 'block';
+             //document.getElementById(configDirId).style.display = 'none';
          }
     }
 
