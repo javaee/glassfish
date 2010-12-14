@@ -81,6 +81,7 @@
     <target name="setup" depends="init-common">
       <delete dir="${env.S1AS_HOME}/domains/domain1/logs/vslogs"/>
       <antcall target="create-virtual-server"/>
+      <antcall target="create-virtual-server2"/>
       <antcall target="create-http-listener"/>
       <antcall target="asadmin-common-ignore-fail">
         <param name="admin.command" value="set" />
@@ -93,6 +94,11 @@
         <param name="operand.props"
                value="${appserver.instance.name}.http-service.virtual-server.myvs.log-file=${env.S1AS_HOME}/domains/domain1/logs/vslogs/myvs.log"/>
       </antcall>
+      <antcall target="asadmin-common-ignore-fail">
+        <param name="admin.command" value="set" />
+        <param name="operand.props"
+               value="${appserver.instance.name}.http-service.virtual-server.myvs2.log-file=${env.S1AS_HOME}/domains/domain1/logs/vslogs/myvs2.log"/>
+      </antcall>
     </target>
 
     <target name="create-virtual-server" depends="init-common">
@@ -100,6 +106,14 @@
         <param name="admin.command" value="create-virtual-server" />
         <param name="operand.props"
                value="--hosts ${http.host} myvs" />
+      </antcall>
+    </target>
+
+    <target name="create-virtual-server2" depends="init-common">
+      <antcall target="asadmin-common-ignore-fail">
+        <param name="admin.command" value="create-virtual-server" />
+        <param name="operand.props"
+               value="--hosts ${http.host} myvs2" />
       </antcall>
     </target>
 
@@ -124,6 +138,14 @@
         <param name="admin.command" value="delete-virtual-server" />
         <param name="operand.props"
                value="myvs"/>
+      </antcall>
+    </target>
+
+    <target name="delete-virtual-server2" depends="init-common">
+      <antcall target="asadmin-common-ignore-fail">
+        <param name="admin.command" value="delete-virtual-server" />
+        <param name="operand.props"
+               value="myvs2"/>
       </antcall>
     </target>
 
@@ -162,14 +184,10 @@
     </target>   
 
     <target name="restore" depends="init-common">
-      <antcall target="asadmin-common-ignore-fail">
-        <param name="admin.command" value="set" />
-        <param name="operand.props"
-               value="${appserver.instance.name}.http-service.virtual-server.myvs.log-file="/>
-      </antcall>
       <delete dir="${env.S1AS_HOME}/domains/domain1/logs/vslogs"/>
       <antcall target="delete-http-listener"/>
       <antcall target="delete-virtual-server"/>
+      <antcall target="delete-virtual-server2"/>
     </target>
 
     <target name="usage">

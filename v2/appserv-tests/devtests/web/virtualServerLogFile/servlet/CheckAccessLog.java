@@ -50,7 +50,7 @@ public class CheckAccessLog extends HttpServlet {
         String location = req.getParameter("location");
         String[] files = new File(location + "/domains/domain1/logs/vslogs").list();
         System.out.println("Checking file location "+location+"/domains/domain1/logs/vslogs");
-        if (files != null && files.length == 1) {
+        if (files != null && files.length == 2) {
             resp.getWriter().println("SUCCESS!");
         }    
     }
