@@ -128,13 +128,13 @@ public class UpdateNodeConfigCommand implements AdminCommand  {
         ParameterMap map = new ParameterMap();
         map.add("DEFAULT", name);
 
-        if (StringUtils.ok(installdir)) {
+        if (installdir != null) {
             map.add(NodeUtils.PARAM_INSTALLDIR, installdir);
         }
-        if (StringUtils.ok(nodehost)) {
+        if (nodehost != null) {
             map.add(NodeUtils.PARAM_NODEHOST, nodehost);
         }
-        if (StringUtils.ok(nodedir)) {
+        if (nodedir != null) {
             map.add(NodeUtils.PARAM_NODEDIR, nodedir);
         }
 
