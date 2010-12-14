@@ -410,6 +410,7 @@
         <ant dir="virtualServerDefaultWebModuleRequestPath" target="all"/>
         <ant dir="virtualServerDocrootDynamicReconfig" target="all"/>
         <ant dir="virtualServerEarWrappedDefaultWebModuleRestart" target="all"/>
+        <ant dir="virtualServerLogFile" target="all"/>
         <ant dir="virtualServerModifyHttpListenerPortAccessWebapp" target="all"/>
         <ant dir="virtualServerRedirectPropertyNoSubstringMatch" target="all"/>
         <ant dir="virtualServerRedirectPropertyUrl" target="all"/>
