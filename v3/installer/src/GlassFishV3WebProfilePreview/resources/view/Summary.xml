@@ -109,6 +109,7 @@ void run ()  {
   /* determine if anything failed */
   boolean partial = false;
   for (Summary sum : theSummary) {
+//    System.out.println(sum.getOperation());
     if (!sum.getStatus()) {
       partial = true;
       break;
@@ -181,6 +182,7 @@ void run ()  {
     summary.requestFocus();
 
     // Take care of registration.
+   if (!theMode.equals("REMOVE")) {
     String installHome = (String)ConfigHelper.getValue("InstallHome.directory.INSTALL_HOME");
     String regFilePath = installHome + File.separator + "glassfish" + File.separator + "lib" +
 			File.separator + "registration" + File.separator + "servicetag-registry.xml";
@@ -224,6 +226,7 @@ void run ()  {
                     launchBrowser.openURL(registrationURL);
             }
         }
+ }
 }
 return (Runnable)this;]]>
   </apt:scriptCode>
