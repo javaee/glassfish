@@ -300,7 +300,7 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
         if (constraintViolations != null) {
             Iterator<ConstraintViolation<ConfigBeanProxy>> it = constraintViolations.iterator();
             boolean violated = false;
-            String msg = i18n.getString("bean.validation.failure");
+            String msg = i18n.getString("bean.validation.failure") + " ";
             String violationMsg = i18n.getString("bean.validation.constraintViolation");
             while (it.hasNext()) {
                 violated = true;
