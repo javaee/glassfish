@@ -3,7 +3,7 @@
 	<parent>
     	<groupId>com.sun.enterprise</groupId>
     	<artifactId>hk2-parent</artifactId>
-	    <version>1.0.71</version>
+	    <version>1.0.72-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
 
     </parent>
