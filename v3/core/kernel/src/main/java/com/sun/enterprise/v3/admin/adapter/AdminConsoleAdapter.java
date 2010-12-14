@@ -42,8 +42,7 @@ package com.sun.enterprise.v3.admin.adapter;
 
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.v3.admin.AdminConsoleConfigUpgrade;
-import com.sun.enterprise.v3.common.ActionReporter;
-import com.sun.enterprise.v3.common.PlainTextActionReporter;
+import com.sun.appserv.server.util.Version;
 import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
 import com.sun.grizzly.tcp.http11.GrizzlyOutputBuffer;
 import com.sun.grizzly.tcp.http11.GrizzlyRequest;
@@ -85,8 +84,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.glassfish.api.admin.CommandRunner;
-import org.glassfish.api.admin.ParameterMap;
 
 /**
  * An HK-2 Service that provides the functionality so that admin console access is handled properly.
@@ -155,6 +152,9 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Config serverConfig;
 
+    @Inject
+    Version version;
+    
     AdminEndpointDecider epd;
 
     private Logger logger = LogDomains.getLogger(AdminConsoleAdapter.class, LogDomains.CORE_LOGGER);
@@ -262,12 +262,8 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
         // as a simple string.
         // see usage in status.html
         
-       CommandRunner cr = habitat.getComponent(CommandRunner.class);
-       ActionReporter ar = new PlainTextActionReporter();
-       ParameterMap p = new ParameterMap();
 
-        cr.getCommandInvocation("version", ar).parameters(p).execute();
-        String serverVersion = ar.getTopMessagePart().getMessage();
+       String serverVersion = version.getFullVersion();
         
         if ("/testifbackendisready.html".equals(req.getRequestURI())) {
 
