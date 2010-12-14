@@ -95,7 +95,7 @@
         <!-- Set sourceEncoding property to eliminate warning with "File encoding not set" -->
         <!-- when running FindBugs plugin.  -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding> 
-        <mail.version>1.4.3</mail.version>
+        <mail.version>1.4.4-rc1</mail.version>
         <management-api.version>1.1-rev-1</management-api.version>
         <jms-api.version>1.1-rev-1</jms-api.version>
         <jsp-api.version>2.2.1-b02</jsp-api.version>
@@ -1279,8 +1279,8 @@
                 <version>4.3.1</version>
             </dependency>
             <dependency>
-                <groupId>javax.mail</groupId>
-                <artifactId>mail</artifactId>
+                <groupId>com.sun.mail</groupId>
+                <artifactId>javax.mail</artifactId>
                 <version>${mail.version}</version>
             </dependency>
             <dependency>
