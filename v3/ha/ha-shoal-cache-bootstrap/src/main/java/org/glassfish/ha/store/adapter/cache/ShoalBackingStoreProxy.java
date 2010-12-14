@@ -85,8 +85,11 @@ public class ShoalBackingStoreProxy
         try {
             BackingStoreFactory storeFactory = habitat.getComponent(BackingStoreFactory.class, "shoal-backing-store-factory");
             return storeFactory.createBackingStore(conf);
+        } catch (IllegalStateException ex) {
+            String msg = "ReplicatedBackingStore requires GMS to be running in the target cluster before the application is deployed. ";
+            throw new BackingStoreException("Exception while creating replicated BackingStore. " + msg, ex);
         } catch (Exception ex) {
-            throw new BackingStoreException("Exception while created shoal cache", ex);
+            throw new BackingStoreException("Exception while creating shoal cache", ex);
         }
     }
 
@@ -113,7 +116,7 @@ public class ShoalBackingStoreProxy
             return storeFactory.createBackingStoreTransaction();
         } catch (Exception ex) {
             //FIXME avoid runtime exception
-            throw new RuntimeException("Exception while created shoal cache", ex);
+            throw new RuntimeException("Exception while creating shoal cache", ex);
         }
     }
 }
