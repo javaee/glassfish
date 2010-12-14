@@ -498,28 +498,34 @@ public class EJBUtils {
 
         _setClassLoader(appClassLoader);
 
-        if( generatedRemoteIntf == null ) {
-            
-            RemoteGenerator gen = new RemoteGenerator(appClassLoader,
-                                                      businessInterfaceName);
+        try {
+            if( generatedRemoteIntf == null ) {
+                
+                RemoteGenerator gen = new RemoteGenerator(appClassLoader,
+                                                          businessInterfaceName);
 
-            Class developerClass = appClassLoader.loadClass(businessInterfaceName);
-            generatedRemoteIntf = generateAndLoad(gen, generatedRemoteIntfName,
-                    appClassLoader, developerClass);
+                Class developerClass = appClassLoader.loadClass(businessInterfaceName);
+                generatedRemoteIntf = generateAndLoad(gen, generatedRemoteIntfName,
+                        appClassLoader, developerClass);
 
+            }
+
+            if( generatedRemoteWrapper == null ) {
+                
+                Remote30WrapperGenerator gen = new Remote30WrapperGenerator
+                    (appClassLoader, businessInterfaceName, 
+                     generatedRemoteIntfName);
+                                          
+                Class developerClass = appClassLoader.loadClass(businessInterfaceName);
+                generatedRemoteWrapper = generateAndLoad(gen, wrapperClassName,
+                        appClassLoader, developerClass);
+            }
+
+        } finally {
+            // Fix for 7075: Make sure no classloader is bound to threadlocal:
+            // avoid possible classloader leak.
+            _setClassLoader(null) ;
         }
-
-        if( generatedRemoteWrapper == null ) {
-            
-            Remote30WrapperGenerator gen = new Remote30WrapperGenerator
-                (appClassLoader, businessInterfaceName, 
-                 generatedRemoteIntfName);
-                                      
-            Class developerClass = appClassLoader.loadClass(businessInterfaceName);
-            generatedRemoteWrapper = generateAndLoad(gen, wrapperClassName,
-                    appClassLoader, developerClass);
-        }
-
     }
 
     public static Class loadGeneratedGenericEJBHomeClass
