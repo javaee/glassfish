@@ -109,7 +109,12 @@
 <f:verbatim>
     <script type="text/javascript">
     function checkTxDir(targetId, instanceName, logDirId, errorMsg){
-        var targetName = document.getElementById(targetId).value;
+        var el = document.getElementById(targetId);
+        if (el == null) {
+            return true;
+        }
+
+        var targetName = el.value;
         var logDir = document.getElementById(logDirId);
         var logDirValue = logDir.value;
         if(targetName == instanceName){
