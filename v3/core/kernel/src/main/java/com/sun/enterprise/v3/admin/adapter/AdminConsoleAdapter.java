@@ -212,6 +212,13 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     
         bundle = getResourceBundle(req.getLocale());
 
+        HttpMethod method = HttpMethod.getHttpMethod(req.getMethod());
+        if (!checkHttpMethodAllowed(method)) {
+            res.setStatus(java.net.HttpURLConnection.HTTP_BAD_METHOD,
+                    method.toString() + " " + bundle.getString("http.bad.method"));
+            res.setHeader("Allow", getAllowedHttpMethodsAsString());
+            return;
+        }
         if (!env.isDas()) {
             sendStatusNotDAS(req, res);
             return;
@@ -872,4 +879,53 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
         return epd.getGuiHosts();
     }
 
+    enum HttpMethod {
+        OPTIONS ("OPTIONS"),
+        GET ("GET"),
+        HEAD ("HEAD"),
+        POST ("POST"),
+        PUT ("PUT"),
+        DELETE ("DELETE"),
+        TRACE ("TRACE"),
+        CONNECT ("CONNECT");
+
+        private String method;
+
+        HttpMethod(String method) {
+            this.method = method;
+        }
+
+        static HttpMethod getHttpMethod(String httpMethod) {
+            for (HttpMethod hh: HttpMethod.values()) {
+                if (hh.method.equalsIgnoreCase(httpMethod)) {
+                    return hh;
+                }
+            }
+            return null;
+        }
+
+        String method() {
+            return method;
+        }
+    }
+
+    private HttpMethod[] allowedHttpMethods = {HttpMethod.GET, HttpMethod.POST, HttpMethod.HEAD,
+            HttpMethod.DELETE, HttpMethod.PUT};
+
+    private boolean checkHttpMethodAllowed(HttpMethod method) {
+        for (HttpMethod hh: allowedHttpMethods) {
+            if (hh.equals(method)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private String getAllowedHttpMethodsAsString() {
+        StringBuffer sb = new StringBuffer(allowedHttpMethods[0].method());
+        for (int i = 1; i < allowedHttpMethods.length; i++) {
+            sb.append(", " + allowedHttpMethods[i].method());
+        }
+        return sb.toString();
+    }
 }
