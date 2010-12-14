@@ -52,8 +52,9 @@
     <ui:event type="beforeCreate">
         setSessionAttribute(key="_hideUpdateMsg" value="#{true}");
         if ("#{sessionScope._updateCountCalculated}=#{null}") {
-            setSessionAttribute(key="_updateCountCalculated" value="true");
             getUpdateComponentCount();
+            setSessionAttribute(key="_updateCountCalculated" value="true");
+            setSessionAttribute(key="_currentUpdateCountMsg" value="#{sessionScope._updateCountMsg}");
         }
     </ui:event>
     </sun:imageHyperlink>

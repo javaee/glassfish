@@ -57,22 +57,6 @@ import org.glassfish.admingui.common.util.GuiUtil;
  * @author anilam
  */
 
-/*
- * back and let the parent set/get it
-[15:31] 	KenPaulsen	getSessionMap() returns a mutable Map... not the actual session map, though (I think).
-[15:31] 	KenPaulsen	So maybe the request has completed and the Map you have is no longer valid.
-[15:31] 	KenPaulsen	Maybe try getting the actual httpSession object?
-[15:33] 	KenPaulsen	Yes, that appears to be the case.
-[15:34] 	KenPaulsen	Instead try:
-[15:34] 	KenPaulsen	FacesContext.getCurrentInstance().getExternalContext().getSession()
-[15:35] 	KenPaulsen	Then cast that to an HttpSession
-[15:35] 	KenPaulsen	Then call getValue("key") and/or setValue("key")
-[15:36] 	KenPaulsen	Sorry... getAttribute("key")/ setAttribute("key", value)
-[15:36] 	KenPaulsen	The only problem you'll run into is synchronizing access to Session.
-
- */
-
-
 public  class UcThread extends Thread {
         private HttpSession session = null;
 
@@ -88,18 +72,14 @@ public  class UcThread extends Thread {
         @Override
         public void run() {
             int count = -1;
-            int ss = 10000;
-            try{
-            Thread.sleep(ss);
-            }catch(Exception ex){
-                //
-            }
-            //session.setAttribute("_updateCountMsg", GuiUtil.getMessage(UpdateCenterHandlers.BUNDLE, "msg.checkForUpdates"));
             try{
                 Integer countInt = null;
-                Image image = UpdateCenterHandlers.getUpdateCenterImage( (String)session.getAttribute("topDir"), true);
-                countInt = UpdateCenterHandlers.updateCountInSession(image);
                 session.setAttribute("_updateCountMsg", "");
+                Image image = UpdateCenterHandlers.getUpdateCenterImage( (String)session.getAttribute("topDir"), true);
+                if (image == null){
+                    return;
+                }
+                countInt = UpdateCenterHandlers.updateCountInSession(image);
                 count = countInt.intValue();
                 if (count == 0){
                     session.setAttribute("_updateCountMsg", GuiUtil.getMessage(UpdateCenterHandlers.BUNDLE, "msg.noUpdates"));

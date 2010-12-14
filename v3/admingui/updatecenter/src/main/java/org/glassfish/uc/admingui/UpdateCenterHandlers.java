@@ -520,7 +520,7 @@ public class UpdateCenterHandlers {
             return;
         }
         GuiUtil.setSessionValue("_hideUpdateMsg", Boolean.FALSE);
-        GuiUtil.setSessionValue("_updateCountMsg", GuiUtil.getMessage(BUNDLE,"checkingUpdate") );
+        GuiUtil.setSessionValue("_updateCountMsg", "");  //GuiUtil.getMessage(BUNDLE,"checkingUpdate") );
         UcThread thread = new UcThread((HttpSession)FacesContext.getCurrentInstance().getExternalContext().getSession(false));
         thread.start();
     }
