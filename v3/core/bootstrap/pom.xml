@@ -80,6 +80,9 @@
                 </configuration>
             </plugin>
             <plugin>
+                <!-- We package simple-glassfish-api classes in this bundle for embedded scenario,
+                     we expect user to just bootstrap the runtime by installing glassfish.jar alone
+                -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
@@ -127,10 +130,15 @@
             <optional>true</optional>
         </dependency>
         <dependency>
+            <!-- Although we package simple-glassfish-api bundle's content in glassfish.jar,
+                 in standalone mode, we have to create a launcher classloader that has the 
+                 launching APIs and OSGi APIs in same level. SO, we need this jar to be
+                 part of distribution. Making it a compile scoped dependency forces this jar
+                 to be part of all distribution.
+            -->
             <groupId>org.glassfish</groupId>
             <artifactId>simple-glassfish-api</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>
