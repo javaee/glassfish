@@ -101,6 +101,7 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
     protected File nodeDirChild;        // the specific node dir
     protected File instanceDir;         // the specific instance dir
     protected String domainName;
+    protected boolean isCreateInstanceFilesystem = false;
     private InstanceDirs instanceDirs;
 
     @Override
@@ -521,25 +522,31 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
         /*
          * If there is no existing node dir child -- create one!
          * If the instance is on the same machine as DAS, use "localhost" as the node dir child
+         * Only for _create-instance-filesystem
          */
-        try {
-            String dashost = null;
-            if (programOpts != null) {
-                dashost = programOpts.getHost();
-            }
-            String hostname = InetAddress.getLocalHost().getHostName();
-            if (hostname.equals(dashost) || NetUtils.isThisHostLocal(dashost)) {
-                hostname = "localhost" + "-" + domainName;
-            }
-            File f = new File(parent, hostname);
+        if (isCreateInstanceFilesystem) {
+            try {
+                String dashost = null;
+                if (programOpts != null) {
+                    dashost = programOpts.getHost();
+                }
+                String hostname = InetAddress.getLocalHost().getHostName();
+                if (hostname.equals(dashost) || NetUtils.isThisHostLocal(dashost)) {
+                    hostname = "localhost" + "-" + domainName;
+                }
+                File f = new File(parent, hostname);
 
-            if (!mkdirs(f) || !isDirectory(f)) // for instance there is a regular file with that name
-                throw new CommandException(Strings.get("cantCreateNodeDirChild", f));
+                if (!mkdirs(f) || !isDirectory(f)) // for instance there is a regular file with that name
+                {
+                    throw new CommandException(Strings.get("cantCreateNodeDirChild", f));
+                }
 
-            return f;
-        }
-        catch (UnknownHostException ex) {
-            throw new CommandException(Strings.get("cantGetHostName", ex));
+                return f;
+            } catch (UnknownHostException ex) {
+                throw new CommandException(Strings.get("cantGetHostName", ex));
+            }
+        } else {
+            throw new CommandException(Strings.get("DeleteInstance.noInstance"));
         }
     }
 

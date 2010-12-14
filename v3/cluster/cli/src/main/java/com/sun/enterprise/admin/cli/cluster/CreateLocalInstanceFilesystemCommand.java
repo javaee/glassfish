@@ -92,6 +92,8 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
         else
             throw new CommandException(Strings.get("Instance.badInstanceName"));
 
+        isCreateInstanceFilesystem = true;
+
         super.validate();
 
         String agentPath = "agent" + File.separator + "config";
