@@ -100,7 +100,6 @@ package org.glassfish.embeddable;
         </span><span class="s0">/** Dispose GlassFish. &#42;&#47;</span><span class="s1">
         glassfish.dispose();
  * </pre>
- * <p/>Note : multiple instances of GlassFish can be used concurrently.
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
