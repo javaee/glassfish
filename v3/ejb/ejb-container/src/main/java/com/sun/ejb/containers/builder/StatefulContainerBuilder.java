@@ -261,7 +261,8 @@ public class StatefulContainerBuilder
                 .setStoreType(persistenceStoreType)
                 .setBaseDirectory(new File(ejbContainerConfig.getSessionStore(), subDirName))
                 .setKeyClazz(Serializable.class)
-                .setValueClazz(SimpleMetadata.class);
+                .setValueClazz(SimpleMetadata.class)
+                .setClassLoader(StatefulContainerBuilder.class.getClassLoader());
 
 
         Map<String, Object> vendorMap = conf.getVendorSpecificSettings();
