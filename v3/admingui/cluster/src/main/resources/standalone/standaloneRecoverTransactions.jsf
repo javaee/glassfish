@@ -54,7 +54,7 @@
         getRequestValue(key="instanceName" value="#{pageSession.instanceName}");
         getRequestValue(key="isStopped" value="#{pageSession.isStopped}");
         urlencode(value="#{pageSession.instanceName}" encoding="UTF-8" result="#{pageSession.encodedInstanceName}");
-        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/cluster/standalone/standaloneRecoverTransactions.jsf?&instanceName=#{pageSession.encodedInstanceName}");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/cluster/standalone/standaloneRecoverTransactions.jsf?&instanceName=#{pageSession.encodedInstanceName}&isStopped=#{pageSession.isStopped}");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/cluster/standalone/standaloneInstanceGeneral.jsf?instanceName=#{pageSession.encodedInstanceName}");
         setPageSessionAttribute(key="resourceUrl", value="#{sessionScope.REST_URL}/servers/server/#{pageSession.encodedInstanceName}");
         gfr.getListOfRunningInstances();

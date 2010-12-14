@@ -49,13 +49,9 @@
                      onClick=" if (checkTxDir('#{pageSession.targetId}', '#{pageSession.instanceName}', '#{pageSession.logDirId}' , '$resource{i18nc.msg.JS.recoverTransactions.enterLogDir}'))
                                 {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;"  >
                     <!command
-                        if (#{useSelf}){
-                            setPageSessionAttribute(key="target" value="#{pageSession.instanceName}");
-                        }
-                        println("==== #{pageSession.instanceName},#{pageSession.target}");
                         createMap(result="#{requestScope.attrs}");
                         mapPut(map="#{requestScope.attrs}", key="server_name", value="#{pageSession.instanceName}");
-                        if("!(#{pageSession.instanceName} = #{pageSession.target})"){
+                        if("!#{useSelf}"){
                             mapPut(map="#{requestScope.attrs}", key="transactionlogdir", value="#{pageSession.txnLogDir}");
                             mapPut(map="#{requestScope.attrs}", key="target", value="#{pageSession.target}");
                         }

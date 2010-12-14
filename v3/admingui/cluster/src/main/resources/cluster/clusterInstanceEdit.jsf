@@ -60,6 +60,7 @@
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/cluster/cluster/clusterInstanceEdit.jsf?clusterName=#{pageSession.encodedClusterName}&instanceName=#{pageSession.encodedInstanceName}");
         gfr.getStatusString();
         gf.getEntityAttrs(endpoint="#{sessionScope.REST_URL}/servers/server/#{pageSession.encodedInstanceName}", valueMap="#{pageSession.vMap}");
+        setPageSessionAttribute(key="isStopped" value="#{false}");
         if ("#{pageSession.status}=RUNNING"){
             setAttribute(key="isRunning" value="#{true}");
         }
@@ -125,7 +126,7 @@
 
             <sun:button id="recoverTrans" text="$resource{i18n.button.recoverTrans}" primary="#{false}">
                 <!command
-                    gf.redirect(page="/cluster/cluster/clusterInstanceRecoverTransactions.jsf?clusterName=#{pageSession.encodedClusterName}&instanceName=#{pageSession.encodedInstanceName}&isStopped=#{pageSession.isStopped}");
+                    gf.redirect(page="#{request.contextPath}/cluster/cluster/clusterInstanceRecoverTransactions.jsf?clusterName=#{pageSession.encodedClusterName}&instanceName=#{pageSession.encodedInstanceName}&isStopped=#{pageSession.isStopped}");
                 />
             </sun:button>
     </sun:title>
