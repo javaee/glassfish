@@ -142,7 +142,7 @@ public class FileLoggerHandler extends Handler implements PostConstruct {
      * Set the verbosity level of this logger.  Messages logged with a
      * higher verbosity than this level will be silently ignored.
      *
-     * @param verbosityLevel The new verbosity level, as a string
+     * @param logLevel The new verbosity level, as a string
      */
     public void setLevel(String logLevel) {
             

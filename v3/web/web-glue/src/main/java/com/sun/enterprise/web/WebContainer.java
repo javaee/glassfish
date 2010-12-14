@@ -357,6 +357,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
     private Collection<TldProvider> tldProviders;
 
+    private String logServiceFile = null;
+
     /**
      * Static initialization
      */
@@ -430,7 +432,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             }
         }
 
-        String logServiceFile = null;
+        logServiceFile = null;
         Map<String, String> logProps = null;
         try {
             logProps = logConfig.getLoggingProperties();
@@ -2742,7 +2744,10 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         vs.setBean(vsBean);
 
-        vs.setLogFile(vsBean.getLogFile(), logLevel, logHandler);
+        String vsLogFile = vsBean.getLogFile();
+        if (vsLogFile != null && !vsLogFile.equals(logServiceFile)) {
+            vs.setLogFile(vsLogFile, logLevel, logHandler);
+        }
 
         vs.configureState();
 
