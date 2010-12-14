@@ -67,7 +67,7 @@ public class Transaction {
 	 */
     synchronized void addParticipant(Transactor t) {
         // add participants first so the lastly created elements are processed before the parent
-        // is modified, this is expecially important when sub elements have key attributes the parent
+        // is modified, this is especially important when sub elements have key attributes the parent
         // need (or the habitat).
           participants.addFirst(t);
     }
@@ -114,9 +114,15 @@ public class Transaction {
         if (!canCommit()) {
             throw new RetryableException();
         }
-        List<PropertyChangeEvent> transactionChanges = new ArrayList<PropertyChangeEvent>();
+        LinkedList<PropertyChangeEvent> transactionChanges = new LinkedList<PropertyChangeEvent>();
         for (Transactor t : participants) {
-            transactionChanges.addAll(t.commit(this));            
+            for (PropertyChangeEvent evt : t.commit(this)) {
+                // adding the last committed changes last to reverse the list of participants
+                // as participants are always added first, we want the events to be consistent
+                // with the transactional code meaning FIFO (first element modified/created generates
+                // first events).
+                transactionChanges.addFirst(evt);
+            }
         }
         // any ConfigBean in our transactor should result in sending transaction events, but only once.
         for (Transactor t : participants) {
