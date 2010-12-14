@@ -171,10 +171,10 @@ public class PlainTextActionReporterTest {
         warningChild.setMessage("wc");
         sb = new StringBuilder();
         successfulRoot.getCombinedMessages(successfulRoot, sb);
-        assertEquals("sr%%%EOL%%%wc", sb.toString());
+        assertEquals("sr\nwc", sb.toString());
         failedChild.setMessage("fc");
         sb = new StringBuilder();
         successfulRoot.getCombinedMessages(successfulRoot, sb);
-        assertEquals("sr%%%EOL%%%fc%%%EOL%%%wc", sb.toString());
+        assertEquals("sr\nfc\nwc", sb.toString());
     }
 }

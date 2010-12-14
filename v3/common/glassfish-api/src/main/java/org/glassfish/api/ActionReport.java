@@ -49,7 +49,7 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 
 /**
- * An action report is an interface allowing any type of server side action 
+ * An action report is an abstract class allowing any type of server side action
  * like a service execution, a command execution to report on its execution
  * to the originator of the action. 
  * 
@@ -71,6 +71,8 @@ public abstract class ActionReport {
     public abstract Throwable getFailureCause();
 
     public abstract void setMessage(String message);
+
+    public abstract void appendMessage(String message);
     
     public abstract void writeReport(OutputStream os) throws IOException;
 
@@ -151,6 +153,18 @@ public abstract class ActionReport {
 
         public void setMessage(String message) {
             this.message = message;
+        }
+
+        public void appendMessage(String message) {
+            // overkill Engineering seemingly but the strings might be HUGE
+            // let the optimized JDK class handle it.
+            if(this.message == null)
+                this.message = message;
+            else {
+                StringBuilder sb = new StringBuilder(this.message);
+                sb.append(message);
+                this.message = sb.toString();
+            }
         }
 
         public void addProperty(String key, String value) {

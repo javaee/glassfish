@@ -54,7 +54,7 @@ import java.util.List;
 import java.util.Queue;
 
 /**
- * Superclass for common ActionReport implementation.
+ * Superclass for common ActionReport extension.
  *
  * @author Jerome Dochez
  */
@@ -151,6 +151,11 @@ public abstract class ActionReporter extends ActionReport {
     @Override
     public void setMessage(String message) {
         topMessage.setMessage(message);
+    }
+
+    @Override
+    public void appendMessage(String message) {
+        topMessage.appendMessage(message);
     }
 
     @Override

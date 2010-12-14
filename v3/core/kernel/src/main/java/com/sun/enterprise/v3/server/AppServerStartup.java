@@ -40,6 +40,7 @@
 
 package com.sun.enterprise.v3.server;
 
+import com.sun.enterprise.v3.common.DoNothingActionReporter;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.logging.Level;
@@ -50,7 +51,6 @@ import com.sun.enterprise.module.bootstrap.ModuleStartup;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.Result;
-import com.sun.enterprise.v3.common.PlainTextActionReporter;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import com.sun.logging.LogDomains;
 import com.sun.appserv.server.util.Version;
@@ -371,9 +371,9 @@ public class AppServerStartup implements ModuleStartup {
                 params.set("force", "false");    
             }
             if (env.isDas()) {
-                runner.getCommandInvocation("stop-domain", new PlainTextActionReporter()).parameters(params).execute();
+                runner.getCommandInvocation("stop-domain", new DoNothingActionReporter()).parameters(params).execute();
             } else {
-                runner.getCommandInvocation("_stop-instance", new PlainTextActionReporter()).parameters(params).execute();
+                runner.getCommandInvocation("_stop-instance", new DoNothingActionReporter()).parameters(params).execute();
             }
         }
     }

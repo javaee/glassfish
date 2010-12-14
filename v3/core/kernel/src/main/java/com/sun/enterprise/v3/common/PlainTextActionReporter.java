@@ -37,66 +37,112 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.v3.common;
 
-import com.sun.enterprise.util.*;
+import static com.sun.enterprise.util.StringUtils.ok;
 import java.util.*;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
 
-import java.io.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.OutputStream;
 
 /**
  *
- * @author bnevins
+ * @author Byron Nevins
  */
-@Service(name="plain")
+@Service(name = "plain")
 @Scoped(PerLookup.class)
 public class PlainTextActionReporter extends ActionReporter {
+
     public static final String MAGIC = "PlainTextActionReporter";
 
+    @Override
     public void writeReport(OutputStream os) throws IOException {
         // The caller will read MAGIC and the next characters for success/failure
         // everything after the HEADER_END is good data
         writer = new PrintWriter(os);
         writer.print(MAGIC);
-        if(isFailure()) {
+        if (isFailure()) {
             writer.print("FAILURE");
             Throwable t = getFailureCause();
-            
-            if(t != null)
+
+            if (t != null) {
                 writer.print(t);
+            }
         }
         else {
             writer.print("SUCCESS");
         }
 
-        if(superSimple(topMessage)) {
-            writer.print(topMessage.getMessage());
-        }
-
-        else {
-            writer.print("\n");
-            
-            if(StringUtils.ok(actionDescription))
-                writer.println("Description: " + actionDescription);
-
-            write("", topMessage);
-        }
-
-        if (!subActions.isEmpty())
-            writer.println("There are " + subActions.size() + " sub operations");
-
-        writer.flush();
+        StringBuilder finalOutput = new StringBuilder();
+        getCombinedMessages(this, finalOutput);
+        writer.print(finalOutput.toString());
     }
+
     @Override
     public String getContentType() {
         return "text/plain";
+    }
+
+    /**
+     * Append the string to the internal buffer -- not to the internal message string!
+     * @param s the string to append
+     */
+    @Override
+    final public void appendMessage(String s) {
+        sb.append(s);
+    }
+
+    /**
+     * Append the string to the internal buffer and add a linefeed like 'println'
+     * @param s the string to append
+     */
+    final public void appendMessageln(String s) {
+        sb.append(s).append('\n');
+    }
+
+    @Override
+    public void setMessage(String message) {
+        sb.delete(0, sb.length());
+        appendMessage(message);
+    }
+
+    public final String getMessage() {
+        return sb.toString();
+    }
+
+    @Override
+    protected void getCombinedMessages(ActionReporter aReport, StringBuilder out) {
+        PlainTextActionReporter ptr = null;
+        try {
+            ptr = (PlainTextActionReporter) aReport;
+        }
+        catch (Exception e) {
+            throw new RuntimeException("Internal Error: Sub reports are different types than parent report.");
+        }
+
+        String s = ptr.getOutputData();
+
+        if(ok(s)) {
+            if(out.length() > 0)
+                out.append('\n');
+
+            out.append(s);
+        }
+
+        for (ActionReporter ar : aReport.subActions) {
+            getCombinedMessages(ar, out);
+        }
+    }
+
+    private String getOutputData() {
+        if (superSimple(topMessage))
+            return simpleGetOutputData();
+        else
+            return notSoSimpleGetOutputData();
     }
 
     private boolean superSimple(MessagePart part) {
@@ -104,32 +150,66 @@ public class PlainTextActionReporter extends ActionReporter {
         // only wrote out the main message.
         List<MessagePart> list = part.getChildren();
         Properties props = part.getProps();
-        boolean hasChildren =  ( list != null && !list.isEmpty() );
-        boolean hasProps = ( props != null && props.size() > 0 );
+        boolean hasChildren = (list != null && !list.isEmpty());
+        boolean hasProps = (props != null && props.size() > 0);
 
         // return true if we are very very simple!
         return !hasProps && !hasChildren;
     }
-    private void write(String indent, MessagePart part) {
-        writer.printf("%s%s\n", indent, part.getMessage());
-        write(indent + INDENT, part.getProps());
 
-        for (MessagePart child : part.getChildren()) {
-            write(indent + INDENT, child);
+    private String simpleGetOutputData() {
+        StringBuilder out = new StringBuilder();
+        String tm = topMessage.getMessage();
+        String body = sb.toString();
+
+        if (ok(tm)) {
+            out.append(topMessage.getMessage());
+
+            if (ok(body)) {
+                out.append('\n');
+            }
+        }
+        if (ok(body)) {
+            out.append(body);
+        }
+
+        return out.toString();
+    }
+
+    private String notSoSimpleGetOutputData() {
+        StringBuilder out = new StringBuilder();
+
+        if (ok(actionDescription)) {
+            out.append("Description: ").append(actionDescription);
+        }
+
+        write("", topMessage, out);
+        return out.toString();
+    }
+
+    private void write(String indent, MessagePart part, StringBuilder out) {
+        out.append(indent).append(part.getMessage()).append('\n');
+        write(indent + INDENT, part.getProps(), out);
+
+        for (MessagePart child :
+                part.getChildren()) {
+            write(indent + INDENT, child, out);
         }
     }
 
-    private void write(String indent, Properties props) {
-        if (props == null || props.size() <= 0)
+    private void write(String indent, Properties props, StringBuilder out) {
+        if (props == null || props.size() <= 0) {
             return;
+        }
 
-        for (Map.Entry<Object,Object> entry : props.entrySet()) {
+        for (Map.Entry<Object, Object> entry :
+                props.entrySet()) {
             String key = "" + entry.getKey();
             String val = "" + entry.getValue();
-            writer.printf("%s[%s=%s]\n", indent, key, val);
+            out.append(indent).append('[').append(key).append('=').append(val).append("\n");
         }
     }
-
     private PrintWriter writer;
     private static final String INDENT = "    ";
+    private final StringBuilder sb = new StringBuilder();
 }

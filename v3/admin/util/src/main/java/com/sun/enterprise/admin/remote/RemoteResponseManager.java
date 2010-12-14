@@ -132,5 +132,5 @@ public class RemoteResponseManager implements ResponseManager {
     final String                    response;
     private static final int        HTTP_SUCCESS_CODE = 200;
     private Manifest                m;
-    private Map<String, String>     mainAtts;
+    private Map<String, String>     mainAtts = Collections.emptyMap();
 }

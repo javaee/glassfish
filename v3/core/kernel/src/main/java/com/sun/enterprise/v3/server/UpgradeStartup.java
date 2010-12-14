@@ -42,10 +42,9 @@ package com.sun.enterprise.v3.server;
 
 import com.sun.enterprise.module.bootstrap.ModuleStartup;
 import com.sun.enterprise.module.bootstrap.StartupContext;
-import com.sun.enterprise.v3.common.PlainTextActionReporter;
+import com.sun.enterprise.v3.common.DoNothingActionReporter;
 import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.Application;
-import com.sun.enterprise.config.serverbeans.ApplicationRef;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.config.serverbeans.Domain;
@@ -219,7 +218,7 @@ public class UpgradeStartup implements ModuleStartup {
         try {
             Thread.sleep(3000);
             if (runner!=null) {
-                runner.getCommandInvocation("stop-domain", new PlainTextActionReporter()).execute();
+                runner.getCommandInvocation("stop-domain", new DoNothingActionReporter()).execute();
             }
 
         } catch (InterruptedException e) {
@@ -330,7 +329,7 @@ public class UpgradeStartup implements ModuleStartup {
         deployParams.createtables = false;
         deployParams.target = DOMAIN_TARGET;
 
-        ActionReport report = new PlainTextActionReporter();
+        ActionReport report = new DoNothingActionReporter();
         commandRunner.getCommandInvocation("deploy", report).parameters(deployParams).execute();
 
         // should we delete the temp file after we are done

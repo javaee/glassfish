@@ -43,6 +43,7 @@ import com.sun.enterprise.admin.util.ClusterOperationUtil;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.v3.common.ActionReporter;
 import com.sun.enterprise.v3.common.PlainTextActionReporter;
 import com.sun.enterprise.v3.common.PropsFileActionReporter;
 import java.lang.reflect.Proxy;
@@ -124,8 +125,7 @@ public class MonitoringReporter extends V2DottedNameSupport {
     private void prepare(AdminCommandContext c, String arg, OutputType type) {
         outputType = type;
         context = c;
-        report = context.getActionReport();
-        isCli = report instanceof PropsFileActionReporter;
+        prepareReporter();
         // DAS runs the show on this command.  If we are running in an
         // instance -- that means we should call runLocally() AND it also
         // means that the pattern is already perfect!
@@ -134,6 +134,27 @@ public class MonitoringReporter extends V2DottedNameSupport {
             prepareDas(arg);
         else
             prepareInstance(arg);
+    }
+
+    /**
+     * The stock ActionReport we get is too inefficient.  Replace it with PlainText
+     * note that we might be called with HTML or XML or JSON or others!
+     */
+    private void prepareReporter() {
+        reporter = (ActionReporter)context.getActionReport();
+
+        if(reporter instanceof PlainTextActionReporter) {
+            // already setup correctly - don't change it!!
+            plainReporter = (PlainTextActionReporter) reporter;
+        }
+        else if(reporter instanceof PropsFileActionReporter) {
+            plainReporter = new PlainTextActionReporter();
+            reporter = plainReporter;
+            context.setActionReport(plainReporter);
+        }
+        else {
+            plainReporter = null; 
+        }
     }
 
     private void prepareDas(String arg) {
@@ -147,7 +168,7 @@ public class MonitoringReporter extends V2DottedNameSupport {
         }
         catch (Exception e) {
             setError(Strings.get("admin.get.monitoring.unknown", e.getMessage()));
-            report.setFailureCause(e);
+            reporter.setFailureCause(e);
         }
     }
 
@@ -207,10 +228,8 @@ public class MonitoringReporter extends V2DottedNameSupport {
         else if (outputType == OutputType.LIST)
             doList(localPattern, ltn);
 
-        if (isCli) {
-            PlainTextActionReporter ptar = new PlainTextActionReporter();
-            context.setActionReport(ptar);
-            ptar.setMessage(cliOutput.toString());
+        if (plainReporter != null) {
+              plainReporter.appendMessage(cliOutput.toString());
         }
     }
 
@@ -224,7 +243,7 @@ public class MonitoringReporter extends V2DottedNameSupport {
             }
         }
 
-        ActionReport.MessagePart topPart = report.getTopMessagePart();
+        ActionReport.MessagePart topPart = reporter.getTopMessagePart();
         Iterator it = map.keySet().iterator();
 
         while (it.hasNext()) {
@@ -232,7 +251,7 @@ public class MonitoringReporter extends V2DottedNameSupport {
             String line = possiblyRemoveServerString(obj.toString());
             line = line.replace(SLASH, "/") + " = " + map.get(obj);
 
-            if (isCli)
+            if (plainReporter != null)
                 cliOutput.append(line).append('\n');
             else {
                 ActionReport.MessagePart part = topPart.addChild();
@@ -257,13 +276,13 @@ public class MonitoringReporter extends V2DottedNameSupport {
 
     private void doList(String localPattern, List<org.glassfish.flashlight.datatree.TreeNode> ltn) {
         // list means only print things that have children.  Don't print the children.
-        ActionReport.MessagePart topPart = report.getTopMessagePart();
+        ActionReport.MessagePart topPart = reporter.getTopMessagePart();
 
         for (org.glassfish.flashlight.datatree.TreeNode tn1 : ltn) {
             if (tn1.hasChildNodes()) {
                 String line = tn1.getCompletePathName();
 
-                if (isCli)
+                if (plainReporter != null)
                     cliOutput.append(line).append('\n');
                 else {
                     ActionReport.MessagePart part = topPart.addChild();
@@ -450,7 +469,7 @@ public class MonitoringReporter extends V2DottedNameSupport {
         Object value = tn1.getValue();
         if (tn1.getParent() != null) {
             map.put(tn1.getParent().getCompletePathName() + DOTTED_NAME,
-                    tn1.getParent().getCompletePathName().replace(SLASH,"/"));
+                    tn1.getParent().getCompletePathName());
         }
         if (value instanceof Stats) {
             for (Statistic s : ((Stats) value).getStatistics()) {
@@ -499,36 +518,36 @@ public class MonitoringReporter extends V2DottedNameSupport {
     }
 
     private void setError(String msg) {
-        report.setActionExitCode(FAILURE);
-        appendMessage(msg);
+        reporter.setActionExitCode(FAILURE);
+        appendStatusMessage(msg);
         clear();
     }
 
     private void setSuccess() {
-        report.setActionExitCode(SUCCESS);
+        reporter.setActionExitCode(SUCCESS);
     }
 
     private void setSuccess(String msg) {
         setSuccess();
-        appendMessage(msg);
+        appendStatusMessage(msg);
     }
 
-    private void appendMessage(String newMessage) {
-        if (isCli)
+    private void appendStatusMessage(String newMessage) {
+        if (plainReporter != null)
             cliOutput.append(newMessage).append('\n');
         else {
-            String oldMessage = report.getMessage();
+            String oldMessage = reporter.getMessage();
 
             if (oldMessage == null)
-                report.setMessage(newMessage);
+                reporter.setMessage(newMessage);
             else
-                report.setMessage(oldMessage + "\n" + newMessage);
+                reporter.appendMessage("\n" + newMessage);
         }
     }
 
     private boolean hasError() {
-        //return report.hasFailures();
-        return report.getActionExitCode() == FAILURE;
+        //return reporter.hasFailures();
+        return reporter.getActionExitCode() == FAILURE;
     }
 
     private void clear() {
@@ -581,7 +600,8 @@ public class MonitoringReporter extends V2DottedNameSupport {
      * of the file.
      */
     List<Server> targets = new ArrayList<Server>();
-    private ActionReport report;
+    private PlainTextActionReporter plainReporter;
+    private ActionReporter reporter;
     private AdminCommandContext context;
     private String pattern;
     private String userarg;
@@ -599,5 +619,4 @@ public class MonitoringReporter extends V2DottedNameSupport {
     private final static String DOTTED_NAME = ".dotted-name";
     private static final String SERVERDOT = "server.";
     private final StringBuilder cliOutput = new StringBuilder();
-    private boolean isCli;
 }
