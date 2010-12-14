@@ -219,10 +219,12 @@ public class DynamicConfigListener implements ConfigListener {
     private NotProcessed processVirtualServer(Changed.TYPE type, VirtualServer vs) {
         NotProcessed notProcessed = null;
         String list = vs.getNetworkListeners();
-        for (String s : GrizzlyProxy.toArray(list, ",")) {
-            for (NetworkListener n : vs.findNetworkListeners()) {
-                if (s.equals(n.getName())) {
-                    notProcessed = processNetworkListener(type, n, null);
+        if (list != null) {
+            for (String s : GrizzlyProxy.toArray(list, ",")) {
+                for (NetworkListener n : vs.findNetworkListeners()) {
+                    if (s.equals(n.getName())) {
+                        notProcessed = processNetworkListener(type, n, null);
+                    }
                 }
             }
         }

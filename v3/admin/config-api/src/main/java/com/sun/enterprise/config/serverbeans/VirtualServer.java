@@ -342,7 +342,8 @@ public interface VirtualServer extends ConfigBeanProxy, Injectable, PropertyBag 
         }
 
         public static NetworkListener findNetworkListener(VirtualServer server, String name) {
-            if (server.getNetworkListeners().contains("name")) {
+            final String listeners = server.getNetworkListeners();
+            if (listeners != null && listeners.contains(name)) {
                 final NetworkConfig config = server.getParent().getParent(Config.class).getNetworkConfig();
                 return config.getNetworkListener(name);
             } else {

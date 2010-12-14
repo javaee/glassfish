@@ -675,13 +675,15 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
             String vsNetworkListeners = virtualServer.getNetworkListeners();
             List<String> vsNetworkListenerList =
                 StringUtils.parseStringList(vsNetworkListeners, ",");
-            for (String vsNetworkListener : vsNetworkListenerList) {
-                for (NetworkListener networkListener : networkListenerList) {
-                    if (networkListener.getName().equals(vsNetworkListener) && 
-                        Boolean.valueOf(networkListener.getEnabled())) {
-                        addressInfos.add(new AddressInfo(networkListener.getAddress(),
-                                                         networkListener.getPort()));
-                        break;
+            if (vsNetworkListenerList != null && !vsNetworkListenerList.isEmpty()) {
+                for (String vsNetworkListener : vsNetworkListenerList) {
+                    for (NetworkListener networkListener : networkListenerList) {
+                        if (networkListener.getName().equals(vsNetworkListener) &&
+                            Boolean.valueOf(networkListener.getEnabled())) {
+                            addressInfos.add(new AddressInfo(networkListener.getAddress(),
+                                                             networkListener.getPort()));
+                            break;
+                        }
                     }
                 }
             }
