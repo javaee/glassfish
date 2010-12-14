@@ -73,6 +73,7 @@ import java.beans.PropertyVetoException;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
+import javax.naming.AuthenticationNotSupportedException;
 import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.config.support.CommandTarget;
@@ -299,6 +300,13 @@ public class LDAPAdminAccessConfigurator implements AdminCommand {
         env.put(Context.PROVIDER_URL, url);
         try {
             new InitialContext(env);
+            appendNL(sb,lsm.getString("ldap.ok", url));
+            return true;
+        } catch (AuthenticationNotSupportedException anse) {
+            //CR 6944776
+            //If the server throws this error, it is up
+            //and is configured with Anonymous bind disabled.
+            //Ignore this error while configuring ldap for admin
             appendNL(sb,lsm.getString("ldap.ok", url));
             return true;
         } catch(Exception e) {
