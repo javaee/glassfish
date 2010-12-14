@@ -69,7 +69,7 @@ enum AdapterState {
     APPLICATION_BACKUP_CLEANED("state.cleanupFailed", "Temperory backup file removed"),
     APPLICATION_RESTORE("state.restore", "Restoring previously deployed Admin Console..."),
     APPLICATION_UPGRADE_FALED("state.upgradeFailed", "Cannot upgrade Admin Console."),
-    WELCOME_TO("status.welcometo", "Welcome To ");
+    WELCOME_TO("status.welcometo", "Welcome to ");
     
     
     private final String desc;

@@ -276,10 +276,10 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
             String wkey = AdapterState.WELCOME_TO.getI18NKey();
                         try {
                 // Try to get a localized version of this key
-                serverVersion = bundle.getString(wkey)+" "+serverVersion;
+                serverVersion = bundle.getString(wkey)+" "+serverVersion+".";
             } catch (MissingResourceException ex) {
                 // Use the non-localized String version of the status
-                serverVersion = AdapterState.WELCOME_TO.toString()+" "+serverVersion;
+                serverVersion = AdapterState.WELCOME_TO.toString()+" "+serverVersion+".";
             }
             status +="\n"+serverVersion;
             try {
