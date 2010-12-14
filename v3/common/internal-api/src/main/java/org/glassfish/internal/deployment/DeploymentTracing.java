@@ -62,6 +62,7 @@ public class DeploymentTracing {
         ARCHIVE_HANDLER_OBTAINED,
         INITIAL_CONTEXT_CREATED,
         APPINFO_PROVIDED,
+        DOL_LOADED,
         APPNAME_DETERMINED,
         TARGET_VALIDATED,
         CONTEXT_CREATED,

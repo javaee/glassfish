@@ -42,6 +42,7 @@ package org.glassfish.javaee.core.deployment;
 
 import org.glassfish.hk2.classmodel.reflect.Parser;
 import org.glassfish.hk2.classmodel.reflect.Types;
+import org.glassfish.internal.deployment.DeploymentTracing;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
@@ -230,11 +231,13 @@ public class DolProvider implements ApplicationMetaDataProvider<Application>,
                 archive.exists("META-INF/application-client.xml") || 
                 archive.exists("META-INF/ra.xml")) {
                 application = applicationFactory.createApplicationFromStandardDD(archive);
-                ApplicationHolder holder = new ApplicationHolder(application);
-                if (context != null) {
-                    context.addModuleMetaData(holder);
+                DeploymentTracing tracing = context.getModuleMetaData(DeploymentTracing.class);
+                if (tracing!=null) {
+                    tracing.addMark(DeploymentTracing.Mark.DOL_LOADED);
                 }
-                
+                ApplicationHolder holder = new ApplicationHolder(application);
+                context.addModuleMetaData(holder);
+
                 return application.getAppName();
             }
         } catch (Exception e) {
