@@ -70,7 +70,7 @@ import org.glassfish.config.support.CommandTarget;
 
 public abstract class JMSDestination {
 
-
+    
     static Logger logger = LogDomains.getLogger(JMSDestination.class,LogDomains.ADMIN_LOGGER);
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(CreateJMSDestination.class);
 

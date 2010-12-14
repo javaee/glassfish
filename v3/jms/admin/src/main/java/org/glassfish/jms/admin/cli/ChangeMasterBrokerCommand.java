@@ -117,7 +117,7 @@ public class ChangeMasterBrokerCommand extends JMSDestination implements AdminCo
         final String newMB = newMasterBroker;
         Server newMBServer = domain.getServerNamed(newMasterBroker);
         if (newMBServer == null) {
-            report.setMessage(localStrings.getLocalString("configure.jms.cluster.invalidServerName",
+            report.setMessage(localStrings.getLocalString("change.master.broker.invalidServerName",
                             "Invalid server name specified. There is no server by this name"));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
@@ -125,7 +125,7 @@ public class ChangeMasterBrokerCommand extends JMSDestination implements AdminCo
         Cluster cluster = newMBServer.getCluster();//domain.getClusterNamed(clusterName);
 
         if (cluster == null) {
-            report.setMessage(localStrings.getLocalString("configure.jms.cluster.invalidClusterName",
+            report.setMessage(localStrings.getLocalString("change.master.broker.invalidClusterName",
                             "The server specified is not associated with a cluster. The server assocaited with the master broker has to be a part of the cluster"));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
