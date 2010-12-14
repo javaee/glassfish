@@ -280,7 +280,8 @@ public class ReplicationWebEventPersistentManager extends ReplicationManagerBase
                 .setClusterName(clusterName)
                 .setInstanceName(instanceName)
                 .setStoreType(persistenceType)
-                .setKeyClazz(String.class).setValueClazz(metadataClass);
+                .setKeyClazz(String.class).setValueClazz(metadataClass)
+                .setClassLoader(this.getClass().getClassLoader());
         if (vendorMap != null) {
             conf.getVendorSpecificSettings().putAll(vendorMap);
         }
