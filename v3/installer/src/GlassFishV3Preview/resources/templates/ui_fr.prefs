@@ -59,24 +59,25 @@ top_left_image=/templates/glassfish_logo.png
 bottom_left_image=/templates/community-logo.png
 icon_image=/templates/glassfishserver.gif
 
-# L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
+# Do not translate 
 leftpanel_font=Sans-Serif-BOLD-14
 
 # Dynamic panel
-# L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
+# Do not translate this section 
 dynamic_content_font=Sans-Serif-BOLD-14
 dynamic_component_background=WHITE
 dynamic_component_foreground=BLACK
 dynamic_component_border_color=BLACK
 
 # Font for titles
-# L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
+# Do not translate 
 title1_font=Sans-Serif-BOLD-18
-# L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
-title2_font=SansSerif-BOLD-20
+# Do not translate 
+title2_font=Sans-Serif-BOLD-20
 
 # Text color for titles
 title1_color=587993
+# Do not translate 
 title2_color=BLACK
 
 # Text for titles
@@ -90,32 +91,12 @@ btnpanel_bgcolor=e8e9ed
 
 
 # Font for Buttons
-# L10n - Replace the right side with -*-*-*-*-*-*-*-*-*-*-*-*-*-*
+# Do not translate 
 button_font=Sans-Serif-BOLD-14
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~W E L C O M E   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Welcome_WELCOME_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Bienvenue sur l\u2019assistant d\u2019installation de ${PRODUCT_NAME}.&lt;BR&gt;&lt;BR&gt;Le projet GlassFish est un environnement structur\u00e9 pour le d\u00e9veloppement du serveur d\u2019application Open Source. Il s\u2019inscrit dans la continuit\u00e9 des efforts d\u00e9ploy\u00e9s par Oracle pour mettre \u00e0 disposition d\u2019importantes portions de son code afin que la communaut\u00e9 Open Source en tire le meilleur parti. En plus du projet GlassFish, d\u2019autres projets communautaires sont h\u00e9berg\u00e9s sur java.net. &lt;BR&gt;&lt;BR&gt;Rendez-vous sur &lt;a href=https://glassfish.dev.java.net&gt; GlassFish Project Page&lt;/a&gt; pour plus d\u2019informations. &lt;BR&gt;&lt;BR&gt;Cliquez sur Suivant pour continuer. &lt;BR&gt;&lt;BR&gt;
-                        &lt;/BODY&gt;&lt;/HTML&gt;
+Welcome_WELCOME_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Bienvenue sur l\u2019assistant d\u2019installation de ${PRODUCT_NAME}.&lt;BR&gt;Cet outil permet d\u2019installer ${PRODUCT_NAME}. &lt;BR&gt;&lt;BR&gt;GlassFish Server est un serveur d\u2019application compatible Java\u00a0EE\u00a06 pr\u00eat \u00e0 l\u2019emploi &lt;BR&gt;d\u00e9velopp\u00e9 sous une licence Open Source. Ses avantages incluent une ex\u00e9cution &lt;BR&gt; modulaire qui r\u00e9duit l\u2019utilisation des ressources, une console d\u2019administration &lt;BR&gt;facile \u00e0 utiliser, un outil de ligne de commande complet, l\u2019administration &lt;BR&gt;centralis\u00e9e et une fonctionnalit\u00e9 de clustering haute disponibilit\u00e9. GlassFish Server est \u00e9galement &lt;BR&gt;le serveur d\u2019application Open Source le plus rapide disponible.&lt;BR&gt;&lt;BR&gt;Rendez-vous sur &lt;a href=https://glassfish.dev.java.net&gt; GlassFish Project Page&lt;/a&gt; pour plus d\u2019informations. &lt;BR&gt;&lt;BR&gt;Cliquez sur Suivant pour continuer. &lt;BR&gt;&lt;BR&gt;&lt;/BODY&gt;&lt;/HTML&gt;
 
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~L I C E N S E   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-License_LICENSE_TEXT1=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Avant d\u2019installer ce produit, vous devez lire et accepter son contrat de licence d\u2019utilisation&lt;/BODY&gt;&lt;/HTML&gt;
-
-
-License_LICENSE_TEXT2=
-
-License_LICENSE_TEXT3=&lt;HTML&gt; &lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Avez-vous lu et acceptez-vous de vous conformer \u00e0 tous les termes du contrat pr\u00e9c\u00e9dent de licence de logiciel &lt;BR&gt; ? Si vous cliquez sur &lt;B&gt;Annuler&lt;/B&gt; le programme d\u2019installation &lt;BR&gt;se fermera sans installer les fichiers du produit.&lt;BR&gt;&lt;/BODY&gt;&lt;/HTML&gt;
-
-LICENSE_CHECKBOX_TOOLTIP=Cliquez pour accepter ou refuser la licence.
-
-LICENSE_CHECKBOX_TEXT=J\u2019accepte
-
-LICENSE_ACCEPT_TOOLTIP=S\u00e9lectionnez cette option si vous acceptez les termes du contrat.
-
-LICENSE_ACCEPT_TEXT=J\u2019accepte les termes du contrat de licence.
-
-LICENSE_DECLINE_TOOLTIP=S\u00e9lectionnez cette option si vous n\u2019acceptez pas les termes du contrat.
-
-LICENSE_DECLINE_TEXT=Je n\u2019accepte pas les termes du contrat de licence.
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~I N S T A L L    H O M E   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -147,9 +128,10 @@ JDK_TYPE_IN_TOOLTIP=Saisissez l\u2019emplacement du SDK de Java(TM) dans cette z
 AVAILABLE_JDK=SDK de Java(TM) disponibles
 ALTERNATE_JDK=Emplacement de remplacement du SDK de Java(TM)
 
-UPDATETOOL_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face=\u2019Sans-Serif\u2019&gt; Si une connexion est disponible, le programme d\u2019installation essaiera de t\u00e9l\u00e9charger et de configurer l\u2019outil de Mise \u00e0 jour pour cette installation.&lt;BODY&gt;&lt;HTML&gt;
+UPDATETOOL_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face=\u2019Sans-Serif\u2019&gt; L\u2019outil de mise \u00e0 jour recherche r\u00e9guli\u00e8rement les mises \u00e0 jour de GlassFish Server, ce qui vous permet&lt;BR&gt;de toujours disposer de la derni\u00e8re version.&lt;BODY&gt;&lt;HTML&gt;
 
-UPDATE_TOOL_PRIVACY_NOTICE=&lt;HTML&gt;&lt;BODY&gt;&lt;font face=\u2019Sans-Serif\u2019&gt; L\u2019outil de mise \u00e0 jour v\u00e9rifie r\u00e9guli\u00e8rement si des mises \u00e0 jour sont disponibles et collecte des donn\u00e9es syst\u00e8me. Pour plus d\u2019informations, consultez la page &lt;a href=http://wiki.glassfish.java.net/Wiki.jsp?page=UsageMetricsV3&gt; GlassFish Usage Metrics&lt;/a&gt; &lt;BR&gt;page, http://wiki.glassfish.java.net/Wiki.jsp?page=UsageMetricsV3.&lt;BODY&gt;&lt;HTML&gt;
+
+UPDATE_TOOL_PRIVACY_NOTICE=&lt;HTML&gt;&lt;BODY&gt;&lt;font face=\u2019Sans-Serif\u2019&gt; L\u2019outil de mise \u00e0 jour v\u00e9rifie r\u00e9guli\u00e8rement si des mises \u00e0 jour sont disponibles et collecte &lt;BR&gt; des donn\u00e9es syst\u00e8me. Pour en savoir plus, reportez-vous \u00e0 la page &lt;a href=http://wikis.sun.com/display/glassfish/UsageMetricsV3&gt; GlassFish Usage Metrics&lt;/a&gt; &lt;BR&gt; \u00e0 l\u2019adresse http://wikis.sun.com/display/GlassFish/UsageMetricsV3.&lt;BODY&gt;&lt;HTML&gt;
 
 
 ADMINISTRATION_SERVICE_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face=\u2019Sans-Serif\u2019&gt;Fournissez le nom du service Windows ou d\u2019un service Solaris SMF.&lt;BODY&gt;&lt;HTML&gt;
@@ -163,8 +145,8 @@ ADMIN_PORT_TOOL_TIP=Saisissez le port d\u2019administration
 HTTP_PORT_TOOL_TIP=Saisissez le port listener HTTP
 ADMIN_USER_TOOL_TIP=Saisissez le nom d\u2019utilisateur de l\u2019administrateur
 ADMIN_PASSWORD_TOOL_TIP=Saisissez le mot de passe de l\u2019administrateur
-ADMIN_SERVICE_CHOICE_TOOL_TIP=S\u00e9lectionnez cette option pour cr\u00e9er un service SE pour le domaine par d\u00e9faut (domain1)
-ADMIN_SERVICE_CHOICE_TEXT=Cr\u00e9er un service SE pour domain1
+ADMIN_SERVICE_CHOICE_TOOL_TIP=S\u00e9lectionnez cette option pour cr\u00e9er un service SE pour le domaine
+ADMIN_SERVICE_CHOICE_TEXT=Cr\u00e9er un service SE pour le domaine
 INSTANCE_SERVICE_CHOICE_TEXT=Cr\u00e9er un service SE pour cette instance 
 INSTANCE_SERVICE_CHOICE_TOOL_TIP=S\u00e9lectionnez cette option pour cr\u00e9er un service SE pour cette instance
 ADMIN_SERVICE_NAME_TEXT=Nom du service
@@ -191,11 +173,12 @@ CUSTOM_CDATA_TXT=Le mode &lt;HTML&gt;&lt;BODY&gt;&lt;B&gt;Personnaliser&lt;/B&gt
  the  le logiciel et le configure avec les valeurs
 that que vous pr\u00e9ciserez dans les pages de configuration ci-apr\u00e8s.&lt;BR&gt;
           &lt;/BODY&gt;&lt;/HTML&gt;
-EXPRESS_CDATA_TXT=Le mode &lt;HTML&gt;&lt;BODY&gt;&lt;B&gt;Express&lt;/B&gt; installe le  logiciel et le configure avec ses valeurs par d\u00e9faut.
+EXPRESS_CDATA_TXT=Le mode &lt;HTML&gt;&lt;BODY&gt;&lt;B&gt;Express&lt;/B&gt; installe le logiciel et le configure avec ses valeurs par d\u00e9faut.
 CONFIGURE_SELECTED_COMPONENTS_MSG=Configurez les composants logiciel s\u00e9lectionn\u00e9s avec des donn\u00e9es par d\u00e9faut ou personnalis\u00e9es.
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~A D M I N   P A S S W O R D   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ADMIN_USER_TEXT=Nom d\u2019utilisateur
 ADMIN_PASSWORD_TEXT=Mot de passe
+ADMIN_REENTERPASSWORD_TEXT=Saisissez de nouveau le mot de passe
 ADMIN_PORT_TEXT=Port d\u2019administration
 DOMAIN_NAME_TEXT=Nom de domaine
 HTTP_PORT_TEXT=Port HTTP
@@ -214,45 +197,45 @@ LASTNAME=Nom
 COUNTRY=Pays
 COMPANYNAME=Nom de l\u2019entreprise
 ACCOUNT_CREATION_HEADER_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face=\u2019Sans-Serif\u2019&gt;Fournissez les informations suivantes pour cr\u00e9er un compte en ligne Sun. Tous les champs doivent \u00eatre renseign\u00e9s.&lt;BODY&gt;&lt;HTML&gt;
-ACCOUNT_CREATION_FOOTER_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face=\u2019Sans-Serif\u2019&gt;&lt;a href=http://www.sun.com/privacy/&gt;Politique de confidentialit\u00e9 de Sun&lt;BODY&gt;&lt;HTML&gt;
+ACCOUNT_CREATION_FOOTER_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face=\u2019Sans-Serif\u2019&gt;&lt;a href=http://www.sun.com/privacy/&gt;Politique de confidentialit\u00e9 Oracle&lt;BODY&gt;&lt;HTML&gt;
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~USER TYPE OPTIONS PAGE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-INSTALLUSERTYPE_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face=\u2019Sans-Serif\u2019&gt;Ce programme prend en charge les installations &lt;i&gtSTANDARD&lt;/i&gt; et &lt;i&gt;PERSONNALIS\u00c9E, a&lt;/i&gt; &lt;BR&gt; en fonction du niveau de personnalisation que vous souhaitez. S\u00e9lectionnez l\u2019option qui convient.&lt;BODY&gt;&lt;HTML&gt;
+INSTALLUSERTYPE_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face=\u2019Sans-Serif\u2019&gt;Choisissez un type d\u2019installation.&lt;BODY&gt;&lt;HTML&gt;
 
-BASIC_USER_FOOTER_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face=\u2019Sans-Serif\u2019&gt;Choisissez cette option pour installer les binaires, cr\u00e9er un serveur d\u2019administration de domaine par nom domain1 et configurer GlassFish pour JDK sous &lt;BR&gt; $JAVA_HOME. Veuillez v\u00e9rifier que les ports 4848 et 8080 sont libres.&lt;BODY&gt;&lt;HTML&gt;
+BASIC_USER_FOOTER_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face=\u2019Sans-Serif\u2019&gt;Installe un domaine de gestion GlassFish Server\u00a0; id\u00e9al pour le d\u00e9veloppement&lt;BR&gt;ou un usage non commercial. Assurez-vous que les ports\u00a04848 et&lt;BR&gt; 8080 sont disponibles.&lt;BODY&gt;&lt;HTML&gt;
 
-ADVANCED_USER_FOOTER_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face=\u2019Sans-Serif\u2019&gt;En choisissant cette option, vous pouvez installer les binaires sans devoir effectuer une quelconque configuration, cr\u00e9er un serveur d\u2019administration de domaine ou une instance autonome, ou encore une instance en cluster en plus du cluster. Vous pouvez \u00e9galement configurer une installation existante de GlassFish.&lt;BODY&gt;&lt;HTML&gt;
+ADVANCED_USER_FOOTER_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face=\u2019Sans-Serif\u2019&gt;Offre la possibilit\u00e9 d\u2019installer uniquement les binaires, un domaine de gestion, une &lt;BR&gt;instance autonome ou un cluster. Cette option est id\u00e9ale pour les d\u00e9ploiements&lt;BR&gt;de production.&lt;BODY&gt;&lt;HTML&gt;
 
 BASIC_USER=Installation standard
 ADVANCED_USER=Installation personnalis\u00e9e
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~INSTALLATION/CONFIGUARATION OPTIONS PAGE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-INSTALL_CONFIG_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face=\u2019Sans-Serif\u2019&gt;Ce programme est capable d\u2019effectuer une nouvelle installation et configuration de GlassFish&lt;BR&gt; ou de se servir des binaires install\u00e9s existants pour proc\u00e9der \u00e0 la configuration requise.&lt;BR&gt; Vous pouvez \u00e9galement choisir d\u2019installer uniquement les binaires et d\u2019ignorer l\u2019\u00e9tape de configuration.&lt;BR&gt; S\u00e9lectionnez l\u2019option qui convient.&lt;BODY&gt;&lt;HTML&gt; 
+INSTALL_CONFIG_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face=\u2019Sans-Serif\u2019&gt;Ce programme est capable d\u2019effectuer une nouvelle installation et configuration de of&lt;BR&gt;GlassFish Server ou de se servir des binaires install\u00e9s pour proc\u00e9der \u00e0 la &lt;BR&gt;configuration requise. Vous pouvez \u00e9galement choisir d\u2019installer uniquement les binaires&lt;BR&gt;et sauter la configuration. S\u00e9lectionnez l\u2019option qui convient.&lt;BODY&gt;&lt;HTML&gt; 
 
-INSTALL_ONLY_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face=\u2019Sans-Serif\u2019&gt;Choisissez cette option pour proc\u00e9der \u00e0 l\u2019installation sans effectuer une quelconque configuration.&lt;BR&gt;Vous pourrez proc\u00e9der \u00e0 la configuration ult\u00e9rieurement en r\u00e9ex\u00e9cutant ce programme et en s\u00e9lectionnant l\u2019option Configurer une installation existante.&lt;BODY&gt;&lt;HTML&gt; 
+INSTALL_ONLY_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face=\u2019Sans-Serif\u2019&gt;Choisissez cette option pour proc\u00e9der \u00e0 l\u2019installation en sautant la configuration.&lt;BR&gt;Pour configurer cette installation, ex\u00e9cutez de nouveau le programme d\u2019installation et s\u00e9lectionnez l\u2019option Configurer&lt;BR&gt;une installation existante ci-dessous.&lt;BODY&gt;&lt;HTML&gt; 
 
-INSTALL_AND_CONFIG_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face=\u2019Sans-Serif\u2019&gt;Choisissez cette option pour proc\u00e9der \u00e0 l\u2019installation et la configuration du produit dans cette session.&lt;BODY&gt;&lt;HTML&gt; 
+INSTALL_AND_CONFIG_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face=\u2019Sans-Serif\u2019&gt;Choisissez cette option pour installer et configurer GlassFish Server.&lt;BODY&gt;&lt;HTML&gt; 
 
-CONFIG_ONLY_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face=\u2019Sans-Serif\u2019&gt;Choisissez cette option pour configurer une version pr\u00e9install\u00e9e de ce produit.&lt;BODY&gt;&lt;HTML&gt; 
+CONFIG_ONLY_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face=\u2019Sans-Serif\u2019&gt;Choisissez cette option pour configurer une version pr\u00e9c\u00e9demment install\u00e9e de ce produit.&lt;BODY&gt;&lt;HTML&gt; 
 
 INSTALL_AND_CONFIG=Installer et configurer
-INSTALL_ONLY=Installer sans configuration
+INSTALL_ONLY=Installer uniquement
 CONFIG_ONLY=Configurer une installation existante 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CONFIGURATION ONLY SUMMARY PANEL PAGE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 SUMMARY_HEADER_EXECUTING=&lt;HTML&gt;&lt;BODY&gt;&lt;font face=\u2019Sans-Serif\u2019&gt;Veuillez patienter jusqu\u2019\u00e0 ce que cet outil configure votre environnement.&lt;BODY&gt;&lt;HTML&gt;
 SUMMARY_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face=\u2019Sans-Serif\u2019&gt;Cet outil a effectu\u00e9 la configuration que vous avez requise en entr\u00e9e. &lt;BR&gt;Veuillez v\u00e9rifier les sorties de journal et de donn\u00e9es pour vous assurer que tout est correct&lt;BR&gt; Vous devrez peut-\u00eatre r\u00e9ex\u00e9cuter ce programme pour qu\u2019il configure GlassFish.&lt;BODY&gt;&lt;HTML&gt; 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~CONFIGURATION OPTIONS PAGE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-CONFIG_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face=\u2019Sans-Serif\u2019&gt;Votre machine peut \u00eatre configur\u00e9e par ce programme en tant que domaine GlassFish ou en tant qu\u2019instance autonome ou en cluster. S\u00e9lectionnez l\u2019option qui convient.&lt;BODY&gt;&lt;HTML&gt; 
+CONFIG_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face=\u2019Sans-Serif\u2019&gt;S\u00e9lectionnez l\u2019option de configuration appropri\u00e9e.&lt;BODY&gt;&lt;HTML&gt; 
 
-DOMAIN_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face=\u2019Sans-Serif\u2019&gt;Choisissez cette option pour cr\u00e9er un serveur d\u2019administration de domaine sans les instances associ\u00e9es. &lt;BODY&gt;&lt;HTML&gt; 
+DOMAIN_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face=\u2019Sans-Serif\u2019&gt;Choisissez cette option pour cr\u00e9er un serveur d\u2019administration de domaine.&lt;BODY&gt;&lt;HTML&gt; 
 
-STANDALONEINSTANCE_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face=\u2019Sans-Serif\u2019&gt;Choisissez cette option pour cr\u00e9er une instance locale pouvant communiquer avec le serveur d\u2019administration de domaine. V\u00e9rifiez que le serveur est activ\u00e9 et en cours d\u2019ex\u00e9cution.&lt;BODY&gt;&lt;HTML&gt; 
+STANDALONEINSTANCE_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face=\u2019Sans-Serif\u2019&gt;Choisissez cette option pour cr\u00e9er une instance locale autonome g\u00e9r\u00e9e &lt;BR&gt;par un serveur d\u2019administration de domaine. Le serveur d\u2019administration de domaine &lt;BR&gt;doit \u00eatre en cours d\u2019ex\u00e9cution pour que cette option fonctionne correctement. &lt;BODY&gt;&lt;HTML&gt; 
 
-CLUSTEREDINSTANCE_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face=\u2019Sans-Serif\u2019&gt;Choisissez cette option pour cr\u00e9er une instance en cluster pouvant communiquer avec le serveur d\u2019administration de domaine. Cette instance peut \u00eatre ajout\u00e9e \u00e0 un cluster existant. Le cluster peut \u00eatre cr\u00e9\u00e9 si n\u00e9cessaire. V\u00e9rifiez que le serveur est activ\u00e9 et en cours d\u2019ex\u00e9cution.&lt;BODY&gt;&lt;HTML&gt; 
+CLUSTEREDINSTANCE_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face=\u2019Sans-Serif\u2019&gt;Choisissez cette option pour cr\u00e9er une instance en cluster g\u00e9r\u00e9e &lt;BR&gt;par un serveur d\u2019administration de domaine. Le serveur d\u2019administration de domaine doit&lt;BR&gt;\u00eatre en cours d\u2019ex\u00e9cution pour que cette option fonctionne correctement.&lt;BODY&gt;&lt;HTML&gt; 
 
 
-NOCONFIG_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face=\u2019Sans-Serif\u2019&gt;Choisissez cette option pour ignorer la configuration et installer uniquement les binaires.&lt;BODY&gt;&lt;HTML&gt; 
+NOCONFIG_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face=\u2019Sans-Serif\u2019&gt;Choisissez cette option pour installer GlassFish Server en sautant la configuration.&lt;BODY&gt;&lt;HTML&gt; 
 
 CREATE_DOMAIN=Cr\u00e9er un domaine de serveur
 CREATE_STANDALONEINSTANCE=Cr\u00e9er une instance de serveur autonome 
@@ -261,9 +244,11 @@ NO_CONFIGURATION=Ignorer la configuration
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~INSTANCE INFORMATION PAGE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-CONFIGURATION_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face=\u2019Sans-Serif\u2019&gt;Choisissez cette option pour cr\u00e9er une instance de serveur pouvant communiquer avec une installation de domaine de serveur distant. V\u00e9rifiez que le serveur est activ\u00e9 et en cours d\u2019ex\u00e9cution sur l\u2019h\u00f4te/le port sp\u00e9cifi\u00e9.&lt;BODY&gt;&lt;HTML&gt; 
+CONFIGURATION_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face=\u2019Sans-Serif\u2019&gt;Pour cr\u00e9er et configurer une instance, veuillez fournir les informations&lt;BR&gt;suivantes.&lt;BR&gt;&lt;BR&gt; Le serveur d\u2019administration de domaine doit \u00eatre en cours d\u2019ex\u00e9cution sur &lt;BR&gt; l\u2019h\u00f4te et le port sp\u00e9cifi\u00e9s.&lt;BODY&gt;&lt;HTML&gt; 
 
 CLUSTERED_CONFIGURATION_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face=\u2019Sans-Serif\u2019&gt;Fournissez les informations suivantes pour cr\u00e9er une instance de serveur locale. Vous pouvez \u00e9galement ajouter cette instance au cluster.&lt;BODY&gt;&lt;HTML&gt; 
+
+DAS_PARTITION_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font size=\u20195\u2019 face=\u2019Sans-Serif\u2019&gt;&lt;BR&gt;&lt;BR&gt;Serveur d\u2019administration de domaine&lt;BODY&gt;&lt;HTML&gt; 
 
 INSTANCE_NAME_TEXT=Nom d\u2019instance
 INSTANCE_NAME_TOOL_TIP=Fournissez le nom de l\u2019instance \u00e0 cr\u00e9er. La valeur par d\u00e9faut est instance1
@@ -271,21 +256,21 @@ INSTANCE_NAME_TOOL_TIP=Fournissez le nom de l\u2019instance \u00e0 cr\u00e9er. L
 SERVER_ADMIN_PORT_TEXT=Port d\u2019administration 
 SERVER_ADMIN_PORT_TOOL_TIP=Fournissez le port d\u2019administration de domaine
 
-SERVER_HOST_NAME_TEXT=Nom d\u2019h\u00f4te du serveur  
+SERVER_HOST_NAME_TEXT=Nom d\u2019h\u00f4te 
 SERVER_HOST_NAME_TOOL_TIP=Fournissez le nom de l\u2019h\u00f4te sur lequel le domaine se trouve
 
-CREATE_CLUSTER_INFO_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face=\u2019Sans-Serif\u2019&gt;Fournissez le nom du cluster auquel cette instance appartient. Vous pouvez \u00e9galement cr\u00e9er le cluster s\u2019il n\u2019existe pas. &lt;BODY&gt;&lt;HTML&gt;
+CREATE_CLUSTER_INFO_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face=\u2019Sans-Serif\u2019&gt;Fournissez le nom du cluster auquel cette instance appartient. Un cluster peut&lt;BR&gt;\u00eatre cr\u00e9\u00e9 s\u2019il n\u2019y en a aucun. &lt;BODY&gt;&lt;HTML&gt;
 
 CREATE_CLUSTER_CHOICE_TEXT=Cr\u00e9er un cluster
 
 PART_OF_CLUSTER_CHOICE_TOOL_TIP=
 
-CLUSTER_NAME_TEXT=Nom du cluster
+CLUSTER_NAME_TEXT=Nom du cluster 
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~REGISTRATION OPTIONS PAGE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-REGISTRATION_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face=\u2019Sans-Serif\u2019&gt;Pourquoi vous enregistrer\u00a0? Obtenez facilement aux avantages tels que les\u00a0:&lt;UL&gt;&lt;LI&gt; informations de patch et mises \u00e0 jour correctives&lt;/LI&gt;&lt;LI&gt; diffusions en ligne et didacticiels,&lt;/LI&gt;&lt;LI&gt; offres de support et de formations&lt;/LI&gt;&lt;/UL&gt;&lt;BODY&gt;&lt;HTML&gt;
+REGISTRATION_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face=\u2019Sans-Serif\u2019&gt;Pourquoi vous enregistrer\u00a0? Obtenez facilement des avantages tels que les\u00a0:&lt;UL&gt;&lt;LI&gt;informations de patch et mises \u00e0 jour correctives&lt;/LI&gt;&lt;LI&gt;notifications de diffusions en ligne et didacticiels&lt;/LI&gt;&lt;LI&gt;offres sp\u00e9ciales&lt;/LI&gt;&lt;/UL&gt;&lt;BODY&gt;&lt;HTML&gt;
 
 CREATE_NEWACCT=Je n\u2019ai pas de compte en ligne Sun. M\u2019enregistrer.
 USE_EXISTINGACCT=J\u2019ai d\u00e9j\u00e0 un compte en ligne Sun.
@@ -297,7 +282,7 @@ SKIP_REGISTRATION=Ignorer l\u2019enregistrement
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~UPGRADE PAGE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 UPGRADE_SOFTWARE=&lt;HTML&gt;&lt;BODY&gt;&lt;h3&gt;${PRODUCT_NAME}: Mise niveau \u00e0 logiciel&lt;/h3&gt;&lt;/BODY&gt;&lt;/HTML&gt;
-UPGRADE_ALLOW_TEXT=Mettre \u00e0 niveau
+UPGRADE_ALLOW_TEXT=Mise \u00e0 niveau
 UPGRADE_DECLINE_TEXT=Ne pas mettre \u00e0 niveau
 UPGRADE_ALLOW_TOOLTIP=S\u00e9lectionnez cette option pour mettre \u00e0 niveau le logiciel.
 UPGRADE_DECLINE_TOOLTIP=S\u00e9lectionnez cette option pour ne pas mettre \u00e0 niveau le logiciel.
