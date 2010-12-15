@@ -88,23 +88,23 @@ import org.jvnet.hk2.config.TransactionFailure;
 public class CreateSsl implements AdminCommand {
     final private static LocalStringManagerImpl localStrings =
         new LocalStringManagerImpl(CreateSsl.class);
-    @Param(name = "certname")
+    @Param(name = "certname", alias="certNickname")
     String certName;
     @Param(name = "type", acceptableValues = "network-listener, http-listener, iiop-listener, iiop-service")
     String type;
-    @Param(name = "ssl2enabled", optional = true, defaultValue = "true")
+    @Param(name = "ssl2Enabled", optional = true, defaultValue = "true")
     Boolean ssl2Enabled;
-    @Param(name = "ssl2ciphers", optional = true)
+    @Param(name = "ssl2Ciphers", optional = true)
     String ssl2ciphers;
-    @Param(name = "ssl3enabled", optional = true, defaultValue = "true")
+    @Param(name = "ssl3Enabled", optional = true, defaultValue = "true")
     Boolean ssl3Enabled;
-    @Param(name = "ssl3tlsciphers", optional = true)
+    @Param(name = "ssl3TlsCiphers", optional = true)
     String ssl3tlsciphers;
-    @Param(name = "tlsenabled", optional = true, defaultValue = "true")
+    @Param(name = "tlsEnabled", optional = true, defaultValue = "true")
     Boolean tlsenabled;
-    @Param(name = "tlsrollbackenabled", optional = true, defaultValue = "true")
+    @Param(name = "tlsRollbackEnabled", optional = true, defaultValue = "true")
     Boolean tlsrollbackenabled;
-    @Param(name = "clientauthenabled", optional = true, defaultValue = "true")
+    @Param(name = "clientAuthEnabled", optional = true, defaultValue = "true")
     Boolean clientauthenabled;
     @Param(name = "target", optional = true, defaultValue = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
     String target;
