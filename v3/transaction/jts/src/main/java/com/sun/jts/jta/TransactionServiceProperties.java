@@ -280,7 +280,9 @@ public class TransactionServiceProperties {
         }
 
         if (properties == null) {
-            _logger.log(Level.WARNING, "", new IllegalStateException());
+            if (force) {
+                _logger.log(Level.WARNING, "", new IllegalStateException());
+            }
             return;
         }
 
