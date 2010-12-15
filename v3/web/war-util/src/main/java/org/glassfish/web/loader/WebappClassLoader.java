@@ -1178,7 +1178,7 @@ public class WebappClassLoader
                         && !(name.endsWith(".jar"))) {
                     // Copy binary content to the work directory if not present
                     File resourceFile = new File(loaderDir, name);
-                    url = resourceFile.toURL();
+                    url = resourceFile.toURI().toURL();
                 }
             } catch (Exception e) {
                 // Ignore
