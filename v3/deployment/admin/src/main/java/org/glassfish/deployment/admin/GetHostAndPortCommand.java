@@ -190,6 +190,9 @@ public class GetHostAndPortCommand implements AdminCommand {
                 continue;
             }
             String vsHttpListeners = virtualServer.getNetworkListeners();
+            if (vsHttpListeners == null) {
+                continue;
+            }
             List<String> vsHttpListenerList =
                 StringUtils.parseStringList(vsHttpListeners, " ,");
 
