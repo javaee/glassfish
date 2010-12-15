@@ -131,9 +131,13 @@ public class EjbMonitoringUtils {
         sb.append(m.getName());
         Class[] args = m.getParameterTypes();
         for (Class c : args) {
-            sb.append(SEP).append(c.getName());
+            sb.append(SEP).append(c.getName().replaceAll("_", "\\."));
         }
-        return sb.toString().replaceAll("\\.", "\\\\.").replaceAll("_", "\\\\.");
+        String result = sb.toString().replaceAll("\\.", "\\\\.");
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.fine("==> Converted method String: " + result);
+        }
+        return result;
     }
 
     static String getBeanNode(String appName, String moduleName, String beanName) {
