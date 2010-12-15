@@ -2737,6 +2737,16 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             return;
         }
 
+        boolean updateListeners = false;
+
+        // Only update connectors if virtual-server.http-listeners is changed dynamically
+        if ((vs.getNetworkListeners() == null) && (vsBean.getNetworkListeners() != null)) {
+            updateListeners = true;
+        } else if ((vs.getNetworkListeners() != null) &&
+                (!vs.getNetworkListeners().equals(vsBean.getNetworkListeners()))) {
+            updateListeners = true;
+        }
+
         // Must retrieve the old default-web-module before updating the
         // virtual server with the new vsBean, because default-web-module is
         // read from vsBean
@@ -2901,14 +2911,17 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             }
         }
 
-        /*
-         * Need to update connector and mapper restart is required when
-         * virtual-server.http-listeners is changed dynamically
-         */
-        List<NetworkListener> httpListeners = serverConfig.getNetworkConfig().getNetworkListeners().getNetworkListener();
-        if (httpListeners != null) {
-            for (NetworkListener httpListener : httpListeners) {
-                updateConnector(httpListener, habitat.getByType(HttpService.class));
+        if (updateListeners) {
+            /*
+             * Need to update connector and mapper restart is required
+             * when virtual-server.http-listeners is changed dynamically
+             */
+            List<NetworkListener> httpListeners =
+                    serverConfig.getNetworkConfig().getNetworkListeners().getNetworkListener();
+            if (httpListeners != null) {
+                for (NetworkListener httpListener : httpListeners) {
+                    updateConnector(httpListener, habitat.getByType(HttpService.class));
+                }
             }
         }
 
@@ -3017,12 +3030,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             }
         }
 
-        List<NetworkListener> listeners = serverConfig.getNetworkConfig().getNetworkListeners().getNetworkListener();
-        if (listeners != null) {
-            for (NetworkListener httpListener : listeners) {
-                updateConnector(httpListener, httpService);
-            }
-        }
     }
 
 

@@ -616,11 +616,12 @@ public class StandardHost
 
 
      public String getNetworkListeners() {
-         String listeners = "";
-         if (networkListenerNames.length>0) {
-             listeners = networkListenerNames[0];
-             for (int i=1; i<networkListenerNames.length; i++) {
-                 listeners = listeners + "," + networkListenerNames[i];
+         java.util.List<String> list = java.util.Arrays.asList(networkListenerNames);
+         String listeners = null;
+         if (list.size() > 0) {
+             listeners = list.get(0);
+             for (int i = 1; i < list.size(); i++) {
+                 listeners = list.get(i) + "," + listeners ;
              }
          }
          return listeners;
