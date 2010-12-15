@@ -106,6 +106,7 @@ public class PlainTextActionReporter extends ActionReporter {
 
     @Override
     public void setMessage(String message) {
+        super.setMessage(message);
         sb.delete(0, sb.length());
         appendMessage(message);
     }
