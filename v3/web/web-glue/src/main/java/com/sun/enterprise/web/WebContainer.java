@@ -2740,11 +2740,30 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         boolean updateListeners = false;
 
         // Only update connectors if virtual-server.http-listeners is changed dynamically
-        if ((vs.getNetworkListeners() == null) && (vsBean.getNetworkListeners() != null)) {
-            updateListeners = true;
-        } else if ((vs.getNetworkListeners() != null) &&
-                (!vs.getNetworkListeners().equals(vsBean.getNetworkListeners()))) {
-            updateListeners = true;
+        if (vs.getNetworkListeners() == null) {
+            if (vsBean.getNetworkListeners() == null) {
+                updateListeners = false;
+            } else {
+                updateListeners = true;
+            }
+        } else if (vs.getNetworkListeners().equals(vsBean.getNetworkListeners())) {
+            updateListeners = false;
+        } else {
+            List<String> vsList = StringUtils.parseStringList(
+                vs.getNetworkListeners(), ",");
+            List<String> vsBeanList = StringUtils.parseStringList(
+                vsBean.getNetworkListeners(), ",");
+            for (String vsBeanName : vsBeanList) {
+                if (!vsList.contains(vsBeanName)) {
+                    updateListeners = true;
+                    if (_logger.isLoggable(Level.FINE)) {
+                        _logger.fine(vsBeanName
+                                + "is not included network listeners "
+                                + vs.getNetworkListeners());
+                    }
+                    break;
+                }
+            }
         }
 
         // Must retrieve the old default-web-module before updating the
@@ -2912,6 +2931,11 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
 
         if (updateListeners) {
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.fine("Virtual server " + vs.getName()
+                        + " network listeners are updated from "
+                        + vs.getNetworkListeners() +" to " + vsBean.getNetworkListeners());
+            }
             /*
              * Need to update connector and mapper restart is required
              * when virtual-server.http-listeners is changed dynamically
@@ -2997,8 +3021,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     }
 
     /**
-     * Processes an update to the http-service element, by updating each
-     * http-listener
+     * Processes an update to the http-service element
      */
     public void updateHttpService(HttpService httpService) throws LifecycleException {
 
@@ -3172,11 +3195,15 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             String virtualServerName = httpListener.findHttpProtocol().getHttp().getDefaultVirtualServer();
             VirtualServer vs =
                     (VirtualServer) getEngine().findChild(virtualServerName);
-            String[] oldListenerNames = vs.getNetworkListenerNames();
-            String[] newListenerNames = new String[oldListenerNames.length + 1];
-            System.arraycopy(oldListenerNames, 0, newListenerNames, 0, oldListenerNames.length);
-            newListenerNames[oldListenerNames.length] = httpListener.getName();
-            vs.setNetworkListenerNames(newListenerNames);
+            List<String> list = Arrays.asList(vs.getNetworkListenerNames());
+            // Avoid adding duplicate network-listener name
+            if (!list.contains(httpListener.getName())) {
+                String[] oldListenerNames = vs.getNetworkListenerNames();
+                String[] newListenerNames = new String[oldListenerNames.length + 1];
+                System.arraycopy(oldListenerNames, 0, newListenerNames, 0, oldListenerNames.length);
+                newListenerNames[oldListenerNames.length] = httpListener.getName();
+                vs.setNetworkListenerNames(newListenerNames);
+            } 
 
             Mapper mapper = null;
             for (Mapper m : habitat.getAllByContract(Mapper.class)) {

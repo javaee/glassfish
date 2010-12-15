@@ -73,8 +73,10 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.net.URL;
+import java.net.URL;       
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -616,7 +618,7 @@ public class StandardHost
 
 
      public String getNetworkListeners() {
-         java.util.List<String> list = java.util.Arrays.asList(networkListenerNames);
+         List<String> list = Arrays.asList(networkListenerNames);
          String listeners = null;
          if (list.size() > 0) {
              listeners = list.get(0);

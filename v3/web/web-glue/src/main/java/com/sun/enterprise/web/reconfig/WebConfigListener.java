@@ -144,6 +144,17 @@ public class WebConfigListener implements ConfigListener, MapperUpdateListener {
                         container.updateHttpService(httpService);
                     } else if (t instanceof NetworkListeners) {
                         // skip updates
+                    } else if (t instanceof Property) {
+                        ConfigBeanProxy config = ((Property)t).getParent();
+                        if (config instanceof HttpService) {
+                            container.updateHttpService((HttpService)config);
+                        } else if (config instanceof VirtualServer) {
+                            container.updateHost((VirtualServer)config);
+                        } else if (config instanceof NetworkListener) {
+                            container.updateConnector((NetworkListener)config, httpService);
+                        } else {
+                            container.updateHttpService(httpService);
+                        }
                     } else {
                         container.updateHttpService(httpService);
                     }
