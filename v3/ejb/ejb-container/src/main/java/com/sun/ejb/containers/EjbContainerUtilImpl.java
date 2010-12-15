@@ -533,13 +533,10 @@ public class EjbContainerUtilImpl
                             // first access of the Timer Service application - so use & instead of &&
                             if (isDas() && (!isUpgrade(resourceName, target, appScratchFile.exists()) & appScratchFile.createNewFile())) {
                                 params.origin = OpsParams.Origin.deploy;
-                                if (target != null) {
-                                    params.target = target;
-                                }
                             } else {
                                 params.origin = OpsParams.Origin.load;
-                                params.target = env.getInstanceName();
                             }
+                            params.target = env.getInstanceName();
 
                             ExtendedDeploymentContext dc = deployment.getBuilder(
                                     _logger, params, report).source(app).build();
