@@ -2101,7 +2101,8 @@ admingui.ajax = {
     },
     
     ajaxStart : function() {
-        document.getElementById('ajaxIndicator').style.visibility = "visible";
+        admingui.ajax._setVisibility('ajaxIndicator', 'visible');
+        admingui.ajax._clearAjaxTimer();
         admingui.ajax.ajaxTimer = setTimeout("admingui.ajax._displayAjaxLoadingPanel()", 2000);
     },
     
@@ -2117,15 +2118,28 @@ admingui.ajax = {
         }
     },
     
+    _setVisibility : function (id, state) {
+        var el = document.getElementById(id);
+        if (el != null) {
+            el.style.visibilty = state;
+        }
+    },
+    
+    _clearAjaxTimer : function() {
+        if (admingui.ajax.ajaxTimer != null) {
+            clearTimeout(admingui.ajax.ajaxTimer);
+            admingui.ajax.ajaxTimer = null;
+        }
+    },
+    
     ajaxComplete : function() {
-        clearTimeout(admingui.ajax.ajaxTimer);
+        admingui.ajax._clearAjaxTimer();
         var ajaxPanel = document.getElementById('ajaxPanel');
         if (ajaxPanel != null) {
             ajaxPanel.style.display = "none";
             ajaxPanel.style.visibility = "hidden";
         }
-        admingui.ajax.ajaxTimer = null;
-        document.getElementById('ajaxIndicator').style.visibility = "hidden";
+        admingui.ajax._setVisibility('ajaxIndicator',  'hidden');
     },
 
     loadPage : function (args) {
