@@ -131,7 +131,7 @@ public class ManifestUtils {
         return map;
     }
     
-    private final static String decode(String s) {
+    public static String decode(String s) {
         // replace "null" with null
         if(s == null || s.equals("null"))
             return null;
