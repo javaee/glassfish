@@ -163,13 +163,9 @@ public class PlainTextActionReporter extends ActionReporter {
         String tm = topMessage.getMessage();
         String body = sb.toString();
 
-        if (ok(tm)) {
-            out.append(topMessage.getMessage());
+        if (ok(tm) && !ok(body))
+                body = tm;
 
-            if (ok(body)) {
-                out.append('\n');
-            }
-        }
         if (ok(body)) {
             out.append(body);
         }
