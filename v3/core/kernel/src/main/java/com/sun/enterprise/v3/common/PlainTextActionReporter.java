@@ -39,6 +39,7 @@
  */
 package com.sun.enterprise.v3.common;
 
+import com.sun.enterprise.util.LocalStringManagerImpl;
 import static com.sun.enterprise.util.StringUtils.ok;
 import java.util.*;
 import org.jvnet.hk2.annotations.Service;
@@ -79,7 +80,19 @@ public class PlainTextActionReporter extends ActionReporter {
 
         StringBuilder finalOutput = new StringBuilder();
         getCombinedMessages(this, finalOutput);
-        writer.print(finalOutput.toString());
+        String outs = finalOutput.toString();
+
+        if (!ok(outs)) {
+            // we want at least one line of output.  Otherwise RemoteResponseManager
+            // will consider this an error.  It is NOT an error there just is no data to report.
+            LocalStringManagerImpl localStrings = new LocalStringManagerImpl(PlainTextActionReporter.class);
+            writer.print(localStrings.getLocalString("get.mon.no.data", "No monitoring data to report."));
+            writer.print("\n"); // forces an error to manifest constructor
+        }
+        else
+            writer.print(outs);
+
+        writer.flush();
     }
 
     @Override
@@ -127,8 +140,8 @@ public class PlainTextActionReporter extends ActionReporter {
 
         String s = ptr.getOutputData();
 
-        if(ok(s)) {
-            if(out.length() > 0)
+        if (ok(s)) {
+            if (out.length() > 0)
                 out.append('\n');
 
             out.append(s);
@@ -164,7 +177,7 @@ public class PlainTextActionReporter extends ActionReporter {
         String body = sb.toString();
 
         if (ok(tm) && !ok(body))
-                body = tm;
+            body = tm;
 
         if (ok(body)) {
             out.append(body);
