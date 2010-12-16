@@ -330,11 +330,15 @@ public class MetroContainer implements PostConstruct, Container, WebServiceDeplo
      */
     private String getHttpPort(boolean secure, String serverName, Config config) {
         try {
+            final String networkListeners = config.getHttpService().getVirtualServerByName(serverName).getNetworkListeners();
+            if (networkListeners == null || networkListeners.isEmpty()) {
+                return null;
+            }
             
-            final String[] networkListenerNames = config.getHttpService().getVirtualServerByName(serverName).getNetworkListeners().split(",");
+            final String[] networkListenerNames = networkListeners.split(",");
 
             for (String listenerName : networkListenerNames) {
-                if (listenerName == null || listenerName.length() == 0) {
+                if (listenerName == null || listenerName.isEmpty()) {
                     continue;
                 }
 
