@@ -71,7 +71,7 @@
           <uniqueVersion>false</uniqueVersion>
           <!-- the ID maps to ~/.m2/settings.xml, so don't change the ID -->
           <id>rator.sfbay</id>
-          <url>dav:http://glassfish-maven-repository.us.oracle.comy/maven/repositories/glassfish/</url>
+          <url>dav:http://glassfish-maven-repository.us.oracle.com/maven/repositories/glassfish/</url>
       </repository>
   </distributionManagement>
 
