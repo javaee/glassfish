@@ -46,8 +46,10 @@ import org.apache.catalina.session.PersistentManagerBase;
 import org.glassfish.ha.store.api.BackingStore;
 import org.glassfish.ha.store.api.BackingStoreException;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -61,6 +63,8 @@ public abstract class ReplicationManagerBase extends PersistentManagerBase {
     protected static final String name = "ReplicationManagerBase";
 
     protected Logger logger = LogDomains.getLogger(ReplicationManagerBase.class, LogDomains.WEB_LOGGER);
+
+    protected boolean relaxCacheVersionSemantics = false;
 
     public BackingStore getBackingStore() {
         return this.backingStore;
@@ -97,6 +101,23 @@ public abstract class ReplicationManagerBase extends PersistentManagerBase {
     public boolean isSessionVersioningSupported() {
         return true; 
     }
+
+
+    /** should relax cache version semantics be applied */
+    public boolean isRelaxCacheVersionSemantics() {
+        return relaxCacheVersionSemantics;
+    }
+
+    /**
+     * set the relaxCacheVersionSemantics
+     * @param value
+     */
+    public void setRelaxCacheVersionSemantics(boolean value) {
+        relaxCacheVersionSemantics = value;
+    }
+
+
+
 
     public abstract void doValveSave(Session session);
 

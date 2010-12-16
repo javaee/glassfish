@@ -101,9 +101,13 @@ public class ReplicatedWebMethodSessionStrategyBuilder extends BasePersistenceSt
             store = new ReplicationAttributeStore(serverConfigLookup, ioUtils);
             rwepMgr.createBackingStore(this.getPassedInPersistenceType(), ctx.getPath(), CompositeMetadata.class, vendorMap);
         }
+
+
+        rwepMgr.setMaxActiveSessions(maxSessions);
+        rwepMgr.setMaxIdleBackup(0);
+        rwepMgr.setRelaxCacheVersionSemantics(relaxCacheVersionSemantics);
         rwepMgr.setStore(store);
-
-
+        
         ctx.setManager(rwepMgr);
         if(!((StandardContext)ctx).isSessionTimeoutOveridden()) {
             rwepMgr.setMaxInactiveInterval(sessionMaxInactiveInterval);

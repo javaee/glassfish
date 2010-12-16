@@ -53,6 +53,7 @@ import com.sun.enterprise.web.ServerConfigLookup;
 import com.sun.logging.LogDomains;
 import org.apache.catalina.Container;
 import org.apache.catalina.Session;
+import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Loader;
 import org.glassfish.ha.store.api.BackingStore;
 import org.glassfish.ha.store.api.BackingStoreException;
@@ -164,7 +165,7 @@ public class ReplicationStore extends HAStoreBase {
         SimpleMetadata simpleMetadata =
             SimpleMetadataFactory.createSimpleMetadata(session.getVersion(),  //version
                 session.getLastAccessedTime(), //lastaccesstime
-                session.getMaxInactiveInterval(), //maxinactiveinterval
+                session.getMaxInactiveInterval()*1000L, //maxinactiveinterval
                 sessionState); //state
         if (_logger.isLoggable(Level.FINEST)) {
             _logger.finest("In doValveSave metadata is " + simpleMetadata);
@@ -197,6 +198,22 @@ public class ReplicationStore extends HAStoreBase {
 
     public void setSessions(BaseCache sesstable) {
         //FIXME;
+    }
+
+
+    public void stop() {
+        try {
+            super.stop();
+            ReplicationManagerBase mgr
+             = (ReplicationManagerBase)this.getManager();
+            BackingStore backingStore = mgr.getBackingStore();
+            backingStore.destroy();
+        } catch (BackingStoreException e) {
+
+        } catch (LifecycleException le) {
+         
+        }
+
     }
 
 
@@ -244,7 +261,7 @@ public class ReplicationStore extends HAStoreBase {
         SimpleMetadata simpleMetadata =
             SimpleMetadataFactory.createSimpleMetadata(session.getVersion(),  //version
                 session.getLastAccessedTime(), //lastaccesstime
-                session.getMaxInactiveInterval(), //maxinactiveinterval
+                session.getMaxInactiveInterval()*1000L, //maxinactiveinterval
                 sessionState); //state
 
         try {
