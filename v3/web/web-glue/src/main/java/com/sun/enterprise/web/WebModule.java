@@ -522,12 +522,6 @@ public class WebModule extends PwcWebModule implements Context {
             hasStarted = false;
         }
 
-        if (webBundleDescriptor != null &&
-                webBundleDescriptor.getServiceReferenceDescriptors() != null) {
-            for (Object obj: webBundleDescriptor.getServiceReferenceDescriptors()) {
-            }
-        }
-
         // Stop and unregister Tomcat mbeans
         super.stop(getWebContainer().isShutdown());
     }
