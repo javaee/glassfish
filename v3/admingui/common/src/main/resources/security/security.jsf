@@ -61,7 +61,7 @@
         
         //For Security Manager
         setPageSessionAttribute(key="additionalSaveHandler" value="saveSecurityManagerValue");
-        setPageSessionAttribute(key="additionalSaveHandlerArgs" value="value:%23{pageSession.securityManagerStatus}");
+        setPageSessionAttribute(key="additionalSaveHandlerArgs" value="value:%23{pageSession.securityManagerStatus},configName:%23{pageSession.configName}"); 
         setPageSessionAttribute(key="convertToFalseList" value={"auditEnabled","activateDefaultPrincipalToRoleMapping"})
         
         //set the following for including buttons.inc
