@@ -147,20 +147,26 @@ public class RelayService {
         fmt.format("<cpuManufacturer>%s</cpuManufacturer>\r\n",se.getCpuManufacturer());
         fmt.format("<serialNumber>%s</serialNumber>\r\n",se.getSerialNumber());
 
-
-        fmt.format("<physmem>%s</physmem>\r\n", se.getPhysMem());
-        fmt.format("<cpuinfo>\r\n");
-        fmt.format("<sockets>%s</sockets>\r\n", se.getSockets());
-        fmt.format("<cores>%s</cores>\r\n", se.getCores());
-        fmt.format("<virtcpus>%s</virtcpus>\r\n", se.getVirtCpus());
+        addNumericTag(fmt, "physmem", se.getPhysMem());
+        html.append("<cpuinfo>\r\n");
+        addNumericTag(fmt, "sockets", "45");
+        addNumericTag(fmt, "cores", se.getCores());
+        addNumericTag(fmt, "virtcpus", se.getVirtCpus());
         fmt.format("<name>%s</name>\r\n", se.getCpuName());
-        fmt.format("<clockrate>%s</clockrate>\r\n", se.getClockRate());
-        fmt.format("</cpuinfo>\r\n");
-
+        addNumericTag(fmt, "clockrate", se.getClockRate());
+        html.append("</cpuinfo>\r\n");
         html.append("</environment>\r\n");
         return html.toString();
     }
 
+    private void addNumericTag(Formatter fmt, String tag, String value) {
+       try {
+            int i = Integer.valueOf(value);
+            fmt.format("<" + tag + ">%s</" + tag + ">\r\n", i);
+        } catch (Exception ex) {
+            //ignore.
+        }
+    }
     
     private String getHtml(ServiceTag tag) {
         StringBuilder html = new StringBuilder();
