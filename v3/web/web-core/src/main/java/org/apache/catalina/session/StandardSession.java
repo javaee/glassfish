@@ -437,7 +437,7 @@ public class StandardSession
      * Sets the id of the SipApplicationSession that is the parent of this
      * StandardSession.
      *
-     * @param The SipApplicationSession id
+     * @param id SipApplicationSession id
      */
     public void setSipApplicationSessionId(String id) {
         sipAppSessionId = id;
