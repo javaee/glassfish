@@ -424,8 +424,8 @@ public class GuiUtil {
         } else {
             attrMap.put("alertType", type);
         }
-        if (detail != null && detail.length() > 500) {
-            detail = detail.substring(0, 500) + "...";
+        if (detail != null && detail.length() > 1000) {
+            detail = detail.substring(0, 1000) + " .... " + GuiUtil.getMessage("msg.seeServerLog");
         }
         try {
             attrMap.put("alertDetail", isEmpty(detail) ? "" : URLEncoder.encode(detail, "UTF-8"));
