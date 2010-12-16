@@ -221,27 +221,34 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
     }
 
     public void addEjbDescriptor(EjbDescriptor other) {
+        setEjbBundleDescriptor(other.bundleDescriptor);
         this.transactionType = other.transactionType;
         this.methodContainerTransactions = new Hashtable(other.getMethodContainerTransactions());
         this.permissionedMethodsByPermission = new Hashtable(other.getPermissionedMethodsByPermission());
-        this.getEnvironmentProperties().addAll(other.getEnvironmentProperties());
-        this.getEjbReferenceDescriptors().addAll(other.getEjbReferenceDescriptors());
-        this.getJmsDestinationReferenceDescriptors().addAll(other.getJmsDestinationReferenceDescriptors());
-        this.getMessageDestinationReferenceDescriptors().addAll(other.getMessageDestinationReferenceDescriptors());
-        this.getResourceReferenceDescriptors().addAll(other.getResourceReferenceDescriptors());
-        this.getServiceReferenceDescriptors().addAll(other.getServiceReferenceDescriptors());
+	if (other.env == null) {
+	    // only add this information if it's contained in
+	    // the other EjbDescriptor
+	    this.getEnvironmentProperties().addAll(other.getEnvironmentProperties());
+	    this.getEjbReferenceDescriptors().addAll(other.getEjbReferenceDescriptors());
+	    this.getJmsDestinationReferenceDescriptors().addAll(other.getJmsDestinationReferenceDescriptors());
+	    this.getMessageDestinationReferenceDescriptors().addAll(other.getMessageDestinationReferenceDescriptors());
+	    this.getResourceReferenceDescriptors().addAll(other.getResourceReferenceDescriptors());
+	    this.getServiceReferenceDescriptors().addAll(other.getServiceReferenceDescriptors());
+	    // XXX - why not addAll?
+	    Set<DataSourceDefinitionDescriptor> dataSourceDescriptors = other.getDataSourceDefinitionDescriptors();
+	    if(dataSourceDescriptors.size() > 0){
+		for(DataSourceDefinitionDescriptor desc : dataSourceDescriptors){
+		    this.addDataSourceDefinitionDescriptor(desc);
+		}
+	    }
+            this.getEntityManagerFactoryReferenceDescriptors().addAll(other.getEntityManagerFactoryReferenceDescriptors());
+            this.getEntityManagerReferenceDescriptors().addAll(other.getEntityManagerReferenceDescriptors());
+	}
         this.getRoleReferences().addAll(other.getRoleReferences());
         this.getIORConfigurationDescriptors().addAll(other.getIORConfigurationDescriptors());
-        Set<DataSourceDefinitionDescriptor> dataSourceDescriptors = other.getDataSourceDefinitionDescriptors();
-        if(dataSourceDescriptors.size() > 0){
-            for(DataSourceDefinitionDescriptor desc : dataSourceDescriptors){
-                this.addDataSourceDefinitionDescriptor(desc);
-            }
-        }
         this.transactionType = other.transactionType;
         this.ejbClassName = other.ejbClassName;
         this.usesCallerIdentity = other.usesCallerIdentity;
-        setEjbBundleDescriptor(other.bundleDescriptor);
         this.timerSchedules = new ArrayList(other.timerSchedules);
         this.timerMethodDescriptors = new ArrayList(other.timerMethodDescriptors);
     }
@@ -2168,19 +2175,80 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
 
     public void setEjbBundleDescriptor(EjbBundleDescriptor bundleDescriptor) {
         this.bundleDescriptor = bundleDescriptor;
+        notifyNewModule();
+    }
+
+    /**
+     * Called above when we're first told about our EjbBundleDescriptor.
+     * Called by EjbBundleDescriptor to notify this EjbDescriptor that the
+     * EjbBundleDescriptor has been associated with a new module.
+     */
+    void notifyNewModule() {
         /*
          * If this EjbDescriptor corresponds to an EJB that's part of a
          * web bundle, we want to refer all environment references back
          * to the environment stored in the web bundle, rather than the
          * environment stored in the EJB descriptor.
          */
-        env = null;
-        if (bundleDescriptor != null) {
-            Descriptor d = bundleDescriptor.getModuleDescriptor().
-                                                getDescriptor();
-            if (d instanceof WebBundleDescriptor)
+	Descriptor d = bundleDescriptor.getModuleDescriptor().getDescriptor();
+        // once the module has been set, it should never change
+        if (env != null && d != env)
+            _logger.fine("EjbDescriptor module changed from " + env.getClass() +
+                            " to " + (d == null ? "NULL" : d.getClass()));
+	if (d instanceof WebBundleDescriptor) {
+            if (d != env) {
                 env = (WritableJndiNameEnvironment)d;
-        }
+                /*
+                 * Copy any JNDI entries stored in this descriptor to the
+                 * web bundle's enviroment.  This can happen when processing
+                 * the ejb-jar.xml deployment descriptor in the war file.  The
+                 * environment entries will be added to the descriptor before
+                 * the descriptor is added to the bundle.
+                 *
+                 * Note: can't use addAll to add the entries because the
+                 * WebBundleDescriptor may need to set itself as the
+                 * referring bundle, check for duplicates, etc., and none
+                 * of that happens with addAll.
+                 */
+                for (EnvironmentProperty envp : environmentProperties)
+                    env.addEnvironmentProperty(envp);
+                environmentProperties.clear();
+                for (EjbReference ejbref : ejbReferences)
+                    env.addEjbReferenceDescriptor(ejbref);
+                ejbReferences.clear();
+                for (JmsDestinationReferenceDescriptor jr : jmsDestReferences)
+                    env.addJmsDestinationReferenceDescriptor(jr);
+                jmsDestReferences.clear();
+                for (MessageDestinationReferenceDescriptor mr :
+                                                        messageDestReferences)
+                    env.addMessageDestinationReferenceDescriptor(mr);
+                messageDestReferences.clear();
+                for (ResourceReferenceDescriptor rr : resourceReferences)
+                    env.addResourceReferenceDescriptor(rr);
+                resourceReferences.clear();
+                for (ServiceReferenceDescriptor sr : serviceReferences)
+                    env.addServiceReferenceDescriptor(sr);
+                serviceReferences.clear();
+                for (DataSourceDefinitionDescriptor desc :
+                                                    datasourceDefinitionDescs)
+                    env.addDataSourceDefinitionDescriptor(desc);
+                datasourceDefinitionDescs.clear();
+                for (EntityManagerFactoryReferenceDescriptor emf :
+                                                entityManagerFactoryReferences)
+                    env.addEntityManagerFactoryReferenceDescriptor(emf);
+                entityManagerFactoryReferences.clear();
+                for (EntityManagerReferenceDescriptor em :
+                                                entityManagerReferences)
+                    env.addEntityManagerReferenceDescriptor(em);
+                entityManagerReferences.clear();
+            }
+	} else
+            env = null;
+    }
+
+    private static String c(Object o) {
+        if (o == null ) return "NULL";
+        return o.getClass() + ":" + System.identityHashCode(o);
     }
 
     /**

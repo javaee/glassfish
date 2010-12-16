@@ -157,8 +157,8 @@ public class ModuleDescriptor<T extends RootDeploymentDescriptor> extends Descri
      * @param descriptor the module descriptor
      */
     public void setDescriptor(T descriptor) {
-        descriptor.setModuleDescriptor(this);
         this.descriptor = descriptor;
+        descriptor.setModuleDescriptor(this);
     }
     
     /**
