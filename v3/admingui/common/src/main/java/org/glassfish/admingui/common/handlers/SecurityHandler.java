@@ -721,11 +721,11 @@ public class SecurityHandler {
                 return;
             }
 
-            ArrayList newOptions = new ArrayList();
+            ArrayList<String> newOptions = new ArrayList();
             Object [] origOptions = list.toArray();
             if (userValue){
                 for(int i=0; i<origOptions.length; i++){
-                    newOptions.add(origOptions[i]);
+                    newOptions.add((String)origOptions[i]);
                 }
                 newOptions.add(JVM_OPTION_SECURITY_MANAGER);
             } else{
@@ -733,34 +733,17 @@ public class SecurityHandler {
                     String str = (String) origOptions[i];
                     if (! (str.trim().equals(JVM_OPTION_SECURITY_MANAGER) ||
                             str.trim().startsWith(JVM_OPTION_SECURITY_MANAGER_WITH_EQUAL))){
-                       newOptions.add(origOptions[i]);
+                       newOptions.add((String)origOptions[i]);
                     }
                 }
             }
-            // delete all the jvm options
-            Map<String, Object> payload = null;
-            for (Object s: list) {
-                String str = (String)s;
-                payload = new HashMap<String, Object>();
-                ArrayList kv = InstanceHandler.getKeyValuePair(str);
+            Map<String, Object> payload = new HashMap<String, Object>();
+            payload.put("target", configName);
+            for (String option : newOptions) {
+                ArrayList kv = InstanceHandler.getKeyValuePair(option);
                 payload.put((String)kv.get(0), kv.get(1));
-                RestResponse response = RestUtil.delete(endpoint, payload);
-                if (!response.isSuccess()) {
-                    throw new Exception (response.getResponseBody());
-                }
             }
-
-            // add all the new jvm options
-            for (Object s : newOptions) {
-                String str = (String)s;
-                payload = new HashMap<String, Object>();
-                ArrayList kv = InstanceHandler.getKeyValuePair(str);
-                payload.put((String)kv.get(0), kv.get(1));
-                RestResponse response = RestUtil.post(endpoint, payload);
-                if (!response.isSuccess()) {
-                    throw new Exception (response.getResponseBody());
-                }
-            }
+            RestUtil.restRequest(endpoint, payload, "POST", handlerCtx, false);
         }catch(Exception ex){
             GuiUtil.handleException(handlerCtx, ex);
         }
