@@ -117,6 +117,7 @@ import java.util.logging.Logger;
  *
  * @author Remy Maucherat
  * @author Craig R. McClanahan
+ * @author Rajiv Mordani
  * @version $Revision: 1.67.2.9 $ $Date: 2008/04/17 18:37:34 $
  */
 public class Request
@@ -2921,6 +2922,9 @@ public class Request
 
         // Creating a new session cookie based on the newly created session
         if ((session != null) && (getContext() != null)) {
+            if (manager.isSessionVersioningSupported()) {
+                incrementSessionVersion((StandardSession) session, context);
+            }
 
             if (getContext().getCookies()) {
                 String jvmRoute = ((StandardContext) getContext()).getJvmRoute();
