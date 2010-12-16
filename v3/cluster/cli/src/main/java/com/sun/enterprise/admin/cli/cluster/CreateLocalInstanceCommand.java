@@ -57,6 +57,7 @@ import com.sun.enterprise.admin.servermgmt.KeystoreManager;
 import com.sun.enterprise.admin.util.CommandModelData.ParamModelData;
 import com.sun.enterprise.security.store.PasswordAdapter;
 import com.sun.enterprise.util.OS;
+import com.sun.enterprise.util.SystemPropertyConstants;
 
 
 /**
@@ -127,6 +128,10 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
         if (!rendezvousWithDAS()) {
             throw new CommandException(
                     Strings.get("Instance.rendezvousFailed", DASHost, "" + DASPort));
+        }
+        if (instanceName.equals(SystemPropertyConstants.DAS_SERVER_NAME)) {
+            throw new CommandException(
+                    Strings.get("Instance.alreadyExists", SystemPropertyConstants.DAS_SERVER_NAME));
         }
         setDomainName();
         setDasDefaultsOnly = false;
