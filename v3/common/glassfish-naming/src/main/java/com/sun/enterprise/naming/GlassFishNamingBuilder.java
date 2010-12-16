@@ -85,6 +85,16 @@ public class GlassFishNamingBuilder implements InitialContextFactoryBuilder, Sta
 
     private static Logger _logger = LogFacade.getLogger();
 
+    /**
+     * We use a naming builder in order to enable use of JNDI in OSGi context, because the builder gives us
+     * desired hooks to create appserver specific initial context without having to rely on thread's
+     * context class loader which is a unknown quantity in osgi environment. Use of a builder can lead to some
+     * probelamatic scenarios as discussed in issue #11997, so we allow user to disable it if they want. Having such
+     * configuration option is more of a workaround than a fix, but I have not been able to find a better solution
+     * so far.
+     */
+    private static final String ALLOW_JNDI_FROM_OSGI = "com.sun.enterprise.naming.allowJndiLookupFromOSGi";
+
     public InitialContextFactory createInitialContextFactory(Hashtable<?, ?> environment) throws NamingException
     {
         if (environment != null)
@@ -153,7 +163,9 @@ public class GlassFishNamingBuilder implements InitialContextFactoryBuilder, Sta
                     {
                         public Void run() throws NamingException
                         {
-                            NamingManager.setInitialContextFactoryBuilder(GlassFishNamingBuilder.this);
+                            if (isUsingBuilder()) {
+                                NamingManager.setInitialContextFactoryBuilder(GlassFishNamingBuilder.this);
+                            }
                             return null;  //Nothing to return
                         }
                     });
@@ -165,7 +177,9 @@ public class GlassFishNamingBuilder implements InitialContextFactoryBuilder, Sta
             }
             else
             {
-                NamingManager.setInitialContextFactoryBuilder(this);
+                if (isUsingBuilder()) {
+                    NamingManager.setInitialContextFactoryBuilder(this);
+                }
             }
         }
         catch (NamingException e)
@@ -180,12 +194,16 @@ public class GlassFishNamingBuilder implements InitialContextFactoryBuilder, Sta
         if (sm != null) {
             AccessController.doPrivileged(new PrivilegedAction<Void>(){
                 public Void run() {
-                    resetInitialContextFactoryBuilder();
+                    if (isUsingBuilder()) {
+                        resetInitialContextFactoryBuilder();
+                    }
                     return null;
                 }
             });
         } else {
-            resetInitialContextFactoryBuilder();
+            if (isUsingBuilder()) {
+                resetInitialContextFactoryBuilder();
+            }
         }
     }
 
@@ -206,4 +224,13 @@ public class GlassFishNamingBuilder implements InitialContextFactoryBuilder, Sta
             throw new RuntimeException(e); // TODO(Sahoo): Proper Exception Handling
         }
     }
+
+    /**
+     * @return true if we are using NamingBuilder, else false.
+     */
+    private Boolean isUsingBuilder() {
+        // We are using a system property, because NamingBuilder is a JDK wide singleton.
+        return Boolean.valueOf(System.getProperty(ALLOW_JNDI_FROM_OSGI, "true"));
+    }
+
 }
