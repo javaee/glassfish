@@ -185,7 +185,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
             WebServicesContainer container = habitat.getComponent(WebServicesContainer.class);
             WebServicesDeploymentMBean bean = container.getDeploymentBean();
             WebServiceDeploymentNotifier notifier = getDeploymentNotifier();
-            bean.deploy(app,notifier);
+            bean.deploy(wsDesc,notifier);
             return true;
         } catch (Exception ex) {
             // re-throw all the exceptions as runtime exceptions
