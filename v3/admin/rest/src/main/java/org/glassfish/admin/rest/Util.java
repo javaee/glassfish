@@ -40,10 +40,17 @@
 package org.glassfish.admin.rest;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.v3.common.ActionReporter;
 import org.glassfish.admin.rest.provider.ProviderUtil;
 import javax.ws.rs.core.UriInfo;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.ws.rs.core.PathSegment;
+import org.glassfish.api.admin.ParameterMap;
+import org.jvnet.hk2.component.Habitat;
 
 /**
  * Utilities class. Extended by ResourceUtil and ProviderUtil utilities. Used by
@@ -244,5 +251,45 @@ public class Util {
         }
         String methodName = upperCaseFirstLetter(elementName);
         return methodName = prefix + methodName;
+    }
+
+
+    /**
+     * Apply changes passed in <code>data</code> using CLI "set".
+     * @param data The set of changes to be applied
+     * @return ActionReporter containing result of "set" execution
+     */
+    public static ActionReporter applyChanges(HashMap<String, String> data, UriInfo uriInfo, Habitat habitat) {
+        List<PathSegment> pathSegments = uriInfo.getPathSegments();
+
+        // Discard the last segment if it is empty. This happens if some one accesses the resource
+        // with trailing '/' at end like in htto://host:port/mangement/domain/.../pathelement/
+        PathSegment lastSegment = pathSegments.get(pathSegments.size() - 1);
+        if(lastSegment.getPath().isEmpty()) {
+            pathSegments = pathSegments.subList(0, pathSegments.size() - 1);
+        }
+
+        List<PathSegment> candidatePathSegment = null;
+        if(pathSegments.size() != 1) {
+            // Discard "domain"
+            candidatePathSegment = pathSegments.subList(1, pathSegments.size());
+        } else {
+            // We are being called for a config change at domain level.
+            // CLI "set" requires name to be of form domain.<attribute-name>. 
+            // Preserve "domain"
+            candidatePathSegment = pathSegments;
+        }
+
+        StringBuilder setBasePath = new StringBuilder();
+        for(PathSegment pathSegment :  candidatePathSegment) {
+            setBasePath.append(pathSegment.getPath());
+            setBasePath.append('.');
+        }
+        ParameterMap parameters = new ParameterMap();
+        for (Map.Entry<String, String> entry : data.entrySet()) {
+            StringBuilder setExpression = new StringBuilder(setBasePath);
+            parameters.add("DEFAULT", setExpression.append(entry.getKey()).append('=').append(entry.getValue()).toString());
+        }
+        return ResourceUtil.runCommand("set", parameters, habitat, ""); //TODO The last parameter is resultType and is not used. Refactor the called method to remove it
     }
 }

@@ -69,8 +69,10 @@ import org.glassfish.api.ActionReport;
 import org.jvnet.hk2.config.ConfigBean;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.Dom;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.TransactionFailure;
 import org.jvnet.hk2.config.types.Property;
+import org.jvnet.hk2.config.types.PropertyBag;
 
 /**
  *
@@ -84,6 +86,9 @@ public class PropertiesBagResource {
     protected UriInfo uriInfo;
     @Context
     protected ResourceContext resourceContext;
+    @Context
+    protected Habitat habitat;
+    
     protected List<Dom> entity;
     protected Dom parent;
     protected String tagName;
@@ -170,8 +175,23 @@ public class PropertiesBagResource {
     protected Response clearThenSaveProperties(List<Map<String, String>> properties) {
         try {
             deleteExistingProperties();
+            HashMap<String, String> data = new HashMap<String, String>();
             for (Map<String, String> property : properties) {
-                ConfigSupport.createAndSet((ConfigBean) parent, Property.class, property);
+                data.put (property.get("name"), property.get("value"));
+            }
+            Util.applyChanges(data, uriInfo, habitat);
+            
+            // We have to do this twice to make sure the property is there for the description to be set
+            data = new HashMap<String, String>();
+            for (Map<String, String> property : properties) {
+                final String description = property.get("description");
+                if (description != null) {
+                    data.put (property.get("name") + ".description", description);
+                }
+            }
+            
+            if (!data.isEmpty()) {
+                Util.applyChanges(data, uriInfo, habitat);
             }
 
             String successMessage = localStrings.getLocalString("rest.resource.update.message",
@@ -188,8 +208,12 @@ public class PropertiesBagResource {
     }
 
     protected void deleteExistingProperties() throws TransactionFailure {
-        for (Dom existingProp : parent.nodeElements(tagName)) {
-            ConfigSupport.deleteChild((ConfigBean) parent, (ConfigBean) existingProp);
+        HashMap<String, String> data = new HashMap<String, String>();
+        for (final Dom existingProp : parent.nodeElements(tagName)) {
+            data.put (((ConfigBean) existingProp).attribute("name"), "");
+        }
+        if (!data.isEmpty()) {
+            Util.applyChanges(data, uriInfo, habitat);
         }
     }
 
