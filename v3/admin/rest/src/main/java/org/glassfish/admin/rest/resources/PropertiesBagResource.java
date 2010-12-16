@@ -67,12 +67,9 @@ import org.glassfish.admin.rest.results.OptionsResult;
 import org.glassfish.admin.rest.utils.xml.RestActionReporter;
 import org.glassfish.api.ActionReport;
 import org.jvnet.hk2.config.ConfigBean;
-import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.Dom;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.TransactionFailure;
-import org.jvnet.hk2.config.types.Property;
-import org.jvnet.hk2.config.types.PropertyBag;
 
 /**
  *
@@ -175,25 +172,16 @@ public class PropertiesBagResource {
     protected Response clearThenSaveProperties(List<Map<String, String>> properties) {
         try {
             deleteExistingProperties();
-            HashMap<String, String> data = new HashMap<String, String>();
+            Map<String, String> data = new LinkedHashMap<String, String>();
             for (Map<String, String> property : properties) {
                 data.put (property.get("name"), property.get("value"));
-            }
-            Util.applyChanges(data, uriInfo, habitat);
-            
-            // We have to do this twice to make sure the property is there for the description to be set
-            data = new HashMap<String, String>();
-            for (Map<String, String> property : properties) {
                 final String description = property.get("description");
                 if (description != null) {
                     data.put (property.get("name") + ".description", description);
                 }
             }
+            Util.applyChanges(data, uriInfo, habitat);
             
-            if (!data.isEmpty()) {
-                Util.applyChanges(data, uriInfo, habitat);
-            }
-
             String successMessage = localStrings.getLocalString("rest.resource.update.message",
                     "\"{0}\" updated successfully.", new Object[]{uriInfo.getAbsolutePath()});
             return ResourceUtil.getResponse(200, successMessage, requestHeaders, uriInfo);
