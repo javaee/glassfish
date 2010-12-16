@@ -66,6 +66,26 @@ public class SecurityTest extends BaseSeleniumTestClass {
     public static final String ADMIN_PWD_NEW_ADMINPWD = "New Administrator Password";
     public static final String ADMIN_PWD_SUCCESS = "New values successfully saved";
 
+    public static final String JVM_CONFIG = "Change the general configuration settings for the Java Virtual Machine (JVM)";
+    public static final String JVM_OPTION = "Manage JVM options for the server";
+    public static final String SECURITY_MGR = "Security Manager";
+    
+
+    @Test
+    public void testSecurityPage() {
+
+        clickAndWait("treeForm:tree:configurations:server-config:jvmSettings:jvmSettings_link", JVM_CONFIG);
+        clickAndWait("propertyForm:javaConfigTab:jvmOptions", JVM_OPTION);
+        int beforeCount = getTableRowCount("propertyForm:basicTable");
+        clickAndWait("treeForm:tree:configurations:server-config:security:security_link", SECURITY_MGR);
+        selenium.click("propertyForm:propertySheet:propertSectionTextField:securityManagerProp:sun_checkbox133");
+        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", ADMIN_PWD_SUCCESS);
+        clickAndWait("treeForm:tree:configurations:server-config:jvmSettings:jvmSettings_link", JVM_CONFIG);
+        clickAndWait("propertyForm:javaConfigTab:jvmOptions", JVM_OPTION);
+        int afterCount = getTableRowCount("propertyForm:basicTable");
+        assertEquals(afterCount, beforeCount+1);
+    }
+
     @Test
     public void testNewSecurityRealm() {
         final String realmName = "TestRealm" + generateRandomString();
