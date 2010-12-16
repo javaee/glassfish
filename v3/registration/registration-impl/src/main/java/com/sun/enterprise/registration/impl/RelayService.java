@@ -149,7 +149,7 @@ public class RelayService {
 
         addNumericTag(fmt, "physmem", se.getPhysMem());
         html.append("<cpuinfo>\r\n");
-        addNumericTag(fmt, "sockets", "45");
+        addNumericTag(fmt, "sockets", se.getSockets());
         addNumericTag(fmt, "cores", se.getCores());
         addNumericTag(fmt, "virtcpus", se.getVirtCpus());
         fmt.format("<name>%s</name>\r\n", se.getCpuName());
