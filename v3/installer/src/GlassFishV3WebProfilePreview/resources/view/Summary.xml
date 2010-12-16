@@ -220,13 +220,18 @@ void run ()  {
 			this.regPagePath = regPage;
 		}
 		public void run() {
+    		try {
                     org.glassfish.installer.util.BrowserLauncher launchBrowser =
                         new org.glassfish.installer.util.BrowserLauncher();
                     URL registrationURL = new URL("file://" + regPagePath);
                     launchBrowser.openURL(registrationURL);
+ 		    }
+ 		catch(Exception ex) {
+			LOGGER.log(Level.FINE,ex.getMessage());
+  		}
             }
         }
- }
+}
 }
 return (Runnable)this;]]>
   </apt:scriptCode>
