@@ -8,8 +8,8 @@
   <name>Maven Embedded GlassFish Plugin</name>
 
   <scm>
-      <connection>scm:svn:https://svn.dev.java.net/svn/glassfish-svn/trunk/maven-plugin</connection>
-      <developerConnection>scm:svn:https://svn.dev.java.net/svn/glassfish-svn/trunk/maven-plugin</developerConnection>
+      <connection>scm:svn:https://svn.java.net/svn/glassfish~svn/trunk/maven-plugin</connection>
+      <developerConnection>scm:svn:https://svn.java.net/svn/glassfish~svn/trunk/maven-plugin</developerConnection>
   </scm>
 
   <build>
