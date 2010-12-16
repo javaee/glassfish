@@ -46,28 +46,29 @@
      Output: #{pageSession.nameAlreadyExists}
 -->
 <handler id="gfj.checkNameExist">
-    gf.checkIfEndPointExist(endpoint="#{sessionScope.REST_URL}/clusters/cluster/#{requestScope.nameToCheck}", exists="#{requestScope.exx}");
+    urlencode(value="#{requestScope.nameToCheck}" result="#{requestScope.encodedNameToCheck}");
+    gf.checkIfEndPointExist(endpoint="#{sessionScope.REST_URL}/clusters/cluster/#{requestScope.encodedNameToCheck}", exists="#{requestScope.exx}");
     if (#{requestScope.exx}){
         setAttribute(key="nameAlreadyExists" value="#{true}");
     }
     if ("!#{requestScope.exx}"){
-        gf.checkIfEndPointExist(endpoint="#{sessionScope.REST_URL}/servers/server/#{requestScope.nameToCheck}", exists="#{requestScope.exx}");
-    }
-    if (#{requestScope.exx}){
-        setAttribute(key="nameAlreadyExists" value="#{true}");
-    }
-    if ("!#{requestScope.exx}"){
-        gf.checkIfEndPointExist(endpoint="#{sessionScope.REST_URL}/configs/config/#{requestScope.nameToCheck}", exists="#{requestScope.exx}");
+        gf.checkIfEndPointExist(endpoint="#{sessionScope.REST_URL}/servers/server/#{requestScope.encodedNameToCheck}", exists="#{requestScope.exx}");
     }
     if (#{requestScope.exx}){
         setAttribute(key="nameAlreadyExists" value="#{true}");
     }
     if ("!#{requestScope.exx}"){
-        gf.checkIfEndPointExist(endpoint="#{sessionScope.REST_URL}/nodes/node/#{requestScope.nameToCheck}", exists="#{requestScope.nameAlreadyExists}");
+        gf.checkIfEndPointExist(endpoint="#{sessionScope.REST_URL}/configs/config/#{requestScope.encodedNameToCheck}", exists="#{requestScope.exx}");
+    }
+    if (#{requestScope.exx}){
+        setAttribute(key="nameAlreadyExists" value="#{true}");
+    }
+    if ("!#{requestScope.exx}"){
+        gf.checkIfEndPointExist(endpoint="#{sessionScope.REST_URL}/nodes/node/#{requestScope.encodedNameToCheck}", exists="#{requestScope.nameAlreadyExists}");
     }
 
     if (#{requestScope.nameAlreadyExists}){
-        setAttribute(key="errormsg" value="$resource{i18ncs.msg.error.nameExists, #{requestScope.nameToCheck}}")
+        setAttribute(key="errormsg" value="$resource{i18ncs.msg.error.nameExists, #{requestScope.encodedNameToCheck}}")
         gf.handleError(detail="#{requestScope.errormsg}");
     }
 

@@ -56,12 +56,14 @@
                 mapPut(map="#{requestScope.attrs}" key="node"  value="#{pageSession.node}" )
                 if (#{forStandalone}){
                     if ('#{configOptionGrp}=copy'){
-                        setAttribute(key="nameToCheck" value="#{pageSession.name}-config");
-                        gfj.checkNameExist();
-                        createMap(result="#{requestScope.copyAttrs}")
-                        mapPut(map="#{requestScope.copyAttrs}" key="id"  value={"$pageSession{config}" , "$pageSession{name}-config" } );
-                        gf.restRequest(endpoint="#{sessionScope.REST_URL}/configs/copy-config"  attrs="#{requestScope.copyAttrs}" );
-                        mapPut(map="#{requestScope.attrs}" key="config"  value="#{pageSession.name}-config" )
+                        if ("! (#{pageSession.config}=default-config)"){
+                            setAttribute(key="nameToCheck" value="#{pageSession.name}-config");
+                            gfj.checkNameExist();
+                            createMap(result="#{requestScope.copyAttrs}")
+                            mapPut(map="#{requestScope.copyAttrs}" key="id"  value={"$pageSession{config}" , "$pageSession{name}-config" } );
+                            gf.restRequest(endpoint="#{sessionScope.REST_URL}/configs/copy-config"  attrs="#{requestScope.copyAttrs}" );
+                            mapPut(map="#{requestScope.attrs}" key="config"  value="#{pageSession.name}-config" )
+                        }
                     }
                     if ("!(#{configOptionGrp}=copy)"){
                         mapPut(map="#{requestScope.attrs}" key="config"  value="#{pageSession.config}" )

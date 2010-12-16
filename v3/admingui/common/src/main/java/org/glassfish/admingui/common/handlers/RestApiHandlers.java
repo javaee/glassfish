@@ -135,7 +135,16 @@ public class RestApiHandlers {
                     @HandlerOutput(name = "exists", type = Boolean.class)
             })
     public static void checkIfEndPointExist(HandlerContext handlerCtx) {
-        handlerCtx.setOutputValue("exists", get((String) handlerCtx.getInputValue("endpoint")).isSuccess());
+        boolean result = false;
+        try {
+            result = get((String) handlerCtx.getInputValue("endpoint")).isSuccess();
+        }catch(Exception ex){
+            GuiUtil.getLogger().info("checkIfEnpointExist failed.");
+            if (GuiUtil.getLogger().isLoggable(Level.FINE)){
+                ex.printStackTrace();
+            }
+        }
+        handlerCtx.setOutputValue("exists", result);
     }
 
     /**
