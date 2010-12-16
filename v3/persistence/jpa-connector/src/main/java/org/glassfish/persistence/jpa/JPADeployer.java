@@ -109,9 +109,38 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPApplicationConta
         // Drop tables if needed on undeploy.
         OpsParams params = dc.getCommandParameters(OpsParams.class);
         if (params.origin.isUndeploy() && isDas()) {
-            Java2DBProcessorHelper helper = new Java2DBProcessorHelper(dc);
-            helper.init();
-            helper.createOrDropTablesInDB(false, "JPA"); // NOI18N
+
+            boolean hasScopedResource = false;
+            String appName = params.name();
+            ApplicationInfo appInfo = applicationRegistry.get(appName);
+            Application application = appInfo.getMetaData(Application.class);
+            Set<BundleDescriptor> bundles = application.getBundleDescriptors();
+
+             // Iterate through all the bundles of the app and collect pu references in referencedPus
+             for (BundleDescriptor bundle : bundles) {
+                 Collection<? extends PersistenceUnitDescriptor> pusReferencedFromBundle = bundle.findReferencedPUs();
+                 for(PersistenceUnitDescriptor pud : pusReferencedFromBundle) {
+                     hasScopedResource = hasScopedResource(pud);
+                     if(hasScopedResource) {
+                         break;
+                     }
+                 }
+             }
+
+            // if there are scoped resources, deploy them so that they are accessible for Java2DB to
+            // delete tables.
+            if(hasScopedResource){
+                connectorRuntime.registerDataSourceDefinitions(application);
+            }
+
+             Java2DBProcessorHelper helper = new Java2DBProcessorHelper(dc);
+             helper.init();
+             helper.createOrDropTablesInDB(false, "JPA"); // NOI18N
+
+            //if there are scoped resources, undeploy them.
+            if(hasScopedResource){
+                connectorRuntime.unRegisterDataSourceDefinitions(application);
+            }
         }
     }
 
@@ -151,8 +180,7 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPApplicationConta
             Collection<? extends PersistenceUnitDescriptor> pusReferencedFromBundle = bundle.findReferencedPUs();
             for(PersistenceUnitDescriptor pud : pusReferencedFromBundle) {
                 referencedPus.add(pud);
-                String jtaDataSource = pud.getJtaDataSource();
-                if(jtaDataSource != null && jtaDataSource.startsWith("java:")){
+                if( hasScopedResource(pud) ) {
                     hasScopedResource = true;
                 }
             }
@@ -179,6 +207,18 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPApplicationConta
             }
         };
         pudIterator.iteratePUDs(context);
+    }
+
+    /**
+     * @return true if given <code>pud</code> is using scoped resource
+     */
+    private boolean hasScopedResource(PersistenceUnitDescriptor pud) {
+        boolean hasScopedResource = false;
+        String jtaDataSource = pud.getJtaDataSource();
+        if(jtaDataSource != null && jtaDataSource.startsWith("java:")){
+            hasScopedResource = true;
+        }
+        return hasScopedResource;
     }
 
     /**

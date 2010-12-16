@@ -605,6 +605,14 @@ public interface ConnectorRuntime extends ConnectorConstants{
      * @param application Application being deployed.
      */
     public void registerDataSourceDefinitions(com.sun.enterprise.deployment.Application application);
+
+    /**
+     * Used to unRegister data-source-definitions at an later stage of undeploy operation.
+     * This is used to unRegister "java:global" and "java:app" scoped DataSourceDefinitions
+     * which can be referred by JPA in persistence.xml
+     * @param application Application being undeployed.
+     */
+    public void unRegisterDataSourceDefinitions(com.sun.enterprise.deployment.Application application);
     
     /**
      * Flush Connection pool by reinitializing the connections 

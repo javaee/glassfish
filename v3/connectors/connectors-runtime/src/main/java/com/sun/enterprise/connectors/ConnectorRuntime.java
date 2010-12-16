@@ -1340,6 +1340,13 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     /**
      * {@inheritDoc}
      */
+    public void unRegisterDataSourceDefinitions(com.sun.enterprise.deployment.Application application) {
+        habitat.getComponent(DataSourceDefinitionDeployer.class).unRegisterDataSourceDefinitions(application);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public List<WorkSecurityMap> getWorkSecurityMap(String raName) {
         List<WorkSecurityMap> workSecurityMap =
                 ConnectorsUtil.getWorkSecurityMaps(raName, getResources());

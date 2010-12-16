@@ -325,7 +325,7 @@ public class ComponentEnvManagerImpl
             String logicalJndiName = descriptorToLogicalJndiName(dsd);
             CompEnvBinding envBinding = new CompEnvBinding(logicalJndiName, proxy);
             jndiBindings.add(envBinding);
-            dsd.setDeployed(true);
+            //dsd.setDeployed(true);
         }
     }
 
