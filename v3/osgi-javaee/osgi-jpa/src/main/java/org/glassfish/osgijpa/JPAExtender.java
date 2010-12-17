@@ -120,7 +120,7 @@ public class JPAExtender implements Extender, SynchronousBundleListener {
                     final Runnable runnable = new Runnable() {
                         public void run() {
                             if (tryResolve(bundle)) {
-                                enhance(bi);
+                                enhance(bi, true);
                             } else {
                                 logger.log(Level.INFO, "Bundle having id {0} can't be resolved now, " +
                                         "so adding to a list so that we can enhance it when it gets resolved in future",
@@ -139,7 +139,7 @@ public class JPAExtender implements Extender, SynchronousBundleListener {
                 if (bi != null) {
                     final Runnable runnable = new Runnable() {
                         public void run() {
-                            enhance(bi);
+                            enhance(bi, false); // see issue 15189 to know why we pass false
                         }
                     };
                     // Always do it asynchronously since the bundle is already started.
@@ -161,14 +161,21 @@ public class JPAExtender implements Extender, SynchronousBundleListener {
         return PackageAdmin.class.cast(tracker.getService());
     }
 
-    private void enhance(JPABundleProcessor bi) {
+    private void enhance(JPABundleProcessor bi, boolean refreshPackage) {
         try {
             Bundle bundle = bi.getBundle();
             InputStream enhancedStream = bi.enhance();
             updateBundle(bundle, enhancedStream);
-            getPackageAdmin().refreshPackages(new Bundle[]{bundle});
+            if (refreshPackage) {
+                getPackageAdmin().refreshPackages(new Bundle[]{bundle});
+            } else {
+                logger.logp(Level.INFO, "JPAExtender", "enhance",
+                        "Deferring refresh to framework restart, " +
+                                "so enhanced bytes won't come into effect until then for bundle " + bi.getBundleId() +
+                                " if there are existing wires to this bundle.");
+            }
         } catch (Exception e) {
-            logger.logp(Level.WARNING, "JPAExtender", "bundleChanged", "Failed to enhance bundle having id " + bi.getBundleId(), e);
+            logger.logp(Level.WARNING, "JPAExtender", "enhance", "Failed to enhance bundle having id " + bi.getBundleId(), e);
         }
     }
 
