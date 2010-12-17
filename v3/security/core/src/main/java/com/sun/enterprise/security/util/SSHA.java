@@ -70,8 +70,7 @@ public class SSHA
 
     //TODO V3 need to check if second arg is correct
     private static StringManager sm =
-        StringManager.getManager(SSHA.class);
-    private static MessageDigest md = null;
+        StringManager.getManager(SSHA.class);   
 
     
     /**
@@ -97,33 +96,31 @@ public class SSHA
         if(algoSHA.equals(algo)) {
             isSHA = true;
         }
-
-        synchronized (SSHA.class) {  
-
-            try {
-                md = MessageDigest.getInstance(algo);
-            } catch (Exception e) {
-                throw new IASSecurityException(e);
-            }
-
-            assert (md != null);
-            md.reset();
-            hash = md.digest(buff);
+        
+        MessageDigest md = null;
+        try {
+            md = MessageDigest.getInstance(algo);
+        } catch (Exception e) {
+            throw new IASSecurityException(e);
         }
 
-        if(!isSHA) {
+        assert (md != null);
+        md.reset();
+        hash = md.digest(buff);
+
+        if (!isSHA) {
             for (int i = 2; i <= 100; i++) {
-                    md.reset();
-                    md.update(hash);
-                    hash = md.digest();
+                md.reset();
+                md.update(hash);
+                hash = md.digest();
             }
-        }
-        if(isSHA) {
+        }    
+        if (isSHA) {
             assert (hash.length == 20); // SHA output is 20 bytes
         }
         else {
             assert (hash.length == 32); //SHA-256 output is 32 bytes
-        }        
+        }
         return hash;
     }
 
