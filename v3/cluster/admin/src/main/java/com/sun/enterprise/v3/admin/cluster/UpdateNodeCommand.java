@@ -128,10 +128,15 @@ public class UpdateNodeCommand implements AdminCommand {
         // like the install directory or node directory.
         if (node.nodeInUse()) {
             String badparam = null;
-            if (StringUtils.ok(nodedir))  {
+            String configNodedir = node.getNodeDir();
+            String configInstalldir = node.getInstallDir();
+
+            if (StringUtils.ok(nodedir)  && StringUtils.ok(configNodedir) &&
+                    ! nodedir.equals(configNodedir))  {
                 badparam = "nodedir";
             }
-            if (StringUtils.ok(installdir))  {
+            if (StringUtils.ok(installdir) && StringUtils.ok(configInstalldir) &&
+                    ! installdir.equals(configInstalldir))  {
                 badparam = "installdir";
             }
 
