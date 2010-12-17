@@ -48,6 +48,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -271,8 +272,19 @@ public class DeploymentImpl implements Deployment {
         ListIterator<BeanDeploymentArchive> lIter = beanDeploymentArchives.listIterator(); 
         while (lIter.hasNext()) {
             BeanDeploymentArchive bda = lIter.next();
-            if (bda.getBeanClasses().contains(beanClass)) {
+            if (bda.getBeanClasses().contains(beanClass.getName())) {
                 return bda;
+            }
+
+            if (bda.getBeanDeploymentArchives() != null & bda.getBeanDeploymentArchives().size() > 0) {
+                Collection<BeanDeploymentArchive> subBdas = bda.getBeanDeploymentArchives();
+                Iterator<BeanDeploymentArchive> subBdaIter = subBdas.iterator();
+                while(subBdaIter.hasNext()){
+                    BeanDeploymentArchive subBda = subBdaIter.next();
+                    if (subBda.getBeanClasses().contains(beanClass.getName())) {
+                        return subBda;
+                    }
+                }
             }
         }
 
