@@ -99,7 +99,5 @@ rem it great troubles.
 rem
 for %%a in ("%JAVA%") do set XJAVA=%%~sa%
 for %%a in ("%_AS_INSTALL%/lib/gf-client.jar") do set XCLASSPATH=%%~sa
-for /F "usebackq tokens=*" %%a in (`%XJAVA% -classpath %XCLASSPATH% org.glassfish.appclient.client.CLIBootstrap`) do set
-
-javaCmd=%%a
+for /F "usebackq tokens=*" %%a in (`%XJAVA% -classpath %XCLASSPATH% org.glassfish.appclient.client.CLIBootstrap`) do set javaCmd=%%a
 %javaCmd%
