@@ -157,7 +157,7 @@ public class MessageInterpolatorImpl implements MessageInterpolator {
             ResourceBundle userResourceBundle = new ContextResourceBundle(context, locale);
             ResourceBundle defaultResourceBundle = ResourceBundle.getBundle(DEFAULT_VALIDATION_MESSAGES,
                     locale,
-                    Thread.currentThread().getContextClassLoader());
+                    MessageInterpolator.class.getClassLoader());
 
             String userBundleResolvedMessage;
             resolvedMessage = message;
