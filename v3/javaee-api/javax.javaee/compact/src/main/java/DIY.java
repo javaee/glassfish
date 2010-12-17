@@ -143,8 +143,7 @@ public class DIY extends AbstractProcessor {
                 ArrayList<File> bootClassPath = new ArrayList<File>();
                 bootClassPath.add(jarFile);
     	    // ADD EXTRA DEPENDENCIES HERE:
-    	    bootClassPath.add(new File("mail.jar"));
-    	    bootClassPath.add(new File("activation.jar"));
+    	    bootClassPath.add(new File("javax.mail.jar"));
     	    bootClassPath.add(new File("../../../target/javax.javaee.jar"));
                 for (File path : fm.getLocation(StandardLocation.PLATFORM_CLASS_PATH)) {
                     // if (!new File(path.getName()).equals(new File("rt.jar")))

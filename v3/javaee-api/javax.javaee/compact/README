@@ -49,6 +49,6 @@ where properties are:
 javaee.jar is the location of the javax.javaee jar file containing both api and impl.
 jar.name is the final name of the jar file.
 
-Maven will copy the dependencies activation.jar and mail.jar to a tmp directory in target.  It will compile DIY.java and run the script, run.sh, to generate the compacted javax.javaee-api.jar with the stripped implementation classes.
+Maven will copy the dependency javax.mail.jar to a tmp directory in target.  It will compile DIY.java and run the script, run.sh, to generate the compacted javax.javaee-api.jar with the stripped implementation classes.
 
 

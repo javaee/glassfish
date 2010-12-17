@@ -217,12 +217,6 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
-            <artifactId>javax.activation</artifactId>
-            <version>${project.version}</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish</groupId>
             <artifactId>javax.xml.rpc</artifactId>
             <version>${project.version}</version>
             <optional>true</optional>
