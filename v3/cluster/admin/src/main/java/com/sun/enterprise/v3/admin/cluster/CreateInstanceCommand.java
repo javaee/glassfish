@@ -428,9 +428,13 @@ public class CreateInstanceCommand implements AdminCommand {
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
 
+    /**
+     * This ensures we don't step on another domain's node files on a remote
+     * instance. See bug GLASSFISH-14985.
+     */
     public boolean validateDasOptions(AdminCommandContext context) {
         boolean isDasOptionsValid = true;
-        if (theNode.isLocal() || (!theNode.isLocal() && !theNode.getType().equals("SSH"))) {
+        if (theNode.isLocal() || (!theNode.isLocal() && theNode.getType().equals("SSH"))) {
             ActionReport report = ctx.getActionReport();
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
 
