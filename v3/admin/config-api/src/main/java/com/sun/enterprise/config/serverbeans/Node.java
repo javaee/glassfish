@@ -242,7 +242,7 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
         public static String getNodeDirAbsolute(Node node) {
             // If nodedir is relative make it absolute relative to installRoot
             String nodeDir= node.getNodeDir();
-            if (nodeDir == null)
+            if (nodeDir == null || nodeDir.length() == 0)
                return null;
             File nodeDirFile = new File(nodeDir);
             if (nodeDirFile.isAbsolute()) {
