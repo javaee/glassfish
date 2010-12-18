@@ -47,6 +47,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.context.spi.CreationalContext;
@@ -106,7 +107,7 @@ public class OSGiServiceExtension implements Extension{
     }
     
     /**
-     * Observer for <code>ProcessInjectionTarget</code> events. This event is
+     * Observer for <code>ProcessBean</code> events. This event is
      * fired fire an event for each enabled bean, interceptor or decorator 
      * deployed in a bean archive, before registering the Bean object. 
      * Injections points of every discovered enabled Java EE component is 
@@ -159,7 +160,7 @@ public class OSGiServiceExtension implements Extension{
     private void addServiceInjectionInfo(InjectionPoint injectionPoint) {
         Type key = injectionPoint.getType();
         if (!servicesToBeInjected.containsKey(key)){
-            servicesToBeInjected.put(key, new HashSet<InjectionPoint>());
+            servicesToBeInjected.put(key, new CopyOnWriteArraySet<InjectionPoint>());
         }
         servicesToBeInjected.get(key).add(injectionPoint);
     }
