@@ -56,6 +56,7 @@ import org.glassfish.api.deployment.UndeployCommandParameters;
 import org.glassfish.api.deployment.OpsParams;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.event.Events;
+import org.glassfish.internal.api.Target;
 import org.glassfish.javaee.core.deployment.JavaEEDeployer;
 import org.glassfish.javaee.services.ApplicationScopedResourcesManager;
 import org.glassfish.javaee.services.ResourceManager;
@@ -111,6 +112,7 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
 
     private static Logger _logger = LogDomains.getLogger(ConnectorDeployer.class, LogDomains.RSR_LOGGER);
 
+    private static final String DOMAIN = "domain";
 
     public ConnectorDeployer() {
     }
@@ -330,19 +332,22 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
         }
     }
 
-    private void deleteAdminObjectResources(final Collection<AdminObjectResource> adminObjectResources, String target,
-                                            String raName) {
+    private void deleteAdminObjectResources(final Collection<AdminObjectResource> adminObjectResources,
+                                            final String target, String raName) {
         if (adminObjectResources != null && adminObjectResources.size() > 0) {
             try {
-                final Server targetServer = domain.getServerNamed(target);
+
+                //delete resource-refs
+                for (AdminObjectResource resource : adminObjectResources) {
+                    String jndiName = resource.getJndiName();
+                    deleteResourceRef(jndiName, target);
+                }
+
                 // delete admin-object-resource
                 if (ConfigSupport.apply(new SingleConfigCode<Resources>() {
                     public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
                         for (AdminObjectResource resource : adminObjectResources) {
                             param.getResources().remove(resource);
-
-                            // delete resource-ref
-                            targetServer.deleteResourceRef(resource.getJndiName());
                         }
                         // not found
                         return true;
@@ -358,19 +363,22 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
         }
     }
 
-    private void deleteConnectorResources(final Collection<Resource> connectorResources, String target, String raName) {
+    private void deleteConnectorResources(final Collection<Resource> connectorResources, final String target,
+                                          String raName) {
         if (connectorResources.size() > 0) {
             try {
-                final Server targetServer = domain.getServerNamed(target);
+
+                //delete resource-refs
+                for (Resource resource : connectorResources) {
+                    String jndiName = ((ConnectorResource) resource).getJndiName();
+                    deleteResourceRef(jndiName, target);
+                }
 
                 // delete connector-resource
                 if (ConfigSupport.apply(new SingleConfigCode<Resources>() {
                     public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
                         for (Resource resource : connectorResources) {
                             param.getResources().remove(resource);
-
-                            // delete resource-ref
-                            targetServer.deleteResourceRef(((ConnectorResource) resource).getJndiName());
                         }
                         // not found
                         return true;
@@ -381,6 +389,42 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
             } catch (TransactionFailure tfe) {
                 Object params[] = new Object[]{raName, tfe};
                 _logger.log(Level.WARNING, "unable.to.delete.connector.resource.exception", params);
+            }
+        }
+    }
+
+    private void deleteResourceRef(String jndiName, String target) throws TransactionFailure {
+
+        if (target.equals(DOMAIN)) {
+            return ;
+        }
+
+        if( domain.getConfigNamed(target) != null){
+            return ;
+        }
+
+        Server server = ConfigBeansUtilities.getServerNamed(target);
+        if (server != null) {
+            if (server.isResourceRefExists(jndiName)) {
+                // delete ResourceRef for Server
+                server.deleteResourceRef(jndiName);
+            }
+        } else {
+            Cluster cluster = domain.getClusterNamed(target);
+            if(cluster != null){
+                if (cluster.isResourceRefExists(jndiName)) {
+                    // delete ResourceRef of Cluster
+                    cluster.deleteResourceRef(jndiName);
+
+                    // delete ResourceRef for all instances of Cluster
+                    Target tgt = habitat.getComponent(Target.class);
+                    List<Server> instances = tgt.getInstances(target);
+                    for (Server svr : instances) {
+                        if (svr.isResourceRefExists(jndiName)) {
+                            svr.deleteResourceRef(jndiName);
+                        }
+                    }
+                }
             }
         }
     }
