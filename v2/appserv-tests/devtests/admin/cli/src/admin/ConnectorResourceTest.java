@@ -119,18 +119,46 @@ public class ConnectorResourceTest extends AdminBaseDevTest {
         testCreateConnectorResourceInServer();
         testListConnectorResourceInServer();
         testListConnectorResourceTargetServer();
+        testDeleteConnectorConnectionPoolWithCascade();
+        testListConnectorResourcesNothingToList();
+
+        testCreateConnectorConnectionPool();
+        testCreateConnectorResourceInServer();
+        testListConnectorResourceTargetServer();
         testDeleteConnectorResourceInServer();
+        testListConnectorResourcesNothingToList();
 
         testCreateConnectoResourceInCluster();
         testListConnectorResourceTargetCluster();
         testListConnectorResourceTargetInstance1();
         testListConnectorResourceTargetInstance2();
+        testDeleteConnectorConnectionPoolWithCascade();
+        testListConnectorResourceTargetClusterNothingToList();
+        testListConnectorResourceTargetClusteredInstance1NothingToList();
+        testListConnectorResourceTargetClusteredInstance2NothingToList();
+
+        testCreateConnectorConnectionPool();
+        testCreateConnectoResourceInCluster();
+        testListConnectorResourceTargetCluster();
+        testListConnectorResourceTargetInstance1();
+        testListConnectorResourceTargetInstance2();
         testDeleteConnectorResourceInCluster();
+        testListConnectorResourceTargetClusterNothingToList();
+        testListConnectorResourceTargetClusteredInstance1NothingToList();
+        testListConnectorResourceTargetClusteredInstance2NothingToList();
 
 
         testCreateConnectorResourceInStandaloneInstance();
         testListConnectorResourceTargetStandaloneInstance();
+        testDeleteConnectorConnectionPoolWithCascade();
+        testListConnectorResourceTargetStandaloneInstanceNothingToList();
+
+        testCreateConnectorConnectionPool();
+        testCreateConnectorResourceInStandaloneInstance();
+        testListConnectorResourceTargetStandaloneInstance();
         testDeleteConnectorResourceInStandaloneInstance();
+        testListConnectorResourceTargetStandaloneInstanceNothingToList();
+
 
         testCreateConnectorResourceInDomain();
         testListConnectorResourceTargetDomain();
@@ -172,6 +200,18 @@ public class ConnectorResourceTest extends AdminBaseDevTest {
 
         testListConnectorConnectionPoolsNothingToList();
         testListConnectorResourcesNothingToList();
+
+        testCreateConnectorConnectionPool();
+        testCreateConnectorResourceInDomain();
+        testCreateResourceRefInCluster();
+        testDeleteConnectorConnectionPoolWithCascade();
+
+        testListConnectorConnectionPoolsNothingToList();
+        testListConnectorResourcesNothingToList();
+        testListConnectorResourceTargetClusterNothingToList();
+        testListConnectorResourceTargetClusteredInstance1NothingToList();
+        testListConnectorResourceTargetClusteredInstance2NothingToList();
+        testListConnectorResourceTargetStandaloneInstanceNothingToList();
 
         cleanup();
         stopDomain();
@@ -475,6 +515,34 @@ public class ConnectorResourceTest extends AdminBaseDevTest {
         reportExpectedResult(testName, result);
         reportExpectedResult(testName, result, STANDALONE_INSTANCE_NAME);
         reportUnexpectedResult(testName, result, INSTANCE1_NAME, INSTANCE2_NAME, CLUSTER_NAME);
+    }
+
+    public void testListConnectorResourceTargetStandaloneInstanceNothingToList() {
+        String testName = "testListConnectorResourceTargetStandaloneInstanceNothingToList";
+        AsadminReturn result = asadminWithOutput(LIST_CONNECTOR_RESOURCES, STANDALONE_INSTANCE_NAME);
+        reportResultStatus(testName, result);
+        reportExpectedResult(testName, result, "Nothing to list.");
+    }
+
+    public void testListConnectorResourceTargetClusterNothingToList() {
+        String testName = "testListConnectorResourceTargetClusterNothingToList";
+        AsadminReturn result = asadminWithOutput(LIST_CONNECTOR_RESOURCES, CLUSTER_NAME);
+        reportResultStatus(testName, result);
+        reportExpectedResult(testName, result, "Nothing to list.");
+    }
+
+    public void testListConnectorResourceTargetClusteredInstance2NothingToList() {
+        String testName = "testListConnectorResourceTargetClusteredInstance2NothingToList";
+        AsadminReturn result = asadminWithOutput(LIST_CONNECTOR_RESOURCES, INSTANCE2_NAME);
+        reportResultStatus(testName, result);
+        reportExpectedResult(testName, result, "Nothing to list.");
+    }
+
+    public void testListConnectorResourceTargetClusteredInstance1NothingToList() {
+        String testName = "testListConnectorResourceTargetClusteredInstance1NothingToList";
+        AsadminReturn result = asadminWithOutput(LIST_CONNECTOR_RESOURCES, INSTANCE1_NAME);
+        reportResultStatus(testName, result);
+        reportExpectedResult(testName, result, "Nothing to list.");
     }
 
     private void reportFailureResultStatus(String testName, AsadminReturn result) {
