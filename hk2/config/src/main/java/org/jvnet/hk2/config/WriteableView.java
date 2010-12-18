@@ -297,28 +297,35 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
         Set constraintViolations =
             beanValidator.validate(this.getProxy(this.getProxyType()));
 
-        if (constraintViolations != null) {
-            Iterator<ConstraintViolation<ConfigBeanProxy>> it = constraintViolations.iterator();
-            boolean violated = false;
-            String msg = i18n.getString("bean.validation.failure") + " ";
-            String violationMsg = i18n.getString("bean.validation.constraintViolation");
-            while (it.hasNext()) {
-                violated = true;
-                ConstraintViolation cv = it.next();
-                msg = msg + MessageFormat.format(violationMsg, cv.getMessage(), cv.getPropertyPath());
-                if (it.hasNext()) {
-                    msg = msg + i18n.getString("bean.validation.separator");
-                }
-            }
-            if (violated) {
-                bean.getLock().unlock();
-                throw new TransactionFailure(msg, new ConstraintViolationException(constraintViolations));
-            }
+        try {
+            handleValidationException(constraintViolations);
+        } catch (ConstraintViolationException constraintViolationException) {
+            throw new TransactionFailure(constraintViolationException.getMessage(), constraintViolationException);
         }
-        
+
         return currentTx==t;
     }
-                                                  
+
+    private void handleValidationException(Set constraintViolations) throws ConstraintViolationException {
+
+        if (constraintViolations != null && !constraintViolations.isEmpty()) {
+            Iterator<ConstraintViolation<ConfigBeanProxy>> it = constraintViolations.iterator();
+
+            StringBuilder sb = new StringBuilder();
+            sb.append(MessageFormat.format(i18n.getString("bean.validation.failure"), this.<ConfigBeanProxy>getProxyType().getSimpleName()));
+            String violationMsg = i18n.getString("bean.validation.constraintViolation");
+            while (it.hasNext()) {
+                ConstraintViolation cv = it.next();
+                sb.append(" ");
+                sb.append(MessageFormat.format(violationMsg, cv.getMessage(), cv.getPropertyPath()));
+                if (it.hasNext()) {
+                    sb.append(i18n.getString("bean.validation.separator"));
+                }
+            }
+            bean.getLock().unlock();
+            throw new ConstraintViolationException(sb.toString(), constraintViolations);
+        }
+    }
      
     /** remove @ or <> eg "@foo" => "foo" or "<foo>" => "foo" */
     public static String stripMarkers(final String s ) {
@@ -670,23 +677,7 @@ private class ProtectedList extends AbstractList {
             beanValidator.validateValue(
                 bean.getProxyType(), toCamelCase(property.xmlName()), value));
 
-        if (!constraintViolations.isEmpty()) {
-            Iterator<ConstraintViolation<?>> it = constraintViolations.iterator();
-            boolean violated = false;
-            String msg = i18n.getString("bean.validation.failure") + " ";
-            String violationMsg = i18n.getString("bean.validation.constraintViolation");
-            while (it.hasNext()) {
-                violated = true;
-                ConstraintViolation cv = it.next();
-                msg = msg + MessageFormat.format(violationMsg, cv.getMessage(), cv.getPropertyPath());
-                if (it.hasNext()) {
-                    msg = msg + i18n.getString("bean.validation.separator");
-                }
-            }
-            if (violated) {
-                throw new ConstraintViolationException(msg, constraintViolations);
-            }
-        }
+        handleValidationException(constraintViolations);
     }
 
     private ConstraintViolation validateDataType(final ConfigModel.AttributeLeaf al, final String value)
