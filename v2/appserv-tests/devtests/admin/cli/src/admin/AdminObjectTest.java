@@ -119,6 +119,7 @@ public class AdminObjectTest extends AdminBaseDevTest {
         testListAdminObjectInServer();
         testListAdminObjectTargetServer();
         testDeleteAdminObjectInServer();
+        testListAdminObjectsNothingToList();
 
 
         testCreateAdminObjectInCluster();
@@ -126,11 +127,15 @@ public class AdminObjectTest extends AdminBaseDevTest {
         testListAdminObjectTargetInstance1();
         testListAdminObjectTargetInstance2();
         testDeleteAdminObjectInCluster();
+        testListAdminObjectsTargetClusteredInstance1NothingToList();
+        testListAdminObjectsTargetClusteredInstance2NothingToList();
+        testListAdminObjectsTargetClusterNothingToList();
 
 
         testCreateAdminObjectInStandaloneInstance();
         testListAdminObjectTargetStandaloneInstance();
         testDeleteAdminObjectInStandaloneInstance();
+        testListAdminObjectsTargetStandaloneInstanceNothingToList();
 
 
         testCreateAdminObjectInDomain();
@@ -143,6 +148,11 @@ public class AdminObjectTest extends AdminBaseDevTest {
         testDeleteAdminObjectExpectFailure(SERVER);
         testDeleteResourceRefInCluster();
         testListAdminObjectTargetDomain();
+        testListAdminObjectsNothingToList();
+        testListAdminObjectsTargetClusterNothingToList();
+        testListAdminObjectsTargetClusteredInstance1NothingToList();
+        testListAdminObjectsTargetClusteredInstance2NothingToList();
+        testListAdminObjectsTargetStandaloneInstanceNothingToList();
 
 
         testCreateResourceRefInStandaloneInstance();
@@ -152,6 +162,12 @@ public class AdminObjectTest extends AdminBaseDevTest {
         testDeleteAdminObjectExpectFailure(SERVER);
         testDeleteResourceRefInStandaloneInstance();
         testListAdminObjectTargetDomain();
+        testListAdminObjectsNothingToList();
+        testListAdminObjectsTargetClusterNothingToList();
+        testListAdminObjectsTargetClusteredInstance1NothingToList();
+        testListAdminObjectsTargetClusteredInstance2NothingToList();
+        testListAdminObjectsTargetStandaloneInstanceNothingToList();
+
 
         testCreateResourceRefInServer();
         testListAdminObjectInServer();
@@ -160,13 +176,63 @@ public class AdminObjectTest extends AdminBaseDevTest {
         testDeleteAdminObjectExpectFailure(STANDALONE_INSTANCE_NAME);
         testDeleteResourceRefInServer();
         testListAdminObjectTargetDomain();
+        testListAdminObjectsNothingToList();
+        testListAdminObjectsTargetClusterNothingToList();
+        testListAdminObjectsTargetClusteredInstance1NothingToList();
+        testListAdminObjectsTargetClusteredInstance2NothingToList();
+        testListAdminObjectsTargetStandaloneInstanceNothingToList();
 
-        testDeleteAdminObjectInDomain();
+        testDeleteAdminObjectInClusterConfig();
+        testListAdminObjectsTargetClusterConfigNothingToList();
 
         cleanup();
         stopDomain();
         stat.printSummary();
     }
+
+
+    public void testListAdminObjectsTargetClusterConfigNothingToList(){
+        String testName = "testListAdminObjects";
+        AsadminReturn result = asadminWithOutput(LIST_ADMIN_OBJECTS, CLUSTER_CONFIG_NAME);
+        reportResultStatus(testName, result);
+        reportExpectedResult(testName, result, "Nothing to list.");
+    }
+
+    public void testListAdminObjectsNothingToList(){
+        String testName = "testListAdminObjects";
+        AsadminReturn result = asadminWithOutput(LIST_ADMIN_OBJECTS);
+        reportResultStatus(testName, result);
+        reportExpectedResult(testName, result, "Nothing to list.");
+    }
+
+    public void testListAdminObjectsTargetStandaloneInstanceNothingToList() {
+        String testName = "testListAdminObjectsTargetStandaloneInstanceNothingToList";
+        AsadminReturn result = asadminWithOutput(LIST_ADMIN_OBJECTS, STANDALONE_INSTANCE_NAME);
+        reportResultStatus(testName, result);
+        reportExpectedResult(testName, result, "Nothing to list.");
+    }
+
+    public void testListAdminObjectsTargetClusterNothingToList() {
+        String testName = "testListAdminObjectsTargetClusterNothingToList";
+        AsadminReturn result = asadminWithOutput(LIST_ADMIN_OBJECTS, CLUSTER_NAME);
+        reportResultStatus(testName, result);
+        reportExpectedResult(testName, result, "Nothing to list.");
+    }
+
+    public void testListAdminObjectsTargetClusteredInstance2NothingToList() {
+        String testName = "testListAdminObjectsTargetClusteredInstance2NothingToList";
+        AsadminReturn result = asadminWithOutput(LIST_ADMIN_OBJECTS, INSTANCE2_NAME);
+        reportResultStatus(testName, result);
+        reportExpectedResult(testName, result, "Nothing to list.");
+    }
+
+    public void testListAdminObjectsTargetClusteredInstance1NothingToList() {
+        String testName = "testListAdminObjectsTargetClusteredInstance1NothingToList";
+        AsadminReturn result = asadminWithOutput(LIST_ADMIN_OBJECTS, INSTANCE1_NAME);
+        reportResultStatus(testName, result);
+        reportExpectedResult(testName, result, "Nothing to list.");
+    }
+    
     private void testDeleteAdminObjectExpectFailure(String target){
         String testName = "testDeleteAdminObjectExpectFailure";
         AsadminReturn result = asadminWithOutput(DELETE_ADMIN_OBJECT,TARGET_OPTION, target, RESOURCE_NAME);
@@ -234,8 +300,8 @@ public class AdminObjectTest extends AdminBaseDevTest {
         reportUnexpectedResult(testName, result, STANDALONE_INSTANCE_NAME, INSTANCE2_NAME, INSTANCE1_NAME,CLUSTER_NAME);
     }
 
-    private void testDeleteAdminObjectInDomain() {
-        String testName = "testDeleteAdminObjectInDomain";
+    private void testDeleteAdminObjectInClusterConfig() {
+        String testName = "testDeleteAdminObjectInClusterConfig";
         AsadminReturn result = asadminWithOutput(DELETE_ADMIN_OBJECT,TARGET_OPTION, CLUSTER_CONFIG_NAME, RESOURCE_NAME);
         reportResultStatus(testName, result);
         //reportExpectedResult(testName, result, "Command delete-admin-object executed successfully.");
