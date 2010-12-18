@@ -111,5 +111,5 @@ public @interface OSGiService {
     * -1 indicates that the service is returned immediately if available 
     * or a null is returned if not available.
     */
-   int waitTimeout() default 0; 
+   int waitTimeout() default -1;
 }

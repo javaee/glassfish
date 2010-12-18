@@ -85,32 +85,8 @@ class OSGiServiceFactory {
         final OSGiService os = 
             svcInjectionPoint.getAnnotated().getAnnotation(OSGiService.class);
 
-        //Get one service instance when the proxy is created
-        final Object svcInstance = lookupService(svcInjectionPoint);
-        InvocationHandler proxyInvHndlr = new InvocationHandler() {
-            @Override
-            public Object invoke(Object proxy, Method method, Object[] args)
-                    throws Throwable {
-                Object instanceToUse = svcInstance;
-                if (os.dynamic()) {
-                    //If the service is marked as dynamic, when a method is invoked on a 
-                    //a service proxy, an attempt is made to get a reference to the service 
-                    //and then the method is invoked on the newly obtained service.
-                    //This scheme should work for statless and/or idempotent service 
-                    //implementations that have a dynamic lifecycle that is not linked to
-                    //the service consumer [service dynamism]
-                    //TODO: we should track the lookedup service and 
-                    //only if it goes away should we look up a service
-                    debug ("looking a service as this is set to DYNAMIC=true");
-                    instanceToUse =  lookupService(svcInjectionPoint);
-                } else {
-                    debug ("using the service that was looked up earlier" +
-                    		" as this is set to DYNAMIC=false");
-                }
-                debug("calling Method " + method + " on proxy");
-                return method.invoke(instanceToUse, args);
-            }
-        };
+        InvocationHandler proxyInvHndlr = os.dynamic() ? new DynamicInvocationHandler(os, svcInjectionPoint)
+                : new StaticInvocationHandler(os, svcInjectionPoint);
         
         Object instance =  Proxy.newProxyInstance(
                             Thread.currentThread().getContextClassLoader(), 
@@ -169,5 +145,65 @@ class OSGiServiceFactory {
     private static void debug(String string) {
         if(DEBUG_ENABLED)
             System.out.println("ServiceFactory:: " + string);
+    }
+
+    /**
+     * If the service is marked as dynamic, when a method is invoked on a
+     * a service proxy, an attempt is made to get a reference to the service
+     * and then the method is invoked on the newly obtained service.
+     * This scheme should work for statless and/or idempotent service
+     * implementations that have a dynamic lifecycle that is not linked to
+     * the service consumer [service dynamism]
+     *
+     */
+    private static class DynamicInvocationHandler implements InvocationHandler {
+        /*
+         * TODO: we should track the lookedup service and
+         * only if it goes away should we look up a service.
+         */
+
+        private final OSGiService os;
+        private final InjectionPoint svcInjectionPoint;
+
+        public DynamicInvocationHandler(OSGiService os, InjectionPoint svcInjectionPoint) {
+            this.os = os;
+            this.svcInjectionPoint = svcInjectionPoint;
+        }
+
+        @Override
+        public Object invoke(Object proxy, Method method, Object[] args)
+                throws Throwable {
+            debug ("looking a service as this is set to DYNAMIC=true");
+            final Object instanceToUse =  lookupService(svcInjectionPoint);
+            debug("calling Method " + method + " on proxy");
+            return method.invoke(instanceToUse, args);
+        }
+    }
+
+    /**
+     * If the service is marked as static, an attempt is made to get a reference to the service
+     * when the injection point is resolved.
+     */
+    private static class StaticInvocationHandler implements InvocationHandler {
+        private final Object svcInstance;
+        private final OSGiService os;
+        private final InjectionPoint svcInjectionPoint;
+
+        public StaticInvocationHandler(OSGiService os, InjectionPoint svcInjectionPoint) {
+            //Get one service instance when the proxy is created
+            svcInstance = lookupService(svcInjectionPoint);
+            this.os = os;
+            this.svcInjectionPoint = svcInjectionPoint;
+        }
+
+        @Override
+        public Object invoke(Object proxy, Method method, Object[] args)
+                throws Throwable {
+            Object instanceToUse = svcInstance;
+            debug ("using the service that was looked up earlier" +
+                    " as this is set to DYNAMIC=false");
+            debug("calling Method " + method + " on proxy");
+            return method.invoke(instanceToUse, args);
+        }
     }
 }
