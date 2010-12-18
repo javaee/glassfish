@@ -78,7 +78,9 @@ import static com.sun.enterprise.util.SystemPropertyConstants.SLASH;
 @Scoped(PerLookup.class)
 @ExecuteOn({RuntimeType.DAS, RuntimeType.INSTANCE})
 public class MonitoringReporter extends V2DottedNameSupport {
+
     public enum OutputType {
+
         GET, LIST
     }
 
@@ -89,9 +91,10 @@ public class MonitoringReporter extends V2DottedNameSupport {
         sb.append("\nPattern=[").append(pattern).append("]").append('\n');
 
         if (!targets.isEmpty()) {
-            for (Server server : targets)
+            for (Server server : targets) {
                 if (server != null)
                     sb.append("Server=[").append(server.getName()).append("]").append('\n');
+            }
         }
         else
             sb.append("No Targets");
@@ -141,19 +144,19 @@ public class MonitoringReporter extends V2DottedNameSupport {
      * note that we might be called with HTML or XML or JSON or others!
      */
     private void prepareReporter() {
-        reporter = (ActionReporter)context.getActionReport();
+        reporter = (ActionReporter) context.getActionReport();
 
-        if(reporter instanceof PlainTextActionReporter) {
+        if (reporter instanceof PlainTextActionReporter) {
             // already setup correctly - don't change it!!
             plainReporter = (PlainTextActionReporter) reporter;
         }
-        else if(reporter instanceof PropsFileActionReporter) {
+        else if (reporter instanceof PropsFileActionReporter) {
             plainReporter = new PlainTextActionReporter();
             reporter = plainReporter;
             context.setActionReport(plainReporter);
         }
         else {
-            plainReporter = null; 
+            plainReporter = null;
         }
     }
 
@@ -229,7 +232,7 @@ public class MonitoringReporter extends V2DottedNameSupport {
             doList(localPattern, ltn);
 
         if (plainReporter != null) {
-              plainReporter.appendMessage(cliOutput.toString());
+            plainReporter.appendMessage(cliOutput.toString());
         }
     }
 
