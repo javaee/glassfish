@@ -315,7 +315,7 @@ public class JDBCConnectionPoolManager implements ResourceManager {
         driverclassname = (String) attrList.get(DRIVER_CLASSNAME);
     }
 
-    public ResourceStatus delete(Server[] servers, final Resources resources, final String cascade,
+    public ResourceStatus delete(Server[] servers, Cluster[] clusters, final Resources resources, final String cascade,
                                  final String poolName) throws Exception {
 
         if (poolName == null) {
@@ -335,7 +335,7 @@ public class JDBCConnectionPoolManager implements ResourceManager {
 
             // if cascade=true delete all the resources associated with this pool 
             // if cascade=false don't delete this connection pool if a resource is referencing it
-            Object obj = deleteAssociatedResources(servers, resources,
+            Object obj = deleteAssociatedResources(servers, clusters, resources,
                     Boolean.parseBoolean(cascade), poolName);
             if (obj instanceof Integer &&
                     (Integer) obj == ResourceStatus.FAILURE) {
@@ -376,7 +376,7 @@ public class JDBCConnectionPoolManager implements ResourceManager {
         return resources.getResourceByName(JdbcConnectionPool.class, poolName) != null;
     }
 
-    private Object deleteAssociatedResources(final Server[] servers, Resources resources,
+    private Object deleteAssociatedResources(final Server[] servers, final Cluster[] clusters, Resources resources,
                                            final boolean cascade, final String poolName) throws TransactionFailure {
         if (cascade) {
             ConfigSupport.apply(new SingleConfigCode<Resources>() {
@@ -385,6 +385,7 @@ public class JDBCConnectionPoolManager implements ResourceManager {
                     for (BindableResource referringResource : referringResources) {
                         // delete resource-refs
                         deleteResourceRefs(servers, referringResource.getJndiName());
+                        deleteResourceRefs(clusters, referringResource.getJndiName());
                         // remove the resource
                         param.getResources().remove(referringResource);
                     }
@@ -402,8 +403,19 @@ public class JDBCConnectionPoolManager implements ResourceManager {
 
     private void deleteResourceRefs(Server[] servers, final String refName)
             throws TransactionFailure {
-        for (Server server : servers) {
-            server.deleteResourceRef(refName);
+        if(servers != null){
+            for (Server server : servers) {
+                server.deleteResourceRef(refName);
+            }
+        }
+    }
+
+    private void deleteResourceRefs(Cluster[] clusters, final String refName)
+            throws TransactionFailure {
+        if(clusters != null){
+            for (Cluster cluster : clusters) {
+                cluster.deleteResourceRef(refName);
+            }
         }
     }
 
