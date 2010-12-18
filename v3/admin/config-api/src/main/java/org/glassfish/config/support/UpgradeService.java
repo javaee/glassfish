@@ -72,6 +72,14 @@ public class UpgradeService implements ConfigurationUpgrade, PostConstruct {
     @Inject
     Domain domain;
 
+    /*
+     * Required to make gms changes before any changes to a cluster
+     * or config can be saved. This is because GMS changed attribute
+     * names from v2 to 3.1. (Issue 15195.)
+     */
+    @Inject(name="gmsupgrade", optional=true)
+    ConfigurationUpgrade precondition = null;
+
     private final static Logger logger = Logger.getAnonymousLogger();
 
     private static final String MODULE_TYPE = "moduleType";

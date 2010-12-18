@@ -77,6 +77,14 @@ public class SystemPropertyUpgrade implements ConfigurationUpgrade, PostConstruc
     @Inject
     Servers servers;
 
+    /*
+     * Required to make gms changes before any changes to a cluster
+     * or config can be saved. This is because GMS changed attribute
+     * names from v2 to 3.1. (Issue 15195.)
+     */
+    @Inject(name="gmsupgrade", optional=true)
+    ConfigurationUpgrade precondition = null;
+
     private static String PREFIX = "2";
     private int DEFAULT_ADMIN_PORT = 4848;
     private static final String DAS_CONFIG = "server-config";
