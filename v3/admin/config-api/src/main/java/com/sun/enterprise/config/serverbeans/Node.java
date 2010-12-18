@@ -63,6 +63,7 @@ import org.jvnet.hk2.component.Injectable;
 import org.glassfish.api.admin.config.Named;
 import org.glassfish.api.admin.config.ReferenceContainer;
 
+import javax.validation.Payload;
 import java.beans.PropertyVetoException;
 import java.io.File;
 import java.util.List;
@@ -77,8 +78,8 @@ import javax.validation.constraints.Pattern;
  */
 @Configured
 @SuppressWarnings("unused")
-@NotDuplicateTargetName
-public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceContainer, RefContainer {
+@NotDuplicateTargetName(message="{node.duplicate.name}", payload=Node.class)
+public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceContainer, RefContainer, Payload {
 
     /**
      * Sets the node name
@@ -89,13 +90,12 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
     @Override
     public void setName(String value) throws PropertyVetoException;
 
-    @NotTargetKeyword
-    @Pattern(regexp=NAME_SERVER_REGEX,
-             message="Invalid node name. Name must start with a letter or number and may contain only letters, numbers, and certain other characters.")
+    @NotTargetKeyword(message="{node.reserved.name}", payload=Node.class)
+    @Pattern(regexp=NAME_SERVER_REGEX, message="{node.invalid.name}", payload=Node.class)
     @Override
     public String getName();
 
-    /**
+    /**                                                                      
      * points to the parent directory of the node(s) directory.
      *
      * @return path location of node-dir

@@ -88,7 +88,7 @@ import javax.validation.constraints.Pattern;
  */
 @Configured
 @SuppressWarnings("unused")
-@NotDuplicateTargetName
+@NotDuplicateTargetName(message="{cluster.duplicate.name}", payload=Cluster.class)
 public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named, SystemPropertyBag, ReferenceContainer, RefContainer, Payload {
 
     /**
@@ -100,7 +100,7 @@ public interface Cluster extends ConfigBeanProxy, Injectable, PropertyBag, Named
     @Override
     public void setName(String value) throws PropertyVetoException;
 
-    @NotTargetKeyword
+    @NotTargetKeyword(message="{cluster.reserved.name}", payload=Cluster.class)
     @Pattern(regexp=NAME_SERVER_REGEX, message="{cluster.invalid.name}", payload=Cluster.class)
     @Override
     public String getName();

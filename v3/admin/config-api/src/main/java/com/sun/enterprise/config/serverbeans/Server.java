@@ -97,7 +97,7 @@ import org.glassfish.api.admin.CommandRunner;
  */
 @Configured
 @SuppressWarnings("unused")
-@NotDuplicateTargetName
+@NotDuplicateTargetName(message="{server.duplicate.name}", payload=Server.class)
 public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named, SystemPropertyBag, ReferenceContainer, RefContainer, Payload {
 
     String lbEnabledSystemProperty = "org.glassfish.lb-enabled-default";
@@ -106,7 +106,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
     @Override
     public void setName(String value) throws PropertyVetoException;
 
-    @NotTargetKeyword
+    @NotTargetKeyword(message="{server.reserved.name}", payload=Server.class)
     @Pattern(regexp=NAME_SERVER_REGEX, message="{server.invalid.name}", payload=Server.class)
     @Override
     public String getName();
@@ -121,7 +121,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      *         {@link String }
      */
     @Attribute
-    @NotTargetKeyword
+    @NotTargetKeyword(message="{server.reserved.name}", payload=Server.class)
     @Pattern(regexp = NAME_SERVER_REGEX)
     String getConfigRef();
 

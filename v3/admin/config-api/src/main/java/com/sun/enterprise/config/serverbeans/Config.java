@@ -68,6 +68,7 @@ import org.jvnet.hk2.config.ConfigView;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.DuckTyped;
 import org.jvnet.hk2.config.Element;
+import javax.validation.Payload;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -102,8 +103,8 @@ import javax.validation.constraints.Pattern;
 }) */
 
 @Configured
-@NotDuplicateTargetName
-public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag, SystemPropertyBag {
+@NotDuplicateTargetName(message="{config.duplicate.name}", payload=Config.class)
+public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag, SystemPropertyBag, Payload {
 
     /**
      *  Name of the configured object
@@ -112,8 +113,8 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      FIXME: should set 'key=true'.  See bugs 6039, 6040
      */
     @NotNull
-    @NotTargetKeyword
-    @Pattern(regexp=NAME_SERVER_REGEX)
+    @NotTargetKeyword(message="{config.reserved.name}", payload=Config.class)
+    @Pattern(regexp=NAME_SERVER_REGEX, message="{config.invalid.name}", payload=Config.class)
     @Override
     String getName();
 
