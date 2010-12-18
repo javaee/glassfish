@@ -507,7 +507,7 @@ public class SetCommand extends V2DottedNameSupport implements AdminCommand, Pos
             params.set("DEFAULT", targetName + "=" + value);
             ActionReport.ExitCode ret = ClusterOperationUtil.replicateCommand("set", FailurePolicy.Error,
                     FailurePolicy.Warn, replicationInstances, context, params, habitat);
-            if (!ret.equals(ActionReport.ExitCode.SUCCESS))
+            if (ret.equals(ActionReport.ExitCode.FAILURE))
                 return false;
         }
         return true;
