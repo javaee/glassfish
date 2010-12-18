@@ -394,6 +394,20 @@ public class InjectionManagerImpl implements InjectionManager, PostConstruct {
      */
     public void destroyManagedObject(Object managedObject)
         throws InjectionException {
+
+        destroyManagedObject(managedObject, true);
+    }
+
+    /**
+     * Destroy a managed object that was created via createManagedObject.  Any
+     * PreDestroy methods will be called.
+     *
+     * @param managedObject
+     * @param validate if false, do nothing if the instance is not registred
+     * @throws InjectionException
+     */
+    public void destroyManagedObject(Object managedObject, boolean validate)
+        throws InjectionException {
                       
         Class managedObjectClass = managedObject.getClass();
 
@@ -406,7 +420,7 @@ public class InjectionManagerImpl implements InjectionManager, PostConstruct {
         if( (jcdiService != null) && jcdiService.isCurrentModuleJCDIEnabled() ) {
 
             // If 299-enabled always delegate to managed bean manager
-            managedBeanMgr.destroyManagedBean(managedObject);
+            managedBeanMgr.destroyManagedBean(managedObject, validate);
 
         } else {
 
@@ -417,7 +431,7 @@ public class InjectionManagerImpl implements InjectionManager, PostConstruct {
 
             if( isManagedBean ) {
 
-                managedBeanMgr.destroyManagedBean(managedObject);
+                managedBeanMgr.destroyManagedBean(managedObject, validate);
 
             } else {
 

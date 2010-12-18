@@ -325,7 +325,7 @@ public final class J2EEInstanceListener implements InstanceListener {
             if (eventType == InstanceEvent.EventType.AFTER_DESTROY_EVENT &&
                     !DefaultServlet.class.equals(instance.getClass()) &&
                     !JspServlet.class.equals(instance.getClass())) {
-                injectionMgr.destroyManagedObject(instance);
+                injectionMgr.destroyManagedObject(instance, false);
             }
         } catch (InjectionException ie) {
             String msg = _rb.getString(

@@ -73,6 +73,8 @@ public interface ManagedBeanManager {
 
     public void destroyManagedBean(Object managedBean);
 
+    public void destroyManagedBean(Object managedBean, boolean validate);
+
     /**
      * Register an interceptor instance for all managed beans in the given module
      *

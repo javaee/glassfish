@@ -276,4 +276,16 @@ public interface InjectionManager {
         throws InjectionException;
 
 
+    /**
+     * Destroy a managed object that may have been created via createManagedObject.  Any
+     * PreDestroy methods will be called.  
+     *
+     * @param managedObject
+     * @param validate if false the object might not been created by createManagedObject() call
+     * @throws InjectionException
+     */
+    public void destroyManagedObject(Object managedObject, boolean validate)
+        throws InjectionException;
+
+
 }
