@@ -118,7 +118,7 @@ public abstract class ServiceAdapter implements Service {
         if (OS.isWindowsForSure() && !LINUX_HACK) {
             // Windows doesn't respond well to slashes in the name!!
             getTokenMap().put(SERVICE_NAME_TN, info.serviceName);
-            getTokenMap().put(ENTITY_NAME_TN, info.serviceName);
+            getTokenMap().put(ENTITY_NAME_TN, serverName);
         }
         else
             getTokenMap().put(SERVICE_NAME_TN, info.smfFullServiceName);

@@ -45,6 +45,7 @@
 package org.glassfish.flashlight.datatree.impl;
 
 import com.sun.enterprise.util.ObjectAnalyzer;
+import static com.sun.enterprise.util.SystemPropertyConstants.MONDOT;
 import static com.sun.enterprise.util.SystemPropertyConstants.SLASH;
 import org.glassfish.flashlight.datatree.TreeNode;
 import java.util.*;
@@ -55,6 +56,10 @@ import java.util.regex.Pattern;
 /**
  *
  * @author Harpreet Singh
+ * @author Byron Nevins
+ * 12/18/2010 -- Added encode/decode.  Note that the encoded form for a dot is
+ * NOT something like "\\." -- there is too much code around making assumptions
+ * about dots, splitting strings, etc.  So we replace with ___MONDOT___
  */
 public abstract class AbstractTreeNode implements TreeNode, Comparable {
 
@@ -77,16 +82,17 @@ public abstract class AbstractTreeNode implements TreeNode, Comparable {
 
     @Override
     public String getName() {
-        return this.name;
+
+        return decodeName();
     }
 
     @Override
-    public void setName(String name) {
-        if (name == null) {
+    public void setName(String aname) {
+
+        if (aname == null)
             throw new RuntimeException("Flashlight-utils: Tree Node needs a"
                     + " non-null name");
-        }
-        this.name = name;
+        name = encodeNodeName(aname);
     }
 
     // should be implemented at the sub-class level
@@ -217,27 +223,37 @@ public abstract class AbstractTreeNode implements TreeNode, Comparable {
 
     @Override
     public TreeNode getNode(String completeName) {
-
         if (completeName == null) {
             return null;
         }
+        completeName = encodePath(completeName);
         Pattern pattern = Pattern.compile(AbstractTreeNode.REGEX);
         String[] tokens = pattern.split(completeName);
         TreeNode n = findNodeInTree(tokens);
         return n;
     }
 
+    // confused?  That's expected!  This should be refactored/re-done for 3.2
+    // we store dots and slashes encoded.  THe tokens coming in to this method
+    // are encoded.  That's because there is lots of other code scattered around
+    // that looks for these special meta-characters.  To be safe I'm storing them
+    // in the node encoded.
+    // But the "children" object has keys that come from the getName() of the node
+    // which is the value.
     private TreeNode findNodeInTree(String[] tokens) {
         if (tokens == null) {
             return null;
         }
         TreeNode child = getChild(tokens[0]);
-        if (child == null) {
+
+        if (child == null)
+            child = getChild(decodeName(tokens[0]));
+
+        if (child == null)
             return null;
-        }
-        if (tokens.length > 1) {
+
+        if (tokens.length > 1)
             child = ((AbstractTreeNode) child).findNodeInTree(dropFirstStringToken(tokens));
-        }
 
         return child;
 
@@ -374,5 +390,27 @@ public abstract class AbstractTreeNode implements TreeNode, Comparable {
         }
 
         return node;
+    }
+
+    private String encodeNodeName(String nodeName) {
+        return nodeName.replace(".", MONDOT).replace("/", SLASH).replace("\\/", SLASH).replace("\\.", MONDOT);
+    }
+
+    private String encodePath(String thePath) {
+        // REST encodes (1) to (2)
+        //  aaa    bbb.x   cccc
+        //  aaa.bbb\\x.cccc
+        // we want aaa.bbb___MONDOT___x.cccc
+
+        return thePath.replace("\\/", SLASH).replace("\\.", MONDOT);
+    }
+
+    // todo replace with \\. ???
+    private String decodeName() {
+        return decodeName(name);
+    }
+
+    private static String decodeName(String s) {
+        return s.replace(SLASH, "/").replace(MONDOT, ".");
     }
 }

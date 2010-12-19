@@ -649,6 +649,8 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
         return handles;
     }
 
+    // TODO TODO TODO
+    // Here is where the slash meta-character is handled
     private TreeNode createSubTree(TreeNode parent, String subTreePath) {
         StringTokenizer st = new StringTokenizer(subTreePath, "/");
         TreeNode parentNode = parent;
@@ -657,7 +659,7 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
         enableTreeNode(parentNode);
 
         while (st.hasMoreTokens()) {
-            TreeNode subTreeNode = createSubTreeNode(parentNode, st.nextToken());
+             TreeNode subTreeNode = createSubTreeNode(parentNode, st.nextToken());
             parentNode = subTreeNode;
         }
         return parentNode;
@@ -762,16 +764,17 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
     }
 
     private TreeNode getPluginPointNode(PluginPoint pp, TreeNode serverNode) {
-        //TODO
-        if (pp.getName().equals(serverNode.getName()))
-            return serverNode;
-        else {
-            String subTreePath = pp.getPath();
-            // skip the "server", to avoid duplicate server node
-            if (subTreePath.startsWith(instanceName))
-                subTreePath = subTreePath.substring(subTreePath.indexOf("/") + 1, subTreePath.length());
-            return createSubTree(serverNode, subTreePath);
-        }
+        // Byron Nevins 12/17/2010
+        // pp is over in GMBL.  It is an enum and there are 2 and only 2 possible values:
+        // (1) "server", "server"
+        // (2) "applications", "server/applications"
+        // It is too risky & difficult to fix GMBL to support instances right now
+        // so we deal with it, perfectly, below.
+
+        if (pp == PluginPoint.APPLICATIONS)
+            return createSubTree(serverNode, "applications");
+
+        return serverNode;
     }
 
     private TreeNode constructServerPP() {

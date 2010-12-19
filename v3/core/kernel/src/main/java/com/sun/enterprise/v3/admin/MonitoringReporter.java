@@ -63,7 +63,9 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.PerLookup;
+import static com.sun.enterprise.util.SystemPropertyConstants.MONDOT;
 import static com.sun.enterprise.util.SystemPropertyConstants.SLASH;
+
 
 /**
  *
@@ -195,12 +197,6 @@ public class MonitoringReporter extends V2DottedNameSupport {
         //"server.something"?
 
         String localPattern = prependServerDot(pattern);
-
-
-        // Weird -- but this is how it works internally!
-        if (!isDas())
-            localPattern = serverEnv.getInstanceName() + "." + localPattern;
-
         org.glassfish.flashlight.datatree.TreeNode tn = datareg.get(serverEnv.getInstanceName());
 
         if (tn == null) {
@@ -251,7 +247,7 @@ public class MonitoringReporter extends V2DottedNameSupport {
 
         while (it.hasNext()) {
             Object obj = it.next();
-            String line = possiblyRemoveServerString(obj.toString());
+            String line = obj.toString();
             line = line.replace(SLASH, "/") + " = " + map.get(obj);
 
             if (plainReporter != null)
@@ -262,19 +258,6 @@ public class MonitoringReporter extends V2DottedNameSupport {
             }
         }
         setSuccess();
-    }
-
-    private String possiblyRemoveServerString(String in) {
-        if (isDas())
-            return in;
-
-        String iname = serverEnv.getInstanceName();
-        String inameAndServer = iname + ".server";
-
-        if (in.startsWith(inameAndServer))
-            return StringUtils.replace(in, inameAndServer, iname);
-
-        return in;
     }
 
     private void doList(String localPattern, List<org.glassfish.flashlight.datatree.TreeNode> ltn) {
@@ -325,21 +308,23 @@ public class MonitoringReporter extends V2DottedNameSupport {
     }
 
     private String prependServerDot(String s) {
+        // note -- we are now running in either DAS or an instance and we are going to gather up
+        // data ONLY for this server.  I.e. the DAS dispatching has already happened.
+        // we really need this pattern to start with the instance-name (DAS's instance-name is "server"
+
         // Issue#15054
         // this is pretty intricate but this is what we want to happen for these samples:
-        //asadmin get -m network.thread-pool.totalexecutedtasks-count ==> ERROR no target
+        // asadmin get -m network.thread-pool.totalexecutedtasks-count ==> ERROR no target
         // asadmin get -m server.network.thread-pool.totalexecutedtasks-count ==> OK, return DAS's data
         // asadmin get -m *.network.thread-pool.totalexecutedtasks-count ==> OK return DAS and instances' data
         // asadmin get -m i1.network.thread-pool.totalexecutedtasks-count ==> OK return data for i1
-        // asadmin get -m i1.server.network.thread-pool.totalexecutedtasks-count ==> no data for "server...."
 
-        // So -- if they give "i1.server.blah" we add yet another '.server' to force it to fail!
+        final String namedot = serverEnv.getInstanceName() + ".";
 
-
-        if (s.startsWith(SERVERDOT) && isDas())
+        if(s.startsWith(namedot))
             return s;
 
-        return SERVERDOT + s;
+        return namedot + s;
     }
 
     private boolean validate() {
@@ -365,6 +350,13 @@ public class MonitoringReporter extends V2DottedNameSupport {
         List<Server> allServers = targetService.getAllInstances();
 
         allServers.add(das);
+
+        // 0 decode special things
+        // \\ == literal backslash and \ is escaping next char
+        userarg = handleEscapes(userarg); // too complicated to do in-line
+
+        // MONDOT, SLASH should be replaced with literals
+        userarg = userarg.replace(MONDOT, ".").replace(SLASH, "/");
 
         // 1.  nothing
         // 2.  *
@@ -593,6 +585,16 @@ public class MonitoringReporter extends V2DottedNameSupport {
         return ret;
     }
 
+    private static String handleEscapes(String s) {
+        // replace double backslash with backslash
+        // simply remove single backslash
+        // there is probably a much better, and very very complicated way to do
+        // this with regexp.  I don't care - it is only done once for each time
+        // a user runs a get -m comand.
+        final String UNLIKELY_STRING = "___~~~~$$$$___";
+        return s.replace("\\\\", UNLIKELY_STRING).replace("\\", "").replace(UNLIKELY_STRING, "\\");
+    }
+
     private boolean isDas() {
         return serverEnv.isDas();
     }
@@ -620,6 +622,5 @@ public class MonitoringReporter extends V2DottedNameSupport {
     Habitat habitat;
     private OutputType outputType;
     private final static String DOTTED_NAME = ".dotted-name";
-    private static final String SERVERDOT = "server.";
     private final StringBuilder cliOutput = new StringBuilder();
 }
