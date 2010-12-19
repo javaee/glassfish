@@ -60,11 +60,9 @@ public abstract class AbstractTreeNode implements TreeNode, Comparable {
 
     protected Map<String, TreeNode> children =
             new ConcurrentHashMap<String, TreeNode>();
-
     protected String name;    // The node object itself
     protected String category;
     protected String description;
-
     protected boolean enabled = false;
     private static String NAME_SEPARATOR = ".";
     private static String REGEX = "(?<!\\\\)\\.";
@@ -85,8 +83,8 @@ public abstract class AbstractTreeNode implements TreeNode, Comparable {
     @Override
     public void setName(String name) {
         if (name == null) {
-            throw new RuntimeException("Flashlight-utils: Tree Node needs a" +
-                    " non-null name");
+            throw new RuntimeException("Flashlight-utils: Tree Node needs a"
+                    + " non-null name");
         }
         this.name = name;
     }
@@ -114,7 +112,8 @@ public abstract class AbstractTreeNode implements TreeNode, Comparable {
     public TreeNode addChild(TreeNode newChild) {
         if (newChild == null) {
             return null;
-        } else if (newChild.getName() == null) {
+        }
+        else if (newChild.getName() == null) {
             // log it and return null
             return null;
         }
@@ -126,9 +125,10 @@ public abstract class AbstractTreeNode implements TreeNode, Comparable {
     public String getCompletePathName() {
 
         if (getParent() != null) {
-            return getParent().getCompletePathName() +
-                    this.NAME_SEPARATOR + getName();
-        } else {
+            return getParent().getCompletePathName()
+                    + this.NAME_SEPARATOR + getName();
+        }
+        else {
             return getName();
         }
     }
@@ -196,20 +196,21 @@ public abstract class AbstractTreeNode implements TreeNode, Comparable {
     }
 
     @Override
-    public String getDescription (){
+    public String getDescription() {
         return this.description;
     }
 
     @Override
-    public void setDescription (String description){
+    public void setDescription(String description) {
         this.description = description;
     }
-    
+
     @Override
     public TreeNode getChild(String childName) {
         if (childName == null) {
             return null;
-        } else {
+        }
+        else {
             return children.get(childName);
         }
     }
@@ -255,7 +256,7 @@ public abstract class AbstractTreeNode implements TreeNode, Comparable {
         }
         return newToken;
     }
-    
+
     /**
      * Returns all the nodes under the current tree
      * @return List of all nodes in the current tree
@@ -265,8 +266,8 @@ public abstract class AbstractTreeNode implements TreeNode, Comparable {
 //        System.out.println ("Node: " + this.getName ()+ " is enabled "+isEnabled());
         List<TreeNode> list = new ArrayList<TreeNode>();
 
-        if (ignoreDisabled){
-            if(!this.enabled){
+        if (ignoreDisabled) {
+            if (!this.enabled) {
                 return list;
             }
         }
@@ -285,7 +286,7 @@ public abstract class AbstractTreeNode implements TreeNode, Comparable {
 
     @Override
     public List<TreeNode> getNodes(String pattern, boolean ignoreDisabled, boolean gfv2Compatible) {
-        pattern = pattern.replace("\\.","\\\\\\.");
+        pattern = pattern.replace("\\.", "\\\\\\.");
 
         // bnevins October 2010
         // design gotcha -- It used to be IMPOSSIBLE to tell the difference between
@@ -304,7 +305,7 @@ public abstract class AbstractTreeNode implements TreeNode, Comparable {
 
         try {
             if (gfv2Compatible)
-                pattern = convertGFv2PatternToRegex (pattern);
+                pattern = convertGFv2PatternToRegex(pattern);
 
             Pattern mPattern = Pattern.compile(pattern);
             List<TreeNode> completeTree = traverse(ignoreDisabled);
@@ -316,55 +317,56 @@ public abstract class AbstractTreeNode implements TreeNode, Comparable {
                     regexMatchedTree.add(node);
                 }
             }
-        } catch (java.util.regex.PatternSyntaxException e) {
+        }
+        catch (java.util.regex.PatternSyntaxException e) {
             // log this
-           // e.printStackTrace ();
+            // e.printStackTrace ();
         }
         return regexMatchedTree;
     }
 
     @Override
-    public List<TreeNode> getNodes (String pattern){
-        return getNodes (pattern, true, true);
+    public List<TreeNode> getNodes(String pattern) {
+        return getNodes(pattern, true, true);
     }
 
-    private String convertGFv2PatternToRegex (String pattern){
-        if (pattern.equals (STAR)){
-           return ".*";
+    private String convertGFv2PatternToRegex(String pattern) {
+        if (pattern.equals(STAR)) {
+            return ".*";
         }
         // Doing this intermediate step as replacing "*" in a pattern with ".*"
         // is too hassling
 
         String modifiedPattern = pattern.replaceAll("\\*", ":");
-        String regex = modifiedPattern.replaceAll (":", ".*");
+        String regex = modifiedPattern.replaceAll(":", ".*");
         return regex;
     }
-    
+
     @Override
     public int compareTo(Object o) {
-        return this.getName().compareTo(((TreeNode)o).getName());
+        return this.getName().compareTo(((TreeNode) o).getName());
     }
 
     @Override
     public TreeNode getPossibleParentNode(String pattern) {
         // simplify by bailing out early if preconditions are not met...
-        if(pattern == null || pattern.length() <= 0 || pattern.indexOf('*') >= 0)
+        if (pattern == null || pattern.length() <= 0 || pattern.indexOf('*') >= 0)
             return null;
-        
+
         TreeNode node = null;
-        int     longest = 0;
-        
-        for(TreeNode n : traverse(true)) {
+        int longest = 0;
+
+        for (TreeNode n : traverse(true)) {
             String aname = n.getCompletePathName();
 
-            if(aname == null)
+            if (aname == null)
                 continue;   // defensive pgming
 
-            if(pattern.startsWith(aname)) {
+            if (pattern.startsWith(aname)) {
                 int thisLength = aname.length();
 
                 // keep the longest match ONLY!
-                if(node == null || thisLength > longest) {
+                if (node == null || thisLength > longest) {
                     node = n;
                     longest = thisLength;
                 }
