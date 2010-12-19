@@ -634,6 +634,8 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostStartup, 
                     throw new IllegalStateException("Unknown JCDI-enabled managed bean " +
                             managedBean + " of class " + managedBean.getClass());
                 }
+                _logger.log(Level.FINE, "Unknown JCDI-enabled managed bean " +
+                            managedBean + " of class " + managedBean.getClass());
                 return;
             }
 
