@@ -46,9 +46,10 @@ public class SystemPropertyConstants
 {
 
     /**
-     * Field used by Monitoring to encode a forward slash
+     * Field used by Monitoring to encode a forward slash and/or dot
      */
     public static final String SLASH = "___SLASH___";
+    public static final String MONDOT = "___MONDOT___";
 
     /**
      * Field
