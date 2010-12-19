@@ -514,7 +514,7 @@ delete-instance
         put("ListAuditModule", "create-audit-module");
         put("ListAuthRealm", "create-auth-realm");
         put("ListCluster", "create-cluster");
-        put("ListConfig", "create-config");
+        put("ListConfig", "_create-config");
         put("ListConnectorConnectionPool", "create-connector-connection-pool");
         put("ListConnectorResource", "create-connector-resource");
         put("ListCustomResource", "create-custom-resource");

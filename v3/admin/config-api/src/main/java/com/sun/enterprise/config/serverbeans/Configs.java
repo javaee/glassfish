@@ -65,7 +65,7 @@ public interface Configs extends ConfigBeanProxy, Injectable {
      * </pre>
      * <p/> <p/> <p/> Objects of the following type(s) are allowed in the list {@link Config }
      */
-
+    @Create(value="_create-config", i18n=@I18n("create.config.command"))
     @Element(required=true)
     List<Config> getConfig();
 
