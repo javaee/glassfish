@@ -78,7 +78,7 @@ import java.util.Properties;
 * (logger_name=logging_value)[:logger_name=logging_value]*
 *
 */
-@ExecuteOn({RuntimeType.DAS})
+@ExecuteOn({RuntimeType.DAS, RuntimeType.INSTANCE})
 @TargetType({CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER, CommandTarget.CONFIG})
 @Service(name = "set-log-levels")
 @CommandLock(CommandLock.LockType.NONE)
@@ -156,7 +156,7 @@ public class SetLogLevel implements AdminCommand {
                     isConfig = true;
 
                     Server targetServer = domain.getServerNamed(SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME);
-                    if (targetServer.getConfigRef().equals(target)) {
+                    if (targetServer!=null && targetServer.getConfigRef().equals(target)) {
                         isDas = true;
                     }
                     targetServer = null;
