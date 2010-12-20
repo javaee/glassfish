@@ -171,5 +171,12 @@
         </dependency>
     </dependencies>
 
+    <repositories>
+        <repository>
+            <id>glassfish-releases</id>
+            <url>http://download.java.net/maven/glassfish</url>
+        </repository>
+    </repositories>
+
 </project>
 
