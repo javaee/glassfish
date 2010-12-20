@@ -165,7 +165,7 @@ public class MonitoringResource {
             return result;
         }
 
-        //replace all . with \.
+        //replace all . with \. Monitoring code expects a '.' to be escaped to distinguish from normal field seperator
         path = path.replaceAll("\\.", "\\\\.");
 
         String dottedName = path.replace('/', '.');
@@ -258,12 +258,6 @@ public class MonitoringResource {
             //process only the non-leaf nodes, if any
             if (node.hasChildNodes()) {
                 String name = node.getName();
-                // Monitoring code escapes "." with "\.". Thus name "order.jar" will be given as "order\.jar".
-                // This would result in URL of form monitoring/domain/server/applications/orderapp/order\.jar for the child resource. This URL is rejected by Grizzly.
-                // Unescape here. Please note that we again introduce the escape before doing a get on monitoringregistry
-
-                // bnevins 12/18/2010 -- no it does not!  The dot comes back as a plain dot.
-                name =  name.replaceAll("\\\\.", "\\.");
                 links.put(name, getElementLink(uriInfo, name));
             }
 
