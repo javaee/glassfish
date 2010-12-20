@@ -90,7 +90,7 @@ public class CreateSsl implements AdminCommand {
         new LocalStringManagerImpl(CreateSsl.class);
     @Param(name = "certname", alias="certNickname")
     String certName;
-    @Param(name = "type", acceptableValues = "network-listener, http-listener, iiop-listener, iiop-service")
+    @Param(name = "type", acceptableValues = "network-listener, http-listener, iiop-listener, iiop-service, jmx-connector")
     String type;
     @Param(name = "ssl2Enabled", optional = true, defaultValue = "true")
     Boolean ssl2Enabled;
@@ -145,6 +145,8 @@ public class CreateSsl implements AdminCommand {
             addSslToIIOPListener(config, report);
         } else if ("iiop-service".equals(type)) {
             addSslToIIOPService(config, report);
+        } else if ("jmx-connector".equals(type)) {
+            addSslToJMXConnector(config, report);
         }
     }
 
@@ -295,5 +297,47 @@ public class CreateSsl implements AdminCommand {
             }, habitat.getComponent(Protocols.class));
         }
         return protocol;
+    }
+
+    private void addSslToJMXConnector(Config config, ActionReport report) {
+        AdminService adminService = config.getAdminService();
+        // ensure we have the specified listener
+        JmxConnector jmxConnector = null;
+        for (JmxConnector jmxConn : adminService.getJmxConnector()) {
+            if (jmxConn.getName().equals(listenerId)) {
+                jmxConnector = jmxConn;
+            }
+        }
+        if (jmxConnector == null) {
+            report.setMessage(
+                localStrings.getLocalString("create.ssl.jmx.notfound",
+                    "JMX Connector named {0} to which this ssl element is " +
+                        "being added does not exist.", listenerId));
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
+        }
+        if (jmxConnector.getSsl() != null) {
+            report.setMessage(
+                localStrings.getLocalString("create.ssl.jmx.alreadyExists",
+                    "IIOP Listener named {0} to which this ssl element is " +
+                        "being added already has an ssl element.", listenerId));
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
+        }
+        try {
+            ConfigSupport.apply(new SingleConfigCode<JmxConnector>() {
+                public Object run(JmxConnector param)
+                    throws PropertyVetoException, TransactionFailure {
+                    Ssl newSsl = param.createChild(Ssl.class);
+                    populateSslElement(newSsl);
+                    param.setSsl(newSsl);
+                    return newSsl;
+                }
+            }, jmxConnector);
+
+        } catch (TransactionFailure e) {
+            reportError(report, e);
+        }
+        reportSuccess(report);
     }
 }
