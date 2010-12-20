@@ -263,7 +263,7 @@ public class MonitoringResource {
                 // Unescape here. Please note that we again introduce the escape before doing a get on monitoringregistry
 
                 // bnevins 12/18/2010 -- no it does not!  The dot comes back as a plain dot.
-                name =  name.replaceAll("\\\\.", "\\.").replace(".", "\\.");
+                name =  name.replaceAll("\\\\.", "\\.");
                 links.put(name, getElementLink(uriInfo, name));
             }
 
