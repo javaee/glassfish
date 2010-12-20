@@ -40,13 +40,20 @@
 
 package numberguess;
 
-import javax.ejb.*;
-import javax.annotation.*;
-
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.annotation.Resource;
+import javax.ejb.EJBException;
+import javax.ejb.SessionContext;
+import javax.ejb.Singleton;
+import javax.ejb.Startup;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+
 
 @Singleton
 @Startup
+@ApplicationScoped
 public class SingletonBean {
 
     @Resource
@@ -57,21 +64,21 @@ public class SingletonBean {
 
     @PostConstruct
 	public void init() {
-	System.out.println("In SingletonBean::init()");
-	System.out.println("sessionCtx = " + sessionCtx);
-	if( sessionCtx == null ) {
-	    throw new EJBException("EE injection error");
-	}
+    	System.out.println("In SingletonBean::init()");
+    	System.out.println("sessionCtx = " + sessionCtx);
+    	if( sessionCtx == null ) {
+    	    throw new EJBException("EE injection error");
+    	}
     }
 
     public void hello() {
-	System.out.println("In SingletonBean::hello()");
-	statelessLocal.hello();
+    	System.out.println("In SingletonBean::hello()");
+    	statelessLocal.hello();
     }
 
     @PreDestroy
 	public void destroy() {
-	System.out.println("In SingletonBean::destroy()");
+    	System.out.println("In SingletonBean::destroy()");
     }
 
     
