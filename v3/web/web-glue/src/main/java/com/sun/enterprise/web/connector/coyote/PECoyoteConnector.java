@@ -971,25 +971,29 @@ public class PECoyoteConnector extends Connector {
      */
     public void configureJKProperties(final NetworkListener listener) {
 
-        File propertiesFile   = new File(listener.getJkConfigurationFile());
+        File propertiesFile = null;
+        if (listener != null) {
+            propertiesFile = new File(listener.getJkConfigurationFile());
+        }
         String propertyFile = System.getProperty("com.sun.enterprise.web.connector.enableJK.propertyFile");
-        if (!propertiesFile.exists() && propertyFile!=null) {
+        if (propertiesFile!=null && !propertiesFile.exists() && propertyFile!=null) {
             propertiesFile   = new File(propertyFile);
         }
-        if (!propertiesFile.exists()) {
+        if (propertiesFile==null) {
             if (_logger.isLoggable(Level.FINEST)) {
                 _logger.finest("jk properties configuration file not defined");
             }
             return;
-        } 
-
-        if (_logger.isLoggable(Level.FINEST)) {
-            _logger.finest("Loading glassfish-jk.properties from " + propertiesFile.getAbsolutePath());
         }
-        if ( !propertiesFile.exists() ) {
+
+        if (!propertiesFile.exists()) {
             _logger.log(Level.WARNING, MessageFormat.format(_rb.getString("pewebcontainer.missingJKProperties"),
                 propertiesFile.getAbsolutePath()));
             return;
+        }
+        
+        if (_logger.isLoggable(Level.FINEST)) {
+            _logger.finest("Loading glassfish-jk.properties from " + propertiesFile.getAbsolutePath());
         }
 
         Properties properties = null;
