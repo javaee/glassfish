@@ -59,7 +59,7 @@
         getRequestValue(key="clusterName" value="#{pageSession.target}");
         setPageSessionAttribute(key="clusterName" value="#{pageSession.target}");
         urlencode(value="#{pageSession.target}" encoding="UTF-8" result="#{pageSession.encodedClusterName}");
-        setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18ncs.msg.JS.confirmDeleteResources}");
+        setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n.msg.JS.confirmDeleteResources}");
         setPageSessionAttribute(key="listLink" value="#{request.contextPath}/cluster/cluster/clusterResources.jsf?clusterName=#{encodedClusterName}");
         getRequestValue(key="filterValue" value="#{pageSession.filterValue}");
         setPageSessionAttribute(key="restURL" value="#{sessionScope.REST_URL}/clusters/cluster/#{pageSession.encodedClusterName}/resource-ref");

@@ -129,10 +129,10 @@ public class ClusterHandler {
 
         String prefix = GuiUtil.getSessionValue("REST_URL") + "/servers/server/";
         for (Map oneRow : rows) {
-            String instanceName = (String) oneRow.get("Name");
+            String instanceName = (String) oneRow.get("encodedName");
             String endpoint = GuiUtil.getSessionValue("REST_URL") + "/servers/server/instanceName" ;
             Map attrsMap = new HashMap();
-            attrsMap.put("lbWeight", oneRow.get("LbWeight"));
+            attrsMap.put("lbWeight", oneRow.get("lbWeight"));
             try{
                 response = RestUtil.restRequest( prefix+instanceName , attrsMap, "post" , null, false);
             }catch (Exception ex){
@@ -289,15 +289,23 @@ public class ClusterHandler {
             attrsMap.put("name", oneInstance.get("name"));
             attrsMap.put("cluster", clusterName);
             attrsMap.put("node", oneInstance.get("node"));
-            //ignore for now till issue# 12646 is fixed
-            //attrsMap.put("weight", oneInstance.get("weight"));
             try{
                 GuiUtil.getLogger().info(endpoint);
                 GuiUtil.getLogger().info(attrsMap.toString());
                 response = RestUtil.restRequest( endpoint , attrsMap, "post" ,null, false);
+                //set lb weight
+                String wt = (String) oneInstance.get("weight");
+                if ( !GuiUtil.isEmpty(wt)) {
+                    String encodedInstanceName = URLEncoder.encode((String)oneInstance.get("name"), "UTF-8");
+                    String ep = GuiUtil.getSessionValue("REST_URL") + "/servers/server/" + encodedInstanceName ;
+                    Map wMap = new HashMap();
+                    wMap.put("lbWeight", wt);
+                    response = RestUtil.restRequest( ep , wMap, "post" , null, false);
+                }
             }catch (Exception ex){
                 GuiUtil.getLogger().severe(
-                    GuiUtil.getCommonMessage("LOG_CREATE_CLUSTER" ,  new Object[]{endpoint, attrsMap}));
+                    GuiUtil.getCommonMessage("LOG_CREATE_CLUSTER_INSTANCE" ,  new Object[]{clusterName,endpoint, attrsMap}));
+                GuiUtil.prepareException(handlerCtx, ex);
             }
         }
 
