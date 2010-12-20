@@ -56,21 +56,12 @@ public class ClusterTest extends RestTestBase {
     @Test
     public void testClusterCreationAndDeletion() {
         final String clusterName = "cluster_" + generateRandomString();
-        Map<String, String> newCluster = new HashMap<String, String>() {{
-           put ("id", clusterName);
-        }};
-
-        ClientResponse response = post(URL_CLUSTER, newCluster);
-        assertTrue(isSuccess(response));
+        createCluster(clusterName);
 
         Map<String, String> entity = getEntityValues(get(URL_CLUSTER + "/" + clusterName));
         assertEquals(clusterName+"-config", entity.get("configRef"));
 
-        response = post(URL_CLUSTER + "/" + clusterName + "/delete-cluster");
-        assertTrue(isSuccess(response));
-
-        response = get(URL_CLUSTER + "/" + clusterName);
-        assertFalse(isSuccess(response));
+        deleteCluster(clusterName);
     }
 
     @Test
@@ -92,5 +83,30 @@ public class ClusterTest extends RestTestBase {
         response = get(URL_CLUSTER + "/" + clusterName);
         assertFalse(isSuccess(response));
 
+    }
+    
+    public String createCluster() {
+        final String clusterName = "cluster_" + generateRandomString();
+        createCluster(clusterName);
+        
+        return clusterName;
+    }
+    
+    public void createCluster(final String clusterName) {
+        Map<String, String> newCluster = new HashMap<String, String>() {{
+           put ("id", clusterName);
+        }};
+
+        ClientResponse response = post(URL_CLUSTER, newCluster);
+        assertTrue(isSuccess(response));
+        
+    }
+    
+    public void deleteCluster(String clusterName) {
+        ClientResponse response = post(URL_CLUSTER + "/" + clusterName + "/delete-cluster");
+        assertTrue(isSuccess(response));
+
+        response = get(URL_CLUSTER + "/" + clusterName);
+        assertFalse(isSuccess(response));
     }
 }
