@@ -42,10 +42,13 @@ package org.glassfish.maven;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
+import org.apache.maven.artifact.metadata.ArtifactMetadataSource;
+import org.apache.maven.artifact.metadata.ResolutionGroup;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
 import org.apache.maven.artifact.resolver.ArtifactResolutionException;
 import org.apache.maven.artifact.resolver.ArtifactResolver;
+import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -85,6 +88,11 @@ public abstract class AbstractServerMojo extends AbstractMojo {
     private static final String EMBEDDED_GROUP_ID = "org.glassfish.extras";
     private static final String EMBEDDED_ALL = "glassfish-embedded-all";
     private static final String EMBEDDED_ARTIFACT_PREFIX = "glassfish-embedded-";
+
+    private static final String GF_API_GROUP_ID = "org.glassfish";
+    private static final String GF_API_ARTIFACT_ID = "simple-glassfish-api";
+    private static final String DEFAULT_GF_VERSION = "3.1-b33";
+    private static String gfVersion;
 
 //    private static final String UBER_JAR_URI = "org.glassfish.embedded.osgimain.jarURI";
 
@@ -211,6 +219,11 @@ public abstract class AbstractServerMojo extends AbstractMojo {
     protected static HashMap<String, URLClassLoader> classLoaders = new HashMap();
     private static URLClassLoader classLoader;
 
+    /**
+     * @component
+     */
+    private ArtifactMetadataSource artifactMetadataSource;
+
     public abstract void execute() throws MojoExecutionException, MojoFailureException;
 
     protected URLClassLoader getClassLoader() throws MojoExecutionException {
@@ -289,13 +302,34 @@ public abstract class AbstractServerMojo extends AbstractMojo {
         return null;
     }
 
+    // GlassFish should be of same version as simple-glassfish-api as defined in plugin's pom.
+    private String getGlassfishVersion(Artifact gfMvnPlugin) throws Exception {
+        if(gfVersion != null) {
+            return  gfVersion;
+        }
+        ResolutionGroup resGroup = artifactMetadataSource.retrieve(
+                gfMvnPlugin, localRepository, remoteRepositories);
+        MavenProject pomProject = projectBuilder.buildFromRepository(resGroup.getPomArtifact(),
+                remoteRepositories, localRepository);
+        List<Dependency> dependencies = pomProject.getOriginalModel().getDependencies();
+        for(Dependency dependency : dependencies) {
+            if(GF_API_GROUP_ID.equals(dependency.getGroupId()) &&
+                    GF_API_ARTIFACT_ID.equals(dependency.getArtifactId())) {
+                gfVersion = dependency.getVersion();
+            }
+        }
+        gfVersion =  gfVersion != null ? gfVersion : DEFAULT_GF_VERSION;
+        return gfVersion;
+    }
+    
     private URLClassLoader getUberGFClassLoader() throws Exception {
         // Use the version user has configured in the plugin.
         Artifact gfMvnPlugin = (Artifact) project.getPluginArtifactMap().get(thisArtifactId);
         Artifact gfUber = getUberFromSpecifiedDependency();
+        String gfVersion = getGlassfishVersion(gfMvnPlugin);
         if (gfUber == null) {
             gfUber = factory.createArtifact(EMBEDDED_GROUP_ID, EMBEDDED_ALL,
-                    gfMvnPlugin.getVersion(), "compile", "jar");
+                    gfVersion, "compile", "jar");
         }
         resolver.resolve(gfUber, remoteRepositories, localRepository);
         try {
@@ -305,6 +339,7 @@ public abstract class AbstractServerMojo extends AbstractMojo {
         } catch (ArtifactNotFoundException e) {
             e.printStackTrace();
         }
+
         URLClassLoader classLoader = new URLClassLoader(
                 new URL[]{gfUber.getFile().toURI().toURL(), gfMvnPlugin.getFile().toURI().toURL()});/* {
             @Override
