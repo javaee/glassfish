@@ -396,8 +396,10 @@ public class LogDomains {
 
                         } catch (MissingResourceException me) {
                         }
+
                         Logger l = LogManager.getLogManager().getLogger(name);
-                        l.log(Level.WARNING, "Can not find resource bundle for this logger. " + " class name that failed: " + clazz.getName());
+                        l.log(Level.FINE, "Can not find resource bundle for this logger. " + " class name that failed: " + clazz.getName());
+
                         //throw e;
                         return null;
                     }
