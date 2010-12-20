@@ -71,12 +71,14 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.glassfish.admingui.common.security.AdminConsoleAuthModule;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import static org.glassfish.api.ActionReport.ExitCode;
 /**
  *
  * @author anilam
@@ -236,29 +238,41 @@ public class RestUtil {
         return valueMap;
     }
 
-    /**
-     *
-     */
+
+    private static String getMessage(Map aMap){
+        String message = "";
+        if (aMap != null){
+            message = (String) aMap.get("message");
+        }
+        return message;
+    }
+
     public static Map<String, Object> parseResponse(RestResponse response, HandlerContext handlerCtx, String endpoint, Map attrs, boolean quiet, boolean throwException) {
         // Parse the response
         String message = "";
+        ExitCode exitCode = ExitCode.FAILURE;
         if (response != null) {
             try {
                 int status = response.getResponseCode();
                 Map responseMap = response.getResponse();
-                if ((status != 200) && (status != 201)) {
-                    if (!quiet) {
-                        GuiUtil.getLogger().severe(GuiUtil.getCommonMessage( "LOG_REQUEST_FAILED", new Object[]{endpoint, attrs}));
-                        GuiUtil.getLogger().finest("response.getResponseBody(): " + response.getResponseBody());
-                    }
-                    if (responseMap.get("data") == null){
-                        message = null;
-                    }else {
-                        message = (String)((Map)responseMap.get("data")).get("message");
-                    }
-                    if (message == null) {
-                        Object msgs = responseMap.get("message");
+                if (responseMap.get("data") != null){
+                    String exitCodeStr = (String)((Map)responseMap.get("data")).get("exit_code");
+                    exitCode = ExitCode.valueOf(exitCodeStr);
+                }
 
+                //Get the message for both WARNING and FAILURE exit_code
+                if (exitCode != ExitCode.SUCCESS){
+                    Map dataMap = (Map)responseMap.get("data");
+                    if (dataMap != null) {
+                        message = getMessage(dataMap);
+                        List<Map> subReports = (List<Map>)dataMap.get("subReports");
+                        if (subReports != null){
+                            for( Map oneSubReport : subReports){
+                                message = message + " " + getMessage(oneSubReport);
+                            }
+                        }
+                    }else{
+                        Object msgs = responseMap.get("message");
                         if (msgs == null) {
                             message =  "REST Request '"  + endpoint + "' failed with response code '" + status + "'.";
                         } else if (msgs instanceof List) {
@@ -277,27 +291,36 @@ public class RestUtil {
                             throw new RuntimeException(message);
                         }
                     }
-                    // If this is called from jsf, stop processing/show error.
-                    if (throwException) {
-                        if (handlerCtx != null) {
-                            GuiUtil.handleError(handlerCtx, message);
-                        } else {
-                            //If handlerCtx is not passed in, it means the caller (java handler) wants to handle this exception itself.
-                            throw new RuntimeException(message);
+                }
+                switch(exitCode){
+                    case FAILURE :  {
+                        // If this is called from jsf, stop processing/show error.
+                        if (throwException) {
+                            if (handlerCtx != null) {
+                                GuiUtil.handleError(handlerCtx, message);
+                                return new HashMap();
+                            } else {
+                                //If handlerCtx is not passed in, it means the caller (java handler) wants to handle this exception itself.
+                                throw new RuntimeException(message);
+                            }
                         }
                     }
-                    return new HashMap();
+                    case WARNING: {
+                        GuiUtil.prepareAlert("warning", GuiUtil.getCommonMessage("msg.command.warning"), message);
+                        return responseMap;
+                    }
+                    case SUCCESS: {
+                        return responseMap;
+                    }
                 }
-                return responseMap;
             } catch (Exception ex) {
                 if (!quiet) {
-                    GuiUtil.getLogger().severe(GuiUtil.getCommonMessage("LOG_REQUEST_FAILED", new Object[]{endpoint, attrs}));
+                    GuiUtil.getLogger().severe(GuiUtil.getCommonMessage("LOG_REQUEST_FAILED", new Object[]{exitCode, endpoint, attrs}));
                     GuiUtil.getLogger().finest("response.getResponseBody(): " + response.getResponseBody());
                 }
                 if (handlerCtx != null) {
                     //If this is called from the jsf as handler, we want to stop processing and show error
                     //instead of dumping the exception on screen.
-                    // GuiUtil.getMessage("error.checkServerLog")
                     if (throwException) {
                         if (message == null) {
                             GuiUtil.handleException(handlerCtx, ex);
