@@ -263,6 +263,7 @@
         <ant dir="web/jruby" target="build-deploy"/>
         -->
         <ant dir="wsit/JaxwsFromWsdl" target="build-deploy"/>
+        <ant dir="wsit/jaxbosgi" target="build-deploy"/>
     </target>
 
     <target name="undeploy">
@@ -293,6 +294,7 @@
 	<ant dir="web/jruby" target="undeploy"/>
         -->
         <ant dir="wsit/JaxwsFromWsdl" target="undeploy"/>
+        <ant dir="wsit/jaxbosgi" target="undeploy"/>
     </target>
 
     <!-- Target is re-definted here as didn't want to specify ws.root property -->
