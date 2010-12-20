@@ -2175,80 +2175,27 @@ public abstract class EjbDescriptor extends EjbAbstractDescriptor
 
     public void setEjbBundleDescriptor(EjbBundleDescriptor bundleDescriptor) {
         this.bundleDescriptor = bundleDescriptor;
-        notifyNewModule();
     }
 
     /**
-     * Called above when we're first told about our EjbBundleDescriptor.
-     * Called by EjbBundleDescriptor to notify this EjbDescriptor that the
-     * EjbBundleDescriptor has been associated with a new module.
+     * Called by WebArchivist to notify this EjbDescriptor that
+     * it has been associated with a web bundle.
      */
-    void notifyNewModule() {
-        /*
-         * If this EjbDescriptor corresponds to an EJB that's part of a
-         * web bundle, we want to refer all environment references back
-         * to the environment stored in the web bundle, rather than the
-         * environment stored in the EJB descriptor.
-         */
-	Descriptor d = bundleDescriptor.getModuleDescriptor().getDescriptor();
-        // once the module has been set, it should never change
-        if (env != null && d != env)
-            _logger.fine("EjbDescriptor module changed from " + env.getClass() +
-                            " to " + (d == null ? "NULL" : d.getClass()));
-	if (d instanceof WebBundleDescriptor) {
-            if (d != env) {
-                env = (WritableJndiNameEnvironment)d;
-                /*
-                 * Copy any JNDI entries stored in this descriptor to the
-                 * web bundle's enviroment.  This can happen when processing
-                 * the ejb-jar.xml deployment descriptor in the war file.  The
-                 * environment entries will be added to the descriptor before
-                 * the descriptor is added to the bundle.
-                 *
-                 * Note: can't use addAll to add the entries because the
-                 * WebBundleDescriptor may need to set itself as the
-                 * referring bundle, check for duplicates, etc., and none
-                 * of that happens with addAll.
-                 */
-                for (EnvironmentProperty envp : environmentProperties)
-                    env.addEnvironmentProperty(envp);
-                environmentProperties.clear();
-                for (EjbReference ejbref : ejbReferences)
-                    env.addEjbReferenceDescriptor(ejbref);
-                ejbReferences.clear();
-                for (JmsDestinationReferenceDescriptor jr : jmsDestReferences)
-                    env.addJmsDestinationReferenceDescriptor(jr);
-                jmsDestReferences.clear();
-                for (MessageDestinationReferenceDescriptor mr :
-                                                        messageDestReferences)
-                    env.addMessageDestinationReferenceDescriptor(mr);
-                messageDestReferences.clear();
-                for (ResourceReferenceDescriptor rr : resourceReferences)
-                    env.addResourceReferenceDescriptor(rr);
-                resourceReferences.clear();
-                for (ServiceReferenceDescriptor sr : serviceReferences)
-                    env.addServiceReferenceDescriptor(sr);
-                serviceReferences.clear();
-                for (DataSourceDefinitionDescriptor desc :
-                                                    datasourceDefinitionDescs)
-                    env.addDataSourceDefinitionDescriptor(desc);
-                datasourceDefinitionDescs.clear();
-                for (EntityManagerFactoryReferenceDescriptor emf :
-                                                entityManagerFactoryReferences)
-                    env.addEntityManagerFactoryReferenceDescriptor(emf);
-                entityManagerFactoryReferences.clear();
-                for (EntityManagerReferenceDescriptor em :
-                                                entityManagerReferences)
-                    env.addEntityManagerReferenceDescriptor(em);
-                entityManagerReferences.clear();
-            }
-	} else
-            env = null;
-    }
-
-    private static String c(Object o) {
-        if (o == null ) return "NULL";
-        return o.getClass() + ":" + System.identityHashCode(o);
+    public void notifyNewModule(WebBundleDescriptor wbd) {
+        // add our JNDI entries to the web bundle
+        wbd.addJndiNameEnvironment(this);
+        // clear our entries
+        environmentProperties.clear();
+        ejbReferences.clear();
+        jmsDestReferences.clear();
+        messageDestReferences.clear();
+        resourceReferences.clear();
+        serviceReferences.clear();
+        datasourceDefinitionDescs.clear();
+        entityManagerFactoryReferences.clear();
+        entityManagerReferences.clear();
+        // switch to the web bundle as the source of JNDI entries
+        env = wbd;
     }
 
     /**

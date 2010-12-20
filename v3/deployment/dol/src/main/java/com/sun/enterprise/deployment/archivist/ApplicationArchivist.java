@@ -591,7 +591,7 @@ public class ApplicationArchivist extends Archivist<Application>
                         }
                     }
                 }
-                newArchivist.postStandardDDsRead(descriptor, embeddedArchive);
+                newArchivist.postStandardDDsRead(descriptor, embeddedArchive, extensions);
                 newArchivist.readAnnotations(embeddedArchive, descriptor, extensions);
                 newArchivist.postAnnotationProcess(descriptor, embeddedArchive);
                 newArchivist.postOpen(descriptor, embeddedArchive);

@@ -369,18 +369,6 @@ public class EjbBundleDescriptor extends BundleDescriptor implements WritableJnd
     }
 
     /**
-     * Override in order to notify all our EjbDescriptors that we're
-     * now associated with a new module.
-     */
-    @Override
-    public void setModuleDescriptor(ModuleDescriptor descriptor) {
-	if (descriptor.getModuleType() != XModuleType.WAR) return;
-        super.setModuleDescriptor(descriptor);
-	for (EjbDescriptor ejb : getEjbs())
-	    ejb.notifyNewModule();
-    }
-
-    /**
      * @return true if this bundle descriptor contains at least one CMP
      * EntityBean
      */

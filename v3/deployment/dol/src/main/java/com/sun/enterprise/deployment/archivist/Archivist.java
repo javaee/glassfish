@@ -318,9 +318,11 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
      *
      * @param descriptor the deployment descriptor for the module
      * @param archive the module archive
+     * @param extensions map of extension archivists
      */
-    protected void postStandardDDsRead(T descriptor,
-                                       ReadableArchive archive) throws IOException {
+    protected void postStandardDDsRead(T descriptor, ReadableArchive archive,
+                Map<ExtensionsArchivist, RootDeploymentDescriptor> extensions)
+                throws IOException {
     }
 
     /**
@@ -401,7 +403,7 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
             }
         }
 
-        postStandardDDsRead(descriptor, contentArchive);
+        postStandardDDsRead(descriptor, contentArchive, extensions);
 
         readAnnotations(contentArchive, descriptor, extensions);
         postAnnotationProcess(descriptor, contentArchive);

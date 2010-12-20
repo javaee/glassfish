@@ -42,6 +42,7 @@ package com.sun.enterprise.deployment.archivist;
 
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
+import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import com.sun.enterprise.deployment.io.AppClientDeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.runtime.AppClientRuntimeDDFile;
@@ -59,6 +60,7 @@ import org.xml.sax.SAXParseException;
 
 import javax.enterprise.deploy.shared.ModuleType;
 import java.io.IOException;
+import java.util.Map;
 import java.util.Vector;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
@@ -186,11 +188,13 @@ public class AppClientArchivist extends Archivist<ApplicationClientDescriptor> {
      *
      * @param descriptor the deployment descriptor for the module
      * @param archive    the module archive
+     * @param extensions map of extension archivists
      */
     @Override
-    protected void postStandardDDsRead(ApplicationClientDescriptor descriptor,
-                                       ReadableArchive archive) throws IOException {
-        super.postStandardDDsRead(descriptor, archive);
+    protected void postStandardDDsRead(ApplicationClientDescriptor descriptor, ReadableArchive archive,
+                Map<ExtensionsArchivist, RootDeploymentDescriptor> extensions)
+                throws IOException {
+        super.postStandardDDsRead(descriptor, archive, extensions);
         // look for MAIN_CLASS
         if (mainClassNameToRun == null) {
             Manifest m = archive.getManifest();
