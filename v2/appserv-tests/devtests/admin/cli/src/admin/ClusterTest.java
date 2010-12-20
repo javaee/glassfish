@@ -626,14 +626,14 @@ public class ClusterTest extends AdminBaseDevTest {
 
 	// Test Get, Set, List for monitoring option
         ret = asadminWithOutput("list", "-m", i3name+".*");
-        success = ret.outAndErr.indexOf(i3name+".server.jvm") < 0;
+        success = ret.outAndErr.indexOf(i3name+".jvm") < 0;
         report("list-without-enabling-monitoring", success);
         ret = asadminWithOutput("set", i3name+"-config.monitoring-service.module-monitoring-levels.jvm=HIGH");
         ret = asadminWithOutput("list", "-m", i3name+".*");
-        success = ret.outAndErr.indexOf(i3name+".server.jvm") >= 0;
+        success = ret.outAndErr.indexOf(i3name+".jvm") >= 0;
         report("list-after-enabling-monitoring", success);
         ret = asadminWithOutput("list", "-m", i2name+".*");
-        success = ret.outAndErr.indexOf(i2name+".server.jvm") < 0;
+        success = ret.outAndErr.indexOf(i2name+".jvm") < 0;
         report("list-without-enabling-monitoring-in2", success);
         ret = asadminWithOutput("get", i3name+"-config.monitoring-service.module-monitoring-levels.jvm");
         success = ret.outAndErr.indexOf(i3name+"-config.monitoring-service.module-monitoring-levels.jvm=HIGH") >= 0;
