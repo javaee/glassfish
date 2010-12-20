@@ -59,7 +59,7 @@ benchmark_commands() {
   bench list-clusters
   bench create-cluster cx
   bench delete-cluster cx
-  bench create-instance --node localhost ix
+  bench create-instance --node localhost-$DOMAIN ix
   bench start-instance ix
   bench stop-instance ix
   bench delete-instance ix
