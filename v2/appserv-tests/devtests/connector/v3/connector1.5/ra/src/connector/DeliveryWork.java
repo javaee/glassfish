@@ -13,18 +13,21 @@ import javax.resource.spi.UnavailableException;
 import javax.resource.spi.work.Work;
 import javax.resource.spi.work.WorkManager;
 import javax.resource.spi.work.ExecutionContext;
+import javax.resource.spi.*;
+import javax.resource.*;
 
 /**
  *
  * @author	Qingqing Ouyang
  */
-public class DeliveryWork implements Work {
+public class DeliveryWork implements Work, ResourceAdapterAssociation {
 
     private MessageEndpoint ep;
     private int num;
     private String op;
     private boolean keepCount;
     private static int counter = 0;
+    protected ResourceAdapter raBean;
     
     public DeliveryWork(MessageEndpoint ep, int numOfMessages, String op) {
         this.ep = ep;
@@ -40,11 +43,24 @@ public class DeliveryWork implements Work {
         this.op = op;
         this.keepCount = keepCount;
     }
+    public void setResourceAdapter(ResourceAdapter ra) throws ResourceException{
+        debug("RA Bean set");
+        raBean = ra;
+    }
+
+    public ResourceAdapter getResourceAdapter(){
+        return raBean;
+    }
 
     public void run() {
 
         debug("ENTER...");
-        
+        debug("RA Bean : " + raBean);
+
+        // We are expecting RAA for Work instance to happen for a 1.5 RAR, GF does not restrict it and hence this is valid.
+        if(raBean == null){
+            throw new RuntimeException("ResourceAdapterAssociation did not happen for DeliveryWork");
+        }
         try {
             //Method onMessage = getOnMessageMethod();
             //ep.beforeDelivery(onMessage);

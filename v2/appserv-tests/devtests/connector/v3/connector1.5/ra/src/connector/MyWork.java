@@ -11,6 +11,9 @@ import javax.resource.spi.endpoint.MessageEndpoint;
 import javax.resource.spi.endpoint.MessageEndpointFactory;
 import javax.resource.spi.UnavailableException;
 import javax.resource.spi.work.Work;
+import javax.resource.spi.ResourceAdapterAssociation;
+import javax.resource.spi.ResourceAdapter;
+import javax.resource.ResourceException;
 import javax.resource.spi.work.WorkManager;
 import javax.resource.spi.work.ExecutionContext;
 
@@ -18,12 +21,13 @@ import javax.resource.spi.work.ExecutionContext;
  *
  * @author	Qingqing Ouyang
  */
-public class MyWork implements Work {
+public class MyWork implements Work, ResourceAdapterAssociation {
 
     private String name;
     private boolean stop = false;
     private MessageEndpointFactory factory;
     private WorkManager wm;
+    protected ResourceAdapter raBean;
     
     public MyWork(
             String name, MessageEndpointFactory factory, WorkManager wm) {
@@ -32,9 +36,18 @@ public class MyWork implements Work {
         this.wm = wm;
     }
 
+    public void setResourceAdapter(ResourceAdapter ra) throws ResourceException{
+        raBean = ra;
+    }
+
+    public ResourceAdapter getResourceAdapter(){
+        return raBean;
+    }
+
     public void run() {
 
         debug("ENTER...");
+        System.out.println("RA Bean : " + raBean);
 
         //try 3 times to create endpoint (in case of failure)
         for (int i = 0; i < 3; i++) {
