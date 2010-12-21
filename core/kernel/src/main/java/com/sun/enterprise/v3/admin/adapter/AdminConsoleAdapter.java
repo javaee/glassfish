@@ -83,7 +83,7 @@ import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.Events;
 import org.glassfish.api.event.RestrictTo;
 import org.glassfish.grizzly.Grizzly;
-import org.glassfish.grizzly.http.server.HttpRequestProcessor;
+import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.grizzly.http.server.io.OutputBuffer;
@@ -131,7 +131,7 @@ import org.jvnet.hk2.config.types.Property;
  * @since GlassFish V3 (March 2008)
  */
 @Service
-public final class AdminConsoleAdapter extends HttpRequestProcessor implements Adapter, PostConstruct, EventListener {
+public final class AdminConsoleAdapter extends HttpHandler implements Adapter, PostConstruct, EventListener {
     private final static Logger logger = Grizzly.logger(AdminConsoleAdapter.class);
 
     @Inject
@@ -224,7 +224,7 @@ public final class AdminConsoleAdapter extends HttpRequestProcessor implements A
     }
 
     @Override
-    public final HttpRequestProcessor getHttpService() {
+    public final HttpHandler getHttpService() {
         return this;
     }
 

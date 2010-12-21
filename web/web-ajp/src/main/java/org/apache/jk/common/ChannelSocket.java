@@ -84,7 +84,7 @@ import org.apache.jk.core.Msg;
 import org.apache.jk.core.MsgContext;
 import org.apache.jk.core.JkChannel;
 import org.apache.jk.core.WorkerEnv;
-import com.sun.grizzly.tcp.ActionCode;
+import org.glassfish.grizzly.tcp.ActionCode;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.RequestGroupInfo;
 import org.glassfish.grizzly.http.server.RequestInfo;
@@ -99,7 +99,7 @@ import org.apache.tomcat.util.threads.ThreadPoolRunnable;
  * @author Bill Barker
  * jmx:mbean name="jk:service=ChannelNioSocket"
  *            description="Accept socket connections"
- * jmx:notification name="com.sun.grizzly.tcp.INVOKE
+ * jmx:notification name="org.glassfish.grizzly.tcp.INVOKE
  * jmx:notification-handler name="org.apache.jk.JK_SEND_PACKET
  * jmx:notification-handler name="org.apache.jk.JK_RECEIVE_PACKET
  * jmx:notification-handler name="org.apache.jk.JK_FLUSH

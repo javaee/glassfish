@@ -712,7 +712,7 @@ public class RequestFacade
     }
 
 
-    public Enumeration<String> getHeaders(String name) {
+    public Iterable<String> getHeaders(String name) {
 
         if (request == null) {
             throw new IllegalStateException(
@@ -728,7 +728,7 @@ public class RequestFacade
     }
 
 
-    public Enumeration<String> getHeaderNames() {
+    public Iterable<String> getHeaderNames() {
 
         if (request == null) {
             throw new IllegalStateException(

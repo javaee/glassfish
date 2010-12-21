@@ -43,7 +43,7 @@ import java.net.InetAddress;
 import java.util.Collection;
 
 import org.glassfish.api.deployment.ApplicationContainer;
-import org.glassfish.grizzly.http.server.HttpRequestProcessor;
+import org.glassfish.grizzly.http.server.HttpHandler;
 import org.jvnet.hk2.annotations.Contract;
 
 /**
@@ -60,7 +60,7 @@ public interface RequestDispatcher {
      * @param contextRoot for the proxy
      * @param endpointAdapter servicing requests.
      */
-    void registerEndpoint(String contextRoot, HttpRequestProcessor endpointAdapter, ApplicationContainer container)
+    void registerEndpoint(String contextRoot, HttpHandler endpointAdapter, ApplicationContainer container)
         throws EndpointRegistrationException;
 
     /**
@@ -72,7 +72,7 @@ public interface RequestDispatcher {
      * @param container
      * @param virtualServers comma separated list of the virtual servers
      */
-    void registerEndpoint(String contextRoot, HttpRequestProcessor endpointAdapter, ApplicationContainer container,
+    void registerEndpoint(String contextRoot, HttpHandler endpointAdapter, ApplicationContainer container,
         String virtualServers) throws EndpointRegistrationException;
 
     /**
@@ -82,14 +82,14 @@ public interface RequestDispatcher {
      * @param contextRoot for the proxy
      * @param endpointAdapter servicing requests.
      */
-    void registerEndpoint(String contextRoot, Collection<String> vsServers, HttpRequestProcessor endpointAdapter,
+    void registerEndpoint(String contextRoot, Collection<String> vsServers, HttpHandler endpointAdapter,
         ApplicationContainer container) throws EndpointRegistrationException;
 
     /**
      * Registers a new endpoint for the given context root at the given port number.
      */
     void registerEndpoint(String contextRoot, InetAddress address, int port, Collection<String> vsServers,
-        HttpRequestProcessor endpointAdapter, ApplicationContainer container) throws EndpointRegistrationException;
+        HttpHandler endpointAdapter, ApplicationContainer container) throws EndpointRegistrationException;
 
     /**
      * Removes the context root from our list of endpoints.

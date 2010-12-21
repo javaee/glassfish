@@ -76,7 +76,7 @@ import org.glassfish.api.container.EndpointRegistrationException;
 import org.glassfish.api.container.RequestDispatcher;
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.flashlight.provider.ProbeProviderFactory;
-import org.glassfish.grizzly.http.server.HttpRequestProcessor;
+import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.util.Mapper;
 import org.glassfish.grizzly.impl.FutureImpl;
 import org.glassfish.grizzly.impl.ReadyFutureImpl;
@@ -550,7 +550,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
      * @param endpointAdapter servicing requests.
      */
     @Override
-    public void registerEndpoint(String contextRoot, HttpRequestProcessor endpointAdapter,
+    public void registerEndpoint(String contextRoot, HttpHandler endpointAdapter,
                                  ApplicationContainer container) throws EndpointRegistrationException {
 
         registerEndpoint(contextRoot, endpointAdapter, container, null);
@@ -566,7 +566,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
      * @param virtualServers comma separated list of the virtual servers
      */
     @Override
-    public void registerEndpoint(String contextRoot, HttpRequestProcessor endpointAdapter,
+    public void registerEndpoint(String contextRoot, HttpHandler endpointAdapter,
         ApplicationContainer container, String virtualServers) throws EndpointRegistrationException {
         List<String> virtualServerList;
         if (virtualServers == null) {
@@ -589,7 +589,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
      */
 
     @Override
-    public void registerEndpoint(String contextRoot, Collection<String> vsServers, HttpRequestProcessor endpointAdapter,
+    public void registerEndpoint(String contextRoot, Collection<String> vsServers, HttpHandler endpointAdapter,
         ApplicationContainer container) throws EndpointRegistrationException {
         Collection<AddressInfo> addressInfos = getAddressInfoFromVirtualServers(vsServers);
         for (AddressInfo info : addressInfos) {
@@ -603,7 +603,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
      */
     @Override
     public void registerEndpoint(String contextRoot, InetAddress address, int port, Collection<String> vsServers,
-        HttpRequestProcessor endpointAdapter, ApplicationContainer container) throws EndpointRegistrationException {
+        HttpHandler endpointAdapter, ApplicationContainer container) throws EndpointRegistrationException {
         for (NetworkProxy proxy : proxies) {
             if (proxy.getPort() == port && proxy.getAddress().equals(address)) {
                 proxy.registerEndpoint(contextRoot, vsServers, endpointAdapter, container);

@@ -57,7 +57,7 @@ import java.util.logging.Logger;
 import com.sun.enterprise.util.Result;
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.config.GrizzlyListener;
-import org.glassfish.grizzly.http.server.HttpRequestProcessor;
+import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.impl.FutureImpl;
 import org.glassfish.grizzly.impl.UnsafeFutureImpl;
 
@@ -75,10 +75,10 @@ public class GrizzlyProxy implements NetworkProxy {
     private int portNumber;
 
     public final static String LEADER_FOLLOWER
-            = "com.sun.grizzly.useLeaderFollower";
+            = "org.glassfish.grizzly.useLeaderFollower";
 
     public final static String AUTO_CONFIGURE
-            = "com.sun.grizzly.autoConfigure";
+            = "org.glassfish.grizzly.autoConfigure";
 
     // <http-listener> 'address' attribute
     private InetAddress address;
@@ -173,7 +173,7 @@ public class GrizzlyProxy implements NetworkProxy {
     */
     @Override
     public void registerEndpoint(String contextRoot, Collection<String> vsServers,
-            HttpRequestProcessor endpointService,
+            HttpHandler endpointService,
             ApplicationContainer container) throws EndpointRegistrationException {
         
         // e.g., there is no admin service in an instance

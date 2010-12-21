@@ -40,7 +40,7 @@
 
 package com.sun.enterprise.web;
 
-import com.sun.grizzly.util.buf.CharChunk;
+import org.glassfish.grizzly.util.buf.CharChunk;
 import com.sun.logging.LogDomains;
 import org.apache.catalina.Request;
 import org.apache.catalina.Response;

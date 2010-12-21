@@ -42,7 +42,7 @@ package org.glassfish.api.container;
 
 import java.net.InetAddress;
 import java.util.List;
-import org.glassfish.grizzly.http.server.HttpRequestProcessor;
+import org.glassfish.grizzly.http.server.HttpHandler;
 
 import org.jvnet.hk2.annotations.Contract;
 
@@ -62,7 +62,7 @@ public interface Adapter {
      * 
      * @return the underlying Grizzly HttpService.
      */
-    public abstract HttpRequestProcessor getHttpService();
+    public abstract HttpHandler getHttpService();
 
     /**
      * Returns the context root for this adapter

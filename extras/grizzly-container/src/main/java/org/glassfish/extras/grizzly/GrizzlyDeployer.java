@@ -40,7 +40,7 @@
 
 package org.glassfish.extras.grizzly;
 
-import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
+import org.glassfish.grizzly.tcp.http11.GrizzlyAdapter;
 import org.glassfish.grizzly.http.server.util.IntrospectionUtils;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
@@ -94,10 +94,10 @@ public class GrizzlyDeployer implements Deployer<GrizzlyContainer, GrizzlyApp> {
         Map<String,ArrayList<GrizzlyProperty>>
                         properties = configs.getProperties();
         for (Map.Entry<String, String> config : configs.getAdapters().entrySet()) {
-            com.sun.grizzly.tcp.Adapter adapter;
+            org.glassfish.grizzly.tcp.Adapter adapter;
             try {
                 Class adapterClass = context.getClassLoader().loadClass(config.getValue());
-                adapter = com.sun.grizzly.tcp.Adapter.class.cast(adapterClass.newInstance());
+                adapter = org.glassfish.grizzly.tcp.Adapter.class.cast(adapterClass.newInstance());
                 ArrayList<GrizzlyProperty> list =
                         properties.get(config.getValue());
                 for (GrizzlyProperty p: list){

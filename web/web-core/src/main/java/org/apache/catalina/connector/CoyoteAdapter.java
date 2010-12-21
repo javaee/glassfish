@@ -59,6 +59,7 @@
 package org.apache.catalina.connector;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.logging.Level;
@@ -67,7 +68,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.sun.appserv.ProxyHandler;
-import com.sun.grizzly.tcp.Adapter;
 import org.apache.catalina.Container;
 import org.apache.catalina.Context;
 import org.apache.catalina.Globals;
@@ -77,7 +77,12 @@ import org.apache.catalina.core.ContainerBase;
 import org.apache.catalina.util.ServerInfo;
 import org.apache.catalina.util.StringManager;
 import org.glassfish.grizzly.config.ContextRootInfo;
-import org.glassfish.grizzly.http.server.HttpRequestProcessor;
+import org.glassfish.grizzly.http.server.HttpHandler;
+import org.glassfish.grizzly.http.server.util.MappingData;
+import org.glassfish.grizzly.http.util.ByteChunk;
+import org.glassfish.grizzly.http.util.CharChunk;
+import org.glassfish.grizzly.http.util.DataChunk;
+import org.glassfish.grizzly.http.util.MessageBytes;
 import org.glassfish.web.valve.GlassFishValve;
 
 /**
@@ -89,7 +94,7 @@ import org.glassfish.web.valve.GlassFishValve;
  * @version $Revision: 1.34 $ $Date: 2007/08/24 18:38:28 $
  */
 
-public class CoyoteAdapter extends HttpRequestProcessor {
+public class CoyoteAdapter extends HttpHandler {
     private static Logger log = Logger.getLogger(CoyoteAdapter.class.getName());
 
     // -------------------------------------------------------------- Constants
@@ -109,7 +114,7 @@ public class CoyoteAdapter extends HttpRequestProcessor {
     static final String JVM_ROUTE = System.getProperty("jvmRoute");
 
     protected static final boolean ALLOW_BACKSLASH =
-        Boolean.valueOf(System.getProperty("com.sun.grizzly.tcp.tomcat5.CoyoteAdapter.ALLOW_BACKSLASH", "false"));
+        Boolean.valueOf(System.getProperty("org.glassfish.grizzly.tcp.tomcat5.CoyoteAdapter.ALLOW_BACKSLASH", "false"));
 
     private static final boolean COLLAPSE_ADJACENT_SLASHES =
         Boolean.valueOf(System.getProperty(
@@ -186,13 +191,8 @@ public class CoyoteAdapter extends HttpRequestProcessor {
         // requestStartEvent probe, so that the mapping data will be
         // available to any probe event listener via standard
         // ServletRequest APIs (such as getContextPath())
-        org.glassfish.grizzly.http.server.util.MappingData md = (org.glassfish.grizzly.http.server.util.MappingData)req.getNote(MAPPING_DATA);
-        if (md == null){
-            v3Enabled = false;
-        } else {
-            v3Enabled = true;
-        }
-            
+        MappingData md = (MappingData)req.getNote(MAPPING_DATA);
+        v3Enabled = md != null;
         if (request == null) {
 
             // Create objects
@@ -210,8 +210,7 @@ public class CoyoteAdapter extends HttpRequestProcessor {
             res.setNote(ADAPTER_NOTES, response);
 
             // Set query string encoding
-            req.getParameters().setQueryStringEncoding
-                (connector.getURIEncoding());
+            req.getRequest().getRequestURIRef().setDefaultURIEncoding(Charset.forName(connector.getURIEncoding()));
         }
 
         if (v3Enabled && !compatWithTomcat) {
@@ -418,7 +417,7 @@ public class CoyoteAdapter extends HttpRequestProcessor {
         }
 
         // URI decoding
-        org.glassfish.grizzly.http.util.MessageBytes decodedURI = req.getDecodedRequestURI();
+        DataChunk decodedURI = req.getRequest().getRequestURIRef().getDecodedRequestURIBC();
         if (compatWithTomcat || !v3Enabled) {           
             decodedURI.duplicate(req.requestURI());
             try {
@@ -439,13 +438,13 @@ public class CoyoteAdapter extends HttpRequestProcessor {
             */
 
             // Set the remote principal
-            String principal = req.getRemoteUser().toString();
+            String principal = req.getRemoteUser();
             if (principal != null) {
                 request.setUserPrincipal(new CoyotePrincipal(principal));
             }
 
             // Set the authorization type
-            String authtype = req.getAuthType().toString();
+            String authtype = req.getAuthType();
             if (authtype != null) {
                 request.setAuthType(authtype);
             }
@@ -491,7 +490,7 @@ public class CoyoteAdapter extends HttpRequestProcessor {
  
         if (compatWithTomcat || !v3Enabled) {
             /*mod_jk*/
-            connector.getMapper().map(req.serverName(), decodedURI, 
+            connector.getMapper().map(req.getServerName(), decodedURI,
                                   request.getMappingData());
             MappingData md = request.getMappingData();
             req.setNote(MAPPING_DATA, md);
@@ -502,7 +501,7 @@ public class CoyoteAdapter extends HttpRequestProcessor {
         if (context instanceof ContextRootInfo) {
             // this block of code will be invoked when an AJP request is intended
             // for an Adapter other than the CoyoteAdapter
-            final Adapter toInvoke = ((ContextRootInfo) context).getAdapter();
+            final HttpHandler toInvoke = ((ContextRootInfo) context).getHttpHandler();
             toInvoke.service(req, res);
             toInvoke.afterService(req, res);
             return false;
@@ -530,34 +529,32 @@ public class CoyoteAdapter extends HttpRequestProcessor {
         request.setWrapper((Wrapper) request.getMappingData().wrapper);
 
         // Filter trace method
-        if (!connector.getAllowTrace() 
-                && req.method().equalsIgnoreCase("TRACE")) {
+        if (!connector.getAllowTrace() && "TRACE".equalsIgnoreCase(req.getMethod())) {
             Wrapper wrapper = request.getWrapper();
             String header = null;
             if (wrapper != null) {
                 String[] methods = wrapper.getServletMethods();
                 if (methods != null) {
-                    for (int i=0; i<methods.length; i++) {
+                    for (String method : methods) {
                         // Exclude TRACE from methods returned in Allow header
-                        if ("TRACE".equals(methods[i])) {
+                        if ("TRACE".equals(method)) {
                             continue;
                         }
                         if (header == null) {
-                            header = methods[i];
+                            header = method;
                         } else {
-                            header += ", " + methods[i];
+                            header += ", " + method;
                         }
                     }
                 }
             }                               
-            res.setStatus(405);
+            res.setStatus(405, "TRACE method is not allowed");
             res.addHeader("Allow", header);
-            res.setMessage("TRACE method is not allowed");
             return false;
         }
 
         // Possible redirect
-        MessageBytes redirectPathMB = request.getMappingData().redirectPath;
+        DataChunk redirectPathMB = request.getMappingData().redirectPath;
         // START SJSAS 6253524
         // if (!redirectPathMB.isNull()) {
         // END SJSAS 6253524

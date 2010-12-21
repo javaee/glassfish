@@ -85,7 +85,7 @@ import org.glassfish.admin.rest.provider.BaseProvider;
 import org.glassfish.admin.rest.results.ActionReportResult;
 import org.glassfish.admin.rest.utils.xml.RestActionReporter;
 import org.glassfish.grizzly.http.Cookie;
-import org.glassfish.grizzly.http.server.HttpRequestProcessor;
+import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.internal.api.AdminAccessController;
@@ -96,7 +96,7 @@ import org.glassfish.internal.api.ServerContext;
  * Adapter for REST interface
  * @author Rajeshwar Patil, Ludovic Champenois
  */
-public abstract class RestAdapter extends HttpRequestProcessor implements Adapter, PostConstruct, EventListener {
+public abstract class RestAdapter extends HttpHandler implements Adapter, PostConstruct, EventListener {
 
     public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(RestAdapter.class);
 
@@ -140,7 +140,7 @@ public abstract class RestAdapter extends HttpRequestProcessor implements Adapte
     }
 
     @Override
-    public HttpRequestProcessor getHttpService() {
+    public HttpHandler getHttpService() {
         return this;
     }
 
@@ -175,7 +175,7 @@ public abstract class RestAdapter extends HttpRequestProcessor implements Adapte
 
                 //Use double checked locking to lazily initialize adapter
                 if (adapter == null) {
-                    synchronized(HttpRequestProcessor.class) {
+                    synchronized(HttpHandler.class) {
                         if(adapter == null) {
                             exposeContext();  //Initializes adapter
                         }
@@ -184,7 +184,7 @@ public abstract class RestAdapter extends HttpRequestProcessor implements Adapte
                 }
 
                 //delegate to adapter managed by Jersey.
-                ((HttpRequestProcessor)adapter).service(req, res);
+                ((HttpHandler)adapter).service(req, res);
                 int status = res.getStatus();
                 if (status < 200 || status > 299) {
                     String message = httpStatus.get(status);
@@ -441,7 +441,7 @@ public abstract class RestAdapter extends HttpRequestProcessor implements Adapte
         if ((context != null) || (!"".equals(context))) {
             Set<Class<?>> classes = getResourcesConfig();
             adapter = LazyJerseyInit.exposeContext(classes, sc, habitat);
-//            ((HttpRequestProcessor) adapter).setResourcesContextPath(context);
+//            ((HttpHandler) adapter).setResourcesContextPath(context);
             
             logger.info("Listening to REST requests at context: " + context + "/domain");
         }
@@ -476,7 +476,7 @@ public abstract class RestAdapter extends HttpRequestProcessor implements Adapte
         }
     }
 
-    private volatile HttpRequestProcessor adapter = null;
+    private volatile HttpHandler adapter = null;
     private boolean isRegistered = false;
     private AdminEndpointDecider epd = null;
 }

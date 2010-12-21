@@ -39,6 +39,13 @@
  */
 package com.sun.enterprise.v3.services.impl;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.sun.enterprise.config.serverbeans.VirtualServer;
 import com.sun.enterprise.v3.services.impl.monitor.ConnectionMonitor;
 import com.sun.enterprise.v3.services.impl.monitor.FileCacheMonitor;
@@ -46,12 +53,6 @@ import com.sun.enterprise.v3.services.impl.monitor.GrizzlyMonitoring;
 import com.sun.enterprise.v3.services.impl.monitor.KeepAliveMonitor;
 import com.sun.enterprise.v3.services.impl.monitor.ThreadPoolMonitor;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.glassfish.grizzly.config.GenericGrizzlyListener;
 import org.glassfish.grizzly.config.dom.Http;
 import org.glassfish.grizzly.config.dom.NetworkListener;
@@ -59,8 +60,8 @@ import org.glassfish.grizzly.config.dom.ThreadPool;
 import org.glassfish.grizzly.config.dom.Transport;
 import org.glassfish.grizzly.filterchain.FilterChain;
 import org.glassfish.grizzly.http.KeepAlive;
-import org.glassfish.grizzly.http.server.HttpRequestProcessor;
-import org.glassfish.grizzly.http.server.StaticResourcesService;
+import org.glassfish.grizzly.http.server.HttpHandler;
+import org.glassfish.grizzly.http.server.StaticHttpHandler;
 import org.glassfish.grizzly.http.server.filecache.FileCache;
 import org.glassfish.grizzly.http.server.util.Mapper;
 import org.glassfish.grizzly.threadpool.ThreadPoolConfig;
@@ -152,8 +153,8 @@ public class GlassfishNetworkListener extends GenericGrizzlyListener {
 
                             String docBase = mapping[1].substring("dir=".length());
                             String urlPattern = mapping[0].substring("from=".length());
-                            final StaticResourcesService staticResourceService =
-                                    new StaticResourcesService(docBase);
+                            final StaticHttpHandler staticResourceService =
+                                    new StaticHttpHandler(docBase);
                             List<String> al = toArray(vs.getHosts(), ";");
                             al.add(http.getDefaultVirtualServer());
                             containerMapper.register(urlPattern, al, staticResourceService, null);
@@ -176,7 +177,7 @@ public class GlassfishNetworkListener extends GenericGrizzlyListener {
     }
 
     @Override
-    protected HttpRequestProcessor getHttpService(Http http) {
+    protected HttpHandler getHttpHandler(Http http) {
         return httpAdapter.getMapper();
     }
 

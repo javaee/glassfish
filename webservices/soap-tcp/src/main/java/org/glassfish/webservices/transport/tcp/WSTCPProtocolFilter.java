@@ -40,13 +40,13 @@
 
 package org.glassfish.webservices.transport.tcp;
 
-import com.sun.grizzly.BaseSelectionKeyHandler;
-import com.sun.grizzly.Context;
-import com.sun.grizzly.ProtocolFilter;
-import com.sun.grizzly.SelectionKeyHandler;
-import com.sun.grizzly.TCPSelectorHandler;
-import com.sun.grizzly.util.ConnectionCloseHandler;
-import com.sun.grizzly.util.WorkerThread;
+import org.glassfish.grizzly.BaseSelectionKeyHandler;
+import org.glassfish.grizzly.Context;
+import org.glassfish.grizzly.ProtocolFilter;
+import org.glassfish.grizzly.SelectionKeyHandler;
+import org.glassfish.grizzly.TCPSelectorHandler;
+import org.glassfish.grizzly.util.ConnectionCloseHandler;
+import org.glassfish.grizzly.util.WorkerThread;
 import com.sun.logging.LogDomains;
 import java.io.IOException;
 import java.nio.ByteBuffer;

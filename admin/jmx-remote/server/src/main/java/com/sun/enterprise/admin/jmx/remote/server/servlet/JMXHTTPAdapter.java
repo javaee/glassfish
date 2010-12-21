@@ -49,7 +49,7 @@ import com.sun.enterprise.v3.common.PropsFileActionReporter;
 import com.sun.logging.LogDomains;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
-import com.sun.grizzly.tcp.http11.InternalOutputBuffer;
+import org.glassfish.grizzly.tcp.http11.InternalOutputBuffer;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Async;

@@ -79,13 +79,13 @@ public final class SecurityConfig{
     private final static String PACKAGE_ACCESS =  "sun.,"
                                                 + "org.apache.catalina." 
                                                 + ",org.apache.jasper."
-                                                + ",com.sun.grizzly.tcp."
-                                                + ",com.sun.grizzly.";
+                                                + ",org.glassfish.grizzly.tcp."
+                                                + ",org.glassfish.grizzly.";
     
     private final static String PACKAGE_DEFINITION= "java.,sun."
                                                 + ",org.apache.catalina." 
-                                                + ",com.sun.grizzly.tcp."
-                                                + ",com.sun.grizzly."
+                                                + ",org.glassfish.grizzly.tcp."
+                                                + ",org.glassfish.grizzly."
                                                 + ",org.apache.jasper.";
     /**
      * List of protected package from conf/catalina.properties

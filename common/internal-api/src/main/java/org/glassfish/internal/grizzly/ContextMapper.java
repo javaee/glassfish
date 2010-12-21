@@ -44,7 +44,7 @@ import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.glassfish.grizzly.http.server.HttpRequestProcessor;
+import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.util.Mapper;
 import org.jvnet.hk2.annotations.ContractProvided;
 import org.jvnet.hk2.annotations.Service;
@@ -58,7 +58,7 @@ import org.jvnet.hk2.annotations.Service;
 @ContractProvided(Mapper.class)
 public class ContextMapper extends Mapper {
     protected final Logger logger;
-    protected HttpRequestProcessor adapter;
+    protected HttpHandler adapter;
     // The id of the associated network-listener
     private String id;
 
@@ -113,7 +113,7 @@ public class ContextMapper extends Mapper {
         // clean all the previously added information, specially the
         // MappingData.wrapper info as this information cannot apply
         // to this Container.
-        if (adapter != null && "org.apache.catalina.connector.CoyoteHttpRequestProcessor".equals(adapter.getClass().getName())) {
+        if (adapter != null && "org.apache.catalina.connector.CoyoteHttpHandler".equals(adapter.getClass().getName())) {
             removeContext(hostName, path);
         }
         super.addContext(hostName, path, context, welcomeResources, resources);
@@ -130,11 +130,11 @@ public class ContextMapper extends Mapper {
         }
     }
 
-    public void setHttpRequestProcessor(final HttpRequestProcessor adapter) {
+    public void setHttpHandler(final HttpHandler adapter) {
         this.adapter = adapter;
     }
 
-    public HttpRequestProcessor getHttpRequestProcessor() {
+    public HttpHandler getHttpHandler() {
         return adapter;
     }
 

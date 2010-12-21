@@ -108,7 +108,7 @@ public class CreateProtocolFilter implements AdminCommand {
             validate(protocol, "create.http.fail.protocolnotfound",
                 "The specified protocol {0} is not yet configured", protocolName);
             final Class<?> filterClass = Thread.currentThread().getContextClassLoader().loadClass(classname);
-            if (!com.sun.grizzly.ProtocolFilter.class.isAssignableFrom(filterClass)) {
+            if (!org.glassfish.grizzly.ProtocolFilter.class.isAssignableFrom(filterClass)) {
                 report.setMessage(localStrings.getLocalString("create.portunif.fail.notfilter",
                     "{0} create failed.  Given class is not a ProtocolFilter: {1}", name, classname));
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);

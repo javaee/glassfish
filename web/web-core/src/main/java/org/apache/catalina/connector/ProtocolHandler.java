@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007-2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -36,26 +36,66 @@
  * and therefore, elected the GPL Version 2 license, then the option applies
  * only if the new code is made subject to such option by the copyright
  * holder.
+ *
+ *
+ * This file incorporates work covered by the following copyright and
+ * permission notice:
+ *
+ * Copyright 2004 The Apache Software Foundation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
+package org.apache.catalina.connector;
 
-package org.glassfish.webservices;
-
-import org.glassfish.grizzly.tcp.http11.GrizzlyAdapter;
-import org.glassfish.grizzly.tcp.http11.GrizzlyRequest;
-import org.glassfish.grizzly.tcp.http11.GrizzlyResponse;
-import org.glassfish.grizzly.http.servlet.ServletAdapter;
-
+import org.glassfish.grizzly.http.server.HttpHandler;
 
 /**
- * This class extends the ServletAdapter and sets the servletInstance to the EjbWebServiceServlet
- * so that its service method is invoked whenever a request maps to this Adapter
+ * Abstract the protocol implementation, including threading, etc.
+ * Processor is single threaded and specific to stream-based protocols,
+ * will not fit Jk protocols like JNI.
+ * <p/>
+ * This is the main interface to be implemented by a coyote connector.
+ * (In contrast, Adapter is the main interface to be implemented by a
+ * coyote servlet container.)
+ *
+ * @author Remy Maucherat
+ * @author Costin Manolache
+ * @see HttpHandler
  */
-public class EjbWSAdapter extends ServletAdapter {
+public interface ProtocolHandler {
+    /**
+     * Pass config info.
+     */
+    void setAttribute(String name, Object value);
 
-    public EjbWSAdapter() {
-        this.setServletInstance(new EjbWebServiceServlet());
-    }
+    Object getAttribute(String name);
 
+    /**
+     * The adapter, used to call the connector.
+     */
+    void setHandler(HttpHandler handler);
 
+    HttpHandler getHandler();
+
+    /**
+     * Init the protocol.
+     */
+    void init() throws Exception;
+
+    /**
+     * Start the protocol.
+     */
+    void start() throws Exception;
+
+    void destroy() throws Exception;
 }
-

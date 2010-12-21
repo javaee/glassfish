@@ -42,7 +42,7 @@ package com.sun.enterprise.v3.server;
 
 import java.lang.reflect.Field;
 
-import org.glassfish.grizzly.http.server.HttpRequestProcessor;
+import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
 
@@ -77,7 +77,7 @@ public class HK2Dispatcher {
     }
 
 
-    public void dispatch(HttpRequestProcessor adapter, ClassLoader cl, Request req, Response res) {
+    public void dispatch(HttpHandler adapter, ClassLoader cl, Request req, Response res) {
 
         // save the thread local entries.
         Thread thread = Thread.currentThread();

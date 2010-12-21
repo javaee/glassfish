@@ -42,7 +42,7 @@ package com.sun.enterprise.v3.services.impl;
 
 import com.sun.enterprise.util.Result;
 import java.io.IOException;
-import org.glassfish.grizzly.http.server.HttpRequestProcessor;
+import org.glassfish.grizzly.http.server.HttpHandler;
 
 import java.net.InetAddress;
 import java.util.concurrent.Future;
@@ -57,7 +57,7 @@ import java.util.concurrent.Future;
  * 
  * @author Jeanfrancois Arcand
  */
-public interface NetworkProxy extends EndpointMapper<HttpRequestProcessor>{
+public interface NetworkProxy extends EndpointMapper<HttpHandler>{
 
 
     /** 

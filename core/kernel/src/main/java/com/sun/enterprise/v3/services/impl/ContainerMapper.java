@@ -53,8 +53,8 @@ import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.grizzly.config.ContextRootInfo;
 import org.glassfish.grizzly.config.GrizzlyListener;
 import org.glassfish.grizzly.http.server.AfterServiceListener;
-import org.glassfish.grizzly.http.server.HttpRequestProcessor;
-import org.glassfish.grizzly.http.server.HttpServiceChain;
+import org.glassfish.grizzly.http.server.HttpHandler;
+import org.glassfish.grizzly.http.server.HttpHandlerChain;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Request.Note;
 import org.glassfish.grizzly.http.server.Response;
@@ -67,7 +67,7 @@ import org.glassfish.grizzly.http.util.DataChunk;
 import org.glassfish.internal.grizzly.V3Mapper;
 
 /**
- * Container's mapper which maps {@link ByteBuffer} bytes representation to an  {@link HttpRequestProcessor}, {@link
+ * Container's mapper which maps {@link ByteBuffer} bytes representation to an  {@link HttpHandler}, {@link
  * ApplicationContainer} and ProtocolFilter chain. The mapping result is stored inside {@link MappingData} which
  * is eventually shared with the CoyoteAdapter, which is the entry point with the Catalina Servlet Container.
  *
@@ -75,7 +75,7 @@ import org.glassfish.internal.grizzly.V3Mapper;
  * @author Alexey Stashok
  */
 @SuppressWarnings({"NonPrivateFieldAccessedInSynchronizedContext"})
-public class ContainerMapper extends HttpRequestProcessor {
+public class ContainerMapper extends HttpHandler {
 
     private static final Logger LOGGER = Logger.getLogger(ContainerMapper.class.getName());
     private final static String ROOT = "";
@@ -90,7 +90,7 @@ public class ContainerMapper extends HttpRequestProcessor {
     private static final AfterServiceListener afterServiceListener =
             new AfterServiceListenerImpl();
     /**
-     * Are we running multiple {@ Adapter} or {@link HttpServiceChain}
+     * Are we running multiple {@ Adapter} or {@link HttpHandlerChain}
      */
     private boolean mapMultipleAdapter;
 
@@ -159,7 +159,7 @@ public class ContainerMapper extends HttpRequestProcessor {
                 // Remove the MappingData as we might delegate the request
                 // to be serviced directly by the WebContainer
                 request.setNote(MAPPING_DATA, null);
-                HttpRequestProcessor a = ((V3Mapper) mapper).getHttpRequestProcessor();
+                HttpHandler a = ((V3Mapper) mapper).getHttpHandler();
                 if (a != null) {
 //                    req.setNote(MAPPED_ADAPTER, a);
                     a.service(request, response);
@@ -173,7 +173,7 @@ public class ContainerMapper extends HttpRequestProcessor {
                 mappingData = new MappingData();
                 request.setNote(MAPPING_DATA, mappingData);
             }
-            HttpRequestProcessor httpService;
+            HttpHandler httpService;
 
             final CharChunk decodedURICC = decodedURI.getCharChunk();
             final int semicolon = decodedURICC.indexOf(';', 0);
@@ -193,7 +193,7 @@ public class ContainerMapper extends HttpRequestProcessor {
                     mappingData.recycle();
                     httpService = mapUriWithSemicolon(request, decodedURI, semicolon, mappingData);
                 } else {
-                    doService(request, response);
+                    doHandle(request, response);
                     return;
                 }
             }
@@ -206,7 +206,7 @@ public class ContainerMapper extends HttpRequestProcessor {
             // The Adapter used for servicing static pages doesn't decode the
             // request by default, hence do not pass the undecoded request.
             if (httpService == null || httpService instanceof ContainerMapper) {
-                doService(request, response);
+                doHandle(request, response);
             } else {
 //                req.setNote(MAPPED_ADAPTER, adapter);
 
@@ -253,7 +253,7 @@ public class ContainerMapper extends HttpRequestProcessor {
                     }
                 }
 
-                HttpRequestProcessor adapter;
+                HttpHandler adapter;
                 if (match) {
                     adapter = grizzlyService.habitat.getComponent(SnifferAdapter.class);
                     ((SnifferAdapter) adapter).initialize(sniffer, this);
@@ -283,7 +283,7 @@ public class ContainerMapper extends HttpRequestProcessor {
      * @return
      * @throws Exception
      */
-    final HttpRequestProcessor mapUriWithSemicolon(final Request req, final DataChunk decodedURI,
+    final HttpHandler mapUriWithSemicolon(final Request req, final DataChunk decodedURI,
             int semicolonPos, final MappingData mappingData) throws Exception {
 
         final CharChunk charChunk = decodedURI.getCharChunk();
@@ -306,7 +306,7 @@ public class ContainerMapper extends HttpRequestProcessor {
         }
     }
 
-    HttpRequestProcessor map(Request req, DataChunk decodedURI, MappingData mappingData) throws Exception {
+    HttpHandler map(Request req, DataChunk decodedURI, MappingData mappingData) throws Exception {
         if (mappingData == null) {
             mappingData = (MappingData) req.getNote(MAPPING_DATA);
         }
@@ -321,10 +321,10 @@ public class ContainerMapper extends HttpRequestProcessor {
             } else {
                 contextRootInfo = (ContextRootInfo) mappingData.context;
             }
-            return contextRootInfo.getHttpRequestProcessor();
+            return contextRootInfo.getHttpHandler();
         } else if (mappingData.context != null
                 && "com.sun.enterprise.web.WebModule".equals(mappingData.context.getClass().getName())) {
-            return ((V3Mapper) mapper).getHttpRequestProcessor();
+            return ((V3Mapper) mapper).getHttpHandler();
         }
         return null;
     }
@@ -341,7 +341,7 @@ public class ContainerMapper extends HttpRequestProcessor {
 //    public void afterService(Request req, Response res) throws Exception {
 //        MappingData mappingData = (MappingData) req.getNote(MAPPING_DATA);
 //        try {
-//            HttpRequestProcessor adapter = (HttpRequestProcessor) req.getNote(MAPPED_ADAPTER);
+//            HttpHandler adapter = (HttpHandler) req.getNote(MAPPED_ADAPTER);
 //            if (adapter != null) {
 //                adapter.afterService(req, res);
 //            }
@@ -381,7 +381,7 @@ public class ContainerMapper extends HttpRequestProcessor {
         res.getOutputBuffer().write(chunk.getBuffer());
     }
 
-    public void register(String contextRoot, Collection<String> vs, HttpRequestProcessor httpService,
+    public void register(String contextRoot, Collection<String> vs, HttpHandler httpService,
             ApplicationContainer container) {
 
         if (LOGGER.isLoggable(Level.FINE)) {

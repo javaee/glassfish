@@ -58,11 +58,11 @@
 
 package org.apache.catalina;
 
+import java.security.cert.X509Certificate;
+
 import com.sun.appserv.ProxyHandler;
 import org.apache.catalina.net.ServerSocketFactory;
-import org.glassfish.grizzly.http.server.HttpRequestProcessor;
-
-import java.security.cert.X509Certificate;
+import org.glassfish.grizzly.http.server.HttpHandler;
 
 // END SJSAS 6363251
 
@@ -342,12 +342,12 @@ public interface Connector {
     /**
      * Set the <code>Adapter</code> used by this connector.
      */
-    void setAdapter(HttpRequestProcessor adapter);
+    void setHandler(HttpHandler adapter);
     
     
     /**
-     * Get the <code>Adapter</code> used by this connector.
+     * Get the <code>HttpHandler</code> used by this connector.
      */
-    HttpRequestProcessor getAdapter();
+    HttpHandler getHandler();
     // END SJSAS 6363251
 }

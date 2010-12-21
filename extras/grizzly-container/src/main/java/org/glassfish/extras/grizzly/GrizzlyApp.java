@@ -46,7 +46,7 @@ import org.glassfish.api.container.RequestDispatcher;
 import org.glassfish.api.container.EndpointRegistrationException;
 
 import com.sun.logging.LogDomains;
-import org.glassfish.grizzly.http.server.HttpRequestProcessor;
+import org.glassfish.grizzly.http.server.HttpHandler;
 
 import java.util.Collection;
 import java.util.logging.Level;
@@ -63,9 +63,9 @@ public class GrizzlyApp implements ApplicationContainer {
     final RequestDispatcher dispatcher;
 
     public static final class Adapter {
-        final HttpRequestProcessor service;
+        final HttpHandler service;
         final String contextRoot;        
-        public Adapter(String contextRoot, HttpRequestProcessor adapter) {
+        public Adapter(String contextRoot, HttpHandler adapter) {
             this.service = adapter;
             this.contextRoot = contextRoot;
         }

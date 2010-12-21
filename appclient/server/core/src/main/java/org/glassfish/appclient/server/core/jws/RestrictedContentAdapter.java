@@ -39,7 +39,6 @@
  */
 package org.glassfish.appclient.server.core.jws;
 
-import com.sun.logging.LogDomains;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
@@ -47,18 +46,20 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletResponse;
+
+import com.sun.logging.LogDomains;
 import org.glassfish.appclient.server.core.jws.servedcontent.Content;
 import org.glassfish.appclient.server.core.jws.servedcontent.StaticContent;
-import org.glassfish.grizzly.http.server.HttpRequestProcessor;
+import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
-import org.glassfish.grizzly.http.server.StaticResourcesService;
+import org.glassfish.grizzly.http.server.StaticHttpHandler;
 
 /**
  *
  * @author tjquinn
  */
-public class RestrictedContentAdapter extends HttpRequestProcessor {
+public class RestrictedContentAdapter extends HttpHandler {
 
     protected final static String LAST_MODIFIED_HEADER_NAME = "Last-Modified";
     protected final static String DATE_HEADER_NAME = "Date";
@@ -257,7 +258,7 @@ public class RestrictedContentAdapter extends HttpRequestProcessor {
             /*
              * Delegate to the Grizzly implementation.
              */
-            StaticResourcesService.sendFile(gResp, fileToSend);
+            StaticHttpHandler.sendFile(gResp, fileToSend);
             final int status = gResp.getStatus();
             if (status != HttpServletResponse.SC_OK) {
                 logger.fine(logPrefix() + "Could not serve content for "

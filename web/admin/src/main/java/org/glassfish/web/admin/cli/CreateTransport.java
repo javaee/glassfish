@@ -96,7 +96,7 @@ public class CreateTransport implements AdminCommand {
     @Param(name = "bytebuffertype", alias="byteBufferType", optional = true, defaultValue = "HEAP")
     String byteBufferType;
     @Param(name = "classname", optional = true,
-        defaultValue = "com.sun.grizzly.TCPSelectorHandler")
+        defaultValue = "org.glassfish.grizzly.TCPSelectorHandler")
     String className;
     @Param(name = "displayconfiguration", alias="displayConfiguration", optional = true, defaultValue = "false")
     Boolean displayConfiguration;

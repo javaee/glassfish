@@ -65,15 +65,15 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.logging.*;
 
-import com.sun.grizzly.tcp.ActionCode;
-import com.sun.grizzly.tcp.ActionHook;
+import org.glassfish.grizzly.tcp.ActionCode;
+import org.glassfish.grizzly.tcp.ActionHook;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
 
-import com.sun.grizzly.util.buf.C2BConverter;
-import com.sun.grizzly.util.buf.MessageBytes;
-import com.sun.grizzly.util.buf.ByteChunk;
-import com.sun.grizzly.util.net.SSLSupport;
+import org.glassfish.grizzly.util.buf.C2BConverter;
+import org.glassfish.grizzly.util.buf.MessageBytes;
+import org.glassfish.grizzly.util.buf.ByteChunk;
+import org.glassfish.grizzly.util.net.SSLSupport;
 import org.apache.jk.common.JkInputStream;
 
 

@@ -46,6 +46,7 @@ import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.web.WebContainer;
 import com.sun.enterprise.web.WebModule;
 import com.sun.enterprise.web.connector.extension.GrizzlyConfig;
+import com.sun.enterprise.web.connector.grizzly.DummyConnectorLauncher;
 import com.sun.enterprise.web.pwc.connector.coyote.PwcCoyoteRequest;
 import org.glassfish.grizzly.config.dom.*;
 import org.glassfish.grizzly.http.server.util.IntrospectionUtils;
@@ -70,9 +71,7 @@ public class PECoyoteConnector extends Connector {
     private static final String DEFAULT_KEYSTORE_TYPE = "JKS";
     private static final String DEFAULT_TRUSTSTORE_TYPE = "JKS";
 
-    private static final String DUMMY_CONNECTOR_LAUNCHER = 
-                com.sun.enterprise.web.
-                    connector.grizzly.DummyConnectorLauncher.class.getName();
+    private static final String DUMMY_CONNECTOR_LAUNCHER = DummyConnectorLauncher.class.getName();
 
     protected static final Logger _logger = LogDomains.getLogger(
             PECoyoteConnector.class, LogDomains.WEB_LOGGER);
@@ -525,6 +524,7 @@ public class PECoyoteConnector extends Connector {
         return selectorReadThreadsCount;
     }
     
+    @Override
     public void start() throws LifecycleException {
         super.start();  
         if ( grizzlyMonitor != null ) {
@@ -533,6 +533,7 @@ public class PECoyoteConnector extends Connector {
         }
     }
         
+    @Override
     public void stop() throws LifecycleException {
         super.stop(); 
         if ( grizzlyMonitor != null ) {
@@ -1175,6 +1176,7 @@ public class PECoyoteConnector extends Connector {
      * @param host the virtual server to which the request was mapped
      * @param context the Context to which the request was mapped
      */
+    @Override
     public void requestStartEvent(HttpServletRequest request, Host host,
             Context context) {
         if (requestProbeProvider != null) {
@@ -1202,6 +1204,7 @@ public class PECoyoteConnector extends Connector {
      * @param context the Context to which the request was mapped
      * @param statusCode the response status code
      */
+    @Override
     public void requestEndEvent(HttpServletRequest request, Host host,
             Context context, int statusCode) {
         if (requestProbeProvider != null) {

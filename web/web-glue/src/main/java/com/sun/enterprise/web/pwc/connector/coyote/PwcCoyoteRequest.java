@@ -42,7 +42,7 @@ package com.sun.enterprise.web.pwc.connector.coyote;
 
 import com.sun.enterprise.web.pwc.PwcWebModule;
 import com.sun.enterprise.web.session.SessionCookieConfig;
-import com.sun.grizzly.util.http.ServerCookie;
+import org.glassfish.grizzly.util.http.ServerCookie;
 import com.sun.logging.LogDomains;
 import org.apache.catalina.Context;
 import org.apache.catalina.Globals;

@@ -196,7 +196,7 @@ public class ServiceInitializerListener extends org.glassfish.grizzly.config.Gen
 //    private AsyncFilter createCometAsyncFilter() {
 //        try {
 //            Class<? extends AsyncFilter> c =
-//                (Class<? extends AsyncFilter>) Class.forName("com.sun.grizzly.comet.CometAsyncFilter",
+//                (Class<? extends AsyncFilter>) Class.forName("org.glassfish.grizzly.comet.CometAsyncFilter",
 //                    true,
 //                    Thread.currentThread().getContextClassLoader());
 //            return c.newInstance();

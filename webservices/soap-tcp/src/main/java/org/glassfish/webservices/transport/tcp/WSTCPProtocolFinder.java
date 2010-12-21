@@ -40,9 +40,9 @@
 
 package org.glassfish.webservices.transport.tcp;
 
-import com.sun.grizzly.Context;
-import com.sun.grizzly.portunif.PUProtocolRequest;
-import com.sun.grizzly.portunif.ProtocolFinder;
+import org.glassfish.grizzly.Context;
+import org.glassfish.grizzly.portunif.PUProtocolRequest;
+import org.glassfish.grizzly.portunif.ProtocolFinder;
 import com.sun.logging.LogDomains;
 import com.sun.xml.ws.transport.tcp.util.TCPConstants;
 import java.io.IOException;

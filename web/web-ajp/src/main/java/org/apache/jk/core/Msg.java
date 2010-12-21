@@ -60,8 +60,8 @@ package org.apache.jk.core;
 
 import java.io.IOException;
 
-import com.sun.grizzly.util.buf.ByteChunk;
-import com.sun.grizzly.util.buf.MessageBytes;
+import org.glassfish.grizzly.util.buf.ByteChunk;
+import org.glassfish.grizzly.util.buf.MessageBytes;
 
 
 /**

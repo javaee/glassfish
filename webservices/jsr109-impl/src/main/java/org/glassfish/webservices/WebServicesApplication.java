@@ -82,7 +82,7 @@ public class WebServicesApplication implements ApplicationContainer {
 
     private ArrayList<EjbEndpoint> ejbendpoints;
 
-    private com.sun.grizzly.tcp.Adapter adapter;
+    private org.glassfish.grizzly.tcp.Adapter adapter;
 
     private final RequestDispatcher dispatcher;
 
@@ -107,7 +107,7 @@ public class WebServicesApplication implements ApplicationContainer {
         this.dispatcher = dispatcherString;
         this.serverEnvironment = env;
         this.ejbendpoints = getEjbEndpoints();
-        this.adapter = (com.sun.grizzly.tcp.Adapter) new EjbWSAdapter();
+        this.adapter = (org.glassfish.grizzly.tcp.Adapter) new EjbWSAdapter();
         this.config = config;
         this.habitat = habitat;
         this.publishedFiles = publishedFiles;
@@ -130,7 +130,7 @@ public class WebServicesApplication implements ApplicationContainer {
                 ejbendpoint = iter.next();
                 String contextRoot = ejbendpoint.contextRoot;
 
-                dispatcher.registerEndpoint(contextRoot, (com.sun.grizzly.tcp.Adapter)adapter, this);
+                dispatcher.registerEndpoint(contextRoot, (org.glassfish.grizzly.tcp.Adapter)adapter, this);
                 logger.info(format(rb.getString("enterprise.deployment.ejbendpoint.registration"),
                         app.getAppName(),
 

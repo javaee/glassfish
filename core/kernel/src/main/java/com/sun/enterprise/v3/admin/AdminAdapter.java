@@ -52,6 +52,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -72,7 +73,6 @@ import com.sun.enterprise.v3.admin.adapter.AdminEndpointDecider;
 import com.sun.enterprise.v3.admin.listener.GenericJavaConfigListener;
 import com.sun.enterprise.v3.admin.listener.SystemPropertyListener;
 import com.sun.logging.LogDomains;
-import java.util.Set;
 import org.glassfish.admin.payload.PayloadImpl;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.AdminCommand;
@@ -85,10 +85,10 @@ import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.Events;
 import org.glassfish.api.event.RestrictTo;
-import org.glassfish.grizzly.http.server.HttpRequestProcessor;
+import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
-import org.glassfish.grizzly.http.server.StaticResourcesService;
+import org.glassfish.grizzly.http.server.StaticHttpHandler;
 import org.glassfish.internal.api.AdminAccessController;
 import org.glassfish.internal.api.Privacy;
 import org.glassfish.internal.api.ServerContext;
@@ -103,7 +103,7 @@ import org.jvnet.hk2.config.ObservableBean;
  * Listen to admin commands...
  * @author dochez
  */
-public abstract class AdminAdapter extends StaticResourcesService implements Adapter, PostConstruct, EventListener {
+public abstract class AdminAdapter extends StaticHttpHandler implements Adapter, PostConstruct, EventListener {
 
     public final static String VS_NAME="__asadmin";
     public final static String PREFIX_URI = "/" + VS_NAME;
@@ -169,7 +169,7 @@ public abstract class AdminAdapter extends StaticResourcesService implements Ada
     }
 
     @Override
-    public final HttpRequestProcessor getHttpService() {
+    public final HttpHandler getHttpService() {
         return this;
     }
 

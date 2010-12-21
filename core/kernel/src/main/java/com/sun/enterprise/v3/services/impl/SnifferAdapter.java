@@ -48,7 +48,7 @@ import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.v3.server.ContainerStarter;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.container.Sniffer;
-import org.glassfish.grizzly.http.server.HttpRequestProcessor;
+import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.grizzly.http.server.util.MappingData;
@@ -71,7 +71,7 @@ import org.jvnet.hk2.component.PerLookup;
  */
 @Service
 @Scoped(PerLookup.class)
-public class SnifferAdapter extends HttpRequestProcessor {
+public class SnifferAdapter extends HttpHandler {
 
     @Inject
     ContainerRegistry containerRegistry;
@@ -86,7 +86,7 @@ public class SnifferAdapter extends HttpRequestProcessor {
     
     private Sniffer sniffer;
     private ContainerMapper mapper;
-    private HttpRequestProcessor adapter;
+    private HttpHandler adapter;
 
     public void initialize(Sniffer sniffer, ContainerMapper mapper) {
         this.sniffer = sniffer;

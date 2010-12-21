@@ -70,18 +70,18 @@ import org.apache.catalina.util.HexUtils;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.RequestInfo;
 import org.glassfish.grizzly.http.server.Response;
-import com.sun.grizzly.tcp.Constants;
+import org.glassfish.grizzly.tcp.Constants;
 import org.apache.jk.core.JkHandler;
 import org.apache.jk.core.Msg;
 import org.apache.jk.core.MsgContext;
 import org.apache.jk.core.WorkerEnv;
 import org.apache.jk.core.JkChannel;
 
-import com.sun.grizzly.util.buf.ByteChunk;
-import com.sun.grizzly.util.buf.CharChunk;
-import com.sun.grizzly.util.buf.MessageBytes;
-import com.sun.grizzly.util.http.MimeHeaders;
-import com.sun.grizzly.util.net.SSLSupport;
+import org.glassfish.grizzly.util.buf.ByteChunk;
+import org.glassfish.grizzly.util.buf.CharChunk;
+import org.glassfish.grizzly.util.buf.MessageBytes;
+import org.glassfish.grizzly.util.http.MimeHeaders;
+import org.glassfish.grizzly.util.net.SSLSupport;
 import org.apache.tomcat.util.threads.ThreadWithAttributes;
 
 /**
