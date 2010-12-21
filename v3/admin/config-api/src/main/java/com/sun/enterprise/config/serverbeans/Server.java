@@ -42,6 +42,8 @@ package com.sun.enterprise.config.serverbeans;
 
 import com.sun.enterprise.config.util.InstanceRegisterInstanceCommandParameters;
 import static com.sun.enterprise.config.util.RegisterInstanceCommandParameters.ParameterNames.*;
+import com.sun.enterprise.config.serverbeans.customvalidators.ConfigRefConstraint;
+import com.sun.enterprise.config.serverbeans.customvalidators.ConfigRefValidator;
 import com.sun.enterprise.config.serverbeans.customvalidators.NotTargetKeyword;
 import com.sun.enterprise.config.serverbeans.customvalidators.NotDuplicateTargetName;
 import com.sun.enterprise.config.util.ServerHelper;
@@ -81,6 +83,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.validation.Payload;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 import org.glassfish.api.admin.ServerEnvironment;
@@ -96,6 +99,7 @@ import org.glassfish.api.admin.CommandRunner;
  * User applications cannot be deployed to an Administration Server instance
  */
 @Configured
+@ConfigRefConstraint(message="{configref.invalid}", payload=ConfigRefValidator.class)
 @SuppressWarnings("unused")
 @NotDuplicateTargetName(message="{server.duplicate.name}", payload=Server.class)
 public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named, SystemPropertyBag, ReferenceContainer, RefContainer, Payload {
@@ -121,6 +125,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      *         {@link String }
      */
     @Attribute
+    @NotNull
     @NotTargetKeyword(message="{server.reserved.name}", payload=Server.class)
     @Pattern(regexp = NAME_SERVER_REGEX)
     String getConfigRef();

@@ -107,26 +107,25 @@ public class AttributeRemovalTest extends ConfigApiTest {
     @Test
     public void deprecatedWrite() throws TransactionFailure {
         final Server server = getHabitat().getComponent(Server.class);
-        final String value = server.getConfigRef();
-        logger.fine("config-ref is " + server.getNodeAgentRef());
+        final String value = server.getNodeRef();
+        logger.fine("node-ref is " + server.getNodeRef());
         ConfigSupport.apply(new SingleConfigCode<Server>() {
             @Override
             public Object run(Server s) throws PropertyVetoException, TransactionFailure {
-                s.setConfigRef(null);
+                s.setNodeAgentRef(value);
                 return null;
             }
         }, server);
-
-        logger.fine("after, config-ref is " + server.getNodeAgentRef());
+        logger.fine("node-agent-ref is " + server.getNodeAgentRef());
         // restore
         ConfigSupport.apply(new SingleConfigCode<Server>() {
             @Override
             public Object run(Server s) throws PropertyVetoException, TransactionFailure {
-                s.setConfigRef(value);
+                s.setNodeAgentRef(null);
                 return null;
             }
         }, server);
-
+        logger.fine("after, node-agent-ref is " + server.getNodeAgentRef());
 
     }
     
