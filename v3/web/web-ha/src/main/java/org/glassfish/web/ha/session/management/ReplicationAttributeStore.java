@@ -157,8 +157,10 @@ public class ReplicationAttributeStore extends ReplicationStore {
         CompositeMetadata compositeMetadata
             = createCompositeMetadata(modAttrSession);
                 
-        try {        
-            System.out.println("Calling save with composite metadata");
+        try {
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.fine("CompositeMetadata is " + compositeMetadata + " id is " + session.getIdInternal());
+            }
             replicator.save(session.getIdInternal(), //id
                     compositeMetadata, !((HASession) session).isPersistent());
             modAttrSession.resetAttributeState();
@@ -188,15 +190,17 @@ public class ReplicationAttributeStore extends ReplicationStore {
         ReplicationManagerBase mgr
             = (ReplicationManagerBase)this.getManager();
         BackingStore replicator = mgr.getBackingStore();
-        System.out.println("in do save");
         if(_logger.isLoggable(Level.FINE)) {
             _logger.fine("ReplicationAttributeStore>>doSave: replicator: " + replicator);                    
         }         
         CompositeMetadata compositeMetadata 
             = createCompositeMetadata(modAttrSession);
                 
-        try {        
-            System.out.println("Calling save on backing store");
+        try {
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.fine("CompositeMetadata is " + compositeMetadata + " id is " + session.getIdInternal());
+            }
+
             replicator.save(session.getIdInternal(), //id
                     compositeMetadata, !((HASession) session).isPersistent());
             modAttrSession.resetAttributeState();
@@ -337,7 +341,6 @@ public class ReplicationAttributeStore extends ReplicationStore {
         }
         catch(IOException e)
         {
-            //System.err.println("getSession IOException :"+e.getMessage());
             throw e;
         }
         String username = ((HASession)_session).getUserName(); 

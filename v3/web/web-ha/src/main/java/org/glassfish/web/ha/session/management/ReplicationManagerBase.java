@@ -102,6 +102,74 @@ public abstract class ReplicationManagerBase extends PersistentManagerBase {
         return true; 
     }
 
+    public Session findSession(String id, String version) throws IOException {
+        if(logger.isLoggable(Level.FINE)) {
+            logger.fine("in findSession: version=" + version);
+        }
+        if(!this.isSessionIdValid(id) || version == null) {
+            return null;
+        }
+        Session loadedSession = null;
+        long requiredVersion = 0L;
+        long cachedVersion = -1L;
+        try {
+            requiredVersion = (Long.valueOf(version)).longValue();
+            if (logger.isLoggable(Level.FINE)) {
+                logger.fine("Required version " + requiredVersion);
+            }
+        } catch (NumberFormatException ex) {
+             logger.log(Level.INFO,"required version nfe ", ex);
+            //deliberately do nothing
+        }
+        if(logger.isLoggable(Level.FINE)) {
+            logger.fine("findSession:requiredVersion=" + requiredVersion);
+        }
+        Session cachedSession = sessions.get(id);
+        if(cachedSession != null) {
+            cachedVersion = cachedSession.getVersion();
+        }
+        if(logger.isLoggable(Level.FINE)) {
+            logger.fine("findSession:cachedVersion=" + cachedVersion);
+        }
+        //if version match return cached session else purge it from cache
+        //if relaxCacheVersionSemantics is set true then we return the
+        //cached version even if it is greater than the required version
+        if(cachedVersion == requiredVersion || (isRelaxCacheVersionSemantics() && (cachedVersion > requiredVersion))) {
+            return cachedSession;
+        } else {
+            //if relaxCacheVersionSemantics - we do not remove because even
+            //though stale we might return it as the best we can do
+            if(cachedVersion < requiredVersion && (!isRelaxCacheVersionSemantics())) {
+                this.removeSessionFromManagerCache(cachedSession);
+                cachedSession = null;
+                cachedVersion = -1L;
+            }
+        }
+        // See if the Session is in the Store
+        if(requiredVersion != -1L) {
+            loadedSession = swapIn(id, version);
+        } else {
+            loadedSession = swapIn(id);
+        }
+        if(logger.isLoggable(Level.FINE)) {
+            logger.fine("findSession:swappedInSession=" + loadedSession);
+        }
+
+        if(loadedSession == null || loadedSession.getVersion() < cachedVersion) {
+            if(logger.isLoggable(Level.FINE)) {
+                logger.fine("ReplicationManagerBase>>findSession:returning cached version:" + cachedVersion);
+            }
+            return cachedSession;
+        }
+        if(loadedSession.getVersion() < requiredVersion && (!isRelaxCacheVersionSemantics())) {
+            loadedSession = null;
+        }
+        if(logger.isLoggable(Level.FINE)) {
+            logger.fine("ReplicationManagerBase>>findSession:returning:" + loadedSession);
+        }
+        return (loadedSession);
+
+    }
 
     /** should relax cache version semantics be applied */
     public boolean isRelaxCacheVersionSemantics() {
@@ -116,6 +184,23 @@ public abstract class ReplicationManagerBase extends PersistentManagerBase {
         relaxCacheVersionSemantics = value;
     }
 
+
+    public void removeSessionFromManagerCache(Session session) {
+        if(logger.isLoggable(Level.FINE)) {
+            logger.fine("in " + this.getClass().getName() + ">>removeSessionFromManagerCache:session = " + session);
+        }
+        if(session == null) {
+            return;
+        }
+        Session removed = null;
+        // TBD: Call super.remove instead?
+        synchronized (sessions) {
+            removed = sessions.remove(session.getIdInternal());
+        }
+        if (removed != null && logger.isLoggable(Level.FINE)){
+            logger.fine("Remove from manager cache id=" + session.getId());
+        }
+    }
 
 
 

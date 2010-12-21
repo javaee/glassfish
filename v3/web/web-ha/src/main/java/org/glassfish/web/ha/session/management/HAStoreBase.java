@@ -179,7 +179,7 @@ public abstract class HAStoreBase extends StoreBase {
     /**
     * Create serialized byte[] for <code>obj</code>.
     *
-    * @param obj - serialize obj
+    * @param session - serialize obj
     * @return byte[] containing serialized data stream for obj
     */
     public byte[] getByteArray(Session session)
