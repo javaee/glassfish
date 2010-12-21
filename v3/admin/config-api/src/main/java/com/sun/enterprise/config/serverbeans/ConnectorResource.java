@@ -40,6 +40,7 @@
 
 package com.sun.enterprise.config.serverbeans;
 
+import com.sun.enterprise.config.serverbeans.customvalidators.ResourcePoolReferenceConstraint;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.Configured;
@@ -72,6 +73,7 @@ import javax.validation.constraints.NotNull;
  @RestRedirect(opType = RestRedirect.OpType.POST, commandName = "create-connector-resource"),
  @RestRedirect(opType = RestRedirect.OpType.DELETE, commandName = "delete-connector-resource")
 })
+@ResourcePoolReferenceConstraint
 public interface ConnectorResource extends ConfigBeanProxy, Injectable, Resource,
     PropertyBag, BindableResource {
 

@@ -40,6 +40,7 @@
 
 package com.sun.enterprise.config.serverbeans;
 
+import com.sun.enterprise.config.serverbeans.customvalidators.ResourcePoolReferenceConstraint;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
@@ -75,6 +76,7 @@ import javax.validation.constraints.NotNull;
  @RestRedirect(opType = RestRedirect.OpType.POST, commandName = "create-jdbc-resource"),
  @RestRedirect(opType = RestRedirect.OpType.DELETE, commandName = "delete-jdbc-resource")
 })
+@ResourcePoolReferenceConstraint
 public interface JdbcResource extends ConfigBeanProxy, Injectable, Resource, PropertyBag, BindableResource {
     
     /**              
