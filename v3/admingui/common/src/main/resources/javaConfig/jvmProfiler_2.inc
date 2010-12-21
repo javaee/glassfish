@@ -55,15 +55,23 @@
                         else {return false;}" >
                 <!command
                     mapPut(map="#{pageSession.valueMap}" key="target" value="#{pageSession.configName}");
+                    getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
+                    getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
+                    foreach(var="oneRow" list="#{requestScope.newList}"){
+                        startsWith(testStr="#{requestScope.oneRow.value}" pattern="-" result="#{requestScope.valid}")
+                        if ("!#{requestScope.valid}"){
+                            gf.handleError( detail="$resource{i18nc.msg.jvmOptionInvalid, #{requestScope.oneRow.value}}");
+                        }
+                    }
+                    
                     gf.createEntity(endpoint="#{pageSession.createProfilerUrl}"
                             attrs="#{pageSession.valueMap}"
                             convertToFalse="#{pageSession.convertToFalseList}"
                             onlyUseAttrs="#{pageSession.onlyUseAttrs}"
                             result => $attribute{objStr});
-                    getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
-                    getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                    saveJvmOptionValues(endpoint="#{pageSession.profilerUrl}/jvm-options", target="#{pageSession.configName}", options="$attribute{newList}");
-                    prepareSuccessfulMsg();
+                    prepareAlertMsg(type="success", summary="$resource{i18nc.jvm.ProfilerCreated}");
+                    saveJvmOptionValues(endpoint="#{pageSession.profilerUrl}/jvm-options", target="#{pageSession.configName}", options="$attribute{newList}" ,
+                        deleteProfileEndpoint="#{pageSession.deleteProfilerUrl}");
                     gf.redirect(page="#{selfPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}&configName=#{pageSession.configName}");
                 />
             </sun:button>
@@ -80,8 +88,8 @@
                     getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                     getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
                     saveJvmOptionValues(endpoint="#{pageSession.profilerUrl}/jvm-options", target="#{pageSession.configName}", options="$attribute{newList}");
-                prepareSuccessfulMsg();
-                gf.redirect(page="#{selfPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}&configName=#{pageSession.configName}");
+                    prepareSuccessfulMsg();
+                    gf.redirect(page="#{selfPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}&configName=#{pageSession.configName}");
                 />
             </sun:button>
 

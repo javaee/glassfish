@@ -110,7 +110,9 @@ public class InstanceHandler {
             @HandlerInput(name="endpoint",   type=String.class, required=true),
             @HandlerInput(name="target",   type=String.class, required=true),
             @HandlerInput(name="attrs", type=Map.class, required=false),
-            @HandlerInput(name="options",   type=List.class)} )
+            @HandlerInput(name="options",   type=List.class),
+            @HandlerInput(name="deleteProfileEndpoint",   type=String.class)
+            } )
    public static void saveJvmOptionValues(HandlerContext handlerCtx) {
         try {
             String endpoint = (String) handlerCtx.getInputValue("endpoint");
@@ -125,8 +127,16 @@ public class InstanceHandler {
                 ArrayList kv = getKeyValuePair(str);
                 payload.put((String)kv.get(0), kv.get(1));
             }
-            RestUtil.restRequest(endpoint, payload, "POST", handlerCtx, false);
+            RestUtil.restRequest(endpoint, payload, "POST", null, false, true);
         } catch (Exception ex) {
+            //If this is called during create profile, we want to delete the profile which was created, and stay at the same
+            //place for user to fix the jvm options.
+            String deleteProfileEndpoint = (String) handlerCtx.getInputValue("deleteProfileEndpoint");
+            if (!GuiUtil.isEmpty(deleteProfileEndpoint)){
+                Map attrMap = new HashMap();
+                attrMap.put("target", (String) handlerCtx.getInputValue("target"));
+                RestUtil.restRequest(deleteProfileEndpoint, attrMap, "DELETE", null, false, false);
+            }
             GuiUtil.handleException(handlerCtx, ex);
         }
     }

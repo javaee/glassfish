@@ -503,7 +503,22 @@ public class UtilHandlers {
         String detail = (String) handlerCtx.getInputValue("detail");
         GuiUtil.prepareAlert(type, summary, detail);
     }
-     
+
+    /**
+     *	<p> This handler will test if a String starts with another String.</p>
+     */
+    @Handler(id="startsWith",
+    	input={
+            @HandlerInput(name="testStr", type=String.class, required=true),
+            @HandlerInput(name="pattern", type=String.class, required=true)},
+        output={
+            @HandlerOutput(name="result", type=Boolean.class)})
+    public static void startsWith(HandlerContext handlerCtx) {
+        String testStr = ((String) handlerCtx.getInputValue("testStr"));
+        String pattern = ((String) handlerCtx.getInputValue("pattern"));
+        handlerCtx.setOutputValue("result", testStr.startsWith(pattern));
+    }
+
     /**
      * <p> This method decodes a String using "UTF-8" as default
      * if scheme is not specified.
