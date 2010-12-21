@@ -462,6 +462,13 @@ public class EjbDeployer
             OpsParams opsparams = context.getCommandParameters(OpsParams.class);
             DeployCommandParameters dcp = context.getCommandParameters(DeployCommandParameters.class);
 
+            ApplicationInfo appInfo = appRegistry.get(opsparams.name());
+            Application app = appInfo.getMetaData(Application.class);
+            if (app == null) {
+                // Not a Java EE application
+                return;
+            }
+
             if (_logger.isLoggable(Level.FINE)) {
                 _logger.log( Level.FINE, "EjbDeployer in APPLICATION_PREPARED for origin: " + opsparams.origin + 
                         ", target: " + dcp.target + ", name: " + opsparams.name());
@@ -480,11 +487,6 @@ public class EjbDeployer
                 createTimers = false;
             }
 
-            ApplicationInfo appInfo = appRegistry.get(opsparams.name());
-            Application app = appInfo.getMetaData(Application.class);
-
-            boolean isTimedApp = false;
-
             String target = dcp.target;
             if (createTimers && dcp.isredeploy != null && dcp.isredeploy && DeploymentUtils.isDomainTarget(target)) {
                 List<String> targets = (List<String>)context.getTransientAppMetaData(DeploymentProperties.PREVIOUS_TARGETS, List.class);
@@ -499,6 +501,8 @@ public class EjbDeployer
             if (_logger.isLoggable(Level.FINE)) {
                 _logger.log( Level.FINE, "EjbDeployer using target for event as " + target);
             }
+
+            boolean isTimedApp = false;
             for (EjbBundleDescriptor ejbBundle : app.getEjbBundleDescriptors()) {
                 if (checkEjbBundleForTimers(ejbBundle, createTimers, target)) { 
                     isTimedApp = true;
