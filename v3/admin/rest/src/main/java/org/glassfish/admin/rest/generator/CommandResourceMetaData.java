@@ -278,6 +278,8 @@ ListLbConfig
             {"IiopService", "create-ssl", "POST", "create-ssl", "Create", "type=iiop-service"},
             {"IiopService", "delete-ssl", "DELETE", "delete-ssl", "Delete", "type=iiop-service"},
             {"IiopService", "list-iiop-listeners", "GET", "list-iiop-listeners", "list-iiop-listeners"},
+            {"JmxConnector", "create-ssl", "POST", "create-ssl", "Create", "id=$parent", "type=jmx-connector"},
+            {"JmxConnector", "delete-ssl", "DELETE", "delete-ssl", "Delete", "id=$parent", "type=jmx-connector"},
             {"JavaConfig", "create-profiler", "POST", "create-profiler", "Create Profiler"},
             {"JavaConfig", "generate-jvm-report", "GET", "generate-jvm-report", "Generate Report", "target=$grandparent"},
             {"JmsService", "list-jms-hosts", "GET", "list-jms-hosts", "list-jms-hosts"},
