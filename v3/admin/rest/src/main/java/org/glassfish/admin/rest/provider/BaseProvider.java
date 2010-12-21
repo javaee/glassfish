@@ -39,6 +39,7 @@
  */
 package org.glassfish.admin.rest.provider;
 
+import org.glassfish.admin.rest.Constants;
 import org.jvnet.hk2.component.Habitat;
 import org.glassfish.admin.rest.RestConfig;
 import java.util.Collections;
@@ -106,7 +107,7 @@ public abstract class BaseProvider<T> implements MessageBodyWriter<T> {
     @Override
     public void writeTo(T proxy, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
-        entityStream.write(getContent(proxy).getBytes());
+        entityStream.write(getContent(proxy).getBytes(Constants.ENCODING));
     }
 
     public abstract String getContent(T proxy);

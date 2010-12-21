@@ -157,7 +157,7 @@ class JerseyRestResponse extends RestResponse {
         if (contentType != null) {
             String responseBody = getResponseBody();
             contentType = contentType.toLowerCase();
-            if (contentType.endsWith("xml")) {
+            if (contentType.startsWith("application/xml")) {
                 InputStream input = null;
                 try {
                     XMLInputFactory inputFactory = XMLInputFactory.newInstance();
@@ -212,7 +212,7 @@ class JerseyRestResponse extends RestResponse {
 //                    // Generate a generic Java structure from the XML
 //                    result.put("data", getJavaFromXML(root));
 //                }
-            } else if (contentType.endsWith("json")) {
+            } else if (contentType.startsWith("application/json")) {
                 // Decode JSON
                 result.put("data", JSONUtil.jsonToJava(responseBody));
             } else {

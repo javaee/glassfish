@@ -63,4 +63,6 @@ public interface Constants {
 
     public static final String VAR_PARENT = "$parent";
     public static final String VAR_GRANDPARENT = "$grandparent";
+    
+    public static final String ENCODING = "UTF-8";
 }

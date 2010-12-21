@@ -150,7 +150,7 @@ public class DomainXmlPersistence implements ConfigurationPersistence, Configura
             XMLStreamWriter writer = null;
             OutputStream fos = getOutputStream(f);
             try {
-                writer = xmlFactory.createXMLStreamWriter(new BufferedOutputStream(fos));
+                writer = xmlFactory.createXMLStreamWriter(new BufferedOutputStream(fos), "UTF-8");
                 IndentingXMLStreamWriter indentingXMLStreamWriter = new IndentingXMLStreamWriter(writer);
                 doc.writeTo(indentingXMLStreamWriter);
                 indentingXMLStreamWriter.close();

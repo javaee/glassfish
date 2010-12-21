@@ -82,6 +82,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import org.glassfish.admin.rest.Constants;
 import org.glassfish.admin.rest.provider.ActionReportResultHtmlProvider;
 import org.glassfish.admin.rest.provider.ActionReportResultJsonProvider;
 import org.glassfish.admin.rest.provider.ActionReportResultXmlProvider;
@@ -143,6 +144,7 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
         LogHelper.getDefaultLogger().finer("Received resource request: " + req.getRequestURI());
 
         try {
+            res.setCharacterEncoding(Constants.ENCODING);
             if (!latch.await(20L, TimeUnit.SECONDS)) {
                 String msg = localStrings.getLocalString("rest.adapter.server.wait",
                         "Server cannot process this command at this time, please wait");
