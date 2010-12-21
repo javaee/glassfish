@@ -68,9 +68,9 @@
                             <tasks>
                                 <resolveArtifact artifactId="javadb" property="javadb.zip"/>
 
-                                <mkdir dir="target/classes/glassfish"/>
+                                <mkdir dir="target/classes/glassfish/javadb"/>
 				<unzip src="${javadb.zip}"
-				        dest="target/classes/glassfish">
+				        dest="target/classes/glassfish/javadb">
                                     <patternset>
                                         <exclude name="javadb/demo/**"/>
                                         <exclude name="javadb/docs/**"/>
