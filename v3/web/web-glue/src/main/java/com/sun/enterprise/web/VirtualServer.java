@@ -52,8 +52,11 @@ import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.archivist.WebArchivist;
 import com.sun.enterprise.security.web.GlassFishSingleSignOn;
+import com.sun.enterprise.server.logging.GFFileHandler;
 import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.web.logger.CatalinaLogger;
 import com.sun.enterprise.web.logger.FileLoggerHandler;
+import com.sun.enterprise.web.logger.FileLoggerHandlerFactory;
 import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
 import com.sun.enterprise.web.session.SessionCookieConfig;
 import com.sun.logging.LogDomains;
@@ -85,8 +88,11 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.util.*;
+import java.util.logging.Handler;
 import java.util.logging.Level;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
+import java.util.logging.LogRecord;
 
 /**
  * Standard implementation of a virtual server (aka virtual host) in
@@ -103,6 +109,17 @@ public class VirtualServer extends StandardHost
     private static final String DISABLED = "disabled";
     private static final String OFF = "off";
     private static final String ON = "on";
+
+    /**
+     * The logger to use for logging this virtual server
+     */
+    private static final Logger DEFAULT_LOGGER =
+        LogDomains.getLogger(VirtualServer.class, LogDomains.WEB_LOGGER);
+
+    /**
+     * The resource bundle containing the message strings for _logger.
+     */
+    protected static final ResourceBundle rb = DEFAULT_LOGGER.getResourceBundle();
 
     // ------------------------------------------------------------ Constructor
 
@@ -145,15 +162,9 @@ public class VirtualServer extends StandardHost
     private String _id = null;
 
     /**
-     * The logger to use for logging ALL web container related messages.
+     * The logger to use for logging this virtual server
      */
-    protected static final Logger _logger =
-        LogDomains.getLogger(VirtualServer.class, LogDomains.WEB_LOGGER);
-
-    /**
-     * The resource bundle containing the message strings for _logger.
-     */
-    protected static final ResourceBundle rb = _logger.getResourceBundle();
+    protected volatile Logger _logger = DEFAULT_LOGGER;
 
     /**
      * Indicates whether the logger level is set to any one of
@@ -216,6 +227,9 @@ public class VirtualServer extends StandardHost
     private ServerContext serverContext;
 
     private boolean ssoFailoverEnabled = false;
+
+    private volatile FileLoggerHandler fileLoggerHandler = null;
+    private volatile FileLoggerHandlerFactory fileLoggerHandlerFactory = null;
 
     // ------------------------------------------------------------- Properties
 
@@ -339,6 +353,10 @@ public class VirtualServer extends StandardHost
 
     public void setDefaultContextPath(String defaultContextPath) {
         this.defaultContextPath = defaultContextPath;
+    }
+
+    public void setFileLoggerHandlerFactory(FileLoggerHandlerFactory factory) {
+        fileLoggerHandlerFactory = factory;
     }
 
     @Override
@@ -769,6 +787,25 @@ public class VirtualServer extends StandardHost
         }
     }
 
+    private void close(FileLoggerHandler handler) {
+        if (handler != null && !handler.isAssociated()) {
+            if (fileLoggerHandlerFactory != null) {
+                // should always be here
+                fileLoggerHandlerFactory.removeHandler(handler.getLogFile());
+            }
+            handler.flush();
+            handler.close();
+        }
+    }
+
+    private void setLogger(Logger newLogger, String logLevel) {
+        _logger = newLogger;
+        // wrap into a cataline logger
+        CatalinaLogger catalinaLogger = new CatalinaLogger(newLogger);
+        catalinaLogger.setLevel(logLevel);
+        setLogger(catalinaLogger);
+    }
+
     /**
      * @return The properties of this virtual server
      */
@@ -786,8 +823,7 @@ public class VirtualServer extends StandardHost
                     String vsLogFile,
                     MimeMap vsMimeMap,
                     String logServiceFile,
-                    String logLevel,
-                    FileLoggerHandler logHandler) {
+                    String logLevel) {
         setDebug(debug);
         setAppBase(vsDocroot);
         setName(vsID);
@@ -831,14 +867,7 @@ public class VirtualServer extends StandardHost
             setIsActive(Boolean.parseBoolean(state));
         }
 
-        if (vsLogFile != null && !vsLogFile.equals(logServiceFile)) {
-            /*
-             * Configure separate logger for this virtual server only if
-             * 'log-file' attribute of this <virtual-server> and 'file'
-             * attribute of <log-service> are different (See 6189219).
-             */
-            setLogFile(vsLogFile, logLevel, logHandler);
-        }
+        setLogFile(vsLogFile, logLevel, logServiceFile);
     }
 
     /**
@@ -878,8 +907,8 @@ public class VirtualServer extends StandardHost
      * @param logFile The value of the virtual server's log-file attribute in
      * the domain.xml
      */
-    void setLogFile(String logFile, String logLevel, FileLoggerHandler logHandler) {
-   
+    synchronized void setLogFile(String logFile, String logLevel, String logServiceFile) {
+
         /** catalina file logger code
         String logPrefix = logFile;
         String logDir = null;
@@ -915,8 +944,122 @@ public class VirtualServer extends StandardHost
         contextLogger.setLevel(logLevel); 
          */
         
-        logHandler.setLogFile(logFile);
-        logHandler.setLevel(logLevel);
+
+        /*
+         * Configure separate logger for this virtual server only if
+         * 'log-file' attribute of this <virtual-server> and 'file'
+         * attribute of <log-service> are different (See 6189219).
+         */
+        boolean noCustomLog =
+            (logFile == null || logFile.equals(logServiceFile));
+
+        if ((fileLoggerHandler == null && noCustomLog) ||
+                (fileLoggerHandler != null && logFile != null &&
+                logFile.equals(fileLoggerHandler.getLogFile()))) {
+            return;
+        }
+
+        Logger newLogger = null;
+        FileLoggerHandler oldHandler = fileLoggerHandler;
+        //remove old handler
+        if (oldHandler != null) {
+            _logger.removeHandler(oldHandler);
+        }
+
+        if (noCustomLog) {
+            fileLoggerHandler = null;
+            newLogger = DEFAULT_LOGGER;
+        } else {
+            // append the logger name with "._vs.<virtual-server-id>"
+            String lname = DEFAULT_LOGGER.getName() + "._vs." + getID();
+            newLogger = LogManager.getLogManager().getLogger(lname);
+            if (newLogger == null) {
+                newLogger = new Logger(lname, null) {
+                    // set thread id, see LogDomains.getLogger method
+                    @Override
+                    public void log(LogRecord record) {
+                        if (record.getResourceBundle() == null) {
+                            ResourceBundle bundle = getResourceBundle();
+                            if (bundle != null) {
+                                record.setResourceBundle(bundle);
+                            }
+                        }
+                        record.setThreadID((int)Thread.currentThread().getId());
+                        super.log(record);
+                    }
+
+                    // use the same resource bundle as default vs logger
+                    @Override
+                    public ResourceBundle getResourceBundle() {
+                        return rb;
+                    }
+
+                    @Override
+                    public synchronized void addHandler(Handler handler) {
+                        super.addHandler(handler);
+                        if (handler instanceof FileLoggerHandler) {
+                            ((FileLoggerHandler)handler).associate();
+                        }
+                    }
+
+                    @Override
+                    public synchronized void removeHandler(Handler handler) {
+                        if (!(handler instanceof FileLoggerHandler)) {
+                            super.removeHandler(handler);
+                        } else {
+                            boolean hasHandler = false;
+                            Handler[] hs = getHandlers();
+                            if (hs != null) {
+                                for (Handler h : hs) {
+                                    if (h == handler) {
+                                        hasHandler = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (hasHandler) {
+                                super.removeHandler(handler);
+                                ((FileLoggerHandler)handler).disassociate();
+                            }
+                        }
+                    }
+                };
+
+                synchronized(Logger.class) {
+                    LogManager.getLogManager().addLogger(newLogger);
+                }
+            }
+
+            // remove old handlers if necessary
+            Handler[] handlers = newLogger.getHandlers();
+            if (handlers != null) {
+                for (Handler h : handlers) {
+                    newLogger.removeHandler(h);
+                }
+            }
+
+            // add handlers from root that is not GFFileHandler
+            Logger rootLogger = Logger.global.getParent();
+            if (rootLogger != null) {
+                Handler[] rootHandlers = rootLogger.getHandlers();
+                if (rootHandlers != null) {
+                    for (Handler h : rootHandlers) {
+                        if (!(h instanceof GFFileHandler)) {
+                            newLogger.addHandler(h);
+                        }
+                    }
+                }
+            }
+
+            // create and add new handler
+            fileLoggerHandler = fileLoggerHandlerFactory.getHandler(logFile);
+            newLogger.addHandler(fileLoggerHandler);
+
+            newLogger.setUseParentHandlers(false);
+        }
+
+        setLogger(newLogger, logLevel);
+        close(oldHandler);
     }
 
     /**
@@ -1834,6 +1977,18 @@ public class VirtualServer extends StandardHost
         return config;
     }
         
+    @Override
+    public synchronized void stop() throws LifecycleException {
+        if (fileLoggerHandler != null) {
+           _logger.removeHandler(fileLoggerHandler);
+           close(fileLoggerHandler);
+           fileLoggerHandler = null;
+        }
+        setLogger(DEFAULT_LOGGER, "INFO");
+        
+        super.stop();
+    }
+
     /**
      * Enables this component.
      * 
@@ -1859,6 +2014,4 @@ public class VirtualServer extends StandardHost
             throw new GlassFishException(e);
         }        
     }
-    
-
 }

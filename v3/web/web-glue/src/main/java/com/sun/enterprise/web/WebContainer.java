@@ -63,7 +63,7 @@ import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.v3.services.impl.ContainerMapper;
 import com.sun.enterprise.v3.services.impl.GrizzlyService;
 import com.sun.enterprise.web.connector.coyote.PECoyoteConnector;
-import com.sun.enterprise.web.logger.FileLoggerHandler;
+import com.sun.enterprise.web.logger.FileLoggerHandlerFactory;
 import com.sun.enterprise.web.logger.IASLogger;
 import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
 import com.sun.enterprise.web.reconfig.WebConfigListener;
@@ -212,7 +212,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     //MonitoringService monitoringService;
 
     @Inject
-    private FileLoggerHandler logHandler;
+    private FileLoggerHandlerFactory fileLoggerHandlerFactory;
 
     @Inject
     private JavaEEIOUtils javaEEIOUtils;
@@ -455,7 +455,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         _embedded.setWebContainer(this);
         _embedded.setLogServiceFile(logServiceFile);
         _embedded.setLogLevel(logLevel);
-        _embedded.setLogHandler(logHandler);
+        _embedded.setFileLoggerHandlerFactory(fileLoggerHandlerFactory);
+        _embedded.setWebContainerFeatureFactory(webContainerFeatureFactory);
 
         _embedded.setCatalinaHome(instance.getDomainRoot().getAbsolutePath());
         _embedded.setCatalinaBase(instance.getDomainRoot().getAbsolutePath());
@@ -2774,9 +2775,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         vs.setBean(vsBean);
 
         String vsLogFile = vsBean.getLogFile();
-        if (vsLogFile != null && !vsLogFile.equals(logServiceFile)) {
-            vs.setLogFile(vsLogFile, logLevel, logHandler);
-        }
+        vs.setLogFile(vsLogFile, logLevel, logServiceFile);
 
         vs.configureState();
 
