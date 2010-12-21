@@ -143,17 +143,24 @@ public class DeleteLocalInstanceCommand extends LocalInstanceCommand {
 
     /**
      * Ask DAS to wipe it out from domain.xml
+     * If DAS isn't running -- ERROR -- return right away with a thrown Exception
+     * If DAS is running, and instance not registered on DAS, do not unregister instance -- OK
+     * If DAS is running, and instance is registered on DAS, then unregister instance -- OK
+     *      - If _unregister-instance is successful - OK
+     *      - If _unregister-instance fails - ERROR - Exception thrown
      */
     private void doRemote() throws CommandException {
-        if (isDASRunning()) {
+        if (!isDASRunning()) {
+            String newString = Strings.get("DeleteInstance.remoteError",
+                    programOpts.getHost(), "" + programOpts.getPort());
+            throw new CommandException(newString);
+        }
+
+        if (isRegisteredToDas()) {
             RemoteCommand rc = new RemoteCommand("_unregister-instance", programOpts, env);
             rc.execute("_unregister-instance",
                     "--node", getServerDirs().getServerParentDir().getName(),
                     getServerDirs().getServerName());
-        } else {
-            String newString = Strings.get("DeleteInstance.remoteError",
-                    programOpts.getHost(), "" + programOpts.getPort());
-            throw new CommandException(newString);
         }
     }
 
@@ -164,5 +171,23 @@ public class DeleteLocalInstanceCommand extends LocalInstanceCommand {
         } catch (CommandException ex) {
             return false;
         }
+    }
+
+    /**
+     * If the instance is not registered on DAS (server xml entry doesn't exist 
+     * in domain.xml), the get command will throw a CommandException
+     */
+    private boolean isRegisteredToDas() {
+        boolean isRegistered = false;
+        RemoteCommand rc = null;
+        String INSTANCE_DOTTED_NAME = "servers.server." + instanceName;
+        try {
+            rc = new RemoteCommand("get", this.programOpts, this.env);
+            rc.executeAndReturnOutput("get", INSTANCE_DOTTED_NAME);
+            isRegistered = true;
+        } catch (CommandException ce) {
+            isRegistered = false;
+        }
+        return isRegistered;
     }
 }
