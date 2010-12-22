@@ -193,11 +193,6 @@ public class CreateInstanceCommand implements AdminCommand {
             return;
         }
 
-        if (!validateDasOptions(context)) {
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            return;
-        }
-
         // First, update domain.xml by calling _register-instance
         CommandInvocation ci = cr.getCommandInvocation("_register-instance", report);
         ParameterMap map = new ParameterMap();
@@ -226,6 +221,11 @@ public class CreateInstanceCommand implements AdminCommand {
         }
 
         registerInstanceMessage = report.getMessage();
+
+        if (!validateDasOptions(context)) {
+            report.setActionExitCode(ActionReport.ExitCode.WARNING);
+            return;
+        }
 
         // Then go create the instance filesystem on the node
         createInstanceFilesystem(context);            
@@ -402,9 +402,9 @@ public class CreateInstanceCommand implements AdminCommand {
                 humanCommand, output);
 
         if (report.getActionExitCode() != ActionReport.ExitCode.SUCCESS) {
-            // something went wrong with the nonlocal command don't continue but set status to success
+            // something went wrong with the nonlocal command don't continue but set status to warning
             // because config was updated correctly or we would not be here.
-            report.setActionExitCode(ActionReport.ExitCode.SUCCESS);            
+            report.setActionExitCode(ActionReport.ExitCode.WARNING);            
             return;
         }
 
@@ -423,9 +423,12 @@ public class CreateInstanceCommand implements AdminCommand {
         } else {
             bootstrapSecureAdminRemotely();
         }
-             // something went wrong with the nonlocal command don't continue but set status to success
+        if (report.getActionExitCode() != ActionReport.ExitCode.SUCCESS) {
+
+             // something went wrong with the nonlocal command don't continue but set status to warning
             // because config was updated correctly or we would not be here.
-            report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+            report.setActionExitCode(ActionReport.ExitCode.WARNING);
+        }
     }
 
     /**
