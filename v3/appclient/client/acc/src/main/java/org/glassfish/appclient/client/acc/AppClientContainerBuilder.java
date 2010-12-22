@@ -80,9 +80,6 @@ import org.xml.sax.SAXParseException;
  */
 public class AppClientContainerBuilder implements AppClientContainer.Builder {
 
-    private static final String ORB_INITIAL_HOST_PROPERTYNAME = "org.omg.CORBA.ORBInitialHost";
-    private static final String ORB_INITIAL_PORT_PROPERTYNAME = "org.omg.CORBA.ORBInitialPort";
-    private static final String ORB_SSL_CLIENT_REQUIRED = "com.sun.CSIV2.ssl.client.required";
     private final static String ENDPOINTS_PROPERTY_NAME = "com.sun.appserv.iiop.endpoints";
 
     private static final LocalStringManager localStrings = new LocalStringManagerImpl(AppClientContainerBuilder.class);
@@ -229,21 +226,39 @@ public class AppClientContainerBuilder implements AppClientContainer.Builder {
             sb.append(ts.getAddress()).append(":").append(ts.getPort());
         }
 
+        /*
+         * If the user has explicitly defined the ORB-related properties, do
+         * not override those settings.
+         */
         if (targetServers.length == 1) {
-            System.setProperty(ORB_INITIAL_HOST_PROPERTYNAME, targetServers[0].getAddress());
-            System.setProperty(ORB_INITIAL_PORT_PROPERTYNAME, Integer.toString(targetServers[0].getPort()));
+            defineIfNotDefined(GlassFishORBHelper.OMG_ORB_INIT_HOST_PROPERTY,
+                    targetServers[0].getAddress());
+            defineIfNotDefined(GlassFishORBHelper.OMG_ORB_INIT_PORT_PROPERTY,
+                    Integer.toString(targetServers[0].getPort()));
         } else {
             /*
              * Currently, set a system property to specify multiple endpoints.
              */
-            System.setProperty(ENDPOINTS_PROPERTY_NAME, sb.toString());
+            defineIfNotDefined(ENDPOINTS_PROPERTY_NAME, sb.toString());
         }
 
         if (isSSLRequired(targetServers, containerProperties)) {
-            orbHelper.setCSIv2Prop(ORB_SSL_CLIENT_REQUIRED, "true");
+            orbHelper.setCSIv2Prop(GlassFishORBHelper.ORB_SSL_CLIENT_REQUIRED, "true");
         }
         logger.log(Level.CONFIG, "Using endpoint address(es): {0}", sb.toString());
 
+    }
+
+    /**
+     * Define the specified system property using the new value unless the
+     * property is already set.
+     * @param propName name of the property to check and, possibly, set
+     * @param newPropValue value to set if the property is not already set
+     */
+    private void defineIfNotDefined(final String propName, final String newPropValue) {
+        if (System.getProperty(propName) == null) {
+            System.setProperty(propName, newPropValue);
+        }
     }
 
     /**
