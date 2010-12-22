@@ -369,7 +369,7 @@ public abstract class GFLauncher {
         }
 
         List<String> cmds = null;
-        if (OS.isDarwin()) {
+        if ((OS.isDarwin()&&(!getInfo().isVerbose()))) {
             // On MacOS we need to start long running process with
             // StartupItemContext. See IT 12942
             cmds = new ArrayList<String>();
