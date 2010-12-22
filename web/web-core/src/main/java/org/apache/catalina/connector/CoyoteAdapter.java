@@ -77,7 +77,9 @@ import org.apache.catalina.core.ContainerBase;
 import org.apache.catalina.util.ServerInfo;
 import org.apache.catalina.util.StringManager;
 import org.glassfish.grizzly.config.ContextRootInfo;
+import org.glassfish.grizzly.http.server.AfterServiceListener;
 import org.glassfish.grizzly.http.server.HttpHandler;
+import org.glassfish.grizzly.http.server.Request.Note;
 import org.glassfish.grizzly.http.server.util.MappingData;
 import org.glassfish.grizzly.http.util.ByteChunk;
 import org.glassfish.grizzly.http.util.CharChunk;
@@ -98,7 +100,6 @@ public class CoyoteAdapter extends HttpHandler {
     private static Logger log = Logger.getLogger(CoyoteAdapter.class.getName());
 
     // -------------------------------------------------------------- Constants
-
     private static final String POWERED_BY = "Servlet/3.0 JSP/2.2 " +
             "(" + ServerInfo.getServerInfo() + " Java/" +
             System.getProperty("java.vm.vendor") + "/" +
@@ -109,7 +110,7 @@ public class CoyoteAdapter extends HttpHandler {
         Boolean.valueOf(System.getProperty("v3.grizzly.useMapper", "true"));
     
     
-    public static final int ADAPTER_NOTES = 1;
+//    public static final int ADAPTER_NOTES = 1;
 
     static final String JVM_ROUTE = System.getProperty("jvmRoute");
 
@@ -131,7 +132,16 @@ public class CoyoteAdapter extends HttpHandler {
     
     // Make sure this value is always aligned with {@link ContainerMapper}
     // (@see com.sun.enterprise.v3.service.impl.ContainerMapper)
-    private final static int MAPPING_DATA = 12;
+    protected final static Note<MappingData> MAPPING_DATA =
+            org.glassfish.grizzly.http.server.Request.<MappingData>createNote("MappingData");
+
+    static final Note<Request> CATALINA_REQUEST_NOTE =
+            org.glassfish.grizzly.http.server.Request.createNote(Request.class.getName());
+    static final Note<Response> CATALINA_RESPONSE_NOTE =
+            org.glassfish.grizzly.http.server.Request.createNote(Response.class.getName());
+
+    static final CatalinaAfterServiceListener catalinaAfterServiceListener =
+            new CatalinaAfterServiceListener();
     
     // ----------------------------------------------------------- Constructors
 
@@ -183,8 +193,8 @@ public class CoyoteAdapter extends HttpHandler {
 
         res.getResponse().setAllowCustomReasonPhrase(Constants.USE_CUSTOM_STATUS_MSG_IN_HEADER);
 
-        Request request = (Request) req.getNote(ADAPTER_NOTES);
-        Response response = (Response) res.getNote(ADAPTER_NOTES);
+        Request request = req.getNote(CATALINA_REQUEST_NOTE);
+        Response response = req.getNote(CATALINA_RESPONSE_NOTE);
         
         // Grizzly already parsed, decoded, and mapped the request.
         // Let's re-use this info here, before firing the
@@ -206,8 +216,9 @@ public class CoyoteAdapter extends HttpHandler {
             response.setRequest(request);
 
             // Set as notes
-            req.setNote(ADAPTER_NOTES, request);
-            res.setNote(ADAPTER_NOTES, response);
+            req.setNote(CATALINA_REQUEST_NOTE, request);
+            req.setNote(CATALINA_RESPONSE_NOTE, response);
+//            res.setNote(ADAPTER_NOTES, response);
 
             // Set query string encoding
             req.getRequest().getRequestURIRef().setDefaultURIEncoding(Charset.forName(connector.getURIEncoding()));
@@ -220,6 +231,8 @@ public class CoyoteAdapter extends HttpHandler {
             }
         }
 
+        req.addAfterServiceListener(catalinaAfterServiceListener);
+        
         try {
             doService(req, request, res, response);
         } catch (IOException e) {
@@ -337,9 +350,9 @@ public class CoyoteAdapter extends HttpHandler {
         req.action( ActionCode.ACTION_POST_REQUEST , null);
          */
         // START GlassFish Issue 798
-        if (compatWithTomcat) {
-            afterService(req, res);
-        }
+//        if (compatWithTomcat) {
+//            afterService(req, res);
+//        }
         // END GlassFish Issue 798    
     }
 
@@ -348,35 +361,35 @@ public class CoyoteAdapter extends HttpHandler {
      * Finish the response and close the connection based on the connection
      * header.
      */
-    @Override
-    public void afterService(org.glassfish.grizzly.http.server.Request req,
-                             org.glassfish.grizzly.http.server.Response res)
-            throws Exception{
-
-        Request request = (Request) req.getNote(ADAPTER_NOTES);
-        Response response = (Response) res.getNote(ADAPTER_NOTES);
-        
-        if ( request == null || response == null) return;
-        
-        try{
-            if (!res.isSuspended()){
-                response.finishResponse();
-                req.action( ActionCode.ACTION_POST_REQUEST , null);
-            } else {
-                if (request != null) {
-                    request.onAfterService();
-                }
-            }
-        } catch (Throwable t) {
-            log.log(Level.SEVERE, sm.getString("coyoteAdapter.service"), t);
-        } finally {
-            if (!res.isSuspended()){
-                // Recycle the wrapper request and response
-                request.recycle();
-                response.recycle();
-            }
-        }
-    }
+//    @Override
+//    public void afterService(org.glassfish.grizzly.http.server.Request req,
+//                             org.glassfish.grizzly.http.server.Response res)
+//            throws Exception{
+//
+//        Request request = (Request) req.getNote(ADAPTER_NOTES);
+//        Response response = (Response) res.getNote(ADAPTER_NOTES);
+//
+//        if ( request == null || response == null) return;
+//
+//        try{
+//            if (!res.isSuspended()){
+//                response.finishResponse();
+//                req.action( ActionCode.ACTION_POST_REQUEST , null);
+//            } else {
+//                if (request != null) {
+//                    request.onAfterService();
+//                }
+//            }
+//        } catch (Throwable t) {
+//            log.log(Level.SEVERE, sm.getString("coyoteAdapter.service"), t);
+//        } finally {
+//            if (!res.isSuspended()){
+//                // Recycle the wrapper request and response
+//                request.recycle();
+//                response.recycle();
+//            }
+//        }
+//    }
     // END GlassFish Issue 798
     // ------------------------------------------------------ Protected Methods
 
@@ -490,7 +503,7 @@ public class CoyoteAdapter extends HttpHandler {
  
         if (compatWithTomcat || !v3Enabled) {
             /*mod_jk*/
-            connector.getMapper().map(req.getServerName(), decodedURI,
+            connector.getMapper().map(req.getRequest().serverName(), decodedURI,
                                   request.getMappingData());
             MappingData md = request.getMappingData();
             req.setNote(MAPPING_DATA, md);
@@ -503,7 +516,7 @@ public class CoyoteAdapter extends HttpHandler {
             // for an Adapter other than the CoyoteAdapter
             final HttpHandler toInvoke = ((ContextRootInfo) context).getHttpHandler();
             toInvoke.service(req, res);
-            toInvoke.afterService(req, res);
+//            toInvoke.afterService(req, res);
             return false;
         }
 
@@ -975,5 +988,23 @@ public class CoyoteAdapter extends HttpHandler {
      */
     public int getPort() {
         return connector.getPort();
-    }       
+    }
+
+    /**
+     * AfterServiceListener, which is responsible for recycle catalina request and response
+     * objects.
+     */
+    static final class CatalinaAfterServiceListener implements AfterServiceListener {
+
+        @Override
+        public void onAfterService(final org.glassfish.grizzly.http.server.Request request) {
+            final Request servletRequest = request.getNote(CATALINA_REQUEST_NOTE);
+            final Response servletResponse = request.getNote(CATALINA_RESPONSE_NOTE);
+
+            if (servletRequest != null) {
+                servletRequest.recycle();
+                servletResponse.recycle();
+            }
+        }
+    }
 }
