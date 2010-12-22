@@ -111,22 +111,19 @@ public class InstanceHandler {
             @HandlerInput(name="target",   type=String.class, required=true),
             @HandlerInput(name="attrs", type=Map.class, required=false),
             @HandlerInput(name="options",   type=List.class),
-            @HandlerInput(name="deleteProfileEndpoint",   type=String.class)
+            @HandlerInput(name="deleteProfileEndpoint",   type=String.class),
+            @HandlerInput(name="origList",   type=List.class)
             } )
    public static void saveJvmOptionValues(HandlerContext handlerCtx) {
+        String endpoint = (String) handlerCtx.getInputValue("endpoint");
+        String target = (String) handlerCtx.getInputValue("target");
         try {
-            String endpoint = (String) handlerCtx.getInputValue("endpoint");
-            List<Map<String, String>> options = (List) handlerCtx.getInputValue("options");
+            List<Map> options = (List<Map>) handlerCtx.getInputValue("options");
             Map<String, Object> payload = new HashMap<String, Object>();
-            payload.put("target", (String) handlerCtx.getInputValue("target"));
             if (endpoint.contains("profiler")) {
                 payload.put("profiler", "true");
             }
-            for (Map<String, String> oneRow : options) {
-                String str = oneRow.get(PROPERTY_VALUE);
-                ArrayList kv = getKeyValuePair(str);
-                payload.put((String)kv.get(0), kv.get(1));
-            }
+            prepareJvmOptionPayload(payload, target, options);
             RestUtil.restRequest(endpoint, payload, "POST", null, false, true);
         } catch (Exception ex) {
             //If this is called during create profile, we want to delete the profile which was created, and stay at the same
@@ -137,9 +134,31 @@ public class InstanceHandler {
                 attrMap.put("target", (String) handlerCtx.getInputValue("target"));
                 RestUtil.restRequest(deleteProfileEndpoint, attrMap, "DELETE", null, false, false);
             }
+
+            //If the origList is not empty,  we want to restore it. Since POST remove all options first and then add it back. As a
+            //result, all previous existing option is gone.
+            List<Map> origList = (List<Map>) handlerCtx.getInputValue("origList");
+            Map<String, Object> payload1 = new HashMap<String, Object>();
+            if (endpoint.contains("profiler")) {
+                payload1.put("profiler", "true");
+            }
+            if (origList != null || origList.size()>0){
+                prepareJvmOptionPayload(payload1, target, origList);
+                RestUtil.restRequest(endpoint, payload1, "POST", null, false, false);
+            }
             GuiUtil.handleException(handlerCtx, ex);
         }
     }
+
+    private static void prepareJvmOptionPayload(Map payload, String target, List<Map> options){
+        payload.put("target", target);
+        for (Map oneRow : options) {
+            String str = (String) oneRow.get(PROPERTY_VALUE);
+            ArrayList kv = getKeyValuePair(str);
+            payload.put((String)kv.get(0), kv.get(1));
+        }
+    }
+
 
     public static ArrayList getKeyValuePair(String str) {
         ArrayList list = new ArrayList(2);

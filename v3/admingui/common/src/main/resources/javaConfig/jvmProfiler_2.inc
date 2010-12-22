@@ -87,7 +87,7 @@
                             onlyUseAttrs="#{pageSession.onlyUseAttrs}");
                     getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                     getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                    saveJvmOptionValues(endpoint="#{pageSession.profilerUrl}/jvm-options", target="#{pageSession.configName}", options="$attribute{newList}");
+                    saveJvmOptionValues(endpoint="#{pageSession.profilerUrl}/jvm-options", target="#{pageSession.configName}", options="$attribute{newList}" , origList="#{pageSession.origList}");
                     prepareSuccessfulMsg();
                     gf.redirect(page="#{selfPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}&configName=#{pageSession.configName}");
                 />

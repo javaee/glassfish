@@ -63,13 +63,14 @@
             setPageSessionAttribute(key="rest-api" value="true");
             //REST-TODO take care of property table
             getJvmOptionsValues(endpoint="#{pageSession.parentUrl}/java-config/jvm-options.json"  result=>$attribute{tableList});
+            gf.listCombine(list="#{null}" list2="$attribute{tableList}", result="#{pageSession.origList}");
             setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/javaConfig/serverJvmOptions.jsf?name=#{pageSession.Name}&configName=#{pageSession.configName}");
              //set the following for including buttons.inc
             setPageSessionAttribute(key="edit" value="#{true}" );
             setPageSessionAttribute(key="showDefaultButton" value="#{false}" );
             setPageSessionAttribute(key="showCancelButton" value="#{false}" );
             setPageSessionAttribute(key="hasPropertySheet" value="#{false}" );
-             setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
+            setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
     />
     </event>
-         <sun:form id="propertyForm">
+    <sun:form id="propertyForm">

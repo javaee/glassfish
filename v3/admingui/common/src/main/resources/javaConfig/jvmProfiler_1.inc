@@ -69,6 +69,7 @@
         if(#{edit}) {
             gf.getEntityAttrs(endpoint="#{pageSession.parentUrl}/java-config/profiler.json", valueMap="#{pageSession.valueMap}");
             getJvmOptionsValues(endpoint="#{pageSession.profilerUrl}/jvm-options.json"  result=>$attribute{tableList});
+            gf.listCombine(list="#{null}" list2="$attribute{tableList}", result="#{pageSession.origList}");
         }
         setPageSessionAttribute(key="onlyUseAttrs" value={"name", "target", "classpath", "enabled","nativeLibraryPath"})
         setPageSessionAttribute(key="convertToFalseList" value={"enabled"});

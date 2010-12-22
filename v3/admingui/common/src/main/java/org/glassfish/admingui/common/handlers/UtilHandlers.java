@@ -410,7 +410,9 @@ public class UtilHandlers {
     	input={
             @HandlerInput(name="list", type=List.class, required=true),
             @HandlerInput(name="list2", type=List.class, required=true)
-        }
+        },
+        output={
+            @HandlerOutput(name="result", type=List.class)}
     )
     public static void listCombine(HandlerContext handlerCtx) {
         List list = (List)handlerCtx.getInputValue("list");
@@ -419,11 +421,12 @@ public class UtilHandlers {
             list = new ArrayList();            
         }
         if (list2 == null) {
-            return;
+            handlerCtx.setOutputValue("result", list);
         }
         for(Object one : list2) {
                 list.add(one);
         }
+        handlerCtx.setOutputValue("result", list);
     }
 
     /**
