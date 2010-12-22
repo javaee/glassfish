@@ -80,7 +80,8 @@ import org.jvnet.hk2.component.Habitat;
 @I18n("list.iiop.listeners")
 @ExecuteOn(value={RuntimeType.DAS})
 @TargetType(value={CommandTarget.CLUSTER,CommandTarget.CONFIG,
-    CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE }
+    CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,
+    CommandTarget.CLUSTERED_INSTANCE, CommandTarget.DOMAIN }
 )
 public class ListIiopListeners implements AdminCommand {
 

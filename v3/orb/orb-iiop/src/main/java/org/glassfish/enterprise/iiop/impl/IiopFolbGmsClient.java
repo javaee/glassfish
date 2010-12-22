@@ -342,26 +342,22 @@ public class IiopFolbGmsClient implements CallBack {
         final int weight = Integer.parseInt( server.getLbWeight() ) ;
         fineLog( "getClusterInstanceInfo: weight {0}", weight ) ;
 
-        String hostName = null ;
-
-        String nodeName = server.getNodeRef() ;
-        Node node = null;
-        if (nodes != null) nodes.getNode(nodeName);
-        if (node != null && node.isLocal()) {
-            try {
-                hostName = InetAddress.getLocalHost().getHostName() ;
-            } catch (UnknownHostException exc) {
-                fineLog( "getClusterInstanceInfo: caught exception for localhost lookup {0}",
-                    exc )  ;
-            }
-        } else if (nodes != null) {
+        final String nodeName = server.getNodeRef() ;
+        String hostName = nodeName ;
+        if (nodes != null) {
+            Node node = nodes.getNode( nodeName ) ;
             if (node != null) {
-                hostName = node.getNodeHost() ;
+                if (node.isLocal()) {
+                    try {
+                        hostName = InetAddress.getLocalHost().getHostName() ;
+                    } catch (UnknownHostException exc) {
+                        fineLog( "getClusterInstanceInfo: caught exception for localhost lookup {0}",
+                            exc )  ;
+                    }
+                } else {
+                    hostName = node.getNodeHost() ;
+                }
             }
-        }
-
-        if (hostName == null) {
-            hostName = nodeName ;
         }
 
         fineLog( "getClusterInstanceInfo: host {0}", hostName ) ;
