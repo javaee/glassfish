@@ -87,7 +87,7 @@ import org.glassfish.grizzly.http.util.C2BConverter;
 public class OutputBuffer extends Writer
     implements ByteChunk.ByteOutputChannel {
 
-    private static Logger log = Logger.getLogger(OutputBuffer.class.getName());
+    private static final Logger log = Logger.getLogger(OutputBuffer.class.getName());
 
     // -------------------------------------------------------------- Constants
 
@@ -364,21 +364,24 @@ public class OutputBuffer extends Writer
         doFlush = true;
         if (initial){
             addSessionCookies();
-            response.flush();
-            initial = false;
+//            response.flush();
+//            initial = false;
         }
         if (bb.getLength() > 0) {
             bb.flushBuffer();
         }
         doFlush = false;
 
-        if (realFlush) {
-            response.action(ActionCode.ACTION_CLIENT_FLUSH, response);
+        if (realFlush || initial) {
+            response.flush();
+
+            initial = false;
+//            response.action(ActionCode.ACTION_CLIENT_FLUSH, response);
             // If some exception occurred earlier, or if some IOE occurred
             // here, notify the servlet with an IOE
-            if (response.isExceptionPresent()) {
-                throw new ClientAbortException(response.getErrorException());
-            }
+//            if (response.isExceptionPresent()) {
+//                throw new ClientAbortException(response.getErrorException());
+//            }
         }
 
     }
@@ -414,7 +417,8 @@ public class OutputBuffer extends Writer
             // real write to the adapter
             outputChunk.setBytes(buf, off, cnt);
             try {
-                response.doWrite(outputChunk);
+                response.getOutputStream().write(buf, off, cnt);
+//                response.doWrite(outputChunk);
             } catch (IOException e) {
                 // An IOException on a write is almost always due to
                 // the remote client aborting the request.  Wrap this

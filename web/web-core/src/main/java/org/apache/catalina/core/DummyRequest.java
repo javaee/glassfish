@@ -285,8 +285,8 @@ public class DummyRequest implements HttpRequest, HttpServletRequest {
     public Cookie[] getCookies() { return null; }
     public long getDateHeader(String name) { return -1; }
     public String getHeader(String name) { return null; }
-    public Iterable<String> getHeaders(String name) { return null; }
-    public Iterable<String> getHeaderNames() { return null; }
+    public Enumeration<String> getHeaders(String name) { return null; }
+    public Enumeration<String> getHeaderNames() { return null; }
     public int getIntHeader(String name) { return -1; }
     /* START PWC 4707989
     public String getMethod() { return null; }

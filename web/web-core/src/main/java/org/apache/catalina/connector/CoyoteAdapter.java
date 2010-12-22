@@ -181,7 +181,7 @@ public class CoyoteAdapter extends HttpHandler {
                         org.glassfish.grizzly.http.server.Response res)
             throws Exception {
 
-        res.setAllowCustomReasonPhrase(Constants.USE_CUSTOM_STATUS_MSG_IN_HEADER);
+        res.getResponse().setAllowCustomReasonPhrase(Constants.USE_CUSTOM_STATUS_MSG_IN_HEADER);
 
         Request request = (Request) req.getNote(ADAPTER_NOTES);
         Response response = (Response) res.getNote(ADAPTER_NOTES);
@@ -392,15 +392,15 @@ public class CoyoteAdapter extends HttpHandler {
         // XXX the processor may have set a correct scheme and port prior to this point, 
         // in ajp13 protocols dont make sense to get the port from the connector...
         // otherwise, use connector configuration
-        if (req.getScheme() != null) {
-            // use processor specified scheme to determine secure state
-            request.setSecure("https".equals(req.getScheme()));
-        } else {
-            // use connector scheme and secure configuration, (defaults to
-            // "http" and false respectively)
-            req.setScheme(connector.getScheme());
-            request.setSecure(connector.getSecure());
-        }
+//        if (req.getScheme() != null) {
+//            // use processor specified scheme to determine secure state
+//            request.setSecure("https".equals(req.getScheme()));
+//        } else {
+//            // use connector scheme and secure configuration, (defaults to
+//            // "http" and false respectively)
+//            req.setScheme(connector.getScheme());
+//            request.setSecure(connector.getSecure());
+//        }
 
         // FIXME: the code below doesnt belongs to here, 
         // this is only have sense 
@@ -419,14 +419,14 @@ public class CoyoteAdapter extends HttpHandler {
         // URI decoding
         DataChunk decodedURI = req.getRequest().getRequestURIRef().getDecodedRequestURIBC();
         if (compatWithTomcat || !v3Enabled) {           
-            decodedURI.duplicate(req.requestURI());
-            try {
-              req.getURLDecoder().convert(decodedURI, false);
-            } catch (IOException ioe) {
-              res.setStatus(400);
-              res.setMessage("Invalid URI: " + ioe.getMessage());
-              return false;
-            }
+//            decodedURI.duplicate(req.requestURI());
+//            try {
+//              req.getURLDecoder().convert(decodedURI, false);
+//            } catch (IOException ioe) {
+//              res.setStatus(400);
+//              res.setMessage("Invalid URI: " + ioe.getMessage());
+//              return false;
+//            }
 
             /* GlassFish Issue 2339
             // Normalize decoded URI
@@ -457,16 +457,16 @@ public class CoyoteAdapter extends HttpHandler {
             parseSessionId(req, request);
              */
             // START CR 6309511
-            // URI character decoding
-            request.convertURI(decodedURI);
+//             URI character decoding
+//            request.convertURI(decodedURI);
 
             // START GlassFish Issue 2339
             // Normalize decoded URI
-            if (!normalize(decodedURI)) {
-                res.setStatus(400);
-                res.setMessage("Invalid URI");
-                return false;
-            }
+//            if (!normalize(decodedURI)) {
+//                res.setStatus(400);
+//                res.setMessage("Invalid URI");
+//                return false;
+//            }
             // END GlassFish Issue 2339
         }
         // END CR 6309511

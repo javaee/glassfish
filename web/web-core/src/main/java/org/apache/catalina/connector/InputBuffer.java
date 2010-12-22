@@ -87,7 +87,7 @@ public class InputBuffer extends Reader
     implements ByteInputChannel, CharChunk.CharInputChannel,
                CharChunk.CharOutputChannel {
 
-    private static Logger log = Logger.getLogger(InputBuffer.class.getName());
+    private static final Logger log = Logger.getLogger(InputBuffer.class.getName());
 
     /**
      * The string manager for this package.
@@ -332,8 +332,15 @@ public class InputBuffer extends Reader
             return -1;
 
         state = BYTE_STATE;
-        return coyoteRequest.getReader(true).read(bb);
+//        bb.setBytes(cbuf, off, len);
 
+        final int readBytes = coyoteRequest.getInputStream(true).read(cbuf, off, len);
+
+        if (readBytes >= 0) {
+            bb.setBytes(cbuf, off, readBytes);
+        }
+
+        return readBytes;
     }
 
 

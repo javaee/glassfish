@@ -144,6 +144,7 @@ import org.glassfish.grizzly.http.server.util.MappingData;
 import org.glassfish.grizzly.http.util.B2CConverter;
 import org.glassfish.grizzly.http.util.ByteChunk;
 import org.glassfish.grizzly.http.util.CharChunk;
+import org.glassfish.grizzly.http.util.Chunk;
 import org.glassfish.grizzly.http.util.DataChunk;
 import org.glassfish.grizzly.http.util.FastHttpDateFormat;
 import org.glassfish.grizzly.http.util.MessageBytes;
@@ -1252,16 +1253,16 @@ public class Request
      */
     @Override
     public Locale getLocale() {
-
-        if (!localesParsed) {
-            parseLocales();
-        }
-
-        if (locales.size() > 0) {
-            return (Locale) locales.get(0);
-        } else {
-            return defaultLocale;
-        }
+        return coyoteRequest.getLocale();
+//        if (!localesParsed) {
+//            parseLocales();
+//        }
+//
+//        if (locales.size() > 0) {
+//            return (Locale) locales.get(0);
+//        } else {
+//            return defaultLocale;
+//        }
 
     }
 
@@ -1273,17 +1274,17 @@ public class Request
      */
     @Override
     public Enumeration<Locale> getLocales() {
-
-        if (!localesParsed) {
-            parseLocales();
-        }
-
-        if (locales.size() > 0) {
-            return new Enumerator(locales);
-        }
-        ArrayList results = new ArrayList();
-        results.add(defaultLocale);
-        return new Enumerator(results);
+        return new Enumerator(coyoteRequest.getLocales());
+//        if (!localesParsed) {
+//            parseLocales();
+//        }
+//
+//        if (locales.size() > 0) {
+//            return new Enumerator(locales);
+//        }
+//        ArrayList results = new ArrayList();
+//        results.add(defaultLocale);
+//        return new Enumerator(results);
     }
 
     /**
@@ -1447,8 +1448,8 @@ public class Request
                 InetAddress inet = socket.getInetAddress();
                 remoteAddr = inet.getHostAddress();
             } else {
-                coyoteRequest.action(ActionCode.ACTION_REQ_HOST_ADDR_ATTRIBUTE, coyoteRequest);
-                remoteAddr = coyoteRequest.remoteAddr().toString();
+//                coyoteRequest.action(ActionCode.ACTION_REQ_HOST_ADDR_ATTRIBUTE, coyoteRequest);
+                remoteAddr = coyoteRequest.getRemoteAddr();
             }
         }
         return remoteAddr;
@@ -1484,7 +1485,7 @@ public class Request
                 InetAddress inet = socket.getInetAddress();
                 remoteHost = inet.getHostName();
             } else {
-                coyoteRequest.action(ActionCode.ACTION_REQ_HOST_ATTRIBUTE, coyoteRequest);
+//                coyoteRequest.action(ActionCode.ACTION_REQ_HOST_ATTRIBUTE, coyoteRequest);
                 remoteHost = coyoteRequest.getRemoteHost();
             }
         }
@@ -1501,7 +1502,7 @@ public class Request
             if (socket != null) {
                 remotePort = socket.getPort();
             } else {
-                coyoteRequest.action(ActionCode.ACTION_REQ_REMOTEPORT_ATTRIBUTE, coyoteRequest);
+//                coyoteRequest.action(ActionCode.ACTION_REQ_REMOTEPORT_ATTRIBUTE, coyoteRequest);
                 remotePort = coyoteRequest.getRemotePort();
             }
         }
@@ -1519,7 +1520,7 @@ public class Request
                 InetAddress inet = socket.getLocalAddress();
                 localName = inet.getHostName();
             } else {
-                coyoteRequest.action(ActionCode.ACTION_REQ_LOCAL_NAME_ATTRIBUTE, coyoteRequest);
+//                coyoteRequest.action(ActionCode.ACTION_REQ_LOCAL_NAME_ATTRIBUTE, coyoteRequest);
                 localName = coyoteRequest.getLocalName();
             }
         }
@@ -1537,7 +1538,7 @@ public class Request
                 InetAddress inet = socket.getLocalAddress();
                 localAddr = inet.getHostAddress();
             } else {
-                coyoteRequest.action(ActionCode.ACTION_REQ_LOCAL_ADDR_ATTRIBUTE, coyoteRequest);
+//                coyoteRequest.action(ActionCode.ACTION_REQ_LOCAL_ADDR_ATTRIBUTE, coyoteRequest);
                 localAddr = coyoteRequest.getLocalAddr();
             }
         }
@@ -1554,7 +1555,7 @@ public class Request
             if (socket != null) {
                 localPort = socket.getLocalPort();
             } else {
-                coyoteRequest.action(ActionCode.ACTION_REQ_LOCALPORT_ATTRIBUTE, coyoteRequest);
+//                coyoteRequest.action(ActionCode.ACTION_REQ_LOCALPORT_ATTRIBUTE, coyoteRequest);
                 localPort = coyoteRequest.getLocalPort();
             }
         }
@@ -2449,16 +2450,16 @@ public class Request
      * @param name Name of the requested header
      */
     @Override
-    public Iterable<String> getHeaders(String name) {
-        return coyoteRequest.getHeaders(name);
+    public Enumeration<String> getHeaders(String name) {
+        return new Enumerator(coyoteRequest.getHeaders(name).iterator());
     }
 
     /**
      * Return the names of all headers received with this request.
      */
     @Override
-    public Iterable<String> getHeaderNames() {
-        return coyoteRequest.getHeaderNames();
+    public Enumeration<String> getHeaderNames() {
+        return new Enumerator(coyoteRequest.getHeaderNames().iterator());
     }
 
     /**
@@ -3188,92 +3189,92 @@ public class Request
     /**
      * Parse request parameters.
      */
-    protected void parseRequestParameters() {
-
-        /* SJSAS 4936855
-        requestParametersParsed = true;
-         */
-
-        Parameters parameters = coyoteRequest.getParameters();
-
-        // getCharacterEncoding() may have been overridden to search for
-        // hidden form field containing request encoding
-        String enc = getCharacterEncoding();
-        // START SJSAS 4936855
-        // Delay updating requestParametersParsed to TRUE until
-        // after getCharacterEncoding() has been called, because
-        // getCharacterEncoding() may cause setCharacterEncoding() to be
-        // called, and the latter will ignore the specified encoding if
-        // requestParametersParsed is TRUE
-        requestParametersParsed = true;
-        // END SJSAS 4936855
-        if (enc != null) {
-            parameters.setEncoding(enc);
-            parameters.setQueryStringEncoding(enc);
-        } else {
-            parameters.setEncoding(org.glassfish.grizzly.http.server.Constants.DEFAULT_CHARACTER_ENCODING);
-            parameters.setQueryStringEncoding(org.glassfish.grizzly.http.server.Constants.DEFAULT_CHARACTER_ENCODING);
-        }
-
-        parameters.handleQueryParameters();
-
-        if (usingInputStream || usingReader) {
-            return;
-        }
-
-        if (!"POST".equalsIgnoreCase(getMethod())) {
-            return;
-        }
-
-        String contentType = getContentType();
-        if (contentType == null) {
-            contentType = "";
-        }
-        int semicolon = contentType.indexOf(';');
-        if (semicolon >= 0) {
-            contentType = contentType.substring(0, semicolon).trim();
-        } else {
-            contentType = contentType.trim();
-        }
-        if (!"application/x-www-form-urlencoded".equals(contentType)) {
-            return;
-        }
-
-        int len = getContentLength();
-
-        if (len > 0) {
-            int maxPostSize = ((Connector) connector).getMaxPostSize();
-            if (maxPostSize > 0 && len > maxPostSize) {
-                log(sm.getString("coyoteRequest.postTooLarge"));
-                throw new IllegalStateException("Post too large");
-            }
-            try {
-                /* SJSAS 6346738
-                byte[] formData = null;
-                if (len < CACHED_POST_LEN) {
-                if (postData == null)
-                postData = new byte[CACHED_POST_LEN];
-                formData = postData;
-                } else {
-                formData = new byte[len];
-                }
-                int actualLen = readPostBody(formData, len);
-                if (actualLen == len) {
-                parameters.processParameters(formData, 0, len);
-                }
-                 */
-                // START SJSAS 6346738
-                byte[] formData = getPostBody();
-                if (formData != null) {
-                    parameters.processParameters(formData, 0, len);
-                }
-                // END SJSAS 6346738
-            } catch (Throwable t) {
-                ; // Ignore
-            }
-        }
-
-    }
+//    protected void parseRequestParameters() {
+//
+//        /* SJSAS 4936855
+//        requestParametersParsed = true;
+//         */
+//
+//        Parameters parameters = coyoteRequest.getParameters();
+//
+//        // getCharacterEncoding() may have been overridden to search for
+//        // hidden form field containing request encoding
+//        String enc = getCharacterEncoding();
+//        // START SJSAS 4936855
+//        // Delay updating requestParametersParsed to TRUE until
+//        // after getCharacterEncoding() has been called, because
+//        // getCharacterEncoding() may cause setCharacterEncoding() to be
+//        // called, and the latter will ignore the specified encoding if
+//        // requestParametersParsed is TRUE
+//        requestParametersParsed = true;
+//        // END SJSAS 4936855
+//        if (enc != null) {
+//            parameters.setEncoding(enc);
+//            parameters.setQueryStringEncoding(enc);
+//        } else {
+//            parameters.setEncoding(org.glassfish.grizzly.http.server.Constants.DEFAULT_CHARACTER_ENCODING);
+//            parameters.setQueryStringEncoding(org.glassfish.grizzly.http.server.Constants.DEFAULT_CHARACTER_ENCODING);
+//        }
+//
+//        parameters.handleQueryParameters();
+//
+//        if (usingInputStream || usingReader) {
+//            return;
+//        }
+//
+//        if (!"POST".equalsIgnoreCase(getMethod())) {
+//            return;
+//        }
+//
+//        String contentType = getContentType();
+//        if (contentType == null) {
+//            contentType = "";
+//        }
+//        int semicolon = contentType.indexOf(';');
+//        if (semicolon >= 0) {
+//            contentType = contentType.substring(0, semicolon).trim();
+//        } else {
+//            contentType = contentType.trim();
+//        }
+//        if (!"application/x-www-form-urlencoded".equals(contentType)) {
+//            return;
+//        }
+//
+//        int len = getContentLength();
+//
+//        if (len > 0) {
+//            int maxPostSize = ((Connector) connector).getMaxPostSize();
+//            if (maxPostSize > 0 && len > maxPostSize) {
+//                log(sm.getString("coyoteRequest.postTooLarge"));
+//                throw new IllegalStateException("Post too large");
+//            }
+//            try {
+//                /* SJSAS 6346738
+//                byte[] formData = null;
+//                if (len < CACHED_POST_LEN) {
+//                if (postData == null)
+//                postData = new byte[CACHED_POST_LEN];
+//                formData = postData;
+//                } else {
+//                formData = new byte[len];
+//                }
+//                int actualLen = readPostBody(formData, len);
+//                if (actualLen == len) {
+//                parameters.processParameters(formData, 0, len);
+//                }
+//                 */
+//                // START SJSAS 6346738
+//                byte[] formData = getPostBody();
+//                if (formData != null) {
+//                    parameters.processParameters(formData, 0, len);
+//                }
+//                // END SJSAS 6346738
+//            } catch (Throwable t) {
+//                ; // Ignore
+//            }
+//        }
+//
+//    }
 
     // START SJSAS 6346738
     /**
@@ -3323,128 +3324,128 @@ public class Request
     /**
      * Parse request locales.
      */
-    protected void parseLocales() {
-
-        localesParsed = true;
-        for (String value : getHeaders("accept-language")) {
-            parseLocalesHeader(value);
-        }
-
-    }
+//    protected void parseLocales() {
+//
+//        localesParsed = true;
+//        for (String value : getHeaders("accept-language")) {
+//            parseLocalesHeader(value);
+//        }
+//
+//    }
 
     /**
      * Parse accept-language header value.
      */
-    protected void parseLocalesHeader(String value) {
-
-        // Store the accumulated languages that have been requested in
-        // a local collection, sorted by the quality value (so we can
-        // add Locales in descending order).  The values will be ArrayLists
-        // containing the corresponding Locales to be added
-        TreeMap locales = new TreeMap();
-
-        // Preprocess the value to remove all whitespace
-        int white = value.indexOf(' ');
-        if (white < 0) {
-            white = value.indexOf('\t');
-        }
-        if (white >= 0) {
-            StringBuilder sb = new StringBuilder();
-            int len = value.length();
-            for (int i = 0; i < len; i++) {
-                char ch = value.charAt(i);
-                if (ch != ' ' && ch != '\t') {
-                    sb.append(ch);
-                }
-            }
-            value = sb.toString();
-        }
-
-        // Process each comma-delimited language specification
-        parser.setString(value);        // ASSERT: parser is available to us
-        int length = parser.getLength();
-        while (true) {
-
-            // Extract the next comma-delimited entry
-            int start = parser.getIndex();
-            if (start >= length) {
-                break;
-            }
-            int end = parser.findChar(',');
-            String entry = parser.extract(start, end).trim();
-            parser.advance();   // For the following entry
-
-            // Extract the quality factor for this entry
-            double quality = 1.0;
-            int semi = entry.indexOf(";q=");
-            if (semi >= 0) {
-                try {
-                    quality = Double.parseDouble(entry.substring(semi + 3));
-                } catch (NumberFormatException e) {
-                    quality = 0.0;
-                }
-                entry = entry.substring(0, semi);
-            }
-
-            // Skip entries we are not going to keep track of
-            if (quality < 0.00005) {
-                continue;       // Zero (or effectively zero) quality factors
-            }
-            if ("*".equals(entry)) {
-                continue;       // FIXME - "*" entries are not handled
-            }
-            // Extract the language and country for this entry
-            String language = null;
-            String country = null;
-            String variant = null;
-            int dash = entry.indexOf('-');
-            if (dash < 0) {
-                language = entry;
-                country = "";
-                variant = "";
-            } else {
-                language = entry.substring(0, dash);
-                country = entry.substring(dash + 1);
-                int vDash = country.indexOf('-');
-                if (vDash > 0) {
-                    String cTemp = country.substring(0, vDash);
-                    variant = country.substring(vDash + 1);
-                    country = cTemp;
-                } else {
-                    variant = "";
-                }
-            }
-
-            if (!isAlpha(language) || !isAlpha(country) || !isAlpha(variant)) {
-                continue;
-            }
-
-            // Add a new Locale to the list of Locales for this quality level
-            Locale locale = new Locale(language, country, variant);
-            Double key = new Double(-quality);  // Reverse the order
-            ArrayList values = (ArrayList) locales.get(key);
-            if (values == null) {
-                values = new ArrayList();
-                locales.put(key, values);
-            }
-            values.add(locale);
-
-        }
-
-        // Process the quality values in highest->lowest order (due to
-        // negating the Double value when creating the key)
-        Iterator keys = locales.keySet().iterator();
-        while (keys.hasNext()) {
-            Double key = (Double) keys.next();
-            ArrayList list = (ArrayList) locales.get(key);
-            Iterator values = list.iterator();
-            while (values.hasNext()) {
-                Locale locale = (Locale) values.next();
-                addLocale(locale);
-            }
-        }
-
-    }
+//    protected void parseLocalesHeader(String value) {
+//
+//        // Store the accumulated languages that have been requested in
+//        // a local collection, sorted by the quality value (so we can
+//        // add Locales in descending order).  The values will be ArrayLists
+//        // containing the corresponding Locales to be added
+//        TreeMap locales = new TreeMap();
+//
+//        // Preprocess the value to remove all whitespace
+//        int white = value.indexOf(' ');
+//        if (white < 0) {
+//            white = value.indexOf('\t');
+//        }
+//        if (white >= 0) {
+//            StringBuilder sb = new StringBuilder();
+//            int len = value.length();
+//            for (int i = 0; i < len; i++) {
+//                char ch = value.charAt(i);
+//                if (ch != ' ' && ch != '\t') {
+//                    sb.append(ch);
+//                }
+//            }
+//            value = sb.toString();
+//        }
+//
+//        // Process each comma-delimited language specification
+//        parser.setString(value);        // ASSERT: parser is available to us
+//        int length = parser.getLength();
+//        while (true) {
+//
+//            // Extract the next comma-delimited entry
+//            int start = parser.getIndex();
+//            if (start >= length) {
+//                break;
+//            }
+//            int end = parser.findChar(',');
+//            String entry = parser.extract(start, end).trim();
+//            parser.advance();   // For the following entry
+//
+//            // Extract the quality factor for this entry
+//            double quality = 1.0;
+//            int semi = entry.indexOf(";q=");
+//            if (semi >= 0) {
+//                try {
+//                    quality = Double.parseDouble(entry.substring(semi + 3));
+//                } catch (NumberFormatException e) {
+//                    quality = 0.0;
+//                }
+//                entry = entry.substring(0, semi);
+//            }
+//
+//            // Skip entries we are not going to keep track of
+//            if (quality < 0.00005) {
+//                continue;       // Zero (or effectively zero) quality factors
+//            }
+//            if ("*".equals(entry)) {
+//                continue;       // FIXME - "*" entries are not handled
+//            }
+//            // Extract the language and country for this entry
+//            String language = null;
+//            String country = null;
+//            String variant = null;
+//            int dash = entry.indexOf('-');
+//            if (dash < 0) {
+//                language = entry;
+//                country = "";
+//                variant = "";
+//            } else {
+//                language = entry.substring(0, dash);
+//                country = entry.substring(dash + 1);
+//                int vDash = country.indexOf('-');
+//                if (vDash > 0) {
+//                    String cTemp = country.substring(0, vDash);
+//                    variant = country.substring(vDash + 1);
+//                    country = cTemp;
+//                } else {
+//                    variant = "";
+//                }
+//            }
+//
+//            if (!isAlpha(language) || !isAlpha(country) || !isAlpha(variant)) {
+//                continue;
+//            }
+//
+//            // Add a new Locale to the list of Locales for this quality level
+//            Locale locale = new Locale(language, country, variant);
+//            Double key = new Double(-quality);  // Reverse the order
+//            ArrayList values = (ArrayList) locales.get(key);
+//            if (values == null) {
+//                values = new ArrayList();
+//                locales.put(key, values);
+//            }
+//            values.add(locale);
+//
+//        }
+//
+//        // Process the quality values in highest->lowest order (due to
+//        // negating the Double value when creating the key)
+//        Iterator keys = locales.keySet().iterator();
+//        while (keys.hasNext()) {
+//            Double key = (Double) keys.next();
+//            ArrayList list = (ArrayList) locales.get(key);
+//            Iterator values = list.iterator();
+//            while (values.hasNext()) {
+//                Locale locale = (Locale) values.next();
+//                addLocale(locale);
+//            }
+//        }
+//
+//    }
 
     /*
      * Returns true if the given string is composed of upper- or lowercase
@@ -3563,24 +3564,26 @@ public class Request
      */
     protected void parseSessionIdFromRequestURI(String sessionParam) {
 
-        int start, end, sessionIdStart, semicolon, semicolon2;
+        int semicolon, semicolon2;
 
-        ByteChunk uriBC = coyoteRequest.requestURI().getByteChunk();
-        start = uriBC.getStart();
-        end = uriBC.getEnd();
-        semicolon = uriBC.indexOf(sessionParam, 0, sessionParam.length(), 0);
+        final DataChunk uriBC = coyoteRequest.getRequest().getRequestURIRef().getRequestURIBC();
+        
+//        start = uriBC.getStart();
+//        end = uriBC.getEnd();
+        semicolon = uriBC.indexOf(sessionParam, 0);
 
         if (semicolon > 0) {
-            sessionIdStart = start + semicolon;
+//            sessionIdStart = semicolon;
             semicolon2 = uriBC.indexOf(';', semicolon + sessionParam.length());
-            uriBC.setEnd(start + semicolon);
-            byte[] buf = uriBC.getBuffer();
-            if (semicolon2 >= 0) {
-                for (int i = 0; i < end - start - semicolon2; i++) {
-                    buf[start + semicolon + i] = buf[start + i + semicolon2];
-                }
-                uriBC.setBytes(buf, start, semicolon + end - start - semicolon2);
-            }
+            uriBC.delete(semicolon, semicolon2);
+//            uriBC.setEnd(start + semicolon);
+//            byte[] buf = uriBC.getBuffer();
+//            if (semicolon2 >= 0) {
+//                for (int i = 0; i < end - start - semicolon2; i++) {
+//                    buf[start + semicolon + i] = buf[start + i + semicolon2];
+//                }
+//                uriBC.setBytes(buf, start, semicolon + end - start - semicolon2);
+//            }
         }
     }
     // END SJSWS 6376484

@@ -74,6 +74,7 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Locale;
 import java.util.Map;
+import org.apache.catalina.util.Enumerator;
 
 
 /**
@@ -712,7 +713,7 @@ public class RequestFacade
     }
 
 
-    public Iterable<String> getHeaders(String name) {
+    public Enumeration<String> getHeaders(String name) {
 
         if (request == null) {
             throw new IllegalStateException(
@@ -728,7 +729,7 @@ public class RequestFacade
     }
 
 
-    public Iterable<String> getHeaderNames() {
+    public Enumeration<String> getHeaderNames() {
 
         if (request == null) {
             throw new IllegalStateException(
