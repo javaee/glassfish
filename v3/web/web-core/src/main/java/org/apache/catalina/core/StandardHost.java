@@ -255,7 +255,7 @@ public class StandardHost
     // START SJSAS 6331392
     public void setPipeline(Pipeline pl) {
         StandardHostValve shValve = new StandardHostValve();
-        updateStandardHostValve(shValve);
+        configureStandardHostValve(shValve);
         pl.setBasic(shValve);
         pipeline = pl;
         hasCustomPipeline = true;
@@ -998,7 +998,7 @@ public class StandardHost
         }
 
         // Set error report valve
-        updateStandardHostValve((StandardHostValve) pipeline.getBasic());
+        configureStandardHostValve((StandardHostValve) pipeline.getBasic());
 
         // START SJSAS_PE 8.1 5034793
         if (log.isLoggable(Level.FINE)) {
@@ -1374,7 +1374,7 @@ public class StandardHost
     // ------------------------------------------------------ Private Methods
 
 
-    private void updateStandardHostValve(StandardHostValve host) {
+    private void configureStandardHostValve(StandardHostValve host) {
         // Set error report valve
         if ((errorReportValveClass != null)
             && !"".equals(errorReportValveClass)) {
