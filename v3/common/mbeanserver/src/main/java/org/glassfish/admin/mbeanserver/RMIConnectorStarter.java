@@ -113,6 +113,7 @@ final class RMIConnectorStarter extends ConnectorStarter {
     private final MyRMIServerSocketFactory mServerSocketFactory;
     private final SecureRMIServerSocketFactory sslServerSocketFactory;
     private final SslRMIClientSocketFactory sslCsf;
+    private final Habitat habitat;
 
     public RMIConnectorStarter(
             final MBeanServer mbeanServer,
@@ -131,6 +132,7 @@ final class RMIConnectorStarter extends ConnectorStarter {
             throw new IllegalArgumentException("JMXConnectorServer not yet supporting protocol: " + protocol);
         }
 
+        this.habitat = habitat;
         final boolean ENABLED = true;
         mBindToSingleIP = ENABLED && !(address.equals("0.0.0.0") || address.equals(""));
 
@@ -140,7 +142,7 @@ final class RMIConnectorStarter extends ConnectorStarter {
         if (mBindToSingleIP) {
             if (isSecurityEnabled()) {
                 Util.getLogger().info("Security enabled");
-                sslServerSocketFactory = new SecureRMIServerSocketFactory(sslConfig, inetAddr);
+                sslServerSocketFactory = new SecureRMIServerSocketFactory(sslConfig, habitat, inetAddr);
                 sslCsf = getClientSocketFactory(sslConfig);
                 mServerSocketFactory = null;
             } else {
@@ -151,7 +153,7 @@ final class RMIConnectorStarter extends ConnectorStarter {
         } else {
             mServerSocketFactory = null;
             if (isSecurityEnabled()) {
-                sslServerSocketFactory = new SecureRMIServerSocketFactory(sslConfig, getAddress(address));
+                sslServerSocketFactory = new SecureRMIServerSocketFactory(sslConfig, habitat, getAddress(address));
                 sslCsf = getClientSocketFactory(sslConfig);
             } else {
                 sslServerSocketFactory = null;

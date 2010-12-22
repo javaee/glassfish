@@ -55,6 +55,7 @@ import javax.net.ssl.SSLServerSocket;
 import javax.rmi.ssl.SslRMIServerSocketFactory;
 import org.glassfish.admin.mbeanserver.JMXSslConfigHolder;
 import org.glassfish.admin.mbeanserver.Util;
+import org.jvnet.hk2.component.Habitat;
 
 /**
  *
@@ -74,12 +75,15 @@ import org.glassfish.admin.mbeanserver.Util;
         private volatile String[] enabledProtocols = null;
         private final Object cipherSuitesSync = new Object();
         private final Object protocolsSync = new Object();
+        private final Habitat habitat;
         private Map socketMap = new HashMap<Integer, Socket>();
 
         public SecureRMIServerSocketFactory(final Ssl sslConfig,
-                final InetAddress addr) {
+                                            final Habitat habitat,
+                                            final InetAddress addr) {
             mAddress = addr;
             ssl = sslConfig;
+            this.habitat = habitat;
             Util.getLogger().info("Creating a SecureRMIServerSocketFactory @ " +
                     addr.getHostAddress() + "with ssl config = " + ssl.toString());
 
@@ -111,7 +115,7 @@ import org.glassfish.admin.mbeanserver.Util;
             // we use a custom class here. The reason is mentioned in the class.
             final JMXSslConfigHolder sslConfigHolder;
             try {
-                sslConfigHolder = new JMXSslConfigHolder(ssl);
+                sslConfigHolder = new JMXSslConfigHolder(ssl, habitat);
             } catch (SSLException ssle) {
                 throw new IllegalStateException(ssle);
             }
