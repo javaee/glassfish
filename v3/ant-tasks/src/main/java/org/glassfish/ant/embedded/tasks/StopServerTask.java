@@ -42,7 +42,6 @@ package org.glassfish.ant.embedded.tasks;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
-import org.glassfish.embeddable.GlassFishException;
 
 public class StopServerTask extends Task {
 
@@ -55,7 +54,7 @@ public class StopServerTask extends Task {
     public void execute() throws BuildException {
         try {
             Util.disposeGlassFish(serverID);
-        } catch (GlassFishException ex) {
+        } catch (Exception ex) {
             log(ex.getMessage());
         }
     }

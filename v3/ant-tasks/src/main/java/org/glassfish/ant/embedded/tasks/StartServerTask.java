@@ -41,7 +41,6 @@
 package org.glassfish.ant.embedded.tasks;
 
 import org.apache.tools.ant.BuildException;
-import org.glassfish.embeddable.GlassFishException;
 
 public class StartServerTask extends TaskBase {
 
@@ -78,7 +77,7 @@ public class StartServerTask extends TaskBase {
         try {
             Util.startGlassFish(serverID, installRoot, instanceRoot,
                     configFile, configFileReadOnly, port);
-        } catch (GlassFishException ex) {
+        } catch (Exception ex) {
             error(ex);
         }
     }
