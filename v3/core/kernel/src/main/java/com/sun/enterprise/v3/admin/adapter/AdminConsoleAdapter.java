@@ -374,7 +374,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
                     is = conn.getInputStream();
                     isRestStarted = true;
                 } catch (Exception ex) {
-                    ex.printStackTrace();
+                   Logger.getLogger(AdminConsoleAdapter.class.getName()).log(Level.FINE, null, ex);
                 } finally {
                     if (is != null) {
                         try {
