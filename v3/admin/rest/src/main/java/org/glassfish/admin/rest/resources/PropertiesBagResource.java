@@ -140,14 +140,14 @@ public class PropertiesBagResource {
     @POST  // create
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
     @Produces({"text/html;qs=2", MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response createProperties(List<Map<String, String>> data) {
+    public ActionReportResult createProperties(List<Map<String, String>> data) {
         return clearThenSaveProperties(data);
     }
 
     @PUT  // create
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
     @Produces({"text/html;qs=2", MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response replaceProperties(List<Map<String, String>> data) {
+    public ActionReportResult replaceProperties(List<Map<String, String>> data) {
         return clearThenSaveProperties(data);
     }
 
@@ -169,7 +169,9 @@ public class PropertiesBagResource {
         }
     }
 
-    protected Response clearThenSaveProperties(List<Map<String, String>> properties) {
+    protected ActionReportResult clearThenSaveProperties(List<Map<String, String>> properties) {
+        RestActionReporter ar = new RestActionReporter();
+        ar.setActionDescription("Property");
         try {
             deleteExistingProperties();
             Map<String, String> data = new LinkedHashMap<String, String>();
@@ -184,15 +186,20 @@ public class PropertiesBagResource {
             
             String successMessage = localStrings.getLocalString("rest.resource.update.message",
                     "\"{0}\" updated successfully.", new Object[]{uriInfo.getAbsolutePath()});
-            return ResourceUtil.getResponse(200, successMessage, requestHeaders, uriInfo);
+
+            ar.setSuccess();
+            ar.setMessage(successMessage);
         } catch (Exception ex) {
             if (ex.getCause() instanceof ValidationException) {
-                return ResourceUtil.getResponse(400, /*400 - bad request*/
-                        ex.getMessage(), requestHeaders, uriInfo);
+                ar.setFailure();
+                ar.setFailureCause(ex);
+                ar.setMessage(ex.getLocalizedMessage());
             } else {
                 throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
             }
         }
+        
+        return new ActionReportResult("properties", ar, new OptionsResult(Util.getResourceName(uriInfo)));
     }
 
     protected void deleteExistingProperties() throws TransactionFailure {
