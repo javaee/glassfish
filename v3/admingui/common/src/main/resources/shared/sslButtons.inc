@@ -66,7 +66,7 @@
             <!command
                 convertCiphersItemsToStr(common="#{pageSession.selectedCommon}" ephemeral="#{pageSession.selectedEphemeral}" other="#{pageSession.selectedOther}" ecc="#{pageSession.selectedEcc}" ciphers="#{requestScope.ciphers}")
                 mapPut(map="#{pageSession.valueMap}" key="ssl3TlsCiphers" value="#{requestScope.ciphers}")
-                gf.createEntity(endpoint="#{pageSession.selfUrl}" attrs="#{pageSession.valueMap}" convertToFalse="#{pageSession.convertToFalseList}");
+                gf.createEntity(endpoint="#{pageSession.selfUrl}" attrs="#{pageSession.valueMap}" skipAttrs="#{pageSession.skipAttrsList}" convertToFalse="#{pageSession.convertToFalseList}");
                 prepareSuccessfulMsg();
                 gf.redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
             />

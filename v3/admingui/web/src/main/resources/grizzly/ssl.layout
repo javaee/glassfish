@@ -61,8 +61,13 @@
         setPageSessionAttribute(key="childType" value="ssl")
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/network-config/protocols/protocol/#{pageSession.Name}");
         setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}");
+        setPageSessionAttribute(key="createSslUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/network-config/network-listeners/network-listener/#{pageSession.listenerName}/create-ssl");
         setPageSessionAttribute(key="rest-api" value="true");
         setPageSessionAttribute(key="showCancelButton" value="#{true}" )
+        createMap(result="#{pageSession.valueMap}");
+        mapPut(map="#{pageSession.valueMap}" key="target" value="server");
+#include "/common/shared/targetsConfig.inc"
+        mapPut(map="#{pageSession.valueMap}" key="certName" value="");
 #include "/common/shared/sslPrepare.inc"
       />
   </event>

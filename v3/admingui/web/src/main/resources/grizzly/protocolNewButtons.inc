@@ -66,7 +66,12 @@
                 if ("#{pageSession.valueMap['noCompressionUserAgents']} = #{null}") {
                     listAdd(list="#{pageSession.skipAttrsList}" value="noCompressionUserAgents");
                 }
-                gf.createEntity(endpoint="${newProxy}/#{pageSession.valueMap['Name']}/#{pageSession.childType2}"
+                mapPut(map="#{pageSession.httpMap}" key="target"  value="#{pageSession.valueMap['target']}")
+                gf.createEntity(endpoint="${newProxy}/#{pageSession.valueMap['Name']}/create-http"
+                        attrs="#{pageSession.httpMap}"
+                        onlyUseAttrs={"target", "defaultVirtualServer"});
+
+                gf.createEntity(endpoint="${newProxy}/#{pageSession.valueMap['Name']}/http"
                         attrs="#{pageSession.httpMap}"
                         onlyUseAttrs={"enableCometSupport", "defaultVirtualServer", "serverName", "redirectPort"}
                         convertToFalse={"uploadTimeoutEnabled", "cometSupportEnabled", "dnsLookupEnabled", "rcmSupportEnabled", "traceEnabled", "authPassThroughEnabled", "chunkingEnabled", "xpoweredBy"},
