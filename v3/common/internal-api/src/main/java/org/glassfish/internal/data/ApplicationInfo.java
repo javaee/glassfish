@@ -252,10 +252,6 @@ public class ApplicationInfo extends ModuleInfo {
             }
         }
 
-        // put all the transient app meta meta from context to 
-        // application info
-        transientAppMetaData.putAll(context.getTransientAppMetadata());
-
         isLoaded = true;
 
         if (tracing!=null) {

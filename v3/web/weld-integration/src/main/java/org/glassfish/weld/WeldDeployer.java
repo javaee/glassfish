@@ -62,9 +62,11 @@ import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.Events;
+import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.deployment.common.DeploymentException;
 import org.glassfish.deployment.common.SimpleDeployer;
 import org.glassfish.internal.data.ApplicationInfo;
+import org.glassfish.internal.data.ApplicationRegistry;
 import org.glassfish.weld.services.EjbServicesImpl;
 import org.glassfish.weld.services.InjectionServicesImpl;
 import org.glassfish.weld.services.ProxyServicesImpl;
@@ -114,6 +116,9 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
 
     @Inject
     private Habitat habitat;
+
+    @Inject
+    private ApplicationRegistry applicationRegistry;
 
     private Map<Application, WeldBootstrap> appToBootstrap =
             new HashMap<Application, WeldBootstrap>();
@@ -288,6 +293,9 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
     @Override
     public WeldApplicationContainer load(WeldContainer container, DeploymentContext context) {
 
+        DeployCommandParameters deployParams = context.getCommandParameters(DeployCommandParameters.class);
+        ApplicationInfo appInfo = applicationRegistry.get(deployParams.name);
+
         ReadableArchive archive = context.getSource();
 
         // See if a WeldBootsrap has already been created - only want one per app.
@@ -300,6 +308,7 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
             appToBootstrap.put(app, bootstrap);
             // Stash the WeldBootstrap instance, so we may access the WeldManager later..
             context.addTransientAppMetaData(WELD_BOOTSTRAP, bootstrap);
+            appInfo.addTransientAppMetaData(WELD_BOOTSTRAP, bootstrap);
         }
 
         Set<EjbDescriptor> ejbs = new HashSet<EjbDescriptor>();
@@ -376,6 +385,7 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
         //context.addTransientAppMetaData(WELD_BOOTSTRAP, bootstrap);
 
         context.addTransientAppMetaData(WELD_DEPLOYMENT, deploymentImpl);
+        appInfo.addTransientAppMetaData(WELD_DEPLOYMENT, deploymentImpl);
 
         return wbApp; 
     }
