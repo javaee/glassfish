@@ -530,8 +530,10 @@ public class RemoteAdminCommand {
                         });
                 try {
                     downloadedFilesMgr.processParts(inboundPayload);
+                } catch (CommandException cex) {
+                    throw cex;
                 } catch (Exception ex) {
-                    throw new CommandException(ex);
+                    throw new CommandException(ex.getMessage(), ex);
                 }
                 }
             });
