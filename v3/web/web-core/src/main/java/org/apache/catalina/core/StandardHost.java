@@ -254,7 +254,9 @@ public class StandardHost
 
     // START SJSAS 6331392
     public void setPipeline(Pipeline pl) {
-        pl.setBasic(new StandardHostValve());
+        StandardHostValve shValve = new StandardHostValve();
+        updateStandardHostValve(shValve);
+        pl.setBasic(shValve);
         pipeline = pl;
         hasCustomPipeline = true;
     }    
@@ -996,25 +998,7 @@ public class StandardHost
         }
 
         // Set error report valve
-        if ((errorReportValveClass != null)
-            && !"".equals(errorReportValveClass)) {
-            try {
-                GlassFishValve valve = (GlassFishValve)
-                    Class.forName(errorReportValveClass).newInstance();
-                /* START SJSAS 6374691
-                addValve(valve);
-                */
-                // START SJSAS 6374691
-                ((StandardHostValve) pipeline.getBasic()).setErrorReportValve(valve);
-                // END SJSAS 6374691
-            } catch (Throwable t) {
-                log.log(
-                    Level.SEVERE,
-                    sm.getString("standardHost.invalidErrorReportValveClass", 
-                                 errorReportValveClass),
-                    t);
-            }
-        }
+        updateStandardHostValve((StandardHostValve) pipeline.getBasic());
 
         // START SJSAS_PE 8.1 5034793
         if (log.isLoggable(Level.FINE)) {
@@ -1384,5 +1368,32 @@ public class StandardHost
         if( log.isLoggable(Level.FINE))
             log.fine("Create ObjectName " + domain + " " + parent );
         return new ObjectName( domain + ":type=Host,host=" + getName());
+    }
+
+
+    // ------------------------------------------------------ Private Methods
+
+
+    private void updateStandardHostValve(StandardHostValve host) {
+        // Set error report valve
+        if ((errorReportValveClass != null)
+            && !"".equals(errorReportValveClass)) {
+            try {
+                GlassFishValve valve = (GlassFishValve)
+                    Class.forName(errorReportValveClass).newInstance();
+                /* START SJSAS 6374691
+                addValve(valve);
+                */
+                // START SJSAS 6374691
+                host.setErrorReportValve(valve);
+                // END SJSAS 6374691
+            } catch (Throwable t) {
+                log.log(
+                    Level.SEVERE,
+                    sm.getString("standardHost.invalidErrorReportValveClass", 
+                                 errorReportValveClass),
+                    t);
+            }
+        }
     }
 }
