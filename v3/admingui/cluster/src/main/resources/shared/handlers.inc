@@ -122,6 +122,9 @@
     Output" #{pageSession.instanceDebugInfo}
     -->
     <handler id="gfr.getInstanceDebugInfo" >
+        setAttribute(key="saveType", value="#{requestScope.alertType}");
+        setAttribute(key="saveSummary", value="#{requestScope.alertSummary}");
+        setAttribute(key="saveDetail", value="#{requestScope.alertDetail}");
         createMap(result="#{requestScope._debugAttrMap}")
         mapPut(map="#{requestScope._debugAttrMap}" key="target" value="#{pageSession.instanceName}")
         gf.restRequest(endpoint="#{sessionScope.REST_URL}/get-runtime-info" attrs="#{requestScope._debugAttrMap}"
@@ -132,4 +135,7 @@
             setAttribute(key="debugPort" value="#{requestScope.debugResult.data.subReports.get(0).properties.debugPort}");
             setPageSessionAttribute(key="instanceDebugInfo" value="$resource{i18n.inst.debugEnabled} ${debugPort}");
         }
+        setAttribute(key="alertType", value="#{requestScope.saveType}");
+        setAttribute(key="alertSummary", value="#{requestScope.saveSummary}");
+        setAttribute(key="alertDetail", value="#{requestScope.saveDetail}");
     </handler>
