@@ -77,7 +77,7 @@ public class FileLoggerHandler extends Handler {
         try {
             printWriter = new PrintWriter(new FileOutputStream(logFile, true));
     	} catch (IOException e) {
-            throw new RuntimeException(e);
+            //throw new RuntimeException(e);
     	}
 
         pump = new Thread() {
