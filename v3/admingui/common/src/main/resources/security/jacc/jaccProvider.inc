@@ -39,7 +39,6 @@
     holder.
 
 -->
-
 <sun:propertySheet id="propertySheet">
 #include "/common/shared/configNameSection.inc"
 		 
@@ -51,10 +50,10 @@
                 <sun:textField id="IdText" text="#{pageSession.valueMap['name']}" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.common.Name']}" styleClass="required" required="#{true}" />
             </sun:property> 
             <sun:property id="policyConfigProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jacc.PolicyConfig}" helpText="$resource{i18nc.jacc.PolicyConfigHelp}">
-                <sun:textField id="PolicyConfig" columns="$int{75}" maxLength="#{sessionScope.fieldLengths['maxLength.jacc.PolicyConfig']}" text="#{pageSession.valueMap['policyconfigfactoryclass']}" styleClass="required" required="#{true}"/>
+                <sun:textField id="PolicyConfig" columns="$int{75}" maxLength="#{sessionScope.fieldLengths['maxLength.jacc.PolicyConfig']}" text="#{pageSession.valueMap['policyConfigurationFactoryProvider']}" styleClass="required" required="#{true}"/>
             </sun:property>      
             <sun:property id="policyProviderProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jacc.PolicyProvider}" helpText="$resource{i18nc.jacc.PolicyProviderHelp}">
-                <sun:textField id="PolicyProvider" columns="$int{75}" maxLength="#{sessionScope.fieldLengths['maxLength.jacc.PolicyProvider']}" text="#{pageSession.valueMap['policyproviderclass']}" styleClass="required" required="#{true}"/>
+                <sun:textField id="PolicyProvider" columns="$int{75}" maxLength="#{sessionScope.fieldLengths['maxLength.jacc.PolicyProvider']}" text="#{pageSession.valueMap['policyProvider']}" styleClass="required" required="#{true}"/>
             </sun:property>      
         </sun:propertySheetSection>
 </sun:propertySheet>    
