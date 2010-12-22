@@ -101,8 +101,14 @@ public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
         dasPropsFile = new File(agentConfigDir, "das.properties");
 
         if (dasPropsFile.isFile()) {
-            validateDasOptions(programOpts.getHost(), String.valueOf(programOpts.getPort()),
-                    String.valueOf(programOpts.isSecure()), dasPropsFile);
+            //Issue GLASSFISH-15263
+            //Don't validate for localhost - can't tell if it's user specified or default.
+            //Just use what's in das.properties so user doesn't have to specify --host
+            if (programOpts.getHost() != null && !programOpts.getHost().equals(DEFAULT_HOSTNAME)) {
+                //validate must come before setDasDefaults
+                validateDasOptions(programOpts.getHost(), String.valueOf(programOpts.getPort()),
+                        String.valueOf(programOpts.isSecure()), dasPropsFile);
+            }
             setDasDefaults(dasPropsFile);
             if (!setDasDefaultsOnly) {
                 String nodeDirChildName = nodeDirChild != null ? nodeDirChild.getName() : "";
