@@ -39,13 +39,11 @@
     holder.
 
 -->
-
 <sun:table id="configs" title="$resource{i18njms.jmsPhysDestinations.tableTitle}">
     <!facet actionsTop>
          <sun:panelGroup id="topActionsGroup1">
             <sun:button id="newButton" text="$resource{i18n.button.New}" >
                 <!command
-                    println ("***** pageSession = #{pageSession}\n\n\n\n\n\n\n\n");
                     gf.redirect(page="/jms/physdest/jmsPhysicalDestinationNew.jsf?target=#{pageSession.target}&parentPage=#{pageSession.selfPage}");
                 />
             </sun:button>
@@ -106,16 +104,17 @@
             <sun:checkbox id="select" selected="#{td.value.selected}" selectedValue="$boolean{true}" />
         </sun:tableColumn>
 
+        // TODO: Fix these links. Combine all of the phys dest pages into one
         <sun:tableColumn id="col1" headerText="$resource{i18n.common.PropertyName}" sort="name" rowHeader="$boolean{true}">
             <sun:hyperlink id="nameCol" text="#{td.value.name}" 
-                url="/jms/physdest/jmsPhysicalDestinationEdit.jsf?name=#{td.value.name}&type=#{td.value.type}&target=#{pageSession.target}&parentPage=#{pageSession.selfPage}" />
+                url="#{request.contextPath}/jms/physdest/jmsPhysicalDestinationEdit.jsf?name=#{td.value.name}&type=#{td.value.type}&target=#{pageSession.target}&parentPage=#{pageSession.selfPage}" />
         </sun:tableColumn>
 
         <sun:tableColumn id="col3" headerText="$resource{i18n.common.type.header}" sort="type" rowHeader="$boolean{true}">
             <staticText id="typeCol"  value="#{td.value.type}" />
         </sun:tableColumn>
         <sun:tableColumn id="col4" headerText="$resource{i18njms.jmsPhysDestinations.stats}">
-            <sun:hyperlink id="statsCol" text="$resource{i18njms.jmsPhysDestinations.view}" url="#{pageSession.viewPage}?name=#{td.value.name}&type=#{td.value.type}" />
+            <sun:hyperlink id="statsCol" text="$resource{i18njms.jmsPhysDestinations.view}" url="#{request.contextPath}/jms/physdest/jmsPhysicalDestinationStats.jsf?name=#{td.value.name}&type=#{td.value.type}" />
         </sun:tableColumn>
     </sun:tableRowGroup>
 </sun:table>
