@@ -37,13 +37,10 @@
     and therefore, elected the GPL Version 2 license, then the option applies
     only if the new code is made subject to such option by the copyright
     holder.
-
 -->
 
-<sun:treeNode id="sysProps" text="$resource{i18ncs.SystemPropertiesTitle}" 
+<sun:treeNode id="sysProps" text="$resource{i18n.tree.systemProps}"
         url="/common/configuration/configurationSystemProperties.jsf?configName=${configName}"
         imageURL="/resource/images/system_properties.png" >
-    <ui:event type="beforeCreate">
-        setResourceBundle(key="i18ncs" bundle="org.glassfish.cluster.admingui.Strings");
-    </ui:event>
 </sun:treeNode>
+
