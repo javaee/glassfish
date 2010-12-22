@@ -122,6 +122,9 @@
                     visibility:hidden;
                     display:none;
                 }
+                
+                /* clickjacking defense */
+                body { display : none; }
             </style>
             </f:verbatim>
         </sun:head>
@@ -344,5 +347,6 @@
             }
         });
     </script>
+    <script src="#{request.contextPath}/resource/js/cj.js"></script>
 </f:verbatim>
 </sun:page>

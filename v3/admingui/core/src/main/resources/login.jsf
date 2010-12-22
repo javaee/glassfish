@@ -75,6 +75,10 @@
         window.location = window.location;
     }
 </script>
+    <style type="text/css">
+        /* clickjacking defense */
+        body { display : none; }
+    </style>
 </f:verbatim>
     <sun:themeLinks/>
     <sun:link url="/resource/css/css_ns6up.css" />
@@ -109,6 +113,7 @@
             <span>$resource{i18n.copyright.shortMessage}</span>
         </div>
     </div>
+    <script src="#{request.contextPath}/resource/js/cj.js"></script>
 </body>
 </html>
 </f:verbatim>

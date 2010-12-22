@@ -54,6 +54,10 @@
     <sun:themeLinks/>
     <sun:link url="/resource/css/css_ns6up.css" />
 <f:verbatim>
+    <style type="text/css">
+        /* clickjacking defense */
+        body { display : none; }
+    </style>
 </head>
 
 <body id="body3" class="LogBdy" focus="loginform.j_username" style="background-color: #FFFFFF;">
@@ -94,6 +98,7 @@
             <span>$resource{i18n.copyright.shortMessage}</span>
         </div>
     </div>
+    <script src="#{request.contextPath}/resource/js/cj.js"></script>
 </body>
 </html>
 </f:verbatim>
