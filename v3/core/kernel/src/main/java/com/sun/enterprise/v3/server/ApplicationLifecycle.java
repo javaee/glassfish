@@ -494,7 +494,7 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
     public Types getDeployableTypes(DeploymentContext context) throws IOException {
 
         synchronized(context) {
-            Types types = context.getModuleMetaData(Types.class);
+            Types types = context.getTransientAppMetaData(Types.class.getName(), Types.class);
             if (types!=null) {
                 return types;
             } else {
@@ -519,8 +519,8 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
                     }
                     parser.awaitTermination();
                     scannerAdapter.close();
-                    context.addModuleMetaData(parsingContext.getTypes());
-                    context.addModuleMetaData(parser);
+                    context.addTransientAppMetaData(Types.class.getName(), parsingContext.getTypes());
+                    context.addTransientAppMetaData(Parser.class.getName(), parser);
                     return parsingContext.getTypes();
                 } catch(InterruptedException e) {
                     throw new IOException(e);

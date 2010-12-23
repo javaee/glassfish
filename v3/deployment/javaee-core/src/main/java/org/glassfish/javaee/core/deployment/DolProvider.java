@@ -129,8 +129,8 @@ public class DolProvider implements ApplicationMetaDataProvider<Application>,
 
         ReadableArchive sourceArchive = dc.getSource();
 
-        sourceArchive.setExtraData(Types.class, dc.getModuleMetaData(Types.class));
-        sourceArchive.setExtraData(Parser.class, dc.getModuleMetaData(Parser.class));
+        sourceArchive.setExtraData(Types.class, dc.getTransientAppMetaData(Types.class.getName(), Types.class));
+        sourceArchive.setExtraData(Parser.class, dc.getTransientAppMetaData(Parser.class.getName(), Parser.class));
 
         ClassLoader cl = dc.getClassLoader();
         DeployCommandParameters params = dc.getCommandParameters(DeployCommandParameters.class);

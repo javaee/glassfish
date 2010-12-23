@@ -198,7 +198,7 @@ public class SnifferManagerImpl implements SnifferManager {
         if (sniffers==null || sniffers.isEmpty()) {
             return Collections.emptyList();
         }
-        Types types = context.getModuleMetaData(Types.class);
+        Types types = context.getTransientAppMetaData(Types.class.getName(), Types.class);
         List<URI> uris = getURIs(context);
 
         List<T> result = new ArrayList<T>();

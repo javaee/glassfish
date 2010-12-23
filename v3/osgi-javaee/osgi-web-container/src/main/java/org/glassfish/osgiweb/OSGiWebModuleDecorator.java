@@ -178,7 +178,7 @@ public class OSGiWebModuleDecorator implements WebModuleDecorator
             logger.fine("Can't process annotations as deployment context is not set.");
             return Collections.emptyMap();
         }
-        final Types types = dc.getModuleMetaData(Types.class);
+        final Types types = dc.getTransientAppMetaData(Types.class.getName(), Types.class);
         return OSGiFacesAnnotationScanner.scan(getURIs(wm), types, getClassLoader(wm));
     }
 

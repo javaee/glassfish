@@ -170,19 +170,19 @@ public interface DeploymentContext extends ApplicationContext, ExecutionContext 
      * class loader
      * @throws UnsupportedOperationException if the class loader we use does not support the
      * registration of a ClassFileTransformer. In such case, the deployer should either fail
-     * deployment or revert to a mode without the byteocode enhancement feature.
+     * deployment or revert to a mode without the bytecode enhancement feature.
      */
     public void addTransformer(ClassFileTransformer transformer);
 
     /**
-     * Returns all the metadata assocated with this deployment
+     * Returns all the metadata associated with this deployment
      *
      * @return collection of metadata added to the context
      */
     public Collection<Object> getModuleMetadata();  
 
     /**
-     * Returns all the transient app metadata assocated with this deployment
+     * Returns all the transient app metadata associated with this deployment
      *
      * @return collection of metadata added to the context
      */

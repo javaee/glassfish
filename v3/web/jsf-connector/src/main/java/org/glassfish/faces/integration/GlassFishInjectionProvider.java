@@ -110,7 +110,7 @@ public class GlassFishInjectionProvider extends DiscoverableInjectionProvider im
     throws InjectionProviderException {
 
         DeploymentContext dc = serverConfigLookup.getDeploymentContext(servletContext);
-        Types types = dc.getModuleMetaData(Types.class);
+        Types types = dc.getTransientAppMetaData(Types.class.getName(), Types.class);
         Collection<Type> allTypes = types.getAllTypes();
         Collection<AnnotationModel> annotations = null;
         Map<String, List<ScannedAnnotation>> classesByAnnotation = 

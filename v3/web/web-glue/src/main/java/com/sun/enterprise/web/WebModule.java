@@ -543,7 +543,7 @@ public class WebModule extends PwcWebModule implements Context {
     @Override
     protected Types getTypes() {
         if (wmInfo.getDeploymentContext()!=null) {
-            return wmInfo.getDeploymentContext().getModuleMetaData(Types.class);
+            return wmInfo.getDeploymentContext().getTransientAppMetaData(Types.class.getName(), Types.class);
         } else {
             return null;
         }
