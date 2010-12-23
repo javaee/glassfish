@@ -59,9 +59,9 @@
 package org.apache.jk.core;
 
 import java.io.IOException;
+import org.glassfish.grizzly.http.util.ByteChunk;
+import org.glassfish.grizzly.http.util.MessageBytes;
 
-import org.glassfish.grizzly.util.buf.ByteChunk;
-import org.glassfish.grizzly.util.buf.MessageBytes;
 
 
 /**

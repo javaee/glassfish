@@ -95,8 +95,6 @@ import org.apache.jk.core.JkChannel;
 import org.apache.jk.core.WorkerEnv;
 import org.glassfish.grizzly.tcp.ActionCode;
 import org.glassfish.grizzly.http.server.Request;
-import org.glassfish.grizzly.http.server.RequestGroupInfo;
-import org.glassfish.grizzly.http.server.RequestInfo;
 import org.apache.tomcat.util.modeler.Registry;
 import org.apache.tomcat.util.threads.ThreadPool;
 import org.apache.tomcat.util.threads.ThreadPoolRunnable;

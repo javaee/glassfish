@@ -77,12 +77,11 @@ import org.apache.jk.core.MsgContext;
 import org.apache.jk.core.WorkerEnv;
 import org.apache.jk.core.JkChannel;
 
-import org.glassfish.grizzly.util.buf.ByteChunk;
-import org.glassfish.grizzly.util.buf.CharChunk;
-import org.glassfish.grizzly.util.buf.MessageBytes;
-import org.glassfish.grizzly.util.http.MimeHeaders;
-import org.glassfish.grizzly.util.net.SSLSupport;
 import org.apache.tomcat.util.threads.ThreadWithAttributes;
+import org.glassfish.grizzly.http.util.ByteChunk;
+import org.glassfish.grizzly.http.util.MessageBytes;
+import org.glassfish.grizzly.http.util.MimeHeaders;
+import org.glassfish.grizzly.ssl.SSLSupport;
 
 /**
  * Handle messages related with basic request information.

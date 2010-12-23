@@ -64,7 +64,6 @@ import java.util.logging.Logger;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
-import org.glassfish.grizzly.tcp.Constants;
 import org.apache.catalina.connector.ProtocolHandler;
 import org.apache.jk.core.JkHandler;
 import org.apache.jk.core.Msg;

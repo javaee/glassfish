@@ -70,11 +70,11 @@ import org.glassfish.grizzly.tcp.ActionHook;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
 
-import org.glassfish.grizzly.util.buf.C2BConverter;
-import org.glassfish.grizzly.util.buf.MessageBytes;
-import org.glassfish.grizzly.util.buf.ByteChunk;
-import org.glassfish.grizzly.util.net.SSLSupport;
 import org.apache.jk.common.JkInputStream;
+import org.glassfish.grizzly.http.util.ByteChunk;
+import org.glassfish.grizzly.http.util.C2BConverter;
+import org.glassfish.grizzly.http.util.MessageBytes;
+import org.glassfish.grizzly.ssl.SSLSupport;
 
 
 /**

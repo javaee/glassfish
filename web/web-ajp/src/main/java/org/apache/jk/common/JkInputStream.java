@@ -61,20 +61,18 @@ package org.apache.jk.common;
 import java.io.IOException;
 import java.util.logging.*;
 
-import org.glassfish.grizzly.tcp.OutputBuffer;
-import org.glassfish.grizzly.tcp.InputBuffer;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
 
 import org.apache.catalina.connector.Constants;
 import org.apache.jk.core.Msg;
 import org.apache.jk.core.MsgContext;
+import org.glassfish.grizzly.http.server.io.InputBuffer;
+import org.glassfish.grizzly.http.server.io.OutputBuffer;
+import org.glassfish.grizzly.http.util.ByteChunk;
+import org.glassfish.grizzly.http.util.C2BConverter;
+import org.glassfish.grizzly.http.util.MessageBytes;
 
-import org.glassfish.grizzly.util.buf.ByteChunk;
-import org.glassfish.grizzly.util.buf.MessageBytes;
-import org.glassfish.grizzly.util.buf.C2BConverter;
-import org.glassfish.grizzly.util.http.HttpMessages;
-import org.glassfish.grizzly.util.http.MimeHeaders;
 
 /** Generic input stream impl on top of ajp
  */
