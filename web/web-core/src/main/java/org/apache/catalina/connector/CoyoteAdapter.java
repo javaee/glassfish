@@ -97,7 +97,7 @@ import org.glassfish.web.valve.GlassFishValve;
  */
 
 public class CoyoteAdapter extends HttpHandler {
-    private static Logger log = Logger.getLogger(CoyoteAdapter.class.getName());
+    private static final Logger log = Logger.getLogger(CoyoteAdapter.class.getName());
 
     // -------------------------------------------------------------- Constants
     private static final String POWERED_BY = "Servlet/3.0 JSP/2.2 " +
@@ -235,6 +235,9 @@ public class CoyoteAdapter extends HttpHandler {
         
         try {
             doService(req, request, res, response);
+
+            // Request may want to initialize async processing
+            request.onAfterService();
         } catch (IOException e) {
             // Recycle the wrapper request and response
             request.recycle();

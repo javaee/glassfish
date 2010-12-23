@@ -67,9 +67,6 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.URLDecoder;
 import java.net.UnknownHostException;
-import java.nio.ByteBuffer;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.SocketChannel;
 import java.nio.charset.UnsupportedCharsetException;
 import java.security.AccessController;
 import java.security.Principal;
@@ -87,7 +84,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
-import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
@@ -140,15 +136,14 @@ import org.apache.catalina.util.RequestUtil;
 import org.apache.catalina.util.StringManager;
 import org.apache.catalina.util.StringParser;
 import org.glassfish.grizzly.CompletionHandler;
+import org.glassfish.grizzly.EmptyCompletionHandler;
 import org.glassfish.grizzly.http.server.util.MappingData;
 import org.glassfish.grizzly.http.util.B2CConverter;
 import org.glassfish.grizzly.http.util.ByteChunk;
 import org.glassfish.grizzly.http.util.CharChunk;
-import org.glassfish.grizzly.http.util.Chunk;
 import org.glassfish.grizzly.http.util.DataChunk;
 import org.glassfish.grizzly.http.util.FastHttpDateFormat;
 import org.glassfish.grizzly.http.util.MessageBytes;
-import org.glassfish.grizzly.http.util.Parameters;
 import org.glassfish.web.valve.GlassFishValve;
 
 /**
@@ -1146,7 +1141,8 @@ public class Request
         }
         // XXX Should move to Globals
         if (Constants.SSL_CERTIFICATE_ATTR.equals(name)) {
-            coyoteRequest.action(/*ActionCode.ACTION_REQ_SSL_CERTIFICATE, null*/);
+            // @TODO Implement SSL rehandshake
+//            coyoteRequest.action(ActionCode.ACTION_REQ_SSL_CERTIFICATE, null);
             attr = getAttribute(Globals.CERTIFICATES_ATTR);
             if (attr != null) {
                 attributes.put(name, attr);
@@ -1345,7 +1341,7 @@ public class Request
             parseRequestParameters();
         }
 */
-        return coyoteRequest.getParameterNames();
+        return new Enumerator(coyoteRequest.getParameterNames());
     }
 
     /**
@@ -3893,35 +3889,6 @@ public class Request
             asyncContext = new AsyncContextImpl(this, servletRequest,
                     (Response) getResponse(), servletResponse,
                     isOriginalRequestAndResponse);
-
-            CompletionHandler requestCompletionHandler =
-                new CompletionHandler<Request>() {
-
-                    @Override
-                    public void completed(Request attachment) {
-                        if (attachment.asyncContext != null) {
-                            attachment.asyncContext.notifyAsyncListeners(
-                                    AsyncContextImpl.AsyncEventType.COMPLETE,
-                                    null);
-                        }
-                    }
-
-                    @Override
-                    public void updated(final Request result) {
-                    }
-
-                    @Override
-                    public void cancelled() {
-                    }
-
-                    @Override
-                    public void failed(final Throwable throwable) {
-                    }
-                };
-
-            Response res = (Response) coyoteRequest.getResponse().getNote(CoyoteAdapter.ADAPTER_NOTES);
-            coyoteRequest.getResponse().suspend(asyncContext.getTimeout(), TimeUnit.MILLISECONDS,
-                requestCompletionHandler);
         }
 
         asyncStarted.set(true);
@@ -3954,7 +3921,7 @@ public class Request
     }
 
     void setAsyncTimeout(long timeout) {
-        coyoteRequest.getResponse().getResponseAttachment().setIdleTimeoutDelay(timeout);
+//        coyoteRequest.getResponse().setIdleTimeoutDelay(timeout);
     }
 
     /**
@@ -4015,6 +3982,26 @@ public class Request
     void onAfterService() {
         if (asyncContext != null) {
             asyncContext.setOkToConfigure(false);
+
+            if (asyncStarted.get()) {
+                final CompletionHandler<org.glassfish.grizzly.http.server.Response> requestCompletionHandler =
+                        new EmptyCompletionHandler<org.glassfish.grizzly.http.server.Response>() {
+
+                            @Override
+                            public void completed(org.glassfish.grizzly.http.server.Response attachment) {
+                                if (asyncContext != null) {
+                                    asyncContext.notifyAsyncListeners(
+                                            AsyncContextImpl.AsyncEventType.COMPLETE,
+                                            null);
+                                }
+                            }
+                        };
+
+//            Response res = coyoteRequest.getNote(CoyoteAdapter.CATALINA_RESPONSE_NOTE);
+                coyoteRequest.getResponse().suspend(asyncContext.getTimeout(), TimeUnit.MILLISECONDS,
+                        requestCompletionHandler);
+            }
+
         }
     }
 
@@ -4112,8 +4099,9 @@ public class Request
 
     // START SJSAS 6419950
     private void populateSSLAttributes() {
-        coyoteRequest.action(ActionCode.ACTION_REQ_SSL_ATTRIBUTE,
-                coyoteRequest);
+        // @TODO Implement SSL rehandshake
+//        coyoteRequest.action(ActionCode.ACTION_REQ_SSL_ATTRIBUTE,
+//                coyoteRequest);
         Object attr = coyoteRequest.getAttribute(Globals.CERTIFICATES_ATTR);
         if (attr != null) {
             attributes.put(Globals.CERTIFICATES_ATTR, attr);
@@ -4239,82 +4227,82 @@ public class Request
      * resumed {@link org.glassfish.grizzly.http.server.Response#resume} or has timed out.
      * See {@link org.glassfish.grizzly.http.server.Response.ResponseAttachment} for details.
      */
-    private final static class RequestAttachment<A> extends
-            org.glassfish.grizzly.http.server.Response.ResponseAttachment {
-
-        private Response res;
-
-        public RequestAttachment(Long timeout, A attachment,
-                CompletionHandler<? super A> completionHandler,
-                Response res) {
-            super(timeout, attachment, completionHandler, res.getCoyoteResponse());
-            this.res = res;
-        }
-
-        @Override
-        public void resume() {
-            getCompletionHandler().resumed(getAttachment());
-            if (log.isLoggable(Level.FINE)) {
-                log.log(Level.FINE, "RequestAttachement.resume: " + res);
-            }
-            completeProcessing();
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        //@Override
-        public void handleSelectedKey(SelectionKey selectionKey) {
-            if (!selectionKey.isValid() || discardDisconnectEvent){
-                selectionKey.cancel();
-                return;
-            }
-            try {
-                ((Request)getAttachment()).clientClosedConnection = ((SocketChannel)selectionKey.channel()).
-                    read(ByteBuffer.allocate(1)) == -1;
-            } catch (IOException ex) {
-
-            } finally{
-                if (((Request)getAttachment()).clientClosedConnection){
-                   selectionKey.cancel();
-                   getCompletionHandler().cancelled(getAttachment());
-                }
-            }
-        }
-
-        void completeProcessing() {
-            try {
-                res.finishResponse();
-            } catch (IOException ex) {
-                if (log.isLoggable(Level.FINE)) {
-                    log.log(Level.FINE, "res.finishResponse()" + res);
-                }
-            }
-            res.recycle();
-            res.getRequest().recycle();
-        }
-
-        @Override
-        public boolean timeout() {
-            // If the buffers are empty, commit the response header
-            boolean result = true;
-
-            try {
-                if (log.isLoggable(Level.FINE)) {
-                    log.log(Level.FINE, "RequestAttachement.timeout: " + res);
-                }
-                cancel();
-            } finally {
-                Request req = (Request)getAttachment();
-                final AsyncContextImpl asyncContext = req.asyncContext;
-                if (asyncContext != null && !asyncContext.getAndResetDispatchInScope()) {
-                completeProcessing();
-                } else {
-                    result = false;
-            }
-        }
-
-            return result;
-    }
-}
+//    private final static class RequestAttachment<A> extends
+//            org.glassfish.grizzly.http.server.Response.ResponseAttachment {
+//
+//        private Response res;
+//
+//        public RequestAttachment(Long timeout, A attachment,
+//                CompletionHandler<? super A> completionHandler,
+//                Response res) {
+//            super(timeout, attachment, completionHandler, res.getCoyoteResponse());
+//            this.res = res;
+//        }
+//
+//        @Override
+//        public void resume() {
+//            getCompletionHandler().resumed(getAttachment());
+//            if (log.isLoggable(Level.FINE)) {
+//                log.log(Level.FINE, "RequestAttachement.resume: " + res);
+//            }
+//            completeProcessing();
+//        }
+//
+//        /**
+//         * {@inheritDoc}
+//         */
+//        //@Override
+//        public void handleSelectedKey(SelectionKey selectionKey) {
+//            if (!selectionKey.isValid() || discardDisconnectEvent){
+//                selectionKey.cancel();
+//                return;
+//            }
+//            try {
+//                ((Request)getAttachment()).clientClosedConnection = ((SocketChannel)selectionKey.channel()).
+//                    read(ByteBuffer.allocate(1)) == -1;
+//            } catch (IOException ex) {
+//
+//            } finally{
+//                if (((Request)getAttachment()).clientClosedConnection){
+//                   selectionKey.cancel();
+//                   getCompletionHandler().cancelled(getAttachment());
+//                }
+//            }
+//        }
+//
+//        void completeProcessing() {
+//            try {
+//                res.finishResponse();
+//            } catch (IOException ex) {
+//                if (log.isLoggable(Level.FINE)) {
+//                    log.log(Level.FINE, "res.finishResponse()" + res);
+//                }
+//            }
+//            res.recycle();
+//            res.getRequest().recycle();
+//        }
+//
+//        @Override
+//        public boolean timeout() {
+//            // If the buffers are empty, commit the response header
+//            boolean result = true;
+//
+//            try {
+//                if (log.isLoggable(Level.FINE)) {
+//                    log.log(Level.FINE, "RequestAttachement.timeout: " + res);
+//                }
+//                cancel();
+//            } finally {
+//                Request req = (Request)getAttachment();
+//                final AsyncContextImpl asyncContext = req.asyncContext;
+//                if (asyncContext != null && !asyncContext.getAndResetDispatchInScope()) {
+//                completeProcessing();
+//                } else {
+//                    result = false;
+//            }
+//        }
+//
+//            return result;
+//    }
+//}
 }
