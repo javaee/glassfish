@@ -1376,6 +1376,17 @@ function checkPoolAttr(componentId, msg){
 
 }
 
+function checkForBackslash(componentId, msg){
+    var component = getTextElement(componentId);
+    var val = component.value;
+    var result = (val != null) && (val != '') && (val.indexOf('\\') == -1);
+    if (!result) {
+        showAlert(msg + ' ' + getLabel(component));
+        component.focus();
+    }
+    return result;
+}
+
 function checkRequired(componentId, reqMsg){
     //component = document.getElementById(componentId);
     //var value = component.getProps().value;

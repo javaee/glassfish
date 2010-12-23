@@ -53,7 +53,11 @@
         </sun:property>   
 
         <sun:property id="jndiTextProp" rendered="#{!edit}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.jndiName}" helpText="$resource{i18n.common.jndiNameHelp}" >
-            <sun:textField id="jnditext" styleClass="required" maxLength="#{sessionScope.fieldLengths['maxLength.common.jndiName']}"  text="#{pageSession.valueMap['name']}" required="#{true}"/>
+            <sun:textField id="jnditext" styleClass="required" maxLength="#{sessionScope.fieldLengths['maxLength.common.jndiName']}"  text="#{pageSession.valueMap['name']}" required="#{true}">
+                <!afterCreate
+                    getClientId(component="$this{component}" clientId=>$page{resCompId});
+                />
+            </sun:textField>
         </sun:property> 
 
         <sun:property id="poolNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.poolName}"  helpText="$resource{i18njca.connectorResource.poolHelp}" >

@@ -58,7 +58,7 @@
         <sun:property id="nameNew"  rendered="#{!edit}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.jndiName}">
             <sun:textField id="name" styleClass="required"  required="#{true}" columns="$int{30}" maxLength="#{sessionScope.fieldLengths['maxLength.common.jndiName']}" text="#{pageSession.valueMap['name']}" >
             <!afterCreate
-                getClientId(component="$this{component}" clientId=>$page{nameNewId});
+                getClientId(component="$this{component}" clientId=>$page{resCompId});
             />
             </sun:textField>
         </sun:property>
@@ -83,7 +83,7 @@
                     //conversely gf.redirect works only for edit page & not new page
                     //needs more investigation - same scenario in component below too
                     if(!#{edit}){
-                        getUIComponent(clientId="#{nameNewId}", component=>$attribute{nameComponent});
+                        getUIComponent(clientId="#{resCompId}", component=>$attribute{nameComponent});
                         getUIComponentProperty(component="$attribute{nameComponent}", name="submittedValue", value=>$attribute{nameChosen});
                         gf.navigate(page="#{selfPage}");
                     }
@@ -108,7 +108,7 @@
                     getUIComponent(clientId="#{resAdaptorPropId}", component=>$attribute{resAdaptorComponent});
                     getUIComponentProperty(component="$attribute{resAdaptorComponent}", name="selected", value=>$attribute{resAdapter});
                     if(!#{edit}){
-                        getUIComponent(clientId="#{nameNewId}", component=>$attribute{nameComponent});
+                        getUIComponent(clientId="#{resCompId}", component=>$attribute{nameComponent});
                         getUIComponentProperty(component="$attribute{nameComponent}", name="submittedValue", value=>$attribute{nameChosen});
                         gf.navigate(page="#{selfPage}");
                     }
@@ -132,7 +132,7 @@
                     getUIComponent(clientId="#{resTypePropId}", component=>$attribute{resTypeComponent});
                     getUIComponentProperty(component="$attribute{resTypeComponent}", name="selected", value=>$attribute{resType});
                     if(!#{edit}){
-                        getUIComponent(clientId="#{nameNewId}", component=>$attribute{nameComponent});
+                        getUIComponent(clientId="#{resCompId}", component=>$attribute{nameComponent});
                         getUIComponentProperty(component="$attribute{nameComponent}", name="submittedValue", value=>$attribute{nameChosen});
                         gf.navigate(page="#{selfPage}");
                     }

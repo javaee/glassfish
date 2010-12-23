@@ -71,7 +71,7 @@
                     <!facet pageButtonsTop>
                     <sun:panelGroup id="topButtons">
                         <sun:button id="nextButton" text="$resource{i18n.button.Next}"  
-                            onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
+                            onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}') && checkForBackslash('#{resCompId}', '$resource{i18n.msg.JS.resources.resName}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                             <!command
                                 gf.updateJDBCPoolWizardStep1();
                                 gf.redirect(page="#{request.contextPath}/jdbc/jdbcConnectionPoolNew2.jsf?fromStep2=false")
@@ -91,7 +91,11 @@
                     <sun:propertySheet id="propertySheet" requiredFields="true">			 
                         <sun:propertySheetSection id="generalPropertySheet" label="$resource{i18njdbc.jdbcPool.general}">
                             <sun:property id="jndiProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njdbc.jdbcPool.poolName}">
-                                <sun:textField id="name"  styleClass="required"  columns="$int{30}" maxLength="#{sessionScope.fieldLengths['maxLength.jdbcPool.poolName']}" text="#{wizardPoolExtra.name}" required="#{true}"/>
+                                <sun:textField id="name"  styleClass="required"  columns="$int{30}" maxLength="#{sessionScope.fieldLengths['maxLength.jdbcPool.poolName']}" text="#{wizardPoolExtra.name}" required="#{true}">
+                                    <!afterCreate
+                                        getClientId(component="$this{component}" clientId=>$page{resCompId});
+                                    />
+                                </sun:textField>
                             </sun:property>   
 
                             <sun:property id="resTypeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.resType}" helpText="$resource{i18njdbc.jdbcPool.resTypeHelp}" >

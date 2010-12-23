@@ -130,6 +130,9 @@
             comp.focus();
             return false;
         }
+        if (option=='text') {
+            return checkForBackslash('#{textId}', '$resource{i18n.msg.JS.resources.resName}');
+        }
         return true;
     }
     </script>
