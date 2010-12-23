@@ -45,6 +45,9 @@ import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.beans.PropertyVetoException;
+import javax.validation.Payload;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.NotNull;
 
 /**
  * An configured element which has to have application type of name.
@@ -52,7 +55,9 @@ import java.beans.PropertyVetoException;
  * @author Nandini Ektare
  */
 @Configured
-public interface ApplicationName extends ConfigBeanProxy {
+public interface ApplicationName extends ConfigBeanProxy, Payload {
+
+    final static String NAME_APP_REGEX = "[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_\\./;:#]*";
 
     /**
      *  Name of the configured object
@@ -60,6 +65,8 @@ public interface ApplicationName extends ConfigBeanProxy {
      * @return name of the configured object
      */
     @Attribute(key=true)
+    @NotNull
+    @Pattern(regexp=NAME_APP_REGEX, message="{app.invalid.name}", payload=ApplicationName.class)
     public String getName();
 
     public void setName(String value) throws PropertyVetoException;
