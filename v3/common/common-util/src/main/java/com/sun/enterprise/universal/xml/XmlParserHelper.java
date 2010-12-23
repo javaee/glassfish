@@ -49,13 +49,9 @@ import javax.xml.stream.*;
 public final class XmlParserHelper {
 
     public XmlParserHelper(final File f) throws FileNotFoundException, XMLStreamException {
-        try {
-            reader = new InputStreamReader(new FileInputStream(f), "UTF-8");
-            parser = XMLInputFactory.newInstance().createXMLStreamReader(
-                    f.toURI().toString(), reader);
-        } catch (UnsupportedEncodingException ex) {
-            throw new XMLStreamException(ex);
-        }
+        reader = new InputStreamReader(new FileInputStream(f));
+        parser = XMLInputFactory.newInstance().createXMLStreamReader(
+                f.toURI().toString(), reader);
     }
 
     public final XMLStreamReader get() {

@@ -222,13 +222,9 @@ public class MiniXmlParser {
     }
 
     private void createParser() throws FileNotFoundException, XMLStreamException {
-        try {
-            reader = new InputStreamReader(new FileInputStream(domainXml), "UTF-8");
-            parser = getXmlInputFactory().createXMLStreamReader(
-                domainXml.toURI().toString(), reader);
-        } catch (UnsupportedEncodingException ex) {
-            throw new XMLStreamException(ex);
-        }
+        reader = new InputStreamReader(new FileInputStream(domainXml));
+        parser = getXmlInputFactory().createXMLStreamReader(
+            domainXml.toURI().toString(), reader);
     }
 
     // In JDK 1.6, StAX is part of JRE, so we use no argument variant of
