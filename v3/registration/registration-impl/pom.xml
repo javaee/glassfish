@@ -61,6 +61,7 @@
                 <directory>src/main/resources</directory>
                 <includes>
                     <include>**/*.html</include>
+                    <include>**/*.properties</include>
                 </includes>
             </resource>
         </resources>

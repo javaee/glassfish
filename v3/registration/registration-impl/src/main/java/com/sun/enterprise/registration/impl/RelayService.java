@@ -40,8 +40,7 @@
 
 
 package com.sun.enterprise.registration.impl;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.io.*;
 import java.text.*;
 
@@ -49,9 +48,9 @@ import com.sun.enterprise.registration.RegistrationException;
 import com.sun.enterprise.registration.impl.environment.EnvironmentInformation;
 import java.util.logging.Logger;
 import java.util.logging.Level;
-import java.net.InetAddress;
 import java.util.Formatter;
-//import com.sun.scn.servicetags.contrib.STClientRegistryHelper;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 public class RelayService {
 
@@ -60,16 +59,25 @@ public class RelayService {
     private static final String TAG_TOKEN   =   "@@@SERVICE_TAGS@@@";
     private static final String PRODUCTNAME_TOKEN =   "@@@PRODUCTNAME@@@";
     private static final String TEMPLATE_FILE = "com/sun/enterprise/registration/impl/relay-template.html";
+    private static final String STRING_TOKEN =   "@@@STRING.";
+    private static final String END_TOKEN =   "@@@";
 
     private RepositoryManager rm;
+    private ResourceBundle bundle;
+    Pattern stringPattern = Pattern.compile(STRING_TOKEN);
 
     public RelayService(String repositoryFile) throws RegistrationException {
         rm = new RepositoryManager(new File(repositoryFile));
         // make sure runtime values are generated in RepositoryManager
         rm.updateRuntimeValues();
     }
-
+    
     public void generateRegistrationPage(String outputFile) throws Exception {
+        generateRegistrationPage(outputFile, Locale.getDefault());
+    }
+    
+    public void generateRegistrationPage(String outputFile, Locale locale) throws Exception {
+        bundle = getResourceBundle(locale);
         InputStream is = getClass().getClassLoader().getResourceAsStream(TEMPLATE_FILE);
         if (is == null)
             throw new RegistrationException("Template file [" + TEMPLATE_FILE + "] not found");
@@ -79,7 +87,7 @@ public class RelayService {
         for (ServiceTag tag : serviceTags) {
             if (productName.length() > 0)
                 productName = productName + " + ";
-            productName = productName + tag.getProductName() + " " + tag.getProductVersion();
+            productName = productName + tag.getSource();
         }
         
         String tags = getHtml(serviceTags);
@@ -95,12 +103,68 @@ public class RelayService {
                 line = line.replaceAll(TAG_TOKEN, tags);
             if (line.indexOf(PRODUCTNAME_TOKEN) >= 0)
                 line = line.replaceAll(PRODUCTNAME_TOKEN, productName);
+            line = replaceStringTokens(line);
             bw.write(line);
             bw.newLine();
         }
         bw.flush();
     }
 
+    private String replaceStringTokens(String line) {
+        int start = 0, end = 0;
+        StringBuffer buf = new StringBuffer("");
+
+        while (start != -1) {
+            // Find start of token
+            start = line.indexOf(STRING_TOKEN, end);
+            if (start != -1) {
+                // copy the stuff before the start
+                buf.append(line.substring(end, start));
+
+                // Move past the @@@
+                start += STRING_TOKEN.length();
+
+                // Find end of token
+                end = line.indexOf(END_TOKEN, start);
+                if (end != -1) {
+                    try {
+                        // Copy the token value to the buffer
+                        buf.append(
+                                bundle.getString(line.substring(start, end)));
+                    } catch (MissingResourceException ex) {
+                        // Unable to find the resource, so we don't do anything
+                        buf.append(STRING_TOKEN + line.substring(start, end) + END_TOKEN);
+                    }
+
+                    // Move past the %%%
+                    end += END_TOKEN.length();
+                } else {
+                    // Add back the %%% because we didn't find a matching end
+                    buf.append(END_TOKEN);
+
+                    // Reset end so we can copy the remainder of the text
+                    end = start;
+                }
+            }
+        }
+
+        // Copy the remainder of the text
+        buf.append(line.substring(end));
+
+        // Return the new String
+        return buf.toString();
+
+    }
+
+    /**
+     * <p> This method returns the resource bundle for localized Strings </p>
+     *
+     * @param    locale    The Locale to be used.
+     */
+    private ResourceBundle getResourceBundle(Locale locale) {
+        return ResourceBundle.getBundle(
+            "com.sun.enterprise.registration.impl.LocalStrings", locale);
+    }
 
 
     private String getHtml(List<ServiceTag> serviceTags) {
@@ -119,21 +183,7 @@ public class RelayService {
     private String  getEnvironmentInformation() throws RegistrationException {
         StringBuilder html = new StringBuilder();
         EnvironmentInformation se = new EnvironmentInformation();
-/*
-        hostName, "", // hostID
-                System.getProperty("os.name"),
-                System.getProperty("os.version"),
-                System.getProperty("os.arch"),
-                "", //systemModel
-                "", //systemManuf.
-                "", //cpuManuf
-                "");
- *
- */
 
-/*
-        SystemEnvironment se = SystemEnvironment.getSystemEnvironment();
-*/
         Formatter fmt = new Formatter(html);
 
         html.append("<environment>");
