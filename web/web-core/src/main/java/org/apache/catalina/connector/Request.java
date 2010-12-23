@@ -137,6 +137,7 @@ import org.apache.catalina.util.StringManager;
 import org.apache.catalina.util.StringParser;
 import org.glassfish.grizzly.CompletionHandler;
 import org.glassfish.grizzly.EmptyCompletionHandler;
+import org.glassfish.grizzly.http.server.TimeoutHandler;
 import org.glassfish.grizzly.http.server.util.MappingData;
 import org.glassfish.grizzly.http.util.B2CConverter;
 import org.glassfish.grizzly.http.util.ByteChunk;
@@ -3988,7 +3989,7 @@ public class Request
                         new EmptyCompletionHandler<org.glassfish.grizzly.http.server.Response>() {
 
                             @Override
-                            public void completed(org.glassfish.grizzly.http.server.Response attachment) {
+                            public void completed(org.glassfish.grizzly.http.server.Response response) {
                                 if (asyncContext != null) {
                                     asyncContext.notifyAsyncListeners(
                                             AsyncContextImpl.AsyncEventType.COMPLETE,
@@ -3997,12 +3998,35 @@ public class Request
                             }
                         };
 
-//            Response res = coyoteRequest.getNote(CoyoteAdapter.CATALINA_RESPONSE_NOTE);
+                final TimeoutHandler timeoutHandler = new TimeoutHandler() {
+
+                    @Override
+                    public boolean onTimeout(final org.glassfish.grizzly.http.server.Response response) {
+                        return processTimeout();
+                    }
+                };
+
                 coyoteRequest.getResponse().suspend(asyncContext.getTimeout(), TimeUnit.MILLISECONDS,
-                        requestCompletionHandler);
+                        requestCompletionHandler, timeoutHandler);
             }
 
         }
+    }
+
+    private boolean processTimeout() {
+        boolean result = true;
+        final AsyncContextImpl asyncContextLocal = this.asyncContext;
+        try {
+            if (clientClosedConnection && asyncContextLocal != null) {
+                asyncContextLocal.notifyAsyncListeners(AsyncContextImpl.AsyncEventType.ERROR, null);
+            } else {
+                asyncTimeout();
+            }
+        } finally {
+            result = asyncContextLocal != null && !asyncContextLocal.getAndResetDispatchInScope();
+        }
+        
+        return result;
     }
 
     void errorDispatchAndComplete(Throwable t) {
