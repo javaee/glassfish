@@ -475,8 +475,7 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
                     }
                 }
 
-                Collection<Resource> resourceConfigurations =
-                        createConfig(asc, resources, embedded);
+                createConfig(asc, resources, embedded);
                 String appName = app.getName();
                 preserveResources(asc, appName, appName);
             }
@@ -521,8 +520,7 @@ public class ResourcesDeployer extends JavaEEDeployer<ResourcesContainer, Resour
                     }
                 }
 
-                Collection<Resource> resourceConfigurations =
-                        createConfig(msc, resources, embedded);
+                createConfig(msc, resources, embedded);
                 preserveResources(msc, app.getName(), module.getName());
             }
         } catch (Exception e) {
