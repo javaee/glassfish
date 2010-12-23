@@ -110,11 +110,11 @@
         </sun:property>
 
         <sun:property id="port"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.port}" helpText="$resource{i18n_web.grizzly.networkListener.portHelp}">
-            <sun:textField id="port" columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.grizzly.networkListener.port']}" required="#{true}" styleClass="required port" text="#{pageSession.valueMap['port']}"  />
+            <sun:textField id="port" columns="$int{40}" maxLength="#{sessionScope.fieldLengths['maxLength.grizzly.networkListener.port']}" required="#{true}" styleClass="required port" text="#{pageSession.valueMap['port']}"  />
         </sun:property>
 
         <sun:property id="addr"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.address}" helpText="$resource{i18n_web.grizzly.networkListener.addressHelp}">
-            <sun:textField id="addr" columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.grizzly.networkListener.address']}" text="#{pageSession.valueMap['address']}"  />
+            <sun:textField id="addr" columns="$int{40}" maxLength="#{sessionScope.fieldLengths['maxLength.grizzly.networkListener.address']}" text="#{pageSession.valueMap['address']}"  />
         </sun:property>
 
         <sun:property id="status"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.common.status}"  helpText="$resource{i18n_web.grizzly.networkListener.statusHelp}" >
