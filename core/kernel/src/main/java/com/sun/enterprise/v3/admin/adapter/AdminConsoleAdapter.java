@@ -682,10 +682,8 @@ public final class AdminConsoleAdapter extends HttpHandler implements Adapter, P
         if (log.isLoggable(Level.FINE)) {
             log.fine("AdminConsoleAdapter's STATE IS: " + getStateMsg());
             log.log(Level.FINE, "Current Thread: " + Thread.currentThread().getName());
-            Enumeration names = req.getParameterNames();
-            while (names.hasMoreElements()) {
-                String name = (String) names.nextElement();
-                String values = Arrays.toString(req.getParameterValues(name));
+            for (final String name : req.getParameterNames()) {
+                final String values = Arrays.toString(req.getParameterValues(name));
                 log.fine("Parameter name: " + name + " values: " + values);
             }
         }
