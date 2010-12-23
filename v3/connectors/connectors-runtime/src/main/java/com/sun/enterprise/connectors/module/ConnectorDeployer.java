@@ -49,14 +49,19 @@ import com.sun.enterprise.connectors.util.ResourcesUtil;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.config.serverbeans.*;
+import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.logging.LogDomains;
+import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.UndeployCommandParameters;
 import org.glassfish.api.deployment.OpsParams;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.Events;
 import org.glassfish.internal.api.Target;
+import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.javaee.core.deployment.JavaEEDeployer;
 import org.glassfish.javaee.services.ApplicationScopedResourcesManager;
 import org.glassfish.javaee.services.ResourceManager;
@@ -66,6 +71,7 @@ import org.glassfish.internal.api.DelegatingClassLoader;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
+import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
@@ -88,7 +94,7 @@ import java.beans.PropertyVetoException;
  */
 @Service
 public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, ConnectorApplication>
-        implements PostConstruct {
+        implements PostConstruct, PreDestroy, EventListener {
 
     @Inject
     private ConnectorRuntime runtime;
@@ -105,14 +111,19 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
     @Inject
     private Domain domain;
 
+    @Inject
+    private ServerEnvironment env;
+
     private Resources resources;
 
     @Inject
     private Events events;
 
     private static Logger _logger = LogDomains.getLogger(ConnectorDeployer.class, LogDomains.RSR_LOGGER);
+    private static StringManager localStrings = StringManager.getManager(ConnectorRuntime.class);
 
     private static final String DOMAIN = "domain";
+    private static final String EAR = "ear";
 
     public ConnectorDeployer() {
     }
@@ -462,6 +473,7 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
      */
     public void postConstruct() {
         resources = domain.getResources();
+        events.register(this);
     }
 
     public void logFine(String message) {
@@ -573,5 +585,88 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
     private void unregisterBeanValidator(String rarName){
         ConnectorRegistry registry = ConnectorRegistry.getInstance();
         registry.removeBeanValidator(rarName);
+    }
+
+    public void event(Event event) {
+
+        // added this pre-check so as to validate whether connector-resources referring
+        // the application (that has rar or is an standalone rar) are present.
+        // Though similar validation is done in 'ConnectorApplication', this is to
+        // handle the case where the application is not enabled in DAS (no ConnectorApplication)
+
+
+        if (/*env.isDas() && */ Deployment.UNDEPLOYMENT_VALIDATION.equals(event.type())) {
+            //this is an application undeploy event
+            DeploymentContext dc = (DeploymentContext) event.hook();
+            UndeployCommandParameters dcp = dc.getCommandParameters(UndeployCommandParameters.class);
+            String appName = dcp.name;
+            Boolean cascade = dcp.cascade;
+            Boolean ignoreCascade = dcp._ignoreCascade;
+
+            if (cascade != null && ignoreCascade != null) {
+                if (cascade || ignoreCascade) {
+                    return;
+                }
+            }
+
+            com.sun.enterprise.config.serverbeans.Application app = domain.getApplications().getApplication(appName);
+            boolean isRAR = false;
+            if (app != null && Boolean.valueOf(app.getEnabled())) {
+                isRAR = app.containsSnifferType(ConnectorConstants.CONNECTOR_MODULE);
+            }
+
+            if (!isRAR) {
+                return;
+            }
+
+            boolean isAppRefEnabled = false;
+            Server server = domain.getServers().getServer(env.getInstanceName());
+            ApplicationRef appRef = server.getApplicationRef(appName);
+            if (appRef != null && Boolean.valueOf(appRef.getEnabled())) {
+                isAppRefEnabled = true;
+            }
+
+            if (isAppRefEnabled) {
+                return;
+            }
+            boolean isEAR = app.containsSnifferType(EAR);
+            String moduleName = appName;
+            if (isEAR) {
+                List<Module> modules = app.getModule();
+                for (Module module : modules) {
+                    moduleName = module.getName();
+                    if (module.getEngine(ConnectorConstants.CONNECTOR_MODULE) != null) {
+                        moduleName = appName + ConnectorConstants.EMBEDDEDRAR_NAME_DELIMITER + moduleName;
+                        if (moduleName.toLowerCase().endsWith(".rar")) {
+                            int index = moduleName.lastIndexOf(".rar");
+                            moduleName = moduleName.substring(0, index);
+                            if (ConnectorApplication.filterConnectorResources
+                                    (resourceManager.getAllResources(), moduleName, true).size() > 0) {
+                                setFailureStatus(dc, moduleName);
+                                return;
+                            }
+                        }
+                    }
+                }
+            } else {
+                if (ConnectorApplication.filterConnectorResources
+                        (resourceManager.getAllResources(), moduleName, true).size() > 0) {
+                    setFailureStatus(dc, moduleName);
+                }
+            }
+        }
+    }
+
+    private void setFailureStatus(DeploymentContext dc, String moduleName) {
+        String message = localStrings.getString("con.deployer.resources.exist", moduleName);
+        _logger.log(Level.WARNING, "resources.of.rar.exist", moduleName);
+
+        ActionReport report = dc.getActionReport();
+        report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+        report.setMessage(message);
+    }
+
+    public void preDestroy() {
+        events.unregister(this);
     }
 }

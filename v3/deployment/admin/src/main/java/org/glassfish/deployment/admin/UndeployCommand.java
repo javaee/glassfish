@@ -63,8 +63,11 @@ import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.admin.FailurePolicy;
+import org.glassfish.api.event.Events;
+import org.glassfish.api.event.EventListener.Event;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.UndeployCommandParameters;
+import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.config.support.TargetType;
 import org.glassfish.config.support.CommandTarget;
 import org.glassfish.common.util.admin.ParameterMapExtractor;
@@ -127,6 +130,9 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
 
     @Inject
     Habitat habitat;
+
+    @Inject
+    Events events;
 
     public UndeployCommand() {
         origin = Origin.undeploy;
@@ -256,6 +262,34 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
             // now start the normal undeploying
             this.name = appName;
 
+            ExtendedDeploymentContext deploymentContext = null;
+            try {
+                deploymentContext = deployment.getBuilder(logger, this, report).source(source).build();
+            } catch (IOException e) {
+                logger.log(Level.SEVERE, "Cannot create context for undeployment ", e);
+                report.setMessage(localStrings.getLocalString("undeploy.contextcreation.failed","Cannot create context for undeployment : {0} ", e.getMessage()));
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                return;
+            }
+
+            final Properties appProps = deploymentContext.getAppProps();
+            appProps.putAll(application.getDeployProperties());
+
+            if (properties!=null) {
+                appProps.putAll(properties);
+            }
+
+            deploymentContext.setModulePropsMap(
+                application.getModulePropertiesMap());
+
+            events.send(new Event<DeploymentContext>(Deployment.UNDEPLOYMENT_VALIDATION, deploymentContext), false);
+
+            if (report.getActionExitCode()==ActionReport.ExitCode.FAILURE) {
+                // if one of the validation listeners sets the action report
+                // status as failure, return
+                return;
+            }
+
             // disable the application first for non-DAS target
             if (env.isDas() && !DeploymentUtils.isDASTarget(target)) {
                 CommandRunner.CommandInvocation inv = commandRunner.getCommandInvocation("disable", report);
@@ -287,23 +321,6 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
                 }
             }   
 
-            ExtendedDeploymentContext deploymentContext = null;
-            try {
-                deploymentContext = deployment.getBuilder(logger, this, report).source(source).build();
-            } catch (IOException e) {
-                logger.log(Level.SEVERE, "Cannot create context for undeployment ", e);
-                report.setMessage(localStrings.getLocalString("undeploy.contextcreation.failed","Cannot create context for undeployment : {0} ", e.getMessage()));
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                return;
-            }
-
-            final Properties appProps = deploymentContext.getAppProps();
-            appProps.putAll(application.getDeployProperties());
-
-            if (properties!=null) {
-                appProps.putAll(properties);
-            }
-
             /*
              * Extract the generated artifacts from the application's properties
              * and record them in the DC.  This will be useful, for example,
@@ -312,9 +329,6 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
             final Artifacts generatedArtifacts = DeploymentUtils.generatedArtifacts(application);
             generatedArtifacts.record(deploymentContext);
             
-            deploymentContext.setModulePropsMap(
-                application.getModulePropertiesMap());
-
             if (info!=null) {
                 deployment.undeploy(appName, deploymentContext);
             }

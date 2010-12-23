@@ -44,6 +44,7 @@ import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.connectors.util.ResourcesUtil;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
+import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.logging.LogDomains;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.enterprise.connectors.ConnectorRuntime;
@@ -79,6 +80,7 @@ public class ConnectorApplication implements ApplicationContainer, EventListener
     private ConnectorRuntime runtime;
     private Events event;
     private ConnectorDescriptor descriptor;
+    private static StringManager localStrings = StringManager.getManager(ConnectorRuntime.class);
 
     public ConnectorApplication(String moduleName, String appName, ResourceManager resourceManager,
                                 ApplicationScopedResourcesManager asrManager, ClassLoader loader,
@@ -136,7 +138,7 @@ public class ConnectorApplication implements ApplicationContainer, EventListener
 
     private void deployGlobalResources() {
         Resources allResources = resourceManager.getAllResources();
-        Collection<Resource> resources = filterConnectorResources(allResources, false);
+        Collection<Resource> resources = filterConnectorResources(allResources, moduleName, false);
         resourceManager.deployResources(resources);
     }
 
@@ -149,7 +151,7 @@ public class ConnectorApplication implements ApplicationContainer, EventListener
         }
     }
 */
-    private Collection<Resource> filterConnectorResources(Resources allResources, boolean includePools) {
+    static Collection<Resource> filterConnectorResources(Resources allResources, String moduleName, boolean includePools) {
         //TODO V3 needed for redeploy of module, what happens to the listeners of these resources ?
         Collection<ConnectorConnectionPool> connectionPools =
                 ConnectorsUtil.getAllPoolsOfModule(moduleName, allResources);
@@ -187,7 +189,7 @@ public class ConnectorApplication implements ApplicationContainer, EventListener
         boolean status;
         //TODO ASR : should we undeploy app-scoped connector resources also ?
         //TODO ASR : should we stop deployment by checking app-scoped connector resources also ?
-        Collection<Resource> resources = filterConnectorResources(resourceManager.getAllResources(), true);
+        Collection<Resource> resources = filterConnectorResources(resourceManager.getAllResources(), moduleName, true);
         if (failIfResourcesExist && resources.size() > 0) {
             String message = "one or more resources of resource-adapter [ " + moduleName + " ] exist, " +
                     "use '--cascade=true' to delete them during undeploy";
@@ -246,8 +248,8 @@ public class ConnectorApplication implements ApplicationContainer, EventListener
             runtime.unregisterConnectorApplication(getModuleName());
             stopped = true;
             logFine("Resource Adapter [ " + getModuleName() + " ] stopped");
+            event.unregister(this);
         }
-        event.unregister(this);
         return stopped;
     }
 
@@ -328,14 +330,13 @@ public class ConnectorApplication implements ApplicationContainer, EventListener
                 if (dcp.origin != OpsParams.Origin.deploy) {
                     if (dcp.origin == OpsParams.Origin.undeploy) {
                         if (!(dcp._ignoreCascade || dcp.cascade)) {
-                            if (filterConnectorResources(resourceManager.getAllResources(), true).size() > 0) {
-                                String message = "one or more resources of resource-adapter [ " + moduleName + " ] exist, " +
-                                        "use '--cascade=true' to delete them during undeploy";
+                            if (filterConnectorResources(resourceManager.getAllResources(), moduleName, true).size() > 0) {
+                                String message = localStrings.getString("con.deployer.resources.exist", moduleName);
                                 _logger.log(Level.WARNING, "resources.of.rar.exist", moduleName);
 
                                 ActionReport report = dc.getActionReport();
+                                report.setMessage(message);
                                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                                report.setActionDescription(message);
                             }
                         }
                     }

@@ -1015,14 +1015,6 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
 
         }
 
-        events.send(new Event<DeploymentContext>(Deployment.UNDEPLOYMENT_VALIDATION, context), false);
-
-        if (report.getActionExitCode()==ActionReport.ExitCode.FAILURE) {
-            // if one of the validation listeners sets the action report 
-            // status as failure, return
-            return;
-        }
-
         events.send(new Event(Deployment.UNDEPLOYMENT_START, info));
 
         // for DAS target, the undeploy should unload the application
