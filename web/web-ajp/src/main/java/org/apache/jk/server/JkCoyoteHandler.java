@@ -72,8 +72,8 @@ import org.apache.tomcat.util.modeler.Registry;
 import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.Request;
 //import org.glassfish.grizzly.http.server.RequestInfo;
+import org.glassfish.grizzly.http.server.Request.Note;
 import org.glassfish.grizzly.http.server.Response;
-import org.glassfish.grizzly.http.util.Constants;
 
 /**
  * Plugs Jk into Coyote. Must be named "type=JkHandler,name=container"
@@ -87,9 +87,11 @@ public class JkCoyoteHandler extends JkHandler implements ProtocolHandler {
     // Set debug on this logger to see the container request time
     // ----------------------------------------------------------- DoPrivileged
     private boolean paused = false;
-    int epNote;
+//    int epNote;
     HttpHandler handler;
     protected JkMain jkMain = null;
+
+    private final Note<MsgContext> epNote = Request.<MsgContext>createNote("epNote");
 
     /**
      * Set a property. Name is a "component.property". JMX should be used instead.
@@ -228,7 +230,9 @@ public class JkCoyoteHandler extends JkHandler implements ProtocolHandler {
             log.log(Level.FINEST, "Invoke {0} {1} {2}",
                     new Object[]{req, res, req.getRequestURI()});
         }
-        res.setNote(epNote, ep);
+
+        req.setNote(epNote, ep);
+//        res.setNote(epNote, ep);
         ep.setStatus(MsgContext.JK_STATUS_HEAD);
 //        RequestInfo rp = req.getRequestProcessor();
 //        rp.setStage(Constants.STAGE_SERVICE);
