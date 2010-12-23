@@ -198,7 +198,7 @@ public class JkInputStream implements InputBuffer, OutputBuffer {
             outputMsg.reset();
             outputMsg.appendByte( AjpConstants.JK_AJP13_SEND_BODY_CHUNK);
             if( log.isLoggable(Level.FINEST) ) 
-                log.finest("doWrite " + off + " " + thisTime + " " + len );
+                log.log(Level.FINEST, "doWrite {0} {1} {2}", new Object[]{off, thisTime, len});
             outputMsg.appendBytes( chunk.getBytes(), chunk.getOffset() + off, thisTime );
             off+=thisTime;
             mc.getSource().send( outputMsg, mc );
@@ -210,8 +210,8 @@ public class JkInputStream implements InputBuffer, OutputBuffer {
         throws IOException {
 
         if( log.isLoggable(Level.FINEST))
-            log.finest( "doRead "  + end_of_stream+
-                       " " + responseChunk.getOffset()+ " " + responseChunk.getLength());
+            log.log( Level.FINEST, "doRead {0} {1} {2}",
+                    new Object[]{end_of_stream, responseChunk.getOffset(), responseChunk.getLength()});
         if( end_of_stream ) {
             return -1;
         }
@@ -241,7 +241,8 @@ public class JkInputStream implements InputBuffer, OutputBuffer {
         bodyMsg.reset();
         int err = mc.getSource().receive(bodyMsg, mc);
         if( log.isLoggable(Level.FINEST) )
-            log.info( "Receiving: getting request body chunk " + err + " " + bodyMsg.getLen() );
+            log.log( Level.INFO, "Receiving: getting request body chunk {0} {1}",
+                    new Object[]{err, bodyMsg.getLen()});
         
         if(err < 0) {
             throw new IOException();
@@ -313,7 +314,7 @@ public class JkInputStream implements InputBuffer, OutputBuffer {
 
     public void appendHead(Response res) throws IOException {
         if( log.isLoggable(Level.FINEST) )
-            log.finest("COMMIT sending headers " + res + " " + res.getMimeHeaders() );
+            log.log(Level.FINEST, "COMMIT sending headers {0} {1}", new Object[]{res, res.getMimeHeaders()});
         
         C2BConverter c2b=mc.getConverter();
         

@@ -71,8 +71,9 @@ import org.apache.jk.core.MsgContext;
 import org.apache.tomcat.util.modeler.Registry;
 import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.Request;
-import org.glassfish.grizzly.http.server.RequestInfo;
+//import org.glassfish.grizzly.http.server.RequestInfo;
 import org.glassfish.grizzly.http.server.Response;
+import org.glassfish.grizzly.http.util.Constants;
 
 /**
  * Plugs Jk into Coyote. Must be named "type=JkHandler,name=container"
@@ -114,7 +115,7 @@ public class JkCoyoteHandler extends JkHandler implements ProtocolHandler {
      */
     public void setAttribute(String name, Object value) {
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("setAttribute " + name + " " + value);
+            log.log(Level.FINEST, "setAttribute {0} {1}", new Object[]{name, value});
         }
         if (value instanceof String) {
             this.setProperty(name, (String) value);
@@ -183,7 +184,7 @@ public class JkCoyoteHandler extends JkHandler implements ProtocolHandler {
                     Registry.getRegistry(null, null)
                         .registerComponent(getJkMain(), jkmainOname, "JkMain");
                 } catch (Exception e) {
-                    log.severe("Error registering jkmain " + e);
+                    log.log(Level.SEVERE, "Error registering jkmain {0}", e);
                 }
             }
             getJkMain().start();
@@ -224,12 +225,13 @@ public class JkCoyoteHandler extends JkHandler implements ProtocolHandler {
         Request req = ep.getRequest();
         Response res = req.getResponse();
         if (log.isLoggable(Level.FINEST)) {
-            log.finest("Invoke " + req + " " + res + " " + req.getRequestURI());
+            log.log(Level.FINEST, "Invoke {0} {1} {2}",
+                    new Object[]{req, res, req.getRequestURI()});
         }
         res.setNote(epNote, ep);
         ep.setStatus(MsgContext.JK_STATUS_HEAD);
-        RequestInfo rp = req.getRequestProcessor();
-        rp.setStage(Constants.STAGE_SERVICE);
+//        RequestInfo rp = req.getRequestProcessor();
+//        rp.setStage(Constants.STAGE_SERVICE);
         try {
             handler.service(req, res);
         } catch (Exception ex) {
@@ -243,7 +245,7 @@ public class JkCoyoteHandler extends JkHandler implements ProtocolHandler {
             return ERROR;
         }
         ep.setStatus(MsgContext.JK_STATUS_NEW);
-        rp.setStage(Constants.STAGE_KEEPALIVE);
+//        rp.setStage(Constants.STAGE_KEEPALIVE);
         return OK;
     }
 

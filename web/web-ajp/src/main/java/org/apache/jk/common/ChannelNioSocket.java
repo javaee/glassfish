@@ -87,13 +87,13 @@ import javax.management.NotificationBroadcasterSupport;
 import javax.management.NotificationFilter;
 import javax.management.NotificationListener;
 import javax.management.ObjectName;
+import org.apache.jk.core.ActionCode;
 
 import org.apache.jk.core.JkHandler;
 import org.apache.jk.core.Msg;
 import org.apache.jk.core.MsgContext;
 import org.apache.jk.core.JkChannel;
 import org.apache.jk.core.WorkerEnv;
-import org.glassfish.grizzly.tcp.ActionCode;
 import org.glassfish.grizzly.http.server.Request;
 import org.apache.tomcat.util.modeler.Registry;
 import org.apache.tomcat.util.threads.ThreadPool;
@@ -480,37 +480,37 @@ public class ChannelNioSocket extends JkHandler
             if( next==null )
                 next=wEnv.getHandler( "request" );
         }
-        JMXRequestNote =wEnv.getNoteId( WorkerEnv.ENDPOINT_NOTE, "requestNote");
+//        JMXRequestNote =wEnv.getNoteId( WorkerEnv.ENDPOINT_NOTE, "requestNote");
         running = true;
 
         // Run a thread that will accept connections.
         // XXX Try to find a thread first - not sure how...
-        if( this.domain != null ) {
-            try {
-                tpOName=new ObjectName(domain + ":type=ThreadPool,name=" + 
-                                       getChannelName());
-
-                Registry.getRegistry(null, null)
-                    .registerComponent(tp, tpOName, null);
-
-                rgOName = new ObjectName
-                    (domain+":type=GlobalRequestProcessor,name=" + getChannelName());
-                Registry.getRegistry(null, null)
-                    .registerComponent(global, rgOName, null);
-            } catch (Exception e) {
-                log.log(Level.SEVERE, "Can't register threadpool" );
-            }
-        }
+//        if( this.domain != null ) {
+//            try {
+//                tpOName=new ObjectName(domain + ":type=ThreadPool,name=" +
+//                                       getChannelName());
+//
+//                Registry.getRegistry(null, null)
+//                    .registerComponent(tp, tpOName, null);
+//
+//                rgOName = new ObjectName
+//                    (domain+":type=GlobalRequestProcessor,name=" + getChannelName());
+//                Registry.getRegistry(null, null)
+//                    .registerComponent(global, rgOName, null);
+//            } catch (Exception e) {
+//                log.log(Level.SEVERE, "Can't register threadpool" );
+//            }
+//        }
 
         tp.start();
         Poller pollAjp = new Poller();
         tp.runIt(pollAjp);
     }
 
-    ObjectName tpOName;
-    ObjectName rgOName;
-    RequestGroupInfo global=new RequestGroupInfo();
-    int JMXRequestNote;
+//    ObjectName tpOName;
+//    ObjectName rgOName;
+//    RequestGroupInfo global=new RequestGroupInfo();
+//    int JMXRequestNote;
 
     public void start() throws IOException{
         if( sSocket==null )
@@ -523,20 +523,20 @@ public class ChannelNioSocket extends JkHandler
     }
 
     public void registerRequest(Request req, MsgContext ep, int count) {
-        if(this.domain != null) {
-            try {
-                RequestInfo rp=req.getRequestProcessor();
-                rp.setGlobalProcessor(global);
-                ObjectName roname = new ObjectName
-                    (getDomain() + ":type=RequestProcessor,worker="+
-                     getChannelName()+",name=JkRequest" +count);
-                ep.setNote(JMXRequestNote, roname);
-                        
-                Registry.getRegistry(null, null).registerComponent( rp, roname, null);
-            } catch( Exception ex ) {
-                log.warning("Error registering request");
-            }
-        }
+//        if(this.domain != null) {
+//            try {
+//                RequestInfo rp=req.getRequestProcessor();
+//                rp.setGlobalProcessor(global);
+//                ObjectName roname = new ObjectName
+//                    (getDomain() + ":type=RequestProcessor,worker="+
+//                     getChannelName()+",name=JkRequest" +count);
+//                ep.setNote(JMXRequestNote, roname);
+//
+//                Registry.getRegistry(null, null).registerComponent( rp, roname, null);
+//            } catch( Exception ex ) {
+//                log.warning("Error registering request");
+//            }
+//        }
     }
 
     public void open(MsgContext ep) throws IOException {
@@ -563,12 +563,12 @@ public class ChannelNioSocket extends JkHandler
             selector.wakeup().close();
             sSocket.close(); // XXX?
             
-            if( tpOName != null )  {
-                Registry.getRegistry(null, null).unregisterComponent(tpOName);
-            }
-            if( rgOName != null ) {
-                Registry.getRegistry(null, null).unregisterComponent(rgOName);
-            }
+//            if( tpOName != null )  {
+//                Registry.getRegistry(null, null).unregisterComponent(tpOName);
+//            }
+//            if( rgOName != null ) {
+//                Registry.getRegistry(null, null).unregisterComponent(rgOName);
+//            }
         } catch(Exception e) {
             log.info("Error shutting down the channel " + port + " " +
                     e.toString());
@@ -684,8 +684,8 @@ public class ChannelNioSocket extends JkHandler
                 got = -1;
             }
             if (log.isLoggable(Level.FINEST)) {
-                log.finest("read() " + " " + (b==null ? 0: b.length) + " " +
-                          offset + " " + len + " = " + got );
+                log.log(Level.FINEST,"read() " + " " + "{0} {1} {2} = {3}" ,
+                        new Object[]{b == null ? 0 : b.length, offset, len, got});
             }
 
             // connection just closed by remote. 
@@ -890,7 +890,7 @@ public class ChannelNioSocket extends JkHandler
                         if( status==-3)
                             log.finest( "server has been restarted or reset this connection" );
                         else 
-                            log.warning("Closing ajp connection " + status );
+                            log.log(Level.WARNING, "Closing ajp connection {0}", status);
                         return false;
                     }
                     ep.setLong( MsgContext.TIMER_RECEIVED, System.currentTimeMillis());
@@ -899,7 +899,7 @@ public class ChannelNioSocket extends JkHandler
                     // Will call next
                     status= invoke( recv, ep );
                     if( status != JkHandler.OK ) {
-                        log.warning("processCallbacks status " + status );
+                        log.log(Level.WARNING, "processCallbacks status {0}", status);
                         ep.action(ActionCode.ACTION_CLOSE, ep.getRequest().getResponse());
                         return false;
                     }
@@ -911,7 +911,7 @@ public class ChannelNioSocket extends JkHandler
                             setFinished();
                         } else {
                             if(log.isLoggable(Level.FINEST))
-                                log.finest("KeepAlive: "+sis.available());
+                                log.log(Level.FINEST, "KeepAlive: {0}", sis.available());
                         }
                     }
                 } 
@@ -963,18 +963,18 @@ public class ChannelNioSocket extends JkHandler
             } catch(Exception e) {
                 log.log(Level.SEVERE, "Error closing connection", e);
             }
-            try{
-                Request req = (Request)ep.getRequest();
-                if( req != null ) {
-                    ObjectName roname = (ObjectName)ep.getNote(JMXRequestNote);
-                    if( roname != null ) {
-                        Registry.getRegistry(null, null).unregisterComponent(roname);
-                    }
-                    req.getRequestProcessor().setGlobalProcessor(null);
-                }
-            } catch( Exception ee) {
-                log.log(Level.SEVERE, "Error, releasing connection",ee);
-            }
+//            try{
+//                Request req = (Request)ep.getRequest();
+//                if( req != null ) {
+//                    ObjectName roname = (ObjectName)ep.getNote(JMXRequestNote);
+//                    if( roname != null ) {
+//                        Registry.getRegistry(null, null).unregisterComponent(roname);
+//                    }
+//                    req.getRequestProcessor().setGlobalProcessor(null);
+//                }
+//            } catch( Exception ee) {
+//                log.log(Level.SEVERE, "Error, releasing connection",ee);
+//            }
         }
 
         void register(MsgContext ep) {
@@ -1003,7 +1003,7 @@ public class ChannelNioSocket extends JkHandler
                 try {
                     int ns = selector.select(serverTimeout);
                     if(log.isLoggable(Level.FINEST))
-                        log.finest("Selecting "+ns+" channels");
+                        log.log(Level.FINEST, "Selecting {0} channels", ns);
                     if(ns > 0) {
                         Set sels = selector.selectedKeys();
                         Iterator it = sels.iterator();
@@ -1084,7 +1084,7 @@ public class ChannelNioSocket extends JkHandler
                 // should rarely happen, so short-lived GC shouldn't hurt
                 // as much as allocating a long-lived buffer for this
                 if(log.isLoggable(Level.FINEST))
-                    log.finest("Saving old buffer: "+buffer.remaining());
+                    log.log(Level.FINEST, "Saving old buffer: {0}", buffer.remaining());
                 oldData = new byte[buffer.remaining()];
                 buffer.get(oldData);
             }
@@ -1170,7 +1170,7 @@ public class ChannelNioSocket extends JkHandler
             if(!dataAvailable) {
                 blocking = true;
                 if(log.isLoggable(Level.FINEST))
-                    log.finest("Waiting for "+len+" bytes to be available");
+                    log.log(Level.FINEST, "Waiting for {0} bytes to be available", len);
                 try{
                     wait(socketTimeout);
                 }catch(InterruptedException iex) {
@@ -1224,7 +1224,7 @@ public class ChannelNioSocket extends JkHandler
                         SelectionKey key = channel.keyFor(selector);
                         key.interestOps(SelectionKey.OP_WRITE);
                         if(log.isLoggable(Level.FINEST))
-                            log.finest("Blocking for channel write: "+buffer.remaining());
+                            log.log(Level.FINEST, "Blocking for channel write: {0}", buffer.remaining());
                         try {
                             wait();
                         } catch(InterruptedException iex) {

@@ -65,8 +65,6 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.logging.*;
 
-import org.glassfish.grizzly.tcp.ActionCode;
-import org.glassfish.grizzly.tcp.ActionHook;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
 
@@ -343,8 +341,8 @@ public class MsgContext implements ActionHook {
             if( getStatus()== JK_STATUS_CLOSED || getStatus() == JK_STATUS_ERROR) {
                 // Double close - it may happen with forward 
                 if( log.isLoggable(Level.FINEST) ) {
-                    log.finest("Double CLOSE - forward ? " +
-                        res.getRequest().requestURI() );
+                    log.log(Level.FINEST, "Double CLOSE - forward ? {0}",
+                            res.getRequest().getRequestURI());
                 }
                 return;
             }
@@ -436,7 +434,7 @@ public class MsgContext implements ActionHook {
         // called after the request
         //            org.glassfish.grizzly.http.server.Request req=(org.glassfish.grizzly.http.server.Request)param;
         //            Response res=req.getResponse();
-        String uri=req.requestURI().toString();
+        String uri=req.getRequestURI();
         if( uri.indexOf( ".gif" ) >0 ) return;
         
         setLong( MsgContext.TIMER_POST_REQUEST, System.currentTimeMillis());
@@ -445,9 +443,8 @@ public class MsgContext implements ActionHook {
         long t2= getLong( MsgContext.TIMER_POST_REQUEST ) -
             getLong( MsgContext.TIMER_PRE_REQUEST );
         
-        logTime.finest("Time pre=" + t1 + "/ service=" + t2 + " " +
-                       res.getContentLength() + " " + 
-                       uri );
+        logTime.log(Level.FINEST, "Time pre={0}/ service={1} {2} {3}",
+                new Object[]{t1, t2, res.getContentLength(), uri});
     }
 
     public void recycle() {

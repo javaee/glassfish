@@ -68,9 +68,9 @@ import java.util.logging.*;
 
 import org.apache.catalina.util.HexUtils;
 import org.glassfish.grizzly.http.server.Request;
-import org.glassfish.grizzly.http.server.RequestInfo;
+//import org.glassfish.grizzly.http.server.RequestInfo;
 import org.glassfish.grizzly.http.server.Response;
-import org.glassfish.grizzly.tcp.Constants;
+import org.glassfish.grizzly.http.util.Constants;
 import org.apache.jk.core.JkHandler;
 import org.apache.jk.core.Msg;
 import org.apache.jk.core.MsgContext;
@@ -79,6 +79,7 @@ import org.apache.jk.core.JkChannel;
 
 import org.apache.tomcat.util.threads.ThreadWithAttributes;
 import org.glassfish.grizzly.http.util.ByteChunk;
+import org.glassfish.grizzly.http.util.CharChunk;
 import org.glassfish.grizzly.http.util.MessageBytes;
 import org.glassfish.grizzly.http.util.MimeHeaders;
 import org.glassfish.grizzly.ssl.SSLSupport;
@@ -294,7 +295,7 @@ public class HandlerRequest extends JkHandler
         }
 
         if( log.isLoggable(Level.FINEST) )
-            log.finest( "Handling " + type );
+            log.log( Level.FINEST, "Handling {0}", type);
         
         switch( type ) {
         case AjpConstants.JK_AJP13_FORWARD_REQUEST:
@@ -419,8 +420,8 @@ public class HandlerRequest extends JkHandler
         // FORWARD_REQUEST handler
         Request req = checkRequest(ep);
 
-        RequestInfo rp = req.getRequestProcessor();
-        rp.setStage(Constants.STAGE_PARSE);
+//        RequestInfo rp = req.getRequestProcessor();
+//        rp.setStage(Constants.STAGE_PARSE);
         MessageBytes tmpMB2 = (MessageBytes)req.getNote(WorkerEnv.SSL_CERT_NOTE);
         if(tmpMB2 != null) {
             tmpMB2.recycle();
