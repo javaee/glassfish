@@ -58,7 +58,7 @@ public interface BindableResource extends Resource{
      */
     @Attribute(key=true)
     @NotNull
-    @Pattern(regexp="[^',][^',]*")
+    @Pattern(regexp="[^',][^',\\\\]*")
     public String getJndiName();
 
     /**

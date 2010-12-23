@@ -53,7 +53,7 @@ import java.beans.PropertyVetoException;
 import java.util.List;
 
 @Configured
-public interface WorkSecurityMap  extends Named, ConfigBeanProxy, Injectable, Resource {
+public interface WorkSecurityMap  extends /*Named,*/ ConfigBeanProxy, Injectable, Resource {
 
     /**
      * Gets the value of the enabled property.
@@ -98,7 +98,7 @@ public interface WorkSecurityMap  extends Named, ConfigBeanProxy, Injectable, Re
      */
     @Attribute
     @NotNull
-    @Pattern(regexp="[^':,][^':,]*")
+    @Pattern(regexp="[^',][^',\\\\]*")
     public String getResourceAdapterName();
 
     /**
@@ -126,4 +126,15 @@ public interface WorkSecurityMap  extends Named, ConfigBeanProxy, Injectable, Re
     @NotNull
     public List<PrincipalMap> getPrincipalMap();
 
+    /**
+     *  Name of the configured object
+     *
+     * @return name of the configured object
+     */
+    @Attribute(required=true, key=true)
+    @Pattern(regexp="[^',][^',\\\\]*")
+    @NotNull
+    public String getName();
+
+    public void setName(String value) throws PropertyVetoException;
 }
