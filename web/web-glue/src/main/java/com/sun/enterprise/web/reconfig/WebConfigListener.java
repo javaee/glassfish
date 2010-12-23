@@ -48,7 +48,6 @@ import com.sun.enterprise.config.serverbeans.WebContainerAvailability;
 import com.sun.enterprise.v3.services.impl.MapperUpdateListener;
 import com.sun.enterprise.web.WebContainer;
 import org.glassfish.grizzly.config.dom.NetworkListener;
-import org.glassfish.grizzly.util.http.mapper.Mapper;
 import org.apache.catalina.LifecycleException;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.config.*;
@@ -58,6 +57,7 @@ import java.beans.PropertyChangeEvent;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.grizzly.http.server.util.Mapper;
 
 
 /**
