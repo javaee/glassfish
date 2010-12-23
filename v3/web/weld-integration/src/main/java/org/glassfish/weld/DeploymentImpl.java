@@ -276,7 +276,7 @@ public class DeploymentImpl implements Deployment {
                 return bda;
             }
 
-            if (bda.getBeanDeploymentArchives() != null & bda.getBeanDeploymentArchives().size() > 0) {
+            if (bda.getBeanDeploymentArchives() != null && bda.getBeanDeploymentArchives().size() > 0) {
                 Collection<BeanDeploymentArchive> subBdas = bda.getBeanDeploymentArchives();
                 Iterator<BeanDeploymentArchive> subBdaIter = subBdas.iterator();
                 while(subBdaIter.hasNext()){

@@ -112,10 +112,11 @@ class OSGiServiceFactory {
         //Create the service tracker for this type.
         debug("creating service tracker for " + ((Class)(serviceType)).getName() 
                                             + " using bundle-context:" + bc);
-        ServiceTracker st = 
-            new ServiceTracker(bc, ((Class)(serviceType)).getName(), null);
-        st.open();
+        ServiceTracker st = null;
         try {
+            st = new ServiceTracker(bc, ((Class)(serviceType)).getName(), null);
+            st.open();
+            
             Object service = ((os.waitTimeout() == -1) 
                                     ? st.getService() 
                                     : st.waitForService(os.waitTimeout()));
@@ -131,6 +132,8 @@ class OSGiServiceFactory {
             throw new ServiceUnavailableException("" +
             		"Service" + (((Class)serviceType).getName()) + "Unavailable", 
             		ServiceException.SUBCLASSED, e);
+        } finally {
+			if (st != null) st.close();
         }
     }
 
