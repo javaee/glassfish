@@ -90,8 +90,6 @@ public final class CreateDomainCommand extends CLICommand {
     private static final String INSTANCE_PORT = "instanceport";
     private static final String DOMAIN_PROPERTIES = "domainproperties";
     private static final String PORTBASE_OPTION = "portbase";
-    private static final String DEFAULT_JMS_USER = "admin";
-    private static final String DEFAULT_JMS_PASSWORD = "admin";
 
     private String adminUser = null;
 
@@ -496,21 +494,6 @@ public final class CreateDomainCommand extends CLICommand {
                 DomainConfig.K_JMS_PORT, null,
                 Integer.toString(DEFAULT_JMS_PORT), "JMS");
 
-        /*
-         * Bug# 4859518
-         * The authentication of jms broker will fail if the jms user is not in
-         * the user database referred by jms broker. Setting the jms user and
-         * password to "admin" which is always present in the user db. Once
-         * the mechanism to update the user db with given jms user/password is
-         * in place we should set the user specified values for jms user and
-         * password.
-
-        final String jmsUser = adminUser;
-        final String jmsPassword = adminPassword;
-         */
-        final String jmsUser = DEFAULT_JMS_USER;
-        final String jmsPassword = DEFAULT_JMS_PASSWORD;
-
         final Integer orbPort = getPort(domainProperties,
                 DomainConfig.K_ORB_LISTENER_PORT,
                 null, Integer.toString(DEFAULT_IIOP_PORT),
@@ -556,8 +539,8 @@ public final class CreateDomainCommand extends CLICommand {
                 adminPortInt, domainPath, adminUser,
                 adminPassword,
                 masterPassword,
-                saveMasterPassword, instancePortInt, jmsUser,
-                jmsPassword, jmsPort, orbPort,
+                saveMasterPassword, instancePortInt,
+                jmsPort, orbPort,
                 httpSSLPort, iiopSSLPort,
                 iiopMutualAuthPort, jmxPort, osgiShellTelnetPort, javaDebuggerPort,
                 domainProperties);

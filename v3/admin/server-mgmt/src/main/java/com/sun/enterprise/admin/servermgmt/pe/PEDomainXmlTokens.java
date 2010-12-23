@@ -57,11 +57,7 @@ public final class PEDomainXmlTokens
 
     public static final String ORB_LISTENER_PORT_TOKEN_NAME  = "ORB_LISTENER_PORT";
 
-    public static final String JMS_PROVIDER_PASSWORD_TOKEN_NAME= "JMS_PROVIDER_PASSWORD"; 
-    
     public static final String JMS_PROVIDER_PORT_TOKEN_NAME= "JMS_PROVIDER_PORT"; 
-    
-    public static final String JMS_PROVIDER_USERID_TOKEN_NAME= "JMS_PROVIDER_USERID";     
     
     public static final String SERVER_ID_TOKEN_NAME= "SERVER_ID"; 
 
@@ -118,17 +114,9 @@ public final class PEDomainXmlTokens
         tv = new TokenValue(ORB_LISTENER_PORT_TOKEN_NAME, orbPort.toString());
         tokens.add(tv);
 
-        tv = new TokenValue(JMS_PROVIDER_PASSWORD_TOKEN_NAME, 
-              (String)domainConfig.get(DomainConfig.K_JMS_PASSWORD));
-        tokens.add(tv);
-
         final Integer jmsPort = 
             (Integer)domainConfig.get(DomainConfig.K_JMS_PORT);
         tv = new TokenValue(JMS_PROVIDER_PORT_TOKEN_NAME, jmsPort.toString());
-        tokens.add(tv);
-
-        tv = new TokenValue(JMS_PROVIDER_USERID_TOKEN_NAME, 
-              (String)domainConfig.get(DomainConfig.K_JMS_USER));
         tokens.add(tv);
 
         tv = new TokenValue(SERVER_ID_TOKEN_NAME, 
