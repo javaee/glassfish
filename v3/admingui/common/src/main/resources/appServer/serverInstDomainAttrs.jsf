@@ -75,7 +75,9 @@
         <sun:property id="appRootProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.domain.AppRoot}" helpText="$resource{i18nc.domain.AppRootHelp}">
             <sun:textField id="AppRoot" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.domain.AppRoot']}" text="#{pageSession.valueMap['applicationRoot']}"/>
         </sun:property>
-        
+        <sun:property id="logRootProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.domain.LogRoot}" helpText="$resource{i18nc.domain.LogRootHelp}">
+            <sun:textField id="LogRoot" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.domain.LogRoot']}" text="#{pageSession.valueMap['logRoot']}"/>
+        </sun:property>
         <sun:property id="localeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.domain.Locale}" helpText="$resource{i18nc.domain.LocaleHelp}">
             <sun:textField id="Locale" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.domain.Locale']}" text="#{pageSession.valueMap['locale']}"/>
         </sun:property>
