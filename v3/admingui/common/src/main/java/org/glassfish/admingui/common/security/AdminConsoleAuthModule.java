@@ -47,6 +47,8 @@ import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Map;
 import javax.security.auth.Subject;
 import javax.security.auth.callback.Callback;
@@ -223,6 +225,19 @@ public class AdminConsoleAuthModule implements ServerAuthModule {
 		ae.initCause(ex);
 		throw ae;
 	    }
+
+            // recreate the session
+            Map<String, Object> map = new HashMap<String, Object>();
+            Enumeration<String> names = session.getAttributeNames();
+            while (names.hasMoreElements()) {
+                String key = names.nextElement();
+                map.put(key, session.getAttribute(key));
+            }
+            session.invalidate();
+            session = request.getSession(true);
+            for (String key : map.keySet()) {
+                session.setAttribute(key, map.get(key));
+            }
 
 	    if (session != null) {
 		// Get the "extraProperties" section of the response...
