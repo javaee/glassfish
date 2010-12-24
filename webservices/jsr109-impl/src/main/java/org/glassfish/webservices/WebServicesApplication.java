@@ -66,6 +66,7 @@ import java.net.URL;
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.util.WebServerInfo;
+import org.glassfish.grizzly.http.server.HttpHandler;
 import org.jvnet.hk2.component.Habitat;
 
 
@@ -82,7 +83,7 @@ public class WebServicesApplication implements ApplicationContainer {
 
     private ArrayList<EjbEndpoint> ejbendpoints;
 
-    private org.glassfish.grizzly.tcp.Adapter adapter;
+    private HttpHandler httpHandler;
 
     private final RequestDispatcher dispatcher;
 
@@ -107,7 +108,7 @@ public class WebServicesApplication implements ApplicationContainer {
         this.dispatcher = dispatcherString;
         this.serverEnvironment = env;
         this.ejbendpoints = getEjbEndpoints();
-        this.adapter = (org.glassfish.grizzly.tcp.Adapter) new EjbWSAdapter();
+        this.httpHandler = new EjbWSAdapter();
         this.config = config;
         this.habitat = habitat;
         this.publishedFiles = publishedFiles;
@@ -130,7 +131,7 @@ public class WebServicesApplication implements ApplicationContainer {
                 ejbendpoint = iter.next();
                 String contextRoot = ejbendpoint.contextRoot;
 
-                dispatcher.registerEndpoint(contextRoot, (org.glassfish.grizzly.tcp.Adapter)adapter, this);
+                dispatcher.registerEndpoint(contextRoot, httpHandler, this);
                 logger.info(format(rb.getString("enterprise.deployment.ejbendpoint.registration"),
                         app.getAppName(),
 

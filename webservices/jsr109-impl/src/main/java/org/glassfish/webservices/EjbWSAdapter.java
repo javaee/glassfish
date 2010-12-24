@@ -40,17 +40,14 @@
 
 package org.glassfish.webservices;
 
-import org.glassfish.grizzly.tcp.http11.GrizzlyAdapter;
-import org.glassfish.grizzly.tcp.http11.GrizzlyRequest;
-import org.glassfish.grizzly.tcp.http11.GrizzlyResponse;
-import org.glassfish.grizzly.http.servlet.ServletAdapter;
+import org.glassfish.grizzly.servlet.ServletHandler;
 
 
 /**
  * This class extends the ServletAdapter and sets the servletInstance to the EjbWebServiceServlet
  * so that its service method is invoked whenever a request maps to this Adapter
  */
-public class EjbWSAdapter extends ServletAdapter {
+public class EjbWSAdapter extends ServletHandler {
 
     public EjbWSAdapter() {
         this.setServletInstance(new EjbWebServiceServlet());
