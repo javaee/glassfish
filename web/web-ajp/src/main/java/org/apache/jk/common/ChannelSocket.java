@@ -83,11 +83,11 @@ import org.apache.jk.core.JkHandler;
 import org.apache.jk.core.Msg;
 import org.apache.jk.core.MsgContext;
 import org.apache.jk.core.JkChannel;
-import org.glassfish.grizzly.http.server.Request;
 //import org.glassfish.grizzly.http.server.RequestGroupInfo;
 //import org.glassfish.grizzly.http.server.RequestInfo;
 import org.apache.tomcat.util.threads.ThreadPool;
 import org.apache.tomcat.util.threads.ThreadPoolRunnable;
+import org.glassfish.grizzly.http.HttpRequestPacket;
 
 /** 
  * Accept ( and send ) TCP messages.
@@ -493,7 +493,7 @@ public class ChannelSocket extends JkHandler
         destroy();
     }
 
-    public void registerRequest(Request req, MsgContext ep, int count) {
+    public void registerRequest(HttpRequestPacket req, MsgContext ep, int count) {
 //        if(this.domain != null) {
 //            try {
 //                RequestInfo rp=req.getRequestProcessor();

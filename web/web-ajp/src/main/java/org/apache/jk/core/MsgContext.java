@@ -69,6 +69,8 @@ import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
 
 import org.apache.jk.common.JkInputStream;
+import org.glassfish.grizzly.http.HttpRequestPacket;
+import org.glassfish.grizzly.http.HttpResponsePacket;
 import org.glassfish.grizzly.http.util.ByteChunk;
 import org.glassfish.grizzly.http.util.C2BConverter;
 import org.glassfish.grizzly.http.util.MessageBytes;
@@ -85,8 +87,8 @@ import org.glassfish.grizzly.ssl.SSLSupport;
  */
 public class MsgContext implements ActionHook {
 
-    private static Logger log = Logger.getLogger(MsgContext.class.getName());
-    private static Logger logTime = Logger.getLogger( "org.apache.jk.REQ_TIME" );
+    private static final Logger log = Logger.getLogger(MsgContext.class.getName());
+    private static final Logger logTime = Logger.getLogger( "org.apache.jk.REQ_TIME" );
 
     private int type;
     private Object notes[]=new Object[32];
@@ -94,7 +96,7 @@ public class MsgContext implements ActionHook {
     private JkChannel source;
     private JkInputStream jkIS;
     private C2BConverter c2b;
-    private Request req;
+    private HttpRequestPacket req;
     private WorkerEnv wEnv;
     private Msg msgs[]=new Msg[10];
     private int status=0;
@@ -196,15 +198,15 @@ public class MsgContext implements ActionHook {
 
     /** The high level request object associated with this context
      */
-    public final void setRequest( Request req ) {
-        this.req=req;
-        req.setInputBuffer(jkIS);
-        Response res = req.getResponse();
-        res.setOutputBuffer(jkIS);
-        res.setHook(this);
+    public final void setRequest( HttpRequestPacket req ) {
+//        this.req=req;
+//        req.setInputBuffer(jkIS);
+//        HttpResponsePacket res = req.getResponse();
+//        res.setOutputBuffer(jkIS);
+//        res.setHook(this);
     }
 
-    public final Request getRequest() {
+    public final HttpRequestPacket getRequest() {
         return req;
     }
 
@@ -329,7 +331,8 @@ public class MsgContext implements ActionHook {
             } catch(IOException iex) {
                 // This is logged elsewhere, so debug only here
                 log.log(Level.FINEST, "Error during flush",iex);
-                res.setErrorException(iex);
+//                res.setErrorException(iex);
+                res.setError();
                 setStatus(JK_STATUS_ERROR);
             }
             
@@ -401,7 +404,7 @@ public class MsgContext implements ActionHook {
             }
                 
         } else if( actionCode==ActionCode.ACTION_REQ_HOST_ATTRIBUTE ) {
-            Request req=(Request)param;
+            HttpRequestPacket req = (HttpRequestPacket) param;
 
             // If remoteHost not set by JK, get it's name from it's remoteAddr
             if( req.remoteHost().isNull()) {

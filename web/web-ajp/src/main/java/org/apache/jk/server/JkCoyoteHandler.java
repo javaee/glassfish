@@ -69,6 +69,8 @@ import org.apache.jk.core.JkHandler;
 import org.apache.jk.core.Msg;
 import org.apache.jk.core.MsgContext;
 import org.apache.tomcat.util.modeler.Registry;
+import org.glassfish.grizzly.http.HttpRequestPacket;
+import org.glassfish.grizzly.http.HttpResponsePacket;
 import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.Request;
 //import org.glassfish.grizzly.http.server.RequestInfo;
@@ -221,34 +223,35 @@ public class JkCoyoteHandler extends JkHandler implements ProtocolHandler {
     // Jk Handler mehod
     public int invoke(Msg msg, MsgContext ep)
         throws IOException {
-        if (ep.isLogTimeEnabled()) {
-            ep.setLong(MsgContext.TIMER_PRE_REQUEST, System.currentTimeMillis());
-        }
-        Request req = ep.getRequest();
-        Response res = req.getResponse();
-        if (log.isLoggable(Level.FINEST)) {
-            log.log(Level.FINEST, "Invoke {0} {1} {2}",
-                    new Object[]{req, res, req.getRequestURI()});
-        }
-
-        req.setNote(epNote, ep);
-//        res.setNote(epNote, ep);
-        ep.setStatus(MsgContext.JK_STATUS_HEAD);
-//        RequestInfo rp = req.getRequestProcessor();
-//        rp.setStage(Constants.STAGE_SERVICE);
-        try {
-            handler.service(req, res);
-        } catch (Exception ex) {
-            log.log(Level.INFO, "Error servicing request " + req, ex);
-        }
-        if (ep.getStatus() != MsgContext.JK_STATUS_CLOSED) {
-            res.finish();
-        }
-        ep.recycle();
-        if (ep.getStatus() == MsgContext.JK_STATUS_ERROR) {
-            return ERROR;
-        }
-        ep.setStatus(MsgContext.JK_STATUS_NEW);
+//        if (ep.isLogTimeEnabled()) {
+//            ep.setLong(MsgContext.TIMER_PRE_REQUEST, System.currentTimeMillis());
+//        }
+//        HttpRequestPacket req = ep.getRequest();
+//        HttpResponsePacket res = req.getResponse();
+//        if (log.isLoggable(Level.FINEST)) {
+//            log.log(Level.FINEST, "Invoke {0} {1} {2}",
+//                    new Object[]{req, res, req.getRequestURI()});
+//        }
+//
+//        //@TODO create Request/Response on base of HttpRequestPacket/HttpResponsePacket
+//        req.setNote(epNote, ep);
+////        res.setNote(epNote, ep);
+//        ep.setStatus(MsgContext.JK_STATUS_HEAD);
+////        RequestInfo rp = req.getRequestProcessor();
+////        rp.setStage(Constants.STAGE_SERVICE);
+//        try {
+//            handler.service(req, res);
+//        } catch (Exception ex) {
+//            log.log(Level.INFO, "Error servicing request " + req, ex);
+//        }
+//        if (ep.getStatus() != MsgContext.JK_STATUS_CLOSED) {
+//            res.finish();
+//        }
+//        ep.recycle();
+//        if (ep.getStatus() == MsgContext.JK_STATUS_ERROR) {
+//            return ERROR;
+//        }
+//        ep.setStatus(MsgContext.JK_STATUS_NEW);
 //        rp.setStage(Constants.STAGE_KEEPALIVE);
         return OK;
     }

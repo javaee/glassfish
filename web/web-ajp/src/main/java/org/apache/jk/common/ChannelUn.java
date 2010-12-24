@@ -70,13 +70,11 @@ import org.apache.jk.core.JkHandler;
 import org.apache.jk.core.Msg;
 import org.apache.jk.core.MsgContext;
 import org.apache.jk.core.JkChannel;
-import org.apache.jk.core.WorkerEnv;
-import org.glassfish.grizzly.http.server.Request;
 //import org.glassfish.grizzly.http.server.RequestGroupInfo;
 //import org.glassfish.grizzly.http.server.RequestInfo;
-import org.apache.tomcat.util.modeler.Registry;
 import org.apache.tomcat.util.threads.ThreadPool;
 import org.apache.tomcat.util.threads.ThreadPoolRunnable;
+import org.glassfish.grizzly.http.HttpRequestPacket;
 
 
 /** Pass messages using unix domain sockets.
@@ -237,7 +235,7 @@ public class ChannelUn extends JniHandler implements JkChannel {
         }
     }
 
-    public void registerRequest(Request req, MsgContext ep, int count) {
+    public void registerRequest(HttpRequestPacket req, MsgContext ep, int count) {
 //	if(this.domain != null) {
 //	    try {
 //
