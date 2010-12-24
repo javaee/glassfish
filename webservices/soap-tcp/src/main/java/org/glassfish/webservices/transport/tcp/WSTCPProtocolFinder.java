@@ -41,8 +41,6 @@
 package org.glassfish.webservices.transport.tcp;
 
 import org.glassfish.grizzly.Context;
-import org.glassfish.grizzly.portunif.PUProtocolRequest;
-import org.glassfish.grizzly.portunif.ProtocolFinder;
 import com.sun.logging.LogDomains;
 import com.sun.xml.ws.transport.tcp.util.TCPConstants;
 import java.io.IOException;
@@ -55,7 +53,8 @@ import java.util.logging.Logger;
  *
  * @author Alexey Stashok
  */
-public class WSTCPProtocolFinder implements ProtocolFinder {
+public class WSTCPProtocolFinder {
+//        implements ProtocolFinder {
 
     private static Logger logger = LogDomains.getLogger(WSTCPProtocolFinder.class, LogDomains.WEBSERVICES_LOGGER);
     private final static byte[] PROTOCOL_SCHEMA_BYTES;
@@ -72,31 +71,31 @@ public class WSTCPProtocolFinder implements ProtocolFinder {
         PROTOCOL_SCHEMA_BYTES = bytes;
     }
 
-    public String find(Context context, PUProtocolRequest puRequest)
-            throws IOException {
-
-        ByteBuffer buffer = puRequest.getByteBuffer();
-        int position = buffer.position();
-        int limit = buffer.limit();
-        try {
-            buffer.flip();
-
-
-            if (buffer.remaining() < PROTOCOL_SCHEMA_BYTES.length) {
-                return null;
-            }
-
-            for (int i = 0; i < PROTOCOL_SCHEMA_BYTES.length; i++) {
-                if (buffer.get(i) != PROTOCOL_SCHEMA_BYTES[i]) {
-                    return null;
-                }
-            }
-
-            puRequest.setMapSelectionKey(true);
-            return TCPConstants.PROTOCOL_SCHEMA;
-        } finally {
-            buffer.limit(limit);
-            buffer.position(position);
-        }
-    }
+//    public String find(Context context, PUProtocolRequest puRequest)
+//            throws IOException {
+//
+//        ByteBuffer buffer = puRequest.getByteBuffer();
+//        int position = buffer.position();
+//        int limit = buffer.limit();
+//        try {
+//            buffer.flip();
+//
+//
+//            if (buffer.remaining() < PROTOCOL_SCHEMA_BYTES.length) {
+//                return null;
+//            }
+//
+//            for (int i = 0; i < PROTOCOL_SCHEMA_BYTES.length; i++) {
+//                if (buffer.get(i) != PROTOCOL_SCHEMA_BYTES[i]) {
+//                    return null;
+//                }
+//            }
+//
+//            puRequest.setMapSelectionKey(true);
+//            return TCPConstants.PROTOCOL_SCHEMA;
+//        } finally {
+//            buffer.limit(limit);
+//            buffer.position(position);
+//        }
+//    }
 }

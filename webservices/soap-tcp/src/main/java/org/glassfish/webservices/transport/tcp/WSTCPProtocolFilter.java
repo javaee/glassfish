@@ -40,77 +40,71 @@
 
 package org.glassfish.webservices.transport.tcp;
 
-import org.glassfish.grizzly.BaseSelectionKeyHandler;
-import org.glassfish.grizzly.Context;
-import org.glassfish.grizzly.ProtocolFilter;
-import org.glassfish.grizzly.SelectionKeyHandler;
-import org.glassfish.grizzly.TCPSelectorHandler;
-import org.glassfish.grizzly.util.ConnectionCloseHandler;
-import org.glassfish.grizzly.util.WorkerThread;
+import org.glassfish.grizzly.Connection;
+import org.glassfish.grizzly.filterchain.FilterChainContext;
+import org.glassfish.grizzly.filterchain.NextAction;
 import com.sun.logging.LogDomains;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
-import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.grizzly.Connection.CloseListener;
+import org.glassfish.grizzly.filterchain.BaseFilter;
+import org.glassfish.grizzly.nio.NIOConnection;
 
 /**
  *
  * @author Alexey Stashok
  */
-public class WSTCPProtocolFilter implements ProtocolFilter {
+public class WSTCPProtocolFilter extends BaseFilter {
     private static Logger logger = LogDomains.getLogger(WSTCPProtocolFilter.class, LogDomains.WEBSERVICES_LOGGER);
 
     private volatile Connector connector;
-    private final ConnectionCloseHandler closeHandler = new WSTCPConnectionCloseHandler();
+//    private final ConnectionCloseHandler closeHandler = new WSTCPConnectionCloseHandler();
     
     private final Object sync = new Object();
 
     private static final V3Module module = new V3Module();
-    
-    public boolean execute(Context ctx) throws IOException {
-        if (connector == null) {
-            synchronized(sync) {
-                if (connector == null) {
-                    final TCPSelectorHandler handler = (TCPSelectorHandler) ctx.getSelectorHandler();
-                    final String host = handler.getInet().getHostName();
-                    final int port = handler.getPort();
 
-                    logger.log(Level.INFO, "Initialize SOAP/TCP protocol for port: " + port);
-                    
-                    connector = new Connector(host, port, module.getDelegate());
+    @Override
+    public NextAction handleRead(final FilterChainContext ctx) throws IOException {
+//        if (connector == null) {
+//            synchronized(sync) {
+//                if (connector == null) {
+//                    final TCPSelectorHandler handler = (TCPSelectorHandler) ctx.getSelectorHandler();
+//                    final String host = handler.getInet().getHostName();
+//                    final int port = handler.getPort();
+//
+//                    logger.log(Level.INFO, "Initialize SOAP/TCP protocol for port: " + port);
+//
+//                    connector = new Connector(host, port, module.getDelegate());
+//
+//                    final SelectionKeyHandler keyHandler = handler.getSelectionKeyHandler();
+//                    if (keyHandler instanceof BaseSelectionKeyHandler) {
+//                        ((BaseSelectionKeyHandler) keyHandler).setConnectionCloseHandler(closeHandler);
+//                    }
+//                }
+//            }
+//        }
+//
+//        final ByteBuffer byteBuffer =
+//                ((WorkerThread) Thread.currentThread()).getByteBuffer();
+//        byteBuffer.flip();
+//        final SocketChannel channel = (SocketChannel) ctx.getSelectionKey().channel();
+//        connector.process(byteBuffer, channel);
 
-                    final SelectionKeyHandler keyHandler = handler.getSelectionKeyHandler();
-                    if (keyHandler instanceof BaseSelectionKeyHandler) {
-                        ((BaseSelectionKeyHandler) keyHandler).setConnectionCloseHandler(closeHandler);
-                    }
-                }
-            }
-        }
-
-        final ByteBuffer byteBuffer =
-                ((WorkerThread) Thread.currentThread()).getByteBuffer();
-        byteBuffer.flip();
-        final SocketChannel channel = (SocketChannel) ctx.getSelectionKey().channel();
-        connector.process(byteBuffer, channel);
-
-        return false;
+        return ctx.getStopAction();
     }
 
-    public boolean postExecute(Context ctx) throws IOException {
-        return true;
-    }
+    protected class WSTCPConnectionCloseHandler implements CloseListener {
 
-    protected class WSTCPConnectionCloseHandler implements ConnectionCloseHandler {
-
-        public void locallyClosed(SelectionKey key) {
-            notifyConnectionClosed(key);
-        }
-
-        public void remotlyClosed(SelectionKey key) {
-            notifyConnectionClosed(key);
-        }
+//        public void locallyClosed(SelectionKey key) {
+//            notifyConnectionClosed(key);
+//        }
+//
+//        public void remotlyClosed(SelectionKey key) {
+//            notifyConnectionClosed(key);
+//        }
 
         private void notifyConnectionClosed(SelectionKey key) {
             try {
@@ -125,6 +119,11 @@ public class WSTCPProtocolFilter implements ProtocolFilter {
                 }
             } catch (Exception e) {
             }
+        }
+
+        @Override
+        public void onClosed(Connection connection) throws IOException {
+            notifyConnectionClosed(((NIOConnection) connection).getSelectionKey());
         }
 
     }
