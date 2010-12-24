@@ -40,7 +40,6 @@
 
 package org.glassfish.extras.grizzly;
 
-import org.glassfish.grizzly.tcp.http11.GrizzlyAdapter;
 import org.glassfish.grizzly.http.server.util.IntrospectionUtils;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
@@ -56,6 +55,7 @@ import java.util.logging.Level;
 
 import com.sun.logging.LogDomains;
 import java.util.ArrayList;
+import org.glassfish.grizzly.http.server.HttpHandler;
 
 /**
  * @author Jerome Dochez
@@ -94,23 +94,21 @@ public class GrizzlyDeployer implements Deployer<GrizzlyContainer, GrizzlyApp> {
         Map<String,ArrayList<GrizzlyProperty>>
                         properties = configs.getProperties();
         for (Map.Entry<String, String> config : configs.getAdapters().entrySet()) {
-            org.glassfish.grizzly.tcp.Adapter adapter;
+            HttpHandler httpHandler;
             try {
                 Class adapterClass = context.getClassLoader().loadClass(config.getValue());
-                adapter = org.glassfish.grizzly.tcp.Adapter.class.cast(adapterClass.newInstance());
+                httpHandler = HttpHandler.class.cast(adapterClass.newInstance());
                 ArrayList<GrizzlyProperty> list =
                         properties.get(config.getValue());
                 for (GrizzlyProperty p: list){
-                    IntrospectionUtils.setProperty(adapter, p.name, p.value);
+                    IntrospectionUtils.setProperty(httpHandler, p.name, p.value);
                 }
-                if (adapter instanceof GrizzlyAdapter){
-                    ((GrizzlyAdapter)adapter).start();
-                }
+                httpHandler.start();
             } catch(Exception e) {
                 context.getLogger().log(Level.SEVERE, e.getMessage(),e);
                 return null;
             }
-            modules.add(new GrizzlyApp.Adapter(config.getKey(), adapter));
+            modules.add(new GrizzlyApp.Adapter(config.getKey(), httpHandler));
         }
         return new GrizzlyApp(modules, dispatcher, context.getClassLoader());
 
