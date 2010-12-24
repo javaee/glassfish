@@ -7,7 +7,9 @@ NAME
 SYNOPSIS
      stop-cluster [--help]
      [--verbose={false|true}]
-     [--autohadboverride={true|false}] cluster-name
+     [--kill={false|true}]
+     [--autohadboverride={true|false}]
+     cluster-name
 
 DESCRIPTION
      The stop-cluster subcommand stops a GlassFish Server cluster
@@ -38,20 +40,39 @@ OPTIONS
              No messages about the status  of  instances  in  the
              cluster are displayed.
 
-     --autohadboverride
+     --kill
 
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command runs successfully and the option is ignored.
+         Specifies whether each instance in the cluster is killed
+         by  using  functionality of the operating system to ter-
+         minate the instance process.
 
-Java EE 6            Last change: 8 Oct 2010                    1
+         Possible values are as follows:
+
+Java EE 6           Last change: 16 Dec 2010                    1
 
 asadmin Utility Subcommands                       stop-cluster(1)
 
+         false
+
+             No instances are killedTMThe subcommand  uses  func-
+             tionality  of  the Java   platform to terminate each
+             instance process (default).
+
+         true
+             Each instance is killed. The subcommand  uses  func-
+             tionality  of the operating system to terminate each
+             instance process.
+
+     --autohadboverride
+
+         Do not specify this option. This option is retained  for
+         compatibility with earlier releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command runs successfully and displays a warning message
+         that the option is ignored.
+
 OPERANDS
      cluster-name
-
          The name of the cluster to stop.
 
 EXAMPLES
@@ -72,6 +93,10 @@ EXAMPLES
 EXIT STATUS
      0                           command executed successfully
 
+Java EE 6           Last change: 16 Dec 2010                    2
+
+asadmin Utility Subcommands                       stop-cluster(1)
+
      1                           error in executing the command
 
 SEE ALSO
@@ -80,5 +105,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6            Last change: 8 Oct 2010                    2
+Java EE 6           Last change: 16 Dec 2010                    3
 

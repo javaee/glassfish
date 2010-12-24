@@ -48,7 +48,7 @@ OPTIONS
          The name of the host that the node represents. The  name
          of  the  host  must  be  specified.  Otherwise, an error
 
-Java EE 6           Last change: 10 Dec 2010                    1
+Java EE 6           Last change: 16 Dec 2010                    1
 
 asadmin Utility Subcommands                    create-node-ssh(1)
 
@@ -76,16 +76,16 @@ asadmin Utility Subcommands                    create-node-ssh(1)
 
          The port to use for SSH connections to this node's host.
          The  default  is  22. If the --nodehost option is set to
-         localhost, the --sshport option is ignored.
+         localhost-domain, the --sshport option is ignored.
 
      --sshuser
-         The user that is to run the process  for  connecting  to
-         this  node's  host  through SSH. The default is the user
-         that is running the DAS process. To ensure that the  DAS
-         can  read  this user's SSH private key file, specify the
-         user that is running the DAS process. If the  --nodehost
-         option  is  set  to  localhost,  the --sshuser option is
-         ignored.
+         The user on this node's host that is to run the  process
+         for  connecting  to the host through SSH. The default is
+         the user that is running the DAS process. To ensure that
+         the  DAS  can  read  this  user's  SSH private key file,
+         specify the user that is running the DAS process. If the
+         --nodehost  option  is  set  to localhost-domain, the --
+         sshuser option is ignored.
 
      --sshkeyfile
 
@@ -101,7 +101,7 @@ asadmin Utility Subcommands                    create-node-ssh(1)
            file.  The  password  file  is  specified  in  the  --
            paswordfile option of the asadmin(1M) utility.
 
-Java EE 6           Last change: 10 Dec 2010                    2
+Java EE 6           Last change: 16 Dec 2010                    2
 
 asadmin Utility Subcommands                    create-node-ssh(1)
 
@@ -110,17 +110,17 @@ asadmin Utility Subcommands                    create-node-ssh(1)
          AS_ADMIN_SSHKEYPASSPHRASE entry.
 
          The path to the key file must be reachable  by  the  DAS
-         and  the  key file must be readable by the DAS. The path
-         may contain Java properties of the form ${prop.name}.
+         and the key file must be readable by the DAS.
 
-         The default is the a platform-dependent key file in  the
-         user's .ssh directory, for example:
+         The default is the a key file in the user's .ssh  direc-
+         tory.  If  multiple  key files are found, the subcommand
+         uses the following order of preference:
 
-             o    id_rsa
+             1.   id_rsa
 
-             o    id_dsa
+             2.   id_dsa
 
-             o    identity
+             3.   identity
 
      --force
 
@@ -153,7 +153,7 @@ asadmin Utility Subcommands                    create-node-ssh(1)
          true
              The GlassFish Server software is  installed  on  the
 
-Java EE 6           Last change: 10 Dec 2010                    3
+Java EE 6           Last change: 16 Dec 2010                    3
 
 asadmin Utility Subcommands                    create-node-ssh(1)
 
@@ -193,10 +193,6 @@ OPERANDS
 
                  o    Underscore
 
-                 o    Slash
-
-                 o    Hash
-
              o    The name must be unique in the domain and  must
                   not  be  the name of another node, a cluster, a
                   named  configuration,  or  a  GlassFish  Server
@@ -206,14 +202,16 @@ OPERANDS
                   other  keyword  that  is  reserved by GlassFish
                   Server.
 
-Java EE 6           Last change: 10 Dec 2010                    4
+EXAMPLES
+     This  example  creates   the   node   adc   for   the   host
+     adc.example.com.   The   parent  of  the  base  installation
+
+Java EE 6           Last change: 16 Dec 2010                    4
 
 asadmin Utility Subcommands                    create-node-ssh(1)
 
-EXAMPLES
-     This  example  creates   the   node   adc   for   the   host
-     adc.example.com.  The parent of the base installation direc-
-     tory of the GlassFish Server software is /export/glassfish3.
+     directory   of   the   GlassFish    Server    software    is
+     /export/glassfish3.
 
      Example 1 Creating a Node
 
@@ -251,5 +249,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 10 Dec 2010                    5
+Java EE 6           Last change: 16 Dec 2010                    5
 

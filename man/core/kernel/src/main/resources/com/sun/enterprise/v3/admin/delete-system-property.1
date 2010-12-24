@@ -7,7 +7,7 @@ NAME
      time
 
 SYNOPSIS
-     delete-system-property [--help] [--target  target_name ]
+     delete-system-property [--help] [--target target_name ]
      [property_name]
 
 DESCRIPTION
@@ -25,10 +25,10 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --target
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command runs successfully and the option is ignored.
+         This option specifies the target on which you are delet-
+         ing  the  system  properties. The valid targets for this
+         subcommand are instance, cluster, configuration, domain,
+         and server. Server is the default option.
 
 OPERANDS
      property_name
@@ -44,7 +44,7 @@ EXAMPLES
        asadmin> delete-system-property http-listener-port
        Command delete-system-property executed successfully.
 
-Java EE 6            Last change: 9 Oct 2009                    1
+Java EE 6           Last change: 22 Dec 2010                    1
 
 asadmin Utility Subcommands             delete-system-property(1)
 
@@ -59,5 +59,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6            Last change: 9 Oct 2009                    2
+Java EE 6           Last change: 22 Dec 2010                    2
 

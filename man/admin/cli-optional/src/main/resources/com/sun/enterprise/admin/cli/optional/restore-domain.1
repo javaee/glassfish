@@ -5,79 +5,88 @@ NAME
      restore-domain - restores files from backup
 
 SYNOPSIS
-     restore-domain  [--domaindir domain_directory]
-      [--filename backup_filename] [--description description]
-      [--terse=false] [--verbose=false]
-      [domain_name]
+     restore-domain [--help]
+     [--long[={false|true}]]
+     [--filename backup-filename]
+     [--domaindirdomain-directory]
+     [--backupdirbackup-directory]
+     [--backupconfigbackup-config-name]
+     [--force[={false|true}]]
+     [domain-name]
 
 DESCRIPTION
      This command restores files under the domain from  a  backup
-     directory.  The restore-domain command is supported in local
-     mode only.
+     directory.
+
+     The restore-domain command is supported in local mode only.
 
 OPTIONS
-     --domaindir
+     --help
+     -?
 
-         This option specifies the parent directory of the domain
-         upon  which  the  command  will  operate. The default is
-         install_dir/domains.
+         Displays the help text for the subcommand.
+
+     --long
+     -l
+         Displays detailed information about the  restore  opera-
+         tion.
+
+         The default value is false.
 
      --filename
-         The restore is performed using the specified zip file as
-         the source.
 
-     --description
+         Specifies the name of the backup  file  to  use  as  the
+         source.
 
-         A description can contain any string  to  help  identify
-         the  particular  backup. The description is displayed as
-         part of the information for any backup.
+     --domaindir
+         Specifies the parent directory of the domain to restore.
 
-     -t --terse
-         Indicates that any output data  must  be  very  concise,
-         typically avoiding human-friendly sentences and favoring
-         well-formatted data for consumption by a script. Default
-         is false.
+         The default value is as-install/domains.
 
-     -v --verbose
+     --backupdir
 
-         Indicates that output data is  displayed  with  detailed
-         information. Default is false.
+         Specifies the directory under which the backup  file  is
+         stored.
 
-OPERANDS
-     domain_name
-         This is the name of the domain to restore. If the domain
-         is  not specified and only one domain exists, it will be
-
-Java EE 6           Last change: 30 Jan 2007                    1
+Java EE 6           Last change: 22 Dec 2010                    1
 
 asadmin Utility Subcommands                     restore-domain(1)
 
-         used automatically.
+         The   default   value   is    as-install/domains/domain-
+         name/backups.
 
-EXAMPLES
-     Example 1 Using restore-domain
+     --backupconfig
 
-       asadmin>restore-domain
-       --domaindir /opt/SUNWappserver/nondefaultdomaindir/domain1
-       --filename sjsas_backup_v00001.zip domain1
-       Successfully restored the domain (domain1), from /opt/SUNWappserver/nondefaultdomaindir/domain1/
-       backups/sjsas_backup_v00001.zip
+         (Supported only in Oracle GlassFish Server.) The name of
+         the  domain backup configuration in the backup directory
+         under which the backup file is stored.
 
-       Description: 1137030607263
-       Backup Filename: /opt/SUNWappserver/nondefaultdomaindir/domain1/backups/sjsas_backup_v00001.zip
-       Date and time backup was performed: Wed Jan 11 17:50:07 PST 2006
-       Domains Directory: /opt/SUNWappserver/nondefaultdomaindir
-       Domain Directory: /opt/SUNWappserver/nondefaultdomaindir/domain1
-       Domain Name: domain1
-       Name of the user that performed the backup: jondoe
+     --force
+         Causes the restore operation to continue even  when  the
+         name of the domain to restore does not match the name of
+         the domain stored in the backup file.
+
+         The default value is false.
+
+OPERANDS
+     domain-name
+
+         Specifies the name of the domain to restore.
+
+         This operand is optional if only one  domain  exists  in
+         the GlassFish Server installation.
+
+         If the specified domain name does not match  the  domain
+         name  stored  in the backup file, an error occurs unless
+         the --force option is specified.
 
 EXIT STATUS
-     0                           command executed successfully
+     0            subcommand executed successfully
 
-     1                           error in executing the command
+     1            error in executing the subcommand
 
 SEE ALSO
      backup-domain(1), list-backups(1)
 
-Java EE 6           Last change: 30 Jan 2007                    2
+Java EE 6           Last change: 22 Dec 2010                    2
 

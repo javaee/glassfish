@@ -44,7 +44,7 @@ DESCRIPTION
      the --long option of the subcommand is false, the subcommand
      lists only the name of each node.
 
-Java EE 6            Last change: 7 Dec 2010                    1
+Java EE 6           Last change: 16 Dec 2010                    1
 
 asadmin Utility Subcommands                         list-nodes(1)
 
@@ -73,10 +73,10 @@ EXAMPLES
      Example 1 Listing GlassFish Server Nodes
 
      This example displays the  name,  type,  and  host  for  all
-     GlassFish Server nodes in a domain.
+     GlassFish Server nodes in the domain domain1.
 
        asadmin> list-nodes
-       localhost  CONFIG  localhost
+       localhost-domain1  CONFIG  localhost
        sj02  SSH  sj02.example.com
        sj01  SSH  sj01.example.com
        devnode  CONFIG  localhost
@@ -85,13 +85,13 @@ EXAMPLES
      Example 2 Listing Only the Names of GlassFish Server Nodes
 
      This example uses the --terse option of the asadmin  utility
-     to  list  only  the names of the GlassFish Server nodes in a
-     domain.
+     to  list only the names of the GlassFish Server nodes in the
+     domain domain1.
 
        asadmin> list-nodes --terse=true
-       localhost
+       localhost-domain1
 
-Java EE 6            Last change: 7 Dec 2010                    2
+Java EE 6           Last change: 16 Dec 2010                    2
 
 asadmin Utility Subcommands                         list-nodes(1)
 
@@ -101,15 +101,15 @@ asadmin Utility Subcommands                         list-nodes(1)
 
      Example 3 Listing GlassFish Server Nodes in Long Format
 
-     This example lists the GlassFish Server nodes in a domain in
-     long format.
+     This example lists the GlassFish Server nodes in the  domain
+     domain1 in long format.
 
        asadmin> list-nodes --long=true
-       NODE NAME   TYPE     NODE HOST          INSTALL DIRECTORY     REFERENCED BY
-       localhost   CONFIG   localhost          /export/glassfish3
-       sj02        SSH      sj02.example.com   /export/glassfish3    pmd-i-sj02, yml-i-sj02
-       sj01        SSH      sj01.example.com   /export/glassfish3    pmd-i-sj01, yml-i-sj01
-       devnode     CONFIG   localhost          /export/glassfish3    pmdsa1
+       NODE NAME           TYPE     NODE HOST          INSTALL DIRECTORY     REFERENCED BY
+       localhost-domain1   CONFIG   localhost          /export/glassfish3
+       sj02                SSH      sj02.example.com   /export/glassfish3    pmd-i2, yml-i2
+       sj01                SSH      sj01.example.com   /export/glassfish3    pmd-i1, yml-i1
+       devnode             CONFIG   localhost          /export/glassfish3    pmdsa1
        Command list-nodes executed successfully.
 
 EXIT STATUS
@@ -124,5 +124,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6            Last change: 7 Dec 2010                    3
+Java EE 6           Last change: 16 Dec 2010                    3
 

@@ -7,7 +7,8 @@ NAME
      utility
 
 SYNOPSIS
-     multimode [--help] [--file filename] [--printprompt={true|false}] [--encoding encode]
+     multimode [--help] [--file filename]
+     [--printprompt={true|false}] [--encoding encode]
 
 DESCRIPTION
      The  multimode  subcommand  processes  asadmin   subcommands
@@ -40,19 +41,20 @@ OPTIONS
 
          Displays the help text for the subcommand.
 
-     --file filename
-         Reads the subcommands as specified in filename.
+     --file
+     -f
+         Reads the subcommands in the specified file.
 
      --printprompt
 
          Controls printing of the  asadmin  prompt.  By  default,
-         this  option  is  set  to  the  same  value  as  the  --
-         interactive asadmin utility option.  Normally  you  will
 
-Java EE 6           Last change: 19 Oct 2009                    1
+Java EE 6           Last change: 20 Dec 2010                    1
 
 asadmin Utility Subcommands                          multimode(1)
 
+         this  option  is  set  to  the  same  value  as  the  --
+         interactive asadmin utility option.  Normally  you  will
          not need to specify this option. Default is true.
 
      --encoding
@@ -72,7 +74,7 @@ EXAMPLES
      You can also start a multimode  session  by  typing  asadmin
      without options or subcommands at the system prompt.
 
-     Example 2  Running Multiple Commands From a File
+     Example 2 Running Multiple Commands From a File
 
      This  example  runs  a  sequence  of  subcommands  from  the
      commands_file.txt file.
@@ -88,7 +90,11 @@ EXIT STATUS
 SEE ALSO
      export(1), unset(1)
 
+Java EE 6           Last change: 20 Dec 2010                    2
+
+asadmin Utility Subcommands                          multimode(1)
+
      asadmin(1M)
 
-Java EE 6           Last change: 19 Oct 2009                    2
+Java EE 6           Last change: 20 Dec 2010                    3
 

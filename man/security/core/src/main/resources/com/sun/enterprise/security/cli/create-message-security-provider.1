@@ -37,10 +37,29 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --target
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command runs successfully and the option is ignored.
+         Specifies the target for which you are creating the mes-
+         sage security provider. The following values are valid:
+
+         server
+
+             Creates the provider for the default server instance
+             server and is the default value.
+
+         domain
+             Creates the provider for the domain.
+
+Java EE 6           Last change: 22 Dec 2010                    1
+
+asadmin Utility Subcommands   create-message-security-provider(1)
+
+         cluster_name
+
+             Creates the provider for every  server  instance  in
+             the cluster.
+
+         instance_name
+             Creates  the  provider  for   a   particular   sever
+             instance.
 
      --classname
 
@@ -50,29 +69,23 @@ OPTIONS
          interface.  Server-side  providers  must  implement  the
          com.sun.enterprise.security       jauth.ServerAuthModule
          interface. A provider may implement both interfaces, but
-
-Java EE 6           Last change: 28 Aug 2009                    1
-
-asadmin Utility Subcommands   create-message-security-provider(1)
-
          it must implement the  interface  corresponding  to  its
          provider type.
 
      --layer
-
          The message-layer entity used to define the value of the
          auth-layer  attribute  of  message-security-config  ele-
          ments. The default is  HttpServlet.  Another  option  is
          SOAP.
 
      --providertype
+
          Establishes whether the provider is to be used as client
          authentication provider, server authentication provider,
          or both. Valid options for this property include client,
          server, or client-server.
 
      --requestauthsource
-
          The auth-source  attribute  defines  a  requirement  for
          message-layer sender authentication (e.g. username pass-
          word) or content authentication (e.g. digital signature)
@@ -81,9 +94,15 @@ asadmin Utility Subcommands   create-message-security-provider(1)
          source authentication of the request is not required.
 
      --requestauthrecipient
+
          The auth-recipient attribute defines a  requirement  for
          message-layer  authentication  of the receiver of a mes-
          sage to its sender (e.g. by  XML  encryption).  Possible
+
+Java EE 6           Last change: 22 Dec 2010                    2
+
+asadmin Utility Subcommands   create-message-security-provider(1)
+
          values  are before-content or after-content. The default
          value is after-content.
 
@@ -101,11 +120,6 @@ asadmin Utility Subcommands   create-message-security-provider(1)
          message-layer  authentication  of  the  receiver  of the
          response message to its sender (e.g. by XML encryption).
          Possible values are before-content or after-content. The
-
-Java EE 6           Last change: 28 Aug 2009                    2
-
-asadmin Utility Subcommands   create-message-security-provider(1)
-
          default value is after-content.
 
      --isdefaultprovider
@@ -136,6 +150,11 @@ asadmin Utility Subcommands   create-message-security-provider(1)
 
          debug
              If true, enables dumping of  server  provider  debug
+
+Java EE 6           Last change: 22 Dec 2010                    3
+
+asadmin Utility Subcommands   create-message-security-provider(1)
+
              messages to the server log. The default is false.
 
          dynamic.username. password
@@ -151,10 +170,6 @@ asadmin Utility Subcommands   create-message-security-provider(1)
              Specifies the encryption key used by  the  provider.
              The  key  is  identified  by its keystore alias. The
              default value is s1as.
-
-Java EE 6           Last change: 28 Aug 2009                    3
-
-asadmin Utility Subcommands   create-message-security-provider(1)
 
          signature.key.alias
 
@@ -180,6 +195,10 @@ EXAMPLES
 EXIT STATUS
      0                            command executed successfully
 
+Java EE 6           Last change: 22 Dec 2010                    4
+
+asadmin Utility Subcommands   create-message-security-provider(1)
+
      1                            error in executing the command
 
 SEE ALSO
@@ -188,5 +207,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 28 Aug 2009                    4
+Java EE 6           Last change: 22 Dec 2010                    5
 

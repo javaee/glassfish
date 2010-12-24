@@ -5,8 +5,10 @@ NAME
      create-audit-module - adds an audit module
 
 SYNOPSIS
-     create-audit-module  --classname classname [--help]
+     create-audit-module [--help]
+     --classname classname
      [--property(name=value)[:name=value]*]
+     [--target target]
      audit_module_name
 
 DESCRIPTION
@@ -45,21 +47,35 @@ OPTIONS
          Other available properties are determined by the  imple-
          mentation of the audit module.
 
-     --target
-
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-
-Java EE 6          Last change: 28 August 2009                  1
+Java EE 6           Last change: 22 Dec 2010                    1
 
 asadmin Utility Subcommands                create-audit-module(1)
 
-         option, a syntax error does not occur. Instead, the sub-
-         command runs successfully and the option is ignored.
+     --target
+
+         Specifies the target on which you are creating the audit
+         module. Valid values are as follows:
+
+         server
+             Creates the audit  module  for  the  default  server
+             instance server and is the default value.
+
+         configuration_name
+
+             Creates the audit module for  the  named  configura-
+             tion.
+
+         cluster_name
+             Creates the audit module for every  server  instance
+             in the cluster.
+
+         instance_name
+
+             Creates the audit module  for  a  particular  server
+             instance.
 
 OPERANDS
      audit_module_name
-
          The name of this audit module.
 
 EXAMPLES
@@ -76,9 +92,14 @@ EXIT STATUS
      1                           error in executing the command
 
 SEE ALSO
+
+Java EE 6           Last change: 22 Dec 2010                    2
+
+asadmin Utility Subcommands                create-audit-module(1)
+
      delete-audit-module(1), list-audit-modules(1)
 
      asadmin(1M)
 
-Java EE 6          Last change: 28 August 2009                  2
+Java EE 6           Last change: 22 Dec 2010                    3
 

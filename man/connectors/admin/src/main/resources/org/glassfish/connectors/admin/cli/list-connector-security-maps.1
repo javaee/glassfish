@@ -7,7 +7,8 @@ NAME
 
 SYNOPSIS
      list-connector-security-maps [--help] [--securitymap securitymap]
-     [--verbose={false|true}] pool-name
+     [--verbose={false|true}] [--target target]
+     pool-name
 
 DESCRIPTION
      The list-connector-security-maps subcommand lists the  secu-
@@ -37,17 +38,25 @@ OPTIONS
          If set to true, returns a list including  the  identity,
          principals, and security name. The default is false.
 
+     --target
+         Do not specify this option. This option is retained  for
+         compatibility with earlier releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command runs successfully and displays a warning message
+         that the option is ignored.
+
+Java EE 6           Last change: 22 Dec 2010                    1
+
+asadmin Utility Subcommands       list-connector-security-maps(1)
+
 OPERANDS
      pool-name
+
          Name of the connector connection pool for which you want
          to list security maps.
 
 EXAMPLES
      Example 1 Listing the Connector Security Maps
-
-Java EE 6           Last change: 03 Nov 2009                    1
-
-asadmin Utility Subcommands       list-connector-security-maps(1)
 
      This example lists the existing connector security maps  for
      the pool named connector-Pool1.
@@ -68,5 +77,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 03 Nov 2009                    2
+Java EE 6           Last change: 22 Dec 2010                    2
 

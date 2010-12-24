@@ -5,7 +5,8 @@ NAME
      stop-instance - stops a running GlassFish Server instance
 
 SYNOPSIS
-     stop-instance [--help] [--force={false|true}]
+     stop-instance [--help]
+     [--force={false|true}] [--kill={false|true}]
      instance-name
 
 DESCRIPTION
@@ -26,30 +27,47 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --force
-         Specifies whether the instance is  forcibly  stopped  by
-         using functionality of the operating system to terminate
-         the instance process.
+         Specifies  whether  the  instance  is  forcibly  stopped
+         immediately.
+
+         Possible values are as follows:
+
+         true
+
+             The  instance  is   forcibly   stopped   immediately
+             (default).
+
+         false
+             The subcommand waits  until  all  threads  that  are
+             associated with the instance are exited before stop-
+             ping the instance.
+
+     --kill
+
+         Specifies whether the instance is killed by using  func-
+         tionality  of  the  operating  system  to  terminate the
+         instance process.
+
+Java EE 6           Last change: 16 Dec 2010                    1
+
+asadmin Utility Subcommands                      stop-instance(1)
 
          Possible values are as follows:
 
          false
 
-             The instance is not forcibly stopTMd. The subcommand
-             uses  functionality  of  the Java   platform to ter-
-             minate the instance process (default).
+             The instance is  not  killed.  The  subcommand  uses
+             functionality  of the Java platform to terminate the
+             instance process (default).
 
          true
-             The instance is  forcibly  stopped.  The  subcommand
-             uses  functionality  of the operating system to ter-
-             minate the instance process.
+             The instance is killed. The  subcommand  uses  func-
+             tionality  of  the operating system to terminate the
+             instance process.
 
 OPERANDS
      instance-name               This is the name of the  GlassF-
                                  ish Server instance to stop.
-
-Java EE 6            Last change: 7 Dec 2010                    1
-
-asadmin Utility Subcommands                      stop-instance(1)
 
 EXAMPLES
      This example stops the GlassFish Server instance yml-i-sj01.
@@ -74,5 +92,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6            Last change: 7 Dec 2010                    2
+Java EE 6           Last change: 16 Dec 2010                    2
 

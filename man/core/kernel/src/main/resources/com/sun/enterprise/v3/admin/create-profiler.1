@@ -27,10 +27,29 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --target
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command runs successfully and the option is ignored.
+         This option specifies the target on which you are creat-
+         ing a profiler. Valid values are
+
+         server
+
+             Creates  the  profiler  for   the   default   server
+             instance. This is the default value.
+
+         configuration_name
+             Creates the profiler for the named configuration
+
+         cluster_name
+
+             Creates the profiler for every  server  instance  in
+             the cluster
+
+         instance_name
+             Creates  the  profiler  for  a   particular   server
+             instance
+
+Java EE 6           Last change: 22 Dec 2010                    1
+
+asadmin Utility Subcommands                    create-profiler(1)
 
      --classpath
 
@@ -44,10 +63,6 @@ OPTIONS
          native  library  path,  the  shell  environment  setting
          (LD_LIBRARY_PATH on UNIX)  and  any  path  that  may  be
          specified in the profile element.
-
-Java EE 6           Last change: 22 Sep 2009                    1
-
-asadmin Utility Subcommands                    create-profiler(1)
 
      --enabled
 
@@ -76,9 +91,14 @@ EXIT STATUS
                                  mand
 
 SEE ALSO
+
+Java EE 6           Last change: 22 Dec 2010                    2
+
+asadmin Utility Subcommands                    create-profiler(1)
+
      delete-profiler(1)
 
      asadmin(1M)
 
-Java EE 6           Last change: 22 Sep 2009                    2
+Java EE 6           Last change: 22 Dec 2010                    3
 

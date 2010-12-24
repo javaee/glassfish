@@ -7,7 +7,9 @@ NAME
      tion.
 
 SYNOPSIS
-     create-system-properties [--help] [--target target-name] [name=value)[:name=value]*]
+     create-system-properties [--help]
+     [--target target-name]
+     [name=value)[:name=value]*]
 
 DESCRIPTION
      The create-system-properties subcommand adds or updates sys-
@@ -35,10 +37,10 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --target
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command runs successfully and the option is ignored.
+         This option specifies the target on which you are creat-
+         ing  the  system  properties. The valid targets for this
+         subcommand are instance, cluster, configuration, domain,
+         and server. Server is the default option.
 
 OPERANDS
      name=value
@@ -47,12 +49,13 @@ OPERANDS
          the specified target. Multiple system properties must be
          separated by a : (colon). If a : (colon) appears in  the
          name  or  value of a system property, it must be escaped
-         with a  (blackslash). If any system properties were pre-
-         viously defined, they are updated with the new values.
 
-Java EE 6           Last change: 12 Oct 2009                    1
+Java EE 6           Last change: 22 Dec 2010                    1
 
 asadmin Utility Subcommands           create-system-properties(1)
+
+         with a  (blackslash). If any system properties were pre-
+         viously defined, they are updated with the new values.
 
 EXAMPLES
      Example 1 Creating System Properties
@@ -74,5 +77,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 12 Oct 2009                    2
+Java EE 6           Last change: 22 Dec 2010                    2
 

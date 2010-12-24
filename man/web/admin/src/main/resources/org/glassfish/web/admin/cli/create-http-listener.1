@@ -96,64 +96,64 @@ asadmin Utility Subcommands               create-http-listener(1)
      --redirectport
 
          Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
+         compatibility with earlier releases. If you specify this
          option, a syntax error does not occur. Instead, the sub-
-         command runs successfully and the option is ignored.
-
-     --securityenabled
-         If set to true, the HTTP listener runs SSL. You can turn
+         command runs successfully and displays a warning message
+         that the option is ignored.
 
 Java EE 6           Last change: 08 Oct 2010                    2
 
 asadmin Utility Subcommands               create-http-listener(1)
 
+     --securityenabled
+
+         If set to true, the HTTP listener runs SSL. You can turn
          SSL2 or SSL3 ON or OFF and set ciphers using an SSL ele-
          ment. The security setting globally enables or  disables
          SSL  by  making  certificates  available  to  the server
          instance. The default value is false.
 
      --enabled
-
          If set to true, the listener is enabled at runtime.  The
          default value is true.
 
      --target
+
          Creates the HTTP listener only on the specified  target.
          Valid values are as follows:
 
          server
-
              Creates the HTTP  listener  on  the  default  server
              instance. This is the default value.
 
          configuration-name
+
              Creates the HTTP listener in  the  specified  confi-
              guration.
 
          cluster-name
-
              Creates the HTTP listener on all server instances in
              the specified cluster.
 
          standalone-instance-name
+
              Creates the HTTP listener  on  the  specified  stan-
              dalone server instance.
 
 OPERANDS
      listener-id
-
          The listener ID of the HTTP network listener.
 
 EXAMPLES
      Example 1 Creating an HTTP Network Listener
 
-     The following command creates an HTTP network listener named
-     sampleListener  that  uses  a  nondefault number of acceptor
-     threads and is not enabled at runtime:
-
 Java EE 6           Last change: 08 Oct 2010                    3
 
 asadmin Utility Subcommands               create-http-listener(1)
+
+     The following command creates an HTTP network listener named
+     sampleListener  that  uses  a  nondefault number of acceptor
+     threads and is not enabled at runtime:
 
        asadmin> create-http-listener --listeneraddress 0.0.0.0 --listenerport 7272
        --defaultvs server --servername host1.sun.com --acceptorthreads 100

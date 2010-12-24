@@ -26,8 +26,13 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --dbuser
-         The user name of the database user, who owns the Java DB
-         server process.
+         The user name of the Java DB user that is  to  stop  the
+         server  process.  This option is required only when Java
+         DB user authentication is enabled.
+
+         If this option is omitted,  no  user  is  specified.  By
+         default,  Java DB user authentication is disabled, so no
+         user or password is required.
 
      --dbhost
 
@@ -41,13 +46,14 @@ OPTIONS
          client connections. The default is 1527.
 
 EXAMPLES
+
+Java EE 6           Last change: 22 Dec 2010                    1
+
+asadmin Utility Subcommands                      stop-database(1)
+
      Example 1 Stopping Java DB
 
      This example stops Java DB on host host1 and port 5001.
-
-Java EE 6           Last change: 23 Oct 2010                    1
-
-asadmin Utility Subcommands                      stop-database(1)
 
        asadmin> stop-database --dbhost host1 --dbport 5001
        Connection obtained for host: host1, port number 5001.
@@ -71,8 +77,8 @@ SEE ALSO
 
      asadmin(1M)
 
-     Chapter 14, Administering Database Connectivity , in  Oracle
+     Chapter 12, Administering Database Connectivity,  in  Oracle
      GlassFish Server 3.1 Administration Guide
 
-Java EE 6           Last change: 23 Oct 2010                    2
+Java EE 6           Last change: 22 Dec 2010                    2
 

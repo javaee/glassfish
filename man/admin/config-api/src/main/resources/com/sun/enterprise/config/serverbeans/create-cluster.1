@@ -306,67 +306,75 @@ asadmin Utility Subcommands                     create-cluster(1)
      --hosts
 
          Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
+         compatibility with earlier releases. If you specify this
          option, a syntax error does not occur. Instead, the sub-
-         command runs successfully and the option is ignored.
+         command runs successfully and displays a warning message
 
 Java EE 6           Last change: 17 Nov 2010                    6
 
 asadmin Utility Subcommands                     create-cluster(1)
 
+         that the option is ignored.
+
      --haagentport
 
          Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
+         compatibility with earlier releases. If you specify this
          option, a syntax error does not occur. Instead, the sub-
-         command runs successfully and the option is ignored.
+         command runs successfully and displays a warning message
+         that the option is ignored.
 
      --haadminpassword
          Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
+         compatibility with earlier releases. If you specify this
          option, a syntax error does not occur. Instead, the sub-
-         command runs successfully and the option is ignored.
+         command runs successfully and displays a warning message
+         that the option is ignored.
 
      --haadminpasswordfile
 
          Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
+         compatibility with earlier releases. If you specify this
          option, a syntax error does not occur. Instead, the sub-
-         command runs successfully and the option is ignored.
+         command runs successfully and displays a warning message
+         that the option is ignored.
 
      --devicesize
          Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
+         compatibility with earlier releases. If you specify this
          option, a syntax error does not occur. Instead, the sub-
-         command runs successfully and the option is ignored.
+         command runs successfully and displays a warning message
+         that the option is ignored.
 
      --haproperty
 
          Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
+         compatibility with earlier releases. If you specify this
          option, a syntax error does not occur. Instead, the sub-
-         command runs successfully and the option is ignored.
+         command runs successfully and displays a warning message
+         that the option is ignored.
 
      --autohadb
          Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
+         compatibility with earlier releases. If you specify this
          option, a syntax error does not occur. Instead, the sub-
-         command runs successfully and the option is ignored.
-
-     --portbase
-
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command runs successfully and the option is ignored.
+         command runs successfully and displays a warning message
+         that the option is ignored.
 
 Java EE 6           Last change: 17 Nov 2010                    7
 
 asadmin Utility Subcommands                     create-cluster(1)
 
+     --portbase
+
+         Do not specify this option. This option is retained  for
+         compatibility with earlier releases. If you specify this
+         option, a syntax error does not occur. Instead, the sub-
+         command runs successfully and displays a warning message
+         that the option is ignored.
+
 OPERANDS
      cluster-name
-
          The name of the cluster.
 
          The name must meet the following requirements:
@@ -389,10 +397,6 @@ OPERANDS
 
                  o    Underscore
 
-                 o    Slash
-
-                 o    Hash
-
              o    The name must be unique in the domain and  must
                   not  be  the  name  of another cluster, a named
                   configuration, a GlassFish Server instance , or
@@ -411,14 +415,13 @@ EXAMPLES
      references  a copy of the named configuration default-config
      that is named ltscluster-config.
 
-       asadmin> create-cluster
-       --systemproperties IIOP_SSL_LISTENER_PORT=1169
-       ltscluster
-
 Java EE 6           Last change: 17 Nov 2010                    8
 
 asadmin Utility Subcommands                     create-cluster(1)
 
+       asadmin> create-cluster
+       --systemproperties IIOP_SSL_LISTENER_PORT=1169
+       ltscluster
        Command create-cluster executed successfully.
 
 EXIT STATUS

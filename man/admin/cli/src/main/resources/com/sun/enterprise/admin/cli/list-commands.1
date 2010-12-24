@@ -5,7 +5,9 @@ NAME
      list-commands - lists available commands
 
 SYNOPSIS
-     list-commands [--help] [--localonly={false|true}] [ --remoteonly ={false|true}]
+     list-commands [--help]
+     [--localonly={false|true}] [ --remoteonly ={false|true}]
+     pattern-list
 
 DESCRIPTION
      The list-commands subcommand lists the asadmin subcommands.
@@ -13,7 +15,8 @@ DESCRIPTION
      By default, the list-commands subcommand displays a list  of
      local  subcommands followed by a list of remote subcommands.
      You can specify that only remote subcommands or  only  local
-     subcommands are listed.
+     subcommands are listed and that only subcommands whose names
+     contain a specified text string are listed.
 
      This subcommand is supported in local mode and remote mode.
 
@@ -38,6 +41,17 @@ OPTIONS
          If this option is set to true,  the  --localonly  option
          must be set to false. Otherwise, an error occurs.
 
+OPERANDS
+     pattern-list
+         A space-separated list  of  text  strings  on  which  to
+         filter  the  list  of  subcommands. Only the subcommands
+         that contain any one of the specified  text  strings  is
+         listed.
+
+Java EE 6           Last change: 20 Dec 2010                    1
+
+asadmin Utility Subcommands                      list-commands(1)
+
 EXAMPLES
      Example 1 Listing the Local Subcommands
 
@@ -46,11 +60,6 @@ EXAMPLES
        asadmin> list-commands --localonly=true
        ********** Local Commands **********
        change-admin-password
-
-Java EE 6            Last change: 9 Oct 2009                    1
-
-asadmin Utility Subcommands                      list-commands(1)
-
        change-master-password
        create-domain
        create-service
@@ -72,7 +81,30 @@ asadmin Utility Subcommands                      list-commands(1)
        version
        Command list-commands executed successfully.
 
-     Example 2 Listing All Subcommands
+     Example 2 Filtering the Subcommands That Are Listed
+
+     This example lists only the subcomands whose  names  contain
+     the text configure or set.
+
+       asadmin> list-commands configure set
+       ********** Local Commands **********
+       setup-ssh
+       unset
+
+       ********** Remote Commands **********
+       configure-jms-cluster                   set-log-levels
+       configure-lb-weight                     set-web-context-param
+       configure-ldap-for-admin                set-web-env-entry
+       set                                     unset-web-context-param
+       set-log-attributes                      unset-web-env-entry
+
+Java EE 6           Last change: 20 Dec 2010                    2
+
+asadmin Utility Subcommands                      list-commands(1)
+
+       Command list-commands executed successfully.
+
+     Example 3 Listing All Subcommands
 
      This example first displays a list of the local subcommands,
      followed by a partial list of the remote subcommands.
@@ -99,15 +131,9 @@ asadmin Utility Subcommands                      list-commands(1)
        unset
        verify-domain-xml
        version
-
-Java EE 6            Last change: 9 Oct 2009                    2
-
-asadmin Utility Subcommands                      list-commands(1)
-
        ********** Remote Commands **********
        __locations                             enable
        add-resources                           enable-monitoring
-       configure-jruby-container               flush-connection-pool
        configure-ldap-for-admin                flush-jmsdest
        create-admin-object                     freeze-transaction-service
        create-audit-module                     generate-jvm-report
@@ -124,6 +150,11 @@ asadmin Utility Subcommands                      list-commands(1)
        create-javamail-resource                list-components
        create-jdbc-connection-pool             list-connector-connection-pools
        create-jdbc-resource                    list-connector-resources
+
+Java EE 6           Last change: 20 Dec 2010                    3
+
+asadmin Utility Subcommands                      list-commands(1)
+
        create-jms-host                         list-connector-security-maps
        create-jms-resource                     list-connector-work-security-maps
        create-jmsdest                          list-containers
@@ -152,14 +183,10 @@ EXIT STATUS
      1                           error in executing  the  subcom-
                                  mand
 
-Java EE 6            Last change: 9 Oct 2009                    3
-
-asadmin Utility Subcommands                      list-commands(1)
-
 SEE ALSO
      list-components(1), list-containers(1), list-modules(1)
 
      asadmin(1M)
 
-Java EE 6            Last change: 9 Oct 2009                    4
+Java EE 6           Last change: 20 Dec 2010                    4
 

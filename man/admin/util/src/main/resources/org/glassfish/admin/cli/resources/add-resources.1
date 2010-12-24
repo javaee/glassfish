@@ -6,7 +6,8 @@ NAME
      file
 
 SYNOPSIS
-     add-resources [--help] [--target target] xml-file-name
+     add-resources [--help] [--target target]
+     [--upload={false|true}] xml-file-name
 
 DESCRIPTION
      The add-resources subcommand creates the resources named  in
@@ -46,7 +47,7 @@ OPTIONS
              Creates  the  resources  for  the   default   server
              instance server and is the default value.
 
-Java EE 6            Last change: 6 Dec 2010                    1
+Java EE 6           Last change: 23 Dec 2010                    1
 
 asadmin Utility Subcommands                      add-resources(1)
 
@@ -63,8 +64,45 @@ asadmin Utility Subcommands                      add-resources(1)
              Creates the resources for a  particular  GlassFish
              Server instance.
 
+     --upload
+         Specifies whether the subcommand uploads the file to the
+         DAS. In most situations, this option can be omitted.
+
+         Valid values are as follows:
+
+         false
+
+             The subcommand does not upload the file and attempts
+             to  access the file through the specified file name.
+             If the DAS cannot access the  file,  the  subcommand
+             fails.
+
+             For example, the DAS might be running as a different
+             user  than the administration user and does not have
+             read access to the file. In this situation, the sub-
+             command fails if the --upload option is false.
+
+         true
+             The subcommand uploads the file to the DAS over  the
+             network connection.
+
+         The default value depends on whether the DAS is  on  the
+         host where the subcommand is run or is on a remote host.
+
+             o    If the DAS is on the host where the  subcommand
+                  is run, the default is false.
+
+             o    If the DAS is on a remote host, the default  is
+                  true.
+
 OPERANDS
+
+Java EE 6           Last change: 23 Dec 2010                    2
+
+asadmin Utility Subcommands                      add-resources(1)
+
      xml-file-name
+
          The path to the XML file  that  contains  the  resources
          that  are  to  be  created.  You can specify an absolute
          path, only the file name, or a relative path.
@@ -97,11 +135,6 @@ OPERANDS
           datasource-classname="oracle.jdbc.pool.OracleDataSource">
          <property name="URL"
            value="jdbc:oracle:thin:@iasperfsol12:1521:specdb"/>
-
-Java EE 6            Last change: 6 Dec 2010                    2
-
-asadmin Utility Subcommands                      add-resources(1)
-
          <property name="User" value="spec"/>
          <property name="Password" value="spec"/>
          <property name="MaxStatements" value="200"/>
@@ -116,6 +149,10 @@ EXAMPLES
 
      This example creates resources using the contents of the XML
      file resource.xml.
+
+Java EE 6           Last change: 23 Dec 2010                    3
+
+asadmin Utility Subcommands                      add-resources(1)
 
        asadmin> add-resources resource.xml
        Command : Connector connection pool jms/testQFactoryPool created.
@@ -142,5 +179,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6            Last change: 6 Dec 2010                    3
+Java EE 6           Last change: 23 Dec 2010                    4
 

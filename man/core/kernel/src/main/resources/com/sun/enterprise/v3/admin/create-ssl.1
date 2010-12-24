@@ -6,13 +6,16 @@ NAME
      selected HTTP listener, IIOP listener, or IIOP service
 
 SYNOPSIS
-     create-ssl
-     [--help]
-     --type listener_or_service_type --certname cert_name
+     create-ssl [--help]
+     [--target target]
+     --type listener_or_service_type
+     --certname cert_name
      [--ssl2enabled={false|true}] [--ssl2ciphers ss12ciphers]
      [--ssl3enabled={true|false}] [--tlsenabled={true|false}]
-     [--ssl3tlsciphers ssl3tlsciphers] [tlsrollbackenabled={true|false}]
-     [clientauthenabled={false|true}] [listener_id]
+     [--ssl3tlsciphers ssl3tlsciphers]
+     [--tlsrollbackenabled={true|false}]
+     [--clientauthenabled={false|true}]
+     [listener_id]
 
 DESCRIPTION
      The create-ssl subcommand creates  and  configures  the  SSL
@@ -33,10 +36,7 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --target
-         This option is valid only in domains that are configured
-         to  support  clusters,  such as domains that are created
-         with the cluster profile  or  the  enterprise  profile..
-         Specifies  the  target  on which you are configuring the
+         Specifies the target on which you  are  configuring  the
          ssl element. The following values are valid:
 
          server
@@ -49,7 +49,7 @@ OPTIONS
              HTTP/IIOP  listener or iiop-service for which SSL is
              to be configured.
 
-Java EE 6           Last change: 21 Oct 2010                    1
+Java EE 6           Last change: 22 Dec 2010                    1
 
 asadmin Utility Subcommands                         create-ssl(1)
 
@@ -100,7 +100,7 @@ asadmin Utility Subcommands                         create-ssl(1)
          target, even if those ciphers are available in the  par-
          ticular  cipher  suite  you are using. If this option is
 
-Java EE 6           Last change: 21 Oct 2010                    2
+Java EE 6           Last change: 22 Dec 2010                    2
 
 asadmin Utility Subcommands                         create-ssl(1)
 
@@ -155,7 +155,7 @@ asadmin Utility Subcommands                         create-ssl(1)
 
              o    SSL_RSA_WITH_RC4_128_SHA
 
-Java EE 6           Last change: 21 Oct 2010                    3
+Java EE 6           Last change: 22 Dec 2010                    3
 
 asadmin Utility Subcommands                         create-ssl(1)
 
@@ -200,11 +200,11 @@ EXIT STATUS
 SEE ALSO
      delete-ssl(1)
 
-Java EE 6           Last change: 21 Oct 2010                    4
+Java EE 6           Last change: 22 Dec 2010                    4
 
 asadmin Utility Subcommands                         create-ssl(1)
 
      asadmin(1M)
 
-Java EE 6           Last change: 21 Oct 2010                    5
+Java EE 6           Last change: 22 Dec 2010                    5
 

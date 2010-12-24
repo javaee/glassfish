@@ -6,8 +6,9 @@ NAME
      providers for the given message layer
 
 SYNOPSIS
-     list-message-security-providers [--help] [--target target]
+     list-message-security-providers [--help]
      --layer message_layer
+     [target]
 
 DESCRIPTION
      The   list-message-security-providers   subcommand   enables
@@ -23,16 +24,35 @@ OPTIONS
 
          Displays the help text for the subcommand.
 
-     --target
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command runs successfully and the option is ignored.
-
      --layer
-
          The message-layer for  which  the  provider  has  to  be
          listed. The default value is HttpServlet.
+
+OPERANDS
+     target
+
+         Restricts the listing to message security providers  for
+         a specific target. Valid values include:
+
+         server
+             Lists providers  for  the  default  server  instance
+             server and is the default value.
+
+         domain
+
+             Lists providers for the domain.
+
+         cluster
+             Lists providers for  the  server  instances  in  the
+             cluster.
+
+Java EE 6           Last change: 22 Dec 2010                    1
+
+asadmin Utility Subcommands    list-message-security-providers(1)
+
+         instance
+
+             Lists providers for a particular server instance.
 
 EXAMPLES
      Example 1 Listing message security providers
@@ -48,10 +68,6 @@ EXAMPLES
        ServerProvider
        Command list-message-security-providers executed successfully.
 
-Java EE 6           Last change: 28 Aug 2009                    1
-
-asadmin Utility Subcommands    list-message-security-providers(1)
-
 EXIT STATUS
      0                            command executed successfully
 
@@ -63,5 +79,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 28 Aug 2009                    2
+Java EE 6           Last change: 22 Dec 2010                    2
 

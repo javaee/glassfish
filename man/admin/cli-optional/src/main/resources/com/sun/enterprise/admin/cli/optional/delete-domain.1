@@ -5,7 +5,7 @@ NAME
      delete-domain - deletes a domain
 
 SYNOPSIS
-     delete-domain [--help] [--domaindir domaindir domain_name
+     delete-domain [--help] [--domaindir domaindir] domain-name
 
 DESCRIPTION
      The delete-domain subcommand deletes the  specified  domain.
@@ -26,8 +26,9 @@ OPTIONS
          install-dir/domains directory is deleted.
 
 OPERANDS
-     domain_name                 The unique name  of  the  domain
-                                 you want to delete.
+     domain-name
+
+         The unique name of the domain you want to delete.
 
 EXAMPLES
      Example 1 Deleting a Domain
@@ -41,12 +42,12 @@ EXAMPLES
 
      Example 2 deleting a Domain From an Alternate Location
 
-     This example deletes a domain named  sampleDomain  from  the
-     /home/someuser/domains directory.
-
 Java EE 6           Last change: 16 Oct 2009                    1
 
 asadmin Utility Subcommands                      delete-domain(1)
+
+     This example deletes a domain named  sampleDomain  from  the
+     /home/someuser/domains directory.
 
        asadmin> delete-domain --domaindir /home/someuser/domains sampleDomain
        Domain sampleDomain deleted

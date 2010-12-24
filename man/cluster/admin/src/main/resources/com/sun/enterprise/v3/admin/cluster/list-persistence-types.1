@@ -10,8 +10,10 @@ SYNOPSIS
 
 DESCRIPTION
      The list-persistence-types subcommand lists registered  per-
-     sistence  types  for  HTTP  sessions and SFSB instances. The
-     built-in persistence types are memory, file, and replicated.
+     sistence  types  for HTTP sessions and stateful session bean
+     (SFSB) instances. The built-in persistence types are memory,
+     file, and replicated. The memory type does not apply to SFSB
+     instances.
 
      Other  persistence  types  can  be  added  using  the  Stra-
      tegyBuilder  class.  For  more  information,  see the Oracle
@@ -23,28 +25,26 @@ DESCRIPTION
 
        asadmin> set c1-config.availability-service.web-container-availability.persistence-type=file
 
-     To set the persistence type for stateful session bean (SFSB)
-     instances  without availability enabled, use the set subcom-
-     mand to set the sfsb-persistence-type attribute.  For  exam-
-     ple:
+     To set the persistence type for SFSB instances without avai-
+     lability  enabled,  use  the set subcommand to set the sfsb-
+     persistence-type attribute. For example:
 
        asadmin> set c1-config.availability-service.ejb-container-availability.sfsb-persistence-type=file
 
-     To set the persistence type for stateful session bean (SFSB)
-     instances  with availability enabled, use the set subcommand
-     to set the sfsb-ha-persistence-type attribute. For example:
+     To set the persistence type for SFSB instances with  availa-
+     bility  enabled,  use the set subcommand to set the sfsb-ha-
+     persistence-type attribute. For example:
 
        asadmin> set
        c1-config.availability-service.ejb-container-availability.sfsb-ha-persistence-type=replicated
 
      This subcommand is supported in remote mode only.
 
-OPTIONS
-
-Java EE 6           Last change: 25 Oct 2010                    1
+Java EE 6           Last change: 15 Dec 2010                    1
 
 asadmin Utility Subcommands             list-persistence-types(1)
 
+OPTIONS
      --help
      -?
 
@@ -85,5 +85,5 @@ SEE ALSO
      Oracle GlassFish Server  3.1  Add-On  Component  Development
      Guide
 
-Java EE 6           Last change: 25 Oct 2010                    2
+Java EE 6           Last change: 15 Dec 2010                    2
 

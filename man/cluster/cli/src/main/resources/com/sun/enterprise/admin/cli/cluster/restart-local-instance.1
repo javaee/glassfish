@@ -9,6 +9,7 @@ SYNOPSIS
      restart-local-instance [--help]
      [--nodedir nodedir] [--node node]
      [--debug={false|true}]
+     [--force={true|false}] [--kill={false|true}]
      [instance-name]
 
 DESCRIPTION
@@ -48,12 +49,12 @@ DESCRIPTION
               directory, full  synchronization  is  required.  In
               normal  operation,  files  below the top level sub-
               directories of these directories are  not  changed.
-              If  an application is deployed and undeployed, full
 
-Java EE 6           Last change: 20 Oct 2010                    1
+Java EE 6           Last change: 20 Dec 2010                    1
 
 asadmin Utility Subcommands             restart-local-instance(1)
 
+              If  an application is deployed and undeployed, full
               synchronization is  not  necessary  to  update  the
               instance with the change.
 
@@ -98,19 +99,59 @@ OPTIONS
              enabled  and  the  port number for JPDA debugging is
              displayed.
 
-         false
-             The  instance  is  restarted  with  JPDA   debugging
-
-Java EE 6           Last change: 20 Oct 2010                    2
+Java EE 6           Last change: 20 Dec 2010                    2
 
 asadmin Utility Subcommands             restart-local-instance(1)
 
-             disabled (default).
+         false
+
+             The instance is restarted with JPDA  debugging  dis-
+             abled (default).
 
          The default is the current setting of  this  option  for
          the instance that is being restarted.
 
+     --force
+         Specifies  whether  the  instance  is  forcibly  stopped
+         immediately before it is restarted.
+
+         Possible values are as follows:
+
+         true
+
+             The  instance  is   forcibly   stopped   immediately
+             (default).
+
+         false
+             The subcommand waits  until  all  threads  that  are
+             associated with the instance are exited before stop-
+             ping the instance.
+
+     --kill
+
+         Specifies whether the instance is killed  before  it  is
+         restarted by using functionality of the operating system
+         to terminate the instance process.
+
+         Possible values are as follows:
+
+         false
+             The instance is  not  killed.  The  subcommand  uses
+             functionality  of  the  JavaTM platform to terminate
+             the instance process (default).
+
+         true
+
+             The instance is killed. The  subcommand  uses  func-
+             tionality  of  the operating system to terminate the
+             instance process.
+
 OPERANDS
+
+Java EE 6           Last change: 20 Dec 2010                    3
+
+asadmin Utility Subcommands             restart-local-instance(1)
+
      instance-name
 
          The name of the GlassFish Server instance to restart. If
@@ -120,10 +161,10 @@ OPERANDS
 EXAMPLES
      Example 1 Restarting an Instance Locally
 
-     This example restarts the instance ymlsa1 on the host  where
-     the subcommand is run.
+     This example restarts the  instance  ymlsa1  in  the  domain
+     domain1 on the host where the subcommand is run.
 
-       asadmin> restart-local-instance --node localhost ymlsa1
+       asadmin> restart-local-instance --node localhost-domain1 ymlsa1
        Command restart-local-instance executed successfully.
 
 EXIT STATUS
@@ -142,5 +183,5 @@ SEE ALSO
      Java     Platform     Debugger      Architecture      (JPDA)
      (http://java.sun.com/javase/technologies/core/toolsapis/jpda/)
 
-Java EE 6           Last change: 20 Oct 2010                    3
+Java EE 6           Last change: 20 Dec 2010                    4
 

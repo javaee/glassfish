@@ -25,10 +25,30 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --target
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command runs successfully and the option is ignored.
+         This option specifies  the  target  for  which  you  are
+         creating  the  JavaMail  session  resource. Valid values
+         are:
+
+         server
+
+             Creates  the  resource  for   the   default   server
+             instance. This is the default value.
+
+         domain
+             Creates the resource for the domain.
+
+         cluster_name
+
+             Creates the resource for every  server  instance  in
+             the cluster.
+
+         instance_name
+             Creates  the  resource  for  a   particular   server
+             instance.
+
+Java EE 6           Last change: 22 Dec 2010                    1
+
+asadmin Utility Subcommands           create-javamail-resource(1)
 
      --mailhost
 
@@ -49,36 +69,36 @@ OPTIONS
          The email address of  the  default  user,  in  the  form
          username@host.domain.
 
-Java EE 6           Last change: 10 Sep 2010                    1
-
-asadmin Utility Subcommands           create-javamail-resource(1)
-
      --storeprotocol
-
          The mail server store protocol.  The  default  is  imap.
          Change  this  value  only  if  you have reconfigured the
          GlassFish Server's mail provider to  use  a  non-default
          store protocol.
 
      --storeprotocolclass
+
          The mail server store protocol class name.  The  default
          is  com.sun.mail.imap.IMAPStore.  Change this value only
          if you have reconfigured  the  GlassFish  Server's  mail
          provider to use a nondefault store protocol.
 
      --transprotocol
-
          The mail server transport protocol. The default is smtp.
          Change  this  value  only  if  you have reconfigured the
          GlassFish Server's mail provider  to  use  a  nondefault
          transport protocol.
 
      --transprotocolclass
+
          The mail  server  transport  protocol  class  name.  The
          default  is com.sun.mail.smtp.SMTPTransport. Change this
          value  only  if  you  have  reconfigured  the  GlassFish
          Server's  mail  provider  to  use a nondefault transport
          protocol.
+
+Java EE 6           Last change: 22 Dec 2010                    2
+
+asadmin Utility Subcommands           create-javamail-resource(1)
 
      --debug
 
@@ -98,11 +118,6 @@ asadmin Utility Subcommands           create-javamail-resource(1)
 
      --property
          Optional attribute name/value pairs for configuring  the
-
-Java EE 6           Last change: 10 Sep 2010                    2
-
-asadmin Utility Subcommands           create-javamail-resource(1)
-
          JavaMail  resource.  The GlassFish Server-specific mail-
          prefix is converted to the  standard  mail  prefix.  The
          JavaMail  API  documentation  lists  the  properties you
@@ -127,6 +142,11 @@ EXAMPLES
        Command create-javamail-resource executed successfully.
 
 EXIT STATUS
+
+Java EE 6           Last change: 22 Dec 2010                    3
+
+asadmin Utility Subcommands           create-javamail-resource(1)
+
      0                           subcommand executed successfully
 
      1                           error in executing  the  subcom-
@@ -137,5 +157,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 10 Sep 2010                    3
+Java EE 6           Last change: 22 Dec 2010                    4
 

@@ -23,15 +23,31 @@ OPTIONS
 
 OPERANDS
      target
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command runs successfully and the option is ignored.
+         The target for which you are listing the resource refer-
+         ences. Valid targets are:
+
+         server
+
+             Lists the resource references for the default server
+             instance and is the default target.
+
+         cluster_name
+             Lists  the  resource  references  for  every  server
+             instance in the cluster.
+
+         instance_name
+
+             Lists  the  resource  references   for   the   named
+             unclustered server instance.
 
 EXAMPLES
      Example 1 Using the list-resource-refs subcommand
 
      The following command lists resource references.
+
+Java EE 6           Last change: 22 Dec 2010                    1
+
+asadmin Utility Subcommands                 list-resource-refs(1)
 
        asadmin> list-resource-refs --user admin
        --passwordfile passwords.txt
@@ -44,14 +60,10 @@ EXIT STATUS
      1                           error in executing  the  subcom-
                                  mand
 
-Java EE 6           Last change: 09 Oct 2009                    1
-
-asadmin Utility Subcommands                 list-resource-refs(1)
-
 SEE ALSO
      create-resource-ref(1), delete-resource-ref(1)
 
      asadmin(1M)
 
-Java EE 6           Last change: 09 Oct 2009                    2
+Java EE 6           Last change: 22 Dec 2010                    2
 

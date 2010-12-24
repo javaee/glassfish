@@ -21,6 +21,26 @@ DESCRIPTION
      Server.  This  subcommand  is  not  applicable  to GlassFish
      Server Open Source Edition.
 
+CONTEXT
+     The Load Balancer distributes the  workload  among  multiple
+     Oracle  GlassFish  Server instances , increasing the overall
+     throughput of the system. The  Load  Balancer  also  enables
+     requests  to  failover  from one server instance to another.
+     For HTTP session information to persist, configure HTTP ses-
+     sion persistence.
+
+     Note -
+
+       The Load Balancer Plugin is  only  available  with  Oracle
+       GlassFish  Server,  and  is  not  available with GlassFish
+       Server Open Source  Edition.  For  GlassFish  Server  Open
+       Source Edition, it is possible to use the mod_jk module to
+       configure load balancing on the Apache HTTP server.
+
+     For more information about configuring load  balancing  with
+     GlassFish  Server, refer to the online help in the GlassFish
+     Server Administration Console.
+
 OPTIONS
      --help
      -?
@@ -28,7 +48,13 @@ OPTIONS
          Displays the help text for the subcommand.
 
 OPERANDS
+
+Java EE 6           Last change: 22 Dec 2010                    1
+
+asadmin Utility Subcommands;             apply-http-lb-changes(1)
+
      lb-name
+
          The name of the  load  balancer  to  which  changes  are
          applied.  The  load balancer must already exist. You can
          create it with the create-http-lb subcommand.
@@ -45,10 +71,6 @@ EXAMPLES
 EXIT STATUS
      0                           subcommand executed successfully
 
-Java EE 6           Last change: 23 Sep 2010                    1
-
-asadmin Utility Subcommands;             apply-http-lb-changes(1)
-
      1                           error in executing  the  subcom-
                                  mand
 
@@ -57,5 +79,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 23 Sep 2010                    2
+Java EE 6           Last change: 22 Dec 2010                    2
 

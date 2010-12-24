@@ -25,10 +25,30 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --target
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command runs successfully and the option is ignored.
+         This option specifies the target profiler element  which
+         you are deleting. Valid values are
+
+         server
+
+             Deletes the profiler element for the default  server
+             instance server and is the default value.
+
+         configuration_name
+             Deletes the profiler element for  the  named  confi-
+             guration.
+
+         cluster_name
+
+             Deletes  the  profiler  element  for  every   server
+             instance in the cluster.
+
+         instance_name
+             Deletes the profiler element for a particular server
+             instance.
+
+Java EE 6           Last change: 22 Dec 2010                    1
+
+asadmin Utility Subcommands                    delete-profiler(1)
 
 EXAMPLES
      Example 1 Deleting a Profile
@@ -44,14 +64,10 @@ EXIT STATUS
      1                           error in executing  the  subcom-
                                  mand
 
-Java EE 6           Last change: 22 Sep 2009                    1
-
-asadmin Utility Subcommands                    delete-profiler(1)
-
 SEE ALSO
      create-profiler(1)
 
      asadmin(1M)
 
-Java EE 6           Last change: 22 Sep 2009                    2
+Java EE 6           Last change: 22 Dec 2010                    2
 

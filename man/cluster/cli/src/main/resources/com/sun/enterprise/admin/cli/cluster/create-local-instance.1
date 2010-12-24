@@ -12,6 +12,7 @@ SYNOPSIS
      [--lbenabled={true|false}]
      [--portbase port-number] [--checkports={true|false}]
      [--savemasterpassword={false|true}]
+     [--usemasterpassword={false|true}]
      [--systemproperties (name=value)[:name=value]* ]
      instance-name
 
@@ -47,15 +48,15 @@ DESCRIPTION
               resides.  The  node can be specified in the command
               to create the instance, but  is  required  only  if
               more  than  one  node exists in the directory where
-              files for nodes are stored. If no  node  is  speci-
-              fied, the behavior of the subcommand depends on the
+              files  for  nodes  are  stored.  If  no   node   is
 
-Java EE 6            Last change: 8 Sep 2010                    1
+Java EE 6           Last change: 17 Dec 2010                    1
 
 asadmin Utility Subcommands              create-local-instance(1)
 
-              number of existing nodes  in  the  directory  where
-              nodes are stored:
+              specified,  the  behavior of the subcommand depends
+              on the number of existing nodes  in  the  directory
+              where nodes are stored:
 
              o    If no nodes exist,  the  subcommand  creates  a
                   node  for the instance. The name of the node is
@@ -103,12 +104,12 @@ asadmin Utility Subcommands              create-local-instance(1)
          A shared instance shares its  configuration  with  other
          instances or clusters. A shared instance is created if a
          configuration that is referenced by other  instances  or
-         clusters  is  specified  in  the  command  to create the
 
-Java EE 6            Last change: 8 Sep 2010                    2
+Java EE 6           Last change: 17 Dec 2010                    2
 
 asadmin Utility Subcommands              create-local-instance(1)
 
+         clusters  is  specified  in  the  command  to create the
          instance.
 
      Clustered instance
@@ -156,11 +157,12 @@ OPTIONS
 
          If no node is specified, the behavior of the  subcommand
          depends on the number of existing nodes in the directory
-         where nodes are stored:
 
-Java EE 6            Last change: 8 Sep 2010                    3
+Java EE 6           Last change: 17 Dec 2010                    3
 
 asadmin Utility Subcommands              create-local-instance(1)
+
+         where nodes are stored:
 
              o    If no nodes exist,  the  subcommand  creates  a
                   node  for the instance. The name of the node is
@@ -210,12 +212,11 @@ asadmin Utility Subcommands              create-local-instance(1)
              The  instance  is   enabled   for   load   balancing
              (default).
 
-             When an instance is enabled for  load  balancing,  a
-
-Java EE 6            Last change: 8 Sep 2010                    4
+Java EE 6           Last change: 17 Dec 2010                    4
 
 asadmin Utility Subcommands              create-local-instance(1)
 
+             When an instance is enabled for  load  balancing,  a
              load balancer sends requests to the instance.
 
          false
@@ -263,7 +264,7 @@ asadmin Utility Subcommands              create-local-instance(1)
          administration,  HTTP,  JMS,  JMX,  and  IIOP ports. The
          default value is true.
 
-Java EE 6            Last change: 8 Sep 2010                    5
+Java EE 6           Last change: 17 Dec 2010                    5
 
 asadmin Utility Subcommands              create-local-instance(1)
 
@@ -272,11 +273,43 @@ asadmin Utility Subcommands              create-local-instance(1)
          Setting this option to true allows the  master  password
          to be written to the file system. If the master password
          is written to the  file  system,  the  instance  can  be
-         started  without  the  need  to prompt for the password.
-         Because writing the master password to the  file  system
-         is an insecure practice, the default is false.
+         started  without the need to prompt for the password. If
+         this option is true, the --usemasterpassword  option  is
+         also  true, regardless of the value that is specified on
+         the command line. Because writing the master password to
+         the  file system is an insecure practice, the default is
+         false.
+
+         The master-password file for an instance is saved in the
+         node  directory,  not  the  domain directory. Therefore,
+         this option is required only for the first instance that
+         is created for each node in a domain.
+
+     --usemasterpassword
+         Specifies whether the key store is encrypted with a mas-
+         ter  password  that  is built into the system or a user-
+         defined master password.
+
+         If false (default), the keystore  is  encrypted  with  a
+         well-known  password  that  is  built  into  the system.
+         Encrypting the keystore with a password  that  is  built
+         into the system provides no additional security.
+
+         If true, the subcommand obtains the master password from
+         the  AS_ADMIN_MASTERPASSWORD  entry in the password file
+         or prompts for the master password. The password file is
+         specified   in   the   --passwordfile   option   of  the
+         asadmin(1M)utility.
+
+         If the --savemasterpassword option is true, this  option
+         is  also true, regardless of the value that is specified
+         on the command line.
+
+         The master password must be the same for  all  instances
+         in a domain.
 
      --systemproperties
+
          Defines system properties for the instance.  These  pro-
          perties  override property definitions for port settings
          in the instance's configuration.  Predefined  port  set-
@@ -286,6 +319,10 @@ asadmin Utility Subcommands              create-local-instance(1)
          because both instances share the same configuration.
 
          The following properties are available:
+
+Java EE 6           Last change: 17 Dec 2010                    6
+
+asadmin Utility Subcommands              create-local-instance(1)
 
          ASADMIN_LISTENER_PORT
 
@@ -315,11 +352,6 @@ asadmin Utility Subcommands              create-local-instance(1)
          IIOP_LISTENER_PORT
              This property specifies the port number of the  port
              that  is used for IIOP connections. Valid values are
-
-Java EE 6            Last change: 8 Sep 2010                    6
-
-asadmin Utility Subcommands              create-local-instance(1)
-
              1-65535. On UNIX, creating sockets  that  listen  on
              ports 1-1024 requires superuser privileges.
 
@@ -337,6 +369,10 @@ asadmin Utility Subcommands              create-local-instance(1)
              authentication. Valid values are 1-65535.  On  UNIX,
              creating   sockets   that  listen  on  ports  1-1024
              requires superuser privileges.
+
+Java EE 6           Last change: 17 Dec 2010                    7
+
+asadmin Utility Subcommands              create-local-instance(1)
 
          JAVA_DEBUGGER_PORT
 
@@ -366,11 +402,6 @@ asadmin Utility Subcommands              create-local-instance(1)
              vice  to  interact  with the OSGi  module management
              subsystem. Valid values are 1-65535. On UNIX, creat-
              ing  sockets  that  listen  on ports 1-1024 requires
-
-Java EE 6            Last change: 8 Sep 2010                    7
-
-asadmin Utility Subcommands              create-local-instance(1)
-
              superuser privileges.
 
 OPERANDS
@@ -392,15 +423,15 @@ OPERANDS
 
                  o    Numbers
 
+Java EE 6           Last change: 17 Dec 2010                    8
+
+asadmin Utility Subcommands              create-local-instance(1)
+
                  o    Hyphen
 
                  o    Period
 
                  o    Underscore
-
-                 o    Slash
-
-                 o    Hash
 
              o    The name must be unique in the domain and  must
                   not  be  the  name  of another GlassFish Server
@@ -419,11 +450,6 @@ EXAMPLES
      host. The instance references the only existing node.
 
        asadmin> create-local-instance il3
-
-Java EE 6            Last change: 8 Sep 2010                    8
-
-asadmin Utility Subcommands              create-local-instance(1)
-
        Rendezvoused with DAS on localhost:4848.
        Port Assignments for server instance il3:
        JMX_SYSTEM_CONNECTOR_PORT=28686
@@ -443,6 +469,10 @@ asadmin Utility Subcommands              create-local-instance(1)
 
      This example creates the clustered instance  ymli2  on  node
      sj02. The instance is a member of the cluster ymlclust.
+
+Java EE 6           Last change: 17 Dec 2010                    9
+
+asadmin Utility Subcommands              create-local-instance(1)
 
      The command is run on the host sj02, which is the host  that
      the  node  sj02  represents.  The DAS is running on the host
@@ -467,11 +497,6 @@ asadmin Utility Subcommands              create-local-instance(1)
        Command create-local-instance executed successfully.
 
 EXIT STATUS
-
-Java EE 6            Last change: 8 Sep 2010                    9
-
-asadmin Utility Subcommands              create-local-instance(1)
-
      0                           command executed successfully
 
      1                           error in executing the command
@@ -484,5 +509,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6            Last change: 8 Sep 2010                   10
+Java EE 6           Last change: 17 Dec 2010                   10
 

@@ -6,7 +6,9 @@ NAME
 
 SYNOPSIS
      restart-domain [--help] [--debug ={true|false}]
-     [--domaindir domaindir] [domain-name]
+     [--domaindir domaindir]
+     [--force={true|false}] [--kill={false|true}]
+     [domain-name]
 
 DESCRIPTION
      The restart-domain subcommand stops and  then  restarts  the
@@ -45,26 +47,67 @@ OPTIONS
              The domain is restarted with JPDA debugging  enabled
              and the port number for JPDA debugging is displayed.
 
-         false
-             The domain is restarted with JPDA debugging disabled
-             (default).
-
-Java EE 6            Last change: 7 Dec 2010                    1
+Java EE 6           Last change: 20 Dec 2010                    1
 
 asadmin Utility Subcommands                     restart-domain(1)
+
+         false
+
+             The domain is restarted with JPDA debugging disabled
+             (default).
 
          The default is the current setting of  this  option  for
          the domain that is being restarted.
 
      --domaindir
-
          The domains directory that contains the directory of the
          domain  that  is to be restarted. If specified, the path
          must be accessible  in  the  file  system.  The  default
          domains directory is as-install/glassfish/domains.
 
+     --force
+
+         Specifies whether the domain is forcibly stopped immedi-
+         ately before it is restarted.
+
+         Possible values are as follows:
+
+         true
+             The   domain   is   forcibly   stopped   immediately
+             (default).
+
+         false
+
+             The subcommand waits  until  all  threads  that  are
+             associated  with  the domain are exited before stop-
+             ping the domain.
+
+     --kill
+         Specifies whether the domain is killed before it is res-
+         tarted by using functionality of the operating system to
+         terminate the domain process.
+
+         Possible values are as follows:
+
+         false
+
+             The domain is not killed. The subcommand uses  func-
+             tionality  of  the  Java  platform  to terminate the
+             domain process (default).
+
+         true
+             The  domain   is   killed.   The   subcommand   uses
+
+Java EE 6           Last change: 20 Dec 2010                    2
+
+asadmin Utility Subcommands                     restart-domain(1)
+
+             functionality  of  the operating system to terminate
+             the domain process.
+
 OPERANDS
      domain-name
+
          The name of the domain you want to restart.  Default  is
          the name specified during installation, usually domain1.
 
@@ -92,5 +135,5 @@ SEE ALSO
      Java     Platform     Debugger      Architecture      (JPDA)
      (http://java.sun.com/javase/technologies/core/toolsapis/jpda/)
 
-Java EE 6            Last change: 7 Dec 2010                    2
+Java EE 6           Last change: 20 Dec 2010                    3
 

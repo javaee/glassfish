@@ -144,9 +144,9 @@ asadmin Utility Subcommands                       install-node(1)
          default is 22.
 
      --sshuser
-         The user that is  to  run  the  process  for  connecting
-         through  SSH  to  the  host  where  the GlassFish Server
-         software is to be installed. The  default  is  the  user
+         The user on the host where the GlassFish Server software
+         is  to  be installed that is to run the process for con-
+         necting through SSH to the host. The default is the user
          that  is running this subcommand. To ensure that the DAS
          can read this user's SSH private key file,  specify  the
          user that is running the DAS process.
@@ -162,18 +162,17 @@ asadmin Utility Subcommands                       install-node(1)
          for authentication to the sshd daemon on the host.
 
          The user that is running this subcommand must be able to
-         reach  the  path  to the key file and read the key file.
-         The  path  may  contain  Java  properties  of  the  form
-         ${prop.name}.
+         reach the path to the key file and read the key file.
 
-         The default is the a platform-dependent key file in  the
-         user's .ssh directory, for example:
+         The default is a key file in the user's .ssh  directory.
+         If multiple key files are found, the subcommand uses the
+         following order of preference:
 
-             o    id_rsa
+             1.   id_rsa
 
-             o    id_dsa
+             2.   id_dsa
 
-             o    identity
+             3.   identity
 
      --force
          Specifies whether the subcommand overwrites an  existing

@@ -6,9 +6,10 @@ NAME
      listener, IIOP listener, or IIOP service
 
 SYNOPSIS
-     delete-ssl
-     [--help]
-      --type  listener_or_service_type listener_id
+     delete-ssl [--help]
+     [--target target]
+     --type listener_or_service_type
+     listener_id
 
 DESCRIPTION
      The delete-ssl subcommand deletes the  SSL  element  in  the
@@ -30,13 +31,39 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --target
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command runs successfully and the option is ignored.
+         Specifies the target on which you  are  configuring  the
+         ssl element. The following values are valid:
+
+         server
+
+             Specifies the server in which  the  iiop-service  or
+             HTTP/IIOP listener is to be unconfigured for SSL.
+
+         config
+             Specifies  the  configuration  that   contains   the
+             HTTP/IIOP  listener or iiop-service for which SSL is
+             to be unconfigured.
+
+         cluster
+
+             Specifies  the  cluster  in  which   the   HTTP/IIOP
+             listener  or  iiop-service is to be unconfigured for
+
+Java EE 6           Last change: 22 Dec 2010                    1
+
+asadmin Utility Subcommands                         delete-ssl(1)
+
+             SSL. All the server instances in  the  cluster  will
+             get  SSL unconfigured for the respective listener or
+             iiop-service.
+
+         instance
+
+             Specifies  the  instance  in  which  the   HTTP/IIOP
+             listener  or  iiop-service is to be unconfigured for
+             SSL.
 
       --type
-
          The type of service or listener for  which  the  SSL  is
          deleted. The type must be one of the following types:
 
@@ -45,10 +72,6 @@ OPTIONS
              o    iiop-listener
 
              o    iiop-service
-
-Java EE 6           Last change: 28 Aug 2009                    1
-
-asadmin Utility Subcommands                         delete-ssl(1)
 
 OPERANDS
      listener_id
@@ -72,6 +95,10 @@ EXAMPLES
 EXIT STATUS
      0                            command executed successfully
 
+Java EE 6           Last change: 22 Dec 2010                    2
+
+asadmin Utility Subcommands                         delete-ssl(1)
+
      1                            error in executing the command
 
 SEE ALSO
@@ -79,5 +106,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 28 Aug 2009                    2
+Java EE 6           Last change: 22 Dec 2010                    3
 

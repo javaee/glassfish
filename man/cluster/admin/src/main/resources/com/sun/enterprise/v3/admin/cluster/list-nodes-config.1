@@ -49,7 +49,7 @@ OPTIONS
 
          Displays the help text for the subcommand.
 
-Java EE 6            Last change: 9 Dec 2010                    1
+Java EE 6           Last change: 16 Dec 2010                    1
 
 asadmin Utility Subcommands                  list-nodes-config(1)
 
@@ -72,10 +72,10 @@ EXAMPLES
 
      This example displays the  name,  type,  and  host  for  all
      GlassFish Server nodes that do not support remote communica-
-     tion in a domain.
+     tion in the domain domain1.
 
        asadmin> list-nodes-config
-       localhost  CONFIG  localhost
+       localhost-domain1  CONFIG  localhost
        devnode  CONFIG  localhost
        Command list-nodes-config executed successfully.
 
@@ -83,25 +83,26 @@ EXAMPLES
 
      This example uses the --terse option of the asadmin  utility
      to list only the names of the GlassFish Server nodes that do
-     not support remote communication in a domain.
+     not support remote communication in the domain domain1.
 
        asadmin> list-nodes-config --terse=true
-       localhost
+       localhost-domain1
        devnode
 
      Example 3 Listing GlassFish Server Nodes in Long Format
 
      This example lists the GlassFish Server nodes  that  do  not
-     support remote communication in a domain in long format.
+     support  remote  communication  in the domain domain1in long
+     format.
 
-Java EE 6            Last change: 9 Dec 2010                    2
+Java EE 6           Last change: 16 Dec 2010                    2
 
 asadmin Utility Subcommands                  list-nodes-config(1)
 
        asadmin> list-nodes-config --long=true
-       NODE NAME   TYPE     NODE HOST   INSTALL DIRECTORY    REFERENCED BY
-       localhost   CONFIG   localhost   /export/glassfish3
-       devnode     CONFIG   localhost   /export/glassfish3   pmdsa1
+       NODE NAME           TYPE     NODE HOST   INSTALL DIRECTORY    REFERENCED BY
+       localhost-domain1   CONFIG   localhost   /export/glassfish3
+       devnode             CONFIG   localhost   /export/glassfish3   pmdsa1
        Command list-nodes-config executed successfully.
 
 EXIT STATUS
@@ -116,5 +117,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6            Last change: 9 Dec 2010                    3
+Java EE 6           Last change: 16 Dec 2010                    3
 

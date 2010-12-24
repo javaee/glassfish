@@ -32,9 +32,10 @@ OPTIONS
      --target
 
          Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
+         compatibility with earlier releases. If you specify this
          option, a syntax error does not occur. Instead, the sub-
-         command runs successfully and the option is ignored.
+         command runs successfully and displays a warning message
+         that the option is ignored.
 
 OPERANDS
      mapname
@@ -43,12 +44,12 @@ OPERANDS
 EXAMPLES
      Example 1 Deleting a Connector Security Map
 
-     This example deletes securityMap1 for the  existing  connec-
-     tion pool named connector-pool1.
-
 Java EE 6           Last change: 14 Sep 2010                    1
 
 asadmin Utility Subcommands      delete-connector-security-map(1)
+
+     This example deletes securityMap1 for the  existing  connec-
+     tion pool named connector-pool1.
 
        asadmin> delete-connector-security-map
        --poolname connector-pool1 securityMap1

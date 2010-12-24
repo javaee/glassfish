@@ -34,22 +34,32 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --target
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command runs successfully and the option is ignored.
+         Specifies the target from which  you  are  removing  the
+         resource reference. Valid values are
 
-OPERANDS
-     reference_name
+         server
 
-         The name or JNDI name of the resource.
+             Removes the  resource  reference  from  the  default
+             server instance server and is the default value.
 
-EXAMPLES
+         cluster_name
+             Removes the resource  reference  from  every  server
+             instance in the cluster.
 
-Java EE 6           Last change: 09 Oct 2009                    1
+Java EE 6           Last change: 22 Dec 2010                    1
 
 asadmin Utility Subcommands                delete-resource-ref(1)
 
+         instance_name
+
+             Removes  the  resource  reference  from  the   named
+             unclustered server instance.
+
+OPERANDS
+     reference_name
+         The name or JNDI name of the resource.
+
+EXAMPLES
      Example 1 Using the delete-resource-ref subcommand
 
      The following subcommand removes a reference to the JMS des-
@@ -71,5 +81,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 09 Oct 2009                    2
+Java EE 6           Last change: 22 Dec 2010                    2
 

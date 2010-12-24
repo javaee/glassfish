@@ -50,7 +50,7 @@ DESCRIPTION
               the  subcommand  creates  a  configuration  for the
               instance. An instance that  is  joining  a  cluster
 
-Java EE 6           Last change: 10 Nov 2010                    1
+Java EE 6           Last change: 16 Dec 2010                    1
 
 asadmin Utility Subcommands                    create-instance(1)
 
@@ -103,7 +103,7 @@ asadmin Utility Subcommands                    create-instance(1)
      subcommand also assigns ports that are currently not in  use
      and  not  already  assigned  to  other instances on the same
 
-Java EE 6           Last change: 10 Nov 2010                    2
+Java EE 6           Last change: 16 Dec 2010                    2
 
 asadmin Utility Subcommands                    create-instance(1)
 
@@ -128,7 +128,7 @@ OPTIONS
          instance  is to be created. The node must already exist.
          If the instance is to be created on the host  where  the
          domain  administration  server (DAS) is running, use the
-         predefined node localhost.
+         predefined node localhost-domain.
 
      --config
 
@@ -156,7 +156,7 @@ OPTIONS
 
          Specifies whether  the  instance  is  enabled  for  load
 
-Java EE 6           Last change: 10 Nov 2010                    3
+Java EE 6           Last change: 16 Dec 2010                    3
 
 asadmin Utility Subcommands                    create-instance(1)
 
@@ -209,7 +209,7 @@ asadmin Utility Subcommands                    create-instance(1)
          When the --portbase option is specified, the  output  of
          this subcommand includes a complete list of used ports.
 
-Java EE 6           Last change: 10 Nov 2010                    4
+Java EE 6           Last change: 16 Dec 2010                    4
 
 asadmin Utility Subcommands                    create-instance(1)
 
@@ -261,7 +261,7 @@ asadmin Utility Subcommands                    create-instance(1)
              1-65535. On UNIX, creating sockets  that  listen  on
              ports 1-1024 requires superuser privileges.
 
-Java EE 6           Last change: 10 Nov 2010                    5
+Java EE 6           Last change: 16 Dec 2010                    5
 
 asadmin Utility Subcommands                    create-instance(1)
 
@@ -310,7 +310,7 @@ asadmin Utility Subcommands                    create-instance(1)
              ing  sockets  that  listen  on ports 1-1024 requires
              superuser privileges.
 
-Java EE 6           Last change: 10 Nov 2010                    6
+Java EE 6           Last change: 16 Dec 2010                    6
 
 asadmin Utility Subcommands                    create-instance(1)
 
@@ -339,10 +339,6 @@ OPERANDS
 
                  o    Underscore
 
-                 o    Slash
-
-                 o    Hash
-
              o    The name must be unique in the domain and  must
                   not  be  the  name  of another GlassFish Server
                   instance, a cluster, a named configuration,  or
@@ -356,23 +352,22 @@ EXAMPLES
      Example 1 Creating a Standalone GlassFish Server Instance
 
      This  example  creates  the  standalone   GlassFish   Server
-     instance pmdsainst on the local host.
+     instance pmdsainst in the domain domain1 on the local host.
 
-       asadmin> create-instance --node localhost pmdsainst
+       asadmin> create-instance --node localhost-domain1 pmdsainst
        Port Assignments for server instance pmdsainst:
        JMX_SYSTEM_CONNECTOR_PORT=28688
        JMS_PROVIDER_PORT=27678
        ASADMIN_LISTENER_PORT=24850
        HTTP_LISTENER_PORT=28082
-
-Java EE 6           Last change: 10 Nov 2010                    7
-
-asadmin Utility Subcommands                    create-instance(1)
-
        IIOP_LISTENER_PORT=23702
        IIOP_SSL_LISTENER_PORT=23822
        HTTP_SSL_LISTENER_PORT=28183
        IIOP_SSL_MUTUALAUTH_PORT=23922
+
+Java EE 6           Last change: 16 Dec 2010                    7
+
+asadmin Utility Subcommands                    create-instance(1)
 
        Command create-instance executed successfully.
 
@@ -380,8 +375,8 @@ asadmin Utility Subcommands                    create-instance(1)
      With Custom Port Assignments
 
      This  example  creates  the  standalone   GlassFish   Server
-     instance  pmdcpinst  on  the local host. Custom port numbers
-     are assigned to the following ports:
+     instance pmdcpinst  in the domain domain1 on the local host.
+     Custom port numbers are assigned to the following ports:
 
          o    HTTP listener port
 
@@ -396,7 +391,7 @@ asadmin Utility Subcommands                    create-instance(1)
 
          o    JMX connector port
 
-       asadmin> create-instance --node localhost
+       asadmin> create-instance --node localhost-domain1
        --systemproperties HTTP_LISTENER_PORT=58294:
        HTTP_SSL_LISTENER_PORT=58297:
        IIOP_LISTENER_PORT=58300:
@@ -412,16 +407,17 @@ asadmin Utility Subcommands                    create-instance(1)
      Example 3 Creating a Shared GlassFish Server Instance
 
      This example creates the shared  GlassFish  Server  instance
-     pmdsharedinst1  on  the local host. The shared configuration
-     of this instance is pmdsharedconfig.
+     pmdsharedinst1  in the domain domain1 on the local host. The
+     shared configuration of this instance is pmdsharedconfig.
 
-Java EE 6           Last change: 10 Nov 2010                    8
+       asadmin create-instance --node localhost-domain1 --config pmdsharedconfig
+       pmdsharedinst1
+       Port Assignments for server instance pmdsharedinst1:
+
+Java EE 6           Last change: 16 Dec 2010                    8
 
 asadmin Utility Subcommands                    create-instance(1)
 
-       asadmin create-instance --node localhost --config pmdsharedconfig
-       pmdsharedinst1
-       Port Assignments for server instance pmdsharedinst1:
        JMX_SYSTEM_CONNECTOR_PORT=28687
        JMS_PROVIDER_PORT=27677
        ASADMIN_LISTENER_PORT=24849
@@ -436,10 +432,10 @@ asadmin Utility Subcommands                    create-instance(1)
      Example 4 Creating a Clustered GlassFish Server Instance
 
      This example creates the clustered GlassFish Server instance
-     pmdinst1  on the local host. The instance is a member of the
-     cluster pmdclust1.
+     pmdinst1  in  the  domain  domain1  on  the  local host. The
+     instance is a member of the cluster pmdclust1.
 
-       asadmin> create-instance --node localhost --cluster pmdclust pmdinst1
+       asadmin> create-instance --node localhost-domain1 --cluster pmdclust pmdinst1
        Port Assignments for server instance pmdinst1:
        JMX_SYSTEM_CONNECTOR_PORT=28686
        JMS_PROVIDER_PORT=27676
@@ -463,11 +459,7 @@ SEE ALSO
      instance(1),  delete-system-property(1),  list-instances(1),
      setup-ssh(1), start-instance(1), stop-instance(1)
 
-Java EE 6           Last change: 10 Nov 2010                    9
-
-asadmin Utility Subcommands                    create-instance(1)
-
      asadmin(1M)
 
-Java EE 6           Last change: 10 Nov 2010                   10
+Java EE 6           Last change: 16 Dec 2010                    9
 

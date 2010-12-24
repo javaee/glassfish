@@ -7,6 +7,7 @@ NAME
 
 SYNOPSIS
      list-jvm-options [--help] [--target target]
+     [--profiler={false|true}]
 
 DESCRIPTION
      The list-jvm-options subcommand displays a list of  command-
@@ -45,9 +46,17 @@ OPTIONS
          configuration-name
              Specifies a named configuration.
 
-Java EE 6           Last change: 29 Nov 2010                    1
+Java EE 6           Last change: 20 Dec 2010                    1
 
 asadmin Utility Subcommands                   list-jvm-options(1)
+
+     --profiler
+
+         Specifies whether the Java application launcher  options
+         to  list  are  for the profiler. Set this option to true
+         only if a profiler has been configured. If  this  option
+         is  set  to true and no profiler is configured, an error
+         occurs. The default is false.
 
 EXAMPLES
      Example 1 Listing the Java Application Launcher Options
@@ -86,23 +95,22 @@ EXIT STATUS
 SEE ALSO
      create-jvm-options(1), delete-jvm-options(1)
 
+Java EE 6           Last change: 20 Dec 2010                    2
+
+asadmin Utility Subcommands                   list-jvm-options(1)
+
      asadmin(1M)
 
      For more information about the  Java  application  launcher,
      see the reference page for the operating system that you are
      using:
 
-         o    Oracle  Solaris  and  Linux:  java   -   the   Java
-
-Java EE 6           Last change: 29 Nov 2010                    2
-
-asadmin Utility Subcommands                   list-jvm-options(1)
-
-              application                                launcher
+         o    Oracle Solaris and Linux: java - the Java  applica-
+              tion                                       launcher
               (http://java.sun.com/javase/6/docs/technotes/tools/solaris/java.html)
 
          o    Windows:  java  -  the  Java  application  launcher
               (http://java.sun.com/javase/6/docs/technotes/tools/windows/java.html)
 
-Java EE 6           Last change: 29 Nov 2010                    3
+Java EE 6           Last change: 20 Dec 2010                    3
 

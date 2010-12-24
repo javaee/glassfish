@@ -6,7 +6,8 @@ NAME
      to delete a message security provider
 
 SYNOPSIS
-     delete-message-security-provider [--help] [--target target] --layer message_layer
+     delete-message-security-provider [--help] [--target target]
+     --layer message_layer
      provider_name
 
 DESCRIPTION
@@ -38,23 +39,34 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --target
-         Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
-         option, a syntax error does not occur. Instead, the sub-
-         command runs successfully and the option is ignored.
+         Specifies the target from which  you  are  deleting  the
+         message security provider. Valid values are
+
+         server           Deletes the message  security  provider
+                          from the default server instance server
+                          and is the default value
+
+Java EE 6           Last change: 22 Dec 2010                    1
+
+asadmin Utility Subcommands   delete-message-security-provider(1)
+
+         domain           Deletes the message  security  provider
+                          from the domain.
+
+         cluster_name     Deletes the message  security  provider
+                          from every server instance in the clus-
+                          ter.
+
+         instance_name    Deletes the message  security  provider
+                          from a particular sever instance.
 
       --layer
 
          The message-layer from which  the  provider  has  to  be
          deleted. The default value is HttpServlet.
 
-Java EE 6            Last change: 28 Aug2009                    1
-
-asadmin Utility Subcommands   delete-message-security-provider(1)
-
 OPERANDS
      provider_name
-
          The  name  of  the  provider  used  to   reference   the
          provider-config element.
 
@@ -76,7 +88,11 @@ SEE ALSO
      create-message-security-provider(1),  list-message-security-
      providers(1)
 
+Java EE 6           Last change: 22 Dec 2010                    2
+
+asadmin Utility Subcommands   delete-message-security-provider(1)
+
      asadmin(1M)
 
-Java EE 6            Last change: 28 Aug2009                    2
+Java EE 6           Last change: 22 Dec 2010                    3
 

@@ -638,9 +638,10 @@ asadmin Utility Subcommands        create-jdbc-connection-pool(1)
 
      --target
          Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
+         compatibility with earlier releases. If you specify this
          option, a syntax error does not occur. Instead, the sub-
-         command runs successfully and the option is ignored.
+         command runs successfully and displays a warning message
+         that the option is ignored.
 
 OPERANDS
      connectionpoolid
@@ -656,12 +657,12 @@ EXAMPLES
        asadmin> create-jdbc-connection-pool
        --datasourceclassname org.apache.derby.jdbc.ClientDataSource
        --restype javax.sql.XADataSource
-       --property portNumber=1527:password=APP:user=APP:serverName=
 
 Java EE 6           Last change: 17 Sep 2010                   13
 
 asadmin Utility Subcommands        create-jdbc-connection-pool(1)
 
+       --property portNumber=1527:password=APP:user=APP:serverName=
        localhost:databaseName=sun-appserv-samples:connectionAttributes=;
        create\=true sample_derby_pool
        Command create-jdbc-connection-pool executed successfully

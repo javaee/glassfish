@@ -13,6 +13,7 @@ SYNOPSIS
      [--template template-name]
      [--domaindir domaindir]
      [--savemasterpassword={false|true}]
+     [--usemasterpassword={false|true}]
      [--domainproperties (name=value)[:name=value]*]
      [--keytooloptions (name=value)[:name=value]*]
      [--savelogin={false|true}]
@@ -21,7 +22,7 @@ SYNOPSIS
      domain-name
 
 DESCRIPTION
-     The create-domain subcommand creates  a  GlassFishTM  Server
+     The create-domain  subcommand  creates  a  GlassFish  Server
      domain.  A  domain  in GlassFish Server is an administrative
      namespace that complies with the JavaTM Platform, Enterprise
      Edition  (Java  EE)  standard. Every domain has a configura-
@@ -48,12 +49,12 @@ DESCRIPTION
      nopassword option is set to true, the default administrative
      user, admin, is used.  If the --nopassword option is set  to
      false  (the  default), a username is required. In this case,
-     if you have not specified the user name by using the  --user
 
-Java EE 6            Last change: 6 Dec 2010                    1
+Java EE 6           Last change: 16 Dec 2010                    1
 
 asadmin Utility Subcommands                      create-domain(1)
 
+     if you have not specified the user name by using the  --user
      option, you are prompted to do so.
 
      This subcommand is supported in local mode only.
@@ -101,12 +102,11 @@ OPTIONS
 
              o    Secure IIOP listener port: portbase + 38
 
-             o    Secure IIOP with  mutual  authentication  port:
-
-Java EE 6            Last change: 6 Dec 2010                    2
+Java EE 6           Last change: 16 Dec 2010                    2
 
 asadmin Utility Subcommands                      create-domain(1)
 
+             o    Secure IIOP with  mutual  authentication  port:
                   portbase + 39
 
              o    JMX port: portbase + 86
@@ -125,9 +125,10 @@ asadmin Utility Subcommands                      create-domain(1)
      --profile
 
          Do not specify this option. This option is retained  for
-         compatibility  with  other releases. If you specify this
+         compatibility with earlier releases. If you specify this
          option, a syntax error does not occur. Instead, the sub-
-         command runs successfully and the option is ignored.
+         command runs successfully and displays a warning message
+         that the option is ignored.
 
      --template
          The file name, including a relative or absolute path, of
@@ -149,34 +150,36 @@ asadmin Utility Subcommands                      create-domain(1)
          default domain directory, as-install/glassfish/domains.
 
      --savemasterpassword
-         Setting this option to true allows the masterpassword to
-         be  written  to  the  file  system. The default value is
-         false.
+         Setting this option to true allows the  master  password
+         to  be  written  to  the  file system. If this option is
+         true,  the  --usemasterpassword  option  is  also  true,
+         regardless of the value that is specified on the command
 
-         A master password is really a password  for  the  secure
-         key  store.  A  domain  is  designed  to  keep   its own
-
-Java EE 6            Last change: 6 Dec 2010                    3
+Java EE 6           Last change: 16 Dec 2010                    3
 
 asadmin Utility Subcommands                      create-domain(1)
 
-         certificate (created at the time of domain creation)  in
-         a safe place in  the configuration location. This certi-
-         ficate is called the domain's  SSL  server  certificate.
-         When  the   domain  is contacted by a web browser over a
-         secure channel (HTTPS), this certificate is presented by
-         the  domain.  The master password is supposed to protect
-         the  store (a file) that contains this certificate. This
-         file  is called keystore.jks and is  created in the con-
-         figuration directory of the domain created. If  however,
-         this  option is  chosen, the master password is saved on
-         the disk in the  domain's  configuration  location.  The
-         master  password  is  stored  in  a  file called master-
-         password, which is a Java JCEKS type  keystore. The rea-
-         son  for  using  the  --savemasterpassword option is for
-         unattended system boots. In this case, the master  pass-
-         word  is not prompted for when the domain starts because
-         the password will be extracted from this file.
+         line. The default value is false.
+
+         A master password is really a password  for  the  secure
+         key  store. A domain is designed to keep  its own certi-
+         ficate (created at the time of  domain  creation)  in  a
+         safe place in  the configuration location. This certifi-
+         cate is called the domain's SSL server certificate. When
+         the   domain is contacted by a web browser over a secure
+         channel (HTTPS), this certificate is  presented  by  the
+         domain.  The  master password is supposed to protect the
+         store (a file) that contains this certificate. This file
+         is called keystore.jks and is  created in the configura-
+         tion directory of the domain created. If  however,  this
+         option  is   chosen, the master password is saved on the
+         disk in the domain's configuration location. The  master
+         password  is  stored  in  a file called master-password,
+         which is a Java JCEKS type   keystore.  The  reason  for
+         using  the --savemasterpassword option is for unattended
+         system boots. In this case, the master password  is  not
+         prompted for when the domain starts because the password
+         will be extracted from this file.
 
          It is best to create a master password when  creating  a
          domain,  because  the  master  password  is  used by the
@@ -187,6 +190,31 @@ asadmin Utility Subcommands                      create-domain(1)
          password is saved, then start-domain does not prompt for
          it. The master password gives an extra level of security
          to the environment.
+
+     --usemasterpassword
+
+         Specifies whether the key store is encrypted with a mas-
+         ter  password  that  is built into the system or a user-
+         defined master password.
+
+         If false (default), the keystore  is  encrypted  with  a
+         well-known  password  that  is  built  into  the system.
+         Encrypting the keystore with a password  that  is  built
+         into the system provides no additional security.
+
+         If true, the subcommand obtains the master password from
+         the  AS_ADMIN_MASTERPASSWORD  entry in the password file
+         or prompts for the master password. The password file is
+         specified   in   the   --passwordfile   option   of  the
+         asadmin(1M)utility.
+
+         If the --savemasterpassword option is true, this  option
+         is  also true, regardless of the value that is specified
+         on the command line.
+
+Java EE 6           Last change: 16 Dec 2010                    4
+
+asadmin Utility Subcommands                      create-domain(1)
 
      --domainproperties
 
@@ -211,22 +239,17 @@ asadmin Utility Subcommands                      create-domain(1)
              This property specifies the port number of the  port
              that  is  used  to  listen  for HTTP requests. Valid
              values are 1-65535. On UNIX, creating  sockets  that
-
-Java EE 6            Last change: 6 Dec 2010                    4
-
-asadmin Utility Subcommands                      create-domain(1)
-
              listen    on   ports   1-1024   requires   superuser
              privileges.
 
          domain.jmxPort
-
              This property specifies the port number on which the
              JMX  connector listens. Valid values are 1-65535. On
              UNIX, creating sockets that listen on  ports  1-1024
              requires superuser privileges.
 
          http.ssl.port
+
              This property specifies the port number of the  port
              that  is  used  to listen for HTTPS requests.  Valid
              values are 1-65535. On UNIX, creating  sockets  that
@@ -234,39 +257,38 @@ asadmin Utility Subcommands                      create-domain(1)
              privileges.
 
          java.debugger.port
-
              This property specifies the port number of the  port
              that  is  used  for connections to the Java Platform
              Debugger Architecture (JPDA) debugger. Valid  values
              are  1-65535.  On UNIX, creating sockets that listen
              on ports 1-1024 requires superuser privileges.
 
+Java EE 6           Last change: 16 Dec 2010                    5
+
+asadmin Utility Subcommands                      create-domain(1)
+
          jms.port
+
              This property specifies the port number for the Java
              Message  Service provider. Valid values are 1-65535.
              On UNIX,  creating  sockets  that  listen  on  ports
              1-1024 requires superuser privileges.
 
          orb.listener.port
-
              This property specifies the port number of the  port
              that  is used for IIOP connections. Valid values are
              1-65535. On UNIX, creating sockets  that  listen  on
              ports 1-1024 requires superuser privileges.
 
          orb.mutualauth.port
+
              This property specifies the port number of the  port
              that is used for secure IIOP connections with client
              authentication. Valid values are 1-65535.  On  UNIX,
              creating   sockets   that  listen  on  ports  1-1024
              requires superuser privileges.
 
-Java EE 6            Last change: 6 Dec 2010                    5
-
-asadmin Utility Subcommands                      create-domain(1)
-
          orb.ssl.port
-
              This property specifies the port number of the  port
              that  is  used  for  secure  IIOP connections. Valid
              values are 1-65535. On UNIX, creating  sockets  that
@@ -274,6 +296,7 @@ asadmin Utility Subcommands                      create-domain(1)
              privileges.
 
          osgi.shell.telnet.port
+
              This property specifies the port number of the  port
              that  is  used  for  connections to the Apache Felix
              Remote Shell. This shell uses the Felix  shell  ser-
@@ -283,7 +306,6 @@ asadmin Utility Subcommands                      create-domain(1)
              superuser privileges.
 
      --keytooloptions
-
          Specifies an optional list of name-value pairs  of  key-
          tool  options  for a self-signed server certificate. The
          certificate is generated  during  the  creation  of  the
@@ -292,7 +314,12 @@ asadmin Utility Subcommands                      create-domain(1)
 
          Allowed options are as follows:
 
+Java EE 6           Last change: 16 Dec 2010                    6
+
+asadmin Utility Subcommands                      create-domain(1)
+
          CN
+
              Specifies the common name of the host that is to  be
              used  for  the  self-signed certificate. This option
              name is case insensitive.
@@ -301,7 +328,6 @@ asadmin Utility Subcommands                      create-domain(1)
              the host where the create-domain subcommand is run.
 
       --savelogin
-
          If set to true, this  option  saves  the  administration
          user  name  and  password.  Default  value is false. The
          username and password are  stored  in  the  .asadminpass
@@ -313,10 +339,6 @@ asadmin Utility Subcommands                      create-domain(1)
          specify --user, --passwordfile, --host, or --port on any
          of  the subsequent asadmin remote commands. These values
          will be obtained automatically.
-
-Java EE 6            Last change: 6 Dec 2010                    6
-
-asadmin Utility Subcommands                      create-domain(1)
 
          Note -
 
@@ -344,6 +366,11 @@ asadmin Utility Subcommands                      create-domain(1)
          password.   If  a user name for the domain is not speci-
          fied by using the --user option,  and  the  --nopassword
          option  is set to true, the default user name, admin, is
+
+Java EE 6           Last change: 16 Dec 2010                    7
+
+asadmin Utility Subcommands                      create-domain(1)
+
          used.
 
 OPERANDS
@@ -364,11 +391,6 @@ EXAMPLES
        Using default port 8080 for HTTP Instance.
        Using default port 7676 for JMS.
        Using default port 3700 for IIOP.
-
-Java EE 6            Last change: 6 Dec 2010                    7
-
-asadmin Utility Subcommands                      create-domain(1)
-
        Using default port 8181 for HTTP_SSL.
        Using default port 3820 for IIOP_SSL.
        Using default port 3920 for IIOP_MUTUALAUTH.
@@ -393,6 +415,11 @@ asadmin Utility Subcommands                      create-domain(1)
        Using port 7070 for Admin.
        Using port 7071 for HTTP Instance.
        Using default port 7676 for JMS.
+
+Java EE 6           Last change: 16 Dec 2010                    8
+
+asadmin Utility Subcommands                      create-domain(1)
+
        Using default port 3700 for IIOP.
        Using default port 8181 for HTTP_SSL.
        Using default port 3820 for IIOP_SSL.
@@ -412,10 +439,6 @@ asadmin Utility Subcommands                      create-domain(1)
 
      This example creates a domain named myDomain and  saves  the
      administration username and password.
-
-Java EE 6            Last change: 6 Dec 2010                    8
-
-asadmin Utility Subcommands                      create-domain(1)
 
        asadmin> create-domain --adminport 8282 --savelogin=true myDomain
        Enter the admin password [Enter to accept default of no password]>
@@ -443,6 +466,10 @@ asadmin Utility Subcommands                      create-domain(1)
        asadmin commands to manage this domain.
        Command create-domain executed successfully.
 
+Java EE 6           Last change: 16 Dec 2010                    9
+
+asadmin Utility Subcommands                      create-domain(1)
+
      Example 4 Creating a Domain and Designating the  Certificate
      Host
 
@@ -465,11 +492,6 @@ asadmin Utility Subcommands                      create-domain(1)
        Distinguished Name of the self-signed X.509 Server Certificate is:
        [CN=trio,OU=GlassFish,O=Oracle Corp.,L=Redwood Shores,ST=California,C=US]
        No domain initializers found, bypassing customization step
-
-Java EE 6            Last change: 6 Dec 2010                    9
-
-asadmin Utility Subcommands                      create-domain(1)
-
        Domain domain5 created.
        Domain domain5 admin port is 9898.
        Domain domain5 allows admin login as user "admin" with no password.
@@ -492,5 +514,5 @@ SEE ALSO
      shell.html),  Java  Platform  Debugger  Architecture  (JPDA)
      (http://java.sun.com/javase/technologies/core/toolsapis/jpda/)
 
-Java EE 6            Last change: 6 Dec 2010                   10
+Java EE 6           Last change: 16 Dec 2010                   10
 

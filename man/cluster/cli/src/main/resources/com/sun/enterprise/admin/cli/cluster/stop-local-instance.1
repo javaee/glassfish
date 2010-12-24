@@ -8,6 +8,7 @@ NAME
 SYNOPSIS
      stop-local-instance [--help]
      [--nodedir node-dir] [--node node]
+     [--force={true|false}] [--kill={false|true}]
      [instance-name]
 
 DESCRIPTION
@@ -47,18 +48,57 @@ OPTIONS
 
          Specifies the node on which the instance  resides.  This
          option  may be omitted only if the directory that the --
-         nodedir  option  specifies  contains   only   one   node
 
-Java EE 6           Last change: 20 Oct 2010                    1
+Java EE 6           Last change: 16 Dec 2010                    1
 
 asadmin Utility Subcommands                stop-local-instance(1)
 
-         directory. Otherwise, this option is required.
+         nodedir option specifies contains only one  node  direc-
+         tory. Otherwise, this option is required.
+
+     --force
+
+         Specifies  whether  the  instance  is  forcibly  stopped
+         immediately.
+
+         Possible values are as follows:
+
+         true
+             The  instance  is   forcibly   stopped   immediately
+             (default).
+
+         false
+
+             The subcommand waits  until  all  threads  that  are
+             associated with the instance are exited before stop-
+             ping the instance.
+
+     --kill
+         Specifies whether the instance is killed by using  func-
+         tionality  of  the  operating  system  to  terminate the
+         instance process.
+
+         Possible values are as follows:
+
+         false
+
+             The instance is  not  killed.  The  subcommand  uses
+             functionality  of the Java platform to terminate the
+             instance process (default).
+
+         true
+             The instance is killed. The  subcommand  uses  func-
+             tionality  of  the operating system to terminate the
+             instance process.
 
 OPERANDS
      instance-name
 
          The name of the instance to stop.
+
+Java EE 6           Last change: 16 Dec 2010                    2
+
+asadmin Utility Subcommands                stop-local-instance(1)
 
 EXAMPLES
      Example 1 Stopping an Instance Locally
@@ -82,5 +122,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 20 Oct 2010                    2
+Java EE 6           Last change: 16 Dec 2010                    3
 

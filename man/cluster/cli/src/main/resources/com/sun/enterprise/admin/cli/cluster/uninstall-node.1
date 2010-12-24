@@ -22,13 +22,13 @@ DESCRIPTION
      uninstalled.
 
      By  default,  if  any  node  except  the   predefined   node
-     localhost-domain-name resides on any host from which GlassF-
-     ish Server software is  being  uninstalled,  the  subcommand
-     fails.  To  uninstall  the  GlassFish Server software from a
-     host on which user-defined nodes  reside,  set  the  --force
-     option  to  true. If the --force option is true, the subcom-
-     mand removes the entire content of the parent  of  the  base
-     installation directory.
+     localhost-domain  resides  on  any host from which GlassFish
+     Server software is being uninstalled, the subcommand  fails.
+     To  uninstall  the  GlassFish Server software from a host on
+     which user-defined nodes reside, set the --force  option  to
+     true.  If the --force option is true, the subcommand removes
+     the entire content of the parent of  the  base  installation
+     directory.
 
      If multiple hosts are specified, the  configuration  of  the
      following items must be the same on all hosts:
@@ -47,7 +47,7 @@ DESCRIPTION
 
      This subcommand is supported in local mode only.
 
-Java EE 6           Last change: 10 Dec 2010                    1
+Java EE 6           Last change: 16 Dec 2010                    1
 
 asadmin Utility Subcommands                     uninstall-node(1)
 
@@ -82,12 +82,12 @@ OPTIONS
          default is 22.
 
      --sshuser
-         The SSH user that is to run the process  for  connecting
-         to the host where the GlassFish Server software is to be
-         uninstalled. The default is the  user  that  is  running
-         this  subcommand.  To  ensure that the DAS can read this
-         user's SSH private key file, specify the  user  that  is
-         running the DAS process.
+         The user on the host where the GlassFish Server software
+         is to be uninstalled that is to run the process for con-
+         necting through SSH to the host. The default is the user
+         that  is running this subcommand. To ensure that the DAS
+         can read this user's SSH private key file,  specify  the
+         user that is running the DAS process.
 
      --sshkeyfile
 
@@ -96,22 +96,22 @@ OPTIONS
          for authentication to the sshd daemon on the host.
 
          The user that is running this subcommand must be able to
-         reach  the  path  to the key file and read the key file.
-         The  path  may  contain  Java  properties  of  the  form
-         ${prop.name}.
+         reach the path to the key file and read the key file.
 
-Java EE 6           Last change: 10 Dec 2010                    2
+         The default is a key file in the user's .ssh  directory.
+         If multiple key files are found, the subcommand uses the
+
+Java EE 6           Last change: 16 Dec 2010                    2
 
 asadmin Utility Subcommands                     uninstall-node(1)
 
-         The default is the a platform-dependent key file in  the
-         user's .ssh directory, for example:
+         following order of preference:
 
-             o    id_rsa
+             1.   id_rsa
 
-             o    id_dsa
+             2.   id_dsa
 
-             o    identity
+             3.   identity
 
      --force
 
@@ -151,7 +151,7 @@ EXAMPLES
      Example 1 Uninstalling GlassFish Server  Software  From  the
      Default Location
 
-Java EE 6           Last change: 10 Dec 2010                    3
+Java EE 6           Last change: 16 Dec 2010                    3
 
 asadmin Utility Subcommands                     uninstall-node(1)
 
@@ -194,7 +194,7 @@ EXIT STATUS
 
      1                           error in executing the command
 
-Java EE 6           Last change: 10 Dec 2010                    4
+Java EE 6           Last change: 16 Dec 2010                    4
 
 asadmin Utility Subcommands                     uninstall-node(1)
 
@@ -203,5 +203,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 10 Dec 2010                    5
+Java EE 6           Last change: 16 Dec 2010                    5
 

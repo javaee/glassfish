@@ -23,7 +23,7 @@ DESCRIPTION
 
      This subcommand should be used before the  GlassFish  Server
      cluster is started for the first time. Otherwise, follow the
-     instructions in Chapter 19, Administering the  Java  Message
+     instructions in Chapter 17, Administering the  Java  Message
      Service (JMS), in Oracle GlassFish Server 3.1 Administration
      Guide.
 
@@ -96,7 +96,7 @@ asadmin Utility Subcommands              configure-jms-cluster(1)
          Note -
 
            To specify the password of the JDBC database user, use
-           the ----passwordfile utility option of the asadmin(1M)
+           the  --passwordfile  utility option of the asadmin(1M)
            command after adding the entry  AS_ADMIN_JMSDBPASSWORD
            to the password file.
 
@@ -113,23 +113,9 @@ asadmin Utility Subcommands              configure-jms-cluster(1)
 
            prop1name=prop1value:prop2name=prop2value
 
-     --force
-
-         Specifies whether the Message Queue  cluster  is  to  be
-         configured even if the GlassFish Server cluster has pre-
-         viously been started  or  contains  instances.  Possible
-         values are as follows:true
-
-         false    The Message Queue cluster is not configured and
-                  the   configure-jms-cluster  subcommand  fails.
-                  This is the default value.
-
-         true     The Message Queue cluster is configured even if
-                  the  GlassFish  Server  cluster  has previously
-                  been started or contains instances.
-
 OPERANDS
      cluster-name
+
          The name of the GlassFish Server cluster for  which  the
          Message Queue cluster is to provide JMS services.
 

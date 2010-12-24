@@ -6,10 +6,10 @@ NAME
      GlassFish Server instance on an unattended boot
 
 SYNOPSIS
-     create-service [--help] [--name servicename]
-     [--serviceproperties serviceproperties]
+     create-service [--help] [--name service-name]
+     [--serviceproperties service-properties]
      [--dry-run={false|true}] [--force={false|true}]
-     [--serviceuser serviceuser]
+     [--serviceuser service-user]
      [--domaindir domain-dir]
      [--nodedir node-dir] [--node node]
      [domain-or-instance-name]
@@ -41,12 +41,13 @@ DESCRIPTION
 
   Behavior of create-service on Windows Systems
      On Windows systems, the create-service subcommand creates  a
-     Windows service to represent the DAS or instance. After this
-     subcommand creates the service, you  must  use  the  Windows
-     Services  Manager  or the Windows Services Wrapper to start,
-     stop, uninstall, or install the service.
+     Windows  service  to represent the DAS or instance. The ser-
+     vice is created in the disabled state. After this subcommand
+     creates  the  service,  you  must  use  the Windows Services
+     Manager or the Windows  Services  Wrapper  to  start,  stop,
+     uninstall, or install the service.
 
-Java EE 6           Last change: 10 Dec 2010                    1
+Java EE 6           Last change: 15 Dec 2010                    1
 
 asadmin Utility Subcommands                     create-service(1)
 
@@ -78,11 +79,12 @@ asadmin Utility Subcommands                     create-service(1)
   Behavior of create-service on Oracle Solaris Systems
      On Oracle Solaris  systems,  the  create-service  subcommand
      creates  a  Service  Management  Facility  (SMF)  service to
-     represent  the  DAS  or  instance.   After  this  subcommand
-     creates  the  service,  you  must use SMF commands to start,
-     enable, disable, delete,  or  stop  the  service.  For  more
-     information  about  SMF, see the following documentation for
-     the Oracle Solaris operating system:
+     represent the DAS or instance.  The service  is  created  in
+     the  disabled  state. After this subcommand creates the ser-
+     vice, you must use SMF commands to start,  enable,  disable,
+     delete, or stop the service. For more information about SMF,
+     see the  following  documentation  for  the  Oracle  Solaris
+     operating system:
 
          o    Chapter 18, Managing Services (Overview), in System
               Administration Guide: Basic Administration
@@ -98,7 +100,7 @@ asadmin Utility Subcommands                     create-service(1)
      controlled by the OS-level user who owns the directory where
      the configuration of the DAS or instance resides.
 
-Java EE 6           Last change: 10 Dec 2010                    2
+Java EE 6           Last change: 15 Dec 2010                    2
 
 asadmin Utility Subcommands                     create-service(1)
 
@@ -144,10 +146,10 @@ OPTIONS
          the  service  that  you  will use when administering the
          service through Oracle Solaris SMF commands or the  ser-
          vice  management  features of the Windows operating sys-
-         tem. If a default is present, this  name  overrides  the
-         default.
+         tem. The default is the name of the domain  or  instance
+         that is specified as the operand of this subcommand.
 
-Java EE 6           Last change: 10 Dec 2010                    3
+Java EE 6           Last change: 15 Dec 2010                    3
 
 asadmin Utility Subcommands                     create-service(1)
 
@@ -162,6 +164,7 @@ asadmin Utility Subcommands                     create-service(1)
          service is superuser, otherwise, this is not allowed.
 
      --dry-run
+     -n
          Previews your attempt to  create  a  service.  Indicates
          issues  and  the  outcome that will occur if you run the
          command without using the --dry-run option.  Nothing  is
@@ -195,7 +198,7 @@ asadmin Utility Subcommands                     create-service(1)
          tains the configuration of the domain. If this option is
          specified, the operand must specify a domain.
 
-Java EE 6           Last change: 10 Dec 2010                    4
+Java EE 6           Last change: 15 Dec 2010                    4
 
 asadmin Utility Subcommands                     create-service(1)
 
@@ -232,23 +235,23 @@ EXAMPLES
        the details:
        ID of the service: domain1
        Display Name of the service:domain1 GlassFish Server
-       Domain Directory: C:\glassfishv3\glassfish\domains\domain1
-       Configuration file for Windows Services Wrapper: C:\glassfishv3\glassfish\domains\
+       Domain Directory: C:\glassfish3\glassfish\domains\domain1
+       Configuration file for Windows Services Wrapper: C:\glassfish3\glassfish\domains\
        domain1\bin\domain1Service.xml
        The service can be controlled using the Windows Services Manager or you can use the
        Windows Services Wrapper instead:
-       Start Command:  C:\glassfishv3\glassfish\domains\domain1\bin\domain1Service.exe  start
-       Stop Command:   C:\glassfishv3\glassfish\domains\domain1\bin\domain1Service.exe  stop
-       Uninstall Command:  C:\glassfishv3\glassfish\domains\domain1\bin\domain1Service.exe
+       Start Command:  C:\glassfish3\glassfish\domains\domain1\bin\domain1Service.exe  start
+       Stop Command:   C:\glassfish3\glassfish\domains\domain1\bin\domain1Service.exe  stop
+       Uninstall Command:  C:\glassfish3\glassfish\domains\domain1\bin\domain1Service.exe
        uninstall
-       Install Command:  C:\glassfishv3\glassfish\domains\domain1\bin\domain1Service.exe
+       Install Command:  C:\glassfish3\glassfish\domains\domain1\bin\domain1Service.exe
        install
 
        This message is also available in a file named PlatformServices.log in the domain's
        root directory
        Command create-service executed successfully.
 
-Java EE 6           Last change: 10 Dec 2010                    5
+Java EE 6           Last change: 15 Dec 2010                    5
 
 asadmin Utility Subcommands                     create-service(1)
 
@@ -285,9 +288,9 @@ asadmin Utility Subcommands                     create-service(1)
        Name of the service:application/GlassFish/domain1
        Type of the service:Domain
        Configuration location of the service:/home/gfuser/glassfish-installations
-       /glassfishv3/glassfish/domains
+       /glassfish3/glassfish/domains
        Manifest file location on the system:/var/svc/manifest/application
-       /GlassFish/domain1_home_gfuser_glassfish-installations_glassfishv3
+       /GlassFish/domain1_home_gfuser_glassfish-installations_glassfish3
        _glassfish_domains/Domain-service-smf.xml.
        You have created the service but you need to start it yourself.
        Here are the most typical Solaris commands of interest:
@@ -297,7 +300,7 @@ asadmin Utility Subcommands                     create-service(1)
        * /usr/sbin/svccfg delete domain1 // uninstall
        Command create-service executed successfully.
 
-Java EE 6           Last change: 10 Dec 2010                    6
+Java EE 6           Last change: 15 Dec 2010                    6
 
 asadmin Utility Subcommands                     create-service(1)
 
@@ -321,5 +324,5 @@ SEE ALSO
 
      Microsoft .NET Framework (http://www.microsoft.com/net/)
 
-Java EE 6           Last change: 10 Dec 2010                    7
+Java EE 6           Last change: 15 Dec 2010                    7
 
