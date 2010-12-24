@@ -202,6 +202,9 @@ public class ListFileUser implements AdminCommand {
         FileRealm fr = null;
         try {
             realmsManager.createRealms(config);
+            //account for updates to realms from outside this config sharing
+            //same keyfile
+            CreateFileUser.refreshRealm(config.getName(), authRealmName);
             fr = (FileRealm) realmsManager.getFromLoadedRealms(config.getName(),authRealmName);
             if (fr == null) {
                 throw new NoSuchRealmException(authRealmName);

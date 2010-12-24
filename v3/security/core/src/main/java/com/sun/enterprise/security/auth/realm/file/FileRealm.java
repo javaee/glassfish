@@ -370,6 +370,37 @@ public final class FileRealm extends IASRealm
         }
     }
 
+    /**
+     * Refreshes the realm data so that new users/groups are visible.
+     *
+     * <P>A new FileRealm instance is created and initialized from the
+     * keyfile on disk. The new instance is installed in the Realm registry
+     * so future Realm.getInstance() calls will obtain the new data. Any
+     * existing references to this instance (e.g. in active LoginModule
+     * sessions) are unaffected.
+     * @param config
+     * @exception BadRealmException if realm data structures are bad
+     *
+     */
+    @Override
+    public void refresh(String configName)
+            throws BadRealmException {
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.fine("Reloading file realm data.");
+        }
+
+        FileRealm newRealm = new FileRealm();
+
+        try {
+            newRealm.init(getProperties());
+            Realm.updateInstance(configName, newRealm, this.getName());
+        } catch (Exception e) {
+            throw new BadRealmException(e.toString());
+        }
+    }
+
+
+
 
     /**
      * Authenticates a user.

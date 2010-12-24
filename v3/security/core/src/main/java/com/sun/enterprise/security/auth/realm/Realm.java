@@ -386,6 +386,37 @@ public abstract class Realm implements Comparable {
         _logger.log(Level.INFO, "realm.updated.successfully",new Object[]{realm.getName()});
     }
 
+    /**
+     * Replace a Realm instance. Can be used by a Realm subclass to
+     * replace a previously initialized instance of itself. Future
+     * getInstance requests will then obtain the new instance.
+     *
+     * <P>Minimal error checking is done. The realm being replaced must
+     * already exist (instantiate() was previously called), the new
+     * instance must be fully initialized properly and it must of course
+     * be of the same class as the previous instance.
+     *
+     * @param realm The new realm instance.
+     * @param name The (previously instantiated) name for this realm.
+     *
+     */
+    protected static synchronized void updateInstance(String configName, Realm realm, String name) {
+        RealmsManager mgr = getRealmsManager();
+        if (mgr == null) {
+            throw new RuntimeException("Unable to locate RealmsManager Service");
+        }
+
+        Realm oldRealm = mgr.getFromLoadedRealms(configName, name);
+        if (!oldRealm.getClass().equals(realm.getClass())) {
+            // would never happen unless bug in realm subclass
+            throw new Error("Incompatible class " + realm.getClass()
+                    + " in replacement realm " + name);
+        }
+        realm.setName(oldRealm.getName());
+        mgr.putIntoLoadedRealms(configName, name, realm);
+        _logger.log(Level.INFO, "realm.updated.successfully", new Object[]{realm.getName()});
+    }
+
     
     /**
      * Convenience method which returns the Realm object representing
@@ -803,6 +834,15 @@ public abstract class Realm implements Comparable {
      * @exception BadRealmException if realm data structures are bad
      */
     public abstract void  refresh() throws BadRealmException;
+
+    /**
+     * Refreshes the realm data so that new users/groups are visible.
+     *
+     * @exception BadRealmException if realm data structures are bad
+     */
+    public void refresh(String configName) throws BadRealmException {
+        //do nothing
+    }
     
     /**
      * Adds new user to file realm. User cannot exist already.

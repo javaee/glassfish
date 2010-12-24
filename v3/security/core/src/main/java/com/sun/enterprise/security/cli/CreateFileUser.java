@@ -317,21 +317,21 @@ public class CreateFileUser implements /*UndoableCommand*/ AdminCommand {
        return password;
    } */
 
-   public static void refreshRealm(String configName, String realmName){
-      if(realmName != null && realmName.length()  >0){
-         try{
-            Realm realm = Realm.getInstance(configName, realmName);
+    public static void refreshRealm(String configName, String realmName) {
+        if (realmName != null && realmName.length() > 0) {
+            try {
+                Realm realm = Realm.getInstance(configName, realmName);
 
-	    if(realm != null){
-	       realm.refresh();
-	    }
-         }catch(com.sun.enterprise.security.auth.realm.NoSuchRealmException nre){
-            //	    _logger.fine("Realm: "+realmName+" is not configured");
-	 }catch(com.sun.enterprise.security.auth.realm.BadRealmException bre){
-            //	    _logger.fine("Realm: "+realmName+" is not configured");
-	 }
-      }
-  }
+                if (realm != null) {
+                    realm.refresh(configName);
+                }
+            } catch (com.sun.enterprise.security.auth.realm.NoSuchRealmException nre) {
+                //	    _logger.fine("Realm: "+realmName+" is not configured");
+            } catch (com.sun.enterprise.security.auth.realm.BadRealmException bre) {
+                //	    _logger.fine("Realm: "+realmName+" is not configured");
+            }
+        }
+    }
     static void handleAdminGroup(String lr, List<String> lg) {
         String fr = "admin-realm";   //this should be a constant defined at a central place -- the name of realm for admin
         String fg = "asadmin";       //this should be a constant defined at a central place -- fixed name of admin group
