@@ -58,6 +58,7 @@ import org.glassfish.grizzly.http.server.HttpHandlerChain;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Request.Note;
 import org.glassfish.grizzly.http.server.Response;
+import org.glassfish.grizzly.http.server.StaticHttpHandler;
 import org.glassfish.grizzly.http.server.util.Mapper;
 import org.glassfish.grizzly.http.server.util.MappingData;
 import org.glassfish.grizzly.http.server.util.MimeType;
@@ -75,7 +76,7 @@ import org.glassfish.internal.grizzly.V3Mapper;
  * @author Alexey Stashok
  */
 @SuppressWarnings({"NonPrivateFieldAccessedInSynchronizedContext"})
-public class ContainerMapper extends HttpHandler {
+public class ContainerMapper extends StaticHttpHandler {
 
     private static final Logger LOGGER = Logger.getLogger(ContainerMapper.class.getName());
     private final static String ROOT = "";
@@ -193,7 +194,7 @@ public class ContainerMapper extends HttpHandler {
                     mappingData.recycle();
                     httpService = mapUriWithSemicolon(request, decodedURI, semicolon, mappingData);
                 } else {
-                    doHandle(request, response);
+                    super.service(request, response);
                     return;
                 }
             }
@@ -206,7 +207,7 @@ public class ContainerMapper extends HttpHandler {
             // The Adapter used for servicing static pages doesn't decode the
             // request by default, hence do not pass the undecoded request.
             if (httpService == null || httpService instanceof ContainerMapper) {
-                doHandle(request, response);
+                super.service(request, response);
             } else {
 //                req.setNote(MAPPED_ADAPTER, adapter);
 
@@ -306,9 +307,11 @@ public class ContainerMapper extends HttpHandler {
         }
     }
 
-    HttpHandler map(Request req, DataChunk decodedURI, MappingData mappingData) throws Exception {
+    HttpHandler map(final Request req, final DataChunk decodedURI,
+            MappingData mappingData) throws Exception {
+        
         if (mappingData == null) {
-            mappingData = (MappingData) req.getNote(MAPPING_DATA);
+            mappingData = req.getNote(MAPPING_DATA);
         }
         // Map the request to its Adapter/Container and also it's Servlet if
         // the request is targetted to the CoyoteAdapter.
@@ -361,6 +364,7 @@ public class ContainerMapper extends HttpHandler {
      *
      * @throws Exception
      */
+    @Override
     protected void customizedErrorPage(Request req, Response res) throws Exception {
         byte[] errorBody;
         if (res.getStatus() == 404) {
