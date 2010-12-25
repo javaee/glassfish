@@ -169,12 +169,12 @@ public class DummyNetworkListener implements NetworkListener {
 
     @Override
     public ThreadPool findThreadPool() {
-        throw new UnsupportedOperationException();
+        return null;
     }
 
     @Override
     public Transport findTransport() {
-        throw new UnsupportedOperationException();
+        return null;
     }
 
     @Override

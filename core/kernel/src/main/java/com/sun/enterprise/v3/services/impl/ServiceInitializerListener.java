@@ -40,9 +40,16 @@
 package com.sun.enterprise.v3.services.impl;
 
 import java.util.logging.Logger;
+import org.glassfish.grizzly.TransportFactory;
 
 import org.glassfish.grizzly.config.dom.Protocol;
+import org.glassfish.grizzly.config.dom.ThreadPool;
+import org.glassfish.grizzly.config.dom.Transport;
 import org.glassfish.grizzly.filterchain.FilterChain;
+import org.glassfish.grizzly.filterchain.FilterChainBuilder;
+import org.glassfish.grizzly.filterchain.TransportFilter;
+import org.glassfish.grizzly.threadpool.GrizzlyExecutorService;
+import org.glassfish.grizzly.threadpool.ThreadPoolConfig;
 
 /**
  * This class extends Grizzly's GrizzlyServiceListener class to customize it for GlassFish and enable a single listener
@@ -93,12 +100,27 @@ public class ServiceInitializerListener extends org.glassfish.grizzly.config.Gen
 //        configureThreadPool(networkListener.findThreadPool());
 //    }
 
+    @Override
+    protected void configureTransport(Transport transportConfig) {
+        transport = TransportFactory.getInstance().createTCPTransport();
+
+        rootFilterChain = FilterChainBuilder.stateless().build();
+        rootFilterChain.add(new TransportFilter());
+
+        transport.setProcessor(rootFilterChain);
+    }
+
 
     @Override
     protected void configureProtocol(final Protocol protocol, final FilterChain filterChain) {
         filterChain.add(new ServiceInitializerFilter(this, grizzlyService.getHabitat(), logger));
     }
 
+    @Override
+    protected void configureThreadPool(final ThreadPool threadPool) {
+        transport.setThreadPool(GrizzlyExecutorService.createInstance(
+                ThreadPoolConfig.defaultConfig()));
+    }
 
     /**
      * Configures the given grizzlyListener.
