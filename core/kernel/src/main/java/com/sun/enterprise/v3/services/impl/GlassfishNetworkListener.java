@@ -166,6 +166,7 @@ public class GlassfishNetworkListener extends GenericGrizzlyListener {
         }
 
         httpAdapter = new HttpAdapterImpl(vs, containerMapper, webAppRootPath);
+        containerMapper.addDocRoot(webAppRootPath);
 
         Inhabitant<Mapper> onePortMapper = new ExistingSingletonInhabitant<Mapper>(mapper);
         grizzlyService.getHabitat().addIndex(onePortMapper,
