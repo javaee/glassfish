@@ -48,10 +48,12 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.glassfish.internal.api.Globals;
+import org.glassfish.internal.api.RelativePathResolver;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
 import com.sun.enterprise.admin.cli.CLICommand;
 import org.glassfish.cluster.ssh.util.SSHUtil;
+import org.glassfish.cluster.ssh.launcher.SSHLauncher;
 import org.glassfish.cluster.ssh.sftp.SFTPClient;
 
 import com.sun.enterprise.config.serverbeans.Domain;
@@ -60,13 +62,20 @@ import com.sun.enterprise.config.serverbeans.Node;
 
 import com.sun.enterprise.universal.glassfish.TokenResolver;
 import com.sun.enterprise.util.io.DomainDirs;
+import com.sun.enterprise.util.SystemPropertyConstants;
+import com.sun.enterprise.util.StringUtils;
 
 import com.trilead.ssh2.SFTPv3DirectoryEntry;
+import com.trilead.ssh2.Connection;
 
 import org.jvnet.hk2.config.ConfigParser;
 import org.jvnet.hk2.config.Dom;
 import org.jvnet.hk2.config.DomDocument;
 import org.jvnet.hk2.component.Habitat;
+
+import org.glassfish.security.common.MasterPassword;
+
+import com.sun.enterprise.security.store.PasswordAdapter;
 
 /**
  *  Base class for SSH provisioning commands.
@@ -105,11 +114,17 @@ public abstract class SSHCommandsBase extends CLICommand {
      */
     protected String getSSHPassword(String node) throws CommandException {
         String password = getFromPasswordFile("AS_ADMIN_SSHPASSWORD");
-
+      
+        if (password !=null ) {
+            String alias = RelativePathResolver.getAlias(password);
+            if (alias != null)
+                password = expandPasswordAlias(node, alias, true);
+        }
+        
         //get password from user if not found in password file
         if (password == null) {
             if (programOpts.isInteractive()) {
-                password=readSSHPassword(Strings.get("SSHPasswordPrompt", sshuser, node));
+                password=readPassword(Strings.get("SSHPasswordPrompt", sshuser, node));
             } else {
                 throw new CommandException(Strings.get("SSHPasswordNotFound"));
             }
@@ -120,14 +135,21 @@ public abstract class SSHCommandsBase extends CLICommand {
     /**
      * Get SSH key passphrase from password file or user.
      */
-    protected String getSSHPassphrase() throws CommandException {
+    protected String getSSHPassphrase(boolean verifyConn) throws CommandException {
         String passphrase = getFromPasswordFile("AS_ADMIN_SSHKEYPASSPHRASE");
 
+        if (passphrase != null) {
+            String alias = RelativePathResolver.getAlias(passphrase);
+
+            if (alias != null)
+                passphrase = expandPasswordAlias(null, alias, verifyConn);
+        }
+        
         //get password from user if not found in password file
         if (passphrase == null) {
             if (programOpts.isInteractive()) {
                 //i18n
-                passphrase=readSSHPassword(Strings.get("SSHPassphrasePrompt", sshkeyfile));
+                passphrase=readPassword(Strings.get("SSHPassphrasePrompt", sshkeyfile));
             } else {
                 passphrase=""; //empty passphrase
             }
@@ -135,6 +157,24 @@ public abstract class SSHCommandsBase extends CLICommand {
         return passphrase;
     }
 
+    /**
+     * Get domain master password from password file or user.
+     */
+    String getMasterPassword(String domain) throws CommandException {
+        String masterPass = getFromPasswordFile("AS_ADMIN_MASTERPASSWORD");
+
+        //get password from user if not found in password file
+        if (masterPass == null) {
+            if (programOpts.isInteractive()) {
+                //i18n
+                masterPass=readPassword(Strings.get("DomainMasterPasswordPrompt", domain));
+            } else {
+                masterPass="changeit"; //default
+            }
+        }
+        return masterPass;
+    }
+    
     private String getFromPasswordFile(String name) {
         return passwords.get(name);
     }
@@ -142,21 +182,6 @@ public abstract class SSHCommandsBase extends CLICommand {
     protected boolean isValidAnswer(String val) {
         return val.equalsIgnoreCase("yes") || val.equalsIgnoreCase("no")
                 || val.equalsIgnoreCase("y") || val.equalsIgnoreCase("n") ;
-    }
-
-    /**
-     * Display the given prompt and read a password without echoing it.
-     * Returns null if no console available.
-     */
-    protected String readSSHPassword(String prompt) {
-        String password = null;
-        Console cons = System.console();
-        if (cons != null) {
-            char[] pc = cons.readPassword("%s", prompt);
-            // yes, yes, yes, it would be safer to not keep it in a String
-            password = new String(pc);
-        }
-        return password;
     }
 
     protected boolean isEncryptedKey() throws CommandException {
@@ -262,5 +287,80 @@ public abstract class SSHCommandsBase extends CLICommand {
             }
         }
         return result;        
+    }
+    
+    /**
+     * Obtains the real password from the domain specific keystore given an alias
+     * @param host host that we are connecting to
+     * @param alias password alias of form ${ALIAS=xxx}
+     * @return real password of ssh user, null if not found
+     */
+    protected String expandPasswordAlias(String host, String alias, boolean verifyConn) {
+        String expandedPassword = null;
+        boolean connStatus = false;
+        
+        try {
+            File domainsDirFile = DomainDirs.getDefaultDomainsDir();
+
+            //get the list of domains
+            File[] files = domainsDirFile.listFiles(new FileFilter() {
+                        public boolean accept(File f) {
+                            return f.isDirectory();
+                        }
+                    });
+
+            for (File f:files) {
+                //the following property is required for initializing the password helper
+                System.setProperty(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY, f.getAbsolutePath());
+                try {
+                    final MasterPassword masterPasswordHelper = Globals.getDefaultHabitat()
+                            .getComponent(MasterPassword.class, "Security SSL Password Provider Service");
+                    
+                    final PasswordAdapter pa = masterPasswordHelper.getMasterPasswordAdapter();
+                    final boolean     exists = pa.aliasExists(alias);
+                    if (exists) {
+                        String mPass = getMasterPassword(f.getName());
+                        masterPasswordHelper.setMasterPassword(mPass.toCharArray());
+                        expandedPassword = masterPasswordHelper.getMasterPasswordAdapter().getPasswordForAlias(alias);
+                    }
+                } catch (Exception e) {
+                    if(logger.isLoggable(Level.FINER)) {
+                        logger.finer(StringUtils.cat(": ", alias, e.getMessage()));
+                    }
+                    logger.warning(Strings.get("GetPasswordFailure", f.getName()));
+                    continue;
+                }
+                
+                if(expandedPassword != null) {                    
+                    SSHLauncher sshL = new SSHLauncher();
+                    if (host != null) {
+                        sshpassword = expandedPassword;
+                        sshL.init(sshuser, host,  sshport, sshpassword, null, null, logger);
+                        connStatus = sshL.checkPasswordAuth();
+                        if (!connStatus) {
+                            logger.warning(Strings.get("PasswordAuthFailure", f.getName()));
+                        }
+                    } else {
+                        sshkeypassphrase = expandedPassword;
+                        if (verifyConn) {
+                            sshL.init(sshuser, hosts[0],  sshport, sshpassword, sshkeyfile, sshkeypassphrase, logger);
+                            connStatus = sshL.checkConnection();
+                            if (!connStatus) {
+                                logger.warning(Strings.get("PasswordAuthFailure", f.getName()));
+                            }
+                        }
+                    }
+                    
+                    if (connStatus) {
+                        break;
+                    }
+                }
+            }
+        } catch (IOException ioe) {
+            if(logger.isLoggable(Level.FINER)) {
+                logger.finer(ioe.getMessage());
+            }
+        }
+        return expandedPassword;
     }
 }

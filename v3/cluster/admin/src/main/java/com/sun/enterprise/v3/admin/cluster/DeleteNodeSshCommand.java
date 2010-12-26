@@ -257,12 +257,13 @@ public class DeleteNodeSshCommand implements AdminCommand, PostConstruct {
         //uninstall-node as well. The passwords are passed using a temporary password file
         if(sshpassword != null) {        
             try {
+                NodeUtils nu = new NodeUtils(habitat, logger);
                 f = new File(System.getProperty("java.io.tmpdir"), "pass.tmp");
                 out = new BufferedWriter(new FileWriter(f));
                 out.newLine();
-                out.write("AS_ADMIN_SSHPASSWORD=" + sshpassword + "\n");
+                out.write("AS_ADMIN_SSHPASSWORD=" + nu.sshL.expandPasswordAlias(sshpassword) + "\n");
                 if(sshkeypassphrase != null)
-                    out.write("AS_ADMIN_SSHKEYPASSPHRASE=" + sshkeypassphrase + "\n");
+                    out.write("AS_ADMIN_SSHKEYPASSPHRASE=" + nu.sshL.expandPasswordAlias(sshkeypassphrase) + "\n");
             } catch (IOException ioe) {
                 if(logger.isLoggable(Level.FINE)) {
                     logger.fine("Failed to create password file: " + ioe.getMessage());

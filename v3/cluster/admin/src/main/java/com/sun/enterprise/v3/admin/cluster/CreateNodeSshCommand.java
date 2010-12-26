@@ -62,6 +62,7 @@ import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
 
 import org.glassfish.cluster.ssh.util.SSHUtil;
+import org.glassfish.cluster.ssh.launcher.SSHLauncher;
 
 import com.sun.enterprise.universal.process.ProcessManager;
 import com.sun.enterprise.universal.process.ProcessManagerException;
@@ -154,7 +155,7 @@ public class CreateNodeSshCommand implements AdminCommand  {
             NodeUtils nodeUtils = new NodeUtils(habitat, logger);
             nodeUtils.validate(map);
             if (install) {
-                boolean s = installNode(context);
+                boolean s = installNode(context, nodeUtils.sshL);
                 if(!s && !force) {
                     report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                     return; 
@@ -196,7 +197,7 @@ public class CreateNodeSshCommand implements AdminCommand  {
      * @param ctx command context
      * @return true if install-node succeeds, false otherwise
      */
-    private boolean installNode(AdminCommandContext ctx) {
+    private boolean installNode(AdminCommandContext ctx, SSHLauncher launcher) throws CommandValidationException {
         boolean res = false;        
         ArrayList<String> command = new ArrayList<String>();
 
@@ -236,7 +237,7 @@ public class CreateNodeSshCommand implements AdminCommand  {
         
         String firstErrorMessage = Strings.get("create.node.ssh.install.failed", nodehost);
         StringBuilder out = new StringBuilder();
-        int exitCode = execCommand(command, out);
+        int exitCode = execCommand(command, launcher, out);
                 
         ActionReport report = ctx.getActionReport();
         if (exitCode == 0) {
@@ -272,7 +273,7 @@ public class CreateNodeSshCommand implements AdminCommand  {
      * @param output contains output message
      * @return exit status of install-node
      */
-    private int execCommand(List<String> cmdLine, StringBuilder output) {
+    private int execCommand(List<String> cmdLine, SSHLauncher launcher, StringBuilder output) {
         int exit = -1;
         
         List<String> fullcommand = new ArrayList<String>();
@@ -294,9 +295,9 @@ public class CreateNodeSshCommand implements AdminCommand  {
                 f = new File(System.getProperty("java.io.tmpdir"), "pass.tmp");
                 out = new BufferedWriter(new FileWriter(f));
                 out.newLine();
-                out.write("AS_ADMIN_SSHPASSWORD=" + sshpassword + "\n");
+                out.write("AS_ADMIN_SSHPASSWORD=" + launcher.expandPasswordAlias(sshpassword) + "\n");
                 if(sshkeypassphrase != null)
-                    out.write("AS_ADMIN_SSHKEYPASSPHRASE=" + sshkeypassphrase + "\n");
+                    out.write("AS_ADMIN_SSHKEYPASSPHRASE=" + launcher.expandPasswordAlias(sshkeypassphrase) + "\n");
             } catch (IOException ioe) {
                 if (logger.isLoggable(Level.FINE)) {
                     logger.fine("Failed to create the temporary password file: " + ioe.getMessage());

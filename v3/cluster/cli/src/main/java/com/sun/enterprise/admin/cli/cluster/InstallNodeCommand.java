@@ -105,6 +105,8 @@ public class InstallNodeCommand extends SSHCommandsBase {
 
     @Override
     protected void validate() throws CommandException {
+        Globals.setDefaultHabitat(habitat);
+        
         installDir = resolver.resolve(installDir);
         if (!force) {
             for (String host: hosts) {
@@ -129,14 +131,14 @@ public class InstallNodeCommand extends SSHCommandsBase {
         
         //we need the key passphrase if key is encrypted
         if(sshkeyfile != null && isEncryptedKey()){
-            sshkeypassphrase=getSSHPassphrase();
+            sshkeypassphrase=getSSHPassphrase(true);
         }
         
     }
 
     @Override
     protected int executeCommand() throws CommandException {
-        Globals.setDefaultHabitat(habitat);
+
         File zipFile = null;
         try {
 

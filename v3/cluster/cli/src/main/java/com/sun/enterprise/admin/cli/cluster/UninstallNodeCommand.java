@@ -82,7 +82,8 @@ public class UninstallNodeCommand extends SSHCommandsBase {
     SSHLauncher sshLauncher;
 
     @Override
-    protected void validate() throws CommandException {        
+    protected void validate() throws CommandException {
+        Globals.setDefaultHabitat(habitat);
         if (!force) {
             for (String host: hosts) {
                 if(checkIfNodeExistsForHost(host)) {
@@ -106,14 +107,14 @@ public class UninstallNodeCommand extends SSHCommandsBase {
         
         //we need the key passphrase if key is encrypted
         if(sshkeyfile != null && isEncryptedKey()){
-            sshkeypassphrase=getSSHPassphrase();
+            sshkeypassphrase=getSSHPassphrase(true);
         }
         
     }
 
     @Override
     protected int executeCommand() throws CommandException {
-        Globals.setDefaultHabitat(habitat);
+
         try {
             String baseRootValue = getSystemProperty(SystemPropertyConstants.PRODUCT_ROOT_PROPERTY);
             deleteFromHosts(baseRootValue);

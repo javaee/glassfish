@@ -85,6 +85,7 @@ public final class SetupSshKey extends SSHCommandsBase {
     @Override
     protected void validate()
             throws CommandException {
+        Globals.setDefaultHabitat(habitat);
         
         sshuser = resolver.resolve(sshuser);
 
@@ -103,13 +104,13 @@ public final class SetupSshKey extends SSHCommandsBase {
                 sshkeyfile = existingKey;
                 
                 if(isEncryptedKey()) {
-                    sshkeypassphrase=getSSHPassphrase();
+                    sshkeypassphrase=getSSHPassphrase(false);
                 }
             }
         } else {
             validateKeyFile(sshkeyfile);
             if(isEncryptedKey()) {
-                sshkeypassphrase=getSSHPassphrase();
+                sshkeypassphrase=getSSHPassphrase(false);
             }
         }
 
@@ -126,7 +127,6 @@ public final class SetupSshKey extends SSHCommandsBase {
             throws CommandException {
 
         SSHLauncher sshL=habitat.getComponent(SSHLauncher.class);
-        Globals.setDefaultHabitat(habitat);
 
         String previousPassword = null;
         boolean status = false;

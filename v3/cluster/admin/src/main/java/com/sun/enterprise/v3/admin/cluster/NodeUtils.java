@@ -97,7 +97,7 @@ public class NodeUtils {
     private Logger logger = null;
     private Habitat habitat = null;
 
-    private SSHLauncher sshL = null;
+    SSHLauncher sshL = null;
 
     NodeUtils(Habitat habitat, Logger logger) {
         this.logger = logger;
