@@ -171,26 +171,29 @@
         </antcall>
     </target>
 
-    <target name="connector-with-security-manager">
-
-        <echo message="enabling security manager"/>
+   <target name="enable-security-manager">
+       <echo message="enabling security manager"/>
         <antcall target="create-jvm-options">
             <param name="option" value="-Djava.security.manager"/>
         </antcall>
- 
+
         <antcall target="restart-server"/>
-        
-         <antcall target="connector">
-            <param name="connector-target" value="all"/>
-        </antcall>
- 
-        <echo message="disabling security manager"/>
+   </target>
+
+   <target name="disable-security-manager">
+      <echo message="disabling security manager"/>
         <antcall target="delete-jvm-options">
             <param name="option" value="-Djava.security.manager"/>
         </antcall>
-
         <antcall target="restart-server"/>
+   </target>
 
+    <target name="connector-with-security-manager">
+        <antcall target="enable-security-manager"/>
+         <antcall target="connector">
+            <param name="connector-target" value="all"/>
+        </antcall>
+        <antcall target="disable-security-manager"/>
     </target>
 
     <target name="connector">
