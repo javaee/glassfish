@@ -7,8 +7,8 @@ Use is subject to License Terms  -->
 
 <a name="task-eelogging"></a><h4>To Configure General Logging Settings</h4><a name="indexterm-67"></a><ol>
 <li><b>In the navigation tree, expand the Configurations node.</b></li>
-<li><b>Under the Configurations node, click the server instance or cluster configuration for
-which you want to configure Logger Settings.</b><p>The Configuration page opens.</p></li>
+<li><b>Under the Configurations node, click the server instance or cluster configuration for which
+you want to configure Logger Settings.</b><p>The Configuration page opens.</p></li>
 <li><b>On the Configuration page, click Logger Settings.</b><p>The Logger Settings page for the selected configuration target opens.</p></li>
 <li><b>Select the Write to System Log Enabled checkbox to send logging output to
 the <tt>syslog</tt> facility in addition to the server log.</b><p>This feature is available on Solaris and Linux systems only. This option is
@@ -18,8 +18,8 @@ server log file.</b><p>The default location is <tt>${com.sun.aas.instanceRoot}/l
 <li><b>In the Log Handler field, type the absolute class name of a
 custom log handler.</b><p>A custom log handler enables you to  send logs to a destination
 other than <tt>server.log</tt> or <tt>syslog</tt>. The custom handler must extend the class <tt>java.util.logging.ConsoleHandler</tt>
-(a JSR 047 compliant API). Put the handler class in the GlassFish Server
-classpath so that the handler is installed during server startup.</p></li>
+(a JSR 047 compliant API). Put the handler class in the GlassFish
+Server classpath so that the handler is installed during server startup.</p></li>
 <li><b>In the File Rotation Limit field, type the size in bytes that the
 server log file must reach before it is rotated.</b><p>When the server log reaches the specified size, the GlassFish Server creates a
 new, empty file named <tt>server.log</tt> and renames the old file <tt>server.log_</tt><i>date</i>, where <i>date</i>

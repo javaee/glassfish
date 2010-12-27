@@ -5,7 +5,7 @@ Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
 Use is subject to License Terms  -->
 
 
-<a name="task-create-standalone-instance"></a><h4>To Create a Standalone GlassFish Server Instance</h4><a name="indexterm-80"></a><a name="indexterm-81"></a><a name="indexterm-82"></a><p>GlassFish Server instances form the basis of an application deployment. A standalone
+<a name="task-create-standalone-instance"></a><h4>To Create a Standalone GlassFish Server Instance</h4><a name="indexterm-83"></a><a name="indexterm-84"></a><a name="indexterm-85"></a><p>GlassFish Server instances form the basis of an application deployment. A standalone
 instance is not a member of a cluster. Each instance belongs to
 a single domain and has its own directory structure, configuration, and deployed applications.
 Each instance also includes the Java Platform, Enterprise Edition (Java EE) web container
@@ -13,11 +13,51 @@ and Enterprise JavaBeans technology (EJB technology) container. Every new instan
 a reference to a node that defines the host where the instance will
 reside.</p>
 
+
+<hr><p><b>Note - </b>To create an instance on a node of type CONFIG that represents
+a remote host, you must use the <a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=create-local-instance-1"><tt>create-local-instance</tt>(1)</a> subcommand. You cannot use the
+Administration Console for this purpose.</p>
+
+
+<hr>
+<h6>Before You Begin</h6><p>Ensure that the <a href="task-createnode.html">the node on which the instance is to reside</a> exists .</p>
+
 <ol>
 <li><b>In the navigation tree, select the Standalone Instances node.</b><p>The Standalone Server Instances page opens.</p></li>
 <li><b>On the Standalone Server Instances page, click New.</b><p>The New Standalone Server Instance page opens.</p></li>
-<li><b>In the Name field, type a name for the instance.</b><p>The name must be unique across all nodes, GlassFish Server instances, clusters,
-and named configurations.</p></li>
+<li><b>In the Name field, type a name for the instance.</b><p>The name must meet the following requirements:</p>
+<ul><li><p>The name must start with a letter, a number, or an underscore.</p>
+
+</li>
+<li><p>The name may contain only the following characters:</p>
+
+
+<ul><li><p>Lowercase letters</p>
+
+</li>
+<li><p>Uppercase letters</p>
+
+</li>
+<li><p>Numbers</p>
+
+</li>
+<li><p>Hyphen</p>
+
+</li>
+<li><p>Period</p>
+
+</li>
+<li><p>Underscore</p>
+
+</li></ul>
+</li>
+<li><p>The name must be unique in the domain and must not be the name of another GlassFish Server instance, a cluster, a named configuration, or a node.</p>
+
+</li>
+<li><p>The name must not be <tt>domain</tt>, <tt>server</tt>, or any other keyword that is reserved by GlassFish Server.</p>
+
+</li></ul>
+</li>
 <li><b>From the Node drop-down list, select the node where the instance will
 reside.</b></li>
 <li><b>From the Configuration drop-down list, select the named configuration that the instance
@@ -47,10 +87,19 @@ the instance that you are creating.</p></li>
 <li><p><a href="task-view-logs-standalone-instance.html">To View Log Files for a Standalone GlassFish Server Instance</a></p>
 
 </li>
+<li><p><a href="task-recovertransactions-standalone-instance.html">To Recover Transactions for a Standalone GlassFish Server Instance</a></p>
+
+</li>
 <li><p><a href="task-standalone-instance-app-deploy.html">To Deploy an Application to a Standalone GlassFish Server Instance</a></p>
 
 </li>
 <li><p><a href="task-standalone-instance-app-list.html">To List Applications That Are Deployed to a Standalone GlassFish Server Instance</a></p>
+
+</li>
+<li><p><a href="task-standalone-instance-app-undeploy.html">To Undeploy Applications From a Standalone GlassFish Server Instance</a></p>
+
+</li>
+<li><p><a href="task-standalone-instance-app-remove.html">To Remove Applications From a Standalone GlassFish Server Instance</a></p>
 
 </li>
 <li><p><a href="task-standalone-instance-app-edit.html">To Edit an Application That Is Deployed to a Standalone GlassFish Server Instance</a></p>

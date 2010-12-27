@@ -7,10 +7,11 @@
         <tocitem target="task-ejbcontaineravailability" text="To Configure Availability Settings for the EJB Container" expand="false"></tocitem></tocitem></tocitem>
  <tocitem target="ref-topic-group" text="GlassFish Server Administration Console Reference" expand="false">
     <tocitem target="ref-group-configuration" text="Configurations" expand="false">
+        <tocitem target="ref-group-availabilityservice" text="Availability Service" expand="false">
+            <tocitem target="ref-ejbcontaineravailability" text="EJB Container Availability" expand="false"></tocitem></tocitem>
         <tocitem target="ref-group-ejbcontainer" text="EJB Container" expand="false">
             <tocitem target="ref-ejbmdbpoolsettings" text="MDB Default Pool Settings" expand="false"></tocitem>
             <tocitem target="ref-ejbtimerservice" text="EJB Timer Service" expand="false"></tocitem>
-            <tocitem target="ref-ejbcontaineravailability" text="EJB Container Availability" expand="false"></tocitem>
 </tocitem>
 </tocitem>
 </tocitem>

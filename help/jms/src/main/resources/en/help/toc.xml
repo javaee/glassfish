@@ -20,6 +20,8 @@
         <tocitem target="task-jmsphysicaldeststats" text="To View Statistics for a JMS Physical Destination" expand="false"></tocitem></tocitem></tocitem>
  <tocitem target="ref-topic-group" text="GlassFish Server Administration Console Reference" expand="false">
     <tocitem target="ref-group-resources" text="Resources" expand="false">
+        <tocitem target="ref-group-availabilityservice" text="Availability Service" expand="false">
+            <tocitem target="ref-jmsavailability" text="JMS Availability" expand="false"></tocitem></tocitem>
         <tocitem target="ref-group-jmsresources" text="JMS Resources" expand="false">
             <tocitem target="ref-jmsresources" text="JMS Resources" expand="false"></tocitem>
             <tocitem target="ref-group-jmsconnectionfactories" text="Connection Factories" expand="false">

@@ -32,14 +32,15 @@
         <tocitem target="task-threadpooldelete" text="To Delete a Thread Pool" expand="false"></tocitem></tocitem></tocitem>
  <tocitem target="ref-topic-group" text="GlassFish Server Administration Console Reference" expand="false">
     <tocitem target="ref-group-configuration" text="Configurations" expand="false">
+        <tocitem target="ref-group-availabilityservice" text="Availability Service" expand="false">
+            <tocitem target="ref-webcontaineravailability" text="Web Container Availability" expand="false"></tocitem></tocitem>
         <tocitem target="ref-group-webcontainer" text="Web Container" expand="false">
             <tocitem target="ref-generalproptab" text="General Properties" expand="false"></tocitem>
             <tocitem target="ref-webcontainerprops" text="Properties Specific to the Web Container" expand="false"></tocitem>
             <tocitem target="ref-sessionproptab" text="Session Properties" expand="false"></tocitem>
             <tocitem target="ref-websessionproperties" text="Properties Specific to Web Container Sessions" expand="false"></tocitem>
             <tocitem target="ref-managerproptab" text="Manager Properties" expand="false"></tocitem>
-            <tocitem target="ref-storeproptab" text="Store Properties" expand="false"></tocitem>
-            <tocitem target="ref-webcontaineravailability" text="Web Container Availability" expand="false"></tocitem></tocitem>
+            <tocitem target="ref-storeproptab" text="Store Properties" expand="false"></tocitem></tocitem>
         <tocitem target="ref-group-httpservice" text="HTTP Service" expand="false">
             <tocitem target="ref-accesslog" text="HTTP Service" expand="false"></tocitem>
             <tocitem target="ref-httpserviceprops" text="Properties Specific to the HTTP Service" expand="false"></tocitem></tocitem>

@@ -8,7 +8,9 @@
         <indexitem target="task-cluster-app-edit" text="editing (task)"></indexitem>
         <indexitem target="task-cluster-app-enable-disable" text="enabling (task)"></indexitem>
         <indexitem target="task-cluster-app-lb-enable-disable" text="enabling load balancing (task)"></indexitem>
-        <indexitem target="task-cluster-app-list" text="listing (task)"></indexitem></indexitem>
+        <indexitem target="task-cluster-app-list" text="listing (task)"></indexitem>
+        <indexitem target="task-cluster-app-remove" text="removing (task)"></indexitem>
+        <indexitem target="task-cluster-app-undeploy" text="undeploying (task)"></indexitem></indexitem>
     <indexitem text="standalone instances">
         <indexitem target="task-standalone-instance-app-deploy" text="deploying (task)"></indexitem>
         <indexitem target="task-standalone-instance-app-enable-disable" text="disabling (task)"></indexitem>
@@ -16,7 +18,9 @@
         <indexitem target="task-standalone-instance-app-edit" text="editing (task)"></indexitem>
         <indexitem target="task-standalone-instance-app-enable-disable" text="enabling (task)"></indexitem>
         <indexitem target="task-standalone-instance-app-lb-enable-disable" text="enabling load balancing (task)"></indexitem>
-        <indexitem target="task-standalone-instance-app-list" text="listing (task)"></indexitem></indexitem>
+        <indexitem target="task-standalone-instance-app-list" text="listing (task)"></indexitem>
+        <indexitem target="task-standalone-instance-app-remove" text="removing (task)"></indexitem>
+        <indexitem target="task-standalone-instance-app-undeploy" text="undeploying (task)"></indexitem></indexitem>
     <indexitem text="viewing deployed">
         <indexitem target="ref-clusterapplications" text="to clusters (reference)"></indexitem>
         <indexitem target="ref-standaloneinstanceapplications" text="to standalone instances (reference)"></indexitem></indexitem>
@@ -52,7 +56,9 @@
         <indexitem target="task-cluster-app-edit" text="editing (task)"></indexitem>
         <indexitem target="task-cluster-app-enable-disable" text="enabling (task)"></indexitem>
         <indexitem target="task-cluster-app-lb-enable-disable" text="enabling load balancing (task)"></indexitem>
-        <indexitem target="task-cluster-app-list" text="listing (task)"></indexitem></indexitem>
+        <indexitem target="task-cluster-app-list" text="listing (task)"></indexitem>
+        <indexitem target="task-cluster-app-remove" text="removing (task)"></indexitem>
+        <indexitem target="task-cluster-app-undeploy" text="undeploying (task)"></indexitem></indexitem>
     <indexitem target="ref-clusterapplications" text="applications (reference)"></indexitem>
     <indexitem text="configurations">
         <indexitem target="task-modify-cluster-config" text="modifying (task)"></indexitem></indexitem>
@@ -60,6 +66,7 @@
     <indexitem target="ref-clusternew" text="creating (reference)"></indexitem>
     <indexitem target="task-create-cluster" text="creating (task)"></indexitem>
     <indexitem target="task-delete-cluster" text="deleting (task)"></indexitem>
+    <indexitem target="task-availabilityservice" text="enabling availability (task)"></indexitem>
     <indexitem target="ref-clustergeneral" text="general information (reference)"></indexitem>
     <indexitem target="ref-clusters" text="listing (reference)"></indexitem>
     <indexitem target="ref-clusterproperties" text="properties (reference)"></indexitem>
@@ -74,7 +81,6 @@
     <indexitem target="ref-clustergeneral" text="stopping (reference)"></indexitem>
     <indexitem target="task-stop-cluster" text="stopping (task)"></indexitem>
     <indexitem target="ref-clustersystemproperties" text="system properties (reference)"></indexitem></indexitem>
- <indexitem target="task-availabilityservice" text="clusterss, enabling availability (task)"></indexitem>
  <indexitem text="configurations">
     <indexitem text="clusters">
         <indexitem target="task-modify-cluster-config" text="modifying (task)"></indexitem></indexitem></indexitem>
@@ -111,7 +117,6 @@
         <indexitem target="ref-clusterinstanceedit" text="managing (reference)"></indexitem>
         <indexitem target="ref-clusterinstanceproperties" text="properties (reference)"></indexitem>
         <indexitem target="task-set-props-clustered-instance" text="properties (task)"></indexitem>
-        <indexitem target="task-recovertransactions" text="recovering transactions (task)"></indexitem>
         <indexitem target="task-mon-resource-clustered-instance" text="resource monitoring (task)"></indexitem>
         <indexitem target="ref-clusterresources" text="resources (reference)"></indexitem>
         <indexitem target="task-start-clustered-instances" text="starting (task)"></indexitem>
@@ -177,7 +182,9 @@
     <indexitem target="ref-clusterproperties" text="clusters (reference)"></indexitem>
     <indexitem target="ref-standaloneinstanceproperties" text="standalone instances (reference)"></indexitem>
     <indexitem target="task-set-props-standalone-instance" text="standalone instances (task)"></indexitem></indexitem>
- <indexitem target="task-recovertransactions" text="recovering transactions (task)"></indexitem>
+ <indexitem text="recovering transactions">
+    <indexitem target="task-recovertransactions" text="clustered instances (task)"></indexitem>
+    <indexitem target="task-recovertransactions-standalone-instance" text="standalone instances (task)"></indexitem></indexitem>
  <indexitem target="task-upgrade-components" text="redeployment, rolling upgrade"></indexitem>
  <indexitem text="resources">
     <indexitem target="ref-clusterresources" text="clustered instances (reference)"></indexitem>
@@ -207,7 +214,9 @@
         <indexitem target="task-standalone-instance-app-edit" text="editing (task)"></indexitem>
         <indexitem target="task-standalone-instance-app-enable-disable" text="enabling (task)"></indexitem>
         <indexitem target="task-standalone-instance-app-lb-enable-disable" text="enabling load balancing (task)"></indexitem>
-        <indexitem target="task-standalone-instance-app-list" text="listing (task)"></indexitem></indexitem>
+        <indexitem target="task-standalone-instance-app-list" text="listing (task)"></indexitem>
+        <indexitem target="task-standalone-instance-app-remove" text="removing (task)"></indexitem>
+        <indexitem target="task-standalone-instance-app-undeploy" text="undeploying (task)"></indexitem></indexitem>
     <indexitem target="ref-standaloneinstanceapplications" text="applications (reference)"></indexitem>
     <indexitem target="ref-standaloneinstancenew" text="creating (reference)"></indexitem>
     <indexitem target="task-create-standalone-instance" text="creating (task)"></indexitem>
@@ -216,6 +225,7 @@
     <indexitem target="ref-standaloneinstancegeneral" text="managing (reference)"></indexitem>
     <indexitem target="ref-standaloneinstanceproperties" text="properties (reference)"></indexitem>
     <indexitem target="task-set-props-standalone-instance" text="properties (task)"></indexitem>
+    <indexitem target="task-recovertransactions-standalone-instance" text="recovering transactions (task)"></indexitem>
     <indexitem target="task-mon-resource-standalone-instance" text="resource monitoring (task)"></indexitem>
     <indexitem text="resources">
         <indexitem target="task-standalone-instance-resource-create" text="creating (task)"></indexitem>
@@ -247,8 +257,9 @@
         <indexitem target="ref-migrateejbtimers" text="migrating (reference)"></indexitem>
         <indexitem target="task-migrate-ejb-timers" text="migrating (task)"></indexitem></indexitem></indexitem>
  <indexitem text="transactions">
+    <indexitem target="task-recovertransactions" text="clustered instances (task)"></indexitem>
     <indexitem target="ref-recovertransactions" text="recovering (reference)"></indexitem>
-    <indexitem target="task-recovertransactions" text="recovering (task)"></indexitem></indexitem>
+    <indexitem target="task-recovertransactions-standalone-instance" text="standalone instances (task)"></indexitem></indexitem>
  <indexitem target="task-upgrade-components" text="upgrade, rolling"></indexitem>
  <indexitem text="virtual servers">
     <indexitem text="viewing monitoring data">

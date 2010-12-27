@@ -4,7 +4,7 @@ Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-standaloneinstancegeneral"></a><h4>General Information</h4>
-<a name="indexterm-195"></a><a name="indexterm-196"></a><a name="indexterm-197"></a><p>The General Information page contains the following options.</p>
+<a name="indexterm-205"></a><a name="indexterm-206"></a><a name="indexterm-207"></a><p>The General Information page contains the following options.</p>
 
 <dl><dt>Start</dt>
 <dd><p>Button to start the instance. If the instance is running, this button is deactivated.</p>
@@ -14,12 +14,24 @@ Use is subject to License Terms  -->
 <dd><p>Button to stop the instance. If the instance is stopped, this button is deactivated.</p>
 
 </dd>
+<dt>Restart</dt>
+<dd><p>Button to restart the instance. If the instance is stopped, this button is deactivated.</p>
+
+</dd>
+<dt>View Log Files</dt>
+<dd><p>Button to view log files for the instance.</p>
+
+</dd>
 <dt>Rotate Log</dt>
 <dd><p>Button to rotate the log file for the instance. When the log file is rotated, the file is renamed with a timestamp name in the format <tt>server.log_</tt><i>date-and-time</i><tt></tt>, and an empty log file is created for new log messages. The changes are applied dynamically. Server restart is not required.</p>
 
 </dd>
-<dt>Instance Name</dt>
-<dd><p>The name that was assigned to the instance when the instance was added to the cluster. This field is read only.</p>
+<dt>Recover Transactions</dt>
+<dd><p>Button to recover transactions for the instance.</p>
+
+</dd>
+<dt>Name</dt>
+<dd><p>The name that was assigned to the instance when the instance was created. This field is read only.</p>
 
 </dd>
 <dt>JVM</dt>
@@ -35,7 +47,13 @@ Use is subject to License Terms  -->
 
 </dd>
 <dt>Configuration</dt>
-<dd><p>The configuration that was selected for the <b>cluster</b> when the cluster of which the instance is a member was created. Each instance in the cluster uses this configuration. Clicking the configuration opens the <a href="../../../common/en/help/ref-configuration.html">Configurations</a> page for the cluster.</p>
+<dd><p>The configuration that the instance references. Clicking the configuration opens the <a href="../../../common/en/help/ref-configuration.html">Configurations</a> page for the instance.</p>
+
+</dd>
+<dt>Debug</dt>
+<dd><p>An indication of whether <a href="http://java.sun.com/javase/technologies/core/toolsapis/jpda/">Java Platform Debugger Architecture (JPDA)</a> debugging is enabled for the instance. This field is read only.</p>
+
+<p>If an instance is started from the Administration Console, JPDA debugging is not enabled for the instance. To start an instance with JPDA debugging enabled, use the <a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=start-instance-1"><tt>start-instance</tt>(1)</a> subcommand.</p>
 
 </dd>
 <dt>HTTP Ports</dt>
@@ -81,19 +99,22 @@ Use is subject to License Terms  -->
 </li>
 <li><p><a href="task-view-logs-standalone-instance.html">To View Log Files for a Standalone GlassFish Server Instance</a></p>
 
+</li>
+<li><p><a href="task-recovertransactions-standalone-instance.html">To Recover Transactions for a Standalone GlassFish Server Instance</a></p>
+
 </li></ul>
 <h5>Equivalent <tt>asadmin</tt> Subcommands</h5>
 
-<ul><li><p><a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2433"><tt>generate-jvm-report</tt>(1)</a></p>
+<ul><li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=generate-jvm-report-1"><tt>generate-jvm-report</tt>(1)</a></p>
 
 </li>
-<li><p><a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2433"><tt>start-instance</tt>(1)</a></p>
+<li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=start-instance-1"><tt>start-instance</tt>(1)</a></p>
 
 </li>
-<li><p><a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2433"><tt>stop-instance</tt>(1)</a></p>
+<li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=stop-instance-1"><tt>stop-instance</tt>(1)</a></p>
 
 </li>
-<li><p><a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2433"><tt>rotate-log</tt>(1)</a></p>
+<li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=rotate-log-1"><tt>rotate-log</tt>(1)</a></p>
 
 </li></ul>
 

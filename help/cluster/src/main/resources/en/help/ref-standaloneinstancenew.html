@@ -4,21 +4,55 @@ Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-standaloneinstancenew"></a><h4>New Standalone Server Instance</h4>
-<a name="indexterm-192"></a><a name="indexterm-193"></a><a name="indexterm-194"></a><p>Use the New Standalone Server Instance page to create a standalone GlassFish
+<a name="indexterm-202"></a><a name="indexterm-203"></a><a name="indexterm-204"></a><p>Use the New Standalone Server Instance page to create a standalone GlassFish
 Server instance.</p>
 
 <p>The New Standalone Server Instance contains the following options.</p>
 
 <dl><dt>Instance Name</dt>
-<dd><p>The name of the instance that is being created. Each instance in a domain must have a name that is unique across all nodes, GlassFish Server instances, clusters, and named configurations.</p>
+<dd><p>The name of the instance that is being created.</p>
 
+<p>The name must meet the following requirements:</p>
+
+
+<ul><li><p>The name must start with a letter, a number, or an underscore.</p>
+
+</li>
+<li><p>The name may contain only the following characters:</p>
+
+
+<ul><li><p>Lowercase letters</p>
+
+</li>
+<li><p>Uppercase letters</p>
+
+</li>
+<li><p>Numbers</p>
+
+</li>
+<li><p>Hyphen</p>
+
+</li>
+<li><p>Period</p>
+
+</li>
+<li><p>Underscore</p>
+
+</li></ul>
+</li>
+<li><p>The name must be unique in the domain and must not be the name of another GlassFish Server instance, a cluster, a named configuration, or a node.</p>
+
+</li>
+<li><p>The name must not be <tt>domain</tt>, <tt>server</tt>, or any other keyword that is reserved by GlassFish Server.</p>
+
+</li></ul>
 </dd>
-<dt>Node Name</dt>
-<dd><p>A drop-down list of existing nodes that define the hosts where the instance can reside. One node must be selected from the list. If the instance is to be created on the host where the domain administration server (DAS) is running, select the predefined node <tt>localhost</tt>.</p>
+<dt>Node</dt>
+<dd><p>Drop-down list of existing nodes that define the hosts where the instance can reside. One node must be selected from the list. If the instance is to be created on the host where the domain administration server (DAS) is running, select the predefined node <tt>localhost-<i>domain</i></tt>.</p>
 
 </dd>
 <dt>Configuration</dt>
-<dd><p>A drop-down list of existing named configurations that the instance can use. One configuration must be selected from the list. The instance will use the selected configuration when the instance is created.</p>
+<dd><p>Drop-down list of existing named configurations that the instance can use. One configuration must be selected from the list. The instance will use the selected configuration when the instance is created.</p>
 
 </dd>
 <dt>Make a Copy of the Selected Configuration</dt>
@@ -41,7 +75,7 @@ Server instance.</p>
 </li></ul>
 <h5>Equivalent <tt>asadmin</tt> Subcommand</h5>
 
-<ul><li><p><a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2433"><tt>create-instance</tt>(1)</a></p>
+<ul><li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=create-instance-1"><tt>create-instance</tt>(1)</a></p>
 
 </li></ul>
 

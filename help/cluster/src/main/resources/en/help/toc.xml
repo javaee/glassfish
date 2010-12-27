@@ -10,6 +10,8 @@
         <tocitem target="task-modify-cluster-config" text="To Modify the Configuration of a Cluster" expand="false"></tocitem>
         <tocitem target="task-cluster-app-deploy" text="To Deploy an Application to a Cluster" expand="false"></tocitem>
         <tocitem target="task-cluster-app-list" text="To List Applications That Are Deployed to a Cluster" expand="false"></tocitem>
+        <tocitem target="task-cluster-app-undeploy" text="To Undeploy Applications From a Cluster" expand="false"></tocitem>
+        <tocitem target="task-cluster-app-remove" text="To Remove Applications From a Cluster" expand="false"></tocitem>
         <tocitem target="task-cluster-app-edit" text="To Edit an Application That Is Deployed to a Cluster" expand="false"></tocitem>
         <tocitem target="task-cluster-app-enable-disable" text="To Enable or Disable an Application That Is Deployed to a Cluster" expand="false"></tocitem>
         <tocitem target="task-cluster-app-lb-enable-disable" text="To Enable or Disable Load Balancing for an Application That Is Deployed to a Cluster" expand="false"></tocitem>
@@ -36,8 +38,11 @@
         <tocitem target="task-start-standalone-instances" text="To Start Standalone GlassFish Server Instances" expand="false"></tocitem>
         <tocitem target="task-stop-standalone-instances" text="To Stop Standalone GlassFish Server Instances" expand="false"></tocitem>
         <tocitem target="task-view-logs-standalone-instance" text="To View Log Files for a Standalone GlassFish Server Instance" expand="false"></tocitem>
+        <tocitem target="task-recovertransactions-standalone-instance" text="To Recover Transactions for a Standalone GlassFish Server Instance" expand="false"></tocitem>
         <tocitem target="task-standalone-instance-app-deploy" text="To Deploy an Application to a Standalone GlassFish Server Instance" expand="false"></tocitem>
         <tocitem target="task-standalone-instance-app-list" text="To List Applications That Are Deployed to a Standalone GlassFish Server Instance" expand="false"></tocitem>
+        <tocitem target="task-standalone-instance-app-undeploy" text="To Undeploy Applications From a Standalone GlassFish Server Instance" expand="false"></tocitem>
+        <tocitem target="task-standalone-instance-app-remove" text="To Remove Applications From a Standalone GlassFish Server Instance" expand="false"></tocitem>
         <tocitem target="task-standalone-instance-app-edit" text="To Edit an Application That Is Deployed to a Standalone GlassFish Server Instance" expand="false"></tocitem>
         <tocitem target="task-standalone-instance-app-enable-disable" text="To Enable or Disable an Application That Is Deployed to a Standalone GlassFish Server Instance" expand="false"></tocitem>
         <tocitem target="task-standalone-instance-app-lb-enable-disable" text="To Enable or Disable Load Balancing for an Application That Is Deployed to a Standalone GlassFish Server Instance" expand="false"></tocitem>

@@ -5,7 +5,7 @@ Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
 Use is subject to License Terms  -->
 
 
-<a name="task-editnode"></a><h4>To Edit a Node</h4><a name="indexterm-147"></a><p>Editing a node updates configuration data of a GlassFish Server node. Editing
+<a name="task-editnode"></a><h4>To Edit a Node</h4><a name="indexterm-157"></a><p>Editing a node updates configuration data of a GlassFish Server node. Editing
 a node also enables you to change the type of the node
 from CONFIG to SSH to enable SSH communication for the node.</p>
 
@@ -17,7 +17,7 @@ left empty:</p>
 <ul><li><p>SSH Port</p>
 
 </li>
-<li><p>User Name</p>
+<li><p>SSH User Name</p>
 
 </li>
 <li><p>Key File</p>
@@ -33,7 +33,14 @@ SSH.</b></li>
 current type of the node is SSH and you select CONFIG, SSH
 configuration data is removed from the node's configuration when you save your changes.</p></li></ul></li>
 <li><b>In the Node Host field, type the name of the host that
-the updated node is to represent.</b></li>
+the updated node is to represent.</b><p>Whether this field is mandatory depends on the type of the node:</p>
+<ul><li><p>If the type of the node is CONFIG, the name of the host may be omitted. The name of the host can be determined when instances that reside on the node are created.</p>
+
+</li>
+<li><p>If the type of the node is SSH, the name of the host must be specified. Otherwise, an error occurs.</p>
+
+</li></ul>
+</li>
 <li><b>In the Node Directory field, type the path to the directory that
 is to contain GlassFish Server instances that are created on the node.</b><p>If you type a relative path, the path is relative to the <i>as-install</i>
 directory, where <i>as-install</i> is the base installation directory of the GlassFish Server
@@ -47,26 +54,28 @@ fails, enable the Force option.</b></li>
 <li><b>In the SSH Port field, type the port to use for SSH
 connections to this node's host.</b><p>If you change the type of the node from CONFIG to SSH and
 leave this field empty, the SSH Port option is set to 22.</p></li>
-<li><b>In the User Name field, type the name of the user that
-is to run the process for connecting to this node's host through
-SSH.</b><p>If you change the type of the node from CONFIG to SSH and
-leave this field empty, the User Name option is set to the
-user that is running the DAS process.</p></li>
+<li><b>In the SSH User Name field, type the name of the user
+on this node's host that is to run the process for connecting
+to the host through SSH.</b><p>If you change the type of the node from CONFIG to SSH
+and leave this field empty, the SSH User Name option is set
+to the user that is running the DAS process.</p></li>
 <li><b>Specify how the SSH user will be authenticated when logging in to
 this node's host.</b><ul>
 <li><b>To specify authentication through an SSH private key file, perform these steps:</b><ol style="list-style-type: lower-alpha">
 <li><b>From the SSH User Authentication drop-down list, select Key File.</b></li>
 <li><b>In the Key File field, type the absolute path to the SSH
-private key file for user that the User Name option specifies. </b>
+private key file for user that the SSH User Name option specifies.
+</b>
 <hr><p><b>Note - </b>GlassFish Server also supports password authentication through the <tt>AS_ADMIN_SSHPASSWORD</tt> entry in the
 password file. The password file is specified in the <tt>--paswordfile</tt> option of the
-<a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2433"><tt>asadmin</tt>(1M)</a> utility.</p>
+<a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=asadmin-1m"><tt>asadmin</tt>(1M)</a> utility.</p>
 
 
 <hr>
 <p>If you change the type of the node from CONFIG to SSH
 and leave this field empty, the Key File option is set to
-a platform-dependent key file in the user's <tt>.ssh</tt> directory, for example:</p>
+a key file in the user's <tt>.ssh</tt> directory. If multiple key files
+are found, GlassFish Server uses the following order of preference:</p>
 <ul><li><p><tt>id_rsa</tt></p>
 
 </li>
@@ -80,7 +89,7 @@ a platform-dependent key file in the user's <tt>.ssh</tt> directory, for example
 <li><b>To specify authentication through a password that is stored in the DAS
 configuration, perform these steps:</b>
 <hr><p><b>Caution - </b>This password is stored in clear text in the DAS configuration. For
-enhanced security, use a key file or a password alias </p>
+enhanced security, use a key file or a password alias.</p>
 
 
 <hr>

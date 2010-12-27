@@ -10,7 +10,16 @@ Use is subject to License Terms  -->
 <li><b>Expand the Security node.</b></li>
 <li><b>Select the Message Security node.</b><p>The Message Security Configurations page opens.</p></li>
 <li><b>On the Message Security Configurations page, select the checkbox to the left of
-the Message Security Configuration that you are deleting.</b></li>
+the Message Security Configuration that you are deleting.</b>
+<hr><p><b>Note - </b>It is not possible to create or delete message security providers for the
+default <tt>server-config</tt> configuration. The only message security providers that are supported for the
+default <tt>server-config</tt> are SOAP and HttpServlet. Because these two message providers are already
+created by default when GlassFish Server is installed, the Delete button does not
+appear on the Message Security Configurations page for the default <tt>server-config</tt>.</p>
+
+
+<hr>
+</li>
 <li><b>Click Delete.</b></li></ol><h6>See Also</h6>
 <ul><li><p><a href="task-configmsgsecproviders.html">To Configure GlassFish Server Facilities for Use by Message Security Providers</a></p>
 

@@ -5,7 +5,15 @@ Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
 Use is subject to License Terms  -->
 
 
-<a name="task-delete-clustered-instances"></a><h4>To Delete Clustered GlassFish Server Instances</h4><a name="indexterm-44"></a><a name="indexterm-45"></a><a name="indexterm-46"></a><ol>
+<a name="task-delete-clustered-instances"></a><h4>To Delete Clustered GlassFish Server Instances</h4><a name="indexterm-48"></a><a name="indexterm-49"></a><a name="indexterm-50"></a>
+<hr><p><b>Caution - </b>If you are using a Java Message Service (JMS) cluster with a
+master broker, do not delete the instance that is associated with the
+master broker. If this instance must be deleted, use the <a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=change-master-broker-1"><tt>change-master-broker</tt>(1)</a> subcommand to
+assign the master broker to a different instance.</p>
+
+
+<hr>
+<ol>
 <li><b>In the navigation tree, expand the Clusters node.</b></li>
 <li><b>Under the expanded Clusters node, select the node for the cluster.</b><p>The General Information page for the cluster opens.</p></li>
 <li><b>On the General Information page, click the Instances tab. </b><p>The Clustered Server Instances page for the cluster opens.</p></li>

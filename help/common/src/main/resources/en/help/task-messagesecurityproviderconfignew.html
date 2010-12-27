@@ -7,6 +7,12 @@ Use is subject to License Terms  -->
 
 <a name="task-messagesecurityproviderconfignew"></a><h4>To Create a Message Security Provider Configuration</h4><a name="indexterm-110"></a><p>To create a new message security provider configuration, follow these steps:</p>
 
+<h6>Before You Begin</h6><p>It is not possible to create or delete message security providers for the
+default <tt>server-config</tt> configuration. The only message security providers that are supported for the
+default <tt>server-config</tt> are SOAP and HttpServlet. Because these two message providers are already
+created by default when GlassFish Server is installed, the New button is grayed
+out on the Message Security Configurations page for the default <tt>server-config</tt>.</p>
+
 <ol>
 <li><b>In the navigation tree, expand the Configuration node.</b></li>
 <li><b>Expand the Security node.</b></li>

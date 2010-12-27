@@ -96,8 +96,7 @@
         <tocitem target="task-uc-set-proxy" text="To Configure Network Proxy Settings for Accessing Network Repositories" expand="false"></tocitem></tocitem></tocitem>
  <tocitem target="ref-topic-group" text="GlassFish Server Administration Console Reference" expand="false">
     <tocitem target="ref-group-commontask-all" text="Common Tasks" expand="false">
-        <tocitem target="ref-developercommontasks" text="Common Tasks" expand="false"></tocitem></tocitem>
-    <tocitem target="ref-group-news" text="GlassFish News" expand="false">
+        <tocitem target="ref-developercommontasks" text="Common Tasks" expand="false"></tocitem>
         <tocitem target="ref-supportpage" text="GlassFish News" expand="false"></tocitem></tocitem>
     <tocitem target="ref-group-domain" text="Domain" expand="false">
         <tocitem target="ref-domainattributestab" text="Domain Attributes" expand="false"></tocitem>
@@ -126,7 +125,7 @@
         <tocitem target="ref-appmanagetargets" text="Manage Targets" expand="false"></tocitem>
         <tocitem target="ref-managevirtualservers" text="Virtual Server Targets" expand="false"></tocitem>
         <tocitem target="ref-endpoint" text="Web Service Endpoint Information" expand="false"></tocitem>
-        <tocitem target="ref-appclientlaunch" text="Launch Application Client" expand="false"></tocitem>
+        <tocitem target="ref-appclientlaunch" text="Application Client Launch" expand="false"></tocitem>
         <tocitem target="ref-uploaddev" text="Deploy Applications or Modules" expand="false"></tocitem>
         <tocitem target="ref-redeploy" text="Redeploy Applications or Modules" expand="false"></tocitem></tocitem>
     <tocitem target="ref-group-lifecyclemodules" text="Lifecycle Modules" expand="false">

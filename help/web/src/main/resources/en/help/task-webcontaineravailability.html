@@ -21,8 +21,8 @@ the web container.</b><p>To disable availability, remove the check from the Avai
 
 </li></ul>
 </li>
-<li><b>If Availability Service Enabled is checked, select <tt>replicated</tt> for session persistence based on
-cluster failover that is highly available.</b></li></ul></li>
+<li><b>If Availability Service Enabled is checked, select <tt>replicated</tt> for session persistence based
+on cluster failover that is highly available.</b></li></ul></li>
 <li><b>From the Persistence Frequency drop-down list, select the frequency at which the HTTP
 session is stored:</b>
 <ul><li><p><tt>web-method</tt> &#8212; The session state is stored at the end of each web request prior to sending a response back to the client. This mode provides the best guarantee that the session state is fully updated in case of failure. This is the default.</p>
@@ -57,18 +57,18 @@ required for storage to occur:</b>
 </li></ul>
 <p>Persistence Scope is only applicable if the Persistence Type is <tt>replicated</tt>.</p></li>
 <li><b>In the Single-Sign-On State field, check the Enabled box to make the single
-sign-on state available for failover.</b><p>To make the single sign-on state unavailable for failover, remove the check from the
-Single-Sign-On State Enabled box.</p></li>
+sign-on state available for failover.</b><p>To make the single sign-on state unavailable for failover, remove the check from
+the Single-Sign-On State Enabled box.</p></li>
 <li><b>To restore the default values of all the settings, click the Load Defaults
 button.</b></li>
 <li>(Optional) <b>In the Additional Properties section, specify additional properties.</b><p>The GlassFish Server does not define any additional properties for web container availability.</p><ul>
 <li><b>To add a property, click the Add Property button. In the blank row
-that appears, type the property name in the Name field, and type the
-property value in the Value field.</b></li>
+that appears, type the property name in the Name field, and type
+the property value in the Value field.</b></li>
 <li><b>To modify a property, edit that property's Value field.</b></li>
-<li><b>To delete a property, select the checkbox to the left of the Name
-field of the property that you are deleting, then click the Delete Properties
-button.</b></li></ul></li>
+<li><b>To delete a property, select the checkbox to the left of the
+Name field of the property that you are deleting, then click the Delete
+Properties button.</b></li></ul></li>
 <li><b>Click Save.</b></li></ol><h6>See Also</h6>
 <ul><li><p><a href="task-webcontainergeneral.html">To Configure General Properties for the Web Container</a></p>
 

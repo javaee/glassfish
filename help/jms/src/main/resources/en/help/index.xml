@@ -1,5 +1,6 @@
 <index version="2.0">
 
+ <indexitem target="ref-jmsavailability" text="availability, EJB container (reference)"></indexitem>
  <indexitem text="connection factories">
     <indexitem target="ref-jmsconnectionnew" text="creating (reference)"></indexitem>
     <indexitem target="task-jmsconnectionnew" text="creating (task)"></indexitem>
@@ -14,6 +15,7 @@
     <indexitem target="ref-jmsdestinationedit" text="editing (reference)"></indexitem>
     <indexitem target="task-jmsdestinationedit" text="editing (task)"></indexitem>
     <indexitem target="ref-jmsdestinationresources" text="viewing and configuring"></indexitem></indexitem>
+ <indexitem target="ref-jmsavailability" text="EJB container, configuring availability settings (reference)"></indexitem>
  <indexitem text="JMS connection factory resources">
     <indexitem target="ref-jmsconnectionnew" text="creating (reference)"></indexitem>
     <indexitem target="task-jmsconnectionnew" text="creating (task)"></indexitem>

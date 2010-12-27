@@ -13,8 +13,8 @@ store location.</b><p>This field specifies the directory where passivated statef
 checkpoint states are stored on the file system. The default value is <tt>${com.sun.aas.instanceRoot}/session-store</tt>.</p><p>Passivated beans are stateful session beans that have had their state written to
 a file on the file system. Passivated beans typically have been idle for
 a certain period of time, and are not currently being accessed by clients.
-Similarly, persisted SFSB checkpoint states are individual SFSBs that have had their state written
-to a file on the file system.</p><p>This setting is applicable to SFSB checkpoint states only if EJB container availability
+Similarly, persisted SFSB checkpoint states are individual SFSBs that have had their state
+written to a file on the file system.</p><p>This setting is applicable to SFSB checkpoint states only if EJB container availability
 is disabled. To disable availability, see <a href="../../../ejb/en/help/task-ejbcontaineravailability.html">To Configure Availability Settings for the EJB Container</a>.</p></li>
 <li><b>Select the Option B or Option C radio button to set the
 Commit Option.</b><p>The Commit Option specifies how the container caches passivated bean instances between transactions.</p><ul>

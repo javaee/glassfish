@@ -16,26 +16,26 @@ that are available.</p>
 <li><b>On the General Properties page, click the Manager Properties tab.</b><p>The Manager Properties page opens.</p></li>
 <li><b>In the Reap Interval field, type the number of seconds before the inactive
 session data is deleted from the store.</b><p>The default value is 60.</p><p>Set this value lower than the frequency at which session data changes. For
-example, this value should be as low as possible (1 second) for a
-hit counter servlet on a frequently accessed web site; otherwise, you could lose
-the last few hits each time you restart the server.</p></li>
+example, this value should be as low as possible (1 second) for
+a hit counter servlet on a frequently accessed web site; otherwise, you could
+lose the last few hits each time you restart the server.</p></li>
 <li><b>In the Max Sessions field, type the maximum number of sessions that can
 be in cache.</b><p>A value of &#8211;1 indicates no limit to the number of sessions. The
-default value is &#8211;1.</p><p>After the limit is reached, an attempt to create a new session causes
-an <tt>IllegalStateException</tt> to be thrown.</p></li>
+default value is &#8211;1.</p><p>After the limit is reached, an attempt to create a new session
+causes an <tt>IllegalStateException</tt> to be thrown.</p></li>
 <li><b>In the Session Filename field, type the absolute or relative path to the
 directory in which the session state is preserved between application restarts, if preserving
 the state is possible.</b><p>If this path is not set, the session state is not preserved. By
-default, this path is not set.</p><p>A relative path is relative to the temporary directory for this web application.</p><p>This setting is applicable only if the Persistence Type is <tt>memory</tt>. To set the
-Persistence Type, see <a href="task-webcontaineravailability.html">To Configure Availability Settings for the Web Container</a>.</p></li>
+default, this path is not set.</p><p>A relative path is relative to the temporary directory for this web application.</p><p>This setting is applicable only if the Persistence Type is <tt>memory</tt>. To set
+the Persistence Type, see <a href="task-webcontaineravailability.html">To Configure Availability Settings for the Web Container</a>.</p></li>
 <li>(Optional) <b>In the Additional Properties section, specify additional properties.</b><p>The GlassFish Server does not define any additional properties for the session manager.</p><ul>
 <li><b>To add a property, click the Add Property button. In the blank row
-that appears, type the property name in the Name field, and type the
-property value in the Value field.</b></li>
+that appears, type the property name in the Name field, and type
+the property value in the Value field.</b></li>
 <li><b>To modify a property, edit that property's Value field.</b></li>
-<li><b>To delete a property, select the checkbox to the left of the Name
-field of the property that you are deleting, then click the Delete Properties
-button.</b></li></ul></li>
+<li><b>To delete a property, select the checkbox to the left of the
+Name field of the property that you are deleting, then click the Delete
+Properties button.</b></li></ul></li>
 <li><b>Click Save.</b>
 <hr><p><b>Tip - </b>To return to the default settings, click the Load Defaults button, then click
 Save.</p>

@@ -15,7 +15,16 @@ the HttpServlet authentication layer and specify one or more provider configurat
 <li><b>In the navigation tree, expand the Configuration node.</b></li>
 <li><b>Expand the Security node.</b></li>
 <li><b>Select the Message Security node.</b><p>The Message Security Configurations page opens.</p></li>
-<li><b>On the Message Security Configurations page, click New.</b><p>The New Message Security Configuration page opens.</p></li>
+<li><b>On the Message Security Configurations page, click New.</b><p>The New Message Security Configuration page opens.</p>
+<hr><p><b>Note - </b>It is not possible to create or delete message security providers for the
+default <tt>server-config</tt> configuration. The only message security providers that are supported for the
+default <tt>server-config</tt> are SOAP and HttpServlet. Because these two message providers are already
+created by default when GlassFish Server is installed, the New button is grayed
+out on the Message Security Configurations page for the default <tt>server-config</tt>.</p>
+
+
+<hr>
+</li>
 <li><b>On the New Message Security Configuration page, from the Authentication Layer drop-down list,
 select the message layer for which you are creating a configuration.</b><p>Because a SOAP configuration is available by default, the only choice is <tt>HttpServlet</tt>.</p></li>
 <li><b>In the Provider ID field, type the unique identifier of the provider configuration

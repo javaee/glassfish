@@ -50,12 +50,6 @@ to reside already exist.</p>
 </li>
 <li><p>Underscore</p>
 
-</li>
-<li><p>Slash</p>
-
-</li>
-<li><p>Hash</p>
-
 </li></ul>
 </li>
 <li><p>The name must be unique in the domain and must not be the name of a another cluster, a named configuration, a GlassFish Server instance , or a node.</p>
@@ -79,7 +73,14 @@ the Selected Configuration option selected. </b><p>The selected configuration is
 the configuration is assigned the name <tt><i>cluster-name</i>-config</tt>, where <i>cluster-name</i> is the name of
 the cluster that you are creating.</p></li>
 <li><b>If the configuration is shared, select the Reference the Selected Configuration option.</b><p>The cluster will use the specified existing named configuration.</p></li></ul></li>
-<li>(Optional) <b><a name="indexterm-2"></a>Add GlassFish Server instances to the cluster.</b><p>You can also <a href="task-create-clustered-instance.html">add instances after the cluster is created</a>.</p><p>Add each instance as follows:</p><ol style="list-style-type: lower-alpha">
+<li>(Optional) <b><a name="indexterm-2"></a>Add GlassFish Server instances to the cluster.</b>
+<hr><p><b>Note - </b>To create an instance on a node of type CONFIG that represents
+a remote host, you must use the <a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=create-local-instance-1"><tt>create-local-instance</tt>(1)</a> subcommand. You cannot use the
+Administration Console for this purpose.</p>
+
+
+<hr>
+<p>You can also <a href="task-create-clustered-instance.html">add instances after the cluster is created</a>.</p><p>Add each instance as follows:</p><ol style="list-style-type: lower-alpha">
 <li><b>In the Server Instances To Be Created area, click Add.</b><p>A row is added to the table of instances in the cluster.</p></li>
 <li><b>In the Instance Name field, type a name for the instance.</b></li>
 <li><b>In the Weight field, type an integer that represents the load-balancing weight
@@ -113,6 +114,12 @@ the table of clusters on the page.</p></li></ol><h6>See Also</h6>
 
 </li>
 <li><p><a href="task-cluster-app-list.html">To List Applications That Are Deployed to a Cluster</a></p>
+
+</li>
+<li><p><a href="task-cluster-app-undeploy.html">To Undeploy Applications From a Cluster</a></p>
+
+</li>
+<li><p><a href="task-cluster-app-remove.html">To Remove Applications From a Cluster</a></p>
 
 </li>
 <li><p><a href="task-cluster-app-edit.html">To Edit an Application That Is Deployed to a Cluster</a></p>

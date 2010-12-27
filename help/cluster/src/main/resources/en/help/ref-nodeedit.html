@@ -4,7 +4,7 @@ Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-nodeedit"></a><h4>Edit Node</h4>
-<a name="indexterm-188"></a><p>Use the Edit Node page to update the configuration data of a
+<a name="indexterm-198"></a><p>Use the Edit Node page to update the configuration data of a
 GlassFish Server node. You can also use this page to change the
 type of a node from CONFIG to SSH to enable SSH communication for
 the node.</p>
@@ -37,14 +37,21 @@ left empty:</p>
 
 </dd>
 <dt>CONFIG</dt>
-<dd><p>The node does not support remote communication. If CONFIG is selected, no options for SSH configuration are displayed. If the current type of the node is SSH and you select CONFIG, SSH configuration data is removed from the node's configuration when you save your changes.</p>
+<dd><p>The node does not support remote communication. If CONFIG, is selected, no options for SSH configuration are displayed. If the current type of the node is SSH and you select CONFIG, SSH configuration data is removed from the node's configuration when you save your changes.</p>
 
 </dd>
 </dl>
 </dd>
 <dt>Node Host</dt>
-<dd><p>The name of the host that the node is to represent after the node is updated.</p>
+<dd><p>The name of the host that the node is to represent after the node is updated. Whether this field is mandatory depends on the type of the node:</p>
 
+
+<ul><li><p>If the type of the node is CONFIG, the name of the host may be omitted. The name of the host can be determined when instances that reside on the node are created.</p>
+
+</li>
+<li><p>If the type of the node is SSH, the name of the host must be specified. Otherwise, an error occurs.</p>
+
+</li></ul>
 </dd>
 <dt>Node Directory</dt>
 <dd><p>The path to the directory that is to contain GlassFish Server instances that are created on the node. If a relative path is specified, the path is relative to the <i>as-install</i> directory, where <i>as-install</i> is the base installation directory of the GlassFish Server software on the host.</p>
@@ -63,15 +70,15 @@ left empty:</p>
 
 <p>If you change the type of the node from CONFIG to SSH and leave this field empty, the SSH Port option is set to 22.</p>
 
-<p>If the Node Host option is set to <tt>localhost</tt>, the SSH Port option is ignored.</p>
+<p>If the Node Host option is set to <tt>localhost-<i>domain</i></tt>, the SSH Port option is ignored.</p>
 
 </dd>
 <dt>SSH User Name</dt>
-<dd><p>The user that is to run the process for connecting to this node's host through SSH. </p>
+<dd><p>The user on this node's host that is to run the process for connecting to the host through SSH.</p>
 
 <p>If you change the type of the node from CONFIG to SSH and leave this field empty, the User Name option is set to the user that is running the DAS process.</p>
 
-<p>If the Node Host option is set to <tt>localhost</tt>, the SSH User option is ignored.</p>
+<p>If the Node Host option is set to <tt>localhost-<i>domain</i></tt>, the SSH User option is ignored.</p>
 
 </dd>
 <dt>SSH User Authentication</dt>
@@ -85,7 +92,7 @@ left empty:</p>
 <dd><p>The SSH user is authenticated through a password that is stored in the DAS configuration.</p>
 
 
-<hr><p><b>Caution - </b>This password is stored in clear text in the DAS configuration. For enhanced security, use a key file or a password alias </p>
+<hr><p><b>Caution - </b>This password is stored in clear text in the DAS configuration. For enhanced security, use a key file or a password alias.</p>
 
 
 <hr>
@@ -114,20 +121,20 @@ left empty:</p>
 <dd><p>The absolute path to the SSH private key file for user that the User Name option specifies. This file is used for authentication to the <tt>sshd</tt> daemon on the node's host.</p>
 
 
-<hr><p><b>Note - </b>GlassFish Server also supports password authentication through the <tt>AS_ADMIN_SSHPASSWORD</tt> entry in the password file. The password file is specified in the <tt>--paswordfile</tt> option of the <a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2433"><tt>asadmin</tt>(1M)</a> utility.</p>
+<hr><p><b>Note - </b>GlassFish Server also supports password authentication through the <tt>AS_ADMIN_SSHPASSWORD</tt> entry in the password file. The password file is specified in the <tt>--paswordfile</tt> option of the <a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=asadmin-1m"><tt>asadmin</tt>(1M)</a> utility.</p>
 
 
 <hr>
 <p>If the SSH private key file is protected by a passphrase, the password file must contain the <tt>AS_ADMIN_SSHKEYPASSPHRASE</tt> entry.</p>
 
-<p>The path to the key file must be reachable by the DAS and the key file must be readable by the DAS. The path may contain Java properties of the form <tt>${<i>prop.name</i>}</tt>.</p>
+<p>The path to the key file must be reachable by the DAS and the key file must be readable by the DAS.</p>
 
 <p>The default depends on whether you change the type of the node from CONFIG to SSH to enable SSH communication for the node:</p>
 
-<p>If you change the type of the node from CONFIG to SSH and leave this field empty, the Key File option is set to a platform-dependent key file in the user's <tt>.ssh</tt> directory, for example:</p>
+<p>If you change the type of the node from CONFIG to SSH and leave this field empty, the Key File option is set to a key file in the user's <tt>.ssh</tt> directory. If multiple key files are found, GlassFish Server uses the following order of preference:</p>
 
 
-<ul><li><p><tt>id_rsa</tt></p>
+<ol><li><p><tt>id_rsa</tt></p>
 
 </li>
 <li><p><tt>id_dsa</tt></p>
@@ -135,7 +142,7 @@ left empty:</p>
 </li>
 <li><p><tt>identity</tt></p>
 
-</li></ul>
+</li></ol>
 </dd>
 </dl>
 <h5>Related Tasks</h5>
@@ -145,10 +152,10 @@ left empty:</p>
 </li></ul>
 <h5>Equivalent <tt>asadmin</tt> Subcommands</h5>
 
-<ul><li><p><a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2433"><tt>update-node-config</tt>(1)</a></p>
+<ul><li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=update-node-config-1"><tt>update-node-config</tt>(1)</a></p>
 
 </li>
-<li><p><a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2433"><tt>update-node-ssh</tt>(1)</a></p>
+<li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=update-node-ssh-1"><tt>update-node-ssh</tt>(1)</a></p>
 
 </li></ul>
 

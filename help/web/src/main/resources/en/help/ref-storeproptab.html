@@ -4,12 +4,16 @@ Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-storeproptab"></a><h4>Store Properties</h4>
-<a name="indexterm-50"></a><a name="indexterm-51"></a><a name="indexterm-52"></a><p>Use the Store Properties page to add or modify session persistence (storage) properties
+<a name="indexterm-52"></a><a name="indexterm-53"></a><a name="indexterm-54"></a><p>Use the Store Properties page to add or modify session persistence (storage) properties
 for the web container.</p>
 
 <p>The Store Properties page contains the following options.</p>
 
-<dl><dt>Directory</dt>
+<dl><dt>Configuration Name</dt>
+<dd><p>The name of the configuration to which the settings on this page apply. This field is read only.</p>
+
+</dd>
+<dt>Directory</dt>
 <dd><p>The absolute or relative pathname of the directory into which individual session files are written. The default value is <tt></tt><i>domain-dir</i><tt>/generated/jsp/j2ee-apps/</tt><i>appname</i><tt>/</tt><i>appname</i><tt>_war</tt>. A relative path is relative to the temporary work directory for this web application.</p>
 
 </dd>

@@ -4,8 +4,8 @@ Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-standaloneinstanceconfigproperties"></a><h4>Instance System Properties</h4>
-<a name="indexterm-203"></a><a name="indexterm-204"></a><a name="indexterm-205"></a><p>The Instance System Properties page displays a list of the Java system properties
-that are set for the selected GlassFish Server instance. Java system properties
+<a name="indexterm-213"></a><a name="indexterm-214"></a><a name="indexterm-215"></a><p>The Instance System Properties page displays a list of the Java system properties
+that are set for the current GlassFish Server instance. Java system properties
 are passed to the Java application launcher through the <tt>-D</tt> option of the
 Java application launcher whenGlassFish Server is started.</p>
 
@@ -16,18 +16,21 @@ be overridden because both instances share the same configuration.</p>
 
 <p>For information about predefined port settings in a configuration, see <a href="../../../common/en/help/ref-predefinedconfigsysproperties.html">Predefined Configuration System Properties</a>.</p>
 
+<p>The Instance Name field is a read-only field that displays the name of
+the current instance.</p>
+
 <p>For each property, the following information is displayed:</p>
 
 <dl><dt>Instance Variable Name</dt>
 <dd><p>The name of the system property.</p>
 
 </dd>
-<dt>Override Value</dt>
-<dd><p>The value of the property that is set for the selected instance. This value overrides the default value.</p>
+<dt>Current Value</dt>
+<dd><p>The value that is currently set for the property. This field is read only.</p>
 
 </dd>
-<dt>Default Value</dt>
-<dd><p>The value that is set for the property in the named configuration that the instance references. This field is read only.</p>
+<dt>Override Value</dt>
+<dd><p>The value to which the property will be set after changes are saved.</p>
 
 </dd>
 </dl>
@@ -52,13 +55,13 @@ be overridden because both instances share the same configuration.</p>
 </li></ul>
 <h5>Equivalent <tt>asadmin</tt> Subcommands</h5>
 
-<ul><li><p><a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2433"><tt>create-system-properties</tt>(1)</a></p>
+<ul><li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=create-system-properties-1"><tt>create-system-properties</tt>(1)</a></p>
 
 </li>
-<li><p><a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2433"><tt>delete-system-property</tt>(1)</a></p>
+<li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=delete-system-property-1"><tt>delete-system-property</tt>(1)</a></p>
 
 </li>
-<li><p><a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2433"><tt>list-system-properties</tt>(1)</a></p>
+<li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=list-system-properties-1"><tt>list-system-properties</tt>(1)</a></p>
 
 </li></ul>
 

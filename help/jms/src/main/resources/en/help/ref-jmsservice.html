@@ -4,10 +4,10 @@ Copyright 2009, 2010 Oracle and/or its affiliates. All rights reserved.
  
 Use is subject to License Terms  -->
 <a name="ref-jmsservice"></a><h4>JMS Service</h4>
-<a name="indexterm-41"></a><p>Use the JMS Service page to configure settings to be used by
+<a name="indexterm-43"></a><p>Use the JMS Service page to configure settings to be used by
 all JMS connections.</p>
 
-<p>For more information about configuring the JMS service, see <a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2418">Chapter 16, Using the Java Message Service, in <i>Oracle GlassFish Server 3.1 Application Development Guide</i></a>.</p>
+<p>For more information about configuring the JMS service, see <a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2418&id=beaob">Chapter 17, Using the Java Message Service, in <i>Oracle GlassFish Server 3.1 Application Development Guide</i></a>.</p>
 
 <p>The JMS Service page contains the following options.</p>
 
@@ -17,6 +17,10 @@ all JMS connections.</p>
 </dd>
 <dt>Ping</dt>
 <dd><p>Button to verify that the JMS service is running on the default JMS host. If the JMS service is up and running, a message reports that the ping succeeded.</p>
+
+</dd>
+<dt>Configuration Name</dt>
+<dd><p>The name of the configuration to which the settings on this page apply. This field is read only.</p>
 
 </dd>
 <dt>Type</dt>
@@ -31,7 +35,7 @@ all JMS connections.</p>
 
 </dd>
 <dt>REMOTE</dt>
-<dd><p>Access the JMS service on another system. If you choose REMOTE, the JMS service is not started by the GlassFish Server the next time the server starts. Instead, the JMS service is started and managed by Message Queue, so you must start the Message Queue broker separately. For information about starting the broker, see the <a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2438">Starting Brokers in <i>Oracle GlassFish Message Queue 4.5 Administration Guide</i></a>. If you choose this value and are using a remote host, follow the instructions in <a href="task-jmshostedit.html">To Edit a JMS Host</a> to specify the name of the remote host.</p>
+<dd><p>Access the JMS service on another system. If you choose REMOTE, the JMS service is not started by the GlassFish Server the next time the server starts. Instead, the JMS service is started and managed by Message Queue, so you must start the Message Queue broker separately. For information about starting the broker, see the <a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2438&id=aeoby">Starting Brokers in <i>Oracle GlassFish Message Queue 4.5 Administration Guide</i></a>. If you choose this value and are using a remote host, follow the instructions in <a href="task-jmshostedit.html">To Edit a JMS Host</a> to specify the name of the remote host.</p>
 
 </dd>
 </dl>
@@ -104,7 +108,7 @@ all JMS connections.</p>
 </li></ul>
 <h5>Related <tt>asadmin</tt> Commands</h5>
 
-<ul><li><p><a href="http://download.oracle.com/docs/cd/E18930_01/html/821-2433"><tt>jms-ping</tt>(1)</a></p>
+<ul><li><p><a href="http://www.oracle.com/pls/topic/lookup?ctx=821-2433&id=jms-ping-1"><tt>jms-ping</tt>(1)</a></p>
 
 </li></ul>
 
