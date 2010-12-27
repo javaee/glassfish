@@ -85,6 +85,7 @@ import org.glassfish.admin.rest.provider.BaseProvider;
 import org.glassfish.admin.rest.results.ActionReportResult;
 import org.glassfish.admin.rest.utils.xml.RestActionReporter;
 import org.glassfish.grizzly.http.Cookie;
+import org.glassfish.grizzly.http.Method;
 import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
@@ -158,7 +159,7 @@ public abstract class RestAdapter extends HttpHandler implements Adapter, PostCo
             } else {
 
                 if(serverEnvironment.isInstance()) {
-                    if(!"GET".equalsIgnoreCase(req.getMethod() ) ) {
+                    if(!Method.GET.equals(req.getMethod())) {
                         String msg = localStrings.getLocalString("rest.resource.only.GET.on.instance", "Only GET requests are allowed on an instance that is not DAS.");
                         reportError(req, res, HttpURLConnection.HTTP_FORBIDDEN, msg);
                         return;
