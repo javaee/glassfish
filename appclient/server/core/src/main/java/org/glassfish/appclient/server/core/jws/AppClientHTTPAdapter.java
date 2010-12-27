@@ -46,7 +46,6 @@ import com.sun.logging.LogDomains;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.URLDecoder;
@@ -60,6 +59,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.glassfish.appclient.server.core.jws.servedcontent.ACCConfigContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.DynamicContent;
 import org.glassfish.appclient.server.core.jws.servedcontent.StaticContent;
+import org.glassfish.grizzly.http.Method;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.grizzly.http.server.util.MimeType;
@@ -230,8 +230,8 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
          * Java Web Start uses HEAD to find out when the target was last
          * modified to see if it should ask for the entire target.
          */
-        final String methodType = gReq.getMethod();
-        if (methodType.equalsIgnoreCase("GET")) {
+        final Method methodType = gReq.getMethod();
+        if (Method.GET.equals(methodType)) {
             writeData(instance.getText(), gResp);
         }
         logger.log(Level.FINE, "{0}Served dyn content for {1}: {2}{3}",
