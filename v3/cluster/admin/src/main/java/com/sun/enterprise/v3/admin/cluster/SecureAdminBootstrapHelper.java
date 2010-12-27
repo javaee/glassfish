@@ -207,7 +207,7 @@ public abstract class SecureAdminBootstrapHelper {
             this.logger = logger;
 
             try {
-                remoteNodeDir = remoteNodeDir(node, remoteNodeDir);
+                remoteNodeDir = remoteNodeDirUnixStyle(node, remoteNodeDir);
                 //remoteNodeDirURI = URI.create(remoteNodeDir);
                 remoteNodeDirURI = new URI("file", remoteNodeDir, null);
                 remoteInstanceURI = remoteInstanceURI(remoteNodeDir);
@@ -236,15 +236,23 @@ public abstract class SecureAdminBootstrapHelper {
             }
         }
 
-        private String remoteNodeDir(final Node node, final String remoteNodeDir) {
+        private String remoteNodeDirUnixStyle(final Node node, final String remoteNodeDir) {
             /*
              * Use the node dir if it was specified when the node was created.
              * Otherwise derive it: ${remote-install-dir}/glassfish/${node-name}
              */
-            return (remoteNodeDir != null ? remoteNodeDir :
-                (new StringBuilder(ensureTrailingSlash(node.getInstallDirUnixStyle()))
-                    .append("glassfish/nodes/")
-                    .append(node.getName())).toString());
+            String result;
+            if (remoteNodeDir != null) {
+                result = remoteNodeDir;
+            } else {
+                result = new StringBuilder(ensureTrailingSlash(node.getInstallDirUnixStyle()))
+                        .append("glassfish/nodes/")
+                        .append(node.getName()).toString();
+            }
+            if (result.charAt(0) != '/') {
+                result = '/' + result;
+            }
+            return ensureTrailingSlash(result.replaceAll("\\\\","/"));
         }
 
         private URI remoteInstanceURI(final String remoteNodeDirPath)
@@ -259,12 +267,23 @@ public abstract class SecureAdminBootstrapHelper {
 
         @Override
         protected void mkdirs(URI dirURI) throws IOException {
-            Integer instanceDirPermissions = ftpClient.lstat(remoteNodeDirURI.getPath()).permissions;
             URI remoteFileURI = remoteInstanceURI.resolve(dirURI);
+            logger.log(Level.FINE, "Trying to create directories for remote path {0}",
+                    remoteFileURI.getPath());
+            Integer instanceDirPermissions;
+            try {
+                instanceDirPermissions = ftpClient.lstat(remoteNodeDirURI.getPath()).permissions;
+            } catch (IOException ex) {
+                throw new IOException(remoteNodeDirURI.getPath(), ex);
+            }
             logger.log(Level.FINE, "Creating remote bootstrap directory " +
                        remoteFileURI.getPath() + " with permissions " +
                        instanceDirPermissions.toString());
-            ftpClient.mkdirs(remoteFileURI.getPath(), instanceDirPermissions);
+            try {
+                ftpClient.mkdirs(remoteFileURI.getPath(), instanceDirPermissions);
+            } catch (IOException ex) {
+                throw new IOException(remoteFileURI.getPath(), ex);
+            }
         }
 
 

@@ -341,7 +341,7 @@ public class CreateInstanceCommand implements AdminCommand {
                         ((SecureAdminBootstrapHelper.BootstrapException)ex).sshSettings() : null),
                     exmsg,
                     nodeHost);
-            logger.severe(msg);
+            logger.log(Level.SEVERE, msg, ex);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setMessage(msg);
             return 1;
