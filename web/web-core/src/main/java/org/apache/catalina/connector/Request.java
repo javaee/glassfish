@@ -2485,7 +2485,7 @@ public class Request
      */
     @Override
     public String getMethod() {
-        return coyoteRequest.getMethod();
+        return coyoteRequest.getMethod().getMethodString();
     }
 
     /**

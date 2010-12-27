@@ -77,6 +77,7 @@ import org.apache.catalina.core.ContainerBase;
 import org.apache.catalina.util.ServerInfo;
 import org.apache.catalina.util.StringManager;
 import org.glassfish.grizzly.config.ContextRootInfo;
+import org.glassfish.grizzly.http.Method;
 import org.glassfish.grizzly.http.server.AfterServiceListener;
 import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.Request.Note;
@@ -545,7 +546,7 @@ public class CoyoteAdapter extends HttpHandler {
         request.setWrapper((Wrapper) request.getMappingData().wrapper);
 
         // Filter trace method
-        if (!connector.getAllowTrace() && "TRACE".equalsIgnoreCase(req.getMethod())) {
+        if (!connector.getAllowTrace() && Method.TRACE.equals(req.getMethod())) {
             Wrapper wrapper = request.getWrapper();
             String header = null;
             if (wrapper != null) {
