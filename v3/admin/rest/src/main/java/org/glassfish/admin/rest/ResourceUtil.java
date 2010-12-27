@@ -41,6 +41,7 @@
 package org.glassfish.admin.rest;
 
 
+import java.util.Locale;
 import org.glassfish.admin.rest.generator.CommandResourceMetaData;
 import java.lang.reflect.Method;
 import java.util.logging.Level;
@@ -711,7 +712,7 @@ public class ResourceUtil {
             if (buf.length() > 0) {
                 buf.append('-');
             }
-            buf.append(t.toLowerCase());
+            buf.append(t.toLowerCase(Locale.US));
         }
         return buf.toString();
     }

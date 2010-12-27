@@ -45,8 +45,8 @@ import org.glassfish.admin.rest.provider.ProviderUtil;
 import javax.ws.rs.core.UriInfo;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import javax.ws.rs.core.PathSegment;
 import org.glassfish.api.admin.ParameterMap;
@@ -196,7 +196,7 @@ public class Util {
         if (string == null || string.length() <= 0) {
             return string;
         }
-        return string.substring(0, 1).toUpperCase() + string.substring(1);
+        return string.substring(0, 1).toUpperCase(Locale.US) + string.substring(1);
     }
 
     /**

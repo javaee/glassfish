@@ -62,6 +62,7 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -553,7 +554,7 @@ public class ProviderUtil {
 
                 for (String value : values) {
                     if ((hasValue) && (value.equalsIgnoreCase(parameterValue))){
-                        if (isBoolean) { parameterValue = parameterValue.toLowerCase();} //boolean options are all displayed as lowercase
+                        if (isBoolean) { parameterValue = parameterValue.toLowerCase(Locale.US);} //boolean options are all displayed as lowercase
                         result = result + "<option selected>" + parameterValue + "<br>";
                     } else {
                         result = result + "<option>" + value + "<br>";

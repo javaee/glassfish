@@ -51,6 +51,7 @@ import org.jvnet.hk2.config.DomDocument;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -363,7 +364,7 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
         boolean nextisUpper = true;
         for (int i = 0; i < elementName.length(); i++) {
             if (nextisUpper == true) {
-                ret = ret + elementName.substring(i, i + 1).toUpperCase();
+                ret = ret + elementName.substring(i, i + 1).toUpperCase(Locale.US);
                 nextisUpper = false;
             } else {
                 if (elementName.charAt(i) == '-') {

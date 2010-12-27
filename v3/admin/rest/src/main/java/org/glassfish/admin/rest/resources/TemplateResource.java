@@ -359,7 +359,7 @@ public class TemplateResource {
                     keyAttributeName = model.key.substring(1, model.key.length());
                 }
 
-                String keyvalue = c.attribute(keyAttributeName.toLowerCase());
+                String keyvalue = c.attribute(keyAttributeName.toLowerCase(Locale.US));
                 if (keyvalue.equals(id)) {
                     setEntity((ConfigBean) c);
                 }

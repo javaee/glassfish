@@ -43,6 +43,7 @@ package org.glassfish.admin.rest.utils.xml;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -70,7 +71,7 @@ public class XmlObject {
     }
 
     public XmlObject(String name, Object value) {
-        this.name = name.toLowerCase();
+        this.name = name.toLowerCase(Locale.US);
         this.value = value;
     }
 
