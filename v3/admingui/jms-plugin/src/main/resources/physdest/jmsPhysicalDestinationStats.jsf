@@ -50,10 +50,11 @@
     <event>
     <!beforeCreate
         setPageSessionAttribute(key="pageTitle" value="$resource{i18njms.jmsPhysDestinations.statsPageTitle}");
-        setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jms/jmsPhysicalDestinations.jsf");
+        //setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jms/physdest/jmsPhysicalDestinations.jsf");
         setPageSessionAttribute(key="edit" value="#{true}");
         getRequestValue(key="name" value=>$page{destName});
         getRequestValue(key="type" value=>$page{destType});
+        getRequestValue(key="parent" value=>$page{parentPage});
 
         getPhysicalDestinationStats(name="#{pageSession.destName}", type="#{pageSession.destType}", statsData="#{statsData}");
         //guiLog(message="***** statsData = #{statsData}");

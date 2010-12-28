@@ -47,7 +47,6 @@
     <!command
         setSessionAttribute(key="clusterTabs" value="jmsPhysDest");
         setSessionAttribute(key="targetType", value="cluster");
-        println("********* pageSession.encodedClusterName = #{pageSession.encodedClusterName}");
         gf.redirect(page="#{request.contextPath}/jms/physdest/clusterPhysDest.jsf?target=#{pageSession.encodedClusterName}");
     />
 </sun:tab>

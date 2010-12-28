@@ -114,7 +114,7 @@
             <staticText id="typeCol"  value="#{td.value.type}" />
         </sun:tableColumn>
         <sun:tableColumn id="col4" headerText="$resource{i18njms.jmsPhysDestinations.stats}">
-            <sun:hyperlink id="statsCol" text="$resource{i18njms.jmsPhysDestinations.view}" url="#{request.contextPath}/jms/physdest/jmsPhysicalDestinationStats.jsf?name=#{td.value.name}&type=#{td.value.type}" />
+            <sun:hyperlink id="statsCol" text="$resource{i18njms.jmsPhysDestinations.view}" url="#{request.contextPath}/jms/physdest/jmsPhysicalDestinationStats.jsf?name=#{td.value.name}&type=#{td.value.type}&parent=#{pageSession.selfPage}" />
         </sun:tableColumn>
     </sun:tableRowGroup>
 </sun:table>
