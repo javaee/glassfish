@@ -3922,7 +3922,8 @@ public class Request
     }
 
     void setAsyncTimeout(long timeout) {
-//        coyoteRequest.getResponse().setIdleTimeoutDelay(timeout);
+        coyoteRequest.getResponse().getSuspendContext().setTimeout(
+                timeout, TimeUnit.MILLISECONDS);;
     }
 
     /**
