@@ -495,12 +495,12 @@ public class CoyoteAdapter extends HttpHandler {
          * context, which may use a custom session parameter name, has been
          * identified
          */
-        CharChunk uriParamsCC = request.getURIParams();
-        CharChunk uriCC = decodedURI.getCharChunk();
+        final CharChunk uriParamsCC = request.getURIParams();
+        final CharChunk uriCC = decodedURI.getCharChunk();
         int semicolon = uriCC.indexOf(';');
         if (semicolon > 0) {
             uriParamsCC.setChars(uriCC.getBuffer(), semicolon,
-                uriCC.getEnd() - semicolon);
+                uriCC.getEnd());
             decodedURI.setChars(uriCC.getBuffer(), uriCC.getStart(),
                 semicolon);
         }
