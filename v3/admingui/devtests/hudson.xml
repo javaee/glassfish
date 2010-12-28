@@ -69,7 +69,7 @@
     <target name="download">
         <get src="http://mirrors.ibiblio.org/pub/mirrors/maven2/ant-contrib/ant-contrib/1.0b3/ant-contrib-1.0b3.jar"
              dest="ant-contrib.jar" usetimestamp="true"/>
-        <get src="http://www.ibiblio.org/pub/mirrors/apache/maven/binaries/maven-ant-tasks-2.2.1.jar"
+        <get src="http://repo2.maven.org/maven2/org/apache/maven/maven-ant-tasks/2.1.1/maven-ant-tasks-2.1.1.jar"
              dest="maven-ant-tasks.jar" usetimestamp="true"/>
         <get src="http://www.ibiblio.org/pub/mirrors/apache/maven/binaries/${maven.version}-bin.zip"
              dest="maven.zip" usetimestamp="true"/>
