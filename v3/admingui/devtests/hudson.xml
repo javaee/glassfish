@@ -40,7 +40,7 @@
 
 -->
 
-<project name="GlassFish Admin Console Dev Test Hudson Helper" default="start-server" basedir="."
+<project name="GlassFish Admin Console Dev Test Hudson Helper" default="test" basedir="."
          xmlns:artifact="antlib:org.apache.maven.artifact.ant">
 
     <property name="maven.version" value="apache-maven-2.2.1"/>
@@ -87,7 +87,7 @@
         <unzip src="maven.zip" dest="${install.dir}/"/>
     </target>
 
-    <target name="setup">
+    <target name="setup" depends="download">
         <taskdef resource="net/sf/antcontrib/antlib.xml" classpath="ant-contrib.jar"/>
         <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="antlib:org.apache.maven.artifact.ant"
                  classpath="maven-ant-tasks.jar"/>
@@ -104,7 +104,7 @@
         </if>
     </target>
 
-    <target name="start-server" depends="setup,shutdown-server">
+    <target name="start-server" depends="shutdown-server">
         <exec executable="${executable}">
             <arg value="--port"/>
             <arg value="${GUI_ADMIN_PORT}"/>
@@ -133,7 +133,7 @@
         </exec>
     </target>
 
-    <target name="test" depends="download,setup">
+    <target name="test" depends="setup">
         <trycatch>
             <try>
                 <antcall target="start-server"/>
@@ -156,7 +156,7 @@
          </fail>
     </target>
 
-    <target name="shutdown-server" depends="setup">
+    <target name="shutdown-server">
         <echo message="***** Stopping GlassFish"/>
         <exec executable="${executable}">
             <arg value="stop-domain"/>
