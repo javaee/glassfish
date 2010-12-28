@@ -182,7 +182,9 @@ public class PropertiesBagResource {
                     data.put (property.get("name") + ".description", description);
                 }
             }
-            Util.applyChanges(data, uriInfo, habitat);
+            if (!data.isEmpty()) {
+                Util.applyChanges(data, uriInfo, habitat);
+            }
             
             String successMessage = localStrings.getLocalString("rest.resource.update.message",
                     "\"{0}\" updated successfully.", new Object[]{uriInfo.getAbsolutePath()});
