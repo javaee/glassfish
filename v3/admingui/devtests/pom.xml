@@ -52,12 +52,12 @@
         <version>3.1-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
-    -->
     <parent>
         <groupId>org.glassfish</groupId>
         <artifactId>pom</artifactId>
         <version>8</version>
     </parent>
+    -->
 
 
     <groupId>org.glassfish.admingui</groupId>
@@ -66,6 +66,13 @@
     <packaging>jar</packaging>
     <name>Admin Console Dev Tests</name>
     <description>This module contains the dev tests for the admin console</description>
+
+    <repositories>
+        <repository>
+            <id>GlassFish Nexus</id>
+            <url>http://maven.glassfish.org/content/groups/glassfish</url>
+        </repository>
+    </repositories>
 
     <properties>
         <selenium.version>2.0a6</selenium.version>
