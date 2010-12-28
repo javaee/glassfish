@@ -43,7 +43,7 @@
 <project name="GlassFish Admin Console Dev Test Hudson Helper" default="start-server" basedir="."
          xmlns:artifact="antlib:org.apache.maven.artifact.ant">
 
-    <property name="maven.version" value="apache-maven-2.0.11"/>
+    <property name="maven.version" value="apache-maven-2.2.1"/>
     <property name="BROWSER" value="firefox"/>
 
     <property name="install.dir" value="binaries"/>
@@ -71,7 +71,7 @@
              dest="ant-contrib.jar" usetimestamp="true"/>
         <get src="http://repo2.maven.org/maven2/org/apache/maven/maven-ant-tasks/2.1.1/maven-ant-tasks-2.1.1.jar"
              dest="maven-ant-tasks.jar" usetimestamp="true"/>
-        <get src="http://www.ibiblio.org/pub/mirrors/apache/maven/binaries/${maven.version}-bin.zip"
+        <get src="http://mirrors.ibiblio.org/pub/mirrors/apache/maven/binaries/${maven.version}-bin.zip"
              dest="maven.zip" usetimestamp="true"/>
         <get src="${glassfish.dist.url}" dest="glassfish.zip" usetimestamp="true"/>
 
