@@ -98,13 +98,13 @@
         <dependency>
            <groupId>org.openinstaller</groupId>
            <artifactId>engine</artifactId>
-           <version>0.9.5.2</version>
+           <version>0.9.5.3</version>
            <type>zip</type>
         </dependency> 
         <dependency>
            <groupId>org.openinstaller</groupId>
            <artifactId>resources</artifactId>
-           <version>0.9.4.3</version>
+           <version>0.9.4.4</version>
            <type>zip</type>
         </dependency> 
         <dependency>
