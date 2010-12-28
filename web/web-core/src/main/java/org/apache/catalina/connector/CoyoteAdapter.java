@@ -1006,8 +1006,14 @@ public class CoyoteAdapter extends HttpHandler {
             final Response servletResponse = request.getNote(CATALINA_RESPONSE_NOTE);
 
             if (servletRequest != null) {
-                servletRequest.recycle();
-                servletResponse.recycle();
+                try {
+                    servletResponse.finishResponse();
+                } catch (Exception e) {
+                    log.log(Level.SEVERE, sm.getString("coyoteAdapter.service"), e);
+                } finally {
+                    servletRequest.recycle();
+                    servletResponse.recycle();
+                }
             }
         }
     }
