@@ -70,6 +70,7 @@ import org.jvnet.hk2.component.PerLookup;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import java.beans.PropertyVetoException;
+import java.security.KeyStoreException;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -78,6 +79,7 @@ import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.config.support.CommandTarget;
 import org.glassfish.config.support.TargetType;
+import org.glassfish.internal.api.RelativePathResolver;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
 
@@ -100,7 +102,7 @@ public class LDAPAdminAccessConfigurator implements AdminCommand {
 
 
     @Param(name="ldap-group", shortName="g", optional=true)
-    public volatile String ldapGroupName;        
+    public volatile String ldapGroupName;
     
     @Inject
     private Configs allConfigs;
@@ -116,6 +118,10 @@ public class LDAPAdminAccessConfigurator implements AdminCommand {
     private static final String BASEDN_P = "base-dn";
     private static final String JAAS_P   = "jaas-context";
     private static final String JAAS_V   = "ldapRealm";
+    public static final String LDAP_SOCKET_FACTORY = "java.naming.ldap.factory.socket";
+    public static final String DEFAULT_SSL_LDAP_SOCKET_FACTORY = "com.sun.enterprise.security.auth.realm.ldap.CustomSocketFactory";
+    public static final String LDAPS_URL = "ldaps://";
+
     private static final Logger logger = LogDomains.getLogger(LDAPAdminAccessConfigurator.class, LogDomains.SECURITY_LOGGER);
 
 
@@ -298,6 +304,11 @@ public class LDAPAdminAccessConfigurator implements AdminCommand {
         Properties env = new Properties();
         env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
         env.put(Context.PROVIDER_URL, url);
+        
+        if (url != null && url.startsWith(LDAPS_URL)) {
+            env.put(LDAP_SOCKET_FACTORY,
+                    DEFAULT_SSL_LDAP_SOCKET_FACTORY);
+        }
         try {
             new InitialContext(env);
             appendNL(sb,lsm.getString("ldap.ok", url));

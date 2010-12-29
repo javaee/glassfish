@@ -64,6 +64,7 @@ import com.sun.enterprise.security.auth.realm.InvalidOperationException;
 import com.sun.enterprise.security.auth.realm.IASRealm;
 import java.lang.StringBuffer;
 import java.util.regex.Matcher;
+import org.glassfish.internal.api.RelativePathResolver;
 import org.jvnet.hk2.annotations.Service;
 import sun.security.x509.X500Name;
 
@@ -253,6 +254,12 @@ public final class LDAPRealm extends IASRealm
         } 
         String bindPWD = props.getProperty(PARAM_BINDPWD);
         if (bindPWD != null) {
+            //If the passwors is aliased, de-alias it
+            try {
+                bindPWD = RelativePathResolver.getRealPasswordFromAlias(bindPWD);
+            }catch(Exception ex) {
+                 _logger.log(Level.WARNING, "ldaprealm.pwd.dealiasing.failed",ex);
+            }
             this.setProperty(PARAM_BINDPWD, bindPWD);
             ldapBindProps.setProperty(Context.SECURITY_CREDENTIALS, bindPWD);
         }
@@ -666,7 +673,7 @@ public final class LDAPRealm extends IASRealm
                 }
             }
         } catch (Exception e) {
-            _logger.log(Level.WARNING, "ldaplm.searcherror", filter);
+            _logger.log(Level.WARNING, "ldaprealm.searcherror", filter);
             _logger.log(Level.WARNING, "security.exception", e);
         }
         return groupList;
