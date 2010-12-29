@@ -1,15 +1,25 @@
+ant -version
+mvn -version
+
 export HUDSON=true
 export ROOT=`pwd`
+
 if [ -x "/usr/bin/cygpath" ]
 then
   ROOT=`cygpath -d $ROOT`
   echo "Windows ROOT: $ROOT"
   export CYGWIN=nontsec
 fi
+
+if [ -x ${BUILD_URL} ]
+then
+  export BUILD_URL=http://gf-hudson.us.oracle.com/hudson/job/gf-trunk-build-continuous/lastSuccessfulBuild
+fi
+
 rm -rf glassfish3
-wget -q -O revision-under-test.html http://gf-hudson.us.oracle.com/hudson/job/gf-trunk-build-continuous/lastSuccessfulBuild
+wget -q -O revision-under-test.html ${BUILD_URL}
 grep 'Build #' revision-under-test.html
-time wget -q -O glassfish.zip http://gf-hudson.us.oracle.com/hudson/job/gf-trunk-build-continuous/lastSuccessfulBuild/artifact/bundles/glassfish.zip
+time wget -q -O glassfish.zip ${BUILD_URL}/artifact/bundles/glassfish.zip
 unzip -q glassfish.zip
 export S1AS_HOME="$ROOT/glassfish3/glassfish"
 export APS_HOME="$ROOT/appserv-tests"
