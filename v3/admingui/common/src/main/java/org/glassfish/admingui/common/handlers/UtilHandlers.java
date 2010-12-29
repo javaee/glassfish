@@ -420,11 +420,10 @@ public class UtilHandlers {
         if (list == null) {
             list = new ArrayList();            
         }
-        if (list2 == null) {
-            handlerCtx.setOutputValue("result", list);
-        }
-        for(Object one : list2) {
-                list.add(one);
+        if (list2 != null) {
+            for(Object one : list2) {
+                    list.add(one);
+            }
         }
         handlerCtx.setOutputValue("result", list);
     }

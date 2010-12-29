@@ -142,7 +142,7 @@ public class InstanceHandler {
             if (endpoint.contains("profiler")) {
                 payload1.put("profiler", "true");
             }
-            if (origList != null || origList.size()>0){
+            if ( (origList != null) && origList.size()>0){
                 prepareJvmOptionPayload(payload1, target, origList);
                 RestUtil.restRequest(endpoint, payload1, "POST", null, false, false);
             }

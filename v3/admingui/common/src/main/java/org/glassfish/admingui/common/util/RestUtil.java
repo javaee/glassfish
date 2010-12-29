@@ -298,6 +298,10 @@ public class RestUtil {
                         if (throwException) {
                             if (handlerCtx != null) {
                                 GuiUtil.handleError(handlerCtx, message);
+                                if (!quiet) {
+                                    GuiUtil.getLogger().severe(GuiUtil.getCommonMessage("LOG_REQUEST_RESULT", new Object[]{exitCode, endpoint, attrs}));
+                                    GuiUtil.getLogger().finest("response.getResponseBody(): " + response.getResponseBody());
+                                }
                                 return new HashMap();
                             } else {
                                 //If handlerCtx is not passed in, it means the caller (java handler) wants to handle this exception itself.
@@ -307,6 +311,7 @@ public class RestUtil {
                     }
                     case WARNING: {
                         GuiUtil.prepareAlert("warning", GuiUtil.getCommonMessage("msg.command.warning"), message);
+                        GuiUtil.getLogger().warning(GuiUtil.getCommonMessage("LOG_REQUEST_RESULT", new Object[]{exitCode, endpoint, attrs}));
                         return responseMap;
                     }
                     case SUCCESS: {
@@ -315,7 +320,7 @@ public class RestUtil {
                 }
             } catch (Exception ex) {
                 if (!quiet) {
-                    GuiUtil.getLogger().severe(GuiUtil.getCommonMessage("LOG_REQUEST_FAILED", new Object[]{exitCode, endpoint, attrs}));
+                    GuiUtil.getLogger().severe(GuiUtil.getCommonMessage("LOG_REQUEST_RESULT", new Object[]{exitCode, endpoint, attrs}));
                     GuiUtil.getLogger().finest("response.getResponseBody(): " + response.getResponseBody());
                 }
                 if (handlerCtx != null) {
