@@ -83,9 +83,7 @@ org.jboss.weld.proxy.util,
 org.jboss.weld.bean.proxy.util,
 org.jboss.weld.context.http,
 org.jboss.weld.bean.builtin.ee,
-javassist.util.proxy,
-org.slf4j,
-org.slf4j.impl
+javassist.util.proxy
                             </Export-Package>
                             <Bundle-Description>${project.description}</Bundle-Description> 
                         </manifestEntries>
