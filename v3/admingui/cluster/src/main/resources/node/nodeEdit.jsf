@@ -72,7 +72,11 @@
             setPageSessionAttribute(key="showInstalldirConfig" value="#{false}");
         }
         if ("#{pageSession.attrMap['type']}=CONFIG"){
+            //for CONFIG Node convert to SSH node case,  if there is already installdir specified, keep the value specified instead of changing that to default. (GLASSFISH-15374)
             mapPut(map="#{pageSession.valueMap}"  key="installdir",  value="\\${com.sun.aas.productRoot}");
+            if("#{pageSession.attrMap['installDir']}"){
+                mapPut(map="#{pageSession.valueMap}"  key="installdir",  value="#{pageSession.attrMap['installDir']}");
+            }
             mapPut(map="#{pageSession.valueMap}"  key="installdirConfig",  value="#{pageSession.attrMap['installDir']}");
             setPageSessionAttribute(key="showInstalldirSSH" value="#{false}");
             setPageSessionAttribute(key="showInstalldirConfig" value="#{true}");
