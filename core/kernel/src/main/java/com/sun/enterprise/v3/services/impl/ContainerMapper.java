@@ -159,11 +159,11 @@ public class ContainerMapper extends StaticHttpHandler {
             if (!mapMultipleAdapter && mapper instanceof V3Mapper) {
                 // Remove the MappingData as we might delegate the request
                 // to be serviced directly by the WebContainer
-                request.setNote(MAPPING_DATA, null);
-                HttpHandler a = ((V3Mapper) mapper).getHttpHandler();
-                if (a != null) {
+                final HttpHandler httpHandler = ((V3Mapper) mapper).getHttpHandler();
+                if (httpHandler != null) {
+                    request.setNote(MAPPING_DATA, null);
 //                    req.setNote(MAPPED_ADAPTER, a);
-                    a.service(request, response);
+                    httpHandler.service(request, response);
                     return;
                 }
             }
@@ -173,6 +173,8 @@ public class ContainerMapper extends StaticHttpHandler {
             if (mappingData == null) {
                 mappingData = new MappingData();
                 request.setNote(MAPPING_DATA, mappingData);
+            } else {
+                mappingData.recycle();
             }
             HttpHandler httpService;
 
