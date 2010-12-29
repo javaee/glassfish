@@ -1,0 +1,5 @@
+test for issue GLASSFISH-11683
+
+The slf4j api and impl bundled with weld-osgi-bundle must not be exported 
+to applications and if an application bundles a custom slf4j api and an
+implementation bundle, then the bundled SLF4j implmentation must be used
