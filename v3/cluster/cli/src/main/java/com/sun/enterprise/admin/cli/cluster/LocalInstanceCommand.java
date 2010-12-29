@@ -104,6 +104,11 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
     protected boolean isCreateInstanceFilesystem = false;
     private InstanceDirs instanceDirs;
 
+    // This is especially used for change-master-password command for a node.
+    // We iterate through all the instances and so it should relax this requirement,
+    // that there is only 1 instance in a node.
+    protected boolean checkOneAndOnly = true;
+
     @Override
     protected void validate()
             throws CommandException, CommandValidationException {
@@ -565,7 +570,7 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
         }
 
         // expect two - the "agent" directory and the instance directory
-        if (files.length > 2) {
+        if (files.length > 2 && checkOneAndOnly) {
             throw new CommandException(
                     Strings.get("Instance.tooManyInstanceDirs", parent));
         }

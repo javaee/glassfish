@@ -41,23 +41,28 @@
 package com.sun.enterprise.admin.cli.cluster;
 
 import com.sun.enterprise.admin.cli.CLIConstants;
-import java.io.File;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.URI;
-import java.net.UnknownHostException;
-import java.util.*;
-import org.jvnet.hk2.annotations.*;
-import org.jvnet.hk2.component.*;
-import org.glassfish.api.Param;
-import org.glassfish.api.I18n;
-import org.glassfish.api.admin.*;
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 import com.sun.enterprise.admin.servermgmt.KeystoreManager;
 import com.sun.enterprise.admin.util.CommandModelData.ParamModelData;
 import com.sun.enterprise.security.store.PasswordAdapter;
 import com.sun.enterprise.util.OS;
 import com.sun.enterprise.util.SystemPropertyConstants;
+import org.glassfish.api.I18n;
+import org.glassfish.api.Param;
+import org.glassfish.api.admin.CommandException;
+import org.glassfish.api.admin.CommandValidationException;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PerLookup;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.URI;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -93,6 +98,11 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
 
     @Param(name = "savemasterpassword", optional = true, defaultValue = "false")
     private boolean saveMasterPassword = false;
+
+    @Param(name = "usemasterpassword", optional = true, defaultValue = "false")
+    private boolean useMasterPassword = false;
+
+    private String masterPassword = null;
 
     private static final String RENDEZVOUS_PROPERTY_NAME = "rendezvousOccurred";
     private String INSTANCE_DOTTED_NAME;
@@ -219,37 +229,51 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
     }
 
     /**
-     * If --savemasterpassword=true, then saves tries to save the master password.
+     * If --savemasterpassword=true,
+     * then --usemasterpassword is set to true also
      * If AS_ADMIN_MASTERPASSWORD from --passwordfile exists that is used.
      * If it does not exist, the user is asked to enter the master password.
      * The password is validated against the keystore if it exists. If successful, master-password
-     * is saved to the server instance directory <glassfish-install>/nodes/<host name>/<instance>/master-password.
+     * is saved to the server instance directory <glassfish-install>/nodes/<host name>/master-password.
      * If the password entered does not match the keystore, master-password is not
      * saved and a warning is displayed. The command is still successful.
+     * The default value of --usemasterpassword is false.
+     *
+     * When savemasterpassword is false, the keystore is encrypted with a well-known password
+     * that is built into the system, thus affording no additional security.
+     * The master password must be the same for all instances in a domain.
+
      * @throws CommandException
      */
     private void saveMasterPassword() throws CommandException {
+        masterPasswordOption = new ParamModelData(CLIConstants.MASTER_PASSWORD,
+                String.class, false, null);
+        masterPasswordOption.description = Strings.get("MasterPassword");
+        masterPasswordOption.param._password = true;
+        if (saveMasterPassword)
+            useMasterPassword = true;
+        if (useMasterPassword)
+            masterPassword = getPassword(masterPasswordOption,
+                DEFAULT_MASTER_PASSWORD, true);
+        if (masterPassword == null)
+            masterPassword = DEFAULT_MASTER_PASSWORD;
+
         if (saveMasterPassword) {
-            masterPasswordOption = new ParamModelData(CLIConstants.MASTER_PASSWORD,
-                        String.class, false, null);
-            masterPasswordOption.description = Strings.get("MasterPassword");
-            masterPasswordOption.param._password = true;
-            String masterPassword = getPassword(masterPasswordOption, DEFAULT_MASTER_PASSWORD, false);
-            if (masterPassword != null) {
-                File mp = new File(new File(getServerDirs().getServerDir(), "config"), "keystore.jks");
-                if (mp.canRead()) {
-                    if (verifyMasterPassword(masterPassword)) {
-                        createMasterPasswordFile(masterPassword);
-                    } else {
-                        logger.info(Strings.get("masterPasswordIncorrect"));
-                    }
-                } else {
+            File mp = new File(new File(getServerDirs().getServerDir(), "config"), "keystore.jks");
+            if (mp.canRead()) {
+                if (verifyMasterPassword(masterPassword)) {
+
                     createMasterPasswordFile(masterPassword);
+                } else {
+                    logger.info(Strings.get("masterPasswordIncorrect"));
                 }
-                
+            } else {
+                createMasterPasswordFile(masterPassword);
             }
         }
+
     }
+
 
     /**
      * Create the master password keystore. This routine can also modify the master password

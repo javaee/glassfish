@@ -180,15 +180,19 @@ public abstract class LocalServerCommand extends CLICommand {
     }
 
     protected final boolean verifyMasterPassword(String mpv) {
-        // only tries to open the keystore
+        //issue : 14971, should ideally use javax.net.ssl.keyStore and
+        //javax.net.ssl.keyStoreType system props here but they are
+        //unavailable to asadmin start-domain hence falling back to
+        //cacerts.jks instead of keystore.jks. Since the truststore
+        //is less-likely to be Non-JKS
+
+        return loadAndVerifyKeystore(getJKS(),mpv);
+    }
+
+    protected boolean loadAndVerifyKeystore(File jks,String mpv) {
         FileInputStream fis = null;
         try {
-            //issue : 14971, should ideally use javax.net.ssl.keyStore and
-            //javax.net.ssl.keyStoreType system props here but they are
-            //unavailable to asadmin start-domain hence falling back to
-            //cacerts.jks instead of keystore.jks. Since the truststore
-            //is less-likely to be Non-JKS
-            fis = new FileInputStream(getJKS());
+            fis = new FileInputStream(jks);
             KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
             ks.load(fis, mpv.toCharArray());
             return true;
