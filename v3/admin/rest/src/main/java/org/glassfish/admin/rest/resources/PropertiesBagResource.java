@@ -207,9 +207,8 @@ public class PropertiesBagResource {
     protected void deleteExistingProperties() throws TransactionFailure {
         HashMap<String, String> data = new HashMap<String, String>();
         for (final Dom existingProp : parent.nodeElements(tagName)) {
+            data.clear();
             data.put (((ConfigBean) existingProp).attribute("name"), "");
-        }
-        if (!data.isEmpty()) {
             Util.applyChanges(data, uriInfo, habitat);
         }
     }
