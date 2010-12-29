@@ -136,8 +136,14 @@
     <target name="test" depends="setup">
         <trycatch>
             <try>
+                <property name="http.proxyHost" value=""/>
+                <property name="http.proxyPort" value=""/>
+                <echo>http.proxyHost = ${http.proxyHost}</echo>
+                <echo>http.proxyPort = ${http.proxyPort}</echo>
                 <antcall target="start-server"/>
                 <artifact:mvn pom="pom.xml" fork="true" mavenHome="${maven.dir}" failonerror="false" resultproperty="test.result">
+                    <arg value="-Dhttp.proxyHost=${http.proxyHost}"/>
+                    <arg value="-Dhttp.proxyPort=${http.proxyPort}"/>
                     <arg value="-Dadmin.port=${GUI_ADMIN_PORT}"/>
                     <arg value="-Dbrowser=${BROWSER}"/>
                     <arg value="test"/>
