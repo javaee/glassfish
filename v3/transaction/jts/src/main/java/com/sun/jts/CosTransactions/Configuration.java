@@ -111,6 +111,7 @@ public class Configuration extends Object {
     private static Hashtable logPathToFiletable = new Hashtable();
 
     private static int retries = -1;
+    public static final String COMMIT_ONE_PHASE_DURING_RECOVERY = "commit-one-phase-during-recovery";
     public static final int LAO_PREPARE_OK = TransactionConstants.LAO_PREPARE_OK;
     public final static long COMMIT_RETRY_WAIT = 60000;
     private static boolean isAppClient = true;

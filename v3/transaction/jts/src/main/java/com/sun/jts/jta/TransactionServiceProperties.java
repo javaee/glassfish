@@ -147,6 +147,11 @@ public class TransactionServiceProperties {
                             if (isValueSet(value)) {
                                 jtsProperties.put("pending-txn-cleanup-interval", value);
                             }
+        
+                        } else if (name.equals(Configuration.COMMIT_ONE_PHASE_DURING_RECOVERY)) {
+                            if (isValueSet(value)) {
+                                jtsProperties.put(Configuration.COMMIT_ONE_PHASE_DURING_RECOVERY, value);
+                            }
                         } else if (name.equals("add-wait-point-during-recovery")) {
                             if (isValueSet(value)) {
                                 try {
