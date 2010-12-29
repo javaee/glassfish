@@ -381,7 +381,7 @@ public abstract class AdminAdapter extends StaticHttpHandler implements Adapter,
         final ParameterMap parameters = extractParameters(req.getQueryString());
         try {
             Payload.Inbound inboundPayload = PayloadImpl.Inbound
-                .newInstance(req.getContentType(), req.getInputStream(false));
+                .newInstance(req.getContentType(), req.getInputStream(true));
             if (logger.isLoggable(Level.FINE)) {
                 logger.fine("***** AdminAdapter "+req.getMethod()+"  *****");
             }
