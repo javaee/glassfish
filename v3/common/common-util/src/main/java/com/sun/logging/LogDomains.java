@@ -338,6 +338,7 @@ public class LogDomains {
                 private final int offValue = Level.OFF.intValue();
 
                 public void log(LogRecord record) {
+                    record.getSourceMethodName();
                     if(record.getResourceBundle()==null) {
                         ResourceBundle rb = getResourceBundle();
                         if(rb!=null) {
