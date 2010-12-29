@@ -1,6 +1,3 @@
-ant -version
-mvn -version
-
 export HUDSON=true
 export ROOT=`pwd`
 
