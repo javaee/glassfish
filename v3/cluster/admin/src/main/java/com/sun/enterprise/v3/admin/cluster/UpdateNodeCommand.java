@@ -45,8 +45,11 @@ import com.sun.enterprise.config.serverbeans.Nodes;
 import com.sun.enterprise.config.serverbeans.SshConnector;
 import com.sun.enterprise.config.serverbeans.SshAuth;
 import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.universal.glassfish.TokenResolver;
 import com.sun.enterprise.util.StringUtils;
 import java.beans.PropertyVetoException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
@@ -54,7 +57,6 @@ import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
-import org.jvnet.hk2.config.TransactionFailure;
 import org.jvnet.hk2.config.*;
 import java.util.logging.Logger;
 
@@ -131,12 +133,11 @@ public class UpdateNodeCommand implements AdminCommand {
             String configNodedir = node.getNodeDir();
             String configInstalldir = node.getInstallDir();
 
-            if (StringUtils.ok(nodedir)  && StringUtils.ok(configNodedir) &&
-                    ! nodedir.equals(configNodedir))  {
+            if (!allowableChange(nodedir, configNodedir)){
                 badparam = "nodedir";
             }
-            if (StringUtils.ok(installdir) && StringUtils.ok(configInstalldir) &&
-                    ! installdir.equals(configInstalldir))  {
+
+            if (!allowableChange(installdir, configInstalldir)) {
                 badparam = "installdir";
             }
 
@@ -218,5 +219,45 @@ public class UpdateNodeCommand implements AdminCommand {
 
         }, domain);
     }
-            
+
+    /**
+     * If the node is in use, is it OK to change currentvalue to newvalue?
+     */
+    private static boolean allowableChange(String newvalue, String currentvalue) {
+
+        // If the new value is not specified, then we aren't changing anything
+        if (newvalue == null) {
+            return true;
+        }
+
+        // If the current (config) value is null or "" then let it be changed.
+        // We need to do this for the offline config case where the user has
+        // created a config node with no values, created instances using those
+        // nodes, then updates the values later. This has the undersireable
+        // effect of letting you, for example, set a nodedir on a node
+        // that was created without one.
+        if (!StringUtils.ok(currentvalue)) {
+            return true;
+        }
+
+        // If the values are the same, then we aren't changing anything.
+        if (newvalue.equals(currentvalue)) {
+            return true;
+        }
+
+        if (newvalue.contains("$") || currentvalue.contains("$")) {
+            // One or both of the values may contain an unexpanded
+            // property. Expand them then compare
+            Map<String, String> systemPropsMap =
+                        new HashMap<String, String>((Map)(System.getProperties()));
+            TokenResolver resolver = new TokenResolver(systemPropsMap);
+            newvalue = resolver.resolve(newvalue);
+            currentvalue = resolver.resolve(currentvalue);
+            return newvalue.equals(currentvalue);
+        }
+
+        // Values don't match.
+        return false;
+    }
+
 }
