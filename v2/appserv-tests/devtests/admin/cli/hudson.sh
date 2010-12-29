@@ -12,11 +12,15 @@ if [ -x ${LAST_SUCC_BUILD_URL} ]
 then
   export LAST_SUCC_BUILD_URL=http://gf-hudson.us.oracle.com/hudson/job/gf-trunk-build-continuous/lastSuccessfulBuild
 fi
+if [ -x ${LAST_SUCC_BUNDLE} ]
+then
+  export LAST_SUCC_BUNDLE=artifact/bundles/glassfish.zip
+fi
 
 rm -rf glassfish3
 wget -q -O revision-under-test.html ${LAST_SUCC_BUILD_URL}
 grep 'Build #' revision-under-test.html
-time wget -q -O glassfish.zip ${LAST_SUCC_BUILD_URL}/artifact/bundles/glassfish.zip
+time wget -q -O glassfish.zip ${LAST_SUCC_BUILD_URL}/${LAST_SUCC_BUNDLE}
 unzip -q glassfish.zip
 export S1AS_HOME="$ROOT/glassfish3/glassfish"
 export APS_HOME="$ROOT/appserv-tests"
