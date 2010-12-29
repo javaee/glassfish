@@ -222,9 +222,12 @@ public class SecurityHandler {
         @HandlerInput(name="endpoint",   type=String.class),
         @HandlerInput(name="classnameOption",   type=String.class),
         @HandlerInput(name="attrMap",      type=Map.class),
-        @HandlerInput(name="edit",      type=Boolean.class),
+        @HandlerInput(name="edit",      type=Boolean.class, required=true),
         @HandlerInput(name="contentType", type=String.class, required=false),
         @HandlerInput(name="propList", type=List.class)
+    },
+    output={
+        @HandlerOutput(name="newPropList", type=List.class)
     })
     public static void saveRealm(HandlerContext handlerCtx) {
         String option = (String) handlerCtx.getInputValue("classnameOption");
@@ -284,11 +287,11 @@ public class SecurityHandler {
 
         Boolean edit = (Boolean) handlerCtx.getInputValue("edit");
         String endpoint = (String) handlerCtx.getInputValue("endpoint");
-        if (edit.booleanValue()) {
-            HashMap attrs = new HashMap<String, Object>();
-            attrs.put("target", attrMap.get("target"));
-            RestUtil.delete(endpoint, attrs);
-            endpoint = endpoint.substring(0, endpoint.indexOf("/auth-realm"));
+        //for edit case, only properties will be changed since we don't allow classname change.
+        //return the prop list so it can continue processing in the .jsf
+        if (edit){
+            handlerCtx.setOutputValue("newPropList", propList);
+            return;
         }
         Map<String, Object> cMap = new HashMap();
         cMap.put("name", attrMap.get("Name"));

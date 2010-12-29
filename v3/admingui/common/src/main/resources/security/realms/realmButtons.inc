@@ -53,7 +53,10 @@
                 attrMap="#{attrMap}",
                 propList="${newList}"
                 edit="#{true}"
+                newPropList="#{requestScope.newPropList}"
             );
+            javaToJSON(obj="#{requestScope.newPropList}" json="#{requestScope.tmpJSON}");
+            gf.restRequest(endpoint="#{pageSession.parentUrl}/property", method="POST", data="#{requestScope.tmpJSON}", result="#{requestScope.restResponse}");
             gf.redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
         />    
     </sun:button>
