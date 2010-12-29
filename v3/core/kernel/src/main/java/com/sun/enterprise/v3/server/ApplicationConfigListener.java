@@ -141,7 +141,7 @@ public class ApplicationConfigListener implements TransactionListener,
                         // enable or disable application accordingly
                         handleAppEnableChange(event.getSource(), 
                             appName, Boolean.valueOf((String)newValue));
-                    } else if (event.getPropertyName().equals(ServerTags.CONTEXT_ROOT) || event.getPropertyName().equals(ServerTags.VIRTUAL_SERVERS)) {
+                    } else if (event.getPropertyName().equals(ServerTags.CONTEXT_ROOT) || event.getPropertyName().equals(ServerTags.VIRTUAL_SERVERS) || event.getPropertyName().equals(ServerTags.AVAILABILITY_ENABLED)) {
                         // for other changes, reload the application
                         handleOtherAppConfigChanges(event.getSource(), 
                             appName);
