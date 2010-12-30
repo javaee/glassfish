@@ -672,32 +672,7 @@ public class MonitoringHandlers {
        })
     public static void getInstanceMonitorURL(HandlerContext handlerCtx) {
         String instanceName = (String) handlerCtx.getInputValue("instanceName");
-        String monitorURL = null;
-        String serverRestURL = (String) GuiUtil.getSessionValue("REST_URL");
-        String port = null;
-
-        if (instanceName.equals("server")) {
-            monitorURL = (String) GuiUtil.getSessionValue("MONITOR_URL") + "/server";
-        } else {
-            if (RestUtil.doesProxyExist(serverRestURL + "/servers/server/" + instanceName + "/system-property/ASADMIN_LISTENER_PORT")) {
-                port = (String) RestUtil.getAttributesMap(serverRestURL + "/servers/server/" + instanceName + "/system-property/ASADMIN_LISTENER_PORT").get("value");
-            } else {
-                String configName = (String) RestUtil.getAttributesMap(serverRestURL + "/servers/server/" + instanceName).get("configRef");
-                port = (String) RestUtil.getAttributesMap(serverRestURL + "/configs/config/" + configName + "/network-config/network-listeners/network-listener/admin-listener").get("port");
-                port = port.trim();
-                if (port.startsWith("${")) {
-                    port = port.substring(2, port.length() - 1);
-                    port = (String) RestUtil.getAttributesMap(serverRestURL + "/configs/config/" + configName + "/system-property/ASADMIN_LISTENER_PORT").get("value");
-                }
-            }
-            String node = (String) RestUtil.getAttributesMap(serverRestURL + "/servers/server/" + instanceName).get("node");
-            String nodeHost = (String) RestUtil.getAttributesMap(serverRestURL + "/nodes/node/" + node).get("nodeHost");
-            if (serverRestURL.startsWith("https:")) {
-                monitorURL = "https://"+nodeHost+":"+ port + "/monitoring/domain/" + instanceName +"/server";
-            } else {
-                monitorURL = "http://"+nodeHost+":"+ port + "/monitoring/domain/" + instanceName +"/server";
-            }
-        }
+        String monitorURL = (String) GuiUtil.getSessionValue("MONITOR_URL") + "/" + instanceName;
         handlerCtx.setOutputValue("monitorURL", monitorURL);
     }
 
@@ -814,7 +789,10 @@ public class MonitoringHandlers {
             if (dataMap != null) {
                 Map<String, Object> extraPropsMap = (Map<String, Object>) dataMap.get("extraProperties");
                 if (extraPropsMap != null) {
-                    monitorInfoMap = (Map<String, Object>) extraPropsMap.get("entity");
+                    Map<String, Object> entityMap = (Map<String, Object>) extraPropsMap.get("entity");
+                    if (entityMap != null) {
+                        monitorInfoMap = entityMap;
+                    }
                 }
             }
         } catch (Exception ex) {
