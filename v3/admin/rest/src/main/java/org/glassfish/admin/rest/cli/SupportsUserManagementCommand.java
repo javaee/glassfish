@@ -40,16 +40,31 @@
 
 package org.glassfish.admin.rest.cli;
 
+import com.sun.enterprise.config.serverbeans.AuthRealm;
+import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.Configs;
+import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.security.auth.realm.Realm;
+import com.sun.enterprise.security.auth.realm.RealmsManager;
+import com.sun.enterprise.util.SystemPropertyConstants;
+import java.util.List;
+import java.util.Properties;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.ActionReport.ExitCode;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.CommandLock;
+import org.glassfish.api.admin.ExecuteOn;
+import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
+import org.jvnet.hk2.config.types.Property;
 
 /**
  * returns the list of targets
@@ -59,6 +74,9 @@ import org.jvnet.hk2.component.PerLookup;
 @Service(name = "__supports-user-management")
 @Scoped(PerLookup.class)
 @CommandLock(CommandLock.LockType.NONE)
+@ExecuteOn({RuntimeType.DAS})
+@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,
+CommandTarget.CLUSTER, CommandTarget.CONFIG,CommandTarget.CLUSTERED_INSTANCE})
 public class SupportsUserManagementCommand implements AdminCommand {
 
     @Inject
@@ -67,15 +85,71 @@ public class SupportsUserManagementCommand implements AdminCommand {
     @Param
     String realmName;
 
+
+    @Param(name = "target", primary=true, optional = true, defaultValue =
+    SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
+    private String target;
+
+    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    private Config config;
+
+    @Inject
+    private Configs configs;
+
+    @Inject
+    RealmsManager realmsManager;
+
     @Override
     public void execute(AdminCommandContext context) {
-        SecurityUtil su = new SecurityUtil(domain);
+        Config tmp = null;
+        try {
+            tmp = configs.getConfigByName(target);
+        } catch (Exception ex) {
+        }
+
+        if (tmp != null) {
+            config = tmp;
+        }
+        if (tmp == null) {
+            Server targetServer = domain.getServerNamed(target);
+            if (targetServer != null) {
+                config = domain.getConfigNamed(targetServer.getConfigRef());
+            }
+            com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
+            if (cluster != null) {
+                config = domain.getConfigNamed(cluster.getConfigRef());
+            }
+        }
         ActionReport report = context.getActionReport();
         report.setActionExitCode(ExitCode.SUCCESS);
 
-        report.setMessage("" + su.supportsUserManagement(realmName));
+        report.setMessage("" + supportsUserManagement(realmName));
 
     }
+
+    private boolean supportsUserManagement(String realmName) {
+        List<AuthRealm> authRealmConfigs = config.getSecurityService().getAuthRealm();
+        for (AuthRealm authRealm : authRealmConfigs) {
+            if (realmName.equals(authRealm.getName())) {
+                List<Property> propConfigs = authRealm.getProperty();
+                Properties props = new Properties();
+                for (Property p : propConfigs) {
+                    String value = p.getValue();
+                    props.setProperty(p.getName(), value);
+                }
+                Realm r = null;
+                try {
+                    r = Realm.instantiate(authRealm.getName(), authRealm.getClassname(), props, config.getName());
+                    return r.supportsUserManagement();
+                } catch (Exception e) {
+                  return false;
+                }
+            }
+
+        }
+        return false;
+    }
+    
 }
 
 
