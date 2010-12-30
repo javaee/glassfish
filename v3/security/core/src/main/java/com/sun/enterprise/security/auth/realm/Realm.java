@@ -193,9 +193,9 @@ public abstract class Realm implements Comparable {
         
         Realm realmClass = _getInstance(name);
         if(realmClass == null) {
-            Realm r = doInstantiate(name, className, props);
+            realmClass = doInstantiate(name, className, props);
             RealmsManager mgr = getRealmsManager();
-            mgr.putIntoLoadedRealms(name, r);
+            mgr.putIntoLoadedRealms(name, realmClass);
         }
         return realmClass;
     }
@@ -223,9 +223,9 @@ public abstract class Realm implements Comparable {
 
         Realm realmClass = _getInstance(configName, name);
         if(realmClass == null) {
-            Realm r = doInstantiate(name, className, props);
+            realmClass = doInstantiate(name, className, props);
             RealmsManager mgr = getRealmsManager();
-            mgr.putIntoLoadedRealms(configName, name, r);
+            mgr.putIntoLoadedRealms(configName, name, realmClass);
         }
         return realmClass;
 
