@@ -41,7 +41,6 @@
 
 package com.sun.enterprise.admin.cli.cluster;
 
-import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.io.FileUtils;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.CommandException;
@@ -69,7 +68,7 @@ import java.util.Set;
 @Service(name = "uninstall-node")
 @Scoped(PerLookup.class)
 public class UninstallNodeCommand extends SSHCommandsBase {
-    @Param(name="installdir", optional = true, defaultValue = "${com.sun.aas.installRoot}")
+    @Param(name="installdir", optional = true, defaultValue = "${com.sun.aas.productRoot}")
     private String installDir;
 
     @Param(optional = true, defaultValue = "false")
@@ -84,6 +83,7 @@ public class UninstallNodeCommand extends SSHCommandsBase {
     @Override
     protected void validate() throws CommandException {
         Globals.setDefaultHabitat(habitat);
+        installDir = resolver.resolve(installDir);
         if (!force) {
             for (String host: hosts) {
                 if(checkIfNodeExistsForHost(host)) {
@@ -116,8 +116,7 @@ public class UninstallNodeCommand extends SSHCommandsBase {
     protected int executeCommand() throws CommandException {
 
         try {
-            String baseRootValue = getSystemProperty(SystemPropertyConstants.PRODUCT_ROOT_PROPERTY);
-            deleteFromHosts(baseRootValue);
+            deleteFromHosts();
         } catch (IOException ioe) {
             throw new CommandException(ioe);
         }  catch (InterruptedException e) {
@@ -127,11 +126,7 @@ public class UninstallNodeCommand extends SSHCommandsBase {
         return SUCCESS;
     }
 
-    private void deleteFromHosts(String baseRootValue) throws CommandException, IOException, InterruptedException {
-
-        if (installDir == null) {
-            installDir = baseRootValue;
-        }
+    private void deleteFromHosts() throws CommandException, IOException, InterruptedException {
 
         for (String host: hosts) {
             sshLauncher.init(sshuser, host, sshport, sshpassword, sshkeyfile, sshkeypassphrase, logger);
