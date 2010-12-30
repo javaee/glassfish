@@ -63,7 +63,7 @@
         gf.getChildrenNamesList(endpoint="#{pageSession.resourceUrl}/server-ref" id="ref" result="#{pageSession.instanceList}" );
         gf.listInstances(optionKeys={"id"} optionValues={"$pageSession{clusterName}"}, statusMap="#{requestScope.statusMap}");
         gf.getClusterStatusSummary(statusMap ="#{requestScope.statusMap}" ,
-            numRunning="#{pageSession.numRunning}"  numNotRunning="#{pageSession.numNotRunning}" 
+            numRunning="#{pageSession.numRunning}"  numNotRunning="#{pageSession.numNotRunning}" numRequireRestart="#{pageSession.numRequireRestart}"
             disableStart="#{pageSession.disableStart}"  disableStop="#{pageSession.disableStop}" disableEjb="#{pageSession.disableEjb}");
         setPageSessionAttribute(key="convertToFalseList" value={ "gmsEnabled"} );
         //set the following for including buttons.inc
@@ -176,9 +176,16 @@
             </sun:property>
 
             <sun:property id="instanceStatusProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.status}" >
+                <if condition="#{pageSession.numNotRunning}">
+                    <sun:staticText id="instanceStatusStopped" text=" #{pageSession.numNotRunning}" />
+                    "<br />
+                </if>
+                <if condition="#{pageSession.numRequireRestart}">
+                    <sun:staticText id="instanceStatusRequireRestart" text="#{pageSession.numRequireRestart}" />
+                    "<br />
+                </if>
                 <sun:staticText id="instanceStatusRunning" text="#{pageSession.numRunning}" />
                 "<br />
-                <sun:staticText id="instanceStatusStopped" text="#{pageSession.numNotRunning}" />
             </sun:property>
         </sun:propertySheetSection>
 

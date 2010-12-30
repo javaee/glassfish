@@ -66,6 +66,7 @@ import java.util.Map;
 import java.util.List;
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.RestUtil;
+import org.glassfish.api.admin.InstanceState;
 
 public class ClusterHandler {
 
@@ -85,6 +86,7 @@ public class ClusterHandler {
         output = {
             @HandlerOutput(name = "numRunning", type = String.class),
             @HandlerOutput(name = "numNotRunning", type = String.class),
+            @HandlerOutput(name = "numRequireRestart", type = String.class),
             @HandlerOutput(name = "disableStart", type = Boolean.class),
             @HandlerOutput(name = "disableStop", type = Boolean.class),
             @HandlerOutput(name = "disableEjb", type = Boolean.class)
@@ -93,22 +95,36 @@ public class ClusterHandler {
         Map statusMap = (Map) handlerCtx.getInputValue("statusMap");
         int running=0;
         int notRunning=0;
+        int requireRestart=0;
+        int unknown = 0;
         try{
-
             for (Iterator it=statusMap.values().iterator(); it.hasNext(); ) {
                 Object value = it.next();
-                if (value.toString().equals(RUNNING)){
+                if (value.toString().equals(InstanceState.StateType.RUNNING.getDescription())){
                     running++;
-                }else{
+                }else
+                if (value.toString().equals(InstanceState.StateType.NOT_RUNNING.getDescription())){
                     notRunning++;
+                }else
+                if (value.toString().equals(InstanceState.StateType.RESTART_REQUIRED.getDescription())){
+                    requireRestart++;
+                }else {
+                    unknown++;
+                    GuiUtil.getLogger().severe("Unknown Status");
                 }
             }
 
             handlerCtx.setOutputValue("disableEjb", (notRunning > 0) ? false :true);  //refer to bug#6342445
             handlerCtx.setOutputValue("disableStart", (notRunning > 0) ? false :true);
-            handlerCtx.setOutputValue("disableStop", (running > 0) ? false :true);
-            handlerCtx.setOutputValue( "numRunning" , GuiUtil.getMessage(CLUSTER_RESOURCE_NAME, "cluster.number.instance.running", new String[]{""+running}));
-            handlerCtx.setOutputValue( "numNotRunning" , GuiUtil.getMessage(CLUSTER_RESOURCE_NAME, "cluster.number.instance.notRunning", new String[]{""+notRunning}));
+            handlerCtx.setOutputValue("disableStop", ( (running+requireRestart) > 0) ? false :true);
+            handlerCtx.setOutputValue( "numRunning" , (running > 0) ? 
+                GuiUtil.getMessage(CLUSTER_RESOURCE_NAME, "cluster.number.instance.running", new String[]{""+running, GuiUtil.getCommonMessage("status.image.RUNNING")} ) : "");
+
+            handlerCtx.setOutputValue( "numNotRunning" , (notRunning > 0) ? 
+                GuiUtil.getMessage(CLUSTER_RESOURCE_NAME, "cluster.number.instance.notRunning", new String[]{""+notRunning , GuiUtil.getCommonMessage("status.image.NOT_RUNNING")}) : "");
+
+            handlerCtx.setOutputValue( "numRequireRestart" , (requireRestart > 0) ?
+                GuiUtil.getMessage(CLUSTER_RESOURCE_NAME, "cluster.number.instance.requireRestart", new String[]{""+requireRestart, GuiUtil.getCommonMessage("status.image.REQUIRES_RESTART")}) : "");
         }catch(Exception ex){
             handlerCtx.setOutputValue("numRunning", GuiUtil.getMessage(CLUSTER_RESOURCE_NAME, "cluster.status.unknown"));
             GuiUtil.getLogger().info(GuiUtil.getCommonMessage("log.error.getClusterStatusSummary") + ex.getLocalizedMessage());
