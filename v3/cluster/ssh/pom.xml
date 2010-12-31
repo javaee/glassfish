@@ -56,8 +56,15 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>com.sun.enterprise</groupId>
-                <artifactId>hk2-maven-plugin</artifactId>
+              <groupId>com.sun.enterprise</groupId>
+              <artifactId>hk2-maven-plugin</artifactId>
+              <configuration>
+                <archive>
+                  <manifestEntries>
+                    <Class-Path>cluster-l10n.jar</Class-Path>
+                  </manifestEntries>
+                </archive>
+              </configuration>
             </plugin>
         </plugins>
         <resources>

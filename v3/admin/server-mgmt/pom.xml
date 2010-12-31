@@ -79,7 +79,7 @@
                 <configuration>
                     <archive>
 		        <manifestEntries>
-			    <Class-Path>server-mgmt-l10n.jar</Class-Path>
+			    <Class-Path>common-l10n.jar</Class-Path>
                         </manifestEntries>
                     </archive>
                 </configuration>
