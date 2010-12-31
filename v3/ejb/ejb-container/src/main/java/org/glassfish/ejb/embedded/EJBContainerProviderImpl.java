@@ -123,9 +123,9 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
                         "ejb.embedded.exception_exists_container"));
             }
 
-            init(properties);
+            Locations l = init(properties);
             try {
-                Set<DeploymentElement> modules = addModules(properties);
+                Set<DeploymentElement> modules = addModules(properties, l);
                 if (!DeploymentElement.hasEJBModule(modules)) {
                     _logger.log(Level.SEVERE, "ejb.embedded.no_modules_found");
                 } else {
@@ -149,26 +149,27 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
         return null;
     }
 
-    private void init(Map<?, ?> properties) throws EJBException {
+    private Locations init(Map<?, ?> properties) throws EJBException {
+        Locations l = null;
         synchronized(lock) {
             // if (container == null || !container.isOpen()) {
                 Server.Builder builder = new Server.Builder("GFEJBContainerProviderImpl");
 
-                Result rs = getLocations(properties);
-                if (rs == null) {
+                l = getLocations(properties);
+                if (l == null) {
                     server = builder.build();
                     addWebContainerIfRequested(properties);
                 } else {
                     EmbeddedFileSystem.Builder efsb = new EmbeddedFileSystem.Builder();
-                    if (rs.reuse_instance_location) {
+                    if (l.reuse_instance_location) {
                         if (_logger.isLoggable(Level.FINE)) {
-                            _logger.fine("[EJBContainerProviderImpl] Reusing instance location at: " + rs.instance_root);
+                            _logger.fine("[EJBContainerProviderImpl] Reusing instance location at: " + l.instance_root);
                         }
-                        efsb.instanceRoot(rs.instance_root);
+                        efsb.instanceRoot(l.instance_root);
                     } else {
-                        efsb.configurationFile(rs.domain_file);
+                        efsb.configurationFile(l.domain_file);
                     }
-                    efsb.installRoot(rs.installed_root, true);
+                    efsb.installRoot(l.installed_root, true);
 
                     builder.embeddedFileSystem(efsb.build());
                     server = builder.build();
@@ -181,11 +182,11 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
 
                 habitat = ejb.habitat;
                 try {
-                     if (rs != null && !rs.reuse_instance_location) {
+                     if (l != null && !l.reuse_instance_location) {
                           // If we are running from an existing install, copy over security files to the temp instance
                           EmbeddedSecurity es = habitat.getByContract(EmbeddedSecurity.class);
                           if (es != null) {
-                              es.copyConfigFiles(habitat, rs.instance_root, rs.domain_file);
+                              es.copyConfigFiles(habitat, l.instance_root, l.domain_file);
                           }
                      }
 
@@ -202,13 +203,15 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
                 container = new EJBContainerImpl(habitat, server, ejbContainer, deployer);
             // }
         }
+
+        return l;
     }
 
     /**
      * Adds EJB modules for the property in the properties Map or if such property
      * is not specified, from the System classpath. Also adds library references.
      */
-    private Set<DeploymentElement> addModules(Map<?, ?> properties) {
+    private Set<DeploymentElement> addModules(Map<?, ?> properties, Locations l) {
         Set<DeploymentElement> modules = new HashSet<DeploymentElement>();
         Object obj = (properties == null)? null : properties.get(EJBContainer.MODULES);
         boolean skip_module_with_main_class = getBooleanProperty(properties, SKIP_CLIENT_MODULES);
@@ -225,11 +228,11 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
                     moduleNames.put(s, false);
                 }
             } else if (obj instanceof File) {
-                addModule(modules, moduleNames, (File)obj);
+                addModule(l, modules, moduleNames, (File)obj);
             } else if (obj instanceof File[]) {
                 File[] arr = (File[])obj;
                 for (File f : arr) {
-                    addModule(modules, moduleNames, f);
+                    addModule(l, modules, moduleNames, f);
                 }
             } 
         } 
@@ -242,7 +245,7 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
             }
             String[] entries = path.split(File.pathSeparator);
             for (String s0 : entries) {
-                addModule(modules, moduleNames, new File(s0), skip_module_with_main_class);
+                addModule(l, modules, moduleNames, new File(s0), skip_module_with_main_class);
             }
 
             if (!moduleNames.isEmpty()) {
@@ -252,10 +255,10 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
                         sb.append(mn).append(", ");
                     }
                 }
-                int l = sb.length();
-                if (l > 0) {
+                int ln = sb.length();
+                if (ln > 0) {
                     // Errors found. Trim the constructed string
-                    throw new EJBException("Modules: [" + sb.substring(0, l-2) + "] do not match an entry in the classpath");
+                    throw new EJBException("Modules: [" + sb.substring(0, ln-2) + "] do not match an entry in the classpath");
                 }
             }
         }
@@ -325,8 +328,8 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
     /**
      * Adds an a DeploymentElement to the Set of modules if it represents an EJB module or a library.
      */
-    private void addModule(Set<DeploymentElement> modules, Map<String, Boolean> moduleNames, File f) {
-        addModule(modules, moduleNames, f, false);
+    private void addModule(Locations l, Set<DeploymentElement> modules, Map<String, Boolean> moduleNames, File f) {
+        addModule(l, modules, moduleNames, f, false);
     }
 
     /**
@@ -334,10 +337,10 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
      * If skip_module_with_main_class is true, ignore the module that contains Main-Class attribute
      * in its manifest file
      */
-    private void addModule(Set<DeploymentElement> modules, Map<String, Boolean> moduleNames, File f,
+    private void addModule(Locations l, Set<DeploymentElement> modules, Map<String, Boolean> moduleNames, File f,
             boolean skip_module_with_main_class) {
         try {
-            if (f.exists() && !skipJar(f, skip_module_with_main_class)) {
+            if (f.exists() && !skipJar(f, l, skip_module_with_main_class)) {
                 
                 DeploymentElement de = getRequestedEJBModuleOrLibrary(f, moduleNames);
                 if (de != null) {
@@ -358,7 +361,7 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
      * @returns true if this jar is either a GlassFish module jar or one
      * of the other known implementation modules.
      */
-    private boolean skipJar(File file, boolean skip_module_with_main_class) throws Exception {
+    private boolean skipJar(File file, Locations l, boolean skip_module_with_main_class) throws Exception {
         if (file.isDirectory() ) {
             if (!skip_module_with_main_class) {
                 // Nothing to check
@@ -373,7 +376,7 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
                 is = new FileInputStream(m_file);
                 if(containsMainClass(new Manifest(is))) {
                     // Ignore dirs with a Manifest file with a Main-Class attribute
-                    _logger.info("... skipping... " + file.getName());
+                    _logger.info("... skipping entry with a Manifest file with a Main-Class attribute: " + file.getName());
                     return true;
                 } else {
                     return false;
@@ -390,6 +393,12 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
             }
         }
 
+        // Skip jars in the install modules directory
+        if (l != null && l.modules_dir != null && l.modules_dir.equals(file.getParentFile().getAbsolutePath())) {
+            _logger.info("... skipping module: " + file.getName());
+            return true;
+        }
+
         JarFile jf = null;
         try {
             jf = new JarFile(file);
@@ -397,7 +406,7 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
             if (m != null) {
                 if (skip_module_with_main_class && containsMainClass(m)) {
                     // Ignore jars with a Main-Class attribute
-                    _logger.info("... skipping... " + file.getName());
+                    _logger.info("... skipping entry with a Manifest file with a Main-Class attribute: " + file.getName());
                     return true;
                 }
 
@@ -413,7 +422,7 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
                                 }
                             }
                             // Not OK - skip it
-                            _logger.info("... skipping... " + file.getName());
+                            _logger.info("... skipping entry with a Manifest file with a special attribute: " + file.getName());
                             return true;
                         }
                     }
@@ -464,8 +473,8 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
     /**
      * Create File objects corresponding to instance root and domain.xml location.
      */
-    private Result getLocations(Map<?, ?> properties) throws EJBException {
-        Result rs = null;
+    private Locations getLocations(Map<?, ?> properties) throws EJBException {
+        Locations l = null;
         String installed_root_location = null;
         String instance_root_location = null;
         String domain_file_location = null;
@@ -539,13 +548,13 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
                                         "ejb.embedded.failed_create_temporary_domain_xml_file"));
                             }
                         }
-                        rs = new Result(installed_root, instance_root, domain_file, reuse_instance_location);
+                        l = new Locations(installed_root, instance_root, domain_file, reuse_instance_location);
                     }
                 }
             }
         }
 
-        return rs;
+        return l;
     }
 
     private InputStream getDeploymentDescriptor(ReadableArchive archive) throws IOException {
@@ -600,16 +609,22 @@ public class EJBContainerProviderImpl implements EJBContainerProvider {
         return result;
     }
 
-    private class Result {
+    private class Locations {
         final File installed_root;
         final File instance_root;
         final File domain_file;
+        final String modules_dir;
         final boolean reuse_instance_location;
 
-        Result (File installed_root, File instance_root, File domain_file, boolean reuse_instance_location) {
+        Locations (File installed_root, File instance_root, File domain_file, boolean reuse_instance_location) {
             this.installed_root  = installed_root;
             this.instance_root  = instance_root;
             this.domain_file  = domain_file;
+            if (installed_root != null) {
+                modules_dir = (new File(installed_root, "modules")).getAbsolutePath();
+            } else {
+                modules_dir = null;
+            }
             this.reuse_instance_location  = reuse_instance_location;
         }
     }

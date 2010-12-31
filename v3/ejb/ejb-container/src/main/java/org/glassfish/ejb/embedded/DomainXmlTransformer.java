@@ -63,6 +63,7 @@ import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.events.XMLEvent;
 import javax.xml.stream.events.StartElement;
+import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.Attribute;
 import javax.xml.namespace.QName;
 
@@ -89,11 +90,12 @@ public class DomainXmlTransformer {
     private static final String JMS_HOST = "jms-host";
     private static final String JMX_CONNECTOR = "jmx-connector";
     private static final String LAZY_INIT_ATTR = "lazy-init";
+    private static final String ADMIN_SERVICE = "admin-service";
     private static final String DAS_CONFIG = "das-config";
+    private static final String DYNAMIC_RELOAD_ENABLED = "dynamic-reload-enabled";
     private static final String JAVA_CONFIG = "java-config";
     private static final String JVM_OPTIONS = "jvm-options";
     private static final String INITIALIZE_ON_DEMAND = "-Dorg.glassfish.jms.InitializeOnDemand=true";
-    private static final String DYNAMIC_RELOAD_ENABLED = "dynamic-reload-enabled";
     private static final String ENABLED = "enabled";
     private static final String FALSE = "false";
     private static final String TRUE = "true";
@@ -102,9 +104,9 @@ public class DomainXmlTransformer {
     private static final Set<String> SKIP_ELEMENTS_KEEP_PORTS = new HashSet();
     private static final Set<String> EMPTY_ELEMENTS = new HashSet(Arrays.asList(NETWORK_LISTENERS, PROTOCOLS, APPLICATIONS, CLUSTERS));
     private static final Set<String> EMPTY_ELEMENTS_KEEP_PORTS = new HashSet(Arrays.asList(APPLICATIONS));
-    private static final Set<String> SKIP_SETTINGS_ELEMENTS = new HashSet(Arrays.asList(IIOP_LISTENER, DAS_CONFIG));
+    private static final Set<String> SKIP_SETTINGS_ELEMENTS = new HashSet(Arrays.asList(IIOP_LISTENER));
     private static final Set<String> DISABLE_ELEMENTS = new HashSet(Arrays.asList(JMX_CONNECTOR));
-    private static final Set<String> DISABLE_SUB_ELEMENTS = new HashSet(Arrays.asList(LAZY_INIT_ATTR, DYNAMIC_RELOAD_ENABLED));
+    private static final Set<String> DISABLE_SUB_ELEMENTS = new HashSet(Arrays.asList(LAZY_INIT_ATTR));
 
     private static final StringManager localStrings = 
         StringManager.getManager(DomainXmlTransformer.class);
@@ -146,6 +148,7 @@ public class DomainXmlTransformer {
             parser = xif.createXMLEventReader(fis);
 
             writer = xof.createXMLEventWriter(fos);
+            boolean fixedDasConfig = false;
             while (parser.hasNext()) {
                 XMLEvent event = parser.nextEvent();
                 if (event.isStartElement()) {
@@ -177,6 +180,11 @@ public class DomainXmlTransformer {
                         // Set lazy-init to false
                         event  = getReplaceAttributeInStartEvent(event, LAZY_INIT_ATTR, FALSE);
                         skip_to_end = true;
+                    } else if (DAS_CONFIG.equals(name)) {
+                        // Set dynamic-reload-enabled to false
+                        event  = getReplaceAttributeInStartEvent(event, DYNAMIC_RELOAD_ENABLED, FALSE);
+                        fixedDasConfig = true;
+                        skip_to_end = true;
                     } else if (JAVA_CONFIG.equals(name)) {
                         // Add jvm-options
                         writer.add(event);
@@ -186,6 +194,14 @@ public class DomainXmlTransformer {
                     if (skip_to_end) {
                         writer.add(event);
                         event = getEndEventFor(parser, name);
+                    }
+                } else if (event.isEndElement()) {
+                    String name = event.asEndElement().getName().getLocalPart();
+                    if (ADMIN_SERVICE.equals(name)) {
+                        if (!fixedDasConfig) {
+                            writer.add(getAddedEventBeforeEndElement(event, writer, DAS_CONFIG, DYNAMIC_RELOAD_ENABLED, FALSE));
+                        }
+                        fixedDasConfig = false; // for the next config
                     }
                 } 
                 if (_logger.isLoggable(Level.FINEST)) {
@@ -273,7 +289,8 @@ public class DomainXmlTransformer {
                 attributes.iterator(), oldStartEvent.getNamespaces());
     }
 
-    /** Create start element with the specified name and text
+    /** Write a new element with the specified name and text
+     * @return the end element
      */
     private XMLEvent getAddedEvent(XMLEvent event, XMLEventWriter writer, String elementName, 
             String text) throws XMLStreamException {
@@ -283,6 +300,23 @@ public class DomainXmlTransformer {
 
         writer.add(newStartEvent);
         writer.add(xmlEventFactory.createCharacters(text));
+        return xmlEventFactory.createEndElement(newStartEvent.getName(), newStartEvent.getNamespaces());
+    }
+
+    /** Write a new element with the specified name and attribute before the end element is written out
+     * @return the end element
+     */
+    private XMLEvent getAddedEventBeforeEndElement(XMLEvent event, XMLEventWriter writer, String elementName,
+            String attributeName, String attributeValue) throws XMLStreamException {
+        Attribute newAttribute = xmlEventFactory.createAttribute(attributeName, attributeValue);
+        Set attributes = new HashSet();
+        attributes.add(newAttribute);
+
+        EndElement oldEvent = event.asEndElement();
+        StartElement newStartEvent = xmlEventFactory.createStartElement(new QName(elementName),
+                attributes.iterator(), oldEvent.getNamespaces());
+
+        writer.add(newStartEvent);
         return xmlEventFactory.createEndElement(newStartEvent.getName(), newStartEvent.getNamespaces());
     }
 
