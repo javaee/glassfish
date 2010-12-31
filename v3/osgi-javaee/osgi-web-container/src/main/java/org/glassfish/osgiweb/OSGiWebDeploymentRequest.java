@@ -206,7 +206,11 @@ public class OSGiWebDeploymentRequest extends OSGiDeploymentRequest {
     public void postDeploy() {
         currentBundleContext.set(null);
         OSGiApplicationInfo osgiAppInfo = getResult();
-        if (osgiAppInfo == null) return;
+        if (osgiAppInfo == null) {
+            ContextPathCollisionDetector cd = ContextPathCollisionDetector.get();
+            cd.cleanUp(getBundle());
+            return;
+        }
         ServletContext sc = getServletContext(osgiAppInfo.getAppInfo());
         assert(sc.getAttribute(BUNDLE_CONTEXT_ATTR) == osgiAppInfo.getBundle().getBundleContext());
         ServiceRegistration scReg = registerService(osgiAppInfo.getBundle(), sc);
