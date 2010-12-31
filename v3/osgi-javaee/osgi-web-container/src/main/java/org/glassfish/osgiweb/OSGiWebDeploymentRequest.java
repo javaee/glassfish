@@ -213,8 +213,16 @@ public class OSGiWebDeploymentRequest extends OSGiDeploymentRequest {
         }
         ServletContext sc = getServletContext(osgiAppInfo.getAppInfo());
         assert(sc.getAttribute(BUNDLE_CONTEXT_ATTR) == osgiAppInfo.getBundle().getBundleContext());
-        ServiceRegistration scReg = registerService(osgiAppInfo.getBundle(), sc);
-        // TODO(Sahoo): Unregister scReg when we go down
+
+        try {
+            ServiceRegistration scReg = registerService(osgiAppInfo.getBundle(), sc);
+            // TODO(Sahoo): Unregister scReg when we go down
+        } catch (IllegalStateException e) {
+            // See issue #15398 as to why this can happen
+            logger.logp(Level.WARNING, "OSGiWebDeploymentRequest", "postDeploy",
+                    "Failed to register ServletContext for bundle " + osgiAppInfo.getBundle().getBundleId() +
+                            " because of following exception:", e);
+        }
     }
 
     private ServletContext getServletContext(ApplicationInfo appInfo)

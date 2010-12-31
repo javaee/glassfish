@@ -41,13 +41,17 @@
 
 package org.glassfish.osgijavaeebase;
 
-import org.osgi.framework.*;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleEvent;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.BundleTracker;
 import org.osgi.util.tracker.BundleTrackerCustomizer;
 
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -66,7 +70,7 @@ public class JavaEEExtender implements Extender {
      * in https://glassfish.dev.java.net/issues/show_bug.cgi?id=14313.
      */
 
-    private OSGiContainer c;
+    private volatile OSGiContainer c;
     private static final Logger logger =
             Logger.getLogger(JavaEEExtender.class.getPackage().getName());
     private BundleContext context;
@@ -89,37 +93,14 @@ public class JavaEEExtender implements Extender {
 
     public synchronized void stop() {
         if (c == null) return;
-        c.shutdown();
+        OSGiContainer tmp = c;
         c = null;
+        tmp.shutdown();
         if (tracker != null) tracker.close();
         tracker = null;
         reg.unregister();
         reg = null;
         executorService.shutdownNow();
-    }
-
-    private void handleEvent(BundleEvent event) {
-        Bundle bundle = event.getBundle();
-        switch (event.getType()) {
-            case BundleEvent.STARTED:
-                // A bundle with LAZY_ACTIVATION policy can be started with eager activation policy unless
-                // START_ACTIVATION_POLICY is set in the options while calling bundle.start(int options).
-                // So, we can't rely on LAZY_ACTIVATION event alone to deploy a bundle with lazy activation policy.
-                // At the same time, if a bundle with lazy activation policy is indeed started lazily, then
-                // we would have deployed the bundle upon receiving the LAZY_ACTIVATION event in which case we must
-                // avoid duplicate deployment upon receiving STARTED event. Hopefully this explains why we check
-                // c.isDeployed(bundle).
-                if (!c.isDeployed(bundle)) {
-                    deploy(bundle);
-                }
-                break;
-            case BundleEvent.LAZY_ACTIVATION:
-                deploy(bundle);
-                break;
-            case BundleEvent.STOPPED:
-                undeploy(bundle);
-                break;
-        }
     }
 
     private synchronized void deploy(Bundle b) {
@@ -152,12 +133,14 @@ public class JavaEEExtender implements Extender {
         }
     }
 
-    private synchronized boolean isStarted() {
+    private boolean isStarted() {
+        // This method is deliberately made non-synchronized, because it is called from tracker customizer
         return c!= null;
     }
 
     private class HybridBundleTrackerCustomizer implements BundleTrackerCustomizer {
         public Object addingBundle(final Bundle bundle, BundleEvent event) {
+            if (!isStarted()) return null;
             final int state = bundle.getState();
             if (isReady(event, state)) {
                 executorService.submit(new Runnable() {
@@ -185,11 +168,19 @@ public class JavaEEExtender implements Extender {
         }
 
         public void removedBundle(final Bundle bundle, BundleEvent event, Object object) {
-            executorService.submit(new Runnable() {
+            if (!isStarted()) return;
+            Future future = executorService.submit(new Runnable() {
                 public void run() {
                     undeploy(bundle);
                 }
             });
+            try {
+                future.get();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e); // TODO(Sahoo): Proper Exception Handling
+            } catch (ExecutionException e) {
+                logger.logp(Level.FINE, "JavaEEExtender$HybridBundleTrackerCustomizer", "removedBundle", "e = {0}", new Object[]{e});
+            }
         }
     }
 }
