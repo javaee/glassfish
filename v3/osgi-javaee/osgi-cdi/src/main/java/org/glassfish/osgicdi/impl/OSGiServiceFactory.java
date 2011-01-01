@@ -52,7 +52,9 @@ import org.glassfish.osgicdi.ServiceUnavailableException;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleReference;
 import org.osgi.framework.ServiceException;
+import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
+import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
 /**
  * A simple Service Factory class that provides the ability to obtain/get 
@@ -147,7 +149,7 @@ class OSGiServiceFactory {
     
     private static void debug(String string) {
         if(DEBUG_ENABLED)
-            System.out.println("ServiceFactory:: " + string);
+            System.out.println("OSGiServiceFactory:: " + string);
     }
 
     /**
@@ -169,6 +171,7 @@ class OSGiServiceFactory {
         private final InjectionPoint svcInjectionPoint;
 
         public DynamicInvocationHandler(OSGiService os, InjectionPoint svcInjectionPoint) {
+            debug("In DynamicInvocationHandler");
             this.os = os;
             this.svcInjectionPoint = svcInjectionPoint;
         }
@@ -182,31 +185,109 @@ class OSGiServiceFactory {
             return method.invoke(instanceToUse, args);
         }
     }
-
+    
     /**
      * If the service is marked as static, an attempt is made to get a reference to the service
      * when the injection point is resolved.
      */
     private static class StaticInvocationHandler implements InvocationHandler {
-        private final Object svcInstance;
         private final OSGiService os;
         private final InjectionPoint svcInjectionPoint;
+        
+        private ServiceReference svcReference = null;
+        private BundleContext bundleContext = null;
 
         public StaticInvocationHandler(OSGiService os, InjectionPoint svcInjectionPoint) {
-            //Get one service instance when the proxy is created
-            svcInstance = lookupService(svcInjectionPoint);
+            debug("In StaticInvocationHandler");
             this.os = os;
             this.svcInjectionPoint = svcInjectionPoint;
+            
+            //Get one service reference when the proxy is created
+            this.bundleContext = getBundleContext(svcInjectionPoint);
+            getServiceReference(svcInjectionPoint);
+        }
+        
+        private BundleContext getBundleContext(InjectionPoint svcInjectionPoint) {
+            Class annotatedElt = svcInjectionPoint.getMember().getDeclaringClass();
+            BundleContext bc = BundleReference.class
+                                .cast(annotatedElt.getClassLoader())
+                                .getBundle().getBundleContext();
+            return bc;
+        }
+        
+        private void getServiceReference(InjectionPoint svcInjectionPoint){
+            Type serviceType = svcInjectionPoint.getType();
+            debug("lookup service" + serviceType);
+            
+            //Create the service tracker for this type.
+            debug("creating service tracker for " + ((Class)(serviceType)).getName() 
+                                                + " using bundle-context:" + this.bundleContext);
+            ServiceTracker st = null;
+            try {
+                st = new ServiceTracker(this.bundleContext, ((Class)(serviceType)).getName(), null);
+                st.open();
+
+                //If wait timeout is specified wait for the specified timeout
+                if (os.waitTimeout() != -1) {
+                    st.waitForService(os.waitTimeout());
+                } 
+                this.svcReference = st.getServiceReference(); 
+                if (this.svcReference == null) {
+                    debug("ServiceReference obtained from ServiceTracker is " +
+                    		"null. No matching services available at this point");
+                    //No service at this point
+                    throwServiceUnavailable();
+                } 
+                debug("ServiceReference obtained from tracker:" + this.svcReference);
+            } catch (InterruptedException e) {
+                //Another thread interupted our wait for a service
+                e.printStackTrace();
+                throwServiceUnavailable();
+            } finally {
+                if (st != null) st.close();
+                //close ServiceTracker as we are not going to use it anymore.
+                //We track if the service is available manually during every
+                //method invocation in the invoke method.
+            }
+            
         }
 
         @Override
         public Object invoke(Object proxy, Method method, Object[] args)
                 throws Throwable {
-            Object instanceToUse = svcInstance;
-            debug ("using the service that was looked up earlier" +
-                    " as this is set to DYNAMIC=false");
-            debug("calling Method " + method + " on proxy");
-            return method.invoke(instanceToUse, args);
+            if (this.svcReference == null) {
+                //Earlier invocation has discovered that this service is unavailable
+                //so throw a service unavailable
+                throwServiceUnavailable();
+            } else {
+                //Attempt to get a service based on the original ServiceReference
+                //obtained at instantiation time.
+                Object instanceToUse = this.bundleContext.getService(this.svcReference);
+                if (instanceToUse == null) {
+                    //Service has vanished, so clear reference and throw svc 
+                    //unavailable
+                    
+                    //clear service reference, so that subsequence invocations 
+                    //continue to throw ServiceUnavailable without needing 
+                    //to check status again.
+                    this.svcReference = null;
+                    throwServiceUnavailable();
+                } 
+                debug ("Using the service that was looked up earlier" +
+                        " as this is set to DYNAMIC=false");
+                debug("Calling Method " + method + " on Proxy");
+                return method.invoke(instanceToUse, args);
+            }
+            return null;
         }
+
+        private void throwServiceUnavailable() {
+            Type serviceType = svcInjectionPoint.getType();
+            throw new ServiceUnavailableException("Service"
+                    + (((Class) serviceType).getName()) + "Unavailable",
+                    ServiceException.SUBCLASSED, null);
+        }
+
     }
+    
 }

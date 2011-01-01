@@ -88,11 +88,12 @@ public @interface OSGiService {
      * 
      * If the value of this annotation element is false, an instance of the service
      * is obtained from the service registry at the time of injection and provided
-     * to the client. If the service implementation provider deregisters or is
-     * stopped, no attempt is made to get another instance of the service. This 
-     * is ideal for stateful or contextual services and for references to 
-     * service implementations whose lifecycle is well-known and is known to be
-     * greater than the lifecycle of the client. 
+     * to the client. If the service implementation provider deregisters the obtained
+     * service or the service instance is stopped, no attempt is made to get 
+     * another instance of the service and a <code>ServiceUnavailableException</code>
+     * is thrown on method invocation. This is ideal for stateful or contextual 
+     * services and for references to service implementations whose lifecycle 
+     * is well-known and is known to be greater than the lifecycle of the client. 
      */
    boolean dynamic() default false;
    
