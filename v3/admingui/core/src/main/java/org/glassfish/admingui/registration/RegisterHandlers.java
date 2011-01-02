@@ -57,14 +57,25 @@ import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
+
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Random;
 
+import com.sun.enterprise.registration.impl.RelayService;
+import com.sun.enterprise.registration.glassfish.RegistrationUtil;
+import org.glassfish.admingui.common.util.GuiUtil;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import java.io.*;
+
 /**
- *
+ * @author Siraj Ghaffar
  * @author Anissa Lam
  */
+
 public class RegisterHandlers {
 
     
@@ -112,5 +123,63 @@ public class RegisterHandlers {
         handlerCtx.setOutputValue("query", query);       
 
     }
+
+    /* generate the default registration html page, if necessary */
+    
+    private static File getDefaultRegistrationPage() {
+        File f = new File(RegistrationUtil.getRegistrationHome(), "registration.html");
+        if (f.exists())
+            return f;
+        try {
+            String regPage = f.getAbsolutePath();
+            if (!f.exists()) {
+                RelayService rs = new RelayService(RegistrationUtil.getServiceTagRegistry());
+                rs.generateRegistrationPage(regPage);
+            }
+        } catch (Exception ex) {
+            Logger logger = GuiUtil.getLogger();
+            logger.fine(ex.getMessage());
+        }
+        return f;
+    }
+
+
+    @Handler(id="gf.isRegistrationEnabled",
+     output={
+        @HandlerOutput(name="isEnabled", type=Boolean.class)
+        })
+    public static void isRegistrationEnabled(HandlerContext handlerCtx) {
+        File f = getDefaultRegistrationPage();
+        if (f.exists())
+            handlerCtx.setOutputValue("isEnabled", Boolean.TRUE);
+        else
+            handlerCtx.setOutputValue("isEnabled", Boolean.FALSE);
+    }
+
+
+    /* get the contents of the registration page. Generate the page if needed */
+    @Handler(id="gf.getRegistrationPage",
+     output={
+        @HandlerOutput(name="registrationPage", type=String.class)
+        })
+    public static void getRegistrationLandingPage(HandlerContext handlerCtx) {
+        File f = getDefaultRegistrationPage();
+        if (!f.exists())
+            return;
+        try {
+            FileReader fr = new FileReader(f);
+            BufferedReader br = new BufferedReader(fr);
+            String s, pageContent = "";
+
+            while((s = br.readLine()) != null) {
+                pageContent = pageContent + s;
+            }
+            handlerCtx.setOutputValue("registrationPage", pageContent);
+        } catch (Exception ex) {
+            Logger logger = GuiUtil.getLogger();
+            logger.fine(ex.getMessage());
+        }
+    }
+
 
 }

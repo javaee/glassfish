@@ -46,6 +46,7 @@ import java.text.*;
 
 import com.sun.enterprise.registration.RegistrationException;
 import com.sun.enterprise.registration.impl.environment.EnvironmentInformation;
+
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.util.Formatter;
@@ -66,12 +67,17 @@ public class RelayService {
     private ResourceBundle bundle;
     Pattern stringPattern = Pattern.compile(STRING_TOKEN);
 
-    public RelayService(String repositoryFile) throws RegistrationException {
-        rm = new RepositoryManager(new File(repositoryFile));
+
+    public RelayService(File repositoryFile) throws RegistrationException {
+        rm = new RepositoryManager(repositoryFile);
         // make sure runtime values are generated in RepositoryManager
         rm.updateRuntimeValues();
     }
-    
+
+    public RelayService(String repositoryFile) throws RegistrationException {
+        this(new File(repositoryFile));
+    }
+
     public void generateRegistrationPage(String outputFile) throws Exception {
         generateRegistrationPage(outputFile, Locale.getDefault());
     }

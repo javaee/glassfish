@@ -65,6 +65,12 @@
         <sun:commonTasksSection id="commonTasksSection" helpText="$resource{i18n.commonTasks.help}"  title="$resource{i18n.commonTasks.title}" columns="$int{2}" style="visibility: #{commonTaskVisibility}">
           <sun:commonTasksGroup  title="$resource{i18n.commonTasks.task.regAndSupport}">
             <sun:commonTask
+                rendered="#{pageSession.isRegistrationEnabled}"
+                text="$resource{i18n.tree.registration}"
+                toolTip="$resource{i18n.tree.registration}"
+                onClick="javascript:var win=window.open('#{request.contextPath}/common/registration.jsf','_blank');if (win) {win.focus();}; return false;">
+            </sun:commonTask>
+            <sun:commonTask
                 rendered="#{!sessionScope._noNetwork}"
                 text="$resource{i18n.tree.support}"
                 toolTip="$resource{i18n.tree.support}"
@@ -75,6 +81,12 @@
               toolTip="$resource{i18n.commonTasks.task.subscriptions.toolTip}"
               onClick="javascript:var win=window.open('http://www.sun.com/service/applicationserversubscriptions/','_blank');if (win) {win.focus();}; return false;">
             </sun:commonTask>
+            <event>
+                <!beforeCreate
+                    gf.isRegistrationEnabled(isEnabled="#{pageSession.isRegistrationEnabled}");
+                    setSessionAttribute(key="gf_application_cancel_page" value="/common/commonTask.jsf");
+                />
+            </event>
           </sun:commonTasksGroup>
 
           <sun:commonTasksGroup id="deployment" title="$resource{i18n.commonTasks.group.Deployment}" >
