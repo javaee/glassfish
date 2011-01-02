@@ -20,7 +20,7 @@
     -->
     &testproperties;
 
-    <target name="all" depends="build,deploy,run,undeploy"/>
+    <target name="all" depends="clean, build,deploy,run,undeploy"/>
     <property  name="test.javabean.value" value="custom-resource-javabean-test"/>
 
     <property  name="test.primitive.int.type" value="Integer"/>
@@ -186,6 +186,15 @@
         <antcall target="runclient-common">
             <param  name="appclient.application.args" value="url http://java.sun.com:80/index.html custom/my-url"/>
         </antcall>
+
+        <antcall target="runclient-common">
+            <param  name="appclient.application.args" value="mappednames"/>
+        </antcall>
+
+        <antcall target="runclient-common">
+            <param  name="appclient.application.args" value="lookupnames"/>
+        </antcall>
+
 
 
     </target>

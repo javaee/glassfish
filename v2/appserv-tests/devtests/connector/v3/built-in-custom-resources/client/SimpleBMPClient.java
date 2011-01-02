@@ -59,6 +59,20 @@ public class SimpleBMPClient {
             } else {
                 stat.addStatus(testSuite+" URL : ", stat.FAIL);
             }
+        }else if(test.equalsIgnoreCase("mappednames")){
+            if ( simpleBMP.testMappedNames()) {
+                stat.addStatus(testSuite+" testResourceInjectionViaMappedName : ", stat.PASS);
+            } else {
+                stat.addStatus(testSuite+" testResourceInjectionViaMappedName : ", stat.FAIL);
+            }
+
+        }else if(test.equalsIgnoreCase("lookupnames")){
+            if ( simpleBMP.testLookupNames()) {
+                stat.addStatus(testSuite+" testResourceInjectionViaLookupAttribute : ", stat.PASS);
+            } else {
+                stat.addStatus(testSuite+" testResourceInjectionViaLookupAttribute : ", stat.FAIL);
+            }
+
         }
 
 

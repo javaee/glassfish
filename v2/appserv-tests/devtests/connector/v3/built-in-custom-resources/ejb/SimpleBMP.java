@@ -10,4 +10,6 @@ public interface SimpleBMP
     public boolean testPrimitives(String type, String value, String resourceName) throws RemoteException;
     public boolean testProperties(Properties properties, String resourceName) throws RemoteException;
     public boolean testURL(String url, String resourceName) throws RemoteException;
+    public boolean testMappedNames() throws RemoteException;
+    public boolean testLookupNames() throws RemoteException;
 }

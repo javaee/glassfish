@@ -2,6 +2,7 @@ package com.sun.s1asdev.jdbc.CustomResourceFactories.ejb;
 
 import com.sun.s1asdev.custom.resource.CustomResourceJavaBean;
 
+import javax.annotation.Resource;
 import javax.ejb.*;
 import javax.naming.*;
 import javax.sql.*;
@@ -13,14 +14,67 @@ import java.util.Set;
 import java.util.Iterator;
 import java.net.URL;
 
-
-public class SimpleBMPBean
-        implements EntityBean {
+@Stateful
+public class SimpleBMPBean {
 
     protected Object obj;
 
-    public void setEntityContext(EntityContext entityContext) {
+
+    @Resource(mappedName="custom/my-properties-file")
+    Properties myPropertiesFile;
+
+    @Resource(mappedName="custom/my-simple-properties")
+    Properties mySimpleProperties;
+
+    @Resource(mappedName="custom/my-properties-xml-file")
+    Properties myPropertiesXMLFile;
+
+    @Resource(mappedName="custom/my-properties-file-with-values")
+    Properties myPropertiesWithValues;
+
+    @Resource(mappedName="custom/my-properties-xml-file-with-values")
+    Properties myPropertiesWithXMLFileWithValues;
+
+    @Resource(mappedName="custom/my-properties-file")
+    Properties myPropertiesFileLookup;
+
+    @Resource(mappedName="custom/my-simple-properties")
+    Properties mySimplePropertiesLookup;
+
+    @Resource(mappedName="custom/my-properties-xml-file")
+    Properties myPropertiesXMLFileLookup;
+
+    @Resource(mappedName="custom/my-properties-file-with-values")
+    Properties myPropertiesWithValuesLookup;
+
+    @Resource(mappedName="custom/my-properties-xml-file-with-values")
+    Properties myPropertiesWithXMLFileWithValuesLookup;
+
+
+    public boolean testLookupNames() throws RemoteException{
+
+        System.out.println("myPropertiesFileLookup : " + myPropertiesFileLookup);
+        System.out.println("mySimplePropertiesLookup : " + mySimplePropertiesLookup);
+        System.out.println("myPropertiesXMLFileLookup : " + myPropertiesXMLFileLookup);
+        System.out.println("myPropertiesWithValuesLookup : " + myPropertiesWithValuesLookup);
+        System.out.println("myPropertiesWithXMLFileWithValuesLookup : " + myPropertiesWithXMLFileWithValuesLookup);
+
+        return  myPropertiesFileLookup != null && mySimplePropertiesLookup != null
+                && myPropertiesXMLFileLookup != null && myPropertiesWithValuesLookup != null && myPropertiesWithXMLFileWithValuesLookup != null;
     }
+
+    public boolean testMappedNames() throws RemoteException{
+
+        System.out.println("myPropertiesFile : " + myPropertiesFile);
+        System.out.println("mySimpleProperties : " + mySimpleProperties);
+        System.out.println("myPropertiesXMLFile : " + myPropertiesXMLFile);
+        System.out.println("myPropertiesWithValues : " + myPropertiesWithValues);
+        System.out.println("myPropertiesWithXMLFileWithValues : " + myPropertiesWithXMLFileWithValues);
+
+        return  myPropertiesFile != null && mySimpleProperties != null
+                && myPropertiesXMLFile != null && myPropertiesWithValues != null && myPropertiesWithXMLFileWithValues != null;
+    }
+
 
     public boolean testJavaBean(String testValue) {
         try {
