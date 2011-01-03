@@ -117,6 +117,10 @@ public class ProcessManager {
                 process.destroy();
                 throw new ProcessManagerTimeoutException(tse);
             }
+            // wait for stdin and stderr to finish up
+            for (Thread t : threads) {
+                t.join();
+            }
         } catch (ProcessManagerException pme) {
             throw pme;
         } catch (Exception e) {
@@ -197,11 +201,6 @@ public class ProcessManager {
     ////////////////////////////////////////////////////////////////////////////
     private void waitForever() throws InterruptedException {
         process.waitFor();
-
-        // wait for stdin and stderr to finish up
-        for (Thread t : threads) {
-            t.join();
-        }
     }
 
     ////////////////////////////////////////////////////////////////////////////
