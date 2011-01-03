@@ -44,11 +44,15 @@ import com.sun.enterprise.config.serverbeans.AuthRealm;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.security.auth.realm.BadRealmException;
+import com.sun.enterprise.security.auth.realm.NoSuchRealmException;
 import com.sun.enterprise.security.auth.realm.Realm;
 import com.sun.enterprise.security.auth.realm.RealmsManager;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.ActionReport.ExitCode;
 import org.glassfish.api.Param;
@@ -81,7 +85,10 @@ public class SupportsUserManagementCommand implements AdminCommand {
 
     @Inject
     com.sun.enterprise.config.serverbeans.Domain domain;
-    
+
+    //TODO: for consistency with other commands dealing with realms
+    //uncomment this below.
+    //@Param(name="authrealmname")
     @Param
     String realmName;
 
@@ -122,12 +129,26 @@ public class SupportsUserManagementCommand implements AdminCommand {
         }
         ActionReport report = context.getActionReport();
         report.setActionExitCode(ExitCode.SUCCESS);
-
-        report.setMessage("" + supportsUserManagement(realmName));
+        try {
+            report.setMessage("" + supportsUserManagement(realmName));
+        } catch (BadRealmException ex) {
+            //throw new RuntimeException(ex);
+            report.setFailureCause(ex);
+            report.setActionExitCode(ExitCode.FAILURE);
+        } catch (NoSuchRealmException ex) {
+            //throw new RuntimeException(ex);
+            report.setFailureCause(ex);
+            report.setActionExitCode(ExitCode.FAILURE);
+        }
 
     }
 
-    private boolean supportsUserManagement(String realmName) {
+    private boolean supportsUserManagement(String realmName)
+            throws BadRealmException, NoSuchRealmException {
+        Realm r = realmsManager.getFromLoadedRealms(config.getName(), realmName);
+        if (r != null) {
+            return r.supportsUserManagement();
+        }
         List<AuthRealm> authRealmConfigs = config.getSecurityService().getAuthRealm();
         for (AuthRealm authRealm : authRealmConfigs) {
             if (realmName.equals(authRealm.getName())) {
@@ -137,17 +158,11 @@ public class SupportsUserManagementCommand implements AdminCommand {
                     String value = p.getValue();
                     props.setProperty(p.getName(), value);
                 }
-                Realm r = null;
-                try {
-                    r = Realm.instantiate(authRealm.getName(), authRealm.getClassname(), props, config.getName());
-                    return r.supportsUserManagement();
-                } catch (Exception e) {
-                  return false;
-                }
+                r = Realm.instantiate(authRealm.getName(), authRealm.getClassname(), props, config.getName());
+                return r.supportsUserManagement();
             }
-
         }
-        return false;
+        throw new NoSuchRealmException("No Such Realm: " + realmName);
     }
     
 }
