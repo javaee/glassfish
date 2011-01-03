@@ -120,7 +120,7 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
      */
 
     @Attribute
-    @Pattern(regexp=NAME_REGEX)
+    @Pattern(regexp=NAME_REGEX, message="{nodehost.invalid.name}", payload=Node.class)
     String getNodeHost();
 
     /**
