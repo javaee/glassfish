@@ -53,7 +53,7 @@
      <dependency>
       <groupId>org.glassfish</groupId>
       <artifactId>simple-glassfish-api</artifactId>
-      <version>3.1-b33</version>
+      <version>3.1-b35</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>
