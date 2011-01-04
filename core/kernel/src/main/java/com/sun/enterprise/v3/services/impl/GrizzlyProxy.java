@@ -60,6 +60,7 @@ import org.glassfish.grizzly.config.GrizzlyListener;
 import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.impl.FutureImpl;
 import org.glassfish.grizzly.impl.UnsafeFutureImpl;
+import org.jvnet.hk2.component.Habitat;
 
 /**
  * This class is responsible for configuring Grizzly.
@@ -118,7 +119,7 @@ public class GrizzlyProxy implements NetworkProxy {
 
         createGrizzlyListener(networkListener);
 
-        grizzlyListener.configure(networkListener);
+        grizzlyListener.configure(grizzlyService.getHabitat(), networkListener);
     }
 
     protected void createGrizzlyListener(final NetworkListener networkListener) {

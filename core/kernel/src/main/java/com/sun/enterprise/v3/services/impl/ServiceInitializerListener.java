@@ -40,7 +40,7 @@
 package com.sun.enterprise.v3.services.impl;
 
 import java.util.logging.Logger;
-import org.glassfish.grizzly.TransportFactory;
+import org.glassfish.grizzly.NIOTransportBuilder;
 
 import org.glassfish.grizzly.config.dom.Protocol;
 import org.glassfish.grizzly.config.dom.ThreadPool;
@@ -50,6 +50,7 @@ import org.glassfish.grizzly.filterchain.FilterChainBuilder;
 import org.glassfish.grizzly.filterchain.TransportFilter;
 import org.glassfish.grizzly.threadpool.GrizzlyExecutorService;
 import org.glassfish.grizzly.threadpool.ThreadPoolConfig;
+import org.jvnet.hk2.component.Habitat;
 
 /**
  * This class extends Grizzly's GrizzlyServiceListener class to customize it for GlassFish and enable a single listener
@@ -101,8 +102,10 @@ public class ServiceInitializerListener extends org.glassfish.grizzly.config.Gen
 //    }
 
     @Override
-    protected void configureTransport(Transport transportConfig) {
-        transport = TransportFactory.getInstance().createTCPTransport();
+    protected void configureTransport(final Habitat habitat,
+            Transport transportConfig) {
+        
+        transport = NIOTransportBuilder.defaultTCPTransportBuilder().build();
 
         rootFilterChain = FilterChainBuilder.stateless().build();
         rootFilterChain.add(new TransportFilter());
@@ -112,12 +115,14 @@ public class ServiceInitializerListener extends org.glassfish.grizzly.config.Gen
 
 
     @Override
-    protected void configureProtocol(final Protocol protocol, final FilterChain filterChain) {
+    protected void configureProtocol(final Habitat habitat,
+            final Protocol protocol, final FilterChain filterChain) {
         filterChain.add(new ServiceInitializerFilter(this, grizzlyService.getHabitat(), logger));
     }
 
     @Override
-    protected void configureThreadPool(final ThreadPool threadPool) {
+    protected void configureThreadPool(final Habitat habitat,
+            final ThreadPool threadPool) {
         transport.setThreadPool(GrizzlyExecutorService.createInstance(
                 ThreadPoolConfig.defaultConfig()));
     }
