@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -475,10 +475,12 @@ public class TemplateResource {
     // This has to be smarter, since we are encoding / in resource names now
 
     private void addDefaultParameter(HashMap<String, String> data) {
-        int index = uriInfo.getAbsolutePath().getPath().lastIndexOf('/');
-        String defaultParameterValue =
-                //uriInfo.getAbsolutePath().getPath().substring(index + 1);
-                getEntity().getKey();
+        String defaultParameterValue = getEntity().getKey();
+        if (defaultParameterValue==null){// no primary key
+            //we take the parent key.
+            // see for example delete-ssl that that the parent key name as ssl does not have a key
+            defaultParameterValue= parent.getKey();
+        }
         data.put("DEFAULT", defaultParameterValue);
     }
 

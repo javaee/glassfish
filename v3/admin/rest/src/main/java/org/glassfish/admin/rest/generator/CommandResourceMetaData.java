@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -274,12 +274,9 @@ ListLbConfig
             {"HttpService", "list-protocols", "GET", "list-protocols", "list-protocols"},
             {"HttpService", "list-virtual-servers", "GET", "list-virtual-servers", "list-virtual-servers"},
             {"IiopListener", "create-ssl", "POST", "create-ssl", "Create", "id=$parent", "type=iiop-listener"},
-            {"IiopListener", "delete-ssl", "DELETE", "delete-ssl", "Delete", "id=$parent", "type=iiop-listener"},
             {"IiopService", "create-ssl", "POST", "create-ssl", "Create", "type=iiop-service"},
-            {"IiopService", "delete-ssl", "DELETE", "delete-ssl", "Delete", "type=iiop-service"},
             {"IiopService", "list-iiop-listeners", "GET", "list-iiop-listeners", "list-iiop-listeners"},
             {"JmxConnector", "create-ssl", "POST", "create-ssl", "Create", "id=$parent", "type=jmx-connector"},
-            {"JmxConnector", "delete-ssl", "DELETE", "delete-ssl", "Delete", "id=$parent", "type=jmx-connector"},
             {"JavaConfig", "create-profiler", "POST", "create-profiler", "Create Profiler"},
             {"JavaConfig", "generate-jvm-report", "GET", "generate-jvm-report", "Generate Report", "target=$grandparent"},
             {"JmsService", "list-jms-hosts", "GET", "list-jms-hosts", "list-jms-hosts"},
@@ -305,7 +302,6 @@ ListLbConfig
             {"LoadBalancer", "apply-http-lb-changes", "POST", "apply-http-lb-changes", "apply-http-lb-changes", "id=$parent"},
             {"LoadBalancer", "export-http-lb-config", "POST", "export-http-lb-config", "export-http-lb-config", "lbname=$parent"},
             {"NetworkListener", "create-ssl", "POST", "create-ssl", "Create", "id=$parent", "type=http-listener"},
-            {"NetworkListener", "delete-ssl", "DELETE", "delete-ssl", "Delete", "id=$parent", "type=http-listener"},
             {"Node", "_delete-node", "DELETE", "delete-node", "Delete Node", "id=$parent"},
             {"Node", "_update-node", "POST", "_update-node", "Update Node", "name=$parent"},
             {"Node", "ping-node-ssh", "GET", "ping-node-ssh", "Ping Node", "id=$parent"},
@@ -323,6 +319,7 @@ ListLbConfig
             {"Protocol", "delete-http", "DELETE", "delete-http", "Delete", "id=$parent"},
             {"Protocol", "delete-protocol-filter", "DELETE", "delete-protocol-filter", "Delete", "protocol=$parent"},
             {"Protocol", "delete-protocol-finder", "DELETE", "delete-protocol-finder", "Delete", "protocol=$parent"},
+            {"Protocol", "create-ssl", "POST", "create-ssl", "Create", "id=$parent", "type=http-listener"},
             {"Config", "_get-rest-admin-config", "GET", "_get-rest-admin-config", "_get-rest-admin-config"},
             {"Config", "_set-rest-admin-config", "POST", "_set-rest-admin-config", "_set-rest-admin-config"},
             {"Resources", "_get-activation-spec-class", "GET", "get-activation-spec-class", "Get Activation Spec Class"},
