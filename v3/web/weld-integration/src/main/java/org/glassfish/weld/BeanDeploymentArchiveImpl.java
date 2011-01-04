@@ -118,7 +118,7 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
         this.wClasses = new ArrayList<Class<?>>();
         this.wUrls = new ArrayList<URL>();
         this.archive = archive;
-        this.id = archive.getURI().getPath(); 
+        this.id = archive.getName(); 
         this.ejbDescImpls = new HashSet<EjbDescriptor<?>>();
         this.beanDeploymentArchives = new ArrayList<BeanDeploymentArchive>();
         this.context = ctx;

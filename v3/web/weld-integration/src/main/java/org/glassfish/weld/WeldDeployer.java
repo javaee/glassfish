@@ -365,7 +365,7 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
         BundleDescriptor bundle = (wDesc != null) ? wDesc : ejbBundle;
         if( bundle != null ) {
 
-            BeanDeploymentArchive bda = deploymentImpl.getBeanDeploymentArchiveForArchive(archive.getURI().getPath());
+            BeanDeploymentArchive bda = deploymentImpl.getBeanDeploymentArchiveForArchive(archive.getName());
 
             // Register EE injection manager at the bean deployment archive level.
             // We use the generic InjectionService service to handle all EE-style
