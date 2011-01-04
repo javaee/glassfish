@@ -45,12 +45,6 @@ import com.sun.enterprise.web.ServerConfigLookup;
 import com.sun.logging.LogDomains;
 import org.glassfish.ha.store.api.BackingStore;
 import org.glassfish.ha.store.api.BackingStoreException;
-//import com.sun.appserv.ha.util.CompositeMetadata;
-//import com.sun.appserv.ha.util.SessionAttributeMetadata;
-//import com.sun.appserv.ha.util.Metadata;
-//import com.sun.enterprise.ee.web.authenticator.ReplicationSingleSignOn;
-//import com.sun.enterprise.security.web.SingleSignOn;
-//import com.sun.enterprise.security.web.SingleSignOnEntry;
 import org.apache.catalina.*;
 import org.apache.catalina.session.*;
 
@@ -444,7 +438,7 @@ public class ReplicationAttributeStore extends ReplicationStore {
         CompositeMetadata result 
             = new CompositeMetadata(modAttrSession.getVersion(),
                 modAttrSession.getLastAccessedTimeInternal(),
-                modAttrSession.getMaxInactiveInterval(),
+                modAttrSession.getMaxInactiveInterval()*1000L,
                 entries, trunkState, null);
         return result;
     }
