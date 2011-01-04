@@ -48,11 +48,10 @@ import com.sun.enterprise.security.auth.realm.BadRealmException;
 import com.sun.enterprise.security.auth.realm.NoSuchRealmException;
 import com.sun.enterprise.security.auth.realm.Realm;
 import com.sun.enterprise.security.auth.realm.RealmsManager;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import java.util.List;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.ActionReport.ExitCode;
 import org.glassfish.api.Param;
@@ -105,6 +104,9 @@ public class SupportsUserManagementCommand implements AdminCommand {
 
     @Inject
     RealmsManager realmsManager;
+
+    private static final LocalStringManagerImpl _localStrings =
+	new LocalStringManagerImpl(SupportsUserManagementCommand.class);
 
     @Override
     public void execute(AdminCommandContext context) {
@@ -162,7 +164,9 @@ public class SupportsUserManagementCommand implements AdminCommand {
                 return r.supportsUserManagement();
             }
         }
-        throw new NoSuchRealmException("No Such Realm: " + realmName);
+        throw new NoSuchRealmException(
+                _localStrings.getLocalString("NO_SUCH_REALM", "No Such Realm: {0}",
+                new Object[] {realmName}));
     }
     
 }
