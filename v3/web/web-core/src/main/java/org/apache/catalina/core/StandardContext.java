@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -99,6 +99,8 @@ import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URLDecoder;
 import java.net.URL;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
@@ -164,7 +166,13 @@ public class StandardContext
         pipeline.setBasic(new StandardContextValve());
         namingResources.setContainer(this);
         broadcaster = new NotificationBroadcasterSupport();
-        mySecurityManager = new MySecurityManager();
+        if (Globals.IS_SECURITY_ENABLED) {
+            mySecurityManager = (MySecurityManager)AccessController.doPrivileged(
+                    new PrivilegedCreateSecurityManager());
+        } else {
+            // keep this for the case when security is enabled later
+            mySecurityManager = new MySecurityManager();
+        }
         
         //START PWC 6403328
         this.logPrefix = sm.getString("standardContext.logPrefix", logName());
@@ -2818,7 +2826,9 @@ public class StandardContext
         if (webappLoader == null) {
             return null;
         }
-        mySecurityManager.checkGetClassLoaderPermission(webappLoader);
+        if (Globals.IS_SECURITY_ENABLED) {
+            mySecurityManager.checkGetClassLoaderPermission(webappLoader);
+        }
         return webappLoader;
     }
 
@@ -7423,6 +7433,12 @@ public class StandardContext
                     !isAncestor(webappLoader, ccl)) {
                 sm.checkPermission(GET_CLASSLOADER_PERMISSION);
             }
+        }
+    }
+
+    private static class PrivilegedCreateSecurityManager implements PrivilegedAction {
+        public Object run() {
+            return new MySecurityManager();
         }
     }
 
