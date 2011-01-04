@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -1770,8 +1770,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                  * return
                  */
                 ctx.setAvailable(true);
-                // release DeploymentContext in memory
-                wmInfo.setDeploymentContext(null);
                 return ctx;
             } else {
                 String msg = rb.getString("webcontainer.duplicateContextRoot");
@@ -1982,8 +1980,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         vs.addChild(ctx);
 
         ctx.loadSessions(deploymentProperties);
-        // release DeploymentContext in memory
-        wmInfo.setDeploymentContext(null);
 
         return ctx;
     }
