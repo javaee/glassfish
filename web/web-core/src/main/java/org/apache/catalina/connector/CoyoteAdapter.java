@@ -500,9 +500,9 @@ public class CoyoteAdapter extends HttpHandler {
         int semicolon = uriCC.indexOf(';');
         if (semicolon > 0) {
             uriParamsCC.setChars(uriCC.getBuffer(), semicolon,
-                uriCC.getEnd());
+                uriCC.getEnd() - semicolon);
             decodedURI.setChars(uriCC.getBuffer(), uriCC.getStart(),
-                semicolon);
+                semicolon - uriCC.getStart());
         }
  
         if (compatWithTomcat || !v3Enabled) {
