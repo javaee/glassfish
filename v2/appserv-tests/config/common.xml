@@ -830,7 +830,7 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
     level="verbose"/>
   <sql
     driver="${db.driver}"
-    url="jdbc:derby://localhost:1527/sun-appserv-samples;create=true;"
+    url="jdbc:derby://localhost:${db.port}/sun-appserv-samples;create=true;"
     userid="APP"
     password="APP"
     src="${sql.file}"
@@ -1398,46 +1398,46 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
 </target>
 
 <target name="startDerbyNonMac" depends="init-common" unless="darwin">
-        <echo message="StaRTing Derby DB servers in the Network Mode"/>
+  <echo message="Starting Derby DB servers in the Network Mode on ports ${db.port} and ${db.port.2}"/>
   <parallel>
     <java classname="org.apache.derby.drda.NetworkServerControl"
       classpath="${db.classpath}" fork="true" spawn="true">
-      <arg line="-h localhost -p 1527 start"/>
+      <arg line="-h localhost -p ${db.port} start"/>
     </java>
     <java classname="org.apache.derby.drda.NetworkServerControl"
       classpath="${db.classpath}" fork="true" spawn="true">
-      <arg line="-h localhost -p 1528 start"/>
+      <arg line="-h localhost -p ${db.port.2} start"/>
     </java>
   </parallel>     
 </target>
 
 <target name="startDerbyMac" depends="init-common" if="darwin">
-        <echo message="StaRTing Derby DB servers in the Network Mode"/>
+  <echo message="Starting Derby DB servers in the Network Mode on ports ${db.port} and ${db.port.2}"/>
   <parallel>
     <java classname="org.apache.derby.drda.NetworkServerControl"
       classpath="${db.classpath}" fork="true" spawn="true">
        <sysproperty key="derby.storage.fileSyncTransactionLog" value="true"/>
-      <arg line="-h localhost -p 1527 start"/>
+       <arg line="-h localhost -p ${db.port} start"/>
     </java>
     <java classname="org.apache.derby.drda.NetworkServerControl"
       classpath="${db.classpath}" fork="true" spawn="true">
        <sysproperty key="derby.storage.fileSyncTransactionLog" value="true"/>     
-      <arg line="-h localhost -p 1528 start"/>
+      <arg line="-h localhost -p ${db.port.2} start"/>
     </java>
   </parallel>
 </target>
 
 <!--  start Derby Database -->
 <target name="stopDerby" depends="init-common">
-        <echo message="Stopping Derby DB servers ..."/>
+  <echo message="Stopping Derby DB servers on ports ${db.port} and ${db.port.2}"/>
   <parallel>
     <java classname="org.apache.derby.drda.NetworkServerControl"
       classpath="${db.classpath}" failonerror="true" fork="true">
-      <arg line="-h localhost -p 1527 shutdown"/>
+      <arg line="-h localhost -p ${db.port} shutdown"/>
     </java>
     <java classname="org.apache.derby.drda.NetworkServerControl"
       classpath="${db.classpath}" failonerror="true" fork="true">
-      <arg line="-h localhost -p 1528 shutdown"/>
+      <arg line="-h localhost -p ${db.port.2} shutdown"/>
     </java>
   </parallel>
 </target>
