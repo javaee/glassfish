@@ -75,17 +75,17 @@
     </target>
 
     <target name="start-database" depends="init-common">
-        <echo message="Starting database"/>
+        <echo message="Starting database --dbport ${db.port}"/>
 	<!-- spawn is added to prevent a hang on Windows -->
 	<exec spawn="true" executable="${ASADMIN}" failonerror="false">
-          <arg line="start-database"/>
+          <arg line="start-database --dbport ${db.port}"/>
 	</exec>
     </target>
 
     <target name="stop-database" depends="init-common">
-        <echo message="Stopping database"/>
+        <echo message="Stopping database --dbport ${db.port}"/>
 	<exec executable="${ASADMIN}" failonerror="false">
-          <arg line="stop-database"/>
+          <arg line="stop-database  --dbport ${db.port}"/>
 	</exec>
     </target>
 

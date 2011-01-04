@@ -43,14 +43,14 @@
 
       <antcall target="execute-sql-common">
         <param name="sql.file" value="sql/create.sql"/>
-        <param name="db.url" value="jdbc:derby://localhost:1527/${db.name};create=true;"/>
+        <param name="db.url" value="jdbc:derby://localhost:${db.port}/${db.name};create=true;"/>
       </antcall>
     </target>
 
     <target name="unsetup" depends="init-common">
       <antcall target="execute-sql-common">
         <param name="sql.file" value="sql/drop.sql"/>
-        <param name="db.url" value="jdbc:derby://localhost:1527/${db.name};create=true;"/>
+        <param name="db.url" value="jdbc:derby://localhost:${db.port}/${db.name};create=true;"/>
       </antcall>
         <antcall target="delete-jdbc-resource-common">
             <param name="jdbc.resource.name" value="jdbc/xa"/>
@@ -114,11 +114,11 @@
     <target name="clean-db" depends="init-common">
       <antcall target="execute-sql-common">
         <param name="sql.file" value="sql/drop.sql"/>
-        <param name="db.url" value="jdbc:derby://localhost:1527/${db.name};create=true;"/>
+        <param name="db.url" value="jdbc:derby://localhost:${db.port}/${db.name};create=true;"/>
       </antcall>
       <antcall target="execute-sql-common">
         <param name="sql.file" value="sql/create.sql"/>
-        <param name="db.url" value="jdbc:derby://localhost:1527/${db.name};create=true;"/>
+        <param name="db.url" value="jdbc:derby://localhost:${db.port}/${db.name};create=true;"/>
       </antcall>
     </target>
 
