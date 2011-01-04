@@ -315,4 +315,20 @@ public class RealmsManager {
          }
          containedRealms.put(realmName, realm);
     }
+    
+    public void refreshRealm(String configName, String realmName) {
+        if (realmName != null && realmName.length() > 0) {
+            try {
+                Realm realm = Realm.getInstance(configName, realmName);
+
+                if (realm != null) {
+                    realm.refresh(configName);
+                }
+            } catch (com.sun.enterprise.security.auth.realm.NoSuchRealmException nre) {
+                //	    _logger.fine("Realm: "+realmName+" is not configured");
+            } catch (com.sun.enterprise.security.auth.realm.BadRealmException bre) {
+                //	    _logger.fine("Realm: "+realmName+" is not configured");
+            }
+        }
+    }
 }
