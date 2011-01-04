@@ -65,6 +65,7 @@ import org.jvnet.hk2.config.UnprocessedChangeEvents;
 import java.beans.PropertyChangeEvent;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.logging.*;
@@ -104,6 +105,9 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy, org.g
 
     final Map<String, Handler> gfHandlers = new HashMap<String, Handler>();
     Logger logger = LogDomains.getLogger(LogManagerService.class, LogDomains.CORE_LOGGER);
+
+    PrintStream oStdOutBackup = System.out;
+    PrintStream oStdErrBackup = System.err;    
 
     /*
         Returns properties based on the DAS/Cluster/Instance
@@ -398,6 +402,9 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy, org.g
             for (Inhabitant<? extends Handler> i : habitat.getInhabitants(Handler.class)) {
                 i.release();
             }
+            System.setOut(oStdOutBackup);
+            System.setErr(oStdErrBackup);
+            System.out.println("Completed shutdown of Log manager service");
         } catch (ComponentException e) {
             e.printStackTrace();
         }
