@@ -302,7 +302,7 @@ public abstract class AbstractTreeNode implements TreeNode, Comparable {
 
     @Override
     public List<TreeNode> getNodes(String pattern, boolean ignoreDisabled, boolean gfv2Compatible) {
-        pattern = pattern.replace("\\.", "\\\\\\.");
+        pattern = pattern.replace("\\.", "\\\\\\."); // \.  goes to \\\.
 
         // bnevins October 2010
         // design gotcha -- It used to be IMPOSSIBLE to tell the difference between
@@ -327,10 +327,22 @@ public abstract class AbstractTreeNode implements TreeNode, Comparable {
             List<TreeNode> completeTree = traverse(ignoreDisabled);
 
             for (TreeNode node : completeTree) {
-                Matcher matcher = mPattern.matcher(node.getCompletePathName());
+                String path = node.getCompletePathName();
+                String path2 = null;
+
+                if (path.indexOf("\\") >= 0)
+                    path2 = path.replace("\\", "");
+
+                Matcher matcher = mPattern.matcher(path);
 
                 if (matcher.matches()) {
                     regexMatchedTree.add(node);
+                }
+                else if (path2 != null) {
+                    Matcher matcher2 = mPattern.matcher(path2);
+                    if (matcher2.matches()) {
+                        regexMatchedTree.add(node);
+                    }
                 }
             }
         }
