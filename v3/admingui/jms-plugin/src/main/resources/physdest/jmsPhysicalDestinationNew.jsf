@@ -54,6 +54,7 @@
         setPageSessionAttribute(key="pageTitle" value="$resource{i18njms.jmsPhysDestinations.newPageTitle}");
         setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18njms.jmsPhysDestinations.newPageHelp}");
         setPageSessionAttribute(key="parentPage" value="#{param.parentPage}");
+        println("======== parentPage = #{pageSession.parentPage}");
         getDefaultPhysicalDestinationValues(map="#{pageSession.valueMap}");
         setPageSessionAttribute(key="target" value="#{param.target}");
         

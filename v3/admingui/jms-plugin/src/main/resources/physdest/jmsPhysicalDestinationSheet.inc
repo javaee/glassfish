@@ -66,7 +66,7 @@
             gf.restRequest(endpoint="#{baseUrl}/create-jmsdest", method="post", attrs="#{requestScope.attrsMap}", result="#{requestScope.result}");
 
 //            updatePhysicalDestination(name="#{pageSession.destName}", type="#{pageSession.destType}", attributes="#{pageSession.valueMap}");
-            gf.redirect(page="#{pageSession.parentPage}&target=#{pageSession.target}");
+        gf.redirect(page="#{request.contextPath}/#{pageSession.parentPage}");
         />
     </sun:button>
      <sun:button id="updateButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
@@ -79,16 +79,16 @@
             mapPut(map="#{requestScope.attrsMap}", key="desttype", value="#{pageSession.destType}");
             mapPut(map="#{requestScope.attrsMap}", key="target", value="#{pageSession.target}");
             mapPut(map="#{requestScope.attrsMap}", key="id", value="#{pageSession.valueMap.Name}");
-
+            prepareSuccessfulMsg();
             gf.restRequest(endpoint="#{baseUrl}/__update-jmsdest", method="post", attrs="#{requestScope.attrsMap}", result="#{requestScope.result}");
 
 //            updatePhysicalDestination(name="#{pageSession.destName}", type="#{pageSession.destType}", attributes="#{pageSession.valueMap}");
-            gf.redirect(page="#{pageSession.parentPage}&target=#{pageSession.target}");
+            gf.redirect(page="#{pageSession.selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}")
         />
     </sun:button>
     <sun:button id="cancelButton" immediate="#{true}" text="$resource{i18n.button.Cancel}" primary="#{false}">
         <!command
-            gf.redirect(page="#{pageSession.parentPage}&target=#{pageSession.target}");
+            gf.redirect(page="#{request.contextPath}/#{pageSession.parentPage}");
         />
   </sun:button>
 

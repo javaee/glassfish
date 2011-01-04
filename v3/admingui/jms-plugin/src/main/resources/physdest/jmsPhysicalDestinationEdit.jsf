@@ -56,6 +56,7 @@
         setPageSessionAttribute(key="edit" value="#{true}");
         getRequestValue(key="name" value=>$page{destName});
         getRequestValue(key="type" value=>$page{destType});
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/jms/physdest/jmsPhysicalDestinationEdit.jsf?name=#{pageSession.destName}&type=#{pageSession.destType}&target=#{pageSession.target}&parentPage=#{pageSession.parentPage}")
 
         if ("#{targetType} = instance") {
             setPageSessionAttribute(key="baseUrl", value="#{sessionScope.REST_URL}/servers/server/#{pageSession.target}");
@@ -68,8 +69,8 @@
         setPageSessionAttribute(key="valueMap", value="#{requestScope.restResponse.data.extraProperties.entity}");
     />
     </event>
-#include "/common/shared/alertMsg.inc"
     <sun:form id="jmsPhysDestForm">
+#include "/common/shared/alertMsg.inc"
 #include "jmsPhysicalDestinationSheet.inc"
         <sun:hidden id="helpKey" value="$resource{helpjms.jmsPhysicalDestinationEdit}" />
     </sun:form>
