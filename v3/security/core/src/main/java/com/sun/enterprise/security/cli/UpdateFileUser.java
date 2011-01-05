@@ -63,6 +63,7 @@ import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.security.auth.realm.RealmsManager;
 import com.sun.enterprise.util.SystemPropertyConstants;
+import java.io.File;
 import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.ServerEnvironment;
@@ -199,6 +200,15 @@ public class UpdateFileUser implements AdminCommand {
                 authRealmName));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;                                            
+        }
+        boolean exists = (new File(keyFile)).exists();
+        if (!exists) {
+            report.setMessage(
+                localStrings.getLocalString("file.realm.keyfilenonexistent",
+                "The specified physical file {0} associated with the file realm {1} does not exist.",
+                new Object[]{keyFile, authRealmName}));
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
         }
         
         // Now get all inputs ready. userid and groups are straightforward but

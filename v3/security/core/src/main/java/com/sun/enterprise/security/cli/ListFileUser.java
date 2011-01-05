@@ -66,6 +66,7 @@ import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.security.auth.realm.RealmsManager;
 import com.sun.enterprise.util.SystemPropertyConstants;
+import java.io.File;
 import org.glassfish.api.admin.ExecuteOn;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -197,7 +198,16 @@ public class ListFileUser implements AdminCommand {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;                                            
         }
-        
+
+        boolean exists = (new File(keyFile)).exists();
+        if (!exists) {
+            report.setMessage(
+                localStrings.getLocalString("file.realm.keyfilenonexistent",
+                "The specified physical file {0} associated with the file realm {1} does not exist.",
+                new Object[]{keyFile, authRealmName}));
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
+        }
         // We have the right impl so let's try to remove one 
         FileRealm fr = null;
         try {

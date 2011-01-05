@@ -66,6 +66,7 @@ import com.sun.enterprise.security.auth.realm.RealmsManager;
 import com.sun.enterprise.security.common.Util;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import java.beans.PropertyVetoException;
+import java.io.File;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
@@ -211,6 +212,15 @@ public class CreateFileUser implements /*UndoableCommand*/ AdminCommand {
                 authRealmName));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;                                            
+        }
+        boolean exists = (new File(kf)).exists();
+        if (!exists) {
+            report.setMessage(
+                localStrings.getLocalString("file.realm.keyfilenonexistent",
+                "The specified physical file {0} associated with the file realm {1} does not exist.",
+                new Object[]{kf, authRealmName}));
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
         }
         // Now get all inputs ready. userid and groups are straightforward but
         // password is tricky. It is stored in the file passwordfile passed 

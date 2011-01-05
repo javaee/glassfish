@@ -64,6 +64,7 @@ import com.sun.enterprise.security.auth.realm.RealmsManager;
 import com.sun.enterprise.security.common.Util;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import java.beans.PropertyVetoException;
+import java.io.File;
 import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.ServerEnvironment;
@@ -193,6 +194,15 @@ public class DeleteFileUser implements /*UndoableCommand*/ AdminCommand {
                 authRealmName));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;                                            
+        }
+        boolean exists = (new File(kFile)).exists();
+        if (!exists) {
+            report.setMessage(
+                localStrings.getLocalString("file.realm.keyfilenonexistent",
+                "The specified physical file {0} associated with the file realm {1} does not exist.",
+                new Object[]{kFile, authRealmName}));
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
         }
         
          //even though delete-file-user is not an update to the security-service
