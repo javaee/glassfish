@@ -318,6 +318,11 @@ public class ContainerMapper extends StaticHttpHandler {
         // Map the request to its Adapter/Container and also it's Servlet if
         // the request is targetted to the CoyoteAdapter.
         mapper.map(req.getRequest().serverName(), decodedURI, mappingData);
+
+        if (!mappingData.contextPath.isNull()) {
+            updateContextPath(req, mappingData.contextPath.toString());
+        }
+
         ContextRootInfo contextRootInfo;
         if (mappingData.context != null && (mappingData.context instanceof ContextRootInfo
                 || mappingData.wrapper instanceof ContextRootInfo)) {
