@@ -1924,24 +1924,24 @@ public class Request
             setUserPrincipal(webPrincipal);
             setAuthType("LOGIN");
 
-            AuthenticatorBase authenticator = (AuthenticatorBase) context.getAuthenticator();
-            if (authenticator != null && authenticator.getCache()) {
+            Session session = getSessionInternal(true);
+            session.setAuthType(authType);
+            session.setPrincipal(webPrincipal);
 
-                Session session = getSessionInternal(true);
-                if (session != null) {
-                    session.setAuthType(authType);
-                    session.setPrincipal(webPrincipal);
-                    if (username != null) {
-                        session.setNote(SESS_USERNAME_NOTE, username);
-                    } else {
-                        session.removeNote(SESS_USERNAME_NOTE);
-                    }
-                    if (password != null) {
-                        session.setNote(SESS_PASSWORD_NOTE, password);
-                    } else {
-                        session.removeNote(SESS_PASSWORD_NOTE);
-                    }
+            AuthenticatorBase authenticator = (AuthenticatorBase) context.getAuthenticator();
+            boolean noCache = (authenticator != null && !authenticator.getCache());
+            if (noCache) {
+                if (username != null) {
+                    session.setNote(SESS_USERNAME_NOTE, username);
+                } else {
+                    session.removeNote(SESS_USERNAME_NOTE);
                 }
+                if (password != null) {
+                    session.setNote(SESS_PASSWORD_NOTE, password);
+                } else {
+                    session.removeNote(SESS_PASSWORD_NOTE);
+                }
+
             }
 
         } catch (Exception ex) {
