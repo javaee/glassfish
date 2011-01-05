@@ -50,6 +50,7 @@ import com.sun.enterprise.security.auth.realm.Realm;
 import com.sun.enterprise.security.auth.realm.RealmsManager;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
+import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Properties;
 import org.glassfish.api.ActionReport;
@@ -139,6 +140,9 @@ public class SupportsUserManagementCommand implements AdminCommand {
             report.setActionExitCode(ExitCode.FAILURE);
         } catch (NoSuchRealmException ex) {
             //throw new RuntimeException(ex);
+            report.setFailureCause(ex);
+            report.setActionExitCode(ExitCode.FAILURE);
+        } catch (Exception ex) {
             report.setFailureCause(ex);
             report.setActionExitCode(ExitCode.FAILURE);
         }
