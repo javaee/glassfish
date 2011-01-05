@@ -81,7 +81,7 @@ public class LazyJerseyInit {
             throws EndpointRegistrationException {
         
 
-        HttpHandler adapter = null;
+        HttpHandler httpHandler = null;
         Reloader r = new Reloader();
         ResourceConfig rc = new DefaultResourceConfig(classes);
         rc.getMediaTypeMappings().put("xml", MediaType.APPLICATION_XML_TYPE);
@@ -118,13 +118,13 @@ public class LazyJerseyInit {
         try {
             ClassLoader apiClassLoader = sc.getCommonClassLoader();
             Thread.currentThread().setContextClassLoader(apiClassLoader);
-            adapter = ContainerFactory.createContainer(HttpHandler.class, rc);
+            httpHandler = ContainerFactory.createContainer(HttpHandler.class, rc);
         } finally {
             Thread.currentThread().setContextClassLoader(originalContextClassLoader);
         }
         //add a rest config listener for possible reload of Jersey
         new RestConfigChangeListener(habitat, r ,rc , sc);
-        return (HttpHandler) adapter;
+        return httpHandler;
     }
     
     
