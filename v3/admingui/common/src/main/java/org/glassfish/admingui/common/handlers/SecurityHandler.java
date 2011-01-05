@@ -356,7 +356,7 @@ public class SecurityHandler {
             HashMap attrs = new HashMap<String, Object>();
             if ((createNew == null)) {
                 String endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + configName +
-                                                            "/security-service/auth-realm/" + realmName + "/delete-user";
+                                                            "/security-service/auth-realm/" + realmName + "/delete-user?target=" + configName;
                 attrs.put("username", userid);
                 RestResponse response = RestUtil.delete(endpoint, attrs);
                 if (!response.isSuccess()) {
@@ -367,11 +367,12 @@ public class SecurityHandler {
             }
             if ((createNew != null) && (createNew == Boolean.TRUE)) {
                 String endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + configName +
-                                                                "/security-service/auth-realm/" + realmName + "/create-user";
+                                                                "/security-service/auth-realm/" + realmName + "/create-user?target=" + configName;
                 attrs = new HashMap<String, Object>();
                 attrs.put("username", userid);
                 attrs.put("authrealmname", realmName);
                 attrs.put("userpassword", password);
+                attrs.put("target", configName);
                 if (grouplist != null && grouplist.contains(","))
                     grouplist = grouplist.replace(',', ':');
                 List<String> grpList = new ArrayList();
@@ -430,7 +431,7 @@ public class SecurityHandler {
         List result = new ArrayList();
         try{
             String endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + configName +
-                                                                "/security-service/auth-realm/" + realmName + "/list-users.json";
+                                                                "/security-service/auth-realm/" + realmName + "/list-users.json?target=" + configName;
             Map<String, Object> responseMap = RestUtil.restRequest(endpoint, null, "get", handlerCtx, false);
             responseMap = (Map<String, Object>) responseMap.get("data");
             List<HashMap> children = (List<HashMap>) responseMap.get("children");
@@ -485,7 +486,7 @@ public class SecurityHandler {
                 }else{
                     HashMap attrs = new HashMap<String, Object>();
                     endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + configName +
-                                                                "/security-service/auth-realm/" + realmName + "/delete-user";
+                                                                "/security-service/auth-realm/" + realmName + "/delete-user?target=" + configName;
                     attrs.put("name", user);
                     RestResponse response = RestUtil.delete(endpoint, attrs);
                     if (!response.isSuccess()) {
@@ -506,7 +507,7 @@ public class SecurityHandler {
     private static String getGroupNames(String realmName, String userName, String configName, HandlerContext handlerCtx){
         try{
             String endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + configName +
-                                                                "/security-service/auth-realm/" + realmName + "/list-group-names?username=" + userName;
+                                                                "/security-service/auth-realm/" + realmName + "/list-group-names?username=" + userName + "&target=" + configName;
             Map<String, Object> responseMap = RestUtil.restRequest(endpoint, null, "get", handlerCtx, false);
             HashMap children = (HashMap)((Map<String, Object>) responseMap.get("data")).get("extraProperties");
             String name = (String)((List)children.get("groups")).get(0);

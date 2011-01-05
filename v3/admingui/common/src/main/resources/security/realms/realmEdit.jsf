@@ -66,7 +66,7 @@
 #include "/common/shared/targetsConfig.inc"
         mapPut(map="#{pageSession.attrMap}" key="target" value="#{pageSession.valueMap['target']}");
         setPageSessionAttribute(key="myOption" value="$pageSession{classnameOption}");
-        gf.restRequest(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/security-service/auth-realm/#{pageSession.Name}/supports-user-management.json", method="get", result="#{requestScope.result}");
+        gf.restRequest(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/security-service/auth-realm/#{pageSession.Name}/supports-user-management.json?target=#{pageSession.configName}", method="get", result="#{requestScope.result}");
         setPageSessionAttribute(key="showUserButton" value="#{false}");
         if ("#{requestScope.result.data['message']}=true") {
             setPageSessionAttribute(key="showUserButton" value="#{true}");
