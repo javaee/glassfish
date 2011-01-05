@@ -411,15 +411,15 @@ public class LinuxService extends NonSMFServiceAdapter {
         // on the other hand -- if they specified one or they are logged in as a'privileged'
         // user then use that account.
         String u = getFinalUserButNotRoot();
+        hasStartStopTokens = (u != null);
 
-        if (u != null)
+        if (hasStartStopTokens)
             return "su --login " + u + " --command \"";
-
         return "";
     }
 
     private String getServiceUserStop() {
-        if (StringUtils.ok(info.serviceUser))
+        if(hasStartStopTokens)
             return "\"";
         return "";
     }
@@ -456,4 +456,5 @@ public class LinuxService extends NonSMFServiceAdapter {
     private List<File> startDirs = new ArrayList<File>();
     private String sFile;
     private String kFile;
+    private boolean hasStartStopTokens = false;
 }
