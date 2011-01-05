@@ -40,8 +40,11 @@
 
 package org.glassfish.admingui.plugin.jms;
 
-import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
+import com.sun.enterprise.config.serverbeans.Cluster;
+import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.connectors.ConnectorRuntime;
 import org.glassfish.resource.common.PoolInfo;
 import com.sun.enterprise.connectors.jms.system.JmsProviderLifecycle;
 import com.sun.jsftemplating.annotation.Handler;
@@ -59,8 +62,13 @@ import java.util.logging.Logger;
 import javax.management.Attribute;
 import javax.management.AttributeList;
 import javax.management.MBeanServer;
+import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 import org.glassfish.admingui.common.util.GuiUtil;
+import org.glassfish.internal.api.ServerContext;
+import org.jvnet.hk2.component.Habitat;
+import org.glassfish.jms.admin.cli.JMSDestination;
+import org.glassfish.jms.admin.cli.MQJMXConnectorInfo;
 
 /**
  *
@@ -171,18 +179,20 @@ public class JmsHandlers {
     @Handler(id = "getPhysicalDestinationStats",
     input = {
         @HandlerInput(name = "name", type = String.class, required = true),
-        @HandlerInput(name = "type", type = String.class, required = true)},
+        @HandlerInput(name = "type", type = String.class, required = true),
+        @HandlerInput(name = "target", type = String.class, required = true)},
     output = {
         @HandlerOutput(name = "statsData", type = java.util.List.class)})
     public static void getPhysicalDestinationStats(HandlerContext handlerCtx) {
         String name = (String) handlerCtx.getInputValue("name");
         String type = (String) handlerCtx.getInputValue("type");
+        String target = (String) handlerCtx.getInputValue("target");
         List statsList = new ArrayList();
         try {
             insureJmsBrokerIsRunning();
 
             String objectName = getJmsDestinationObjectName(SUBTYPE_MONITOR, name, type);
-            AttributeList attributes = (AttributeList) JMXUtil.getMBeanServer().getAttributes(new ObjectName(objectName), ATTRS_MONITOR);
+            AttributeList attributes = (AttributeList) getMBeanServerConnection(target).getAttributes(new ObjectName(objectName), ATTRS_MONITOR);
             ResourceBundle bundle = GuiUtil.getBundle("org.glassfish.jms.admingui.Strings");
             statsList.add(createRow("Name", name, ""));
             statsList.add(createRow("Type", type.substring(0, 1).toUpperCase() + type.substring(1), ""));
@@ -444,5 +454,30 @@ public class JmsHandlers {
         map.put("help", helpText);
 
         return map;
+    }
+    
+    private static MBeanServerConnection getMBeanServerConnection(String target) throws ConnectorRuntimeException, Exception {
+        Habitat habitat = GuiUtil.getHabitat();
+        Domain domain = habitat.getComponent(Domain.class);
+        Cluster cluster = domain.getClusterNamed(target);
+        String configRef = null;
+        if (cluster == null) {
+            Server server = domain.getServerNamed(target);
+            configRef = server.getConfigRef();
+        } else {
+            configRef = cluster.getConfigRef();
+        }
+        
+        PhysicalDestinations pd = new PhysicalDestinations();
+        MQJMXConnectorInfo mqInfo = pd.getConnectorInfo(target, configRef, habitat, domain);
+        
+        return mqInfo.getMQMBeanServerConnection();
+    }
+    
+    private static class PhysicalDestinations extends JMSDestination {
+        public MQJMXConnectorInfo getConnectorInfo(String target, String configName, Habitat habitat, Domain domain) throws Exception {
+            return getMQJMXConnectorInfo(target, domain.getConfigNamed(configName), habitat.getComponent(ServerContext.class), 
+                domain, habitat.getComponent(ConnectorRuntime.class));
+        }
     }
 }

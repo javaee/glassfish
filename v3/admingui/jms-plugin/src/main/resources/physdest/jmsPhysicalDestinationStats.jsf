@@ -54,10 +54,10 @@
         setPageSessionAttribute(key="edit" value="#{true}");
         getRequestValue(key="name" value=>$page{destName});
         getRequestValue(key="type" value=>$page{destType});
+        getRequestValue(key="target" value=>$page{target});
         getRequestValue(key="parent" value=>$page{parentPage});
 
-        getPhysicalDestinationStats(name="#{pageSession.destName}", type="#{pageSession.destType}", statsData="#{statsData}");
-        //guiLog(message="***** statsData = #{statsData}");
+        getPhysicalDestinationStats(name="#{pageSession.destName}", type="#{pageSession.destType}", target="#{pageSession.target}", statsData="#{statsData}");
     />
     </event>
 #include "/common/shared/alertMsg.inc"
