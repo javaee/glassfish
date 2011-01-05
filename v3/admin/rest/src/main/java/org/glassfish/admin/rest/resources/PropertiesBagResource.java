@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -168,6 +168,13 @@ public class PropertiesBagResource {
             }
         }
     }
+    /*
+     * prop names that have . in them need to be entered with \. for the set command
+     * so this routine replaces . with \.
+     */
+    private String getEscapedPropertyName(String propName){
+        return propName.replaceAll("\\.","\\\\.");
+    }
 
     protected ActionReportResult clearThenSaveProperties(List<Map<String, String>> properties) {
         RestActionReporter ar = new RestActionReporter();
@@ -176,10 +183,14 @@ public class PropertiesBagResource {
             deleteExistingProperties();
             Map<String, String> data = new LinkedHashMap<String, String>();
             for (Map<String, String> property : properties) {
-                data.put (property.get("name"), property.get("value"));
+                String escapedName = getEscapedPropertyName(property.get("name"));
+                data.put (escapedName, property.get("value"));
                 final String description = property.get("description");
-                if (description != null) {
-                    data.put (property.get("name") + ".description", description);
+                //update the description only if not null
+                // and the prop name does not contain .
+                // need to remove the . test when http://java.net/jira/browse/GLASSFISH-15418  is fixed
+                if ((description != null)&&(property.get("name").indexOf(".")==-1)) {
+                    data.put (escapedName + ".description", description);
                 }
             }
             if (!data.isEmpty()) {
@@ -208,7 +219,8 @@ public class PropertiesBagResource {
         HashMap<String, String> data = new HashMap<String, String>();
         for (final Dom existingProp : parent.nodeElements(tagName)) {
             data.clear();
-            data.put (((ConfigBean) existingProp).attribute("name"), "");
+            String escapedName = getEscapedPropertyName(((ConfigBean) existingProp).attribute("name"));
+            data.put (escapedName, "");
             Util.applyChanges(data, uriInfo, habitat);
         }
     }
