@@ -330,6 +330,25 @@ org.w3c.dom.ls; \
 org.xml.sax; \
 org.xml.sax.ext; \
 org.xml.sax.helpers; \
+com.sun.enterprise.v3.admin; \
+com.sun.enterprise.naming.impl; \
+com.sun.grizzly.http.res; \
+com.sun.enterprise.security.ssl; \
+com.sun.org.apache.xerces.internal.jaxp; \
+com.sun.org.apache.xalan.internal.xsltc.trax; \
+com.sun.org.apache.xerces.internal.parsers; \
+com.sun.pkg.client; \
+com.ctc.wstx.stax; \
+com.sun.jmx.remote.protocol.jmxmp; \
+com.sun.enterprise.security.provider; \
+com.sun.enterprise.security.auth.realm.file; \
+com.sun.enterprise.security.auth.realm.certificate; \
+com.sun.enterprise.security; \
+com.sun.faces.config; \
+com.sun.jersey.server.impl.container.servlet; \
+org.apache.jasper.runtime; \
+com.sun.xml.ws.transport.http.servlet; \
+org.apache.jasper.servlet; \
                     resolution:=optional
                             </Import-Package>
                             <Bundle-Description>${project.description}</Bundle-Description> 
