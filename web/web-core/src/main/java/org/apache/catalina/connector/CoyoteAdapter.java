@@ -527,9 +527,9 @@ public class CoyoteAdapter extends HttpHandler {
         Context ctx = (Context) context;
 
         // Parse session id
-        if (ctx != null && !uriParamsCC.isNull()) {
-            String sessionParam = ";" + ctx.getSessionParameterName() + "=";
-            request.parseSessionId(sessionParam, uriParamsCC);
+        if (ctx != null && !uriParamsCC.isNull() || req.isRequestedSessionIdFromURL()) {
+//            String sessionParam = ";" + ctx.getSessionParameterName() + "=";
+            request.parseSessionId(ctx.getSessionParameterName(), uriParamsCC);
         }
 
         // START GlassFish 1024

@@ -3472,6 +3472,16 @@ public class Request
      * Parse session id in URL.
      */
     protected void parseSessionId(String sessionParam, CharChunk uriBB) {
+        if (coyoteRequest.isRequestedSessionIdFromURL() &&
+                sessionParam.equals(Globals.SESSION_PARAMETER_NAME)) {
+            setRequestedSessionURL(true);
+            setRequestedSessionId(coyoteRequest.getRequestedSessionId());
+            setJrouteId(coyoteRequest.getJrouteId());
+
+            return;
+        }
+
+        sessionParam = ";" + sessionParam + "=";
         int semicolon = uriBB.indexOf(sessionParam, 0, sessionParam.length(),
                 0);
         if (semicolon >= 0) {
@@ -3572,7 +3582,9 @@ public class Request
         if (semicolon > 0) {
 //            sessionIdStart = semicolon;
             semicolon2 = uriBC.indexOf(';', semicolon + sessionParam.length());
-            uriBC.delete(semicolon, semicolon2);
+            final int end = semicolon2 >= 0 ? semicolon2 : uriBC.getEnd();
+            
+            uriBC.delete(semicolon, end);
 //            uriBC.setEnd(start + semicolon);
 //            byte[] buf = uriBC.getBuffer();
 //            if (semicolon2 >= 0) {
