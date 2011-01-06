@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -254,7 +254,9 @@ public class TransactionImpl implements TransactionInternal {
             return true;
         } catch (XAException ex) {
             setRollbackOnly();
-            throw new SystemException();
+            SystemException se = new SystemException();
+            se.initCause(ex);
+            throw se;
         }
     }
 
@@ -342,12 +344,14 @@ public class TransactionImpl implements TransactionInternal {
             } else {
               control.get_coordinator().rollback_only();
             }
-        } catch (Unavailable ex) {
-            throw new SystemException();
         } catch (Inactive ex) {
-            throw new IllegalStateException();
+            IllegalStateException ise = new IllegalStateException();
+            ise.initCause(ex);
+            throw ise;
         } catch (Exception ex) {
-            throw new SystemException();
+            SystemException se = new SystemException();
+            se.initCause(ex);
+            throw se;
         }
     }
 

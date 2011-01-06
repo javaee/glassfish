@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -378,7 +378,9 @@ public class TopCoordinator extends CoordinatorImpl {
         case TransactionState.STATE_ACTIVE :
             try {
                 rollback(true);
-            } catch (Throwable exc) {}
+            } catch (Throwable exc) {
+                _logger.log(Level.FINE, "", exc);
+            }
 
             break;
 
@@ -779,6 +781,7 @@ public class TopCoordinator extends CoordinatorImpl {
                             result = Status.StatusCommitted;
                         }
                     } catch (Throwable exc) {
+                        _logger.log(Level.FINE, "", exc);
                         // If the exception is neither TRANSIENT or
                         // COMM_FAILURE, it isunexpected, so display a message
                         // and assume that the transaction has rolled back.
@@ -1342,6 +1345,7 @@ public class TopCoordinator extends CoordinatorImpl {
 
                 INTERNAL ex2 = new INTERNAL(MinorCode.RecCoordCreateFailed,
                                             CompletionStatus.COMPLETED_NO);
+                ex2.initCause(exc);
                 throw ex2;
             }
 
@@ -1496,6 +1500,7 @@ public class TopCoordinator extends CoordinatorImpl {
                                     ).object();
         } catch (Throwable exc) {
             Inactive ex2 = new Inactive();
+            ex2.initCause(exc);
             throw ex2;
         }
 
@@ -1932,6 +1937,8 @@ public class TopCoordinator extends CoordinatorImpl {
                     } else {
                         throw (HeuristicHazard)heuristicExc;
                     }
+                } else {
+                    _logger.log(Level.FINE, "", exc);
                 }
 
                 // For any other exception, change the vote to rollback
@@ -2113,12 +2120,13 @@ public class TopCoordinator extends CoordinatorImpl {
                 if (exc instanceof HeuristicMixed ||
                         exc instanceof HeuristicHazard) {
                     heuristicExc = exc;
-                }
+                } else if (exc instanceof INTERNAL) {
 
-                // ADDED(Ram J) percolate any system exception
-                // back to the caller.
-                if (exc instanceof INTERNAL) {
+                    // ADDED(Ram J) percolate any system exception
+                    // back to the caller.
                     internalExc = exc; // throw (INTERNAL) exc;
+                } else {
+                    _logger.log(Level.WARNING, "", exc);
                 }
             }
         }
@@ -2302,11 +2310,11 @@ public class TopCoordinator extends CoordinatorImpl {
                 if (exc instanceof HeuristicMixed ||
                         exc instanceof HeuristicHazard) {
                     heuristicExc = exc;
-                }
-
-                // ADDED (Ram J) percolate up any system exception.
-                if (exc instanceof INTERNAL) {
+                } else if (exc instanceof INTERNAL) {
+                    // ADDED (Ram J) percolate up any system exception.
                     throw (INTERNAL) exc;
+                } else {
+                    _logger.log(Level.WARNING, "", exc);
                 }
             }
         }
@@ -2457,6 +2465,7 @@ public class TopCoordinator extends CoordinatorImpl {
                     TRANSACTION_ROLLEDBACK ex2 =
                         new TRANSACTION_ROLLEDBACK(
                             0, CompletionStatus.COMPLETED_NO);
+                    ex2.initCause(exc);
                     throw ex2;
                 }
 
@@ -2472,6 +2481,7 @@ public class TopCoordinator extends CoordinatorImpl {
 
                 INTERNAL ex2 = new INTERNAL(MinorCode.NotRegistered,
                                             CompletionStatus.COMPLETED_NO);
+                ex2.initCause(exc);
                 throw ex2;
             }
         }
@@ -2859,7 +2869,9 @@ public class TopCoordinator extends CoordinatorImpl {
 
         try {
             rollback(true);
-        } catch( Throwable exc ) {}
+        } catch( Throwable exc ) {
+            _logger.log(Level.FINE, "", exc);
+        }
     }
 
     //-------------------------------------------------------------------------
@@ -3003,6 +3015,8 @@ public class TopCoordinator extends CoordinatorImpl {
                 } else if (exc instanceof INTERNAL) {
                     // ADDED (Ram J) percolate up any system exception.
                     internalExc = exc;
+                } else {
+                    _logger.log(Level.WARNING, "", exc);
                 } // end else if cascade on the exception types
 
                 // (Other exceptions are not passed back
@@ -3266,6 +3280,7 @@ public class TopCoordinator extends CoordinatorImpl {
                     INVALID_TRANSACTION ex3 = new INVALID_TRANSACTION(
                                                 MinorCode.CompareFailed,
                                                 CompletionStatus.COMPLETED_NO);
+                    ex3.initCause(exc);
                     throw ex3;
                 }
             }

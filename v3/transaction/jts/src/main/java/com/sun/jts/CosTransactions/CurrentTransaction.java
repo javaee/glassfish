@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -393,7 +393,9 @@ public class CurrentTransaction {
         if( result != null )
             try {
                 completed = (result.getTranState() != Status.StatusActive);
-            } catch( Throwable exc ) {}
+            } catch( Throwable exc ) {
+		_logger.log(Level.FINE,"", exc);
+            }
 
         if( result != null && completed ) {
             if (endAssociation) {
@@ -596,6 +598,7 @@ public class CurrentTransaction {
                         result++;
                     }
             } catch( Throwable exc ) {
+		_logger.log(Level.FINE,"", exc);
             }
         }
 
@@ -807,6 +810,7 @@ public class CurrentTransaction {
 
         catch (Unavailable exc) {
             INVALID_TRANSACTION ex2 = new INVALID_TRANSACTION(0,CompletionStatus.COMPLETED_NO);
+            ex2.initCause(exc);
             throw ex2;
         }
 
@@ -822,6 +826,7 @@ public class CurrentTransaction {
         // Any other exception is unexpected.  Assume there is no transaction.
 
         catch( Throwable exc ) {
+	    _logger.log(Level.FINE,"", exc);
         }
 
         // Increase the count of outgoing requests for this transaction, if the
@@ -881,7 +886,9 @@ public class CurrentTransaction {
                 } else {
                     currentCoord = current.get_coordinator();
                 }
-            } catch (Unavailable exc) {}
+            } catch (Unavailable exc) {
+	        _logger.log(Level.FINE,"", exc);
+            }
 
             if (currentCoord == null) {
                 return; // no coord, cannot mark tx for rollback
@@ -889,7 +896,9 @@ public class CurrentTransaction {
 
             try {
                 currentCoord.rollback_only();
-            } catch (Inactive exc) {}
+            } catch (Inactive exc) {
+	        _logger.log(Level.FINE,"", exc);
+            }
 
             // COMMENT (Ram J) (11/24/2000) This has been commented out since
             // the exception reply could have a tx context. Do further checks.
@@ -914,6 +923,7 @@ public class CurrentTransaction {
         try {
             globalTID = new GlobalTID(current.getGlobalTID(outStatus));
         } catch( Throwable exc ) {
+            _logger.log(Level.FINE,"", exc);
         }
 
         // If the global identifier is NULL, then the Control object is unable to provide
@@ -1006,7 +1016,7 @@ public class CurrentTransaction {
         // create a subordinate.  Do something drastic.
 
         catch( Throwable exc ) {
-			_logger.log(Level.WARNING,"jts.unable_to_create_subordinate_coordinator");
+			_logger.log(Level.WARNING,"jts.unable_to_create_subordinate_coordinator", exc);
 			 String msg = LogFormatter.getLocalizedMessage(_logger,
 			 							"jts.unable_to_create_subordinate_coordinator");
 			  throw  new org.omg.CORBA.INTERNAL(msg);
@@ -1086,6 +1096,7 @@ public class CurrentTransaction {
                 throw exc;
             }
         } catch( SystemException ex ) {
+            _logger.log(Level.FINE,"", ex);
             INVALID_TRANSACTION exc = new INVALID_TRANSACTION(MinorCode.WrongContextOnReply,CompletionStatus.COMPLETED_YES);
             throw exc;
         }
@@ -1116,13 +1127,16 @@ public class CurrentTransaction {
             try {
                 forgetParent = coord.replyAction(outInt);
             } catch( Throwable exc ) {
+                _logger.log(Level.FINE,"", exc);
             }
     
             int replyAction = outInt[0];
             if( replyAction == CoordinatorImpl.activeChildren ) {
                 try {
                     coord.rollback_only();
-                } catch( Throwable ex ) {}
+                } catch( Throwable ex ) {
+                    _logger.log(Level.FINE,"", ex);
+                }
 
                 INVALID_TRANSACTION exc = new INVALID_TRANSACTION(MinorCode.UnfinishedSubtransactions,
                                                               CompletionStatus.COMPLETED_YES);
@@ -1150,7 +1164,9 @@ public class CurrentTransaction {
                         current.isOutgoing() ) {
                     try {
                         coord.rollback_only();
-                    } catch( Throwable exc ) {}
+                    } catch( Throwable exc ) {
+                        _logger.log(Level.FINE,"", exc);
+                    }
 
                     INVALID_TRANSACTION exc = new INVALID_TRANSACTION(MinorCode.DeferredActivities,
                                                                   CompletionStatus.COMPLETED_YES);
@@ -1163,8 +1179,10 @@ public class CurrentTransaction {
         } catch( INVALID_TRANSACTION exc ) {
             throw exc;
         } catch( Unavailable exc ) {
+            _logger.log(Level.FINE,"", exc);
             // Ignore
         } catch( SystemException exc ) {
+            _logger.log(Level.FINE,"", exc);
             // Ignore
         }
 
@@ -1215,7 +1233,7 @@ public class CurrentTransaction {
             
         } catch (Throwable exc) {
             RecoveryManager.removeFromTxMap(tid); // remove tx id from map
-			_logger.log(Level.WARNING,"jts.unable_to_create_subordinate_coordinator");
+			_logger.log(Level.WARNING,"jts.unable_to_create_subordinate_coordinator", exc);
 			 String msg = LogFormatter.getLocalizedMessage(_logger,
 			 							"jts.unable_to_create_subordinate_coordinator");
             throw new INVALID_TRANSACTION(
@@ -1264,6 +1282,7 @@ public class CurrentTransaction {
                 throw exc;
             }
         } catch (SystemException ex) {
+            _logger.log(Level.FINE,"", ex);
             INVALID_TRANSACTION exc = 
                 new INVALID_TRANSACTION(MinorCode.WrongContextOnReply,
                                         CompletionStatus.COMPLETED_YES);
