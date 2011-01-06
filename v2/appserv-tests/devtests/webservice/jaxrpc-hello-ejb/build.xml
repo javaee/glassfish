@@ -67,6 +67,10 @@
   </target>
 
   <target name="deploy" depends="set-asadmin,build,create-ear">
+      <echo message="admin password file ${admin.password.file}"/>
+      <echo message="admin user  ${admin.user}"/>
+      <echo message="admin host  ${admin.host}"/>
+      <echo message="admin port  ${admin.port}"/>
       <echo message="Deploying ${ear.file} from ${basedir}." level="verbose"/>
       <exec executable="${ASADMIN}">
         <arg line="deploy"/>
