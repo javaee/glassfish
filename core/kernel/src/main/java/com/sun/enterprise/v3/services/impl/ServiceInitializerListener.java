@@ -40,7 +40,6 @@
 package com.sun.enterprise.v3.services.impl;
 
 import java.util.logging.Logger;
-import org.glassfish.grizzly.NIOTransportBuilder;
 
 import org.glassfish.grizzly.config.dom.Protocol;
 import org.glassfish.grizzly.config.dom.ThreadPool;
@@ -48,6 +47,7 @@ import org.glassfish.grizzly.config.dom.Transport;
 import org.glassfish.grizzly.filterchain.FilterChain;
 import org.glassfish.grizzly.filterchain.FilterChainBuilder;
 import org.glassfish.grizzly.filterchain.TransportFilter;
+import org.glassfish.grizzly.nio.transport.TCPNIOTransportBuilder;
 import org.glassfish.grizzly.threadpool.GrizzlyExecutorService;
 import org.glassfish.grizzly.threadpool.ThreadPoolConfig;
 import org.jvnet.hk2.component.Habitat;
@@ -105,7 +105,7 @@ public class ServiceInitializerListener extends org.glassfish.grizzly.config.Gen
     protected void configureTransport(final Habitat habitat,
             Transport transportConfig) {
         
-        transport = NIOTransportBuilder.defaultTCPTransportBuilder().build();
+        transport = TCPNIOTransportBuilder.newInstance().build();
 
         rootFilterChain = FilterChainBuilder.stateless().build();
         rootFilterChain.add(new TransportFilter());
