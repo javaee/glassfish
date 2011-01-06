@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -52,16 +52,16 @@ import static org.junit.Assert.assertTrue;
  * To change this template use File | Settings | File Templates.
  */
 public class LifecycleModulesTest extends BaseSeleniumTestClass {
-    private static final String TRIGGER_LIFECYCLE_MODULES = "A lifecycle module performs tasks when it is triggered by one or more events in the server's lifecycle. Possible trigger server events are: initialization, startup, ready to service requests, and shutdown.";
-    private static final String TRIGGER_EDIT_LIFECYCLE_MODULE = "Edit Lifecycle Module";
-    private static final String TRIGGER_NEW_LIFECYCLE_MODULE = "New Lifecycle Module";
+    private static final String TRIGGER_LIFECYCLE_MODULES = "i18nc.lifecycleModules.titleHelp";
+    private static final String TRIGGER_EDIT_LIFECYCLE_MODULE = "i18nc.lifecycleModule.editPageTitle";
+    private static final String TRIGGER_NEW_LIFECYCLE_MODULE = "i18nc.lifecycleModule.newPageTitle";
 
     @Test
     public void testLifecycleModules() {
         final String lifecycleName = "TestLifecycle"+generateRandomString();
         final String lifecycleClassname = "org.foo.nonexistent.Lifecyclemodule";
 
-        clickAndWait("treeForm:tree:lifecycle:lifecycle_link", TRIGGER_LIFECYCLE_MODULES);
+        clickAndWait("treeForm:tree:lifecycles:lifecycles_link", TRIGGER_LIFECYCLE_MODULES);
         clickAndWait("propertyForm:deployTable:topActionsGroup1:newButton", TRIGGER_NEW_LIFECYCLE_MODULE);
         selenium.type("form:propertySheet:propertSectionTextField:IdTextProp:IdText", lifecycleName);
         selenium.type("form:propertySheet:propertSectionTextField:classNameProp:classname", lifecycleClassname);
