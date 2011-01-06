@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,7 +40,10 @@
 package org.glassfish.admingui.devtests;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.Ignore;
@@ -66,9 +69,14 @@ public class SpecificTestRule implements MethodRule {
                 boolean runMethod = false;
                 final Logger logger = Logger.getLogger(BaseSeleniumTestClass.class.getName());
                 String method = System.getProperty("method");
+                Set<String> methods = new HashSet<String>();
+                if (method != null) {
+                    String[] parts = method.split(",");
+                    methods.addAll(Arrays.asList(parts));
+                }
                 Ignore ignore = frameworkMethod.getAnnotation(Ignore.class);
 
-                if (frameworkMethod.getName().equals(method)) {
+                if (methods.contains(frameworkMethod.getName())) {
                     runMethod = true;
                 } else if ((method == null) && (ignore == null)) {
                     runMethod = true;
