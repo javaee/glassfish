@@ -62,6 +62,9 @@
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/network-config/protocols/protocol/#{pageSession.Name}");
         setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}");
         setPageSessionAttribute(key="createSslUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/network-config/network-listeners/network-listener/#{pageSession.listenerName}/create-ssl");
+        if ("#{pageSession.protocol}=true") {
+            setPageSessionAttribute(key="createSslUrl", value="#{pageSession.parentUrl}/create-ssl");
+        }
         setPageSessionAttribute(key="rest-api" value="true");
         setPageSessionAttribute(key="showCancelButton" value="#{true}" )
         createMap(result="#{pageSession.valueMap}");
