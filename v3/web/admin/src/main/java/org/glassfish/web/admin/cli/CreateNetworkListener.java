@@ -43,10 +43,8 @@ package org.glassfish.web.admin.cli;
 import java.beans.PropertyVetoException;
 import java.util.List;
 
-import org.glassfish.internal.api.Target;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
@@ -62,10 +60,11 @@ import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.ExecuteOn;
-import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.config.support.CommandTarget;
 import org.glassfish.config.support.TargetType;
+import org.glassfish.internal.api.Target;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -91,7 +90,7 @@ public class CreateNetworkListener implements AdminCommand {
     String address;
     @Param(name = "listenerport", optional = false, alias="Port")
     String port;
-    @Param(name = "threadpool", optional = true, defaultValue = "http-thread-pool")
+    @Param(name = "threadpool", optional = true, defaultValue = "http-thread-pool", alias="threadPool")
     String threadPool;
     @Param(name = "protocol", optional = false)
     String protocol;
@@ -101,9 +100,9 @@ public class CreateNetworkListener implements AdminCommand {
     String transport;
     @Param(name = "enabled", optional = true, defaultValue = "true")
     Boolean enabled;
-    @Param(name = "jkenabled", optional = true, defaultValue = "false")
+    @Param(name = "jkenabled", optional = true, defaultValue = "false", alias = "jkEnabled")
     Boolean jkEnabled;
-    @Param(name = "target", optional = true, defaultValue = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
+    @Param(name = "target", optional = true, defaultValue = SystemPropertyConstants.DAS_SERVER_NAME)
     String target;
     @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Config config;
@@ -187,7 +186,7 @@ public class CreateNetworkListener implements AdminCommand {
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
 
-    private VirtualServer findVirtualServer(final Protocol protocol) {
+    private VirtualServer findVirtualServer(Protocol protocol) {
         String name = null;
         final Http http = protocol.getHttp();
         if (http != null) {
