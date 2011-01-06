@@ -1,35 +1,35 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
- * 
+ *
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ *
  * The contents of this file are subject to the terms of either the GNU
- * General Public License Version 2 only (\"GPL\") or the Common Development
- * and Distribution License(\"CDDL\") (collectively, the \"License\").  You
+ * General Public License Version 2 only ("GPL") or the Common Development
+ * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
  * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at packager/legal/LICENSE.txt.
- * 
+ *
  * GPL Classpath Exception:
- * Oracle designates this particular file as subject to the \"Classpath\"
+ * Oracle designates this particular file as subject to the "Classpath"
  * exception as provided by Oracle in the GPL Version 2 section of the License
  * file that accompanied this code.
- * 
+ *
  * Modifications:
  * If applicable, add the following below the License Header, with the fields
  * enclosed by brackets [] replaced by your own identifying information:
- * \"Portions Copyright [year] [name of copyright owner]\"
- * 
+ * "Portions Copyright [year] [name of copyright owner]"
+ *
  * Contributor(s):
  * If you wish your version of this file to be governed by only the CDDL or
- * only the GPL Version 2, indicate your decision by adding \"[Contributor]
+ * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
- * Version 2] license.\"  If you don't indicate a single choice of license, a
+ * Version 2] license."  If you don't indicate a single choice of license, a
  * recipient has the option to distribute your version of this file under
  * either the CDDL, the GPL Version 2 or to extend the choice of license to
  * its licensees as provided above.  However, if you add GPL Version 2 code
@@ -54,9 +54,9 @@ public class JsonUtilTest {
     
     @Test 
     public void readConstants() {
-	assertTrue((Boolean)JSONUtil.jsonToJava("true"));
-	assertFalse((Boolean)JSONUtil.jsonToJava("false"));
-	assertNull(JSONUtil.jsonToJava("null"));
+        assertTrue((Boolean)JSONUtil.jsonToJava("true"));
+        assertFalse((Boolean)JSONUtil.jsonToJava("false"));
+        assertNull(JSONUtil.jsonToJava("null"));
     }
     
     @Test
@@ -66,7 +66,7 @@ public class JsonUtilTest {
         assertEquals(1, list.size());
         assertNull(list.get(0));
         
-	list = (List)JSONUtil.jsonToJava("[true,false,null,{'a':'b'},['1','2','3']]");
+        list = (List)JSONUtil.jsonToJava("[true,false,null,{'a':'b'},['1','2','3']]");
         assertNotNull(list);
         assertEquals(5, list.size());
         assertTrue((Boolean)list.get(0));
@@ -97,13 +97,13 @@ public class JsonUtilTest {
     
     @Test
     public void readObjects() {
-	Map<String, Object> map = (Map<String, Object>)JSONUtil.jsonToJava("{'x':['foo',null ,{'a':true, 'b':false }]}");
+        Map<String, Object> map = (Map<String, Object>)JSONUtil.jsonToJava("{'x':['foo',null ,{'a':true, 'b':false }]}");
         assertEquals(1, map.size());
         assertTrue(map.get("x") instanceof List);
         assertEquals(3, ((List)map.get("x")).size());
         assertTrue(((List)map.get("x")).get(2) instanceof Map);
         
-	map = (Map<String, Object>)JSONUtil.jsonToJava("{	    'key'   :	\"value\" ,\n  \r \"key2\"   :   {  'innerKey'  : [  3.3E-2 , false  , 800e+8, null , 37  , \"test\" ] , \n \"innerKey2\" : {'a' : 'b', 'c' : 'd'}, 'innerKey3' : true} }");
+        map = (Map<String, Object>)JSONUtil.jsonToJava("{            'key'   :        \"value\" ,\n  \r \"key2\"   :   {  'innerKey'  : [  3.3E-2 , false  , 800e+8, null , 37  , \"test\" ] , \n \"innerKey2\" : {'a' : 'b', 'c' : 'd'}, 'innerKey3' : true} }");
         assertEquals(2, map.size());
         assertEquals("value", map.get("key"));
         assertTrue(map.get("key2") instanceof Map);
