@@ -257,7 +257,7 @@ public class RestUtil {
                 Map responseMap = response.getResponse();
                 if (responseMap.get("data") != null){
                     String exitCodeStr = (String)((Map)responseMap.get("data")).get("exit_code");
-                    exitCode = ExitCode.valueOf(exitCodeStr);
+                    exitCode = (exitCodeStr != null) ? ExitCode.valueOf(exitCodeStr) : ExitCode.SUCCESS;
                 }
 
                 //Get the message for both WARNING and FAILURE exit_code
