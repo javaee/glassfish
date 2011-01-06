@@ -157,7 +157,7 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
         gotoStandaloneInstancesPage();
         clickAndWait("propertyForm:instancesTable:topActionsGroup1:newButton", TRIGGER_NEW_PAGE );
         selenium.type("propertyForm:propertySheet:propertSectionTextField:NameTextProp:NameText", instanceName);
-        selenium.select("propertyForm:propertySheet:propertSectionTextField:node:node", "label=localhost");
+        selenium.select("propertyForm:propertySheet:propertSectionTextField:node:node", "label=localhost-domain1");
         selenium.select("propertyForm:propertySheet:propertSectionTextField:configProp:Config", "label=default-config");
         selenium.check("propertyForm:propertySheet:propertSectionTextField:configOptionProp:optC");
         clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_INSTANCES_PAGE);
