@@ -409,6 +409,11 @@ public class BaseSeleniumTestClass {
         return null;
         */
     }
+    
+    protected void selectDropdownOption(String id, String label) {
+        label = resolveTriggerText(label);
+        selenium.select(id, "label="+label);
+    }
 
     protected void selectTableRowByValue(String tableId, String value) {
         selectTableRowByValue(tableId, value, "col0", "col1");
@@ -724,6 +729,26 @@ public class BaseSeleniumTestClass {
         return value != null ? value : defaultValue;
     }
     
+    protected String resolveTriggerText(String original) {
+        String triggerText = original;
+        int index = original.indexOf(".");
+        if (index > -1) {
+            String bundleName = original.substring(0, index);
+            String key = original.substring(index + 1);
+            String bundle = bundles.get(bundleName);
+            if (bundle != null) {
+                ResourceBundle res = ResourceBundle.getBundle(bundle);
+                if (res != null) {
+                    // Strip out HTML. Hopefully this will be robust enough
+                    triggerText = res.getString(key).replaceAll("<.*?>", "");
+                } else {
+                    Logger.getLogger(BaseSeleniumTestClass.class.getName()).log(Level.WARNING, null, "An invalid resource bundle was specified: " + original);
+                }
+            }
+        }
+        return triggerText;
+    }
+    
     private void insureElementIsVisible (final String id) {
         if (!id.contains("treeForm:tree")) {
             return;
@@ -754,27 +779,7 @@ public class BaseSeleniumTestClass {
 
         public PageLoadCallBack(String triggerText, boolean textShouldBeMissing) {
             this.textShouldBeMissing = textShouldBeMissing;
-            
-            int index = triggerText.indexOf(".");
-            if (index > -1) {
-                String bundleName = triggerText.substring(0, index);
-                String key = triggerText.substring(index+1);
-                String bundle = bundles.get(bundleName);
-                if (bundle != null) {
-                    ResourceBundle res = ResourceBundle.getBundle(bundle);
-                    if (res != null) {
-                        this.triggerText = res.getString(key);
-                        // Strip out HTML. Hopefully this will be robust enough
-                        this.triggerText = this.triggerText.replaceAll("<.*?>", "");
-                    } else {
-                        Logger.getLogger(BaseSeleniumTestClass.class.getName()).log(Level.WARNING, null, "An invalid resource bundle was specified: " + triggerText);
-                    }
-                } else {
-                    this.triggerText = triggerText;
-                }
-            } else {
-                this.triggerText = triggerText;
-            }
+            this.triggerText = resolveTriggerText(triggerText);
         }
 
         
