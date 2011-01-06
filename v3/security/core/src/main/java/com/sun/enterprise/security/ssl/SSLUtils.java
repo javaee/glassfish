@@ -153,6 +153,8 @@ public final class SSLUtils implements PostConstruct {
             ctx.init(kMgrs, getTrustManagers(trustAlgorithm), null);
 
             HttpsURLConnection.setDefaultSSLSocketFactory(ctx.getSocketFactory());
+            //refer issue :http://java.net/jira/browse/GLASSFISH-15369
+            SSLContext.setDefault(ctx);
         } catch (Exception e) {
             throw new Error(e);
         }
