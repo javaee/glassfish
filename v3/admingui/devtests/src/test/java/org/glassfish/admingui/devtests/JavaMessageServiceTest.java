@@ -46,7 +46,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class JavaMessageServiceTest extends BaseSeleniumTestClass {
-    private static final String TRIGGER_GENERAL_INFORMATION = "General Information";
+    private static final String TRIGGER_GENERAL_INFORMATION = "i18n.instance.GeneralTitle";
     private static final String TRIGGER_JMS_SERVICE = "i18njms.jms.PageHelp";
     private static final String TRIGGER_JMS_HOSTS = "i18njms.jmsHosts.ListPageHelp";
     private static final String TRIGGER_NEW_JMS_HOST = "i18njms.newJmsHost.NewJmsHost";
