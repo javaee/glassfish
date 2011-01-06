@@ -100,11 +100,29 @@ public class BaseSeleniumTestClass {
     private boolean processingLogin = false;
     
     private static Map<String, String> bundles = new HashMap<String, String>() {{
-        put("i18n",  "org.glassfish.admingui.core.Strings"); // core
-        put("i18nc",  "org.glassfish.common.admingui.Strings"); // common -- apparently we use both in the app :|
-        put("i18ncs", "org.glassfish.cluster.admingui.Strings"); // cluster
+        put("i18n", "org.glassfish.admingui.core.Strings"); // core
+        put("i18nUC", "org.glassfish.updatecenter.admingui.Strings"); // update center
+        put("i18n_corba", "org.glassfish.corba.admingui.Strings");
+        put("i18n_ejb", "org.glassfish.ejb.admingui.Strings");
+        put("i18n_ejbLite", "org.glassfish.ejb-lite.admingui.Strings");
         put("i18n_jts" ,"org.glassfish.jts.admingui.Strings"); // JTS
+        put("i18n_web", "org.glassfish.web.admingui.Strings"); // WEB
+        put("common", "org.glassfish.common.admingui.Strings");
+        put("i18nc", "org.glassfish.common.admingui.Strings"); // common -- apparently we use both in the app :|
+        put("i18nce", "org.glassfish.admingui.community-theme.Strings");
+        put("i18ncs", "org.glassfish.cluster.admingui.Strings"); // cluster
+        put("i18njca", "org.glassfish.jca.admingui.Strings"); // JCA
+        put("i18njdbc", "org.glassfish.jdbc.admingui.Strings"); // JDBC
+        put("i18njmail", "org.glassfish.full.admingui.Strings");
+        put("i18njms", "org.glassfish.jms.admingui.Strings"); // JMS
+        put("theme", "org.glassfish.admingui.community-theme.Strings");
+
+        // These conflict with core and should probably be changed in the pages
+        //put("i18n", "org.glassfish.common.admingui.Strings");
+        //put("i18n", "org.glassfish.web.admingui.Strings");
+        //put("i18nc", "org.glassfish.web.admingui.Strings");
     }};
+    
     
     @BeforeClass
     public static void setUp() throws Exception {
