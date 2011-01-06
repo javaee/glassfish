@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -47,13 +47,13 @@ import static org.junit.Assert.assertTrue;
 
 public class JavaMessageServiceTest extends BaseSeleniumTestClass {
     private static final String TRIGGER_GENERAL_INFORMATION = "General Information";
-    private static final String TRIGGER_JMS_SERVICE = "General properties for the Java Message Service (JMS)";
-    private static final String TRIGGER_JMS_HOSTS = "Click New to create a new JMS host. Click the name of a JMS host to modify its properties.";
-    private static final String TRIGGER_NEW_JMS_HOST = "New JMS Host";
-    private static final String TRIGGER_JMS_PHYSICAL_DESTINATIONS = "Click New to create a new physical destination.";
-    private static final String TRIGGER_NEW_JMS_PHYSICAL_DESTINATION = "New JMS Physical Destination";
-    private static final String TRIGGER_EDIT_JMS_PHYSICAL_DESTINATION = "Edit JMS Physical Destination";
-    private static final String TRIGGER_FLUSH = "Flush successful for the physical destination(s)";
+    private static final String TRIGGER_JMS_SERVICE = "i18njms.jms.PageHelp";
+    private static final String TRIGGER_JMS_HOSTS = "i18njms.jmsHosts.ListPageHelp";
+    private static final String TRIGGER_NEW_JMS_HOST = "i18njms.newJmsHost.NewJmsHost";
+    private static final String TRIGGER_JMS_PHYSICAL_DESTINATIONS = "i18njms.jmsPhysDestinations.pageHelp";
+    private static final String TRIGGER_NEW_JMS_PHYSICAL_DESTINATION = "i18njms.jmsPhysDestinations.newPageTitle";
+    private static final String TRIGGER_EDIT_JMS_PHYSICAL_DESTINATION = "i18njms.jmsPhysDestinations.editPageTitle";
+    private static final String TRIGGER_FLUSH = "i18njms.jmsPhysDestinations.purged";
 
     @Test
     public void testJmsService() {
@@ -120,11 +120,11 @@ public class JavaMessageServiceTest extends BaseSeleniumTestClass {
         selenium.type("jmsPhysDestForm:propertySheet:propertSectionTextField:maxNumMsgsProp:maxNumMsgs", maxUnconsumed);
         selenium.type("jmsPhysDestForm:propertySheet:propertSectionTextField:maxBytesPerMsgProp:maxBytesPerMsg", maxMessageSize);
         selenium.type("jmsPhysDestForm:propertySheet:propertSectionTextField:maxTotalMsgBytesProp:maxTotalMsgBytes", maxTotalMemory);
-        selenium.select("jmsPhysDestForm:propertySheet:propertSectionTextField:limitBehaviorProp:Type", "label=Throw out lowest-priority messages");
+        selectDropdownOption("jmsPhysDestForm:propertySheet:propertSectionTextField:limitBehaviorProp:Type", "i18njms.jmsPhysDestinations.REMOVE_LOW_PRIORITY");
         selenium.type("jmsPhysDestForm:propertySheet:propertSectionTextField:maxNumProducersProp:maxNumProducers", maxProducers);
         selenium.type("jmsPhysDestForm:propertySheet:propertSectionTextField:consumerFlowLimitProp:consumerFlowLimit", consumerFlowLimit);
-        selenium.select("jmsPhysDestForm:propertySheet:propertSectionTextField:useDmqProp:useDmq", "label=False");
-        selenium.select("jmsPhysDestForm:propertySheet:propertSectionTextField:validateSchemaProp:validateXMLSchemaEnabled", "label=True");
+        selectDropdownOption("jmsPhysDestForm:propertySheet:propertSectionTextField:useDmqProp:useDmq", "i18n.common.false");
+        selectDropdownOption("jmsPhysDestForm:propertySheet:propertSectionTextField:validateSchemaProp:validateXMLSchemaEnabled", "i18n.common.true");
         clickAndWait("jmsPhysDestForm:propertyContentPage:topButtons:newButton", TRIGGER_JMS_PHYSICAL_DESTINATIONS);
 
         clickAndWait(getLinkIdByLinkText("propertyForm:configs", name), TRIGGER_EDIT_JMS_PHYSICAL_DESTINATION);
@@ -141,12 +141,13 @@ public class JavaMessageServiceTest extends BaseSeleniumTestClass {
 //        assertEquals("false", selenium.getValue("jmsPhysDestForm:propertySheet:propertSectionTextField:useDmqProp:useDmq"));
 
         assertEquals(consumerFlowLimit, selenium.getValue("jmsPhysDestForm:propertySheet:propertSectionTextField:consumerFlowLimitProp:consumerFlowLimit"));
-        // TODO: The server code for this looks right, but it's not working. Disabling for now.
-        //assertEquals("true", selenium.getValue("jmsPhysDestForm:propertySheet:propertSectionTextField:validateSchemaProp:validateXMLSchemaEnabled"));
+        assertEquals("true", selenium.getValue("jmsPhysDestForm:propertySheet:propertSectionTextField:validateSchemaProp:validateXMLSchemaEnabled"));
         clickAndWait("jmsPhysDestForm:propertyContentPage:topButtons:cancelButton", TRIGGER_JMS_PHYSICAL_DESTINATIONS);
 
+        this.selectTableRowByValue("propertyForm:configs", name);
         clickAndWait("propertyForm:configs:topActionsGroup1:flushButton", TRIGGER_FLUSH);
+        this.selectTableRowByValue("propertyForm:configs", name); // Deselect row. This is ugly, but will have to stay this way for now
 
-        deleteRow("propertyForm:configs:topActionsGroup1:button1", "propertyForm:configs", name);
+        deleteRow("propertyForm:configs:topActionsGroup1:deleteButton", "propertyForm:configs", name);
     }
 }
