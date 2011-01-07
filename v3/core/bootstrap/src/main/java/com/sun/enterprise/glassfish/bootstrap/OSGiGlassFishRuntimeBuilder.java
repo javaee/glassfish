@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -76,6 +76,7 @@ import org.osgi.framework.launch.Framework;
  */
 public final class OSGiGlassFishRuntimeBuilder implements RuntimeBuilder {
     private Framework framework;
+    private final static boolean debug = false;
 
     /**
      * Default constructor needed for meta-inf/service lookup to work
@@ -117,7 +118,8 @@ public final class OSGiGlassFishRuntimeBuilder implements RuntimeBuilder {
     }
 
     private static void debug(String s) {
-        System.out.println("OSGiGlassFishRuntime: " + s);
+        if (debug)
+            System.out.println("OSGiGlassFishRuntime: " + s);
     }
 
 }

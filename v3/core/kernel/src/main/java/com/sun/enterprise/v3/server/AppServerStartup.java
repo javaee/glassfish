@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -141,7 +141,7 @@ public class AppServerStartup implements ModuleStartup {
         serverThread = new Thread("GlassFish Kernel Main Thread"){
             @Override
             public void run() {
-                logger.logp(Level.INFO, "AppServerStartup", "run",
+                logger.logp(Level.FINE, "AppServerStartup", "run",
                         "[{0}] started", new Object[]{this});
 
                 // notify the other thread to continue now that a non-daemon

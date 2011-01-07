@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -129,9 +129,11 @@ public class StatsProviderManagerDelegateImpl extends MBeanListener.CallbackImpl
         //serverNode is special, construct that first if doesn't exist
         serverNode = constructServerPP();
         statsProviderRegistry = new StatsProviderRegistry(mrdr);
-        logger.log(Level.INFO, " In the ctor : instance name " + instanceName);
+        if (logger.isLoggable(Level.FINE)) {
+            logger.log(Level.FINE, " In the ctor : instance name " + instanceName);
+            logger.log(Level.FINE, " In the ctor : MONITORING SERVER " + MONITORING_SERVER);
+        }
         MONITORING_SERVER = AMXGlassfish.DEFAULT.serverMon(instanceName);
-        logger.log(Level.INFO, " In the ctor : MONITORING SERVER " + MONITORING_SERVER);
         DOMAIN = MONITORING_SERVER.getDomain();
         PP = MONITORING_SERVER.getKeyProperty(PARENT_PATH_KEY);
         TYPE = MONITORING_SERVER.getKeyProperty(TYPE_KEY);

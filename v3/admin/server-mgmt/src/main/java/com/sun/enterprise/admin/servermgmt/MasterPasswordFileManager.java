@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -48,7 +48,6 @@ package com.sun.enterprise.admin.servermgmt;
 
 import com.sun.enterprise.admin.servermgmt.pe.PEFileLayout;
 import com.sun.enterprise.security.store.PasswordAdapter;
-import com.sun.enterprise.security.util.SSHA;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.util.SystemPropertyConstants;
 

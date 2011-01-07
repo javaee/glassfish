@@ -152,7 +152,7 @@
    <target name="create-domain-on-unix" depends="init" if="unix">
        <ant antfile="../distributions.xml" target="create-domain">
            <property name="exec.dir" value="${basedir}/target/stage/${install.dir.name}/glassfish/bin"/>
-           <property name="exec.executable" value="${basedir}/target/stage/${install.dir.name}/glassfish/bin/asadmin"/>
+           <property name="exec.executable" value="${basedir}/target/stage/${install.dir.name}/bin/asadmin"/>
        </ant>
    </target>
 </project>
