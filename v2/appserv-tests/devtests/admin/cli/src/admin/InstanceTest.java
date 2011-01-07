@@ -105,6 +105,7 @@ public class InstanceTest extends AdminBaseDevTest {
         testUpgrade();
         testNode();
         testPortBase();
+        invalidConfigRef();
         deleteDirectory(nodeDir);
         stopDomain();
         stat.printSummary();
@@ -410,6 +411,47 @@ public class InstanceTest extends AdminBaseDevTest {
 
         //clean up
         report("delete-local-instance-portbase", asadmin("delete-local-instance", instance ));
+    }
+
+    private void invalidConfigRef() {
+        String inst = "invalidconfigrefinstance";
+        String in1 = "in1";
+        String dasConfig ="server-config";
+        String defaultConfig = "default-config";
+        String c1 = "c1";
+        String inA = "inA";
+        String someConfig = "some-config";
+        report("invalid-config-ref-copy-config", asadmin("copy-config",  "server-config", someConfig));
+        report("invalid-config-ref-server-config", asadmin("create-local-instance", in1));
+        report("invalid-config-ref-create-cluster", asadmin("create-cluster", c1));
+        report("invalid-config-ref-create-local-instance", asadmin("create-local-instance", "--cluster", c1, inA));
+
+        //1) not changing config-ref for DAS
+        report("invalid-config-ref-cant-change-das-config", !asadmin("set", "servers.server.server.config-ref="+someConfig));
+
+        //2) not allowing config-ref of 'server-config' for non-DAS
+        report("invalid-config-ref-server-config-create", !asadmin("create-local-instance", "--config", dasConfig, inst));
+        report("invalid-config-ref-server-config-set", !asadmin("set", "servers.server."+in1+".config-ref=" + dasConfig));
+
+        //3) not allowing config-ref of 'default-config'
+        report("invalid-config-ref-default-config-create", !asadmin("create-local-instance", "--config", defaultConfig, inst));
+        report("invalid-config-ref-default-config-set", !asadmin("set", "servers.server."+in1+".config-ref=" + defaultConfig));
+
+        //4) not allowing changing config-ref of clustered instance
+        report("invalid-config-ref-clustered-instance", !asadmin("set", "servers.server."+inA+".config-ref=" + someConfig));
+
+        //5) not allowing changing config-ref to non-existent config
+        report("invalid-config-ref-nonexistent", !asadmin("set", "servers.server."+in1+".config-ref=nosuchconfig"));
+
+        //6) not allowing config-ref to be null
+        report("invalid-config-ref-null", !asadmin("set", "servers.server."+in1+".config-ref="));
+
+        //cleanup
+        report("invalid-config-ref-delete-config", asadmin("delete-config", someConfig));
+        report("invalid-config-ref-delete-local-instance-sa", asadmin("delete-local-instance", in1));
+        report("invalid-config-ref-delete-local-instance-ci", asadmin("delete-local-instance", inA));
+        report("invalid-config-ref-delete-cluster", asadmin("delete-cluster", c1));
+
     }
 
     private boolean checkInstanceDir(String name) {
