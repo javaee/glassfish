@@ -51,6 +51,9 @@
             </classpath>
             <arg value="http://${http.host}:${http.port}/wsclient/RequestProcessor"/>
           </java>
+        <!--restore the tokens back in file--> 
+         <replace file="webclient/Client.java" token="${http.host}" value="HTTP_HOST"/>
+         <replace file="webclient/Client.java" token="${http.port}" value="HTTP_PORT"/>
         </target>
 
 
@@ -70,8 +73,11 @@
           <mkdir dir="${build.classes.dir}/webclient/WEB-INF/classes"/>
           <antcall target="wsimport">
             <param name="wsimport.args"
-              value="-p client  -Xendorsed -keep -d ${build.classes.dir}/webclient/WEB-INF/classes http://localhost:8080/noname2/HelloService?wsdl"/>
+              value="-p client  -Xendorsed -keep -d ${build.classes.dir}/webclient/WEB-INF/classes http://${http.host}:${http.port}/noname2/HelloService?wsdl"/>
           </antcall>
+
+         <replace file="webclient/Client.java" token="HTTP_HOST" value="${http.host}"/>
+         <replace file="webclient/Client.java" token="HTTP_PORT" value="${http.port}"/>
           <javac srcdir="." destdir="${build.classes.dir}/webclient/WEB-INF/classes"
                 includes="webclient/**">
              <classpath refid="classpath"/>
