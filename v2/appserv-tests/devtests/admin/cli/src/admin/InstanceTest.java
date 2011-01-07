@@ -143,6 +143,7 @@ public class InstanceTest extends AdminBaseDevTest {
 
         report(metname + "-start", asadmin("start-local-instance", iname));
         report(metname + "-list-instances", isInstanceRunning(iname));
+        report(metname + "-restart-local-instance", asadmin("restart-local-instance", iname));
         report(metname + "-stop", asadmin("stop-local-instance", iname));
 
 		report(metname + "-delete", asadmin("delete-local-instance", iname));
