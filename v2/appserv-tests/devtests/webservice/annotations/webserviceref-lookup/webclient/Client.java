@@ -28,7 +28,6 @@ public class Client extends HttpServlet {
                   com.sun.xml.ws.transport.http.client.HttpTransportPipe.dump=true;
                 SubtractNumbersImpl port2 = service2.getSubtractNumbersPortType();
 
-                ((BindingProvider)port2).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,"http://localhost:8080/webserviceref-lookup/webservice/SubtractNumbersService?WSDL");
                 int ret = port2.subtractNumbers(9999, 4444);
                 PrintWriter out = resp.getWriter();
                 resp.setContentType("text/html");

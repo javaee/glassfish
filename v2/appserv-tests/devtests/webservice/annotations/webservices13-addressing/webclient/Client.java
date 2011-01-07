@@ -24,8 +24,6 @@ public class Client extends HttpServlet {
               throws javax.servlet.ServletException {
             try {
                   com.sun.xml.ws.transport.http.client.HttpTransportPipe.dump=true;
-
-                ((BindingProvider)port).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,"http://localhost:8080/webservices13-addressing/webservice/SubtractNumbersService?WSDL");
                 int ret = port.subtractNumbers(9999, 4444);
                 PrintWriter out = resp.getWriter();
                 resp.setContentType("text/html");
