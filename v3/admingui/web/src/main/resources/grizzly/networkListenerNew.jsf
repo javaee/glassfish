@@ -80,7 +80,16 @@
                 <!command
                     setPageSessionAttribute(key="protocolUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/network-config/protocols/protocol");
                     createMap(result="#{pageSession.protocolMap}");
-                    mapPut(map="#{pageSession.protocolMap}", key="SecurityEnabled", value="#{pageSession.valueMap['securityEnabled']}");
+                    if("#{pageSession.valueMap['securityEnabled']}=#{null}") {
+                        mapPut(map="#{pageSession.valueMap}", key="securityEnabled", value="false");
+                    }
+                    if("#{pageSession.valueMap['jkenabled']}=#{null}") {
+                        mapPut(map="#{pageSession.valueMap}", key="jkenabled", value="false");
+                    }
+                    if("#{pageSession.valueMap['enabled']}=#{null}") {
+                        mapPut(map="#{pageSession.valueMap}", key="enabled", value="false");
+                    }
+                    mapPut(map="#{pageSession.protocolMap}", key="securityEnabled", value="#{pageSession.valueMap['securityEnabled']}");
                     if ("#{pageSession.valueMap['protocolChoice']}=create") {
                         mapPut(map="#{pageSession.protocolMap}", key="name", value="#{pageSession.valueMap['newProtocolName']}");
                         mapPut(map="#{pageSession.protocolMap}", key="target", value="#{pageSession.valueMap['target']}");

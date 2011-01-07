@@ -130,7 +130,7 @@
         </sun:property>
 
         <sun:property id="threadpool"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.threadPool}" helpText="$resource{i18n_web.grizzly.networkListener.threadPoolHelp}">
-            <sun:dropDown id="threadpool" selected="#{pageSession.valueMap['threadPool']}" labels="$pageSession{threadPoolList}"  values="$pageSession{threadPoolList}" >
+            <sun:dropDown id="threadpool" selected="#{pageSession.valueMap['threadpool']}" labels="$pageSession{threadPoolList}"  values="$pageSession{threadPoolList}" >
             <!beforeCreate
                 gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/thread-pools/thread-pool" result="#{pageSession.threadPoolList}");
             />
