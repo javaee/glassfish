@@ -40,6 +40,10 @@
 
 package org.glassfish.weld;
 
+import static org.glassfish.weld.WeldUtils.JAR_SUFFIX;
+import static org.glassfish.weld.WeldUtils.META_INF_BEANS_XML;
+import static org.glassfish.weld.WeldUtils.SEPARATOR_CHAR;
+
 import java.io.IOException;
 import java.util.Enumeration;
 
@@ -58,10 +62,6 @@ import org.jvnet.hk2.component.Singleton;
 @Service(name = "weldCompositeSniffer")
 @Scoped(Singleton.class)
 public class WeldCompositeSniffer extends WeldSniffer implements CompositeSniffer {
-
-    private static char SEPARATOR_CHAR = '/';
-    private static final String JAR_SUFFIX = ".jar";
-    private static final String META_INF_BEANS_XML = "META-INF" + SEPARATOR_CHAR + "beans.xml";
 
     public boolean handles(DeploymentContext context) {
         boolean isWeldApplication = false;

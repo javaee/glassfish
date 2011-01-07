@@ -40,6 +40,12 @@
 
 package org.glassfish.weld;
 
+import static java.util.logging.Level.FINE;
+import static org.glassfish.weld.WeldUtils.JAR_SUFFIX;
+import static org.glassfish.weld.WeldUtils.META_INF_BEANS_XML;
+import static org.glassfish.weld.WeldUtils.META_INF_SERVICES_EXTENSION;
+import static org.glassfish.weld.WeldUtils.SEPARATOR_CHAR;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -48,17 +54,18 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import javax.enterprise.inject.spi.Extension;
 
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.javaee.core.deployment.ApplicationHolder;
+import org.glassfish.weld.WeldUtils.BDAType;
 import org.jboss.weld.bootstrap.WeldBootstrap;
 import org.jboss.weld.bootstrap.api.ServiceRegistry;
 import org.jboss.weld.bootstrap.api.helpers.SimpleServiceRegistry;
@@ -73,10 +80,6 @@ import com.sun.enterprise.deployment.EjbDescriptor;
  */
 public class DeploymentImpl implements Deployment {
 
-    private static final String META_INF_BEANS_XML = "META-INF/beans.xml";
-    private static final String JAR_SUFFIX = ".jar";
-    private static final char SEPARATOR_CHAR = '/';
-
     // Keep track of our BDAs for this deployment
     private List<BeanDeploymentArchive> jarBDAs;
     private List<BeanDeploymentArchive> warBDAs;
@@ -89,12 +92,15 @@ public class DeploymentImpl implements Deployment {
     private Map<String, BeanDeploymentArchive> idToBeanDeploymentArchive;
     private SimpleServiceRegistry simpleServiceRegistry = null;
 
+    private Logger logger = Logger.getLogger(DeploymentImpl.class.getName());
+    
     /**
      * Produce <code>BeanDeploymentArchive</code>s for this <code>Deployment</code>
      * from information from the provided <code>ReadableArchive</code>. 
      */
     public DeploymentImpl(ReadableArchive archive, Collection<EjbDescriptor> ejbs,
                           DeploymentContext context) {
+        logger.log(FINE, "Creating deployment for archive:" + archive.getName());
         this.beanDeploymentArchives = new ArrayList<BeanDeploymentArchive>();
         this.context = context;
         this.idToBeanDeploymentArchive = new HashMap<String, BeanDeploymentArchive>();
@@ -112,12 +118,12 @@ public class DeploymentImpl implements Deployment {
 
         BeanDeploymentArchive bda = new BeanDeploymentArchiveImpl(archive, ejbs, context);
         this.beanDeploymentArchives.add(bda);
-        if (((BeanDeploymentArchiveImpl)bda).getBDAType().equals(BeanDeploymentArchiveImpl.WAR)) {
+        if (((BeanDeploymentArchiveImpl)bda).getBDAType().equals(BDAType.WAR)) {
             if (warBDAs == null) {
                 warBDAs = new ArrayList<BeanDeploymentArchive>();
             }
             warBDAs.add(bda);
-        } else if (((BeanDeploymentArchiveImpl)bda).getBDAType().equals(BeanDeploymentArchiveImpl.JAR)) {
+        } else if (((BeanDeploymentArchiveImpl)bda).getBDAType().equals(BDAType.JAR)) {
             if (jarBDAs == null) {
                 jarBDAs = new ArrayList<BeanDeploymentArchive>();
             }
@@ -151,12 +157,12 @@ public class DeploymentImpl implements Deployment {
         }
 
         beanDeploymentArchives.add(bda);
-        if (((BeanDeploymentArchiveImpl)bda).getBDAType().equals(BeanDeploymentArchiveImpl.WAR)) {
+        if (((BeanDeploymentArchiveImpl)bda).getBDAType().equals(BDAType.WAR)) {
             if (warBDAs == null) {
                 warBDAs = new ArrayList<BeanDeploymentArchive>();
             }
             warBDAs.add(bda);
-        } else if (((BeanDeploymentArchiveImpl)bda).getBDAType().equals(BeanDeploymentArchiveImpl.JAR)) {
+        } else if (((BeanDeploymentArchiveImpl)bda).getBDAType().equals(BDAType.JAR)) {
             if (jarBDAs == null) {
                 jarBDAs = new ArrayList<BeanDeploymentArchive>();
             }
@@ -260,6 +266,12 @@ public class DeploymentImpl implements Deployment {
 
     @Override
     public List<BeanDeploymentArchive> getBeanDeploymentArchives() {
+        return getBeanDeploymentArchives(true);
+    }
+    
+    public List<BeanDeploymentArchive> getBeanDeploymentArchives(boolean printDebug) {
+        if (printDebug) logger.log(FINE, "DeploymentImpl::getBDAs. " +
+        		"Returning \n" + beanDeploymentArchives);
         if (!beanDeploymentArchives.isEmpty()) {
             return beanDeploymentArchives;
         }
@@ -268,20 +280,42 @@ public class DeploymentImpl implements Deployment {
 
     @Override
     public BeanDeploymentArchive loadBeanDeploymentArchive(Class<?> beanClass) {
-        List<BeanDeploymentArchive> beanDeploymentArchives = getBeanDeploymentArchives();
+        logger.log(FINE, "DeploymentImpl::loadBDA:"+ beanClass);
+        List<BeanDeploymentArchive> beanDeploymentArchives = getBeanDeploymentArchives(false);
+        
         ListIterator<BeanDeploymentArchive> lIter = beanDeploymentArchives.listIterator(); 
         while (lIter.hasNext()) {
             BeanDeploymentArchive bda = lIter.next();
-            if (bda.getBeanClasses().contains(beanClass.getName())) {
+            logger.log(FINE, "checking for " + beanClass + "in root BDA" + bda.getId());
+            if (((BeanDeploymentArchiveImpl)bda).getModuleBeanClasses().contains(beanClass.getName())) {
+                //don't stuff this Bean Class into the BDA's beanClasses, 
+                //as Weld automatically add theses classes to the BDA's bean Classes
+                logger.log(FINE, "DeploymentImpl(as part of loadBDA)::An " +
+                		"existing BDA has this class " + beanClass.getName() 
+                		+ " and so adding this class as a bean class it to " +
+                		"existing bda: " + bda);
+                //((BeanDeploymentArchiveImpl)bda).addBeanClass(beanClass.getName());
+                logger.log(FINE, "Deployment(as part of loadBDA): and returning " + bda);
                 return bda;
             }
 
-            if (bda.getBeanDeploymentArchives() != null && bda.getBeanDeploymentArchives().size() > 0) {
-                Collection<BeanDeploymentArchive> subBdas = bda.getBeanDeploymentArchives();
-                Iterator<BeanDeploymentArchive> subBdaIter = subBdas.iterator();
-                while(subBdaIter.hasNext()){
-                    BeanDeploymentArchive subBda = subBdaIter.next();
-                    if (subBda.getBeanClasses().contains(beanClass.getName())) {
+            //XXX: As of now, we handle one-level. Ideally, a bean deployment 
+            //descriptor is a composite and we should be able to search the tree 
+            //and get the right BDA for the beanClass
+            if (bda.getBeanDeploymentArchives().size() > 0) {
+                for(BeanDeploymentArchive subBda: bda.getBeanDeploymentArchives()){
+                    Collection<String> s = ((BeanDeploymentArchiveImpl)subBda).getModuleBeanClasses();
+                    logger.log(FINE, "checking for " + beanClass + "in subBDA" + subBda.getId());
+                    boolean match = s.contains(beanClass.getName());
+                    if (match) {
+                        //don't stuff this Bean Class into the BDA's beanClasses, 
+                        //as Weld automatically add theses classes to the BDA's bean Classes
+                        logger.log(FINE, "DeploymentImpl(as part of loadBDA)::" +
+                        		"An existing BDA has this class " 
+                                + beanClass.getName() + " and so adding this " +
+                                "class as a bean class to existing bda:" + subBda);
+                        //((BeanDeploymentArchiveImpl)subBda).addBeanClass(beanClass.getName());
+                        logger.log(FINE, "Deployment(as part of loadBDA): and returning " + subBda);
                         return subBda;
                     }
                 }
@@ -289,18 +323,27 @@ public class DeploymentImpl implements Deployment {
         }
 
         // If the BDA was not found for the Class, create one and add it
-
-        List<Class<?>> wClasses = new ArrayList<Class<?>>();
-        List<URL> wUrls = new ArrayList<URL>();
+        logger.log(FINE, "+++++ DeploymentImpl(as part of loadBDA):: beanClass " 
+                + beanClass + " not found in the BDAs of this deployment. " +
+                "Hence creating a new BDA");
+        List<Class<?>> beanClasses = new ArrayList<Class<?>>();
+        List<URL> beanXMLUrls = new ArrayList<URL>();
         Set<EjbDescriptor> ejbs = new HashSet<EjbDescriptor>();
-        wClasses.add(beanClass);
+        beanClasses.add(beanClass);
         BeanDeploymentArchive newBda = 
-            new BeanDeploymentArchiveImpl(beanClass.getName(), wClasses, wUrls, ejbs, context);
+            new BeanDeploymentArchiveImpl(beanClass.getName(), 
+                    beanClasses, beanXMLUrls, ejbs, context);
+        logger.log(FINE, "DeploymentImpl(as part of loadBDA):: new BDA " 
+                + newBda + "created. Now adding this new BDA to " +
+                "all root BDAs of this deployment");
         lIter = beanDeploymentArchives.listIterator();
         while (lIter.hasNext()) {
             BeanDeploymentArchive bda = lIter.next();
             bda.getBeanDeploymentArchives().add(newBda);
         }
+        logger.log(FINE, "DeploymentImpl(as part of loadBDA):: for beanClass " 
+                + beanClass + " finally returning the " +
+                "newly created BDA " + newBda);
         return newBda;
     }
 
@@ -314,8 +357,9 @@ public class DeploymentImpl implements Deployment {
 
     @Override
     public Iterable<Metadata<Extension>> getExtensions() {
-        return context.getTransientAppMetaData(WeldDeployer.WELD_BOOTSTRAP, WeldBootstrap.class).loadExtensions(Thread.currentThread().getContextClassLoader());
-        //return null;
+        return context.getTransientAppMetaData(
+                WeldDeployer.WELD_BOOTSTRAP, WeldBootstrap.class).loadExtensions(
+                        Thread.currentThread().getContextClassLoader());
     }
 
     @Override
@@ -363,7 +407,7 @@ public class DeploymentImpl implements Deployment {
                 Enumeration<String> entries = archive.entries(libDir);
                 while (entries.hasMoreElements()) {
                     String entryName = entries.nextElement();
-                    // if a jar in lib dir and not WEB-INF/lib/foo/bar.jar
+                    // if a jar is directly in lib dir and not WEB-INF/lib/foo/bar.jar
                     if (entryName.endsWith(JAR_SUFFIX) &&
                         entryName.indexOf(SEPARATOR_CHAR, libDir.length() + 1 ) == -1 ) {
                         try {
@@ -373,13 +417,20 @@ public class DeploymentImpl implements Deployment {
                                     libJars = new ArrayList<ReadableArchive>();
                                 }
                                 libJars.add(jarInLib);
+                            } else if (jarInLib.exists(META_INF_SERVICES_EXTENSION)){
+                                if (libJars == null) {
+                                    libJars = new ArrayList<ReadableArchive>();
+                                }
+                                libJars.add(jarInLib);
                             }
                         } catch (IOException e) {
+                            logger.log(FINE, "Exception thrown while scanning for library jars", e);
                         }
                     }
                 }
             }
         }
+        
         if (libJars != null) {
             ListIterator<ReadableArchive> libJarIterator = libJars.listIterator();
             while (libJarIterator.hasNext()) {
@@ -394,6 +445,7 @@ public class DeploymentImpl implements Deployment {
             }
 
         }
+        
         return libJarBDAs;
     }
 

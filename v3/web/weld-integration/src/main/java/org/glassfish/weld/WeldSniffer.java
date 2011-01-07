@@ -40,6 +40,15 @@
 
 package org.glassfish.weld;
 
+import static org.glassfish.weld.WeldUtils.EXPANDED_JAR_SUFFIX;
+import static org.glassfish.weld.WeldUtils.EXPANDED_RAR_SUFFIX;
+import static org.glassfish.weld.WeldUtils.JAR_SUFFIX;
+import static org.glassfish.weld.WeldUtils.META_INF_BEANS_XML;
+import static org.glassfish.weld.WeldUtils.SEPARATOR_CHAR;
+import static org.glassfish.weld.WeldUtils.WEB_INF;
+import static org.glassfish.weld.WeldUtils.WEB_INF_BEANS_XML;
+import static org.glassfish.weld.WeldUtils.WEB_INF_LIB;
+
 import java.io.IOException;
 import java.util.Enumeration;
 
@@ -50,7 +59,6 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Singleton;
 
-
 /**
  * Implementation of the Sniffer for Weld.
  */
@@ -60,15 +68,6 @@ public class WeldSniffer extends GenericSniffer implements Sniffer {
 
     private static final String[] containers = { "org.glassfish.weld.WeldContainer" };
 
-    private static char SEPARATOR_CHAR = '/';
-    private static final String WEB_INF = "WEB-INF";
-    private static final String WEB_INF_LIB = WEB_INF + SEPARATOR_CHAR + "lib";
-    private static final String WEB_INF_BEANS_XML = "WEB-INF" + SEPARATOR_CHAR + "beans.xml";
-    private static final String META_INF_BEANS_XML = "META-INF" + SEPARATOR_CHAR + "beans.xml";
-    private static final String JAR_SUFFIX = ".jar";
-    private static final String EXPANDED_JAR_SUFFIX = "_jar";
-    private static final String RAR_SUFFIX = ".rar";
-    private static final String EXPANDED_RAR_SUFFIX = "_rar";
 
     public WeldSniffer() {
         // We do not haGenericSniffer(String containerName, String appStigma, String urlPattern
