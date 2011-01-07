@@ -61,7 +61,7 @@
     <property name="GUI_ORB_SSL_PORT" value="50007"/>
     <property name="GUI_ORB_SSL_MUTUALAUTH_PORT" value="50008"/>
     <property name="GUI_OSGI_SHELL" value="50009"/>
-    <property name="DOMAIN" value="testdomain"/>
+    <property name="DOMAIN" value="domain1"/>
 
     <property name="glassfish.dist.url"
               value="http://hudson.glassfish.org/job/gf-trunk-build-continuous/lastSuccessfulBuild/artifact/bundles/glassfish.zip"/>
@@ -105,6 +105,7 @@
     </target>
 
     <target name="start-server" depends="shutdown-server">
+        <!--
         <exec executable="${executable}">
             <arg value="--port"/>
             <arg value="${GUI_ADMIN_PORT}"/>
@@ -125,6 +126,7 @@
             <arg value="${GUI_PORT}"/>
             <arg value="${DOMAIN}"/>
         </exec>
+        -->
 
         <echo message="***** Starting GlassFish"/>
         <exec executable="${executable}">
