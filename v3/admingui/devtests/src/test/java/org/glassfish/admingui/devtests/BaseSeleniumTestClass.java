@@ -82,10 +82,10 @@ import org.openqa.selenium.ie.InternetExplorerDriver;
 public class BaseSeleniumTestClass {
 
     public static final String CURRENT_WINDOW = "selenium.browserbot.getCurrentWindow()";
-    public static final String MSG_NEW_VALUES_SAVED = "New values successfully saved.";
+    public static final String TRIGGER_NEW_VALUES_SAVED = "New values successfully saved.";
     public static final String TRIGGER_COMMON_TASKS = "Other Tasks";
     public static final String TRIGGER_REGISTRATION_PAGE = "Receive patch information and bug updates, screencasts and tutorials, support and training offerings, and more";
-    public static final String MSG_ERROR_OCCURED = "An error has occurred";
+    public static final String TRIGGER_ERROR_OCCURED = "An error has occurred";
     private static final String AJAX_INDICATOR = "ajaxIndicator";
 
     @Rule
@@ -658,9 +658,9 @@ public class BaseSeleniumTestClass {
         final String enableStatus = "Enabled on 2 of 2 Target(s)";
         final String disableStatus = "Enabled on 0 of 2 Target(s)";
         final String TRIGGER_MANAGE_TARGETS = "Manage Resource Targets";
-        final String TRIGGGER_VALUES_SAVED = "New values successfully saved.";
         final String DEFAULT_SERVER = "server";
 
+        reset();
         clickAndWait(resourcesLinkId, resourcesTriggerText);
         clickAndWait(getLinkIdByLinkText(resourcesTableId, jndiName), resEditTriggerText);
         //Click on the target tab and verify whether the target is in the target table or not.
@@ -691,13 +691,13 @@ public class BaseSeleniumTestClass {
         clickAndWait("propertyForm:targetTable:topActionsGroup1:manageTargetButton", TRIGGER_MANAGE_TARGETS);
         selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_selected", "label=" + DEFAULT_SERVER);
         selenium.click("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_removeButton");
-        clickAndWait("form:propertyContentPage:topButtons:saveButton", TRIGGGER_VALUES_SAVED);
+        clickAndWait("form:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
 
         //Test the issue : 13280
         //If server instance is not one of the target, edit resource was failing. Fixed that and added a test
         clickAndWait(resourcesLinkId, resourcesTriggerText);
         clickAndWait(getLinkIdByLinkText(resourcesTableId, jndiName), resEditTriggerText);
-        Assert.assertTrue(selenium.isTextPresent(jndiName));
+        Assert.assertTrue(isTextPresent(jndiName));
         clickAndWait(resTargetTabId, TRIGGER_EDIT_RESOURCE_TARGETS);
 
         //Test the manage targets : Remove the instance and add the server.
@@ -712,9 +712,9 @@ public class BaseSeleniumTestClass {
         waitForButtonEnabled("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
         selenium.click("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
         waitForButtonDisabled("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
-        clickAndWait("form:propertyContentPage:topButtons:saveButton", TRIGGGER_VALUES_SAVED);
+        clickAndWait("form:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
         waitForPageLoad(instanceName, false);
-        Assert.assertTrue(selenium.isTextPresent(DEFAULT_SERVER));
+        Assert.assertTrue(isTextPresent(DEFAULT_SERVER));
 
         //Go Back to Resources Page
         clickAndWait(resourcesLinkId, resourcesTriggerText);

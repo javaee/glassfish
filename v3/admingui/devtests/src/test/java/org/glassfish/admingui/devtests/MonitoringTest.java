@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -118,7 +118,7 @@ public class MonitoringTest extends BaseSeleniumTestClass {
         selenium.select("form1:basicTable:topActionsGroup1:change_list", "label=" + monLevel);
         selenium.click("form1:basicTable:topActionsGroup1:button1");
         waitForButtonDisabled("form1:basicTable:topActionsGroup1:button1");
-        clickAndWait("form1:title:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
+        clickAndWait("form1:title:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
 
         //Test whether the level has changed to monLevel or not.
         //clickAndWait("treeForm:tree:configurations:server-config:monitor:monitor_link", TRIGGER_MONITORING_SERVICE);

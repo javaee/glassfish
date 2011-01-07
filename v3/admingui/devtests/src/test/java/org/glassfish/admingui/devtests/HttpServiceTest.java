@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -66,7 +66,7 @@ public class HttpServiceTest extends BaseSeleniumTestClass {
         selenium.type("form1:basicTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
         selenium.type("form1:basicTable:rowGroup1:0:col3:col1St", "value");
         selenium.type("form1:basicTable:rowGroup1:0:col4:col1St", "description");
-        clickAndWait("form1:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
+        clickAndWait("form1:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
         
         clickAndWait("treeForm:tree:configurations:server-config:httpService:httpService_link", TRIGGER_HTTP_SERVICE);
         assertEquals(true, selenium.isChecked("form1:propertySheet:http:acLog:ssoEnabled"));

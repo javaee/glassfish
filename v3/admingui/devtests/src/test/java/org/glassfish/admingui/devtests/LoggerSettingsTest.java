@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -60,7 +60,7 @@ public class LoggerSettingsTest extends BaseSeleniumTestClass {
         selenium.type("form1:general:sheetSection:FileRotationLimitProp:FileRotationLimit", rotationLimit);
         selenium.type("form1:general:sheetSection:FileRotationTimeLimitProp:FileRotationTimeLimit", rotationTimeLimit);
         selenium.type("form1:general:sheetSection:FlushFrequencyProp:FlushFrequency", flushFrequency);
-        clickAndWait("form1:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
+        clickAndWait("form1:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
 
         clickAndWait("form1:loggingTabs:loggerLevels", TRIGGER_LOG_LEVELS);
 
@@ -88,7 +88,7 @@ public class LoggerSettingsTest extends BaseSeleniumTestClass {
         selenium.click("form1:basicTable:topActionsGroup1:button1");
         waitForButtonDisabled("form1:basicTable:topActionsGroup1:button1");
 
-        clickAndWait("form1:title:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
+        clickAndWait("form1:title:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
 
         clickAndWait("form1:loggingTabs:loggerGeneral", TRIGGER_LOGGER_SETTINGS);
         clickAndWait("form1:loggingTabs:loggerLevels", TRIGGER_LOG_LEVELS);

@@ -80,7 +80,7 @@ public class SecurityTest extends BaseSeleniumTestClass {
         int beforeCount = getTableRowCount("propertyForm:basicTable");
         clickAndWait("treeForm:tree:configurations:server-config:security:security_link", SECURITY_MGR);
         selenium.click("propertyForm:propertySheet:propertSectionTextField:securityManagerProp:sun_checkbox133");
-        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
+        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
         clickAndWait("treeForm:tree:configurations:server-config:jvmSettings:jvmSettings_link", JVM_CONFIG);
         clickAndWait("propertyForm:javaConfigTab:jvmOptions", JVM_OPTION);
         int afterCount = getTableRowCount("propertyForm:basicTable");

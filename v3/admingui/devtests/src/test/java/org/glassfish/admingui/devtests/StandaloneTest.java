@@ -95,7 +95,7 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
         int sysPropCount = addTableRow("propertyForm:sysPropsTable", "propertyForm:sysPropsTable:topActionsGroup1:addSharedTableButton");
         selenium.type("propertyForm:sysPropsTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
         selenium.type("propertyForm:sysPropsTable:rowGroup1:0:overrideValCol:overrideVal", "value");
-        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
+        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
 
         // Go to instance props page
         selenium.click("propertyForm:standaloneInstanceTabs:standaloneProp:instanceProps");
@@ -104,7 +104,7 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
         int instancePropCount = addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton");
         selenium.type("propertyForm:basicTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
         selenium.type("propertyForm:basicTable:rowGroup1:0:col3:col1St", "value");
-        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
+        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
 
         // Verify that properties were persisted
         clickAndWait("propertyForm:standaloneInstanceTabs:standaloneProp:configProps", TRIGGER_SYS_PROPS);

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -47,18 +47,12 @@ import static org.junit.Assert.assertTrue;
 
 
 public class JmsResourcesTest extends BaseSeleniumTestClass {
-    private static final String TRIGGER_JMS_CONNECTION_FACTORIES = "Java Message Service (JMS) connection factories";
-    private static final String TRIGGER_NEW_JMS_CONN_FACT = "New JMS Connection Factory";
-    private static final String TRIGGER_EDIT_JMS_CONN_FACT = "Edit JMS Connection Factory";
-    private static final String TRIGGER_JMS_DESTINATION_RESOURCES = "Click New to create a new destination resource. Click the name of a destination resource to modify its properties.";
-    private static final String TRIGGER_NEW_JMS_DEST_RES = "New JMS Destination Resource";
-    private static final String TRIGGER_EDIT_JMS_DEST_RES = "Edit JMS Destination Resource";
-
-    private static final String TRIGGER_EDIT_RESOURCE_TARGETS = "Resource Targets";
-    private static final String ENABLE_STATUS = "Enabled on All Targets";
-    private static final String DISABLE_STATUS = "Disabled on All Targets";
-    private static final String TRIGGER_MANAGE_TARGETS = "Manage Targets";
-    private static final String TRIGGGER_VALUES_SAVED = "New values successfully saved.";
+    private static final String TRIGGER_JMS_CONNECTION_FACTORIES = "i18njms.connectionFactories.pageTitleHelp";
+    private static final String TRIGGER_NEW_JMS_CONN_FACT = "i18njms.connectionFactory.newPageTitleHelp";
+    private static final String TRIGGER_EDIT_JMS_CONN_FACT = "i18njms.connectionFactory.editPageTitleHelp";
+    private static final String TRIGGER_JMS_DESTINATION_RESOURCES = "i18njms.destinationResources.pageTitleHelp";
+    private static final String TRIGGER_NEW_JMS_DEST_RES = "i18njms.jmsDestination.newPageTitleHelp";
+    private static final String TRIGGER_EDIT_JMS_DEST_RES = "i18njms.jmsDestination.editPageTitleHelp";
 
     @Test
     public void testAddingConnectionFactories() throws Exception {
@@ -78,7 +72,7 @@ public class JmsResourcesTest extends BaseSeleniumTestClass {
         selenium.type("form:propertySheet:generalPropertySheet:descProp:descProp", description);
         selenium.select("form:propertySheet:poolPropertySheet:transprop:trans", "label=LocalTransaction");
         clickAndWait("form:propertyContentPage:topButtons:newButton", TRIGGER_JMS_CONNECTION_FACTORIES);
-        assertTrue(selenium.isTextPresent(poolName));
+        assertTrue(isTextPresent(poolName));
 
         // This can't currently use testDisableButton/testEnableButton because the table is different from the others
         // The table should be fixed to be like the others (in terms of IDs) so the standard test API can be used here.
@@ -108,16 +102,16 @@ public class JmsResourcesTest extends BaseSeleniumTestClass {
         clickAndWait("propertyForm:resourcesTable:topActionsGroup1:newButton", TRIGGER_NEW_JMS_CONN_FACT);
 
         selenium.type("form:propertySheet:generalPropertySheet:jndiProp:jndiProp", poolName);
-        selenium.select("form:propertySheet:generalPropertySheet:resType:resType", "label=javax.jms.TopicConnectionFactory");
+        selectDropdownOption("form:propertySheet:generalPropertySheet:resType:resType", "javax.jms.TopicConnectionFactory"); // i18n?
         selenium.type("form:propertySheet:generalPropertySheet:descProp:descProp", description);
-        selenium.select("form:propertySheet:poolPropertySheet:transprop:trans", "label=LocalTransaction");
+        selectDropdownOption("form:propertySheet:poolPropertySheet:transprop:trans", "LocalTransaction"); //i18n
         
         selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=" + instanceName);
         selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=server");
         selenium.click("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
         
         clickAndWait("form:propertyContentPage:topButtons:newButton", TRIGGER_JMS_CONNECTION_FACTORIES);
-        assertTrue(selenium.isTextPresent(poolName));
+        assertTrue(isTextPresent(poolName));
 
         // This can't currently use testDisableButton/testEnableButton because the table is different from the others
         // The table should be fixed to be like the others (in terms of IDs) so the standard test API can be used here.
@@ -166,7 +160,7 @@ public class JmsResourcesTest extends BaseSeleniumTestClass {
         selenium.type("form:propertyContentPage:propertySheet:propertSectionTextField:nameProp:name", "somePhysicalDestination");
         selenium.type("form:propertyContentPage:propertySheet:propertSectionTextField:descProp:desc", description);
         clickAndWait("form:propertyContentPage:topButtons:newButton", TRIGGER_JMS_DESTINATION_RESOURCES);
-        assertTrue(selenium.isTextPresent(resourceName) && selenium.isTextPresent(description));
+        assertTrue(isTextPresent(resourceName) && isTextPresent(description));
 
         // This can't currently use testDisableButton/testEnableButton because the table is different from the others
         // The table should be fixed to be like the others (in terms of IDs) so the standard test API can be used here.
@@ -204,7 +198,7 @@ public class JmsResourcesTest extends BaseSeleniumTestClass {
         selenium.click("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
 
         clickAndWait("form:propertyContentPage:topButtons:newButton", TRIGGER_JMS_DESTINATION_RESOURCES);
-        assertTrue(selenium.isTextPresent(resourceName) && selenium.isTextPresent(description));
+        assertTrue(isTextPresent(resourceName) && isTextPresent(description));
 
         // This can't currently use testDisableButton/testEnableButton because the table is different from the others
         // The table should be fixed to be like the others (in terms of IDs) so the standard test API can be used here.
@@ -240,9 +234,9 @@ public class JmsResourcesTest extends BaseSeleniumTestClass {
     @Test
     public void testAddingTransport() {
         selenium.click("treeForm:tree:configurations:server-config:networkConfig:transports:transports_link");
-        verifyTrue(selenium.isTextPresent("Click New to define a new transport. Click the name of an existing transport to modify its settings."));
+        verifyTrue(isTextPresent("Click New to define a new transport. Click the name of an existing transport to modify its settings."));
         selenium.click("propertyForm:configs:topActionsGroup1:newButton");
-        verifyTrue(selenium.isTextPresent("New Transport"));
+        verifyTrue(isTextPresent("New Transport"));
         selenium.type("propertyForm:propertySheet:propertSectionTextField:IdTextProp:IdText", "transport");
         selenium.select("propertyForm:propertySheet:propertSectionTextField:ByteBufferType:ByteBufferType", "label=DIRECT");
         selenium.type("propertyForm:propertySheet:propertSectionTextField:BufferSizeBytes:BufferSizeBytes", "16384");
@@ -253,10 +247,10 @@ public class JmsResourcesTest extends BaseSeleniumTestClass {
         selenium.type("propertyForm:propertySheet:propertSectionTextField:SelectorPollTimeoutMillis:SelectorPollTimeoutMillis", "2000");
         selenium.type("propertyForm:propertySheet:propertSectionTextField:WriteTimeoutMillis:WriteTimeoutMillis", "60000");
         selenium.click("propertyForm:propertyContentPage:topButtons:newButton");
-        verifyTrue(selenium.isTextPresent("Click New to define a new transport. Click the name of an existing transport to modify its settings."));
-        assertTrue(selenium.isTextPresent("transport"));
+        verifyTrue(isTextPresent("Click New to define a new transport. Click the name of an existing transport to modify its settings."));
+        assertTrue(isTextPresent("transport"));
         selenium.click("propertyForm:configs:rowGroup1:0:col1:link");
-        verifyTrue(selenium.isTextPresent("Edit Transport"));
+        verifyTrue(isTextPresent("Edit Transport"));
         verifyTrue(selenium.isElementPresent("propertyForm:propertySheet:propertSectionTextField:ByteBufferType:ByteBufferType"));
         verifyEquals("16384", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:BufferSizeBytes:BufferSizeBytes"));
         verifyEquals("2", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:AcceptorThreads:AcceptorThreads"));
@@ -266,7 +260,7 @@ public class JmsResourcesTest extends BaseSeleniumTestClass {
         verifyEquals("2000", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:SelectorPollTimeoutMillis:SelectorPollTimeoutMillis"));
         verifyEquals("60000", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:WriteTimeoutMillis:WriteTimeoutMillis"));
         selenium.click("propertyForm:propertyContentPage:topButtons:cancelButton");
-        verifyTrue(selenium.isTextPresent("Click New to define a new transport. Click the name of an existing transport to modify its settings."));
+        verifyTrue(isTextPresent("Click New to define a new transport. Click the name of an existing transport to modify its settings."));
         selenium.click("propertyForm:configs:rowGroup1:0:col0:select");
         selenium.click("propertyForm:configs:topActionsGroup1:button1");
         assertTrue(selenium.getConfirmation().matches("^Selected Transport\\(s\\) will be deleted\\.  Continue[\\s\\S]$"));

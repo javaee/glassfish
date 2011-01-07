@@ -71,7 +71,7 @@ public class TransactionServiceTest extends BaseSeleniumTestClass {
         selenium.type("propertyForm:basicTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
         selenium.type("propertyForm:basicTable:rowGroup1:0:col3:col1St", "value");
         selenium.type("propertyForm:basicTable:rowGroup1:0:col4:col1St", "description");
-        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
+        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
         reset();
 
         clickAndWait("treeForm:tree:configurations:server-config:transactionService:transactionService_link", TRIGGER_TRANSACTION_SERVICE);
