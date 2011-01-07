@@ -105,29 +105,6 @@
     </target>
 
     <target name="start-server" depends="shutdown-server">
-        <!--
-        <exec executable="${executable}">
-            <arg value="--port"/>
-            <arg value="${GUI_ADMIN_PORT}"/>
-            <arg value="delete-domain"/>
-            <arg value="${DOMAIN}"/>
-        </exec>
-
-        <exec executable="${executable}">
-            <arg value="--port"/>
-            <arg value="${GUI_ADMIN_PORT}"/>
-            <arg value="create-domain"/>
-            <arg value="--adminport"/>
-            <arg value="${GUI_ADMIN_PORT}"/>
-            <arg value="--nopassword=true"/>
-            <arg value="--domainproperties"/>
-            <arg value="jms.port=${GUI_JMS_PORT}:domain.jmxPort=${GUI_JMX_PORT}:orb.listener.port=${GUI_ORB_PORT}:http.ssl.port=${GUI_SSL_PORT}:orb.ssl.port=${GUI_ORB_SSL_PORT}:orb.mutualauth.port=${GUI_ORB_SSL_MUTUALAUTH_PORT}:osgi.shell.telnet.port=${GUI_OSGI_SHELL}"/>
-            <arg value="--instanceport"/>
-            <arg value="${GUI_PORT}"/>
-            <arg value="${DOMAIN}"/>
-        </exec>
-        -->
-
         <echo message="***** Starting GlassFish"/>
         <exec executable="${executable}">
             <arg value="start-domain"/>
