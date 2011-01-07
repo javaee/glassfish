@@ -78,6 +78,7 @@
             </facet>
         </sun:title>
 #include "/common/shared/nameSection.inc"
+#include "/common/shared/alertMsg.inc"
 #include "/common/configuration/systemProperties.jsf"
 
         <sun:title>
