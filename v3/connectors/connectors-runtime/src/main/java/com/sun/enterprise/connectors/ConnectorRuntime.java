@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -88,6 +88,7 @@ import com.sun.enterprise.security.jmac.callback.ContainerCallbackHandler;
 import com.sun.enterprise.security.SecurityServicesUtil;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 import org.glassfish.admin.monitor.MonitoringBootstrap;
+import org.glassfish.javaee.services.ResourceManager;
 import org.glassfish.resource.common.PoolInfo;
 import org.glassfish.resource.common.ResourceInfo;
 import org.jvnet.hk2.config.types.Property;
@@ -1549,5 +1550,9 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     public void associateResourceAdapter(String rarName, ResourceAdapterAssociation raa)
             throws ResourceException{
         resourceAdapterAdmService.associateResourceAdapter(rarName,raa);
+    }
+
+    public ResourceManager getGlobalResourceManager(){
+        return habitat.getComponent(ResourceManager.class);
     }
 }

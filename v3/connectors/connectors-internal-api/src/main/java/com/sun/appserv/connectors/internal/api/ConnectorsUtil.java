@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -141,18 +141,22 @@ public class ConnectorsUtil {
 
     public static String getLocation(String moduleName) throws ConnectorRuntimeException {
         String location = null;
-        location = ConfigBeansUtilities.getLocation(moduleName);
-        if(location == null){
-            //check whether its embedded RAR
-            String rarName = getRarNameFromApplication(moduleName);
-            String appName = getApplicationNameOfEmbeddedRar(moduleName);
+        if(ConnectorsUtil.belongsToSystemRA(moduleName)){
+            location = ConnectorsUtil.getSystemModuleLocation(moduleName);
+        }else{
+            location = ConfigBeansUtilities.getLocation(moduleName);
+            if(location == null){
+                //check whether its embedded RAR
+                String rarName = getRarNameFromApplication(moduleName);
+                String appName = getApplicationNameOfEmbeddedRar(moduleName);
 
-            if(appName != null && rarName != null){
-                location = ConfigBeansUtilities.getLocation(appName);
-                if(location != null){
-                    location = location + File.separator + rarName + "_rar";
-                }else{
-                    throw new ConnectorRuntimeException("Unable to find location for module : " + moduleName);
+                if(appName != null && rarName != null){
+                    location = ConfigBeansUtilities.getLocation(appName);
+                    if(location != null){
+                        location = location + File.separator + rarName + "_rar";
+                    }else{
+                        throw new ConnectorRuntimeException("Unable to find location for module : " + moduleName);
+                    }
                 }
             }
         }

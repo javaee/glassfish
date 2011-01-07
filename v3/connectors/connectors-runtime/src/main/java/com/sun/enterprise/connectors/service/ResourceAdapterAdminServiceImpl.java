@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,6 +42,7 @@ package com.sun.enterprise.connectors.service;
 
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
+import com.sun.enterprise.config.serverbeans.Resource;
 import com.sun.enterprise.connectors.ActiveResourceAdapter;
 import com.sun.enterprise.connectors.ConnectorRegistry;
 import com.sun.enterprise.connectors.ConnectorRuntime;
@@ -57,11 +58,8 @@ import javax.naming.NamingException;
 import javax.resource.ResourceException;
 import javax.resource.spi.ResourceAdapter;
 import javax.resource.spi.ResourceAdapterAssociation;
+import java.util.*;
 import java.util.logging.Level;
-import java.util.Set;
-import java.util.List;
-import java.util.HashSet;
-import java.util.ArrayList;
 import java.util.concurrent.*;
 
 import org.jvnet.hk2.config.types.Property;
@@ -384,6 +382,7 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
         if (acr != null) {
             sendStopToResourceAdapter(acr);
 
+/*
             // remove the system rar from class loader chain.
             if(ConnectorsUtil.belongsToSystemRA(moduleName)) {
                 ConnectorClassFinder ccf =
@@ -397,6 +396,7 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
                         "classloader chain : " + systemRarCLRemoved);
                 }
             }
+*/
             return _registry.removeActiveResourceAdapter(moduleName);
         }
         return true;
@@ -522,13 +522,26 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
     public void reCreateActiveResourceAdapter(String moduleName)
             throws ConnectorRuntimeException {
 
+        ConnectorRuntime runtime = ConnectorRuntime.getRuntime();
+
         if (isRarDeployed(moduleName)) {
-            ConnectorApplication app = _registry.getConnectorApplication(moduleName);
-            app.undeployResources();
-            stopAndRemoveActiveResourceAdapter(moduleName);
-            String moduleDir = ConnectorsUtil.getLocation(moduleName);
-            createActiveResourceAdapter(moduleDir, moduleName, app.getClassLoader());
-            _registry.getConnectorApplication(moduleName).deployResources();
+            if(!ConnectorsUtil.belongsToSystemRA(moduleName)){
+                ConnectorApplication app = _registry.getConnectorApplication(moduleName);
+                app.undeployResources();
+                stopAndRemoveActiveResourceAdapter(moduleName);
+                String moduleDir = ConnectorsUtil.getLocation(moduleName);
+                createActiveResourceAdapter(moduleDir, moduleName, app.getClassLoader());
+                _registry.getConnectorApplication(moduleName).deployResources();
+            }else{
+             Collection<Resource> resources =
+                     getResourcesUtil().filterConnectorResources(getResourcesUtil().getGlobalResources(), moduleName, true);
+                runtime.getGlobalResourceManager().undeployResources(resources);
+                stopAndRemoveActiveResourceAdapter(moduleName);
+                String moduleDir = ConnectorsUtil.getLocation(moduleName);
+                createActiveResourceAdapter(moduleDir, moduleName,
+                        runtime.getSystemRARClassLoader(moduleName));
+                runtime.getGlobalResourceManager().deployResources(resources);
+            }
         }
      /*   //No need to deploy the .rar, it may be a case where rar is not deployed yet
         //Also, when the rar is started, RA-Config is anyway used

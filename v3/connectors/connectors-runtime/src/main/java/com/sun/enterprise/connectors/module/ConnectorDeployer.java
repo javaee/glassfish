@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -631,6 +631,7 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
             }
             boolean isEAR = app.containsSnifferType(EAR);
             String moduleName = appName;
+            ResourcesUtil resourcesUtil = ResourcesUtil.createInstance();
             if (isEAR) {
                 List<Module> modules = app.getModule();
                 for (Module module : modules) {
@@ -640,7 +641,7 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
                         if (moduleName.toLowerCase().endsWith(".rar")) {
                             int index = moduleName.lastIndexOf(".rar");
                             moduleName = moduleName.substring(0, index);
-                            if (ConnectorApplication.filterConnectorResources
+                            if (resourcesUtil.filterConnectorResources
                                     (resourceManager.getAllResources(), moduleName, true).size() > 0) {
                                 setFailureStatus(dc, moduleName);
                                 return;
@@ -649,7 +650,7 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
                     }
                 }
             } else {
-                if (ConnectorApplication.filterConnectorResources
+                if (resourcesUtil.filterConnectorResources
                         (resourceManager.getAllResources(), moduleName, true).size() > 0) {
                     setFailureStatus(dc, moduleName);
                 }

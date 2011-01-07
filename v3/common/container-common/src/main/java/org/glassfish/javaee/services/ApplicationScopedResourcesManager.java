@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,12 +41,10 @@
 package org.glassfish.javaee.services;
 
 import org.glassfish.resource.common.ResourceInfo;
+import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.component.PostConstruct;
-import org.jvnet.hk2.component.PreDestroy;
-import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.Inhabitant;
+import org.jvnet.hk2.component.*;
 import org.jvnet.hk2.config.*;
 import org.glassfish.internal.api.*;
 
@@ -68,6 +66,7 @@ import org.jvnet.hk2.config.ObservableBean;
  * startup, create/update/delete of resource/pool
  * @author Jagadish Ramu
  */
+@Scoped(Singleton.class)
 @Service(name="ApplicationScopedResourcesManager")
 public class ApplicationScopedResourcesManager implements PostStartup, PostConstruct, PreDestroy, ConfigListener {
 

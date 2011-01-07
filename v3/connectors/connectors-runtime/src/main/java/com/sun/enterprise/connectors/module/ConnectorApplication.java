@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -81,6 +81,7 @@ public class ConnectorApplication implements ApplicationContainer, EventListener
     private Events event;
     private ConnectorDescriptor descriptor;
     private static StringManager localStrings = StringManager.getManager(ConnectorRuntime.class);
+    private ResourcesUtil resourcesUtil;
 
     public ConnectorApplication(String moduleName, String appName, ResourceManager resourceManager,
                                 ApplicationScopedResourcesManager asrManager, ClassLoader loader,
@@ -93,6 +94,7 @@ public class ConnectorApplication implements ApplicationContainer, EventListener
         this.applicationName = appName;
         this.event = event;
         this.descriptor = descriptor;
+        this.resourcesUtil = ResourcesUtil.createInstance();
     }
 
     /**
@@ -138,7 +140,7 @@ public class ConnectorApplication implements ApplicationContainer, EventListener
 
     private void deployGlobalResources() {
         Resources allResources = resourceManager.getAllResources();
-        Collection<Resource> resources = filterConnectorResources(allResources, moduleName, false);
+        Collection<Resource> resources = resourcesUtil.filterConnectorResources(allResources, moduleName, false);
         resourceManager.deployResources(resources);
     }
 
@@ -151,22 +153,6 @@ public class ConnectorApplication implements ApplicationContainer, EventListener
         }
     }
 */
-    static Collection<Resource> filterConnectorResources(Resources allResources, String moduleName, boolean includePools) {
-        //TODO V3 needed for redeploy of module, what happens to the listeners of these resources ?
-        Collection<ConnectorConnectionPool> connectionPools =
-                ConnectorsUtil.getAllPoolsOfModule(moduleName, allResources);
-        Collection<String> poolNames = ConnectorsUtil.getAllPoolNames(connectionPools);
-        Collection<Resource> resources = ConnectorsUtil.getAllResources(poolNames, allResources);
-        Collection<AdminObjectResource> adminObjectResources =
-                ResourcesUtil.createInstance().getEnabledAdminObjectResources(moduleName);
-        resources.addAll(adminObjectResources);
-        if(includePools){
-            Collection<ConnectorConnectionPool> allPoolsOfModule = ConnectorsUtil.getAllPoolsOfModule(moduleName, allResources);
-            resources.addAll(allPoolsOfModule);
-        }
-        return resources;
-    }
-
     /**
      * undeploy all resources/pools pertaining to this resource adapter
      */
@@ -189,7 +175,8 @@ public class ConnectorApplication implements ApplicationContainer, EventListener
         boolean status;
         //TODO ASR : should we undeploy app-scoped connector resources also ?
         //TODO ASR : should we stop deployment by checking app-scoped connector resources also ?
-        Collection<Resource> resources = filterConnectorResources(resourceManager.getAllResources(), moduleName, true);
+        Collection<Resource> resources =
+                resourcesUtil.filterConnectorResources(resourceManager.getAllResources(), moduleName, true);
         if (failIfResourcesExist && resources.size() > 0) {
             String message = "one or more resources of resource-adapter [ " + moduleName + " ] exist, " +
                     "use '--cascade=true' to delete them during undeploy";
@@ -330,7 +317,7 @@ public class ConnectorApplication implements ApplicationContainer, EventListener
                 if (dcp.origin != OpsParams.Origin.deploy) {
                     if (dcp.origin == OpsParams.Origin.undeploy) {
                         if (!(dcp._ignoreCascade || dcp.cascade)) {
-                            if (filterConnectorResources(resourceManager.getAllResources(), moduleName, true).size() > 0) {
+                            if (resourcesUtil.filterConnectorResources(resourceManager.getAllResources(), moduleName, true).size() > 0) {
                                 String message = localStrings.getString("con.deployer.resources.exist", moduleName);
                                 _logger.log(Level.WARNING, "resources.of.rar.exist", moduleName);
 

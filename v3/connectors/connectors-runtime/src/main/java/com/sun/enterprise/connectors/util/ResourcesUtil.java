@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -98,7 +98,7 @@ public class ResourcesUtil {
     private ResourcesUtil(){
     }
 
-    private Resources getGlobalResources(){
+    public Resources getGlobalResources(){
         ResourceInfo resourceInfo = null;
         return getRuntime().getResources(resourceInfo);
     }
@@ -188,7 +188,6 @@ public class ResourcesUtil {
         return resourcesUtil;
     }
 
-
     /**
      * This method takes in an admin JdbcConnectionPool and returns the RA
      * that it belongs to.
@@ -200,19 +199,19 @@ public class ResourcesUtil {
     public String getRANameofJdbcConnectionPool(JdbcConnectionPool pool) {
         String dsRAName = ConnectorConstants.JDBCDATASOURCE_RA_NAME;
 
-        Class dsClass = null;
+        Class clz = null;
 
-        if(pool.getDatasourceClassname() != null) {
+        if(pool.getDatasourceClassname() != null && !pool.getDatasourceClassname().isEmpty()) {
             try {
-                dsClass = ClassLoadingUtility.loadClass(pool.getDatasourceClassname());
+                clz = ClassLoadingUtility.loadClass(pool.getDatasourceClassname());
             } catch (ClassNotFoundException cnfe) {
                 Object params[] = new Object[]{dsRAName, pool.getName()};
                 _logger.log(Level.WARNING, "using.default.ds", params);
                 return dsRAName;
             }
-        } else if(pool.getDriverClassname() != null) {
+        } else if(pool.getDriverClassname() != null && !pool.getDriverClassname().isEmpty()) {
             try {
-                dsClass = ClassLoadingUtility.loadClass(pool.getDriverClassname());
+                clz = ClassLoadingUtility.loadClass(pool.getDriverClassname());
             } catch (ClassNotFoundException cnfe) {
                 Object params[] = new Object[]{dsRAName, pool.getName()};
                 _logger.log(Level.WARNING, "using.default.ds", params);
@@ -220,41 +219,41 @@ public class ResourcesUtil {
             }            
         }
 
-        //check if its XA
-        if (ConnectorConstants.JAVAX_SQL_XA_DATASOURCE.equals(pool.getResType())) {
-            if (javax.sql.XADataSource.class.isAssignableFrom(dsClass)) {
-                return ConnectorConstants.JDBCXA_RA_NAME;
+        if(clz != null){
+            //check if its XA
+            if (ConnectorConstants.JAVAX_SQL_XA_DATASOURCE.equals(pool.getResType())) {
+                if (javax.sql.XADataSource.class.isAssignableFrom(clz)) {
+                    return ConnectorConstants.JDBCXA_RA_NAME;
+                }
             }
-        }
 
-        //check if its CP
-        if (ConnectorConstants.JAVAX_SQL_CONNECTION_POOL_DATASOURCE.equals(pool.getResType())) {
-            if (javax.sql.ConnectionPoolDataSource.class.isAssignableFrom(
-                    dsClass)) {
-                return ConnectorConstants.JDBCCONNECTIONPOOLDATASOURCE_RA_NAME;
+            //check if its CP
+            if (ConnectorConstants.JAVAX_SQL_CONNECTION_POOL_DATASOURCE.equals(pool.getResType())) {
+                if (javax.sql.ConnectionPoolDataSource.class.isAssignableFrom(
+                        clz)) {
+                    return ConnectorConstants.JDBCCONNECTIONPOOLDATASOURCE_RA_NAME;
+                }
             }
-        }
-        
-        //check if its DM
-        if(ConnectorConstants.JAVA_SQL_DRIVER.equals(pool.getResType())) {
-            if(java.sql.Driver.class.isAssignableFrom(dsClass)) {
-                return ConnectorConstants.JDBCDRIVER_RA_NAME;
-            }
-        }
 
-        //check if its DS
-        if ("javax.sql.DataSource".equals(pool.getResType())) {
-            if (javax.sql.DataSource.class.isAssignableFrom(dsClass)) {
-                return dsRAName;
+            //check if its DM
+            if(ConnectorConstants.JAVA_SQL_DRIVER.equals(pool.getResType())) {
+                if(java.sql.Driver.class.isAssignableFrom(clz)) {
+                    return ConnectorConstants.JDBCDRIVER_RA_NAME;
+                }
+            }
+
+            //check if its DS
+            if ("javax.sql.DataSource".equals(pool.getResType())) {
+                if (javax.sql.DataSource.class.isAssignableFrom(clz)) {
+                    return dsRAName;
+                }
             }
         }
-
         Object params[] = new Object[]{dsRAName, pool.getName()};
         _logger.log(Level.WARNING, "using.default.ds", params);
         //default to __ds
         return dsRAName;
     }
-
 
     public DeferredResourceConfig getDeferredResourceConfig(ResourceInfo resourceInfo) {
         DeferredResourceConfig resConfig = getDeferredConnectorResourceConfigs(resourceInfo);
@@ -1157,4 +1156,21 @@ public class ResourcesUtil {
         ResourceInfo resourceInfo = new ResourceInfo(jndiName, appName, moduleName);
         return getResource(resourceInfo, resourceType);
     }
+
+    public Collection<Resource> filterConnectorResources(Resources allResources, String moduleName, boolean includePools) {
+        //TODO V3 needed for redeploy of module, what happens to the listeners of these resources ?
+        Collection<ConnectorConnectionPool> connectionPools =
+                ConnectorsUtil.getAllPoolsOfModule(moduleName, allResources);
+        Collection<String> poolNames = ConnectorsUtil.getAllPoolNames(connectionPools);
+        Collection<Resource> resources = ConnectorsUtil.getAllResources(poolNames, allResources);
+        Collection<AdminObjectResource> adminObjectResources =
+                ResourcesUtil.createInstance().getEnabledAdminObjectResources(moduleName);
+        resources.addAll(adminObjectResources);
+        if(includePools){
+            Collection<ConnectorConnectionPool> allPoolsOfModule = ConnectorsUtil.getAllPoolsOfModule(moduleName, allResources);
+            resources.addAll(allPoolsOfModule);
+        }
+        return resources;
+    }
+
 }
