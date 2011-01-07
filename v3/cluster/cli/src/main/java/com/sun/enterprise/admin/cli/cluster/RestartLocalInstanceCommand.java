@@ -57,6 +57,7 @@ import org.jvnet.hk2.component.PerLookup;
 @Service(name = "restart-local-instance")
 @Scoped(PerLookup.class)
 public class RestartLocalInstanceCommand extends StopLocalInstanceCommand {
+
     @Param(name = "debug", optional = true)
     private Boolean debug;
     @Inject
@@ -64,7 +65,11 @@ public class RestartLocalInstanceCommand extends StopLocalInstanceCommand {
 
     @Override
     protected final int doRemoteCommand() throws CommandException {
-        // first, find out how long the server has been up
+        // see StopLocalInstance for comments.  These 2 lines can be refactored.
+        setLocalPassword();
+        programOpts.setInteractive(false);
+
+        // find out how long the server has been up
         long uptimeOldServer = getUptime();  // may throw CommandException
 
         // get the timestamp BEFORE calling the server!
