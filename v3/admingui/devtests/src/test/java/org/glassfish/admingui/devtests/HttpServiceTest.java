@@ -68,7 +68,6 @@ public class HttpServiceTest extends BaseSeleniumTestClass {
         selenium.type("form1:basicTable:rowGroup1:0:col4:col1St", "description");
         clickAndWait("form1:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
         
-        clickAndWait("treeForm:tree:ct", "Please Register");
         clickAndWait("treeForm:tree:configurations:server-config:httpService:httpService_link", TRIGGER_HTTP_SERVICE);
         assertEquals(true, selenium.isChecked("form1:propertySheet:http:acLog:ssoEnabled"));
         assertTrue(selenium.isTextPresent(TRIGGER_HTTP_SERVICE));
