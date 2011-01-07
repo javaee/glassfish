@@ -410,6 +410,10 @@ public class BaseSeleniumTestClass {
         */
     }
     
+    protected boolean isTextPresent(String text) {
+        return selenium.isTextPresent(resolveTriggerText(text));
+    }
+    
     protected void selectDropdownOption(String id, String label) {
         label = resolveTriggerText(label);
         selenium.select(id, "label="+label);
