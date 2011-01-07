@@ -5270,11 +5270,6 @@ public class StandardContext
             // Notify our interested LifecycleListeners
             lifecycle.fireLifecycleEvent(START_EVENT, null);
             // END SJSAS 8.1 5049111
-
-            // START SJSAS 8.1 5049111
-            // Notify our interested LifecycleListeners
-            // lifecycle.fireLifecycleEvent(START_EVENT, null);
-            // END SJSAS 8.1 504911
         } catch (Throwable t) {
             throw new LifecycleException(t);
         } finally {
@@ -5572,6 +5567,22 @@ public class StandardContext
                 ((Lifecycle) loader).stop();
             }
             */
+        } catch(Throwable t) {
+            // started was "true" when it first enters the try block.
+            // Note that it is set to false after STOP_EVENT is fired.
+            // One need to fire STOP_EVENT to clean up naming information 
+            // if START_EVENT is processed successfully.
+            if (started) {
+                lifecycle.fireLifecycleEvent(STOP_EVENT, null);
+            }
+
+            if (t instanceof RuntimeException) {
+                throw (RuntimeException)t;
+            } else if (t instanceof LifecycleException) {
+                throw (LifecycleException)t;
+            } else {
+                throw new LifecycleException(t);
+            }
         } finally {
 
             // Unbinding thread
