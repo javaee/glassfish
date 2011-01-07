@@ -98,6 +98,7 @@ public class BaseSeleniumTestClass {
     private static String currentTestClass = "";
     protected static boolean debug = Boolean.parseBoolean(getParameter("debug", "false"));
     private boolean processingLogin = false;
+    protected Logger logger = Logger.getLogger(BaseSeleniumTestClass.class.getName());
     
     private static Map<String, String> bundles = new HashMap<String, String>() {{
         put("i18n", "org.glassfish.admingui.core.Strings"); // core
@@ -415,8 +416,16 @@ public class BaseSeleniumTestClass {
     }
     
     protected void selectDropdownOption(String id, String label) {
-        label = resolveTriggerText(label);
-        selenium.select(id, "label="+label);
+        try {
+            label = resolveTriggerText(label);
+            selenium.select(id, "label="+label);
+        } catch (SeleniumException se) {
+            logger.info("An invalid option was requested.  Here are the valid options:");
+            for (String option : selenium.getSelectOptions(id)) {
+                logger.log(Level.INFO, "\t{0}", option);
+            }
+            throw se;
+        }
     }
 
     protected void selectTableRowByValue(String tableId, String value) {
@@ -722,7 +731,6 @@ public class BaseSeleniumTestClass {
     
     protected void logDebugMessage(String message) {
         if (debug) {
-            Logger logger = Logger.getLogger(BaseSeleniumTestClass.class.getName());
             logger.info(message);
         }
     }
