@@ -5,7 +5,7 @@ import com.sun.s1asdev.custom.resource.CustomResourceJavaBean;
 import javax.annotation.Resource;
 import javax.ejb.*;
 import javax.naming.*;
-import javax.sql.*;
+import java.rmi.RemoteException;
 import java.sql.*;
 import java.rmi.RemoteException;
 import java.util.Properties;
@@ -51,6 +51,21 @@ public class SimpleBMPBean {
     Properties myPropertiesWithXMLFileWithValuesLookup;
 
 
+    private boolean testAndPrintProperties(String resourceName, Properties properties){
+        boolean propertiesFound = false;
+        System.out.println("resource-name : " + resourceName);
+        if(properties != null){
+            for(Object o : properties.keySet()){
+                propertiesFound = true;
+                System.out.println("key : " + o + ", value : " + properties.get(o));
+            }
+        }else{
+            propertiesFound = false;
+                System.out.println("null properties from resource : " + resourceName);
+            }
+        return propertiesFound;
+    }
+
     public boolean testLookupNames() throws RemoteException{
 
         System.out.println("myPropertiesFileLookup : " + myPropertiesFileLookup);
@@ -59,8 +74,18 @@ public class SimpleBMPBean {
         System.out.println("myPropertiesWithValuesLookup : " + myPropertiesWithValuesLookup);
         System.out.println("myPropertiesWithXMLFileWithValuesLookup : " + myPropertiesWithXMLFileWithValuesLookup);
 
-        return  myPropertiesFileLookup != null && mySimplePropertiesLookup != null
+        boolean  myPropertiesFileLookupBoolean = testAndPrintProperties("myPropertiesFileLookup", myPropertiesFileLookup);
+        boolean  mySimplePropertiesLookupBoolean = testAndPrintProperties("mySimplePropertiesLookup", mySimplePropertiesLookup);
+        boolean  myPropertiesXMLFileLookupBoolean = testAndPrintProperties("myPropertiesXMLFileLookup", myPropertiesXMLFileLookup);
+        boolean  myPropertiesWithValuesLookupBoolean = testAndPrintProperties("myPropertiesWithValuesLookup", myPropertiesWithValuesLookup);
+        boolean  myPropertiesWithXMLFileWithValuesLookupBoolean = testAndPrintProperties("myPropertiesWithXMLFileWithValuesLookup", myPropertiesWithXMLFileWithValuesLookup);
+
+        boolean injectionSucceeded = myPropertiesFileLookup != null && mySimplePropertiesLookup != null
                 && myPropertiesXMLFileLookup != null && myPropertiesWithValuesLookup != null && myPropertiesWithXMLFileWithValuesLookup != null;
+        boolean nonEmptyProperties =  myPropertiesFileLookupBoolean  && mySimplePropertiesLookupBoolean &&  myPropertiesXMLFileLookupBoolean
+                && myPropertiesWithValuesLookupBoolean && myPropertiesWithXMLFileWithValuesLookupBoolean;
+
+        return injectionSucceeded && nonEmptyProperties;
     }
 
     public boolean testMappedNames() throws RemoteException{
@@ -71,8 +96,19 @@ public class SimpleBMPBean {
         System.out.println("myPropertiesWithValues : " + myPropertiesWithValues);
         System.out.println("myPropertiesWithXMLFileWithValues : " + myPropertiesWithXMLFileWithValues);
 
-        return  myPropertiesFile != null && mySimpleProperties != null
+        boolean myPropertiesFileBoolean= testAndPrintProperties("myPropertiesFile", myPropertiesFile);
+        boolean mySimplePropertiesBoolean= testAndPrintProperties("mySimpleProperties", mySimpleProperties);
+        boolean myPropertiesXMLFileBoolean= testAndPrintProperties("myPropertiesXMLFile", myPropertiesXMLFile);
+        boolean myPropertiesWithValuesBoolean= testAndPrintProperties("myPropertiesWithValues", myPropertiesWithValues);
+        boolean myPropertiesWithXMLFileWithValuesBoolean= testAndPrintProperties("myPropertiesWithXMLFileWithValues", myPropertiesWithXMLFileWithValues);
+
+        boolean injectionSucceeded = myPropertiesFile != null && mySimpleProperties != null
                 && myPropertiesXMLFile != null && myPropertiesWithValues != null && myPropertiesWithXMLFileWithValues != null;
+
+        boolean nonEmptyProperties =  myPropertiesFileBoolean &&  mySimplePropertiesBoolean &&  myPropertiesXMLFileBoolean &&
+                 myPropertiesWithValuesBoolean &&   myPropertiesWithXMLFileWithValuesBoolean;
+
+        return injectionSucceeded && nonEmptyProperties;
     }
 
 
