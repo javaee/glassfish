@@ -245,7 +245,7 @@ public class CLIBootstrap {
 
         otherJVMOptions = new JVMOption("-.*", userVMArgs.evOtherJVMOptions);
 
-        arguments = new CommandLineElement(".*");
+        arguments = new CommandLineElement(".*", Pattern.DOTALL);
 
         initCommandLineElements();
     }
@@ -341,7 +341,11 @@ public class CLIBootstrap {
         final List<String> values = new ArrayList<String>();
 
         CommandLineElement(String patternString) {
-            pattern = Pattern.compile(patternString);
+            this(patternString, 0);
+        }
+
+        CommandLineElement(String patternString, int flags) {
+            pattern = Pattern.compile(patternString, flags);
         }
 
         final boolean matchesPattern(final String element) {
