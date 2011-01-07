@@ -149,12 +149,6 @@
             <sun:property id="clusterNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.cluster.ClusterName}" >
                 <sun:staticText id="clusterName"text="#{pageSession.clusterName}" />
             </sun:property>
-            <sun:property id="jvmProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.inst.JVMLabel}">
-                <sun:hyperlink id="jvmlink" text="$resource{i18nc.inst.jvmReport}"
-                    onClick="javascript:
-                    var jvmWin = window.open('#{request.contextPath}/common/appServer/jvmReport.jsf?reportType=summary&instanceName=#{pageSession.clusterName}','JVMReport','width='+(screen.width-300)+',height='+(screen.height-100)+',top=0,left=0,toolbar=no,status=no,menubar=no,scrollbars=yes,resizable=yes,directories=no,location=no');
-                    jvmWin.focus(); return false;" />
-            </sun:property>
             <sun:property id="configNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Configuration}" >
                 <sun:hyperlink id="configlink" text="#{pageSession.valueMap['configRef']}"
                     url="#{request.contextPath}/common/configuration/configuration.jsf?configName=#{pageSession.valueMap['configRef']}" />

@@ -48,15 +48,13 @@
         setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
         setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings");
         getRequestValue(key="instanceName" value="#{pageSession.instanceName}");
+        getRequestValue(key="clusterName" value="#{pageSession.clusterName}");
         urlencode(value="#{pageSession.instanceName}" encoding="UTF-8" result="#{pageSession.encodedInstanceName}");
         getRequestValue(key="reportType" value="#{pageSession.reportType}" default="summary");
         urlencode(value="#{pageSession.reportType}" encoding="UTF-8" result="#{pageSession.encodedReportType}");
 
         getRequestValue(key="config" value="#{pageSession.config}");
-        if ("!#{pageSession.config}") {
-            setPageSessionAttribute(key="config", value="server-config");
-        }
-
+        setPageSessionAttribute(key="ep", value="/servers/server/#{pageSession.encodedInstanceName}/generate-jvm-report.json");
     />
     <sun:html id="html2"> 
         <sun:head id="propertyhead" title="JVM Report" >
@@ -84,13 +82,11 @@
                     <sun:propertySheet id="propertySheet">
                         <event>
                             <!beforeCreate
-                                gf.createAttributeMap(keys={"target", "type"}
-                                    values={"$pageSession{encodedInstanceName}", "$pageSession{encodedReportType}"},
+                                gf.createAttributeMap(keys={"type"}
+                                    values={"$pageSession{encodedReportType}"},
                                     map="#{requestScope.attrs}");
-
-                                    gf.restRequest(endpoint="#{sessionScope.REST_URL}/configs/config/server-config/java-config/generate-jvm-report.json",
-                                    method="POST",
-                                    attrs="#{requestScope.attrs}",
+                                    gf.restRequest(endpoint="#{sessionScope.REST_URL}#{ep}?type=#{pageSession.reportType}&__remove_empty_entries__=true",
+                                    method="get",
                                     result="#{pageSession.report}");
                             />
                         </event>
@@ -102,15 +98,13 @@
                                         values={"summary", "memory", "class", "thread"}>
                                     <!command                                                                                
 
-                                        gf.createAttributeMap(keys={"target", "type"}
-                                            values={"$pageSession{instanceName}", "$pageSession{reportType}"},
+                                        gf.createAttributeMap(keys={"type"}
+                                            values={"$pageSession{encodedReportType}"},
                                             map="#{requestScope.attrs}");
 
-                                        gf.restRequest(endpoint="#{sessionScope.REST_URL}/configs/config/server-config/java-config/generate-jvm-report.json",
-                                        method="POST",
-                                        attrs="#{requestScope.attrs}",
+                                        gf.restRequest(endpoint="#{sessionScope.REST_URL}#{ep}?type=#{pageSession.reportType}&__remove_empty_entries__=true",
+                                        method="get",
                                         result="#{pageSession.report}");
-
                                     />
                                 </sun:dropDown>
                             </sun:property>                          
@@ -119,7 +113,8 @@
                             <sun:property id="ReportProp"  labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" readOnly="#{true)" >
                              "<pre><font size="3" /> 
                                 <sun:staticText id="Report" text="#{pageSession.report.data.message}"/>
-                             "</pre>
+                                <sun:staticText id="Report1" text="#{pageSession.report.data.subReports[0].properties.message}"/>
+                            "</pre>
                             </sun:property>                  
                         </sun:propertySheetSection>
                     </sun:propertySheet>
