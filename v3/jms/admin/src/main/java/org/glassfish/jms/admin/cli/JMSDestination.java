@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -551,7 +551,7 @@ public abstract class JMSDestination {
             throw jae;
         }
         //XXX: To refactor into a Generic attribute type mapper, so that it is extensible later.
-            protected AttributeList convertProp2Attrs(Properties destProps) {
+        protected AttributeList convertProp2Attrs(Properties destProps) {
 
             AttributeList destAttrs = new AttributeList();
 
@@ -623,10 +623,37 @@ public abstract class JMSDestination {
                          } else if (propName.equals("ConsumerFlowLimit")) {
                              destAttrs.add(new Attribute("ConsumerFlowLimit",
                                                          Long.valueOf(destProps.getProperty("ConsumerFlowLimit"))));
+                         } else if (propName.equals("LocalDeliveryPreferred")) {
+                             destAttrs.add(new Attribute("LocalDeliveryPreferred",
+                                                         getBooleanValue(destProps.getProperty("LocalDeliveryPreferred"))));
+                         } else if (propName.equals("ValidateXMLSchemaEnabled")) {
+                             destAttrs.add(new Attribute("ValidateXMLSchemaEnabled",
+                                                         getBooleanValue(destProps.getProperty("ValidateXMLSchemaEnabled"))));
+                         } else if (propName.equals("UseDMQ")) {
+                             destAttrs.add(new Attribute("UseDMQ",
+                                                         getBooleanValue(destProps.getProperty("UseDMQ"))));
+                         } else if (propName.equals("LocalOnly")) {
+                             destAttrs.add(new Attribute("LocalOnly",
+                                                         getBooleanValue(destProps.getProperty("LocalOnly"))));
+                         } else if (propName.equals("ReloadXMLSchemaOnFailure")) {
+                             destAttrs.add(new Attribute("ReloadXMLSchemaOnFailure",
+                                                         getBooleanValue(destProps.getProperty("ReloadXMLSchemaOnFailure"))));
+                         } else if (propName.equals("MaxNumProducers")) {
+                             destAttrs.add(new Attribute("MaxNumProducers",
+                                                         Integer.valueOf(destProps.getProperty("MaxNumProducers"))));
+                         } else if (propName.equals("MaxNumBackupConsumers")) {
+                             destAttrs.add(new Attribute("MaxNumBackupConsumers",
+                                                         Integer.valueOf(destProps.getProperty("MaxNumBackupConsumers"))));
+                         } else if (propName.equals("LimitBehavior")) {
+                             destAttrs.add(new Attribute("LimitBehavior",
+                                                         destProps.getProperty("LimitBehavior")));
                          }
                      }
             return destAttrs;
         }
 
-
+        private Boolean getBooleanValue(String propValue) {
+            return propValue.equalsIgnoreCase("true") ? Boolean.TRUE : Boolean.FALSE;
+//            UseDMQ
+        }
 }
