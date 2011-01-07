@@ -53,7 +53,7 @@
     <property environment="env"/>
 
     <property name="GUI_PORT" value="50001"/>
-    <property name="GUI_ADMIN_PORT" value="50002"/>
+    <property name="GUI_ADMIN_PORT" value="4848"/>
     <property name="GUI_JMS_PORT" value="50003"/>
     <property name="GUI_JMX_PORT" value="50004"/>
     <property name="GUI_ORB_PORT" value="50005"/>
