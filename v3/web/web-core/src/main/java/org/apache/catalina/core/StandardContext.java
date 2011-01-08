@@ -169,9 +169,6 @@ public class StandardContext
         if (Globals.IS_SECURITY_ENABLED) {
             mySecurityManager = (MySecurityManager)AccessController.doPrivileged(
                     new PrivilegedCreateSecurityManager());
-        } else {
-            // keep this for the case when security is enabled later
-            mySecurityManager = new MySecurityManager();
         }
         
         //START PWC 6403328
@@ -2826,7 +2823,7 @@ public class StandardContext
         if (webappLoader == null) {
             return null;
         }
-        if (Globals.IS_SECURITY_ENABLED) {
+        if (mySecurityManager != null) {
             mySecurityManager.checkGetClassLoaderPermission(webappLoader);
         }
         return webappLoader;
