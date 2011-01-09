@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -3449,6 +3449,47 @@ public class Request
     }
     // END CR 6309511
 
+    /**
+     * Parses and removes any session version (if present) from the request
+     * URI.
+     *
+     */
+    protected void parseSessionVersion(CharChunk uriCC) {
+
+        String sessionVersionString = null;
+
+        int semicolon = uriCC.indexOf(Globals.SESSION_VERSION_PARAMETER, 0,
+                                      Globals.SESSION_VERSION_PARAMETER.length(),
+                                      0);
+        if (semicolon > 0) {
+
+            int start = uriCC.getStart();
+            int end = uriCC.getEnd();
+
+            int sessionVersionStart = start + semicolon
+                + Globals.SESSION_VERSION_PARAMETER.length();
+            int semicolon2 = uriCC.indexOf(';', sessionVersionStart);
+            if (semicolon2 >= 0) {
+                sessionVersionString = new String(
+                    uriCC.getBuffer(),
+                    sessionVersionStart, 
+                    semicolon2 - semicolon - Globals.SESSION_VERSION_PARAMETER.length());
+            } else {
+                sessionVersionString = new String(
+                    uriCC.getBuffer(),
+                    sessionVersionStart, 
+                    end - sessionVersionStart);
+            }
+
+            parseSessionVersionString(sessionVersionString);
+
+            if (!coyoteRequest.requestURI().getByteChunk().isNull()) {
+                removeSessionVersionFromRequestURI();
+            }
+        }
+
+    }
+
     // START SJSWS 6376484
     /**
      * Extracts the session ID from the request URI.
@@ -3476,6 +3517,36 @@ public class Request
         }
     }
     // END SJSWS 6376484
+
+    /**
+     * Removes the session version from the request URI.
+     */
+    protected void removeSessionVersionFromRequestURI() {
+
+        int start, end, sessionVersionStart, semicolon, semicolon2;
+
+        ByteChunk uriBC = coyoteRequest.requestURI().getByteChunk();
+        start = uriBC.getStart();
+        end = uriBC.getEnd();
+        semicolon = uriBC.indexOf(Globals.SESSION_VERSION_PARAMETER, 0,
+                                  Globals.SESSION_VERSION_PARAMETER.length(),
+                                  0);
+        if (semicolon > 0) {
+            sessionVersionStart = start + semicolon;
+            semicolon2 = uriBC.indexOf
+                (';', semicolon + Globals.SESSION_VERSION_PARAMETER.length());
+            uriBC.setEnd(start + semicolon);
+            byte[] buf = uriBC.getBuffer();
+            if (semicolon2 >= 0) {
+                for (int i = 0; i < end - start - semicolon2; i++) {
+                    buf[start + semicolon + i] 
+                        = buf[start + i + semicolon2];
+                }
+                uriBC.setBytes(buf, start, semicolon 
+                               + (end - start - semicolon2));
+            }
+        }
+    }
 
     /*
      * Parses the given session version string into its components. Each
