@@ -44,6 +44,7 @@ import com.thoughtworks.selenium.Selenium;
 import com.thoughtworks.selenium.SeleniumException;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -65,7 +66,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.ResourceBundle;
-import java.util.regex.Pattern;
 import org.junit.AfterClass;
 import org.junit.Rule;
 import org.openqa.selenium.By;
@@ -168,6 +168,9 @@ public class BaseSeleniumTestClass {
     @AfterClass
     public static void captureLog() {
         try {
+            selenium.stop();
+            selenium = null;
+
             if (!currentTestClass.isEmpty() && !debug) {
                 URL url = new URL("http://localhost:" + getParameter("admin.port", "4848") + "/management/domain/view-log");
     //            URLConnection urlC = url.openConnection();
@@ -182,8 +185,8 @@ public class BaseSeleniumTestClass {
                 in.close();
                 out.close();
             }
-            selenium.stop();
-            selenium = null;
+        } catch (FileNotFoundException fnfe) {
+            //
         } catch (Exception ex) {
             Logger.getLogger(BaseSeleniumTestClass.class.getName()).log(Level.INFO, null, ex);
         }

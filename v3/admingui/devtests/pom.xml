@@ -60,7 +60,7 @@
     </repositories>
 
     <properties>
-        <selenium.version>2.0a6</selenium.version>
+        <selenium.version>2.0b1</selenium.version>
     </properties>
 
     <dependencies>
@@ -175,6 +175,7 @@
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
                 <configuration>
                     <source>1.6</source>
                     <target>1.6</target>
@@ -182,12 +183,21 @@
             </plugin>
             <plugin>
                 <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.5</version>
                 <configuration>
                     <skip>true</skip>
                 </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.7.1</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.maven.surefire</groupId>
+                        <artifactId>surefire-junit47</artifactId>
+                        <version>2.7.1</version>
+                    </dependency>
+                </dependencies>
                 <configuration>
                     <forkMode>never</forkMode>
                     <!--
@@ -197,6 +207,7 @@
             </plugin>
             <plugin>
                 <artifactId>maven-clean-plugin</artifactId>
+                <version>2.4.1</version>
                 <executions>
                     <execution>
                         <id>auto-clean</id>
@@ -210,6 +221,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
+                <version>2.3.1</version>
                 <executions>
                     <execution>
                         <id>package-tests</id>
