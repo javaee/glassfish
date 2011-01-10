@@ -57,6 +57,10 @@
         <param name="wsimport.args"
                value="-keep -d ${build.classes.dir}/client http://${http.host}:${http.port}/WSHelloEJBService/WSHelloEJB?WSDL"/>
       </antcall>
+
+      <replace file="client/Client.java" value="${http.host}" token="HTTP_HOST"/>
+      <replace file="client/Client.java" value="${http.port}" token="HTTP_PORT"/>
+
       <javac srcdir="." destdir="${build.classes.dir}/client" 
             classpath="${env.APS_HOME}/lib/reporter.jar:${env.S1AS_HOME}/lib/j2ee.jar:${env.S1AS_HOME}/lib/webservices-rt.jar:${env.S1AS_HOME}/lib/webservices-tools.jar" 
             includes="client/**"/>
@@ -82,6 +86,8 @@
         <param name="client-class" value="client.Client"/>
         <param name="other-args" value="webservicerefs-test"/>
       </antcall>
+      <replace file="client/Client.java" token="${http.host}" value="HTTP_HOST"/>
+     <replace file="client/Client.java" token="${http.port}" value="HTTP_PORT"/>
     </target>
 </project>
 

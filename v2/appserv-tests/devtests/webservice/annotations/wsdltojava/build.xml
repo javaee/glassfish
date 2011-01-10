@@ -30,6 +30,8 @@
 
     <target name="run-wsimport">
       <mkdir dir="${build.classes.dir}"/>
+      <replace file="HttpTestService.wsdl" value="${http.host}" token="HTTP_HOST"/>
+      <replace file="HttpTestService.wsdl" value="${http.port}" token="HTTP_PORT"/>
       <antcall target="wsimport">
         <param name="wsimport.args"
                value="-wsdllocation WEB-INF/wsdl/HttpTestService.wsdl -keep -b customservice.xml -d ${build.classes.dir} HttpTestService.wsdl"/>
@@ -72,6 +74,10 @@
         <param name="client-class" value="client.Client"/>
         <param name="other-args" value="basic-wsdl-to-java-test-case"/>
       </antcall>
+
+      <!--restore the tokens back in file--> 
+      <replace file="HttpTestService.wsdl" token="${http.host}" value="HTTP_HOST"/>
+      <replace file="HttpTestService.wsdl" token="${http.port}" value="HTTP_PORT"/>
     </target>
 </project>
 

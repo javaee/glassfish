@@ -12,8 +12,8 @@ import ejb_endpoint.WSHello;
 import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
 
 @WebServiceRefs({
-        @WebServiceRef(name="service/MyServletService", type=servlet_endpoint.ServletHelloService.class, wsdlLocation="http://localhost:8080/webservicerefs/webservice/ServletHelloService?WSDL"),
-        @WebServiceRef(name="service/MyEjbService", type=ejb_endpoint.WSHelloEJBService.class, wsdlLocation="http://localhost:8080/WSHelloEJBService/WSHelloEJB?WSDL") })
+        @WebServiceRef(name="service/MyServletService", type=servlet_endpoint.ServletHelloService.class, wsdlLocation="http://HTTP_HOST:HTTP_PORT/webservicerefs/webservice/ServletHelloService?WSDL"),
+        @WebServiceRef(name="service/MyEjbService", type=ejb_endpoint.WSHelloEJBService.class, wsdlLocation="http://HTTP_HOST:HTTP_PORT/WSHelloEJBService/WSHelloEJB?WSDL") })
 public class Client {
 
         private static SimpleReporterAdapter stat =

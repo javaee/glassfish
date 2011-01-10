@@ -70,6 +70,8 @@
 
   <target name="runtest1" depends="init-common">
       <mkdir dir="${build.classes.dir}/client"/>
+         <replace file="client/Client.java" value="${http.host}" token="HTTP_HOST"/>
+         <replace file="client/Client.java" value="${http.port}" token="HTTP_PORT"/>
       <javac srcdir="." destdir="${build.classes.dir}/client"
             classpath="${env.APS_HOME}/lib/reporter.jar"
             includes="client/**"/>
@@ -96,6 +98,12 @@
         </classpath>
         <arg value="http://${http.host}:${http.port}/endpointaddress/HelloService"/>
       </java>
+
+ <!--restore the tokens back in file--> 
+         <replace file="webclient/Client.java" token="${http.host}" value="HTTP_HOST"/>
+         <replace file="webclient/Client.java" token="${http.port}" value="HTTP_PORT"/>
+         <replace file="client/Client.java" token="${http.host}" value="HTTP_HOST"/>
+         <replace file="client/Client.java" token="${http.port}" value="HTTP_PORT"/>
     </target>
 
 
@@ -117,6 +125,9 @@
         <param name="wsimport.args"
           value="-p client  -Xendorsed -keep -d ${build.classes.dir}/webclient/WEB-INF/classes http://localhost:8080/mappedname/HelloService?wsdl"/>
       </antcall>
+
+      <replace file="webclient/Client.java" value="${http.host}" token="HTTP_HOST"/>
+      <replace file="webclient/Client.java" value="${http.port}" token="HTTP_PORT"/>
       <javac srcdir="." destdir="${build.classes.dir}/webclient/WEB-INF/classes"
             includes="webclient/**">
          <classpath refid="classpath"/>

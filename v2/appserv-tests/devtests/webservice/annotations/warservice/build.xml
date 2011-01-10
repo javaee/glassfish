@@ -38,6 +38,8 @@
     </target>
 
     <target name="assemble-client" depends="init-common">
+       <replace file="client/Client.java" value="${http.host}" token="HTTP_HOST"/>
+      <replace file="client/Client.java" value="${http.port}" token="HTTP_PORT"/>
       <antcall target="compile-client">
         <param name="test-wsdl-uri" value="${appname}/webservice/HelloService?WSDL"/>
         <param name="client-src" value="client"/>
@@ -53,6 +55,10 @@
     <target name="restart-test">
       <antcall target="restart-server-instance-common"/>
       <antcall target="runclient"/>
+
+      <!--restore the tokens back in file--> 
+      <replace file="client/Client.java" token="${http.host}" value="HTTP_HOST"/>
+      <replace file="client/Client.java" token="${http.port}" value="HTTP_PORT"/>
     </target>
 
     <target name="undeploy" depends="init-common">

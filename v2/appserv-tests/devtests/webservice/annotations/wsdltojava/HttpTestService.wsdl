@@ -68,7 +68,7 @@
   </binding>
   <service name="HttpTestService">
     <port name="HelloPort" binding="tns:HelloBinding">
-      <soap:address location="http://localhost:8080/wsdltojava/ws4ee"/>
+      <soap:address location="http://HTTP_HOST:HTTP_PORT/wsdltojava/ws4ee"/>
     </port>
   </service>
 </definitions>
