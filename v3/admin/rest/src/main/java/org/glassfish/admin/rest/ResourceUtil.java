@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -324,23 +324,32 @@ public class ResourceUtil {
             Set<String> attributeNames = configBeanModel.getAttributeNames();
             for (String attributeName : attributeNames) {
                 String methodName = getAttributeMethodName(attributeName);
+                Method method = null;
                 try {
-                    Method method = configBeanProxy.getMethod(methodName);
-                    Attribute attribute = method.getAnnotation(Attribute.class);
-                    if (attribute != null) {
-                        ParameterMetaData parameterMetaData = getParameterMetaData(attribute);
-                        if (method.getAnnotation(Deprecated.class) != null) {
-                            parameterMetaData.putAttribute(Constants.DEPRECATED, "true");
-                        }
-
-                        //camelCase the attributeName before passing out
-                        attributeName = eleminateHypen(attributeName);
-
-                        methodMetaData.putParameterMetaData(attributeName, parameterMetaData);
-                        
-                    }
+                    method = configBeanProxy.getMethod(methodName);
                 } catch (NoSuchMethodException e) {
-                    e.printStackTrace();
+                    // Method not found, so let's try a brute force method if the method
+                    // can't be found via the method above.  For example: for
+                    // Ssl.getSSLInactivityTimeout(), we calculate getSslInactivityTimeout,
+                    // which doesn't match due to case.
+                    for (Method m : configBeanProxy.getMethods()) {
+                        if (m.getName().equalsIgnoreCase(methodName)) {
+                            method = m;
+                        }
+                    }
+                }
+                Attribute attribute = method.getAnnotation(Attribute.class);
+                if (attribute != null) {
+                    ParameterMetaData parameterMetaData = getParameterMetaData(attribute);
+                    if (method.getAnnotation(Deprecated.class) != null) {
+                        parameterMetaData.putAttribute(Constants.DEPRECATED, "true");
+                    }
+
+                    //camelCase the attributeName before passing out
+                    attributeName = eleminateHypen(attributeName);
+
+                    methodMetaData.putParameterMetaData(attributeName, parameterMetaData);
+
                 }
             }
         } catch (ClassNotFoundException e) {
