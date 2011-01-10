@@ -153,12 +153,6 @@
             <version>4.8.2</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.seleniumhq.selenium.client-drivers</groupId>
-            <artifactId>selenium-java-client-driver</artifactId>
-            <version>1.0.2</version>
-            <scope>test</scope>
-        </dependency>
         <dependency> 
             <groupId>org.seleniumhq.selenium</groupId> 
             <artifactId>selenium</artifactId> 
@@ -169,11 +163,13 @@
         <defaultGoal>install</defaultGoal>
         <pluginManagement>
           <plugins>
+            <!--
             <plugin>
               <groupId>org.codehaus.mojo</groupId>
               <artifactId>selenium-maven-plugin</artifactId>
-              <version>1.0.1</version>
+              <version>1.1</version>
             </plugin>
+            -->
           </plugins>
         </pluginManagement>
         <plugins>
@@ -194,6 +190,9 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <forkMode>never</forkMode>
+                    <!--
+                    <parallel>classes</parallel>
+                    -->
                 </configuration>
             </plugin>
             <plugin>

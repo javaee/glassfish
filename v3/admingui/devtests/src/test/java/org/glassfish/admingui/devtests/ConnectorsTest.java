@@ -160,7 +160,7 @@ public class ConnectorsTest extends BaseSeleniumTestClass {
         clickAndWait("propertyForm:resourcesTable:topActionsGroup1:newButton", TRIGGER_NEW_CONNECTOR_RESOURCE);
 
         selenium.type("form:propertySheet:propertSectionTextField:jndiTextProp:jnditext", testConnector);
-        selenium.select("form:propertySheet:propertSectionTextField:poolNameProp:PoolName", "label=" + testPool);
+        selectDropdownOption("form:propertySheet:propertSectionTextField:poolNameProp:PoolName", testPool);
 
         int count = addTableRow("form:basicTable", "form:basicTable:topActionsGroup1:addSharedTableButton");
         selenium.type("form:basicTable:rowGroup1:0:col2:col1St", "property" + generateRandomString());
