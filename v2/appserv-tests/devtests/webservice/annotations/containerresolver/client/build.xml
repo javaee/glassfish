@@ -47,6 +47,9 @@
         <param name="wsimport.args"
           value="-keep -d ${build.classes.dir}/webclient/WEB-INF/classes http://${http.host}:${http.port}/containerresolver-app2/Hello2Service?WSDL"/>
       </antcall>
+
+      <replace file="webclient/Client.java" value="${http.host}" token="HTTP_HOST"/>
+      <replace file="webclient/Client.java" value="${http.port}" token="HTTP_PORT"/>
       <javac srcdir="." destdir="${build.classes.dir}/webclient/WEB-INF/classes"
              
             includes="webclient/**">
@@ -93,6 +96,11 @@
         </classpath>
         <arg value="http://${http.host}:${http.port}/wsclient/RequestProcessor"/>
       </java>
+
+
+<!--restore the tokens back in file--> 
+         <replace file="webclient/Client.java" token="${http.host}" value="HTTP_HOST"/>
+         <replace file="webclient/Client.java" token="${http.port}" value="HTTP_PORT"/>
     </target>
 </project>
 

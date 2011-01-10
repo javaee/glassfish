@@ -12,8 +12,8 @@ import com.example.hello2.*;
 
 public class Client extends HttpServlet {
 
-       @WebServiceRef(wsdlLocation="http://localhost:8080/containerresolver-app1/Hello1Service?wsdl") Hello1Service service1;
-       @WebServiceRef(wsdlLocation="http://localhost:8080/containerresolver-app2/Hello2Service?wsdl") Hello2Service service2;
+       @WebServiceRef(wsdlLocation="http://HTTP_HOST:HTTP_PORT/containerresolver-app1/Hello1Service?wsdl") Hello1Service service1;
+       @WebServiceRef(wsdlLocation="http://HTTP_HOST:HTTP_PORT/containerresolver-app2/Hello2Service?wsdl") Hello2Service service2;
 
        public void doGet(HttpServletRequest req, HttpServletResponse resp) 
 		throws javax.servlet.ServletException {

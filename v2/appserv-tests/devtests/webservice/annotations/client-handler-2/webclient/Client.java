@@ -21,7 +21,7 @@ public class Client extends HttpServlet {
               throws javax.servlet.ServletException {
             try {
                 SubtractNumbersPortType port = service.getSubtractNumbersPortType();
-                ((BindingProvider)port).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,"http://localhost:8080/client-handler-2/webservice/SubtractNumbersService?WSDL");
+                ((BindingProvider)port).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,"http://HTTP_HOST:HTTP_PORT/client-handler-2/webservice/SubtractNumbersService?WSDL");
                 int ret = port.subtractNumbers(9999, 8888);
                 PrintWriter out = resp.getWriter();
                 resp.setContentType("text/html");

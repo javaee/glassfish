@@ -20,7 +20,6 @@ public class Client extends HttpServlet {
               throws javax.servlet.ServletException {
             try {
                 SubtractNumbersPortType port = service.getSubtractNumbersPortType();
-                ((BindingProvider)port).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,"http://localhost:8080/mtom/webservice/SubtractNumbersService?WSDL");
                 int ret = port.subtractNumbers(22222, 11111);
                 PrintWriter out = resp.getWriter();
                 resp.setContentType("text/html");
