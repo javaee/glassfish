@@ -803,7 +803,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
             String brokerPort = jmsHost.getPort();
             brkrPort = brokerPort;
             String adminUserName = jmsHost.getAdminUserName();
-            String adminPassword = jmsHost.getAdminPassword();
+            String adminPassword = JmsRaUtil.getUnAliasedPwd(jmsHost.getAdminPassword());
             List jmsHostProps= getJmsService().getProperty();
 
             String username = null;

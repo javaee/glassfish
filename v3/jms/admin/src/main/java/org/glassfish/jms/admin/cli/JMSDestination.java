@@ -203,7 +203,7 @@ public abstract class JMSDestination {
                 JmsHost jmsHost = mqadList.getDefaultJmsHost(jmsService);
                 if (jmsHost != null) {//&& jmsHost.isEnabled()) {
                     adminUserName = jmsHost.getAdminUserName();
-                    adminPassword = jmsHost.getAdminPassword();
+                    adminPassword = JmsRaUtil.getUnAliasedPwd(jmsHost.getAdminPassword());
                 } else {
                     logger.log(Level.FINE, " _getMQJMXConnectorInfo, using default jms admin user and password ");
                 }
@@ -283,7 +283,7 @@ public abstract class JMSDestination {
               JmsHost jmsHost = list.getDefaultJmsHost(jmsService);
               if (jmsHost != null){// && jmsHost.isEnabled()) {
                   adminUserName = jmsHost.getAdminUserName();
-                  adminPassword = jmsHost.getAdminPassword();
+                  adminPassword = JmsRaUtil.getUnAliasedPwd(jmsHost.getAdminPassword());
               } else {
                   logger.log(Level.FINE, " _getMQJMXConnectorInfo, using default jms admin user and password ");
               }
