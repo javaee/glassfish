@@ -38,10 +38,11 @@
 # holder.
 #
 
+#
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ COMMON STUFF ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-PRODUCT_NAME=Profilo Web di GlassFish Server Open Source Edition
+PRODUCT_NAME=GlassFish Server Open Source Edition Web Profile
 
-app_title=Profilo Web di GlassFish Server Open Source Edition
+app_title=GlassFish Server Open Source Edition Web Profile
 
 # Text for Buttons
 btnCancel_text=Annulla
@@ -62,8 +63,8 @@ icon_image=/templates/glassfishserver.gif
 leftpanel_font=Sans-Serif-BOLD-14
 
 # Dynamic panel
-# Do not translate this section
-dynamic_content_font=Sans-Serif-BOLD-14
+# Do not translate this section 
+dynamic_content_font=Sans-Serif-BOLD-13
 dynamic_component_background=WHITE
 dynamic_component_foreground=BLACK
 dynamic_component_border_color=BLACK
@@ -76,7 +77,7 @@ title2_font=Sans-Serif-BOLD-20
 
 # Text color for titles
 title1_color=587993
-# Do not translate
+# Do not translate 
 title2_color=BLACK
 
 # Text for titles
@@ -94,8 +95,7 @@ btnpanel_bgcolor=e8e9ed
 button_font=Sans-Serif-BOLD-14
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~W E L C O M E   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Welcome_WELCOME_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Introduzione all'installazione di ${PRODUCT_NAME}.&lt;BR&gt;Strumento per l'installazione di ${PRODUCT_NAME}. &lt;BR&gt;&lt;BR&gt;GlassFish Server \u00e8 un server di applicazioni pronto per la produzione compatibile con Java EE 6, &lt;BR&gt;sviluppato con una licenza open source. Offre numerosi vantaggi, tra cui un runtime modulare, &lt;BR&gt;, che riduce al massimo l'utilizzo di risorse, una console di &lt;BR&gt;amministrazione di facile utilizzo, uno strumento da riga di comando ricco di funzionalit\u00e0,&lt;BR&gt;amministrazione centralizzata e clustering ad alta disponibilit\u00e0. GlassFish Server rappresenta inoltre &lt;BR&gt;il pi\u00f9 rapido server di applicazioni open source disponibile.&lt;BR&gt;&lt;BR&gt;Per ulteriori informazioni, visitare la &lt;a href=https://glassfish.dev.java.net&gt; pagina del progetto GlassFishPage&lt;/a&gt;. &lt;BR&gt;&lt;BR&gt;Fare clic su Avanti per continuare. &lt;BR&gt;&lt;/BODY&gt;&lt;/HTML&gt;
-
+Welcome_WELCOME_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Introduzione all'installazione di ${PRODUCT_NAME}.&lt;BR&gt;Strumento per l'installazione di ${PRODUCT_NAME}. &lt;BR&gt;&lt;BR&gt;GlassFish Server \u00e8 un server di applicazioni pronto per la produzione compatibile con Java EE 6, &lt;BR&gt;sviluppato con una licenza open source. Offre numerosi vantaggi, tra cui un runtime modulare &lt;BR&gt;, che consente di ridurre al massimo l'utilizzo di risorse, una console di &lt;BR&gt;amministrazione di facile utilizzo, uno strumento da riga di comando ricco di funzionalit\u00e0,&lt;BR&gt;amministrazione centralizzata e clustering ad alta disponibilit\u00e0. GlassFish Server rappresenta inoltre &lt;BR&gt;il pi\u00f9 rapido server di applicazioni open source disponibile.&lt;BR&gt;&lt;BR&gt;Per ulteriori informazioni, visitare la &lt;a href=https://glassfish.dev.java.net&gt; pagina del progetto GlassFishPage&lt;/a&gt;. &lt;BR&gt;&lt;BR&gt;Fare clic su Avanti per continuare. &lt;BR&gt;&lt;/BODY&gt;&lt;/HTML&gt;
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~I N S T A L L    H O M E   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -127,15 +127,14 @@ JDK_TYPE_IN_TOOLTIP=Digitare il percorso di uno Java(TM) SDK nella casella di te
 AVAILABLE_JDK=Java(TM) SDK disponibili
 ALTERNATE_JDK=Percorso Java(TM) SDK alternativo
 
-UPDATETOOL_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt; Mediante lo strumento di aggiornamento viene controllata periodicamente la presenza di aggiornamenti per GlassFish Server in modo da consentire&lt;BR&gt;all'utente di mantenersi aggiornato con le build pi\u00f9 recenti.&lt;BODY&gt;&lt;HTML&gt;
+UPDATETOOL_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt; Lo strumento di aggiornamento verifica periodicamente la disponibilit\u00e0 di&lt;BR&gt;aggiornamenti per GlassFish Server in modo da consentire agli utenti&lt;BR&gt;di mantenersi aggiornati con le build pi\u00f9 recenti.&lt;BODY&gt;&lt;HTML&gt;
 
 
-UPDATE_TOOL_PRIVACY_NOTICE=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt; Lo strumento di aggiornamento verifica periodicamente la disponibilit\u00e0 di aggiornamenti e raccoglie &lt;BR&gt; alcuni dati di sistema. Per ulteriori informazioni, vedere la pagina &lt;a href=http://wikis.sun.com/display/glassfish/UsageMetricsV3&gt; GlassFish Usage Metrics&lt;/a&gt; &lt;BR&gt;all'indirizzo http://wikis.sun.com/display/GlassFish/UsageMetricsV3.&lt;BODY&gt;&lt;HTML&gt;
-
+UPDATE_TOOL_PRIVACY_NOTICE=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt; Lo strumento di aggiornamento verifica periodicamente la disponibilit\u00e0 di&lt;BR&gt;aggiornamenti e raccoglie alcuni dati di sistema. Per ulteriori informazioni, vedere&lt;BR&gt;la pagina &lt;a href=http://wikis.sun.com/display/glassfish/UsageMetricsV3&gt; GlassFish Usage Metrics&lt;/a&gt; &lt;BR&gt;all'indirizzo http://wikis.sun.com/display/GlassFish/UsageMetricsV3.&lt;BODY&gt;&lt;HTML&gt;
 
 ADMINISTRATION_SERVICE_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Specificare il nome del servizio Windows o di un servizio SMF Solaris.&lt;BODY&gt;&lt;HTML&gt;
 
-ADMINISTRATION_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt; &lt;BR&gt;Configurare le impostazioni di amministrazione del server. Specificare il &lt;BR&gt;nome utente e la password del server. \u00c8 possibile lasciare le password &lt;BR&gt; vuote se si desidera configurare il server per il login senza autenticazione. &lt;/BODY&gt;&lt;HTML&gt;
+ADMINISTRATION_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Configurare le impostazioni di amministrazione del server. Specificare il &lt;BR&gt;nome utente e la password del server. \u00c8 possibile lasciare le password &lt;BR&gt; vuote se si desidera configurare il server per il login senza autenticazione. &lt;/BODY&gt;&lt;HTML&gt;
 
 ANONYMOUS=Configura come utente anonimo
 NON_ANONYMOUS=Specificare nome utente e password 
@@ -177,7 +176,7 @@ CONFIGURE_SELECTED_COMPONENTS_MSG=Configura i componenti del software selezionat
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~A D M I N   P A S S W O R D   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ADMIN_USER_TEXT=Nome utente
 ADMIN_PASSWORD_TEXT=Password
-ADMIN_REENTERPASSWORD_TEXT=Reimmetti password
+ADMIN_REENTERPASSWORD_TEXT=Reenter Password
 ADMIN_PORT_TEXT=Porta di amministrazione
 DOMAIN_NAME_TEXT=Nome di dominio
 HTTP_PORT_TEXT=Porta HTTP
@@ -229,9 +228,9 @@ CONFIG_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Sele
 
 DOMAIN_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Scegliere questa opzione per installare un server di amministrazione del dominio.&lt;BODY&gt;&lt;HTML&gt; 
 
-STANDALONEINSTANCE_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Scegliere questa opzione per creare un'istanza standalone locale getsita&lt;BR&gt;da un server di amministrazione del dominio. Per eseguire l'opzione correttamente \u00e8 necessario che il server di amministrazione del dominio &lt;BR&gt;sia in esecuzione. &lt;BODY&gt;&lt;HTML&gt; 
+STANDALONEINSTANCE_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Scegliere questa opzione per creare un'istanza standalone locale gestita da un server di amministrazione del dominio. Per eseguire l'opzione correttamente \u00e8 necessario che il server di amministrazione del dominio sia in esecuzione. &lt;BODY&gt;&lt;HTML&gt; 
 
-CLUSTEREDINSTANCE_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Scegliere questa opzione per creare un'istanza in cluster gestita da un &lt;BR&gt;server di amministrazione del dominio. Per eseguire l'opzione correttamente \u00e8 necessario che il server di amministrazione del dominio&lt;BR&gt;sia in esecuzione.&lt;BODY&gt;&lt;HTML&gt; 
+CLUSTEREDINSTANCE_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Scegliere questa opzione per creare un'istanza in cluster gestita da un server di amministrazione del dominio. Per eseguire l'opzione correttamente \u00e8 necessario che il server di amministrazione del dominio sia in esecuzione.&lt;BODY&gt;&lt;HTML&gt; 
 
 
 NOCONFIG_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Scegliere questa opzione per installare GlassFish Server senza alcuna configurazione.&lt;BODY&gt;&lt;HTML&gt; 
@@ -243,9 +242,9 @@ NO_CONFIGURATION=Ignora configurazione
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~INSTANCE INFORMATION PAGE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-CONFIGURATION_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Per creare e configurare un'istanza, specificare le informazioni &lt;BR&gt;seguenti.&lt;BR&gt;&lt;BR&gt; Il server di amministrazione del dominio deve essere in esecuzione nell'&lt;BR&gt;host e sulla porta specificati.&lt;BODY&gt;&lt;HTML&gt; 
+CONFIGURATION_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Per creare e configurare un'istanza, specificare le informazioni seguenti. Il server di&lt;BR&gt;amministrazione del dominio deve essere in esecuzione nell' host e sulla porta&lt;BR&gt;specificati.&lt;BODY&gt;&lt;HTML&gt; 
 
-CLUSTERED_CONFIGURATION_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Specificare le informazioni necessarie per creare un'istanza del server locale. \u00c8 inoltre possibile&lt;BR&gt; scegliere di aggiungere questa istanza al cluster.&lt;BODY&gt;&lt;HTML&gt; 
+CLUSTERED_CONFIGURATION_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Specificare le informazioni necessarie per creare un'istanza server locale. \u00c8 inoltre possibile&lt;BR&gt; scegliere di aggiungere questa istanza al cluster.&lt;BODY&gt;&lt;HTML&gt; 
 
 DAS_PARTITION_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font size='5' face='Sans-Serif'&gt;&lt;BR&gt;&lt;BR&gt;Server di amministrazione del dominio&lt;BODY&gt;&lt;HTML&gt; 
 
@@ -258,7 +257,7 @@ SERVER_ADMIN_PORT_TOOL_TIP=Specificare la porta di amministrazione del dominio
 SERVER_HOST_NAME_TEXT=Nome host 
 SERVER_HOST_NAME_TOOL_TIP=Specificare il nome host in cui si trova il dominio
 
-CREATE_CLUSTER_INFO_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Specificare il nome del cluster a cui appartiene l'istanza. Se non esiste gi\u00e0 un cluster, \u00e8 possibile&lt;BR&gt;crearne uno. &lt;BODY&gt;&lt;HTML&gt;
+CREATE_CLUSTER_INFO_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Specificare il nome del cluster a cui appartiene l'istanza. Se non esiste gi\u00e0 un&lt;BR&gt;cluster, \u00e8 possibile crearne uno. &lt;BODY&gt;&lt;HTML&gt;
 
 CREATE_CLUSTER_CHOICE_TEXT=Crea cluster
 

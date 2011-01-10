@@ -38,10 +38,11 @@
 # holder.
 #
 
+#
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ COMMON STUFF ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-PRODUCT_NAME=Profil Web du serveur GlassFish \u00e9dition Open Source
+PRODUCT_NAME=GlassFish Server Open Source Edition Web Profile
 
-app_title=Profil Web du serveur GlassFish \u00e9dition Open Source
+app_title=GlassFish Server Open Source Edition Web Profile
 
 # Text for Buttons
 btnCancel_text=Annuler
@@ -62,8 +63,8 @@ icon_image=/templates/glassfishserver.gif
 leftpanel_font=Sans-Serif-BOLD-14
 
 # Dynamic panel
-# Do not translate this section
-dynamic_content_font=Sans-Serif-BOLD-14
+# Do not translate this section 
+dynamic_content_font=Sans-Serif-BOLD-13
 dynamic_component_background=WHITE
 dynamic_component_foreground=BLACK
 dynamic_component_border_color=BLACK
@@ -76,7 +77,7 @@ title2_font=Sans-Serif-BOLD-20
 
 # Text color for titles
 title1_color=587993
-# Do not translate
+# Do not translate 
 title2_color=BLACK
 
 # Text for titles
@@ -95,7 +96,6 @@ button_font=Sans-Serif-BOLD-14
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~W E L C O M E   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Welcome_WELCOME_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Bienvenue sur l\u2019assistant d\u2019installation de ${PRODUCT_NAME}.&lt;BR&gt;Cet outil permet d\u2019installer ${PRODUCT_NAME}. &lt;BR&gt;&lt;BR&gt;GlassFish Server est un serveur d\u2019application compatible Java\u00a0EE\u00a06 pr\u00eat \u00e0 l\u2019emploi &lt;BR&gt;d\u00e9velopp\u00e9 sous une licence Open Source. Ses avantages incluent une ex\u00e9cution &lt;BR&gt; modulaire qui r\u00e9duit l\u2019utilisation des ressources, une console d\u2019administration &lt;BR&gt;facile \u00e0 utiliser, un outil de ligne de commande complet, l\u2019administration &lt;BR&gt;centralis\u00e9e et une fonctionnalit\u00e9 de clustering haute disponibilit\u00e9. GlassFish Server est \u00e9galement &lt;BR&gt;le serveur d\u2019application Open Source le plus rapide disponible.&lt;BR&gt;&lt;BR&gt;Rendez-vous sur &lt;a href=https://glassfish.dev.java.net&gt; GlassFish Project Page&lt;/a&gt; pour plus d\u2019informations. &lt;BR&gt;&lt;BR&gt;Cliquez sur Suivant pour continuer. &lt;BR&gt;&lt;BR&gt;&lt;/BODY&gt;&lt;/HTML&gt;
-
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~I N S T A L L    H O M E   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -127,15 +127,14 @@ JDK_TYPE_IN_TOOLTIP=Saisissez l\u2019emplacement du SDK de Java(TM) dans cette z
 AVAILABLE_JDK=SDK de Java(TM) disponibles
 ALTERNATE_JDK=Emplacement de remplacement du SDK de Java(TM)
 
-UPDATETOOL_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face=\u2019Sans-Serif\u2019&gt; L\u2019outil de mise \u00e0 jour recherche r\u00e9guli\u00e8rement les mises \u00e0 jour de GlassFish Server, ce qui vous permet&lt;BR&gt;de toujours disposer de la derni\u00e8re version.&lt;BODY&gt;&lt;HTML&gt;
+UPDATETOOL_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face=\u2019Sans-Serif\u2019&gt; L\u2019outil de mise \u00e0 jour recherche r\u00e9guli\u00e8rement les mises \u00e0 jour de GlassFish Server, &lt;BR&gt;ce qui vous permet de toujours disposer de la derni\u00e8re version.&lt;BODY&gt;&lt;HTML&gt;
 
 
-UPDATE_TOOL_PRIVACY_NOTICE=&lt;HTML&gt;&lt;BODY&gt;&lt;font face=\u2019Sans-Serif\u2019&gt; L\u2019outil de mise \u00e0 jour v\u00e9rifie r\u00e9guli\u00e8rement si des mises \u00e0 jour sont disponibles et collecte &lt;BR&gt; des donn\u00e9es syst\u00e8me. Pour en savoir plus, reportez-vous \u00e0 la page &lt;a href=http://wikis.sun.com/display/glassfish/UsageMetricsV3&gt; GlassFish Usage Metrics&lt;/a&gt; &lt;BR&gt; \u00e0 l\u2019adresse http://wikis.sun.com/display/GlassFish/UsageMetricsV3.&lt;BODY&gt;&lt;HTML&gt;
-
+UPDATE_TOOL_PRIVACY_NOTICE=&lt;HTML&gt;&lt;BODY&gt;&lt;font face=\u2019Sans-Serif\u2019&gt; L\u2019outil de mise \u00e0 jour v\u00e9rifie r\u00e9guli\u00e8rement si des mises \u00e0 jour sont disponibles et&lt;BR&gt;collecte des donn\u00e9es syst\u00e8me. Pour en savoir plus, reportez-vous \u00e0 la page&lt;BR&gt; &lt;a href=http://wikis.sun.com/display/glassfish/UsageMetricsV3&gt; GlassFish Usage Metrics&lt;/a&gt; \u00e0 l\u2019adresse&lt;BR&gt; http://wikis.sun.com/display/GlassFish/UsageMetricsV3.&lt;BODY&gt;&lt;HTML&gt;
 
 ADMINISTRATION_SERVICE_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face=\u2019Sans-Serif\u2019&gt;Fournissez le nom du service Windows ou d\u2019un service Solaris SMF.&lt;BODY&gt;&lt;HTML&gt;
 
-ADMINISTRATION_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face=\u2019Sans-Serif\u2019&gt; &lt;BR&gt;Configurez les param\u00e8tres d\u2019administration du serveur. Indiquez le nom d\u2019utilisateur et le mot de passe associ\u00e9s au serveur. Si vous souhaitez configurer le serveur pour les connexions non authentifi\u00e9es, laissez le champ du mot de passe vide. &lt;/BODY&gt;&lt;HTML&gt;
+ADMINISTRATION_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face=\u2019Sans-Serif\u2019&gt;Configurez les param\u00e8tres d\u2019administration du serveur. Indiquez le nom d\u2019utilisateur &lt;BR&gt;et le mot de passe associ\u00e9s au serveur. Si vous souhaitez configurer le serveur pour&lt;BR&gt;les connexions non authentifi\u00e9es, laissez le champ du mot de passe vide. &lt;/BODY&gt;&lt;HTML&gt;
 
 ANONYMOUS=Configurez en tant qu\u2019utilisateur anonyme
 NON_ANONYMOUS=Fournissez nom d\u2019utilisateur et mot de passe 
@@ -243,7 +242,7 @@ NO_CONFIGURATION=Ignorer la configuration
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~INSTANCE INFORMATION PAGE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-CONFIGURATION_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face=\u2019Sans-Serif\u2019&gt;Pour cr\u00e9er et configurer une instance, veuillez fournir les informations&lt;BR&gt;suivantes.&lt;BR&gt;&lt;BR&gt; Le serveur d\u2019administration de domaine doit \u00eatre en cours d\u2019ex\u00e9cution sur &lt;BR&gt; l\u2019h\u00f4te et le port sp\u00e9cifi\u00e9s.&lt;BODY&gt;&lt;HTML&gt; 
+CONFIGURATION_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face=\u2019Sans-Serif\u2019&gt;Pour cr\u00e9er et configurer une instance, veuillez fournir les informations&lt;BR&gt;suivantes.&lt;BR&gt; Le serveur d\u2019administration de domaine doit \u00eatre en cours d\u2019ex\u00e9cution sur &lt;BR&gt; l\u2019h\u00f4te et le port sp\u00e9cifi\u00e9s.&lt;BODY&gt;&lt;HTML&gt; 
 
 CLUSTERED_CONFIGURATION_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face=\u2019Sans-Serif\u2019&gt;Fournissez les informations suivantes pour cr\u00e9er une instance de serveur locale. Vous pouvez \u00e9galement ajouter cette instance au cluster.&lt;BODY&gt;&lt;HTML&gt; 
 
