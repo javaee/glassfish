@@ -76,7 +76,7 @@ public abstract class AbstractServerMojo extends AbstractMojo {
     public final static String PLATFORM_KEY = "GlassFish_Platform";
     public final static String INSTANCE_ROOT_PROP_NAME = "com.sun.aas.instanceRoot";
     public static final String INSTALL_ROOT_PROP_NAME = "com.sun.aas.installRoot";
-    public static final String CONFIG_FILE_URI_PROP_NAME = "com.sun.aas.configFileURI";
+    public static final String CONFIG_FILE_URI_PROP_NAME = "org.glassfish.embeddable.configFileURI";
     private static final String NETWORK_LISTENER_KEY = "embedded-glassfish-config." +
             "server.network-config.network-listeners.network-listener.%s";
 
@@ -91,7 +91,7 @@ public abstract class AbstractServerMojo extends AbstractMojo {
 
     private static final String GF_API_GROUP_ID = "org.glassfish";
     private static final String GF_API_ARTIFACT_ID = "simple-glassfish-api";
-    private static final String DEFAULT_GF_VERSION = "3.1-b35";
+    private static final String DEFAULT_GF_VERSION = "3.1-b36";
     private static String gfVersion;
 
 //    private static final String UBER_JAR_URI = "org.glassfish.embedded.osgimain.jarURI";
@@ -372,10 +372,16 @@ public abstract class AbstractServerMojo extends AbstractMojo {
 
         if (configFile != null) {
             try {
-                // if it is a java.net.URI pointing to file: or jar: or http: then use it as is.
-                props.setProperty(CONFIG_FILE_URI_PROP_NAME, URI.create(configFile).toString());
+                URI configFileURI = URI.create(configFile);
+                String scheme = configFileURI.getScheme();
+                if (scheme == null || "file".equalsIgnoreCase(scheme)) {
+                    props.setProperty(CONFIG_FILE_URI_PROP_NAME, new File(configFileURI).toURI().toString());
+                } else {
+                    // if it is a java.net.URI pointing to file: or jar: or http: then use it as is.
+                    props.setProperty(CONFIG_FILE_URI_PROP_NAME, configFileURI.toString());
+                }
             } catch (Exception ex) {
-                // if the supplied parameter is not a java.net.URI, assume it is a file.
+                // should never come here, but just in case...
                 props.setProperty(CONFIG_FILE_URI_PROP_NAME, new File(configFile).toURI().toString());
             }
         }
