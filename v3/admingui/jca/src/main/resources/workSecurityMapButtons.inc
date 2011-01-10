@@ -43,7 +43,7 @@
    <!facet pageButtonsTop>
         <sun:panelGroup id="topButtons">
             <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
-                onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
+                onClick="if (isSecurityMappingPresent('$resource{i18njca.msg.JS.Error.securityMappingCannotBeEmpty}') && guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
                     mapPut(map="#{pageSession.valueMap}" key="resourceAdapterName" value="#{pageSession.valueMap['raname']}");
                     gf.createEntity(endpoint="#{pageSession.selfUrl}"
@@ -121,7 +121,7 @@
                 />
             </sun:button>
             <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
-                onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}') && checkForBackslash('#{resCompId}', '$resource{i18n.msg.JS.resources.resName}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
+                onClick="if (isSecurityMappingPresent('$resource{i18njca.msg.JS.Error.securityMappingCannotBeEmpty}') && guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}') && checkForBackslash('#{resCompId}', '$resource{i18n.msg.JS.resources.resName}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
                     if ('#{usersOptionG}=users') {                        
                         mapPut(map="#{pageSession.valueMap}" key="groupsmap" value="#{pageSession.valueMap2['groupMapping']}");
