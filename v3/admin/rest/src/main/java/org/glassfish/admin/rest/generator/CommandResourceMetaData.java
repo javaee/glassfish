@@ -192,6 +192,7 @@ ListLbConfig
             {"Cluster", "stop-cluster", "POST", "stop-cluster", "Stop Cluster", "id=$parent"},
            {"Config", "__resolve-tokens", "GET", "resolve-tokens", "Resolve Tokens", "target=$parent"},
             {"Config", "delete-config", "POST", "delete-config", "Delete Config", "id=$parent"},
+            {"Config", "__synchronize-realm-from-config", "POST", "synchronize-realm-from-config", "Synchronize-realm-from-config", "target=$parent"},
             {"Configs", "copy-config", "POST", "copy-config", "Copy Config"},
             {"Configs", "list-configs", "GET", "list-configs", "list-configs"},
             {"ConnectionPool", "ping-connection-pool", "GET", "ping", "Ping"},
