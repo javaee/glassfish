@@ -1366,7 +1366,7 @@ public class Request
      */
     @Override
     public String getProtocol() {
-        return coyoteRequest.getProtocol().toString();
+        return coyoteRequest.getProtocol().getProtocolString();
     }
 
     /**
@@ -3904,6 +3904,30 @@ public class Request
                     isOriginalRequestAndResponse);
         }
 
+        final CompletionHandler<org.glassfish.grizzly.http.server.Response> requestCompletionHandler =
+                new EmptyCompletionHandler<org.glassfish.grizzly.http.server.Response>() {
+
+                    @Override
+                    public void completed(org.glassfish.grizzly.http.server.Response response) {
+                        if (asyncContext != null) {
+                            asyncContext.notifyAsyncListeners(
+                                    AsyncContextImpl.AsyncEventType.COMPLETE,
+                                    null);
+                        }
+                    }
+                };
+
+        final TimeoutHandler timeoutHandler = new TimeoutHandler() {
+
+            @Override
+            public boolean onTimeout(final org.glassfish.grizzly.http.server.Response response) {
+                return processTimeout();
+            }
+        };
+
+        coyoteRequest.getResponse().suspend(-1, TimeUnit.MILLISECONDS,
+                requestCompletionHandler, timeoutHandler);
+
         asyncStarted.set(true);
 
         return asyncContext;
@@ -3970,7 +3994,14 @@ public class Request
         }
         isAsyncComplete = true;
         asyncStarted.set(false);
+        
+//        if (!asyncContext.isOkToConfigure()) {  // if false - Grizzly Response.suspend(...) has been called already
         coyoteRequest.getResponse().resume();
+//        } else {
+//            asyncContext.notifyAsyncListeners(
+//                    AsyncContextImpl.AsyncEventType.COMPLETE,
+//                    null);
+//        }
     }
 
     /*
@@ -3998,29 +4029,8 @@ public class Request
             asyncContext.setOkToConfigure(false);
 
             if (asyncStarted.get()) {
-                final CompletionHandler<org.glassfish.grizzly.http.server.Response> requestCompletionHandler =
-                        new EmptyCompletionHandler<org.glassfish.grizzly.http.server.Response>() {
-
-                            @Override
-                            public void completed(org.glassfish.grizzly.http.server.Response response) {
-                                if (asyncContext != null) {
-                                    asyncContext.notifyAsyncListeners(
-                                            AsyncContextImpl.AsyncEventType.COMPLETE,
-                                            null);
-                                }
-                            }
-                        };
-
-                final TimeoutHandler timeoutHandler = new TimeoutHandler() {
-
-                    @Override
-                    public boolean onTimeout(final org.glassfish.grizzly.http.server.Response response) {
-                        return processTimeout();
-                    }
-                };
-
-                coyoteRequest.getResponse().suspend(asyncContext.getTimeout(), TimeUnit.MILLISECONDS,
-                        requestCompletionHandler, timeoutHandler);
+                coyoteRequest.getResponse().getSuspendContext().setTimeout(
+                        asyncContext.getTimeout(), TimeUnit.MILLISECONDS);
             }
 
         }
