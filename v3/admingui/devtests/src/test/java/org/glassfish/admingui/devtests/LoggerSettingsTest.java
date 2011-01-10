@@ -45,8 +45,8 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 public class LoggerSettingsTest extends BaseSeleniumTestClass {
-    private static final String TRIGGER_LOGGER_SETTINGS = "GlassFish Server logging messages are recorded in the server log";
-    private static final String TRIGGER_LOG_LEVELS = "Specify log levels for individual loggers.";
+    private static final String TRIGGER_LOGGER_SETTINGS = "i18nc.log.LoggingSettingsHelp";
+    private static final String TRIGGER_LOG_LEVELS = "i18nc.log.LogLevelsPageTitleHelp";
 
     @Test
     public void testLoggerSettings() {
