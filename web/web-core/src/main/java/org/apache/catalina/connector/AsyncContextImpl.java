@@ -356,6 +356,15 @@ public class AsyncContextImpl implements AsyncContext {
     }
 
     /**
+     * @return value true if calls to AsyncContext#addListener and
+     * AsyncContext#setTimeout will be accepted, and false if these
+     * calls will result in an IllegalStateException
+     */
+    boolean isOkToConfigure() {
+        return isOkToConfigure.get();
+    }
+
+    /**
      * @param value true if calls to AsyncContext#addListener and
      * AsyncContext#setTimeout will be accepted, and false if these
      * calls will result in an IllegalStateException
