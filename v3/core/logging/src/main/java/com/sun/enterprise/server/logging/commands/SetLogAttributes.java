@@ -47,10 +47,9 @@ import com.sun.enterprise.util.SystemPropertyConstants;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.ExecuteOn;
-import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.api.admin.*;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -78,6 +77,8 @@ import java.util.Properties;
 *
 */
 @ExecuteOn({RuntimeType.DAS, RuntimeType.INSTANCE})
+@TargetType({CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER, CommandTarget.CONFIG})
+@CommandLock(CommandLock.LockType.NONE)
 @Service(name = "set-log-attributes")
 @Scoped(PerLookup.class)
 @I18n("set.log.attributes")
@@ -169,9 +170,10 @@ public class SetLogAttributes implements AdminCommand {
                     isConfig = true;
 
                     Server targetServer = domain.getServerNamed(SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME);
-                    if (targetServer.getConfigRef().equals(target)) {
+                    if (targetServer!=null && targetServer.getConfigRef().equals(target)) {
                         isDas = true;
                     }
+                    targetServer = null;
                 } else {
                     Server targetServer = domain.getServerNamed(target);
 
