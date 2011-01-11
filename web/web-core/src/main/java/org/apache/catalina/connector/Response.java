@@ -666,7 +666,33 @@ public class Response
         return coyoteResponse.getCharacterEncoding();
     }
 
+    
+    /*
+     * Overrides the name of the character encoding used in the body
+     * of the request. This method must be called prior to reading
+     * request parameters or reading input using getReader().
+     *
+     * @param charset String containing the name of the character encoding.
+     */
+    public void setCharacterEncoding(String charset) {
 
+        if (isCommitted())
+            return;
+
+        // Ignore any call from an included servlet
+        if (included)
+            return;
+
+        // Ignore any call made after the getWriter has been invoked
+        // The default should be used
+        if (usingWriter)
+            return;
+
+        coyoteResponse.setCharacterEncoding(charset);
+        isCharacterEncodingSet = true;
+    }
+
+    
     /**
      * Return the servlet output stream associated with this Response.
      *
@@ -893,33 +919,6 @@ public class Response
     }
 
 
-    /*
-     * Overrides the name of the character encoding used in the body
-     * of the request. This method must be called prior to reading
-     * request parameters or reading input using getReader().
-     *
-     * @param charset String containing the name of the character encoding.
-     */
-    public void setCharacterEncoding(String charset) {
-
-        if (isCommitted())
-            return;
-        
-        // Ignore any call from an included servlet
-        if (included)
-            return;     
-        
-        // Ignore any call made after the getWriter has been invoked
-        // The default should be used
-        if (usingWriter)
-            return;
-
-        coyoteResponse.setCharacterEncoding(charset);
-        isCharacterEncodingSet = true;
-    }
-
-    
-    
     /**
      * Set the Locale that is appropriate for this response, including
      * setting the appropriate character encoding.
