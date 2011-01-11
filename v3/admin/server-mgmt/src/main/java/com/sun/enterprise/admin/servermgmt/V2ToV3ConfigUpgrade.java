@@ -166,6 +166,7 @@ public class V2ToV3ConfigUpgrade implements ConfigurationUpgrade, PostConstruct 
         "-Dfelix.fileinstall.debug=3",
         "-Dfelix.fileinstall.bundles.new.start=true",
         "-Dfelix.fileinstall.bundles.startTransient=true",
+        "-Dfelix.fileinstall.disableConfigSave=false",
         "-Dfelix.fileinstall.log.level=2",
         "-Djavax.management.builder.initial=com.sun.enterprise.v3.admin.AppServerMBeanServerBuilder",
         "-Dorg.glassfish.web.rfc2109_cookie_names_enforced=false",
