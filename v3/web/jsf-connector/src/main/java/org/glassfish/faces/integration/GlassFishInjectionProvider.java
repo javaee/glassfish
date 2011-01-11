@@ -52,6 +52,7 @@ import com.sun.faces.spi.DiscoverableInjectionProvider;
 import com.sun.faces.spi.AnnotationScanner;
 import com.sun.faces.spi.AnnotationScanner.ScannedAnnotation;
 import com.sun.faces.spi.InjectionProviderException;
+import com.sun.faces.spi.HighAvailabilityEnabler;
 import com.sun.faces.util.FacesLogger;
 import java.net.URI;
 import org.glassfish.api.invocation.ComponentInvocation;
@@ -73,12 +74,15 @@ import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.hk2.classmodel.reflect.AnnotationModel;
 import org.glassfish.hk2.classmodel.reflect.Type;
 import org.glassfish.hk2.classmodel.reflect.Types;
-
+import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.web.WebModule;
+import com.sun.faces.config.WebConfiguration;
+import org.apache.catalina.core.StandardContext;
 /**
  * <p>This <code>InjectionProvider</code> is specific to the
  * GlassFish/SJSAS 9.x PE/EE application servers.</p>
  */
-public class GlassFishInjectionProvider extends DiscoverableInjectionProvider implements AnnotationScanner {
+public class GlassFishInjectionProvider extends DiscoverableInjectionProvider implements AnnotationScanner, HighAvailabilityEnabler {
 
     private static final Logger LOGGER = FacesLogger.APPLICATION.getLogger();
     private static final String HABITAT_ATTRIBUTE =
@@ -422,6 +426,39 @@ public class GlassFishInjectionProvider extends DiscoverableInjectionProvider im
 
     }
 
+    /**
+     * Method to test with HA has been enabled.
+     * If so, then set the JSF context param
+     * com.sun.faces.enableAgressiveSessionDirtying to true
+     * @param ctx
+     */
+    public void enableHighAvailability(ServletContext ctx) {
+        //look at the following values for the web app
+        //1> has <distributable /> in the web.xml
+        //2> Was deployed with --availabilityenabled --target <clustername>
+        WebConfiguration config = WebConfiguration.getInstance(ctx);
+        if (!config.isSet(WebConfiguration.BooleanWebContextInitParameter.EnableAgressiveSessionDirtying)) {
+            if (ctx instanceof org.apache.catalina.core.ApplicationContextFacade) {
+                org.apache.catalina.core.ApplicationContext applicationContext =
+                        ((org.apache.catalina.core.ApplicationContextFacade) ctx).getApplicationContext();
+                StandardContext stdContext = applicationContext.getStandardContext();
+                WebBundleDescriptor desc = ((WebModule) stdContext).getWebModuleConfig().getDescriptor();
+                boolean isDistributable = desc.isDistributable();
+                boolean enableHA = serverConfigLookup.calculateWebAvailabilityEnabledFromConfig((WebModule) stdContext);
 
-
+                if (LOGGER.isLoggable(Level.FINE)) {
+                    LOGGER.log(Level.FINE,
+                            "isDistributable = {0} enableHA = {1}",
+                            new Object[]{isDistributable, enableHA});
+                }
+                if (isDistributable && enableHA) {
+                    if (LOGGER.isLoggable(Level.FINE)) {
+                        LOGGER.fine("setting the EnableAgressiveSessionDirtying to true");
+                    }
+                    config.overrideContextInitParameter(WebConfiguration.BooleanWebContextInitParameter.EnableAgressiveSessionDirtying,
+                            Boolean.TRUE);
+                }
+            }
+        }
+    }
 } // END GlassFishInjectionProvider

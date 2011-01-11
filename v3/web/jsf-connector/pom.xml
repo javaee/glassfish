@@ -87,10 +87,12 @@
         </dependency>
         <dependency>
             <groupId>com.sun.faces</groupId>
+            <scope>provided</scope>
             <artifactId>jsf-api</artifactId>
         </dependency>
         <dependency>
             <groupId>com.sun.faces</groupId>
+            <scope>provided</scope>
             <artifactId>jsf-impl</artifactId>
         </dependency>
         <dependency>
