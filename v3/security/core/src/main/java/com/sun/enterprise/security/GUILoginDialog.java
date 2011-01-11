@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -324,7 +324,7 @@ class PassphraseDialog extends JDialog
 		if(passwordCallback != null) {
                     char[] pass = passField.getPassword();
 		    //if(passphrase.trim().length() > 0) {
-		    passwordCallback.setPassword(passphrase);
+		    passwordCallback.setPassword(pass);
 		    //}
 		}
 		if(choiceCallback != null) {
@@ -346,11 +346,13 @@ class PassphraseDialog extends JDialog
 	    public void actionPerformed(ActionEvent ae) {
 		if (choiceCallback!=null) {
 		    choiceCallback.setSelectedIndex (-1);
-		} else {
-		    username = null;
-		    Arrays.fill(passphrase, ' ');
-		    frame.dispose();
-		}
+                } else {
+                    username = null;
+                    if (passphrase != null) {
+                        Arrays.fill(passphrase, ' ');
+                    }
+                    frame.dispose();
+                }
 	    }
 	}
 	);
