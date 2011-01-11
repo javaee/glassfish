@@ -58,14 +58,11 @@ import static org.junit.Assert.*;
  */
 public class JmsTest extends RestTestBase {
     static final String URL_ADMIN_OBJECT_RESOURCE = "/domain/resources/admin-object-resource";
-
     static final String URL_CONNECTOR_CONNECTION_POOL = "/domain/resources/connector-connection-pool";
-
     static final String URL_CONNECTOR_RESOURCE = "/domain/resources/connector-resource";
-
     static final String URL_JMS_HOST = "/domain/configs/config/server-config/jms-service/jms-host";
-
     static final String URL_SEVER_JMS_DEST = "/domain/servers/server/server";
+    static final String DEST_TYPE = "topic";
 
     @Test
     public void testJmsConnectionFactories() {
@@ -164,11 +161,12 @@ public class JmsTest extends RestTestBase {
         final int maxNumMsgs = generateRandomNumber(500);
         final int consumerFlowLimit = generateRandomNumber(500);
 
-        createJmsPhysicalDestination(destName, "topic", URL_SEVER_JMS_DEST);
+        createJmsPhysicalDestination(destName, DEST_TYPE, URL_SEVER_JMS_DEST);
 
         final HashMap<String, String> newDest = new HashMap<String, String>() {
             {
                 put("id", destName);
+                put("desttype", DEST_TYPE);
             }
         };
         Map<String, String> destProps = new HashMap<String, String>() {
@@ -197,6 +195,8 @@ public class JmsTest extends RestTestBase {
         final String destName = "jmsDest" + generateRandomString();
         ClusterTest ct = getTestClass(ClusterTest.class);
         final String clusterName = ct.createCluster();
+        ct.createClusterInstance(clusterName, "in1_"+clusterName);
+        ct.startCluster(clusterName);
         final String endpoint = "/domain/clusters/cluster/" + clusterName;
         try {
             
@@ -204,6 +204,7 @@ public class JmsTest extends RestTestBase {
             final HashMap<String, String> newDest = new HashMap<String, String>() {
                 {
                     put("id", destName);
+                    put("desttype", DEST_TYPE);
                 }
             };
 
@@ -215,6 +216,7 @@ public class JmsTest extends RestTestBase {
         }
         finally {
             deleteJmsPhysicalDestination(destName, endpoint);
+            ct.stopCluster(clusterName);
             ct.deleteCluster(clusterName);
         }
     }
@@ -274,7 +276,7 @@ public class JmsTest extends RestTestBase {
         final Map<String, String> newDest = new HashMap<String, String>() {
             {
                 put("id", destName);
-                put("destType", type);
+                put("desttype", type);
             }
         };
 
@@ -288,11 +290,12 @@ public class JmsTest extends RestTestBase {
         final HashMap<String, String> newDest = new HashMap<String, String>() {
             {
                 put("id", destName);
+                put("desttype", DEST_TYPE);
             }
         };
 
         // Test deletion
-        ClientResponse response = post(endpoint + "delete-jmsdest", newDest); // You POST to commands
+        ClientResponse response = delete(endpoint + "/delete-jmsdest", newDest); // You POST to commands
         checkStatusForSuccess(response);
 
         response = get(endpoint + "__get-jmsdest", newDest);

@@ -40,6 +40,8 @@
 
 package org.glassfish.admin.rest;
 
+import java.util.List;
+import org.glassfish.admin.rest.clientutils.MarshallingUtils;
 import com.sun.jersey.api.client.ClientResponse;
 import java.util.HashMap;
 import java.util.Map;
@@ -99,11 +101,47 @@ public class ClusterTest extends RestTestBase {
 
         ClientResponse response = post(URL_CLUSTER, newCluster);
         assertTrue(isSuccess(response));
-        
+    }
+    
+    public void startCluster(String clusterName) {
+        ClientResponse response = post(URL_CLUSTER + "/" + clusterName + "/start-cluster");
+        assertTrue(isSuccess(response));
+    }
+    
+    public void stopCluster(String clusterName) {
+        ClientResponse response = post(URL_CLUSTER + "/" + clusterName + "/stop-cluster");
+        assertTrue(isSuccess(response));
+    }
+    
+    public void createClusterInstance(final String clusterName, final String instanceName) {
+        ClientResponse response = post("/domain/create-instance", new HashMap<String, String>() {{
+            put("cluster", clusterName);
+            put("id", instanceName);
+            put("node", "localhost-domain1");
+        }});
+        assertTrue(isSuccess(response));
     }
     
     public void deleteCluster(String clusterName) {
-        ClientResponse response = post(URL_CLUSTER + "/" + clusterName + "/delete-cluster");
+        ClientResponse response = get(URL_CLUSTER + "/" + clusterName + "/list-instances");
+        Map body = MarshallingUtils.buildMapFromDocument(response.getEntity(String.class));
+        Map extraProperties = (Map)body.get("extraProperties");
+        List<Map<String, String>> instanceList = (List<Map<String, String>>)extraProperties.get("instanceList");
+        if ((instanceList != null) && (!instanceList.isEmpty())) {
+            for (Map<String, String> instance : instanceList) {
+                String status = instance.get("status");
+                String instanceName = instance.get("name");
+                if (!"NOT_RUNNING".equalsIgnoreCase(status)) {
+                    response = post ("/domain/servers/server/" + instanceName + "/stop-instance");
+                    assertTrue(isSuccess(response));
+                }
+                response = delete("/domain/servers/server/" + instanceName + "/delete-instance");
+                assertTrue(isSuccess(response));
+            }
+        }
+        
+        
+        response = post(URL_CLUSTER + "/" + clusterName + "/delete-cluster");
         assertTrue(isSuccess(response));
 
         response = get(URL_CLUSTER + "/" + clusterName);
