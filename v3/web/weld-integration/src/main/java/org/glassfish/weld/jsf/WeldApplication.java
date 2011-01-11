@@ -45,10 +45,17 @@ import javax.el.ExpressionFactory;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.faces.application.Application;
 import javax.faces.application.ApplicationWrapper;
+import javax.faces.context.FacesContext;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.servlet.ServletContext;
+import javax.servlet.jsp.JspApplicationContext;
+import javax.servlet.jsp.JspFactory;
+
 
 import org.glassfish.weld.util.Util;
+
+import org.apache.jasper.runtime.JspApplicationContextImpl;
 
 public class WeldApplication extends ApplicationWrapper {
    
@@ -62,6 +69,10 @@ public class WeldApplication extends ApplicationWrapper {
             application.addELContextListener(Util.<ELContextListener>newInstance(
                 "org.jboss.weld.el.WeldELContextListener"));
             application.addELResolver(beanManager.getELResolver());
+            JspApplicationContext jspAppContext = JspFactory.getDefaultFactory().
+                getJspApplicationContext((ServletContext)FacesContext.getCurrentInstance().getExternalContext().getContext());
+            this.expressionFactory = beanManager.wrapExpressionFactory(jspAppContext.getExpressionFactory());
+            ((JspApplicationContextImpl)jspAppContext).setExpressionFactory(this.expressionFactory);
         }
     }
 

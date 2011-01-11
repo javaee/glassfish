@@ -108,6 +108,7 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
 
     /* package */ static final String WELD_BOOTSTRAP = "org.glassfish.weld.WeldBootstrap";
 
+    private static final String WELD_CONTEXT_LISTENER = "org.glassfish.weld.WeldContextListener";
     private static final String WELD_LISTENER = "org.jboss.weld.servlet.WeldListener";
     private static final String WELD_SHUTDOWN = "false";
     
@@ -355,17 +356,20 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
         }
         
 
+        BeanDeploymentArchive bda = deploymentImpl.getBeanDeploymentArchiveForArchive(archive.getName());
+
         WebBundleDescriptor wDesc = context.getModuleMetaData(WebBundleDescriptor.class);
         if( wDesc != null) {
             wDesc.setExtensionProperty(WELD_EXTENSION, "true");
             // Add the Weld Listener if it does not already exist..
             wDesc.addAppListenerDescriptor(new AppListenerDescriptorImpl(WELD_LISTENER));
+            // Add Weld Context Listener - this listener will ensure the WeldELContextListener is used
+            // for JSP's..
+            wDesc.addAppListenerDescriptor(new AppListenerDescriptorImpl(WELD_CONTEXT_LISTENER));
         }
 
         BundleDescriptor bundle = (wDesc != null) ? wDesc : ejbBundle;
         if( bundle != null ) {
-
-            BeanDeploymentArchive bda = deploymentImpl.getBeanDeploymentArchiveForArchive(archive.getName());
 
             // Register EE injection manager at the bean deployment archive level.
             // We use the generic InjectionService service to handle all EE-style
