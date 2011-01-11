@@ -129,7 +129,7 @@ final class RMIConnectorStarter extends ConnectorStarter {
         if (mBindToSingleIP) {
             if (isSecurityEnabled()) {
                 Util.getLogger().info("Security enabled");
-                sslServerSocketFactory = new SecureRMIServerSocketFactory(sslConfig, inetAddr);
+                sslServerSocketFactory = new SecureRMIServerSocketFactory(habitat, sslConfig, inetAddr);
                 sslCsf = getClientSocketFactory(sslConfig);
                 mServerSocketFactory = null;
             } else {
@@ -140,7 +140,7 @@ final class RMIConnectorStarter extends ConnectorStarter {
         } else {
             mServerSocketFactory = null;
             if (isSecurityEnabled()) {
-                sslServerSocketFactory = new SecureRMIServerSocketFactory(sslConfig, getAddress(address));
+                sslServerSocketFactory = new SecureRMIServerSocketFactory(habitat, sslConfig, getAddress(address));
                 sslCsf = getClientSocketFactory(sslConfig);
             } else {
                 sslServerSocketFactory = null;
