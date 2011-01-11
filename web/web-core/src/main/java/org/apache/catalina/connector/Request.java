@@ -137,6 +137,7 @@ import org.apache.catalina.util.StringManager;
 import org.apache.catalina.util.StringParser;
 import org.glassfish.grizzly.CompletionHandler;
 import org.glassfish.grizzly.EmptyCompletionHandler;
+import org.glassfish.grizzly.http.server.Response.SuspendedContextImpl;
 import org.glassfish.grizzly.http.server.TimeoutHandler;
 import org.glassfish.grizzly.http.server.util.MappingData;
 import org.glassfish.grizzly.http.util.B2CConverter;
@@ -483,7 +484,7 @@ public class Request
     private AsyncContextImpl asyncContext;
     // Has AsyncContext.complete been called?
     private boolean isAsyncComplete;
-    private final Object asyncInit = new Object();
+    private Thread asyncStartedThread;
     /**
      * Multi-Part support
      */
@@ -644,6 +645,7 @@ public class Request
         isAsyncSupported = true;
         asyncStarted.set(false);
         isAsyncComplete = false;
+        asyncStartedThread = null;
         clientClosedConnection = false;
     }
 
@@ -3882,7 +3884,10 @@ public class Request
                     sm.getString("request.startAsync.notSupported"));
         }
 
-        if (asyncContext != null) {
+        final AsyncContextImpl asyncContextLocal = asyncContext;
+        final AsyncContextImpl asyncContextFinal;
+        
+        if (asyncContextLocal != null) {
             if (isAsyncStarted()) {
                 throw new IllegalStateException(
                         sm.getString("request.startAsync.alreadyCalled"));
@@ -3891,21 +3896,47 @@ public class Request
                 throw new IllegalStateException(
                         sm.getString("request.startAsync.alreadyComplete"));
             }
-            if (!asyncContext.isStartAsyncInScope()) {
+            if (!asyncContextLocal.isStartAsyncInScope()) {
                 throw new IllegalStateException(
                         sm.getString("request.startAsync.notInScope"));
             }
 
             // Reinitialize existing AsyncContext
-            asyncContext.reinitialize(servletRequest, servletResponse,
+            asyncContextLocal.reinitialize(servletRequest, servletResponse,
                     isOriginalRequestAndResponse);
+            asyncContextFinal = asyncContextLocal;
         } else {
-            asyncContext = new AsyncContextImpl(this, servletRequest,
+            asyncContextFinal = new AsyncContextImpl(this, servletRequest,
                     (Response) getResponse(), servletResponse,
                     isOriginalRequestAndResponse);
         }
 
+        asyncContext = asyncContextFinal;
+
+        final CompletionHandler<org.glassfish.grizzly.http.server.Response> requestCompletionHandler =
+                new EmptyCompletionHandler<org.glassfish.grizzly.http.server.Response>() {
+
+                    @Override
+                    public void completed(org.glassfish.grizzly.http.server.Response response) {
+                        asyncContextFinal.notifyAsyncListeners(
+                                AsyncContextImpl.AsyncEventType.COMPLETE,
+                                null);
+                    }
+                };
+
+        final TimeoutHandler timeoutHandler = new TimeoutHandler() {
+
+            @Override
+            public boolean onTimeout(final org.glassfish.grizzly.http.server.Response response) {
+                return processTimeout();
+            }
+        };
+
+        coyoteRequest.getResponse().suspend(-1, TimeUnit.MILLISECONDS,
+                requestCompletionHandler, timeoutHandler);
+
         asyncStarted.set(true);
+        asyncStartedThread = Thread.currentThread();
 
         return asyncContext;
     }
@@ -3969,18 +4000,19 @@ public class Request
             throw new IllegalStateException(
                     sm.getString("request.asyncComplete.alreadyComplete"));
         }
+        isAsyncComplete = true;
+        asyncStarted.set(false);
         
-        synchronized (asyncInit) {
-            isAsyncComplete = true;
-            asyncStarted.set(false);
+        if (asyncStartedThread != Thread.currentThread() ||
+                !asyncContext.isOkToConfigure()) {
+            // it's not safe to just mark response as resumed
+            coyoteRequest.getResponse().resume();
+        } else {
+            final SuspendedContextImpl suspendContext =
+                    (SuspendedContextImpl) coyoteRequest.getResponse().getSuspendContext();
 
-            if (!asyncContext.isOkToConfigure()) {  // if false - Grizzly Response.suspend(...) has been called already
-                coyoteRequest.getResponse().resume();
-            } else {
-                asyncContext.notifyAsyncListeners(
-                        AsyncContextImpl.AsyncEventType.COMPLETE,
-                        null);
-            }
+            suspendContext.markResumed();
+            suspendContext.getSuspendStatus().reset();
         }
     }
 
@@ -4008,32 +4040,9 @@ public class Request
         if (asyncContext != null) {
             asyncContext.setOkToConfigure(false);
 
-            synchronized (asyncInit) {
-                if (asyncStarted.get()) {
-                    final CompletionHandler<org.glassfish.grizzly.http.server.Response> requestCompletionHandler =
-                            new EmptyCompletionHandler<org.glassfish.grizzly.http.server.Response>() {
-
-                                @Override
-                                public void completed(org.glassfish.grizzly.http.server.Response response) {
-                                    if (asyncContext != null) {
-                                        asyncContext.notifyAsyncListeners(
-                                                AsyncContextImpl.AsyncEventType.COMPLETE,
-                                                null);
-                                    }
-                                }
-                            };
-
-                    final TimeoutHandler timeoutHandler = new TimeoutHandler() {
-
-                        @Override
-                        public boolean onTimeout(final org.glassfish.grizzly.http.server.Response response) {
-                            return processTimeout();
-                        }
-                    };
-
-                    coyoteRequest.getResponse().suspend(asyncContext.getTimeout(), TimeUnit.MILLISECONDS,
-                            requestCompletionHandler, timeoutHandler);
-                }
+            if (asyncStarted.get()) {
+                coyoteRequest.getResponse().getSuspendContext().setTimeout(
+                        asyncContext.getTimeout(), TimeUnit.MILLISECONDS);
             }
 
         }
