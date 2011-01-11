@@ -67,14 +67,14 @@
                     <!facet pageButtonsTop>
                     <sun:panelGroup id="topButtons">
                         <sun:button id="closeButton" text="$resource{i18n.button.Close}"
-                            onClick="javascript: window.close();" >      
+                            onClick="javascript: window.close(); return false;" >
                         </sun:button>
                     </sun:panelGroup>
                     </facet>
                     <!facet pageButtonsBottom>
                     <sun:panelGroup id="bottomButtons">
-                        <sun:button id="closeButton2" text="$resource{i18n.button.Close}"
-                            onClick="javascript: window.close();" >      
+                        <sun:button id="closeButton" text="$resource{i18n.button.Close}"
+                            onClick="javascript: window.close(); return false;" >
                         </sun:button>
                     </sun:panelGroup>
                     </facet>

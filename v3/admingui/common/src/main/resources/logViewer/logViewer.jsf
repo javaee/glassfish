@@ -159,7 +159,7 @@
 		    setAttribute(key="hasResults" value="true" );
 		</ui:event>
 	    </sun:button>
-	    <sun:button id="closeButton" text="$resource{i18n.button.Close}" onClick="javascript: window.close();" >
+	    <sun:button id="closeButton" text="$resource{i18n.button.Close}" onClick="javascript: window.close(); return false;" >
 		<ui:event type="command">
 		    setSessionAttribute(key="showAdvanced" value="false" );
 		</ui:event>
@@ -174,7 +174,7 @@
 		    setAttribute(key="hasResults" value="true" );
 		 </ui:event>
 	    </sun:button>
-	    <sun:button id="closeButtonBottom" text="$resource{i18n.button.Close}" onClick="javascript: window.close();" >
+	    <sun:button id="closeButtonBottom" text="$resource{i18n.button.Close}" onClick="javascript: window.close(); return false;" >
 		<ui:event type="command">
 		    setSessionAttribute(key="showAdvanced" value="false" );
 		</ui:event>
