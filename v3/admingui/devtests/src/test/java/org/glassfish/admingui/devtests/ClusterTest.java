@@ -66,7 +66,7 @@ public class ClusterTest extends BaseSeleniumTestClass {
     public static final String TRIGGER_CLUSTER_INSTANCES_PAGE = "i18ncs.cluster.InstancesTitleHelp";
     public static final String TRIGGER_CLUSTER_RESOURCES_PAGE = "i18ncs.cluster.ResourcesTitleHelp";
 
-//    @Test
+    @Test
     public void testStartAndStopClusterWithOneInstance() {
         String clusterName = "clusterName" + generateRandomString();
         String instanceName1 = "instanceName" + generateRandomString();
@@ -117,7 +117,7 @@ public class ClusterTest extends BaseSeleniumTestClass {
         deleteCluster(clusterName);
     }
 
-//    @Test
+    @Test
     public void verifyClusterGeneralInformationPage() {
         String clusterName = "clusterName" + generateRandomString();
         String instanceName1 = "instanceName" + generateRandomString();
@@ -135,8 +135,8 @@ public class ClusterTest extends BaseSeleniumTestClass {
         //Back to the Clusters page,  ensure default value is there.
         clickAndWait("treeForm:tree:clusterTreeNode:clusterTreeNode_link", TRIGGER_CLUSTER_PAGE);
         clickAndWait(getLinkIdByLinkText(ID_CLUSTERS_TABLE, clusterName), TRIGGER_CLUSTER_GENERAL_PAGE);
-        assertEquals("0 instances running", selenium.getText("propertyForm:propertySheet:propertSectionTextField:instanceStatusProp:instanceStatusRunning"));
-        assertEquals("2 instances not running", selenium.getText("propertyForm:propertySheet:propertSectionTextField:instanceStatusProp:instanceStatusStopped"));
+        //TODO: should try to use the String key
+        assertEquals("2 instances are stopped", selenium.getText("propertyForm:propertySheet:propertSectionTextField:instanceStatusProp:instanceStatusStopped"));
 
         //change value
         selenium.type("propertyForm:propertySheet:propertSectionTextField:gmsMulticastPort:gmsMulticastPort", "12345");
@@ -154,7 +154,8 @@ public class ClusterTest extends BaseSeleniumTestClass {
         deleteCluster(clusterName);
     }
 
-//    @Test
+
+    @Test
     public void testClusterInstancesTab() {
         String clusterName = "clusterName" + generateRandomString();
         String instanceName1 = "instanceName" + generateRandomString();
@@ -173,7 +174,7 @@ public class ClusterTest extends BaseSeleniumTestClass {
         deleteCluster(clusterName);
     }
 
-//    @Test
+    @Test
     public void testProperties() {
         String clusterName = "clusterName" + generateRandomString();
         String instanceName1 = "instanceName" + generateRandomString();
@@ -208,7 +209,7 @@ public class ClusterTest extends BaseSeleniumTestClass {
         deleteCluster(clusterName);
     }
 
-//    @Test
+    @Test
     public void testMultiDeleteClusters() {
         String clusterName1 = "cluster" + generateRandomString();
         String clusterName2 = "cluster" + generateRandomString();
