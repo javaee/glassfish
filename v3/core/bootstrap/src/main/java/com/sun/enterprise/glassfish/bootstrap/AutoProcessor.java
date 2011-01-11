@@ -48,6 +48,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author Copied from Felix: AutoProcessor.java
@@ -61,6 +63,8 @@ public class AutoProcessor {
      * The property name prefix for the launcher's auto-start property.
      */
     public static final String AUTO_START_PROP = "glassfish.auto.start";
+
+    private static Logger logger = Logger.getLogger(AutoProcessor.class.getPackage().getName());
 
     /**
      * Used to instigate auto-deploy directory process and auto-install/auto-start
@@ -124,10 +128,9 @@ public class AutoProcessor {
                     sl.setBundleStartLevel(b, startLevel);
                 }
                 catch (Exception ex) {
-                    System.err.println("Auto-properties install: " + location + " ("
-                            + ex + ((ex.getCause() != null) ? " - " + ex.getCause() : "") + ")");
-//                    if (ex.getCause() != null)
-//                        ex.printStackTrace();
+                    // We log in FINE level because of issue # 15486
+                    logger.logp(Level.FINE, "AutoProcessor", "processAutoProperties",
+                            "Auto-properties install: " + location, ex);
                 }
             }
         }
@@ -146,8 +149,9 @@ public class AutoProcessor {
                         }
                     }
                     catch (Exception ex) {
-                        System.err.println("Auto-properties start: " + location + " ("
-                                + ex + ((ex.getCause() != null) ? " - " + ex.getCause() : "") + ")");
+                        // We log in FINE level because of issue # 15486
+                        logger.logp(Level.FINE, "AutoProcessor", "processAutoProperties",
+                                "Auto-properties start: " + location, ex);
                     }
                 }
             }
