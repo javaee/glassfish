@@ -45,6 +45,7 @@ import com.sun.ejb.Container;
 import org.glassfish.ejb.api.EjbContainerServices;
 import org.jvnet.hk2.annotations.Service;
 
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Member;
 import java.lang.reflect.Proxy;
@@ -70,9 +71,9 @@ import java.util.HashSet;
  *
  */
 @Service
-public class EjbContainerServicesImpl implements EjbContainerServices {
+public class EjbContainerServicesImpl implements EjbContainerServices, Serializable {
 
-     private Logger _logger = LogDomains.getLogger(EjbContainerUtilImpl.class, LogDomains.EJB_LOGGER);
+     private transient Logger _logger = LogDomains.getLogger(EjbContainerUtilImpl.class, LogDomains.EJB_LOGGER);
 
 
     public <S> S  getBusinessObject(Object ejbRef, java.lang.Class<S> businessInterface) {

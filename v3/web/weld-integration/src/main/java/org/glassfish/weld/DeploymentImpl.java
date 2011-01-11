@@ -439,14 +439,39 @@ public class DeploymentImpl implements Deployment {
                 this.beanDeploymentArchives.add(bda);
                 if (libJarBDAs  == null) {
                     libJarBDAs = new ArrayList<BeanDeploymentArchive>();
-                    libJarBDAs.add(bda);
                 }
+                libJarBDAs.add(bda);
                 this.idToBeanDeploymentArchive.put(bda.getId(), bda);
             }
-
+            //Ensure each library jar in EAR/lib is visible to each other.
+            ensureEarLibJarVisibility(libJarBDAs);
         }
         
         return libJarBDAs;
     }
-
+    
+    private void ensureEarLibJarVisibility(List<BeanDeploymentArchive> earLibBDAs) {
+        //ensure all ear/lib JAR BDAs are visible to each other
+        for (int i = 0; i < earLibBDAs.size(); i++) {
+            BeanDeploymentArchive firstBDA = earLibBDAs.get(i);
+            boolean modified = false;
+            //loop through the list once more
+            for (int j = 0; j < earLibBDAs.size(); j++) {
+                BeanDeploymentArchive otherBDA = earLibBDAs.get(j);
+                if (!firstBDA.getId().equals(otherBDA.getId())){
+                    logger.log(FINE, "DeploymentImpl::ensureEarLibJarVisibility - " + firstBDA.getId() + " being associated with " + otherBDA.getId());
+                    firstBDA.getBeanDeploymentArchives().add(otherBDA);
+                    modified = true;
+                }
+            }
+            //update modified BDA
+            if (modified){
+                int idx = this.beanDeploymentArchives.indexOf(firstBDA);
+                logger.log(FINE, "DeploymentImpl::ensureEarLibJarVisibility - updating " + firstBDA.getId() );
+                if (idx >= 0) {
+                    this.beanDeploymentArchives.set(idx, firstBDA);
+                }
+            }
+        }
+    }
 }
