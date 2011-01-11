@@ -53,6 +53,7 @@ import javax.management.loading.ClassLoaderRepository;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
+import javax.rmi.ssl.SslRMIClientSocketFactory;
 
 /**
     This Interceptor wraps the real MBeanServer so that additional interceptor code can be
@@ -208,6 +209,7 @@ public class DynamicInterceptor implements MBeanServer
                     objectName.getKeyProperty("type").equals("resources") ||
                     objectName.getKeyProperty("type").equals("system-applications") ||
                     objectName.getKeyProperty("type").equals("applications") ||
+                    objectName.getKeyProperty("type").equals("realms") ||
                     objectName.getKeyProperty("type").equalsIgnoreCase("MBeanServerDelegate")) {
 
                 result.addInstance("server");
@@ -222,9 +224,8 @@ public class DynamicInterceptor implements MBeanServer
             result.addInstance("server");
             return result;
         } 
-        
         // What abouut JVM
-        //System.out.println(" instance = "+oName+" :: "+instances.toString());
+        
         return result;
     }
 
@@ -310,7 +311,10 @@ public class DynamicInterceptor implements MBeanServer
         if(MbeanService.getInstance().isInstance(instanceName)) {
             return getDelegateMBeanServer();
         }
-
+        // check if this needs a secure connection
+        if(MbeanService.getInstance().isSecureJMX(instanceName)) {
+            return getSecureInstanceConnection(instanceName);
+        }
         synchronized (instanceConnections) {
             if (!instanceConnections.containsKey(instanceName)) {
                 try {
@@ -329,6 +333,36 @@ public class DynamicInterceptor implements MBeanServer
         }
     }
 
+    private MBeanServerConnection getSecureInstanceConnection(String instanceName) throws InstanceNotFoundException {
+
+        synchronized (instanceConnections) {
+            if (!instanceConnections.containsKey(instanceName)) {
+                try {
+            //
+            System.out.println("\nInitialize the environment map");
+            final Map<String,Object> env = new HashMap<String,Object>();
+            // Provide the SSL/TLS-based RMI Client Socket Factory required
+            // by the JNDI/RMI Registry Service Provider to communicate with
+            // the SSL/TLS-protected RMI Registry
+
+            SslRMIClientSocketFactory csf = new SslRMIClientSocketFactory();
+            env.put("com.sun.jndi.rmi.factory.socket", csf);
+                    String urlStr = "service:jmx:rmi:///jndi/rmi://" +
+                            MbeanService.getInstance().getHost(instanceName) + ":" +
+                            MbeanService.getInstance().getJMXPort(instanceName) + "/jmxrmi";
+                    JMXServiceURL url = new JMXServiceURL(urlStr);
+                    JMXConnector jmxConn = JMXConnectorFactory.connect(url, env);
+                    MBeanServerConnection conn = jmxConn.getMBeanServerConnection();
+                    instanceConnections.put(instanceName, conn);
+                } catch(Exception ex) {
+                     throw new InstanceNotFoundException(ex.getLocalizedMessage());
+                }
+            }
+            return instanceConnections.get(instanceName);
+        }
+    
+    }
+
     /**
         Get the MBeanServer to which the request can be delegated.
      */
@@ -345,13 +379,13 @@ public class DynamicInterceptor implements MBeanServer
             throws ReflectionException, InstanceNotFoundException, MBeanException {
         if(objectName == null)
             throw new InstanceNotFoundException();
-        ReplicationInfo result = getInstance(objectName);
+        ReplicationInfo result = getInstance(objectName); 
         Object returnValue = null;
         try {
             for(String svr : result.getInstances()) {
                 if("server".equals(svr)) {
                     returnValue = getDelegateMBeanServer().invoke( objectName, operationName, params, signature );
-                } else {
+                } else {                    
                     returnValue = getInstanceConnection(svr).invoke(objectName, operationName, params, signature);
                 }
             }
@@ -508,12 +542,20 @@ public class DynamicInterceptor implements MBeanServer
             return false;
         try {
             List<String> instance = getInstance(objectName).getInstances();
-            if(instance.size() != 1)
+            /* if(instance.size() != 1)
                 throw new InstanceNotFoundException(localStrings.getLocalString("interceptor.objectName.wrongservernames",
-                        "This mbean call does not support multiple target instances"));
-            if((instance.get(0).equals("server")))
+                        "This mbean call does not support multiple target instances")); */
+            for(String instanceName : instance) {
+                if(instanceName.equals(System.getProperty("com.sun.aas.instanceName"))) {
+                    return getDelegateMBeanServer().isRegistered( objectName );
+                } else {
+                    continue;
+                }
+            }
+            return false;
+            /*if((instance.get(0).equals("server")))
                 return getDelegateMBeanServer().isRegistered( objectName );
-            return getInstanceConnection(instance.get(0)).isRegistered(objectName);
+            return getInstanceConnection(instance.get(0)).isRegistered(objectName); */
         } catch (Exception ex) {
             return false;
         }

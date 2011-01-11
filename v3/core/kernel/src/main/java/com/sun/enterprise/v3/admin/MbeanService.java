@@ -134,4 +134,20 @@ public class MbeanService implements Startup {
     public boolean isInstance(String name) {
         return env.getInstanceName().equals(name);
     }
+
+    /**
+     * Returns if the SystemJMXConnector is secure or not
+     * @param instance
+     * @return
+     */
+    public boolean isSecureJMX(String instance) {
+        String isSecure = "false";
+        if(domain.getServerNamed(instance) != null ) {
+            if (domain.getServerNamed(instance).getConfig().getAdminService().getSystemJmxConnector() != null) {
+                isSecure= domain.getServerNamed(instance).getConfig().getAdminService().getSystemJmxConnector().getSecurityEnabled();
+            }
+        }
+        return Boolean.parseBoolean(isSecure);
+
+    }
 }
