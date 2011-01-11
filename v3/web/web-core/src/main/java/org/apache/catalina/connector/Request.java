@@ -3365,7 +3365,9 @@ public class Request
     /**
      * Parse session id in URL.
      */
-    protected void parseSessionId(String sessionParam, CharChunk uriBB) {
+    protected void parseSessionId(String sessionParameterName, CharChunk uriBB) {
+        //START GLASSFISH-15508
+        /*
         int semicolon = uriBB.indexOf(sessionParam, 0, sessionParam.length(),
                 0);
         if (semicolon >= 0) {
@@ -3376,6 +3378,8 @@ public class Request
 
             int sessionIdStart = start + semicolon + sessionParam.length();
             int semicolon2 = uriBB.indexOf(';', sessionIdStart);
+        */
+        //END GLASSFISH-15508
             /* SJSAS 6346226
             if (semicolon2 >= 0) {
             setRequestedSessionId
@@ -3387,6 +3391,8 @@ public class Request
             end - sessionIdStart));
             }
              */
+            //START GLASSFISH-15508
+            /*
             // START SJSAS 6346226
             String sessionId = null;
             if (semicolon2 >= 0) {
@@ -3396,6 +3402,16 @@ public class Request
                 sessionId = new String(uriBB.getBuffer(), sessionIdStart,
                         end - sessionIdStart);
             }
+            */
+            //END GLASSFISH-15508
+        
+        // Parse session ID, and extract it from the decoded request URI
+        String sessionParam = ";" + sessionParameterName + "=";
+        String sessionId =
+            parseParameterFromRequestURI(uriBB, sessionParam);
+
+        if (sessionId != null) {
+            // START SJSAS 6346226
             int jrouteIndex = sessionId.lastIndexOf(':');
             if (jrouteIndex > 0) {
                 setRequestedSessionId(sessionId.substring(0, jrouteIndex));
@@ -3438,7 +3454,7 @@ public class Request
              * URI is not null, to allow for lazy evaluation
              */
             if (!coyoteRequest.requestURI().getByteChunk().isNull()) {
-                parseSessionIdFromRequestURI(sessionParam);
+                removeParameterFromRequestURI(sessionParam);
             }
             // END SJSWS 6376484
 
@@ -3455,98 +3471,98 @@ public class Request
      *
      */
     protected void parseSessionVersion(CharChunk uriCC) {
+        String sessionVersionString =
+            parseParameterFromRequestURI(uriCC, Globals.SESSION_VERSION_PARAMETER);
 
-        String sessionVersionString = null;
-
-        int semicolon = uriCC.indexOf(Globals.SESSION_VERSION_PARAMETER, 0,
-                                      Globals.SESSION_VERSION_PARAMETER.length(),
-                                      0);
-        if (semicolon > 0) {
-
-            int start = uriCC.getStart();
-            int end = uriCC.getEnd();
-
-            int sessionVersionStart = start + semicolon
-                + Globals.SESSION_VERSION_PARAMETER.length();
-            int semicolon2 = uriCC.indexOf(';', sessionVersionStart);
-            if (semicolon2 >= 0) {
-                sessionVersionString = new String(
-                    uriCC.getBuffer(),
-                    sessionVersionStart, 
-                    semicolon2 - semicolon - Globals.SESSION_VERSION_PARAMETER.length());
-            } else {
-                sessionVersionString = new String(
-                    uriCC.getBuffer(),
-                    sessionVersionStart, 
-                    end - sessionVersionStart);
-            }
-
+        if (sessionVersionString != null) {
             parseSessionVersionString(sessionVersionString);
 
             if (!coyoteRequest.requestURI().getByteChunk().isNull()) {
-                removeSessionVersionFromRequestURI();
+                removeParameterFromRequestURI(Globals.SESSION_VERSION_PARAMETER);
+            }
+        }
+    }
+
+    /**
+     * Parses and removes jreplica (if present) from the request URI.
+     */
+    protected void parseJReplica(CharChunk uriCC) {
+        String jreplica =
+            parseParameterFromRequestURI(uriCC, Globals.JREPLICA_PARAMETER);
+
+        if (jreplica != null) {
+            Session session = getSessionInternal(false);
+            if (session != null) {
+                session.setNote(Globals.JREPLICA_SESSION_NOTE, jreplica);
+            }
+            if (!coyoteRequest.requestURI().getByteChunk().isNull()) {
+                removeParameterFromRequestURI(Globals.JREPLICA_PARAMETER);
             }
         }
 
     }
 
+    /**
+     * @param parameter  of the form ";" + parameterName + "="
+     * @return parameterValue
+     */
+    private String parseParameterFromRequestURI(CharChunk uriCC, String parameter) {
+
+        String parameterValue = null;
+
+        int semicolon = uriCC.indexOf(parameter, 0, parameter.length(), 0);
+        if (semicolon >= 0) {
+
+            int start = uriCC.getStart();
+            int end = uriCC.getEnd();
+
+            int parameterStart = start + semicolon + parameter.length();
+            int semicolon2 = uriCC.indexOf(';', semicolon + parameter.length());
+            if (semicolon2 >= 0) {
+                parameterValue = new String(
+                    uriCC.getBuffer(),
+                    parameterStart, 
+                    semicolon2 - semicolon - parameter.length());
+            } else {
+                parameterValue = new String(
+                    uriCC.getBuffer(),
+                    parameterStart, 
+                    end - parameterStart);
+            }
+
+        }
+
+        return parameterValue;
+    }
+
     // START SJSWS 6376484
     /**
-     * Extracts the session ID from the request URI.
+     * Removes the session version from the request URI.
+     * @param parameter   of the form ";" + parameterName + "="
      */
-    protected void parseSessionIdFromRequestURI(String sessionParam) {
+    private void removeParameterFromRequestURI(String parameter) {
 
-        int start, end, sessionIdStart, semicolon, semicolon2;
+        int start, end, parameterStart, semicolon, semicolon2;
 
         ByteChunk uriBC = coyoteRequest.requestURI().getByteChunk();
         start = uriBC.getStart();
         end = uriBC.getEnd();
-        semicolon = uriBC.indexOf(sessionParam, 0, sessionParam.length(), 0);
-
+        semicolon = uriBC.indexOf(parameter, 0, parameter.length(), 0);
         if (semicolon > 0) {
-            sessionIdStart = start + semicolon;
-            semicolon2 = uriBC.indexOf(';', semicolon + sessionParam.length());
+            parameterStart = start + semicolon;
+            semicolon2 = uriBC.indexOf(';', semicolon + parameter.length());
             uriBC.setEnd(start + semicolon);
             byte[] buf = uriBC.getBuffer();
             if (semicolon2 >= 0) {
                 for (int i = 0; i < end - start - semicolon2; i++) {
                     buf[start + semicolon + i] = buf[start + i + semicolon2];
                 }
-                uriBC.setBytes(buf, start, semicolon + (end - start - semicolon2));
-            }
-        }
-    }
-    // END SJSWS 6376484
-
-    /**
-     * Removes the session version from the request URI.
-     */
-    protected void removeSessionVersionFromRequestURI() {
-
-        int start, end, sessionVersionStart, semicolon, semicolon2;
-
-        ByteChunk uriBC = coyoteRequest.requestURI().getByteChunk();
-        start = uriBC.getStart();
-        end = uriBC.getEnd();
-        semicolon = uriBC.indexOf(Globals.SESSION_VERSION_PARAMETER, 0,
-                                  Globals.SESSION_VERSION_PARAMETER.length(),
-                                  0);
-        if (semicolon > 0) {
-            sessionVersionStart = start + semicolon;
-            semicolon2 = uriBC.indexOf
-                (';', semicolon + Globals.SESSION_VERSION_PARAMETER.length());
-            uriBC.setEnd(start + semicolon);
-            byte[] buf = uriBC.getBuffer();
-            if (semicolon2 >= 0) {
-                for (int i = 0; i < end - start - semicolon2; i++) {
-                    buf[start + semicolon + i] 
-                        = buf[start + i + semicolon2];
-                }
                 uriBC.setBytes(buf, start, semicolon 
                                + (end - start - semicolon2));
             }
         }
     }
+    // END SJSWS 6376484
 
     /*
      * Parses the given session version string into its components. Each

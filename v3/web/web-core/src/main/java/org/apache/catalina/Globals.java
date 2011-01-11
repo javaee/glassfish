@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -260,6 +260,16 @@ public final class Globals {
 
     public static final String SESSION_VERSIONS_REQUEST_ATTRIBUTE =
         "com.sun.enterprise.http.sessionVersions";
+
+    public static final String JREPLICA_COOKIE_NAME = "JREPLICA";
+
+    public static final String JREPLICA_PARAMETER_NAME = "jreplica";
+
+    public static final String JREPLICA_PARAMETER =
+        ";" + JREPLICA_PARAMETER_NAME + "=";
+
+    public static final String JREPLICA_SESSION_NOTE =
+        "com.sun.enterprise.http.jreplicaLocation";
 
     public static final String WRAPPED_REQUEST =
         "__javax.security.auth.message.request";
