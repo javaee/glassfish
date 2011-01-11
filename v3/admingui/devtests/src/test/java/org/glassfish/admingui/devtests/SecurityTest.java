@@ -62,9 +62,10 @@ public class SecurityTest extends BaseSeleniumTestClass {
     public static final String TRIGGER_NEW_MESSAGE_SECURITY_CONFIGURATION = "i18nc.headings.NewMsgSecurity";
     public static final String TRIGGER_EDIT_MESSAGE_SECURITY_CONFIGURATION = "i18nc.msgSecurity.EditMsgSecurity";
     public static final String TRIGGER_EDIT_PROVIDER_CONFIGURATION = "i18nc.msgProvider.EditPageTitle";
+    public static final String TRIGGER_PROVIDER_CONFIGURATION = "i18nc.msgSecProvider.TableTitle";
+    public static final String TRIGGER_NEW_PROVIDER_CONFIGURATION = "i18nc.msgSecProvider.NewPageTitle";
     public static final String ADMIN_PWD_DOMAIN_ATTRIBUTES = "i18nc.domain.DomainAttrsPageTitle";
     public static final String ADMIN_PWD_NEW_ADMINPWD = "i18nc.domain.AdminPasswordTitle";
-//    public static final String ADMIN_PWD_SUCCESS = "New values successfully saved";
 
     public static final String JVM_CONFIG = "i18nc.jvm.GeneralPageHelp";
     public static final String JVM_OPTION = "i18nc.jvmOptions.PageHelp";
@@ -184,20 +185,14 @@ public class SecurityTest extends BaseSeleniumTestClass {
     @Test
     public void testAddMessageSecurityConfiguration() {
         final String providerName = "provider" + generateRandomString();
-        final String providerType = selectRandomItem(new String[] {"client", "server", "client-server"});
         final String className = "com.example.Foo";
-        final String LAYER_NAME = "HttpServlet";
-
+        
         clickAndWait("treeForm:tree:configurations:server-config:security:messageSecurity:messageSecurity_link", TRIGGER_MESSAGE_SECURITY_CONFIGURATIONS);
-
-        // Clean up, just in case...
-        if (tableContainsRow("propertyForm:configs", "col1", LAYER_NAME)) {
-            deleteRow("propertyForm:configs:topActionsGroup1:button1", "propertyForm:configs", LAYER_NAME);            
-        }
-
-        clickAndWait("propertyForm:configs:topActionsGroup1:newButton", TRIGGER_NEW_MESSAGE_SECURITY_CONFIGURATION);
+        clickAndWait(getLinkIdByLinkText("propertyForm:configs", "SOAP"), TRIGGER_EDIT_MESSAGE_SECURITY_CONFIGURATION);
+        clickAndWait("propertyForm:msgSecurityTabs:providers", TRIGGER_PROVIDER_CONFIGURATION);
+        clickAndWait("propertyForm:configs:topActionsGroup1:newButton", TRIGGER_NEW_PROVIDER_CONFIGURATION);
+        
         selenium.type("propertyForm:propertySheet:providerConfSection:ProviderIdTextProp:ProviderIdText", providerName);
-        selenium.select("propertyForm:propertySheet:providerConfSection:ProviderTypeProp:ProviderType", "label="+providerType);
         selenium.type("propertyForm:propertySheet:providerConfSection:ClassNameProp:ClassName", className);
         int count = addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton");
 
@@ -205,30 +200,21 @@ public class SecurityTest extends BaseSeleniumTestClass {
         selenium.type("propertyForm:basicTable:rowGroup1:0:col3:col1St", "value");
         selenium.type("propertyForm:basicTable:rowGroup1:0:col4:col1St", "description");
 
-        clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_MESSAGE_SECURITY_CONFIGURATIONS);
-        assertTrue(selenium.isTextPresent(LAYER_NAME));
-
-        clickAndWait(getLinkIdByLinkText("propertyForm:configs", LAYER_NAME), TRIGGER_EDIT_MESSAGE_SECURITY_CONFIGURATION);
-        clickAndWait("propertyForm:msgSecurityTabs:providers", "Provider Configurations");
+        clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_PROVIDER_CONFIGURATION);
+        assertTrue(selenium.isTextPresent(providerName));
         clickAndWait(getLinkIdByLinkText("propertyForm:configs", providerName), TRIGGER_EDIT_PROVIDER_CONFIGURATION);
-        
-        assertEquals(providerType, selenium.getValue("propertyForm:propertySheet:providerConfSection:ProviderTypeProp:ProviderType"));
         assertEquals(className, selenium.getValue("propertyForm:propertySheet:providerConfSection:ClassNameProp:ClassName"));
         assertTableRowCount("propertyForm:basicTable", count);
-
-        clickAndWait("treeForm:tree:configurations:server-config:security:messageSecurity:messageSecurity_link", TRIGGER_MESSAGE_SECURITY_CONFIGURATIONS);
-        deleteRow("propertyForm:configs:topActionsGroup1:button1", "propertyForm:configs", LAYER_NAME);
     }
 
-    // commented because this test will cause all other tests to fail, uncomment once Issue 13185 is fixed
-    /*@Test
+    @Test
     public void testNewAdminPassword() {
-        final String userPassword = "admin" + generateRandomString();
+        final String userPassword = "";
 
         clickAndWait("treeForm:tree:nodes:nodes_link", ADMIN_PWD_DOMAIN_ATTRIBUTES);
         clickAndWait("propertyForm:domainTabs:adminPassword", ADMIN_PWD_NEW_ADMINPWD);
         selenium.type("propertyForm:propertySheet:propertSectionTextField:newPasswordProp:NewPassword", userPassword);
         selenium.type("propertyForm:propertySheet:propertSectionTextField:confirmPasswordProp:ConfirmPassword", userPassword);
-        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", ADMIN_PWD_SUCCESS);
-    }*/
+        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
+    }
 }
