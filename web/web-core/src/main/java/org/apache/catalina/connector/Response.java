@@ -80,6 +80,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
 import com.sun.appserv.ProxyHandler;
+import java.util.ArrayList;
 import org.apache.catalina.Connector;
 import org.apache.catalina.Context;
 import org.apache.catalina.Globals;
@@ -975,7 +976,12 @@ public class Response
      * of the headers of this response
      */
     public Collection<String> getHeaderNames() {
-        return Arrays.asList(coyoteResponse.getHeaderNames());
+        final Collection<String> result = new ArrayList<String>();
+        for (final String headerName : coyoteResponse.getResponse().getHeaders().names()) {
+            result.add(headerName);
+        }
+
+        return result;
     }
 
 
@@ -986,7 +992,12 @@ public class Response
      * of the response header with the given name
      */
     public Collection<String> getHeaders(String name) {
-        return Arrays.asList(coyoteResponse.getHeaderValues(name));
+        final Collection<String> result = new ArrayList<String>();
+        for (final String headerValue : coyoteResponse.getResponse().getHeaders().values(name)) {
+            result.add(headerValue);
+        }
+
+        return result;
     }
 
 
