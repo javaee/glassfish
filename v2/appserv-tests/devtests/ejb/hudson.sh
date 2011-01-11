@@ -1,5 +1,5 @@
 java -version
-
+ant -version
 
 rm -rf glassfish-v3-image
 mkdir glassfish-v3-image
