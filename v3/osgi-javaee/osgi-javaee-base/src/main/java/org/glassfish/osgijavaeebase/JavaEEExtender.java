@@ -48,10 +48,8 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.BundleTracker;
 import org.osgi.util.tracker.BundleTrackerCustomizer;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.Map;
+import java.util.concurrent.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -103,10 +101,10 @@ public class JavaEEExtender implements Extender {
         executorService.shutdownNow();
     }
 
-    private synchronized void deploy(Bundle b) {
-        if (!isStarted()) return;
+    private synchronized OSGiApplicationInfo deploy(Bundle b) {
+        if (!isStarted()) return null;
         try {
-            c.deploy(b);
+            return c.deploy(b);
         }
         catch (Exception e) {
             logger.logp(Level.SEVERE, "JavaEEExtender", "deploy",
@@ -115,6 +113,7 @@ public class JavaEEExtender implements Extender {
             logger.logp(Level.SEVERE, "JavaEEExtender", "deploy",
                     "Exception Stack Trace", e);
         }
+        return null;
     }
 
     private synchronized void undeploy(Bundle b) {
@@ -139,15 +138,20 @@ public class JavaEEExtender implements Extender {
     }
 
     private class HybridBundleTrackerCustomizer implements BundleTrackerCustomizer {
+        private Map<Long, Future<OSGiApplicationInfo>> deploymentTasks =
+                new ConcurrentHashMap<Long, Future<OSGiApplicationInfo>>();
+
         public Object addingBundle(final Bundle bundle, BundleEvent event) {
             if (!isStarted()) return null;
             final int state = bundle.getState();
             if (isReady(event, state)) {
-                executorService.submit(new Runnable() {
-                    public void run() {
-                        deploy(bundle);
+                Future<OSGiApplicationInfo> future = executorService.submit(new Callable<OSGiApplicationInfo>() {
+                    @Override
+                    public OSGiApplicationInfo call() throws Exception {
+                        return deploy(bundle);
                     }
                 });
+                deploymentTasks.put(bundle.getBundleId(), future);
                 return bundle;
             }
             return null;
@@ -169,13 +173,17 @@ public class JavaEEExtender implements Extender {
 
         public void removedBundle(final Bundle bundle, BundleEvent event, Object object) {
             if (!isStarted()) return;
-            Future future = executorService.submit(new Runnable() {
-                public void run() {
-                    undeploy(bundle);
-                }
-            });
+            Future<OSGiApplicationInfo> deploymentTask = deploymentTasks.remove(bundle.getBundleId());
+            if (deploymentTask == null) {
+                // We have never seen this bundle before. Ideally we should never get here.
+                assert(false);
+                return;
+            }
             try {
-                future.get();
+                OSGiApplicationInfo deployedApp = deploymentTask.get();
+                if (deployedApp != null) {
+                    undeploy(bundle); // undeploy synchronously to avoid any deadlock. See GF issue #
+                }
             } catch (InterruptedException e) {
                 throw new RuntimeException(e); // TODO(Sahoo): Proper Exception Handling
             } catch (ExecutionException e) {
