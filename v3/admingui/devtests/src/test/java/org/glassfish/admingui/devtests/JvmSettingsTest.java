@@ -44,10 +44,12 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class JvmSettingsTest extends BaseSeleniumTestClass {
-    public static final String TRIGGER_JVM_GENERAL_SETTINGS = "JVM General Settings";
-    public static final String TRIGGER_JVM_PATH_SETTINGS = "JVM Path Settings";
-    public static final String TRIGGER_JVM_OPTIONS = "Manage JVM options for the server.";
-    public static final String TRIGGER_JVM_PROFILER_SETTINGS = "JVM Profiler Settings";
+    public static final String TRIGGER_JVM_GENERAL_SETTINGS = "i18nc.jvm.GeneralTitle";
+    public static final String TRIGGER_JVM_PATH_SETTINGS = "i18nc.jvm.PathSettingsTitle";
+    public static final String TRIGGER_JVM_OPTIONS = "i18nc.jvmOptions.PageHelp";
+    public static final String TRIGGER_JVM_PROFILER_SETTINGS = "i18nc.jvm.ProfilerPageName";
+    public static final String TRIGGER_JVM_PROFILER_CREATED = "i18nc.jvm.ProfilerCreated";
+    public static final String TRIGGER_JVM_PROFILER_DELETED = "i18nc.jvm.ProfilerDeleted";
 
     @Test
     public void testJvmGeneralSettings() {
@@ -79,7 +81,7 @@ public class JvmSettingsTest extends BaseSeleniumTestClass {
         clickAndWait("propertyForm:javaConfigTab:profiler", TRIGGER_JVM_PROFILER_SETTINGS);
 
         if (selenium.isElementPresent("propertyForm:propertyContentPage:topButtons:deleteButton")) {
-            this.clickAndWait("propertyForm:propertyContentPage:topButtons:deleteButton", "Profiler successfully deleted.");
+            this.clickAndWait("propertyForm:propertyContentPage:topButtons:deleteButton", TRIGGER_JVM_PROFILER_DELETED);
             if (selenium.isConfirmationPresent()) {
                 selenium.getConfirmation();
             }
@@ -88,7 +90,7 @@ public class JvmSettingsTest extends BaseSeleniumTestClass {
         selenium.type("propertyForm:propertySheet:propertSectionTextField:profilerNameProp:ProfilerName", "profiler" + generateRandomString());
         int count = addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton", "Options");
         selenium.type("propertyForm:basicTable:rowGroup1:0:col3:col1St", "-Dfoo=" + generateRandomString());
-        clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_JVM_PROFILER_SETTINGS);
+        clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_JVM_PROFILER_CREATED);
         assertTableRowCount("propertyForm:basicTable", count);
 
         clickAndWait("propertyForm:javaConfigTab:pathSettings", TRIGGER_JVM_PATH_SETTINGS);
