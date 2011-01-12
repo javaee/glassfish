@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,20 +41,12 @@
 package com.sun.enterprise.security;
 
 import com.sun.enterprise.config.serverbeans.*;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.grizzly.config.dom.Ssl;
 import com.sun.logging.LogDomains;
 import java.beans.PropertyVetoException;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.api.admin.ServerEnvironment;
@@ -99,7 +91,8 @@ public class SecurityUpgradeService implements ConfigurationUpgrade, PostConstru
     private static final String GF_SSL_IMPL_NAME = "com.sun.enterprise.security.ssl.GlassfishSSLImpl";
     private static final Logger _logger = LogDomains.getLogger(SecurityUpgradeService.class, LogDomains.SECURITY_LOGGER);
 
-
+    private static final LocalStringManagerImpl localStrings =
+	new LocalStringManagerImpl(SecurityUpgradeService.class);
 
     
     public void postConstruct()  {
@@ -166,9 +159,8 @@ public class SecurityUpgradeService implements ConfigurationUpgrade, PostConstru
 
         if (requiresSecureAdmin()) {
 
-            _logger.log(Level.SEVERE, "AutoUpgrade from v2 EE edition to v3 is not currently supported."
-                    + "Please refer to the instructions in http://wikihome.sfbay.sun.com/security/Wiki.jsp?page=V2.XEEToV3.1NSSUpgrade "
-                    + "for upgrading manually");
+            _logger.log(Level.WARNING, localStrings.getLocalString("enterprise.security.upgrade.warning", "Upgrade from v2 EE  to v3.1 requires manual steps."
+                    + "Please refer to the v3.1 Upgrade Guide for details."));
         }
 
         //Fix for issue 14950 the classname attribute
