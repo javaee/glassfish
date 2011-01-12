@@ -1,7 +1,0 @@
-Test
-- Use of Producer Methods to act as a source of injectable bean instances
-- Use of producer methods and qualifiers to enable runtime polymorphism (runtime
-selection of beans to inject)
-    - The beans can either be programmatically instantiated (new)
-    - or via Injection (if a request-scoped bean is injected and the producer 
-    method is annotated session-scoped, use @New to create a new Dependent object)  

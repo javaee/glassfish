@@ -1,8 +1,0 @@
-Built in custom resource factories test for 
-1) Primitives And String
-2) Properties
-3) URL
-4) JavaBean
-
-@Test : bundles resource configuration as part of glassfish-resources.xml (.ear) level
-and hence tests java:app scoped resources (custom-resources)

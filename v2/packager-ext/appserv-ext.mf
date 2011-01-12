@@ -1,7 +1,0 @@
-Manifest-Version: 1.0
-Specification-Title: SunONE Application Server
-Specification-Version: 8.0
-Specification-Vendor: Sun Microsystems, Inc.
-Created-By: 1.4.0 (Sun Microsystems Inc.)
-Implementation-Vendor: Sun Microsystems, Inc.
-Implementation-Version: 8.0

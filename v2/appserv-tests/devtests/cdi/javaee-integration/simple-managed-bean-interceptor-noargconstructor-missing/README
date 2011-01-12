@@ -1,1 +1,0 @@
-- modification of the simple-managed-bean-interceptor test with non-null package for the managed bean and no no-arg constructor. Though the managed bean spec requires a no-arg constructor, it allows CDI specificaiton and implementations to support ManagedBeans with no no-arg constructor. Deployment would succeed on Weld 1.1 and above.

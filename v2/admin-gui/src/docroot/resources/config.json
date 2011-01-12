@@ -1,8 +1,0 @@
-{
-  "config": {
-    "version": ".8.3",
-    "glue" : {
-       "includes": ["/glue.js"]
-    }
-   }
- }

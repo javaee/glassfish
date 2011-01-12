@@ -1,5 +1,0 @@
-Test
-    - Injection of ServletContext into a Servlet. As CDI does not allow injection of ServletContext, a Bridge 
-ServletContextListener is used to fire events during the initialization  and destruction of ServletContext as suggested in 
-http://seamframework.org/Community/InjectServletContextIntoManagedBean#comment111596
-

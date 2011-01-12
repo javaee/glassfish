@@ -1,5 +1,0 @@
-Test
-- Injection of a no-interface bean in a request-scoped model via @Inject 
-and @EJB and invocation of methods defined in the EJB class and 
-in a super-class of the EJB
-- glassfish issue 13040

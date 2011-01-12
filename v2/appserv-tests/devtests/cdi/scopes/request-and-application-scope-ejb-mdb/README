@@ -1,8 +1,0 @@
-Test
-- availability of application and request scoped beans in 
-   - invocation of EJB remote methods
-   - invocation of MDB message delivery
-   - invocation of EJB timer timeout methods
-
-- TODO: check availability in invocation of
-   - async EJB methods, MDB (Connector), WS HAndler 

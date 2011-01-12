@@ -1,4 +1,0 @@
-({
-	buttonOk: "OK",
-	buttonCancel: "Cancel"
-})

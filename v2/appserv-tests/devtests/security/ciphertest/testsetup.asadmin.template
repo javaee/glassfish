@@ -1,8 +1,0 @@
-delete-http-listener test-http-listener-1
-delete-http-listener test-http-listener-2
-
-create-http-listener --listeneraddress 0.0.0.0 --listenerport @HTTPS1PORT@ --defaultvs server --securityenabled=true test-http-listener-1
-create-ssl --type http-listener --certname s1as --ssl3tlsciphers "SSL_RSA_WITH_RC4_128_MD5" test-http-listener-1
-
-create-http-listener --listeneraddress 0.0.0.0 --listenerport @HTTPS2PORT@ --defaultvs server --securityenabled=true test-http-listener-2
-create-ssl --type http-listener --certname s1as --ssl3tlsciphers "SSL_RSA_WITH_3DES_EDE_CBC_SHA,SSL_RSA_WITH_DES_CBC_SHA,SSL_RSA_EXPORT_WITH_RC4_40_MD5,SSL_RSA_WITH_NULL_MD5,SSL_RSA_WITH_RC4_128_SHA,SSL_RSA_WITH_NULL_SHA" test-http-listener-2

@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE application-client PUBLIC '-//Sun Microsystems, Inc.//DTD J2EE Application Client 1.3//EN' 'http://java.sun.com/dtd/application-client_1_3.dtd'>
-
-<!-- Copyright 2002 Sun Microsystems, Inc. All rights reserved. -->
-
-<application-client>
-  <display-name>annotation-connector15Client</display-name>
-</application-client>
-

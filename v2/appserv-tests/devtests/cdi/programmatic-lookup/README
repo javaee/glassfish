@@ -1,4 +1,0 @@
-Test
-- Programmatic lookup: specifying bean type and qualifiers(with 
-and without members) dynamically at runtime, @Any
-- Injection of @Dependent unproxyable deps
