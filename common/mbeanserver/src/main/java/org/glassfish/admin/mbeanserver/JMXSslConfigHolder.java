@@ -67,7 +67,7 @@ public class JMXSslConfigHolder extends SSLConfigurator {
 
     private static final String DEFAULT_SSL_PROTOCOL = "TLS";
 
-    public JMXSslConfigHolder(final Habitat habitat, Ssl ssl) throws SSLException {
+    public JMXSslConfigHolder(final Habitat habitat, final Ssl ssl) throws SSLException {
                 super(habitat, ssl);
     }
 
