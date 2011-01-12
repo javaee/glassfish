@@ -290,6 +290,7 @@ public class ContainerMapper extends StaticHttpHandler {
             int semicolonPos, final MappingData mappingData) throws Exception {
 
         final CharChunk charChunk = decodedURI.getCharChunk();
+        final int oldStart = charChunk.getStart();
         final int oldEnd = charChunk.getEnd();
 
         if (semicolonPos == 0) {
@@ -305,6 +306,7 @@ public class ContainerMapper extends StaticHttpHandler {
         try {
             return map(req, decodedURI, mappingData);
         } finally {
+            charChunk.setStart(oldStart);
             charChunk.setEnd(oldEnd);
         }
     }
