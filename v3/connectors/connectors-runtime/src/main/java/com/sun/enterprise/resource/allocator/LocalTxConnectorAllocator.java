@@ -41,6 +41,8 @@
 package com.sun.enterprise.resource.allocator;
 
 import javax.transaction.xa.XAResource;
+import javax.transaction.Status;
+import javax.transaction.SystemException;
 import javax.resource.spi.*;
 import javax.resource.ResourceException;
 import javax.security.auth.Subject;
@@ -48,6 +50,7 @@ import java.util.logging.*;
 
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.resource.pool.PoolManager;
+import com.sun.enterprise.transaction.api.JavaEETransaction;
 import com.sun.enterprise.resource.*;
 import com.sun.enterprise.resource.listener.ConnectionEventListener;
 import com.sun.enterprise.resource.listener.LocalTxConnectionEventListener;
@@ -70,6 +73,13 @@ public class LocalTxConnectorAllocator extends AbstractConnectorAllocator {
         this.shareable = shareable;
     }
 
+    private static String transactionCompletionMode;
+    private static final String COMMIT = "COMMIT";
+    private static final String ROLLBACK = "ROLLBACK";
+
+    static{
+        transactionCompletionMode = System.getProperty("com.sun.enterprise.in-progress-local-transaction.completion-mode");
+    }
 
     public ResourceHandle createResource()
             throws PoolingException {
@@ -121,6 +131,8 @@ public class LocalTxConnectorAllocator extends AbstractConnectorAllocator {
         try {
             ManagedConnection mc = (ManagedConnection) resource.getResource();
             ConnectorXAResource.freeListener(mc);
+            XAResource xares = resource.getXAResource();
+            forceTransactionCompletion(xares);
             mc.destroy();
             if (_logger.isLoggable(Level.FINEST)) {
                 _logger.finest("destroyResource for LocalTxConnectorAllocator done");
@@ -131,6 +143,38 @@ public class LocalTxConnectorAllocator extends AbstractConnectorAllocator {
         }
     }
 
+    private void forceTransactionCompletion(XAResource xares) throws SystemException {
+        if(transactionCompletionMode != null){
+            if(xares instanceof ConnectorXAResource){
+                ConnectorXAResource connectorXARes = (ConnectorXAResource)xares;
+                JavaEETransaction j2eetran = connectorXARes.getAssociatedTransaction();
+                if(j2eetran != null && j2eetran.isLocalTx()){
+                    if(j2eetran.getStatus() == (Status.STATUS_ACTIVE)){
+                        try{
+                            if(transactionCompletionMode.equalsIgnoreCase(COMMIT)){
+                                if(_logger.isLoggable(Level.FINEST)){
+                                    _logger.log(Level.FINEST,"Transaction Completion Mode for LocalTx resource is " +
+                                            "set as COMMIT, committing transaction");
+                                }
+                                j2eetran.commit();
+                            }else if(transactionCompletionMode.equalsIgnoreCase(ROLLBACK)){
+                                if(_logger.isLoggable(Level.FINEST)){
+                                    _logger.log(Level.FINEST,"Transaction Completion Mode for LocalTx resource is " +
+                                        "set as ROLLBACK, rolling back transaction");
+                                }
+                                j2eetran.rollback();
+                            }else{
+                                _logger.log(Level.WARNING,"Unknown transaction completion mode, no action made");
+                            }
+                        }catch(Exception e){
+                            _logger.log(Level.WARNING, "Failure while forcibily completing an incomplete, " +
+                                    "local transaction ", e);
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     public boolean shareableWithinComponent() {
         return shareable;
