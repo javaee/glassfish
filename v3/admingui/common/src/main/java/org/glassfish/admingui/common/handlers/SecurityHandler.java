@@ -353,7 +353,14 @@ public class SecurityHandler {
             if (password == null) {
                 password = "";
             }
+            // before save user synchronize realm, for the case if keyfile is changed
+            String tmpEP = GuiUtil.getSessionValue("REST_URL") + "/configs/config/"
+                                                    + configName + "/synchronize-realm-from-config";
             HashMap attrs = new HashMap<String, Object>();
+            attrs.put("id", configName);
+            attrs.put("realmName", realmName);
+            RestUtil.restRequest(tmpEP, attrs, "POST", handlerCtx, false);
+            attrs = new HashMap<String, Object>();
             if ((createNew == null)) {
                 String endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + configName +
                                                             "/security-service/auth-realm/" + realmName + "/delete-user?target=" + configName;
