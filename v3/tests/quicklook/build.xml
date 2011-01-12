@@ -197,6 +197,7 @@
         <antcall target="start-server-felix"/>
         <antcall target="build-deploy"/>
         <antcall target="build-deploy-gd"/>
+        <antcall target="build-cluster"/>
         <antcall target="runtest">
         <param name="testng.xml" value="testng/testng_gd.xml"/> </antcall>
         <antcall target="undeploy"/>
