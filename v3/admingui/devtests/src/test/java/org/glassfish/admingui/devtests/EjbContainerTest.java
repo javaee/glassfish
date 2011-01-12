@@ -45,9 +45,9 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 public class EjbContainerTest extends BaseSeleniumTestClass {
-    private static final String TAB_EJB_SETTINGS = "Enterprise Java Beans (EJB)";
-    private static final String TAB_MDB_SETTINGS = "MDB Default Pool Settings";
-    private static final String TAB_EJB_TIMER_SERVICE = "The EJB timer service enables you";
+    private static final String TAB_EJB_SETTINGS = "i18n_ejbLite.headings.ejbSettings";
+    private static final String TAB_MDB_SETTINGS = "i18n_ejb.headings.ejbMdbSettings";
+    private static final String TAB_EJB_TIMER_SERVICE = "i18n_ejb.ejb.ejbTimerSettingsInfo";
 
     @Test
     public void testEjbSettings() {
