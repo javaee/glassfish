@@ -45,8 +45,8 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 public class GMSTest extends BaseSeleniumTestClass {
-    private static final String TRIGGER_GMS = "in-process service";
-    private static final String TRIGGER_CONFIGURATION = "Configuration";
+    private static final String TRIGGER_GMS = "i18ncs.gms.TitlePageHelp";
+    private static final String TRIGGER_CONFIGURATION = "i18ncs.common.ConfigurationCol";
 
     @Test
     public void testConfig() {
