@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -526,9 +526,11 @@ public class PoolManagerImpl extends AbstractPoolManager implements ComponentInv
             while(it.hasNext()){
                 ResourceReferenceDescriptor rrd = (ResourceReferenceDescriptor)it.next();
                 String refName = rrd.getName();
-                refName = getJavaName(refName);
-                if(refName.equals(getJavaName(logicalName))){
-                    return rrd;
+                if(refName != null && logicalName != null){
+                    refName = getJavaName(refName);
+                    if(refName.equals(getJavaName(logicalName))){
+                        return rrd;
+                    }
                 }
             }
         }
@@ -536,7 +538,7 @@ public class PoolManagerImpl extends AbstractPoolManager implements ComponentInv
     }
 
     private static String getJavaName(String name){
-        if(name.startsWith("java:")){
+        if(name == null || name.startsWith("java:")){
             return name;
         }else {
             //by default, scope is "comp"
