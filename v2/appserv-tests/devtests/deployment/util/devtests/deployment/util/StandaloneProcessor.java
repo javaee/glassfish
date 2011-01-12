@@ -42,6 +42,7 @@ import com.sun.enterprise.deployment.annotation.impl.AppClientScanner;
 import org.glassfish.apf.impl.DirectoryScanner;
 import com.sun.enterprise.deployment.annotation.impl.EjbJarScanner;
 import com.sun.enterprise.deployment.annotation.impl.WarScanner;
+import com.sun.enterprise.deployment.annotation.impl.ModuleScanner;
 
 import com.sun.enterprise.deployment.io.AppClientDeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.EjbDeploymentDescriptorFile;
@@ -54,6 +55,17 @@ import com.sun.enterprise.deployment.util.EjbBundleValidator;
 import com.sun.enterprise.deployment.util.EjbBundleVisitor;
 import com.sun.enterprise.deployment.util.WebBundleVisitor;
 
+import org.glassfish.api.deployment.archive.ReadableArchive;
+import com.sun.enterprise.deploy.shared.ArchiveFactory;
+import com.sun.enterprise.module.ModulesRegistry;
+import org.jvnet.hk2.component.Habitat;
+import com.sun.hk2.component.ExistingSingletonInhabitant;
+import com.sun.enterprise.module.single.StaticModulesRegistry;
+import com.sun.enterprise.module.bootstrap.StartupContext;
+import org.glassfish.api.admin.ProcessEnvironment;
+import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
+
+
 /**
  *
  * @author dochez
@@ -63,6 +75,7 @@ public class StandaloneProcessor {
     private AnnotatedElementHandler aeHandler = null;
     private ModuleType type = null;
     private Set<String> compClassNames = null;
+    private static Habitat habitat;
     
     /** Creates a new instance of StandaloneProcessor */
     public StandaloneProcessor() {
@@ -113,6 +126,9 @@ public class StandaloneProcessor {
             File f = new File(arg);
             if (f.exists()) {
                 try {
+                    prepareHabitat();
+                    ArchiveFactory archiveFactory = habitat.getComponent(ArchiveFactory.class);
+                    ReadableArchive archive = archiveFactory.openArchive(f);
                     ClassLoader classLoader = null;
                     if (ModuleType.WAR.equals(type)) {
                         classLoader = new URLClassLoader(
@@ -120,13 +136,13 @@ public class StandaloneProcessor {
                     } else {
                         classLoader = new URLClassLoader(new URL[]{ f.toURL() });
                     }
-                    Scanner scanner = null;
+                    ModuleScanner scanner = null;
 
                     if (ModuleType.EJB.equals(type)) {
                         EjbBundleDescriptor ejbBundleDesc =
                                 (EjbBundleDescriptor)bundleDescriptor;
-                        scanner = new EjbJarScanner();
-                        scanner.process(f, ejbBundleDesc, classLoader);
+                        scanner = habitat.getComponent(EjbJarScanner.class);
+                        scanner.process(archive, ejbBundleDesc, classLoader, null);
                         
                     } else if (ModuleType.WAR.equals(type)) {
                         WebBundleDescriptor webBundleDesc =
@@ -138,20 +154,20 @@ public class StandaloneProcessor {
                             webCompDesc.setWebComponentImplementation(cname);
                             webBundleDesc.addWebComponentDescriptor(webCompDesc);
                         }
-                        scanner = new WarScanner();
-                        scanner.process(f, webBundleDesc, classLoader);
+                        scanner = habitat.getComponent(WarScanner.class);
+                        scanner.process(archive, webBundleDesc, classLoader, null);
                         
                     } else if (ModuleType.CAR.equals(type)) {
                         String mainClassName = compClassNames.iterator().next();
                         ApplicationClientDescriptor appClientDesc = 
                                 (ApplicationClientDescriptor)bundleDescriptor;
                         appClientDesc.setMainClassName(mainClassName);
-                        scanner = new AppClientScanner();
-                        scanner.process(f, appClientDesc, classLoader);
+                        scanner = habitat.getComponent(AppClientScanner.class);
+                        scanner.process(archive, appClientDesc, classLoader, null);
                         
                     }
 
-                    AnnotationProcessor ap = (new SJSASFactory()).getAnnotationProcessor();
+                    AnnotationProcessor ap = habitat.getComponent(SJSASFactory.class).getAnnotationProcessor();
                     
                     
                     // if the user indicated a directory for handlers, time to add the                    
@@ -246,4 +262,18 @@ public class StandaloneProcessor {
                 e.printStackTrace();
             }       
     }
+
+    private void prepareHabitat() {
+        if ( (habitat == null) ) {
+            // Bootstrap a hk2 environment.
+            ModulesRegistry registry = new StaticModulesRegistry(getClass().getClassLoader());
+            habitat = registry.createHabitat("default");
+
+            StartupContext startupContext = new StartupContext();
+            habitat.add(new ExistingSingletonInhabitant(startupContext));
+
+            habitat.addComponent(null, new ProcessEnvironment(ProcessEnvironment.ProcessType.Other));
+        }
+    }
+
 }

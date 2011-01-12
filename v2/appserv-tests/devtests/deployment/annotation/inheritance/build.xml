@@ -35,7 +35,7 @@
 
   <target name="test" depends="compile">
     <mkdir dir="${annotation.report.dir}"/>
-    <junit2 printsummary="yes" haltonerror="no" haltonfailure="no" fork="true">
+    <junit printsummary="yes" haltonerror="no" haltonfailure="no" fork="true">
       <formatter type="plain" usefile="false"/>
       <formatter type="xml"/>
       <test name="InheritanceAnnotationTest"
@@ -47,8 +47,9 @@
         <path refid="gfv3.classpath"/>
         <pathelement path="${testsRoot}/util/build"/>
         <pathelement path="${build}"/>
+        <pathelement path="${junit.jar}"/>
       </classpath>
-    </junit2>
+    </junit>
   </target>
 
 </project>

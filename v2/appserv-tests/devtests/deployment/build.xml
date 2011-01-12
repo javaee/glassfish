@@ -30,11 +30,9 @@
 <!--        <ant dir="autodeploy" target="private-all">
             <property name="build" value="${build}/autodeploy"/>
         </ant> -->
-<!--
         <ant dir="annotation" target="private-all">
             <property name="build" value="${build}/annotation"/>
         </ant>
--->
         <ant dir="ejb30" target="private-all">
             <property name="build" value="${build}/ejb30"/>
         </ant>
