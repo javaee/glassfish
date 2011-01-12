@@ -1,5 +1,6 @@
 package com.sun.s1asdev.jdbc.connsharing.nonxa.ejb;
 
+import javax.annotation.Resource;
 import javax.naming.*;
 import javax.sql.*;
 import javax.ejb.*;
@@ -8,10 +9,18 @@ import java.util.Set;
 import java.util.HashSet;
 import javax.transaction.UserTransaction;
 
+@Stateless
 public class SimpleSessionBean implements SessionBean {
 
     private SessionContext ctxt_;
     private InitialContext ic_;
+
+    @Resource(mappedName="jdbc/connsharing")
+    DataSource ds1;
+
+    @Resource(mappedName="jdbc/connsharing")
+    DataSource ds2;
+
 
     public void setSessionContext(SessionContext context) {
         ctxt_ = context;
@@ -306,6 +315,21 @@ public class SimpleSessionBean implements SessionBean {
             }
         }
         return passed;
+    }
+
+    // with multiple @Resource injections on same resource name,
+    // test physical lookup. It should succeed
+    public boolean test7(){
+        boolean result = false;
+        try{
+            DataSource ds = (DataSource) ic_.lookup("jdbc/connsharing");
+            Connection con = ds.getConnection();
+            con.close();
+            result = true;
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return result;
     }
 
     /**

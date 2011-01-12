@@ -19,4 +19,6 @@ public interface SimpleSession extends EJBObject {
     public boolean query2() throws RemoteException;
 
     public boolean test6() throws RemoteException;
+
+    public boolean test7() throws RemoteException;
 }

@@ -58,7 +58,13 @@ public class Client {
         } else {
             stat.addStatus(testSuite + " test6 : ", stat.FAIL);
         }
-     
+
+        if (simpleSession.test7()) {
+            stat.addStatus(testSuite + " test7 : ", stat.PASS);
+        } else {
+            stat.addStatus(testSuite + " test7 : ", stat.FAIL);
+        }
+
         stat.printSummary();
     }
 }

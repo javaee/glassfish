@@ -43,3 +43,7 @@ tx {
     Bean1 -> new transaction query that data indeed got updated
 }
 
+Also adding a test-case (test7 in EJB) for GlassFish-Issue : 15443
+Two resource-refs (in this case @Resource injections) for same resource
+and doing a physical lookup of same resource (initialContext.lookup), which was failing.
+Fix for 15443 should make this test pass.
