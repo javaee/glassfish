@@ -62,8 +62,7 @@
         setPageSessionAttribute(key="rest-api" value="true");
         getRealmAttrForEdit(endpoint="#{parentUrl}" attrMap=>$page{attrMap}, classnameOption=>$page{classnameOption}, realmClasses=>$page{realmClasses}, properties="#{pageSession.tableList}" );
         createMap(result="#{pageSession.valueMap}");
-        mapPut(map="#{pageSession.valueMap}" key="target" value="server");
-#include "/common/shared/targetsConfig.inc"
+        mapPut(map="#{pageSession.valueMap}" key="target" value="#{pageSession.configName}");
         mapPut(map="#{pageSession.attrMap}" key="target" value="#{pageSession.valueMap['target']}");
         setPageSessionAttribute(key="myOption" value="$pageSession{classnameOption}");
         gf.restRequest(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/security-service/auth-realm/#{pageSession.Name}/supports-user-management.json?target=#{pageSession.configName}", method="get", result="#{requestScope.result}");

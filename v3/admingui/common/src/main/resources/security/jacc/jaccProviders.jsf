@@ -61,8 +61,7 @@
         setPageSessionAttribute(key="rest-api" value="true");
         gf.getChildList(parentEndpoint="#{pageSession.parentUrl}", childType="#{pageSession.childType}", result="#{requestScope.listOfRows}");
         createMap(result="#{pageSession.valueMap}");
-        mapPut(map="#{pageSession.valueMap}" key="target" value="server");
-#include "/common/shared/targetsConfig.inc"
+        mapPut(map="#{pageSession.valueMap}" key="target" value="#{pageSession.configName}");
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18nc.msg.JS.confirmDeleteJaccProviders}");
         setPageSessionAttribute(key="createLink" value="#{request.contextPath}/common/security/jacc/jaccProviderNew.jsf?configName=#{pageSession.configName}");
         setPageSessionAttribute(key="listLink" value="#{request.contextPath}/common/security/jacc/jaccProviders.jsf?configName=#{pageSession.configName}");

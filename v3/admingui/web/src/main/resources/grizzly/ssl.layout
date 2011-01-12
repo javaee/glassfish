@@ -68,8 +68,7 @@
         setPageSessionAttribute(key="rest-api" value="true");
         setPageSessionAttribute(key="showCancelButton" value="#{true}" )
         createMap(result="#{pageSession.valueMap}");
-        mapPut(map="#{pageSession.valueMap}" key="target" value="server");
-#include "/common/shared/targetsConfig.inc"
+        mapPut(map="#{pageSession.valueMap}" key="target" value="#{pageSession.configName}");
         mapPut(map="#{pageSession.valueMap}" key="certName" value="");
 #include "/common/shared/sslPrepare.inc"
       />

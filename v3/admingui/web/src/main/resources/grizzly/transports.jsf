@@ -59,8 +59,7 @@
         setPageSessionAttribute(key="rest-api" value="true");
         gf.getChildList(parentEndpoint="#{pageSession.parentUrl}", childType="#{pageSession.childType}", result="#{requestScope.listOfRows}");
         createMap(result="#{pageSession.valueMap}");
-        mapPut(map="#{pageSession.valueMap}" key="target" value="server");
-#include "/common/shared/targetsConfig.inc"
+        mapPut(map="#{pageSession.valueMap}" key="target" value="#{pageSession.configName}");
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n_web.msg.JS.confirmDeleteTransport}");
         setPageSessionAttribute(key="createLink" value="#{request.contextPath}/web/grizzly/transportNew.jsf?configName=#{configName}");
         setPageSessionAttribute(key="listLink" value="#{request.contextPath}/web/grizzly/transports.jsf?configName=#{configName}");
