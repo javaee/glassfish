@@ -85,8 +85,8 @@
             <sun:button id="saveButton"  text="$resource{i18n.button.Save}"
                 onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
-                    saveLoggingAttributes(attrs="#{pageSession.logAttributes}" attrsInUI="#{pageSession.attrsInUI}" config="#{pageSession.configName}");
                     prepareSuccessfulMsg();
+                    saveLoggingAttributes(attrs="#{pageSession.logAttributes}" attrsInUI="#{pageSession.attrsInUI}" config="#{pageSession.configName}");
                     gf.redirect(page="#{request.contextPath}/common/configuration/loggerGeneral.jsf?configName=#{pageSession.configName}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                 />
             </sun:button>

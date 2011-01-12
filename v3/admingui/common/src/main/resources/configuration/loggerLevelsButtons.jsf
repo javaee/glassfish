@@ -47,8 +47,8 @@
                 <!command
                     getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
                     getAllSingleMapRows(TableRowGroup="${tableRowGroup}" Rows=>$attribute{allRows});
-                    updateLoggerLevels(allRows="#{requestScope.allRows}" config="#{pageSession.configName}");
                     prepareSuccessfulMsg();
+                    updateLoggerLevels(allRows="#{requestScope.allRows}" config="#{pageSession.configName}");
                     gf.redirect(page="#{request.contextPath}/common/configuration/loggerLevels.jsf?configName=#{pageSession.configName}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                 />
             </sun:button>

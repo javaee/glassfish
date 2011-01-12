@@ -316,6 +316,7 @@ public class RestUtil {
                                 throw new RuntimeException(message);
                             }
                         }
+                        break;
                     }
                     case WARNING: {
                         GuiUtil.prepareAlert("warning", GuiUtil.getCommonMessage("msg.command.warning"), message);

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -130,11 +130,15 @@ public class LoggingHandlers {
         List<Map<String,Object>> allRows = (List<Map<String,Object>>) handlerCtx.getInputValue("allRows");
         String config = (String)handlerCtx.getInputValue("config");
         Map<String, Object> props = new HashMap();
-        for(Map<String, Object> oneRow : allRows){
-            props.put("id", oneRow.get("loggerName") + "=" + oneRow.get("level"));
-            props.put("target", config);
-            RestUtil.restRequest((String)GuiUtil.getSessionValue("REST_URL") + "/set-log-levels.json",
-                    props, "POST", null, true);
+        try{
+            for(Map<String, Object> oneRow : allRows){
+                props.put("id", oneRow.get("loggerName") + "=" + oneRow.get("level"));
+                props.put("target", config);
+                RestUtil.restRequest((String)GuiUtil.getSessionValue("REST_URL") + "/set-log-levels.json",
+                    props, "POST", null, false, true);
+            }
+        }catch(Exception ex){
+            GuiUtil.handleException(handlerCtx, ex);
         }
 
      }
@@ -152,11 +156,15 @@ public class LoggingHandlers {
         String[] attrNames = attrsInUI.split(",");
         String config = (String)handlerCtx.getInputValue("config");
         Map<String, Object> props = new HashMap();
-        for(String key : attrNames){
-            props.put("id", key + "='" + attrs.get(key) + "'");
-            props.put("target", config);
-            RestUtil.restRequest((String)GuiUtil.getSessionValue("REST_URL") + "/set-log-attributes.json",
-                props, "POST", null, true);
+        try{
+            for(String key : attrNames){
+                props.put("id", key + "='" + attrs.get(key) + "'");
+                props.put("target", config);
+                RestUtil.restRequest((String)GuiUtil.getSessionValue("REST_URL") + "/set-log-attributes.json",
+                    props, "POST", null, false, true);
+            }
+        }catch (Exception ex){
+            GuiUtil.handleException(handlerCtx, ex);
         }
      }
 
