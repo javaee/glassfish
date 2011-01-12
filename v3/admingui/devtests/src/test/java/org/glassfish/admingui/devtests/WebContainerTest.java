@@ -53,10 +53,10 @@ import static org.junit.Assert.assertTrue;
  * To change this template use File | Settings | File Templates.
  */
 public class WebContainerTest extends BaseSeleniumTestClass {
-    private static final String TAB_GENERAL_PROPERTIES = "General Properties";
-    private static final String TAB_SESSION_PROPERTIES = "Maximum number of seconds";
-    private static final String TAB_MANAGER_PROPERTIES = "Number of seconds until";
-    private static final String TAB_STORE_PROPERTIES = "Absolute or relative pathname";
+    private static final String TAB_GENERAL_PROPERTIES = "i18n_web.headings.webGeneral";
+    private static final String TAB_SESSION_PROPERTIES = "i18n_web.webSession.sessionTimeoutHelp";
+    private static final String TAB_MANAGER_PROPERTIES = "i18n_web.webManager.reapIntervalHelp";
+    private static final String TAB_STORE_PROPERTIES = "i18n_web.webStore.directoryHelp";
 
     @Test
     public void testGeneralTab() {
