@@ -55,7 +55,7 @@ import static org.junit.Assert.assertTrue;
  * @author Mitesh Meswani
  */
 public class NoCLICommandResourceCreationTest extends RestTestBase {
-    private static final String URL_DOMAIN_PROPERTY = "/domain/property";
+    private static final String URL_DOMAIN_PROPERTY = "/domain/servers/server/server/property";
 
     @Test
     public void testPropertyCreation() {
