@@ -68,6 +68,7 @@ import org.glassfish.admingui.common.util.RestResponse;
 import org.jvnet.hk2.component.Habitat;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.security.SecurityServicesUtil;
+import org.glassfish.admingui.common.util.RestUtil;
 
 /**
  *  <p>	This class is responsible for providing the Authentication support
@@ -192,7 +193,8 @@ public class AdminConsoleAuthModule implements ServerAuthModule {
 	    // Not passed in, show the login page...
 	    RequestDispatcher rd = request.getRequestDispatcher(loginPage);
 	    try {
-		rd.forward(request, response);
+                 RestUtil.initialize(null);
+		 rd.forward(request, response);
 	    } catch (Exception ex) {
 		AuthException ae = new AuthException();
 		ae.initCause(ex);
@@ -208,7 +210,10 @@ public class AdminConsoleAuthModule implements ServerAuthModule {
 //	    new PasswordValidationCallback(clientSubject, username, pwd);
 
 	// Make REST Request
-	WebResource webResource = Client.create().resource(restURL);
+
+        Client client2 = Client.create();
+        RestUtil.initialize(client2);
+	WebResource webResource = client2.resource(restURL);
 	webResource.addFilter(new HTTPBasicAuthFilter(username, password));
 	ClientResponse resp = webResource.accept(RESPONSE_TYPE).post(ClientResponse.class);
 	RestResponse restResp = RestResponse.getRestResponse(resp);

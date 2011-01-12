@@ -72,6 +72,14 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.glassfish.admingui.common.security.AdminConsoleAuthModule;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLSession;
+import com.sun.enterprise.security.SecurityServicesUtil;
+import com.sun.enterprise.config.serverbeans.SecureAdmin;
+import com.sun.enterprise.security.ssl.SSLUtils;
+import com.sun.jersey.client.urlconnection.HTTPSProperties;
+import org.jvnet.hk2.component.Habitat;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -159,7 +167,7 @@ public class RestUtil {
         Logger logger = GuiUtil.getLogger();
         if (logger.isLoggable(Level.FINEST)) {
             logger.log(Level.FINEST, 
-                    GuiUtil.getCommonMessage("LOG_REST_REQUEST_INFO", new Object[]{endpoint, attrs, method}));
+                    GuiUtil.getCommonMessage("LOG_REST_REQUEST_INFO", new Object[]{endpoint, (useData && "post".equals(method))? data: attrs, method}));
         }
 
         // Execute the request...
@@ -178,7 +186,7 @@ public class RestUtil {
             response = delete(endpoint, attrs);
         }
 
-        return parseResponse(response, handlerCtx, endpoint, attrs, quiet, throwException);
+        return parseResponse(response, handlerCtx, endpoint, (useData && "post".equals(method))? data: attrs, quiet, throwException);
     }
 
     public static Map<String, String> buildDefaultValueMap(String endpoint) throws ParserConfigurationException, SAXException, IOException {
@@ -247,7 +255,7 @@ public class RestUtil {
         return message;
     }
 
-    public static Map<String, Object> parseResponse(RestResponse response, HandlerContext handlerCtx, String endpoint, Map attrs, boolean quiet, boolean throwException) {
+    public static Map<String, Object> parseResponse(RestResponse response, HandlerContext handlerCtx, String endpoint, Object attrs, boolean quiet, boolean throwException) {
         // Parse the response
         String message = "";
         ExitCode exitCode = ExitCode.FAILURE;
@@ -710,4 +718,35 @@ public class RestUtil {
     //******************************************************************************************************************
     // Jersey client methods
     //******************************************************************************************************************
+     public static void initialize(Client client){
+        if (client == null){
+            client = JERSEY_CLIENT;
+        }
+        try{
+            Habitat habitat = SecurityServicesUtil.getInstance().getHabitat();
+            SecureAdmin secureAdmin = habitat.getComponent(SecureAdmin.class);
+            HTTPSProperties httpsProperties = new HTTPSProperties(new BasicHostnameVerifier(),
+                habitat.getComponent(SSLUtils.class).getAdminSSLContext(SecureAdmin.Util.DASAlias(secureAdmin), null ));
+            client.getProperties().put(HTTPSProperties.PROPERTY_HTTPS_PROPERTIES, httpsProperties);
+        }catch(Exception ex){
+            GuiUtil.getLogger().warning("RestUtil.initialize() failed");
+            if (GuiUtil.getLogger().isLoggable(Level.FINE)){
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    private static class BasicHostnameVerifier implements HostnameVerifier {
+        final HostnameVerifier defaultVerifier = javax.net.ssl.HttpsURLConnection.getDefaultHostnameVerifier();
+        public BasicHostnameVerifier(){
+        }
+        
+        public boolean verify(String host, SSLSession sslSession) {
+            if (host.equals("localhost")){
+                return true;
+            }
+            boolean result = defaultVerifier.verify(host, sslSession);
+            return (result) ? true :  host.equals(sslSession.getPeerHost());
+        }
+    }
 }
