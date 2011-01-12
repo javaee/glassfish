@@ -158,7 +158,7 @@
         <javadb.version>10.5.3.0</javadb.version>
         <jaxr.version>JAXR_RA_20091012</jaxr.version>
         <weld.version>1.1.0-01-glassfish</weld.version>
-        <jersey.version>1.5-ea03</jersey.version>
+        <jersey.version>1.5-SNAPSHOT</jersey.version>
         <jbi.version>1.0</jbi.version>
         <wsdl4j.version>1.6.2</wsdl4j.version>
         <gmbal.version>3.0.0-b023</gmbal.version>
@@ -821,12 +821,6 @@
 
             <dependency>
                 <groupId>org.glassfish.grizzly</groupId>
-                <artifactId>grizzly-portunif</artifactId>
-                <version>${grizzly.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.glassfish.grizzly</groupId>
                 <artifactId>grizzly-http</artifactId>
                 <version>${grizzly.version}</version>
             </dependency>
@@ -839,15 +833,27 @@
 
             <dependency>
                 <groupId>org.glassfish.grizzly</groupId>
+                <artifactId>grizzly-http-servlet</artifactId>
+                <version>${grizzly.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.glassfish.grizzly</groupId>
                 <artifactId>grizzly-rcm</artifactId>
                 <version>${grizzly.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>org.glassfish.grizzly</groupId>
-                <artifactId>grizzly-compat</artifactId>
+                <artifactId>grizzly-portunif</artifactId>
                 <version>${grizzly.version}</version>
             </dependency>
+
+<!--            <dependency>
+                <groupId>org.glassfish.grizzly</groupId>
+                <artifactId>grizzly-compat</artifactId>
+                <version>${grizzly.version}</version>
+            </dependency>-->
 
 <!--
             <dependency>
@@ -863,11 +869,11 @@
                 <version>${grizzly.version}</version>
             </dependency>
 
-            <dependency>
+<!--            <dependency>
                 <groupId>org.glassfish.grizzly</groupId>
                 <artifactId>grizzly-messagesbus</artifactId>
                 <version>${grizzly.version}</version>
-            </dependency>
+            </dependency>-->
 
             <dependency>
                 <groupId>org.glassfish.grizzly</groupId>
@@ -965,11 +971,6 @@
                 <version>${jaxb-api.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.glassfish.grizzly</groupId>
-                <artifactId>grizzly-http-servlet</artifactId>
-                <version>${grizzly.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>javax.jbi</groupId>
                 <artifactId>jbi</artifactId>
                 <version>${jbi.version}</version>
@@ -1062,6 +1063,11 @@
             <dependency>
                 <groupId>com.sun.jersey</groupId>
                 <artifactId>jersey-server</artifactId>
+                <version>${jersey.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.jersey.experimental</groupId>
+                <artifactId>jersey-grizzly2</artifactId>
                 <version>${jersey.version}</version>
             </dependency>
             <dependency>
