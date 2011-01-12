@@ -30,12 +30,10 @@
 		<ant dir="libClassPath" target="private-all">
 			<property name="build" value="${build}/libClassPath"/>
 		</ant>
-<!--
                 
                 <ant dir="libclasspath2" target="private-all">
 			<property name="build" value="${build}/libclasspath2"/>
 		</ant>
--->
 		<ant dir="manifestClassPath" target="private-all">
 			<property name="build" value="${build}/manifestClassPath"/>
 		</ant>

@@ -235,15 +235,15 @@
         
         <!-- library-directory specified as empty, meaning no lib dir should be used -->
         <property name="noLib.expected.results" 
-            value="${test.tl.pos} ${test.x.neg} ${test.xExtra.neg} ${test.lib.neg} ${test.lib.sub.neg} ${test.x.xExtra.neg} ${test.xMore.sub.neg} ${test.x.xMore.neg} ${test.x.xMore.sub.neg} -clientonly ${test.z.pos} ${test.y.pos} -serveronly ${test.z.neg} ${test.y.neg}"/>
+            value="${test.tl.pos} ${test.x.neg} ${test.xExtra.neg} ${test.lib.neg} ${test.lib.sub.neg} ${test.x.xExtra.neg} ${test.xMore.sub.neg} ${test.x.xMore.neg} ${test.x.xMore.sub.neg} -clientonly ${test.z.pos} -serveronly ${test.z.neg} ${test.y.neg}"/>
         
         <!-- library-directory not specified; default of lib used -->
         <property name="defaultLib.expected.results" 
-            value="${test.tl.pos} ${test.x.neg} ${test.xExtra.neg} ${test.lib.pos} ${test.lib.sub.neg} ${test.x.xExtra.neg} ${test.xMore.sub.neg} ${test.x.xMore.neg} ${test.x.xMore.sub.neg} -clientonly ${test.z.pos} ${test.y.pos} -serveronly ${test.z.neg} ${test.y.neg}"/>
+            value="${test.tl.pos} ${test.x.neg} ${test.xExtra.neg} ${test.lib.pos} ${test.lib.sub.neg} ${test.x.xExtra.neg} ${test.xMore.sub.neg} ${test.x.xMore.neg} ${test.x.xMore.sub.neg} -clientonly ${test.z.pos} -serveronly ${test.z.neg} ${test.y.neg}"/>
 
         <!-- library-directory specified as x; x.jar and its Class-Path entries xExtra/xExtra.jar and xMore/sub used -->
         <property name="explicitLibWithDir.expected.results" 
-            value="${test.tl.pos} ${test.x.pos} ${test.xExtra.neg} ${test.lib.neg} ${test.lib.sub.neg} ${test.x.xExtra.pos} ${test.xMore.sub.neg} ${test.x.xMore.neg} ${test.x.xMore.sub.pos}  -clientonly ${test.z.pos} ${test.y.pos} -serveronly ${test.z.neg} ${test.y.neg}"/>
+            value="${test.tl.pos} ${test.x.pos} ${test.xExtra.neg} ${test.lib.neg} ${test.lib.sub.neg} ${test.x.xExtra.pos} ${test.xMore.sub.neg} ${test.x.xMore.neg} -clientonly ${test.z.pos} -serveronly ${test.z.neg} ${test.y.neg}"/>
 
 
     <target name="prepare" depends="init">
@@ -369,7 +369,7 @@
 
     <target name="deploy.asadmin" depends="prepare">
         <antcall target="common.deploy.asadmin">
-            <param name="arg.list" value="--retrieve ${archivedir} --name ${module.name} ${ear.file}"/>
+            <param name="arg.list" value="--property compatibility=v2 --retrieve ${archivedir} --name ${module.name} ${ear.file}"/>
             <param name="testName" value="${testName}"/>
         </antcall>
     </target>
@@ -404,7 +404,7 @@
         </antcall>
     </target>
 
-    <target name="private-all" depends="prepare">
+    <target name="private-all" depends="prepare" if="PE">
         <antcall target="assemble"/>
 
         <deploy moduleName="libtest-none" earFile="${none.ear}"/>

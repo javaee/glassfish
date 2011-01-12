@@ -3,7 +3,7 @@ Results of deployment dev tests with v3
 
 1. Running with PE installation and EE installation on DAS
 
-PASS: 244 
+PASS: 247 
 FAIL: 0
 UNKNOWN: 0
 
@@ -110,6 +110,9 @@ UNKNOWN: 0
 [PASSED] earwithall2 : ear/earwithall2 Test jsr88 deploy using InputStream (server)  
 [PASSED] earwithall2 : ear/earwithall2 Test jsr88 redeploy using InputStream (server)  
 [PASSED] libClassPath : libClasspath Test asadmin deploy (server)  
+[PASSED] libclasspath2 : ear/libclasspath2 Testing for noLibUsed
+[PASSED] libclasspath2 : ear/libclasspath2 Testing for defaultLibUsed
+[PASSED] libclasspath2 : ear/libclasspath2 Testing for explicitLibWithDir
 [PASSED] manifestClassPath : libClasspath Test asadmin deploy (server)  
 [PASSED] appmgt : earwithall/appmgt Check app's original config [1.1] (server)  
 [PASSED] appmgt : earwithall/appmgt Make sure a non-existent customization is absent [1.2] (server)  
