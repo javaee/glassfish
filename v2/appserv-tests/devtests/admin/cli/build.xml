@@ -187,6 +187,13 @@
         </java>
     </target>
 
+	<target name="logging-command" depends="init">
+        <java classname="admin.LoggingCommandTest"  fork="true" classpath="${test}">
+            <jvmarg value="${javaprops}"/>
+            <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9010"/>
+        </java>
+    </target>
+
 
     <target name="admin-object-resource" depends="init">
         <java classname="admin.AdminObjectTest"  fork="true" classpath="${test}">
