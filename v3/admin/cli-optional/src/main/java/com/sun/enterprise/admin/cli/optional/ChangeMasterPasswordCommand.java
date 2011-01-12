@@ -43,6 +43,7 @@ package com.sun.enterprise.admin.cli.optional;
 
 import com.sun.enterprise.admin.cli.CLICommand;
 import com.sun.enterprise.util.io.DomainDirs;
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.CommandException;
 import org.jvnet.hk2.annotations.Inject;
@@ -95,11 +96,17 @@ public class ChangeMasterPasswordCommand extends CLICommand {
     @Param(name = "nodedir", optional = true)
     protected String nodeDir;
 
+    @Param(name = "domaindir", optional = true)
+    protected String domainDirParam = null;
+
     private final String CHANGE_MASTER_PASSWORD_DAS =
             "_change-master-password-das";
 
     private final String CHANGE_MASTER_PASSWORD_NODE =
             "_change-master-password-node";
+
+    private static final LocalStringsImpl strings =
+       new LocalStringsImpl(ChangeMasterPasswordCommand.class);
 
     @Override
     protected int executeCommand() throws CommandException {
@@ -110,6 +117,10 @@ public class ChangeMasterPasswordCommand extends CLICommand {
     public int execute(String... args) throws CommandException {
         super.execute(args);
         CLICommand command = null;
+
+        if (domainDirParam != null && nodeDir != null) {
+            throw new CommandException(strings.get("both.domaindir.nodedir.not.allowed"));
+        }
         try {
             if (isDomain()) {  // is it domain
                 command = CLICommand.getCommand(habitat,
@@ -143,8 +154,23 @@ public class ChangeMasterPasswordCommand extends CLICommand {
     }
 
     private boolean isDomain() throws IOException {
-        return new File(DomainDirs.getDefaultDomainsDir(),
-                (domainNameOrNodeName)).isDirectory();
+        DomainDirs domainDirs = null;
+        //if both domainDir and domainNameOrNodeName are null get default domaindir
+        if (domainDirParam == null && domainNameOrNodeName == null ) {
+            domainDirs = new DomainDirs(DomainDirs.getDefaultDomainsDir());
+        } else  {
+            if (domainDirParam != null) {
+                domainDirs = new DomainDirs(new File(domainDirParam),domainNameOrNodeName);
+            }
+            if (domainNameOrNodeName != null) {
+                return new File(DomainDirs.getDefaultDomainsDir(),domainNameOrNodeName).isDirectory();
+            }
+        }
+        //It can be null in the case when this is not a domain but a node
+        if (domainDirs != null) {
+            return domainDirs.getDomainsDir().isDirectory();
+        }
+        return false;
 
     }
 

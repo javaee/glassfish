@@ -63,7 +63,7 @@ import org.jvnet.hk2.component.PerLookup;
 @Scoped(PerLookup.class)
 public class ChangeMasterPasswordCommandDAS extends LocalDomainCommand {
 
-    @Param(name="domain",primary=true)
+    @Param(name="domain",primary=true, optional=true)
     protected String domainName0;
 
     @Param(name = "savemasterpassword", optional = true, defaultValue = "false")
@@ -75,7 +75,13 @@ public class ChangeMasterPasswordCommandDAS extends LocalDomainCommand {
     @Override
     protected void validate()
             throws CommandException  {
-        setDomainName(domainName0);
+        String dName;
+        if (domainName0 != null ) {
+            dName = domainName0;
+        } else {
+            dName = getDomainName();
+        }
+        setDomainName(dName);
         super.validate();
     }
 
