@@ -409,15 +409,7 @@ public class CoyoteAdapter extends HttpHandler {
         // XXX the processor may have set a correct scheme and port prior to this point, 
         // in ajp13 protocols dont make sense to get the port from the connector...
         // otherwise, use connector configuration
-//        if (req.getScheme() != null) {
-//            // use processor specified scheme to determine secure state
-//            request.setSecure("https".equals(req.getScheme()));
-//        } else {
-//            // use connector scheme and secure configuration, (defaults to
-//            // "http" and false respectively)
-//            req.setScheme(connector.getScheme());
-//            request.setSecure(connector.getSecure());
-//        }
+        request.setSecure(req.isSecure());
 
         // FIXME: the code below doesnt belongs to here, 
         // this is only have sense 
