@@ -338,7 +338,7 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy, org.g
 
                                 } else if (a.endsWith(".file")) {
                                     //check if file name was changed and send notification
-                                    if (!a.contains("${com.sun.aas.instanceRoot}/logs/server.log")) {
+                                    if (!props.get(a).contains("${com.sun.aas.instanceRoot}/logs/server.log")) {
                                         PropertyChangeEvent pce = new PropertyChangeEvent(this, a, "${com.sun.aas.instanceRoot}/logs/server.log", props.get(a));
                                         UnprocessedChangeEvents ucel = new UnprocessedChangeEvents(new UnprocessedChangeEvent(pce, "server log filename changed."));
                                         List<UnprocessedChangeEvents> b = new ArrayList();
