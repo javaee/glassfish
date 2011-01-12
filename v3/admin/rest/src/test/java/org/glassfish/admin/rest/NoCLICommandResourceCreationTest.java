@@ -55,7 +55,7 @@ import static org.junit.Assert.assertTrue;
  * @author Mitesh Meswani
  */
 public class NoCLICommandResourceCreationTest extends RestTestBase {
-    private static final String URL_DOMAIN_PROPERTY = "/domain/servers/server/server/property";
+    private static final String URL_SERVER_PROPERTY = "/domain/servers/server/server/property";
 
     @Test
     public void testPropertyCreation() {
@@ -66,14 +66,14 @@ public class NoCLICommandResourceCreationTest extends RestTestBase {
         Map<String, String> param = new HashMap<String, String>();
         param.put("name", propertyKey);
         param.put("value",propertyValue);
-        ClientResponse response = client.resource(getAddress(URL_DOMAIN_PROPERTY))
+        ClientResponse response = client.resource(getAddress(URL_SERVER_PROPERTY))
                 .header("Content-Type", MediaType.APPLICATION_XML)
                 .accept(RESPONSE_TYPE)
                 .post(ClientResponse.class, MarshallingUtils.getXmlForProperties(param));
         assertTrue(isSuccess(response));
 
         //Verify the property got created
-        String propertyURL = URL_DOMAIN_PROPERTY + "/" + propertyKey;
+        String propertyURL = URL_SERVER_PROPERTY + "/" + propertyKey;
         response = get (propertyURL);
         assertTrue(isSuccess(response));
         Map<String, String> entity = getEntityValues(response);
@@ -83,7 +83,7 @@ public class NoCLICommandResourceCreationTest extends RestTestBase {
         // Verify property update
         propertyValue = generateRandomString();
         param.put("value", propertyValue);
-        response = client.resource(getAddress(URL_DOMAIN_PROPERTY))
+        response = client.resource(getAddress(URL_SERVER_PROPERTY))
                 .header("Content-Type", MediaType.APPLICATION_XML)
                 .accept(RESPONSE_TYPE)
                 .put(ClientResponse.class, MarshallingUtils.getXmlForProperties(param));
@@ -96,16 +96,6 @@ public class NoCLICommandResourceCreationTest extends RestTestBase {
 
         //Clean up to leave domain.xml good for next run
         response = delete(propertyURL, new HashMap<String, String>());
-        assertTrue(isSuccess(response));
-
-        // Restore domain props
-
-        param.put("name", "administrative.domain.name");
-        param.put("value", "domain1");
-        response = client.resource(getAddress(URL_DOMAIN_PROPERTY))
-                .header("Content-Type", MediaType.APPLICATION_XML)
-                .accept(RESPONSE_TYPE)
-                .post(ClientResponse.class, MarshallingUtils.getXmlForProperties(param));
         assertTrue(isSuccess(response));
     }
 

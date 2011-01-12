@@ -40,6 +40,7 @@
 
 package org.glassfish.admin.rest;
 
+import org.codehaus.jettison.json.JSONObject;
 import java.util.Map;
 import com.sun.jersey.api.client.ClientResponse;
 import java.util.HashMap;
@@ -168,8 +169,8 @@ public class NetworkListenerTest extends RestTestBase {
         assertTrue(isSuccess(response));
         response = get(URL_SSL, params);
         entity = this.getEntityValues(response);
-        assertEquals("", entity.get("keyStore"));
-        assertEquals("", entity.get("trustAlgorithm"));
-        assertEquals("", entity.get("trustStore"));
+        assertEquals(JSONObject.NULL, entity.get("keyStore"));
+        assertEquals(JSONObject.NULL, entity.get("trustAlgorithm"));
+        assertEquals(JSONObject.NULL, entity.get("trustStore"));
     }
 }
