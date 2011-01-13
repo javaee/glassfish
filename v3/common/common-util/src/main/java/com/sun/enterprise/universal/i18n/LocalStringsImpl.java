@@ -240,7 +240,8 @@ public class LocalStringsImpl {
             // bundle!  Fix: send in the class's Classloader...
             if(bundle == null) {
                 String props = className.substring(0, className.lastIndexOf('.')) + "." + propsName;
-                bundle = ResourceBundle.getBundle(props, Locale.getDefault(), clazz.getClassLoader());
+                bundle = ResourceBundle.getBundle(props, Locale.getDefault(), clazz.getClassLoader(),
+                        rbcontrol);
             }
         }
         catch (Exception e) {
@@ -253,7 +254,7 @@ public class LocalStringsImpl {
     private void setBundle(String className) {
         try {
             String props = className.substring(0, className.lastIndexOf('.')) + "." + propsName;
-            bundle = ResourceBundle.getBundle(props);
+            bundle = ResourceBundle.getBundle(props, rbcontrol);
         }
         catch (Exception e) {
             bundle = null;
@@ -264,4 +265,6 @@ public class LocalStringsImpl {
     private ResourceBundle bundle;
     private String propsName = "LocalStrings";
     private static final String thisPackage = "com.elf.util";
+    private static final ResourceBundle.Control rbcontrol =
+            ResourceBundle.Control.getControl(ResourceBundle.Control.FORMAT_PROPERTIES);
 }
