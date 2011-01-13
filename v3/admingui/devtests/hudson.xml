@@ -55,7 +55,7 @@
 
     <property environment="env"/>
 
-    <property name="GUI_PORT" value="4848"/>
+    <property name="GUI_ADMIN_PORT" value="4848"/>
     <property name="DOMAIN" value="domain1"/>
 
     <property name="glassfish.dist.url"
