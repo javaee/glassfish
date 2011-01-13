@@ -143,7 +143,7 @@ public class MessageDestinationDescriptor extends Descriptor implements NamedDes
         return mappedName;
     }
 
-    public void getMappedName(String mappedName) {
+    public void setMappedName(String mappedName) {
         this.mappedName = mappedName;
     }
 

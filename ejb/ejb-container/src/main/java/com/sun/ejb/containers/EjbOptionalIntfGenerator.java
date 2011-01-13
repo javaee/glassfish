@@ -74,6 +74,8 @@ public class EjbOptionalIntfGenerator
 
     private static final String DELEGATE_FIELD_NAME = "__ejb31_delegate";
 
+    private static final Class[] emptyClassArray = new Class[] {};
+
     private Map<String, byte[]> classMap = new HashMap<String, byte[]>();
 
     private Map<String, Class> loadedClasses = new HashMap<String, Class>()
@@ -138,7 +140,8 @@ public class EjbOptionalIntfGenerator
         String objectInternalName = Type.getType(Object.class).getInternalName();
         tv.visit(V1_1, ACC_PUBLIC + ACC_ABSTRACT + ACC_INTERFACE,
                 intfInternalName, null,
-                Type.getType(Object.class).getInternalName(), null);
+                Type.getType(Object.class).getInternalName(), 
+                (ejbClass instanceof Serializable)? new String[] {Type.getType(Serializable.class).getInternalName()} : null);
 
         Set<java.lang.reflect.Method> allMethods = new HashSet<java.lang.reflect.Method>();
         for (Class clz = ejbClass; clz != Object.class; clz = clz.getSuperclass()) {
@@ -186,9 +189,9 @@ public class EjbOptionalIntfGenerator
         ClassWriter cw = new ClassWriter(INTF_FLAGS);
 
        ClassVisitor tv = cw;
-              //  new TraceClassVisitor(cw, new PrintWriter(System.out));
+//        ClassVisitor tv = (_debug)
+//                ? new TraceClassVisitor(cw, new PrintWriter(System.out)) : cw;
         
-        //ClassVisitor tv = cw;
         boolean isSuperClassSerializable = superClass.isAssignableFrom(Serializable.class);
 
         String[] interfaces = new String[] {
@@ -267,6 +270,13 @@ public class EjbOptionalIntfGenerator
             }
         }
 
+        // add toString() method if it was not overridden
+        java.lang.reflect.Method mth = Object.class.getDeclaredMethod("toString", emptyClassArray);
+        if( !hasSameSignatureAsExisting(mth, allMethods)) {
+                        //generateBeanMethod(tv, subClassName, mth, delegateClass);
+            generateToStringBeanMethod(tv, superClass);
+        }
+
         tv.visitEnd();
 
         byte[] classData = cw.toByteArray();
@@ -306,6 +316,30 @@ public class EjbOptionalIntfGenerator
         mg.invokeInterface(Type.getType(delegateClass), asmMethod);
         mg.returnValue();
         mg.endMethod();
+
+    }
+
+    private static void generateToStringBeanMethod(ClassVisitor cv, Class superClass) 
+        throws Exception {
+
+        String toStringMethodName = "toString";
+        String toStringMethodDescriptor = "()Ljava/lang/String;";
+        String stringBuilder = "java/lang/StringBuilder";
+
+        MethodVisitor mv = cv.visitMethod(ACC_PUBLIC, toStringMethodName, toStringMethodDescriptor, null, null);
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitTypeInsn(NEW, stringBuilder);
+        mv.visitInsn(DUP);
+        mv.visitMethodInsn(INVOKESPECIAL, stringBuilder, "<init>", "()V");
+        mv.visitLdcInsn(superClass.getName() + "@");
+        mv.visitMethodInsn(INVOKEVIRTUAL, stringBuilder, "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;");
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Object", "hashCode", "()I");
+        mv.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "toHexString", "(I)Ljava/lang/String;");
+        mv.visitMethodInsn(INVOKEVIRTUAL, stringBuilder, "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;");
+        mv.visitMethodInsn(INVOKEVIRTUAL, stringBuilder, toStringMethodName, toStringMethodDescriptor);
+        mv.visitInsn(ARETURN);
+        mv.visitMaxs(2, 1);
 
     }
 

@@ -61,6 +61,7 @@ import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
  */
 @Service(name="ping-connection-pool")
 @Scoped(PerLookup.class)
+@CommandLock(CommandLock.LockType.NONE)
 @ExecuteOn(value={RuntimeType.DAS})
 @I18n("ping.connection.pool")
 public class PingConnectionPool implements AdminCommand {

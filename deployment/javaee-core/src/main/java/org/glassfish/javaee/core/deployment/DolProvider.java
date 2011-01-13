@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,6 +42,7 @@ package org.glassfish.javaee.core.deployment;
 
 import org.glassfish.hk2.classmodel.reflect.Parser;
 import org.glassfish.hk2.classmodel.reflect.Types;
+import org.glassfish.internal.deployment.DeploymentTracing;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
@@ -80,7 +81,6 @@ import java.util.Properties;
 import java.util.Collection;
 import java.io.IOException;
 import java.io.File;
-import java.io.FileFilter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.net.URL;
@@ -129,8 +129,8 @@ public class DolProvider implements ApplicationMetaDataProvider<Application>,
 
         ReadableArchive sourceArchive = dc.getSource();
 
-        sourceArchive.setExtraData(Types.class, dc.getModuleMetaData(Types.class));
-        sourceArchive.setExtraData(Parser.class, dc.getModuleMetaData(Parser.class));
+        sourceArchive.setExtraData(Types.class, dc.getTransientAppMetaData(Types.class.getName(), Types.class));
+        sourceArchive.setExtraData(Parser.class, dc.getTransientAppMetaData(Parser.class.getName(), Parser.class));
 
         ClassLoader cl = dc.getClassLoader();
         DeployCommandParameters params = dc.getCommandParameters(DeployCommandParameters.class);
@@ -231,11 +231,18 @@ public class DolProvider implements ApplicationMetaDataProvider<Application>,
                 archive.exists("META-INF/application-client.xml") || 
                 archive.exists("META-INF/ra.xml")) {
                 application = applicationFactory.createApplicationFromStandardDD(archive);
+                DeploymentTracing tracing = null; 
+                if (context != null) {
+                    tracing = context.getModuleMetaData(DeploymentTracing.class);
+                }
+                if (tracing!=null) {
+                    tracing.addMark(DeploymentTracing.Mark.DOL_LOADED);
+                }
                 ApplicationHolder holder = new ApplicationHolder(application);
                 if (context != null) {
                     context.addModuleMetaData(holder);
                 }
-                
+
                 return application.getAppName();
             }
         } catch (Exception e) {
@@ -259,54 +266,12 @@ public class DolProvider implements ApplicationMetaDataProvider<Application>,
 
             libraryURLs.addAll(DOLUtils.getLibraryJars(bundleDesc, archive));
 
-            libraryURLs.addAll(getModuleLibraryJars(context, archive));
+            libraryURLs.addAll(DeploymentUtils.getModuleLibraryJars(context));
         } catch (Exception e) {
             Logger.getAnonymousLogger().log(Level.WARNING, "failed to get library jar: ", e);
         }
 
         return libraryURLs;
-    }
-
-    private List<URL> getModuleLibraryJars(DeploymentContext context, 
-        ReadableArchive archive) throws Exception {
-        List<URL> moduleLibraryURLs = new ArrayList<URL>();
-        ArchiveHandler handler = context.getArchiveHandler();
-        if (handler.getClass() == null || 
-            handler.getClass().getAnnotation(Service.class) == null) {
-            return moduleLibraryURLs;
-        }
-        String handlerName = handler.getClass().getAnnotation(Service.class).name();
-        File archiveFile = new File(archive.getURI());
-        if (handlerName.equals("war")) {
-            // we should add all the WEB-INF/lib jars for web module
-            File webInf = new File(archiveFile, "WEB-INF");
-            File webInfLib = new File(webInf, "lib");
-            if (webInfLib.exists()) {
-                moduleLibraryURLs = getLibDirectoryJars(webInfLib);
-            }
-        } else if (handlerName.equals("connector")) {
-            // we should add the top level jars for connector module
-            moduleLibraryURLs = getLibDirectoryJars(archiveFile);
-        }
-        return moduleLibraryURLs;
-    }
-
-    private List<URL> getLibDirectoryJars(File moduleLibDirectory) throws Exception {
-        List<URL> libLibraryURLs = new ArrayList<URL>();
-        File[] jarFiles = moduleLibDirectory.listFiles(new FileFilter() {
-            public boolean accept(File pathname) {
-                return (pathname.isFile() &&
-                        pathname.getAbsolutePath().endsWith(".jar"));
-            }
-        });
-
-        if (jarFiles != null && jarFiles.length > 0) {
-            for (File jarFile : jarFiles) {
-                libLibraryURLs.add(jarFile.toURL());
-            }
-        }
- 
-        return libLibraryURLs;
     }
 
     protected void handleDeploymentPlan(File deploymentPlan,

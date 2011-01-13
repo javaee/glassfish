@@ -302,6 +302,14 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
     }
 
     private String getAppName(long resourceHandleId) {
+
+        // if monitoring is disabled, avoid sending events
+        // as we need to do "java:app/AppName" to get applicationName for each
+        // acquire/return connection call which is a performance bottleneck.
+        if(!runtime.isJdbcPoolMonitoringEnabled() && !runtime.isConnectorPoolMonitoringEnabled()){
+            return null;
+        }
+
         String appName = resourceAppAssociationMap.get(resourceHandleId);
         if(appName == null){
             try {
@@ -392,7 +400,8 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
             StatsProviderManager.register(
                     ContainerMonitoring.JDBC_CONNECTION_POOL,
                     PluginPoint.SERVER,
-                    "resources/" + poolName + "/" + appName, jdbcPoolAppStatsProvider);
+                    "resources/" + ConnectorsUtil.escapeResourceNameForMonitoring(poolName) + "/" + appName,
+                    jdbcPoolAppStatsProvider);
             jdbcPoolAppStatsProviders.add(jdbcPoolAppStatsProvider);
         } else if (pool instanceof ConnectorConnectionPool) {
             probeAppProvider = new ConnectorConnPoolAppProbeProvider();
@@ -401,7 +410,8 @@ public class ConnectionPoolEmitterImpl implements PoolLifeCycleListener {
             StatsProviderManager.register(
                     ContainerMonitoring.CONNECTOR_CONNECTION_POOL,
                     PluginPoint.SERVER,
-                    "resources/" + poolName + "/" + appName, ccPoolAppStatsProvider);
+                    "resources/" + ConnectorsUtil.escapeResourceNameForMonitoring(poolName) + "/" + appName,
+                    ccPoolAppStatsProvider);
             ccPoolAppStatsProviders.add(ccPoolAppStatsProvider);
         }
         return probeAppProvider;

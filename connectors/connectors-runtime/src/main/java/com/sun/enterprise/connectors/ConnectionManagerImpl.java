@@ -42,8 +42,10 @@ package com.sun.enterprise.connectors;
 
 import com.sun.appserv.connectors.internal.api.*;
 import com.sun.appserv.connectors.internal.spi.ConnectionManager;
+import com.sun.enterprise.config.serverbeans.BindableResource;
 import com.sun.enterprise.connectors.util.ConnectionPoolObjectsUtils;
 import com.sun.enterprise.connectors.authentication.AuthenticationService;
+import com.sun.enterprise.connectors.util.ResourcesUtil;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.deployment.ResourcePrincipal;
 import com.sun.enterprise.deployment.ResourceReferenceDescriptor;
@@ -58,6 +60,7 @@ import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.security.SecurityContext;
 import com.sun.logging.LogDomains;
 import org.glassfish.resource.common.PoolInfo;
+import org.glassfish.resource.common.ResourceInfo;
 
 import javax.resource.ResourceException;
 import javax.resource.spi.*;
@@ -78,16 +81,20 @@ public class ConnectionManagerImpl implements ConnectionManager, Serializable {
     protected String jndiName;
     protected String logicalName;
     protected PoolInfo poolInfo;
+    protected ResourceInfo resourceInfo;
 
     private static Logger logger = LogDomains.getLogger(ConnectionManagerImpl.class,LogDomains.RSR_LOGGER);
     private static StringManager localStrings = StringManager.getManager(ConnectionManagerImpl.class);
 
     protected String rarName;
 
+    private transient BindableResource resourceConfiguration;
+
     protected ResourcePrincipal defaultPrin = null;
 
-    public ConnectionManagerImpl(PoolInfo poolInfo) {
+    public ConnectionManagerImpl(PoolInfo poolInfo, ResourceInfo resourceInfo) {
         this.poolInfo = poolInfo;
+        this.resourceInfo = resourceInfo;
     }
 
     public void setJndiName(String jndiName) {
@@ -107,9 +114,11 @@ public class ConnectionManagerImpl implements ConnectionManager, Serializable {
     }
 
 
+/*
     public void setPoolInfo(PoolInfo poolInfo) {
         this.poolInfo = poolInfo;
     }
+*/
 
     /**
      * Allocate a non transactional connection. This connection, even if
@@ -159,7 +168,7 @@ public class ConnectionManagerImpl implements ConnectionManager, Serializable {
     public Object allocateConnection(ManagedConnectionFactory mcf,
                                      ConnectionRequestInfo cxRequestInfo, String jndiNameToUse, Object conn)
             throws ResourceException {
-        validatePool();
+        validateResourceAndPool();
         PoolManager poolmgr = ConnectorRuntime.getRuntime().getPoolManager();
         boolean resourceShareable = true;
 
@@ -358,8 +367,77 @@ public class ConnectionManagerImpl implements ConnectionManager, Serializable {
         defaultPrin = pmd.getResourcePrincipal();
     }
 
-    private void validatePool() throws ResourceException {
+    private void validateResourceAndPool() throws ResourceException {
+        ResourceInfo resourceInfo = this.resourceInfo;
+        ResourcesUtil resourcesUtil = ResourcesUtil.createInstance();
+
+        ConnectorRuntime runtime = ConnectorRuntime.getRuntime();
         ConnectorRegistry registry = ConnectorRegistry.getInstance();
+        // adding a perf. optimization check so that "config-bean" is not accessed at all for
+        // cases where the resource is enabled (deployed). Only for cases where resource
+        // is not available, we look further and determine whether resource/resource-ref
+        // are disabled.
+        if (!registry.isResourceDeployed(resourceInfo)) {
+            if(logger.isLoggable(Level.FINEST)){
+                logger.log(Level.FINEST,"resourceInfo not found in connector-registry : " + resourceInfo);
+            }
+            boolean isDefaultResource = false;
+            boolean isSunRAResource = false;
+            ConnectorDescriptor descriptor = registry.getDescriptor(rarName);
+            if (descriptor != null) {
+                isDefaultResource = descriptor.getDefaultResourcesNames().contains(resourceInfo.getName());
+                if (descriptor.getSunDescriptor() != null) {
+                    com.sun.enterprise.deployment.runtime.connector.ResourceAdapter rar =
+                            descriptor.getSunDescriptor().getResourceAdapter();
+                    if (rar != null) {
+                        String sunRAJndiName = (String)
+                                rar.getValue(com.sun.enterprise.deployment.runtime.connector.ResourceAdapter.JNDI_NAME);
+                        isSunRAResource = resourceInfo.getName().equals(sunRAJndiName);
+                    }
+                }
+            }
+
+            if ((runtime.isServer() || runtime.isEmbedded()) &&
+                    (!resourceInfo.getName().contains(ConnectorConstants.DATASOURCE_DEFINITION_JNDINAME_PREFIX) &&
+                            (!isDefaultResource) && (!isSunRAResource))) {
+                // performance optimization so that resource configuration is not retrieved from
+                // resources config bean each time.
+                if (resourceConfiguration == null) {
+                    resourceConfiguration =
+                            (BindableResource) resourcesUtil.getResource(resourceInfo, BindableResource.class);
+                    if (resourceConfiguration == null) {
+                        String suffix = ConnectorsUtil.getValidSuffix(resourceInfo.getName());
+                        // it is possible that the resource is a __PM or __NONTX suffixed resource used by JPA/EJB Container
+                        // check for the enabled status and existence using non-prefixed resource-name
+                        if (suffix != null) {
+                            String nonPrefixedName = resourceInfo.getName().substring(0, resourceInfo.getName().lastIndexOf(suffix));
+                            resourceInfo = new ResourceInfo(nonPrefixedName, resourceInfo.getApplicationName(),
+                                    resourceInfo.getModuleName());
+                            resourceConfiguration = (BindableResource)
+                                    resourcesUtil.getResource(resourceInfo, BindableResource.class);
+                        }
+                    }
+                } else {
+                    // we cache the resourceConfiguration for performance optimization.
+                    // make sure that appropriate (actual) resourceInfo is used for validation.
+                    String suffix = ConnectorsUtil.getValidSuffix(resourceInfo.getName());
+                    // it is possible that the resource is a __PM or __NONTX suffixed resource used by JPA/EJB Container
+                    // check for the enabled status and existence using non-prefixed resource-name
+                    if (suffix != null) {
+                        String nonPrefixedName = resourceInfo.getName().substring(0, resourceInfo.getName().lastIndexOf(suffix));
+                        resourceInfo = new ResourceInfo(nonPrefixedName, resourceInfo.getApplicationName(),
+                                resourceInfo.getModuleName());
+                    }
+                }
+                if (resourceConfiguration == null) {
+                    throw new ResourceException("No such resource : " + resourceInfo);
+                }
+                if (!resourcesUtil.isEnabled(resourceConfiguration, resourceInfo)) {
+                    throw new ResourceException(resourceInfo + " is not enabled");
+                }
+            }
+        }
+
         if (registry.getPoolMetaData(poolInfo) == null) {
             String msg = getLocalStrings().getString("con_mgr.no_pool_meta_data", poolInfo);
             throw new ResourceException(poolInfo + ": " + msg);

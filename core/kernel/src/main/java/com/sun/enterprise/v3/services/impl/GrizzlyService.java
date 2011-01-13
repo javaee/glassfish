@@ -117,6 +117,8 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
     ProbeProviderFactory probeProviderFactory;
 
     private final Collection<NetworkProxy> proxies = new LinkedBlockingQueue<NetworkProxy>();
+    private final String JMS_DEFAULT_LISTENER_IP="0.0.0.0";
+    private final String JMS_DEFAULT_HOST="localhost";
 
     List<Future<Result<Thread>>> futures;
 
@@ -335,7 +337,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
     public void postConstruct() {
         NetworkConfig networkConfig = config.getNetworkConfig();
 
-        configListener = new DynamicConfigListener(logger);
+        configListener = new DynamicConfigListener(config, logger);
         
         ObservableBean bean = (ObservableBean) ConfigSupport.getImpl(networkConfig.getNetworkListeners());
         bean.addListener(configListener);
@@ -352,7 +354,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
             
             /*
              * Ideally (and ultimately), all services that need lazy Init will add a network-listener element
-             * in the domain.xml with name = "light-weight-listener". And a LWL instance would have been created
+             * in the domain.xml with protocol = "light-weight-listener". And a LWL instance would have been created
              * by the above loop. But for v3-FCS, IIOP and JMS listener will not
              * be able to reach that stage - hence we create a dummy network listener object here and use that
              * to create proxies etc. Whenever, IIOP and JMS listeners move to use network-listener elements,
@@ -384,13 +386,14 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
                     List<JmsHost> jmsHosts = jmsService.getJmsHost();
                     for (JmsHost oneHost : jmsHosts) {
                         if (Boolean.valueOf(oneHost.getLazyInit())) {
+                            String jmsHost = null;
+                            if (oneHost.getHost() != null && JMS_DEFAULT_HOST.equals(oneHost.getHost()))
+                                jmsHost = JMS_DEFAULT_LISTENER_IP;
+                            else
+                                jmsHost = oneHost.getHost();
                             NetworkListener dummy = new DummyNetworkListener();
                             dummy.setPort(oneHost.getPort());
-                            try {
-                                dummy.setAddress(InetAddress.getByName(oneHost.getHost()).getHostAddress());
-                            } catch(UnknownHostException uex) {
-                                logger.log(Level.SEVERE, "Unable to get host address for jms-host = " + oneHost.getHost());
-                            }
+                            dummy.setAddress(jmsHost);
                             dummy.setProtocol("light-weight-listener");
                             dummy.setTransport("tcp");
                             dummy.setName("mq-service");
@@ -683,13 +686,15 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
             String vsNetworkListeners = virtualServer.getNetworkListeners();
             List<String> vsNetworkListenerList =
                 StringUtils.parseStringList(vsNetworkListeners, ",");
-            for (String vsNetworkListener : vsNetworkListenerList) {
-                for (NetworkListener networkListener : networkListenerList) {
-                    if (networkListener.getName().equals(vsNetworkListener) && 
-                        Boolean.valueOf(networkListener.getEnabled())) {
-                        addressInfos.add(new AddressInfo(networkListener.getAddress(),
-                                                         networkListener.getPort()));
-                        break;
+            if (vsNetworkListenerList != null && !vsNetworkListenerList.isEmpty()) {
+                for (String vsNetworkListener : vsNetworkListenerList) {
+                    for (NetworkListener networkListener : networkListenerList) {
+                        if (networkListener.getName().equals(vsNetworkListener) &&
+                            Boolean.valueOf(networkListener.getEnabled())) {
+                            addressInfos.add(new AddressInfo(networkListener.getAddress(),
+                                                             networkListener.getPort()));
+                            break;
+                        }
                     }
                 }
             }

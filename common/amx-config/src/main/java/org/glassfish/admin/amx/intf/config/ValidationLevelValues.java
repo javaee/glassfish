@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,16 +41,15 @@
 package org.glassfish.admin.amx.intf.config;
 
 /**
-Values which are legal to pass for the validation-level.
-
-See {@link DASConfig#getDeployXMLValidation}.
+ * Values which are legal to pass for the validation-level.
+ * <p/>
+ * See {@link DASConfig#getDeployXMLValidation}.
  */
-public final class ValidationLevelValues
-{
+public final class ValidationLevelValues {
 
-    private ValidationLevelValues()
-    {
+    private ValidationLevelValues() {
     }
+
     public static final String FULL = "full";
     public static final String PARSING = "parsing";
     public static final String NONE = "none";

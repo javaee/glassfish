@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,6 +41,7 @@
 package com.sun.enterprise.server.logging.logviewer.backend;
 
 import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.Node;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.SystemPropertyConstants;
@@ -236,9 +237,9 @@ public class LogFilter {
             // store under glassfish/domains/domain1/logs/<instance name>/ directory which is used to get LogFile object.
             // Right now user needs to go through this URL to setup and configure ssh http://wikis.sun.com/display/GlassFish/3.1SSHSetup
 
-            String serverNode = targetServer.getNode();
-
-            if (serverNode.equals("localhost") || serverNode.equals("127.0.0.1")) {
+            String serverNode = targetServer.getNodeRef();
+            Node node = domain.getNodes().getNode(serverNode);
+            if (node.isLocal()) {
 
                 instanceLogFile = new File(env.getInstanceRoot().getAbsolutePath() + File.separator + ".." + File.separator
                         + ".." + File.separator + "nodes" + File.separator + serverNode
@@ -476,7 +477,7 @@ public class LogFilter {
     /**
      * This provides access to the LogFile object.
      */
-    public static LogFile getLogFile() {
+    public LogFile getLogFile() {
         return _logFile;
     }
 
@@ -589,7 +590,7 @@ public class LogFilter {
         if (!(loggedDateTime.before(fromDateTime) ||
                 loggedDateTime.after(toDateTime))) {
             return true;
-        }
+        }                                               
 
         return false;
     }
@@ -718,7 +719,7 @@ public class LogFilter {
             System.getProperty("com.sun.aas.verboseMode", "false");
     private static String defaultLogFile =
             System.getProperty("com.sun.aas.defaultLogFile");
-    private static LogFile _logFile =
+    private LogFile _logFile =
             (pL != null && !verboseMode.equals("true") && defaultLogFile != null) ?
                     new LogFile(defaultLogFile) :
                     new LogFile(StringUtils.makeFilePath(serverLogElements, false));

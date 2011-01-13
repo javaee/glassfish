@@ -42,6 +42,7 @@ package org.glassfish.deployment.admin;
 
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.CommandLock;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
@@ -71,6 +72,7 @@ import java.io.IOException;
 @Service(name="_get-deployment-configurations")
 @ExecuteOn(value={RuntimeType.DAS})
 @Scoped(PerLookup.class)
+@CommandLock(CommandLock.LockType.NONE)
 public class GetDeploymentConfigurationsCommand implements AdminCommand {
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(GetDeploymentConfigurationsCommand.class);

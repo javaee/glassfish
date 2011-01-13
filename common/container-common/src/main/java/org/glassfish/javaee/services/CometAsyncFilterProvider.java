@@ -44,7 +44,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.ContractProvided;
 
 /**
- * I really wished Grizzly would start using hk2 so I don't have to exist
+ * Comet service.
  *
  * @Author Jerome Dochez
  * Date: Apr 16, 2008

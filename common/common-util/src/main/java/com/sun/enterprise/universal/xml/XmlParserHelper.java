@@ -49,9 +49,9 @@ import javax.xml.stream.*;
 public final class XmlParserHelper {
 
     public XmlParserHelper(final File f) throws FileNotFoundException, XMLStreamException {
-        stream = new FileInputStream(f);
+        reader = new InputStreamReader(new FileInputStream(f));
         parser = XMLInputFactory.newInstance().createXMLStreamReader(
-                f.toURI().toString(), stream);
+                f.toURI().toString(), reader);
     }
 
     public final XMLStreamReader get() {
@@ -73,8 +73,8 @@ public final class XmlParserHelper {
             // ignore
         }
         try {
-            if (stream != null) {
-                stream.close();
+            if (reader != null) {
+                reader.close();
             }
         }
         catch (Exception e) {
@@ -82,6 +82,6 @@ public final class XmlParserHelper {
         }
     }
 
-    private final FileInputStream stream;
     private final XMLStreamReader parser;
+    private final InputStreamReader reader;
 }

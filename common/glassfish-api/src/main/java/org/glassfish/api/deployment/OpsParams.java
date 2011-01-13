@@ -50,7 +50,7 @@ import org.glassfish.api.admin.CommandParameters;
 public abstract class OpsParams implements CommandParameters {
 
     /**
-     * There can be so far 4 types of events that can trigger deployment
+     * There can be so far 6 types of events that can trigger deployment
      * activities.
      *
      * load when an already deployed application is being reloaded.
@@ -58,9 +58,10 @@ public abstract class OpsParams implements CommandParameters {
      * deploy_instance when a new application is deployed on instance
      * unload when a loaded application is stopped
      * undeploy when a deployed application is removed from the system.
+     * create_application_ref when an application reference is being created
      */
     public enum Origin { 
-        load, deploy, deploy_instance, unload, undeploy;
+        load, deploy, deploy_instance, unload, undeploy, create_application_ref;
 
         // whether it's part of the deployment, on DAS or on instance
         public boolean isDeploy() {
@@ -85,7 +86,8 @@ public abstract class OpsParams implements CommandParameters {
         // whether the artifacts are already present and no need to 
         // generate
         public boolean isArtifactsPresent() {
-            if (this == Origin.load || this == Origin.deploy_instance) {
+            if (this == Origin.load || this == Origin.deploy_instance || 
+                this == Origin.create_application_ref) {
                 return true;
             }
             else {
@@ -108,6 +110,16 @@ public abstract class OpsParams implements CommandParameters {
             if (this == Origin.unload) {
                 return true;
             }    
+            else {
+                return false;
+            }
+        }
+
+        // whether it's creating application reference
+        public boolean isCreateAppRef() {
+            if (this == Origin.create_application_ref) {
+                return true;
+            }
             else {
                 return false;
             }

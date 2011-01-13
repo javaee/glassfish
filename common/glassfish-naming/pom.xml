@@ -65,10 +65,29 @@
             </roles>
         </developer>
     </developers>       
+    <build>
+      <plugins>
+        <plugin>
+          <groupId>com.sun.enterprise</groupId>
+          <artifactId>hk2-maven-plugin</artifactId>
+          <configuration>
+            <archive>
+              <manifestEntries>
+                <Class-Path>common-l10n.jar</Class-Path>
+              </manifestEntries>
+            </archive>
+          </configuration>
+        </plugin>
+      </plugins>
+    </build>
     <dependencies>
         <dependency>
             <groupId>com.sun.corba</groupId>
             <artifactId>glassfish-corba-omgapi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.corba</groupId>
+            <artifactId>glassfish-corba-internal-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.glassfish.orb</groupId>
@@ -88,11 +107,17 @@
             <groupId>org.glassfish.common</groupId>
             <artifactId>internal-api</artifactId>
             <version>${project.version}</version>
-        </dependency>        
+        </dependency>
         <dependency>
             <!-- Needed to have a bundle activator to set up a different serialization policy-->
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <!-- Needed to have a bundle activator to set up a different serialization policy-->
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.enterprise</artifactId>
             <scope>provided</scope>
         </dependency>
    </dependencies>

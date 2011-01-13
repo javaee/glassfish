@@ -39,12 +39,13 @@
  */
 package com.sun.enterprise.v3.admin;
 
-import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.enterprise.module.Module;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import java.util.logging.Logger;
+import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.embeddable.GlassFish;
+import org.jvnet.hk2.component.Habitat;
 
-import java.util.Collection;
+import java.io.File;
+import java.util.logging.Logger;
 
 /**
  * A class to house identical code for stopping instances and DAS
@@ -58,23 +59,41 @@ public class StopServer {
      * All running services are stopped. 
      * LookupManager is flushed.
      */
-    protected final void doExecute(ModulesRegistry registry, Logger logger, boolean force) {
-        logger.info(localStrings.getLocalString("stop.domain.init", "Server shutdown initiated"));
-        boolean noSysExit = Boolean.parseBoolean(System.getenv("AS_NO_SYSTEM_EXIT"));
-
-        Collection<Module> modules = registry.getModules(
-                "org.glassfish.core.glassfish");
-        if (modules.size() == 1) {
-            final Module mgmtAgentModule = modules.iterator().next();
-            mgmtAgentModule.stop();
+    protected final void doExecute(Habitat habitat, ServerEnvironment env, Logger logger, boolean force) {
+        try {
+            logger.info(localStrings.getLocalString("stop.domain.init", "Server shutdown initiated"));
+            // Don't shutdown GlassFishRuntime, as that can bring the OSGi framework down which is wrong
+            // when we are embedded inside an existing runtime. So, just stop the glassfish instance that
+            // we are supposed to stop. Leave any cleanup to some other code.
+            GlassFish gfKernel = habitat.getComponent(GlassFish.class);
+            if (gfKernel != null) {
+                gfKernel.stop();
+            }
         }
-        else {
-            logger.warning(modules.size() + " no of primordial modules found");
+        catch (Throwable t) {
+            // ignore
         }
 
-        if (!noSysExit && force) {
+        
+        if(force)
             System.exit(0);
-        }
+        else
+            deletePidFile(env);
     }
+    
     private final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(StopServer.class);
+
+    /**
+     * It is **Essential** to delete this file!  Other code will assume the server
+     * is running if it exists.
+     * Any old App is currently (10/10/10) allowed to add a shutdownhook with a System.exit()
+     * which is GUARANTEED to prevent the shutdown hook for deleting the pidfile to run.
+     * So -- we always do it BEFORE trying to exit.
+     */
+    private void deletePidFile(ServerEnvironment env) {
+        File pidFile = new File(env.getConfigDirPath(), "pid");
+
+        if (pidFile.isFile())
+            pidFile.delete();
+    }
 }

@@ -55,7 +55,7 @@ import java.util.logging.Level;
 
 import javax.ejb.EJBException;
 
-import org.glassfish.api.embedded.ScatteredArchive;
+import org.glassfish.internal.embedded.ScatteredArchive;
 import org.glassfish.deployment.common.ModuleExploder;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.logging.LogDomains;

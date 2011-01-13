@@ -113,6 +113,7 @@ public class TimerBeanContainer
             _logger.log(Level.WARNING, "ejb.timer_service_init_error",
                         logParams);
             _logger.log(Level.WARNING, "", ex);
+            throw new RuntimeException(ex.getMessage(), ex);
         } 
 
     }

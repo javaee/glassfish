@@ -73,11 +73,9 @@ public class LogReporter {
             for (String logger : loggers) {
                 String ln = (logger == null) ? ANON_LOGGER : logger;
                 String parent = lb.getParentLoggerName(logger);
-                assert parent != null;
-                if (parent.length() == 0)
+                if (parent == null || parent.length() == 0)
                     parent = ROOT_LOGGER;
                 sb.append(ln + "|" + lb.getLoggerLevel(logger) + "|" + parent);
-                sb.append("--------------------------------------------------");
             }
             return (sb.toString());
         } catch(Exception e) {

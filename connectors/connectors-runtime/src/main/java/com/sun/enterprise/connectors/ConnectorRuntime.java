@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -56,6 +56,7 @@ import javax.naming.NamingException;
 import javax.resource.ResourceException;
 import javax.resource.spi.ConnectionManager;
 import javax.resource.spi.ManagedConnectionFactory;
+import javax.resource.spi.ResourceAdapterAssociation;
 import javax.resource.spi.XATerminator;
 import javax.resource.spi.work.WorkManager;
 import javax.security.auth.callback.CallbackHandler;
@@ -82,10 +83,12 @@ import com.sun.enterprise.deployment.util.XModuleType;
 import com.sun.enterprise.resource.deployer.DataSourceDefinitionDeployer;
 import com.sun.enterprise.resource.pool.PoolManager;
 import com.sun.enterprise.resource.pool.monitor.ConnectionPoolProbeProviderUtil;
+import com.sun.enterprise.resource.pool.monitor.PoolMonitoringLevelListener;
 import com.sun.enterprise.security.jmac.callback.ContainerCallbackHandler;
 import com.sun.enterprise.security.SecurityServicesUtil;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 import org.glassfish.admin.monitor.MonitoringBootstrap;
+import org.glassfish.javaee.services.ResourceManager;
 import org.glassfish.resource.common.PoolInfo;
 import org.glassfish.resource.common.ResourceInfo;
 import org.jvnet.hk2.config.types.Property;
@@ -133,6 +136,7 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     private ConnectorAdminObjectAdminServiceImpl adminObjectAdminService;
     private ConnectorRegistry connectorRegistry = ConnectorRegistry.getInstance();
     private JdbcAdminServiceImpl jdbcAdminService;
+    private PoolMonitoringLevelListener poolMonitoringLevelListener;
 
     @Inject
     private GlassfishNamingManager namingManager;
@@ -187,6 +191,8 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
 
     @Inject
     private ResourceNamingService resourceNamingService;
+
+    private Resources globalResources;
 
     // performance improvement, cache the lookup of transaction manager.
     private JavaEETransactionManager transactionManager;
@@ -434,10 +440,10 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      * @throws ConnectorRuntimeException when unable to provide a connection manager
      */
     public ConnectionManager obtainConnectionManager(PoolInfo poolInfo,
-                                                     boolean forceNoLazyAssoc)
+                                                     boolean forceNoLazyAssoc, ResourceInfo resourceInfo)
             throws ConnectorRuntimeException {
         ConnectionManager mgr = ConnectionManagerFactory.
-                getAvailableConnectionManager(poolInfo, forceNoLazyAssoc);
+                getAvailableConnectionManager(poolInfo, forceNoLazyAssoc, resourceInfo);
         return mgr;
     }
 
@@ -814,7 +820,11 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
         initializeEnvironment(processEnvironment);
         if(isServer()) {
             getProbeProviderUtil().registerProbeProvider();
-         }
+        }
+        if(isServer() || isEmbedded()){
+            poolMonitoringLevelListener = habitat.getComponent(PoolMonitoringLevelListener.class);
+        }
+
     }
 
     /**
@@ -1317,11 +1327,22 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
         return clh.getConnectorClassLoader(null);
     }
 
+    public ClassLoaderHierarchy getClassLoaderHierarchy(){
+        return clh;
+    }
+
     /**
      * {@inheritDoc}
      */
     public void registerDataSourceDefinitions(com.sun.enterprise.deployment.Application application) {
         habitat.getComponent(DataSourceDefinitionDeployer.class).registerDataSourceDefinitions(application);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void unRegisterDataSourceDefinitions(com.sun.enterprise.deployment.Application application) {
+        habitat.getComponent(DataSourceDefinitionDeployer.class).unRegisterDataSourceDefinitions(application);
     }
 
     /**
@@ -1396,7 +1417,10 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
     }
 
     private Resources getResources(){
-        return habitat.getComponent(Domain.class).getResources();
+        if(globalResources == null){
+            globalResources = habitat.getComponent(Domain.class).getResources();
+        }
+        return globalResources; 
     }
 
     /**
@@ -1502,5 +1526,33 @@ public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api
      */
     public Set<String> getDatabaseVendorNames() {
         return driverLoader.getDatabaseVendorNames();
+    }
+
+    public boolean isJdbcPoolMonitoringEnabled(){
+        boolean enabled = false;
+        if(poolMonitoringLevelListener != null){
+            enabled = poolMonitoringLevelListener.getJdbcPoolMonitoringEnabled();
+        }
+        return enabled;
+    }
+
+    public boolean isConnectorPoolMonitoringEnabled(){
+        boolean enabled= false;
+        if(poolMonitoringLevelListener != null){
+            enabled = poolMonitoringLevelListener.getConnectorPoolMonitoringEnabled();
+        }
+        return enabled;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public void associateResourceAdapter(String rarName, ResourceAdapterAssociation raa)
+            throws ResourceException{
+        resourceAdapterAdmService.associateResourceAdapter(rarName,raa);
+    }
+
+    public ResourceManager getGlobalResourceManager(){
+        return habitat.getComponent(ResourceManager.class);
     }
 }

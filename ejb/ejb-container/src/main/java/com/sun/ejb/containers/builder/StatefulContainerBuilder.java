@@ -43,7 +43,6 @@ package com.sun.ejb.containers.builder;
 import java.io.File;
 import java.io.Serializable;
 import java.util.Map;
-import java.util.Properties;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
@@ -65,13 +64,11 @@ import com.sun.ejb.containers.util.cache.LruSessionCache;
 import com.sun.ejb.containers.util.cache.NRUSessionCache;
 import com.sun.ejb.containers.util.cache.UnBoundedSessionCache;
 
-import com.sun.ejb.spi.sfsb.store.SFSBBeanState;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.deployment.EjbDescriptor;
 
 import com.sun.ejb.spi.container.SFSBContainerInitialization;
 
-import com.sun.enterprise.util.io.FileUtils;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.gms.bootstrap.GMSAdapter;
@@ -80,6 +77,8 @@ import org.glassfish.ha.store.api.BackingStore;
 import org.glassfish.ha.store.api.BackingStoreConfiguration;
 import org.glassfish.ha.store.api.BackingStoreException;
 import org.glassfish.ha.store.api.BackingStoreFactory;
+import org.glassfish.ha.store.util.KeyTransformer;
+import org.glassfish.ha.store.util.SimpleMetadata;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
@@ -133,11 +132,13 @@ public class StatefulContainerBuilder
     
     private LruSessionCache sessionCache;
 
-    private BackingStore<Serializable, SFSBBeanState> backingStore;
+    private BackingStore<Serializable, SimpleMetadata> backingStore;
 
     private boolean HAEnabled = false;
 
     private boolean asyncReplication = true;
+
+    private SimpleKeyGenerator keyGen;
 
     public StatefulContainerBuilder() {
         super();
@@ -213,9 +214,10 @@ public class StatefulContainerBuilder
     private void buildSFSBUUIDUtil() {
         //Just for debugging purpose,  we instantiate
         //  two different key generators
-        containerInitialization.setSFSBUUIDUtil(HAEnabled
+        keyGen = HAEnabled
                 ? new ScrambledKeyGenerator(getIPAddress(), getPort())
-                : new SimpleKeyGenerator(getIPAddress(), getPort()));
+                : new SimpleKeyGenerator(getIPAddress(), getPort());
+        containerInitialization.setSFSBUUIDUtil(keyGen);
     }
 
     private void buildStoreManager()
@@ -227,13 +229,15 @@ public class StatefulContainerBuilder
             persistenceStoreType = HAEnabled
                 ? ejbAvailability.getSfsbHaPersistenceType() : ejbAvailability.getSfsbPersistenceType();
             if ("ha".equals(persistenceStoreType)) {
-                persistenceStoreType = "replication";
+                persistenceStoreType = "replicated";
+            } else if ("memory".equals(persistenceStoreType)) {
+                persistenceStoreType = "file";
             }
         }
 
 
 
-        BackingStoreConfiguration<Serializable, SFSBBeanState> conf = new BackingStoreConfiguration<Serializable, SFSBBeanState>();
+        BackingStoreConfiguration<Serializable, SimpleMetadata> conf = new BackingStoreConfiguration<Serializable, SimpleMetadata>();
         String storeName = ejbDescriptor.getName() + "-" + ejbDescriptor.getUniqueId() + "-BackingStore";
 
         _logger.log(Level.INFO, "StatefulContainerBuilder.buildStoreManager() storeName: " + storeName);
@@ -257,14 +261,18 @@ public class StatefulContainerBuilder
                 .setStoreType(persistenceStoreType)
                 .setBaseDirectory(new File(ejbContainerConfig.getSessionStore(), subDirName))
                 .setKeyClazz(Serializable.class)
-                .setValueClazz(SFSBBeanState.class);
+                .setValueClazz(SimpleMetadata.class)
+                .setClassLoader(StatefulContainerBuilder.class.getClassLoader());
 
 
         Map<String, Object> vendorMap = conf.getVendorSpecificSettings();
         vendorMap.put("local.caching", true);
         vendorMap.put("start.gms", false);
         vendorMap.put("async.replication", asyncReplication);
-        
+        vendorMap.put("broadcast.remove.expired", false);
+        vendorMap.put("value.class.is.thread.safe", true);
+        vendorMap.put("key.transformer", keyGen);
+
         if (gmsAdapterService != null) {
             GMSAdapter gmsAdapter = gmsAdapterService.getGMSAdapter();
             if (gmsAdapter != null) {

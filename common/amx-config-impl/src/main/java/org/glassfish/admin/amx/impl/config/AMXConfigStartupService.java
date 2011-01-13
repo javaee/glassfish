@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admin.amx.impl.config;
 
 import org.glassfish.admin.amx.base.DomainRoot;
@@ -65,112 +64,91 @@ import org.glassfish.admin.mbeanserver.PendingConfigBeans;
 import org.jvnet.hk2.config.Transactions;
 
 /**
-    Startup service that loads support for AMX config MBeans.  How this is to be
-    triggered is not yet clear.
+Startup service that loads support for AMX config MBeans.  How this is to be
+triggered is not yet clear.
  */
-@Taxonomy( stability=Stability.NOT_AN_INTERFACE )
+@Taxonomy(stability = Stability.NOT_AN_INTERFACE)
 @Service
 public final class AMXConfigStartupService
-    implements  org.jvnet.hk2.component.PostConstruct,
-                org.jvnet.hk2.component.PreDestroy,
-                AMXConfigStartupServiceMBean
-{
-    private static void debug( final String s ) { System.out.println(s); }
-    
+        implements org.jvnet.hk2.component.PostConstruct,
+        org.jvnet.hk2.component.PreDestroy,
+        AMXConfigStartupServiceMBean {
+
+    private static void debug(final String s) {
+        System.out.println(s);
+    }
     @Inject
-    InjectedValues  mInjectedValues;
-    
+    InjectedValues mInjectedValues;
     @Inject//(name=AppserverMBeanServerFactory.OFFICIAL_MBEANSERVER)
     private MBeanServer mMBeanServer;
-    
     @Inject
     private volatile PendingConfigBeans mPendingConfigBeans;
-    
     @Inject
     private Transactions mTransactions;
-    
     private volatile AMXConfigLoader mLoader;
-    
-    public AMXConfigStartupService()
-    {
+    private volatile PendingConfigBeans mPendingConfigBeansBackup;
+
+    public AMXConfigStartupService() {
         //debug( "AMXStartupService.AMXStartupService()" );
     }
-    
-    public void postConstruct()
-    {
+
+    public void postConstruct() {
         final TimingDelta delta = new TimingDelta();
-        
-        if ( mMBeanServer == null ) throw new Error( "AMXStartup: null MBeanServer" );
-        if ( mPendingConfigBeans == null ) throw new Error( "AMXStartup: null mPendingConfigBeans" );
-        
-        try
-        {
-           final StandardMBean mbean = new StandardMBean(this, AMXConfigStartupServiceMBean.class);
-           mMBeanServer.registerMBean( mbean, OBJECT_NAME );
+
+        if (mMBeanServer == null) {
+            throw new Error("AMXStartup: null MBeanServer");
         }
-        catch( JMException e )
-        {
+        if (mPendingConfigBeans == null) {
+            throw new Error("AMXStartup: null mPendingConfigBeans");
+        }
+
+        mPendingConfigBeansBackup = mPendingConfigBeans;
+        try {
+            final StandardMBean mbean = new StandardMBean(this, AMXConfigStartupServiceMBean.class);
+            mMBeanServer.registerMBean(mbean, OBJECT_NAME);
+        } catch (JMException e) {
             throw new Error(e);
         }
         //debug( "AMXStartupService.postConstruct(): registered: " + OBJECT_NAME);
-        ImplUtil.getLogger().fine( "Initialized AMXConfig Startup service in " + delta.elapsedMillis() + " ms, registered as " + OBJECT_NAME );
+        ImplUtil.getLogger().fine("Initialized AMXConfig Startup service in " + delta.elapsedMillis() + " ms, registered as " + OBJECT_NAME);
     }
 
     public void preDestroy() {
-        ImplUtil.getLogger().info( "AMXConfigStartupService.preDestroy(): stopping AMX" );
+        ImplUtil.getLogger().info("AMXConfigStartupService.preDestroy(): stopping AMX");
         unloadAMXMBeans();
     }
-    
-    public DomainRoot getDomainRoot()
-    {
-        return ProxyFactory.getInstance( mMBeanServer ).getDomainRootProxy(false);
+
+    public DomainRoot getDomainRoot() {
+        return ProxyFactory.getInstance(mMBeanServer).getDomainRootProxy(false);
     }
-    
-        public ObjectName
-    getDomainConfig()
-    {
+
+    public ObjectName getDomainConfig() {
         return getDomainRoot().child(Domain.class).extra().objectName();
     }
-    
-        public Domain
-    getDomainConfigProxy()
-    {
-        return ProxyFactory.getInstance( mMBeanServer ).getProxy(getDomainConfig(), Domain.class);
-    }
-    
-        public synchronized ObjectName
-    loadAMXMBeans()
-    {
-        if ( mLoader == null )
-        {
-            //getDomainRootProxy().waitAMXReady();
 
+    public Domain getDomainConfigProxy() {
+        return ProxyFactory.getInstance(mMBeanServer).getProxy(getDomainConfig(), Domain.class);
+    }
+
+    public synchronized ObjectName loadAMXMBeans() {
+        if (mLoader == null) {
+            //getDomainRootProxy().waitAMXReady();
+            if(mPendingConfigBeans.size() == 0)  {
+                mPendingConfigBeans = mPendingConfigBeansBackup;
+            }
             mLoader = new AMXConfigLoader(mMBeanServer, mPendingConfigBeans, mTransactions);
             mLoader.start();
             // asynchronous start, caller must wait for 
         }
         return getDomainConfig();
     }
-    
-    public synchronized void unloadAMXMBeans()
-    {
+
+    public synchronized void unloadAMXMBeans() {
         final Domain domainConfig = getDomainConfigProxy();
-        if ( domainConfig!= null )
-        {
-            ImplUtil.unregisterAMXMBeans( domainConfig );
+        if (domainConfig != null) {
+            ImplUtil.unregisterAMXMBeans(domainConfig);
         }
+        mLoader.stop();
         mLoader = null;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-

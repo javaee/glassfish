@@ -338,6 +338,13 @@ public class LogDomains {
                 private final int offValue = Level.OFF.intValue();
 
                 public void log(LogRecord record) {
+                    record.getSourceMethodName();
+                    if(record.getResourceBundle()==null) {
+                        ResourceBundle rb = getResourceBundle();
+                        if(rb!=null) {
+                            record.setResourceBundle(rb);
+                        }
+                    }
                     record.setThreadID((int) Thread.currentThread().getId());
                     super.log(record);
                 }
@@ -390,8 +397,10 @@ public class LogDomains {
 
                         } catch (MissingResourceException me) {
                         }
+
                         Logger l = LogManager.getLogManager().getLogger(name);
-                        l.log(Level.WARNING, "Can not find resource bundle for this logger. " + " class name that failed: " + clazz.getName());
+                        l.log(Level.FINE, "Can not find resource bundle for this logger. " + " class name that failed: " + clazz.getName());
+
                         //throw e;
                         return null;
                     }

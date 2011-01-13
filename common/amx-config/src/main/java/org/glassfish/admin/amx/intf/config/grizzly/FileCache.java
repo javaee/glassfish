@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,20 +44,23 @@ import org.glassfish.admin.amx.base.Singleton;
 import org.glassfish.admin.amx.intf.config.PropertiesAccess;
 
 /**
-Note: attribute getters/setters are not included in this interface; use generic approach.
+ * Note: attribute getters/setters are not included in this interface; use generic approach.
  */
-public interface FileCache extends Singleton, PropertiesAccess
-{
+public interface FileCache extends Singleton, PropertiesAccess {
     public String getEnabled();
+
     public void setEnabled(String val);
-    
+
     public String getMaxFilesCount();
+
     public void setMaxFilesCount(String val);
-    
+
     public String getMaxAgeSeconds();
+
     public void setMaxAgeSeconds(String val);
-    
+
     public String getMaxCacheSizeBytes();
+
     public void setMaxCacheSizeBytes(String val);
 }
 

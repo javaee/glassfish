@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -46,6 +46,7 @@ import com.sun.common.util.logging.LoggingXMLNames;
 import com.sun.enterprise.admin.monitor.callflow.Agent;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.module.bootstrap.EarlyLogHandler;
 import com.sun.enterprise.util.EarlyLogger;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.v3.logging.AgentFormatterDelegate;
@@ -66,6 +67,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.*;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.logging.*;
 
 /**
@@ -104,9 +106,13 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy, org.g
     final Map<String, Handler> gfHandlers = new HashMap<String, Handler>();
     Logger logger = LogDomains.getLogger(LogManagerService.class, LogDomains.CORE_LOGGER);
 
+    PrintStream oStdOutBackup = System.out;
+    PrintStream oStdErrBackup = System.err;    
+
     /*
         Returns properties based on the DAS/Cluster/Instance
-     */
+      */
+
     public Map<String, String> getLoggingProperties() throws IOException {
 
         Server targetServer = domain.getServerNamed(env.getInstanceName());
@@ -117,9 +123,9 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy, org.g
             if (targetServer.isDas()) {
                 props = loggingConfig.getLoggingProperties();
             } else if (targetServer.getCluster() != null) {
-                props = loggingConfig.getLoggingProperties(targetServer.getCluster().getName());
+                props = loggingConfig.getLoggingProperties(targetServer.getCluster().getConfigRef());
             } else if (targetServer.isInstance()) {
-                props = loggingConfig.getLoggingProperties(env.getInstanceName());
+                props = loggingConfig.getLoggingProperties(targetServer.getConfigRef());
             } else {
                 props = loggingConfig.getLoggingProperties();
             }
@@ -133,6 +139,7 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy, org.g
     /*
         Returns logging file to be monitor during server is running.
      */
+
     public File getLoggingFile() throws IOException {
 
         File file = null;
@@ -143,7 +150,7 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy, org.g
             if (targetServer.isDas()) {
                 file = new File(env.getConfigDirPath(), ServerEnvironmentImpl.kLoggingPropertiesFileName);
             } else if (targetServer.getCluster() != null) {
-                String pathForLogging = env.getConfigDirPath() + File.separator + targetServer.getCluster().getName() + "-config";
+                String pathForLogging = env.getConfigDirPath() + File.separator + targetServer.getCluster().getConfigRef();
                 File dirForLogging = new File(pathForLogging);
 
                 file = new File(dirForLogging, ServerEnvironmentImpl.kLoggingPropertiesFileName);
@@ -153,7 +160,7 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy, org.g
                     file = new File(dirForLogging, ServerEnvironmentImpl.kLoggingPropertiesFileName);
                 }
             } else if (targetServer.isInstance()) {
-                String pathForLogging = env.getConfigDirPath() + File.separator + env.getInstanceName() + "-config";
+                String pathForLogging = env.getConfigDirPath() + File.separator + targetServer.getConfigRef();
                 File dirForLogging = new File(pathForLogging);
 
                 file = new File(dirForLogging, ServerEnvironmentImpl.kLoggingPropertiesFileName);
@@ -272,25 +279,31 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy, org.g
 
         // redirect stderr and stdout, a better way to do this
         //http://blogs.sun.com/nickstephen/entry/java_redirecting_system_out_and
-        /*
-                Logger _ologger = LogDomains.getLogger(LogManagerService.class,LogDomains.STD_LOGGER);
-                LoggingOutputStream los = new LoggingOutputStream(_ologger, Level.INFO);
-                LoggingOutputStream.LoggingPrintStream pout = los.new  LoggingPrintStream(los);
-                System.setOut(pout);
 
-                Logger _elogger = LogDomains.getLogger(LogManagerService.class,LogDomains.STD_LOGGER);
-                los = new LoggingOutputStream(_elogger, Level.SEVERE);
-                LoggingOutputStream.LoggingPrintStream perr = los.new  LoggingPrintStream(los);
-                System.setErr(perr);
-             */
-        Logger anonymousLogger = Logger.getAnonymousLogger();
-        LoggingOutputStream los = new LoggingOutputStream(anonymousLogger, Level.INFO);
-        PrintStream pout = new PrintStream(los, true);
+        Logger _ologger = LogDomains.getLogger(LogManagerService.class, LogDomains.STD_LOGGER);
+        LoggingOutputStream los = new LoggingOutputStream(_ologger, Level.INFO);
+        LoggingOutputStream.LoggingPrintStream pout = los.new LoggingPrintStream(los);
         System.setOut(pout);
 
-        los = new LoggingOutputStream(anonymousLogger, Level.SEVERE);
-        PrintStream perr = new PrintStream(los, true);
+        Logger _elogger = LogDomains.getLogger(LogManagerService.class, LogDomains.STD_LOGGER);
+        los = new LoggingOutputStream(_elogger, Level.SEVERE);
+        LoggingOutputStream.LoggingPrintStream perr = los.new LoggingPrintStream(los);
         System.setErr(perr);
+
+        /*Logger anonymousLogger = Logger.getAnonymousLogger();
+       LoggingOutputStream los = new LoggingOutputStream(anonymousLogger, Level.INFO);
+       PrintStream pout = new PrintStream(los,true);
+       synchronized (pout) {
+           System.setOut(pout);
+       }
+
+
+       los = new LoggingOutputStream(anonymousLogger, Level.SEVERE);
+       PrintStream perr = new PrintStream(los,true);
+       synchronized (perr) {
+           System.setErr(perr);
+       } */
+
 
         // finally listen to changes to the logging.properties file
         if (logging != null) {
@@ -325,7 +338,7 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy, org.g
 
                                 } else if (a.endsWith(".file")) {
                                     //check if file name was changed and send notification
-                                    if (!a.contains("${com.sun.aas.instanceRoot}/logs/server.log")) {
+                                    if (!props.get(a).contains("${com.sun.aas.instanceRoot}/logs/server.log")) {
                                         PropertyChangeEvent pce = new PropertyChangeEvent(this, a, "${com.sun.aas.instanceRoot}/logs/server.log", props.get(a));
                                         UnprocessedChangeEvents ucel = new UnprocessedChangeEvents(new UnprocessedChangeEvent(pce, "server log filename changed."));
                                         List<UnprocessedChangeEvents> b = new ArrayList();
@@ -359,6 +372,16 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy, org.g
             }
             catchUp.clear();
         }
+
+        ArrayBlockingQueue<LogRecord> catchEarlyMessage = EarlyLogHandler.earlyMessages;
+
+        while (!catchEarlyMessage.isEmpty()) {
+            LogRecord logRecord = catchEarlyMessage.poll();
+            if (logRecord != null) {
+                logger.log(logRecord);
+            }
+        }
+
     }
 
     public void addHandler(Handler handler) {
@@ -379,6 +402,9 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy, org.g
             for (Inhabitant<? extends Handler> i : habitat.getInhabitants(Handler.class)) {
                 i.release();
             }
+            System.setOut(oStdOutBackup);
+            System.setErr(oStdErrBackup);
+            System.out.println("Completed shutdown of Log manager service");
         } catch (ComponentException e) {
             e.printStackTrace();
         }

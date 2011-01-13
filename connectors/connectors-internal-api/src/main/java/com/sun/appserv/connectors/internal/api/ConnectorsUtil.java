@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -67,6 +67,7 @@ import org.glassfish.resource.common.PoolInfo;
 import org.glassfish.resource.common.ResourceInfo;
 import org.jvnet.hk2.config.types.Property;
 import org.jvnet.hk2.config.types.PropertyBag;
+import static com.sun.enterprise.util.SystemPropertyConstants.SLASH;
 
 /**
  * Util class for connector related classes
@@ -138,8 +139,28 @@ public class ConnectorsUtil {
         return j2eeModuleDirName;
     }
 
-    public static String getLocation(String moduleName) {
-        return ConfigBeansUtilities.getLocation(moduleName);
+    public static String getLocation(String moduleName) throws ConnectorRuntimeException {
+        String location = null;
+        if(ConnectorsUtil.belongsToSystemRA(moduleName)){
+            location = ConnectorsUtil.getSystemModuleLocation(moduleName);
+        }else{
+            location = ConfigBeansUtilities.getLocation(moduleName);
+            if(location == null){
+                //check whether its embedded RAR
+                String rarName = getRarNameFromApplication(moduleName);
+                String appName = getApplicationNameOfEmbeddedRar(moduleName);
+
+                if(appName != null && rarName != null){
+                    location = ConfigBeansUtilities.getLocation(appName);
+                    if(location != null){
+                        location = location + File.separator + rarName + "_rar";
+                    }else{
+                        throw new ConnectorRuntimeException("Unable to find location for module : " + moduleName);
+                    }
+                }
+            }
+        }
+        return location;
         /* TODO V3
 
             if(moduleName == null) {
@@ -154,8 +175,6 @@ public class ConnectorsUtil {
             }
             return location;
         */
-
-
     }
     /**
      *  Return the system PM name for the JNDI name
@@ -917,9 +936,18 @@ public class ConnectorsUtil {
                 resourceInfo.getName() != null && resourceInfo.getName().startsWith(ConnectorConstants.JAVA_MODULE_SCOPE_PREFIX);
     }
 
-    public static String getPoolMonitoringSubTreeRoot(PoolInfo poolInfo) {
+    public static String escapeResourceNameForMonitoring(String name){
+        return name.replaceAll("/", SLASH);
+    }
+
+    public static String getPoolMonitoringSubTreeRoot(PoolInfo poolInfo, boolean escapeSlashes) {
         String resourcesPrefix = "resources/";
         String suffix = poolInfo.getName();
+
+        if(escapeSlashes){
+            suffix = escapeResourceNameForMonitoring(suffix);
+        }
+
         String subTreeRoot = resourcesPrefix + suffix;
         if(ConnectorsUtil.isModuleScopedResource(poolInfo)){
             subTreeRoot = "applications/" + poolInfo.getApplicationName()+ "/" + poolInfo.getModuleName() + "/" +

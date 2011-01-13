@@ -1708,6 +1708,14 @@ public final class JMXUtil
         return queryNames(conn, newObjectNamePattern(domain, ""), null);
     }
 
+    public static Set<ObjectName> queryLocalMBeans(
+            final MBeanServer conn,
+            final String domain,
+            final String server)
+    {
+        return queryNames(conn, newObjectNamePattern(domain, "instance="+server), null);
+    }
+
     /**
     The sole purpose of this method is to move compiler warnings here, thus
     eliminating them from other call sites.  May be removed when JMX becomes

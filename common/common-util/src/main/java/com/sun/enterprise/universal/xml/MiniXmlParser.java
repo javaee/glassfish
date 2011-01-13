@@ -46,6 +46,7 @@ import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.HostAndPort;
+import java.io.UnsupportedEncodingException;
 
 import javax.xml.stream.XMLInputFactory;
 import static javax.xml.stream.XMLStreamConstants.END_DOCUMENT;
@@ -56,14 +57,12 @@ import javax.xml.stream.XMLStreamReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -103,8 +102,8 @@ public class MiniXmlParser {
                 // ignore
             }
             try {
-                if (domainXmlstream != null) {
-                    domainXmlstream.close();
+                if (reader != null) {
+                    reader.close();
                 }
             }
             catch (Exception e) {
@@ -223,9 +222,9 @@ public class MiniXmlParser {
     }
 
     private void createParser() throws FileNotFoundException, XMLStreamException {
-        domainXmlstream = new FileInputStream(domainXml);
+        reader = new InputStreamReader(new FileInputStream(domainXml));
         parser = getXmlInputFactory().createXMLStreamReader(
-                            domainXml.toURI().toString(), domainXmlstream);
+            domainXml.toURI().toString(), reader);
     }
 
     // In JDK 1.6, StAX is part of JRE, so we use no argument variant of
@@ -829,7 +828,7 @@ public class MiniXmlParser {
     private LoggingConfigImpl loggingConfig = new LoggingConfigImpl();
     private File domainXml;
     private XMLStreamReader parser;
-    private FileInputStream domainXmlstream;
+    private InputStreamReader reader;
     private String serverName;
     private String configRef;
     private List<String> jvmOptions = new ArrayList<String>();

@@ -121,19 +121,17 @@ public class InboundRecoveryHandler implements RecoveryResourceHandler {
             ArrayList<EjbDescriptor> xaEnabledMDBList = new ArrayList<EjbDescriptor>();
 
             for (Application application : applications) {
-                if(ResourcesUtil.createInstance().isEnabled(application)){
-                    Vector ejbDescVec = getEjbDescriptors(application, appsRegistry);
-                    for (int j = 0; j < ejbDescVec.size(); j++) {
-                        EjbDescriptor desc = (EjbDescriptor) ejbDescVec.elementAt(j);
-                        // If EjbDescriptor is an instance of a CMT enabled MDB descriptor,
-                        // add it to the list of xaEnabledMDBList.
-                        if (desc instanceof EjbMessageBeanDescriptor &&
-                                desc.getTransactionType().
-                                        equals(EjbDescriptor.CONTAINER_TRANSACTION_TYPE)) {
-                            xaEnabledMDBList.add(desc);
-                            _logger.log(Level.FINE, "Found a CMT MDB: "
-                                    + desc.getEjbClassName());
-                        }
+                Vector ejbDescVec = getEjbDescriptors(application, appsRegistry);
+                for (int j = 0; j < ejbDescVec.size(); j++) {
+                    EjbDescriptor desc = (EjbDescriptor) ejbDescVec.elementAt(j);
+                    // If EjbDescriptor is an instance of a CMT enabled MDB descriptor,
+                    // add it to the list of xaEnabledMDBList.
+                    if (desc instanceof EjbMessageBeanDescriptor &&
+                            desc.getTransactionType().
+                                    equals(EjbDescriptor.CONTAINER_TRANSACTION_TYPE)) {
+                        xaEnabledMDBList.add(desc);
+                        _logger.log(Level.FINE, "Found a CMT MDB: "
+                                + desc.getEjbClassName());
                     }
                 }
             }
@@ -256,17 +254,24 @@ public class InboundRecoveryHandler implements RecoveryResourceHandler {
     private Vector getEjbDescriptors(Application application, ApplicationRegistry appsRegistry) {
         Vector ejbDescriptors = new Vector();
 
-        ApplicationInfo appInfo = appsRegistry.get(application.getName());
-
-        com.sun.enterprise.deployment.Application app = appInfo.getMetaData(com.sun.enterprise.deployment.Application.class);
-        Set<BundleDescriptor> descriptors = app.getBundleDescriptors();
-        for (BundleDescriptor descriptor : descriptors) {
-            if (descriptor instanceof EjbBundleDescriptor) {
-                EjbBundleDescriptor ejbBundleDescriptor = (EjbBundleDescriptor) descriptor;
-                Set<EjbDescriptor> ejbDescriptorsSet = ejbBundleDescriptor.getEjbs();
-                for (EjbDescriptor ejbDescriptor : ejbDescriptorsSet) {
-                    ejbDescriptors.add(ejbDescriptor);
+        if(ResourcesUtil.createInstance().isEnabled(application)){
+            ApplicationInfo appInfo = appsRegistry.get(application.getName());
+            if(appInfo != null){
+                com.sun.enterprise.deployment.Application app =
+                        appInfo.getMetaData(com.sun.enterprise.deployment.Application.class);
+                Set<BundleDescriptor> descriptors = app.getBundleDescriptors();
+                for (BundleDescriptor descriptor : descriptors) {
+                    if (descriptor instanceof EjbBundleDescriptor) {
+                        EjbBundleDescriptor ejbBundleDescriptor = (EjbBundleDescriptor) descriptor;
+                        Set<EjbDescriptor> ejbDescriptorsSet = ejbBundleDescriptor.getEjbs();
+                        for (EjbDescriptor ejbDescriptor : ejbDescriptorsSet) {
+                            ejbDescriptors.add(ejbDescriptor);
+                        }
+                    }
                 }
+            }else{
+                //application is enabled, but still not found in app-registry
+                _logger.log(Level.WARNING, "application.not.started.skipping.recovery", application.getName());
             }
         }
         return ejbDescriptors;

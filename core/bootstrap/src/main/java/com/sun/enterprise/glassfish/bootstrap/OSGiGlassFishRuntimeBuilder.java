@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -46,11 +46,12 @@ import org.osgi.framework.launch.Framework;
 
 /**
  * This RuntimeBuilder can only handle GlassFish_Platform of following types:
- * {@link org.glassfish.embeddable.Constants.Platform#Felix},
- * {@link org.glassfish.embeddable.Constants.Platform#Equinox},
- * and {@link org.glassfish.embeddable.Constants.Platform#Knopflerfish}.
+ * 
+ * {@link Constants.Platform#Felix},
+ * {@link Constants.Platform#Equinox},
+ * and {@link Constants.Platform#Knopflerfish}.
  *
- * It can't handle {@link org.glassfish.embeddable.Constants.Platform#GenericOSGi} platform,
+ * <p/>It can't handle GenericOSGi platform,
  * because it reads framework configuration from a framework specific file when it calls
  * {@link ASMainHelper#buildStartupContext(java.util.Properties)}.
  *
@@ -75,6 +76,7 @@ import org.osgi.framework.launch.Framework;
  */
 public final class OSGiGlassFishRuntimeBuilder implements RuntimeBuilder {
     private Framework framework;
+    private final static boolean debug = false;
 
     /**
      * Default constructor needed for meta-inf/service lookup to work
@@ -98,23 +100,26 @@ public final class OSGiGlassFishRuntimeBuilder implements RuntimeBuilder {
          * This builder can't handle GOSGi platform, because we read framework configuration from a framework
          * specific file in ASMainHelper.buildStartupContext(properties);
          */
-        final String platformStr = bsProps.getPlatform();
-        if (platformStr == null || platformStr.trim().isEmpty()) {
-            return false;
-        }
-        BootstrapProperties.Platform platform =
-                BootstrapProperties.Platform.valueOf(platformStr);
-        switch (platform) {
-            case Felix:
-            case Equinox:
-            case Knopflerfish:
-                return true;
+        String platformStr = bsProps.getProperty(Constants.PLATFORM_PROPERTY_KEY);
+        if (platformStr != null && platformStr.trim().length() != 0) {
+            try {
+                Constants.Platform platform = Constants.Platform.valueOf(platformStr);
+                switch (platform) {
+                    case Felix:
+                    case Equinox:
+                    case Knopflerfish:
+                        return true;
+                }
+            } catch (IllegalArgumentException ex) {
+                // might be a plugged-in custom platform.
+            }
         }
         return false;
     }
 
     private static void debug(String s) {
-        System.out.println("OSGiGlassFishRuntime: " + s);
+        if (debug)
+            System.out.println("OSGiGlassFishRuntime: " + s);
     }
 
 }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,37 +40,33 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-/**
-Configuration for the &lt;ejb-container-availability&gt; element.
- */
-public interface EjbContainerAvailability extends ConfigElement, PropertiesAccess
-{
-    
+
+public interface EjbContainerAvailability
+        extends ConfigElement, PropertiesAccess {
+
+
     public String getAvailabilityEnabled();
 
-    public void setAvailabilityEnabled(final String value);
+    public void setAvailabilityEnabled(final String param1);
 
     public String getSfsbHaPersistenceType();
 
-    /**
-    Legal values are those defined in {@link SFSBPersistenceTypeValues}.
-     */
-    public void setSfsbHaPersistenceType(final String value);
+    public void setSfsbHaPersistenceType(final String param1);
 
     public String getSfsbPersistenceType();
 
-    /**
-    Legal values are those defined in {@link SFSBPersistenceTypeValues}.
-     */
-    public void setSfsbPersistenceType(final String value);
+    public void setSfsbPersistenceType(final String param1);
 
     public String getSfsbStorePoolName();
 
-    public void setSfsbStorePoolName(final String value);
+    public void setSfsbStorePoolName(final String param1);
 
-    /** @deprecated do not use */
     public String getSfsbQuickCheckpointEnabled();
 
-    /** @deprecated do not use */
     public String getSfsbCheckpointEnabled();
+
+    public void setSfsbCheckpointEnabled(String param1);
+
+    public void setSfsbQuickCheckpointEnabled(String param1);
+
 }

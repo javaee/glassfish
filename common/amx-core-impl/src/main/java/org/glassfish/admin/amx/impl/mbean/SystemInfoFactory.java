@@ -69,9 +69,15 @@ public final class SystemInfoFactory {
 
             new SystemInfoIniter(server, INSTANCE).init();
         } else {
-            throw new RuntimeException("can only initialize once--bug");
+            //throw new RuntimeException("can only initialize once--bug");
         }
         return INSTANCE;
+    }
+
+    public static synchronized void removeInstance() {
+        if(INSTANCE != null) {
+            INSTANCE = null;
+        }
     }
 }
 

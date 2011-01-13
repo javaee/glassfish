@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,18 +40,23 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-/**
-Configuration for the &lt;applications&gt; element; it is an internal "node" which
-groups all applications under itself.
-@since Glassfish V3
- */
-public interface Applications extends ApplicationsBase
-{
+import java.util.List;
+import java.util.Map;
+
+public interface Applications
+        extends ApplicationsBase {
+
+
+    public Application getApplication(String param1);
+
+    public List getApplications();
+
+    public Object getModule(Class param1, String param2);
+
+    public Map<String, Module> getModules(Class param1);
+
+    public Map<String, Application> getApplicationsWithSnifferType(String param1);
+
+    public Map<String, Application> getApplicationsWithSnifferType(String param1, boolean param2);
+
 }
-
-
-
-
-
-
-

@@ -165,11 +165,14 @@ public final class DomainDirs {
 
         File[] files = parent.listFiles(new FileFilter() {
             public boolean accept(File f) {
-                return f.isDirectory();
+                File config = new File(f, "config");
+                File dxml = new File(config, "domain.xml");
+                return f.isDirectory() && config.isDirectory() &&
+                        dxml.isFile();
             }
         });
 
-        if(files == null || files.length == 0)
+        if (files == null || files.length == 0)
             throw new IOException(strings.get("Domain.noDomainDirs", parent));
 
         if(files.length > 1) {
@@ -181,7 +184,7 @@ public final class DomainDirs {
                 names += files[i].getName();
             }
             
-            throw new IOException(strings.get("Domain.tooManyDomainDirs", names));
+            throw new IOException(strings.get("Domain.tooManyDomainDirs", parent, names));
         }
 
         return files[0];

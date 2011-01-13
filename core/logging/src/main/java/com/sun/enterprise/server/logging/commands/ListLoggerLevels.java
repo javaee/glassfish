@@ -47,10 +47,7 @@ import com.sun.enterprise.util.SystemPropertyConstants;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.api.admin.ExecuteOn;
-import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.api.admin.*;
 import org.glassfish.config.support.CommandTarget;
 import org.glassfish.config.support.TargetType;
 import org.jvnet.hk2.annotations.Inject;
@@ -72,6 +69,7 @@ import java.util.*;
 @Service(name = "list-log-levels")
 @TargetType({CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER, CommandTarget.CLUSTERED_INSTANCE, CommandTarget.CONFIG})
 @Scoped(PerLookup.class)
+@CommandLock(CommandLock.LockType.NONE)
 @I18n("list.log.levels")
 public class ListLoggerLevels implements AdminCommand {
 
@@ -98,69 +96,57 @@ public class ListLoggerLevels implements AdminCommand {
         boolean isCluster = false;
         boolean isDas = false;
         boolean isInstance = false;
-        boolean foundConfig = false;
+        boolean isConfig = false;
+        String targetConfigName = "";
 
         try {
             HashMap<String, String> props = null;
 
             Config config = domain.getConfigNamed(target);
             if (config != null) {
-                List<Cluster> clusterList = clusters.getCluster();
-                for (Cluster cluster : clusterList) {
-                    String clusterConfigName = cluster.getConfigRef();
-                    if (clusterConfigName.equals(target)) {
-                        target = cluster.getName();
-                        foundConfig = true;
-                        break;
-                    }
-                }
-                if (!foundConfig) {
-                    List<Server> serverList = servers.getServer();
-                    for (Server server : serverList) {
-                        String serverConfigName = server.getConfigRef();
-                        if (serverConfigName.equals(target)) {
-                            target = server.getName();
-                            break;
-                        }
-                    }
-                }
-            }
+                targetConfigName = target;
+                isConfig = true;
 
-            Server targetServer = domain.getServerNamed(target);
-
-            if (targetServer != null && targetServer.isDas()) {
-                isDas = true;
+                Server targetServer = domain.getServerNamed(SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME);
+                if (targetServer.getConfigRef().equals(target)) {
+                    isDas = true;
+                }
             } else {
-                com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
-                if (cluster != null) {
-                    isCluster = true;
+
+                Server targetServer = domain.getServerNamed(target);
+
+                if (targetServer != null && targetServer.isDas()) {
+                    isDas = true;
                 } else {
-                    isInstance = true;
+                    com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
+                    if (cluster != null) {
+                        isCluster = true;
+                        targetConfigName = cluster.getConfigRef();
+                    } else if (targetServer != null) {
+                        isInstance = true;
+                        targetConfigName = targetServer.getConfigRef();
+                    }
+                }
+
+                if (isInstance) {
+                    Cluster clusterForInstance = targetServer.getCluster();
+                    if (clusterForInstance != null) {
+                        targetConfigName = clusterForInstance.getConfigRef();
+                    }
                 }
             }
-
-            if (isInstance) {
-                Cluster clusterForInstance = targetServer.getCluster();
-                if (clusterForInstance != null) {
-                    target = clusterForInstance.getName();
-                }
-            }
-
 
             if (isCluster || isInstance) {
-                props = (HashMap<String, String>) loggingConfig.getLoggingProperties(target);
+                props = (HashMap<String, String>) loggingConfig.getLoggingProperties(targetConfigName);
             } else if (isDas) {
                 props = (HashMap<String, String>) loggingConfig.getLoggingProperties();
+            } else if (isConfig) {
+                // This loop is for the config which is not part of any target
+                props = (HashMap<String, String>) loggingConfig.getLoggingProperties(targetConfigName);
             } else {
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                String clusterName = "";
                 String msg = localStrings.getLocalString("invalid.target.sys.props",
                         "Invalid target: {0}. Valid default target is a server named ''server'' (default) or cluster name.", target);
-                if (targetServer != null && targetServer.isInstance()) {
-                    clusterName = targetServer.getCluster().getName();
-                    msg = localStrings.getLocalString("invalid.target.sys.props",
-                            "Instance {0} is part of the Cluster so valid target value is '" + clusterName + "'.", target);
-                }
                 report.setMessage(msg);
                 return;
             }
@@ -178,7 +164,7 @@ public class ListLoggerLevels implements AdminCommand {
                     final ActionReport.MessagePart part = report.getTopMessagePart()
                             .addChild();
                     String n = name.substring(0, name.lastIndexOf(".level"));
-                    part.setMessage(n + "\t" + "<" +(String) props.get(name)+ ">");
+                    part.setMessage(n + "\t" + "<" + (String) props.get(name) + ">");
                     logLevelMap.put(n, props.get(name)); //Needed for REST xml and JSON output
                     loggerList.add(n); //Needed for REST xml and JSON output                    
                 }

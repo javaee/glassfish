@@ -42,6 +42,7 @@ package com.sun.enterprise.glassfish.bootstrap;
 
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.bootstrap.Main;
+import com.sun.enterprise.module.bootstrap.Which;
 import com.sun.enterprise.module.common_impl.AbstractFactory;
 import org.glassfish.embeddable.BootstrapProperties;
 import org.glassfish.embeddable.GlassFishException;
@@ -53,6 +54,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.embeddable.spi.RuntimeBuilder;
@@ -71,11 +73,14 @@ public class StaticGlassFishRuntimeBuilder implements RuntimeBuilder {
         // The classloades should contain installRoot/modules/**/*.jar files.
         String installRoot = getInstallRoot(bsProps);
         if (installRoot != null) {
-            System.setProperty(BootstrapProperties.INSTALL_ROOT_PROP_NAME, installRoot);
+            System.setProperty("org.glassfish.embeddable.installRoot", installRoot);
         }
         // Required to add moduleJarURLs to support 'java -jar modules/glassfish.jar case'
         List<URL> moduleJarURLs = getModuleJarURLs(installRoot);
-        ClassLoader cl = new StaticClassLoader(getClass().getClassLoader(), moduleJarURLs);
+        ClassLoader cl = getClass().getClassLoader();
+        if (!moduleJarURLs.isEmpty()) {
+            cl = new StaticClassLoader(getClass().getClassLoader(), moduleJarURLs);
+        }
 
         // Step 2. Setup the module subsystem.
         Main main = new EmbeddedMain();
@@ -92,8 +97,8 @@ public class StaticGlassFishRuntimeBuilder implements RuntimeBuilder {
     }
 
     public boolean handles(BootstrapProperties bsProps) {
-        return bsProps.getPlatform() == null || BootstrapProperties.Platform.Static
-                .name().equals(bsProps.getPlatform());
+        String platform = bsProps.getProperty(Constants.PLATFORM_PROPERTY_KEY);
+        return platform == null || Constants.Platform.Static.toString().equalsIgnoreCase(platform);
     }
 
     private String getInstallRoot(BootstrapProperties props) {
@@ -115,6 +120,18 @@ public class StaticGlassFishRuntimeBuilder implements RuntimeBuilder {
         if(installRoot == null) {
             return new ArrayList();
         }
+        try {
+            // When running off the uber jar don't add extras module URLs to classpath.
+            JarFile jarfile = new JarFile(Which.jarFile(getClass()));
+            String mainClassName = jarfile.getManifest().
+                    getMainAttributes().getValue("Main-Class");
+            if(UberMain.class.getName().equals(mainClassName)) {
+                return new ArrayList();
+            }
+        } catch (Exception ex) {
+            logger.warning(ex.getMessage());
+        }
+        
         File modulesDir = new File(installRoot, "modules/");
         final File autostartModulesDir = new File(modulesDir, "autostart/");
         final List<URL> moduleJarURLs = new ArrayList<URL>();

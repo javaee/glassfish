@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,17 +39,16 @@
  */
 
 /**
-    Specific AMX MBean proxy interfaces for config MBeans (domain.xml elements).  These interfaces
-    offer for the convenience of using more specialized proxies as created by {@link ProxyFactory},
-    but {@link AMXConfigProxy} can be used generically for all config MBeans.
-    @see AMXProxy
-    @see AMXConfigProxy
+ Specific AMX MBean proxy interfaces for config MBeans (domain.xml elements).  These interfaces
+ offer for the convenience of using more specialized proxies as created by {@link ProxyFactory},
+ but {@link AMXConfigProxy} can be used generically for all config MBeans.
+ @see AMXProxy
+ @see AMXConfigProxy
  */
-@Taxonomy(stability = Stability.UNCOMMITTED)
-package org.glassfish.admin.amx.intf.config;
+@Taxonomy(stability = Stability.UNCOMMITTED) package org.glassfish.admin.amx.intf.config;
 
-import org.glassfish.external.arc.Taxonomy;
 import org.glassfish.external.arc.Stability;
+import org.glassfish.external.arc.Taxonomy;
 
 
 

@@ -40,12 +40,13 @@
 
 package com.sun.enterprise.universal.io;
 
-import com.sun.enterprise.universal.StringUtils;
-import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
 import java.io.*;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.universal.glassfish.GFLauncherUtils;
 
 /**
  * A class for sanitizing Files.
@@ -185,61 +186,38 @@ public class SmartFile {
     private void convertNix(String oldPath) {
         // guarantee -- the beginning will not have "." or ".." 
         // (because of getAbsolutePath()...)
-        String[] elemsArray = oldPath.split(SLASH);
-        List<String> elems = new ArrayList<String>();
+        char[] p = oldPath.toCharArray();
 
-        for (String s : elemsArray) {
-            elems.add(s);
-        }
-
-        path = SLASH;
-
-        // remove empty elems
-        for (Iterator<String> it = elems.iterator(); it.hasNext();) {
-            String elem = it.next();
-            if (elem.length() <= 0) {
-                it.remove();
+        int from, to;
+        for (from = 0, to = 0; from < p.length; from++) {
+            if (p[from] == '/' &&
+                ((from + 3 < p.length &&
+                  p[from+1] == '.' && p[from+2] == '.' && p[from+3] == '/') ||
+                 (from + 3 == p.length &&
+                  p[from+1] == '.' && p[from+2] == '.'))) {
+                // remove the previous directory due to /../
+                while (to > 0 && p[--to] != '/');
+                from += 2;
+            }
+            else if (p[from] == '/' &&
+                    ((from + 2 < p.length &&
+                      p[from+1] == '.' && p[from+2] == '/') ||
+                     (from + 2 == p.length &&
+                      p[from+1] == '.'))) {
+                // skip over /./
+                from += 1;
+            }
+            else {
+                p[to++] = p[from];
             }
         }
-
-        // replace dots
-
-        while (hasDots(elems)) {
-            for (int i = 0; i < elems.size(); i++) {
-                String elem = elems.get(i);
-
-                if (elem.equals(".")) {
-                    elems.remove(i);
-                    break;
-                }
-                else if (elem.equals("..")) {
-                    elems.remove(i);
-
-                    if (i <= 0) // ignore leading ".."
-                        break;
-
-                    elems.remove(i - 1);
-                    break;
-                }
-            }
-        }
-
-        // now all the dots are gone.
-        for (String s : elems) {
-            path += s + SLASH;
-        }
-        // get rid of trailing slash
-        if (path.length() > 1)
-            path = path.substring(0, path.length() - 1);
-    }
-
-    private boolean hasDots(List<String> elems) {
-        return elems.contains(".") || elems.contains("..");
+        if (to > 0 && p[to-1] == '/') to -= 1;
+        path = new String(p, 0, to);
     }
 
     private static boolean ok(String s) {
         return s != null && s.length() > 0;
     }
+
     private String path;
-    private static final String SLASH = "/";
 }

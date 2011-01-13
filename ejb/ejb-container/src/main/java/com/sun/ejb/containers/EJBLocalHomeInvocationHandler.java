@@ -47,6 +47,8 @@ import com.sun.ejb.containers.util.MethodMap;
 import com.sun.ejb.spi.io.IndirectlySerializable;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.EjbSessionDescriptor;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.Utility;
 
 import javax.ejb.EJBException;
 import javax.ejb.EJBLocalHome;
@@ -66,6 +68,9 @@ final class EJBLocalHomeInvocationHandler
 
     private static final Logger logger =
             EjbContainerUtilImpl.getInstance().getLogger();
+
+    private static LocalStringManagerImpl localStrings =
+        new LocalStringManagerImpl(EJBLocalHomeInvocationHandler.class);
 
     private boolean isStatelessSession_;
     private boolean isEntity_;
@@ -119,10 +124,24 @@ final class EJBLocalHomeInvocationHandler
     public Object invoke(Object proxy, Method method, Object[] args) 
         throws Throwable {
 
+        ClassLoader originalClassLoader = null;
+
         // NOTE : be careful with "args" parameter.  It is null
         //        if method signature has 0 arguments.
         try {
         ((BaseContainer) getContainer()).onEnteringContainer();
+
+            // In some cases(e.g. CDI + OSGi combination) ClassLoader
+            // is accessed from the current Thread. In those cases we need to set
+            // the context classloader to the application's classloader before
+            // proceeding. Otherwise, the context classloader could still
+            // reflect the caller's class loader.
+
+            if( Thread.currentThread().getContextClassLoader() !=
+                getContainer().getClassLoader() ) {
+                originalClassLoader = Utility.setContextClassLoader
+                    (getContainer().getClassLoader());
+            }
 
         Class methodClass = method.getDeclaringClass();
 
@@ -177,10 +196,8 @@ final class EJBLocalHomeInvocationHandler
                 Object [] params = new Object[] 
                     { invInfo.ejbName, "LocalHome", 
                       invInfo.method.toString() };
-                /*TODO String errorMsg = localStrings.getLocalString
-                    ("ejb.bean_class_method_not_found;, "", params);
-                */
-                String errorMsg = "ejb.bean_class_method_not_found";                                  
+                String errorMsg = localStrings.getLocalString
+                    ("ejb.bean_class_method_not_found", "", params);
                 throw new EJBException(errorMsg);
             }
 
@@ -250,6 +267,10 @@ final class EJBLocalHomeInvocationHandler
 
         return returnValue;
         } finally {
+            if( originalClassLoader != null ) {
+                Utility.setContextClassLoader(originalClassLoader);
+            }
+
             ((BaseContainer) getContainer()).onLeavingContainer();
         }
     }

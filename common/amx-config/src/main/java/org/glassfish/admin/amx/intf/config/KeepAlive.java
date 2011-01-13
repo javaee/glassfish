@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,24 +42,20 @@ package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.base.Singleton;
 
-/**
-Configuration for the &lt;keep-alive&gt; element.
- */
-public interface KeepAlive extends ConfigElement, Singleton
-{    
-    public String getMaxConnections();
+public interface KeepAlive
+        extends Singleton, ConfigElement {
 
-    public void setMaxConnections(final String value);
 
-    
-    public String getThreadCount();
-
-    public void setThreadCount(final String value);
-
-    
     public String getTimeoutInSeconds();
 
-    public void setTimeoutInSeconds(final String value);
+    public void setTimeoutInSeconds(String param1);
+
+    public String getMaxConnections();
+
+    public void setMaxConnections(String param1);
+
+    public String getThreadCount();
+
+    public void setThreadCount(String param1);
+
 }
-
-

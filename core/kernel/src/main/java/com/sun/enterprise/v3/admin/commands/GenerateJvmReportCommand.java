@@ -46,12 +46,17 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.CommandLock;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
 
 import javax.management.MBeanServer;
 import java.lang.management.ManagementFactory;
+import org.glassfish.api.admin.ExecuteOn;
+import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 
 /** Implements the front end for generating the JVM report. Sends back a String
  * to the asadmin console based on server's locale.
@@ -60,17 +65,20 @@ import java.lang.management.ManagementFactory;
  */
 @Service(name="generate-jvm-report")
 @Scoped(PerLookup.class)
+@CommandLock(CommandLock.LockType.NONE)
 @I18n("generate.jvm.report")
+@TargetType({CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTERED_INSTANCE})
+@ExecuteOn(RuntimeType.INSTANCE)
 public class GenerateJvmReportCommand implements AdminCommand {
     
-    @Param(name="target", optional=true) // default is DAS, TODO
+    @Param(name="target", optional=true) 
     String target;
     
-    @Param(name="type", optional=true, defaultValue="summary", acceptableValues = "summary, thread, class, memory, log") //default is "summary"
+    @Param(name="type", optional=true, defaultValue="summary",
+           acceptableValues = "summary, thread, class, memory, log")
     String type;
     
     private MBeanServer mbs = null;  //needs to be injected, I guess
-    private JVMInformation jvmi = null;
 
     public void execute(AdminCommandContext ctx) {
         prepare();
@@ -81,21 +89,19 @@ public class GenerateJvmReportCommand implements AdminCommand {
     }
     
     private synchronized void prepare() {
-        mbs = ManagementFactory.getPlatformMBeanServer(); //TODO
-        if (jvmi == null)
-            jvmi = new JVMInformation(mbs);
+        mbs = ManagementFactory.getPlatformMBeanServer();
     }
     private String getResult() {
-        if ("summary".equals(type))
-            return (jvmi.getSummary(target));
-        else if("thread".equals(type))
-            return jvmi.getThreadDump(target);
-        else if ("class".equals(type))
-            return jvmi.getClassInformation(target);
-        else if("memory".equals(type))
-            return jvmi.getMemoryInformation(target);
-        else if ("log".equals(type))
-            return jvmi.getLogInformation(target);
+        if (type.equals("summary"))
+            return new SummaryReporter(mbs).getSummaryReport();
+        else if (type.equals("thread"))
+            return new ThreadMonitor(mbs).getThreadDump();
+        else if (type.equals("class"))
+            return new ClassReporter(mbs).getClassReport();
+        else if (type.equals("memory"))
+            return new MemoryReporter(mbs).getMemoryReport();
+        else if (type.equals("log"))
+            return new LogReporter().getLoggingReport();
         else
             throw new IllegalArgumentException("Unsupported Option: " + type);   //this should not happen
     }

@@ -46,9 +46,10 @@ public class SystemPropertyConstants
 {
 
     /**
-     * Field used by Monitoring to encode a forward slash
+     * Field used by Monitoring to encode a forward slash and/or dot
      */
     public static final String SLASH = "___SLASH___";
+    public static final String MONDOT = "___MONDOT___";
 
     /**
      * Field
@@ -102,6 +103,7 @@ public class SystemPropertyConstants
      * Field 
      */
     public static final String JAVA_ROOT_PROPERTY = "com.sun.aas.javaRoot";
+    public static final String JAVA_ROOT_PROPERTY_ASENV = "com.sun.aas.javaRoot.asenv";
 
     /**
      * Field 
@@ -209,6 +211,7 @@ public class SystemPropertyConstants
     public static final String DEFAULT_SERVER_INSTANCE_NAME = "server";
 
     public static final String DAS_SERVER_NAME = "server";
+    public static final String DAS_SERVER_CONFIG = "server-config";
 
     public static final String JDMK_HOME_PROPERTY="com.sun.aas.jdmkHome";
     

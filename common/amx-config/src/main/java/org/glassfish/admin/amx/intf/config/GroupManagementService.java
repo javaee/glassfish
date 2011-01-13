@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,51 +42,40 @@ package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.core.AMXProxy;
 
-/**
- * Configuration for the &lt;group-management-service&gt; for a &lt;config&gt; in
- * a domain. This element controls the behavior of the group management service
- * used for cluster monitoring and failure detection.
- * @since Appserver 9.0
- */
 public interface GroupManagementService
-        extends AMXProxy, ConfigElement, PropertiesAccess
-{
-    /** Return the FD protocol tries.
-     *  This is the maximum number of attempts to try before GMS confirms that a  
-     *  failure is suspected in the group.
-     *  @return positive integer specifying the number of such attempts
-     */
-    
+        extends AMXProxy, ConfigElement, PropertiesAccess {
+
+
     public String getFdProtocolMaxTries();
 
-    /** Set the FD protocol tries to the specified positive integer value.
-     * Must be a positive integer.
-     * @param tries a positive integer specifying the number of attempts
-     */
-    public void setFdProtocolMaxTries(final String tries);
+    public void setFdProtocolMaxTries(String param1);
 
-    
     public String getFdProtocolTimeoutInMillis();
 
-    public void setFdProtocolTimeoutInMillis(final String duration);
+    public void setFdProtocolTimeoutInMillis(String param1);
 
-    
     public String getMergeProtocolMaxIntervalInMillis();
 
-    public void setMergeProtocolMaxIntervalInMillis(final String duration);
+    public void setMergeProtocolMaxIntervalInMillis(String param1);
 
-    
     public String getMergeProtocolMinIntervalInMillis();
 
-    public void setMergeProtocolMinIntervalInMillis(final String duration);
+    public void setMergeProtocolMinIntervalInMillis(String param1);
 
-    
     public String getPingProtocolTimeoutInMillis();
 
-    public void setPingProtocolTimeoutInMillis(final String duration);
+    public void setPingProtocolTimeoutInMillis(String param1);
 
-    
     public String getVsProtocolTimeoutInMillis();
 
-    public void setVsProtocolTimeoutInMillis(final String duration);
+    public void setVsProtocolTimeoutInMillis(String param1);
+
+    public FailureDetection getFailureDetection();
+
+    public void setFailureDetection(FailureDetection param1);
+
+    public String getGroupDiscoveryTimeoutInMillis();
+
+    public void setGroupDiscoveryTimeoutInMillis(String param1);
+
 }

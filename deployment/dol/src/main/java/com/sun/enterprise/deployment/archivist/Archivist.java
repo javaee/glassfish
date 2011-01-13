@@ -63,7 +63,7 @@ import org.glassfish.api.deployment.archive.Archive;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.deployment.common.InstalledLibrariesResolver;
-import org.glassfish.hk2.classmodel.reflect.Parser;
+import org.glassfish.hk2.classmodel.reflect.*;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.component.ComponentException;
@@ -73,6 +73,7 @@ import org.xml.sax.SAXParseException;
 import javax.enterprise.deploy.shared.ModuleType;
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.*;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.JarInputStream;
@@ -148,6 +149,8 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
     private static final boolean processAnnotationForOldDD =
             Boolean.getBoolean(PROCESS_ANNOTATION_FOR_OLD_DD); 
     
+    private static ExecutorService executorService = null;
+
     protected T descriptor;
 
     @Inject
@@ -315,9 +318,11 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
      *
      * @param descriptor the deployment descriptor for the module
      * @param archive the module archive
+     * @param extensions map of extension archivists
      */
-    protected void postStandardDDsRead(T descriptor,
-                                       ReadableArchive archive) throws IOException {
+    protected void postStandardDDsRead(T descriptor, ReadableArchive archive,
+                Map<ExtensionsArchivist, RootDeploymentDescriptor> extensions)
+                throws IOException {
     }
 
     /**
@@ -398,7 +403,7 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
             }
         }
 
-        postStandardDDsRead(descriptor, contentArchive);
+        postStandardDDsRead(descriptor, contentArchive, extensions);
 
         readAnnotations(contentArchive, descriptor, extensions);
         postAnnotationProcess(descriptor, contentArchive);
@@ -549,6 +554,12 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
         } else {
             parser = archive.getExtraData(Parser.class);
         }
+
+        if (parser == null) {
+            ParsingContext parsingContext = new ParsingContext.Builder().logger(logger).executorService(getExecutorService()).build();
+            parser = new Parser(parsingContext);
+        }
+
         scanner.process(archive, bundleDesc, classLoader, parser);
 
         if (!scanner.getElements().isEmpty()) {
@@ -654,6 +665,24 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
      */
     public void readRuntimeDeploymentDescriptor(ReadableArchive archive, T descriptor)
             throws IOException, SAXParseException {
+        readRuntimeDeploymentDescriptor(archive, descriptor, true);
+    }
+
+    /**
+     * Read the runtime deployment descriptors (can contained in one or
+     * many file) set the corresponding information in the passed descriptor.
+     * By default, the runtime deployment descriptors are all contained in
+     * the xml file characterized with the path returned by
+     *
+     * @param archive the archive
+     * @param descriptor the initialized deployment descriptor
+     * @param warnIfMultipleDDs whether to log warnings if both the GlassFish and the legacy Sun descriptors are present
+     * @link getRuntimeDeploymentDescriptorPath
+     */
+    public void readRuntimeDeploymentDescriptor(ReadableArchive archive, T descriptor,
+            final boolean warnIfMultipleDDs)
+            throws IOException, SAXParseException {
+
 
         String ddFileEntryName = getRuntimeDeploymentDescriptorPath();
         // if we are not supposed to handle runtime info, just pass
@@ -677,7 +706,7 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
             }
 
             if (is != null && confDD != null) {
-                if (is2 != null) {
+                if (is2 != null && warnIfMultipleDDs) {
                     logger.log(Level.WARNING, "gf.counterpart.configdd.exists",
                         new Object[] {
                         sunConfDD.getDeploymentDescriptorPath(),
@@ -969,16 +998,16 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
                 out.closeEntry();
             }
 
-            // Legacy Sun Runtime DDs
-            DeploymentDescriptorFile sunConfDD = getSunConfigurationDDFile();
-            if (sunConfDD != null) {
-                OutputStream os = out.putNextEntry(
-                        sunConfDD.getDeploymentDescriptorPath());
-                sunConfDD.write(desc, os);
-                out.closeEntry();
+                // Legacy Sun Runtime DDs
+                DeploymentDescriptorFile sunConfDD = getSunConfigurationDDFile();
+                if (sunConfDD != null) {
+                    OutputStream os = out.putNextEntry(
+                            sunConfDD.getDeploymentDescriptorPath());
+                    sunConfDD.write(desc, os);
+                    out.closeEntry();
+                }
             }
         }
-    }
 
     /**
      * writes the WL runtime deployment descriptors to an abstract archive
@@ -1911,5 +1940,23 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
         // 1. It is not a full deployment descriptor
         // 2. It is called through dynamic deployment
         return (!isFull && annotationProcessingRequested && classLoader != null);
+    }
+
+    protected synchronized ExecutorService getExecutorService() {
+        if (executorService != null) {
+            return executorService;
+        }
+        Runtime runtime = Runtime.getRuntime();
+        int nrOfProcessors = runtime.availableProcessors();
+        executorService = Executors.newFixedThreadPool(nrOfProcessors, new ThreadFactory() {
+            @Override
+            public Thread newThread(Runnable r) {
+                Thread t = new Thread(r);
+                t.setName("dol-jar-scanner");
+                t.setDaemon(true);
+                return t;
+            }
+        });
+        return executorService;
     }
 }

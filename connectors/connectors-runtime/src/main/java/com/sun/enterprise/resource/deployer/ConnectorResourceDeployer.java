@@ -40,6 +40,7 @@
 
 package com.sun.enterprise.resource.deployer;
 
+import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import org.glassfish.resource.common.PoolInfo;
@@ -80,7 +81,7 @@ public class ConnectorResourceDeployer implements ResourceDeployer {
         ConnectorResource domainResource = (ConnectorResource) resource;
         ResourceInfo resourceInfo = new ResourceInfo(domainResource.getJndiName(), applicationName, moduleName);
         PoolInfo poolInfo = new PoolInfo(domainResource.getPoolName(), applicationName, moduleName);
-        createConnectorResource(resourceInfo, poolInfo);
+        createConnectorResource(domainResource, resourceInfo, poolInfo);
     }
     
     /**
@@ -93,18 +94,25 @@ public class ConnectorResourceDeployer implements ResourceDeployer {
         String poolName = domainResource.getPoolName();
         ResourceInfo resourceInfo = ConnectorsUtil.getResourceInfo(domainResource);
         PoolInfo poolInfo = new PoolInfo(poolName, resourceInfo.getApplicationName(), resourceInfo.getModuleName());
-        createConnectorResource(resourceInfo, poolInfo);
+        createConnectorResource(domainResource, resourceInfo, poolInfo);
     }
 
-    private void createConnectorResource(ResourceInfo resourceInfo, PoolInfo poolInfo) throws ConnectorRuntimeException {
-        if(_logger.isLoggable(Level.FINE)) {
-            _logger.log(Level.FINE, "Calling backend to add connector resource",
-                    resourceInfo);
-        }
-        runtime.createConnectorResource(resourceInfo, poolInfo, null);
-        if(_logger.isLoggable(Level.FINE)) {
-            _logger.log(Level.FINE, "Added connector resource in backend",
-                    resourceInfo);
+    private void createConnectorResource(ConnectorResource connectorResource, ResourceInfo resourceInfo,
+                                         PoolInfo poolInfo) throws ConnectorRuntimeException {
+        if (ResourcesUtil.createInstance().isEnabled(connectorResource, resourceInfo)){
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "Calling backend to add connector resource",
+                        resourceInfo);
+            }
+            runtime.createConnectorResource(resourceInfo, poolInfo, null);
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "Added connector resource in backend",
+                        resourceInfo);
+            }
+        } else {
+            _logger.log(Level.INFO, "core.resource_disabled",
+                    new Object[]{connectorResource.getJndiName(), ConnectorConstants.RES_TYPE_CR});
+
         }
     }
 

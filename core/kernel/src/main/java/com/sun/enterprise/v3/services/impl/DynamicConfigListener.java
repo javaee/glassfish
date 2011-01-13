@@ -37,10 +37,18 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.v3.services.impl;
 
+import com.sun.enterprise.config.serverbeans.Config;
 import java.beans.PropertyChangeEvent;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -81,25 +89,20 @@ import org.glassfish.grizzly.impl.SafeFutureImpl;
 public class DynamicConfigListener implements ConfigListener {
     private static final String ADMIN_LISTENER = "admin-listener";
     private GrizzlyService grizzlyService;
-
+    private String config;
     private final Logger logger;
-
     private static final int RECONFIG_LOCK_TIMEOUT_SEC = 30;
     private static final ReentrantLock reconfigLock = new ReentrantLock();
     private static final Map<Integer, FutureImpl> reconfigByPortLock =
             new HashMap<Integer, FutureImpl>();
 
-    public DynamicConfigListener() {
-        this(Grizzly.logger(DynamicConfigListener.class));
-    }
-
-    public DynamicConfigListener(Logger logger) {
+    public DynamicConfigListener(final Config parent, final Logger logger) {
+        config = findConfigName(parent);
         this.logger = logger;
     }
 
     @Override
     public UnprocessedChangeEvents changed(final PropertyChangeEvent[] events) {
-
         return ConfigSupport.sortAndDispatch(
             events, new Changed() {
                 @Override
@@ -120,21 +123,19 @@ public class DynamicConfigListener implements ConfigListener {
                     } else if (t instanceof Protocol) {
                         return processProtocol(type, (Protocol) t, null);
                     } else if (t instanceof ThreadPool) {
-                        ThreadPool pool = (ThreadPool) t;
                         NotProcessed notProcessed = null;
-                        for (NetworkListener listener : pool.findNetworkListeners()) {
+                        for (NetworkListener listener : ((ThreadPool) t).findNetworkListeners()) {
                             notProcessed = processNetworkListener(type, listener, null);
                         }
                         return notProcessed;
                     } else if (t instanceof Transport) {
-                        Transport transport = (Transport) t;
                         NotProcessed notProcessed = null;
-                        for (NetworkListener listener : transport.findNetworkListeners()) {
+                        for (NetworkListener listener : ((Transport) t).findNetworkListeners()) {
                             notProcessed = processNetworkListener(type, listener, null);
                         }
                         return notProcessed;
-                    } else if (t instanceof VirtualServer && !grizzlyService.hasMapperUpdateListener()){
-                        return processVirtualServer(type, (VirtualServer)t);
+                    } else if (t instanceof VirtualServer && !grizzlyService.hasMapperUpdateListener()) {
+                        return processVirtualServer(type, (VirtualServer) t);
                     }
                     return null;
                 }
@@ -143,56 +144,70 @@ public class DynamicConfigListener implements ConfigListener {
 
     private <T extends ConfigBeanProxy> NotProcessed processNetworkListener(Changed.TYPE type,
         NetworkListener listener, PropertyChangeEvent[] changedProperties) {
-        boolean isAdminListener = ADMIN_LISTENER.equals(listener.getName());
 
-        Lock portLock = null;
-        try {
-            portLock = acquirePortLock(listener);
-
-            if (type == Changed.TYPE.ADD) {
-                final Future future = grizzlyService.createNetworkProxy(listener);
-                future.get(RECONFIG_LOCK_TIMEOUT_SEC, TimeUnit.SECONDS);
-                grizzlyService.registerNetworkProxy();
-            } else if (type == Changed.TYPE.REMOVE) {
-                if (!isAdminListener) {
-                    grizzlyService.removeNetworkProxy(listener);
-                }
-            } else if (type == Changed.TYPE.CHANGE) {
-                if (isAdminListener) {
-                    final boolean dynamic = isAdminDynamic(changedProperties);
-                    if (dynamic) {
-                        GrizzlyProxy proxy = (GrizzlyProxy) grizzlyService.lookupNetworkProxy(listener);
-                        if (proxy != null) {
-                            final GrizzlyListener netListener = proxy.getUnderlyingListener();
-                            netListener.processDynamicConfigurationChange(changedProperties);
-                            return null;
-                        }
+        if (findConfigName(listener).equals(config)) {
+            boolean isAdminListener = ADMIN_LISTENER.equals(listener.getName());
+            Lock portLock = null;
+            try {
+                portLock = acquirePortLock(listener);
+                if (type == Changed.TYPE.ADD) {
+                    final int[] ports = portLock.getPorts();
+                    if (isAdminListener && ports[ports.length - 1] == -1) {
+                        return null;
                     }
-                    return null;
-                }
-                // Restart GrizzlyProxy on the address/port
-                // Address/port/id could have been changed - so try to find
-                // corresponding proxy both ways
-                if (!grizzlyService.removeNetworkProxy(listener)) {
-                    grizzlyService.removeNetworkProxy(listener.getName());
-                }
-                final Future future = grizzlyService.createNetworkProxy(listener);
-                if (future != null) {
-                    future.get(30, TimeUnit.SECONDS);
+                    final Future future = grizzlyService.createNetworkProxy(listener);
+                    future.get(RECONFIG_LOCK_TIMEOUT_SEC, TimeUnit.SECONDS);
                     grizzlyService.registerNetworkProxy();
-                } else {
-                    logger.log(Level.FINE, "Skipping proxy registration for the listener {0}",
-                            listener.getName());
+                } else if (type == Changed.TYPE.REMOVE) {
+                    if (!isAdminListener) {
+                        grizzlyService.removeNetworkProxy(listener);
+                    }
+                } else if (type == Changed.TYPE.CHANGE) {
+                    if (isAdminListener) {
+                        final boolean dynamic = isAdminDynamic(changedProperties);
+                        if (dynamic) {
+                            GrizzlyProxy proxy = (GrizzlyProxy) grizzlyService.lookupNetworkProxy(listener);
+                            if (proxy != null) {
+                                GrizzlyListener netListener = proxy.getUnderlyingListener();
+                                netListener.processDynamicConfigurationChange(
+                                        grizzlyService.getHabitat(), changedProperties);
+                                return null;
+                            }
+                        }
+                        return null;
+                    }
+                    // Restart GrizzlyProxy on the address/port
+                    // Address/port/id could have been changed - so try to find
+                    // corresponding proxy both ways
+                    if (!grizzlyService.removeNetworkProxy(listener)) {
+                        grizzlyService.removeNetworkProxy(listener.getName());
+                    }
+                    final Future future = grizzlyService.createNetworkProxy(listener);
+                    if (future != null) {
+                        future.get(30, TimeUnit.SECONDS);
+                        grizzlyService.registerNetworkProxy();
+                    } else {
+                        logger.log(Level.FINE, "Skipping proxy registration for the listener {0}",
+                                listener.getName());
+                    }
                 }
-            }
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Network listener configuration error. Type: " + type, e);
-        } finally {
-            if (portLock != null) {
-                releaseListenerLock(portLock);
+            } catch (Exception e) {
+                logger.log(Level.SEVERE, "Network listener configuration error. Type: " + type, e);
+            } finally {
+                if (portLock != null) {
+                    releaseListenerLock(portLock);
+                }
             }
         }
         return null;
+    }
+
+    private String findConfigName(final ConfigBeanProxy child) {
+        ConfigBeanProxy bean = child;
+        while(bean != null && ! (bean instanceof Config)) {
+            bean = bean.getParent();
+        }
+        return bean instanceof Config ? ((Config) bean).getName() : "";
     }
 
     private boolean isAdminDynamic(PropertyChangeEvent[] events) {
@@ -200,7 +215,7 @@ public class DynamicConfigListener implements ConfigListener {
             return false;
         }
         // for now, anything other than comet support will require a restart
-        for (PropertyChangeEvent e: events) {
+        for (PropertyChangeEvent e : events) {
             if ("comet-support-enabled".equals(e.getPropertyName())) {
                 return true;
             }
@@ -219,16 +234,17 @@ public class DynamicConfigListener implements ConfigListener {
     private NotProcessed processVirtualServer(Changed.TYPE type, VirtualServer vs) {
         NotProcessed notProcessed = null;
         String list = vs.getNetworkListeners();
-        for (String s: GrizzlyProxy.toArray(list,",")){
-            for(NetworkListener n: vs.findNetworkListeners()){
-                if (n.getName().equals(s)){
-                    notProcessed = processNetworkListener(type, n, null);
+        if (list != null) {
+            for (String s : GrizzlyProxy.toArray(list, ",")) {
+                for (NetworkListener n : vs.findNetworkListeners()) {
+                    if (s.equals(n.getName())) {
+                        notProcessed = processNetworkListener(type, n, null);
+                    }
                 }
             }
         }
         return notProcessed;
     }
-
 
     public void setGrizzlyService(GrizzlyService grizzlyService) {
         this.grizzlyService = grizzlyService;
@@ -243,21 +259,16 @@ public class DynamicConfigListener implements ConfigListener {
      */
     private Lock acquirePortLock(NetworkListener listener) throws InterruptedException, TimeoutException {
         final boolean isLoggingFinest = logger.isLoggable(Level.FINEST);
-        
         final int port = getPort(listener);
-
         try {
             while (true) {
                 logger.finest("Aquire reconfig lock");
                 if (reconfigLock.tryLock(RECONFIG_LOCK_TIMEOUT_SEC, TimeUnit.SECONDS)) {
-                    
                     Future lock = reconfigByPortLock.get(port);
-
                     if (isLoggingFinest) {
                         logger.log(Level.FINEST, "Reconfig lock for port: {0} is {1}",
                                 new Object[]{port, lock});
                     }
-
                     int proxyPort = -1;
                     if (lock == null) {
                         final NetworkProxy runningProxy = grizzlyService.lookupNetworkProxy(listener);
@@ -274,7 +285,6 @@ public class DynamicConfigListener implements ConfigListener {
                             }
                         }
                     }
-
                     if (lock != null) {
                         reconfigLock.unlock();
                         try {
@@ -289,12 +299,10 @@ public class DynamicConfigListener implements ConfigListener {
                             logger.log(Level.FINEST, "Set reconfig lock for ports: {0} and {1}: {2}",
                                     new Object[]{port, proxyPort, future});
                         }
-                        
                         reconfigByPortLock.put(port, future);
                         if (proxyPort != -1) {
                             reconfigByPortLock.put(proxyPort, future);
                         }
-
                         return new Lock(port, proxyPort);
                     }
                 } else {
@@ -310,28 +318,23 @@ public class DynamicConfigListener implements ConfigListener {
 
     private void releaseListenerLock(Lock lock) {
         final boolean isLoggingFinest = logger.isLoggable(Level.FINEST);
-
         reconfigLock.lock();
-
         try {
             final int[] ports = lock.getPorts();
-
             if (isLoggingFinest) {
                 logger.log(Level.FINEST, "Release reconfig lock for ports: {0}",
                         Arrays.toString(ports));
             }
-            
             FutureImpl future = null;
             for (int port : ports) {
                 if (port != -1) {
                     future = reconfigByPortLock.remove(port);
                 }
             }
-
             if (future != null) {
                 if (isLoggingFinest) {
-                    logger.log(Level.FINEST,
-                            "Release reconfig lock, set result: {0}", future);
+                    logger.log(Level.FINEST, "Release reconfig lock, set result: {0}",
+                            future);
                 }
                 future.result(new Result<Thread>(Thread.currentThread()));
             }
@@ -350,7 +353,6 @@ public class DynamicConfigListener implements ConfigListener {
                         listener.getPort());
             }
         }
-
         return listenerPort;
     }
 

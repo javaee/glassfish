@@ -53,7 +53,8 @@ import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.regex.Pattern;;
+import java.util.regex.Pattern;import javax.management.ObjectName;
+;
 import javax.management.Descriptor;
 import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanConstructorInfo;
@@ -217,6 +218,43 @@ public final class AMXValidator
         return filterAMX(theWorld);
     }
 
+    private boolean bypassTesting(ObjectName objectName) {
+        if(checkByType(objectName) || checkByJ2EEType(objectName)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean checkByType(ObjectName objectName) {
+        if(objectName.getKeyProperty("type") != null &&
+                 (objectName.getKeyProperty("type").equals("Mapper") ||
+                 objectName.getKeyProperty("type").equals("Connector") ||
+                 objectName.getKeyProperty("type").equals("Manager") ||
+                 
+                 objectName.getKeyProperty("type").equals("Engine") ||
+                 objectName.getKeyProperty("type").equals("ProtocolHandler") ||
+                 objectName.getKeyProperty("type").equals("Service") ||
+                 objectName.getKeyProperty("type").equals("Host") ||
+                 objectName.getKeyProperty("type").equals("Loader") ||
+                 objectName.getKeyProperty("type").equals("JspMonitor") ||
+                 objectName.getKeyProperty("type").equals("Valve"))) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean checkByJ2EEType(ObjectName objectName) {
+        if(objectName.getKeyProperty("j2eeType") != null && 
+                objectName.getKeyProperty("j2eeType").equals("WebModule") ||
+                objectName.getKeyProperty("j2eeType").equals("Servlet") ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
     private static final class IllegalClassException extends Exception
     {
         private final Class<?> mClass;
@@ -1269,6 +1307,9 @@ public final class AMXValidator
         // list them in order
         for (final ObjectName objectName : targets)
         {
+            /* if(bypassTesting(objectName)) {
+                continue;
+            } */
             progress( "AMXValidator.validate(), begin: " + objectName );
             final ProblemList problems = new ProblemList(objectName);
             AMXProxy     amx = null;

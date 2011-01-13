@@ -90,13 +90,22 @@ public class InstanceState {
                 return " running";
             }
         },
-        RESTART_REQUIRED{
+        RESTART_REQUIRED {
             public String getDescription() {
                 return "REQUIRES_RESTART";
             }
 
             public String getDisplayString() {
                 return " requires restart";
+            }
+        },
+        NEVER_STARTED {
+            public String getDescription() {
+                return "NEVER_STARTED";
+            }
+
+            public String getDisplayString() {
+                return " never started";
             }
         };
 
@@ -107,11 +116,17 @@ public class InstanceState {
         public String getDisplayString() {
             return "NONE";
         }
+
+        public static StateType makeStateType(String s) {
+            for (StateType st : StateType.values()) {
+                if (s.equals(st.getDescription())) return st;
+            }
+            return null;
+        }
     };
 
     private StateType currentState;
     private List<String> failedCommands;
-    private ExecutorService svc = Executors.newSingleThreadExecutor(new InstanceStateThreadFactory());
 
     public InstanceState(StateType st) {
         currentState = st;
@@ -131,23 +146,15 @@ public class InstanceState {
     }
 
     public void addFailedCommands(String cmd) {
+        if (currentState == StateType.NEVER_STARTED) {
+            // do not keep track of failed commands for instances that
+            // have never been started
+            return;
+        }
         failedCommands.add(cmd);
     }
 
     public void removeFailedCommands() {
         failedCommands.clear();
-    }
-
-    public Future<InstanceCommandResult> submitJob(InstanceCommand ice, InstanceCommandResult r) {
-        FutureTask<InstanceCommandResult> t = new FutureTask<InstanceCommandResult>((Runnable)ice, r);
-        return svc.submit(t, r);
-    }
-
-    private class InstanceStateThreadFactory implements ThreadFactory {
-        public Thread newThread(Runnable runnableObj) {
-            Thread t = new Thread(runnableObj);
-            t.setDaemon(true);
-            return t;
-        }
     }
 }

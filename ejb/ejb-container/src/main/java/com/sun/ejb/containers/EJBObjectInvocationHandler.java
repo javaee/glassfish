@@ -211,6 +211,10 @@ public final class EJBObjectInvocationHandler
                 inv.exception = t;
             } finally {
                 container.postInvoke(inv);
+                //purge ThreadLocals before the thread is returned to pool
+                if (container.getSecurityManager() != null) {
+                    container.getSecurityManager().resetPolicyContext();
+                }
             }
             
             if (inv.exception != null) {

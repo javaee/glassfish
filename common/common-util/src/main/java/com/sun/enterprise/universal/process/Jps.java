@@ -40,11 +40,13 @@
 
 package com.sun.enterprise.universal.process;
 
-import com.sun.enterprise.universal.StringUtils;
-import com.sun.enterprise.universal.io.SmartFile;
-import com.sun.enterprise.util.OS;
 import java.io.*;
 import java.util.*;
+
+import com.sun.enterprise.universal.io.SmartFile;
+import com.sun.enterprise.util.OS;
+
+import static com.sun.enterprise.util.StringUtils.ok;
 
 /**
  * Run a native process with jps
@@ -97,6 +99,7 @@ public class Jps {
                 return;
             }
             ProcessManager pm = new ProcessManager(jpsExe.getPath(), "-l");
+            pm.setEcho(false);
             pm.execute();
             String jpsOutput = pm.getStdout();
 
@@ -130,7 +133,7 @@ public class Jps {
     }
 
     private boolean isJps(String id) {
-        if (!StringUtils.ok(id)) {
+        if (!ok(id)) {
             return false;
         }
 

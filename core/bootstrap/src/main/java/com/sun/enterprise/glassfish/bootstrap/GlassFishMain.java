@@ -47,6 +47,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.Properties;
 
@@ -69,7 +70,7 @@ public class GlassFishMain {
         System.out.println("Launching GlassFish on " + platform + " platform");
 
         // Set the system property if downstream code wants to know about it
-        System.setProperty(BootstrapProperties.PLATFORM_PROPERTY_KEY, platform); // TODO(Sahoo): Why is this a system property?
+        System.setProperty(Constants.PLATFORM_PROPERTY_KEY, platform); // TODO(Sahoo): Why is this a system property?
 
         File installRoot = ASMainHelper.findInstallRoot();
 
@@ -84,12 +85,9 @@ public class GlassFishMain {
          * needs to locate OSGi framework factory using some class loader and that class loader must share same OSGi APIs
          * with the class loader of OSGiGlassFishRuntimeBuilder. Since we don't have the classpath for OSGi framework
          * until main method is called (note, we allow user to select what OSGi framework to use at runtime without
-         * requiring them to add any extra jar in system classpath), we can't assume that everything is correctly set up in
-         * system classpath. So, we create a single class loader which has GlassFishRuntime, OSGiGlassFishRuntimebuilder
-         * and OSGi framework jar in claspath. We use that class loader to load Launcher class which is used to load
-         * glassfishapi as well as implementation of glassfishapi and OSGi framework. This launcher class loader is also
-         * used as the parent class loader for underlying module system (be it HK2 or OSGi). In case of OSGi, using
-         * bootdelegation property or system package list to make sure only version of glassfishapi is loaded.
+         * requiring them to add any extra jar in system classpath), we can't assume that everything is correctly set up
+         * in system classpath. So, we create a class loader which can load GlassFishRuntime, OSGiGlassFishRuntimebuilder
+         * and OSGi framework classes.
          */
         final ClassLoader launcherCL = ASMainHelper.createLauncherCL(ctx,
                 ClassLoader.getSystemClassLoader().getParent());
@@ -147,9 +145,9 @@ public class GlassFishMain {
                             System.out.println("Syntax: deploy <options> file");
                             continue;
                         }
-                        final File file = new File(tokens[tokens.length -1]);
+                        final URI uri = URI.create(tokens[tokens.length -1]);
                         String[] params = Arrays.copyOfRange(tokens, 1, tokens.length-1);
-                        String name = deployer.deploy(file.toURI(), params);
+                        String name = deployer.deploy(uri, params);
                         System.out.println("Deployed = " + name);
                     } else if (command.startsWith("undeploy")) {
                         if (gf.getStatus() != GlassFish.Status.STARTED) {
@@ -202,9 +200,6 @@ public class GlassFishMain {
             Runtime.getRuntime().addShutdownHook(new Thread("GlassFish Shutdown Hook") {
                 public void run() {
                     try {
-                        if (gf != null) {
-                            gf.stop();
-                        }
                         gfr.shutdown();
                     }
                     catch (Exception ex) {

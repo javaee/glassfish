@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,55 +40,29 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-import java.util.Map;
 
-/**
-Represents an &lt;application-ref&gt; element
-found within a &lt;server&gt element.
- */
-public interface ApplicationRef extends Ref
-{
+public interface ApplicationRef
+        extends Ref {
 
-    /**
-    @return comma-delimited list of virtual servers
-     */
-    String getVirtualServers();
 
-    /**
-    See {@link #getVirtualServers}.
-     */
-    void setVirtualServers(final String virtualServers);
+    public String getRef();
 
-    /**
-    <b>EE only</b>
-    Return the String flag that causes any and all load-balancers using
-    this application to consider this application unavailable to
-    them. Defaults to unavailable (false).
-     */
-    
+    public String getEnabled();
+
+    public void setEnabled(String param1);
+
+    public String getVirtualServers();
+
+    public void setVirtualServers(String param1);
+
     public String getLbEnabled();
 
-    /**
-    <b>EE only</b>
-    Set the String flag that causes any and all load-balancers using
-    this application to consider this application unavailable to
-    them.
-     */
-    public void setLbEnabled(final String lbEnabled);
+    public void setLbEnabled(String param1);
 
-    /**
-    The time, in minutes, that it takes this application to reach
-    a quiescent state after having been disabled.
-    @since AppServer 9.0
-     */
-    
     public String getDisableTimeoutInMinutes();
 
-    /**
-    @see #getDisableTimeoutInMinutes
-    @since AppServer 9.0
-     */
-    public void setDisableTimeoutInMinutes(final String timeout);
+    public void setDisableTimeoutInMinutes(String param1);
+
+    public void setRef(String param1);
+
 }
-
-

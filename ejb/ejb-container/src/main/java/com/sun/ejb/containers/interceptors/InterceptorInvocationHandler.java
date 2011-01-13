@@ -163,4 +163,10 @@ public final class InterceptorInvocationHandler
         return returnValue;
 
     }
+
+    @Override
+    public String toString() {
+        return (targetInstance != null)? targetInstance.toString() : super.toString();
+    }
+
 }

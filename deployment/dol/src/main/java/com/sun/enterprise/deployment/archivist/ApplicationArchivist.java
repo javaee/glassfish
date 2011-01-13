@@ -250,27 +250,32 @@ public class ApplicationArchivist extends Archivist<Application>
             }
         }
  
+        // save the handleRuntimeInfo value first
+        boolean origHandleRuntimeInfo = handleRuntimeInfo;
+
         // read the modules standard deployment descriptors
         handleRuntimeInfo = false;
         if (!readModulesDescriptors(application, archive))
             return null;
 
         // now read the runtime deployment descriptors
-        handleRuntimeInfo = true;
-        readRuntimeDeploymentDescriptor(archive, application);
+        handleRuntimeInfo = origHandleRuntimeInfo;
+        
+        if (handleRuntimeInfo) {
+            readRuntimeDeploymentDescriptor(archive, application);
 
-        // read extensions runtime deployment descriptors if any
-        for (Map.Entry<ExtensionsArchivist, RootDeploymentDescriptor> extension : extensions.entrySet()) {
-            // after standard DD and annotations are processed, we should
-            // an extension descriptor now
-            if (extension.getValue() != null) {
-                extension.getKey().readRuntimeDeploymentDescriptor(this, archive, extension.getValue());
+            // read extensions runtime deployment descriptors if any
+            for (Map.Entry<ExtensionsArchivist, RootDeploymentDescriptor> extension : extensions.entrySet()) {
+                // after standard DD and annotations are processed, we should
+                // an extension descriptor now
+                if (extension.getValue() != null) {
+                    extension.getKey().readRuntimeDeploymentDescriptor(this, archive, extension.getValue());
+                }
             }
-        }
-
-        // validate...
-        if (classLoader!=null && isHandlingRuntimeInfo()) {
-            validate(null);
+            // validate...
+            if (classLoader!=null) {
+                validate(null);
+            }
         }
         return application;
     }
@@ -586,7 +591,7 @@ public class ApplicationArchivist extends Archivist<Application>
                         }
                     }
                 }
-                newArchivist.postStandardDDsRead(descriptor, embeddedArchive);
+                newArchivist.postStandardDDsRead(descriptor, embeddedArchive, extensions);
                 newArchivist.readAnnotations(embeddedArchive, descriptor, extensions);
                 newArchivist.postAnnotationProcess(descriptor, embeddedArchive);
                 newArchivist.postOpen(descriptor, embeddedArchive);

@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.v3.server;
 
 import com.sun.enterprise.config.serverbeans.Cluster;
@@ -46,6 +45,7 @@ import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.SystemProperty;
+import com.sun.enterprise.util.io.FileUtils;
 import java.io.*;
 import java.io.File;
 import java.util.Collections;
@@ -57,6 +57,7 @@ import com.sun.enterprise.universal.process.ProcessUtils;
 import com.sun.enterprise.util.net.NetUtils;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.appserv.server.util.Version;
+import com.sun.enterprise.universal.io.SmartFile;
 import java.io.PrintWriter;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.annotations.Inject;
@@ -82,14 +83,10 @@ public class SystemTasks implements Init, PostConstruct {
     // in embedded environment, JavaConfig is pointless, so make this optional
     @Inject(optional = true)
     JavaConfig javaConfig;
-   
-    @Inject(name= ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Server server;
-    
     @Inject
     Domain domain;
-
-    
     Logger _logger = Logger.getLogger(SystemTasks.class.getName());
 
     public void postConstruct() {
@@ -97,7 +94,7 @@ public class SystemTasks implements Init, PostConstruct {
         setSystemPropertiesFromEnv();
         setSystemPropertiesFromDomainXml();
         resolveJavaConfig();
-        _logger.fine( "SystemTasks: loaded server named: " + server.getName() );
+        _logger.fine("SystemTasks: loaded server named: " + server.getName());
     }
 
     private void setVersion() {
@@ -108,43 +105,33 @@ public class SystemTasks implements Init, PostConstruct {
      * write our Process ID to a file
      */
     public void writePidFile() {
-        Writer writer = null;
         File pidFile = null;
 
         try {
-            pidFile = getPidFile();
+            pidFile = SmartFile.sanitize(getPidFile());
+            File pidFileCopy = new File(pidFile.getPath() + ".prev");
             String pidString = getPidString();
-            writer = new PrintWriter(pidFile);
-            writer.write(pidString);
+            FileUtils.writeStringToFile(pidString, pidFile);
+            FileUtils.writeStringToFile(pidString, pidFileCopy);
         }
-        catch(PidException pe) {
+        catch (PidException pe) {
             _logger.warning(pe.getMessage());
         }
-        catch(Exception e) {
+        catch (Exception e) {
             _logger.warning(strings.get("internal_error", e));
         }
         finally {
-            if(writer != null) {
-                try {
-                    writer.flush();
-                    writer.close();
-                }
-                catch(Exception e) {
-                    //ignore
-                }
-                pidFile.setReadable(true);
-                pidFile.setWritable(true);
-                pidFile.deleteOnExit();
-            }
+            pidFile.deleteOnExit();
         }
     }
-
 
     /*
      * Here is where we make the change Post-TP2 to *not* use JVM System Properties
      */
     private void setSystemProperty(String name, String value) {
         System.setProperty(name, value);
+
+
     }
 
     private void setSystemPropertiesFromEnv() {
@@ -152,16 +139,24 @@ public class SystemTasks implements Init, PostConstruct {
         setSystemProperty(SystemPropertyConstants.JAVA_ROOT_PROPERTY, System.getProperty("java.home"));
 
         String hostname = "localhost";
+
+
         try {
             // canonical name checks to make sure host is proper
             hostname = NetUtils.getCanonicalHostName();
+
+
         }
         catch (Exception ex) {
             if (_logger != null)
                 _logger.log(Level.SEVERE, "cannot determine host name, will use localhost exclusively", ex);
+
+
         }
         if (_logger != null)
             setSystemProperty(SystemPropertyConstants.HOST_NAME_PROPERTY, hostname);
+
+
     }
 
     private void setSystemPropertiesFromDomainXml() {
@@ -177,17 +172,29 @@ public class SystemTasks implements Init, PostConstruct {
         List<SystemProperty> configSPList = getConfigSystemProperties();
         Cluster cluster = server.getCluster();
         List<SystemProperty> clusterSPList = null;
+
+
         if (cluster != null) {
             clusterSPList = cluster.getSystemProperty();
+
+
         }
         List<SystemProperty> serverSPList = server.getSystemProperty();
 
-        setSystemProperties(domainSPList);
-        setSystemProperties(configSPList);
+        setSystemProperties(
+                domainSPList);
+        setSystemProperties(
+                configSPList);
+
+
         if (clusterSPList != null) {
             setSystemProperties(clusterSPList);
+
+
         }
         setSystemProperties(serverSPList);
+
+
     }
 
     private List<SystemProperty> getConfigSystemProperties() {
@@ -197,28 +204,46 @@ public class SystemTasks implements Init, PostConstruct {
             List<Config> configsList = configs.getConfig();
             Config config = null;
 
+
+
             for (Config c : configsList) {
                 if (c.getName().equals(configName)) {
                     config = c;
+
+
                     break;
+
+
                 }
             }
-            return (List<SystemProperty>)  (config != null ? config.getSystemProperty() : Collections.emptyList());
+            return (List<SystemProperty>) (config != null ? config.getSystemProperty() : Collections.emptyList());
+
+
         }
-        catch(Exception e) {  //possible NPE if domain.xml has issues!
+        catch (Exception e) {  //possible NPE if domain.xml has issues!
             return Collections.emptyList();
+
+
         }
     }
 
     private void resolveJavaConfig() {
-        if(javaConfig!=null) {
+        if (javaConfig != null) {
             Pattern p = Pattern.compile("-D([^=]*)=(.*)");
+
+
             for (String jvmOption : javaConfig.getJvmOptions()) {
                 Matcher m = p.matcher(jvmOption);
+
+
                 if (m.matches()) {
                     setSystemProperty(m.group(1), TranslatedConfigView.getTranslatedValue(m.group(2)).toString());
+
+
                     if (_logger.isLoggable(Level.FINE)) {
                         _logger.fine("Setting " + m.group(1) + " = " + TranslatedConfigView.getTranslatedValue(m.group(2)));
+
+
                     }
                 }
             }
@@ -229,50 +254,79 @@ public class SystemTasks implements Init, PostConstruct {
         for (SystemProperty sp : spList) {
             String name = sp.getName();
             String value = sp.getValue();
-            if(ok(name)) {
-                setSystemProperty(name,value);
+
+
+            if (ok(name)) {
+                setSystemProperty(name, value);
+
+
             }
         }
     }
+
     private String getPidString() {
         return "" + ProcessUtils.getPid();
+
+
     }
 
-    private File getPidFile() throws PidException{
+    private File getPidFile() throws PidException {
         try {
             String configDirString = System.getProperty(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY);
 
-            if(!ok(configDirString))
+
+
+            if (!ok(configDirString))
                 throw new PidException(strings.get("internal_error",
-                        "Null or empty value for the System Property: " +
-                        SystemPropertyConstants.INSTANCE_ROOT_PROPERTY));
+                        "Null or empty value for the System Property: "
+                        + SystemPropertyConstants.INSTANCE_ROOT_PROPERTY));
 
             File configDir = new File(new File(configDirString), "config");
 
-            if(!configDir.isDirectory())
+
+
+            if (!configDir.isDirectory())
                 throw new PidException(strings.get("bad_config_dir", configDir));
 
             File pidFile = new File(configDir, "pid");
 
-            if(pidFile.exists()) {
+
+
+            if (pidFile.exists()) {
                 pidFile.delete();
 
-                if(pidFile.exists()) {
+
+
+                if (pidFile.exists()) {
                     throw new PidException(strings.get("cant_delete_pid_file", pidFile));
+
+
                 }
             }
             return pidFile;
+
+
         }
-        catch(PidException pe) {
+        catch (PidException pe) {
             throw pe;
+
+
         }
-        catch(Exception e) {
+        catch (Exception e) {
             throw new PidException(e.getMessage());
+
+
         }
     }
 
     private static boolean ok(String s) {
         return s != null && s.length() > 0;
+
+
+
+
+
+
     }
 
     private static class PidException extends Exception {
@@ -283,4 +337,3 @@ public class SystemTasks implements Init, PostConstruct {
     }
     private final static LocalStringsImpl strings = new LocalStringsImpl(SystemTasks.class);
 }
-

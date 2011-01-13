@@ -45,7 +45,7 @@ import org.glassfish.api.naming.GlassfishNamingManager;
 import org.jvnet.hk2.component.Habitat;
 
 import javax.naming.NamingException;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -55,25 +55,26 @@ import java.util.ArrayList;
  */
 public class NamedNamingObjectManager {
 
-    private static AtomicBoolean gotAllNamedProxies
-            = new AtomicBoolean(false);
+    private static AtomicReference gotAllNamedProxies
+            = new AtomicReference();
 
     private static List<NamedNamingObjectProxy> proxies = new ArrayList<NamedNamingObjectProxy>();
 
 
     public static void checkAndLoadProxies(Habitat habitat)
         throws NamingException {
-        if (! gotAllNamedProxies.get()) {
+        if (gotAllNamedProxies.get() != habitat) {
             if (habitat != null) {
                 synchronized (gotAllNamedProxies) {
-                    if (!gotAllNamedProxies.get()) {
+                    if (gotAllNamedProxies.get() != habitat) {
+                        proxies.clear();
                         GlassfishNamingManager nm =
                                 habitat.getByContract(GlassfishNamingManager.class);
                         for (NamedNamingObjectProxy proxy : habitat.getAllByContract(NamedNamingObjectProxy.class)) {
                             //System.out.println("Got NamedNamingObjectProxy: " + proxy.getClass().getName());
                             proxies.add(proxy);
                         }
-                        gotAllNamedProxies.set(true);
+                        gotAllNamedProxies.set(habitat);
                     }
                 }
             }

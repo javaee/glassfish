@@ -43,7 +43,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
-Enforce singletone semantics: if an item already exists, an Error is thrown.
+Enforce singleton semantics: if an item already exists, an Error is thrown.
 Otherwise it is recorded for future checks.  This facility exists because of 
 ugly framework requirements for singletons to offer public constructors, which can allow
 more than one instance of a class to be instantiated.
@@ -62,6 +62,12 @@ public final class SingletonEnforcer {
     public static void register(final Class<?> theClass, final Object theInstance) {
         if (mItems.putIfAbsent(theClass, theInstance) != null) {
             throw new IllegalArgumentException("Illegal to register more than one instance of " + theClass.getName());
+        }
+    }
+
+    public static void deregister(final Class<?> theClass, final Object theInstance) {
+        if (!mItems.remove(theClass, theInstance)) {
+            throw new IllegalArgumentException("Cannot deregister the instance of " + theClass.getName());
         }
     }
 }

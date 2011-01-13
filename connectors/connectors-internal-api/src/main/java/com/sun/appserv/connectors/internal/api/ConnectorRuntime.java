@@ -49,6 +49,7 @@ import org.glassfish.api.invocation.InvocationManager;
 import javax.naming.NamingException;
 import javax.resource.ResourceException;
 import javax.resource.spi.ManagedConnectionFactory;
+import javax.resource.spi.ResourceAdapterAssociation;
 import javax.security.auth.callback.CallbackHandler;
 import java.util.*;
 
@@ -604,6 +605,14 @@ public interface ConnectorRuntime extends ConnectorConstants{
      * @param application Application being deployed.
      */
     public void registerDataSourceDefinitions(com.sun.enterprise.deployment.Application application);
+
+    /**
+     * Used to unRegister data-source-definitions at an later stage of undeploy operation.
+     * This is used to unRegister "java:global" and "java:app" scoped DataSourceDefinitions
+     * which can be referred by JPA in persistence.xml
+     * @param application Application being undeployed.
+     */
+    public void unRegisterDataSourceDefinitions(com.sun.enterprise.deployment.Application application);
     
     /**
      * Flush Connection pool by reinitializing the connections 
@@ -693,4 +702,14 @@ public interface ConnectorRuntime extends ConnectorConstants{
      * @return set of common database vendor names
      */
     public Set<String> getDatabaseVendorNames();
+
+    /**
+     * associates the given instance of ResourceAdapterAssociation with
+     * the ResourceAdapter java-bean of the specified RAR
+     * @param rarName resource-adapter-name
+     * @param raa Object that is an instance of ResourceAdapterAssociation
+     * @throws ResourceException when unable to associate the RA Bean with RAA instance.
+     */
+    public void associateResourceAdapter(String rarName, ResourceAdapterAssociation raa)
+            throws ResourceException;
 }

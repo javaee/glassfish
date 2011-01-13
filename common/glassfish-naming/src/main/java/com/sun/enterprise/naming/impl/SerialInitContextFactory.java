@@ -246,13 +246,23 @@ public class SerialInitContextFactory implements InitialContextFactory {
 
     private final Habitat habitat ;
 
+    private static ORBLocator orbLocator = null ;
+
     private final GroupInfoServiceObserverImpl giso ;
 
     private /* should be final */ GroupInfoService gis = null ;
 
     public SerialInitContextFactory() {
-        habitat = (defaultHabitat == null) ? Globals.getDefaultHabitat() 
-            : defaultHabitat;
+        // Issue 14396
+        Habitat temp = defaultHabitat ;
+        if (temp == null) {
+            temp = Globals.getDefaultHabitat() ;
+        }
+        if (temp == null) {
+            // May need to initialize hk2 component model in standalone client
+            temp = Globals.getStaticHabitat() ;
+        }
+        habitat = temp ;
 
         if (useLB) {
             try {
@@ -291,9 +301,9 @@ public class SerialInitContextFactory implements InitialContextFactory {
     private ORB getORB() {
         ORB result = null ;
         if (habitat != null) {
-            ORBLocator orbLoc = habitat.getByContract(ORBLocator.class) ;
-            if (orbLoc != null) {
-                return orbLoc.getORB() ;
+            orbLocator = habitat.getByContract(ORBLocator.class) ;
+            if (orbLocator != null) {
+                return orbLocator.getORB() ;
             }
         }
 
@@ -326,6 +336,7 @@ public class SerialInitContextFactory implements InitialContextFactory {
                 }
             }
 
+            // XXX orbLocator.initialzeLoadBalancing
             if (useLB) {
                 final List<String> epList = getEndpointList( myEnv ) ;
                 if (!epList.isEmpty()) {

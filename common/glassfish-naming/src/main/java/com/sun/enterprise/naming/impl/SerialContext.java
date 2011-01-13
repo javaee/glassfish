@@ -563,9 +563,11 @@ public class SerialContext implements Context {
             ne.initCause(nnfe);
             throw ne;
         } catch (Exception ex) {
-            _logger.log(Level.SEVERE,
+            // Issue 14732: make this FINE, as a cluster configuration change
+            // can send us here in a normal retry scenario.
+            _logger.log(Level.FINE,
                     "enterprise_naming.serialctx_communication_exception", name);
-            _logger.log(Level.SEVERE, "", ex);
+            _logger.log(Level.FINE, "", ex);
 
             final int nextLevel = level + 1 ;
 

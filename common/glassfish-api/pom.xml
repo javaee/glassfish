@@ -68,10 +68,9 @@
     </developers>
     <dependencies>
         <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>simple-glassfish-api</artifactId>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>scattered-archive-api</artifactId>
 	    <version>${project.version}</version>
-	    <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.sun.enterprise</groupId>

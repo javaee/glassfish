@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,33 +41,29 @@
 package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.base.Singleton;
-import org.glassfish.admin.amx.core.AMXMBeanMetadata;
 
-public interface AmxPref extends PropertiesAccess, ConfigElement, Singleton
-{
-    /**
-        Validation level for AMX MBeans (validated when an MBean is registered).
-      */
+public interface AmxPref
+        extends Singleton, ConfigElement, PropertiesAccess {
+
+
     public String getValidationLevel();
-    public void setValidationLevel(String level);
-    
-    /** Whether to unregister AMX MBeans not compliant to the AMX specification */
+
+    public void setValidationLevel(String param1);
+
     public String getUnregisterNonCompliant();
-    public void setUnregisterNonCompliant(String unregister);
-    
+
+    public void setUnregisterNonCompliant(String param1);
+
     public String getAutoStart();
-    public void setAutoStart(String autoStart);
-    
+
+    public void setAutoStart(String param1);
+
     public String getEmitRegisrationStatus();
-    public void setEmitRegisrationStatus(String emit);
-    
+
+    public void setEmitRegisrationStatus(String param1);
+
     public String getLogInaccessibleAttributes();
-    public void setLogInaccessibleAttributes(String flag);
+
+    public void setLogInaccessibleAttributes(String param1);
+
 }
-
-
-
-
-
-
-

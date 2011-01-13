@@ -854,6 +854,7 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
     }        
 
     public void accept(ResourceReferenceDescriptor resRef) {
+        resRef.checkType();
         computeRuntimeDefault(resRef);
     }
 
@@ -1118,7 +1119,7 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
      * Set runtime default value for ResourceReferenceDescriptor.
      */
     private void computeRuntimeDefault(ResourceReferenceDescriptor resRef) {
-        if (resRef.getType().equals("org.omg.CORBA.ORB")) {
+        if (resRef.getType() != null && resRef.getType().equals("org.omg.CORBA.ORB")) {
             resRef.setJndiName("java:comp/ORB");
         }
 
@@ -1132,13 +1133,12 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
      * Set runtime default value for JmsDestinationReferenceDescriptor. 
      */
     private void computeRuntimeDefault(JmsDestinationReferenceDescriptor jmsDestRef) {
-        if (jmsDestRef.getRefType().equals(
+        if (jmsDestRef.getRefType() != null && jmsDestRef.getRefType().equals(
             "javax.transaction.UserTransaction")) {
             jmsDestRef.setJndiName("java:comp/UserTransaction");
         }
 
-        else if (jmsDestRef.getRefType().equals(
-            "javax.transaction.TransactionSynchronizationRegistry")) {
+        else if (jmsDestRef.getRefType() != null && jmsDestRef.getRefType().equals("javax.transaction.TransactionSynchronizationRegistry")) {
             jmsDestRef.setJndiName(
                 "java:comp/TransactionSynchronizationRegistry");
         }

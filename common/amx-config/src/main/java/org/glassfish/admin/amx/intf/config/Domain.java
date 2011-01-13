@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,62 +43,130 @@ package org.glassfish.admin.amx.intf.config;
 import org.glassfish.admin.amx.base.Singleton;
 import org.glassfish.admin.amx.core.AMXMBeanMetadata;
 
-/**
-Configuration for the &lt;domain&gt; element.
-<p>
-All configuration resides in a tree rooted at this .
- */
-@AMXMBeanMetadata(globalSingleton=true)
+import java.util.List;
+import java.util.Map;
+
+@AMXMBeanMetadata
 public interface Domain
-        extends PropertiesAccess, SystemPropertiesAccess, ConfigElement, Singleton
-{
-    /** @since Glassfish V3 */
+        extends Singleton, ConfigElement, PropertiesAccess, SystemPropertiesAccess {
+
+
     public Resources getResources();
 
-    /** @since Glassfish V3 */
-    public Configs getConfigs();
-
-    /** @since Glassfish V3 */
     public Applications getApplications();
 
-    /** @since Glassfish V3 */
     public SystemApplications getSystemApplications();
 
-    /** @since Glassfish V3 */
     public Servers getServers();
 
-    /** @since Glassfish V3 */
+    public Configs getConfigs();
+
     public Clusters getClusters();
 
-    /** @since Glassfish V3 */
     public NodeAgents getNodeAgents();
-    
+
     public AmxPref getAmxPref();
-    
+
     public String getVersion();
-    
+
     public LbConfigs getLbConfigs();
-    
+
     public LoadBalancers getLoadBalancers();
 
-
-    //---------------------------------------------------------------------------------------
     public String getApplicationRoot();
 
-    public void setApplicationRoot(final String value);
+    public void setApplicationRoot(String param1);
 
     public String getLocale();
 
-    public void setLocale(final String value);
+    public void setLocale(String param1);
 
     public String getLogRoot();
 
-    public void setLogRoot(final String value);
+    public void setLogRoot(String param1);
+
+    public void setResources(Resources param1);
+
+    public boolean isServer(String param1);
+
+    public Map<String, ApplicationRef> getSystemApplicationsReferencedFrom(String param1);
+
+    public Application getSystemApplicationReferencedFrom(String param1, String param2);
+
+    public boolean isNamedSystemApplicationReferencedFrom(String param1, String param2);
+
+    public Server getServerNamed(String param1);
+
+    public List getAllDefinedSystemApplications();
+
+    public Map<String, ApplicationRef> getApplicationRefsInServer(String param1);
+
+    public ApplicationRef getApplicationRefInServer(String param1, String param2);
+
+    public SecureAdmin getSecureAdmin();
+
+    public void setSecureAdmin(SecureAdmin param1);
+
+    public void setApplications(Applications param1);
+
+    public void setSystemApplications(SystemApplications param1);
+
+    public void setConfigs(Configs param1);
+
+    public void setServers(Servers param1);
+
+    public void setClusters(Clusters param1);
+
+    public Nodes getNodes();
+
+    public void setNodes(Nodes param1);
+
+    public void setNodeAgents(NodeAgents param1);
+
+    public void setLbConfigs(LbConfigs param1);
+
+    public void setLoadBalancers(LoadBalancers param1);
+
+    public void setAmxPref(AmxPref param1);
+
+    public Config getConfigNamed(String param1);
+
+    public Cluster getClusterNamed(String param1);
+
+    public Node getNodeNamed(String param1);
+
+    public boolean isCurrentInstanceMatchingTarget(String param1, String param2, String param3, List param4);
+
+    public Map<String, Server> getServersInTarget(String param1);
+
+    public Map<String, ApplicationRef> getApplicationRefsInTarget(String param1);
+
+    public ApplicationRef getApplicationRefInTarget(String param1, String param2);
+
+    public ApplicationRef getApplicationRefInTarget(String param1, String param2, boolean param3);
+
+    public boolean isAppRefEnabledInTarget(String param1, String param2);
+
+    public boolean isAppEnabledInTarget(String param1, String param2);
+
+    public List getAllReferencedTargetsForApplication(String param1);
+
+    public List getAllTargets();
+
+    public Map<String, Applications> getApplicationsInTarget(String param1);
+
+    public String getVirtualServersForApplication(String param1, String param2);
+
+    public String getEnabledForApplication(String param1, String param2);
+
+    public Cluster getClusterForInstance(String param1);
+
+    public List getAllReferenceContainers();
+
+    public Map<String, RefContainer> getReferenceContainersOf(Config param1);
+
+    public List getInstancesOnNode(String param1);
+
+    public Map<String, Cluster> getClustersOnNode(String param1);
+
 }
-
-
-
-
-
-
-

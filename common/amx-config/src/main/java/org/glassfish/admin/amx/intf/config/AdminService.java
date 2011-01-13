@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,51 +40,56 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-import org.glassfish.admin.amx.config.AMXConfigProxy;
-
 import org.glassfish.admin.amx.base.Singleton;
+import org.glassfish.admin.amx.config.AMXConfigProxy;
 
 import java.util.Map;
 
-/**
-Configuration for the &lt;admin-service&gt; element.
- */
 public interface AdminService
-        extends AMXConfigProxy, PropertiesAccess, Singleton
-{
+        extends Singleton, AMXConfigProxy, PropertiesAccess {
     public Map<String, JmxConnector> getJmxConnector();
 
-    public String getSystemJmxConnectorName();
-
-    public void setSystemJmxConnectorName(String value);
 
     public String getType();
-    /** Possible value for Type.  See {@link #setType} */
+
+    /**
+     * Possible value for Type.  See {@link #setType}
+     */
     public final static String TYPE_DAS = "das";
-    /** Possible value for Type.  See {@link #setType} */
+    /**
+     * Possible value for Type.  See {@link #setType}
+     */
     public final static String TYPE_SERVER = "server";
-    /** Possible value for Type.  See {@link #setType} */
+    /**
+     * Possible value for Type.  See {@link #setType}
+     */
     public final static String TYPE_DAS_AND_SERVER = "das-and-server";
 
     /**
-    Valid values are:
-    <ul>
-    <li>{@link #TYPE_DAS}</li>
-    <li>{@link #TYPE_SERVER}</li>
-    <li>{@link #TYPE_DAS_AND_SERVER}</li>
-    </ul>
-    @param value
+     * Valid values are:
+     * <ul>
+     * <li>{@link #TYPE_DAS}</li>
+     * <li>{@link #TYPE_SERVER}</li>
+     * <li>{@link #TYPE_DAS_AND_SERVER}</li>
+     * </ul>
+     *
+     * @param param1
      */
-    public void setType(String value);
+    public void setType(String param1);
 
-    /** may return null if not present */
+
     public DasConfig getDasConfig();
-    
-    
+
     public String getAuthRealmName();
-    public void setAuthRealmName(String val);
+
+    public void setAuthRealmName(String param1);
+
+    public void setDasConfig(DasConfig param1);
+
+    //public JmxConnector getSystemJmxConnector();
+
+    public AuthRealm getAssociatedAuthRealm();
+
+    public boolean usesFileRealm();
+
 }
-
-
-
-

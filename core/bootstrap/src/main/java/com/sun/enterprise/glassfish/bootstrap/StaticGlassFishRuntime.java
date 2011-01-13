@@ -58,6 +58,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Properties;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -119,7 +120,9 @@ public class StaticGlassFishRuntime extends GlassFishRuntime {
             // Add this newly created instance to a Map
             gfMap.put(gfProps.getInstanceRoot(), gfImpl);
             return gfImpl;
-        } catch (Exception e) {
+        } catch (GlassFishException e) {
+            throw e;
+        } catch(Exception e) {
             throw new GlassFishException(e);
         }
     }
@@ -157,17 +160,21 @@ public class StaticGlassFishRuntime extends GlassFishRuntime {
         if (instanceRootValue == null) {
             instanceRootValue = createTempInstanceRoot(gfProps);
             gfProps.setInstanceRoot(instanceRootValue);
-            gfProps.setInstanceRootURI(new File(instanceRootValue).toURI().toString());
+//            gfProps.setProperty(Constants.INSTANCE_ROOT_URI_PROP_NAME,
+//                    new File(instanceRootValue).toURI().toString());
         }
 
         File instanceRoot = new File(instanceRootValue);
         System.setProperty(Constants.INSTANCE_ROOT_PROP_NAME, instanceRoot.getAbsolutePath());
         System.setProperty(Constants.INSTANCE_ROOT_URI_PROP_NAME, instanceRoot.toURI().toString());
 
-        String installRootValue = System.getProperty(BootstrapProperties.INSTALL_ROOT_PROP_NAME);
+        String installRootValue = System.getProperty("org.glassfish.embeddable.installRoot");
         if (installRootValue == null) {
             installRootValue = instanceRoot.getAbsolutePath();
+            JarUtil.extractRars(installRootValue);
         }
+        JarUtil.setEnv(installRootValue);
+
         File installRoot = new File(installRootValue);
 
         // Some legacy code might depend on setting installRoot as system property.
@@ -184,9 +191,12 @@ public class StaticGlassFishRuntime extends GlassFishRuntime {
 
     private String createTempInstanceRoot(GlassFishProperties gfProps)
             throws Exception {
-        String tmpDir = System.getProperty("glassfish.embedded.tmpdir");
+        String tmpDir =  gfProps.getProperties().getProperty("glassfish.embedded.tmpdir",
+                System.getProperty("glassfish.embedded.tmpdir"));
         if (tmpDir == null) {
-            tmpDir = System.getProperty("user.dir");
+            tmpDir = System.getProperty("java.io.tmpdir");
+        } else {
+            new File(tmpDir).mkdirs();
         }
         File instanceRoot = File.createTempFile("gfembed", "tmp", new File(tmpDir));
         instanceRoot.delete();
@@ -217,12 +227,14 @@ public class StaticGlassFishRuntime extends GlassFishRuntime {
     public static void copy(URL u, File destFile, boolean overwrite) {
         if (u == null || destFile == null) return;
         try {
-            InputStream stream = u.openStream();
-            if (!destFile.toURI().toURL().equals(u)) {
-                if (!destFile.exists() || overwrite) {
+            if (!destFile.exists() || overwrite) {
+                if (!destFile.toURI().equals(u.toURI())) {
+                    InputStream stream = u.openStream();
                     destFile.getParentFile().mkdirs();
                     Util.copy(stream, new FileOutputStream(destFile), stream.available());
-                    logger.finer("Copied " + u + " to " + destFile.toURI().toURL());
+                    if (logger.isLoggable(Level.FINER)) {
+                        logger.finer("Copied " + u.toURI() + " to " + destFile.toURI());
+                    }
                 }
             }
         } catch (Exception ex) {

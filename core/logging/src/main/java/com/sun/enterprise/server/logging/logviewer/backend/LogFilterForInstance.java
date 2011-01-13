@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -77,7 +77,7 @@ public class LogFilterForInstance {
         // store in domains/domain1/logs/<instance name> which is used to get LogFile object.
         // Right now user needs to go through this URL to setup and configure ssh http://wikis.sun.com/display/GlassFish/3.1SSHSetup
         SSHLauncher sshL = getSSHL(habitat);
-        String sNode = targetServer.getNode();
+        String sNode = targetServer.getNodeRef();
         Nodes nodes = domain.getNodes();
         Node node = nodes.getNode(sNode);
         sshL.init(node, logger);
@@ -119,7 +119,7 @@ public class LogFilterForInstance {
         // store in  tempDirectoryOnServer which is used to create zip file.
         // Right now user needs to go through this URL to setup and configure ssh http://wikis.sun.com/display/GlassFish/3.1SSHSetup
         SSHLauncher sshL = getSSHL(habitat);
-        String sNode = targetServer.getNode();
+        String sNode = targetServer.getNodeRef();
         Nodes nodes = domain.getNodes();
         Node node = nodes.getNode(sNode);
         sshL.init(node, logger);
@@ -152,11 +152,12 @@ public class LogFilterForInstance {
                                           String instanceName) throws IOException {
 
         // helper method to get all log file names for given instance
-        String sNode = targetServer.getNode();
+        String sNode = targetServer.getNodeRef();
+        Node node = domain.getNodes().getNode(sNode);
         Vector instanceLogFileNames = new Vector();
         Vector instanceLogFileNamesAsString = new Vector();
 
-        if (sNode.equals("localhost") || sNode.equals("127.0.0.1")) {
+        if (node.isLocal()) {
             String sourceDir = System.getProperty("com.sun.aas.instanceRoot") + File.separator + ".." + File.separator + ".."
                     + File.separator + "nodes" + File.separator + sNode
                     + File.separator + instanceName + File.separator + "logs";
@@ -179,8 +180,6 @@ public class LogFilterForInstance {
         } else {
 
             SSHLauncher sshL = getSSHL(habitat);
-            Nodes nodes = domain.getNodes();
-            Node node = nodes.getNode(sNode);
             sshL.init(node, logger);
 
             SFTPClient sftpClient = sshL.getSFTPClient();

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,23 +40,20 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-import org.glassfish.admin.amx.base.Singleton;
-import org.glassfish.admin.amx.core.AMXMBeanMetadata;
-
 import java.util.Map;
 
-public interface AlertSubscription extends NamedConfigElement
-{
-    public Map<String,ListenerConfig> getListenerConfig();
-    
-    public Map<String,FilterConfig> getFilterConfig();
+public interface AlertSubscription
+        extends NamedConfigElement {
+    public Map<String, ListenerConfig> getListenerConfig();
+
+    public Map<String, FilterConfig> getFilterConfig();
+
+    public String getName();
+
+    public void setName(String param1);
+
+    public void setListenerConfig(ListenerConfig param1);
+
+    public void setFilterConfig(FilterConfig param1);
+
 }
-
-
-
-
-
-
-
-
-

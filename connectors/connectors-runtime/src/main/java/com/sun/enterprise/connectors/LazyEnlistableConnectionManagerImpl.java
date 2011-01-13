@@ -41,6 +41,7 @@
 package com.sun.enterprise.connectors;
 
 import org.glassfish.resource.common.PoolInfo;
+import org.glassfish.resource.common.ResourceInfo;
 
 import javax.resource.ResourceException;
 import javax.resource.spi.LazyEnlistableConnectionManager;
@@ -51,8 +52,8 @@ import javax.resource.spi.LazyEnlistableConnectionManager;
 public class LazyEnlistableConnectionManagerImpl extends ConnectionManagerImpl
         implements LazyEnlistableConnectionManager 
 {
-    public LazyEnlistableConnectionManagerImpl( PoolInfo poolInfo ) {
-        super( poolInfo );
+    public LazyEnlistableConnectionManagerImpl( PoolInfo poolInfo, ResourceInfo resourceInfo ) {
+        super( poolInfo, resourceInfo );
     }
     
     public void lazyEnlist( javax.resource.spi.ManagedConnection mc ) throws ResourceException {

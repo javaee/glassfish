@@ -56,6 +56,7 @@ import com.sun.enterprise.glassfish.bootstrap.StartupContextUtil;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
+import org.glassfish.internal.config.UnprocessedConfigListener;
 
 /**
  * Locations command to indicate where this server is installed.
@@ -70,6 +71,10 @@ public class LocationsCommand implements AdminCommand {
     @Inject
     ServerEnvironmentImpl env;
 
+    @Inject
+    private UnprocessedConfigListener ucl;
+
+    @Override
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
@@ -80,6 +85,7 @@ public class LocationsCommand implements AdminCommand {
         mp.addProperty("Instance-Root", env.getInstanceRoot().getAbsolutePath());
         mp.addProperty("Uptime", ""+getUptime());
         mp.addProperty("Pid", ""+ProcessUtils.getPid());
+        mp.addProperty("Restart-Required", ""+ucl.serverRequiresRestart());
     }
 
     private long getUptime() {

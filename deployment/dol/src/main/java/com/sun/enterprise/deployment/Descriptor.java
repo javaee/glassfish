@@ -131,7 +131,7 @@ public class Descriptor extends DynamicAttributesDescriptor implements Serializa
      *
      * @param b true for bounds checking on, false else.
      */
-    public static void setBoundsChecking(boolean b) {
+    public static synchronized void setBoundsChecking(boolean b) {
         boundsChecking = b;
     }
 
@@ -140,7 +140,7 @@ public class Descriptor extends DynamicAttributesDescriptor implements Serializa
      *
      * @return true for boudsn checking, false else.
      */
-    public static boolean isBoundsChecking() {
+    public static synchronized boolean isBoundsChecking() {
         return boundsChecking;
     }
 

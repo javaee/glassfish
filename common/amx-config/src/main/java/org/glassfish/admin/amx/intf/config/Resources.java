@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,54 +43,19 @@ package org.glassfish.admin.amx.intf.config;
 import org.glassfish.admin.amx.base.Singleton;
 import org.glassfish.admin.amx.core.AMXMBeanMetadata;
 
-import org.glassfish.admin.amx.annotation.ChildGetter;
+import java.util.Collection;
 
-
-import java.util.Map;
-
-/**
-Configuration for the &lt;resources&gt; element; it is an internal "node" which
-groups all resources under itself.
-@since Glassfish V3
- */
-@AMXMBeanMetadata(globalSingleton=true)
+@AMXMBeanMetadata
 public interface Resources
-        extends ConfigElement, ConfigCollectionElement, Singleton
-{
-    @ChildGetter
-    public Map<String, CustomResource> getCustomResource();
+        extends Singleton, ConfigCollectionElement, ConfigElement {
 
-    @ChildGetter
-    public Map<String, JndiResource> getJndiResource();
 
-    @ChildGetter
-    public Map<String, JdbcResource> getJdbcResource();
+    public Collection getResources(Class param1);
 
-    @ChildGetter
-    public Map<String, JdbcConnectionPool> getJdbcConnectionPool();
+    public Resource getResourceByName(Class param1, String param2);
 
-    @ChildGetter
-    public Map<String, ConnectorResource> getConnectorResource();
+    //public List getResources();
 
-    @ChildGetter
-    public Map<String, ConnectorConnectionPool> getConnectorConnectionPool();
+    public Collection getResourcesOfPool(String param1);
 
-    @ChildGetter
-    public Map<String, AdminObjectResource> getAdminObjectResource();
-
-    @ChildGetter
-    public Map<String, ResourceAdapter> getResourceAdapter();
-
-    @ChildGetter
-    public Map<String, MailResource> getMailResource();
-
-    @ChildGetter
-    public Map<String, PersistenceManagerFactoryResource> getPersistenceManagerFactoryResource();
 }
-
-
-
-
-
-
-

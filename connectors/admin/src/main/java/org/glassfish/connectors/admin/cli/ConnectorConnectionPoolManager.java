@@ -213,35 +213,49 @@ public class ConnectorConnectionPoolManager implements ResourceManager {
 
         newResource.setResourceAdapterName(raname);
         newResource.setConnectionDefinitionName(connectiondefinition);
-        newResource.setValidateAtmostOncePeriodInSeconds(
-                        validateAtmostOncePeriod);
+        if(validateAtmostOncePeriod != null){
+            newResource.setValidateAtmostOncePeriodInSeconds(validateAtmostOncePeriod);
+        }
         newResource.setSteadyPoolSize(steadypoolsize);
         newResource.setPoolResizeQuantity(poolresize);
         newResource.setMaxWaitTimeInMillis(maxwait);
         newResource.setMaxPoolSize(maxpoolsize);
-        newResource.setMaxConnectionUsageCount(
-                        maxConnectionUsageCount);
+        if(maxConnectionUsageCount != null){
+            newResource.setMaxConnectionUsageCount(maxConnectionUsageCount);
+        }
         newResource.setMatchConnections(matchConnections);
-        newResource.setLazyConnectionEnlistment(
-                        lazyConnectionEnlistment);
-        newResource.setLazyConnectionAssociation(
-                        lazyConnectionAssociation);
-        newResource.setIsConnectionValidationRequired(
-                        isconnectvalidatereq);
+        if(lazyConnectionEnlistment != null){
+            newResource.setLazyConnectionEnlistment(lazyConnectionEnlistment);
+        }
+        if(lazyConnectionAssociation != null){
+            newResource.setLazyConnectionAssociation(lazyConnectionAssociation);
+        }
+        if(isconnectvalidatereq != null){
+            newResource.setIsConnectionValidationRequired(isconnectvalidatereq);
+        }
         newResource.setIdleTimeoutInSeconds(idletimeout);
         newResource.setFailAllConnections(failconnection);
-        newResource.setConnectionLeakTimeoutInSeconds(
-                        connectionLeakTimeout);
-        newResource.setConnectionLeakReclaim(
-                        connectionLeakReclaim);
-        newResource.setConnectionCreationRetryIntervalInSeconds(
-                        connectionCreationRetryInterval);
-        newResource.setConnectionCreationRetryAttempts(
-                        connectionCreationRetryAttempts);
-        newResource.setAssociateWithThread(
-                        associateWithThread);
-        newResource.setPooling(pooling);
-        newResource.setPing(ping);
+        if(connectionLeakTimeout != null){
+            newResource.setConnectionLeakTimeoutInSeconds(connectionLeakTimeout);
+        }
+        if(connectionLeakReclaim != null){
+            newResource.setConnectionLeakReclaim(connectionLeakReclaim);
+        }
+        if(connectionCreationRetryInterval != null){
+            newResource.setConnectionCreationRetryIntervalInSeconds(connectionCreationRetryInterval);
+        }
+        if(connectionCreationRetryAttempts != null){
+            newResource.setConnectionCreationRetryAttempts(connectionCreationRetryAttempts);
+        }
+        if(associateWithThread != null){
+            newResource.setAssociateWithThread(associateWithThread);
+        }
+        if(pooling != null){
+            newResource.setPooling(pooling);
+        }
+        if(ping != null){
+            newResource.setPing(ping);
+        }
         if (transactionSupport != null) {
             newResource.setTransactionSupport(transactionSupport);
         }

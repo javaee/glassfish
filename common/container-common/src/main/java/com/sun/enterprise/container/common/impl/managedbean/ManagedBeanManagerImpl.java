@@ -613,6 +613,10 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostStartup, 
     }
 
     public void destroyManagedBean(Object managedBean)  {
+        destroyManagedBean(managedBean, true);
+    }
+
+    public void destroyManagedBean(Object managedBean, boolean validate)  {
 
         BundleDescriptor bundle = getBundle();
 
@@ -626,8 +630,13 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostStartup, 
                     bundleNonManagedObjs.remove(managedBean);  
 
             if( context == null ) {
-                throw new IllegalStateException("Unknown JCDI-enabled managed bean " +
-                    managedBean + " of class " + managedBean.getClass());
+                if (validate) {
+                    throw new IllegalStateException("Unknown JCDI-enabled managed bean " +
+                            managedBean + " of class " + managedBean.getClass());
+                }
+                _logger.log(Level.FINE, "Unknown JCDI-enabled managed bean " +
+                            managedBean + " of class " + managedBean.getClass());
+                return;
             }
 
             // Call PreDestroy and cleanup

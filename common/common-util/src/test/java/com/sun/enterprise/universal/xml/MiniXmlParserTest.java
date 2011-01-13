@@ -61,6 +61,7 @@ import com.sun.enterprise.util.HostAndPort;
 /**
  * @author bnevins
  */
+@org.junit.Ignore // This test takes a minute to run, so I (Sahoo) have disabled it.
 @SuppressWarnings({"StaticNonFinalField"})
 public class MiniXmlParserTest {
 

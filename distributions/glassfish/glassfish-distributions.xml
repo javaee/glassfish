@@ -42,7 +42,7 @@
 -->
 
 <project name="GlassFish Distribution (ips) Creation" default="create-image" basedir=".">
-<property name="source.distribution.name" value="GlassFish v3 Preview"/>
+<property name="source.distribution.name" value="GlassFish Open Source Edition 3.1"/>
 
 <target name="create-image" depends="create-installer-image, create-glassfish-image">
     <mkdir dir="${installer.image.dir}"/>
@@ -173,6 +173,10 @@
     </ant>
     <ant antfile="../distributions.xml" target="install-package">
         <property name="package.name" value="glassfish-ejb-l10n"/>
+        <property name="image.dir" value="${image.dir}"/>
+    </ant>
+    <ant antfile="../distributions.xml" target="install-package">
+        <property name="package.name" value="glassfish-cmp-l10n"/>
         <property name="image.dir" value="${image.dir}"/>
     </ant>
     <ant antfile="../distributions.xml" target="install-package">

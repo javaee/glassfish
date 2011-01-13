@@ -246,9 +246,7 @@ public class UniformLogFormatter extends Formatter {
             recordBuffer.append(record.getLoggerName()).append(FIELD_SEPARATOR);
 
             recordBuffer.append("_ThreadID").append(NV_SEPARATOR);
-            /* added to fix bug  12367*/
-            record.setThreadID((int) Thread.currentThread().getId());
-            /***************************/
+            //record.setThreadID((int) Thread.currentThread().getId());
             recordBuffer.append(record.getThreadID()).append(NVPAIR_SEPARATOR);
 
             recordBuffer.append("_ThreadName").append(NV_SEPARATOR);

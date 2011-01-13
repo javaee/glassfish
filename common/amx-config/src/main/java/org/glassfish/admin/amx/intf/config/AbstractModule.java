@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,23 +43,22 @@ package org.glassfish.admin.amx.intf.config;
 import org.glassfish.admin.amx.core.AMXProxy;
 
 /**
-Functionality that all modules share.  
+ * Functionality that all modules share.
  */
 public interface AbstractModule
         extends AMXProxy, Enabled, Description, ObjectType, NamedConfigElement,
-        ApplicationRefReferent, PropertiesAccess
-{
+        ApplicationRefReferent, PropertiesAccess {
 
     /**
-    The file system path to this module, typically something like
-    <code>${com.sun.aas.instanceRoot}/applications/...</code>
+     * The file system path to this module, typically something like
+     * <code>${com.sun.aas.instanceRoot}/applications/...</code>
      */
     public String getLocation();
 
     /**
-    Indicates whether the application has been
-    deployed to a directory or not.
+     * Indicates whether the application has been
+     * deployed to a directory or not.
      */
-    
+
     public String getDirectoryDeployed();
 }

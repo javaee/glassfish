@@ -159,7 +159,10 @@ public final class ServerLifecycleModule {
             Class cl = Class.forName(className, true, classLoader);
             slcl = (LifecycleListener) cl.newInstance();
         } catch (Exception ee) {
-            _logger.log(Level.WARNING, localStrings.getLocalString("lifecyclemodule.load_exception", "Exception loading lifecycle module", this.name, ee.toString()), ee) ;
+            _logger.log(Level.SEVERE, localStrings.getLocalString("lifecyclemodule.load_exception", "Exception loading lifecycle module", this.name, ee.toString()), ee) ;
+            if (isFatal) {
+                throw new ServerLifecycleException(localStrings.getLocalString("lifecyclemodule.loadExceptionIsFatal", "Treating failure loading the lifecycle module as fatal", this.name));
+            }
         }
 
         return slcl;

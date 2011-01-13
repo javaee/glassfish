@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,16 +42,16 @@ package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.base.Singleton;
 
-/**
-Configuration for the &lt;response-policy&gt; element.
- */
-public interface ResponsePolicy extends ConfigElement, Singleton
-{
+public interface ResponsePolicy
+        extends Singleton, ConfigElement {
+
+
     public String getAuthRecipient();
 
-    public void setAuthRecipient(final String value);
+    public void setAuthRecipient(String param1);
 
     public String getAuthSource();
 
-    public void setAuthSource(final String value);
+    public void setAuthSource(String param1);
+
 }

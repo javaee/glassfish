@@ -37,14 +37,14 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.util.io;
 
-import com.sun.enterprise.universal.StringUtils;
-import com.sun.enterprise.universal.i18n.LocalStringsImpl;
-import com.sun.enterprise.universal.io.SmartFile;
 import java.io.*;
 import java.io.File;
+
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import com.sun.enterprise.universal.io.SmartFile;
+import com.sun.enterprise.util.ObjectAnalyzer;
 
 /**
  * The hierarchy of directories above a running DAS or server instance can get
@@ -89,6 +89,7 @@ public class ServerDirs {
     public ServerDirs() {
         serverName = null;
         serverDir = null;
+        agentDir = null;
         parentDir = null;
         grandParentDir = null;
         configDir = null;
@@ -101,10 +102,10 @@ public class ServerDirs {
     }
 
     public ServerDirs(File leaf) throws IOException {
-        if(leaf == null)
+        if (leaf == null)
             throw new IllegalArgumentException(strings.get("ServerDirs.nullArg", "ServerDirs.ServerDirs()"));
 
-        if(!leaf.isDirectory())
+        if (!leaf.isDirectory())
             throw new IOException(strings.get("ServerDirs.badDir", leaf));
 
         serverDir = SmartFile.sanitize(leaf);
@@ -114,7 +115,7 @@ public class ServerDirs {
         // about getParentFile() which has issues with relative paths...
         parentDir = serverDir.getParentFile();
 
-        if(parentDir == null || !parentDir.isDirectory())
+        if (parentDir == null || !parentDir.isDirectory())
             throw new IOException(strings.get("ServerDirs.badParentDir", serverDir));
 
         // grandparent dir is optional.  It can be null for DAS for instance...
@@ -130,26 +131,29 @@ public class ServerDirs {
             r = new BufferedReader(new FileReader(localPasswordFile));
             localPasswordBuffer = r.readLine();
         }
-        catch(Exception e) {
+        catch (Exception e) {
             // needs no handling
-        } finally {
+        }
+        finally {
             localPassword = localPasswordBuffer;
             if (r != null) {
                 try {
                     r.close();
-                } catch (IOException ex) {
-                // ignore
+                }
+                catch (IOException ex) {
+                    // ignore
                 }
             }
         }
 
         // bnevins May 17 -- perhaps we should have a NodeAgentDirs ???
+        agentDir = new File(parentDir, "agent");
         dasPropertiesFile = new File(parentDir, "agent/config/das.properties");
         valid = true;
     }
 
     public final String getServerName() {
-        if(!valid)
+        if (!valid)
             return null;
 
         return serverName;
@@ -160,15 +164,15 @@ public class ServerDirs {
      * @return
      */
     public final String deletePidFile() {
-        if(!valid)
+        if (!valid)
             return "Internal Error: ServerDirs is in an invalid state";
 
-        if(!pidFile.isFile())
+        if (!pidFile.isFile())
             return null;
 
         String message = "pid file " + pidFile + " exists, removing it.";
 
-        if(!pidFile.delete()) {
+        if (!pidFile.delete()) {
             // Hmmm... can't delete it, don't use it
             // TODO -- try to go inside it and delete the contents
             return message + "  Couldn't remove pid file";
@@ -176,46 +180,51 @@ public class ServerDirs {
         return message;
     }
 
-    public ServerDirs refresh
-            () throws IOException {
+    public ServerDirs refresh() throws IOException {
         return new ServerDirs(serverDir);
     }
 
     // getters & setters section below
     public final File getServerDir() {
-        if(!valid)
+        if (!valid)
             return null;
         return serverDir;
     }
 
+    public final File getAgentDir(){
+         if (!valid)
+            return null;
+        return agentDir;
+    }
+
     public final File getServerParentDir() {
-        if(!valid)
+        if (!valid)
             return null;
         return parentDir;
     }
 
     public final File getServerGrandParentDir() {
-        if(!valid)
+        if (!valid)
             return null;
         return grandParentDir;
     }
 
     public final File getDomainXml() {
-        if(!valid)
+        if (!valid)
             return null;
 
         return domainXml;
     }
 
     public final File getConfigDir() {
-        if(!valid)
+        if (!valid)
             return null;
 
         return configDir;
     }
 
     public final File getPidFile() {
-        if(!valid)
+        if (!valid)
             return null;
 
         return pidFile;
@@ -224,7 +233,6 @@ public class ServerDirs {
     public final File getDasPropertiesFile() {
         return dasPropertiesFile;
     }
-
 
     public String getLocalPassword() {
         return localPassword;
@@ -240,12 +248,18 @@ public class ServerDirs {
     public final boolean isValid() {
         return valid;
     }
+
+    @Override
+    public String toString() {
+        return ObjectAnalyzer.toString(this);
+    }
     ///////////////////////////////////////////////////////////////////////////
     ///////////           All Private Below           /////////////////////////
     ///////////////////////////////////////////////////////////////////////////
     private final String serverName;
     private final File serverDir;
     private final File parentDir;
+    private final File agentDir;
     private final File grandParentDir;
     private final File configDir;
     private final File domainXml;

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,50 +42,20 @@ package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 
-/**
-<b>EE only</b>
-Each cluster would be configured for a ping based health check mechanism.
-Base interface for such a Health Checker.
- */
-public interface HealthChecker extends AMXConfigProxy
-{
-    /**
-    Returns the relative URL to ping to determine the health state of a
-    listener.
-     */
-    public String getURL();
+public interface HealthChecker
+        extends AMXConfigProxy {
 
-    /**
-    Sets the relative URL to ping to determine the health state of a
-    listener.
-     */
-    public void setURL(String url);
 
-    /**
-    Returns interval, in seconds, between health checks. A value of "0"
-    means that the health check is disabled.
-     */
-    
     public String getIntervalInSeconds();
 
-    /**
-    Set the interval, in seconds, between health checks. A value of "0"
-    means that the health check will be disabled. Default is 30
-    seconds. Must be 0 or greater.
-     */
-    public void setIntervalInSeconds(String intervalInSeconds);
+    public void setIntervalInSeconds(String param1);
 
-    /**
-    Return the maximum time, in seconds, that a server must respond to a
-    health check request to be considered healthy.
-     */
-    
     public String getTimeoutInSeconds();
 
-    /**
-    Set the maximum time, in seconds, that a server must respond to a
-    health check request to be considered healthy. Default is 10
-    seconds. Must be greater than 0.
-     */
-    public void setTimeoutInSeconds(String timeoutInSeconds);
+    public void setTimeoutInSeconds(String param1);
+
+    public String getUrl();
+
+    public void setUrl(String param1);
+
 }

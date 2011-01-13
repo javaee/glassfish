@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,24 +38,38 @@
  * holder.
  */
 
-package com.sun.enterprise.universal.io;
+package org.glassfish.admin.amx.intf.config;
 
-import java.io.*;
 
-/**
- * static utility methods
- * @author bnevins
- */
-public class FileUtils {
-    private FileUtils() {
-    }
+public interface LifecycleModule {
 
-    public static void copyStream(InputStream in, OutputStream out) throws IOException {
-        byte[] buf = new byte[4096];
-        int len;
-        while ((len = in.read(buf)) >= 0) {
-            out.write(buf, 0, len);
-        }
-        out.close();
-    }
+
+    public String getClassName();
+
+    public String getEnabled();
+
+    public void setEnabled(String param1);
+
+    public String getDescription();
+
+    public void setDescription(String param1);
+
+    public String getObjectType();
+
+    public void setObjectType(String param1);
+
+    public void setClassName(String param1);
+
+    public String getClasspath();
+
+    public void setClasspath(String param1);
+
+    public String getLoadOrder();
+
+    public void setLoadOrder(String param1);
+
+    public String getIsFailureFatal();
+
+    public void setIsFailureFatal(String param1);
+
 }

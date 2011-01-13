@@ -92,8 +92,6 @@
               <tasks>
                <property name="bundlename" value="org.glassfish.embedded.web"/>
  		<property name="finaljar" value="${project.build.directory}/glassfish-embedded-web.jar"/>
- 		<property name="includeRars" value="true"/>
-		<property name="includeDtds" value="true"/>	
 		<ant dir="." antfile="../build.xml" target="create.distribution"/>
               </tasks>
             </configuration>
@@ -122,6 +120,15 @@
         <dependency>
             <groupId>org.glassfish.packager</groupId>
             <artifactId>glassfish-grizzly</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+            <optional>true</optional>
+        </dependency>
+
+	<!-- additional grizzly modules package which includes websockets -->
+        <dependency>
+            <groupId>org.glassfish.packager</groupId>
+            <artifactId>glassfish-grizzly-full</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
             <optional>true</optional>

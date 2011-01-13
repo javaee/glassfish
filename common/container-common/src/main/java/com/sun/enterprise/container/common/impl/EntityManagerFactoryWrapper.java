@@ -182,11 +182,14 @@ public class EntityManagerFactoryWrapper
 
         case EJB_INVOCATION:
 
-            EjbDescriptor ejbDesc = (EjbDescriptor) descriptor;
-            module = (BundleDescriptor) ejbDesc.getEjbBundleDescriptor().getModuleDescriptor().getDescriptor();
-            app = module.getApplication();
-
-            break;
+            if (descriptor instanceof EjbDescriptor) {
+                EjbDescriptor ejbDesc = (EjbDescriptor) descriptor;
+                module = (BundleDescriptor) ejbDesc.getEjbBundleDescriptor().getModuleDescriptor().getDescriptor();
+                app = module.getApplication();
+                break;
+            }
+            // EJB invocation in web bundle?
+            // fall through into web case...
 
         case SERVLET_INVOCATION:
 

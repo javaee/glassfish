@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,12 +41,12 @@
 package org.glassfish.admin.amx.intf.config;
 
 /**
-Values as defined in DTD by ENTITY &lt;message-layer>.
-@since Appserver 9.0
-@see MessageSecurityConfig
+ * Values as defined in DTD by ENTITY &lt;message-layer>.
+ *
+ * @see MessageSecurityConfig
+ * @since Appserver 9.0
  */
-public final class MessageLayerValues
-{
+public final class MessageLayerValues {
 
     public static final String AMX_TYPE = "access-log";
     public static final String SOAP = "SOAP";

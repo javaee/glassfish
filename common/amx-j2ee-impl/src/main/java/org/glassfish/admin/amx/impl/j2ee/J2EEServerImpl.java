@@ -68,7 +68,7 @@ public class J2EEServerImpl extends J2EELogicalServerImplBase
     }
     /* The vendor information for this server. */
 
-    private static final String serverVendor = "Sun Microsystems, Inc.";
+    private static final String serverVendor = "Oracle Corporation";
 
     public String[] getjavaVMs()
     {
@@ -99,7 +99,7 @@ public class J2EEServerImpl extends J2EELogicalServerImplBase
     public String getserverVersion()
     {
         Issues.getAMXIssues().notDone("How to get the server version");
-        return "Glassfish V3";
+        return "Glassfish V3.1";
     }
 
     public String getserverVendor()

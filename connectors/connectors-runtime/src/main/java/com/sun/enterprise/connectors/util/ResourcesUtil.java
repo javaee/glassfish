@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -98,7 +98,7 @@ public class ResourcesUtil {
     private ResourcesUtil(){
     }
 
-    private Resources getGlobalResources(){
+    public Resources getGlobalResources(){
         ResourceInfo resourceInfo = null;
         return getRuntime().getResources(resourceInfo);
     }
@@ -188,7 +188,6 @@ public class ResourcesUtil {
         return resourcesUtil;
     }
 
-
     /**
      * This method takes in an admin JdbcConnectionPool and returns the RA
      * that it belongs to.
@@ -200,19 +199,19 @@ public class ResourcesUtil {
     public String getRANameofJdbcConnectionPool(JdbcConnectionPool pool) {
         String dsRAName = ConnectorConstants.JDBCDATASOURCE_RA_NAME;
 
-        Class dsClass = null;
+        Class clz = null;
 
-        if(pool.getDatasourceClassname() != null) {
+        if(pool.getDatasourceClassname() != null && !pool.getDatasourceClassname().isEmpty()) {
             try {
-                dsClass = ClassLoadingUtility.loadClass(pool.getDatasourceClassname());
+                clz = ClassLoadingUtility.loadClass(pool.getDatasourceClassname());
             } catch (ClassNotFoundException cnfe) {
                 Object params[] = new Object[]{dsRAName, pool.getName()};
                 _logger.log(Level.WARNING, "using.default.ds", params);
                 return dsRAName;
             }
-        } else if(pool.getDriverClassname() != null) {
+        } else if(pool.getDriverClassname() != null && !pool.getDriverClassname().isEmpty()) {
             try {
-                dsClass = ClassLoadingUtility.loadClass(pool.getDriverClassname());
+                clz = ClassLoadingUtility.loadClass(pool.getDriverClassname());
             } catch (ClassNotFoundException cnfe) {
                 Object params[] = new Object[]{dsRAName, pool.getName()};
                 _logger.log(Level.WARNING, "using.default.ds", params);
@@ -220,41 +219,41 @@ public class ResourcesUtil {
             }            
         }
 
-        //check if its XA
-        if (ConnectorConstants.JAVAX_SQL_XA_DATASOURCE.equals(pool.getResType())) {
-            if (javax.sql.XADataSource.class.isAssignableFrom(dsClass)) {
-                return ConnectorConstants.JDBCXA_RA_NAME;
+        if(clz != null){
+            //check if its XA
+            if (ConnectorConstants.JAVAX_SQL_XA_DATASOURCE.equals(pool.getResType())) {
+                if (javax.sql.XADataSource.class.isAssignableFrom(clz)) {
+                    return ConnectorConstants.JDBCXA_RA_NAME;
+                }
             }
-        }
 
-        //check if its CP
-        if (ConnectorConstants.JAVAX_SQL_CONNECTION_POOL_DATASOURCE.equals(pool.getResType())) {
-            if (javax.sql.ConnectionPoolDataSource.class.isAssignableFrom(
-                    dsClass)) {
-                return ConnectorConstants.JDBCCONNECTIONPOOLDATASOURCE_RA_NAME;
+            //check if its CP
+            if (ConnectorConstants.JAVAX_SQL_CONNECTION_POOL_DATASOURCE.equals(pool.getResType())) {
+                if (javax.sql.ConnectionPoolDataSource.class.isAssignableFrom(
+                        clz)) {
+                    return ConnectorConstants.JDBCCONNECTIONPOOLDATASOURCE_RA_NAME;
+                }
             }
-        }
-        
-        //check if its DM
-        if(ConnectorConstants.JAVA_SQL_DRIVER.equals(pool.getResType())) {
-            if(java.sql.Driver.class.isAssignableFrom(dsClass)) {
-                return ConnectorConstants.JDBCDRIVER_RA_NAME;
-            }
-        }
 
-        //check if its DS
-        if ("javax.sql.DataSource".equals(pool.getResType())) {
-            if (javax.sql.DataSource.class.isAssignableFrom(dsClass)) {
-                return dsRAName;
+            //check if its DM
+            if(ConnectorConstants.JAVA_SQL_DRIVER.equals(pool.getResType())) {
+                if(java.sql.Driver.class.isAssignableFrom(clz)) {
+                    return ConnectorConstants.JDBCDRIVER_RA_NAME;
+                }
+            }
+
+            //check if its DS
+            if ("javax.sql.DataSource".equals(pool.getResType())) {
+                if (javax.sql.DataSource.class.isAssignableFrom(clz)) {
+                    return dsRAName;
+                }
             }
         }
-
         Object params[] = new Object[]{dsRAName, pool.getName()};
         _logger.log(Level.WARNING, "using.default.ds", params);
         //default to __ds
         return dsRAName;
     }
-
 
     public DeferredResourceConfig getDeferredResourceConfig(ResourceInfo resourceInfo) {
         DeferredResourceConfig resConfig = getDeferredConnectorResourceConfigs(resourceInfo);
@@ -676,6 +675,10 @@ public class ResourcesUtil {
         if (resource == null){
             return false;
         }else if (resource instanceof BindableResource) {
+            BindableResource bindableResource = (BindableResource)resource;
+            if(bindableResource.getJndiName().contains(ConnectorConstants.DATASOURCE_DEFINITION_JNDINAME_PREFIX)){
+                return Boolean.valueOf(bindableResource.getEnabled());
+            }
             ResourceRef resRef = getServer().getResourceRef(
                     ((BindableResource) resource).getJndiName());
             return isEnabled((BindableResource) resource) &&
@@ -706,14 +709,19 @@ public class ResourcesUtil {
         return enabled;
     }
 
-    public boolean isEnabled(BindableResource br) {
-        ResourceInfo resourceInfo = ConnectorsUtil.getResourceInfo(br);
+    public boolean isEnabled(BindableResource br, ResourceInfo resourceInfo){
         boolean enabled = false;
         //this cannot happen? need to remove later?
         if (br == null) {
             return false;
         }
         boolean resourceEnabled = ConnectorsUtil.parseBoolean(br.getEnabled());
+
+        //TODO can we also check whether the application in which it is defined is enabled (app and app-ref) ?
+        if(resourceInfo.getName().contains(ConnectorConstants.DATASOURCE_DEFINITION_JNDINAME_PREFIX)){
+            return resourceEnabled;
+        }
+
         boolean refEnabled = isResourceReferenceEnabled(resourceInfo);
 
         if((br instanceof JdbcResource) ||
@@ -740,8 +748,16 @@ public class ResourcesUtil {
             if(/* TODO isRarEnabled &&*/ resourceEnabled && refEnabled){
                 enabled = true;
             }
+        } else if(refEnabled && resourceEnabled){
+            //other bindable resources need to be checked for "resource.enabled" and "resource-ref.enabled"
+            enabled = true;
         }
         return enabled;
+    }
+
+    public boolean isEnabled(BindableResource br) {
+        ResourceInfo resourceInfo = ConnectorsUtil.getResourceInfo(br);
+        return isEnabled(br, resourceInfo);
     }
 
     private boolean isRarEnabled(String raName) {
@@ -865,6 +881,10 @@ public class ResourcesUtil {
             if (appRef != null) {
                 enabled = appRef.getEnabled();
             } else {
+                // for an application-scoped-resource, if the application is being deployed,
+                // <application> element and <application-ref> will be null until deployment
+                // is complete. Hence this workaround.
+                enabled = "true";
                 if(_logger.isLoggable(Level.FINE)) {
                     _logger.fine("ResourcesUtil :: isResourceReferenceEnabled null app-ref");
                 }
@@ -964,7 +984,7 @@ public class ResourcesUtil {
      * Determines if a connector connection pool is referred in a
      * server-instance via resource-refs
      * @param poolInfo pool-name
-     * @return boolean true if pool is referred in this server instance, false
+     * @return boolean true if pool is referred in this server instance as well enabled, false
      * otherwise
      */
     public boolean isPoolReferredInServerInstance(PoolInfo poolInfo) {
@@ -976,10 +996,11 @@ public class ResourcesUtil {
                 _logger.fine("poolname " + resource.getPoolName() + "resource " + resource.getJndiName());
             }
             ResourceInfo resourceInfo = ConnectorsUtil.getResourceInfo(resource);
-            if ((resource.getPoolName().equalsIgnoreCase(poolInfo.getName())) && isReferenced(resourceInfo)){
+            if ((resource.getPoolName().equalsIgnoreCase(poolInfo.getName())) && isReferenced(resourceInfo)
+                    && isEnabled(resource)){
                 if(_logger.isLoggable(Level.FINE)) {
                     _logger.fine("Connector resource "  + resource.getJndiName() + "refers "
-                        + poolInfo + "in this server instance");
+                        + poolInfo + "in this server instance and is enabled");
                 }
                 return true;
             }
@@ -994,7 +1015,7 @@ public class ResourcesUtil {
      * Determines if a JDBC connection pool is referred in a
      * server-instance via resource-refs
      * @param poolName pool-name
-     * @return boolean true if pool is referred in this server instance, false
+     * @return boolean true if pool is referred in this server instance as well enabled, false
      * otherwise
      */
     public boolean isJdbcPoolReferredInServerInstance(PoolInfo poolInfo) {
@@ -1004,13 +1025,14 @@ public class ResourcesUtil {
         for (JdbcResource resource : jdbcResources) {
             ResourceInfo resourceInfo = ConnectorsUtil.getResourceInfo(resource);
             //Have to check isReferenced here!
-            if ((resource.getPoolName().equalsIgnoreCase(poolInfo.getName())) && isReferenced(resourceInfo)){
+            if ((resource.getPoolName().equalsIgnoreCase(poolInfo.getName())) && isReferenced(resourceInfo)
+                    && isEnabled(resource)){
                 if (_logger.isLoggable(Level.FINE)) {
                     _logger.fine("pool " + poolInfo + "resource " + resourceInfo
                             + " referred " + isReferenced(resourceInfo));
 
                     _logger.fine("JDBC resource " + resource.getJndiName() + "refers " + poolInfo
-                            + "in this server instance");
+                            + "in this server instance and is enabled");
                 }
                 return true;
             }
@@ -1134,4 +1156,21 @@ public class ResourcesUtil {
         ResourceInfo resourceInfo = new ResourceInfo(jndiName, appName, moduleName);
         return getResource(resourceInfo, resourceType);
     }
+
+    public Collection<Resource> filterConnectorResources(Resources allResources, String moduleName, boolean includePools) {
+        //TODO V3 needed for redeploy of module, what happens to the listeners of these resources ?
+        Collection<ConnectorConnectionPool> connectionPools =
+                ConnectorsUtil.getAllPoolsOfModule(moduleName, allResources);
+        Collection<String> poolNames = ConnectorsUtil.getAllPoolNames(connectionPools);
+        Collection<Resource> resources = ConnectorsUtil.getAllResources(poolNames, allResources);
+        Collection<AdminObjectResource> adminObjectResources =
+                ResourcesUtil.createInstance().getEnabledAdminObjectResources(moduleName);
+        resources.addAll(adminObjectResources);
+        if(includePools){
+            Collection<ConnectorConnectionPool> allPoolsOfModule = ConnectorsUtil.getAllPoolsOfModule(moduleName, allResources);
+            resources.addAll(allPoolsOfModule);
+        }
+        return resources;
+    }
+
 }

@@ -76,6 +76,7 @@ import org.glassfish.deployment.versioning.VersioningSyntaxException;
 @Service(name="list-sub-components")
 @I18n("list.sub.components")
 @Scoped(PerLookup.class)
+@CommandLock(CommandLock.LockType.NONE)
 @ExecuteOn(value={RuntimeType.DAS})
 public class ListSubComponentsCommand implements AdminCommand {
 
@@ -157,8 +158,14 @@ public class ListSubComponentsCommand implements AdminCommand {
         if (appname == null) {
             subComponents = getAppLevelComponents(app, type, subComponentsMap);
         } else {
-           subComponents = getModuleLevelComponents(
-               app.getModuleByUri(modulename), type, subComponentsMap);
+            BundleDescriptor bundleDesc = app.getModuleByUri(modulename);
+            if (bundleDesc == null) {
+                report.setMessage(localStrings.getLocalString("listsubcomponents.invalidmodulename", "Invalid module name", appname, modulename));
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                return;
+            }
+            subComponents = getModuleLevelComponents(
+                bundleDesc, type, subComponentsMap);
         }
         
         // the type param can only have values "ejbs" and "servlets"
@@ -175,10 +182,33 @@ public class ListSubComponentsCommand implements AdminCommand {
             subModuleInfos = getSubModulesForEar(app);
         }
 
+        int[] longestValue = new int[2];
+        for (String key : subComponents.keySet()) {
+            if (key.length() > longestValue[0]) {
+                longestValue[0] = key.length();
+            }
+            String value = subComponents.get(key);
+            if (value.length() > longestValue[1]) {
+                longestValue[1] = value.length();
+            }
+        }
+        StringBuilder formattedLineBuf = new StringBuilder();
+        for (int j = 0; j < 2; j++) {
+            longestValue[j] += 2;
+            formattedLineBuf.append("%-")
+                    .append(longestValue[j])
+                    .append("s");
+        }
+        String formattedLine = formattedLineBuf.toString();
+        if (!terse && subComponents.isEmpty()) {
+            part.setMessage(localStrings.getLocalString("listsubcomponents.no.elements.to.list", "Nothing to List."));
+        }
         int i=0;
         for (String key : subComponents.keySet()) {
             ActionReport.MessagePart childPart = part.addChild();
-            childPart.setMessage(key + subComponents.get(key));
+            childPart.setMessage(
+                    String.format(formattedLine,
+                    new Object[]{key, subComponents.get(key)} ));
             if (appname == null && !app.isVirtual()) {
                 // we use the property mechanism to provide 
                 // support for JSR88 client
@@ -212,11 +242,6 @@ public class ListSubComponentsCommand implements AdminCommand {
         for (String key : keys) {
             part.addProperty(key, subComponentsMap.get(key));
         }
-
-        if (subComponents.size() == 0 && !terse) {
-            part.setMessage(localStrings.getLocalString("listsubcomponents.no.elements.to.list", "Nothing to List."));
-        }
-
         // now this is the normal output for the list-sub-components command
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
@@ -268,7 +293,7 @@ public class ListSubComponentsCommand implements AdminCommand {
 
                 StringBuffer sb = new StringBuffer();
                 String moduleName = module.getArchiveUri();
-                sb.append(" <"); 
+                sb.append("<");
                 String moduleType = getModuleType(module);
                 sb.append(moduleType);
                 sb.append(">"); 
@@ -301,7 +326,7 @@ public class ListSubComponentsCommand implements AdminCommand {
                     wbd.getWebComponentDescriptors()) {
                 StringBuffer sb = new StringBuffer();    
                 String canonicalName = wcd.getCanonicalName();
-                sb.append(" <"); 
+                sb.append("<");
                 String wcdType = (wcd.isServlet() ? "Servlet" : "JSP");
                 sb.append(wcdType);
                 sb.append(">"); 
@@ -316,7 +341,7 @@ public class ListSubComponentsCommand implements AdminCommand {
             for (EjbDescriptor ejbDesc : ebd.getEjbs()) {
                 StringBuffer sb = new StringBuffer();    
                 String ejbName = ejbDesc.getName();
-                sb.append(" <"); 
+                sb.append("<");
                 String ejbType = getEjbType(ejbDesc);
                 sb.append(ejbType);
                 sb.append(">"); 

@@ -40,58 +40,26 @@
 
 package com.sun.enterprise.v3.admin.adapter;
 
-import java.beans.PropertyVetoException;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.InetAddress;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Locale;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import com.sun.enterprise.config.serverbeans.AdminService;
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.ServerTags;
-import com.sun.enterprise.deploy.shared.ArchiveFactory;
-import com.sun.enterprise.v3.admin.AdminAdapter;
 import com.sun.enterprise.v3.admin.AdminConsoleConfigUpgrade;
-import com.sun.enterprise.v3.common.PlainTextActionReporter;
+import com.sun.appserv.server.util.Version;
 import com.sun.logging.LogDomains;
-import com.sun.pkg.client.Image;
-import com.sun.pkg.client.Version;
-import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.container.Adapter;
-import org.glassfish.api.deployment.UndeployCommandParameters;
-import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.Events;
 import org.glassfish.api.event.RestrictTo;
-import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.grizzly.http.server.io.OutputBuffer;
-import org.glassfish.internal.api.AdminAccessController;
-import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.data.ApplicationRegistry;
-import org.glassfish.internal.deployment.Deployment;
-import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
@@ -101,6 +69,26 @@ import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 import org.jvnet.hk2.config.types.Property;
+
+import java.beans.PropertyVetoException;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.InetAddress;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.glassfish.grizzly.http.Method;
 
 /**
  * An HK-2 Service that provides the functionality so that admin console access is handled properly.
@@ -128,11 +116,11 @@ import org.jvnet.hk2.config.types.Property;
  *
  * @author &#2325;&#2375;&#2342;&#2366;&#2352; (km@dev.java.net)
  * @author Ken Paulsen (kenpaulsen@dev.java.net)
+ * @author Siraj Ghaffar (sirajg@dev.java.net)
  * @since GlassFish V3 (March 2008)
  */
 @Service
 public final class AdminConsoleAdapter extends HttpHandler implements Adapter, PostConstruct, EventListener {
-    private final static Logger logger = Grizzly.logger(AdminConsoleAdapter.class);
 
     @Inject
     ServerEnvironmentImpl env;
@@ -142,23 +130,15 @@ public final class AdminConsoleAdapter extends HttpHandler implements Adapter, P
 
     
     private String contextRoot;
-    private File ipsRoot;    // GF IPS Root
     private File warFile;    // GF Admin Console War File Location
-    private String proxyHost;
-    private int proxyPort = 8080;
     private AdapterState stateMsg = AdapterState.UNINITIAZED;
     private boolean installing = false;
     private boolean isOK = false;  // FIXME: initialize this with previous user choice
-    private boolean errorOccurred   = false;
-    private String currentDeployedVersion   = "";     //Version of admin console that is currently deployed
-    private String downloadedVersion = null;            //Version of the console IPS package that is downloaded
     private AdminConsoleConfigUpgrade adminConsoleConfigUpgrade=null;
 
     private final CountDownLatch latch = new CountDownLatch(1);
 
-    @Inject
-    private Logger log;
-
+    
     @Inject
     ApplicationRegistry appRegistry;
 
@@ -177,8 +157,12 @@ public final class AdminConsoleAdapter extends HttpHandler implements Adapter, P
     @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Config serverConfig;
 
+    @Inject
+    Version version;
+    
     AdminEndpointDecider epd;
 
+    private Logger logger = LogDomains.getLogger(AdminConsoleAdapter.class, LogDomains.CORE_LOGGER);
     private String statusHtml;
     private String initHtml;
 
@@ -186,26 +170,15 @@ public final class AdminConsoleAdapter extends HttpHandler implements Adapter, P
     private ResourceBundle bundle;
 
     //don't change the following without changing the html pages
-
-    private static final String PROXY_HOST_PARAM = "proxyHost";
-    private static final String PROXY_PORT_PARAM = "proxyPort";
-    private static final String OK_PARAM         = "ok";
-    private static final String CANCEL_PARAM     = "cancel";
-
     private static final String MYURL_TOKEN = "%%%MYURL%%%";
     private static final String STATUS_TOKEN = "%%%STATUS%%%";
     private static final String REDIRECT_TOKEN = "%%%LOCATION%%%";
-    private static final String ADMIN_CONSOLE_IPS_PKGNAME = "glassfish-gui";
 
     private static final String RESOURCE_PACKAGE = "com/sun/enterprise/v3/admin/adapter";
-
-
     private static final String INSTALL_ROOT = "com.sun.aas.installRoot";
     static final String ADMIN_APP_NAME = ServerEnvironmentImpl.DEFAULT_ADMIN_CONSOLE_APP_NAME;
-
-    // Flag set to true for directory deploy, false for war
-    private static final boolean directoryDeploy = true;
     private boolean isRestStarted = false;
+    private boolean isRestBeingStarted = false;
 
     /**
      * Constructor.
@@ -233,6 +206,20 @@ public final class AdminConsoleAdapter extends HttpHandler implements Adapter, P
      */
     @Override
     public void service(Request req, Response res) {
+    
+        bundle = getResourceBundle(req.getLocale());
+
+        Method method = req.getMethod();
+        if (!checkHttpMethodAllowed(method)) {
+            res.setStatus(java.net.HttpURLConnection.HTTP_BAD_METHOD,
+                    method.getMethodString() + " " + bundle.getString("http.bad.method"));
+            res.setHeader("Allow", getAllowedHttpMethodsAsString());
+            return;
+        }
+        if (!env.isDas()) {
+            sendStatusNotDAS(req, res);
+            return;
+        }
 
         //This is needed to support the case where user update to 3.1 from previous release, and didn't run the upgrade tool.
         if (adminConsoleConfigUpgrade == null){
@@ -242,11 +229,11 @@ public final class AdminConsoleAdapter extends HttpHandler implements Adapter, P
         try {
             if (!latch.await(100L, TimeUnit.SECONDS)) {
                 // todo : better error reporting.
-                log.severe("Cannot process admin console request in time");
+                logger.log(Level.SEVERE, "console.adapter.timeout");
                 return;
             }
         } catch (InterruptedException ex) {
-            log.severe("Cannot process admin console request");
+            logger.log(Level.SEVERE, "console.adapter.cannotProcess");
             return;
         }
         logRequest(req);
@@ -254,20 +241,62 @@ public final class AdminConsoleAdapter extends HttpHandler implements Adapter, P
             try {
                 handleResourceRequest(req, res);
             } catch (IOException ioe) {
-                if (log.isLoggable(Level.SEVERE)) {
-                    log.log(Level.SEVERE, "Unable to serve resource: {0}.  Cause: {1}", new Object[]{req.getRequestURI(), ioe.toString()});
+                if (logger.isLoggable(Level.SEVERE)) {
+                    logger.log(Level.SEVERE, "console.adapter.resourceError",
+                            new Object[]{req.getRequestURI(), ioe.toString()});
                 }
-                if (log.isLoggable(Level.FINE)) {
-                    log.log(Level.FINE,
+                if (logger.isLoggable(Level.FINE)) {
+                    logger.log(Level.FINE,
                             ioe.toString(),
                             ioe);
                 }
             }
             return;
         }
-        bundle = getResourceBundle(req.getLocale());
         res.setContentType("text/html; charset=UTF-8");
+        
+        // simple get request use via javascript to give back the console status (starting with :::)
+        // as a simple string.
+        // see usage in status.html
+        
 
+       String serverVersion = version.getFullVersion();
+        
+        if ("/testifbackendisready.html".equals(req.getRequestURI())) {
+
+            // Replace state token
+            String status = getStateMsg().getI18NKey();
+            try {
+                // Try to get a localized version of this key
+                status = bundle.getString(status);
+            } catch (MissingResourceException ex) {
+                // Use the non-localized String version of the status
+                status = getStateMsg().toString();
+            }
+            String wkey = AdapterState.WELCOME_TO.getI18NKey();
+                        try {
+                // Try to get a localized version of this key
+                serverVersion = bundle.getString(wkey)+" "+serverVersion+".";
+            } catch (MissingResourceException ex) {
+                // Use the non-localized String version of the status
+                serverVersion = AdapterState.WELCOME_TO.toString()+" "+serverVersion+".";
+            }
+            status +="\n"+serverVersion;
+            try {
+                OutputBuffer ob = getOutputBuffer(res);
+
+                byte[] bytes = (":::" + status).getBytes("UTF-8");
+                res.setContentLength(bytes.length);
+                ob.write(bytes, 0, bytes.length);
+                ob.flush();
+
+            } catch (IOException ex) {
+                Logger.getLogger(AdminConsoleAdapter.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+
+            return;
+        }
         if (isApplicationLoaded()) {
             // Let this pass to the admin console (do nothing)
             handleLoadedState();
@@ -279,44 +308,20 @@ public final class AdminConsoleAdapter extends HttpHandler implements Adapter, P
             if ("/favicon.ico".equals(req.getRequestURI())) {
                 return;
             }
-            
-            InteractionResult ir = getUserInteractionResult(req);
-            if (ir == InteractionResult.CANCEL) {
-// FIXME: What if they clicked Cancel?
-	    }
-
-	    synchronized(this) {
-		if (downloadedVersion == null) {
-		    setDownloadedVersion();
-		}
                 if (!isRestStarted) {
                     forceRestModuleLoad(req);
                 }
+	    synchronized(this) {
+		
+
 		if (isInstalling()) {
 		    sendStatusPage(req, res);
 		} else {
-                    if (isErrorOccurred()) {
-                        restore();
-                        sendStatusPage(req, res);
-                        return;
-                    } else if (isApplicationLoaded()) {
+                    if (isApplicationLoaded()) {
 			// Double check here that it is not yet loaded (not
 			// likely, but possible)
 			handleLoadedState();
-		    } else if (!hasPermission(ir)) {
-			// Ask for permission
-                        handleAuth(req, res);
-			sendConsentPage(req, res);
-		    } else {
-                        if (redeployNeeded()) {
-                            setStateMsg(AdapterState.APPLICATION_PREPARE_UPGRADE);
-                            sendStatusPage(req, res);
-                            if (!prepareRedeploy()) {
-                                setErrorOccurred(true);
-                                sendStatusPage(req, res);
-                                return;
-                            }
-                        }
+		    }else {
 			try {
 			    // We have permission and now we should install
 			    // (or load) the application.
@@ -352,6 +357,10 @@ public final class AdminConsoleAdapter extends HttpHandler implements Adapter, P
      * then close the stream and move on.
      */
     private void forceRestModuleLoad(final Request req) {
+        if (isRestBeingStarted==true){
+            return;
+        }
+        isRestBeingStarted = true;
         Thread thread = new Thread() {
             @Override
             public void run() {
@@ -362,6 +371,7 @@ public final class AdminConsoleAdapter extends HttpHandler implements Adapter, P
                     is = conn.getInputStream();
                     isRestStarted = true;
                 } catch (Exception ex) {
+                   Logger.getLogger(AdminConsoleAdapter.class.getName()).log(Level.FINE, null, ex);
                 } finally {
                     if (is != null) {
                         try {
@@ -374,7 +384,7 @@ public final class AdminConsoleAdapter extends HttpHandler implements Adapter, P
             }
         };
         thread.setDaemon(true);
-        thread.run();
+        thread.start();
     }
 
     private String getContentType(String resource) {
@@ -389,8 +399,8 @@ public final class AdminConsoleAdapter extends HttpHandler implements Adapter, P
         } else if (resource.endsWith(".jpg")) {
             return "image/jpeg";
         } else {
-            if (log.isLoggable(Level.FINE)) {
-                log.fine("Unhandled content-type: " + resource);
+            if (logger.isLoggable(Level.FINE)) {
+                logger.fine("Unhandled content-type: " + resource);
             }
             return null;
         }
@@ -408,8 +418,8 @@ public final class AdminConsoleAdapter extends HttpHandler implements Adapter, P
         try {
             in = loader.getResourceAsStream(resourcePath);
             if (in == null) {
-                if (log.isLoggable(Level.WARNING)) {
-                    log.warning("Resource not found: " + resourcePath);
+                if (logger.isLoggable(Level.WARNING)) {
+                    logger.log(Level.WARNING, "console.adapter.resourceNotFound", resourcePath);
                 }
                 return;
             }
@@ -433,59 +443,6 @@ public final class AdminConsoleAdapter extends HttpHandler implements Adapter, P
             }
         }
 
-    }
-
-    /**
-     * returns true if there is any error occurs during the upgrade process.
-     */
-    private boolean isErrorOccurred() {
-        return errorOccurred;
-    }
-
-    /**
-     * Set error condition.
-     */
-    private void setErrorOccurred(boolean error) {
-        errorOccurred=error;
-    }
-
-    /**
-     *
-     */
-    //We will try to backup the old bits, if the old directory doesn't exist,
-    //issue warning, and continue. see issue# 6477
-    private boolean prepareRedeploy() {
-        try {
-            if (!stopAndCleanup()) {
-                setStateMsg(AdapterState.APPLICATION_CLEANUP_FALED);
-                return false;
-            }
-            File parentFile = warFile.getParentFile();
-            File currentDeployedDir = new File( parentFile,ADMIN_APP_NAME);
-            if (!currentDeployedDir.exists()) {
-                logger.log(Level.WARNING, currentDeployedDir + " does not exist. Will not do backup for this.");
-                return true;
-            }
-            File backupDir = new File(parentFile, ADMIN_APP_NAME+".backup");
-            if (currentDeployedDir.renameTo(backupDir)) {
-                return true;
-	    }
-        } catch (Exception ex) {
-            logger.log(Level.SEVERE, "Exception in prepareRedeploy() " + ex.getMessage());
-            //ex.printStackTrace();
-        }
-        logger.log(Level.SEVERE, "Cannot backup previous version of __admingui ");
-        setStateMsg(AdapterState.APPLICATION_BACKUP_FALED);
-        return true;
-    }
-
-    private void restore() {
-        setStateMsg(AdapterState.APPLICATION_RESTORE);
-        File parentFile = warFile.getParentFile();
-        File currentDeployedDir = new File(parentFile, ADMIN_APP_NAME);
-        File backupDir = new File(parentFile, ADMIN_APP_NAME + ".backup");
-        backupDir.renameTo(currentDeployedDir);
-        setStateMsg(AdapterState.APPLICATION_UPGRADE_FALED);
     }
 
     private boolean isApplicationLoaded() {
@@ -530,7 +487,7 @@ public final class AdminConsoleAdapter extends HttpHandler implements Adapter, P
      */
     void setStateMsg(AdapterState msg) {
         stateMsg = msg;
-        log.log(Level.INFO, msg.toString());
+        logger.log(Level.INFO, msg.toString());
     }
 
     /**
@@ -557,33 +514,10 @@ public final class AdminConsoleAdapter extends HttpHandler implements Adapter, P
     @Override
     public void event(@RestrictTo(EventTypes.SERVER_READY_NAME) Event event) {
         latch.countDown();
-        if (log != null) {
-            if (log.isLoggable(Level.FINE)) {
-                log.log(Level.FINE, "AdminConsoleAdapter is ready.");
+        if (logger != null) {
+            if (logger.isLoggable(Level.FINE)) {
+                logger.log(Level.FINE, "AdminConsoleAdapter is ready.");
             }
-        }
-    }
-
-    /**
-     *
-     */
-    private void handleAuth(Request greq, Response gres) {
-        try {
-            AdminAccessController authenticator = habitat.getByContract(AdminAccessController.class);
-
-            if (authenticator != null) {
-//                Request req = greq.getRequest();
-                String[] userPass = AdminAdapter.getUserPassword(greq);
-                String pswd = userPass.length >= 2 ? userPass[1] : "";
-                if (!authenticator.loginAsAdmin(userPass[0], pswd, as.getAuthRealmName())) {
-                    setStateMsg(AdapterState.AUTHENTICATING);
-                    gres.setStatus(HttpURLConnection.HTTP_UNAUTHORIZED);
-                    gres.addHeader("WWW-Authenticate", "BASIC");
-                    gres.finish();
-                }
-            }
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
         }
     }
 
@@ -591,19 +525,6 @@ public final class AdminConsoleAdapter extends HttpHandler implements Adapter, P
      *
      */
     private void init() {
-
-        // Save the IPS root and admin console war locations
-        // For upgrade scenario, the property may not be set. refer to issue# 9529.   We hardcode some info here, this should match
-        // the out-of-box domain.xml
-
-        Property iprop = adminService.getProperty(ServerTags.IPS_ROOT);
-        if(iprop == null){
-            File f = new File (System.getProperty(INSTALL_ROOT));
-            ipsRoot = new File(f, "..");
-            writeAdminServiceProp(ServerTags.IPS_ROOT, "${" + INSTALL_ROOT + "}/..");
-        }else{
-            ipsRoot = new File(iprop.getValue());
-        }
 
         Property locProp = adminService.getProperty(ServerTags.ADMIN_CONSOLE_DOWNLOAD_LOCATION);
         if(locProp == null || locProp.getValue()==null || locProp.getValue().equals("")){
@@ -621,21 +542,12 @@ public final class AdminConsoleAdapter extends HttpHandler implements Adapter, P
             }
         }
 
-        Property prop = adminService.getProperty(ServerTags.ADMIN_CONSOLE_VERSION);
-        if (prop != null) {
-            currentDeployedVersion = prop.getValue();
-        } else {
-            currentDeployedVersion = "";
-        }
-
-        if (log.isLoggable(Level.FINE)){
-            log.log(Level.FINE, "GlassFish IPS Root: " + ipsRoot.getAbsolutePath());
-            log.log(Level.FINE, "Admin Console download location: " + warFile.getAbsolutePath());
-            log.log(Level.FINE, "Current Deployed version: " + currentDeployedVersion);
+        if (logger.isLoggable(Level.FINE)){
+            logger.log(Level.FINE, "Admin Console download location: " + warFile.getAbsolutePath());
         }
 
         initState();
-        epd = new AdminEndpointDecider(serverConfig, log);
+        epd = new AdminEndpointDecider(serverConfig, logger);
         contextRoot = epd.getGuiContextRoot();
     }
 
@@ -679,12 +591,12 @@ public final class AdminConsoleAdapter extends HttpHandler implements Adapter, P
      *
      */
     private void logRequest(Request req) {
-        if (log.isLoggable(Level.FINE)) {
-            log.fine("AdminConsoleAdapter's STATE IS: " + getStateMsg());
-            log.log(Level.FINE, "Current Thread: " + Thread.currentThread().getName());
+        if (logger.isLoggable(Level.FINE)) {
+            logger.fine("AdminConsoleAdapter's STATE IS: " + getStateMsg());
+            logger.log(Level.FINE, "Current Thread: " + Thread.currentThread().getName());
             for (final String name : req.getParameterNames()) {
                 final String values = Arrays.toString(req.getParameterValues(name));
-                log.fine("Parameter name: " + name + " values: " + values);
+                logger.fine("Parameter name: " + name + " values: " + values);
             }
         }
     }
@@ -715,13 +627,14 @@ public final class AdminConsoleAdapter extends HttpHandler implements Adapter, P
      *
      */
     private void startThread() {
-        new InstallerThread(ipsRoot, warFile, proxyHost, proxyPort, this, habitat, domain, env, contextRoot, log, epd.getGuiHosts()).start();
+        new InstallerThread(this, habitat, domain, env, contextRoot, logger, epd.getGuiHosts()).start();
     }
 
     /**
      *
      */
-    private synchronized InteractionResult getUserInteractionResult(Request req) {
+    /*
+    private synchronized InteractionResult getUserInteractionResult(GrizzlyRequest req) {
         if (req.getParameter(OK_PARAM) != null) {
             proxyHost = req.getParameter(PROXY_HOST_PARAM);
             if ((proxyHost != null) && !proxyHost.equals("")) {
@@ -749,6 +662,8 @@ public final class AdminConsoleAdapter extends HttpHandler implements Adapter, P
         // This is a first-timer
         return InteractionResult.FIRST_TIMER;
     }
+     *
+     */
 
     private OutputBuffer getOutputBuffer(Response res) {
         res.setStatus(202);
@@ -807,6 +722,26 @@ public final class AdminConsoleAdapter extends HttpHandler implements Adapter, P
                                  + ':' + req.getServerPort() + "/login.jsf";
             localHtml = localHtml.replace(REDIRECT_TOKEN, locationUrl);
             bytes = localHtml.replace(STATUS_TOKEN, status).getBytes("UTF-8");
+            res.setContentLength(bytes.length);
+            ob.write(bytes, 0, bytes.length);
+            ob.flush();
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    /**
+     *
+     */
+    private void sendStatusNotDAS(Request req, Response res) {
+        byte[] bytes;
+        try {
+            String html = Utils.packageResource2String("statusNotDAS.html");
+            OutputBuffer ob = getOutputBuffer(res);
+            // Replace locale specific Strings
+            String localHtml = replaceTokens(html, bundle);
+
+            bytes = localHtml.getBytes("UTF-8");
             res.setContentLength(bytes.length);
             ob.write(bytes, 0, bytes.length);
             ob.flush();
@@ -884,66 +819,10 @@ public final class AdminConsoleAdapter extends HttpHandler implements Adapter, P
         return buf.toString();
     }
 
-    /**
-     * 
-     */
-    public String getDownloadedVersion() {
-        return downloadedVersion;
-    }
 
-    public void setDownloadedVersion() {
-	if (downloadedVersion == null) {
-	    downloadedVersion = "";
-	}
-        try{
-            Image image = new Image(ipsRoot);
-            if (image != null) {
-                List<Image.FmriState> fList = image.getInventory(new String[]{ADMIN_CONSOLE_IPS_PKGNAME}, false);
-                if (!fList.isEmpty()) {
-                    downloadedVersion = fList.get(0).fmri.getVersion().toString();
-                }
-            } else {
-                log.log(Level.WARNING, "!!!! No information relating to update center.");
-            }
-        } catch (Exception ex) {
-            log.log(Level.WARNING, "!!!!! Cannot create Update Center Image for " + ipsRoot );
-            //ex.printStackTrace();
-        }
-    }
-
-    public String getCurrentDeployedVersion() {
-        return currentDeployedVersion;
-    }
 
     public AdminService getAdminService() {
         return adminService;
-    }
-
-    public String getIPSPackageName() {
-        return ADMIN_CONSOLE_IPS_PKGNAME;
-    }
-
-    private boolean redeployNeeded() {
-	if (isDirectoryDeploy()) {
-	    return false;
-	}
-        //for first access after installation, deployedVersion will be "",  we don't want to do redeployment.
-        //it will just go through install and loading.
-        if (currentDeployedVersion == null || currentDeployedVersion.length() == 0) {
-            return false;
-        }
-        //if we don't know the downloaded version, we don't want to do redeployment either.
-        //this maybe the case during development where web.zip doesn't include UC info.
-        if (downloadedVersion.length() == 0) {
-            return false;
-        }
-
-        Version deployed = new Version(currentDeployedVersion);
-        Version downloaded = new Version(downloadedVersion);
-        int compare = deployed.compareTo(downloaded);
-
-        //-1 if this version is less than downloaded, 0 if they are equal, 1 if this version is greater than downloaded
-	return compare == -1;
     }
 
     private void writeAdminServiceProp(final String propName, final String propValue){
@@ -958,28 +837,7 @@ public final class AdminConsoleAdapter extends HttpHandler implements Adapter, P
                 }
             }, adminService);
         }catch(Exception ex){
-            log.log(Level.WARNING, "Cannot write property for AdminService in domain.xml; " + propName + ":" + propValue);
-            //ex.printStackTrace();
-        }
-    }
-
-    public void updateDeployedVersion() {
-        try{
-            final Property prop = adminService.getProperty(ServerTags.ADMIN_CONSOLE_VERSION);
-            if (prop == null) {
-                writeAdminServiceProp(ServerTags.ADMIN_CONSOLE_VERSION, downloadedVersion );
-            } else {
-                if (! downloadedVersion.equals(prop.getValue())) {
-                    ConfigSupport.apply(new SingleConfigCode<Property>() {
-                        public Object run(Property prop) throws PropertyVetoException, TransactionFailure {
-                            prop.setValue(downloadedVersion);
-                            return prop;
-                        }
-                    }, prop);
-                }
-            }
-        } catch (Exception ex) {
-            log.log(Level.FINE, "!!!! Error, cannot update deployed version in domain.xml");
+            logger.log(Level.WARNING, "console.adapter.propertyError", propName + ":" + propValue);
             //ex.printStackTrace();
         }
     }
@@ -1009,58 +867,53 @@ public final class AdminConsoleAdapter extends HttpHandler implements Adapter, P
         return epd.getGuiHosts();
     }
 
+//    enum HttpMethod {
+//        OPTIONS ("OPTIONS"),
+//        GET ("GET"),
+//        HEAD ("HEAD"),
+//        POST ("POST"),
+//        PUT ("PUT"),
+//        DELETE ("DELETE"),
+//        TRACE ("TRACE"),
+//        CONNECT ("CONNECT");
+//
+//        private String method;
+//
+//        HttpMethod(String method) {
+//            this.method = method;
+//        }
+//
+//        static HttpMethod getHttpMethod(String httpMethod) {
+//            for (HttpMethod hh: HttpMethod.values()) {
+//                if (hh.method.equalsIgnoreCase(httpMethod)) {
+//                    return hh;
+//                }
+//            }
+//            return null;
+//        }
+//
+//        String method() {
+//            return method;
+//        }
+//    }
 
-    /**
-     * Stop (if running) and cleanup existing admin gui installation, usually performed during upgrades.
-     * the entries in the domain.xml will NOT be removed, this is an inplace upgrade,
-     * not a redeploy.
-     *
-     * @return true if stopping and cleaning the current installation was successful
-     */
-    private boolean stopAndCleanup() {
+    private Method[] allowedHttpMethods = {Method.GET, Method.POST, Method.HEAD,
+            Method.DELETE, Method.PUT};
 
-        Application app = getConfig();
-        if (app==null) {
-            // never deployed/ran, nothing to worry about
-            return true;
-        }
-        final String location = app.getLocation();
-        final Logger logger = LogDomains.getLogger(this.getClass(), LogDomains.CORE_LOGGER);
-        try {
-            final ArchiveFactory archiveFactory = habitat.getComponent(ArchiveFactory.class);
-            final ReadableArchive archive = archiveFactory.openArchive(new File(location));
-
-            UndeployCommandParameters parameters = new UndeployCommandParameters(ServerEnvironmentImpl.DEFAULT_ADMIN_CONSOLE_APP_NAME);
-            parameters.origin = UndeployCommandParameters.Origin.unload;
-            Deployment deployment = habitat.getComponent(Deployment.class);
-            ActionReport report = new PlainTextActionReporter();
-            
-            ExtendedDeploymentContext context = deployment.getBuilder(logger, parameters, report).source(archive).build();
-
-            ApplicationInfo info = appRegistry.get(ServerEnvironmentImpl.DEFAULT_ADMIN_CONSOLE_APP_NAME);
-            if (info!=null) {
-                deployment.undeploy(ServerEnvironmentImpl.DEFAULT_ADMIN_CONSOLE_APP_NAME, context);
-            } else {
-                // no need to worry, let's just delete all created metadata.
-                context.clean();
+    private boolean checkHttpMethodAllowed(Method method) {
+        for (Method hh: allowedHttpMethods) {
+            if (hh.equals(method)) {
+                return true;
             }
-            if (report.getActionExitCode() != ActionReport.ExitCode.SUCCESS) {
-                logger.log(Level.SEVERE, "Cannot undeploy current admin gui ", report.getFailureCause());
-                return false;
-            }
-        } catch (IOException ioe) {
-            logger.log(Level.SEVERE, "Exception while stopping and cleaning previous instance of admin GUI", ioe);
-            return false;
         }
-        return true;
+        return false;
     }
 
-    /**
-     *	<p> This method returns true if the server only supports directory
-     *	    deployment of the admin console application.  false means that a
-     *	    .war file will be supplied which must be expanded.</p>
-     */
-    public static boolean isDirectoryDeploy() {
-	return directoryDeploy;
+    private String getAllowedHttpMethodsAsString() {
+        StringBuffer sb = new StringBuffer(allowedHttpMethods[0].getMethodString());
+        for (int i = 1; i < allowedHttpMethods.length; i++) {
+            sb.append(", ").append(allowedHttpMethods[i].getMethodString());
+        }
+        return sb.toString();
     }
 }

@@ -98,9 +98,13 @@ public class ResourcesApplication implements ApplicationContainer{
         DeploymentContext dc = (DeploymentContext)startupContext;
         final DeployCommandParameters deployParams = dc.getCommandParameters(DeployCommandParameters.class);
         //during app. deployment, create resources config and load resources
-        if(deployParams.origin == OpsParams.Origin.deploy) {
-            ResourcesDeployer.createResources(dc, true);
-        }else if (deployParams.origin == OpsParams.Origin.load) {
+        if(deployParams.origin == OpsParams.Origin.deploy || deployParams.origin == OpsParams.Origin.deploy_instance){
+            ResourcesDeployer.deployResources(applicationName, true);
+        }else if (deployParams.origin == OpsParams.Origin.load ||
+                deployParams.origin == OpsParams.Origin.create_application_ref) {
+            //<application> and its <resources>, <modules> are already available.
+            //Deploy them.
+            
             //during app. load (eg: server start or application/application-ref enable(), load resources
             asrManager.deployResources(applicationName);
         }

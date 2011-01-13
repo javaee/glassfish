@@ -45,6 +45,8 @@ import com.sun.enterprise.deployment.OrderingDescriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.WebFragmentDescriptor;
 import com.sun.enterprise.deployment.RootDeploymentDescriptor;
+import com.sun.enterprise.deployment.EjbBundleDescriptor;
+import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.annotation.impl.ModuleScanner;
 import com.sun.enterprise.deployment.annotation.impl.WarScanner;
 import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
@@ -192,6 +194,29 @@ public class WebArchivist extends Archivist<WebBundleDescriptor> {
             validator.accept(defaultWebXmlBundleDescriptor );
         }
         return defaultWebXmlBundleDescriptor ;
+    }
+
+    /**
+     * After reading all the standard deployment descriptors, merge any
+     * resource descriptors from EJB descriptors into the WebBundleDescriptor.
+     *
+     * @param descriptor the deployment descriptor for the module
+     * @param archive the module archive
+     * @param extensions map of extension archivists
+     */
+    protected void postStandardDDsRead(WebBundleDescriptor descriptor,
+                ReadableArchive archive,
+                Map<ExtensionsArchivist, RootDeploymentDescriptor> extensions)
+                throws IOException {
+        for (RootDeploymentDescriptor rd : extensions.values()) {
+            if (rd instanceof EjbBundleDescriptor) {
+                EjbBundleDescriptor eb = (EjbBundleDescriptor)rd;
+                descriptor.addJndiNameEnvironment(eb);
+                for (EjbDescriptor ejb : eb.getEjbs()) {
+                    ejb.notifyNewModule(descriptor);
+                }
+            }
+        }
     }
 
     /**

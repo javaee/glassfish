@@ -166,6 +166,7 @@ public class ApplicationFactory implements ContractProvider {
         Application application;
         if (descriptor instanceof Application) {
             application = (Application) descriptor;
+            application.setAppName(appName);
             application.setRegistrationName(appName);
         } else {
             BundleDescriptor aBundle = (BundleDescriptor) descriptor;

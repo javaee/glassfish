@@ -60,6 +60,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
 
 import java.beans.PropertyVetoException;
+import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -90,7 +91,10 @@ public class DeleteConnectorConnectionPool implements AdminCommand {
     
     @Inject
     private Server[] servers;
-    
+
+    @Inject
+    private Cluster[] clusters;
+
     /**
      * Executes the command with the command parameters passed as Properties
      * where the keys are the paramter names and the values the parameter values
@@ -119,7 +123,7 @@ public class DeleteConnectorConnectionPool implements AdminCommand {
 
             // if cascade=true delete all the resources associated with this pool
             // if cascade=false don't delete this connection pool if a resource is referencing it
-            Object obj = deleteAssociatedResources(servers, domain.getResources(),
+            Object obj = deleteAssociatedResources(servers, clusters, domain.getResources(),
                     cascade, poolname);
             if (obj instanceof Integer &&
                     (Integer) obj == ResourceStatus.FAILURE) {
@@ -164,39 +168,50 @@ public class DeleteConnectorConnectionPool implements AdminCommand {
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
 
-    private Object deleteAssociatedResources(final Server[] servers, Resources resources,
-            final boolean cascade, final String connPoolId) throws TransactionFailure {
+    //TODO duplicate code in JDBCConnectionPoolManager
+    private Object deleteAssociatedResources(final Server[] servers, final Cluster[] clusters, Resources resources,
+                                           final boolean cascade, final String poolName) throws TransactionFailure {
+        if (cascade) {
+            ConfigSupport.apply(new SingleConfigCode<Resources>() {
+                public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
+                    Collection<BindableResource> referringResources = param.getResourcesOfPool(poolName);
+                    for (BindableResource referringResource : referringResources) {
+                        // delete resource-refs
+                        deleteResourceRefs(servers, referringResource.getJndiName());
+                        deleteResourceRefs(clusters, referringResource.getJndiName());
 
-        return ConfigSupport.apply(new SingleConfigCode<Resources>() {
-            public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
-                Resource res = null;
-                for (Resource resource : param.getResources()) {
-                    if (resource instanceof ConnectorResource) {
-                        if (((ConnectorResource)resource).getPoolName().equals(connPoolId)) {
-                            if (cascade) {
-                                // delete resource-refs
-                                deleteResourceRefs(servers, ((ConnectorResource)resource).getJndiName());
-                                res = resource;
-                                break;
-                            } else {
-                                return ResourceStatus.FAILURE;
-                            }
-                        }
+                        // remove the resource
+                        param.getResources().remove(referringResource);
                     }
-                 }
-                 // delete connector-resource
-                 if (res != null) {
-                     param.getResources().remove(res);
-                 }
-                 return null;
+                    return true; //no-op
+                }
+            }, resources);
+        }else{
+            Collection<BindableResource> referringResources = resources.getResourcesOfPool(poolName);
+            if(referringResources.size() > 0){
+                return ResourceStatus.FAILURE;
             }
-        }, resources);
+        }
+        return true; //no-op
     }
 
+    //TODO duplicate code in JDBCConnectionPoolManager
     private void deleteResourceRefs(Server[] servers, final String refName)
             throws TransactionFailure {
-        for (Server server : servers) {
-           server.deleteResourceRef(refName);
+        if(servers != null){
+            for (Server server : servers) {
+                server.deleteResourceRef(refName);
+            }
         }
     }
+
+    private void deleteResourceRefs(Cluster[] clusters, final String refName)
+            throws TransactionFailure {
+        if(clusters != null){
+            for (Cluster cluster : clusters) {
+                cluster.deleteResourceRef(refName);
+            }
+        }
+    }
+
 }

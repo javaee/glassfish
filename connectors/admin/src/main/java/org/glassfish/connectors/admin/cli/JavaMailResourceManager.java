@@ -40,6 +40,7 @@
 
 package org.glassfish.connectors.admin.cli;
 
+import org.glassfish.admin.cli.resources.BindableResourcesHelper;
 import org.glassfish.admin.cli.resources.ResourceManager;
 import org.glassfish.admin.cli.resources.ResourceUtil;
 import org.glassfish.resource.common.ResourceStatus;
@@ -87,6 +88,9 @@ public class JavaMailResourceManager implements ResourceManager {
     @Inject
     private ResourceUtil resourceUtil;
 
+    @Inject
+    private BindableResourcesHelper resourcesHelper;
+
     public String getResourceType() {
         return ServerTags.MAIL_RESOURCE;
     }
@@ -95,7 +99,7 @@ public class JavaMailResourceManager implements ResourceManager {
                                  String target) throws Exception {
         setAttributes(attributes, target);
 
-        ResourceStatus validationStatus = isValid(resources);
+        ResourceStatus validationStatus = isValid(resources, true, target);
         if(validationStatus.getStatus() == ResourceStatus.FAILURE){
             return validationStatus;
         }
@@ -135,7 +139,7 @@ public class JavaMailResourceManager implements ResourceManager {
         }
     }
 
-    private ResourceStatus isValid(Resources resources){
+    private ResourceStatus isValid(Resources resources, boolean validateResourceRef, String target){
         ResourceStatus status = new ResourceStatus(ResourceStatus.SUCCESS, "Validation Successful");
         if (mailHost == null) {
             String msg = localStrings.getLocalString("create.mail.resource.noHostName",
@@ -156,14 +160,12 @@ public class JavaMailResourceManager implements ResourceManager {
         }
 
 
-        // ensure we don't already have one of this name
-        if (resources.getResourceByName(BindableResource.class, jndiName) != null) {
-            String msg = localStrings.getLocalString(
-                    "create.mail.resource.duplicate.1",
-                    "A Mail Resource named {0} already exists.",
-                    jndiName);
-            return new ResourceStatus(ResourceStatus.FAILURE, msg, true);
+        status = resourcesHelper.validateBindableResourceForDuplicates(resources, jndiName, validateResourceRef,
+                target, MailResource.class);
+        if(status.getStatus() == ResourceStatus.FAILURE){
+            return status;
         }
+
         return status;
     }
 
@@ -221,7 +223,7 @@ public class JavaMailResourceManager implements ResourceManager {
         if(!validate){
             status = new ResourceStatus(ResourceStatus.SUCCESS,"");
         }else{
-            status = isValid(resources);
+            status = isValid(resources, false, null);
         }
         if(status.getStatus() == ResourceStatus.SUCCESS){
             return createConfigBean(resources, properties);

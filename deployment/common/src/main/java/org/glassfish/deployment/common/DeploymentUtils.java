@@ -44,13 +44,16 @@ import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.api.deployment.archive.ArchiveHandler;
 import com.sun.enterprise.deployment.deploy.shared.Util;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.loader.util.ASClassLoaderUtil;
+import org.jvnet.hk2.annotations.Service;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.FileFilter;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.net.URI;
@@ -72,6 +75,8 @@ import java.util.logging.Level;
 
 public class DeploymentUtils {
 
+    public static final String DEPLOYMENT_PROPERTY_JAVA_WEB_START_ENABLED = "java-web-start-enabled";
+    
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(DeploymentUtils.class);
 
     final private static Logger _logger = LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
@@ -460,7 +465,10 @@ public class DeploymentUtils {
             for (URL manifestURL : manifestURLs) {
                 URI manifestLibURI = archiveURI.relativize(manifestURL.toURI());
                 if (manifestLibURI.isAbsolute()) {
-                    externalLibURIs.add(manifestLibURI);
+                    File externalLib = new File(manifestLibURI); 
+                    if (externalLib.exists()) {
+                        externalLibURIs.add(manifestLibURI);
+                    }
                 }
             }
         } catch (Exception e) {
@@ -469,4 +477,46 @@ public class DeploymentUtils {
         return externalLibURIs;
     }
 
+    public static List<URL> getModuleLibraryJars(DeploymentContext context)
+        throws Exception {
+        ReadableArchive archive = context.getSource();
+        List<URL> moduleLibraryURLs = new ArrayList<URL>();
+        ArchiveHandler handler = context.getArchiveHandler();
+        if (handler.getClass() == null ||
+            handler.getClass().getAnnotation(Service.class) == null) {
+            return moduleLibraryURLs;
+        }
+        String handlerName = handler.getClass().getAnnotation(Service.class).name();
+        File archiveFile = new File(archive.getURI());
+        if (handlerName.equals("war")) {
+            // we should add all the WEB-INF/lib jars for web module
+            File webInf = new File(archiveFile, "WEB-INF");
+            File webInfLib = new File(webInf, "lib");
+            if (webInfLib.exists()) {
+                moduleLibraryURLs = getLibDirectoryJars(webInfLib);
+            }
+        } else if (handlerName.equals("connector")) {
+            // we should add the top level jars for connector module
+            moduleLibraryURLs = getLibDirectoryJars(archiveFile);
+        }
+        return moduleLibraryURLs;
+    }
+
+    private static List<URL> getLibDirectoryJars(File moduleLibDirectory) throws Exception {
+        List<URL> libLibraryURLs = new ArrayList<URL>();
+        File[] jarFiles = moduleLibDirectory.listFiles(new FileFilter() {
+            public boolean accept(File pathname) {
+                return (pathname.isFile() &&
+                        pathname.getAbsolutePath().endsWith(".jar"));
+            }
+        });
+
+        if (jarFiles != null && jarFiles.length > 0) {
+            for (File jarFile : jarFiles) {
+                libLibraryURLs.add(jarFile.toURL());
+            }
+        }
+
+        return libLibraryURLs;
+    }
 }

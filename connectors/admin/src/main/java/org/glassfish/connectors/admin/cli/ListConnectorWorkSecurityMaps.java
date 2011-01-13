@@ -43,6 +43,7 @@ package org.glassfish.connectors.admin.cli;
 import com.sun.enterprise.config.serverbeans.*;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.CommandLock;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
@@ -63,6 +64,7 @@ import java.util.logging.Logger;
  */
 @Service(name="list-connector-work-security-maps")
 @Scoped(PerLookup.class)
+@CommandLock(CommandLock.LockType.NONE)
 @I18n("list.connector.work.security.maps")
 public class ListConnectorWorkSecurityMaps implements AdminCommand {
 

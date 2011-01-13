@@ -43,8 +43,8 @@ package org.glassfish.kernel.embedded;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
-import org.glassfish.api.embedded.Ports;
-import org.glassfish.api.embedded.Port;
+import org.glassfish.internal.embedded.Port;
+import org.glassfish.internal.embedded.Ports;
 
 import java.io.IOException;
 import java.util.*;

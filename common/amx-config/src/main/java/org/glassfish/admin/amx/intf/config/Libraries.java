@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,33 +41,32 @@
 package org.glassfish.admin.amx.intf.config;
 
 /**
-Mixin interface for access to library path.
+ * Mixin interface for access to library path.
  */
-public interface Libraries
-{
+public interface Libraries {
 
     /**
-    Optional Attribute (may be null).
-    <p>
-    These paths could be either relative [relative to
-    {com.sun.aas.instanceRoot}/lib/applibs] or absolute paths.
-    These dependencies appears *after* the libraries defined in
-    classpath-prefix in the java-config and *before* the
-    application server provided over-rideable jar set. The
-    libraries would be made available to the application in the
-    order in which they were specified.
-
-    @since AppServer 9.0
+     * Optional Attribute (may be null).
+     * <p/>
+     * These paths could be either relative [relative to
+     * {com.sun.aas.instanceRoot}/lib/applibs] or absolute paths.
+     * These dependencies appears *after* the libraries defined in
+     * classpath-prefix in the java-config and *before* the
+     * application server provided over-rideable jar set. The
+     * libraries would be made available to the application in the
+     * order in which they were specified.
+     *
+     * @since AppServer 9.0
      */
     public String getLibraries();
 
     /**
-    Replaces the existing libraries Attribute. Certain
-    system applications may not allow changing this Attribute
-    (read only).  Delimiter is TBD
-
-    @see #getLibraries
-    @since AppServer 9.0
+     * Replaces the existing libraries Attribute. Certain
+     * system applications may not allow changing this Attribute
+     * (read only).  Delimiter is TBD
+     *
+     * @see #getLibraries
+     * @since AppServer 9.0
      */
     public void setLibraries(String libraries);
 }

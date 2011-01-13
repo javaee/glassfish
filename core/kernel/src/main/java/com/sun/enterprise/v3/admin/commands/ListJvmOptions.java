@@ -58,6 +58,7 @@ import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.CommandLock;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.config.support.TargetType;
 import org.glassfish.config.support.CommandTarget;
@@ -76,6 +77,7 @@ import org.jvnet.hk2.component.PerLookup;
  */
 @Service(name="list-jvm-options")   //implements the cli command by this "name"
 @Scoped(PerLookup.class)            //should be provided "per lookup of this class", not singleton
+@CommandLock(CommandLock.LockType.NONE)
 @I18n("list.jvm.options")
 @ExecuteOn({RuntimeType.DAS})
 @TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})

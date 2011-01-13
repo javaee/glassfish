@@ -37,24 +37,16 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.v3.admin;
 
-import com.sun.enterprise.admin.util.ClusterOperationUtil;
 import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.v3.common.PropsFileActionReporter;
 import org.glassfish.api.ActionReport;
-import org.glassfish.api.ActionReport.ExitCode;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
-import org.glassfish.external.statistics.Statistic;
-import org.glassfish.external.statistics.Stats;
-import org.glassfish.external.statistics.impl.StatisticImpl;
 import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
 import org.glassfish.internal.api.Target;
-import org.glassfish.config.support.CommandTarget;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -64,10 +56,9 @@ import org.jvnet.hk2.config.Dom;
 import org.jvnet.hk2.config.types.Property;
 
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Proxy;
 import java.net.URLEncoder;
 import java.util.*;
-import static com.sun.enterprise.util.SystemPropertyConstants.SLASH;
+
 
 /**
  * User: Jerome Dochez
@@ -76,34 +67,30 @@ import static com.sun.enterprise.util.SystemPropertyConstants.SLASH;
  */
 @Service(name = "get")
 @Scoped(PerLookup.class)
+@CommandLock(CommandLock.LockType.NONE)
 @ExecuteOn({RuntimeType.DAS, RuntimeType.INSTANCE})
 public class GetCommand extends V2DottedNameSupport implements AdminCommand {
-
     @Inject
-    Domain domain;
-
+    private MonitoringReporter mr;
     @Inject
-    ServerEnvironment serverEnv;
-
+    private Domain domain;
     @Inject
-    Target targetService;
-
+    private ServerEnvironment serverEnv;
     @Inject
-    Habitat habitat;
-
+    private Target targetService;
+    @Inject
+    private Habitat habitat;
     @Param(optional = true, defaultValue = "false", shortName = "m")
-    Boolean monitor;
-
+    private Boolean monitor;
     @Param(primary = true)
-    String pattern;
-
+    private String pattern;
     @Inject(optional = true)
     private MonitoringRuntimeDataRegistry mrdr;
-
     private final String DOTTED_NAME = ".dotted-name";
     final private static LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(GetCommand.class);
 
+    @Override
     public void execute(AdminCommandContext context) {
 
         ActionReport report = context.getActionReport();
@@ -112,19 +99,23 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
         try {
             PropsFileActionReporter reporter = (PropsFileActionReporter) report;
             reporter.useMainChildrenAttribute(true);
-        } catch (ClassCastException e) {
+        }
+        catch (ClassCastException e) {
             // ignore this is not a manifest output.
         }
 
         if (monitor) {
-            getMonitorAttributes(report, context);
+            getMonitorAttributes(context);
+            //String old = report.getMessage();
+            //String append = "\nXXXXXXXXX\n" + mr.toString();
+            //report.setMessage(old == null ? append : old + append);
             return;
         }
 
         // check for logging patterns
-        if (pattern.contains(".log-service.")) {
+        if (pattern.contains(".log-service")) {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setMessage(localStrings.getLocalString("admin.get.invalid.logservice.command", "For getting log levels use list-log-levels command."));
+            report.setMessage(localStrings.getLocalString("admin.get.invalid.logservice.command", "For getting log levels/attributes use list-log-levels/list-log-attributes command."));
             return;
         }
 
@@ -140,25 +131,33 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
 
         // first let's get the parent for this pattern.
         TreeNode[] parentNodes = getAliasedParent(domain, pattern);
-        Map<Dom, String> dottedNames = new HashMap<Dom, String>();
-        for (TreeNode parentNode : parentNodes) {
-            dottedNames.putAll(getAllDottedNodes(parentNode.node));
-        }
 
         // reset the pattern.
         String prefix = "";
-        if (!pattern.startsWith(parentNodes[0].relativeName)) {
+        if(!pattern.startsWith(parentNodes[0].relativeName)) {
             prefix = pattern.substring(0, pattern.indexOf(parentNodes[0].relativeName));
+            pattern = parentNodes[0].relativeName;
+        } else {
+            pattern = parentNodes[0].relativeName;
         }
-        pattern = parentNodes[0].relativeName;
 
-        Map<Dom, String> matchingNodes = getMatchingNodes(dottedNames, pattern);
+        String targetName = prefix + pattern;
+
+        Map<Dom, String> matchingNodes;
+        Map<Dom, String> dottedNames = new HashMap<Dom, String>();
+        for (TreeNode parentNode : parentNodes) {
+            dottedNames.putAll(getAllDottedNodes(parentNode.node));
+            if (parentNode.name.equals("")) {
+                dottedNames.put(parentNode.node, "domain");
+            }
+        }
+        matchingNodes = getMatchingNodes(dottedNames, pattern);
         if (matchingNodes.isEmpty() && pattern.lastIndexOf('.') != -1) {
             // it's possible the user is just looking for an attribute, let's remove the
             // last element from the pattern.
             matchingNodes = getMatchingNodes(dottedNames, pattern.substring(0, pattern.lastIndexOf(".")));
         }
-
+        
         //No matches found - report the failure and return
         if (matchingNodes.isEmpty()) {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
@@ -180,7 +179,8 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
                     part.setMessage(prefix + node.getValue() + "=" + encode(node.getKey().attribute("value")));
                     foundMatch = true;
                 }
-            } else {
+            }
+            else {
                 Map<String, String> attributes = getNodeAttributes(node.getKey(), pattern);
                 TreeMap<String, String> attributesSorted = new TreeMap(attributes);
                 for (Map.Entry<String, String> name : attributesSorted.entrySet()) {
@@ -205,146 +205,22 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
     private String encode(String value) {
         try {
             return URLEncoder.encode(value, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
+        }
+        catch (UnsupportedEncodingException e) {
             return value;
         }
     }
 
-    private void getMonitorAttributes(ActionReport report, AdminCommandContext ctxt) {
-        if ((pattern == null) || (pattern.equals(""))) {
-            report.setActionExitCode(ExitCode.FAILURE);
-            report.setMessage("match pattern is invalid or null");
-            report.setMessage(localStrings.getLocalString("admin.get.invalid.pattern", "Match pattern is invalid or null"));
-            return;
-        }
+    private void getMonitorAttributes(AdminCommandContext ctxt) {
+        mr.prepareGet(ctxt, pattern);
 
-        if (mrdr == null) {
-            report.setActionExitCode(ExitCode.FAILURE);
-            //report.setMessage("monitoring facility not installed");
-            report.setMessage(localStrings.getLocalString("admin.get.no.monitoring", "Monitoring facility not installed"));
-            return;
-        }
+        String s = "Get Command: " + mr.toString();
 
-        //Grab the monitoring tree root from habitat and get the attributes using pattern
-        String targetName;
-        if (pattern.indexOf(".") == -1) {
-            targetName = pattern;
-        } else {
-            targetName = pattern.substring(0, pattern.indexOf("."));
-        }
-        if( ("*".equals(targetName) && (domain.getServers().getServer().size() == 1) &&
-                (domain.getClusters().getCluster().size() == 0)) ) {
-            targetName = "server";
-        }
-        if (serverEnv.isDas() &&
-                !serverEnv.getInstanceName().equals(targetName)) {
-            callInstance(report, ctxt, targetName);
-            return;
-        }
-        targetName = (targetName.equals("*")) ? serverEnv.getInstanceName() : targetName;
-        org.glassfish.flashlight.datatree.TreeNode tn = mrdr.get(targetName);
-        if (tn == null) {
-            //No monitoring data, so nothing to list
-            report.setActionExitCode(ExitCode.SUCCESS);
-            return;
-        }
+        if (Boolean.parseBoolean(System.getenv("AS_DEBUG")))
+            ctxt.logger.info(s);
+        else
+            ctxt.logger.fine(s);
 
-        TreeMap map = new TreeMap();
-        List<org.glassfish.flashlight.datatree.TreeNode> ltn = tn.getNodes(pattern);
-        boolean singleStat = false;
-
-        if (ltn == null || ltn.isEmpty()) {
-            org.glassfish.flashlight.datatree.TreeNode parent = tn.getPossibleParentNode(pattern);
-
-            if (parent != null) {
-                ltn = new ArrayList<org.glassfish.flashlight.datatree.TreeNode>(1);
-                ltn.add(parent);
-                singleStat = true;
-            }
-        }
-
-        if (!singleStat)
-            pattern = null; // signal to method call below
-
-        for (org.glassfish.flashlight.datatree.TreeNode tn1 : sortTreeNodesByCompletePathName(ltn)) {
-            if (!tn1.hasChildNodes()) {
-                insertNameValuePairs(map, tn1, pattern);
-            }
-        }
-        Iterator it = map.keySet().iterator();
-        Object obj;
-        while (it.hasNext()) {
-            obj = it.next();
-            String s = obj.toString();
-            ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-            part.setMessage(s.replace(SLASH, "/") + " = " + map.get(obj));
-        }
-        report.setActionExitCode(ExitCode.SUCCESS);
-    }
-
-    private void insertNameValuePairs(
-            TreeMap map, org.glassfish.flashlight.datatree.TreeNode tn1, String exactMatch) {
-        String name = tn1.getCompletePathName();
-        Object value = tn1.getValue();
-        if (tn1.getParent() != null) {
-            map.put(tn1.getParent().getCompletePathName() + DOTTED_NAME,
-                    tn1.getParent().getCompletePathName());
-        }
-        if (value instanceof Stats) {
-            for (Statistic s : ((Stats) value).getStatistics()) {
-                String statisticName = s.getName();
-                if (statisticName != null) {
-                    statisticName = s.getName().toLowerCase();
-                }
-                addStatisticInfo(s, name + "." + statisticName, map);
-            }
-        } else if (value instanceof Statistic) {
-            addStatisticInfo(value, name, map);
-        } else {
-            map.put(name, value);
-        }
-
-        // IT 8985 bnevins
-        // Hack to get single stats.  The code above above would take a lot of
-        // time to unwind.  For development speed we just remove unwanted items
-        // after the fact...
-
-        if (exactMatch != null) {
-            Object val = map.get(exactMatch);
-            map.clear();
-
-            if (val != null)
-                map.put(exactMatch, val);
-        }
-    }
-
-    private void addStatisticInfo(Object value, String name, TreeMap map) {
-        Map<String, Object> statsMap;
-        // Most likely we will get the proxy of the StatisticImpl,
-        // reconvert that so you can access getStatisticAsMap method
-        if (Proxy.isProxyClass(value.getClass())) {
-            statsMap = ((StatisticImpl) Proxy.getInvocationHandler(value)).getStaticAsMap();
-        } else {
-            statsMap = ((StatisticImpl) value).getStaticAsMap();
-        }
-        for (String attrName : statsMap.keySet()) {
-            Object attrValue = statsMap.get(attrName);
-            map.put(name + "-" + attrName, attrValue);
-        }
-    }
-
-    public void callInstance(ActionReport report, AdminCommandContext context, String targetName) {
-        try {
-            ParameterMap paramMap = new ParameterMap();
-            paramMap.set("monitor", "true");
-            paramMap.set("DEFAULT", pattern);
-            List<Server> targetList = (targetName.equals("*")) ? targetService.getAllInstances() :
-                    targetService.getInstances(targetName);
-            ClusterOperationUtil.replicateCommand("get", FailurePolicy.Error, FailurePolicy.Warn, targetList,
-                    context, paramMap, habitat);
-        } catch (Exception ex) {
-            report.setActionExitCode(ExitCode.FAILURE);
-            report.setMessage("Failure while trying get details from instance " + targetName);
-        }
+        mr.execute();
     }
 }

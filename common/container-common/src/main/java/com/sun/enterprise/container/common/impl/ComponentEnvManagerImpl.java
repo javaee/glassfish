@@ -66,7 +66,9 @@ import javax.naming.NameNotFoundException;
 import javax.naming.Context;
 import java.net.MalformedURLException;
 import java.util.*;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.validation.Validation;
@@ -119,19 +121,46 @@ public class ComponentEnvManagerImpl
     @Inject
     private InvocationManager invMgr;
 
-    private Map<String, JndiNameEnvironment> compId2Env =
-            new ConcurrentHashMap<String, JndiNameEnvironment>();
+    private ConcurrentMap<String, RefCountJndiNameEnvironment> compId2Env =
+            new ConcurrentHashMap<String, RefCountJndiNameEnvironment>();
+
+    /*
+     * Keep track of number of components using the same component ID
+     * so that we can match register calls with unregister calls.
+     * EJBs in war files will use the same component ID as the web
+     * bundle.
+     */
+    private static class RefCountJndiNameEnvironment {
+        public RefCountJndiNameEnvironment(JndiNameEnvironment env) {
+            this.env = env;
+            this.refcnt = new AtomicInteger(1);
+        }
+        public JndiNameEnvironment env;
+        public AtomicInteger refcnt;
+    }
 
     public void register(String componentId, JndiNameEnvironment env) {
-        this.compId2Env.put(componentId, env);
+        RefCountJndiNameEnvironment nrj = new RefCountJndiNameEnvironment(env);
+        RefCountJndiNameEnvironment rj =
+            compId2Env.putIfAbsent(componentId, nrj);
+        if (rj != null)
+            rj.refcnt.incrementAndGet();
     }
 
     public void unregister(String componentId) {
-        this.compId2Env.remove(componentId);
+        RefCountJndiNameEnvironment rj = compId2Env.get(componentId);
+        if (rj != null && rj.refcnt.decrementAndGet() == 0)
+            compId2Env.remove(componentId);
     }
 
     public JndiNameEnvironment getJndiNameEnvironment(String componentId) {
-        return this.compId2Env.get(componentId);
+        RefCountJndiNameEnvironment rj = compId2Env.get(componentId);
+        if (componentId != null && _logger.isLoggable(Level.FINEST)) {
+            _logger.finest("ComponentEnvManagerImpl: " +
+                "getJndiNameEnvironment " + componentId + " is " +
+                (rj == null ? "NULL" : rj.env.getClass().toString()));
+        }
+        return rj == null ? null : rj.env;
     }
 
     public JndiNameEnvironment getCurrentJndiNameEnvironment() {
@@ -139,7 +168,12 @@ public class ComponentEnvManagerImpl
         ComponentInvocation inv = invMgr.getCurrentInvocation();
         if (inv != null) {
             if (inv.componentId != null) {
-                desc = compId2Env.get(inv.componentId);
+                desc = getJndiNameEnvironment(inv.componentId);
+                if (_logger.isLoggable(Level.FINEST)) {
+                    _logger.finest("ComponentEnvManagerImpl: " +
+                        "getCurrentJndiNameEnvironment " + inv.componentId +
+                        " is " + desc.getClass());
+                }
             }
         }
 
@@ -224,6 +258,9 @@ public class ComponentEnvManagerImpl
 
 
         if( compEnvId != null ) {
+            if (_logger.isLoggable(Level.FINEST))
+                _logger.finest("ComponentEnvManagerImpl: " +
+                    "register " + compEnvId + " is " + env.getClass());
             this.register(compEnvId, env);
         }
 
@@ -288,7 +325,7 @@ public class ComponentEnvManagerImpl
             String logicalJndiName = descriptorToLogicalJndiName(dsd);
             CompEnvBinding envBinding = new CompEnvBinding(logicalJndiName, proxy);
             jndiBindings.add(envBinding);
-            dsd.setDeployed(true);
+            //dsd.setDeployed(true);
         }
     }
 
@@ -413,7 +450,8 @@ public class ComponentEnvManagerImpl
                    obj  = new java.net.URL(physicalJndiName);
                 }
                 catch(MalformedURLException e) {
-                    e.printStackTrace();
+                    // no need to print the stack trace, this is allowed
+                    //e.printStackTrace();
                 }
                 NamingObjectFactory factory = namingUtils.createSimpleNamingObjectFactory(name, obj);
                 value = namingUtils.createCloningNamingObjectFactory(name, factory);
@@ -713,11 +751,23 @@ public class ComponentEnvManagerImpl
             String flattedJndiName = ejbEnv.getJndiName().replace('/', '.');
 
             EjbBundleDescriptor ejbBundle = ejbEnv.getEjbBundleDescriptor();
-	        id = ejbEnv.getApplication().getName() + ID_SEPARATOR +
-                ejbBundle.getModuleDescriptor().getArchiveUri()
-                + ID_SEPARATOR +
-                ejbEnv.getName() + ID_SEPARATOR + flattedJndiName +
-                ejbEnv.getUniqueId();
+            Descriptor d = ejbBundle.getModuleDescriptor().getDescriptor();
+            // if this EJB is in a war file, use the same component ID
+            // as the web bundle, because they share the same JNDI namespace
+            if (d instanceof WebBundleDescriptor) {
+                // copy of code below
+                WebBundleDescriptor webEnv = (WebBundleDescriptor) d;
+                id = webEnv.getApplication().getName() + ID_SEPARATOR +
+                    webEnv.getContextRoot();
+                _logger.finer("ComponentEnvManagerImpl: " +
+                                "converting EJB to web bundle id " + id);
+            } else {
+                id = ejbEnv.getApplication().getName() + ID_SEPARATOR +
+                    ejbBundle.getModuleDescriptor().getArchiveUri()
+                    + ID_SEPARATOR +
+                    ejbEnv.getName() + ID_SEPARATOR + flattedJndiName +
+                    ejbEnv.getUniqueId();
+            }
         } else if(env instanceof WebBundleDescriptor) {
             WebBundleDescriptor webEnv = (WebBundleDescriptor) env;
 	    id = webEnv.getApplication().getName() + ID_SEPARATOR +

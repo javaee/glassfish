@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,16 +41,17 @@
 package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.config.AMXConfigProxy;
+
 import java.util.Map;
 
 /**
-All MBeans that have system SystemProperties must extend this interface.
+ * All MBeans that have system SystemProperties must extend this interface.
  */
-public interface SystemPropertiesAccess extends AMXConfigProxy
-{
+public interface SystemPropertiesAccess extends AMXConfigProxy {
     /**
-    Return all SystemProperty MBeans, keyed by property name.
-    @since Glassfish V3
+     * Return all SystemProperty MBeans, keyed by property name.
+     *
+     * @since Glassfish V3
      */
     public Map<String, SystemProperty> getSystemProperty();
 }

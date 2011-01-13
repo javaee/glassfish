@@ -279,6 +279,11 @@ public final class FeatureAvailability
         return data;
     }
 
+    public synchronized void deRegisterFeatures() {
+        debug("Removed all Fetaures from the Map");
+        mFeatures.clear();
+    }
+
 }
 
 

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,61 +42,61 @@ package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.base.Singleton;
 
-/**
-Represents the &lt;access-log&gt; element.
-<p>
- */
-public interface AccessLog extends ConfigElement, Singleton, PropertiesAccess
-{
+public interface AccessLog
+        extends Singleton, ConfigElement, PropertiesAccess {
+
+
     public String getFormat();
 
-    public void setFormat(final String value);
-
+    public void setFormat(String param1);
 
     public String getBufferSizeBytes();
-    public void setBufferSizeBytes(String val);
-    
+
+    public void setBufferSizeBytes(String param1);
+
     public String getWriteIntervalSeconds();
-    public void setWriteIntervalSeconds(String val);
-    
+
+    public void setWriteIntervalSeconds(String param1);
+
     public String getRotationEnabled();
 
-    public void setRotationEnabled(final String value);
+    public void setRotationEnabled(final String param1);
 
-    
     public String getRotationIntervalInMinutes();
 
-    public void setRotationIntervalInMinutes(final String value);
+    public void setRotationIntervalInMinutes(final String param1);
+
     /**
-    Possible value for RotationPolicy.
+     * Possible value for RotationPolicy.
      */
     public static final String ROTATION_POLICY_BY_TIME = "time";
     /**
-    Possible value for RotationPolicy.
+     * Possible value for RotationPolicy.
      */
     public static final String ROTATION_POLICY_BY_SIZE = "size";
     /**
-    Possible value for RotationPolicy.
+     * Possible value for RotationPolicy.
      */
     public static final String ROTATION_POLICY_ON_DEMAND = "on-demand";
 
     /**
-    Valid values are:
-    <ul>
-    <li>{@link #ROTATION_POLICY_BY_TIME}</li>
-    <li>{@link #ROTATION_POLICY_BY_SIZE}</li>
-    <li>{@link #ROTATION_POLICY_ON_DEMAND}</li>
-    </ul>
+     * Valid values are:
+     * <ul>
+     * <li>{@link #ROTATION_POLICY_BY_TIME}</li>
+     * <li>{@link #ROTATION_POLICY_BY_SIZE}</li>
+     * <li>{@link #ROTATION_POLICY_ON_DEMAND}</li>
+     * </ul>
      */
-    public void setRotationPolicy(final String value);
+    public void setRotationPolicy(final String param1);
 
     public String getRotationPolicy();
 
     public String getRotationSuffix();
 
-    public void setRotationSuffix(final String value);
+    public void setRotationSuffix(final String param1);
 
     public String getMaxHistoryFiles();
 
-    public void setMaxHistoryFiles(final String value);
+    public void setMaxHistoryFiles(final String param1);
+
 }

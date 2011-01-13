@@ -42,7 +42,7 @@
 -->
 
 <project name="Web Distribution (ips) Creation" default="create-image" basedir=".">
-<property name="source.distribution.name" value="GlassFish 3.1 Web Profile"/>
+<property name="source.distribution.name" value="GlassFish Open Source Edition 3.1 Web Profile"/>
 <target name="create-image" depends="create-installer-image, create-glassfish-image">
     <mkdir dir="${installer.image.dir}"/>
     <mkdir dir="${installer.image.dir}/${install.dir.name}"/>
@@ -204,6 +204,10 @@
 <target name="install-l10n-packages" description="Installing l10n packages">
    <ant antfile="../distributions.xml" target="install-package">
         <property name="package.name" value="glassfish-common-l10n"/>
+        <property name="image.dir" value="${image.dir}"/>
+    </ant>
+    <ant antfile="../distributions.xml" target="install-package">
+        <property name="package.name" value="glassfish-cluster-l10n"/>
         <property name="image.dir" value="${image.dir}"/>
     </ant>
     <ant antfile="../distributions.xml" target="install-package">

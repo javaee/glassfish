@@ -47,7 +47,8 @@
 package com.sun.enterprise.universal;
 
 import java.util.*;
-//import com.sun.enterprise.util.StringUtils;
+
+import com.sun.enterprise.util.StringUtils;
 
 /**
  *

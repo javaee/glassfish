@@ -40,7 +40,10 @@
 package com.sun.enterprise.v3.admin;
 
 import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.JavaConfig;
+import static com.sun.enterprise.util.StringUtils.ok;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
 import java.util.logging.Level;
@@ -52,13 +55,17 @@ import java.lang.management.OperatingSystemMXBean;
 import java.lang.management.ManagementFactory;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import java.util.logging.Logger;
+import org.glassfish.api.admin.*;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.CommandLock;
 import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.config.support.*;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
+import org.jvnet.hk2.config.types.Property;
 import static org.glassfish.api.ActionReport.ExitCode.SUCCESS;
 
 /**
@@ -68,8 +75,10 @@ import static org.glassfish.api.ActionReport.ExitCode.SUCCESS;
  */
 @Service(name = "_get-runtime-info")
 @Scoped(PerLookup.class)
+@CommandLock(CommandLock.LockType.NONE)
+@ExecuteOn({RuntimeType.INSTANCE})
+@TargetType({CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTERED_INSTANCE})
 public class RuntimeInfo implements AdminCommand {
-
     public RuntimeInfo() {
     }
 
@@ -97,7 +106,6 @@ public class RuntimeInfo implements AdminCommand {
             final Method jm = osBean.getClass().getMethod("getTotalPhysicalMemorySize");
             AccessController.doPrivileged(
                     new PrivilegedExceptionAction() {
-
                         public Object run() throws Exception {
                             if (!jm.isAccessible()) {
                                 jm.setAccessible(true);
@@ -117,9 +125,32 @@ public class RuntimeInfo implements AdminCommand {
         RuntimeMXBean rmxb = ManagementFactory.getRuntimeMXBean();
         top.addProperty("startTimeMillis", "" + rmxb.getStartTime());
         top.addProperty("pid", "" + rmxb.getName());
+        checkDtrace();
+        setDasName();
+        top.addProperty("java.vm.name", System.getProperty("java.vm.name"));
 
         reportMessage.append(Strings.get("runtime.info.debug", jpdaEnabled ? "enabled" : "not enabled"));
         report.setMessage(reportMessage.toString());
+    }
+
+    private void checkDtrace() {
+        try {
+            Class.forName("com.sun.tracing.ProviderFactory");
+            top.addProperty("dtrace", "true");
+        }
+        catch (Exception ex) {
+            top.addProperty("dtrace", "false");
+        }
+    }
+
+    private void setDasName() {
+        try {
+            String name = env.getInstanceRoot().getName();
+            top.addProperty("domain_name", name);
+        }
+        catch (Exception ex) {
+            // ignore
+        }
     }
 
     private int parsePort(String s) {
@@ -141,11 +172,13 @@ public class RuntimeInfo implements AdminCommand {
         return port;
     }
     @Inject
+    ServerEnvironment env;
+    @Inject
     private StartupContext ctx;
     @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
     private Config config;
-    @Param(optional = true)
-    private String target;
+    @Param(name = "target", optional = true, defaultValue = SystemPropertyConstants.SERVER_NAME)
+    String target;
     private boolean jpdaEnabled;
     private JavaConfig javaConfig;
     private ActionReport report;

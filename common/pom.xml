@@ -56,6 +56,7 @@
     <name>GlassFish Common modules</name>  
     <modules>
     	<module>simple-glassfish-api</module>
+    	<module>scattered-archive-api</module>
     	<module>glassfish-api</module>
         <module>mbeanserver</module>
     	<module>stats77</module>

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,18 +42,18 @@ package org.glassfish.admin.amx.intf.config;
 
 
 /**
-	Values which are legal to pass for 'isolation'
-	
-	See {@link JDBCConnectionPoolConfig#setTransactionIsolationLevel} and
-	{@link ResourcesConfig#createJDBCConnectionPoolConfig}.
-	@see JDBCConnectionPoolConfigKeys#TRANSACTION_ISOLATION_LEVEL_KEY
+ * Values which are legal to pass for 'isolation'
+ * <p/>
+ * See {@link JDBCConnectionPoolConfig#setTransactionIsolationLevel} and
+ * {@link ResourcesConfig#createJDBCConnectionPoolConfig}.
+ *
+ * @see JDBCConnectionPoolConfigKeys#TRANSACTION_ISOLATION_LEVEL_KEY
  */
-public final class IsolationValues
-{
+public final class IsolationValues {
 
-    private IsolationValues()
-    {
+    private IsolationValues() {
     }
+
     public static final String READ_UNCOMMITTED = "read-uncommitted";
     public static final String READ_COMMITTED = "read-committed";
     public static final String REPEATABLE_READ = "repeatable-read";

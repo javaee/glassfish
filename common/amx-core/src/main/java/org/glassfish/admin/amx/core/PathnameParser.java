@@ -400,7 +400,7 @@ public final class PathnameParser
 
     public static String parentPath(final ObjectName objectName)
     {
-        return objectName.getKeyProperty(PARENT_PATH_KEY);
+        return Util.unquoteIfNeeded(objectName.getKeyProperty(PARENT_PATH_KEY));
     }
 
 }

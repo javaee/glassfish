@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,30 +40,27 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.base.Singleton;
+import org.glassfish.admin.amx.config.AMXConfigProxy;
 
-/**
-Configuration for the &lt;ejb-timer-service&gt; element.
- */
-public interface EjbTimerService extends AMXConfigProxy, PropertiesAccess, Singleton
-{
+public interface EjbTimerService
+        extends Singleton, AMXConfigProxy, PropertiesAccess {
 
-    String getMaxRedeliveries();
 
-    void setMaxRedeliveries(final String value);
+    public String getMaxRedeliveries();
 
-    
-    String getMinimumDeliveryIntervalInMillis();
+    public void setMaxRedeliveries(String param1);
 
-    void setMinimumDeliveryIntervalInMillis(final String value);
+    public String getMinimumDeliveryIntervalInMillis();
 
-    
-    String getRedeliveryIntervalInternalInMillis();
+    public void setMinimumDeliveryIntervalInMillis(String param1);
 
-    void setRedeliveryIntervalInternalInMillis(final String value);
+    public String getRedeliveryIntervalInternalInMillis();
 
-    String getTimerDatasource();
+    public void setRedeliveryIntervalInternalInMillis(String param1);
 
-    void setTimerDatasource(final String value);
+    public String getTimerDatasource();
+
+    public void setTimerDatasource(String param1);
+
 }

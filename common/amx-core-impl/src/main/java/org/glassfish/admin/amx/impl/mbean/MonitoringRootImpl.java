@@ -48,10 +48,13 @@ import org.glassfish.admin.amx.impl.util.ObjectNameBuilder;
 import org.glassfish.admin.amx.monitoring.MonitoringRoot;
 import org.glassfish.admin.amx.monitoring.ServerMon;
 import org.glassfish.admin.amx.core.Util;
+import org.glassfish.api.admin.ServerEnvironment;
+import com.sun.enterprise.config.serverbeans.Server;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.Habitat;
 
 public class MonitoringRootImpl extends AMXImplBase // implements MonitoringRoot
 {
-
     public MonitoringRootImpl(final ObjectName parent) {
         super(parent, MonitoringRoot.class);
     }
@@ -66,10 +69,11 @@ public class MonitoringRootImpl extends AMXImplBase // implements MonitoringRoot
 
         ObjectName childObjectName = null;
         Object mbean = null;
-
+        System.out.println(" In the registerChildren of MonitoringRootImpl instance Name = " + System.getProperty("com.sun.aas.instanceName"));
         // when clustering comes along, some other party will need to register MBeans
         // for each non-DAS instance
-        childObjectName = objectNames.buildChildObjectName(ServerMon.class, AMXGlassfish.DEFAULT.dasName());
+        // childObjectName = objectNames.buildChildObjectName(ServerMon.class, AMXGlassfish.DEFAULT.dasName());
+        childObjectName = objectNames.buildChildObjectName(ServerMon.class, System.getProperty("com.sun.aas.instanceName"));
         mbean = new ServerMonitoringImpl(self);
         registerChild(mbean, childObjectName);
     }

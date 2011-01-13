@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2006-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -73,6 +73,7 @@ import org.glassfish.internal.data.EngineInfo;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.internal.deployment.SnifferManager;
+import org.glassfish.internal.deployment.DeploymentTracing;
 import org.glassfish.internal.api.*;
 import org.glassfish.external.probe.provider.PluginPoint;
 import org.glassfish.external.probe.provider.StatsProviderManager;
@@ -139,6 +140,8 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
     @Inject
     Habitat habitat;
 
+    private String deploymentTracingEnabled = null;
+
     /**
      * Retuns the lifecyle of the service.
      * Once the applications are loaded, this service does not need to remain
@@ -168,6 +171,9 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
         DeploymentLifecycleStatsProvider dlsp = new DeploymentLifecycleStatsProvider();
         StatsProviderManager.register("deployment", PluginPoint.SERVER,
             "deployment/lifecycle", dlsp);
+
+        deploymentTracingEnabled = System.getProperty(
+            "org.glassfish.deployment.trace");
 
         Domain domain = habitat.getComponent(Domain.class);
         systemApplications = domain.getSystemApplications();
@@ -330,6 +336,10 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
                 ReadableArchive archive = null;
                 try {
 
+                    DeploymentTracing tracing = null;
+                    if (deploymentTracingEnabled != null) {
+                        tracing = new DeploymentTracing();
+                    }
                     DeployCommandParameters deploymentParams =
                         app.getDeployParameters(appRef);
                     deploymentParams.target = server.getName();
@@ -342,6 +352,9 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
 
                     ActionReport report = new HTMLActionReporter();
                     ExtendedDeploymentContext depContext = deployment.getBuilder(logger, deploymentParams, report).source(archive).build();
+                    if (tracing!=null) {
+                        depContext.addModuleMetaData(tracing);
+                    }
 
                     depContext.getAppProps().putAll(app.getDeployProperties());
                     depContext.setModulePropsMap(app.getModulePropertiesMap());
@@ -350,6 +363,9 @@ public class ApplicationLoaderService implements Startup, PreDestroy, PostConstr
 
                     deployment.deploy(deployment.getSniffersFromApp(app), depContext);
                     if (report.getActionExitCode().equals(ActionReport.ExitCode.SUCCESS)) {
+                        if (tracing!=null) {
+                            tracing.print(System.out);
+                        }
                         logger.log(Level.INFO, "loading.application.time", new Object[] {
                                 appName, (Calendar.getInstance().getTimeInMillis() - operationStartTime)});
                     } else {

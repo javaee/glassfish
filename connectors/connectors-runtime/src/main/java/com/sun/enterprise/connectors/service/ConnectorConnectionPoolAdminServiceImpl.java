@@ -1039,7 +1039,7 @@ public class ConnectorConnectionPoolAdminServiceImpl extends ConnectorService {
                         }
                     }
 
-                    boolean isPM = false;
+                    boolean isPM = connectorConnectionPool.isNonComponent();
                     boolean isNonTx = connectorConnectionPool.isNonTransactional();
                     ConnectorSecurityMap[] securityMaps =
                             connectorConnectionPool.getSecurityMaps();

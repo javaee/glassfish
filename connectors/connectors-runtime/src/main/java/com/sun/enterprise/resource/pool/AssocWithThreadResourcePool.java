@@ -127,6 +127,16 @@ public class AssocWithThreadResourcePool extends ConnectionPool {
                         }
                     }
 
+                    if (!isConnectionValid(ar, alloc)) {
+                        localResource.remove();
+                        ar.setAssociated(false);
+                        // disassociating the connection from the thread.
+                        // validation failure will mark the connectionErrorOccurred flag
+                        // and the connection will be removed whenever it is retrieved again
+                        // from the pool.
+                        return null;
+                    }
+
                     setResourceStateToBusy(ar);
                     if (maxConnectionUsage_ > 0) {
                         ar.incrementUsageCount();

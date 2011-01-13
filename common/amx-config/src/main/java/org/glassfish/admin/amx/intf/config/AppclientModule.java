@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,63 +38,26 @@
  * holder.
  */
 
-package com.sun.enterprise.universal;
+package org.glassfish.admin.amx.intf.config;
 
-import java.sql.SQLException;
-import java.util.Vector;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
 
-/**
- *
- * @author bnevins
- */
-public class StringUtilsTest {
+public interface AppclientModule {
 
-    public StringUtilsTest() {
-    }
 
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
+    public String getLocation();
 
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
+    public String getDirectoryDeployed();
 
-    @Before
-    public void setUp() {
-    }
+    public String getDescription();
 
-    @After
-    public void tearDown() {
-    }
+    public void setDescription(String param1);
 
- /**
-     * Test of removeEnclosingQuotes method, of class StringUtils.
-     */
-    @Test
-    public void removeEnclosingQuotes() {
-        String a = "\"hello\"";
-        String b = "'hello'";
-        String c = "\"hello'";
-        String d = "\"\"hello";
-        
-        assertEquals(StringUtils.removeEnclosingQuotes(a), "hello");
-        assertEquals(StringUtils.removeEnclosingQuotes(b), "hello");
-        assertEquals(StringUtils.removeEnclosingQuotes(c), "\"hello\'");
-        assertEquals(StringUtils.removeEnclosingQuotes(d), "\"\"hello");
-        assertEquals(StringUtils.removeEnclosingQuotes("\""), "\"");
-        assertEquals(StringUtils.removeEnclosingQuotes("'"), "'");
-        assertEquals(StringUtils.removeEnclosingQuotes("''"), "");
-        assertEquals(StringUtils.removeEnclosingQuotes("\"\""), "");
-        assertEquals(StringUtils.removeEnclosingQuotes(""), "");
-        assertNull(StringUtils.removeEnclosingQuotes(null));
-        
-    }
+    public String getJavaWebStartEnabled();
+
+    public void setJavaWebStartEnabled(String param1);
+
+    public void setLocation(String param1);
+
+    public void setDirectoryDeployed(String param1);
 
 }

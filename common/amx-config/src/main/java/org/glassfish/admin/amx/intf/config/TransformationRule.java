@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,36 +40,25 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-/**
-Sub-element of {@link WebServiceEndpointConfig}.
 
-@since AppServer 9.0
- */
-public interface TransformationRule extends NamedConfigElement, Enabled
-{
+public interface TransformationRule
+        extends Enabled, NamedConfigElement {
 
-    /**
-    One of {@link #APPLY_TO_REQUEST}, {@link #APPLY_TO_RESPONSE}, {@link #APPLY_TO_BOTH}.
-     */
+
+    public String getName();
+
+    public void setName(String param1);
+
+    public String getEnabled();
+
+    public void setEnabled(String param1);
+
     public String getApplyTo();
 
-    /**
-    @see #getApplyTo
-     */
-    public void setApplyTo(String value);
+    public void setApplyTo(String param1);
 
-    /**
-     * Gets the transformation rule file location.
-     *
-     * @return File path for this transformation rule
-     */
     public String getRuleFileLocation();
 
-    /**
-     * Sets the transformation rule file location.
-     * WARNING: Rule file must exist in the new location.
-     *
-     * @param name File path for this transformation rule
-     */
-    public void setRuleFileLocation(String name);
+    public void setRuleFileLocation(String param1);
+
 }

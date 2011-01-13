@@ -193,7 +193,7 @@ public class Target {
         if(CommandTarget.NODE.isValid(habitat, targetName)) {
             List<Server> allInstances = getAllInstances();
             for(Server s : allInstances) {
-                if(targetName.equals(s.getNode()))
+                if(targetName.equals(s.getNodeRef()))
                     instances.add(s);
             }
         }

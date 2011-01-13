@@ -156,6 +156,8 @@ public abstract class AdminAdapter extends StaticHttpHandler implements Adapter,
 
     @Inject
     GenericJavaConfigListener listener;
+    
+    private SecureAdmin secureAdmin;
 
     final Class<? extends Privacy> privacyClass;
 
@@ -179,6 +181,7 @@ public abstract class AdminAdapter extends StaticHttpHandler implements Adapter,
         epd = new AdminEndpointDecider(config, logger);
         registerDynamicReconfigListeners();
         addDocRoot(env.getProps().get(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY) + "/asadmindocroot/");
+        secureAdmin = habitat.getComponent(SecureAdmin.class);
     }
 
     /**
@@ -263,7 +266,7 @@ public abstract class AdminAdapter extends StaticHttpHandler implements Adapter,
         }
     }
 
-    public boolean authenticate(Request req) throws Exception {
+    public AdminAccessController.Access authenticate(Request req) throws Exception {
         String[] up = getUserPassword(req);
         String user = up[0];
         String password = up.length > 1 ? up[1] : "";
@@ -271,9 +274,9 @@ public abstract class AdminAdapter extends StaticHttpHandler implements Adapter,
         if (authenticator != null) {
             final Principal sslPrincipal = req.getUserPrincipal();
             return authenticator.loginAsAdmin(user, password, as.getAuthRealmName(),
-                    authRelatedHeaders(req), sslPrincipal);
+                    req.getRemoteHost(), authRelatedHeaders(req), sslPrincipal);
         }
-        return true;   //if the authenticator is not available, allow all access - per Jerome
+        return AdminAccessController.Access.FULL;   //if the authenticator is not available, allow all access - per Jerome
     }
     
     private Map<String,String> authRelatedHeaders(final Request gr) {
@@ -311,21 +314,74 @@ public abstract class AdminAdapter extends StaticHttpHandler implements Adapter,
 
     private boolean authenticate(Request req, ActionReport report, Response res)
             throws Exception {
-        boolean authenticated = authenticate(req);
-        if (!authenticated) {
-            String msg = adminStrings.getLocalString("adapter.auth.userpassword",
-                    "Invalid user name or password");
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setMessage(msg);
-            report.setActionDescription("Authentication error");
-            res.setStatus(HttpURLConnection.HTTP_UNAUTHORIZED);
-            res.setHeader("WWW-Authenticate", "BASIC");
-            res.setContentType(report.getContentType());
-            report.writeReport(res.getOutputStream());
-            res.getOutputStream().flush();
-            res.finish();
+        
+        AdminAccessController.Access access = authenticate(req);
+        /*
+         * Admin requests through this adapter are assumed to change the
+         * configuration, which means the access granted needs to be FULL.
+         */
+        switch (access)  {
+            case FULL:
+                return true;
+
+            case MONITORING:
+                /*
+                 * The request authenticated OK but it is remote and this is the DAS;
+                 * that's why MONITORING rather than FULL came back.
+                 * 
+                 * For user-friendliness respond with Forbidden.
+                 */
+                reportAuthFailure(res, report,
+                        "adapter.auth.remoteReqSecAdminOff",
+                        "Remote configuration is currently disabled",
+                        HttpURLConnection.HTTP_FORBIDDEN);
+
+                break;
+
+            case NONE:
+                if (env.isDas()) {
+                    reportAuthFailure(res, report, "adapter.auth.userpassword",
+                        "Invalid user name or password",
+                        HttpURLConnection.HTTP_UNAUTHORIZED,
+                        "WWW-Authenticate", "BASIC");
+                } else {
+                    reportAuthFailure(res, report, "adapter.auth.notOnInstance",
+                            "Configuration access to an instance is not allowed; please connect to the domain admin server instead to make configuration changes",
+                        HttpURLConnection.HTTP_FORBIDDEN);
+                }
+                break;
+
         }
-        return authenticated;
+
+        return access == AdminAccessController.Access.FULL;
+    }
+
+    private void reportAuthFailure(final Response res,
+            final ActionReport report,
+            final String msgKey,
+            final String msg,
+            final int httpStatus) throws IOException {
+        reportAuthFailure(res, report, msgKey, msg, httpStatus, null, null);
+    }
+
+    private void reportAuthFailure(final Response res,
+            final ActionReport report,
+            final String msgKey,
+            final String msg,
+            final int httpStatus,
+            final String headerName,
+            final String headerValue) throws IOException {
+        report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+        report.setMessage(adminStrings.getLocalString(msgKey, msg));
+        report.setActionDescription("Authentication error");
+        res.setStatus(httpStatus);
+        if (headerName != null) {
+            res.setHeader(headerName, headerValue);
+        }
+        res.setContentType(report.getContentType());
+        report.writeReport(res.getOutputStream());
+        res.getOutputStream().flush();
+        res.finish();
     }
 
     private ActionReport getClientActionReport(String requestURI, Request req) {
@@ -404,6 +460,13 @@ public abstract class AdminAdapter extends StaticHttpHandler implements Adapter,
                 // todo : needs to be changed, we should reuse adminCommand
                 CommandRunner.CommandInvocation inv = commandRunner.getCommandInvocation(command, report);
                 inv.parameters(parameters).inbound(inboundPayload).outbound(outboundPayload).execute();
+                try {
+                    // note it has become extraordinarily difficult to change the reporter!
+                    CommandRunnerImpl.ExecutionContext inv2 = (CommandRunnerImpl.ExecutionContext) inv;
+                    report = inv2.report();
+                }
+                catch(Exception e) {
+                }
             } else {
                 report.failure( logger,
                                 adminStrings.getLocalString("adapter.wrongprivacy",
@@ -535,6 +598,8 @@ public abstract class AdminAdapter extends StaticHttpHandler implements Adapter,
         SystemPropertyListener ls = habitat.getComponent(SystemPropertyListener.class);
         ob.addListener(ls); //there should be a better way to do this ...
         ob = (ObservableBean)ConfigSupport.getImpl(server);
+        ob.addListener(ls);
+        ob = (ObservableBean)ConfigSupport.getImpl(config);
         ob.addListener(ls);
     }
     private void registerDynamicReconfigListeners() {

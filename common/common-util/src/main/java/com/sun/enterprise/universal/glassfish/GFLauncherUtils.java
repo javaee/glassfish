@@ -75,7 +75,7 @@ public class GFLauncherUtils {
 
         if(installDir == null)
         {
-            String resourceName = GFLauncherUtils.class.getName().replace(".", "/") + ".class";
+            String resourceName = GFLauncherUtils.class.getName().replace('.', '/') + ".class";
             URL resource = GFLauncherUtils.class.getClassLoader().getResource(resourceName);
 
             if (resource == null) {

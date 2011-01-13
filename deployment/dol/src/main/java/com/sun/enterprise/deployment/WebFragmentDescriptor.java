@@ -156,23 +156,25 @@ public class WebFragmentDescriptor extends WebBundleDescriptor
     }
 
     @Override
-    protected void combineEnvironmentEntries(WebBundleDescriptor webBundleDescriptor) {
-        for (EnvironmentEntry env: webBundleDescriptor.getEnvironmentEntrySet()) {
-            EnvironmentProperty envProp = _getEnvironmentPropertyByName(env.getName());
+    protected void combineEnvironmentEntries(JndiNameEnvironment env) {
+        for (Object oenve : env.getEnvironmentProperties()) {
+            EnvironmentEntry enve = (EnvironmentEntry)oenve;
+            EnvironmentProperty envProp = _getEnvironmentPropertyByName(enve.getName());
             if (envProp != null) {
-                if (envProp.isConflict((EnvironmentProperty)env)) {
+                if (envProp.isConflict((EnvironmentProperty)enve)) {
                     conflictEnvironmentEntry = true;
                 }
-                unionInjectionTargets(envProp, (EnvironmentProperty)env);
+                unionInjectionTargets(envProp, (EnvironmentProperty)enve);
             } else {
-                addEnvironmentEntry(env);
+                addEnvironmentEntry(enve);
             }
         }
     }
 
     @Override
-    protected void combineEjbReferenceDescriptors(WebBundleDescriptor webBundleDescriptor) {
-        for (EjbReference ejbRef: webBundleDescriptor.getEjbReferenceDescriptors()) {
+    protected void combineEjbReferenceDescriptors(JndiNameEnvironment env) {
+        for (Object oejbRef : env.getEjbReferenceDescriptors()) {
+            EjbReference ejbRef = (EjbReference)oejbRef;
             EjbReferenceDescriptor ejbRefDesc =
                     (EjbReferenceDescriptor)_getEjbReference(ejbRef.getName());
             if (ejbRefDesc != null) {
@@ -187,8 +189,10 @@ public class WebFragmentDescriptor extends WebBundleDescriptor
     }
 
     @Override
-    protected void combineServiceReferenceDescriptors(WebBundleDescriptor webBundleDescriptor) {
-        for (ServiceReferenceDescriptor serviceRef: webBundleDescriptor.getServiceReferenceDescriptors()) {
+    protected void combineServiceReferenceDescriptors(JndiNameEnvironment env) {
+        for (Object oserviceRef : env.getServiceReferenceDescriptors()) {
+            ServiceReferenceDescriptor serviceRef =
+                (ServiceReferenceDescriptor)oserviceRef;
             ServiceReferenceDescriptor sr = _getServiceReferenceByName(serviceRef.getName());
             if (sr != null) {
                 if (sr.isConflict((ServiceReferenceDescriptor)serviceRef)) {
@@ -202,8 +206,10 @@ public class WebFragmentDescriptor extends WebBundleDescriptor
     }
 
     @Override
-    protected void combineResourceReferenceDescriptors(WebBundleDescriptor webBundleDescriptor) {
-        for (ResourceReferenceDescriptor resRef : webBundleDescriptor.getResourceReferenceDescriptors()) {
+    protected void combineResourceReferenceDescriptors(JndiNameEnvironment env) {
+        for (Object oresRef : env.getResourceReferenceDescriptors()) {
+            ResourceReferenceDescriptor resRef =
+                (ResourceReferenceDescriptor)oresRef;
             ResourceReferenceDescriptor rrd = _getResourceReferenceByName(resRef.getName());
             if (rrd != null) {
                 if (resRef.isConflict(rrd)) {
@@ -217,8 +223,10 @@ public class WebFragmentDescriptor extends WebBundleDescriptor
     }
 
     @Override
-    protected void combineJmsDestinationReferenceDescriptors(WebBundleDescriptor webBundleDescriptor) {
-        for (JmsDestinationReferenceDescriptor jdRef: webBundleDescriptor.getJmsDestinationReferenceDescriptors()) {
+    protected void combineJmsDestinationReferenceDescriptors(JndiNameEnvironment env) {
+        for (Object ojdRef : env.getJmsDestinationReferenceDescriptors()) {
+            JmsDestinationReferenceDescriptor jdRef =
+                (JmsDestinationReferenceDescriptor)ojdRef;
             JmsDestinationReferenceDescriptor jdr = _getJmsDestinationReferenceByName(jdRef.getName());
             if (jdr != null) {
                 if (jdr.isConflict((JmsDestinationReferenceDescriptor)jdRef)) {
@@ -232,9 +240,10 @@ public class WebFragmentDescriptor extends WebBundleDescriptor
     }
 
     @Override
-    protected void combineMessageDestinationReferenceDescriptors(WebBundleDescriptor webBundleDescriptor) {
-        for (MessageDestinationReferenceDescriptor mdRef :
-            webBundleDescriptor.getMessageDestinationReferenceDescriptors()) {
+    protected void combineMessageDestinationReferenceDescriptors(JndiNameEnvironment env) {
+        for (Object omdRef : env.getMessageDestinationReferenceDescriptors()) {
+            MessageDestinationReferenceDescriptor mdRef =
+                (MessageDestinationReferenceDescriptor)omdRef;
             MessageDestinationReferenceDescriptor mdr =
                 _getMessageDestinationReferenceByName(mdRef.getName());
             if (mdr != null) {
@@ -249,9 +258,9 @@ public class WebFragmentDescriptor extends WebBundleDescriptor
     }
 
     @Override
-    protected void combineEntityManagerReferenceDescriptors(WebBundleDescriptor webBundleDescriptor) {
+    protected void combineEntityManagerReferenceDescriptors(JndiNameEnvironment env) {
         for (EntityManagerReferenceDescriptor emRef :
-                webBundleDescriptor.getEntityManagerReferenceDescriptors()) {
+                env.getEntityManagerReferenceDescriptors()) {
             EntityManagerReferenceDescriptor emr =
                 _getEntityManagerReferenceByName(emRef.getName());
             if (emr != null) {
@@ -266,9 +275,9 @@ public class WebFragmentDescriptor extends WebBundleDescriptor
     }
 
     @Override
-     protected void combineEntityManagerFactoryReferenceDescriptors(WebBundleDescriptor webBundleDescriptor) {
+     protected void combineEntityManagerFactoryReferenceDescriptors(JndiNameEnvironment env) {
         for (EntityManagerFactoryReferenceDescriptor emfRef :
-                webBundleDescriptor.getEntityManagerFactoryReferenceDescriptors()) {
+                env.getEntityManagerFactoryReferenceDescriptors()) {
             EntityManagerFactoryReferenceDescriptor emfr =
                 _getEntityManagerFactoryReferenceByName(emfRef.getName());
             if (emfr != null) {
@@ -293,8 +302,8 @@ public class WebFragmentDescriptor extends WebBundleDescriptor
     }
 
     @Override
-    protected void combineDataSourceDefinitionDescriptors(WebBundleDescriptor webBundleDescriptor) {
-        for (DataSourceDefinitionDescriptor ddd: webBundleDescriptor.getDataSourceDefinitionDescriptors()) {
+    protected void combineDataSourceDefinitionDescriptors(JndiNameEnvironment env) {
+        for (DataSourceDefinitionDescriptor ddd: env.getDataSourceDefinitionDescriptors()) {
             DataSourceDefinitionDescriptor ddDesc = getDataSourceDefinitionDescriptor(ddd.getName());
             if (ddDesc != null) {
                 if (ddDesc.isConflict(ddd)) {

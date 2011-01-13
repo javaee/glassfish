@@ -75,6 +75,7 @@
                     <include>com/sun/enterprise/v3/**/*.properties</include>
                     <include>com/sun/enterprise/v3/**/downloadgui.html</include>
                     <include>com/sun/enterprise/v3/**/status.html</include>
+                    <include>com/sun/enterprise/v3/**/statusNotDAS.html</include>
                     <include>com/sun/enterprise/v3/**/asynch-1F.gif</include>
                     <include>com/sun/enterprise/v3/**/backimage.jpg</include>
                 </includes>
@@ -96,6 +97,7 @@
                     <archive>
                         <manifestEntries>
                             <probe-provider-class-names>com.sun.enterprise.v3.services.impl.monitor.probes.ThreadPoolProbeProvider,com.sun.enterprise.v3.services.impl.monitor.probes.FileCacheProbeProvider,com.sun.enterprise.v3.services.impl.monitor.probes.KeepAliveProbeProvider,com.sun.enterprise.v3.services.impl.monitor.probes.ConnectionQueueProbeProvider</probe-provider-class-names>
+                            <Class-Path>kernel-l10n.jar</Class-Path>
                         </manifestEntries>
                     </archive>
                 </configuration>

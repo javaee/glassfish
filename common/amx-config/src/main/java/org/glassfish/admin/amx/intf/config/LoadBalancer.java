@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,22 +40,31 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-import org.glassfish.admin.amx.base.Singleton;
 import org.glassfish.admin.amx.core.AMXMBeanMetadata;
 
-/**
-Configuration for the &lt;configs&gt; element; it is an internal "node" which
-groups all config elements under itself.
-@since Glassfish V3
- */
 @AMXMBeanMetadata
-public interface LoadBalancer extends NamedConfigElement
-{
+public interface LoadBalancer
+        extends NamedConfigElement {
+
+
+    public String getName();
+
+    public void setName(String param1);
+
+    public String getLbConfigName();
+
+    public void setLbConfigName(String param1);
+
+    public String getDeviceHost();
+
+    public void setDeviceHost(String param1);
+
+    public String getDevicePort();
+
+    public void setDevicePort(String param1);
+
+    public String getAutoApplyEnabled();
+
+    public void setAutoApplyEnabled(String param1);
+
 }
-
-
-
-
-
-
-

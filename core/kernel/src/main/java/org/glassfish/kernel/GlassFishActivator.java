@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -83,7 +83,11 @@ public class GlassFishActivator implements BundleActivator, EventListener {
 
     private void registerGlassFishRuntime() throws InterruptedException {
         bundleContext.registerService(GlassFishRuntime.class.getName(), new GlassFishRuntime() {
+
             List<GlassFish> gfs = new ArrayList<GlassFish>();
+
+            // cache the value, because we can't use bundleContext after this bundle is stopped.
+            Framework framework = (Framework) bundleContext.getBundle(0); // system bundle is the framework
 
             @Override
             public synchronized GlassFish newGlassFish(GlassFishProperties gfProps) throws GlassFishException {
@@ -99,7 +103,6 @@ public class GlassFishActivator implements BundleActivator, EventListener {
                     final ModulesRegistry mr = ModulesRegistry.class.cast(bundleContext.getService(bundleContext.getServiceReference(ModulesRegistry.class.getName())));
                     final Habitat habitat = main.createHabitat(mr, startupContext);
                     final ModuleStartup gfKernel = main.findStartupService(mr, habitat, null, startupContext);
-                    System.out.println("gfKernel = " + gfKernel);
                     GlassFish glassFish = new GlassFishImpl(gfKernel, habitat, gfProps.getProperties());
                     gfs.add(glassFish);
                     events = habitat.getComponent(Events.class);
@@ -115,6 +118,9 @@ public class GlassFishActivator implements BundleActivator, EventListener {
             }
 
             public synchronized void shutdown() throws GlassFishException {
+                if (framework == null) {
+                    return; // already shutdown
+                }
                 for (GlassFish gf : gfs) {
                     if (gf.getStatus() != GlassFish.Status.DISPOSED) {
                         try {
@@ -126,7 +132,6 @@ public class GlassFishActivator implements BundleActivator, EventListener {
                 }
                 gfs.clear();
                 try {
-                    Framework framework = (Framework) bundleContext.getBundle(0); // system bundle is the framework
                     framework.stop();
                     framework.waitForStop(0);
                 } catch (InterruptedException ex) {
@@ -135,6 +140,8 @@ public class GlassFishActivator implements BundleActivator, EventListener {
                     throw new GlassFishException(ex);
                 }
                 shutdownInternal();
+                framework = null;
+                System.out.println("Completed shutdown of GlassFish runtime");
             }
         }, null);
     }

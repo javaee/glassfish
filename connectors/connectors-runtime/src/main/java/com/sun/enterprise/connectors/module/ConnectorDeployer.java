@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -49,13 +49,19 @@ import com.sun.enterprise.connectors.util.ResourcesUtil;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.config.serverbeans.*;
+import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.logging.LogDomains;
+import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.UndeployCommandParameters;
 import org.glassfish.api.deployment.OpsParams;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.Events;
+import org.glassfish.internal.api.Target;
+import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.javaee.core.deployment.JavaEEDeployer;
 import org.glassfish.javaee.services.ApplicationScopedResourcesManager;
 import org.glassfish.javaee.services.ResourceManager;
@@ -65,6 +71,7 @@ import org.glassfish.internal.api.DelegatingClassLoader;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
+import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
@@ -87,7 +94,7 @@ import java.beans.PropertyVetoException;
  */
 @Service
 public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, ConnectorApplication>
-        implements PostConstruct {
+        implements PostConstruct, PreDestroy, EventListener {
 
     @Inject
     private ConnectorRuntime runtime;
@@ -104,13 +111,19 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
     @Inject
     private Domain domain;
 
+    @Inject
+    private ServerEnvironment env;
+
     private Resources resources;
 
     @Inject
     private Events events;
 
     private static Logger _logger = LogDomains.getLogger(ConnectorDeployer.class, LogDomains.RSR_LOGGER);
+    private static StringManager localStrings = StringManager.getManager(ConnectorRuntime.class);
 
+    private static final String DOMAIN = "domain";
+    private static final String EAR = "ear";
 
     public ConnectorDeployer() {
     }
@@ -153,6 +166,9 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
             context.getModuleMetaData(ConnectorDescriptor.class);
         if (connDesc != null) {
             connDesc.setClassLoader(context.getClassLoader());
+        }
+        if(_logger.isLoggable(Level.FINEST)){
+            _logger.finest("connector-descriptor during load : " + connDesc);
         }
 
         boolean isEmbedded = ConnectorsUtil.isEmbedded(context);
@@ -208,14 +224,10 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
      * @param context      of the undeployment
      */
     public void unload(ConnectorApplication appContainer, DeploymentContext context) {
-        File sourceDir = context.getSourceDir();
-        String moduleName = sourceDir.getName();
+
+        String moduleName = appContainer.getModuleName();
 
         try {
-            if (ConnectorsUtil.isEmbedded(context)) {
-                String applicationName = ConnectorsUtil.getApplicationName(context);
-                moduleName = ConnectorsUtil.getEmbeddedRarModuleName(applicationName, moduleName);
-            }
             runtime.destroyActiveResourceAdapter(moduleName);
         } catch (ConnectorRuntimeException e) {
             Object params[] = new Object[]{moduleName, e};
@@ -331,19 +343,22 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
         }
     }
 
-    private void deleteAdminObjectResources(final Collection<AdminObjectResource> adminObjectResources, String target,
-                                            String raName) {
+    private void deleteAdminObjectResources(final Collection<AdminObjectResource> adminObjectResources,
+                                            final String target, String raName) {
         if (adminObjectResources != null && adminObjectResources.size() > 0) {
             try {
-                final Server targetServer = domain.getServerNamed(target);
+
+                //delete resource-refs
+                for (AdminObjectResource resource : adminObjectResources) {
+                    String jndiName = resource.getJndiName();
+                    deleteResourceRef(jndiName, target);
+                }
+
                 // delete admin-object-resource
                 if (ConfigSupport.apply(new SingleConfigCode<Resources>() {
                     public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
                         for (AdminObjectResource resource : adminObjectResources) {
                             param.getResources().remove(resource);
-
-                            // delete resource-ref
-                            targetServer.deleteResourceRef(resource.getJndiName());
                         }
                         // not found
                         return true;
@@ -359,19 +374,22 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
         }
     }
 
-    private void deleteConnectorResources(final Collection<Resource> connectorResources, String target, String raName) {
+    private void deleteConnectorResources(final Collection<Resource> connectorResources, final String target,
+                                          String raName) {
         if (connectorResources.size() > 0) {
             try {
-                final Server targetServer = domain.getServerNamed(target);
+
+                //delete resource-refs
+                for (Resource resource : connectorResources) {
+                    String jndiName = ((ConnectorResource) resource).getJndiName();
+                    deleteResourceRef(jndiName, target);
+                }
 
                 // delete connector-resource
                 if (ConfigSupport.apply(new SingleConfigCode<Resources>() {
                     public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
                         for (Resource resource : connectorResources) {
                             param.getResources().remove(resource);
-
-                            // delete resource-ref
-                            targetServer.deleteResourceRef(((ConnectorResource) resource).getJndiName());
                         }
                         // not found
                         return true;
@@ -382,6 +400,42 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
             } catch (TransactionFailure tfe) {
                 Object params[] = new Object[]{raName, tfe};
                 _logger.log(Level.WARNING, "unable.to.delete.connector.resource.exception", params);
+            }
+        }
+    }
+
+    private void deleteResourceRef(String jndiName, String target) throws TransactionFailure {
+
+        if (target.equals(DOMAIN)) {
+            return ;
+        }
+
+        if( domain.getConfigNamed(target) != null){
+            return ;
+        }
+
+        Server server = ConfigBeansUtilities.getServerNamed(target);
+        if (server != null) {
+            if (server.isResourceRefExists(jndiName)) {
+                // delete ResourceRef for Server
+                server.deleteResourceRef(jndiName);
+            }
+        } else {
+            Cluster cluster = domain.getClusterNamed(target);
+            if(cluster != null){
+                if (cluster.isResourceRefExists(jndiName)) {
+                    // delete ResourceRef of Cluster
+                    cluster.deleteResourceRef(jndiName);
+
+                    // delete ResourceRef for all instances of Cluster
+                    Target tgt = habitat.getComponent(Target.class);
+                    List<Server> instances = tgt.getInstances(target);
+                    for (Server svr : instances) {
+                        if (svr.isResourceRefExists(jndiName)) {
+                            svr.deleteResourceRef(jndiName);
+                        }
+                    }
+                }
             }
         }
     }
@@ -419,6 +473,7 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
      */
     public void postConstruct() {
         resources = domain.getResources();
+        events.register(this);
     }
 
     public void logFine(String message) {
@@ -530,5 +585,89 @@ public class ConnectorDeployer extends JavaEEDeployer<ConnectorContainer, Connec
     private void unregisterBeanValidator(String rarName){
         ConnectorRegistry registry = ConnectorRegistry.getInstance();
         registry.removeBeanValidator(rarName);
+    }
+
+    public void event(Event event) {
+
+        // added this pre-check so as to validate whether connector-resources referring
+        // the application (that has rar or is an standalone rar) are present.
+        // Though similar validation is done in 'ConnectorApplication', this is to
+        // handle the case where the application is not enabled in DAS (no ConnectorApplication)
+
+
+        if (/*env.isDas() && */ Deployment.UNDEPLOYMENT_VALIDATION.equals(event.type())) {
+            //this is an application undeploy event
+            DeploymentContext dc = (DeploymentContext) event.hook();
+            UndeployCommandParameters dcp = dc.getCommandParameters(UndeployCommandParameters.class);
+            String appName = dcp.name;
+            Boolean cascade = dcp.cascade;
+            Boolean ignoreCascade = dcp._ignoreCascade;
+
+            if (cascade != null && ignoreCascade != null) {
+                if (cascade || ignoreCascade) {
+                    return;
+                }
+            }
+
+            com.sun.enterprise.config.serverbeans.Application app = domain.getApplications().getApplication(appName);
+            boolean isRAR = false;
+            if (app != null && Boolean.valueOf(app.getEnabled())) {
+                isRAR = app.containsSnifferType(ConnectorConstants.CONNECTOR_MODULE);
+            }
+
+            if (!isRAR) {
+                return;
+            }
+
+            boolean isAppRefEnabled = false;
+            Server server = domain.getServers().getServer(env.getInstanceName());
+            ApplicationRef appRef = server.getApplicationRef(appName);
+            if (appRef != null && Boolean.valueOf(appRef.getEnabled())) {
+                isAppRefEnabled = true;
+            }
+
+            if (isAppRefEnabled) {
+                return;
+            }
+            boolean isEAR = app.containsSnifferType(EAR);
+            String moduleName = appName;
+            ResourcesUtil resourcesUtil = ResourcesUtil.createInstance();
+            if (isEAR) {
+                List<Module> modules = app.getModule();
+                for (Module module : modules) {
+                    moduleName = module.getName();
+                    if (module.getEngine(ConnectorConstants.CONNECTOR_MODULE) != null) {
+                        moduleName = appName + ConnectorConstants.EMBEDDEDRAR_NAME_DELIMITER + moduleName;
+                        if (moduleName.toLowerCase().endsWith(".rar")) {
+                            int index = moduleName.lastIndexOf(".rar");
+                            moduleName = moduleName.substring(0, index);
+                            if (resourcesUtil.filterConnectorResources
+                                    (resourceManager.getAllResources(), moduleName, true).size() > 0) {
+                                setFailureStatus(dc, moduleName);
+                                return;
+                            }
+                        }
+                    }
+                }
+            } else {
+                if (resourcesUtil.filterConnectorResources
+                        (resourceManager.getAllResources(), moduleName, true).size() > 0) {
+                    setFailureStatus(dc, moduleName);
+                }
+            }
+        }
+    }
+
+    private void setFailureStatus(DeploymentContext dc, String moduleName) {
+        String message = localStrings.getString("con.deployer.resources.exist", moduleName);
+        _logger.log(Level.WARNING, "resources.of.rar.exist", moduleName);
+
+        ActionReport report = dc.getActionReport();
+        report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+        report.setMessage(message);
+    }
+
+    public void preDestroy() {
+        events.unregister(this);
     }
 }

@@ -168,6 +168,14 @@ public class ResourceReferenceDescriptor extends EnvironmentProperty
     }
    
     /**
+     * Has the sharing scope been set?
+     * @return true if the sharing scope has been set
+     */
+    public boolean hasSharingScope() {
+        return this.sharingScope != null;
+    }
+
+    /**
      * Return the res-sharing-scope of this resource reference.
      * @return the sharing scope.
      */
@@ -195,6 +203,14 @@ public class ResourceReferenceDescriptor extends EnvironmentProperty
 	return true;
     }
     
+    /**
+     * Has the authorization type been set?
+     * @return true if the authorization type has been set
+     */
+    public boolean hasAuthorization() {
+        return this.authorization != null;
+    }
+
     /**
      * Return true of this resource reference is expecting the container 
      * to authorize the resource.
@@ -293,7 +309,7 @@ public class ResourceReferenceDescriptor extends EnvironmentProperty
      * @return true if the resource is a URL object, false otherwise.
      */
     public boolean isURLResource() {
-        return this.getType().equals(URL_RESOURCE_TYPE);
+        return (this.getType() != null && this.getType().equals(URL_RESOURCE_TYPE));
     }
 
     /**
@@ -486,6 +502,14 @@ public class ResourceReferenceDescriptor extends EnvironmentProperty
     ** if the class of type "type" does not exist
     */
     public void checkType() {
+        if (rType == null) {
+	    if (this.isBoundsChecking()) {
+	        throw new IllegalArgumentException(localStrings.getLocalString(
+                "enterprise.deployment.exceptiontypenotallowedpropertytype", 
+                "{0} is not an allowed property value type", 
+                new Object[] {"null"}));
+            }
+        }
 	if (rType != null) {
 	    Class typeClass = null;
 	    // is it loadable ?

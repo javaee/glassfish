@@ -43,6 +43,7 @@ package com.sun.enterprise.resource;
 import javax.resource.ResourceException;
 import javax.transaction.xa.*;
 import javax.resource.spi.*;
+import javax.transaction.SystemException;
 
 import org.glassfish.resource.common.PoolInfo;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
@@ -78,6 +79,7 @@ public class ConnectorXAResource implements XAResource {
     private ClientSecurityInfo info;
     private ConnectionEventListener listener;
     private ResourceHandle localHandle_;
+    private JavaEETransaction associatedTransaction;
 
     private static Hashtable listenerTable = new Hashtable();
 
@@ -124,6 +126,7 @@ public class ConnectorXAResource implements XAResource {
             handleResourceException(ex);
         }finally{
             resetAssociation();
+            resetAssociatedTransaction();
         }
     }
 
@@ -140,6 +143,8 @@ public class ConnectorXAResource implements XAResource {
                     _logger.log(Level.FINE, "connection_sharing_start",  userHandle);
                 }
                 l.associateHandle(userHandle, localHandle_);
+            } else{
+                 associatedTransaction = getCurrentTransaction();
             }
         } catch (Exception ex) {
             handleResourceException(ex);
@@ -210,6 +215,7 @@ public class ConnectorXAResource implements XAResource {
             handleResourceException(ex);
         }finally{
             resetAssociation();
+            resetAssociatedTransaction();
         }
     }
 
@@ -224,8 +230,7 @@ public class ConnectorXAResource implements XAResource {
     private ResourceHandle getResourceHandle() throws PoolingException {
         try {
             ResourceHandle h = null;
-            JavaEETransactionManager txMgr = ConnectorRuntime.getRuntime().getTransactionManager();
-            JavaEETransaction j2eetran = (JavaEETransaction) txMgr.getTransaction();
+            JavaEETransaction j2eetran = getCurrentTransaction();
             if (j2eetran == null) {      //Only if some thing is wrong with tx manager.
                 h = localHandle_;        //Just return the local handle.
             } else {
@@ -249,6 +254,11 @@ public class ConnectorXAResource implements XAResource {
             _logger.log(Level.SEVERE, "poolmgr.system_exception", ex);
             throw new PoolingException(ex.toString(), ex);
         }
+    }
+
+    private JavaEETransaction getCurrentTransaction() throws SystemException {
+         JavaEETransactionManager txMgr = ConnectorRuntime.getRuntime().getTransactionManager();
+         return (JavaEETransaction) txMgr.getTransaction();
     }
 
     private void resetAssociation() throws XAException{
@@ -276,5 +286,13 @@ public class ConnectorXAResource implements XAResource {
         } catch (Exception ex) {
             handleResourceException(ex);
         }
+    }
+   
+    public JavaEETransaction getAssociatedTransaction(){
+         return associatedTransaction;
+    }
+
+    private void resetAssociatedTransaction(){
+         associatedTransaction = null;
     }
 }

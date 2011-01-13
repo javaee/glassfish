@@ -120,10 +120,18 @@ public class ManifestUtils {
     }
 
     public static Map<String,String> getMain(Map<String, Map<String,String>> exManifest) {
-        return exManifest.get(MAIN_ATTS);
+        Map<String,String> map = exManifest.get(MAIN_ATTS);
+
+        // Never return null
+        // do NOT return Collections.emptyMap because then we'll get an error when
+        // they try to add to it!
+        if(map == null)
+            map = new HashMap<String,String>(0);
+
+        return map;
     }
     
-    private final static String decode(String s) {
+    public static String decode(String s) {
         // replace "null" with null
         if(s == null || s.equals("null"))
             return null;

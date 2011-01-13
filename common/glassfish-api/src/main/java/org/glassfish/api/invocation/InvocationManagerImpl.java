@@ -294,10 +294,11 @@ public class InvocationManagerImpl
         List<RegisteredComponentInvocationHandler> setRegCompInvHandlers = regCompInvHandlerMap.get(type);
         if (setRegCompInvHandlers == null) {
             setRegCompInvHandlers = new ArrayList<RegisteredComponentInvocationHandler>();
+            regCompInvHandlerMap.put(type, setRegCompInvHandlers);
         }
-        setRegCompInvHandlers.add(handler);
-        regCompInvHandlerMap.put(type, setRegCompInvHandlers);
-  
+        if (setRegCompInvHandlers.size() == 0) {
+            setRegCompInvHandlers.add(handler);
+        }
     }
 }
 

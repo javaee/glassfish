@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,24 +40,23 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.base.Singleton;
+import org.glassfish.admin.amx.config.AMXConfigProxy;
 
-/**
-Configuration for the &lt;orb&gt; config element.
- */
-public interface Orb extends AMXConfigProxy, PropertiesAccess, Singleton
-{    
+public interface Orb
+        extends Singleton, AMXConfigProxy, PropertiesAccess {
+
+
     public String getMaxConnections();
 
-    public void setMaxConnections(String value);
+    public void setMaxConnections(String param1);
 
-    
     public String getMessageFragmentSize();
 
-    public void setMessageFragmentSize(String value);
+    public void setMessageFragmentSize(String param1);
 
     public String getUseThreadPoolIds();
 
-    public void setUseThreadPoolIds(String value);
+    public void setUseThreadPoolIds(String param1);
+
 }

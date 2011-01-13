@@ -46,20 +46,25 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Properties;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.util.Result;
 
 import com.sun.appserv.server.ServerLifecycleException;
 import com.sun.appserv.server.LifecycleListener;
-
+import org.glassfish.deployment.common.DeploymentException;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.Events;
 import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.api.FutureProvider;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.internal.api.ServerContext;
 
@@ -74,7 +79,7 @@ import org.glassfish.api.Startup;
  * registered LifecycleListeners.
  */
 @Service
-public class LifecycleModuleService implements Startup, PreDestroy, PostConstruct, EventListener {
+public class LifecycleModuleService implements Startup, PreDestroy, PostConstruct, EventListener, FutureProvider<Result<Thread>>{
 
     @Inject
     ServerContext context;
@@ -93,12 +98,14 @@ public class LifecycleModuleService implements Startup, PreDestroy, PostConstruc
      */
     private ArrayList listeners = new ArrayList();
     
+    List<Future<Result<Thread>>> futures = new ArrayList();
+
     public void postConstruct() {
         events.register(this);
         try {
             onInitialization();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            addExceptionToFuture(e);
         }
     }
 
@@ -108,6 +115,10 @@ public class LifecycleModuleService implements Startup, PreDestroy, PostConstruc
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public List<Future<Result<Thread>>> getFutures() {
+        return futures;
     }
 
     public Startup.Lifecycle getLifecycle() {
@@ -124,70 +135,65 @@ public class LifecycleModuleService implements Startup, PreDestroy, PostConstruc
                 onShutdown();
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new DeploymentException(e);
         }
     }
 
     private void onInitialization() throws ServerLifecycleException {
-        try {
-            List<Application> applications = apps.getApplications();
-            List<Application> lcms = new ArrayList<Application>();;
-            for (Application app : applications) {
-                if (Boolean.valueOf(app.getDeployProperties().getProperty
-                    (ServerTags.IS_LIFECYCLE))) {
-                    lcms.add(app);
-                }
+        List<Application> applications = apps.getApplications();
+        List<Application> lcms = new ArrayList<Application>();;
+        for (Application app : applications) {
+            if (Boolean.valueOf(app.getDeployProperties().getProperty
+                (ServerTags.IS_LIFECYCLE))) {
+                lcms.add(app);
             }
-
-            HashSet listenerSet = new HashSet();
-            for (Application next : lcms) {
-                Properties props = next.getDeployProperties();
-                String enabled = next.getEnabled();
-                if ( isEnabled(next.getName(), enabled) ) {
-                    String strOrder = (String)props.remove(
-                        ServerTags.LOAD_ORDER); 
-
-                    int order = Integer.MAX_VALUE;
-                    if (strOrder != null) {
-                        try {
-                            order = Integer.parseInt(strOrder);
-                        } catch(NumberFormatException nfe) {
-                            nfe.printStackTrace();
-                        }
-                    }
-
-                    String className = (String)props.remove(
-                        ServerTags.CLASS_NAME);
-                    ServerLifecycleModule slcm = 
-                        new ServerLifecycleModule(context, 
-                                    next.getName(), className);
-
-                    slcm.setLoadOrder(order);
-
-                    String classpath = (String)props.remove(
-                        ServerTags.CLASSPATH);
-                    slcm.setClasspath(classpath);
-
-                    String isFailureFatal = (String)props.remove(
-                        ServerTags.IS_FAILURE_FATAL);
-                    slcm.setIsFatal(Boolean.valueOf(isFailureFatal));
-
-                    props.remove(ServerTags.IS_LIFECYCLE);
-                    props.remove(ServerTags.OBJECT_TYPE);
-                        
-                    for (String propName : props.stringPropertyNames()) {
-                        slcm.setProperty(propName, props.getProperty(propName));
-                    }
-
-                    LifecycleListener listener = slcm.loadServerLifecycle();
-                    listenerSet.add(slcm);
-                }
-            }
-            sortModules(listenerSet);
-        } catch(Exception ce1) {
-            // FIXME eat it?
-            ce1.printStackTrace();
         }
+
+        HashSet listenerSet = new HashSet();
+        for (Application next : lcms) {
+            Properties props = next.getDeployProperties();
+            String enabled = next.getEnabled();
+            if ( isEnabled(next.getName(), enabled) ) {
+                String strOrder = (String)props.remove(
+                    ServerTags.LOAD_ORDER); 
+
+                int order = Integer.MAX_VALUE;
+                if (strOrder != null) {
+                    try {
+                        order = Integer.parseInt(strOrder);
+                    } catch(NumberFormatException nfe) {
+                        nfe.printStackTrace();
+                    }
+                }
+
+                String className = (String)props.remove(
+                    ServerTags.CLASS_NAME);
+                ServerLifecycleModule slcm = 
+                    new ServerLifecycleModule(context, 
+                                next.getName(), className);
+
+                slcm.setLoadOrder(order);
+
+                String classpath = (String)props.remove(
+                    ServerTags.CLASSPATH);
+                slcm.setClasspath(classpath);
+
+                String isFailureFatal = (String)props.remove(
+                    ServerTags.IS_FAILURE_FATAL);
+                slcm.setIsFatal(Boolean.valueOf(isFailureFatal));
+
+                props.remove(ServerTags.IS_LIFECYCLE);
+                props.remove(ServerTags.OBJECT_TYPE);
+                    
+                for (String propName : props.stringPropertyNames()) {
+                    slcm.setProperty(propName, props.getProperty(propName));
+                }
+
+                LifecycleListener listener = slcm.loadServerLifecycle();
+                listenerSet.add(slcm);
+            }
+        }
+        sortModules(listenerSet);
 
         initialize();
     }
@@ -302,5 +308,49 @@ public class LifecycleModuleService implements Startup, PreDestroy, PostConstruc
         }
         // set it back
         resetClassLoader(cl);
+    }
+
+    private Future<Result<Thread>> addExceptionToFuture(Throwable t) {
+        Future<Result<Thread>> future = new LifecycleModuleFuture();
+        ((LifecycleModuleFuture)future).setResult(new Result<Thread>(t));
+        futures.add(future);
+        return future;
+    }
+
+    public static final class LifecycleModuleFuture implements Future<Result<Thread>> {
+        Result<Thread> result;
+        CountDownLatch latch = new CountDownLatch(1);
+
+        public void setResult(Result<Thread> result) {
+            this.result = result;
+            latch.countDown();
+        }
+
+        @Override
+        public boolean cancel(boolean mayInterruptIfRunning) {
+            return false;
+        }
+
+        @Override
+        public boolean isCancelled() {
+            return false;
+        }
+
+        @Override
+        public boolean isDone() {
+            return latch.getCount() == 0;
+        }
+
+        @Override
+        public Result<Thread> get() throws InterruptedException {
+            latch.await();
+            return result;
+        }
+
+        @Override
+        public Result<Thread> get(long timeout, TimeUnit unit) throws InterruptedException {
+            latch.await(timeout, unit);
+            return result;
+        }
     }
 }

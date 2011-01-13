@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,32 +40,23 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-import org.glassfish.admin.amx.base.Singleton;
-
-
 import java.util.Map;
 
-/**
-Configuration for the &lt;message-security-config&gt; element.
- */
 public interface MessageSecurityConfig
-        extends NamedConfigElement
-{
-    /**
-    One of the values defined by {@link MessageLayerValues}.
-     */
+        extends NamedConfigElement {
+
+
     public String getAuthLayer();
 
     public String getDefaultClientProvider();
 
-    public void setDefaultClientProvider(final String value);
+    public void setDefaultClientProvider(String param1);
 
     public String getDefaultProvider();
 
-    public void setDefaultProvider(final String value);
+    public void setDefaultProvider(String param1);
 
-    /**
-    @return A map of Provider MBean proxies keyed on provider-id.
-     */
+    public void setAuthLayer(String param1);
+
     public Map<String, ProviderConfig> getProviderConfig();
 }

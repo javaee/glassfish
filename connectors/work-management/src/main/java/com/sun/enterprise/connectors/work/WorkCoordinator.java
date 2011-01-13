@@ -48,6 +48,8 @@ import com.sun.enterprise.connectors.work.monitor.WorkManagementProbeProvider;
 import com.sun.logging.LogDomains;
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 
+import javax.resource.ResourceException;
+import javax.resource.spi.ResourceAdapterAssociation;
 import javax.resource.spi.work.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -183,6 +185,15 @@ public final class WorkCoordinator {
             if (probeProvider != null) {
                 probeProvider.workProcessingStarted(raName);
                 probeProvider.workDequeued(raName);
+            }
+        }
+
+        // associate ResourceAdapter if the Work is RAA
+        if(work instanceof ResourceAdapterAssociation){
+            try{
+                runtime.associateResourceAdapter(raName, (ResourceAdapterAssociation)work);
+            }catch(ResourceException re){
+                logger.log(Level.SEVERE, "rardeployment.assoc_failed", re);
             }
         }
 

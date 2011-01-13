@@ -59,6 +59,7 @@ import javax.rmi.PortableRemoteObject;
 import java.util.Properties;
 import java.util.List;
 import java.util.ArrayList;
+import org.glassfish.api.admin.ServerEnvironment;
 
 @Service
 @Scoped(Singleton.class)
@@ -72,6 +73,9 @@ public class MbeanService implements Startup {
 
     @Inject
     private static Habitat habitat;
+
+    @Inject
+    private static ServerEnvironment env;
 
     @Override
     public Lifecycle getLifecycle() {
@@ -125,5 +129,25 @@ public class MbeanService implements Startup {
         for(Server svr : servers)
             serverStrings.add(svr.getName());
         return serverStrings;
+    }
+
+    public boolean isInstance(String name) {
+        return env.getInstanceName().equals(name);
+    }
+
+    /**
+     * Returns if the SystemJMXConnector is secure or not
+     * @param instance
+     * @return
+     */
+    public boolean isSecureJMX(String instance) {
+        String isSecure = "false";
+        if(domain.getServerNamed(instance) != null ) {
+            if (domain.getServerNamed(instance).getConfig().getAdminService().getSystemJmxConnector() != null) {
+                isSecure= domain.getServerNamed(instance).getConfig().getAdminService().getSystemJmxConnector().getSecurityEnabled();
+            }
+        }
+        return Boolean.parseBoolean(isSecure);
+
     }
 }

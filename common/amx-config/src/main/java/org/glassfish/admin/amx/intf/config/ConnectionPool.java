@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,29 +40,25 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-import org.glassfish.admin.amx.base.Singleton;
-import org.glassfish.admin.amx.core.AMXMBeanMetadata;
 
-public interface ConnectionPool extends ConfigElement
-{
+public interface ConnectionPool
+        extends ConfigElement {
+
+
     public String getQueueSizeInBytes();
-    public void setQueueSizeInBytes(String value);
+
+    public void setQueueSizeInBytes(String param1);
 
     public String getMaxPendingCount();
-    public void setMaxPendingCount(String value);
+
+    public void setMaxPendingCount(String param1);
 
     public String getReceiveBufferSizeInBytes();
-    public void setReceiveBufferSizeInBytes(String value);
+
+    public void setReceiveBufferSizeInBytes(String param1);
 
     public String getSendBufferSizeInBytes();
-    public void setSendBufferSizeInBytes(String value);
+
+    public void setSendBufferSizeInBytes(String param1);
+
 }
-
-
-
-
-
-
-
-
-

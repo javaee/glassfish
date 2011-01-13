@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,6 +40,7 @@
 
 package com.sun.enterprise.v3.server;
 
+import com.sun.enterprise.v3.common.DoNothingActionReporter;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.logging.Level;
@@ -50,7 +51,6 @@ import com.sun.enterprise.module.bootstrap.ModuleStartup;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.Result;
-import com.sun.enterprise.v3.common.PlainTextActionReporter;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import com.sun.logging.LogDomains;
 import com.sun.appserv.server.util.Version;
@@ -141,7 +141,7 @@ public class AppServerStartup implements ModuleStartup {
         serverThread = new Thread("GlassFish Kernel Main Thread"){
             @Override
             public void run() {
-                logger.logp(Level.INFO, "AppServerStartup", "run",
+                logger.logp(Level.FINE, "AppServerStartup", "run",
                         "[{0}] started", new Object[]{this});
 
                 // notify the other thread to continue now that a non-daemon
@@ -271,7 +271,7 @@ public class AppServerStartup implements ModuleStartup {
                 (System.currentTimeMillis() - platformInitTime),
                 System.currentTimeMillis() - context.getCreationTime()));
 
-        printModuleStatus(level);
+        printModuleStatus(systemRegistry, level);
 
         try {
 			// it will only be set when called from AsadminMain and the env. variable AS_DEBUG is set to true
@@ -325,11 +325,11 @@ public class AppServerStartup implements ModuleStartup {
         for (Inhabitant<? extends PostStartup> postStartup : habitat.getInhabitants(PostStartup.class)) {
             postStartup.get();
         }
-        printModuleStatus(level);
+        printModuleStatus(systemRegistry, level);
 
      }
 
-    private void printModuleStatus(Level level)
+    public static void printModuleStatus(ModulesRegistry registry, Level level)
     {
         if (!logger.isLoggable(level)) {
             return;
@@ -338,21 +338,21 @@ public class AppServerStartup implements ModuleStartup {
         StringBuilder sb = new StringBuilder("Module Status Report Begins\n");
         // first started :
 
-        for (Module m : systemRegistry.getModules()) {
+        for (Module m : registry.getModules()) {
             if (m.getState()== ModuleState.READY) {
                 sb.append(m).append("\n");
             }
         }
         sb.append("\n");
         // then resolved
-        for (Module m : systemRegistry.getModules()) {
+        for (Module m : registry.getModules()) {
             if (m.getState()== ModuleState.RESOLVED) {
                 sb.append(m).append("\n");
             }
         }
         sb.append("\n");
         // finally installed
-        for (Module m : systemRegistry.getModules()) {
+        for (Module m : registry.getModules()) {
             if (m.getState()!= ModuleState.READY && m.getState()!=ModuleState.RESOLVED) {
                 sb.append(m).append("\n");
             }
@@ -371,9 +371,9 @@ public class AppServerStartup implements ModuleStartup {
                 params.set("force", "false");    
             }
             if (env.isDas()) {
-                runner.getCommandInvocation("stop-domain", new PlainTextActionReporter()).parameters(params).execute();
+                runner.getCommandInvocation("stop-domain", new DoNothingActionReporter()).parameters(params).execute();
             } else {
-                runner.getCommandInvocation("_stop-instance", new PlainTextActionReporter()).parameters(params).execute();
+                runner.getCommandInvocation("_stop-instance", new DoNothingActionReporter()).parameters(params).execute();
             }
         }
     }

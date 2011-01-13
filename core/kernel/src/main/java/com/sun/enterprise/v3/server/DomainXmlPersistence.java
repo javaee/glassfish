@@ -41,6 +41,7 @@
 package com.sun.enterprise.v3.server;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.io.FileUtils;
 import org.glassfish.common.util.admin.ManagedFile;
 import org.glassfish.common.util.admin.ParamTokenizer;
 import org.glassfish.config.support.ConfigurationAccess;
@@ -185,18 +186,18 @@ public class DomainXmlPersistence implements ConfigurationPersistence, Configura
                 throw new IOException(msg);
             }
             if (destination != null) {
-                if (destination.exists() && !destination.renameTo(backup)) {
+                if (destination.exists() && !FileUtils.renameFile(destination, backup)) {
                     String msg = localStrings.getLocalString("TmpRenameFailed",
                             "Could not rename {0} to {1}",  destination.getAbsolutePath() , backup.getAbsolutePath());
                     logger.severe(msg);
                     throw new IOException(msg);
                 }
                 // save the temp file to domain.xml
-                if (!f.renameTo(destination)) {
+                if (!FileUtils.renameFile(f, destination)) {
                     String msg = localStrings.getLocalString("TmpRenameFailed",
                             "Could not rename {0} to {1}",  f.getAbsolutePath() , destination.getAbsolutePath());
                     // try to rename backup to domain.xml (so that at least something is there)
-                    if (!backup.renameTo(destination)) {
+                    if (!FileUtils.renameFile(backup, destination)) {
                         msg += "\n" + localStrings.getLocalString("RenameFailed",
                                 "Could not rename backup to {0}", destination.getAbsolutePath());
                     }

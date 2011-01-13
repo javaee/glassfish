@@ -169,7 +169,7 @@ public final class ObjectNameBuilder {
          */
         final AMXProxy parentProxy = ProxyFactory.getInstance(server).getProxy(parent, AMXProxy.class);
         final String parentPath = parentProxy.path();
-        final String parentPathProp = Util.makeProp(PARENT_PATH_KEY, parentPath);
+        final String parentPathProp = Util.makeProp(PARENT_PATH_KEY, Util.quoteIfNeeded(parentPath));
         props = Util.concatenateProps(parentPathProp, props);
 
         return JMXUtil.newObjectName(parent.getDomain(), props);

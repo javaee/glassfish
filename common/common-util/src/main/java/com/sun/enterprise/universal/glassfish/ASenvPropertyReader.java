@@ -41,7 +41,8 @@
 package com.sun.enterprise.universal.glassfish;
 
 import com.sun.enterprise.universal.io.SmartFile;
-import com.sun.enterprise.util.SystemPropertyConstants;
+import static com.sun.enterprise.util.SystemPropertyConstants.*;
+import com.sun.enterprise.util.net.NetUtils;
 
 import java.io.*;
 import java.util.*;
@@ -76,15 +77,20 @@ public class ASenvPropertyReader {
      */
     public ASenvPropertyReader(File installDir)
     {
-        try {
-            this.installDir = SmartFile.sanitize(installDir);
-            configDir = SmartFile.sanitize(new File(installDir, "config"));
-            getBusy();
-        }
-        catch(Exception e)
-        {
+        synchronized (propsMap) {
+            try {
+                installDir = SmartFile.sanitize(installDir);
+                props = propsMap.get(installDir);
+                if (props == null) {
+                    props = new ASenvMap(installDir);
+                    propsMap.put(installDir, props);
+                }
+            }
+            catch(Exception e)
+            {
             // ignore -- this is universal utility code there isn't much we can
             // do.
+            }
         }
     }
 
@@ -114,236 +120,284 @@ public class ASenvPropertyReader {
         return sb.toString();
     }
 
-    private void getBusy() {
-        setEnvToPropMap();
-        //props.putAll(System.getProperties());
-        props.put(SystemPropertyConstants.INSTALL_ROOT_PROPERTY, installDir.getPath());
-        props.put(SystemPropertyConstants.CONFIG_ROOT_PROPERTY, configDir.getPath());
-        setProperties();
-        postProcess();
-        // Product root is defined to be the parent of the install root.
-        // While tempting to just use installDir.getParent() we go through
-        // these gyrations just in case setProperties() changed the value
-        // of the INSTALL_ROOT_PROPERTY property.
-        File installRoot = new File(props.get(SystemPropertyConstants.INSTALL_ROOT_PROPERTY));
-        props.put(SystemPropertyConstants.PRODUCT_ROOT_PROPERTY, installRoot.getParent());
-    }
 
-    /* 
-     * 2 things to do
-     * 1) change relative paths to absolute
-     * 2) change env. variables to either the actual values in the environment
-     *  or to another prop in asenv
+    /*
+     * ASenvMap is a "lazy-evaluation" map, i.e., for values that are
+     * expensive to calculate, the value is not calculated until it is actually
+     * used.
      */
-    private void postProcess() {
-        final Map<String, String> env = System.getenv();
-        //put env props in first
-        Map<String, String> all = new HashMap<String, String>(env);
-        // now override with our props
-        all.putAll(props);
-        TokenResolver tr = new TokenResolver(all);
-        tr.resolve(props);
+    static class ASenvMap extends HashMap<String, String>
+    {
+        // If we find a token in a set property, this is set to true.
+        boolean foundToken = false;
 
-        // props have all tokens replaced now (if they exist)
-        // now make the paths absolute.
-        absolutize();
-        setJavaRoot();
-    }
-    
-    private void absolutize() {
-        Set<String> keys = props.keySet();
+        ASenvMap(File installDir) {
+            put(INSTALL_ROOT_PROPERTY, installDir.getPath());
+            File configDir = SmartFile.sanitize(new File(installDir, "config"));
+            put(CONFIG_ROOT_PROPERTY, configDir.getPath());
+            setProperties(configDir);
+            postProcess(configDir);
+            // Product root is defined to be the parent of the install root.
+            // While tempting to just use installDir.getParent() we go through
+            // these gyrations just in case setProperties() changed the value
+            // of the INSTALL_ROOT_PROPERTY property.
+            File installRoot = new File(super.get(INSTALL_ROOT_PROPERTY));
+            put(PRODUCT_ROOT_PROPERTY, installRoot.getParent());
+        }
 
-        for (String key : keys) {
-            String value = props.get(key);
-            if (GFLauncherUtils.isRelativePath(value)) {
-                // we have to handle both of these:
-                // /x/y/../z
-                // ../x/y/../z
+        @Override
+        public String get(Object k) {
+            String v = super.get(k);
+            if (v != null) return v;
+            if (k.equals(HOST_NAME_PROPERTY)) {
+                v = getHostname();
+                put(HOST_NAME_PROPERTY, v);
+            }
+            else if (k.equals(JAVA_ROOT_PROPERTY)) {
+                v = getJavaRoot(super.get(JAVA_ROOT_PROPERTY_ASENV));
+                put(JAVA_ROOT_PROPERTY, v);
+            }
+            return v;
+        }
 
-                File f;
-                if (value.startsWith(".")) {
-                    f = SmartFile.sanitize(new File(configDir, value));
+        @Override
+        public Set<String> keySet() {
+            completeMap();
+            return super.keySet();
+        }
+
+        @Override
+        public Set<Map.Entry<String, String>> entrySet() {
+            completeMap();
+            return super.entrySet();
+        }
+
+        @Override
+        public boolean containsKey(Object k) {
+            completeMap();
+            return super.containsKey((String)k);
+        }
+
+        @Override
+        public Collection<String> values() {
+            completeMap();
+            return super.values();
+        }
+
+        /*
+         * Add the "lazy" items to the map so that the map is complete.
+         */
+        private void completeMap() {
+            get(HOST_NAME_PROPERTY);
+            get(JAVA_ROOT_PROPERTY);
+        }
+
+        /*
+         * 2 things to do
+         * 1) change relative paths to absolute
+         * 2) change env. variables to either the actual values in the environment
+         *  or to another prop in asenv
+         */
+        private void postProcess(File configDir) {
+            if (foundToken) {
+                final Map<String, String> env = System.getenv();
+                //put env props in first
+                Map<String, String> all = new HashMap<String, String>(env);
+                // now override with our props
+                all.putAll(this);
+                TokenResolver tr = new TokenResolver(all);
+                tr.resolve(this);
+            }
+
+            // props have all tokens replaced now (if they exist)
+            // now make the paths absolute.
+            // Call super.keySet here so that the lazy values are not added
+            // to the map at this point.
+            Set<String> keys = super.keySet();
+
+            for (String key : keys) {
+                String value = super.get(key);
+                if (GFLauncherUtils.isRelativePath(value)) {
+                    // we have to handle both of these:
+                    // /x/y/../z
+                    // ../x/y/../z
+
+                    File f;
+                    if (value.startsWith(".")) {
+                        f = SmartFile.sanitize(new File(configDir, value));
+                    }
+                    else {
+                        f = SmartFile.sanitize(new File(value));
+                    }
+
+                    put(key, f.getPath());
                 }
-                else {
-                    f = SmartFile.sanitize(new File(value));
-                }
-
-                props.put(key, f.getPath());
             }
         }
-    }
-    
-    private void setJavaRoot() {
-        // make sure we have a folder with java in it!
-        // note that we are not in a position to set it from domain.xml yet
-        
-        // first choice -- whatever is in asenv
-        String javaRootName = props.get(SystemPropertyConstants.JAVA_ROOT_PROPERTY);
-        
-        if(isValidJavaRoot(javaRootName))
-            return; // we are already done!
-            
-        // try JAVA_HOME
-        javaRootName = System.getenv("JAVA_HOME");
 
-        if(isValidJavaRoot(javaRootName))
-        {
-            javaRootName = SmartFile.sanitize(new File(javaRootName)).getPath();
-            props.put(SystemPropertyConstants.JAVA_ROOT_PROPERTY, javaRootName);
-            return;
-        }
-        // try java.home with ../
-        // usually java.home is pointing at jre and ".." goes to the jdk
-        javaRootName = System.getProperty("java.home") + "/..";
+        private void setProperties(File configDir) {
+            //Read in asenv.conf/bat and set system properties accordingly
+            File asenv = new File(configDir,
+                    GFLauncherUtils.isWindows() ?
+                        WINDOWS_ASENV_FILENAME : UNIX_ASENV_FILENAME);
 
-        if(isValidJavaRoot(javaRootName))
-        {
-            javaRootName = SmartFile.sanitize(new File(javaRootName)).getPath();
-            props.put(SystemPropertyConstants.JAVA_ROOT_PROPERTY, javaRootName);
-            return;
-        }
-
-        // try java.home as-is
-        javaRootName = System.getProperty("java.home");
-
-        if(isValidJavaRoot(javaRootName))
-        {
-            javaRootName = SmartFile.sanitize(new File(javaRootName)).getPath();
-            props.put(SystemPropertyConstants.JAVA_ROOT_PROPERTY, javaRootName);
-            return;
-        }
-
-        // TODO - should this be an Exception?  A log message?
-        props.put(SystemPropertyConstants.JAVA_ROOT_PROPERTY, null);
-    }
-
-    private boolean isValidJavaRoot(String javaRootName) {
-        if(!GFLauncherUtils.ok(javaRootName))
-            return false;
-        
-        // look for ${javaRootName}/bin/java[.exe]
-        File f = new File(javaRootName);
-        
-        if(GFLauncherUtils.isWindows())
-            f = new File(f, "bin/java.exe");
-        else
-            f = new File(f, "bin/java");
-        
-        return f.exists();
-    }
-
-    private void setProperties() {
-        String hostname = "localhost";
-        try {
-            // canonical name checks to make sure host is proper
-            hostname = GFLauncherUtils.getCanonicalHostName();
-        }
-        catch (Exception ex) {
-        // ignore, go with "localhost"
-        }
-        props.put(SystemPropertyConstants.HOST_NAME_PROPERTY, hostname);
-
-        //Read in asenv.conf/bat and set system properties accordingly
-        File asenv;
-
-        if (GFLauncherUtils.isWindows()) {
-            asenv = new File(configDir, SystemPropertyConstants.WINDOWS_ASENV_FILENAME);
-        }
-        else {
-            asenv = new File(configDir, SystemPropertyConstants.UNIX_ASENV_FILENAME);
-        }
-
-        BufferedReader reader = null;
-
-        try {
-            reader = new BufferedReader(new FileReader(asenv));
-            String line = null;
-
-            while (true) {
-                line = reader.readLine();
-
-                if (line == null) {
-                    break;
-                }
-                else {
+            BufferedReader reader = null;
+            try {
+                reader = new BufferedReader(new FileReader(asenv));
+                String line;
+                while ((line = reader.readLine()) != null) {
                     setProperty(line);
                 }
             }
-        }
-        catch (Exception ex) {
-        // TODO
-        }
-        finally {
-            try {
-                if (reader != null) {
-                    reader.close();
-                }
-            }
             catch (Exception ex) {
+            // TODO
             }
-        }
-    }
-
-    /**
-     * Method setProperty
-     * Parses a single line of asenv.conf or asenv.bat and attempt to 
-     * set the corresponding property. Note that if the system
-     * property is already set (e.g. via -D on the command line), then
-     * we will not clobber its existing value.
-     *
-     * @param line 
-     *
-     */
-    private void setProperty(String line) {
-        int pos = line.indexOf("=");
-
-        if (pos > 0) {
-            String lhs = (line.substring(0, pos)).trim();
-            String rhs = (line.substring(pos + 1)).trim();
-
-            if (GFLauncherUtils.isWindows()) {    //trim off the "set "
-                lhs = (lhs.substring(3)).trim();
-            }
-            else {      // take the quotes out
-                pos = rhs.indexOf("\"");
-                if (pos != -1) {
-                    rhs = (rhs.substring(pos + 1)).trim();
-                    pos = rhs.indexOf("\"");
-                    if (pos != -1) {
-                        rhs = (rhs.substring(0, pos)).trim();
+            finally {
+                try {
+                    if (reader != null) {
+                        reader.close();
                     }
                 }
-            }
-
-            String systemPropertyName = envToPropMap.get(lhs);
-
-            if (systemPropertyName != null) {
-                props.put(systemPropertyName, rhs);
+                catch (Exception ex) {
+                }
             }
         }
+
+        /**
+         * Method setProperty
+         * Parses a single line of asenv.conf or asenv.bat and attempt to
+         * set the corresponding property. Note that if the system
+         * property is already set (e.g. via -D on the command line), then
+         * we will not clobber its existing value.
+         *
+         * @param line
+         *
+         */
+        private void setProperty(String line) {
+            int pos = line.indexOf("=");
+
+            if (pos > 0) {
+                String lhs = (line.substring(0, pos)).trim();
+                String rhs = (line.substring(pos + 1)).trim();
+
+                if (GFLauncherUtils.isWindows()) {    //trim off the "set "
+                    lhs = (lhs.substring(3)).trim();
+                }
+                else {      // take the quotes out
+                    pos = rhs.indexOf("\"");
+                    if (pos != -1) {
+                        rhs = (rhs.substring(pos + 1)).trim();
+                        pos = rhs.indexOf("\"");
+                        if (pos != -1) {
+                            rhs = (rhs.substring(0, pos)).trim();
+                        }
+                    }
+                }
+
+                String systemPropertyName = envToPropMap.get(lhs);
+
+                if (systemPropertyName != null) {
+                    if (TokenResolver.hasToken(rhs)) foundToken = true;
+                    put(systemPropertyName, rhs);
+                }
+            }
+        }
+
+        static private String getHostname() {
+            String hostname = "localhost";
+            try {
+                // canonical name checks to make sure host is proper
+                hostname = NetUtils.getCanonicalHostName();
+            }
+            catch (Exception ex) {
+            // ignore, go with "localhost"
+            }
+            return hostname;
+        }
+
+        /*
+         * Get a value for the Java installation directory.  The value that is
+         * passed in should be the value from the ASenv config file. If it is valid
+         * it is returned.  Otherwise, this method checks the following:
+         * - JAVA_HOME environment variable
+         * - java.home system property
+         */
+        static private String getJavaRoot(String fileValue) {
+            // make sure we have a folder with java in it!
+            // note that we are not in a position to set it from domain.xml yet
+
+            // first choice -- whatever is in asenv
+            String javaRootName = fileValue;
+
+            if (isValidJavaRoot(javaRootName))
+                return javaRootName; // we are already done!
+
+            // try JAVA_HOME
+            javaRootName = System.getenv("JAVA_HOME");
+
+            if (isValidJavaRoot(javaRootName))
+            {
+                javaRootName = SmartFile.sanitize(new File(javaRootName)).getPath();
+                return javaRootName;
+            }
+            // try java.home with ../
+            // usually java.home is pointing at jre and ".." goes to the jdk
+            javaRootName = System.getProperty("java.home") + "/..";
+
+            if (isValidJavaRoot(javaRootName))
+            {
+                javaRootName = SmartFile.sanitize(new File(javaRootName)).getPath();
+                return javaRootName;
+            }
+
+            // try java.home as-is
+            javaRootName = System.getProperty("java.home");
+
+            if (isValidJavaRoot(javaRootName))
+            {
+                javaRootName = SmartFile.sanitize(new File(javaRootName)).getPath();
+                return javaRootName;
+            }
+            // TODO - should this be an Exception?  A log message?
+            return null;
+        }
+
+        static private boolean isValidJavaRoot(String javaRootName) {
+            if (!GFLauncherUtils.ok(javaRootName))
+                return false;
+
+            // look for ${javaRootName}/bin/java[.exe]
+            File f = new File(javaRootName);
+
+            if (GFLauncherUtils.isWindows())
+                f = new File(f, "bin/java.exe");
+            else
+                f = new File(f, "bin/java");
+
+            return f.exists();
+        }
+
     }
-    private void setEnvToPropMap() {
-        //The envToPropMap keeps the mapping between environment variable
-        //name and system property name.
-        envToPropMap.put("AS_DERBY_INSTALL",
-                SystemPropertyConstants.DERBY_ROOT_PROPERTY);
-        envToPropMap.put("AS_IMQ_LIB",
-                SystemPropertyConstants.IMQ_LIB_PROPERTY);
-        envToPropMap.put("AS_IMQ_BIN",
-                SystemPropertyConstants.IMQ_BIN_PROPERTY);
-        envToPropMap.put("AS_CONFIG",
-                SystemPropertyConstants.CONFIG_ROOT_PROPERTY);
-        envToPropMap.put("AS_INSTALL",
-                SystemPropertyConstants.INSTALL_ROOT_PROPERTY);
-        envToPropMap.put("AS_JAVA",
-                SystemPropertyConstants.JAVA_ROOT_PROPERTY);
-        envToPropMap.put("AS_DEF_DOMAINS_PATH",
-                SystemPropertyConstants.DOMAINS_ROOT_PROPERTY);
-        envToPropMap.put("AS_DEF_NODES_PATH",
-                SystemPropertyConstants.AGENT_ROOT_PROPERTY);
+
+    static private Map<String, String> envToPropMap = new HashMap<String, String>();
+    {
+        envToPropMap.put("AS_DERBY_INSTALL", DERBY_ROOT_PROPERTY);
+        envToPropMap.put("AS_IMQ_LIB", IMQ_LIB_PROPERTY);
+        envToPropMap.put("AS_IMQ_BIN", IMQ_BIN_PROPERTY);
+        envToPropMap.put("AS_CONFIG", CONFIG_ROOT_PROPERTY);
+        envToPropMap.put("AS_INSTALL", INSTALL_ROOT_PROPERTY);
+        envToPropMap.put("AS_JAVA", JAVA_ROOT_PROPERTY_ASENV);
+        envToPropMap.put("AS_DEF_DOMAINS_PATH", DOMAINS_ROOT_PROPERTY);
+        envToPropMap.put("AS_DEF_NODES_PATH", AGENT_ROOT_PROPERTY);
     }
-    private Map<String, String> envToPropMap = new HashMap<String, String>();
-    private Map<String, String> props = new HashMap<String, String>();
-    private File configDir;
-    private File installDir;
+
+    /*
+     * Typically, only one asenv file will be read, even though there may be many
+     * ASenvPropertyReader objects.  So for each unique File, only one ASenvMap
+     * is created, and all ASenvPropertyReader objects that reference the file
+     * will share the same map. The key to the propsMap is the install dir that
+     * is passed to the constructor.
+     */
+    static private final HashMap<File, ASenvMap> propsMap = new HashMap<File, ASenvMap>();
+    private ASenvMap props;
 }

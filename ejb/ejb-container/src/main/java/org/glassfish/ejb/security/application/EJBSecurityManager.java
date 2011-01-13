@@ -1140,5 +1140,33 @@ public final class EJBSecurityManager
         }
         return ret;
     }
+
+    @Override
+    public void resetPolicyContext() {
+        if (System.getSecurityManager() == null) {
+            ((PolicyContextHandlerImpl)PolicyContextHandlerImpl.getInstance()).reset();
+            PolicyContext.setContextID(null);
+            return;
+        }
+        
+        try {
+                AppservAccessController.doPrivileged(new PrivilegedExceptionAction() {
+                    public java.lang.Object run() throws Exception {
+                         ((PolicyContextHandlerImpl)PolicyContextHandlerImpl.getInstance()).
+                                 reset();
+                          PolicyContext.setContextID(null);
+                        return null;
+                    }
+                });
+            } catch (java.security.PrivilegedActionException pae) {
+                Throwable cause = pae.getCause();
+                if (cause instanceof java.security.AccessControlException) {
+                    _logger.log(Level.SEVERE, "jacc_policy_context_security_exception", cause);
+                } else {
+                    _logger.log(Level.SEVERE, "jacc_policy_context_exception", cause);
+                }
+                throw new RuntimeException(cause);
+            }
+    }
    
 }

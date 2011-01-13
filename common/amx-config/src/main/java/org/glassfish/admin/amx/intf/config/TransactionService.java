@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,36 +42,32 @@ package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.base.Singleton;
 
-/**
-Configuration for the &lt;transaction-service&gt; element.
- */
-public interface TransactionService extends ConfigElement, PropertiesAccess, Singleton
-{    
-    public String getAutomaticRecovery();
+public interface TransactionService
+        extends Singleton, ConfigElement, PropertiesAccess {
 
-    public void setAutomaticRecovery(String value);
 
-    
-    public String getHeuristicDecision();
-
-    public void setHeuristicDecision(String value);
-
-    
-    public String getKeypointInterval();
-
-    public void setKeypointInterval(String value);
-
-    
-    public String getRetryTimeoutInSeconds();
-
-    public void setRetryTimeoutInSeconds(String value);
-
-    
     public String getTimeoutInSeconds();
 
-    public void setTimeoutInSeconds(String value);
+    public void setTimeoutInSeconds(String param1);
+
+    public String getAutomaticRecovery();
+
+    public void setAutomaticRecovery(String param1);
+
+    public String getHeuristicDecision();
+
+    public void setHeuristicDecision(String param1);
+
+    public String getKeypointInterval();
+
+    public void setKeypointInterval(String param1);
+
+    public String getRetryTimeoutInSeconds();
+
+    public void setRetryTimeoutInSeconds(String param1);
 
     public String getTxLogDir();
 
-    public void setTxLogDir(String value);
+    public void setTxLogDir(String param1);
+
 }

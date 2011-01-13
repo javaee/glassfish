@@ -61,6 +61,7 @@ import com.sun.enterprise.deployment.EjbReferenceDescriptor;
 import com.sun.enterprise.deployment.EjbSessionDescriptor;
 import com.sun.enterprise.deployment.MethodDescriptor;
 import com.sun.enterprise.deployment.InjectionTarget;
+import com.sun.enterprise.deployment.MetadataSource;
 import com.sun.enterprise.deployment.types.EjbReferenceContainer;
 import org.glassfish.apf.AnnotatedElementHandler;
 import org.glassfish.apf.AnnotationInfo;
@@ -69,6 +70,8 @@ import org.glassfish.apf.HandlerProcessingResult;
 import com.sun.enterprise.deployment.annotation.context.ResourceContainerContext;
 import com.sun.enterprise.deployment.annotation.handlers.AbstractResourceHandler;
 import org.jvnet.hk2.annotations.Service;
+
+import static com.sun.enterprise.util.StringUtils.ok;
 
 /**
  * This handler is responsible for handling the javax.ejb.EJB
@@ -108,7 +111,7 @@ public class EJBHandler extends AbstractResourceHandler {
 
 
     /**
-     * Process a particular annotation which type is the same as the
+     * Process a particular annotation whose type is the same as the
      * one returned by @see getAnnotationType(). All information
      * pertinent to the annotation and its context is encapsulated
      * in the passed AnnotationInfo instance.
@@ -123,98 +126,92 @@ public class EJBHandler extends AbstractResourceHandler {
             throws AnnotationProcessorException {
         EjbReferenceDescriptor ejbRefs[] = null;
 
+        String defaultLogicalName = null;
+        Class defaultBeanInterface = null;
+        InjectionTarget target = null;
+
         if (ElementType.FIELD.equals(ainfo.getElementType())) {
             Field f = (Field)ainfo.getAnnotatedElement();
             String targetClassName = f.getDeclaringClass().getName();
 
-            String logicalName = ejbAn.name();
+            defaultLogicalName = targetClassName + "/" + f.getName();
 
-            // applying with default
-            if (logicalName.equals("")) {
-                logicalName = targetClassName + "/" + f.getName();
-            }
+            defaultBeanInterface = f.getType();
 
-            // If specified, beanInterface() overrides field type
-            // NOTE that defaultValue is Object.class, not null
-            Class beanInterface = (ejbAn.beanInterface() == Object.class) ?
-                    f.getType() : ejbAn.beanInterface();
-
-            InjectionTarget target = new InjectionTarget();
+            target = new InjectionTarget();
             target.setClassName(targetClassName);
             target.setFieldName(f.getName());
+            target.setMetadataSource(MetadataSource.ANNOTATION);
             
-            ejbRefs = getEjbReferenceDescriptors(logicalName, rcContexts);
-            for (EjbReferenceDescriptor ejbRef : ejbRefs) {
-                ejbRef.addInjectionTarget(target);
-
-                if (ejbRef.getName().length() == 0) { // a new one
-                    processNewEJBAnnotation(ejbRef, beanInterface,
-                                            logicalName, ejbAn);
-                }
-            }
         } else if (ElementType.METHOD.equals(ainfo.getElementType())) {
 
             Method m = (Method)ainfo.getAnnotatedElement();
             String targetClassName = m.getDeclaringClass().getName();
 
-            String logicalName = ejbAn.name();
-            if( logicalName.equals("") ) {
-                // Derive javabean property name.
-                String propertyName = 
-                        getInjectionMethodPropertyName(m, ainfo);
-
-                // prefixing with fully qualified type name
-                logicalName = targetClassName + "/" + propertyName;
-            }
-
             validateInjectionMethod(m, ainfo);
 
-            Class[] params = m.getParameterTypes();
-            // If specified, beanInterface() overrides parameter type
-            // NOTE that default value is Object.class, not null
-            Class beanInterface = (ejbAn.beanInterface() == Object.class) ?
-                    params[0] : ejbAn.beanInterface();
+            // Derive javabean property name.
+            String propertyName = getInjectionMethodPropertyName(m, ainfo);
 
-            InjectionTarget target = new InjectionTarget();
+            defaultLogicalName = targetClassName + "/" + propertyName;
+
+            defaultBeanInterface = m.getParameterTypes()[0];
+
+            target = new InjectionTarget();
             target.setClassName(targetClassName);
             target.setMethodName(m.getName());
+            target.setMetadataSource(MetadataSource.ANNOTATION);
             
-            ejbRefs = getEjbReferenceDescriptors(logicalName, rcContexts);
-            for (EjbReferenceDescriptor ejbRef : ejbRefs) {
-
-                ejbRef.addInjectionTarget(target);
-
-                if (ejbRef.getName().length() == 0) { // a new one
-
-                    processNewEJBAnnotation(ejbRef, beanInterface,
-                                            logicalName, ejbAn);
-                }
-            }
         } else if( ElementType.TYPE.equals(ainfo.getElementType()) ) {
-            // name() and beanInterface() are required elements for 
-            // TYPE-level usage
-            String logicalName = ejbAn.name();
-            Class beanInterface = ejbAn.beanInterface();
-
-            if( "".equals(logicalName) || beanInterface == Object.class ) {
+            // name() and beanInterface() are required for TYPE-level @EJB
+            if (ejbAn.name().equals("") ||
+                    ejbAn.beanInterface() == Object.class ) {
                 Class c = (Class) ainfo.getAnnotatedElement();
                 log(Level.SEVERE, ainfo,
                     localStrings.getLocalString(
                     "enterprise.deployment.annotation.handlers.invalidtypelevelejb",
-                    "Invalid TYPE-level @EJB with name() = [{0}] and beanInterface = [{1}] in {2}.  Each TYPE-level @EJB must specify both name() and beanInterface().",
-                new Object[] { logicalName, beanInterface, c }));
+                    "Invalid TYPE-level @EJB with name() = [{0}] and " +
+                    "beanInterface = [{1}] in {2}.  Each TYPE-level @EJB " +
+                    "must specify both name() and beanInterface().",
+                    new Object[] { ejbAn.name(), ejbAn.beanInterface(), c }));
                 return getDefaultFailedResult();
             }
-                               
-            ejbRefs = getEjbReferenceDescriptors(logicalName, rcContexts);
-            for (EjbReferenceDescriptor ejbRef : ejbRefs) {
-                if (ejbRef.getName().length() == 0) { // a new one
+        } else {
+            // can't happen
+            return getDefaultFailedResult();
+        }
 
-                    processNewEJBAnnotation(ejbRef, beanInterface,
-                                            logicalName, ejbAn);
-                }
-            }
-        } 
+        // NOTE that default value is Object.class, not null
+        Class beanInterface = (ejbAn.beanInterface() == Object.class) ?
+            defaultBeanInterface : ejbAn.beanInterface();
+        String logicalName = ejbAn.name().equals("") ?
+            defaultLogicalName : ejbAn.name();
+
+        ejbRefs = getEjbReferenceDescriptors(logicalName, rcContexts);
+        for (EjbReferenceDescriptor ejbRef : ejbRefs) {
+            if (target != null)
+                ejbRef.addInjectionTarget(target);
+
+            if (!ok(ejbRef.getName()))  // a new one
+                ejbRef.setName(logicalName);
+
+            // merge type information
+            setEjbType(ejbRef, beanInterface);
+
+            // merge description
+            if (!ok(ejbRef.getDescription()) && ok(ejbAn.description()))
+                ejbRef.setDescription(ejbAn.description());
+
+            // merge lookup-name and mapped-name
+            if (!ejbRef.hasLookupName() && ok(ejbAn.lookup()))
+                ejbRef.setLookupName(ejbAn.lookup());
+            if (!ok(ejbRef.getMappedName()) && ok(ejbAn.mappedName()))
+                ejbRef.setMappedName(ejbAn.mappedName());
+
+            // merge beanName/linkName
+            if (!ok(ejbRef.getLinkName()) && ok(ejbAn.beanName()))
+                ejbRef.setLinkName(ejbAn.beanName());
+        }
 
         return getDefaultProcessedResult();
     }
@@ -243,63 +240,60 @@ public class EJBHandler extends AbstractResourceHandler {
         return ejbRefs;
     }
 
-    private void processNewEJBAnnotation(EjbReferenceDescriptor ejbRef,
-                                         Class beanInterface, 
-                                         String logicalName, EJB annotation) {
-        
-        ejbRef.setName(logicalName);
-        
-        String targetBeanType = EjbSessionDescriptor.TYPE;
+    /**
+     * Set the type information for the EJB, but only if it hasn't
+     * already been set by the deployment descriptor.
+     */
+    private void setEjbType(EjbReferenceDescriptor ejbRef,
+                                         Class beanInterface) {
         if (EJBHome.class.isAssignableFrom(beanInterface) ||
-            EJBLocalHome.class.isAssignableFrom(beanInterface)) {
-            targetBeanType = processForHomeInterface(ejbRef, beanInterface);
+                EJBLocalHome.class.isAssignableFrom(beanInterface)) {
+            setEjbHomeType(ejbRef, beanInterface);
         } else {
-            // EJB 3.0 style Business Interface
-            ejbRef.setEjbInterface(beanInterface.getName());
-            
-            if( beanInterface.getAnnotation(Local.class) != null ) {
-                ejbRef.setLocal(true);
-            } else if( beanInterface.getAnnotation(Remote.class) 
-                       != null ) {
-                ejbRef.setLocal(false);
-            } else {
-                // Assume remote for now. We can't know for sure until the
-                // post-validation stage.  Even though local business will 
-                // probably be more common than remote business, defaulting 
-                // to remote business simplies the post-application 
-                // validation logic considerably.  See 
-                // EjbBundleValidator.accept(EjbReferenceDescriptor) 
-                // for more details.
-                ejbRef.setLocal(false);
-            }
+            setEjbIntfType(ejbRef, beanInterface);
         }
-        
-        String ejbAnBeanName = annotation.beanName();
-        if (ejbAnBeanName != null && ejbAnBeanName.length() > 0) {
-            ejbRef.setLinkName(ejbAnBeanName);
-        }
-
-
-        String ejbAnLookup = annotation.lookup();
-        if (ejbAnLookup != null && ejbAnLookup.length() > 0) {
-            if( !ejbRef.hasLookupName() ) {
-                ejbRef.setLookupName(ejbAnLookup);
-            }
-        }
-
-        
-        ejbRef.setType(targetBeanType);
-        ejbRef.setMappedName(annotation.mappedName());
-        ejbRef.setDescription(annotation.description());
     }
 
     /**
-     * @return targetBeanType
+     * Set the type information for the EJB starting with the EJB business
+     * interface, but only if it hasn't already been set.
      */
-    private String processForHomeInterface(EjbReferenceDescriptor ejbRef,
-            Class beanInterface) {
+    private void setEjbIntfType(EjbReferenceDescriptor ejbRef,
+                                        Class beanInterface) {
+        if (ejbRef.getEjbInterface() != null)
+            return;
 
-        //XXX assume session bean
+        // only set it if not already set by DD
+        ejbRef.setEjbInterface(beanInterface.getName());
+
+        if (beanInterface.getAnnotation(Local.class) != null) {
+            ejbRef.setLocal(true);
+        } else if (beanInterface.getAnnotation(Remote.class) != null) {
+            ejbRef.setLocal(false);
+        } else {
+            // Assume remote for now. We can't know for sure until the
+            // post-validation stage.  Even though local business will 
+            // probably be more common than remote business, defaulting 
+            // to remote business simplies the post-application 
+            // validation logic considerably.  See 
+            // EjbBundleValidator.accept(EjbReferenceDescriptor) 
+            // for more details.
+            ejbRef.setLocal(false);
+        }
+        ejbRef.setType(EjbSessionDescriptor.TYPE);
+    }
+
+    /**
+     * Set the type information for the EJB starting with the EJB Home
+     * interface, but only if it hasn't already been set.
+     */
+    private void setEjbHomeType(EjbReferenceDescriptor ejbRef,
+                                        Class beanInterface) {
+
+        if (ejbRef.getHomeClassName() != null)
+            return;
+
+        // default is Session bean
         String targetBeanType = EjbSessionDescriptor.TYPE;
         ejbRef.setHomeClassName(beanInterface.getName());
 
@@ -330,6 +324,6 @@ public class EJBHandler extends AbstractResourceHandler {
         }
 
         ejbRef.setLocal(EJBLocalHome.class.isAssignableFrom(beanInterface));
-        return targetBeanType;
+        ejbRef.setType(targetBeanType);
     }
 }

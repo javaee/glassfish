@@ -82,11 +82,13 @@ public class LocalTxConnectionEventListener extends ConnectionEventListener {
         ManagedConnection mc = (ManagedConnection) evt.getSource();
         mc.removeConnectionEventListener(this);
 	    poolMgr.resourceErrorOccurred( resource );
+/*
         try {
             mc.destroy();
         } catch (Exception ex) {
             // ignore exception
         }
+*/
     }
 
     /**

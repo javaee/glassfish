@@ -40,7 +40,6 @@
 
 package org.glassfish.ejb.startup;
 
-import java.lang.reflect.Method;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.concurrent.atomic.AtomicLong;
@@ -50,6 +49,7 @@ import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import com.sun.enterprise.deployment.EjbDescriptor;
+import com.sun.enterprise.deployment.MethodDescriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.ScheduledTimerDescriptor;
 import com.sun.enterprise.security.PolicyLoader;
@@ -62,6 +62,7 @@ import com.sun.ejb.codegen.StaticRmiStubGenerator;
 import com.sun.ejb.containers.EjbContainerUtilImpl;
 import com.sun.ejb.containers.EJBTimerService;
 import com.sun.logging.LogDomains;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import org.glassfish.api.admin.config.ReferenceContainer;
 import org.glassfish.api.deployment.DeploymentContext;
@@ -69,9 +70,11 @@ import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.OpsParams;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.UndeployCommandParameters;
+import org.glassfish.deployment.common.DeploymentException;
+import org.glassfish.deployment.common.DeploymentProperties;
+import org.glassfish.deployment.common.DeploymentUtils;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.Events;
-import org.glassfish.deployment.common.DeploymentException;
 import org.glassfish.ejb.spi.CMPDeployer;
 import org.glassfish.ejb.spi.CMPService;
 import org.glassfish.javaee.core.deployment.JavaEEDeployer;
@@ -138,6 +141,9 @@ public class EjbDeployer
     private static final Logger _logger =
                 LogDomains.getLogger(EjbDeployer.class, LogDomains.EJB_LOGGER);
 
+    private static final LocalStringManagerImpl localStrings = 
+                new LocalStringManagerImpl(EjbDeployer.class);
+
     private final EjbSecurityProbeProvider probeProvider = new EjbSecurityProbeProvider();
 
     /**
@@ -180,8 +186,8 @@ public class EjbDeployer
         EjbBundleDescriptor ejbBundle = dc.getModuleMetaData(EjbBundleDescriptor.class);
 
         if( ejbBundle == null ) {
-            throw new RuntimeException("Unable to load EJB module.  DeploymentContext does not contain any EJB " +
-                    " Check archive to ensure correct packaging for " + dc.getSourceDir());
+            String errMsg = localStrings.getLocalString("context.contains.no.ejb", "DeploymentContext does not contain any EJB", dc.getSourceDir());
+            throw new RuntimeException(errMsg);
         }
 
         // Get application-level properties (*not* module-level)
@@ -283,13 +289,6 @@ public class EjbDeployer
 
         ejbApp.loadContainers(dc);
 
-        if (ejbApp.containsTimedObject()) {
-            // Mark application as a timeout application, so that the clean() call removes the timers.
-            OpsParams params = dc.getCommandParameters(OpsParams.class);
-            ApplicationInfo appInfo = appRegistry.get(params.name());
-            appInfo.addTransientAppMetaData(IS_TIMEOUT_APP_PROP, Boolean.TRUE);
-        }
-
         return ejbApp;
     }
 
@@ -343,21 +342,32 @@ public class EjbDeployer
                             dc.getCommandParameters(DeployCommandParameters.class).target :
                             dc.getCommandParameters(UndeployCommandParameters.class).target);
 
-                    EJBTimerService timerService = EjbContainerUtilImpl.getInstance().getEJBTimerService(target);
+                    if (DeploymentUtils.isDomainTarget(target)) {
+                        List<String> targets = (List<String>)dc.getTransientAppMetaData(DeploymentProperties.PREVIOUS_TARGETS, List.class);
+                        if (targets == null) {
+                            targets = domain.getAllReferencedTargetsForApplication(params.name());
+                        }
+                        if (targets != null && targets.size() > 0) {
+                            target = targets.get(0);
+                        }
+                    }
+                    EJBTimerService timerService = EjbContainerUtilImpl.getInstance().getEJBTimerService(target, false);
                     if (_logger.isLoggable(Level.FINE)) {
                         _logger.log( Level.FINE, "EjbDeployer APP ID of a Timeout App? " + uniqueAppId);
                         _logger.log( Level.FINE, "EjbDeployer TimerService: " + timerService);
                     }
 
                     if(timerService == null) {
-                        throw new RuntimeException("EJB Timer Service is not available");
-                    }
-                    
-                    if (getKeepStateFromApplicationInfo(params.name())) {
-                        _logger.log(Level.INFO,
-                        "Timers will not be destroyed since keepstate is true for application {0}", params.name());
+                        _logger.log( Level.WARNING, "EJB Timer Service is not available. Timers for application with id " + 
+                                uniqueAppId + " will not be deleted");
                     } else {
-                        timerService.destroyAllTimers(Long.parseLong(uniqueAppId));
+                        if (getKeepStateFromApplicationInfo(params.name())) {
+                            _logger.log(Level.INFO,
+                                     "Timers will not be destroyed since keepstate is true for application {0}", 
+                                     params.name());
+                        } else {
+                            timerService.destroyAllTimers(Long.parseLong(uniqueAppId));
+                        }
                     }
                 }
             } catch (Exception e) {
@@ -450,61 +460,69 @@ public class EjbDeployer
         if (event.is(Deployment.APPLICATION_PREPARED) && isDas()) {
             ExtendedDeploymentContext context = (ExtendedDeploymentContext)event.hook();
             OpsParams opsparams = context.getCommandParameters(OpsParams.class);
-
-            if (_logger.isLoggable(Level.FINE)) {
-                _logger.log( Level.FINE, "EjbDeployer in APPLICATION_PREPARED for " + context.getSourceDir());
-                _logger.log( Level.FINE, "EjbDeployer in origin " + opsparams.origin);
-            }
-
-            if (!opsparams.origin.isDeploy()) {
-                return;
-            }
-
             DeployCommandParameters dcp = context.getCommandParameters(DeployCommandParameters.class);
 
-            if (_logger.isLoggable(Level.FINE)) {
-                _logger.log( Level.FINE, "EjbDeployer in INSTANCE: " + env.getInstanceName() + " for TARGET: " + dcp.target);
-            }
-
-            if (env.getInstanceName().equals(dcp.target)) {
-                if (_logger.isLoggable(Level.FINE)) {
-                    _logger.log( Level.FINE, "EjbDeployer ... skipping event");
-                }
-                // Timers will be created by the BaseContainer
+            ApplicationInfo appInfo = appRegistry.get(opsparams.name());
+            Application app = appInfo.getMetaData(Application.class);
+            if (app == null) {
+                // Not a Java EE application
                 return;
             }
 
-            Map<String, ExtendedDeploymentContext> deploymentContexts = context.getModuleDeploymentContexts();
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log( Level.FINE, "EjbDeployer in APPLICATION_PREPARED for origin: " + opsparams.origin + 
+                        ", target: " + dcp.target + ", name: " + opsparams.name());
+            }
+
+            boolean createTimers = true;
+            if (!(opsparams.origin.isDeploy() || opsparams.origin.isCreateAppRef()) || env.getInstanceName().equals(dcp.target)) {
+                // Do real work only on deploy for a cluster or create-application-ref (the latter will
+                // check if it's the 1st ref being added or a subsequent one (timers with this unique id are present
+                // or not)
+                // Timers will be created by the BaseContainer if it's a single instance deploy
+                if (_logger.isLoggable(Level.FINE)) {
+                    _logger.log( Level.FINE, "EjbDeployer ... will only set the timeout application flag if any");
+                }
+                // But is-timed-app needs to be set in AppInfo in any case
+                createTimers = false;
+            }
+
+            String target = dcp.target;
+            if (createTimers && dcp.isredeploy != null && dcp.isredeploy && DeploymentUtils.isDomainTarget(target)) {
+                List<String> targets = (List<String>)context.getTransientAppMetaData(DeploymentProperties.PREVIOUS_TARGETS, List.class);
+                for (String ref: targets) {
+                    target = ref;
+                    if (domain.getClusterNamed(target) != null) {
+                        break; // prefer cluster target
+                    }
+                 } 
+            }
+
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log( Level.FINE, "EjbDeployer using target for event as " + target);
+            }
 
             boolean isTimedApp = false;
-            for (DeploymentContext dc : deploymentContexts.values()) {
-                EjbBundleDescriptor ejbBundle = dc.getModuleMetaData(EjbBundleDescriptor.class);
-                if (checkEjbBundleForTimers(ejbBundle, dcp.target, dc.getClassLoader())) {
+            for (EjbBundleDescriptor ejbBundle : app.getEjbBundleDescriptors()) {
+                if (checkEjbBundleForTimers(ejbBundle, createTimers, target)) { 
                     isTimedApp = true;
                 }
             }
     
-            EjbBundleDescriptor ejbBundle = context.getModuleMetaData(EjbBundleDescriptor.class);
-            if (checkEjbBundleForTimers(ejbBundle, dcp.target, context.getClassLoader())) {
-                isTimedApp = true;
-            }
-
-            if (isTimedApp) {
+            if (isTimedApp && (opsparams.origin.isDeploy() || opsparams.origin.isLoad())) {
                 // Mark application as a timeout application, so that the clean() call removes the timers.
-                ApplicationInfo appInfo = appRegistry.get(opsparams.name());
                 appInfo.addTransientAppMetaData(IS_TIMEOUT_APP_PROP, Boolean.TRUE);
             }
         }
     }
 
-    private boolean checkEjbBundleForTimers(EjbBundleDescriptor ejbBundle, String target, ClassLoader cl) {
+    private boolean checkEjbBundleForTimers(EjbBundleDescriptor ejbBundle, boolean createTimers, String target) {
         boolean result = false;
         if (ejbBundle != null) {
             if (_logger.isLoggable(Level.FINE)) {
                 _logger.log( Level.FINE, "EjbDeployer.checkEjbBundleForTimers in BUNDLE: " + ejbBundle.getName());
             }
 
-            ejbBundle.setClassLoader(cl);
             for (EjbDescriptor ejbDescriptor : ejbBundle.getEjbs()) {
                 if (_logger.isLoggable(Level.FINE)) {
                     _logger.log( Level.FINE, "EjbDeployer.checkEjbBundleForTimers in EJB: " + ejbDescriptor.getName());
@@ -512,7 +530,9 @@ public class EjbDeployer
 
                 if (ejbDescriptor.isTimedObject()) {
                     result = true;
-                    createAutomaticPersistentTimersForEJB(ejbDescriptor, target);
+                    if (createTimers && !DeploymentUtils.isDomainTarget(target)) {
+                        createAutomaticPersistentTimersForEJB(ejbDescriptor, target);
+                    }
                 }
             }
         }
@@ -539,10 +559,10 @@ public class EjbDeployer
 
             if( timerService != null ) {
                 String owner = getOwnerId(target);
-                Map<Method, List<ScheduledTimerDescriptor>> schedules = 
-                        new HashMap<Method, List<ScheduledTimerDescriptor>>();
+                Map<MethodDescriptor, List<ScheduledTimerDescriptor>> schedules = 
+                        new HashMap<MethodDescriptor, List<ScheduledTimerDescriptor>>();
                 for (ScheduledTimerDescriptor schd : ejbDescriptor.getScheduledTimerDescriptors()) {
-                    Method method = schd.getTimeoutMethod().getMethod(ejbDescriptor);
+                    MethodDescriptor method = schd.getTimeoutMethod();
                     if (method != null && schd.getPersistent()) {
                         if( _logger.isLoggable(Level.FINE) ) {
                             _logger.log(Level.FINE, "... processing " + method );
@@ -557,12 +577,13 @@ public class EjbDeployer
                     }
                 }
 
-                //TODO pass in only schedules to create.
-                timerService.recoverAndCreateSchedules(ejbDescriptor.getUniqueId(), 
-                        ejbDescriptor.getApplication().getUniqueId(), schedules, owner, true);
+                if (_logger.isLoggable(Level.FINE)) {
+                    _logger.log( Level.FINE, "EjbDeployer - calling timerService.createSchedules for " + ejbDescriptor.getUniqueId());
+                }  
+                timerService.createSchedules(ejbDescriptor.getUniqueId(), ejbDescriptor.getApplication().getUniqueId(), schedules, owner);
 
                 if (_logger.isLoggable(Level.FINE)) {
-                    _logger.log( Level.FINE, "EjbDeployer Done With BEAN ID? " + ejbDescriptor.getUniqueId());
+                    _logger.log( Level.FINE, "EjbDeployer Done With BEAN ID: " + ejbDescriptor.getUniqueId());
                 }  
             } else {
                 throw new RuntimeException("EJB Timer Service is not available");

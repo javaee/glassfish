@@ -37,14 +37,15 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.universal.process;
 
-import com.sun.enterprise.universal.StringUtils;
-import com.sun.enterprise.universal.io.*;
-import com.sun.enterprise.util.*;
 import java.io.*;
 import java.lang.management.ManagementFactory;
+
+import com.sun.enterprise.universal.io.*;
+import com.sun.enterprise.util.*;
+
+import static com.sun.enterprise.util.StringUtils.ok;
 
 /**
  * Includes a somewhat kludgy way to get the pid for "me".
@@ -55,9 +56,16 @@ import java.lang.management.ManagementFactory;
  * @author bnevins
  */
 public final class ProcessUtils {
-
     private ProcessUtils() {
         // all static class -- no instances allowed!!
+    }
+
+    // for informal testing.  Too difficult to make a unit test...
+    public static void main(String[] args) {
+        debug = true;
+        for (String s : args) {
+            System.out.println(s + " ===> " + isProcessRunning(Integer.parseInt(s)));
+        }
     }
 
     public static File getExe(String name) {
@@ -79,12 +87,109 @@ public final class ProcessUtils {
         return pid;
     }
 
-    private static final int        pid;
-    private static final String[]   paths;
+    /**
+     * Kill the process with the given Process ID.
+     * @param pid
+     * @return a String if the process was not killed for any reason including if it does not exist.
+     *  Return null if it was killed.
+     */
+    public static String kill(int pid) {
+        try {
+            String pidString = Integer.toString(pid);
+            ProcessManager pm = null;
+            String cmdline;
+
+            if (OS.isWindowsForSure()) {
+                pm = new ProcessManager("taskkill", "/F", "/T", "/pid", pidString);
+                cmdline = "taskkill /F /T /pid " + pidString;
+            }
+            else {
+                pm = new ProcessManager("kill", "-9", "" + pidString);
+                cmdline = "kill -9 " + pidString;
+            }
+
+            pm.setEcho(false);
+            pm.execute();
+            int exitValue = pm.getExitValue();
+
+            if (exitValue == 0)
+                return null;
+            else
+                return Strings.get("ProcessUtils.killerror", cmdline,
+                        pm.getStderr() + pm.getStdout(), "" + exitValue);
+        }
+        catch (ProcessManagerException ex) {
+            return ex.getMessage();
+        }
+    }
+
+    /**
+     * If we can determine it -- find out if the process that owns the given
+     * process id is running.
+     * @param aPid
+     * @return true if it's running, false if not and null if we don't know.
+     * I.e the return value is a true tri-state Boolean.
+     */
+    public static final Boolean isProcessRunning(int aPid) {
+        try {
+            if (OS.isWindowsForSure())
+                return isProcessRunningWindows(aPid);
+            else
+                return isProcessRunningUnix(aPid);
+        }
+        catch (Exception e) {
+            return null;
+        }
+    }
+    //////////////////////////////////////////////////////////////////////////
+    //////////     all private below     /////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
+    private static final int pid;
+    private static final String[] paths;
+
+    private static boolean isProcessRunningWindows(int aPid) throws ProcessManagerException {
+        String pidString = Integer.toString(aPid);
+        ProcessManager pm = new ProcessManager("tasklist", "/FI", "\"pid eq " + pidString + "\"");
+        pm.setEcho(false);
+        pm.execute();
+        String out = pm.getStdout() + pm.getStderr();
+
+        /* output is either 
+        (1) 
+        INFO: No tasks running with the specified criteria.
+        (2) 
+        Image Name                   PID Session Name     Session#    Mem Usage
+        ========================= ====== ================ ======== ============
+        java.exe                    3760 Console                 0     64,192 K
+         */
+
+        if (debug) {
+            System.out.println("------------   Output from tasklist   ----------");
+            System.out.println(out);
+            System.out.println("------------------------------------------------");
+        }
+
+        if (ok(out)) {
+            if (out.indexOf("" + aPid) >= 0)
+                return true;
+            else
+                return false;
+        }
+
+        throw new ProcessManagerException("unknown");
+    }
+
+    private static Boolean isProcessRunningUnix(int aPid) throws ProcessManagerException {
+        ProcessManager pm = new ProcessManager("kill", "-0", "" + aPid);
+        pm.setEcho(false);
+        pm.execute();
+        int retval = pm.getExitValue();
+        return retval == 0 ? Boolean.TRUE : Boolean.FALSE;
+    }
 
     static {
         // variables named with 'temp' are here so that we can legally set the
-        // 2 final variables above legally.
+        // 2 final variables above.
 
         int tempPid = -1;
 
@@ -92,10 +197,11 @@ public final class ProcessUtils {
             String pids = ManagementFactory.getRuntimeMXBean().getName();
             int index = -1;
 
-            if (StringUtils.ok(pids) && (index = pids.indexOf('@')) >= 0) {
+            if (ok(pids) && (index = pids.indexOf('@')) >= 0) {
                 tempPid = Integer.parseInt(pids.substring(0, index));
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             tempPid = -1;
         }
         // final assignment
@@ -103,19 +209,20 @@ public final class ProcessUtils {
 
         String tempPaths = null;
 
-        if(OS.isWindows()) {
+        if (OS.isWindows()) {
             tempPaths = System.getenv("Path");
-            
-            if(!StringUtils.ok(tempPaths))
+
+            if (!ok(tempPaths))
                 tempPaths = System.getenv("PATH"); // give it a try
         }
-        else  {
+        else {
             tempPaths = System.getenv("PATH");
         }
-        
-        if(StringUtils.ok(tempPaths))
+
+        if (ok(tempPaths))
             paths = tempPaths.split(File.pathSeparator);
         else
             paths = new String[0];
     }
+    private static boolean debug;
 }

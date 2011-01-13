@@ -71,7 +71,11 @@ import com.sun.enterprise.config.serverbeans.Domain;
  */
 @Service(name="list")
 @Scoped(PerLookup.class)
+@CommandLock(CommandLock.LockType.NONE)
 public class ListCommand extends V2DottedNameSupport implements AdminCommand {
+
+    @Inject
+    private MonitoringReporter mr;
 
     @Inject
     Domain domain;
@@ -108,7 +112,7 @@ public class ListCommand extends V2DottedNameSupport implements AdminCommand {
         }
 
         if (monitor) {
-            listMonitorElements(report, context);
+            listMonitorElements(context);
             return;
         }
         
@@ -143,46 +147,9 @@ public class ListCommand extends V2DottedNameSupport implements AdminCommand {
         }
     }
     
-    private void listMonitorElements(ActionReport report, AdminCommandContext ctxt) {
-        if ((pattern == null) || (pattern.equals(""))) {
-            report.setActionExitCode(ExitCode.FAILURE);
-            report.setMessage("match pattern is invalid or null");
-            return;
-        }
-
-        if (mrdr==null) {
-            report.setActionExitCode(ExitCode.FAILURE);
-            report.setMessage("monitoring facility not installed");
-            return;
-        }
-
-        //Grab the monitoring tree root from habitat and get the attributes using pattern
-        String targetName;
-        if(pattern.indexOf(".") == -1) {
-            targetName = pattern;
-        } else {
-            targetName = pattern.substring(0, pattern.indexOf("."));
-        }
-        if(!serverEnv.getInstanceName().equals(targetName)) {
-            callInstance(report, ctxt, targetName);
-            return;
-        }
-        org.glassfish.flashlight.datatree.TreeNode tn = mrdr.get(targetName);
-        if (tn == null) {
-            //No monitoring data, so nothing to list
-            report.setActionExitCode(ExitCode.SUCCESS);
-            return;
-        }
-        List<org.glassfish.flashlight.datatree.TreeNode> ltn = sortTreeNodesByCompletePathName(tn.getNodes(pattern));
-        for (org.glassfish.flashlight.datatree.TreeNode tn1 : ltn) {
-            if (tn1.hasChildNodes() ) {
-                System.out.println(tn1.getCompletePathName());
-                //report.setMessage(tn1.getCompletePathName() + " = " + tn1.getCompletePathName());
-                ActionReport.MessagePart part = report.getTopMessagePart().addChild();
-                part.setMessage(tn1.getCompletePathName());
-            }
-        }
-        report.setActionExitCode(ExitCode.SUCCESS);
+    private void listMonitorElements(AdminCommandContext ctxt) {
+        mr.prepareList(ctxt, pattern);
+        mr.execute();
     }
 
     public void callInstance(ActionReport report, AdminCommandContext context, String targetName) {

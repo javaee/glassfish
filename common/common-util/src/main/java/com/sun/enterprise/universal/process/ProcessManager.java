@@ -77,7 +77,7 @@ public class ProcessManager {
     public final void setStdinLines(List<String> list) {
         if (list != null && list.size() > 0) {
             stdinLines = new String[list.size()];
-            stdinLines = (String[]) list.toArray(cmdline);
+            stdinLines = (String[]) list.toArray(stdinLines);
         }
     }
 

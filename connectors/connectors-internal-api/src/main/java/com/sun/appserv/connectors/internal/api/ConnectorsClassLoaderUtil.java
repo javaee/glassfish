@@ -237,15 +237,18 @@ public class ConnectorsClassLoaderUtil {
     }
 
     public ConnectorClassFinder getSystemRARClassLoader(String rarName) throws ConnectorRuntimeException {
-        Collection<ConnectorClassFinder> systemRarCLs = getSystemRARClassLoaders();
-        for(ConnectorClassFinder ccf : systemRarCLs){
-            if(ccf.getResourceAdapterName().equals(rarName)){
-                return ccf;
+        if (ConnectorsUtil.belongsToSystemRA(rarName)) {
+            DelegatingClassLoader dch = clh.getConnectorClassLoader(null);
+            for (DelegatingClassLoader.ClassFinder cf : dch.getDelegates()) {
+                if (cf instanceof ConnectorClassFinder) {
+                    if (rarName.equals(((ConnectorClassFinder) cf).getResourceAdapterName())) {
+                        return (ConnectorClassFinder) cf;
+                    }
+                }
             }
         }
-        throw new ConnectorRuntimeException("No Classloader found for RA [ "+ rarName +" ]");
+        throw new ConnectorRuntimeException("No Classloader found for RA [ " + rarName + " ]");
     }
-
 
     private void appendJars(File moduleDir, ASURLClassLoader cl) throws MalformedURLException {
         //TODO for embedded rars -consider MANIFEST.MF's classpath attribute

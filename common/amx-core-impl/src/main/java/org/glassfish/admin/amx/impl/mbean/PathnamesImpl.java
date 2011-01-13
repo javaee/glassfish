@@ -99,7 +99,7 @@ public final class PathnamesImpl extends AMXImplBase // implements Pathnames  (c
         //cdebug( "resolvePath: " + parser.toString() + ", parentPath = " + parentPath );
 
         // fixed query based on the path, which will find all MBeans with that parent path
-        final String props = Util.makeProp(PARENT_PATH_KEY, parentPath);
+        final String props = Util.makeProp(PARENT_PATH_KEY, Util.quoteIfNeeded(parentPath));
         final ObjectName pattern = JMXUtil.newObjectNamePattern(getObjectName().getDomain(), props);
         final Set<ObjectName> s = getMBeanServer().queryNames(pattern, null);
 

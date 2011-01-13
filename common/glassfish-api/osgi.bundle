@@ -59,8 +59,6 @@
                         org.glassfish.api.managedbean; \
                         org.glassfish.api.monitoring; \
                         org.glassfish.api.naming; \
-                        org.glassfish.api.embedded; \
-                        org.glassfish.api.embedded.admin; \
                         org.glassfish.api.web; \
                         org.glassfish.api.branding; version=${project.osgi.version}
 

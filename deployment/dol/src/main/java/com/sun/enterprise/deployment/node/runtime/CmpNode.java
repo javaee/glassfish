@@ -46,10 +46,12 @@ import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.runtime.IASEjbCMPFinder;
 import com.sun.enterprise.deployment.runtime.PrefetchDisabledDescriptor;
 import com.sun.enterprise.deployment.xml.RuntimeTagNames;
+import com.sun.enterprise.deployment.util.DOLUtils;
 import org.w3c.dom.Node;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Level;
 
 /**
  * This node handles the cmp runtime deployment descriptors 
@@ -102,6 +104,11 @@ public class CmpNode extends DeploymentDescriptorNode {
      */    
     public void addDescriptor(Object newDescriptor) {    
         getDescriptor();
+        if (descriptor == null) {
+            DOLUtils.getDefaultLogger().log(Level.WARNING, "enterprise.deployment.backend.addDescriptorFailure",
+                new Object[] {newDescriptor, this});
+            return;
+        }
         if (newDescriptor instanceof IASEjbCMPFinder ) {
             descriptor.addOneOneFinder((IASEjbCMPFinder ) newDescriptor);
         }

@@ -144,18 +144,17 @@ public abstract class PayloadFilesManager {
                 final File xferRootFile = new File(parentPathFromPart);
                 if (xferRootFile.isAbsolute()) {
                     parentFile = xferRootFile;
-                    parentFileURI = parentFile.toURI();
                 } else {
                     parentFile = new File(parentFile, parentPathFromPart);
-                    /*
-                     * If this parent directory does not exist, then the URI from
-                     * the File object will lack the trailing slash.  So create
-                     * the URI a little oddly to account for that case.
-                     */
-                    parentFileURI = URI.create(
-                            parentFile.toURI().toASCIIString() +
-                            (parentFile.exists() ? "" : "/"));
                 }
+                /*
+                 * If this parent directory does not exist, then the URI from
+                 * the File object will lack the trailing slash.  So create
+                 * the URI a little oddly to account for that case.
+                 */
+                parentFileURI = URI.create(
+                        parentFile.toURI().toASCIIString() +
+                        (parentFile.exists() ? "" : "/"));
             }
             return parentFileURI;
         }

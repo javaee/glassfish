@@ -69,7 +69,6 @@ import org.jvnet.hk2.component.PerLookup;
 @Service(name = "_get-habitat-info")
 @Scoped(PerLookup.class)
 public class GetHabitatInfo implements AdminCommand {
-
     @Inject
     Habitat habitat;
     @Inject
@@ -83,13 +82,13 @@ public class GetHabitatInfo implements AdminCommand {
         StringBuilder sb = new StringBuilder();
         if (contract == null) {
             dumpContracts(sb);
+            dumpModules(sb);
+            dumpTypes(sb);
         }
         else {
             dumpInhabitantsImplementingContractPattern(contract, sb);
         }
 
-        dumpModules(sb);
-        dumpTypes(sb);
 
         String msg = sb.toString();
         ActionReport report = context.getActionReport();

@@ -49,6 +49,8 @@
                         com.sun.enterprise.deployment.interfaces; \
                         com.sun.enterprise.deployment.io; \
                         com.sun.enterprise.deployment.io.runtime; \
+                        com.sun.enterprise.deployment.node; \
+                        com.sun.enterprise.deployment.node.runtime; \
                         com.sun.enterprise.deployment.runtime; \
                         com.sun.enterprise.deployment.runtime.common; \
                         com.sun.enterprise.deployment.runtime.connector; \

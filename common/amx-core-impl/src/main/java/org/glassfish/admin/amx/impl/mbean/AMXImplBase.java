@@ -461,14 +461,16 @@ public class AMXImplBase extends MBeanImplBase
             final String attrName)
             throws AttributeNotFoundException {
         final Throwable rootCause = ExceptionUtil.getRootCause(t);
-        if (rootCause instanceof AttributeNotFoundException) {
+        if(rootCause.getMessage() != null && rootCause.getMessage().contains("Failed to retrieve RMIServer stub:")) {
+            trace("Attribute could not be found at a remote server. This is most likely due to a clustered or remote instance being down");
+        } else  if (rootCause instanceof AttributeNotFoundException) {
             throw (AttributeNotFoundException) rootCause;
         }
 
-        final String msg = "Attribute not found: " + StringUtil.quote(attrName) +
+        /* final String msg = "Attribute not found: " + StringUtil.quote(attrName) +
                 " of MBean " + getObjectName() + "[" + rootCause.getMessage() + "]";
         ;
-        throw new AttributeNotFoundException(msg);
+        throw new AttributeNotFoundException(msg); */
     }
 
 
@@ -1020,7 +1022,7 @@ public class AMXImplBase extends MBeanImplBase
     }
 
     protected ObjectName registerChild(final Object mbean, final ObjectName childObjectName) {
-        try {
+        try {            
             final ObjectName objectName = getMBeanServer().registerMBean(mbean, childObjectName).getObjectName();
 
             return objectName;

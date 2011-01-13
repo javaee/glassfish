@@ -170,6 +170,19 @@ public class EnableCommand extends StateCommandParameters implements AdminComman
                     return;
                 }
             }
+
+            /*
+             * If the target is a cluster instance, the DAS will broadcast the command
+             * to all instances in the cluster so they can all update their configs.
+             */
+
+            try {
+                DeploymentCommandUtils.replicateEnableDisableToContainingCluster(
+                        "enable", domain, target, name(), habitat, context, this);
+            } catch (Exception e) {
+                report.failure(logger, e.getMessage());
+                return;
+            }
         }
 
 

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,21 +40,19 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.base.Singleton;
+import org.glassfish.admin.amx.config.AMXConfigProxy;
 
-/**
-Configuration for the &lt;store-properties&gt; element.
- */
-public interface StoreProperties extends AMXConfigProxy, PropertiesAccess, Singleton
-{
+public interface StoreProperties
+        extends Singleton, AMXConfigProxy, PropertiesAccess {
+
+
+    public String getReapIntervalInSeconds();
+
+    public void setReapIntervalInSeconds(String param1);
 
     public String getDirectory();
 
-    public void setDirectory(final String value);
+    public void setDirectory(String param1);
 
-    
-    public String getReapIntervalInSeconds();
-
-    public void setReapIntervalInSeconds(final String value);
 }

@@ -83,6 +83,14 @@ public class NonBlockingPool
     protected boolean	  inResizing = false;
     private boolean	  maintainSteadySize = false;
 
+    /**
+     * If glassfish-ejb-jar.xml <enterprise-beans><property>singleton-bean-pool is
+     * true, steadyPoolSize is 1, and maxPoolSize is 1, then this field is set
+     * to true, and only 1 bean instance is created.  The pool size at any given
+     * time may be 0 or 1.  Both PoolResizeTimerTask and ReSizeWork are skipped.
+     */
+    private boolean       singletonBeanPool;
+
     // Set to true after close().  Prevents race condition
     // of async resize task kicking in after close().
     private boolean poolClosed = false;
@@ -98,8 +106,21 @@ public class NonBlockingPool
         int maxPoolSize, int idleTimeoutInSeconds, 
         ClassLoader loader)
     {
+        this(beanId, poolName, factory,
+             steadyPoolSize, resizeQuantity,
+             maxPoolSize, idleTimeoutInSeconds,
+             loader, false);
+    }
+
+    public NonBlockingPool(long beanId, String poolName, ObjectFactory factory,
+        int steadyPoolSize, int resizeQuantity,
+        int maxPoolSize, int idleTimeoutInSeconds,
+        ClassLoader loader, boolean singletonBeanPool)
+    {
         this.poolName = poolName;
         this.beanId = beanId;
+        this.singletonBeanPool = singletonBeanPool && (steadyPoolSize == 1) &&
+                (maxPoolSize == 1);
     	initializePool(factory, steadyPoolSize, resizeQuantity, maxPoolSize,
                        idleTimeoutInSeconds, loader);
     }
@@ -118,11 +139,11 @@ public class NonBlockingPool
         this.steadyPoolSize = (this.steadyPoolSize > this.maxPoolSize)
             ? this.maxPoolSize : this.steadyPoolSize;
         this.idleTimeoutInSeconds = 
-            (idleTimeoutInSeconds <= 0) ? 0 : idleTimeoutInSeconds;
+            (idleTimeoutInSeconds <= 0 || this.singletonBeanPool) ? 0 : idleTimeoutInSeconds;
         
         this.containerClassLoader = loader;
         
-        this.maintainSteadySize = (this.steadyPoolSize > 0);
+        this.maintainSteadySize = this.singletonBeanPool ? false : (this.steadyPoolSize > 0);
         if ((this.idleTimeoutInSeconds > 0) && (this.resizeQuantity > 0)) {
             try {
                 this.poolTimerTask =  new PoolResizeTimerTask();
@@ -183,7 +204,7 @@ public class NonBlockingPool
                 } else {
                     return list.remove(size-1);
                 }
-            } else {
+            } else if(!singletonBeanPool){
                 if ((maintainSteadySize) && (addedResizeTask == false)) {
                     toAddResizeTask = addedResizeTask = true;
                 }
@@ -199,15 +220,38 @@ public class NonBlockingPool
         if (obj != null) {
             return obj;
         }
-        
-        try {
-            return factory.create(param);
-        } catch (RuntimeException th) {
+
+        if (singletonBeanPool) {
             synchronized (list) {
-                poolProbeNotifier.ejbObjectAddFailedEvent(beanId, appName, modName, ejbName);
-                createdCount--;
+                while (list.isEmpty() && (createdCount - destroyedCount) > 0) {
+                    try {
+                        list.wait();
+                    } catch (InterruptedException ex) {  //ignore
+                    }
+                }
+                if (!list.isEmpty()) {
+                    obj = list.remove(0);
+                    return obj;
+                }
+                try {
+                    obj = factory.create(param);
+                    createdCount++;
+                    return obj;
+                } catch (RuntimeException th) {
+                    poolProbeNotifier.ejbObjectAddFailedEvent(beanId, appName, modName, ejbName);
+                    throw th;
+                }
             }
-            throw th;
+        } else {
+            try {
+                return factory.create(param);
+            } catch (RuntimeException th) {
+                synchronized (list) {
+                    poolProbeNotifier.ejbObjectAddFailedEvent(beanId, appName, modName, ejbName);
+                    createdCount--;
+                }
+                throw th;
+            }
         }
     }
     
@@ -241,6 +285,9 @@ public class NonBlockingPool
     	synchronized (list) {
             if (list.size() < maxPoolSize) {
                 list.add(object);
+                if(this.singletonBeanPool) {
+                    list.notify();
+                }
                 return;
             } else {
                 poolProbeNotifier.ejbObjectDestroyedEvent(beanId, appName, modName, ejbName);
@@ -264,11 +311,14 @@ public class NonBlockingPool
      * be reused.
      */
     public void destroyObject(Object object) {
-    	synchronized (list) {
+        synchronized (list) {
             poolProbeNotifier.ejbObjectDestroyedEvent(beanId, appName, modName, ejbName);
             destroyedCount++;
-    	}
-        
+            if (this.singletonBeanPool) {
+                list.notify();
+            }
+        }
+
         try {
             factory.destroy(object);
         } catch (Exception ex) {

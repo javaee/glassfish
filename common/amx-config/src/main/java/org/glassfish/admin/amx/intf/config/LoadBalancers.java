@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -45,21 +45,11 @@ import org.glassfish.admin.amx.core.AMXMBeanMetadata;
 
 import java.util.Map;
 
-/**
-Configuration for the &lt;configs&gt; element; it is an internal "node" which
-groups all config elements under itself.
-@since Glassfish V3
- */
-@AMXMBeanMetadata(globalSingleton=true)
+@AMXMBeanMetadata
 public interface LoadBalancers
-        extends ConfigElement, ConfigCollectionElement, Singleton
-{
+        extends Singleton, ConfigCollectionElement, ConfigElement {
     public Map<String, LoadBalancer> getLoadBalancer();
+
+    public LoadBalancer getLoadBalancer(String param1);
+
 }
-
-
-
-
-
-
-

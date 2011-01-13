@@ -45,7 +45,7 @@
 
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title>%%%status.pageTitle%%%</title>
-
+    
 <style type="text/css">
 a:link {color:#003399;text-decoration:none}
 a:visited {color:#003399;text-decoration:none}
@@ -64,35 +64,106 @@ h4 {font-style:normal;font-size:.9em;color:#666;}
 #header, #footer {font-size:small;text-align:center;padding:0.3em 0;background:#4a5c6a;height:20px;color:#FFFFFF;font-weight:bold;}
 .progress {padding-left:130px;padding-top:10px;}
 </style>
-<meta http-equiv="refresh" content="5;url=" />
+<!--meta http-equiv="refresh" content="5;url=" /-->
 </head>
 
-<body onLoad="document.getElementById('spin').src = '/asynch-1F.gif';">
- <script type="text/javascript">
-    if (document.getElementById('layout-doc') != null) {
-        window.location = '%%%LOCATION%%%';
-    }
+    <body onLoad="document.getElementById('spin').src = '/asynch-1F.gif';">
+        <script type="text/javascript">
+            if (document.getElementById('layout-doc') != null) {
+                window.location = '%%%LOCATION%%%';
+            }
+            
+           
+            var feedbackZoneId = 'feedbackZone';
+            
+            function start() {
+                displayCount(1,feedbackZoneId);
+                
+            }
+            loaded(feedbackZoneId,start);
+            
+            var pageLoaded = 0; 
+            
+            window.onload = function() {
+                pageLoaded = 1;
+            }
+            function loaded(i,f) {
+                if (document.getElementById && document.getElementById(i) != null) {
+                    f(); 
+                    
+                }
+                else 
+                    if (!pageLoaded) 
+                        setTimeout('loaded(\''+i+'\','+f+')',100);
+            } 
+            
+            String.prototype.startsWith = function(s) { 
+                if( this.indexOf(s) == 0 ) 
+                    return true; 
+                return false; 
+            }
+                      
+            function displayCount(countdn,cd) 
+            {
+                if (window.XMLHttpRequest)
+                {// code for IE7+, Firefox, Chrome, Opera, Safari
+                    xmlhttp=new XMLHttpRequest();
+                }
+                else
+                {// code for IE6, IE5
+                    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+                }
+                xmlhttp.onreadystatechange=function()
+                {
+                    if (xmlhttp.readyState==4 && ((xmlhttp.status==200)||(xmlhttp.status==202)))
+                    {
+                        var response = ""+xmlhttp.responseText;
+                        if (response.startsWith(":::")){
+                            fileLines=response.split("\n");
+
+                            document.getElementById("STATUS").innerHTML= fileLines[0].substring(3,fileLines[0].length);
+                            document.getElementById("WELCOME").innerHTML= "<b>"+ fileLines[1]+"</b>";
+                            
+                          /// document.getElementById(cd).innerHTML = countdn+' times  ';
+                            setTimeout('displayCount('+(countdn+1)+',\''+cd+'\');',999);
+                        }else {
+                            location.reload(true);
+                        }
+                       }
+                }              
+                xmlhttp.open("GET","/testifbackendisready.html",true);
+                xmlhttp.send();
+		
+            }   
+    
 </script>
     <div id="header"></div>
     <div class="container">
 	<div id="center" class="column">
 	    <!-- <div id="page_content"> -->
 	    <h1>%%%product.title%%%</h1>
-	    <p> <span class="subtitle">%%%status.pageTitle%%%</span>
-		<br>%%%status.text%%%</p>
+	    <p> 
+		<br><span id="WELCOME"> </span></p>
 	    <!-- don't change the names -->
 	    <form id="form1" name="form1" method="post" action="%%%MYURL%%%">
-		<h2>%%%status.loading%%%</h2>
-		<p> <img id="spin" class="progress" src="/asynch-1F.gif" border="0" alt="%%%status.spin.alt%%%" align="center" /></p>
-		<div id="fields">
-		    <p> <span class="subtitle">%%%status.current%%%</span>
-			<small>%%%STATUS%%%</small></p>
-		</div>
+		<p> 
+                    <table border="0">
+                        <tbody>
+                            <tr>
+                                <td><img id="spin"  src="/asynch-1F.gif" border="0" alt="%%%status.spin.alt%%%"  /></td>
+                                <td><b>%%%status.current%%%</b>
+			<span id="STATUS">%%%STATUS%%%</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    </p>
 	    </form>
+            	    <p> 
+		<br>%%%status.text%%%</p>
+            <span id="feedbackZone"></span>
 	</div>
    </div>
-   <div id="footer-wrapper">
-       <div id="footer">%%%thankYou%%%</div>
-    </div>
+
 </body>
 </html>

@@ -51,7 +51,8 @@ public class ResourceStatus {
 
     public final static int SUCCESS = 0;
     public final static int FAILURE = 1;
-    
+    public final static int WARNING = 2;
+
     int status = SUCCESS;
     String message;
     Throwable exception;

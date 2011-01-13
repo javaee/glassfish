@@ -46,6 +46,7 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.CommandLock;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -59,6 +60,7 @@ import java.util.Properties;
  */
 @Service(name = "_get-admin-object-config-properties")
 @Scoped(PerLookup.class)
+@CommandLock(CommandLock.LockType.NONE)
 public class GetAdminObjectConfigProps implements AdminCommand {
     @Inject
     private ConnectorRuntime connectorRuntime;

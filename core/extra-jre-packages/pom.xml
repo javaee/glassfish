@@ -116,6 +116,7 @@
  com.sun.org.apache.xpath.internal.jaxp,
  com.sun.org.apache.xpath.internal.objects,
  com.sun.security.auth,
+ com.sun.security.auth.login,
  com.sun.security.auth.callback,
  com.sun.tools.apt,
  com.sun.tools.javac,

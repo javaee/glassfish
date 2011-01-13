@@ -42,48 +42,55 @@ package org.glassfish.extras.osgicontainer;
 
 import org.glassfish.api.deployment.ApplicationContainer;
 import org.glassfish.api.deployment.ApplicationContext;
-import com.sun.enterprise.module.Module;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleException;
+import org.osgi.framework.Constants;
 
-/**
- * Created by IntelliJ IDEA.
- * User: dochez
- * Date: Jun 11, 2009
- * Time: 3:58:59 PM
- * To change this template use File | Settings | File Templates.
- */
 public class OSGiDeployedBundle implements ApplicationContainer<OSGiContainer> {
 
-    final RefCountingClassLoader cl;
-    final Module m;
+    private Bundle bundle;
 
-    public OSGiDeployedBundle(Module m,RefCountingClassLoader cl) {
-        this.cl = cl;
-        this.m = m;
+    public OSGiDeployedBundle(Bundle bundle) {
+        this.bundle = bundle;
     }
 
     public OSGiContainer getDescriptor() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     public boolean start(ApplicationContext startupContext) throws Exception {
-        m.start();
-        return true;
+        return resume();
     }
 
     public boolean stop(ApplicationContext stopContext) {
-        m.stop();
-        return true;
+        return suspend();
     }
 
     public boolean suspend() {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        if (!isFragment(bundle)) {
+            try {
+                bundle.stop(Bundle.STOP_TRANSIENT);
+                System.out.println("Stopped " + bundle);
+            } catch (BundleException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return true;
     }
 
     public boolean resume() throws Exception {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        if (!isFragment(bundle)) {
+            bundle.start(Bundle.START_TRANSIENT | Bundle.START_ACTIVATION_POLICY);
+            System.out.println("Started " + bundle);
+        }
+        return true;
     }
 
     public ClassLoader getClassLoader() {
-        return cl;
+        return null;
+    }
+
+    private static boolean isFragment(Bundle b) {
+        return b.getHeaders().get(Constants.FRAGMENT_HOST) != null;
     }
 }

@@ -41,11 +41,19 @@
 package org.glassfish.embeddable;
 
 /**
- * GlassFish has a very sophisticated command line interface (CLI) called asadmin. This interface
- * exposes that to user. This interface supports programatic execution of the administrative commands
- * which are otherwise done via asadmin utility. A command runner is obtained by calling
- * {@link org.glassfish.embeddable.GlassFish#getCommandRunner()}. A command runner is a per-lookup type
- * object, which means each time getCommandRunner is called, it returns a different instance of command runner.
+ * GlassFish has a very sophisticated command line interface (CLI) viz., 
+ * 'asadmin' to executive administrative commands.
+ *
+ * <p/>This is a programmatic interface equivalent to 'asadmin'.
+ *
+ * <p/>This interface allows the execution of the adminstrative commands
+ * from an application which embeds GlassFish.
+ *
+ * <p/>A command runner is obtained by calling
+ * {@link org.glassfish.embeddable.GlassFish#getCommandRunner()}.
+ *
+ * <p/>A command runner is a per-lookup type object, which means each time
+ * {@link GlassFish#getCommandRunner()} is called, it returns a new instance of command runner.
  *
  * Command specific options are passed in the var-args argument of {@link #run(String, String...)} method.
  *
@@ -58,21 +66,31 @@ public interface CommandRunner {
      * command arguments. Refer to GlassFish Administration Guide to know about the commands supported
      * in GlassFish and their usage.
      *
-     * Example : To add an additional http listener:
+     * <p/>Example: To add an additional http listener 9090 :
      *
-     *      Map&lt;String, String>&gt args = new HashMap();
-     *      args.put("listenerport", "9090");
-     *      args.put("listeneraddress", "localhost");
-     *      args.put("securityenabled", "false");
-     *      args.put("default-virtual-server", "server");
-     *      args.put("listener_id", "my-http-listener-1");
-     *      commandRunner.run("create-http-listener", args);
+     * <pre>
+     *      commandRunner.run("create-http-listener", "--listenerport", "9090",
+     *                                       "--listeneraddress", "0.0.0.0",
+     *                                       "--defaultvs", "server",
+     *                                       "--securityenabled", "false",
+     *                                       "listener_id", "my-http-listener-1");
      *
+     * </pre>
+     * asadmin commands also allow option values to be specified using '=', so the above example can be written as:
+     *
+     * <pre>
+     *      commandRunner.run("create-http-listener", "--listenerport=9090",
+     *                                       "--listeneraddress=0.0.0.0",
+     *                                       "--defaultvs=server",
+     *                                       "--securityenabled=false",
+     *                                       "listener_id=my-http-listener-1");
+     *
+     * </pre>
      * @param command command to be executed.
      * @param args command arguments.
-     * @return exit code. Refer to actual documentation of the command to interpret the exit code.
+     * @return {@link CommandResult} which encapsulates exit status, command output, failure cause (if any).
      */
-    CommandResult run(String command, String... args) throws GlassFishException;
+    CommandResult run(String command, String... args);
 
     /**
      * Set the terse level.

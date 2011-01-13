@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,153 +40,108 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-import java.util.Map;
-import org.glassfish.admin.amx.core.AMXProxy;
-
 import org.glassfish.admin.amx.intf.config.grizzly.NetworkConfig;
+import org.glassfish.admin.amx.intf.config.grizzly.NetworkListener;
 
-/**
-Configuration for the &lt;config&gt; element.
- */
+import java.util.Map;
+
 public interface Config
-        extends PropertiesAccess, SystemPropertiesAccess,
-        NamedConfigElement
-{
-    /**
-    Configuration of the config element itself.
-     */
-    /**
-    Return the IiopService.
-     */
-    public IiopService getIiopService();
+        extends NamedConfigElement, PropertiesAccess, SystemPropertiesAccess {
 
-    /**
-    Return the HttpService.
-     */
-    public HttpService getHttpService();
 
-    /**
-    Return the NetworkConfig.
-     */
+    public String getName();
+
+    public void setName(String param1);
+
     public NetworkConfig getNetworkConfig();
 
-    /**
-    Return the SecurityService.
-     */
+    public IiopService getIiopService();
+
+    public HttpService getHttpService();
+
     public SecurityService getSecurityService();
 
-    /**
-    Return the MonitoringService.
-     */
     public MonitoringService getMonitoringService();
 
-    /**
-    Return the AdminService.
-     */
     public AdminService getAdminService();
 
-    /** @since Glassfish V3 */
     public ThreadPools getThreadPools();
 
-    /**
-    Return the DiagnosticService.  May be null.
-    @since AppServer 9.0
-     */
     public DiagnosticService getDiagnosticService();
 
-    /**
-    Return the WebContainer.
-     */
     public WebContainer getWebContainer();
 
-    /**
-    Return the EJBContainer.
-     */
     public EjbContainer getEjbContainer();
 
-    /**
-    Return the MDBContainer.
-     */
     public MdbContainer getMdbContainer();
-    
-    
+
     public AlertService getAlertService();
 
-    /**
-    Return the JavaConfig.
-     */
-    public JavaConfig getJava();
-
-    /**
-    Return the JMSService.
-     */
     public JmsService getJmsService();
 
-    /**
-    Return the LogService.
-     */
     public LogService getLogService();
 
-    /**
-    Return the TransactionService.
-     */
     public TransactionService getTransactionService();
 
-    /**
-    Return the AvailabilityService.
-     */
     public AvailabilityService getAvailabilityService();
 
-    /**
-    Return the ConnectorService.
-     */
     public ConnectorService getConnectorService();
 
-    /**
-    Return the Group Management Service configuration.
-    @since AppServer 9.0
-     */
     public GroupManagementService getGroupManagementService();
 
-    /**
-    When set to "true" then any changes to the system (e.g.
-    applications deployed, resources created) will be
-    automatically applied to the affected servers without a
-    restart being required. When set to "false" such changes will
-    only be picked up by the affected servers when each server
-    restarts.
-    @since AppServer 9.0
-     */
-    
     public String getDynamicReconfigurationEnabled();
 
-    /**
-    @see #getDynamicReconfigurationEnabled
-    @since AppServer 9.0
-     */
-    public void setDynamicReconfigurationEnabled(String enabled);
+    public void setDynamicReconfigurationEnabled(String param1);
 
-    /**
-    @return ManagementRules (may be null );
-     */
     public ManagementRules getManagementRules();
-    
+
     public JavaConfig getJavaConfig();
+
+    public void setEjbContainer(EjbContainer param1);
+
+    public void setMdbContainer(MdbContainer param1);
+
+    public void setWebContainer(WebContainer param1);
+
+    public void setGroupManagementService(GroupManagementService param1);
+
+    public void setConnectorService(ConnectorService param1);
+
+    public void setJmsService(JmsService param1);
+
+    public void setHttpService(HttpService param1);
+
+    public void setTransactionService(TransactionService param1);
+
+    public void setNetworkConfig(NetworkConfig param1);
+
+    public void setIiopService(IiopService param1);
+
+    public void setAdminService(AdminService param1);
+
+    public void setLogService(LogService param1);
+
+    public void setSecurityService(SecurityService param1);
+
+    public void setMonitoringService(MonitoringService param1);
+
+    public void setDiagnosticService(DiagnosticService param1);
+
+    public void setJavaConfig(JavaConfig param1);
+
+    public void setAvailabilityService(AvailabilityService param1);
+
+    public void setThreadPools(ThreadPools param1);
+
+    public void setAlertService(AlertService param1);
+
+    public void setManagementRules(ManagementRules param1);
+
+    public Map getLoggingProperties();
+
+    public String setLoggingProperty(String param1, String param2);
+
+    public Map updateLoggingProperties(Map param1);
+
+    public NetworkListener getAdminListener();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

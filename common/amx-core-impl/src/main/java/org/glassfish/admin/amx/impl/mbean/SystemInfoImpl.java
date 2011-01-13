@@ -63,8 +63,8 @@ public final class SystemInfoImpl extends AMXImplBase //implements SystemInfo
 
     public SystemInfoImpl(
             final MBeanServer server) {
-        super(AMXGlassfish.DEFAULT.domainRoot(), SystemInfo.class);
 
+        super(AMXGlassfish.DEFAULT.domainRoot(), SystemInfo.class);
         mServer = server;
 
         // must be thread-safe, because features can be added at a later time

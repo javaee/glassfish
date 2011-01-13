@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,6 +40,7 @@
 
 package org.glassfish.internal.deployment;
 
+import com.sun.enterprise.module.ModulesRegistry;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
@@ -54,6 +55,7 @@ import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.jar.Manifest;
 import java.util.jar.JarFile;
+import java.util.logging.Level;
 
 import com.sun.enterprise.util.io.FileUtils;
 
@@ -124,6 +126,17 @@ public abstract class GenericHandler implements ArchiveHandler {
         // first try to get the name from ApplicationInfoProvider if 
         // we can find an implementation of this service
         ApplicationInfoProvider nameProvider = habitat.getComponent(ApplicationInfoProvider.class);
+
+        DeploymentTracing tracing = null;
+
+        if (context != null) {
+            tracing = context.getModuleMetaData(DeploymentTracing.class);
+        }
+
+        if (tracing!=null) {
+            tracing.addMark(DeploymentTracing.Mark.APPINFO_PROVIDED);
+        }
+
 
         String appName = null;
         if (nameProvider != null) {

@@ -40,6 +40,7 @@
 
 package com.sun.enterprise.container.common;
 
+import com.sun.logging.LogDomains;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.SecureAdmin;
 import com.sun.enterprise.security.auth.realm.file.FileRealm;
@@ -54,6 +55,11 @@ import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.config.serverbeans.AuthRealm;
 import com.sun.enterprise.config.serverbeans.AdminService;
 import com.sun.enterprise.security.ssl.SSLUtils;
+import com.sun.enterprise.util.net.NetUtils;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.security.KeyStoreException;
 import java.util.Map;
 import java.util.logging.Level;
 import org.glassfish.common.util.admin.AuthTokenManager;
@@ -74,6 +80,8 @@ import java.security.KeyStore;
 import java.security.Principal;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
+import java.util.Collections;
+import java.util.HashMap;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.jvnet.hk2.component.PostConstruct;
 
@@ -128,7 +136,13 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
 
     private static LocalStringManagerImpl lsm = new LocalStringManagerImpl(GenericAdminAuthenticator.class);
     
-    private final Logger logger = Logger.getAnonymousLogger();
+    private final Logger logger = LogDomains.getLogger(GenericAdminAuthenticator.class,
+            LogDomains.ADMIN_LOGGER);
+
+    private KeyStore truststore = null;
+
+    /** maps server alias to the Principal for the cert with that alias from the truststore */
+    private Map<String,Principal> serverPrincipals = new HashMap<String,Principal>();
 
     @Override
     public void postConstruct() {
@@ -141,11 +155,14 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
      * @param user String representing the user name of the user doing an admin opearation
      * @param password String representing clear-text password of the user doing an admin operation
      * @param realm String representing the name of the admin realm for given server
-     * @return boolean representing successful authentication and group membership
+     * @param originHost the host from which the request was sent
+     * @return AdminAcessController.Access level of access to grant
      * @throws LoginException
      */
-    public boolean loginAsAdmin(String user, String password, String realm) throws LoginException {
-        return loginAsAdmin(user, password, realm, null, null);
+    public AdminAccessController.Access loginAsAdmin(String user, String password,
+            String realm, final String originHost) throws LoginException {
+        return loginAsAdmin(user, password, realm,
+                originHost, Collections.EMPTY_MAP, null);
     }
 
     /** Ensures that authentication and authorization works as specified in class documentation.
@@ -153,28 +170,72 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
      * @param user String representing the user name of the user doing an admin opearation
      * @param password String representing clear-text password of the user doing an admin operation
      * @param realm String representing the name of the admin realm for given server
+     * @param originHost the host from which the request was sent
      * @param candidateAdminIndicator String containing the special admin indicator (null if absent)
      * @param requestPrincipal Principal, typically as reported by the secure transport delivering the admin request
-     * @return boolean representing successful authentication and group membership
+     * @return AdminAcessController.Access level of access to grant
      * @throws LoginException
      */
-    public boolean loginAsAdmin(String user, String password, String realm,
-            final Map<String,String> authRelatedHeaders, final Principal requestPrincipal) throws LoginException {
+    public synchronized AdminAccessController.Access loginAsAdmin(String user, String password, String realm,
+            final String originHost, final Map<String,String> authRelatedHeaders,
+            final Principal requestPrincipal) throws LoginException {
         boolean isLocal = isLocalPassword(user, password); //local password gets preference
         if (isLocal) {
             logger.fine("Accepted locally-provisioned password authentication");
-            return true;
+            return AdminAccessController.Access.FULL;
+        }
+        /*
+         * Try to authenticate as a trusted sender first.  A trusted sender is
+         * one that either presents an SSL cert that is in our truststore or
+         * presents a very-short-term authentication token in the http request
+         * header.
+         * 
+         * One reason to check for a trusted sender first is that
+         * under secure admin an incoming command could have an auth token and,
+         * if there is one, we'd like to consume it and retire it.  If we 
+         * checked for file realm auth. first then a command submitted from a
+         * shell process on a system using asadmin - which will have a limited-use
+         * token - might also be using a stored password which would authenticate,
+         * thereby bypassing the auth token
+         * processing and allowing the token to remain valid longer than it should.
+         */
+        boolean result = authenticateAsTrustedSender(authRelatedHeaders, requestPrincipal);
+        if (result) {
+            logger.log(Level.FINE, "Authenticated as trusted sender");
+            return AdminAccessController.Access.FULL;
         }
         if (as.usesFileRealm()) {
-            boolean result = handleFileRealm(user, password);
-            if ( ! result) {
-                result = authenticateAsTrustedSender(authRelatedHeaders, requestPrincipal);
+            result = handleFileRealm(user, password);
+            logger.log(Level.FINE, "Not a \"trusted sender\"; file realm user authentication {1} for admin user {0}",
+                    new Object[] {user, result ? "passed" : "failed"});
+            final Access access;
+            if (result) {
+                 access = chooseAccess(originHost);
+                logger.log(Level.FINE, "Authorized {0} access for user {1}",
+                        new Object[] {access, user});
+
             } else {
-                logger.log(Level.FINE, "File realm user authentication passed for admin user {0}", user);
+                /*
+                 * User did not authenticate. As a guard against a potential
+                 * attack encode the failed username.
+                 */
+                String msg;
+                String userToDisplay;
+                String extraMsg = "";
+                try {
+                    userToDisplay = URLEncoder.encode(user, "UTF-8");
+                } catch (UnsupportedEncodingException ex) {
+                    userToDisplay = "???";
+                    extraMsg = ex.getLocalizedMessage();
+                }
+                msg = lsm.getLocalString("authentication.failed", "User [{0}] from host {1} does not have administration access", 
+                            userToDisplay, originHost) + extraMsg;
+                logger.log(Level.INFO, msg);
+                access = Access.NONE;
             }
-            return result;
+            return access;
         } else {
-            //now, deleate to the security service
+            //now, delegate to the security service
             ClassLoader pc = null;
             boolean hack = false;
             boolean authenticated = false;
@@ -189,15 +250,17 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
                 snif.setup(System.getProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY) + "/modules/security", Logger.getAnonymousLogger());
                 LoginContextDriver.login(user, password.toCharArray(), realm);
                 authenticated = true;
-                if (as.getAssociatedAuthRealm().getGroupMapping() != null)
-                    return ensureGroupMembership(user, realm);
-                else
-                    return true;
+                final boolean isConsideredInAdminGroup = (
+                        (as.getAssociatedAuthRealm().getGroupMapping() == null)
+                        || ensureGroupMembership(user, realm));
+                return isConsideredInAdminGroup
+                    ?  chooseAccess(originHost)
+                    : AdminAccessController.Access.NONE;
            } catch(Exception e) {
 //              LoginException le = new LoginException("login failed!");
 //              le.initCause(e);
 //              thorw le //TODO need to work on this, this is rather too ugly
-                return authenticateAsTrustedSender(authRelatedHeaders, requestPrincipal);
+                return AdminAccessController.Access.NONE;
            } finally {
                 if (hack)
                     Thread.currentThread().setContextClassLoader(pc);
@@ -206,7 +269,30 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
     }
 
     /**
-     * Try to authenticate using a Principal, typically from the incoming admin request,
+     * Chooses what level of admin access to grant an authenticated user.
+     * <p>
+     * If the current node is not the DAS, then we grant only monitoring access.
+     * (We do not permit full admin access to instances.)
+     *
+     * If the current node is the DAS, then we grant full admin access only
+     * if the request came from the same host or if secure admin is enabled.
+     * 
+     * @return the access to be granted to the authenticated user
+     */
+    private Access chooseAccess(final String originHost) {
+        Access grantedAccess = Access.MONITORING;
+        if (serverEnv.isDas()) {
+            if ( NetUtils.isThisHostLocal(originHost) 
+                 ||
+                 SecureAdmin.Util.isEnabled(secureAdmin) ) {
+                grantedAccess = Access.FULL;
+            }
+        }
+        return grantedAccess;
+    }
+
+    /**
+     * Tries to authenticate using a Principal, typically from the incoming admin request,
      * or using the special admin indicator (which flags requests as from another
      * server in the unsecured use case).
      *
@@ -222,15 +308,14 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
          * enabled, use only the special indicator check.
          */
         boolean result;
-        if (SecureAdmin.Util.isEnabled(secureAdmin)) {
-            result = authenticateUsingCert(reqPrincipal, 
-                    serverEnv.isDas() ? SecureAdmin.Util.instanceAlias(secureAdmin) :
-                        SecureAdmin.Util.DASAlias(secureAdmin));
-            if (result) {
-                logger.log(Level.FINE, "Authenticated SSL client auth principal {0}", reqPrincipal.getName());
-                return result;
-            }
-        } else {
+        result = authenticateUsingCert(reqPrincipal, 
+                serverEnv.isDas() ? SecureAdmin.Util.instanceAlias(secureAdmin) :
+                    SecureAdmin.Util.DASAlias(secureAdmin));
+        if (result) {
+            logger.log(Level.FINE, "Authenticated SSL client auth principal {0}", reqPrincipal.getName());
+            return result;
+        }
+        if ( ! SecureAdmin.Util.isEnabled(secureAdmin)) {
             result = authenticateUsingSpecialIndicator(
                     authRelatedHeaders.get(SecureAdmin.Util.ADMIN_INDICATOR_HEADER_NAME));
             if (result) {
@@ -252,12 +337,7 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
             return false;
         }
         try {
-            final KeyStore trustStore = sslUtils().getTrustStore();
-            final Certificate cert = trustStore.getCertificate(instanceAlias);
-            if (cert == null || ! (cert instanceof X509Certificate)) {
-                return false;
-            }
-            final Principal expectedPrincipal = ((X509Certificate) cert).getSubjectX500Principal();
+            final Principal expectedPrincipal = expectedPrincipal(instanceAlias);
             return (expectedPrincipal != null ? expectedPrincipal.equals(reqPrincipal) : false);
         } catch (Exception ex) {
             final LoginException loginEx = new LoginException();
@@ -266,11 +346,31 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
         }
     }
 
+    private synchronized KeyStore trustStore() throws IOException {
+        if (truststore == null) {
+            truststore = sslUtils().getTrustStore();
+        }
+        return truststore;
+    }
+
     private synchronized SSLUtils sslUtils() {
         if (sslUtils == null) {
             sslUtils = habitat.getComponent(SSLUtils.class);
         }
         return sslUtils;
+    }
+
+    private synchronized Principal expectedPrincipal(final String instanceAlias) throws IOException, KeyStoreException {
+        Principal result;
+        if ((result = serverPrincipals.get(instanceAlias)) == null) {
+            final Certificate cert = trustStore().getCertificate(instanceAlias);
+            if (cert == null || ! (cert instanceof X509Certificate)) {
+                return null;
+            }
+            result = ((X509Certificate) cert).getSubjectX500Principal();
+            serverPrincipals.put(instanceAlias, result);
+        }
+        return result;
     }
 
     /*
@@ -413,6 +513,7 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
     @Override
     public Subject authenticate(Object credentials) {
         String user = "", password = "";
+        String host = null;
         if (credentials instanceof String[]) {
             // this is supposed to be 2-string array with user name and password
             String[] up = (String[])credentials;
@@ -424,6 +525,9 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
                 if (password == null)
                     password = "";
             }
+            if (up.length > 2) {
+                host = up[2];
+            }
         }
 
         String realm = as.getSystemJmxConnector().getAuthRealmName(); //yes, for backward compatibility;
@@ -431,12 +535,13 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
             realm = as.getAuthRealmName();
 
         try {
-            boolean ok = this.loginAsAdmin(user, password, realm);
-            if (!ok) {
+            AdminAccessController.Access result = this.loginAsAdmin(user, password, realm, host);
+            if (result == AdminAccessController.Access.NONE) {
                 String msg = lsm.getLocalString("authentication.failed",
-                        "User [{0}] does not have administration access", user);
+                        "User [{0}] from host {1} does not have administration access", user, host);
                 throw new SecurityException(msg);
             }
+            // TODO Do we need to build a Subject so JMX can enforce monitor-only vs. manage permissions?
             return null; //for now;
         } catch (LoginException e) {
             throw new SecurityException(e);

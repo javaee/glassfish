@@ -236,6 +236,9 @@ public interface Deployment {
 
     public boolean isAppEnabled(Application app);
 
+    public ApplicationInfo unload(ApplicationInfo appInfo,
+        ExtendedDeploymentContext context);
+
     public void disable(UndeployCommandParameters commandParams, 
         Application app, ApplicationInfo appInfo, ActionReport report, 
         Logger logger) throws Exception;

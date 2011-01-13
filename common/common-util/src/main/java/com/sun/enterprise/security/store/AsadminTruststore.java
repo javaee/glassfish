@@ -93,13 +93,7 @@ public class AsadminTruststore {
                 .getAsadminTruststore();
     }
     
-    private AsadminTruststore() throws CertificateException, IOException,
-        KeyStoreException, NoSuchAlgorithmException 
-    {                 
-        this(AsadminSecurityUtil.getAsadminTruststorePassword());
-    }
-            
-    private AsadminTruststore(final char[] password) throws CertificateException, IOException,
+    AsadminTruststore(final char[] password) throws CertificateException, IOException,
         KeyStoreException, NoSuchAlgorithmException 
     {                 
         init(getAsadminTruststore(), password);

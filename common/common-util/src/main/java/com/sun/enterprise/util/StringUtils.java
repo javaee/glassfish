@@ -49,6 +49,9 @@ import java.sql.SQLException;
 
 public class StringUtils {
 
+    public static final String NEWLINE = System.getProperty("line.separator");
+    public static final String EOL = NEWLINE;
+
     private StringUtils() {
     }
 
@@ -564,5 +567,28 @@ public class StringUtils {
             sb.append(s);
         }
         return sb.toString();
+    }
+
+    /**
+     * Removes the quoting around a String.
+     * @param s The String that may have enclosing quotes
+     * @return The String resulting from removing the enclosing quotes
+     */
+    public static String removeEnclosingQuotes(String s) {
+        if (s == null)
+            return null;
+
+        if (isDoubleQuoted(s) || isSingleQuoted(s)) {
+            return s.substring(1, s.length() - 1);
+        }
+        return s;
+    }
+
+    private static boolean isDoubleQuoted(String s) {
+        return s.startsWith("\"") && s.endsWith("\"") && s.length() > 1;
+    }
+
+    private static boolean isSingleQuoted(String s) {
+        return s.startsWith("'") && s.endsWith("'") && s.length() > 1;
     }
 }

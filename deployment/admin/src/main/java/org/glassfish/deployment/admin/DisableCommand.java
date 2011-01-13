@@ -40,6 +40,7 @@
 
 package org.glassfish.deployment.admin;
 
+import com.sun.enterprise.config.serverbeans.Cluster;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.ServerEnvironment;
@@ -223,22 +224,45 @@ public class DisableCommand extends UndeployCommandParameters implements AdminCo
             // we should let undeployment go through
             // on instance side for partial deployment case
             if (!deployment.isRegistered(appName)) {
-                report.setMessage(localStrings.getLocalString("application.notreg","Application {0} not registered", appName));
-                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                if (env.isDas()) {
+                    // let's only do this check for DAS to be more
+                    // tolerable of the partial deployment case
+                    report.setMessage(localStrings.getLocalString("application.notreg","Application {0} not registered", appName));
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                }
                 return;
             }
 
             if (!DeploymentUtils.isDomainTarget(target)) {
                 ApplicationRef ref = domain.getApplicationRefInTarget(appName, target);
                 if (ref == null) {
-                    report.setMessage(localStrings.getLocalString("ref.not.referenced.target","Application {0} is not referenced by target {1}", appName, target));
-                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    if (env.isDas()) {
+                        // let's only do this check for DAS to be more
+                        // tolerable of the partial deployment case
+                        report.setMessage(localStrings.getLocalString("ref.not.referenced.target","Application {0} is not referenced by target {1}", appName, target));
+                        report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    }
                     return;
                 }
             }
         }
 
+        /*
+         * If the target is a cluster instance, the DAS will broadcast the command
+         * to all instances in the cluster so they can all update their configs.
+         */
         ApplicationInfo appInfo = deployment.get(appName);
+        if (env.isDas()) {
+            try {
+                DeploymentCommandUtils.replicateEnableDisableToContainingCluster(
+                        "disable", domain, target, appName, habitat, context, this);
+
+            } catch (Exception e) {
+                report.failure(logger, e.getMessage());
+                return;
+            }
+        }
+
 
         if (!domain.isCurrentInstanceMatchingTarget(target, appName, server.getName(), null)) {
             if (!isundeploy) {
@@ -248,7 +272,11 @@ public class DisableCommand extends UndeployCommandParameters implements AdminCo
                     logger.warning("failed to set enable attribute for " + appName);
                 }
             }
-            events.send(new Event<ApplicationInfo>(Deployment.APPLICATION_DISABLED, appInfo));
+            if (env.isDas()) {
+                // if it's non DAS target, we should still send this 
+                // DISABLE event on DAS so proper clean up can be triggered
+                events.send(new Event<ApplicationInfo>(Deployment.APPLICATION_DISABLED, appInfo));
+            }
             return;
         }
 

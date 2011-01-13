@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,21 +40,21 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-/**
-Configuration for the &lt;jacc-provider&gt; element.
 
- */
 public interface JaccProvider
-        extends PropertiesAccess, ConfigElement
-{
+        extends ConfigElement, PropertiesAccess {
+
 
     public String getName();
 
+    public void setName(String param1);
+
     public String getPolicyConfigurationFactoryProvider();
 
-    public void setPolicyConfigurationFactoryProvider(String value);
+    public void setPolicyConfigurationFactoryProvider(String param1);
 
     public String getPolicyProvider();
 
-    public void setPolicyProvider(String value);
+    public void setPolicyProvider(String param1);
+
 }

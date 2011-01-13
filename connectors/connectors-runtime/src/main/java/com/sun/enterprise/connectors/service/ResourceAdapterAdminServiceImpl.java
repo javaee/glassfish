@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,6 +42,7 @@ package com.sun.enterprise.connectors.service;
 
 import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
+import com.sun.enterprise.config.serverbeans.Resource;
 import com.sun.enterprise.connectors.ActiveResourceAdapter;
 import com.sun.enterprise.connectors.ConnectorRegistry;
 import com.sun.enterprise.connectors.ConnectorRuntime;
@@ -54,11 +55,11 @@ import com.sun.enterprise.deployment.util.ModuleDescriptor;
 import com.sun.enterprise.config.serverbeans.ResourceAdapterConfig;
 
 import javax.naming.NamingException;
+import javax.resource.ResourceException;
+import javax.resource.spi.ResourceAdapter;
+import javax.resource.spi.ResourceAdapterAssociation;
+import java.util.*;
 import java.util.logging.Level;
-import java.util.Set;
-import java.util.List;
-import java.util.HashSet;
-import java.util.ArrayList;
 import java.util.concurrent.*;
 
 import org.jvnet.hk2.config.types.Property;
@@ -345,6 +346,24 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
     }
 
 
+    /**
+     * associates the given instance of ResourceAdapterAssociation with
+     * the ResourceAdapter java-bean of the specified RAR
+     * @param rarName resource-adapter-name
+     * @param raa Object that is an instance of ResourceAdapterAssociation
+     * @throws ResourceException when unable to associate the RA Bean with RAA instance.
+     */
+    public void associateResourceAdapter(String rarName, ResourceAdapterAssociation raa)
+            throws ResourceException {
+        ResourceAdapter ra = ConnectorRegistry.getInstance().
+                getActiveResourceAdapter(rarName).getResourceAdapter();
+        if(ra != null){
+            raa.setResourceAdapter(ra);
+        }else{
+            throw new ResourceException("RA Bean [ "+rarName+" ] not available");
+        }
+    }
+
 
     /**
      * Stops the resourceAdapter and removes it from connector container/
@@ -363,6 +382,7 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
         if (acr != null) {
             sendStopToResourceAdapter(acr);
 
+/*
             // remove the system rar from class loader chain.
             if(ConnectorsUtil.belongsToSystemRA(moduleName)) {
                 ConnectorClassFinder ccf =
@@ -376,6 +396,7 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
                         "classloader chain : " + systemRarCLRemoved);
                 }
             }
+*/
             return _registry.removeActiveResourceAdapter(moduleName);
         }
         return true;
@@ -501,26 +522,34 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
     public void reCreateActiveResourceAdapter(String moduleName)
             throws ConnectorRuntimeException {
 
-        String moduleDir = ConnectorsUtil.getLocation(moduleName);
-        /* TODO V3 moduleDir=null can happen only for embedded rar,
-        need to decide whether it need to be handled or not */
-        if (moduleDir != null) {
-            //TODO V3 is there a case where RAR is not deployed ?
-            if (isRarDeployed(moduleName)) {
+        ConnectorRuntime runtime = ConnectorRuntime.getRuntime();
+
+        if (isRarDeployed(moduleName)) {
+            if(!ConnectorsUtil.belongsToSystemRA(moduleName)){
                 ConnectorApplication app = _registry.getConnectorApplication(moduleName);
                 app.undeployResources();
                 stopAndRemoveActiveResourceAdapter(moduleName);
+                String moduleDir = ConnectorsUtil.getLocation(moduleName);
                 createActiveResourceAdapter(moduleDir, moduleName, app.getClassLoader());
                 _registry.getConnectorApplication(moduleName).deployResources();
+            }else{
+             Collection<Resource> resources =
+                     getResourcesUtil().filterConnectorResources(getResourcesUtil().getGlobalResources(), moduleName, true);
+                runtime.getGlobalResourceManager().undeployResources(resources);
+                stopAndRemoveActiveResourceAdapter(moduleName);
+                String moduleDir = ConnectorsUtil.getLocation(moduleName);
+                createActiveResourceAdapter(moduleDir, moduleName,
+                        runtime.getSystemRARClassLoader(moduleName));
+                runtime.getGlobalResourceManager().deployResources(resources);
             }
-            //No need to deploy the .rar, it may be a case where rar is not deployed yet
-            //Also, when the rar is started, RA-Config is anyway used
-            /*else {
-                ConnectorApplication app = _registry.getConnectorApplication(moduleName);
-                createActiveResourceAdapter(moduleDir, moduleName, app.getClassLoader());
-                _registry.getConnectorApplication(moduleName).deployResources();
-            }*/
         }
+     /*   //No need to deploy the .rar, it may be a case where rar is not deployed yet
+        //Also, when the rar is started, RA-Config is anyway used
+        else {
+            ConnectorApplication app = _registry.getConnectorApplication(moduleName);
+            createActiveResourceAdapter(moduleDir, moduleName, app.getClassLoader());
+            _registry.getConnectorApplication(moduleName).deployResources();
+        }*/
     }
 
     /**

@@ -46,6 +46,7 @@ import org.glassfish.admin.cli.resources.BindableResourcesHelper;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.CommandLock;
 import org.glassfish.api.I18n;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.ExecuteOn;
@@ -71,6 +72,7 @@ import java.util.Collection;
 @ExecuteOn(value={RuntimeType.DAS})
 @Service(name="list-connector-resources")
 @Scoped(PerLookup.class)
+@CommandLock(CommandLock.LockType.NONE)
 @I18n("list.connector.resources")
 public class ListConnectorResources implements AdminCommand {
     

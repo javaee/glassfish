@@ -102,7 +102,7 @@ public class JdbcResourceDeployer implements ResourceDeployer {
         PoolInfo poolInfo = new PoolInfo(poolName, applicationName, moduleName);
         ResourceInfo resourceInfo = new ResourceInfo(jndiName, applicationName, moduleName);
 
-        if (ConnectorsUtil.parseBoolean(jdbcRes.getEnabled())){
+        if (ResourcesUtil.createInstance().isEnabled(jdbcRes, resourceInfo)){
             runtime.createConnectorResource(resourceInfo, poolInfo, null);
             //In-case the resource is explicitly created with a suffix (__nontx or __PM), no need to create one
             if(ConnectorsUtil.getValidSuffix(jndiName) == null){

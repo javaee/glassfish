@@ -104,10 +104,18 @@ public class APIClassLoaderServiceImpl implements PostConstruct {
          * fine if we want to honor OSGi classloading semantics. APIClassLoader
          * wants to use delegation model so that we don't have to set
          * bootdelegation=* for OSGi bundles.
+         * Since the parent of bundle classloader will have glassfish launching classes, felix or any other
+         * OSGi framework classes and their dependencies, we don't want to delegate to such a class loader.
+         * Instead, we delegate to JRE's extension class loader if we don't find any class via APIModuleLoader.
+         * With this, user can actually embed a different version of Felix as part of their app.
          */
-        theAPIClassLoader = new APIClassLoader(apiModuleLoader);
+        theAPIClassLoader = new APIClassLoader(apiModuleLoader, getExtensionClassLoader());
         logger.logp(Level.FINE, "APIClassLoaderService", "createAPIClassLoader",
                 "APIClassLoader = {0}", new Object[]{theAPIClassLoader});
+    }
+
+    private ClassLoader getExtensionClassLoader() {
+        return ClassLoader.getSystemClassLoader().getParent();
     }
 
     public ClassLoader getAPIClassLoader() {
@@ -121,8 +129,19 @@ public class APIClassLoaderServiceImpl implements PostConstruct {
         private Set<String> blacklist;
         private final ClassLoader apiModuleLoader;
 
-        public APIClassLoader(ClassLoader apiModuleLoader) {
-            super(apiModuleLoader.getParent());
+        /**
+         * This method takes two classloaders which is unusual. Both the class loaders are consulted,
+         * so they both are delegates, but depending on the class/resource being requested, one is preferred
+         * over the other. The second argument is the classic parent class loader, where as the first one
+         * is the OSGi gateway classloader. For all java.* names, we consult only the parent loader.
+         * For any other names, we first consult the OSGi gateway loader and then parent. See more comments in
+         * loadClass() method implementation of this class.
+         * @param apiModuleLoader ClassLoader corresponding to the APIModule
+         * @param parent ClassLoader that's consulted for all java.* classes and for classes
+         * not found via apiModuleLoader
+         */
+        public APIClassLoader(ClassLoader apiModuleLoader, ClassLoader parent) {
+            super(parent);
             this.apiModuleLoader = apiModuleLoader;
             blacklist = new HashSet<String>();
 

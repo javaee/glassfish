@@ -69,7 +69,7 @@ public class UnitTest {
         Context ic = c.getContext();
         try {
             System.out.println("Looking up EJB...");
-            SampleEjb ejb = (SampleEjb) ic.lookup("java:global/test-classes/SampleEjb");
+            SampleEjb ejb = (SampleEjb) ic.lookup("java:global/classes/SampleEjb");
             if (ejb!=null) {
                 System.out.println("Invoking EJB...");
                 System.out.println(ejb.saySomething());
@@ -84,7 +84,7 @@ public class UnitTest {
             EJBContainer c0 = EJBContainer.createEJBContainer();
             if (c0 != null)
                 throw new RuntimeException("Create another container");
-        } catch (EJBException e) { 
+        } catch (EJBException e) {
             System.out.println("Caught expected: " + e.getMessage());
         }
 

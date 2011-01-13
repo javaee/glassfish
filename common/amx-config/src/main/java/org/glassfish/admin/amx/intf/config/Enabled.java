@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,19 +41,18 @@
 package org.glassfish.admin.amx.intf.config;
 
 /**
-Factors out the meaning of the "Enabled" Attribute.
+ * Factors out the meaning of the "Enabled" Attribute.
  */
-public interface Enabled
-{
+public interface Enabled {
 
     /**
-    Return true if the item is enabled, false otherwise.
+     * Return true if the item is enabled, false otherwise.
      */
-    
+
     public String getEnabled();
 
     /**
-    Mark the item as enabled.
+     * Mark the item as enabled.
      */
     public void setEnabled(String enabled);
 }

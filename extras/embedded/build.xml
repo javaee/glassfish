@@ -47,18 +47,26 @@
     <property name="jardir" value="${rootdir}/packager_jars"/>
     <property name="modulesdir" value="${jardir}/glassfish3/glassfish/modules"/>
     <property name="filedir" value="${rootdir}/packager_files"/>
- 
 
-    <target name="create.distribution">
+    <target name="get.distribution.type">
+      <condition property="full.distribution">
+	<equals arg1="${bundlename}" arg2="org.glassfish.embedded.all"/>
+      </condition>
+      <condition property="web.distribution">
+	<equals arg1="${bundlename}" arg2="org.glassfish.embedded.web"/>
+      </condition>
+      <condition property="nucleus.distribution">
+	<equals arg1="${bundlename}" arg2="org.glassfish.embedded.nucleus"/>
+      </condition>
+    </target>
+
+    <target name="create.distribution" depends="get.distribution.type">
         <antcall target="makeJarDir"/>
         <antcall target="removeJarsNotNeeded"/>
-	 <antcall target="addDtds"/>
-        <antcall target="rejar"/>
-	<antcall target="unjar"/>
+	<antcall target="addDtds"/>
    	<antcall target="addRars"/>
 	<antcall target="addEjbTimer"/>
-        <antcall target="jar"/>
-	
+        <antcall target="rejar"/>
         <attachArtifact file="${finaljar}"/>
      </target>
 
@@ -74,64 +82,72 @@
         <unzip dest="${jardir}">
             <fileset dir="${zipdir}">
                 <include name="*.zip"/>
+                <exclude name="mq**.zip"/>
             </fileset>
         </unzip>
+
+	<mkdir dir="${rootdir}/temp"/>
+
      </target>
 
      <target name="removeJarsNotNeeded">
 	<delete file="${modulesdir}/javahelp.jar"/>
 	<delete file="${modulesdir}/upgrade-tool.jar"/>
-	<delete file="${modulesdir}/console-common-full-plugin.jar"/>
-	<delete file="${modulesdir}/console-corba-plugin.jar"/>
-	<delete file="${modulesdir}/console-ejb-lite-plugin.jar"/>
-	<delete file="${modulesdir}/console-ejb-plugin.jar"/>
-	<delete file="${modulesdir}/console-jca-plugin.jar"/>
-	<delete file="${modulesdir}/console-jdbc-plugin.jar"/>
-	<delete file="${modulesdir}/console-jms-plugin.jar"/>
-	<delete file="${modulesdir}/console-jruby-plugin.jar"/>
-	<delete file="${modulesdir}/console-jts-plugin.jar"/>
-	<delete file="${modulesdir}/console-web-plugin.jar"/>
 	<delete file="${modulesdir}/web-gui-plugin-common.jar"/>
+	<delete file="${modulesdir}/ant.jar" failonerror="false"/>
+	<delete verbose="true" failonerror="false">
+	  <fileset dir="${modulesdir}" includes="console-**-help.jar"/>
+	  <fileset dir="${modulesdir}" includes="console-**-plugin.jar"/>
+	</delete>
      </target>
 
 
-    <target name="addDtds" if="includeDtds">
+    <target name="addDtds" unless="nucleus.distribution">
         <echo message="adding dtds"/>
         <jar jarfile="${jardir}/dtds.jar" basedir="${jardir}/glassfish3/glassfish/lib" includes="dtds/**/*"/>
 	<jar jarfile="${jardir}/schemas.jar" basedir="${jardir}/glassfish3/glassfish/lib" includes="schemas/**/*"/>
     </target>
     
     <target name="rejar">
-       <echo message="rejarring and processing metadata..."/>
+        <echo message="rejarring and processing metadata..."/>
         <taskdef name="rejar" classname="org.jvnet.maven.plugin.antrun.RejarTask" />
 
+	<defaultexcludes add="META-INF/**.RSA"/>
+	<defaultexcludes add="META-INF/**.inf"/>
+	<defaultexcludes add="META-INF/**.SF"/>
+
         <rejar destfile="${finaljar}" duplicate="preserve" >
+           <manifest>
+                <attribute name="Bundle-SymbolicName" value="${bundlename}"/>
+                <attribute name="Main-Class" value="com.sun.enterprise.glassfish.bootstrap.UberMain"/>
+            </manifest>
             <zipgroupfileset dir="${jardir}" includes="**/*.jar"/>
+            <fileset dir="${rootdir}/temp" includes="*.rar, *.war"/>
         </rejar>
     </target>
 
 
-    <target name="unjar">
-	<unjar src="${finaljar}" dest="${rootdir}/temp" />
-        <delete>
-		<fileset dir="${rootdir}/temp/META-INF/">
-			<include name="*.inf"/>
-			<include name="*.RSA"/>
-			<include name="*.SF"/>
-		</fileset>
-	</delete>
-     </target>
+    <target name="addExtraRars" if="full.distribution">
+	<echo message="Adding additional rars"/>
 
-    <target name="jar">
-	<jar destfile="${finaljar}" basedir="${rootdir}/temp" >
-           <manifest>
-                <attribute name="Bundle-SymbolicName" value="${bundlename}"/>
-            </manifest>
-	</jar>
+	<!-- Include property files i.e., glassfish3/mq/lib/props/broker/*.properties of mq.zip in jmsra.rar --> 
+        <unzip dest="${jardir}">
+            <fileset dir="${zipdir}">
+                <include name="mq**.zip"/>
+            </fileset>
+            <patternset>
+                <include name="**/props/broker/**"/>
+            </patternset>
+        </unzip>
+        <move file="${jardir}/glassfish3/mq/lib/props" tofile="${jardir}/glassfish3/glassfish/lib/install/applications/jmsra/props"/>
+        <delete dir="${jardir}/glassfish3/mq"/>
 
+        <jar jarfile="${jardir}/jmsra.rar" basedir="${jardir}/glassfish3/glassfish" includes="lib/install/applications/jmsra/**/*"/>
+
+        <jar jarfile="${jardir}/jaxr-ra.rar" basedir="${jardir}/glassfish3/glassfish" includes="lib/install/applications/jaxr-ra/**/*"/>
     </target>
 
-    <target name="addRars" if="includeRars">
+    <target name="addRars" depends="addExtraRars" unless="nucleus.distribution">
         <echo message="adding rars"/>
         <jar jarfile="${jardir}/__cp_jdbc_ra.rar" basedir="${jardir}/glassfish3/glassfish" includes="lib/install/applications/__cp_jdbc_ra/**/*"/>
         <jar jarfile="${jardir}/__ds_jdbc_ra.rar" basedir="${jardir}/glassfish3/glassfish" includes="lib/install/applications/__ds_jdbc_ra/**/*"/>
@@ -145,7 +161,7 @@
    <!--     <jar jarfile="${finaljar}" update="true" basedir="${jardir}" includes="__cp_jdbc_ra.rar, __ds_jdbc_ra.rar, __dm_jdbc_ra.rar, __xa_jdbc_ra.rar"/>  -->
     </target>
 
-  <target name="addEjbTimer" if="includeEjbTimer">
+  <target name="addEjbTimer" if="full.distribution">
         <echo message="adding EJBTimer"/>
 	<copy file="${jardir}/glassfish3/glassfish/lib/install/applications/ejb-timer-service-app.war" todir= "${rootdir}/temp"/>
 <!--

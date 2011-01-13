@@ -43,7 +43,7 @@
 
 <project name="glassfish nucleus distribution creation" default="create.distribution" basedir=".">
     <import file="../distributions.xml"/>
-    <property name="source.distribution.name" value="GlassFish Nucleus"/>
+    <property name="source.distribution.name" value="GlassFish Open Source Edition 3.1 Nucleus"/>
     <target name="init">
         <condition property="windows">
             <os family="windows" />
@@ -152,7 +152,7 @@
    <target name="create-domain-on-unix" depends="init" if="unix">
        <ant antfile="../distributions.xml" target="create-domain">
            <property name="exec.dir" value="${basedir}/target/stage/${install.dir.name}/glassfish/bin"/>
-           <property name="exec.executable" value="${basedir}/target/stage/${install.dir.name}/glassfish/bin/asadmin"/>
+           <property name="exec.executable" value="${basedir}/target/stage/${install.dir.name}/bin/asadmin"/>
        </ant>
    </target>
 </project>

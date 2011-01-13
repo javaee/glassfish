@@ -87,11 +87,13 @@ public class NoTxConnectorAllocator extends AbstractConnectorAllocator {
             ManagedConnection mc = (ManagedConnection) evt.getSource();
             mc.removeConnectionEventListener(this);
             poolMgr.putbackResourceToPool(resource, true);
+/*
             try {
                 mc.destroy();
             } catch (Exception ex) {
                 // ignore exception
             }
+*/
             //GJCINT
             resource.setConnectionErrorOccurred();
         }

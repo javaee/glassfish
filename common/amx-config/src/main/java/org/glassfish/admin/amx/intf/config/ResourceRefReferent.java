@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,10 +41,9 @@
 package org.glassfish.admin.amx.intf.config;
 
 /**
-Referent: "the object of a reference", in this case a marker 
-interface denoting that the item may be referred to by a
-{@link ResourceRefReferent}.
+ * Referent: "the object of a reference", in this case a marker
+ * interface denoting that the item may be referred to by a
+ * {@link ResourceRefReferent}.
  */
-public interface ResourceRefReferent extends RefReferent
-{
+public interface ResourceRefReferent extends RefReferent {
 }

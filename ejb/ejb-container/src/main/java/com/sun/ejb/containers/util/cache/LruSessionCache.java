@@ -44,15 +44,13 @@ import com.sun.appserv.util.cache.CacheListener;
 
 import com.sun.ejb.base.io.IOUtils;
 
-import com.sun.ejb.containers.util.cache.LruCache;
-
 import com.sun.ejb.spi.container.SFSBContainerCallback;
 import com.sun.ejb.spi.container.StatefulEJBContext;
 
 import com.sun.ejb.base.stats.StatefulSessionStoreMonitor;
 
-import com.sun.ejb.spi.sfsb.store.SFSBBeanState;
 import org.glassfish.ha.store.api.BackingStore;
+import org.glassfish.ha.store.util.SimpleMetadata;
 import org.glassfish.ha.store.api.BackingStoreException;
 
 import java.io.Serializable;
@@ -82,7 +80,7 @@ public class LruSessionCache
     private int numVictimsAccessed = 0;
     
     protected SFSBContainerCallback     container;
-    protected BackingStore<Serializable, SFSBBeanState> backingStore;
+    protected BackingStore<Serializable, SimpleMetadata> backingStore;
 
     private static final byte CACHE_ITEM_VALID = 0;
     private static final byte CACHE_ITEM_LOADING = 1;
@@ -137,7 +135,7 @@ public class LruSessionCache
 	    && (removalTimeoutInSeconds <= cacheIdleTimeoutInSeconds);
     }
 
-    public void setBackingStore(BackingStore<Serializable, SFSBBeanState> store) {
+    public void setBackingStore(BackingStore<Serializable, SimpleMetadata> store) {
         this.backingStore = store;
     }
 
@@ -471,7 +469,7 @@ public class LruSessionCache
         Object object = null;
 
         try {
-            SFSBBeanState beanState = backingStore.load(sessionKey, null);
+            SimpleMetadata beanState = backingStore.load(sessionKey, null);
             byte[] data = (beanState != null)
                 ? beanState.getState()
                 : null;
@@ -506,16 +504,15 @@ public class LruSessionCache
         boolean status = false;
 	
 	if (data != null) {
-	    SFSBBeanState beanState = new SFSBBeanState(
-		sessionKey, ctx.getLastAccessTime(),
-		!ctx.existsInStore(), data, ctx.getVersion());
+	    SimpleMetadata beanState = new SimpleMetadata(
+		ctx.getVersion(), ctx.getLastAccessTime(), removalTimeoutInSeconds*1000, data);
         
         //Note: Don't increment the version here because
         //  this is called on an async thread and the client
         //  already has the correct version
         beanState.setVersion(ctx.getVersion());
 	    try {
-		backingStore.save(beanState.getSessionId(), beanState, beanState.isNew());
+		backingStore.save(sessionKey, beanState, !ctx.existsInStore());
 		// sfsbStoreMonitor.setPassivationSize(data.length);
 		status = true;
 	    } catch (BackingStoreException sfsbEx) {

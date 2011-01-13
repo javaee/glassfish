@@ -98,59 +98,53 @@ public class ListLogAttributes implements AdminCommand {
         boolean isCluster = false;
         boolean isDas = false;
         boolean isInstance = false;
-        boolean foundConfig = false;
+        boolean isConfig = false;
+        String targetConfigName = "";
 
         try {
             HashMap<String, String> props = null;
 
             Config config = domain.getConfigNamed(target);
             if (config != null) {
-                List<Cluster> clusterList = clusters.getCluster();
-                for (Cluster cluster : clusterList) {
-                    String clusterConfigName = cluster.getConfigRef();
-                    if (clusterConfigName.equals(target)) {
-                        target = cluster.getName();
-                        foundConfig = true;
-                        break;
-                    }
-                }
-                if (!foundConfig) {
-                    List<Server> serverList = servers.getServer();
-                    for (Server server : serverList) {
-                        String serverConfigName = server.getConfigRef();
-                        if (serverConfigName.equals(target)) {
-                            target = server.getName();
-                            break;
-                        }
-                    }
-                }
-            }
+                targetConfigName = target;
+                isConfig = true;
 
-            Server targetServer = domain.getServerNamed(target);
-
-            if (targetServer != null && targetServer.isDas()) {
-                isDas = true;
+                Server targetServer = domain.getServerNamed(SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME);
+                if (targetServer.getConfigRef().equals(target)) {
+                    isDas = true;
+                }
             } else {
-                com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
-                if (cluster != null) {
-                    isCluster = true;
+
+                Server targetServer = domain.getServerNamed(target);
+
+                if (targetServer != null && targetServer.isDas()) {
+                    isDas = true;
                 } else {
-                    isInstance = true;
+                    com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
+                    if (cluster != null) {
+                        isCluster = true;
+                        targetConfigName = cluster.getConfigRef();
+                    } else if (targetServer != null) {
+                        isInstance = true;
+                        targetConfigName = targetServer.getConfigRef();
+                    }
+                }
+
+                if (isInstance) {
+                    Cluster clusterForInstance = targetServer.getCluster();
+                    if (clusterForInstance != null) {
+                        targetConfigName = clusterForInstance.getConfigRef();
+                    }
                 }
             }
-
-            if (isInstance) {
-                Cluster clusterForInstance = targetServer.getCluster();
-                if (clusterForInstance != null) {
-                    target = clusterForInstance.getName();
-                }
-            }
-
 
             if (isCluster || isInstance) {
-                props = (HashMap<String, String>) loggingConfig.getLoggingProperties(target);
+                props = (HashMap<String, String>) loggingConfig.getLoggingProperties(targetConfigName);
             } else if (isDas) {
                 props = (HashMap<String, String>) loggingConfig.getLoggingProperties();
+            } else if (isConfig) {
+                // This loop is for the config which is not part of any target
+                props = (HashMap<String, String>) loggingConfig.getLoggingProperties(targetConfigName);
             } else {
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 String msg = localStrings.getLocalString("invalid.target.sys.props",
@@ -166,13 +160,13 @@ public class ListLogAttributes implements AdminCommand {
 
             // The following Map is used to hold the REST data
             Map<String, String> logAttributes = new HashMap<String, String>();
-            
+
             while (it2.hasNext()) {
                 String name = it2.next();
                 if (!name.endsWith(".level") && !name.equals(".level")) {
                     final ActionReport.MessagePart part = report.getTopMessagePart()
                             .addChild();
-                    part.setMessage(name + "\t" + "<"+props.get(name)+">");
+                    part.setMessage(name + "\t" + "<" + props.get(name) + ">");
                     logAttributes.put(name, props.get(name));
                 }
             }

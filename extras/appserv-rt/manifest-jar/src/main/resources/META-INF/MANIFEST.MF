@@ -2,5 +2,5 @@ Manifest-Version: 1.0
 Archiver-Version: Plexus Archiver
 Created-By: Apache Maven
 Build-Jdk: 
-Class-Path: ../modules/gf-client.jar
+Class-Path: ../lib/gf-client.jar
 GlassFish-ServerExcluded: true

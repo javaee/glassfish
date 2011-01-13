@@ -3,7 +3,7 @@ CREATE TABLE EJB__TIMER__TBL (
     `BLOB`                 BLOB,
     `TIMERID`              VARCHAR(255)  NOT NULL,
     `CONTAINERID`          BIGINT        NOT NULL,
-    `OWNERID`              VARCHAR(255)  NOT NULL,
+    `OWNERID`              VARCHAR(255)  NULL,
     `STATE`                INTEGER       NOT NULL,
     `PKHASHCODE`           INTEGER       NOT NULL,
     `INTERVALDURATION`     BIGINT        NOT NULL,

@@ -100,7 +100,6 @@ import com.sun.enterprise.deployment.WebComponentDescriptor;
 import javax.management.MBeanServer;
 import org.glassfish.admin.amx.impl.util.ObjectNameBuilder;
 import org.glassfish.admin.amx.util.StringUtil;
-import org.glassfish.appclient.server.core.AppClientDeployer;
 
 /**
 AMX RealmsMgr implementation.
@@ -113,7 +112,6 @@ public final class RuntimeRootImpl extends AMXImplBase
 
     private final Habitat mHabitat;
 
-    private final AppClientDeployer appClientDeployer;
 
     public RuntimeRootImpl(final ObjectName parent)
     {
@@ -123,7 +121,6 @@ public final class RuntimeRootImpl extends AMXImplBase
 
         appRegistry = mHabitat.getComponent(ApplicationRegistry.class);
 
-        appClientDeployer = mHabitat.getComponent(AppClientDeployer.class);
 
     }
 
@@ -291,20 +288,6 @@ public final class RuntimeRootImpl extends AMXImplBase
         return scheme + "://" + host + ":" + getRESTPort() + "/" + get_asadmin() + "/";
     }
 
-    /**
-     * Returns a partial URI (excludes the scheme, host, and port) for launching
-     * an app client using Java Web Start.
-     *
-     * @param applicationName name of the application as recorded internally
-     * @param clientModuleURI relative URI within the EAR to the app client; null for a stand-alone app client
-     * @return
-     */
-    public String getRelativeJWSURI(
-        final String applicationName,
-        final String clientModuleURI)
-    {
-        return appClientDeployer.userFriendlyContextRoot(applicationName, clientModuleURI);
-    }
 
     public String executeREST(final String cmd)
     {
@@ -375,8 +358,7 @@ public final class RuntimeRootImpl extends AMXImplBase
         final JVMInformation info = new JVMInformation(getMBeanServer());
 
         final String NL = StringUtil.LS;
-        
-        String target = "das";
+        final String target = "das";
         String result = "FAILED";
         if ("summary".equals(type))
         {

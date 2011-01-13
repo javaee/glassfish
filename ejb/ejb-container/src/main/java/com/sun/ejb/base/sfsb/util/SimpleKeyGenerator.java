@@ -42,6 +42,7 @@ package com.sun.ejb.base.sfsb.util;
 
 import com.sun.ejb.spi.sfsb.util.SFSBUUIDUtil;
 import com.sun.enterprise.util.Utility;
+import org.glassfish.ha.store.util.KeyTransformer;
 
 /**
  * A utility class that generates stateful session keys using two longs
@@ -54,7 +55,7 @@ import com.sun.enterprise.util.Utility;
  * @author  Mahesh Kannan
  */
 public class SimpleKeyGenerator
-    implements SFSBUUIDUtil<SimpleKeyGenerator.SimpleSessionKey>
+    implements SFSBUUIDUtil<SimpleKeyGenerator.SimpleSessionKey>, KeyTransformer<SimpleKeyGenerator.SimpleSessionKey>
 {
    
     protected long prefix;

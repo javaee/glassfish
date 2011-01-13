@@ -257,30 +257,6 @@ public class DefaultDOLVisitor implements ApplicationVisitor, EjbBundleVisitor, 
      */
     public void accept(WebBundleDescriptor descriptor) {
         this.bundleDescriptor = descriptor;
-        for (EjbBundleDescriptor ejbBundleDesc : descriptor.getExtensionsDescriptors(EjbBundleDescriptor.class)) {
-            // at most 1 extension EjbBundleDescriptor
-            for (EjbDescriptor ejbDesc : ejbBundleDesc.getEjbs()) {
-                // copy ejb-ref's from each EJB to WebBundleDescriptor, so ejb-ref and
-                // ejb-local-ref's declared in ejb-jar.xml can override @EJB injections,
-                // which are scanned while processing the WAR. See issue 11684.
-                // If there already exists an ejb-ref by the same name in the WebBundleDescriptor,
-                // need to merge its injection-targets with the corresponding ejb-ref
-                // that will be copied over.  See bug 6992465
-                for (EjbReference ejbRefInEjb : ejbDesc.getEjbReferenceDescriptors()) {
-                    try {
-                        EjbReferenceDescriptor existing = descriptor.getEjbReferenceByName(ejbRefInEjb.getName());
-                        descriptor.removeEjbReferenceDescriptor(existing);
-                        EjbReferenceDescriptor addNew = new EjbReferenceDescriptor((EjbReferenceDescriptor) ejbRefInEjb);
-                        for (InjectionTarget next : existing.getInjectionTargets()) {
-                            addNew.addInjectionTarget(next);
-                        }
-                        descriptor.addEjbReferenceDescriptor(addNew);
-                    } catch (IllegalArgumentException e) {
-                        //no existing ejb-ref in WebBundleDescriptor by the same name
-                    }
-                }
-            }
-        }
     }
 
     public void accept(ManagedBeanDescriptor descriptor) {

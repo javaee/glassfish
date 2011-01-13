@@ -43,6 +43,7 @@ package com.sun.enterprise.resource.pool.monitor;
 import com.sun.appserv.connectors.internal.api.ConnectorConstants;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.connectors.util.ResourcesUtil;
+import com.sun.logging.LogDomains;
 import org.glassfish.resource.common.PoolInfo;
 import com.sun.enterprise.connectors.ConnectorRuntime;
 import com.sun.enterprise.resource.listener.PoolLifeCycle;
@@ -85,9 +86,9 @@ import org.jvnet.hk2.component.Habitat;
 public class ConnectionPoolStatsProviderBootstrap implements PostConstruct, 
         PoolLifeCycle {
 
-    @Inject
-    Logger logger;
-    
+    protected final static Logger logger =
+    LogDomains.getLogger(ConnectorConnPoolStatsProvider.class,LogDomains.RSR_LOGGER);
+
     @Inject
     private PoolManager poolManager;
 
@@ -186,7 +187,7 @@ public class ConnectionPoolStatsProviderBootstrap implements PostConstruct,
             StatsProviderManager.register(
                     ContainerMonitoring.JDBC_CONNECTION_POOL,
                     PluginPoint.SERVER,
-                    ConnectorsUtil.getPoolMonitoringSubTreeRoot(poolInfo), jdbcPoolStatsProvider);
+                    ConnectorsUtil.getPoolMonitoringSubTreeRoot(poolInfo, true), jdbcPoolStatsProvider);
             //String jdbcPoolName = jdbcPoolStatsProvider.getJdbcPoolName();
             PoolLifeCycleListenerRegistry registry = registerPool(poolInfo, 
                     getProbeProviderUtil().getJdbcProbeProvider());
@@ -213,7 +214,7 @@ public class ConnectionPoolStatsProviderBootstrap implements PostConstruct,
             StatsProviderManager.register(
                     ContainerMonitoring.CONNECTOR_CONNECTION_POOL,
                     PluginPoint.SERVER,
-                    ConnectorsUtil.getPoolMonitoringSubTreeRoot(poolInfo), ccPoolStatsProvider);
+                    ConnectorsUtil.getPoolMonitoringSubTreeRoot(poolInfo, true), ccPoolStatsProvider);
 
             PoolLifeCycleListenerRegistry registry = registerPool(
                     poolInfo, getProbeProviderUtil().getJcaProbeProvider());
@@ -237,13 +238,14 @@ public class ConnectionPoolStatsProviderBootstrap implements PostConstruct,
                     monitoringModuleName =  ConnectorConstants.MONITORING_JMS_SERVICE_MODULE_NAME;
                     dottedNamesHierarchy = ConnectorConstants.MONITORING_JMS_SERVICE +
                         ConnectorConstants.MONITORING_SEPARATOR + ConnectorConstants.MONITORING_CONNECTION_FACTORIES
-                            + ConnectorConstants.MONITORING_SEPARATOR + poolInfo.getName();
+                            + ConnectorConstants.MONITORING_SEPARATOR +
+                            ConnectorsUtil.escapeResourceNameForMonitoring(poolInfo.getName());
 
                 }else{
                     monitoringModuleName =  ConnectorConstants.MONITORING_CONNECTOR_SERVICE_MODULE_NAME;
                     dottedNamesHierarchy = ConnectorConstants.MONITORING_CONNECTOR_SERVICE_MODULE_NAME +
                     ConnectorConstants.MONITORING_SEPARATOR + raName + ConnectorConstants.MONITORING_SEPARATOR +
-                    poolInfo.getName();
+                    ConnectorsUtil.escapeResourceNameForMonitoring(poolInfo.getName());
                 }
 
                 StatsProviderManager.register(monitoringModuleName, PluginPoint.SERVER,
@@ -254,10 +256,13 @@ public class ConnectionPoolStatsProviderBootstrap implements PostConstruct,
                         "for [ " + raName + " ] with monitoring-stats-registry.");
                 }
 
+                /* no need to create multiple probe provider instances, one per pool will
+                   work for multiple stats providers 
                 PoolLifeCycleListenerRegistry poolLifeCycleListenerRegistry = registerPool(
                         poolInfo, getProbeProviderUtil().getJcaProbeProvider());
-                connectorServicePoolStatsProvider.setPoolRegistry(poolLifeCycleListenerRegistry);
+                */
 
+                connectorServicePoolStatsProvider.setPoolRegistry(registry);
                 ccStatsProviders.add(connectorServicePoolStatsProvider);
             }
         }

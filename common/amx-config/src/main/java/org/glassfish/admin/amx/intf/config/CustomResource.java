@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,16 +40,25 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-/**
-Configuration for the &lt;custom-resource&gt; element.
- */
-public interface CustomResource extends Resource
-{
-    String getResType();
 
-    void setResType(final String resType);
+public interface CustomResource
+        extends Resource {
 
-    String getFactoryClass();
 
-    void setFactoryClass(final String classname);
+    public String getEnabled();
+
+    public void setEnabled(String param1);
+
+    public String getDescription();
+
+    public void setDescription(String param1);
+
+    public String getResType();
+
+    public void setResType(String param1);
+
+    public String getFactoryClass();
+
+    public void setFactoryClass(String param1);
+
 }

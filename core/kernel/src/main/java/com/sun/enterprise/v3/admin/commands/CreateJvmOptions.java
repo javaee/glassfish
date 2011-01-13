@@ -223,20 +223,19 @@ public final class CreateJvmOptions implements AdminCommand {
         }
     }
 
-    private void validate(JvmOptionBag bag, List<String> opts, ActionReport report) {
-        //Note: mutates the given list and removes options that we definitely know are not valid
+    private void validate(JvmOptionBag bag, List<String> opts, ActionReport report) 
+            throws IllegalArgumentException {
         Iterator<String> siter = opts.iterator();
         while (siter.hasNext()) {
             String opt = siter.next();
             if (!opt.startsWith("-")) {
                 String msg = lsm.getString("joe.invalid.start", opt);
-                report.getTopMessagePart().addChild().setMessage(msg);
-                siter.remove();
+                throw new IllegalArgumentException(msg);
             }
-            if (bag.contains(opt)) { //only to generate a message!
+            if (bag.contains(opt)) {
+                // setting an option that already exists is considered an error
                 String msg = lsm.getString("joe.exists", opt);
-                report.getTopMessagePart().addChild().setMessage(msg);
-                siter.remove();
+                throw new IllegalArgumentException(msg);
             }
         }
     }

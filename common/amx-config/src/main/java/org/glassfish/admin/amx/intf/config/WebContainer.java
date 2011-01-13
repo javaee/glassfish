@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,13 +42,16 @@ package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.base.Singleton;
 
-/**
-Configuration for the &lt;web-container&gt; element.
- */
 public interface WebContainer
-        extends PropertiesAccess, ConfigElement, Singleton
-{
+        extends Singleton, ConfigElement, PropertiesAccess {
+
+
     public SessionConfig getSessionConfig();
-    
+
     public String getJspCachingEnabled();
+
+    public void setSessionConfig(SessionConfig param1);
+
+    public void setJspCachingEnabled(String param1);
+
 }

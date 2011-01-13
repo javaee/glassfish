@@ -82,6 +82,19 @@
                 </includes>
             </resource>
         </resources>
+        <plugins>
+          <plugin>
+            <groupId>com.sun.enterprise</groupId>
+            <artifactId>hk2-maven-plugin</artifactId>
+            <configuration>
+              <archive>
+                <manifestEntries>
+                  <Class-Path>common-l10n.jar</Class-Path>
+                </manifestEntries>
+              </archive>
+            </configuration>
+          </plugin>
+        </plugins>
     </build>
 
     <dependencies>
@@ -125,8 +138,8 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>javax.mail</groupId>
-            <artifactId>mail</artifactId>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>javax.mail</artifactId>
         </dependency>
         <dependency>
             <groupId>org.glassfish.security</groupId>
@@ -139,6 +152,10 @@
             <artifactId>grizzly-comet</artifactId>
         </dependency>
 -->
+<!--        <dependency>
+            <groupId>com.sun.grizzly</groupId>
+            <artifactId>grizzly-websockets</artifactId>
+        </dependency>-->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

@@ -46,6 +46,7 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.CommandLock;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.internal.deployment.SnifferManager;
@@ -58,6 +59,7 @@ import org.glassfish.deployment.common.DeploymentProperties;
 @Service(name="_is-sniffer-user-visible")
 @org.glassfish.api.admin.ExecuteOn(value={RuntimeType.DAS})
 @Scoped(PerLookup.class)
+@CommandLock(CommandLock.LockType.NONE)
 public class IsSnifferUserVisibleCommand implements AdminCommand {
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(IsSnifferUserVisibleCommand.class);

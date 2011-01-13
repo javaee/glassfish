@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,19 +40,18 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-import java.util.Map;
-
-import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 
+import java.util.Map;
+
 /**
-    All MBeans that have Property should extend this interface.
+ * All MBeans that have Property should extend this interface.
  */
-public interface PropertiesAccess extends AMXConfigProxy
-{
+public interface PropertiesAccess extends AMXConfigProxy {
     /**
-    Return all Property MBeans, keyed by property name.
-    @since Glassfish V3
+     * Return all Property MBeans, keyed by property name.
+     *
+     * @since Glassfish V3
      */
     public Map<String, Property> getProperty();
 }

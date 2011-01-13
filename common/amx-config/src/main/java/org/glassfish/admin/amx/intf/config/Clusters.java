@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,22 +42,10 @@ package org.glassfish.admin.amx.intf.config;
 
 import java.util.Map;
 
-/**
-Configuration for the &lt;clusters&gt; element; it is an internal "node" which
-groups all resources under itself.
-@since Glassfish V3
- */
 public interface Clusters
-        extends ConfigElement, ConfigCollectionElement
-{
+        extends ConfigCollectionElement, ConfigElement {
     public Map<String, Cluster> getCluster();
+
+    public Cluster getCluster(String param1);
+
 }
-
-
-
-
-
-
-
-
-

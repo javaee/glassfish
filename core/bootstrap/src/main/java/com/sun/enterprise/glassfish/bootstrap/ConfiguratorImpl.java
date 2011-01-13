@@ -40,14 +40,11 @@
 
 package com.sun.enterprise.glassfish.bootstrap;
 
+import org.glassfish.embeddable.CommandResult;
 import org.glassfish.embeddable.CommandRunner;
 import org.glassfish.embeddable.GlassFishException;
-import org.glassfish.embeddable.GlassFishProperties;
 import org.jvnet.hk2.component.Habitat;
 
-import java.text.MessageFormat;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -57,17 +54,7 @@ class ConfiguratorImpl implements Configurator {
 
     Habitat habitat;
 
-    private static final Map<String, String[]> httpListeners = new HashMap();
-
-    static {
-        httpListeners.put(GlassFishProperties.HTTP_PORT, new String[]{
-                "--listenerport={0}", "--listeneraddress=0.0.0.0", "--defaultvs=server",
-                "listener_id=embedded-listener-__1__"});
-        httpListeners.put(GlassFishProperties.HTTPS_PORT, new String[]{
-                "--listenerport={0}", "--listeneraddress=0.0.0.0", "--defaultvs=server",
-                "--securityenabled=true", "listener_id=embedded-listener-__2__"});
-        // TODO :: support other simple configurations like jmx.port and jms.port
-    }
+    private static final String CONFIG_PROP_PREFIX = "embedded-glassfish-config.";
 
     public ConfiguratorImpl(Habitat habitat) {
         this.habitat = habitat;
@@ -75,12 +62,14 @@ class ConfiguratorImpl implements Configurator {
 
     public void configure(Properties props) throws GlassFishException {
         CommandRunner commandRunner = habitat.getComponent(CommandRunner.class);
-        for (String key : httpListeners.keySet()) {
-            String configuredVal = props.getProperty(key);
-            if (configuredVal != null) {
-                String[] values = httpListeners.get(key);
-                values[0] = MessageFormat.format(values[0], configuredVal);
-                commandRunner.run("create-http-listener", values);
+        for (Object obj : props.keySet()) {
+            String key = (String) obj;
+            if (key.startsWith(CONFIG_PROP_PREFIX)) {
+                CommandResult result = commandRunner.run("set",
+                        key.substring(CONFIG_PROP_PREFIX.length()) + "=" + props.getProperty(key));
+                if (result.getExitStatus() != CommandResult.ExitStatus.SUCCESS) {
+                    throw new GlassFishException(result.getOutput());
+                }
             }
         }
     }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,20 +42,24 @@ package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 
-/**
- * Config AMX MBean for Engine's config
- * @since Glassfish V3
- * 
- */
-public interface Engine extends AMXConfigProxy, Description, PropertiesAccess
-{
-    /**
-     * get the sniffer
-     */
+public interface Engine
+        extends AMXConfigProxy, Description, PropertiesAccess {
+
+
+    public String getDescription();
+
+    public void setDescription(String param1);
+
     public String getSniffer();
 
-    /**
-     * set the sniffer
-     */
-    public void setSniffer(String value);
+    public void setSniffer(String param1);
+
+    /*public Map<String, ApplicationConfig> getApplicationConfigs();
+
+    public ApplicationConfig getApplicationConfig();
+
+    public void setApplicationConfig(ApplicationConfig param1);
+
+    public ApplicationConfig newApplicationConfig(Class param1);     */
+
 }

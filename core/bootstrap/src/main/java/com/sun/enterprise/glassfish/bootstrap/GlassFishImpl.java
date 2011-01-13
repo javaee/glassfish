@@ -72,33 +72,33 @@ public class GlassFishImpl implements GlassFish {
     }
 
     public synchronized void start() throws GlassFishException {
-        if (status == Status.STARTED) return;
-        try {
-            status = Status.STARTING;
-            gfKernel.start();
-            status = Status.STARTED;
-
-        } catch (Exception e) {
-            throw new GlassFishException(e);
+        if (status == Status.STARTED || status == Status.STARTING || status == Status.DISPOSED) {
+            throw new IllegalStateException("Already in " + status + " state.");
         }
+        status = Status.STARTING;
+        gfKernel.start();
+        status = Status.STARTED;
     }
 
     public synchronized void stop() throws GlassFishException {
-        if (status != Status.STARTED) return;
-        try {
-            status = Status.STOPPING;
-            gfKernel.stop();
-            status = Status.STOPPED;
-        } catch (Exception e) {
-            throw new GlassFishException(e);
+        if (status == Status.STOPPED || status == Status.STOPPING || status == Status.DISPOSED) {
+            throw new IllegalStateException("Already in " + status + " state.");
         }
+        status = Status.STOPPING;
+        gfKernel.stop();
+        status = Status.STOPPED;
     }
 
     public synchronized void dispose() throws GlassFishException {
         if (status == Status.DISPOSED) {
             throw new IllegalStateException("Already disposed.");
         } else if (status != Status.STOPPED) {
-            stop();
+            try {
+                stop();
+            } catch (Exception e) {
+                // ignore and continue.
+                e.printStackTrace();
+            }
         }
         this.gfKernel = null;
         this.habitat = null;

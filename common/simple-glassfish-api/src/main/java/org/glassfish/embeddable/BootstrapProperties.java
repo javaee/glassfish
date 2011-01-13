@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -47,27 +47,12 @@ import java.util.Properties;
  * <p/>
  * <p/>Eg.., GlassFishRuntime.bootstrap(new BootstrapProperties());
  *
- * @author Prasad.Subramanian@Sun.COM
  * @author bhavanishankar@dev.java.net
+ * @author Prasad.Subramanian@Sun.COM
  */
 public class BootstrapProperties {
 
     private Properties properties;
-
-    /**
-     * Key for specifying which platform the GlassFish should run with.
-     */
-    public final static String PLATFORM_PROPERTY_KEY = "GlassFish_Platform";
-
-    /**
-     * Key for specifying which installation root the GlassFish should run with.
-     */
-    public static final String INSTALL_ROOT_PROP_NAME = "com.sun.aas.installRoot";
-
-    /**
-     * Key for specifying which installation root (in URI format) the GlassFish should run with.
-     */
-    public static final String INSTALL_ROOT_URI_PROP_NAME = "com.sun.aas.installRootURI";
 
     /**
      * Create BootstrapProperties with default properties.
@@ -78,6 +63,8 @@ public class BootstrapProperties {
 
     /**
      * Create BootstrapProperties with custom properties.
+     * This method does not take a copy of the passed in properties object; instead it just maintains a reference to
+     * it, so all semantics of "pass-by-reference" applies.
      * <p/>
      * <p/>Custom properties can include GlassFish_Platform,
      * com.sun.aas.installRoot, com.sun.aas.installRootURI
@@ -109,47 +96,29 @@ public class BootstrapProperties {
      *
      * @param key   the key to be placed into this bootstrap properties.
      * @param value the value corresponding to the key.
-     * @return This object after setting the custom property.
      */
-    public BootstrapProperties setProperty(String key, String value) {
+    public void setProperty(String key, String value) {
         properties.setProperty(key, value);
-        return this;
     }
 
     /**
-     * Optionally set the platform on which the GlassFish should run.
-     * <p/>
-     * <p/> Eg., setPlatform({@link BootstrapProperties.Platform#Felix}.toString());
-     * <p/>
-     * <p/> Default is {@link BootstrapProperties.Platform#Static}.toString();
+     * Get the value of the property with the specified key.
      *
-     * @param platform Name of the platform
-     * @return This object after setting the platform.
+     * @param key the property key
+     * @return value of the property for the specified key, null if there is no such property.
      */
-    public BootstrapProperties setPlatform(String platform) {
-        properties.setProperty(PLATFORM_PROPERTY_KEY, platform);
-        return this;
-
+    public String getProperty(String key) {
+        return properties.getProperty(key);
     }
-
-    /**
-     * Gets the name of the platform with which GlassFish is running or will run.
-     *
-     * @return String Name of the platform.
-     */
-    public String getPlatform() {
-        return properties.getProperty(PLATFORM_PROPERTY_KEY);
-    }
-
+    
     /**
      * Optionally set the installation root using which the GlassFish should run.
      *
      * @param installRoot Location of installation root.
      * @return This object after setting the installation root.
      */
-    public BootstrapProperties setInstallRoot(String installRoot) {
+    public void setInstallRoot(String installRoot) {
         properties.setProperty(INSTALL_ROOT_PROP_NAME, installRoot);
-        return this;
     }
 
     /**
@@ -161,55 +130,6 @@ public class BootstrapProperties {
         return properties.getProperty(INSTALL_ROOT_PROP_NAME);
     }
 
-    /**
-     * Optionally set the installation root (in URI format) using which the
-     * GlassFish should run.
-     *
-     * @param installRootUri Location of installation root in java.net.URI format
-     * @return This object after setting the installation root.
-     */
-    public BootstrapProperties setInstallRootURI(String installRootUri) {
-        properties.setProperty(INSTALL_ROOT_URI_PROP_NAME, installRootUri);
-        return this;
-    }
-
-    /**
-     * Get the installation root URI set using {@link #setInstallRootURI}
-     *
-     * @return Installation root URI set using {@link #setInstallRootURI}
-     */
-    public String getInstallRootURI() {
-        return properties.getProperty(INSTALL_ROOT_URI_PROP_NAME);
-    }
-
-    /**
-     * Various platforms on which GlassFish could run.
-     */
-    public enum Platform {
-        /**
-         * Felix OSGi platform
-         */
-        Felix,
-
-        /**
-         * Equinox OSGi platform
-         */
-        Equinox,
-
-        /**
-         * Knopflerfish OSGi platform
-         */
-        Knopflerfish,
-
-        /**
-         * Generic OSGi R4.2 or higher platform.
-         * When this is chosen, we expect the framework to be set up in launcher classloader by user.
-         */
-        GenericOSGi,
-
-        /**
-         * Proprietary non-modular hk2 module system
-         */
-        Static
-    }
+    // Key for specifying which installation root the GlassFish should run with.
+    private static final String INSTALL_ROOT_PROP_NAME = "com.sun.aas.installRoot";
 }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,14 +40,13 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-/**
-Base interface representing a reference.
-@see RefConfigReferent
- */
-public interface Ref extends ConfigElement, Enabled
-{
+
+public interface Ref
+        extends ConfigElement, Enabled {
+
 
     public String getRef();
 
-    public void setRef(String value);
+    public void setRef(String param1);
+
 }

@@ -819,6 +819,36 @@ public class FileUtils {
         return (inputStr.replace('\\', '/'));
     }
 
+    /**
+     * Given a string (typically a path), quote the string such that spaces
+     * are protected from interpretation by a Unix or Windows command shell.
+     * Note that this method does not handle quoting for all styles of special
+     * characters. Just for the basic case of strings with spaces.
+     *
+     * @param s input string
+     * @return a String which is quoted to protect spaces
+     */
+    public static String quoteString(String s) {
+        if (s == null) {
+            throw new IllegalArgumentException("null string");
+        }
+
+        if (!s.contains("\'")) {
+            return("\'" + s + "\'");
+        } else if(!s.contains("\"")) {
+            return("\"" + s + "\"");
+        } else {
+            // Contains a single quote and a double quote. Use backslash
+            // On Unix. Double quotes on Windows. This method does not claim
+            // to support this case well if at all
+            if (OS.isWindows()) {
+                return("\"" + s + "\"");
+            } else {
+                return(s.replaceAll("\040", "\134 "));
+            }
+        }
+    }
+
     ///////////////////////////////////////////////////////////////////////////
 
     public static String getIllegalFilenameCharacters() {
@@ -1051,6 +1081,59 @@ public class FileUtils {
         return f;
     }
 
+    /**
+     * Write the String to a file.  Then make the file readable and writable.
+     * If the file already exists it will be truncated and the contents replaced
+     * with the String argument.
+     * @param s The String to write to the file
+     * @param f The file to write the String to
+     * @throws IOException if any errors
+     */
+    public static void writeStringToFile(String s, File f) throws IOException {
+        Writer writer = null;
+
+        try {
+            writer = new PrintWriter(f);
+            writer.write(s);
+        }
+        finally {
+            if(writer != null) {
+                try {
+                    writer.flush();
+                    writer.close();
+                }
+                catch(Exception e) {
+                    //ignore
+                }
+                f.setReadable(true);
+                f.setWritable(true);
+            }
+        }
+    }
+/**
+ * Find files matching the regular expression in the given directory
+ * @param dir the directory to search
+ * @param regexp the regular expression pattern
+ * @return either an array of matching File objects or an empty array.  Guaranteed
+ * to never return null
+ */
+    public static File[] findFilesInDir(File dir, final String regexp) {
+        try {
+            File[] matches = dir.listFiles(new FilenameFilter() {
+                @Override
+                public boolean accept(File dir, String name) {
+                    return name.matches(regexp);
+                }
+            });
+            if (matches != null)
+                return matches;
+        }
+        catch (Exception e) {
+            // fall through
+        }
+        return new File[0];
+    }
+    
     /**
      * Represents a unit of work that should be retried, if needed, until it
      * succeeds or the configured retry limit is reached.
