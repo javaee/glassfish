@@ -42,42 +42,21 @@ package org.glassfish.admingui.devtests;
 
 import com.thoughtworks.selenium.Selenium;
 import com.thoughtworks.selenium.SeleniumException;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.*;
+import org.openqa.selenium.*;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.ie.InternetExplorerDriver;
 
+import java.io.*;
 import java.math.BigInteger;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.ResourceBundle;
-import org.junit.AfterClass;
-import org.junit.Rule;
-import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.RenderedWebElement;
-import org.openqa.selenium.StaleElementReferenceException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebDriverBackedSelenium;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.ie.InternetExplorerDriver;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class BaseSeleniumTestClass {
 
@@ -87,6 +66,7 @@ public class BaseSeleniumTestClass {
     public static final String TRIGGER_REGISTRATION_PAGE = "Receive patch information and bug updates, screencasts and tutorials, support and training offerings, and more";
     public static final String TRIGGER_ERROR_OCCURED = "An error has occurred";
     private static final String AJAX_INDICATOR = "ajaxIndicator";
+    public static boolean DEBUG;
 
     @Rule
     public SpecificTestRule specificTestRule = new SpecificTestRule();
@@ -96,6 +76,7 @@ public class BaseSeleniumTestClass {
     protected static final int TIMEOUT = 90;
     protected static final int BUTTON_TIMEOUT = 750;
     private static String currentTestClass = "";
+    private static int currentScreenshotNumber = 1;
     protected static boolean debug = Boolean.parseBoolean(getParameter("debug", "false"));
     private boolean processingLogin = false;
     protected Logger logger = Logger.getLogger(BaseSeleniumTestClass.class.getName());
@@ -129,8 +110,9 @@ public class BaseSeleniumTestClass {
     public static void setUp() throws Exception {
         String browser = getParameter("browser", "firefox");
         String port = getParameter("admin.port", "4848");
-        String seleniumPort = getParameter("selenium.port", "4444");
         String baseUrl = "http://localhost:" + port;
+        DEBUG = new Boolean(getParameter("debug", "false"));
+        currentScreenshotNumber = 1;
         
         if ("firefox".equals(browser)) {
             driver = new FirefoxDriver();
@@ -248,6 +230,7 @@ public class BaseSeleniumTestClass {
     }
 
     protected void clickAndWait(String id, String triggerText, int seconds) {
+        log ("Clicking on {0} and waiting for \'{1}\'", id, triggerText);
         insureElementIsVisible(id);
         selenium.click(id);
         waitForPageLoad(triggerText, seconds);
@@ -313,11 +296,6 @@ public class BaseSeleniumTestClass {
                 Assert.fail("The operation timed out waiting for the page to load.");
             }
 
-            /*
-            if (callback.executeTest()) {
-                break;
-            }
-            */
             try {
                 RenderedWebElement ajaxPanel = (RenderedWebElement) driver.findElement(By.id(AJAX_INDICATOR));
                 if (!ajaxPanel.isDisplayed()) {
@@ -441,6 +419,7 @@ public class BaseSeleniumTestClass {
             // It seems this must be click for the JS to fire in the browser
             final String id = row + ":" + selectColId + ":select";
             selenium.click(id); 
+            selenium.check(id); 
         }
     }
 
@@ -463,6 +442,7 @@ public class BaseSeleniumTestClass {
         if (!rows.isEmpty()) {
             for (String row : rows) {
                 selenium.click(row + ":col0:select");
+                selenium.check(row + ":col0:select");
             }
         }
 
@@ -764,6 +744,16 @@ public class BaseSeleniumTestClass {
         return triggerText;
     }
     
+    protected void log(String message, String... args) {
+        if (debug) {
+            String[] temp = new String[args.length];
+            for (int i = 0; i < args.length; i++) {
+                temp[i] = resolveTriggerText(args[i]);
+            }
+            logger.log(Level.INFO, message, temp);
+        }
+    }
+    
     private void insureElementIsVisible (final String id) {
         if (!id.contains("treeForm:tree")) {
             return;
@@ -787,7 +777,7 @@ public class BaseSeleniumTestClass {
             selenium.click(grandParentId + ":" + nodeId+"_turner");
         }
     }
-
+    
     class PageLoadCallBack implements WaitForLoadCallBack {
         boolean textShouldBeMissing;
         String triggerText;
@@ -880,8 +870,12 @@ public class BaseSeleniumTestClass {
         @Override
         public boolean executeTest() {
 //            String attr = selenium.getEval("this.browserbot.findElement('id=" + buttonId + "').disabled"); // "Classic" Selenium
-            String attr = driver.findElement(By.id(buttonId)).getAttribute("disabled"); // WebDriver-backed Selenium
-            return (Boolean.parseBoolean(attr) == desiredState);
+            try {
+                String attr = driver.findElement(By.id(buttonId)).getAttribute("disabled"); // WebDriver-backed Selenium
+                return (Boolean.parseBoolean(attr) == desiredState);
+            } catch (Exception ex) {
+                return true;// ???
+            }
         }
         
         

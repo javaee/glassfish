@@ -82,17 +82,20 @@ public class SpecificTestRule implements MethodRule {
                     runMethod = true;
                 }
 
+                if (debug) {
+                    logger.log(Level.INFO, "Processing test {0} at {1}",
+                            new String[]{
+                                frameworkMethod.getName(),
+                                (new SimpleDateFormat("yyyy-MM-dd-hh.mm.ss")).format(new Date())
+                            });
+                }
                 if (runMethod) {
                     if (debug) {
-                        logger.log(Level.INFO, "Executing test {0} at {1}",
-                                new String[]{
-                                    frameworkMethod.getName(),
-                                    (new SimpleDateFormat("yyyy-MM-dd-hh.mm.ss")).format(new Date())
-                                });
+                        logger.log(Level.INFO, "\tExecuting.");
                     }
                     statement.evaluate();
                 } else {
-                    logger.log(Level.INFO, "Skipping test:  {0}", frameworkMethod.getName());
+                    logger.log(Level.INFO, "\tSkipping.");
                 }
             }
         };
