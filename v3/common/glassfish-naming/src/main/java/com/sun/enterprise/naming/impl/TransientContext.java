@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2006-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -46,8 +46,11 @@ import javax.naming.*;
 import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
@@ -750,18 +753,29 @@ public class TransientContext implements Context, Serializable {
     }
 
     // Class for enumerating name/class pairs
-    class RepNames implements NamingEnumeration {
-        Hashtable bindings;
-        Enumeration names;
+    static class RepNames implements NamingEnumeration {
+        private Map<String,String> nameToClassName =
+            new HashMap<String,String>() ;
+        private Iterator<String> iter ;
 
         RepNames(Hashtable bindings) {
-            this.bindings = bindings;
-            this.names = bindings.keys();
+            Set<String> names = new HashSet<String>() ;
+            for (Object str : bindings.keySet()) {
+                names.add( (String)str ) ;
+            }
+
+            iter = names.iterator() ;
+
+            for (Object obj : bindings.entrySet() ) {
+                Map.Entry entry = (Map.Entry)obj ;
+                nameToClassName.put( (String)entry.getKey(),
+                    entry.getValue().getClass().getName()) ;
+            }
         }
 
         @Override
         public boolean hasMoreElements() {
-            return names.hasMoreElements();
+            return iter.hasNext();
         }
 
         @Override
@@ -771,12 +785,13 @@ public class TransientContext implements Context, Serializable {
 
         @Override
         public Object nextElement() {
-            if (names.hasMoreElements()) {
-                String name = (String) names.nextElement();
-                String className = bindings.get(name).getClass().getName();
+            if (iter.hasNext()) {
+                String name = iter.next();
+                String className = nameToClassName.get(name) ;
                 return new NameClassPair(name, className);
-            } else
+            } else {
                 return null;
+            }
         }
 
         @Override
@@ -791,8 +806,8 @@ public class TransientContext implements Context, Serializable {
         }
     }
 
-    // Class for enumerating bindings
-    class RepBindings implements NamingEnumeration {
+    // Class for enumerating bmesindings
+    static class RepBindings implements NamingEnumeration {
         Enumeration names;
         Hashtable bindings;
 

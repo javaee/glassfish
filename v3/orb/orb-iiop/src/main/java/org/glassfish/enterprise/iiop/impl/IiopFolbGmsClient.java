@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -333,6 +333,10 @@ public class IiopFolbGmsClient implements CallBack {
 
     private ClusterInstanceInfo getClusterInstanceInfo( Server server,
         Config config ) {
+        if ((server == null) || !server.isRunning()) {
+            return null ;
+        }
+
         fineLog( "getClusterInstanceInfo: server {0}, config {1}",
             server, config ) ;
 
@@ -429,7 +433,9 @@ public class IiopFolbGmsClient implements CallBack {
 
         for (Server server : myCluster.getInstances()) {
             ClusterInstanceInfo cii = getClusterInstanceInfo( server, myConfig ) ;
-            result.put( server.getName(), cii ) ;
+            if (cii != null) {
+                result.put( server.getName(), cii ) ;
+            }
         }
 
         fineLog( "getAllClusterInstanceInfo: result {0}", result ) ;
@@ -461,7 +467,9 @@ public class IiopFolbGmsClient implements CallBack {
 
     class GroupInfoServiceGMSImpl extends GroupInfoServiceBase {
         @Override
-        public List<ClusterInstanceInfo> internalClusterInstanceInfo() {
+        public List<ClusterInstanceInfo> internalClusterInstanceInfo( 
+            List<String> endpoints) {
+
             fineLog( "internalClusterInstanceInfo: currentMembers {0}",
                 currentMembers ) ;
 

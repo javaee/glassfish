@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2006-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -66,19 +66,22 @@ public class GroupInfoServiceObserverImpl
         GroupInfoServiceObserverImpl.class, LogDomains.JNDI_LOGGER);
 
     private GroupInfoService gis;
+    private RoundRobinPolicy rr ;
 
-    public GroupInfoServiceObserverImpl(GroupInfoService gis ) {
+    public GroupInfoServiceObserverImpl(GroupInfoService gis, 
+        RoundRobinPolicy rr ) {
+
 	this.gis = gis;
+        this.rr = rr ;
     }
 
     @Override
     public void membershipChange() {
 	try {	 	    
 	    List<ClusterInstanceInfo> instanceInfoList =
-                gis.getClusterInstanceInfo((String[])null);
+                gis.getClusterInstanceInfo((String[])null, rr.getHostPortList() );
 	    if (instanceInfoList != null && instanceInfoList.size() > 0) {
-	        SerialInitContextFactory.getRRPolicy()
-                    .setClusterInstanceInfo(instanceInfoList);
+                rr.setClusterInstanceInfo(instanceInfoList);
 	    }
 	} catch(Exception e) {
 	    _logger.log(Level.SEVERE,
