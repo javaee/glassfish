@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2008-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -102,8 +102,6 @@
 		<echo message="Setting up required registration module dependencies" />
 		<resolveArtifact groupID="org.glassfish.registration" artifactId="registration-api" property="registration-api.jar" />
 		<resolveArtifact groupID="org.glassfish.registration" artifactId="registration-impl" property="registration-impl.jar" />
-		<resolveArtifact groupID="org.glassfish.external" artifactId="sysnet-registration-repackaged" property="sysnet-registration.jar" />
-		<resolveArtifact groupID="org.glassfish.external" artifactId="commons-codec-repackaged" property="commons-codec.jar" />
 
 		<echo message="Setting up required OpenInstaller dependencies" />
 		<resolveArtifact groupID="org.openinstaller" artifactId="resources" property="resources.zip" />
@@ -238,8 +236,6 @@
 		<echo message="Staging registration jar files" />
 		<copy tofile="${stage.dir}/${bundle.name}/registration-api.jar" file="${registration-api.jar}" />
 		<copy tofile="${stage.dir}/${bundle.name}/registration-impl.jar" file="${registration-impl.jar}" />
-		<copy tofile="${stage.dir}/${bundle.name}/sysnet-registration.jar" file="${sysnet-registration.jar}" />
-		<copy tofile="${stage.dir}/${bundle.name}/commons-codec-1.3.jar" file="${commons-codec.jar}" />
 
 		<echo message="Staging binaries required for IPS" />
 		<copy tofile="${stage.dir}/${bundle.name}/pkg-client.jar" file="${pkg-client.jar}" />

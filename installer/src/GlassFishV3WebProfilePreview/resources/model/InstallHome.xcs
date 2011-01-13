@@ -290,6 +290,9 @@
             if (theProdMap == null) {
               throw new EnhancedException("CANNOT_CREATE_PRODUCT_MAP", new String [] {});
             }
+ 	   /* Find out what kind of an operation it is */
+            gOpType = theProdMap.getOperation();
+            if (gOpType == Operation.OPTYPE.INSTALL) {
             String installMode = ConfigHelper.getStringValue("InstallType.Option.CONFIGURATION_MODE");
 	    /* Validations in case of INSTALL_ONLY or INSTALL_AND_CONFIG Operations. */
 	     if (!installMode.equals("CONFIG_ONLY")) {
@@ -301,14 +304,14 @@
                  * die silently.
 		 */
 	        throw new EnhancedException("INSTALL_HOME_NOT_WRITEABLE", null,
-                  new String[]{"dir=" + theInstallHomeDir.getAbsolutePath()});
+                  new String[]{});
               }
               else {
                  // If it is writable, then check if it is not empty.
                      String[] files = theInstallHomeDir.list();
                      if (files.length > 0) {
                      	throw new EnhancedException("INSTALL_HOME_NOT_EMPTY", null,
-                        new String[]{"dir=" + theInstallHomeDir.getAbsolutePath()});
+                        new String[]{});
 
                       }
               }
@@ -316,7 +319,7 @@
                  // InstallHome directory does not exists. So, create one.
                 if (!theInstallHomeDir.mkdirs()) {
                   throw new EnhancedException ("CANNOT_CREATE_INSTALLHOME_DIRECTORY", null,
-                    new String[] {"dir=" + theInstallHomeDir.getAbsolutePath()});
+                    new String[] {});
                 }
             }
             }
@@ -330,21 +333,22 @@
                  * die silently.
 		 */ 
                 throw new EnhancedException("INSTALL_HOME_NOT_GLASSFISH", null,
-                  new String[]{"dir=" + theInstallHomeDir.getAbsolutePath()});
+                  new String[]{});
               }
               else {
                 // Check if this is the GlassFish directory.
                     if (!GlassFishUtils.isGlassFishInstalledHere(aInstallHomePath)) {
                         throw new EnhancedException("INSTALL_HOME_NOT_GLASSFISH", null,
-                  new String[]{"dir=" + theInstallHomeDir.getAbsolutePath()});
+                  new String[]{});
                   }
                 }
             } else {
                  // InstallHome directory does not exists. 
                  throw new EnhancedException("INSTALL_HOME_NOT_GLASSFISH", null,
-                  new String[]{"dir=" + theInstallHomeDir.getAbsolutePath()});
+                  new String[]{});
             }
             } // end for Config only install validation.
+	  }
             
 	      // Add all the defaults.
               List theActiveModesList = (List)ConfigHelper.getValue("PageFlow.Mode.ACTIVE_MODES_LIST");

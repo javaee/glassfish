@@ -79,6 +79,10 @@ if [ "`uname -s`" = Darwin ] ; then
   GETTEXT=echo
 fi
 
+if [ "`uname -s`" = HP-UX ] ; then
+  GETTEXT=echo
+fi
+
 # global settings
 JAVAHOME=""				# java home path
 JAVA_OPTIONS=""			# java options
@@ -102,7 +106,7 @@ usage() {
   ${CAT} <<EOF
 Usage: <GlassFish uninstallation program.> [-options]
 where options include:
-    -l <Log Directory>
+    -l <Complete path to Log Directory>
         log information goes to this directory
     -q Logging level set to WARNING
     -v Logging level set to FINEST

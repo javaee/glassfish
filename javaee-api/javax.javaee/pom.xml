@@ -211,14 +211,8 @@
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>javax.mail</groupId>
-            <artifactId>mail</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.activation</artifactId>
-            <version>${project.version}</version>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>javax.mail</artifactId>
             <optional>true</optional>
         </dependency>
         <dependency>

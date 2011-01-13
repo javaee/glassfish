@@ -80,6 +80,8 @@ public @interface Resource {
     /**
      * The name of the resource that the reference points to. It can
      * link to any compatible resource using the global JNDI names.
+     *
+     * @since Common Annotations 1.1
      */
 
     String lookup() default "";

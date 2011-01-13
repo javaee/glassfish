@@ -134,7 +134,7 @@ arg="$1"
         then    
 		ARGS=`echo ${ARGS} -l ${1} `
 	else
-                echo "Please provide a valid log directory along with -l option."
+                echo "Please provide a valid and complete path to log directory along with -l option."
                 exit ${LOGPATHARGUMENTVALUE_MISSING}
 	fi
 	;;

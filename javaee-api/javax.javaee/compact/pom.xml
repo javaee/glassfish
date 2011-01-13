@@ -43,6 +43,13 @@
 <project>
   <modelVersion>4.0.0</modelVersion>
 
+  <parent>
+      <groupId>org.glassfish</groupId>
+      <artifactId>glassfish-parent</artifactId>
+      <version>3.1-SNAPSHOT</version>
+      <relativePath>../../../pom.xml</relativePath>
+  </parent>
+
   <groupId>javax.javaee.api</groupId>
   <artifactId>javaee.api-compact</artifactId>
   <name>Strip JavaEE Implementation classes</name>
@@ -84,22 +91,12 @@
             <configuration>
               <artifactItems>
                 <artifactItem>
-                  <groupId>javax.mail</groupId>
-                  <artifactId>mail</artifactId>
-                  <version>1.4.3</version>
+                  <groupId>com.sun.mail</groupId>
+                  <artifactId>javax.mail</artifactId>
                   <type>jar</type>
                   <overWrite>false</overWrite>
                   <outputDirectory>${project.build.directory}/tmp</outputDirectory>
-                  <destFileName>mail.jar</destFileName>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.glassfish</groupId>
-                  <artifactId>javax.activation</artifactId>
-                  <version>${project.version}</version>
-                  <type>jar</type>
-                  <overWrite>false</overWrite>
-                  <outputDirectory>${project.build.directory}/tmp</outputDirectory>
-                  <destFileName>activation.jar</destFileName>
+                  <destFileName>javax.mail.jar</destFileName>
                 </artifactItem>
               </artifactItems>
             </configuration>

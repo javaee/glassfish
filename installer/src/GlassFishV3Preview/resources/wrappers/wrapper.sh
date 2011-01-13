@@ -208,7 +208,8 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "Extracting the installer archive..."
-tail +258l $0 > ${tmpdir_path}/tmp.jar
+tail +260l $0 > ${tmpdir_path}/tmp.jar
+curdir=`pwd`
 cd ${tmpdir_path}
 $my_jar xf tmp.jar 
 
@@ -250,6 +251,7 @@ echo "InstallHome.directory.INSTALL_HOME=$HOME/glassfish3" > install.properties
 sh product-installer.sh $ARGS
 rm -rf ${tmpdir_path}/*
 #Assign appropriate permission to answer file if one is provided.
+cd ${curdir}
 if [ ! -z "${ANSWER_FILE}" ]
 then
 	chmod 600 ${ANSWER_FILE}
