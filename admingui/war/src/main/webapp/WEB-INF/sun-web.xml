@@ -49,11 +49,6 @@
     <principal-name>admin</principal-name>
     <group-name>asadmin</group-name>
  </security-role-mapping>
- <security-role-mapping>
-    <role-name>noaccess</role-name>
-    <principal-name>noaccess</principal-name>
- </security-role-mapping>
-
  <session-config>
      <session-manager>
 	 <manager-properties>

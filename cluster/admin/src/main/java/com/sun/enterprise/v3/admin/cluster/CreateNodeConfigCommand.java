@@ -90,8 +90,8 @@ public class CreateNodeConfigCommand implements AdminCommand {
         ActionReport report = context.getActionReport();
 
         //validate installdir if passed and running on localhost
-        if (nodehost != null){
-            if (NetUtils.IsThisHostLocal(nodehost) && installdir != null){
+        if (StringUtils.ok(nodehost)){
+            if (NetUtils.isThisHostLocal(nodehost) && StringUtils.ok(installdir)){
                 TokenResolver resolver = null;
 
                 // Create a resolver that can replace system properties in strings
@@ -112,9 +112,12 @@ public class CreateNodeConfigCommand implements AdminCommand {
         CommandInvocation ci = cr.getCommandInvocation("_create-node", report);
         ParameterMap map = new ParameterMap();
         map.add("DEFAULT", name);
-        map.add("nodedir", nodedir);
-        map.add("installdir", installdir);
-        map.add("nodehost", nodehost);
+        if (StringUtils.ok(nodedir))
+            map.add("nodedir", nodedir);
+        if (StringUtils.ok(installdir))
+            map.add("installdir", installdir);
+        if (StringUtils.ok(nodehost))
+            map.add("nodehost", nodehost);
         ci.parameters(map);
         ci.execute();
 

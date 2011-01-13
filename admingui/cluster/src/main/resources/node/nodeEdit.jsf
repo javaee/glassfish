@@ -45,9 +45,11 @@
     setResourceBundle(key="i18ncs" bundle="org.glassfish.cluster.admingui.Strings")
     setResourceBundle(key="help_cluster" bundle="org.glassfish.cluster.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18ncs.node.EditPageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18ncs.node.EditPageTitle}"
+    guiOnLoad="showSshSection('#{pageSession.valueMap['type']}', '#{pageSession.sshConnectorSectionId}', '#{pageSession.installdirSshId}', '#{pageSession.installdirConfigId}');
+               showPswdSection('#{pageSession.psSelected}', '#{pageSession.ps1Id}', '#{pageSession.ps2Id}', '#{pageSession.pswdAliasId}');" >
 <!define name="content">
-    <event>
+<event>
     <!beforeCreate
         getRequestValue(key="nodeName" value="#{pageSession.nodeName}");
         urlencode(value="#{pageSession.nodeName}" encoding="UTF-8" result="#{pageSession.encodedNodeName}");
@@ -58,13 +60,29 @@
         setPageSessionAttribute(key="childType" value="node");
         setPageSessionAttribute(key="rest-api" value="true");
         gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}.json", valueMap="#{pageSession.attrMap}");
+
         createMap(result="#{pageSession.valueMap}")
         mapPut(map="#{pageSession.valueMap}"  key="nodehost"  value="#{pageSession.attrMap['nodeHost']}");
         mapPut(map="#{pageSession.valueMap}"  key="nodedir"  value="#{pageSession.attrMap['nodeDir']}");
-        mapPut(map="#{pageSession.valueMap}"  key="installdir",  value="#{pageSession.attrMap['installDir']}");
         mapPut(map="#{pageSession.valueMap}"  key="type",  value="#{pageSession.attrMap['type']}");
-        //mapPut(map="#{pageSession.valueMap}"  key="name",  value="#{pageSession.attrMap['name']}");
-        
+
+        if ("#{pageSession.attrMap['type']}=SSH"){
+            mapPut(map="#{pageSession.valueMap}"  key="installdir",  value="#{pageSession.attrMap['installDir']}");
+            setPageSessionAttribute(key="showInstalldirSSH" value="#{true}");
+            setPageSessionAttribute(key="showInstalldirConfig" value="#{false}");
+        }
+        if ("#{pageSession.attrMap['type']}=CONFIG"){
+            //for CONFIG Node convert to SSH node case,  if there is already installdir specified, keep the value specified instead of changing that to default. (GLASSFISH-15374)
+            mapPut(map="#{pageSession.valueMap}"  key="installdir",  value="\\${com.sun.aas.productRoot}");
+            if("#{pageSession.attrMap['installDir']}"){
+                mapPut(map="#{pageSession.valueMap}"  key="installdir",  value="#{pageSession.attrMap['installDir']}");
+            }
+            mapPut(map="#{pageSession.valueMap}"  key="installdirConfig",  value="#{pageSession.attrMap['installDir']}");
+            setPageSessionAttribute(key="showInstalldirSSH" value="#{false}");
+            setPageSessionAttribute(key="showInstalldirConfig" value="#{true}");
+        }
+
+        setPageSessionAttribute(key="psSelected" value="1");
         gf.checkIfEndPointExist(endpoint="#{pageSession.selfUrl}/ssh-connector" exists="#{requestScope.sshConnectorExist}");
         if (#{requestScope.sshConnectorExist}){
             gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}/ssh-connector.json", currentMap="#{pageSession.attrMap}"  valueMap="#{pageSession.attrMap}");
@@ -75,17 +93,23 @@
                 gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}/ssh-connector/ssh-auth.json", currentMap="#{pageSession.attrMap}"  valueMap="#{pageSession.attrMap}");
                 mapPut(map="#{pageSession.valueMap}"  key="sshuser",  value="#{pageSession.attrMap['userName']}");
                 mapPut(map="#{pageSession.valueMap}"  key="sshkeyfile",  value="#{pageSession.attrMap['keyfile']}");
+                gf.convertNodePswd(pswd="#{pageSession.attrMap['password']}" pswdText="#{pageSession.pswdText}" pswdAlias="#{pageSession.pswdAlias}" psSelected="#{pageSession.psSelected}");
+                setPageSessionAttribute(key="confirmPassword" value="#{pageSession.pswdText}");
             }
         }
-        println("================ #{pageSession.valueMap}");
+
+        //fill in default for CONFIG -> SSH case.
+        if (! #{requestScope.sshConnectorExist}){
+            mapPut(map="#{pageSession.valueMap}"  key="sshport", value="22");
+            mapPut(map="#{pageSession.valueMap}"  key="sshuser", value="\\${user.name}");
+        }
 
         setPageSessionAttribute(key="edit" value="#{true}");
         setPageSessionAttribute(key="showCancelButton" value="#{true}" );
         setPageSessionAttribute(key="hasPropertySheet" value="#{false}" );
         setPageSessionAttribute(key="title" value="$resource{i18ncs.node.EditPageTitle}");
         setPageSessionAttribute(key="titleHelp" value="$resource{i18ncs.node.EditPageTitleHelp}");
-    />
-    />
+        />
     </event>
             <sun:form id="propertyForm">
 #include "/common/shared/alertMsg.inc"
@@ -94,5 +118,9 @@
 "<br /><br />
 	<sun:hidden id="helpKey" value="$resource{help_cluster.nodeEdit}" />
 </sun:form>
+
+
+#include "/cluster/node/nodeJS.inc"
+
 </define>
 </composition>

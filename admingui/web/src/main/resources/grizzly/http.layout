@@ -101,6 +101,7 @@
 #include "/web/grizzly/httpSaveButtons.inc"
                 </sun:title>
     <sun:propertySheet id="propertySheet">
+#include "/common/shared/configNameSection.inc"
 #include "/web/grizzly/httpAttr.inc"
     </sun:propertySheet>
 "<br><br>

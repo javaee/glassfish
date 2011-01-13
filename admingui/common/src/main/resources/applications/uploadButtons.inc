@@ -50,9 +50,13 @@
             result = (checkRequired('#{dirPathId}', '#{reqMsg}'));
         }
         if (result == true) {
-	    if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')){
-		disableAllButtons();
-		return submitAndDisable(this, '$resource{i18n.button.Processing}', '_self');
+	    if (admingui.deploy.checkType('#{pageSession.typeId}', '$resource{i18n.msg.JS.deploy.selectType}' )){
+                if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')){
+                    if (admingui.deploy.checkTarget('#{pageSession.onlyDASExist}', '#{pageSession.commonAddRemoveId}'+'_list_value', '$resource{i18n.msg.JS.deploy.confirmNoTarget}')){
+                        disableAllButtons();
+                        return submitAndDisable(this, '$resource{i18n.button.Processing}', '_self');
+                    }
+                }
 	    }
         }
         return false;"
@@ -60,16 +64,16 @@
     <!command
         compare(obj1="#{uploadRdBtn}" obj2="client" objEqual=>$attribute{needUpload});
         if (${needUpload}){
-            uploadFileToTempDir(file="#{uploadedFile}" uploadedTempFile=>$attribute{filePath}, origPath=>$attribute{origPath});
+            println("===== GUI deployment: needUploadToTempfile ======");
+            uploadFileToTempDir(file="#{uploadedFile}" uploadedTempFile="#{requestScope.filePath}", origPath="#{requestScope.origPath}");
+            println("===== filePath=#{requestScope.filePath} origPath=#{requestScope.origPath}");
         }
         if (! ${needUpload}){
             setAttribute(key="origPath", value="#{dirPath}");
             setAttribute(key="filePath", value="#{dirPath}");
+            println("========= No upload needed. origPath=#{requestScope.origPath}, filePath=#{requestScope.filePath} ");
+
         }
-<!--
-        getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
-        getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
--->
         deploy(filePath="$attribute{filePath}"
               origPath="$attribute{origPath}"
               allMaps = "#{pageSession.deployMap}"

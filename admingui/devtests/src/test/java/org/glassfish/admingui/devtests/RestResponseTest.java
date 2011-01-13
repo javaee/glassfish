@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,8 +40,8 @@
 
 package org.glassfish.admingui.devtests;
 
+import org.glassfish.admingui.common.util.RestUtil;
 import java.util.HashMap;
-import org.glassfish.admingui.common.handlers.RestApiHandlers;
 import org.glassfish.admingui.common.util.RestResponse;
 import org.junit.Test;
 
@@ -55,11 +55,11 @@ import static org.junit.Assert.*;
 public class RestResponseTest {
     public static final String BASE_URL = "http://localhost:4848/management/domain";
     static final String URL_UPTIME = BASE_URL + "/uptime";
-    static final String URL_GENERATE_JVM_REPORT = BASE_URL + "/configs/config/server-config/java-config/generate-jvm-report";
+    static final String URL_GENERATE_JVM_REPORT = BASE_URL + "/servers/server/server/generate-jvm-report";
 
     @Test
     public void testPostCommand() {
-        RestResponse response = RestApiHandlers.post(URL_GENERATE_JVM_REPORT, new HashMap<String, Object>(){{
+        RestResponse response = RestUtil.get(URL_GENERATE_JVM_REPORT, new HashMap<String, Object>(){{
             put ("type", "summary");
         }});
         assertTrue(response.getResponseBody().contains("Operating System Information"));
@@ -67,16 +67,16 @@ public class RestResponseTest {
 
     @Test
     public void testGetCommand() {
-        RestResponse response = RestApiHandlers.get(URL_UPTIME);
+        RestResponse response = RestUtil.get(URL_UPTIME);
         assertTrue(response.getResponseBody().contains("\"uptime AdminCommand\""));
     }
 
     @Test
     public void testEndpointExists() {
-        RestResponse response = RestApiHandlers.get(URL_UPTIME);
+        RestResponse response = RestUtil.get(URL_UPTIME);
         assertTrue(response.isSuccess());
 
-        response = RestApiHandlers.get(URL_UPTIME + "/forceFailure");
+        response = RestUtil.get(URL_UPTIME + "/forceFailure");
         assertFalse(response.isSuccess());
     }
 }

@@ -45,6 +45,7 @@ import com.sun.enterprise.config.serverbeans.Nodes;
 import com.sun.enterprise.config.serverbeans.SshConnector;
 import com.sun.enterprise.config.serverbeans.SshAuth;
 
+import com.sun.enterprise.util.OS;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.net.NetUtils;
 import com.sun.enterprise.util.io.FileUtils;
@@ -173,13 +174,20 @@ public class ValidateNodeCommand implements AdminCommand {
         String value = null;
 
         value = node.getNodeDir();
-        validatePath("nodedir", nodedir, value);
+        if (!StringUtils.ok(nodedir) && StringUtils.ok(value)) {
+            // If no nodedir was passed, but the config has a value, then
+            // consider that an error (14887)
+            throw new CommandValidationException(
+                Strings.get("attribute.mismatch", name,
+                    "nodedir", nodedir, value));
+        }
+        validatePathSimple("nodedir", nodedir, value);
 
         value = node.getNodeHost();
         validateHostname("nodehost", nodehost, value);
 
         value = node.getInstallDir();
-        validatePath("installdir", installdir, value);
+        validatePathSimple("installdir", installdir, value);
 
         SshConnector sshc = node.getSshConnector();
 
@@ -221,18 +229,30 @@ public class ValidateNodeCommand implements AdminCommand {
         String canonicalConfigValueFile = FileUtils.safeGetCanonicalPath(new File(configValue));
         if (canonicalConfigValueFile == null || canonicalValueFile== null) {
             throw new CommandValidationException(
-                Strings.get("attribute.null",
+                Strings.get("attribute.null", name,
                            propname, canonicalValueFile, canonicalConfigValueFile));
         }
 
         if ( !canonicalValueFile.equals(canonicalConfigValueFile) ) {
             throw new CommandValidationException(
-                Strings.get("attribute.mismatch",
+                Strings.get("attribute.mismatch", name,
                            propname, canonicalValueFile, canonicalConfigValueFile));
         }
         // Don't update an attribute that is considered a match
         excludeFromUpdate.add(propname);
         
+    }
+
+    private void validatePathSimple(String propname, String value, String configValue)
+            throws CommandValidationException {
+        // Compares paths by just doing a string comparison. Some of the paths
+        // we are comparing are valid on remote systems, so we can't do any
+        // path processing
+        if (OS.isWindows()) {
+            validateString(propname, value, configValue, true);
+        } else {
+            validateString(propname, value, configValue, false);
+        }
     }
 
     private void validateHostname(String propname,
@@ -251,10 +271,10 @@ public class ValidateNodeCommand implements AdminCommand {
             if (! NetUtils.isEqual(value, configValue)) {
                 // If they both refer to the localhost then consider them
                 // them same.
-                if ( ! (NetUtils.IsThisHostLocal(value) &&
-                        NetUtils.IsThisHostLocal(configValue)) ) {
+                if ( ! (NetUtils.isThisHostLocal(value) &&
+                        NetUtils.isThisHostLocal(configValue)) ) {
                     throw new CommandValidationException(
-                        Strings.get("attribute.mismatch",
+                        Strings.get("attribute.mismatch", name,
                             propname, value, configValue));
                 }
             }
@@ -284,7 +304,7 @@ public class ValidateNodeCommand implements AdminCommand {
 
         if ( !match ) {
             throw new CommandValidationException(
-                Strings.get("attribute.mismatch",
+                Strings.get("attribute.mismatch", name,
                             propname, value, configValue));
         }
         // Don't update an attribute that is considered a match

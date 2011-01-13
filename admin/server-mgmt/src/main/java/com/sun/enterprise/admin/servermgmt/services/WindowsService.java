@@ -37,24 +37,17 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.admin.servermgmt.services;
 
-import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.universal.process.ProcessManager;
 import com.sun.enterprise.universal.process.ProcessManagerException;
 import com.sun.enterprise.util.OS;
 import com.sun.enterprise.util.ObjectAnalyzer;
 import com.sun.enterprise.util.StringUtils;
-import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.io.ServerDirs;
 import java.io.*;
-import java.util.*;
-import java.util.Map;
 import static com.sun.enterprise.admin.servermgmt.services.Constants.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Warning: there is lots of file twiddling going on in this class.  It is the nature
@@ -62,7 +55,6 @@ import java.util.logging.Logger;
  * @author Byron Nevins
  */
 public class WindowsService extends NonSMFServiceAdapter {
-
     static boolean apropos() {
         return OS.isWindowsForSure();
     }
@@ -76,13 +68,19 @@ public class WindowsService extends NonSMFServiceAdapter {
         }
     }
 
-
     // bnevins, Aug 2010.  The unfortunate FAT interface of the Service interface makes
     // it confusing -- this method is really the only one that does something --
     // all the other methods do configuration.
     @Override
     public final void createServiceInternal() throws RuntimeException {
         try {
+            handlePreExisting(targetWin32Exe, targetXml, info.force);
+            FileUtils.copy(sourceWin32Exe, targetWin32Exe);
+            trace("Copied from " + sourceWin32Exe + " to " + targetWin32Exe);
+            getTokenMap().put(CREDENTIALS_START_TN, getAsadminCredentials("startargument"));
+            getTokenMap().put(CREDENTIALS_STOP_TN, getAsadminCredentials("stopargument"));
+            ServicesUtils.tokenReplaceTemplateAtDestination(getTokenMap(), getTemplateFile().getPath(), targetXml.getPath());
+            trace("Target XML file written: " + targetXml);
             trace("**********   Object Dump  **********\n" + this.toString());
 
             if (uninstall() == 0 && !info.dryRun)
@@ -91,6 +89,42 @@ public class WindowsService extends NonSMFServiceAdapter {
                 trace("No preexisting Service with that id and/or name was found");
 
             install();
+        }
+        catch (RuntimeException re) {
+            throw re;
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void deleteServiceInternal() {
+        try {
+            if (!isInstalled())
+                throw new RuntimeException(Strings.get("not_installed"));
+
+            if (!targetWin32Exe.canExecute())
+                throw new RuntimeException(Strings.get("cant_exec"));
+
+            ProcessManager pm = new ProcessManager(targetWin32Exe.getAbsolutePath(), "stop");
+            pm.setEcho(false);
+            pm.execute();
+
+            pm = new ProcessManager(targetWin32Exe.getAbsolutePath(), "uninstall");
+            pm.setEcho(false);
+            pm.execute();
+
+            trace("Uninstalled Windows Service");
+
+            if (!targetWin32Exe.delete())
+                targetWin32Exe.deleteOnExit();
+
+            if (!targetXml.delete())
+                targetXml.deleteOnExit();
+
+            trace("deleted " + targetWin32Exe + targetXml);
+            trace(toString());
         }
         catch (ProcessManagerException ex) {
             throw new RuntimeException(ex);
@@ -103,7 +137,7 @@ public class WindowsService extends NonSMFServiceAdapter {
             return Strings.get("dryrun");
 
         return Strings.get("WindowsServiceCreated", info.serviceName,
-                getServerDirs().getServerName() + " GlassFish Server", 
+                getServerDirs().getServerName() + " GlassFish Server",
                 getServerDirs().getServerDir(), targetXml, targetWin32Exe);
     }
 
@@ -112,7 +146,7 @@ public class WindowsService extends NonSMFServiceAdapter {
         // TODO 1/19/2010 bnevins duplicated in SMFService
         File f = new File(getServerDirs().getServerDir(), README);
 
-        if(StringUtils.ok(xmlFileCopy))
+        if (StringUtils.ok(xmlFileCopy))
             msg += xmlFileCopy;
 
         ServicesUtils.appendTextToFile(f, msg);
@@ -162,13 +196,6 @@ public class WindowsService extends NonSMFServiceAdapter {
                 throw new RuntimeException(Strings.get("noTargetDir", targetDir));
             targetWin32Exe = new File(targetDir, getServerDirs().getServerName() + "Service.exe");
             targetXml = new File(targetDir, getServerDirs().getServerName() + "Service.xml");
-            handlePreExisting(targetWin32Exe, targetXml, info.force);
-            FileUtils.copy(sourceWin32Exe, targetWin32Exe);
-            trace("Copied from " + sourceWin32Exe + " to " + targetWin32Exe);
-            getTokenMap().put(CREDENTIALS_START_TN, getAsadminCredentials("startargument"));
-            getTokenMap().put(CREDENTIALS_STOP_TN, getAsadminCredentials("stopargument"));
-            ServicesUtils.tokenReplaceTemplateAtDestination(getTokenMap(), getTemplateFile().getPath(), targetXml.getPath());
-            trace("Target XML file written: " + targetXml);
         }
         catch (IOException ex) {
             throw new RuntimeException(ex);
@@ -178,6 +205,13 @@ public class WindowsService extends NonSMFServiceAdapter {
     ///////////////////////////////////////////////////////////////////////
     //////////////////////////   ALL PRIVATE BELOW    /////////////////////
     ///////////////////////////////////////////////////////////////////////
+    private boolean isInstalled() {
+        if (targetDir == null || targetWin32Exe == null || targetXml == null)
+            throw new RuntimeException(Strings.get("internal.error", "call to isInstall() before initializeInternal()"));
+
+        return targetWin32Exe.isFile() && targetXml.isFile();
+    }
+
     private void setSourceWin32Exe() throws IOException {
         sourceWin32Exe = new File(info.libDir, SOURCE_WIN32_EXE_FILENAME);
 
@@ -200,8 +234,6 @@ public class WindowsService extends NonSMFServiceAdapter {
         in.close();
         out.close();
     }
-
-
 
     /**
      * If we had a crude "Template Language" we could do some if/else stuff
@@ -243,6 +275,7 @@ public class WindowsService extends NonSMFServiceAdapter {
             return 0;
         // it is NOT an error to not be able to uninstall
         ProcessManager mgr = new ProcessManager(targetWin32Exe.getPath(), "uninstall");
+        mgr.setEcho(false);
         mgr.execute();
         trace("Uninstall STDERR: " + mgr.getStderr());
         trace("Uninstall STDOUT: " + mgr.getStdout());
@@ -266,6 +299,7 @@ public class WindowsService extends NonSMFServiceAdapter {
         }
         else {
             ProcessManager mgr = new ProcessManager(targetWin32Exe.getPath(), "install");
+            mgr.setEcho(false);
             mgr.execute();
             int ret = mgr.getExitValue();
 
@@ -287,7 +321,7 @@ public class WindowsService extends NonSMFServiceAdapter {
                 handlePreExisting(targetWin32Exe, targetXml, false);
             }
             else {
-                throw new RuntimeException(Strings.get("services.alreadyCreated", 
+                throw new RuntimeException(Strings.get("services.alreadyCreated",
                         new File(targetDir, getServerDirs().getServerName() + "Service").toString() + ".*",
                         "del"));
             }
@@ -302,11 +336,9 @@ public class WindowsService extends NonSMFServiceAdapter {
         return "  " + STOP_ARG_START + s + STOP_ARG_END + "\n";
     }
 
-
     private static boolean ok(String s) {
         return s != null && s.length() > 0;
     }
-
     private static final String SOURCE_WIN32_EXE_FILENAME = "winsw.exe";
     private static final String TARGET_DIR = "bin";
     private static final String TEMPLATE_FILE_NAME = "Domain-service-winsw.xml.template";

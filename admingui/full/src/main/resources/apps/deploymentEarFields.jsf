@@ -44,7 +44,7 @@
 
 <sun:property id="nameProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.ApplicationName}" visible="#{true}">
     <sun:textField id="appName" columns="$int{40}" maxLength="#{sessionScope.fieldLengths['maxLength.deploy.ApplicationName']}" text="#{pageSession.ear['name']}" styleClass="required" required="#{true}"
-        onChange="javascript: setAppName('#{appNameId}', this.value, window)">
+        onChange="javascript: admingui.deploy.setAppName('#{appNameId}', this.value, window, '#{sessionScope.appTypeString}')">
         <!afterCreate
             getClientId(component="$this{component}" clientId=>$page{appNameId});
         />
@@ -75,24 +75,36 @@
     </sun:checkbox>
 </sun:property>
 
-<sun:property id="availability" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.availability}" helpText="$resource{i18n.deploy.availabilityHelp}">
-    <sun:checkbox id="availability" label="$resource{i18n.common.Enabled}" selected="#{pageSession.ear['PROPERTY-availabilityEnabled']}" selectedValue="true" />
-</sun:property>
-
-<sun:property id="precmplProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.precompile}" helpText="$resource{i18n.deploy.PrecompileHelp}">
-	<sun:checkbox id="precompileJSP" label="$resource{i18n.common.Enabled}" selected="#{pageSession.ear['precompilejsp']}" selectedValue="true" />
-</sun:property>
-
-<sun:property id="v2" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.run}" helpText="$resource{i18n.deploy.runHelp}">
-        <sun:checkbox id="ver2" label="$resource{i18n.common.Enabled}" selected="#{pageSession.ear['verify']}" selectedValue="true" />
-</sun:property>
-
-<sun:property id="force" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.forceRedeploy}" helpText="$resource{i18n.deploy.forceRedeployHelp}">
-        <sun:checkbox id="force"  selected="#{pageSession.ear['force']}" selectedValue="true" />
+<sun:property id="availability"  rendered="#{!pageSession.onlyDASExist}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.availability}" helpText="$resource{i18n.deploy.availabilityHelp}">
+    <sun:checkbox id="availability" label="$resource{i18n.common.Enabled}" selected="#{pageSession.ear['availabilityEnabled']}" selectedValue="true" />
 </sun:property>
 
 <sun:property id="jw" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.JavaWebStart}" helpText="$resource{i18n.deploy.JavaWebStartHelp}">
-	<sun:checkbox id="jwc" label="$resource{i18n.common.Enabled}" selected="#{pageSession.ear['PROPERTY-javaWebStartEnabled']}" selectedValue="true" />
+	<sun:checkbox id="jwc" label="$resource{i18n.common.Enabled}" selected="#{pageSession.ear['PROPERTY-$constant{org.glassfish.deployment.client.DFDeploymentProperties.DEPLOY_OPTION_JAVA_WEB_START_ENABLED}']}" selectedValue="true" />
+</sun:property>
+
+<sun:property id="precmplProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.precompile}" helpText="$resource{i18n.deploy.PrecompileHelp}">
+	<sun:checkbox id="precompileJSP" label=" " selected="#{pageSession.ear['precompilejsp']}" selectedValue="true" />
+</sun:property>
+
+<sun:property id="v2" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.run}" helpText="$resource{i18n.deploy.runHelp}">
+        <sun:checkbox id="ver2" label=" " selected="#{pageSession.ear['verify']}" selectedValue="true" />
+</sun:property>
+
+<sun:property id="compatibility" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.compatibility}" helpText="$resource{i18n.deploy.compatibilityHelp}">
+        <sun:checkbox id="compatibility" label=" " selected="#{pageSession.ear['PROPERTY-compatibility']}" selectedValue="v2" />
+</sun:property>
+
+<sun:property id="force" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.forceRedeploy}" helpText="$resource{i18n.deploy.forceRedeployHelp}">
+        <sun:checkbox id="force"  label=" " selected="#{pageSession.ear['force']}" selectedValue="true" />
+</sun:property>
+
+<sun:property id="keepState" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.redeploy.keepState}" helpText="$resource{i18n.redeploy.keepStateHelp}">
+        <sun:checkbox id="keepState"  label=" " selected="#{pageSession.ear['keepState']}" selectedValue="true" />
+</sun:property>
+
+<sun:property id="preserveAppScopedResources" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18n.redeploy.preserveAppScopedResources}" helpText="$resource{i18n.redeploy.preserveAppScopedResourcesHelp}">
+        <sun:checkbox id="preserveAppScopedResources" label=" " selected="#{pageSession.ear['PROPERTY-preserveAppScopedResources']}" selectedValue="true" />
 </sun:property>
 
 

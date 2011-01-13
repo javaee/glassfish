@@ -59,6 +59,8 @@
           <supported-locale>zh_TW</supported-locale>
           <supported-locale>zh_CN</supported-locale>
           <supported-locale>es</supported-locale>
+          <supported-locale>it</supported-locale>
+          <supported-locale>pt_BR</supported-locale>
         </locale-config>
 	<el-resolver>com.sun.webui.jsf.faces.UIComponentELResolver</el-resolver>
     </application>

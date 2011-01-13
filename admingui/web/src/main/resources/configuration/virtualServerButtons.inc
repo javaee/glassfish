@@ -41,7 +41,7 @@
 -->
 
 <!-- configuration/virtualServerButtons.inc -->
-
+#include "/common/shared/commonHandlers.inc"
 <!facet pageButtonsTop>
         <sun:panelGroup id="topButtons">
             <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
@@ -49,29 +49,18 @@
                 <!command
                     convertArrayToCommaString(array="#{pageSession.selectedNetworkListeners}"  commaString="#{requestScope.tmp}");
                     mapPut(map="#{pageSession.valueMap}" key="networkListeners" value="$attribute{tmp}");
-                    getRequestValue(key="stateGp" value="#{requestScope.stateGp}");
-                    getRequestValue(key="ssoGroup" value="#{requestScope.ssoGroup}");
-                    getRequestValue(key="accessLoggingFlagGp" value="#{requestScope.accessLoggingFlagGp}");
-
-                    mapPut(map="#{pageSession.valueMap}" key="state" value="#{requestScope.stateGp}");
-                    mapPut(map="#{pageSession.valueMap}" key="ssoEnabled" value="#{requestScope.ssoGroup}");
-                    mapPut(map="#{pageSession.valueMap}" key="accessLoggingEnabled" value="#{requestScope.accessLoggingFlagGp}");
-
+                    
                     gf.createEntity(endpoint="#{pageSession.selfUrl}"
                         attrs="#{pageSession.valueMap}"
                         skipAttrs="#{pageSession.skipAttrsList}"
                         convertToFalse="#{pageSession.convertToFalseList}");
                     createMap(result="#{pageSession.statusAttrs}");
                     mapPut(map="#{pageSession.statusAttrs}" key="DEFAULT" value="#{pageSession.configName}" );
-                    gf.callRestAndExtractMsgProps(
-                        endpoint="#{sessionScope.REST_URL}/list-instances.xml"
-                        attrs="#{pageSession.statusAttrs}"
-                        method="GET"
-                        keyList="#{requestScope.instanceList}" propsMap="#{requestScope.propsMap}");
+                    gfr.getListOfInstances();
                     if(#{pageSession.configName}=server-config){
-                        listAdd(list="#{requestScope.instanceList}" value="server" index="0");
+                        listAdd(list="#{pageSession.instanceList}" value="server" index="0");
                     }
-                    EnsureDefaultWebModule(endpoint="#{pageSession.selfUrl}",vsName="#{pageSession.valueMap['id']}",instanceList="#{requestScope.instanceList}");
+                    EnsureDefaultWebModule(endpoint="#{pageSession.selfUrl}",vsName="#{pageSession.valueMap['id']}",instanceList="#{pageSession.instanceList}");
                     getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                     getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
                     removeEmptyProps(props="#{pageSession.tableList}" modifiedProps="#{pageSession.tableList}");
@@ -87,9 +76,6 @@
                 <!command
                     convertArrayToCommaString(array="#{pageSession.selectedNetworkListeners}"  commaString="#{requestScope.tmp}");
                     mapPut(map="#{pageSession.valueMap}" key="networkListeners" value="$attribute{tmp}");
-                    mapPut(map="#{pageSession.valueMap}" key="state" value="#{requestScope.stateGp}");
-                    mapPut(map="#{pageSession.valueMap}" key="ssoEnabled" value="#{requestScope.ssoGroup}");
-                    mapPut(map="#{pageSession.valueMap}" key="accessLoggingEnabled" value="#{requestScope.accessLoggingFlagGp}");
                     setPageSessionAttribute(key="onlyUseAttrs" value={"id", "state", "target", "hosts", "logFile", "defaultWebModule", "networkListeners", "logfile"})
                     gf.createEntity(endpoint="#{pageSession.selfUrl}"
                             attrs="#{pageSession.valueMap}"
@@ -105,15 +91,11 @@
                     );
                     createMap(result="#{pageSession.statusAttrs}");
                     mapPut(map="#{pageSession.statusAttrs}" key="DEFAULT" value="#{pageSession.configName}" );
-                    gf.callRestAndExtractMsgProps(
-                        endpoint="#{sessionScope.REST_URL}/list-instances.xml"
-                        attrs="#{pageSession.statusAttrs}"
-                        method="GET"
-                        keyList="#{requestScope.instanceList}" propsMap="#{requestScope.propsMap}");
+                    gfr.getListOfInstances();
                     if(#{pageSession.configName}=server-config){
-                        listAdd(list="#{requestScope.instanceList}" value="server" index="0");
+                        listAdd(list="#{pageSession.instanceList}" value="server" index="0");
                     }
-                    EnsureDefaultWebModule(endpoint="#{pageSession.selfUrl}",vsName="#{pageSession.valueMap['id']}",instanceList="#{requestScope.instanceList}");
+                    EnsureDefaultWebModule(endpoint="#{pageSession.selfUrl}",vsName="#{pageSession.valueMap['id']}",instanceList="#{pageSession.instanceList}");
                     getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                     getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
                     removeEmptyProps(props="#{pageSession.tableList}" modifiedProps="#{pageSession.tableList}");

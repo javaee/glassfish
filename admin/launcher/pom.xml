@@ -52,7 +52,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>launcher</artifactId>
     <packaging>hk2-jar</packaging>
-    <name>Launcher</name>
+    <name>admin-launcher</name>
     <description>Server Launching</description>
     
     <build>
@@ -65,6 +65,17 @@
             </resource>
         </resources>
         <plugins>
+          <plugin>
+            <groupId>com.sun.enterprise</groupId>
+            <artifactId>hk2-maven-plugin</artifactId>
+            <configuration>
+              <archive>
+                <manifestEntries>
+                  <Class-Path>launcher-l10n.jar</Class-Path>
+                </manifestEntries>
+              </archive>
+            </configuration>
+          </plugin>
         </plugins>
     </build>
     <dependencies>

@@ -248,7 +248,7 @@ public class ExportSyncBundle implements AdminCommand {
     private boolean setSyncBundleExportFile() {
         if (isRetrieve) {
             try {
-                syncBundleExport = File.createTempFile("GlassFishSyncBundle.", ".zip");
+                syncBundleExport = File.createTempFile("GlassFishSyncBundle", ".zip");
                 syncBundleExport.deleteOnExit();
             } catch (Exception ex) {
                 syncBundleExport = null;

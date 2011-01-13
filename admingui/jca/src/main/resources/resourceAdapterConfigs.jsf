@@ -48,7 +48,8 @@
 />
 <!composition template="/templates/default.layout"
     guiTitle="$resource{i18njca.resourceAdapterConfig.pageTitle}"
-    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:resources:resourceAdapterConfigs');"
+    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:resources:resourceAdapterConfigs');
+        setTimeout('admingui.table.changeOneTableButton(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0);"
 >
 <!define name="content">
     <event>

@@ -46,7 +46,8 @@
     setResourceBundle(key="i18njca" bundle="org.glassfish.jca.admingui.Strings");
     setResourceBundle(key="help_jca" bundle="org.glassfish.jca.admingui.Helplinks")
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18njca.resourceAdapterConfig.newPageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18njca.resourceAdapterConfig.newPageTitle}"
+    guiOnLoad="enableRadioButtonFields('#{myOption}');">
 <!define name="content">
     <event>
     <!beforeCreate
@@ -61,28 +62,44 @@
         setPageSessionAttribute(key="showCancelButton" value="#{true}" );
         setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
         setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
+
         getRequestValue(key="name" value="#{pageSession.Name}");
+        getRequestValue(key="nameText" value="#{pageSession.nameText}");
+        getRequestValue(key="myOption" value="#{pageSession.myOption}");
+        
+        if (!#{pageSession.myOption}) {
+            setPageSessionAttribute(key="myOption" value="dropdown");
+        }
         createMap(result="#{pageSession.attrsMap}");
-        if (#{pageSession.Name}) {
+        if ("#{pageSession.Name}&(#{pageSession.myOption}=dropdown)") {
             mapPut(map="#{pageSession.attrsMap}" key="rarName" value="#{pageSession.Name}");
             mapPut(map="#{pageSession.valueMap}" key="name" value="#{name}");
         }
-        if (!#{pageSession.Name}) {
+        if ("#{pageSession.Name}&(#{pageSession.myOption}=text)") {
+            setPageSessionAttribute(key="nameDropDown" value="#{pageSession.Name}");
+        }
+        if ("!#{pageSession.Name}&(#{pageSession.myOption}=dropdown)") {
             mapPut(map="#{pageSession.attrsMap}" key="rarName" value="jmsra");
         }
-        gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/get-resource-adapter-config-properties"
-                       attrs="#{pageSession.attrsMap}"
-                       method="GET"
-                       result="#{requestScope.result}");
-        gf.getMapKeys(Map="#{requestScope.result.data.extraProperties.configProps}" Keys=>$attribute{propsKeys});
+        if (#{pageSession.myOption}=dropdown) {
+            setPageSessionAttribute(key="nameDropDown" value="#{pageSession.attrsMap['rarName']}");
+        }
         setPageSessionAttribute(key="tableList" value={});
-        foreach (var="prop" list="#{propsKeys}") {
-            mapGet(Map="#{requestScope.result.data.extraProperties.configProps}" Key="#{prop}" Value="#{requestScope.val}");
-            gf.createAttributeMap(
-                keys={"name", "value"},
-                values={"$attribute{prop}", "$attribute{val}"},
-                map="#{requestScope.oneRowMap}");
-            listAdd(list="#{pageSession.tableList}" value="#{requestScope.oneRowMap}");
+        if (#{pageSession.attrsMap['rarName']}) {
+            gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/get-resource-adapter-config-properties"
+                           attrs="#{pageSession.attrsMap}"
+                           method="GET"
+                           result="#{requestScope.result}");
+            gf.getMapKeys(Map="#{requestScope.result.data.extraProperties.configProps}" Keys=>$attribute{propsKeys});
+
+            foreach (var="prop" list="#{propsKeys}") {
+                mapGet(Map="#{requestScope.result.data.extraProperties.configProps}" Key="#{prop}" Value="#{requestScope.val}");
+                gf.createAttributeMap(
+                    keys={"name", "value"},
+                    values={"$attribute{prop}", "$attribute{val}"},
+                    map="#{requestScope.oneRowMap}");
+                listAdd(list="#{pageSession.tableList}" value="#{requestScope.oneRowMap}");
+            }
         }
     />
     </event>
@@ -90,14 +107,38 @@
 #include "/common/shared/alertMsg.inc"
 
     <sun:title id="propertyContentPage" title="$resource{i18njca.resourceAdapterConfig.newPageTitle}" helpText="$resource{i18njca.resourceAdapterConfig.newPageTitleHelp}">
-#include "/common/shared/editPageButtons_2.inc"
+#include "/jca/resourceAdapterConfigButtons.inc"
     </sun:title>
 #include "/jca/resourceAdapterConfigAttr.inc"
 #include "/common/shared/propertyDescTable.inc"
 
 	<sun:hidden id="helpKey" value="$resource{help_jca.resourceAdapterConfigNew}" />
             </sun:form>
+<f:verbatim>
+<script type="text/javascript">
+
+    function navigateToPage(name, option) {
+        var nameTextVal = document.getElementById("$pageSession{textId}").value;
+        top.admingui.ajax.loadPage({url:'$pageSession{selfPage}?myOption='+option+'&nameText='+nameTextVal+'&name='+name});
+        return true;
+    }
+    function CheckForEmptyName(option, reqMsg) {
+        var comp = document.getElementById("$pageSession{textId}");
+        var nameTextVal = comp.value;
+        if (option == 'text' && (nameTextVal==null || nameTextVal=='')){
+            showAlert(reqMsg);
+            comp.focus();
+            return false;
+        }
+        if (option=='text') {
+            return checkForBackslash('#{textId}', '$resource{i18n.msg.JS.resources.resName}');
+        }
+        return true;
+    }
+    </script>
+</f:verbatim>
                         "<br/>
+#include "/common/shared/radioButtonsJS.inc"
 #include "/common/shared/changeButtonsJS.inc" 
 </define>
 </composition>

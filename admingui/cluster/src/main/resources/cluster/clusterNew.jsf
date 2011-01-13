@@ -80,6 +80,9 @@
                 createMap(result="#{requestScope.ct}");
                 mapPut(map="#{requestScope.ct}" key="config"  value="$pageSession{config}");
                 mapPut(map="#{requestScope.ct}" key="id" value="#{pageSession.name}" );
+                println("Creating cluster ....");
+                println("#{sessionScope.REST_URL}/clusters/cluster");
+                println("#{requestScope.ct}");
                 gf.createEntity( endpoint="#{sessionScope.REST_URL}/clusters/cluster"   attrs="#{requestScope.ct}")
                 gf.createClusterInstances(clusterName="#{pageSession.name}", instanceRow="#{instances}");
                 gf.redirect(page="#{request.contextPath}/cluster/cluster/clusters.jsf?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");

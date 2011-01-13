@@ -42,7 +42,8 @@
 
     <!-- PropertySheet .... -->
     <sun:propertySheet id="propertySheet" requiredFields="true">			 
-        
+#include "/common/shared/configNameSection.inc"
+
         <sun:propertySheetSection id="propertSectionTextField">
             <sun:property id="IdStaticProp"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}" >
                 <sun:staticText id="IdStatic" text="#{pageSession.valueMap['name']}"/>

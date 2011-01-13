@@ -52,7 +52,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>monitoring-core</artifactId>
     <packaging>hk2-jar</packaging>
-    <name>Appserver Monitoring Infrastructure</name>
+    <name>admin-monitoring</name>
     <description>Glassfish Appserver Admin Monitoring Infrastructure</description>
     <developers>
         <developer>
@@ -118,6 +118,17 @@
                            </configuration>
                       </execution>
                    </executions>
+              </plugin>
+              <plugin>
+                <groupId>com.sun.enterprise</groupId>
+                <artifactId>hk2-maven-plugin</artifactId>
+                <configuration>
+                  <archive>
+                    <manifestEntries>
+                      <Class-Path>common-l10n.jar</Class-Path>
+                    </manifestEntries>
+                  </archive>
+                </configuration>
               </plugin>
         </plugins>
      </build>

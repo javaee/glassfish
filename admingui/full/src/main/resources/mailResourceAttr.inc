@@ -51,7 +51,11 @@
             <sun:staticText id="name" text="#{pageSession.name}"  rendered="#{Edit}" />
         </sun:property>
         <sun:property id="nameNew"  rendered="#{!edit}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.jndiName}">
-            <sun:textField id="name" styleClass="required"  required="#{true}" columns="$int{30}" maxLength="#{sessionScope.fieldLengths['maxLength.common.jndiName']}" text="#{pageSession.valueMap['name']}" />
+            <sun:textField id="name" styleClass="required"  required="#{true}" columns="$int{30}" maxLength="#{sessionScope.fieldLengths['maxLength.common.jndiName']}" text="#{pageSession.valueMap['name']}" >
+                <!afterCreate
+                    getClientId(component="$this{component}" clientId=>$page{resCompId});
+                />
+            </sun:textField>
         </sun:property>
         
         <sun:property id="hostProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njmail.javaMail.mailHost}" helpText="$resource{i18njmail.javaMail.mailHostHelp}">

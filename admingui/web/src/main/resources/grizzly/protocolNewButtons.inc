@@ -57,18 +57,22 @@
                 if("#{pageSession.skipAttrsList}=#{null}") {
                     createList(size="0", result="#{pageSession.skipAttrsList}");
                 }
-                if ("#{pageSession.valueMap['redirectPort']} = #{emptyStr}") {
+                if ("#{pageSession.httpMap['redirectPort']} = #{emptyStr}") {
                     listAdd(list="#{pageSession.skipAttrsList}" value="redirectPort");
                 }
-                if ("#{pageSession.valueMap['redirectPort']} = #{null}") {
+                if ("#{pageSession.httpMap['redirectPort']} = #{null}") {
                     listAdd(list="#{pageSession.skipAttrsList}" value="redirectPort");
                 }
-                if ("#{pageSession.valueMap['noCompressionUserAgents']} = #{null}") {
+                if ("#{pageSession.httpMap['noCompressionUserAgents']} = #{null}") {
                     listAdd(list="#{pageSession.skipAttrsList}" value="noCompressionUserAgents");
                 }
-                gf.createEntity(endpoint="${newProxy}/#{pageSession.valueMap['Name']}/#{pageSession.childType2}"
+                mapPut(map="#{pageSession.httpMap}" key="target"  value="#{pageSession.valueMap['target']}")
+                gf.createEntity(endpoint="${newProxy}/#{pageSession.valueMap['Name']}/create-http"
                         attrs="#{pageSession.httpMap}"
-                        onlyUseAttrs={"enableCometSupport", "defaultVirtualServer", "serverName", "redirectPort"}
+                        onlyUseAttrs={"target", "defaultVirtualServer"});
+                listAdd(list="#{pageSession.skipAttrsList}" value="target");
+                gf.createEntity(endpoint="${newProxy}/#{pageSession.valueMap['Name']}/http"
+                        attrs="#{pageSession.httpMap}"
                         convertToFalse={"uploadTimeoutEnabled", "cometSupportEnabled", "dnsLookupEnabled", "rcmSupportEnabled", "traceEnabled", "authPassThroughEnabled", "chunkingEnabled", "xpoweredBy"},
                         skipAttrs="#{pageSession.skipAttrsList}"
                         result => $attribute{newHttp});

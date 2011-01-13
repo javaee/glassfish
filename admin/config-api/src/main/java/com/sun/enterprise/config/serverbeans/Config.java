@@ -53,11 +53,10 @@ import com.sun.common.util.logging.LoggingConfigImpl;
 import com.sun.enterprise.config.serverbeans.customvalidators.NotDuplicateTargetName;
 import com.sun.enterprise.config.serverbeans.customvalidators.NotTargetKeyword;
 import com.sun.enterprise.config.util.ServerHelper;
-import org.glassfish.api.admin.config.ConfigExtension;
-import org.glassfish.api.admin.config.Container;
-import org.glassfish.api.admin.config.Named;
-import org.glassfish.api.admin.config.PropertiesDesc;
-import org.glassfish.api.admin.config.PropertyDesc;
+import org.glassfish.api.admin.config.*;
+import static org.glassfish.config.support.Constants.NAME_SERVER_REGEX;
+import org.jvnet.hk2.config.types.Property;
+import org.jvnet.hk2.config.types.PropertyBag;
 import org.glassfish.config.support.datatypes.Port;
 import org.glassfish.grizzly.config.dom.NetworkConfig;
 import org.glassfish.grizzly.config.dom.NetworkListener;
@@ -71,8 +70,7 @@ import org.jvnet.hk2.config.ConfigView;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.DuckTyped;
 import org.jvnet.hk2.config.Element;
-import org.jvnet.hk2.config.types.Property;
-import org.jvnet.hk2.config.types.PropertyBag;
+import javax.validation.Payload;
 
 /**
  * The configuration defines the configuration of a server instance that can be
@@ -104,8 +102,8 @@ import org.jvnet.hk2.config.types.PropertyBag;
 }) */
 
 @Configured
-@NotDuplicateTargetName
-public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag, SystemPropertyBag {
+@NotDuplicateTargetName(message="{config.duplicate.name}", payload=Config.class)
+public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag, SystemPropertyBag, Payload {
 
     /**
      *  Name of the configured object
@@ -114,8 +112,8 @@ public interface Config extends ConfigBeanProxy, Injectable, Named, PropertyBag,
      FIXME: should set 'key=true'.  See bugs 6039, 6040
      */
     @NotNull
-    @NotTargetKeyword
-    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")
+    @NotTargetKeyword(message="{config.reserved.name}", payload=Config.class)
+    @Pattern(regexp=NAME_SERVER_REGEX, message="{config.invalid.name}", payload=Config.class)
     @Override
     String getName();
 

@@ -41,22 +41,28 @@
 package com.sun.enterprise.admin.cli.cluster;
 
 import com.sun.enterprise.admin.cli.CLIConstants;
+import com.sun.enterprise.admin.cli.remote.RemoteCommand;
+import com.sun.enterprise.admin.servermgmt.KeystoreManager;
+import com.sun.enterprise.admin.util.CommandModelData.ParamModelData;
+import com.sun.enterprise.security.store.PasswordAdapter;
+import com.sun.enterprise.util.OS;
+import com.sun.enterprise.util.SystemPropertyConstants;
+import org.glassfish.api.I18n;
+import org.glassfish.api.Param;
+import org.glassfish.api.admin.CommandException;
+import org.glassfish.api.admin.CommandValidationException;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.PerLookup;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URI;
 import java.net.UnknownHostException;
-import java.util.*;
-import org.jvnet.hk2.annotations.*;
-import org.jvnet.hk2.component.*;
-import org.glassfish.api.Param;
-import org.glassfish.api.admin.*;
-import com.sun.enterprise.admin.cli.remote.RemoteCommand;
-import com.sun.enterprise.admin.util.SecureAdminClientManager;
-import com.sun.enterprise.admin.servermgmt.KeystoreManager;
-import com.sun.enterprise.admin.util.CommandModelData.ParamModelData;
-import com.sun.enterprise.security.store.PasswordAdapter;
-import com.sun.enterprise.util.OS;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -67,6 +73,7 @@ import com.sun.enterprise.util.OS;
  */
 @Service(name = "create-local-instance")
 @Scoped(PerLookup.class)
+@I18n("create.local.instance")
 public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesystemCommand {
     private final String CONFIG = "config";
     private final String CLUSTER = "cluster";
@@ -77,8 +84,8 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
     @Param(name = CLUSTER, optional = true)
     private String clusterName;
 
-    @Param(name="lbenabled", optional = true, acceptableValues = "true,false")
-    private String lbEnabled;
+    @Param(name="lbenabled", optional = true)
+    private Boolean lbEnabled;
 
     @Param(name = "systemproperties", optional = true, separator = ':')
     private String systemProperties;     // XXX - should it be a Properties?
@@ -89,11 +96,13 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
     @Param(name = "checkports", optional = true, defaultValue = "true")
     private boolean checkPorts = true;
 
-    @Param(name = "bootstrap", optional = true, defaultValue = "true")
-    private boolean bootstrap = true;
-
     @Param(name = "savemasterpassword", optional = true, defaultValue = "false")
     private boolean saveMasterPassword = false;
+
+    @Param(name = "usemasterpassword", optional = true, defaultValue = "false")
+    private boolean useMasterPassword = false;
+
+    private String masterPassword = null;
 
     private static final String RENDEZVOUS_PROPERTY_NAME = "rendezvousOccurred";
     private String INSTANCE_DOTTED_NAME;
@@ -126,30 +135,19 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
             validateNode(node, getProductRootPath(), getInstanceHostName(true));
         }
 
+        if (!rendezvousWithDAS()) {
+            throw new CommandException(
+                    Strings.get("Instance.rendezvousFailed", DASHost, "" + DASPort));
+        }
+        if (instanceName.equals(SystemPropertyConstants.DAS_SERVER_NAME)) {
+            throw new CommandException(
+                    Strings.get("Instance.alreadyExists", SystemPropertyConstants.DAS_SERVER_NAME));
+        }
+        setDomainName();
         setDasDefaultsOnly = false;
         super.validate();  // instanceName is validated and set in super.validate(), directories created
         INSTANCE_DOTTED_NAME = "servers.server." + instanceName;
         RENDEZVOUS_DOTTED_NAME = INSTANCE_DOTTED_NAME + ".property." + RENDEZVOUS_PROPERTY_NAME;
-
-        /*
-         * Before contacting the DAS, intialize client authentication so
-         * we either send the admin indicator header or we use client cert
-         * authentication, depending on the current configuration.
-         */
-        SecureAdminClientManager.initClientAuthentication(
-                passwords.get(CLIConstants.MASTER_PASSWORD) != null ?
-                    passwords.get(CLIConstants.MASTER_PASSWORD).toCharArray() : null,
-                programOpts.isInteractive(),
-                instanceName,
-                nodeDir,
-                node,
-                nodeDirRoot);
-
-        if (!rendezvousWithDAS()) {
-            instanceDir.delete();
-            throw new CommandException(
-                    Strings.get("Instance.rendezvousFailed", DASHost, "" + DASPort));
-        }
 
         _rendezvousOccurred = rendezvousOccurred();
         if (_rendezvousOccurred) {
@@ -188,9 +186,7 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
                 throw ce;
             }
         }
-        if (bootstrap) {
-            bootstrapSecureAdminFiles();
-        }
+        bootstrapSecureAdminFiles();
         try {
             exitCode = super.executeCommand();
             if (exitCode == SUCCESS) {
@@ -233,37 +229,51 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
     }
 
     /**
-     * If --savemasterpassword=true, then saves tries to save the master password.
+     * If --savemasterpassword=true,
+     * then --usemasterpassword is set to true also
      * If AS_ADMIN_MASTERPASSWORD from --passwordfile exists that is used.
      * If it does not exist, the user is asked to enter the master password.
      * The password is validated against the keystore if it exists. If successful, master-password
-     * is saved to the server instance directory <glassfish-install>/nodes/<host name>/<instance>/master-password.
+     * is saved to the server instance directory <glassfish-install>/nodes/<host name>/master-password.
      * If the password entered does not match the keystore, master-password is not
      * saved and a warning is displayed. The command is still successful.
+     * The default value of --usemasterpassword is false.
+     *
+     * When savemasterpassword is false, the keystore is encrypted with a well-known password
+     * that is built into the system, thus affording no additional security.
+     * The master password must be the same for all instances in a domain.
+
      * @throws CommandException
      */
     private void saveMasterPassword() throws CommandException {
+        masterPasswordOption = new ParamModelData(CLIConstants.MASTER_PASSWORD,
+                String.class, false, null);
+        masterPasswordOption.description = Strings.get("MasterPassword");
+        masterPasswordOption.param._password = true;
+        if (saveMasterPassword)
+            useMasterPassword = true;
+        if (useMasterPassword)
+            masterPassword = getPassword(masterPasswordOption,
+                DEFAULT_MASTER_PASSWORD, true);
+        if (masterPassword == null)
+            masterPassword = DEFAULT_MASTER_PASSWORD;
+
         if (saveMasterPassword) {
-            masterPasswordOption = new ParamModelData(CLIConstants.MASTER_PASSWORD,
-                        String.class, false, null);
-            masterPasswordOption.description = Strings.get("MasterPassword");
-            masterPasswordOption.param._password = true;
-            String masterPassword = getPassword(masterPasswordOption, DEFAULT_MASTER_PASSWORD, false);
-            if (masterPassword != null) {
-                File mp = new File(new File(getServerDirs().getServerDir(), "config"), "keystore.jks");
-                if (mp.canRead()) {
-                    if (verifyMasterPassword(masterPassword)) {
-                        createMasterPasswordFile(masterPassword);
-                    } else {
-                        logger.info(Strings.get("masterPasswordIncorrect"));
-                    }
-                } else {
+            File mp = new File(new File(getServerDirs().getServerDir(), "config"), "keystore.jks");
+            if (mp.canRead()) {
+                if (verifyMasterPassword(masterPassword)) {
+
                     createMasterPasswordFile(masterPassword);
+                } else {
+                    logger.info(Strings.get("masterPasswordIncorrect"));
                 }
-                
+            } else {
+                createMasterPasswordFile(masterPassword);
             }
         }
+
     }
+
 
     /**
      * Create the master password keystore. This routine can also modify the master password
@@ -272,7 +282,7 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
      * @throws CommandException
      */
     protected void createMasterPasswordFile(String masterPassword) throws CommandException {
-        final File pwdFile = new File(this.getServerDirs().getServerDir(), MASTER_PASSWORD_ALIAS);
+        final File pwdFile = new File(this.getServerDirs().getAgentDir(), MASTER_PASSWORD_ALIAS);
         try {
             PasswordAdapter p = new PasswordAdapter(pwdFile.getAbsolutePath(),
                 MASTER_PASSWORD_ALIAS.toCharArray());
@@ -456,22 +466,10 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
         return instanceHostName;
     }
 
-    @Override
-    public String getUsage() {
-        String str = super.getUsage();
-        String newStr = str;
-        StringBuffer sb = new StringBuffer(str);
-        String config = "--"+CONFIG+" <"+CONFIG+">";
-        String cluster = "--"+CLUSTER+" <"+CLUSTER+">";
-        String oldConfigCluster = "["+config+"] ["+cluster+"]";
-        String newConfigCluster = "["+config+" | "+cluster+"]";
-        int start = sb.indexOf(oldConfigCluster);
-        if (start != -1) {
-            int end = start + oldConfigCluster.length();
-            StringBuffer newsb = sb.replace(start, end, newConfigCluster);
-            newStr = newsb.toString();
-        }
-        return newStr;
+    private void setDomainName() throws CommandException {
+        RemoteCommand rc = new RemoteCommand("_get-runtime-info", this.programOpts, this.env);
+        Map<String, String> map = rc.executeAndReturnAttributes("_get-runtime-info", "--target", "server");
+        this.domainName = map.get("domain_name_value");
     }
 
     @Override

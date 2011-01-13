@@ -39,6 +39,8 @@
  */
 package com.sun.enterprise.admin.cli.cluster;
 
+import com.sun.enterprise.universal.process.Jps;
+import com.sun.enterprise.universal.process.ProcessUtils;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.io.FileUtils;
 import java.io.*;
@@ -53,6 +55,7 @@ import org.glassfish.api.admin.*;
 
 import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
+import com.sun.enterprise.util.ObjectAnalyzer;
 
 /**
  * Delete a local server instance.
@@ -102,7 +105,6 @@ public class DeleteLocalInstanceCommand extends LocalInstanceCommand {
             throws CommandException, CommandValidationException {
         instanceName = instanceName0;
         super.validate();
-
         if (!StringUtils.ok(getServerDirs().getServerName()))
             throw new CommandException(Strings.get("DeleteInstance.noInstanceName"));
 
@@ -122,8 +124,15 @@ public class DeleteLocalInstanceCommand extends LocalInstanceCommand {
     @Override
     protected int executeCommand()
             throws CommandException, CommandValidationException {
-
         if (isRunning()) {
+            int prevpid = getPrevPid();
+            Map<String, Integer> procs = Jps.getProcessTable();
+            Set<Map.Entry<String,Integer>> set = procs.entrySet();
+            Iterator<Map.Entry<String,Integer>> it = set.iterator();
+            while(it.hasNext()) {
+                Map.Entry<String,Integer> entry = it.next();
+            }
+            
             throw new CommandException(Strings.get("DeleteInstance.running"));
         }
 
@@ -134,25 +143,51 @@ public class DeleteLocalInstanceCommand extends LocalInstanceCommand {
 
     /**
      * Ask DAS to wipe it out from domain.xml
+     * If DAS isn't running -- ERROR -- return right away with a thrown Exception
+     * If DAS is running, and instance not registered on DAS, do not unregister instance -- OK
+     * If DAS is running, and instance is registered on DAS, then unregister instance -- OK
+     *      - If _unregister-instance is successful - OK
+     *      - If _unregister-instance fails - ERROR - Exception thrown
      */
     private void doRemote() throws CommandException {
-        try {
+        if (!isDASRunning()) {
+            String newString = Strings.get("DeleteInstance.remoteError",
+                    programOpts.getHost(), "" + programOpts.getPort());
+            throw new CommandException(newString);
+        }
+
+        if (isRegisteredToDas()) {
             RemoteCommand rc = new RemoteCommand("_unregister-instance", programOpts, env);
             rc.execute("_unregister-instance",
                     "--node", getServerDirs().getServerParentDir().getName(),
-                    //"--remote_only", "true",
                     getServerDirs().getServerName());
         }
-        catch (CommandException ce) {
-            // Let's add our $0.02 to this Exception!
-            Throwable t = ce.getCause();
-            String newString = Strings.get("DeleteInstance.remoteError",
-                    ce.getLocalizedMessage());
+    }
 
-            if (t != null)
-                throw new CommandException(newString, t);
-            else
-                throw new CommandException(newString);
+    private boolean isDASRunning() {
+        try {
+            getUptime();
+            return true;
+        } catch (CommandException ex) {
+            return false;
         }
+    }
+
+    /**
+     * If the instance is not registered on DAS (server xml entry doesn't exist 
+     * in domain.xml), the get command will throw a CommandException
+     */
+    private boolean isRegisteredToDas() {
+        boolean isRegistered = false;
+        RemoteCommand rc = null;
+        String INSTANCE_DOTTED_NAME = "servers.server." + instanceName;
+        try {
+            rc = new RemoteCommand("get", this.programOpts, this.env);
+            rc.executeAndReturnOutput("get", INSTANCE_DOTTED_NAME);
+            isRegistered = true;
+        } catch (CommandException ce) {
+            isRegistered = false;
+        }
+        return isRegistered;
     }
 }

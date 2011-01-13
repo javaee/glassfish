@@ -45,6 +45,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
+import org.glassfish.common.util.admin.AsadminInput;
 
 import org.jvnet.hk2.component.Habitat;
 import org.glassfish.api.admin.SSHCommandExecutionException;
@@ -61,6 +62,7 @@ import org.glassfish.common.util.admin.AuthTokenManager;
 public class NodeRunner  {
 
     private static final String NL = System.getProperty("line.separator");
+    private static final String AUTH_TOKEN_STDIN_LINE_PREFIX = "option." + AuthTokenManager.AUTH_TOKEN_OPTION_NAME + "=";
 
     private  Habitat habitat;
     private Logger logger;
@@ -86,7 +88,7 @@ public class NodeRunner  {
     public boolean isSshNode(Node node) {
 
         if (node == null) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Node is null");
         }
         if (node.getType() ==null)
             return false;
@@ -140,20 +142,30 @@ public class NodeRunner  {
         UnsupportedOperationException,
         IllegalArgumentException {
 
-        args.add(0, AuthTokenManager.AUTH_TOKEN_OPTION);
-        args.add(1, authTokenManager.createToken());
+
+        if (node == null) {
+            throw new IllegalArgumentException("Node is null");
+        }
+
+        final List<String> stdinLines = new ArrayList<String>();
+        stdinLines.add(AsadminInput.versionSpecifier());
+        stdinLines.add(AUTH_TOKEN_STDIN_LINE_PREFIX + authTokenManager.createToken());
+        args.add(0, AsadminInput.CLI_INPUT_OPTION);
+        args.add(1, AsadminInput.SYSTEM_IN_INDICATOR); // specified to read from System.in
+        args.add(2, "--interactive=false");            // No prompting!
         
         if (node.isLocal()) {
             return runAdminCommandOnLocalNode(node, output, waitForReaderThreads,
-                    args);
+                    args, stdinLines);
         } else {
-            return runAdminCommandOnRemoteNode(node, output, args);
+            return runAdminCommandOnRemoteNode(node, output, args, stdinLines);
         }
     }
 
     private int runAdminCommandOnLocalNode(Node node, StringBuilder output,
                                            boolean waitForReaderThreads,
-                                           List<String> args) throws
+                                           List<String> args,
+                                           List<String> stdinLines) throws
             ProcessManagerException {
 
         List<String> fullcommand = new ArrayList<String>();
@@ -167,12 +179,13 @@ public class NodeRunner  {
         fullcommand.addAll(args);
 
         if (!asadmin.canExecute())
-            throw new ProcessManagerException("asadmin is not executable!");
+            throw new ProcessManagerException(asadmin.getAbsolutePath() + " is not executable.");
 
         lastCommandRun = commandListToString(fullcommand);
 
         trace("Running command locally: " + lastCommandRun);
         ProcessManager pm = new ProcessManager(fullcommand);
+        pm.setStdinLines(stdinLines);
 
         // XXX should not need this after fix for 12777, but we seem to
         pm.waitForReaderThreads(waitForReaderThreads);
@@ -197,7 +210,8 @@ public class NodeRunner  {
     }
 
     private int runAdminCommandOnRemoteNode(Node node, StringBuilder output,
-                                       List<String> args) throws
+                                       List<String> args,
+                                       List<String> stdinLines) throws
             SSHCommandExecutionException, IllegalArgumentException,
             UnsupportedOperationException {
 
@@ -210,11 +224,6 @@ public class NodeRunner  {
         if (!StringUtils.ok(installDir)) {
             throw new IllegalArgumentException("Node does not have an installDir");
         }
-
-        // Since we pass the command as a string to SSHLauncher we must
-        // make sure to escape any spaces in the installDir with backslashes
-        // XXX need a more general solution to this problem
-        installDir = encodeSpaces(installDir);
 
         List<String> fullcommand = new ArrayList<String>();
 
@@ -231,7 +240,7 @@ public class NodeRunner  {
             sshL.init(node, logger);
 
             ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-            commandStatus = sshL.runCommand(lastCommandRun, outStream);
+            commandStatus = sshL.runCommand(fullcommand, outStream, stdinLines);
             String results = outStream.toString();
             output.append(outStream.toString());
             return commandStatus;              
@@ -269,14 +278,6 @@ public class NodeRunner  {
 
     private void trace(String s) {
         logger.fine(String.format("%s: %s", this.getClass().getSimpleName(), s));
-    }
-
-    /**
-     * Escape all spaces in the string with a backslash.
-     */
-    private String encodeSpaces(String s) {
-        // This replaces all spaces with a backslash-space
-        return s.replaceAll(" ", "\\\\ ");
     }
 
     private String commandListToString(List<String> command) {

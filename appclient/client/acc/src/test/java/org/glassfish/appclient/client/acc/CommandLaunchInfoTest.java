@@ -83,12 +83,12 @@ public class CommandLaunchInfoTest {
     @Test
     public void testA() throws Exception, UserError {
 
-        CommandLaunchInfo info = CommandLaunchInfo.newInstance(
+        final AgentArguments agentArgs = AgentArguments.newInstance(
                 "mode=acscript" +
                 ",client=jar=" + JAR_CLIENT_NAME +
                 ",arg=-textauth" +
-                ",arg=-user,arg=" + USER_VALUE
-                );
+                ",arg=-user,arg=" + USER_VALUE);
+        CommandLaunchInfo info = CommandLaunchInfo.newInstance(agentArgs);
         assertEquals("wrong client type", ClientLaunchType.JAR, info.getClientLaunchType());
         assertEquals("wrong client name", JAR_CLIENT_NAME, info.getClientName());
 
@@ -99,11 +99,12 @@ public class CommandLaunchInfoTest {
         URL testFileURL = getClass().getResource(PASSWORDFILE_PATH);
         assertNotNull("test file URL came back null", testFileURL);
         File testFile = new File(testFileURL.toURI());
-        CommandLaunchInfo info = CommandLaunchInfo.newInstance(
+        final AgentArguments agentArgs = AgentArguments.newInstance(
                 "mode=acscript" +
                 ",client=dir=" + DIR_CLIENT_NAME +
                 ",arg=-passwordfile,arg=" + testFile.getAbsolutePath() +
                 ",arg=-noappinvoke");
+        CommandLaunchInfo info = CommandLaunchInfo.newInstance(agentArgs);
 
         assertEquals("wrong client type", ClientLaunchType.DIR, info.getClientLaunchType());
         assertEquals("wrong client name", DIR_CLIENT_NAME, info.getClientName());

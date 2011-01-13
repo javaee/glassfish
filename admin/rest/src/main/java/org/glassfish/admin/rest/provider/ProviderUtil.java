@@ -62,6 +62,7 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -239,7 +240,7 @@ public class ProviderUtil {
         }
         return stringMap;
     }
-
+    
     static protected String getHtmlRepresentationForAttributes(ConfigBean proxy, UriInfo uriInfo) {
         StringBuilder result = new StringBuilder();
 
@@ -356,14 +357,19 @@ public class ProviderUtil {
             }
 
         }
-
+        //hack-1 : support delete method for html
+        //hardcode "post" instead of commandMethod which chould be post or delete.
+        String webMethod="post";
+        if (commandMethod.equalsIgnoreCase("get")){
+             webMethod="get";
+        }
         if (!result.equals("")) {
             //set encType if file upload operation
             String encType = methodMetaData.isFileUploadOperation() ?
                 " enctype=\"multipart/form-data\"" : "" ;
             result = "<div><form action=\"" + uriInfo.getAbsolutePath().toString() +
-                "\" method=\"" + /*commandMethod*/"post\"" + encType + ">" +  //hack-1 : support delete method for html
-                "<dl>" + result;                       //hardcode "post" instead of commandMethod which chould be post or delete.
+                "\" method=\"" + webMethod+ "\"" + encType + ">" +  
+                "<dl>" + result;                       
 
             //hack-1 : support delete method for html
             //add hidden field
@@ -485,6 +491,11 @@ public class ProviderUtil {
 
     static private String getHtmlRespresentationForParameter(String parameter,
             ParameterMetaData parameterMetaData, String parameterValue) {
+        
+      if ("true".equals(parameterMetaData.getAttributeValue(Constants.DEPRECATED))) {
+            return "";
+        }
+      
         String result = parameter;
         //set appropriate type of input field. In can be of type file or text
         //file type is used in case of deploy operation
@@ -543,7 +554,7 @@ public class ProviderUtil {
 
                 for (String value : values) {
                     if ((hasValue) && (value.equalsIgnoreCase(parameterValue))){
-                        if (isBoolean) { parameterValue = parameterValue.toLowerCase();} //boolean options are all displayed as lowercase
+                        if (isBoolean) { parameterValue = parameterValue.toLowerCase(Locale.US);} //boolean options are all displayed as lowercase
                         result = result + "<option selected>" + parameterValue + "<br>";
                     } else {
                         result = result + "<option>" + value + "<br>";

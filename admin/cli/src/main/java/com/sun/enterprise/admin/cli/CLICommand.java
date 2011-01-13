@@ -271,6 +271,15 @@ public abstract class CLICommand implements PostConstruct {
     }
 
     /**
+     * Returns the program options associated with this command.
+     * 
+     * @return the command's program options
+     */
+    public ProgramOptions getProgramOptions() {
+        return programOpts;
+    }
+
+    /**
      * Return a Reader for the man page for this command,
      * or null if not found.
      */
@@ -284,6 +293,20 @@ public abstract class CLICommand implements PostConstruct {
      * @return usage text
      */
     public String getUsage() {
+        String usage;
+        if (commandModel != null && ok(usage = commandModel.getUsageText())) {
+            StringBuffer usageText = new StringBuffer();
+            usageText.append(
+                strings.get("Usage", strings.get("Usage.asadmin")));
+            usageText.append(" ");
+            usageText.append(usage);
+            return usageText.toString();
+        } else {
+            return generateUsageText();
+        }
+    }
+
+    private String generateUsageText() {
         StringBuilder usageText = new StringBuilder();
         usageText.append(strings.get("Usage", strings.get("Usage.asadmin")));
         usageText.append(" ");
@@ -438,8 +461,11 @@ public abstract class CLICommand implements PostConstruct {
                 // include every option that was specified on the command line
                 // and every option that has a default value
                 String value = getOption(opt.getName());
-                if (value == null)
+                if (value == null) {
                     value = opt.getParam().defaultValue();
+                    if (value != null && value.length() == 0)
+                        value = null;
+                }
                 if (value != null) {
                     sb.append("--").append(lc(opt.getName()));
                     if (opt.getType() == Boolean.class ||
@@ -610,8 +636,8 @@ public abstract class CLICommand implements PostConstruct {
 
         if (ok(pwfile)) {
             passwords = CLIUtil.readPasswordFileOptions(pwfile, true);
-            logger.finer("Passwords from password file " +
-                                        passwords);
+            logger.finer("Passwords were read from password file: " +
+                                        pwfile);
             String password = passwords.get(
                     Environment.AS_ADMIN_ENV_PREFIX + "PASSWORD");
             if (password != null && programOpts.getPassword() == null)
@@ -1050,6 +1076,14 @@ public abstract class CLICommand implements PostConstruct {
      */
     protected String getSystemProperty(String name) {
         return systemProps.get(name);
+    }
+
+    /**
+     * Return all the system properties and properties set
+     * in asenv.conf.  The returned Map may not be modified.
+     */
+    protected Map<String,String> getSystemProperties() {
+        return systemProps;
     }
 
     /**

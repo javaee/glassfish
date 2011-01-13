@@ -55,6 +55,7 @@ import org.glassfish.quality.ToDo;
 
 
 @Configured
+@Deprecated
 public interface WebModule extends Injectable, ApplicationName, PropertyBag {
 
     /**

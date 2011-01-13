@@ -61,9 +61,7 @@
 		InstanceName="#{instanceName}",
 		FromRecord="#{recNumberPlus}",
 		AfterRecord="false",
-		// FIXME: Remove hard-coded value!!
-		LogFileName="/logs/server.log",
-		//LogFileName="#{logFile}",
+		LogFileName="#{logFile}",
 		LogLevel="#{logLevel}",
 		NumToDisplay="1",
 		attributes=>$attribute{attrs});

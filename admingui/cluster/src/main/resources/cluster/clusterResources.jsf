@@ -57,8 +57,9 @@
     <!beforeCreate
         setSessionAttribute(key="clusterTabs" value="clusterResources");
         getRequestValue(key="clusterName" value="#{pageSession.target}");
+        setPageSessionAttribute(key="clusterName" value="#{pageSession.target}");
         urlencode(value="#{pageSession.target}" encoding="UTF-8" result="#{pageSession.encodedClusterName}");
-        setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18ncs.msg.JS.confirmDeleteResources}");
+        setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n.msg.JS.confirmDeleteResources}");
         setPageSessionAttribute(key="listLink" value="#{request.contextPath}/cluster/cluster/clusterResources.jsf?clusterName=#{encodedClusterName}");
         getRequestValue(key="filterValue" value="#{pageSession.filterValue}");
         setPageSessionAttribute(key="restURL" value="#{sessionScope.REST_URL}/clusters/cluster/#{pageSession.encodedClusterName}/resource-ref");
@@ -75,8 +76,9 @@
                  helpText="$resource{i18ncs.cluster.ResourcesTitleHelp}" >
 </sun:title>
 "<br/>
+#include "/common/shared/nameSection.inc"
 #include "/common/resourceNode/targetResourceTable.inc"
-<!--#include "/cluster/cluster/clusterNameSection.inc"
+<!--#include "/common/shared/nameSection.inc"
 <sun:table id="table1" title="$resource{i18n.resourcesTable.resources}"  >
          <!afterCreate
             getClientId(component="$this{component}" clientId=>$page{tableId});

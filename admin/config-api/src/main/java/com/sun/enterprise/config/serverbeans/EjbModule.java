@@ -54,6 +54,7 @@ import org.jvnet.hk2.config.types.PropertyBag;
 import org.glassfish.quality.ToDo;
 
 @Configured
+@Deprecated
 public interface EjbModule extends Injectable, ApplicationName, PropertyBag {
 
     /**

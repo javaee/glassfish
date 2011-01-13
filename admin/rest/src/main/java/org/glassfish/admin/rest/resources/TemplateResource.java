@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,6 +40,7 @@
 package org.glassfish.admin.rest.resources;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.v3.common.ActionReporter;
 import com.sun.jersey.api.core.ResourceContext;
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataMultiPart;
@@ -86,7 +87,6 @@ public class TemplateResource {
     protected Dom entity;  //may be null when not created yet...
     protected Dom parent;
     protected String tagName;
-    protected boolean entityNeedsToBeCreated = false;
     protected ConfigModel childModel; //good model even if the child entity is null
     public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(TemplateResource.class);
     final private static List<String> attributesToSkip = new ArrayList<String>() {
@@ -136,35 +136,19 @@ public class TemplateResource {
                 data.remove("operation");
                 return delete(data);
             }
-            if (entityNeedsToBeCreated == false) { //just update it.
-                Map<ConfigBean, Map<String, String>> mapOfChanges = new HashMap<ConfigBean, Map<String, String>>();
-                data = ResourceUtil.translateCamelCasedNamesToXMLNames(data);
-                mapOfChanges.put((ConfigBean) getEntity(), data);
-                ConfigSupport cs = habitat.getComponent(ConfigSupport.class);
-                cs.apply(mapOfChanges); //throws TransactionFailure
-            } else {//create if in the tree
-                Class<? extends ConfigBeanProxy> proxy = TemplateListOfResource.getElementTypeByName(parent, tagName);
-                ConfigBean theParent = (ConfigBean) parent;
-                //need to change from camel case to xml !!!createAndSet works on xml names
-                HashMap<String, String> xmldata = new HashMap<String, String>();
-                Set<String> keys = data.keySet();
-                Iterator<String> iterator = keys.iterator();
-                String key;
-                while (iterator.hasNext()) {
-                    key = iterator.next();
-                    xmldata.put(theParent.model.camelCaseToXML(key), data.get(key));
-                }
-                ConfigSupport.createAndSet(theParent, proxy, xmldata);
-                entity = parent.nodeElement(tagName);
-                entityNeedsToBeCreated = false;
+            //just update it.
+            data = ResourceUtil.translateCamelCasedNamesToXMLNames(data);
+            ActionReporter ar = Util.applyChanges(data, uriInfo, habitat);
+            if(ar.getActionExitCode() != ActionReport.ExitCode.SUCCESS) {
+                //TODO better error handling.
+                return Response.status(400).entity(ResourceUtil.getActionReportResult(400, "Could not apply changes" + ar.getMessage(), requestHeaders, uriInfo)).build();
             }
+
             String successMessage = localStrings.getLocalString("rest.resource.update.message",
-                    "\"{0}\" updated successfully.", new Object[]{uriInfo.getAbsolutePath()});
+                    "\"{0}\" updated successfully.", uriInfo.getAbsolutePath());
             return Response.ok(ResourceUtil.getActionReportResult(200, successMessage, requestHeaders, uriInfo)).build();
         } catch (Exception ex) {
             if (ex.getCause() instanceof ValidationException) {
-                return Response.status(400).entity(ResourceUtil.getActionReportResult(400, ex.getMessage(), requestHeaders, uriInfo)).build();
-            } else if (ex instanceof TransactionFailure) {
                 return Response.status(400).entity(ResourceUtil.getActionReportResult(400, ex.getMessage(), requestHeaders, uriInfo)).build();
             } else {
                 throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
@@ -285,23 +269,9 @@ public class TemplateResource {
         this.tagName = tagName;
         entity = parent.nodeElement(tagName);
         if (entity == null) {
-            try {
-                Class<? extends ConfigBeanProxy> proxy = TemplateListOfResource.getElementTypeByName(parent, tagName);
-                ConfigBean theParent = (ConfigBean) parent;
-                // we quickly crate one just to get it smodel.
-                // but the real one might be created later, if the user wants it!
-                entityNeedsToBeCreated = true;
-                entity = theParent.allocate(proxy);
-                childModel = entity.model;
-                entity = null;
-
-            } catch (Exception e) {
-                throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
-            }
-
+            //throw new WebApplicationException(new Exception("Trying to create an entity using generic create"),Response.Status.INTERNAL_SERVER_ERROR);
         } else {
             childModel = entity.model;
-
         }
     }
 
@@ -368,29 +338,31 @@ public class TemplateResource {
     }
 
     public void setBeanByKey(List<Dom> parentList, String id) {
-        for (Dom c : parentList) {
-            String keyAttributeName = null;
-            ConfigModel model = c.model;
-            if (model.key == null) {
-                try {
-                    for (String s : model.getAttributeNames()) {//no key, by default use the name attr
-                        if (s.equals("name")) {
-                            keyAttributeName = s;
+        if (parentList != null) { // Believe it or not, this can happen
+            for (Dom c : parentList) {
+                String keyAttributeName = null;
+                ConfigModel model = c.model;
+                if (model.key == null) {
+                    try {
+                        for (String s : model.getAttributeNames()) {//no key, by default use the name attr
+                            if (s.equals("name")) {
+                                keyAttributeName = s;
+                            }
                         }
-                    }
-                    if (keyAttributeName == null) {//nothing, so pick the first one
-                        keyAttributeName = model.getAttributeNames().iterator().next();
-                    }
-                } catch (Exception e) {
-                    keyAttributeName = "ThisIsAModelBug:NoKeyAttr"; //no attr choice fo a key!!! Error!!!
-                } //firstone
-            } else {
-                keyAttributeName = model.key.substring(1, model.key.length());
-            }
+                        if (keyAttributeName == null) {//nothing, so pick the first one
+                            keyAttributeName = model.getAttributeNames().iterator().next();
+                        }
+                    } catch (Exception e) {
+                        keyAttributeName = "ThisIsAModelBug:NoKeyAttr"; //no attr choice fo a key!!! Error!!!
+                    } //firstone
+                } else {
+                    keyAttributeName = model.key.substring(1, model.key.length());
+                }
 
-            String keyvalue = c.attribute(keyAttributeName.toLowerCase());
-            if (keyvalue.equals(id)) {
-                setEntity((ConfigBean) c);
+                String keyvalue = c.attribute(keyAttributeName.toLowerCase(Locale.US));
+                if (keyvalue.equals(id)) {
+                    setEntity((ConfigBean) c);
+                }
             }
         }
     }
@@ -415,7 +387,8 @@ public class TemplateResource {
 
         ResourceUtil.addMethodMetaData(ar, mmd);
         if (entity != null) {
-            ar.getExtraProperties().put("childResources", ResourceUtil.getResourceLinks(entity, uriInfo));
+            ar.getExtraProperties().put("childResources", ResourceUtil.getResourceLinks(entity, uriInfo, 
+                    ResourceUtil.canShowDeprecatedItems(habitat)));
         }
         ar.getExtraProperties().put("commands", ResourceUtil.getCommandLinks(getCommandResourcesPaths()));
 
@@ -502,10 +475,12 @@ public class TemplateResource {
     // This has to be smarter, since we are encoding / in resource names now
 
     private void addDefaultParameter(HashMap<String, String> data) {
-        int index = uriInfo.getAbsolutePath().getPath().lastIndexOf('/');
-        String defaultParameterValue =
-                //uriInfo.getAbsolutePath().getPath().substring(index + 1);
-                getEntity().getKey();
+        String defaultParameterValue = getEntity().getKey();
+        if (defaultParameterValue==null){// no primary key
+            //we take the parent key.
+            // see for example delete-ssl that that the parent key name as ssl does not have a key
+            defaultParameterValue= parent.getKey();
+        }
         data.put("DEFAULT", defaultParameterValue);
     }
 
@@ -525,7 +500,7 @@ public class TemplateResource {
     //******************************************************************************************************************
 
     private Map<String, String> getAttributes(Dom entity) {
-        Map<String, String> result = new HashMap<String, String>();
+        Map<String, String> result = new TreeMap<String, String>();
         Set<String> attributeNames = entity.model.getAttributeNames();
         for (String attributeName : attributeNames) {
             result.put(eleminateHypen(attributeName), entity.attribute(attributeName));
@@ -541,11 +516,6 @@ public class TemplateResource {
 
         /////optionsResult.putMethodMetaData("POST", new MethodMetaData());
         MethodMetaData postMethodMetaData = ResourceUtil.getMethodMetaData(childModel);
-        if (entityNeedsToBeCreated) {
-            postMethodMetaData.setDescription("Create A New One");
-        } else {
-            postMethodMetaData.setDescription("Update");
-        }
         map.put("POST", postMethodMetaData);
 
 

@@ -45,8 +45,8 @@ import org.junit.Test;
 import static org.junit.Assert.assertTrue;
 
 public class ConfigTest extends BaseSeleniumTestClass {
-    private static final String TRIGGER_CONFIGURATION = "Manage configurations";
-    private static final String TRIGGER_NEW_CONFIGURATION = "New Configuration";
+    private static final String TRIGGER_CONFIGURATION = "i18nc.configurations.PageTitleHelp";
+    private static final String TRIGGER_NEW_CONFIGURATION = "i18nc.configurations.NewPageTitle";
 
     @Test
     public void testConfig() {

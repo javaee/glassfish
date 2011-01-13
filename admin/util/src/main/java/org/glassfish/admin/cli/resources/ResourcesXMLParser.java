@@ -54,7 +54,9 @@ import org.xml.sax.InputSource;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.EntityResolver;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -106,6 +108,8 @@ public class ResourcesXMLParser implements EntityResolver
     private static final int NONCONNECTOR = 2;
     private static final int CONNECTOR = 1;
 
+    private static final Logger _logger  = Logger.getLogger(ResourcesXMLParser.class.getName());
+
     private static final String SUN_RESOURCES = "sun-resources";
 
     public static final String JAVA_APP_SCOPE_PREFIX = "java:app/";
@@ -123,6 +127,28 @@ public class ResourcesXMLParser implements EntityResolver
                 JAVA_MODULE_SCOPE_PREFIX,
                 JAVA_GLOBAL_SCOPE_PREFIX
             ));
+
+    private static final String publicID_sjsas90 = "Sun Microsystems, Inc.//DTD Application Server 9.0 Resource Definitions";
+    private static final String publicID_ges30 = "Sun Microsystems, Inc.//DTD GlassFish Application Server 3.0 Resource Definitions";
+    private static final String publicID_ges31 = "GlassFish.org//DTD GlassFish Application Server 3.1 Resource Definitions";
+
+    private static final String DTD_1_5 = "glassfish-resources_1_5.dtd";
+    private static final String DTD_1_4 = "sun-resources_1_4.dtd";
+    private static final String DTD_1_3 = "sun-resources_1_3.dtd";
+    private static final String DTD_1_2 = "sun-resources_1_2.dtd";
+    private static final String DTD_1_1 = "sun-resources_1_1.dtd";
+    private static final String DTD_1_0 = "sun-resources_1_0.dtd";
+    
+    private static final List<String> systemIDs = Collections.unmodifiableList(
+            Arrays.asList(
+                    DTD_1_5,
+                    DTD_1_4,
+                    DTD_1_3,
+                    DTD_1_2,
+                    DTD_1_1,
+                    DTD_1_0
+            ));
+
 
     /** Creates new ResourcesXMLParser */
     public ResourcesXMLParser(File resourceFile) throws Exception {
@@ -146,6 +172,8 @@ public class ResourcesXMLParser implements EntityResolver
      */
     private void initProperties() throws Exception {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        BufferedInputStream bis = null;
+        FileInputStream fis = null;
         try {
             AddResourcesErrorHandler  errorHandler = new AddResourcesErrorHandler();
             factory.setValidating(true);
@@ -159,7 +187,8 @@ public class ResourcesXMLParser implements EntityResolver
                                                         args );
                 throw new Exception( msg );
             }
-            InputSource is = new InputSource(resourceFile.toURI().toString());
+            fis = new FileInputStream(resourceFile);
+            InputSource is = new InputSource(fis);
             document = builder.parse(is);
             detectDeprecatedDescriptor();
         }/*catch(SAXParseException saxpe){
@@ -171,7 +200,17 @@ public class ResourcesXMLParser implements EntityResolver
                 SAXParserFactory spf = SAXParserFactory.newInstance();
                 SAXParser sp = spf.newSAXParser();
                 sp.setProperty("http://xml.org/sax/properties/lexical-handler", new MyLexicalHandler());
-                sp.getXMLReader().parse(new InputSource(resourceFile.toString()));
+                //we need to open the same file. Close it to be safe.
+                if(fis != null){
+                    try{
+                        fis.close();
+                        fis = null;
+                    }catch(Exception e){
+                        //ignore
+                    }
+                }
+                fis = new FileInputStream(resourceFile);
+                sp.getXMLReader().parse(new InputSource(fis));
             } catch (ParserConfigurationException ex) {
             } catch (SAXException ex) {
             } catch (IOException ex) {
@@ -194,6 +233,14 @@ public class ResourcesXMLParser implements EntityResolver
         }
         catch (IOException ioe) {
             throw new Exception(ioe.getLocalizedMessage());
+        }finally{
+            if(fis != null){
+                try{
+                    fis.close();
+                }catch(Exception e){
+                    //ignore
+                }
+            }
         }
     }
 
@@ -203,12 +250,11 @@ public class ResourcesXMLParser implements EntityResolver
     private void detectDeprecatedDescriptor() {
         String publicId = document.getDoctype().getPublicId();
         String systemId = document.getDoctype().getSystemId();
-        Logger logger  = Logger.getLogger(ResourcesXMLParser.class.getName());
         if( (publicId != null && publicId.contains(SUN_RESOURCES)) ||
                 (systemId != null && systemId.contains(SUN_RESOURCES))){
             String msg = localStrings.getString(
                     "deprecated.resources.dtd", resourceFile.getAbsolutePath() );
-            logger.log(Level.FINEST, msg);
+            _logger.log(Level.FINEST, msg);
         }
     }
 
@@ -242,6 +288,13 @@ public class ResourcesXMLParser implements EntityResolver
                 {
                     generateMailResource(nextKid, scope);
                 }
+                //PMF resource is no more supported and hence removing support form sun-resources.xml
+                else if (nodeName.equalsIgnoreCase(Resource.PERSISTENCE_MANAGER_FACTORY_RESOURCE))
+                {
+                   generatePersistenceResource(nextKid);
+                   _logger.log(Level.FINEST, "persistence-manager-factory-resource is no more supported " +
+                           ", ignoring the resource description");
+                }
                 else if (nodeName.equalsIgnoreCase(Resource.ADMIN_OBJECT_RESOURCE))
                 {
                     generateAdminObjectResource(nextKid, scope);
@@ -265,7 +318,7 @@ public class ResourcesXMLParser implements EntityResolver
             }
         }
     }
-    
+
     /**
      * Sorts the resources defined in the resources configuration xml file into
      * two buckets
@@ -433,6 +486,42 @@ public class ResourcesXMLParser implements EntityResolver
             }
         }
         return name;
+    }
+
+    private void generatePersistenceResource(Node nextKid) throws Exception
+    {
+        NamedNodeMap attributes = nextKid.getAttributes();
+        if (attributes == null)
+            return;
+
+        Node jndiNameNode = attributes.getNamedItem(JNDI_NAME);
+        String jndiName = jndiNameNode.getNodeValue();
+        Node factoryClassNode = attributes.getNamedItem(FACTORY_CLASS);
+        Node poolNameNode = attributes.getNamedItem(JDBC_RESOURCE_JNDI_NAME);
+        Node enabledNode = attributes.getNamedItem(ENABLED);
+
+        Resource persistenceResource =
+                    new Resource(Resource.PERSISTENCE_MANAGER_FACTORY_RESOURCE);
+        persistenceResource.setAttribute(JNDI_NAME, jndiName);
+        if (factoryClassNode != null) {
+           String factoryClass = factoryClassNode.getNodeValue();
+           persistenceResource.setAttribute(FACTORY_CLASS, factoryClass);
+        }
+        if (poolNameNode != null) {
+           String poolName = poolNameNode.getNodeValue();
+           persistenceResource.setAttribute(JDBC_RESOURCE_JNDI_NAME, poolName);
+        }
+        if (enabledNode != null) {
+           String sEnabled = enabledNode.getNodeValue();
+           persistenceResource.setAttribute(ENABLED, sEnabled);
+        }
+
+        NodeList children = nextKid.getChildNodes();
+        generatePropertyElement(persistenceResource, children);
+        vResources.add(persistenceResource);
+
+        //debug strings
+        printResourceElements(persistenceResource);
     }
 
     /*
@@ -1417,13 +1506,40 @@ public class ResourcesXMLParser implements EntityResolver
     }
       
       
-    public InputSource resolveEntity(String publicId,String systemId) 
+    public InputSource resolveEntity(String publicId, String systemId)
         throws SAXException {
         InputSource is = null;
+        String dtdFileName = DTD_1_5;
+
+        boolean foundMatchingDTD = false;
+
+        if(systemId != null){
+            for(int i =0; i<systemIDs.size();i++){
+                if(systemId.contains(systemIDs.get(i))){
+                    dtdFileName = systemIDs.get(i);
+                    foundMatchingDTD = true;
+                    break;
+                }
+            }
+        }
+
+        if (!foundMatchingDTD && publicId != null){
+            if(publicId.contains(publicID_sjsas90)){
+                dtdFileName = DTD_1_3;
+            }else if(publicId.contains(publicID_ges30)){
+                dtdFileName = DTD_1_4;
+            }else if(publicId.contains(publicID_ges31)){
+                dtdFileName = DTD_1_5;
+            }
+        }
+
         try {
              String dtd = System.getProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY) +
                           File.separator + "lib" + File.separator + "dtds" + File.separator +
-                          "glassfish-resources_1_5.dtd";
+                          dtdFileName;
+            if(_logger.isLoggable(Level.FINEST)){
+                _logger.finest("using DTD [ "+dtd+" ]");
+            }
             is = new InputSource(new java.io.FileInputStream(dtd));
         } catch(Exception e) {
             throw new SAXException("cannot resolve dtd", e);
@@ -1457,4 +1573,3 @@ public class ResourcesXMLParser implements EntityResolver
     }
 
 }
-

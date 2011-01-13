@@ -45,6 +45,7 @@ import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.jersey.api.container.ContainerFactory;
 import com.sun.jersey.api.core.ResourceConfig;
 import org.glassfish.api.container.EndpointRegistrationException;
+import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.container.filter.LoggingFilter;
 import com.sun.jersey.api.core.DefaultResourceConfig;
 import com.sun.jersey.spi.inject.SingletonTypeInjectableProvider;
@@ -106,11 +107,12 @@ public class LazyJerseyInit {
         rc.getProperties().put(ResourceConfig.PROPERTY_CONTAINER_NOTIFIER, r);
         rc.getClasses().add(ReloadResource.class);
 
-        //We can only inject these 3 extra classes in Jersey resources...
+        //We can only inject these 4 extra classes in Jersey resources...
         //
         rc.getSingletons().add(new SingletonTypeInjectableProvider<Context, Reloader>(Reloader.class, r) {});
         rc.getSingletons().add(new SingletonTypeInjectableProvider<Context, ServerContext>(ServerContext.class, sc) {});
         rc.getSingletons().add(new SingletonTypeInjectableProvider<Context, Habitat>(Habitat.class, habitat) {});
+        rc.getSingletons().add(new SingletonTypeInjectableProvider<Context, Client>(Client.class, Client.create()) {});
 
         //Use common classloader. Jersey artifacts are not visible through
         //module classloader

@@ -60,7 +60,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
-@Service(name = "_gmsAnnounceAfterStartClusterCommand")
+@Service(name = "_gms-announce-after-start-cluster-command")
 @Supplemental(value = "start-cluster", on = Supplemental.Timing.After, ifFailure = FailurePolicy.Warn)
 @Scoped(PerLookup.class)
 public class GMSAnnounceAfterStartClusterCommand implements AdminCommand {

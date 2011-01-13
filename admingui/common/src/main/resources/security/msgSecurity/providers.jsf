@@ -53,17 +53,24 @@
         urlencode(value="#{pageSession.Name}" encoding="UTF-8" result="#{pageSession.encodedName}");
         urlencode(value="#{pageSession.configName}" encoding="UTF-8" result="#{pageSession.encodedConfigName}");
         setSessionAttribute(key="msgSecurityTabs" value="providers");
+
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/security-service/message-security-config/#{pageSession.Name}");
-        setPageSessionAttribute(key="rest-api" value="true");
         setPageSessionAttribute(key="childType" value="provider-config");
+
+        setPageSessionAttribute(key="rest-api" value="true");
+        
         gf.getChildList(parentEndpoint="#{pageSession.parentUrl}", childType="#{pageSession.childType}", id="providerId", result="#{requestScope.listOfRows}");
+
         addDefaultProviderInfo(providerList="#{requestScope.listOfRows}", configName="#{pageSession.configName}", msgSecurityName="#{pageSession.Name}");
+
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18nc.msg.JS.confirmDeleteMsgProviders}");
         setPageSessionAttribute(key="createLink" value="#{request.contextPath}/common/security/msgSecurity/providerNew.jsf?msgSecurityName=#{pageSession.encodedName}&configName=#{pageSession.encodedConfigName}");
         setPageSessionAttribute(key="listLink" value="#{request.contextPath}/common/security/msgSecurity/providers.jsf?name=#{pageSession.encodedName}&configName=#{pageSession.encodedConfigName}");
         setPageSessionAttribute(key="editLink" value="#{request.contextPath}/common/security/msgSecurity/providerEdit.jsf");
         setPageSessionAttribute(key="tableTitle" value="$resource{i18nc.msgSecProvider.TableTitle}");
         setPageSessionAttribute(key="deleteKey" value="providerId");
+        setPageSessionAttribute(key="disableNewButton" value="#{false}");
+
     />
     </event>
 
@@ -74,6 +81,8 @@
                  helpText="$resource{i18nc.msgSecProvider.ListPageHelp}" />
 		 
  <sun:propertySheet id="propertySheet">
+#include "/common/shared/configNameSection.inc"
+
      <sun:propertySheetSection id="propertySheetSection">
          <sun:property id="AuthLayerProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.msgSecurity.authLayerLabel}" >
              <sun:staticText escape="true" id="AuthLayer" text="#{pageSession.Name}" />
@@ -104,12 +113,12 @@
             />
     </sun:tableColumn>
 
-    <sun:tableColumn headerText="$resource{i18nc.msgSecProvider.colProvId}" sort="Name" rowHeader="$boolean{true}" id="col1">
+    <sun:tableColumn headerText="$resource{i18nc.msgSecProvider.colProvId}" sort="name" rowHeader="$boolean{true}" id="col1">
         <sun:hyperlink id="authlayer" text="#{td.value.name}"
             url="#{editLink}?name=#{td.value.name}&msgSecurityName=#{pageSession.Name}&configName=#{configName}" />
     </sun:tableColumn>
 
-    <sun:tableColumn headerText="$resource{i18nc.msgSecProvider.colProvType}" sort="ProviderType" rowHeader="$boolean{true}" id="col2">
+    <sun:tableColumn headerText="$resource{i18nc.msgSecProvider.colProvType}" sort="providerType" rowHeader="$boolean{true}" id="col2">
         <sun:staticText escape="true" id="provType" value="#{td.value.providerType}" />
     </sun:tableColumn>
 
@@ -117,7 +126,7 @@
         <sun:staticText escape="true" id="default" value="#{td.value.default}" />
     </sun:tableColumn>
 
-    <sun:tableColumn headerText="$resource{i18nc.msgSecProvider.colClassName}" sort="ClassName" rowHeader="$boolean{true}" id="col4">
+    <sun:tableColumn headerText="$resource{i18nc.msgSecProvider.colClassName}" sort="className" rowHeader="$boolean{true}" id="col4">
         <sun:staticText escape="true" id="defaultclientprov" value="#{td.value.className}" />
     </sun:tableColumn>
 

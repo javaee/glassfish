@@ -59,10 +59,16 @@
         
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
         setPageSessionAttribute(key="childType" value="jdbc-connection-pool");
-        setPageSessionAttribute(key="resourceUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.encodedName}");
+        gf.buildResourceUrl(base="#{pageSession.parentUrl}/#{pageSession.childType}", resourceName="#{pageSession.Name}", url="#{pageSession.resourceUrl}");
+
         setPageSessionAttribute(key="rest-api" value="true");
+        setPageSessionAttribute(key="poolGeneralAttrs" value={"name" "resType" "datasourceClassname"
+            "driverClassname" "ping" "description" "steadyPoolSize" "maxPoolSize" "poolResizeQuantity"
+            "idleTimeoutInSeconds" "maxWaitTimeInMillis" "nonTransactionalConnections"
+            "transactionIsolationLevel" "isIsolationLevelGuaranteed"});
 
         gf.getEntityAttrs(endpoint="#{pageSession.resourceUrl}.json", valueMap="#{pageSession.valueMap}");
+        gf.filterMap(map="#{pageSession.valueMap}" attrNames="#{pageSession.poolGeneralAttrs}" resultMap="#{pageSession.valueMap}");
 
         setPageSessionAttribute(key="type" value="#{valueMap.resType}");
         setPageSessionAttribute(key="convertToFalseList" value={"ping" "isConnectionValidationRequired" "failAllConnections" "allowNonComponentCallers" "nonTransactionalConnections" "isIsolationLevelGuaranteed"});
@@ -86,7 +92,7 @@
 #include "/common/shared/editPageLoadDefaultButton.inc"
                     <sun:button id="flush" text="$resource{i18njdbc.button.Flush}" primary="#{false}" >
                         <!command
-                            gf.createAttributeMap(keys={"id"} values={"$pageSession{encodedName}"} map="#{requestScope.attrMap}");
+                            gf.createAttributeMap(keys={"id"} values={"$pageSession{Name}"} map="#{requestScope.attrMap}");
                             gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/flush-connection-pool.json"
                                            attrs="#{requestScope.attrMap}"
                                            method="POST"
@@ -98,7 +104,7 @@
                     </sun:button>
                     <sun:button id="ping"  text="$resource{i18n.button.Ping}" primary="#{false}" >
                         <!command
-                            gf.createAttributeMap(keys={"id"} values={"$pageSession{encodedName}"} map="#{requestScope.attrMap}");
+                            gf.createAttributeMap(keys={"id"} values={"$pageSession{Name}"} map="#{requestScope.attrMap}");
                             gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/ping-connection-pool.json"
                                            attrs="#{requestScope.attrMap}"
                                            method="GET"

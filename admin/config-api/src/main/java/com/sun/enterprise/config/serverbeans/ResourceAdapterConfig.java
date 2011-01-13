@@ -54,6 +54,7 @@ import org.jvnet.hk2.config.types.Property;
 import org.jvnet.hk2.config.types.PropertyBag;
 import org.glassfish.api.admin.RestRedirects;
 import org.glassfish.api.admin.RestRedirect;
+import static org.glassfish.config.support.Constants.NAME_REGEX;
 
 import org.glassfish.quality.ToDo;
 
@@ -87,6 +88,7 @@ public interface ResourceAdapterConfig extends ConfigBeanProxy, Injectable, Reso
      *         {@link String }
      */
     @Attribute
+    @Pattern(regexp=NAME_REGEX)
     public String getName();
 
     /**
@@ -121,7 +123,7 @@ public interface ResourceAdapterConfig extends ConfigBeanProxy, Injectable, Reso
      *         {@link String }
      */
     @Attribute(key=true)
-    @Pattern(regexp="[^':,][^':,]*")
+    @Pattern(regexp="[^',][^',\\\\]*")
     public String getResourceAdapterName();
 
     /**

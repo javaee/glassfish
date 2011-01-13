@@ -59,8 +59,7 @@
         setPageSessionAttribute(key="rest-api" value="true");
         gf.getChildList(parentEndpoint="#{pageSession.parentUrl}", childType="#{pageSession.childType}", result="#{requestScope.listOfRows}");
         createMap(result="#{pageSession.valueMap}");
-        mapPut(map="#{pageSession.valueMap}" key="target" value="server");
-#include "/common/shared/targetsConfig.inc"
+        mapPut(map="#{pageSession.valueMap}" key="target" value="#{pageSession.configName}");
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n_web.msg.JS.confirmDeleteTransport}");
         setPageSessionAttribute(key="createLink" value="#{request.contextPath}/web/grizzly/transportNew.jsf?configName=#{configName}");
         setPageSessionAttribute(key="listLink" value="#{request.contextPath}/web/grizzly/transports.jsf?configName=#{configName}");
@@ -74,7 +73,7 @@
 #include "/common/shared/alertMsg.inc"
                  <sun:title id="propertyContentPage" title="$resource{i18n_web.transport.listPageTitle}"
                  helpText="$resource{i18n_web.transport.listPageTitleHelp}" />
-		 "<br /> <br />
+#include "/common/shared/configNameSection.inc"
 <sun:table id="configs" title="#{tableTitle}"
             deselectMultipleButton="$boolean{true}"
             deselectMultipleButtonOnClick="setTimeout('admingui.table.changeOneTableButton(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0)"
@@ -98,16 +97,16 @@
             />
     </sun:tableColumn>
 
-    <sun:tableColumn headerText="$resource{i18n_web.transport.nameCol}" sort="Name" rowHeader="$boolean{true}" id="col1">
+    <sun:tableColumn headerText="$resource{i18n_web.transport.nameCol}" sort="name" rowHeader="$boolean{true}" id="col1">
         <sun:hyperlink id="link" text="#{td.value.name}"  url="#{pageSession.editLink}&name=#{td.value.name}" />
     </sun:tableColumn>
 
-    <sun:tableColumn headerText="$resource{i18n_web.transport.classnameCol}" sort="Classname"  rowHeader="$boolean{true}" id="classname">
+    <sun:tableColumn headerText="$resource{i18n_web.transport.classnameCol}" sort="classname"  rowHeader="$boolean{true}" id="classname">
         <sun:staticText escape="true" id="classname" value="#{td.value.classname}" />
     </sun:tableColumn>
 
 
-    <sun:tableColumn headerText="$resource{i18n_web.transport.byteBufferTypeCol}" sort="ByteBufferType" rowHeader="$boolean{true}" id="byteType">
+    <sun:tableColumn headerText="$resource{i18n_web.transport.byteBufferTypeCol}" sort="byteBufferType" rowHeader="$boolean{true}" id="byteType">
         <sun:staticText escape="true" id="byteType" value="#{td.value.byteBufferType}" />
     </sun:tableColumn>
 

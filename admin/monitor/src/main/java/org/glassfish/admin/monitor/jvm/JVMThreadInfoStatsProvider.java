@@ -75,7 +75,7 @@ public class JVMThreadInfoStatsProvider {
             "LockName", "String",
                 "Returns the string representation of an object for which the thread associated with this ThreadInfo is blocked waiting" );
     private CountStatisticImpl lockOwnerId = new CountStatisticImpl(
-            "LockOwnerId", StatisticImpl.UNIT_COUNT,
+            "LockOwnerId", "String",
                 "Returns the ID of the thread which owns the object for which the thread associated with this ThreadInfo is blocked waiting" );
     private StringStatisticImpl lockOwnerName = new StringStatisticImpl(
             "LockOwnerName", "String",
@@ -84,7 +84,7 @@ public class JVMThreadInfoStatsProvider {
             "StackTrace", "String",
                 "Returns the stack trace of the thread associated with this ThreadInfo" );
     private CountStatisticImpl threadId = new CountStatisticImpl(
-            "ThreadId", StatisticImpl.UNIT_COUNT,
+            "ThreadId", "String",
                 "Returns the ID of the thread associated with this ThreadInfo" );
     private StringStatisticImpl threadName = new StringStatisticImpl(
             "ThreadName", "String",

@@ -58,6 +58,10 @@
         setPageSessionAttribute(key="showCancelButton" value="#{false}")
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/admin-service/jmx-connector/system");
         setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}");
+        setPageSessionAttribute(key="createSslUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/admin-service/jmx-connector/system/create-ssl");
+        createMap(result="#{pageSession.valueMap}");
+        mapPut(map="#{pageSession.valueMap}" key="target" value="#{pageSession.configName}");
+        mapPut(map="#{pageSession.valueMap}" key="certName" value=""); 
         setPageSessionAttribute(key="rest-api" value="true");
 #include "/common/shared/sslPrepare.inc"
       />
@@ -68,12 +72,10 @@
 #include "/common/shared/alertMsg.inc"
 
         <!-- Page Title -->
-        <sun:title id="propertyContentPage" title="$resource{i18n.edJmxConnector.sslSettingsLabel}" helpText="$resource{i18n.edJmxConnector.sslSettingsLabelHelp}">
+        <sun:title id="propertyContentPage" title="$resource{i18n.edJmxConnector.sslSettingsTitle}" helpText="$resource{i18n.edJmxConnector.sslSettingsTitleHelp}">
 #include "/common/shared/sslButtons.inc"
         </sun:title>
-        "<br><br>
 #include "/common/shared/sslAttrs.inc"
-
 	<sun:hidden id="helpKey" value="$resource{help_common.jmxSSLEdit}" />
 </sun:form>
 #include "/common/shared/changeButtonsJS.inc"

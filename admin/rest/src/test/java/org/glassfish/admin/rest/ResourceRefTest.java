@@ -61,7 +61,7 @@ public class ResourceRefTest extends RestTestBase {
         final String jdbcResourceName = "jdbc_" + generateRandomString();
         Map<String, String> newInstance = new HashMap<String, String>() {{
             put("id", instanceName);
-            put("node", "localhost");
+            put("node", "localhost-domain1");
         }};
         Map<String, String> jdbcResource = new HashMap<String, String>() {{
             put("id", jdbcResourceName);
@@ -83,7 +83,9 @@ public class ResourceRefTest extends RestTestBase {
             response = post(URL_RESOURCE_REF, resourceRef);
             assertTrue(isSuccess(response));
         } finally {
-            ClientResponse response = delete("/domain/servers/server/" + instanceName + "/resource-ref/" + jdbcResourceName, new HashMap<String, String>() {{ put("target", instanceName); }});
+            ClientResponse response = delete("/domain/servers/server/" + instanceName + "/resource-ref/" + jdbcResourceName, new HashMap<String, String>() {{ 
+                put("target", instanceName); 
+            }});
             assertTrue(isSuccess(response));
             response = get("/domain/servers/server/" + instanceName + "/resource-ref/" + jdbcResourceName);
             assertFalse(isSuccess(response));

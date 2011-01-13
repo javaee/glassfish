@@ -55,7 +55,11 @@
         </sun:property>
 
         <sun:property id="mapNameNew" rendered="#{!edit}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.connectorSecurityMap.securityMapName}" >
-            <sun:textField id="mapName"   styleClass="required" maxLength="#{sessionScope.fieldLengths['maxLength.connectorSecurityMap.securityMapName']}" text="#{pageSession.valueMap['id']}" required="#{true}"/>
+            <sun:textField id="mapName"   styleClass="required" maxLength="#{sessionScope.fieldLengths['maxLength.connectorSecurityMap.securityMapName']}" text="#{pageSession.valueMap['id']}" required="#{true}">
+                <!afterCreate
+                    getClientId(component="$this{component}" clientId=>$page{resCompId});
+                />
+            </sun:textField>
         </sun:property>
                 <sun:property id="groupProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njca.workSecurityMap.Group}">
 

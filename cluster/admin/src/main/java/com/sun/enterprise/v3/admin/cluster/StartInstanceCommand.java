@@ -144,7 +144,7 @@ public class StartInstanceCommand implements AdminCommand {
             return;
         }
 
-        noderef = instance.getNode();
+        noderef = instance.getNodeRef();
         if(!StringUtils.ok(noderef)) {
             msg = Strings.get("missingNodeRef", instanceName);
             logger.severe(msg);
@@ -154,7 +154,7 @@ public class StartInstanceCommand implements AdminCommand {
         
         node = nodes.getNode(noderef);
         if (node != null) {
-            nodedir = node.getNodeDir();
+            nodedir = node.getNodeDirAbsolute();
             nodeHost = node.getNodeHost();
         } else {
             msg = Strings.get("missingNode", noderef);

@@ -45,7 +45,8 @@
     setResourceBundle(key="i18nc" bundle="org.glassfish.web.admingui.Strings");
     setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.redeploy.pageTitle}" guiTemplateOnLoad="uploadInit();">
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.redeploy.pageTitle}"
+        guiTemplateOnLoad="admingui.deploy.uploadInit('#{dirPathId}','#{dirPathId}','#{dirSelectBtnId}','#{filSelectBtnId}','#{fileuploadId}');"  >
 <!define name="content">
 <f:verbatim>
     <script type="text/javascript">

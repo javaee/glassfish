@@ -47,6 +47,8 @@ import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Map;
 import javax.security.auth.Subject;
 import javax.security.auth.callback.Callback;
@@ -63,7 +65,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.glassfish.admingui.common.util.RestResponse;
-
+import org.jvnet.hk2.component.Habitat;
+import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.security.SecurityServicesUtil;
+import org.glassfish.admingui.common.util.RestUtil;
 
 /**
  *  <p>	This class is responsible for providing the Authentication support
@@ -71,6 +76,31 @@ import org.glassfish.admingui.common.util.RestResponse;
  *	as well as invoke REST requests.</p>
  */
 public class AdminConsoleAuthModule implements ServerAuthModule {
+    public static final String TOKEN_ADMIN_LISTENER_PORT = "${ADMIN_LISTENER_PORT}";
+    private CallbackHandler handler = null;
+    private String restURL = null;
+    private String loginPage = null;
+    private String loginErrorPage = null;
+    private static final Class [] SUPPORTED_MESSAGE_TYPES = new Class[] { HttpServletRequest.class, HttpServletResponse.class };
+    private static final String SAVED_SUBJECT = "Saved_Subject";
+    private static final String USER_NAME = "userName";
+    private static final String RESPONSE_TYPE = "application/json";
+
+    /**
+     *	The Session key for the REST Server Name.
+     */
+    public static final String REST_SERVER_NAME = "serverName";
+
+    /**
+     *	The Session key for the REST Server Port.
+     */
+    public static final String REST_SERVER_PORT = "serverPort";
+
+    /**
+     *	The Session key for the REST authentication token.
+     */
+    public static final String REST_TOKEN = "__rTkn__";
+    
 
     /**
      *	<p> This method configures this AuthModule and makes sure all the
@@ -98,6 +128,12 @@ public class AdminConsoleAuthModule implements ServerAuthModule {
 		    + "must be supplied as a property in the provider-config "
 		    + "in the domain.xml file!");
 	    }
+            if (restURL.contains(TOKEN_ADMIN_LISTENER_PORT)) {
+                Habitat habitat = SecurityServicesUtil.getInstance().getHabitat();
+                Domain domain = habitat.getComponent(Domain.class);
+                String port = domain.getServerNamed("server").getConfig().getNetworkConfig().getNetworkListener("admin-listener").getPort();
+                restURL = restURL.replace(TOKEN_ADMIN_LISTENER_PORT, port);
+            }
 	}
     }
 
@@ -157,7 +193,8 @@ public class AdminConsoleAuthModule implements ServerAuthModule {
 	    // Not passed in, show the login page...
 	    RequestDispatcher rd = request.getRequestDispatcher(loginPage);
 	    try {
-		rd.forward(request, response);
+                 RestUtil.initialize(null);
+		 rd.forward(request, response);
 	    } catch (Exception ex) {
 		AuthException ae = new AuthException();
 		ae.initCause(ex);
@@ -173,7 +210,10 @@ public class AdminConsoleAuthModule implements ServerAuthModule {
 //	    new PasswordValidationCallback(clientSubject, username, pwd);
 
 	// Make REST Request
-	WebResource webResource = Client.create().resource(restURL);
+
+        Client client2 = Client.create();
+        RestUtil.initialize(client2);
+	WebResource webResource = client2.resource(restURL);
 	webResource.addFilter(new HTTPBasicAuthFilter(username, password));
 	ClientResponse resp = webResource.accept(RESPONSE_TYPE).post(ClientResponse.class);
 	RestResponse restResp = RestResponse.getRestResponse(resp);
@@ -190,6 +230,19 @@ public class AdminConsoleAuthModule implements ServerAuthModule {
 		ae.initCause(ex);
 		throw ae;
 	    }
+
+            // recreate the session
+            Map<String, Object> map = new HashMap<String, Object>();
+            Enumeration<String> names = session.getAttributeNames();
+            while (names.hasMoreElements()) {
+                String key = names.nextElement();
+                map.put(key, session.getAttribute(key));
+            }
+            session.invalidate();
+            session = request.getSession(true);
+            for (String key : map.keySet()) {
+                session.setAttribute(key, map.get(key));
+            }
 
 	    if (session != null) {
 		// Get the "extraProperties" section of the response...
@@ -259,28 +312,4 @@ public class AdminConsoleAuthModule implements ServerAuthModule {
 	return Boolean.valueOf((String)messageInfo.getMap().get(
 	    "javax.security.auth.message.MessagePolicy.isMandatory"));
     }
-
-    private CallbackHandler handler = null;
-    private String restURL = null;
-    private String loginPage = null;
-    private String loginErrorPage = null;
-    private static final Class [] SUPPORTED_MESSAGE_TYPES = new Class[] { HttpServletRequest.class, HttpServletResponse.class };
-    private static final String SAVED_SUBJECT = "Saved_Subject";
-    private static final String USER_NAME = "userName";
-    private static final String RESPONSE_TYPE = "application/json";
-
-    /**
-     *	The Session key for the REST Server Name.
-     */
-    public static final String REST_SERVER_NAME = "serverName";
-
-    /**
-     *	The Session key for the REST Server Port.
-     */
-    public static final String REST_SERVER_PORT = "serverPort";
-
-    /**
-     *	The Session key for the REST authentication token.
-     */
-    public static final String REST_TOKEN = "__rTkn__";
 }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,12 +44,15 @@ import com.sun.enterprise.config.serverbeans.customvalidators.NotTargetKeyword;
 import com.sun.enterprise.config.serverbeans.customvalidators.NotDuplicateTargetName;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.net.NetUtils;
+import com.sun.enterprise.util.io.FileUtils;
+import com.sun.enterprise.util.StringUtils;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.config.support.*;
+import static org.glassfish.config.support.Constants.*;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -60,7 +63,9 @@ import org.jvnet.hk2.component.Injectable;
 import org.glassfish.api.admin.config.Named;
 import org.glassfish.api.admin.config.ReferenceContainer;
 
+import javax.validation.Payload;
 import java.beans.PropertyVetoException;
+import java.io.File;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -73,8 +78,8 @@ import javax.validation.constraints.Pattern;
  */
 @Configured
 @SuppressWarnings("unused")
-@NotDuplicateTargetName
-public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceContainer, RefContainer {
+@NotDuplicateTargetName(message="{node.duplicate.name}", payload=Node.class)
+public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceContainer, RefContainer, Payload {
 
     /**
      * Sets the node name
@@ -85,13 +90,12 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
     @Override
     public void setName(String value) throws PropertyVetoException;
 
-    @NotTargetKeyword
-    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*",
-             message="Invalid node name. Name must start with a letter or number and may contain only letters, numbers, and certain other characters.")
+    @NotTargetKeyword(message="{node.reserved.name}", payload=Node.class)
+    @Pattern(regexp=NAME_SERVER_REGEX, message="{node.invalid.name}", payload=Node.class)
     @Override
     public String getName();
 
-    /**
+    /**                                                                      
      * points to the parent directory of the node(s) directory.
      *
      * @return path location of node-dir
@@ -116,7 +120,7 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
      */
 
     @Attribute
-    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")                        
+    @Pattern(regexp=NAME_REGEX, message="{nodehost.invalid.name}", payload=Node.class)
     String getNodeHost();
 
     /**
@@ -187,6 +191,32 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
     String getNodeDirUnixStyle();
 
     /**
+     * Returns the node dir as an absolute path. If the node dir path
+     * in the Node element is relative this will make it absolute relative
+     * to the node's installdir.
+     * @return the node's nodedir as an absolute path. Null if no nodedir.
+     */
+    @DuckTyped
+    String getNodeDirAbsolute();
+
+    @DuckTyped
+    String getNodeDirAbsoluteUnixStyle();
+
+    /**
+     * Is a node being used by any server instance?
+     * @return true if node is referenced by any server instance, else false.
+     */
+    @DuckTyped
+    boolean nodeInUse();
+
+    /**
+     * True if this is the default local node. Example: localhost-domain1
+     * @return
+     */
+    @DuckTyped
+    boolean isDefaultLocalNode();
+
+    /**
      * True if the node's nodeHost is local to this
      * @return
      */
@@ -209,16 +239,67 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
             return nodeDir.replaceAll("\\\\","/");
         }
 
+        public static String getNodeDirAbsolute(Node node) {
+            // If nodedir is relative make it absolute relative to installRoot
+            String nodeDir= node.getNodeDir();
+            if (nodeDir == null || nodeDir.length() == 0)
+               return null;
+            File nodeDirFile = new File(nodeDir);
+            if (nodeDirFile.isAbsolute()) {
+                return nodeDir;
+            }
+            // node-dir is relative. Make it absolute. We root it under the
+            // GlassFish root install directory.
+            String installDir= node.getInstallDir();
+            File installRootFile = new File(installDir, "glassfish");
+            File absoluteNodeDirFile = new File(installRootFile, nodeDir);
+            return absoluteNodeDirFile.getPath();
+        }
+
+        public static String getNodeDirAbsoluteUnixStyle(Node node) {
+            String nodeDirAbsolute = getNodeDirAbsolute(node);
+            if (nodeDirAbsolute == null)
+               return null;
+            return nodeDirAbsolute.replaceAll("\\\\","/");
+        }
+
+        public static boolean isDefaultLocalNode(Node node) {
+            Dom serverDom = Dom.unwrap(node);
+            Domain domain = serverDom.getHabitat().getComponent(Domain.class);
+            if (node.getName().equals("localhost-" + domain.getName())) {
+                return true;
+            }
+            return false;
+        }
+
         public static boolean isLocal(Node node) {
             // Short circuit common case for efficiency
-            if (node.getName().equals("localhost")) {
+            Dom serverDom = Dom.unwrap(node);
+            Domain domain = serverDom.getHabitat().getComponent(Domain.class);
+            if (node.getName().equals("localhost-" + domain.getName())) {
                 return true;
             }
             String nodeHost = node.getNodeHost();
             if (nodeHost == null || nodeHost.length() == 0) {
                 return false;
             }
-            return NetUtils.IsThisHostLocal(nodeHost);
+            return NetUtils.isThisHostLocal(nodeHost);
+        }
+
+        public static boolean nodeInUse(Node node) {
+            //check if node is referenced by an instance
+            String nodeName = node.getName();
+            Dom serverDom = Dom.unwrap(node);
+            Servers servers = serverDom.getHabitat().getComponent(Servers.class);
+            List<Server> serverList=servers.getServer();
+            if (serverList != null) {
+                for (Server server : serverList){
+                    if (nodeName.equals(server.getNodeRef())){
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
     }
     
@@ -280,32 +361,37 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
         @Override
         public void decorate(AdminCommandContext context, final Node instance) throws TransactionFailure, PropertyVetoException {
 
-            if (nodedir != null && nodedir !="")
-                instance.setNodeDir(nodedir);
-            if(installdir != null && installdir != "")
-                instance.setInstallDir(installdir);
-            if (nodehost != null && nodehost !="")
-                instance.setNodeHost(nodehost);
+            // If these options were passed a value of the empty string then
+            // we want to make sure they are null in the Node. The
+            // admin console often passes the empty string instead of null.
+            // See bug 14873
+            if ( !StringUtils.ok(nodedir))
+                instance.setNodeDir(null);
+            if ( !StringUtils.ok(installdir))
+                instance.setInstallDir(null);
+            if  (!StringUtils.ok(nodehost))
+                instance.setNodeHost(null);
+
             //only create-node-ssh and update-node-ssh should be changing the type to SSH
             instance.setType(type);
             
             SshConnector sshC = instance.createChild(SshConnector.class);
-            if (sshPort != "-1" && sshPort != "" )
+            if (StringUtils.ok(sshPort) && ! sshPort.equals("-1") )
                 sshC.setSshPort(sshPort);
 
-            if (sshHost != null && sshHost != "")
+            if (StringUtils.ok(sshHost))
                 sshC.setSshHost(sshHost);
 
             if (sshuser != null || sshkeyfile != null || sshpassword != null ||
                 sshkeypassphrase != null) {
                 SshAuth sshA = sshC.createChild(SshAuth.class);
-                if (sshuser != null && sshuser != "")
+                if (StringUtils.ok(sshuser))
                     sshA.setUserName(sshuser);
-                if (sshkeyfile != null && sshkeyfile != "")
+                if (StringUtils.ok(sshkeyfile))
                     sshA.setKeyfile(sshkeyfile);
-                if (sshpassword != null && sshpassword != "")
+                if (StringUtils.ok(sshpassword))
                     sshA.setPassword(sshpassword);
-                if (sshkeypassphrase != null && sshkeypassphrase != "")
+                if (StringUtils.ok(sshkeypassphrase))
                     sshA.setKeyPassphrase(sshkeypassphrase);
                 sshC.setSshAuth(sshA);
             }
@@ -337,40 +423,39 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
             final ActionReport report = context.getActionReport();
             String nodeName = child.getName();
             
-            if (nodeName.equals("localhost"))  { // can't delete localhost node
+            if (nodeName.equals("localhost-" + domain.getName()))  { // can't delete localhost node
                 final String msg = localStrings.getLocalString(
                  "Node.localhost",
                  "Cannot remove Node {0}. ",child.getName() );
                 
                  logger.log(Level.SEVERE, msg);
-                throw new TransactionFailure(msg);            }
+                throw new TransactionFailure(msg);
+            }
+
 
             List<Node> nodeList = nodes.getNode();
-            List<Server> serverList=servers.getServer();
-            //check if node is referenced in an instance
-            String instanceName = null;
-            if (serverList.size() > 0) {
-                for (Server server: serverList){
-                    if (nodeName.equals(server.getNode())){
-                        if (instanceName == null)
-                            instanceName = new String();
-                        instanceName = instanceName.concat(server.getName()+ ", ");
-                    }
-                }
-                if (instanceName != null) {
-                    final String msg = localStrings.getLocalString(
-                            "Node.referencedByInstance",
-                            "Node {0} referenced in server instance(s): {1}.  Remove instances before removing node."
-                            ,child.getName() ,instanceName );
-                            logger.log(Level.SEVERE, msg);
-                            throw new TransactionFailure(msg);
+
+            // See if any servers are using this node
+            List<Server> serversOnNode = servers.getServersOnNode(child);
+            int n = 0;
+            if (serversOnNode != null && serversOnNode.size() > 0) {
+                StringBuilder sb = new StringBuilder();
+                for (Server server : serversOnNode) {
+                    if (n > 0)
+                        sb.append(", ");
+                    sb.append(server.getName());
+                    n++;
                 }
 
+                final String msg = localStrings.getLocalString(
+                            "Node.referencedByInstance",
+                            "Node {0} referenced in server instance(s): {1}.  Remove instances before removing node."
+                            , child.getName(), sb.toString() );
+                            logger.log(Level.SEVERE, msg);
+                            throw new TransactionFailure(msg);
             }
 
             nodeList.remove(child);
-
         }
     }
-
 }

@@ -40,34 +40,20 @@
 
 package com.sun.enterprise.v3.admin.cluster;
 
-import java.util.Iterator;
-import java.util.Collection;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import com.sun.enterprise.admin.remote.RemoteAdminCommand;
-import com.sun.enterprise.config.serverbeans.*;
-import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.enterprise.module.Module;
-import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.v3.admin.StopServer;
 import org.glassfish.api.Async;
-import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.ExecuteOn;
-import org.glassfish.api.admin.CommandException;
 import org.glassfish.api.admin.CommandLock;
-import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.ServerEnvironment;
-import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PerLookup;
 
 /**
@@ -91,9 +77,9 @@ public class StopInstanceInstanceCommand extends StopServer implements AdminComm
     @Inject
     private ServerEnvironment env;
     @Inject
-    private ModulesRegistry registry;
+    private Habitat habitat;
     @Param(optional = true, defaultValue = "true")
-    private Boolean force;
+    private Boolean force = true;
 
     public void execute(AdminCommandContext context) {
 
@@ -105,6 +91,6 @@ public class StopInstanceInstanceCommand extends StopServer implements AdminComm
             return;
         }
 
-        doExecute(registry, context.getLogger(), force);
+        doExecute(habitat, env, context.getLogger(), force);
     }
 }

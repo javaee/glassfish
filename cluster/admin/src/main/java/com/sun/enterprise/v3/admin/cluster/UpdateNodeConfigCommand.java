@@ -100,7 +100,15 @@ public class UpdateNodeConfigCommand implements AdminCommand  {
         // Make sure Node is valid
         node = nodes.getNode(name);
         if (node == null) {
-            String m = Strings.get("noSuchNode", node);
+            String m = Strings.get("noSuchNode", name);
+            logger.warning(m);
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage(m);
+            return;
+        }
+
+        if (node.isDefaultLocalNode()) {
+            String m = Strings.get("update.node.config.defaultnode", name);
             logger.warning(m);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setMessage(m);
@@ -120,13 +128,13 @@ public class UpdateNodeConfigCommand implements AdminCommand  {
         ParameterMap map = new ParameterMap();
         map.add("DEFAULT", name);
 
-        if (StringUtils.ok(installdir)) {
+        if (installdir != null) {
             map.add(NodeUtils.PARAM_INSTALLDIR, installdir);
         }
-        if (StringUtils.ok(nodehost)) {
+        if (nodehost != null) {
             map.add(NodeUtils.PARAM_NODEHOST, nodehost);
         }
-        if (StringUtils.ok(nodedir)) {
+        if (nodedir != null) {
             map.add(NodeUtils.PARAM_NODEDIR, nodedir);
         }
 

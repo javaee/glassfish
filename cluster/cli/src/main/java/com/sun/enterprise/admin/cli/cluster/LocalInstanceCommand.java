@@ -90,7 +90,6 @@ import com.sun.enterprise.util.io.ServerDirs;
 // ----------------   public methods here   --------------- --------------
 // -----------------------------------------------------------------------
 public abstract class LocalInstanceCommand extends LocalServerCommand {
-
     @Param(name = "nodedir", optional = true, alias = "agentdir")
     protected String nodeDir;           // nodeDirRoot
     @Param(name = "node", optional = true, alias = "nodeagent")
@@ -101,7 +100,14 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
     protected File nodeDirRoot;         // the parent dir of all node(s)
     protected File nodeDirChild;        // the specific node dir
     protected File instanceDir;         // the specific instance dir
+    protected String domainName;
+    protected boolean isCreateInstanceFilesystem = false;
     private InstanceDirs instanceDirs;
+
+    // This is especially used for change-master-password command for a node.
+    // We iterate through all the instances and so it should relax this requirement,
+    // that there is only 1 instance in a node.
+    protected boolean checkOneAndOnly = true;
 
     @Override
     protected void validate()
@@ -147,6 +153,12 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
         nodeDirRoot = new File(nodeDirRootPath);
         mkdirs(nodeDirRoot);
 
+        if (ok(nodeDir)) {
+            // Ensure later uses of nodeDir get an absolute path
+            // See bug 15014
+            nodeDir = FileUtils.safeGetCanonicalPath(nodeDirRoot);
+        }
+
         if (!isDirectory(nodeDirRoot)) {
             throw new CommandException(
                     Strings.get("Instance.badNodeDir", nodeDirRoot));
@@ -187,7 +199,7 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
         catch (IOException e) {
             throw new CommandException(e);
         }
-
+        
         logger.finer("nodeDirChild: " + nodeDirChild);
         logger.finer("instanceDir: " + instanceDir);
     }
@@ -203,59 +215,96 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
      * Set the programOpts based on the das.properties file.
      */
     protected final void setDasDefaults(File propfile) throws CommandException {
+        Properties dasprops = getDasProperties(propfile);
+
+        // read properties and set them in programOpts
+        // properties are:
+        // agent.das.port
+        // agent.das.host
+        // agent.das.isSecure
+        // agent.das.user           XXX - not in v2?
+        String p;
+        p = dasprops.getProperty("agent.das.host");
+        if (p != null) {
+            programOpts.setHost(p);
+        }
+        p = dasprops.getProperty("agent.das.port");
+        int port = -1;
+        if (p != null) {
+            port = Integer.parseInt(p);
+        }
+        p = dasprops.getProperty("agent.das.protocol");
+        if (p != null && p.equals("rmi_jrmp")) {
+            programOpts.setPort(updateDasPort(dasprops, port, propfile));
+        } else if (p == null || p.equals("http")) {
+            programOpts.setPort(port);
+        } else {
+            throw new CommandException(Strings.get("Instance.badProtocol",
+                    propfile.toString(), p));
+        }
+        p = dasprops.getProperty("agent.das.isSecure");
+        if (p != null) {
+            programOpts.setSecure(Boolean.parseBoolean(p));
+        }
+        p = dasprops.getProperty("agent.das.user");
+        if (p != null) {
+            programOpts.setUser(p);
+        }
+        // XXX - what about the DAS admin password?
+    }
+
+    /**
+     * Checks if programOpts values match das.properties file.
+     */
+    protected final void validateDasOptions(String hostOption, String portOption,
+            String isSecureOption, File propfile) throws CommandException {
+        if (propfile != null) {
+            Properties dasprops = getDasProperties(propfile);
+            if (!dasprops.isEmpty()) {
+                String errorMsg = "";
+                String nodeName = nodeDirChild != null ? nodeDirChild.getName() : "";
+                String hostProp = dasprops.getProperty("agent.das.host");
+                String portProp = dasprops.getProperty("agent.das.port");
+                String secureProp = dasprops.getProperty("agent.das.isSecure");
+                if (hostProp != null && !hostProp.equals(hostOption)) {
+                    errorMsg = errorMsg + Strings.get("Instance.DasHostInvalid", hostOption, nodeName) + "\n";
+                }
+                if (portProp != null && !portProp.equals(portOption)) {
+                    errorMsg = errorMsg + Strings.get("Instance.DasPortInvalid", portOption, nodeName) + "\n";
+                }
+                if (secureProp != null && !secureProp.equals(isSecureOption)) {
+                    errorMsg = errorMsg + Strings.get("Instance.DasIsSecureInvalid", isSecureOption, nodeName) + "\n";
+                }
+                if (!errorMsg.isEmpty()) {
+                    errorMsg = errorMsg + Strings.get("Instance.DasConfig", nodeName, hostProp, portProp, secureProp);
+                    throw new CommandException(errorMsg);
+                }
+            }
+        }
+    }
+
+    final protected Properties getDasProperties(File propfile) throws CommandException {
         Properties dasprops = new Properties();
         FileInputStream fis = null;
         try {
-            // read properties and set them in programOpts
-            // properties are:
-            // agent.das.port
-            // agent.das.host
-            // agent.das.isSecure
-            // agent.das.user           XXX - not in v2?
             fis = new FileInputStream(propfile);
             dasprops.load(fis);
             fis.close();
             fis = null;
-            String p;
-            p = dasprops.getProperty("agent.das.host");
-            if (p != null)
-                programOpts.setHost(p);
-            p = dasprops.getProperty("agent.das.port");
-            int port = -1;
-            if (p != null)
-                port = Integer.parseInt(p);
-            p = dasprops.getProperty("agent.das.protocol");
-            if (p != null && p.equals("rmi_jrmp")) {
-                programOpts.setPort(updateDasPort(dasprops, port, propfile));
-            }
-            else if (p == null || p.equals("http"))
-                programOpts.setPort(port);
-            else
-                throw new CommandException(Strings.get("Instance.badProtocol",
-                        propfile.toString(), p));
-            p = dasprops.getProperty("agent.das.isSecure");
-            if (p != null)
-                programOpts.setSecure(Boolean.parseBoolean(p));
-            p = dasprops.getProperty("agent.das.user");
-            if (p != null)
-                programOpts.setUser(p);
-            // XXX - what about the DAS admin password?
-        }
-        catch (IOException ioex) {
+        } catch (IOException ioex) {
             throw new CommandException(
                     Strings.get("Instance.cantReadDasProperties",
                     propfile.getPath()));
-        }
-        finally {
+        } finally {
             if (fis != null) {
                 try {
                     fis.close();
-                }
-                catch (IOException cex) {
+                } catch (IOException cex) {
                     // ignore it
                 }
             }
         }
+        return dasprops;
     }
 
     final protected void whackFilesystem() throws CommandException {
@@ -292,12 +341,21 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
             FileUtils.whack(tmpwhackee);
         }
         catch (IOException ioe) {
-            throw new CommandException(Strings.get("DeleteInstance.badWhack",
-                    whackee));
+            throw new CommandException(Strings.get("DeleteInstance.badWhackWithException",
+                    whackee, ioe, StringUtils.getStackTrace(ioe)));
         }
-        if (whackee.isDirectory())
+        if (whackee.isDirectory()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("whackee=").append(whackee.toString());
+            sb.append(", files in parent:");
+            files = parent.listFiles();
+            for (File f : files)
+                sb.append(f.toString()).append(", ");
+            File f1 = new File(whackee.toString());
+            sb.append(", new wackee.exists=").append(f1.exists());
             throw new CommandException(Strings.get("DeleteInstance.badWhack",
-                    whackee));
+                    whackee) + ", " + sb.toString());
+        }
 
         // now see if the parent dir is empty.  If so wipe it out.
         // Don't be too picky with throwin errors here...
@@ -451,7 +509,6 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
         // or there can be zero in which case we create one-and-only
 
         File[] files = parent.listFiles(new FileFilter() {
-
             public boolean accept(File f) {
                 return isDirectory(f);
             }
@@ -470,25 +527,31 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
         /*
          * If there is no existing node dir child -- create one!
          * If the instance is on the same machine as DAS, use "localhost" as the node dir child
+         * Only for _create-instance-filesystem
          */
-        try {
-            String dashost = null;
-            if (programOpts != null) {
-                dashost = programOpts.getHost();
-            }
-            String hostname = InetAddress.getLocalHost().getHostName();
-            if (hostname.equals(dashost) || "localhost".equals(dashost) || NetUtils.IsThisHostLocal(dashost)) {
-                hostname = "localhost";
-            }
-            File f = new File(parent, hostname);
+        if (isCreateInstanceFilesystem) {
+            try {
+                String dashost = null;
+                if (programOpts != null) {
+                    dashost = programOpts.getHost();
+                }
+                String hostname = InetAddress.getLocalHost().getHostName();
+                if (hostname.equals(dashost) || NetUtils.isThisHostLocal(dashost)) {
+                    hostname = "localhost" + "-" + domainName;
+                }
+                File f = new File(parent, hostname);
 
-            if (!mkdirs(f) || !isDirectory(f)) // for instance there is a regular file with that name
-                throw new CommandException(Strings.get("cantCreateNodeDirChild", f));
+                if (!mkdirs(f) || !isDirectory(f)) // for instance there is a regular file with that name
+                {
+                    throw new CommandException(Strings.get("cantCreateNodeDirChild", f));
+                }
 
-            return f;
-        }
-        catch (UnknownHostException ex) {
-            throw new CommandException(Strings.get("cantGetHostName", ex));
+                return f;
+            } catch (UnknownHostException ex) {
+                throw new CommandException(Strings.get("cantGetHostName", ex));
+            }
+        } else {
+            throw new CommandException(Strings.get("DeleteInstance.noInstance"));
         }
     }
 
@@ -496,7 +559,6 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
         // look for subdirs in the parent dir -- there must be one and only one
 
         File[] files = parent.listFiles(new FileFilter() {
-
             public boolean accept(File f) {
                 return isDirectory(f);
             }
@@ -508,7 +570,7 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
         }
 
         // expect two - the "agent" directory and the instance directory
-        if (files.length > 2) {
+        if (files.length > 2 && checkOneAndOnly) {
             throw new CommandException(
                     Strings.get("Instance.tooManyInstanceDirs", parent));
         }

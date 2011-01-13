@@ -51,9 +51,16 @@ import static com.sun.enterprise.admin.servermgmt.services.Constants.*;
  * @author bnevins
  */
 public abstract class ServiceAdapter implements Service {
-
     ServiceAdapter(ServerDirs serverDirs, AppserverServiceType type) {
         info = new PlatformServicesInfo(serverDirs, type);
+    }
+
+    @Override
+    public final void deleteService() {
+        info.validate();
+        initialize();
+        initializeInternal();
+        deleteServiceInternal();
     }
 
     @Override
@@ -108,8 +115,11 @@ public abstract class ServiceAdapter implements Service {
         getTokenMap().put(FQSN_TN, info.fqsn);
         getTokenMap().put(OS_USER_TN, info.osUser);
 
-        if (OS.isWindowsForSure()) // Windows doesn't respond well to slashes in the name!!
+        if (OS.isWindowsForSure() && !LINUX_HACK) {
+            // Windows doesn't respond well to slashes in the name!!
             getTokenMap().put(SERVICE_NAME_TN, info.serviceName);
+            getTokenMap().put(ENTITY_NAME_TN, serverName);
+        }
         else
             getTokenMap().put(SERVICE_NAME_TN, info.smfFullServiceName);
 
@@ -144,6 +154,11 @@ public abstract class ServiceAdapter implements Service {
     void trace(String s) {
         if (info.trace)
             System.out.println(TRACE_PREPEND + s);
+    }
+
+    void dryRun(String s) {
+        if (info.dryRun)
+            System.out.println(DRYRUN_PREPEND + s);
     }
 
     final Map<String, String> getTokenMap() {

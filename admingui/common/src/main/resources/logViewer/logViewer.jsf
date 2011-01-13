@@ -51,7 +51,7 @@
 
 <sun:page id="page1">
 <ui:event type="beforeCreate">
-    setPageSessionAttribute(key="instanceName" value="server");
+    <!-- setPageSessionAttribute(key="instanceName" value="server"); -->
     getRequestValue(key="instanceName" value=>$attribute{instanceName});
 <!-- This just gets the Log File Directory... get via REST, remove this handler -->
     getRequestValue(key="logFile" value=>$attribute{reqLogFile});
@@ -137,6 +137,9 @@
 	LastRecord="#{lastRecord}",
 	First=>$page{first},
 	Last=>$page{last});
+
+        setAttribute(key="hasRecords" value="#{requestScope.queryResult.data.records.size() > 0}" );
+
 </ui:event>
 <sun:html id="html2">
 <sun:head id="propertyhead" title="$resource{i18nc.logViewer.PageTitle}" debug="false" parseOnLoad="false">
@@ -156,7 +159,7 @@
 		    setAttribute(key="hasResults" value="true" );
 		</ui:event>
 	    </sun:button>
-	    <sun:button id="closeButton" text="$resource{i18n.button.Close}" onClick="javascript: window.close();" >
+	    <sun:button id="closeButton" text="$resource{i18n.button.Close}" onClick="javascript: window.close(); return false;" >
 		<ui:event type="command">
 		    setSessionAttribute(key="showAdvanced" value="false" );
 		</ui:event>
@@ -171,7 +174,7 @@
 		    setAttribute(key="hasResults" value="true" );
 		 </ui:event>
 	    </sun:button>
-	    <sun:button id="closeButtonBottom" text="$resource{i18n.button.Close}" onClick="javascript: window.close();" >
+	    <sun:button id="closeButtonBottom" text="$resource{i18n.button.Close}" onClick="javascript: window.close(); return false;" >
 		<ui:event type="command">
 		    setSessionAttribute(key="showAdvanced" value="false" );
 		</ui:event>
@@ -335,7 +338,7 @@
 </sun:title>
 "<a name="#options"></a>&nbsp;&nbsp;
 <sun:hyperlink rendered="#{hasResults}" url="#thetop" name="thebottom"><sun:staticText text="$resource{i18nc.logViewer.modifySearch}" /></sun:hyperlink>
-<!-- appServer/propertyTable.inc -->
+
 <sun:propertySheet id="propertySheetLogResults">
     <sun:propertySheetSection id="propertSectionLogResults">
 	<sun:property id="instanceProp" labelAlign="left" noWrap="true" overlapLabel="false" label="$resource{i18nc.logViewer.instanceLabel}">
@@ -374,17 +377,34 @@
 	    <ui:event type="afterCreate">
 		getClientId(component="$this{component}" clientId=>$page{topActionGroup});
 	    </ui:event>
-	    <sun:button id="button1" rendered="#{hasResults}" text="$resource{i18nc.logViewer.RecordsBefore, #{first}}" disabled="false">
-	    <ui:event type="command">
-		setAttribute(key="afterRecord" value="false");
-		setAttribute(key="fromRecord" value="#{first}");
-		gf.navigate(page="#{request.contextPath}/common/logViewer/logViewer.jsf");
-	    </ui:event>
+	    <sun:button id="button1" rendered="#{showButton1}" text="#{button1Text}" disabled="false">
+                <ui:event type="beforeCreate">
+                    setAttribute(key="showButton1", value="#{hasResults}");
+                    setAttribute(key="button1Text", value="$resource{i18nc.logViewer.RecordsBefore, #{first}}");
+                    if (#{hasRecords}=false) {
+                        setAttribute(key="button1Text", value="$resource{i18nc.logViewer.Prev}");
+                    }
+                    if (#{first}=0) {
+                        setAttribute(key="showButton1", value="#{false}");
+                    }
+                </ui:event>
+                <ui:event type="command">
+                    setAttribute(key="afterRecord" value="false");
+                    setAttribute(key="fromRecord" value="#{first}");
+                    gf.navigate(page="#{request.contextPath}/common/logViewer/logViewer.jsf");
+                </ui:event>
 	    </sun:button>
 	    "&nbsp;&nbsp;&nbsp;
-	    <staticText id="recNumCol" rendered="#{hasResults}" value="$resource{i18nc.logViewer.PaginationText, #{first}, #{last}}"/>
+	    <staticText id="recNumCol" rendered="#{hasRecords}" value="$resource{i18nc.logViewer.PaginationText, #{first}, #{last}}"/>
+	    <staticText id="recNumCol2" rendered="#{!hasRecords}" value="$resource{i18nc.logViewer.NoRecordsFound}"/>
 	    "&nbsp;&nbsp;&nbsp;
-	    <sun:button id="button2" rendered="#{hasResults}" text="$resource{i18nc.logViewer.RecordsAfter, #{last}}" disabled="false">
+	    <sun:button id="button2" rendered="#{hasResults}" text="#{button2Text}" disabled="false">
+                <ui:event type="beforeCreate">
+                    setAttribute(key="button2Text", value="$resource{i18nc.logViewer.RecordsAfter, #{last}}");
+                    if (#{hasRecords}=false) {
+                        setAttribute(key="button2Text", value="$resource{i18nc.logViewer.Next}");
+                    }
+                </ui:event>
 	    <ui:event type="command">
 		setAttribute(key="afterRecord" value="true");
 		setAttribute(key="fromRecord" value="#{last}");

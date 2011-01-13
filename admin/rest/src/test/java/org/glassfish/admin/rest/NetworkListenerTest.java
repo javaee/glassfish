@@ -40,6 +40,7 @@
 
 package org.glassfish.admin.rest;
 
+import org.codehaus.jettison.json.JSONObject;
 import java.util.Map;
 import com.sun.jersey.api.client.ClientResponse;
 import java.util.HashMap;
@@ -107,16 +108,17 @@ public class NetworkListenerTest extends RestTestBase {
 
 
 //        asadmin set configs.config.server-config.network-config.network-listeners.network-listener.http-listener-1.protocol=pu-protocol
-            response = post("/domain/set", new HashMap<String, String>() {{
-                put("configs.config.server-config.network-config.network-listeners.network-listener.http-listener-1.protocol", portUniProtocolName);
+            response = post("/domain/configs/config/server-config/network-config/network-listeners/network-listener/http-listener-1", new HashMap<String, String>() {{
+                put("protocol", portUniProtocolName);
             }});
             checkStatusForSuccess(response);
 
             response = get("/domain/configs/config/server-config/network-config/network-listeners/network-listener/http-listener-1/find-http-protocol");
             assertTrue(response.getEntity(String.class).contains("http-listener-2"));
         } finally {
-            ClientResponse response = post("/domain/set", new HashMap<String, String>() {{
-                put("configs.config.server-config.network-config.network-listeners.network-listener.http-listener-1.protocol", "http-listener-1");
+//            ClientResponse response = post("/domain/set", new HashMap<String, String>() {{
+            ClientResponse response = post("/domain/configs/config/server-config/network-config/network-listeners/network-listener/http-listener-1", new HashMap<String, String>() {{
+                put("protocol", "http-listener-1");
             }});
             checkStatusForSuccess(response);
             response = delete(URL_PROTOCOL + "/" + portUniProtocolName + "/delete-protocol-finder",
@@ -167,8 +169,8 @@ public class NetworkListenerTest extends RestTestBase {
         assertTrue(isSuccess(response));
         response = get(URL_SSL, params);
         entity = this.getEntityValues(response);
-        assertEquals("", entity.get("keyStore"));
-        assertEquals("", entity.get("trustAlgorithm"));
-        assertEquals("", entity.get("trustStore"));
+        assertEquals(JSONObject.NULL, entity.get("keyStore"));
+        assertEquals(JSONObject.NULL, entity.get("trustAlgorithm"));
+        assertEquals(JSONObject.NULL, entity.get("trustStore"));
     }
 }

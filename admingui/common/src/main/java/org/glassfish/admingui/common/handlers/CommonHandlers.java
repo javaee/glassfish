@@ -67,6 +67,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.text.SimpleDateFormat;
 
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
@@ -361,7 +362,7 @@ public class CommonHandlers {
         List<Map<String, String>> modifiedProps = new java.util.ArrayList<Map<String, String>>();
         if (props != null) {
             for (Map<String, String> prop : props) {
-                if (!GuiUtil.isEmpty(prop.get("name"))) {
+                if (!(GuiUtil.isEmpty(prop.get("name")) || GuiUtil.isEmpty(prop.get("value")))) {
                     modifiedProps.add(prop);
                 }
             }
@@ -493,6 +494,33 @@ public class CommonHandlers {
         MiscUtil.setValueExpression((String) handlerCtx.getHandler().getInputValue("expression"), 
                 (Object) handlerCtx.getInputValue("value"));
     }
+
+    
+    @Handler(id = "gf.convertDateTime",
+        input = {
+            @HandlerInput(name = "dateTime", type = String.class, required = true),
+            @HandlerInput(name = "format", type = String.class)},
+    output={
+        @HandlerOutput(name="result", type=String.class)})
+        
+    public static void convertDateTimeFormat(HandlerContext handlerCtx) {
+        String dateTime = (String)handlerCtx.getInputValue("dateTime");
+        String result = "";
+        if (!GuiUtil.isEmpty(dateTime)) {
+            try {
+                long longValue = Long.valueOf(dateTime);
+                String format = (String)handlerCtx.getHandler().getInputValue("format");
+                if (format == null)
+                    format = "yyyy-MM-dd HH:mm:ss z";
+                result = new SimpleDateFormat(format).format(new Date(longValue));
+            } catch (NumberFormatException ex) {
+                //ignore
+            }
+        }
+        handlerCtx.setOutputValue("result", result);
+    }
+
+
     
     /**
      *	<p> This handler checks if particular feature is supported  </p>
@@ -626,6 +654,40 @@ public class CommonHandlers {
         }
 
         handlerCtx.setOutputValue("table", results);
+    }
+
+    @Handler(id = "gf.filterMap",
+        input = {
+            @HandlerInput(name = "map", type = java.util.Map.class, required = true),
+            @HandlerInput(name = "attrNames", type = java.util.List.class, required = true),
+            @HandlerInput(name = "keep", type = java.lang.Boolean.class, defaultValue="true")
+        },
+        output = {
+            @HandlerOutput(name = "resultMap", type = java.util.Map.class)
+    })
+    public static void filterMap(HandlerContext handlerCtx) {
+        Map<String, String> map = (Map<String, String>) handlerCtx.getInputValue("map");
+        List<String> attrNames = (List<String>) handlerCtx.getInputValue("attrNames");
+        Boolean keep = (Boolean) handlerCtx.getInputValue("keep");
+        Map<String, String> resultMap = new HashMap<String, String>();
+        if (map != null) {
+            if (keep == null) {
+                keep = Boolean.TRUE;
+            }
+            if (attrNames == null) {
+                resultMap = map;
+            } else {
+                for (String key : map.keySet()) {
+                    if (attrNames.contains(key) && keep) {
+                        resultMap.put(key, map.get(key));
+                    } else if ((!attrNames.contains(key)) && (!keep)) {
+                        resultMap.put(key, map.get(key));
+                    }
+                }
+            }
+        }
+
+        handlerCtx.setOutputValue("resultMap", resultMap);
     }
 
     /**

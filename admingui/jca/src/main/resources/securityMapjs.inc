@@ -85,8 +85,8 @@ function enableWorkSecurityMapFields(opt){
         var val = getTextElement('#{eisuserGroupsId}').value;
         disableComponent('#{eisuserGroupsId}', 'text');
         getTextElement('#{eisuserGroupsId}').value=val;
- 	enableComponent('#{eisprincipalsId}', 'text');
-	getTextElement('#{eisprincipalsId}').focus();
+        enableComponent('#{eisprincipalsId}', 'text');
+        getTextElement('#{eisprincipalsId}').focus();
         #{themeJavascript.JS_PREFIX}.radiobutton.setChecked('#{pPropId}:optB', true);
     }else{
         var val = getTextElement('#{eisprincipalsId}').value;
@@ -97,6 +97,30 @@ function enableWorkSecurityMapFields(opt){
         #{themeJavascript.JS_PREFIX}.radiobutton.setChecked('#{grpPropId}:optA', true);
     }
  }
+
+function isSecurityMappingPresent(reqMsg) {
+    var isGroup = document.getElementById('#{grpPropId}:optA').checked;
+    var isPrincipal = document.getElementById('#{pPropId}:optB').checked;
+    if (isGroup) {
+        var comp = document.getElementById('#{eisuserGroupsId}');
+        var groups = comp.value;
+        if (groups == null || groups == '') {
+            comp.select();
+            comp.focus();
+            return showAlert(reqMsg + ' ' + getLabel(comp));
+        }
+    }
+    if (isPrincipal) {
+        var comp = document.getElementById('#{eisprincipalsId}');
+        var principals = comp.value;
+        if (principals == null || principals == '') {
+            comp.select();
+            comp.focus();
+            return showAlert(reqMsg + ' ' + getLabel(comp));
+        }
+    }
+    return true;
+}
 
 </script>
 </f:verbatim>

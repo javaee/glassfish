@@ -43,7 +43,7 @@
 <sun:property>
     <sun:hyperlink 
         toolTip="$resource{i18n_web.tree.webContainer.tooltip}" 
-        url="/web/configuration/webContainerGeneral.jsf?configName=server-config"
+        url="/web/configuration/webContainerGeneral.jsf?configName=#{configName}"
         >
         <sun:image url="/resource/web/images/container.gif" />
         <sun:staticText text="$resource{i18n_web.tree.webContainer}" />

@@ -60,9 +60,9 @@ import java.net.URI;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.logging.Level;
 import java.util.Map;
 import javax.enterprise.deploy.spi.Target;
-import org.glassfish.admingui.common.handlers.RestApiHandlers;
 /**
  *
  * @author anilam
@@ -73,18 +73,19 @@ public class DeployUtil {
      public static void deploy(String[] targets, Properties deploymentProps, String location,  HandlerContext handlerCtx) throws Exception {
             
         deploymentProps.setProperty(DFDeploymentProperties.UPLOAD, "false");
-        boolean status = invokeDeploymentFacility(targets, deploymentProps, location, handlerCtx);
+        boolean status = invokeDeploymentFacility(targets, deploymentProps, location, handlerCtx, "deploy.warning");
         if(status){
             //String mesg = GuiUtil.getMessage("msg.deploySuccess", new Object[] {"", "deployed"});
             //GuiUtil.prepareAlert("success", mesg, null);
         }
     }
      
-     public static boolean invokeDeploymentFacility(String[] targets, Properties props, String archivePath, HandlerContext handlerCtx) 
+     public static boolean invokeDeploymentFacility(String[] targets, Properties props, String archivePath, HandlerContext handlerCtx, String warningMsgKey)
      	throws Exception {
      	if(archivePath == null) {
+            GuiUtil.getLogger().info("invokeDeploymentFacility(): archivePath = NULL");
             //Localize this message.
-            GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.deploy.nullArchiveError"));
+            GuiUtil.handleError(handlerCtx, "invokeDeploymentFacility: " + GuiUtil.getMessage("msg.deploy.nullArchiveError"));
      	}
         
         if (targets == null){
@@ -99,11 +100,11 @@ public class DeployUtil {
         progressObject = df.deploy(df.createTargets(targets), source, null , props);  //null for deployment plan
         progressObject.waitFor();
         DFDeploymentStatus status = progressObject.getCompletedStatus();
-        boolean ret = checkDeployStatus(status, handlerCtx, true);
+        boolean ret = checkDeployStatus(status, handlerCtx, true, warningMsgKey);
      	return ret;
      }
 
-     public static boolean checkDeployStatus(DFDeploymentStatus status, HandlerContext handlerCtx, boolean stopProcessing) 
+     public static boolean checkDeployStatus(DFDeploymentStatus status, HandlerContext handlerCtx, boolean stopProcessing, String warningMsgKey)
      {
          //TODO-V3 get more msg to user.
         //parse the deployment status and retrieve failure/warning msg
@@ -123,7 +124,7 @@ public class DeployUtil {
          }
          if (status!=null && status.getStatus() == DFDeploymentStatus.Status.WARNING){
             //We may need to log this mesg.
-            GuiUtil.prepareAlert("warning", GuiUtil.getMessage("deploy.warning"),statusString);
+            GuiUtil.prepareAlert("warning", GuiUtil.getMessage(warningMsgKey),statusString);
             return false;
          }
          return true;
@@ -144,7 +145,7 @@ public class DeployUtil {
             else
                 progressObject = df.deleteAppRef(df.createTargets(targetNames), appName, dProps);
             DFDeploymentStatus status = df.waitFor(progressObject);
-            checkDeployStatus(status, handlerCtx, true);
+            checkDeployStatus(status, handlerCtx, true, "appAction.warnig");
         }
     }
 
@@ -170,7 +171,7 @@ public class DeployUtil {
         DFProgressObject  progressObject  = (enable) ? df.enable(targets,appName) : df.disable(targets, appName);
         progressObject.waitFor();
         DFDeploymentStatus status = progressObject.getCompletedStatus();
-        boolean ret = checkDeployStatus(status, handlerCtx, false);
+        boolean ret = checkDeployStatus(status, handlerCtx, false, "appAction.warning" );
         return ret;
     }
 
@@ -181,7 +182,7 @@ public class DeployUtil {
             //check if any cluster has this application-ref
             List<String> clusters = TargetUtil.getClusters();
             for(String oneCluster:  clusters){
-                List appRefs = new ArrayList(RestApiHandlers.getChildMap(GuiUtil.getSessionValue("REST_URL")+"/clusters/cluster/"+oneCluster+"/"+ref).keySet());
+                List appRefs = new ArrayList(RestUtil.getChildMap(GuiUtil.getSessionValue("REST_URL")+"/clusters/cluster/"+oneCluster+"/"+ref).keySet());
 
                 if (appRefs.contains(appName)){
                     targets.add(oneCluster);
@@ -190,14 +191,17 @@ public class DeployUtil {
             List<String> servers = TargetUtil.getStandaloneInstances();
             servers.add("server");
             for(String oneServer:  servers){
-                List appRefs = new ArrayList(RestApiHandlers.getChildMap(GuiUtil.getSessionValue("REST_URL") + "/servers/server/" + oneServer + "/" + ref).keySet());
+                List appRefs = new ArrayList(RestUtil.getChildMap(GuiUtil.getSessionValue("REST_URL") + "/servers/server/" + oneServer + "/" + ref).keySet());
                 if (appRefs.contains(appName)){
                     targets.add(oneServer);
                 }
             }
 
         }catch(Exception ex){
-            ex.printStackTrace();
+            GuiUtil.getLogger().info(GuiUtil.getCommonMessage("log.error.appTarget") + ex.getLocalizedMessage());
+            if (GuiUtil.getLogger().isLoggable(Level.FINE)){
+                ex.printStackTrace();
+            }
         }
         return targets;
     }
@@ -209,7 +213,7 @@ public class DeployUtil {
             //check if any cluster has this application-ref
             List<String> clusters = TargetUtil.getClusters();
             for(String oneCluster:  clusters){
-                List appRefs = new ArrayList(RestApiHandlers.getChildMap(GuiUtil.getSessionValue("REST_URL")+"/clusters/cluster/"+oneCluster+"/"+ref).keySet());
+                List appRefs = new ArrayList(RestUtil.getChildMap(GuiUtil.getSessionValue("REST_URL")+"/clusters/cluster/"+oneCluster+"/"+ref).keySet());
                 if (appRefs.contains(name)){
                     Map aMap = new HashMap();
                     aMap.put("endpoint", GuiUtil.getSessionValue("REST_URL")+"/clusters/cluster/"+oneCluster+"/" + ref + "/" + encodedName);
@@ -220,7 +224,7 @@ public class DeployUtil {
             List<String> servers = TargetUtil.getStandaloneInstances();
             servers.add("server");
             for(String oneServer:  servers){
-                List appRefs = new ArrayList(RestApiHandlers.getChildMap(GuiUtil.getSessionValue("REST_URL") + "/servers/server/" + oneServer + "/" + ref).keySet());
+                List appRefs = new ArrayList(RestUtil.getChildMap(GuiUtil.getSessionValue("REST_URL") + "/servers/server/" + oneServer + "/" + ref).keySet());
                 if (appRefs.contains(name)){
                     Map aMap = new HashMap();
                     aMap.put("endpoint", GuiUtil.getSessionValue("REST_URL") + "/servers/server/" + oneServer + "/" + ref + "/" + encodedName);
@@ -229,7 +233,10 @@ public class DeployUtil {
                 }
             }
         }catch(Exception ex){
-            ex.printStackTrace();
+            GuiUtil.getLogger().info(GuiUtil.getCommonMessage("log.error.getRefEndpoints")+ ex.getLocalizedMessage());
+            if (GuiUtil.getLogger().isLoggable(Level.FINE)){
+                ex.printStackTrace();
+            }
         }
         return endpoints;
     }
@@ -248,7 +255,7 @@ public class DeployUtil {
         }
         if (clusters.isEmpty() && standalone.isEmpty()){
             //just return Enabled or not.
-            enabled = (String)RestApiHandlers.getAttributesMap(prefix  +"/servers/server/server/"+ref+"/"+appName).get("enabled");
+            enabled = (String)RestUtil.getAttributesMap(prefix  +"/servers/server/server/"+ref+"/"+appName).get("enabled");
             if (useImage){
                 return (Boolean.parseBoolean(enabled))? "/resource/images/enabled.png" : "/resource/images/disabled.png";
             }else{
@@ -264,9 +271,9 @@ public class DeployUtil {
         }
         for (String oneTarget : targetList) {
             if (clusters.contains(oneTarget)) {
-                enabled = (String) RestApiHandlers.getAttributesMap(prefix + "/clusters/cluster/" + oneTarget + "/" + ref + "/" + appName).get("enabled");
+                enabled = (String) RestUtil.getAttributesMap(prefix + "/clusters/cluster/" + oneTarget + "/" + ref + "/" + appName).get("enabled");
             } else {
-                enabled = (String) RestApiHandlers.getAttributesMap(prefix + "/servers/server/" + oneTarget + "/" + ref + "/" + appName).get("enabled");
+                enabled = (String) RestUtil.getAttributesMap(prefix + "/servers/server/" + oneTarget + "/" + ref + "/" + appName).get("enabled");
             }
             if (Boolean.parseBoolean(enabled)) {
                 numEnabled++;
@@ -288,7 +295,5 @@ public class DeployUtil {
                 GuiUtil.getMessage("deploy.someEnabled", new String[]{""+numEnabled, ""+numTargets });
         
     }
-
-    private static final String COMMON_BUNDLE = "org.glassfish.common.admingui.Strings";
 
 }

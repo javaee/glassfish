@@ -47,13 +47,11 @@
 	childExpanded="false"
 	childURL="/jca/resourceAdapterConfigEdit.jsf?name=#{$this{valueBinding}.attributes.encodedText}"
 	text="$resource{i18njca.tree.resourceAdapterConfigs}"
+        imageURL="/resource/jca/images/connector.png"
 	url="/jca/resourceAdapterConfigs.jsf">
     <ui:event type="beforeCreate">
 	setResourceBundle(key="i18njca" bundle="org.glassfish.jca.admingui.Strings");
 	gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/resource-adapter-config.json" method="get" result="#{requestScope.resp}");
 	setAttribute(key="children" value="#{requestScope.resp.data.extraProperties.childResources}");
     </ui:event>
-    <!facet image>
-	<sun:iconHyperlink id="treeIcon" icon="TREE_FOLDER" url="/jca/resourceAdapterConfigs.jsf"  border="0" immediate="true" />
-    </facet>
 </dynamicTreeNode>

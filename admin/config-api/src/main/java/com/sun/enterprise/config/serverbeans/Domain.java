@@ -70,6 +70,8 @@ import java.util.logging.Logger;
  */
 public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, SystemPropertyBag  {
 
+    public static final String DOMAIN_NAME_PROPERTY = "administrative.domain.name";
+
     /**
      * Gets the value of the applicationRoot property.
      *
@@ -387,7 +389,9 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
     @PropertiesDesc(props={})
     @Element
     List<Property> getProperty();
-    
+
+    @DuckTyped
+    String getName();
 
     @DuckTyped
     List<Application> getAllDefinedSystemApplications();
@@ -487,6 +491,9 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
     List<Cluster> getClustersOnNode(String nodeName);
 
     class Duck {
+        public static String getName(Domain domain) {
+            return domain.getPropertyValue(DOMAIN_NAME_PROPERTY);
+        }
         /* return an empty list if given garbage -- or errors are encountered
          * or if no matches
          */
@@ -499,7 +506,7 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
                 List<Server> servers = domain.getServers().getServer();
 
                 for(Server server : servers) {
-                    if(nodeName.equals(server.getNode()))
+                    if(nodeName.equals(server.getNodeRef()))
                             ret.add(server);
                 }
             }
@@ -520,7 +527,7 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
             try {
                 for(Server server : serverList) {
                     Cluster mycl = server.getCluster();
-                    if(nodeName.equals(server.getNode()) )   {
+                    if(nodeName.equals(server.getNodeRef()) )   {
                         clMap.put(mycl.getName(),mycl);
                     }
                 }
@@ -769,6 +776,20 @@ public interface Domain extends ConfigBeanProxy, Injectable, PropertyBag, System
         public static boolean isAppRefEnabledInTarget(
             Domain me, String appName, String target) {
             boolean found = false;
+
+            Cluster containingCluster = getClusterForInstance(me, target);
+            if (containingCluster != null) {
+                // if this is a clustered instance, check the enable 
+                // attribute of its enclosing cluster first
+                // and return false if the cluster level enable attribute
+                // is false
+                ApplicationRef clusterRef = getApplicationRefInTarget(me, appName, containingCluster.getName());
+                if (clusterRef == null || 
+                    !Boolean.valueOf(clusterRef.getEnabled())) {
+                    return false;
+                }
+            }
+
             for (ApplicationRef ref : 
                 getApplicationRefsInTarget(me, target, true)) {
                 if (ref.getRef().equals(appName)) {

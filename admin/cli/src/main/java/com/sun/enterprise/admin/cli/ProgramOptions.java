@@ -44,16 +44,14 @@ import java.io.File;
 import java.util.*;
 import java.util.logging.Logger;
 
-import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
 import org.glassfish.api.admin.CommandModel.ParamModel;
 
-import com.sun.enterprise.admin.util.*;
 import com.sun.enterprise.admin.util.CommandModelData.ParamModelData;
-import com.sun.enterprise.admin.util.CommandModelData.ParamData;
-import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.HostAndPort;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import org.glassfish.common.util.admin.AsadminInput;
+import org.glassfish.common.util.admin.AuthTokenManager;
 
 /**
  * Representation of the options known to the asadmin program.
@@ -84,7 +82,8 @@ public class ProgramOptions {
     public static final String INTERACTIVE      = "interactive";
     public static final String SECURE           = "secure";
     public static final String HELP             = "help";
-    public static final String AUTHTOKEN        = "authtoken";
+    public static final String AUTHTOKEN        = AuthTokenManager.AUTH_TOKEN_OPTION_NAME;
+    public static final String AUXINPUT         = AsadminInput.CLI_INPUT_OPTION_NAME;
 
     private static final Logger logger =
         Logger.getLogger(ProgramOptions.class.getPackage().getName());
@@ -122,6 +121,7 @@ public class ProgramOptions {
         addMetaOption(opts, ECHO, 'e', Boolean.class, false, "false");
         addMetaOption(opts, INTERACTIVE, 'I', Boolean.class, false, "false");
         addMetaOption(opts, HELP, '?', Boolean.class, false, "false");
+        addMetaOption(opts, AUXINPUT, 'X', String.class, false, null);
         addMetaOption(opts, AUTHTOKEN, 'A', String.class, false, null);
         programOptions = Collections.unmodifiableSet(opts);
     }
@@ -231,6 +231,7 @@ public class ProgramOptions {
         putEnv(env, USER);
         putEnv(env, PASSWORDFILE);
         putEnv(env, AUTHTOKEN);
+        putEnv(env, AUXINPUT);
         // XXX - HELP?
     }
 
@@ -390,16 +391,29 @@ public class ProgramOptions {
     }
     
     public String getAuthToken() {
+        return getString(AUTHTOKEN);
+    }
+    
+    public void setAuxInput(final String authInput) {
+        options.set(AUXINPUT, authInput);
+    }
+    
+    public String getAuxInput() {
+        return getString(AUXINPUT);
+    }
+    
+    private String getString(final String optionName) {
         String result;
-        result = options.getOne(AUTHTOKEN);
+        result = options.getOne(optionName);
         if ( ! ok(result)) {
-            result = env.getStringOption(AUTHTOKEN);
+            result = env.getStringOption(optionName);
             if ( ! ok(result)) {
                 result = null;
             }
         }
         return result;
     }
+
     /**
      * @return the terse
      */
@@ -530,9 +544,9 @@ public class ProgramOptions {
             args.add("--passwordfile");
             args.add(getPasswordFile());
         }
-        if (ok(getAuthToken())) {
-            args.add("--" + AUTHTOKEN);
-            args.add(getAuthToken());
+        if (ok(getAuxInput())) {
+            args.add("--" + AUXINPUT);
+            args.add(getAuxInput());
         }
         args.add("--secure=" + String.valueOf(isSecure()));
         args.add("--terse=" + String.valueOf(isTerse()));

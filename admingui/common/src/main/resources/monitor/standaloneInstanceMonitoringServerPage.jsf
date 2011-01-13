@@ -49,7 +49,7 @@
 <!define name="content">
     <event>
     <!beforeCreate
-        getRequestValue(key="instanceName" value=>$attribute{instanceName});
+        getRequestValue(key="instanceName" value="#{pageSession.instanceName}");
         urlencode(value="#{instanceName}" encoding="UTF-8" result="#{pageSession.encodedInstanceName}");
         gf.getConfigName(target="#{instanceName}" configName=>$pageSession{configName});
         setSessionAttribute(key="standaloneInstanceTabs" value="monitorServer");
@@ -62,7 +62,7 @@
 #include "/cluster/standalone/standaloneInstanceTabs.inc"
 #include "/shared/alertMsg.inc"
 #include "monitoringServerStatsPage.inc"
-	<sun:hidden id="helpKey" value="$resource{help_web.monitorRuntime}" />
+	<sun:hidden id="helpKey" value="$resource{help_common.monitorRuntime}" />
             </sun:form>
 #include "/shared/changeButtonsJS.inc"
 </define>

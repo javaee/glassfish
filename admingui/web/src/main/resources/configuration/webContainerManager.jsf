@@ -78,6 +78,7 @@
 </sun:title>
 
     <sun:propertySheet id="managerPropSheet" requiredFields="#{hasRequiredFields}">
+#include "/common/shared/configNameSection.inc"
     <sun:propertySheetSection id="managerPropSheetSection">
         <sun:property id="ReapIntervalProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.webManager.reapIntervalLabel}" helpText="$resource{i18n_web.webManager.reapIntervalHelp}" >
             <sun:textField id="ReapInterval" styleClass="integer" columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.webManager.reapInterval']}" text="#{pageSession.valueMap['reapIntervalInSeconds']}" />

@@ -46,7 +46,8 @@
     setResourceBundle(key="i18njca" bundle="org.glassfish.jca.admingui.Strings");
     setResourceBundle(key="help_jca" bundle="org.glassfish.jca.admingui.Helplinks")
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18njca.connectorSecurityMaps.pageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18njca.connectorSecurityMaps.pageTitle}"
+    guiTemplateOnLoad="setTimeout('admingui.table.changeOneTableButton(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\'); admingui.table.initAllRows(\\\\\'#{pageSession.tableId}\\\\\');', 0);">
 <!define name="content">
     <event>
     <!beforeCreate

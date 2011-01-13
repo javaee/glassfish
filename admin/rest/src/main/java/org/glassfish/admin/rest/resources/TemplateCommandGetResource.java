@@ -42,14 +42,12 @@ package org.glassfish.admin.rest.resources;
 
 
 import com.sun.jersey.spi.container.ContainerRequest;
-import org.glassfish.admin.rest.Constants;
-import org.glassfish.admin.rest.results.ActionReportResult;
 import org.glassfish.api.admin.ParameterMap;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import org.glassfish.admin.rest.CliFailureException;
+import javax.ws.rs.core.Response;
 
 /**
  *
@@ -61,8 +59,7 @@ import org.glassfish.admin.rest.CliFailureException;
 public class TemplateCommandGetResource extends TemplateExecCommand {
 
     public TemplateCommandGetResource(String resourceName, String commandName, String commandMethod, boolean b) {
-        super(resourceName, commandName, commandMethod, "", "", b);
-        parameterType = Constants.QUERY_PARAMETER;
+        super(resourceName, commandName, commandMethod, "GET", commandName, b);
     }
 
     @GET
@@ -71,16 +68,13 @@ public class TemplateCommandGetResource extends TemplateExecCommand {
         MediaType.APPLICATION_JSON,
         MediaType.APPLICATION_XML,
         MediaType.APPLICATION_FORM_URLENCODED})
-    public ActionReportResult processGet() {
-        ParameterMap data = new ParameterMap();
-        try {
+    public Response processGet() {
+            ParameterMap data = new ParameterMap();
             processCommandParams(data);
             addQueryString(((ContainerRequest) requestHeaders).getQueryParameters(), data);
+            purgeEmptyEntries(data);
             adjustParameters(data);
 
             return executeCommand(data);
-        } catch (Exception e) {
-            throw new CliFailureException(e.getMessage());
-        }
     }
 }

@@ -48,7 +48,7 @@
         setAttribute(key="fieldMap" value="rar");
         createMap(result="#{pageSession.rar}")
         mapPut(map="#{pageSession.deployMap}", key="rar", value="#{pageSession.rar}");
-        mapPut(map="#{pageSession.rar}", key="convertToFalseList", value={"enabled", "verify" ,"force" } );
+        mapPut(map="#{pageSession.rar}", key="convertToFalseList", value={"enabled", "verify" ,"force", "PROPERTY-preserveAppScopedResources"} );
      />
     <!afterCreate
         getClientId(component="$this{component}" clientId=>$page{rarId});
@@ -57,7 +57,7 @@
 
 <sun:property id="nameProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.ApplicationName}" visible="#{true}">
     <sun:textField id="appName" columns="$int{40}" maxLength="#{sessionScope.fieldLengths['maxLength.deploy.ApplicationName']}" text="#{pageSession.rar['name']}" styleClass="required" required="#{true}"
-        onChange="javascript: setAppName('#{appNameId}', this.value, window)">
+        onChange="javascript: admingui.deploy.setAppName('#{appNameId}', this.value, window, '#{sessionScope.appTypeString}')">
         <!afterCreate
             getClientId(component="$this{component}" clientId=>$page{appNameId});
         />
@@ -71,13 +71,17 @@
     </sun:checkbox>
 </sun:property>
 <sun:property id="v2" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.run}" helpText="$resource{i18n.deploy.runHelp}">
-        <sun:checkbox id="ver2" label="$resource{i18n.common.Enabled}" selected="#{pageSession.rar['verify']}" selectedValue="true" />
+        <sun:checkbox id="ver2" label=" " selected="#{pageSession.rar['verify']}" selectedValue="true" />
 </sun:property>
 
 <sun:property id="force" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.forceRedeploy}" helpText="$resource{i18n.deploy.forceRedeployHelp}">
-        <sun:checkbox id="force"  selected="#{pageSession.rar['force']}" selectedValue="true" />
+        <sun:checkbox id="force" label=" " selected="#{pageSession.rar['force']}" selectedValue="true" />
 </sun:property>
 
+
+<sun:property id="preserveAppScopedResources" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" label="$resource{i18n.redeploy.preserveAppScopedResources}" helpText="$resource{i18n.redeploy.preserveAppScopedResourcesHelp}">
+        <sun:checkbox id="preserveAppScopedResources"  selected="#{pageSession.rar['PROPERTY-preserveAppScopedResources']}" selectedValue="true" />
+</sun:property>
 
 <sun:property id="descriptionProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.description}" helpText="$resource{i18n.deploy.descHelp}" >
 	<sun:textField id="description" columns="$int{40}" maxLength="#{sessionScope.fieldLengths['maxLength.common.description']}" text="#{pageSession.rar['description']}" />

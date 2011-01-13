@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -45,9 +45,9 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 public class EjbContainerTest extends BaseSeleniumTestClass {
-    private static final String TAB_EJB_SETTINGS = "Enterprise Java Beans (EJB)";
-    private static final String TAB_MDB_SETTINGS = "MDB Default Pool Settings";
-    private static final String TAB_EJB_TIMER_SERVICE = "The EJB timer service enables you";
+    private static final String TAB_EJB_SETTINGS = "i18n_ejbLite.headings.ejbSettings";
+    private static final String TAB_MDB_SETTINGS = "i18n_ejb.headings.ejbMdbSettings";
+    private static final String TAB_EJB_TIMER_SERVICE = "i18n_ejb.ejb.ejbTimerSettingsInfo";
 
     @Test
     public void testEjbSettings() {
@@ -67,7 +67,7 @@ public class EjbContainerTest extends BaseSeleniumTestClass {
         selenium.type("form1:basicTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
         selenium.type("form1:basicTable:rowGroup1:0:col3:col1St", "value");
         selenium.type("form1:basicTable:rowGroup1:0:col4:col1St", "description");
-        clickAndWait("form1:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
+        clickAndWait("form1:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
         clickAndWait("form1:ejbContainerTabs:mdbSettingsTab", TAB_MDB_SETTINGS);
         clickAndWait("form1:ejbContainerTabs:ejbSettingsTab", TAB_EJB_SETTINGS);
         assertEquals(true, selenium.isChecked("form1:propertySheet:generalPropertySection:commitOptionProp:optC"));
@@ -97,7 +97,7 @@ public class EjbContainerTest extends BaseSeleniumTestClass {
         selenium.type("form1:basicTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
         selenium.type("form1:basicTable:rowGroup1:0:col3:col1St", "value");
         selenium.type("form1:basicTable:rowGroup1:0:col4:col1St", "description");
-        clickAndWait("form1:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
+        clickAndWait("form1:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
 
         clickAndWait("treeForm:tree:configurations:server-config:ejbContainer:ejbContainer_link", TAB_EJB_SETTINGS);
         clickAndWait("form1:ejbContainerTabs:mdbSettingsTab", TAB_MDB_SETTINGS);
@@ -123,7 +123,7 @@ public class EjbContainerTest extends BaseSeleniumTestClass {
         selenium.type("form1:propertySheet:propertySectionTextField:MaxRedeliveryProp:MaxRedelivery", maxRedelivery);
         selenium.type("form1:propertySheet:propertySectionTextField:RedeliveryIntrProp:RedeliveryIntr", redeliveryInterval);
         selenium.type("form1:propertySheet:propertySectionTextField:TimerDatasourceProp:TimerDatasource", timerDatasource);
-        clickAndWait("form1:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
+        clickAndWait("form1:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
 
         clickAndWait("form1:ejbContainerTabs:mdbSettingsTab", TAB_MDB_SETTINGS);
         clickAndWait("form1:ejbContainerTabs:ejbTimerTab", TAB_EJB_TIMER_SERVICE);
@@ -138,7 +138,7 @@ public class EjbContainerTest extends BaseSeleniumTestClass {
         selenium.type("form1:propertySheet:propertySectionTextField:MaxRedeliveryProp:MaxRedelivery", "1");
         selenium.type("form1:propertySheet:propertySectionTextField:RedeliveryIntrProp:RedeliveryIntr", "5000");
         selenium.type("form1:propertySheet:propertySectionTextField:TimerDatasourceProp:TimerDatasource", "");
-        clickAndWait("form1:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
+        clickAndWait("form1:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
     }
 
     //Test that the default button in EJB Settings will fill in the default value when pressed.
@@ -159,7 +159,7 @@ public class EjbContainerTest extends BaseSeleniumTestClass {
         selenium.type("form1:propertySheet:cacheSettingSection:CacheIdleProp:CacheIdle", "666");
 
         //Save this, goto another tab and back
-        clickAndWait("form1:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
+        clickAndWait("form1:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
         clickAndWait("form1:ejbContainerTabs:mdbSettingsTab", TAB_MDB_SETTINGS);
         clickAndWait("form1:ejbContainerTabs:ejbSettingsTab", TAB_EJB_SETTINGS);
 
@@ -188,7 +188,7 @@ public class EjbContainerTest extends BaseSeleniumTestClass {
         assertEquals("600", selenium.getValue("form1:propertySheet:cacheSettingSection:CacheIdleProp:CacheIdle"));
 
         //will be nice to have the default value back for the server.
-        clickAndWait("form1:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
+        clickAndWait("form1:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
 
     }
 }

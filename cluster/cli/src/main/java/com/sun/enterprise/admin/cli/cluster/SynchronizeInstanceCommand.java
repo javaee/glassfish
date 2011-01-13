@@ -42,6 +42,7 @@ package com.sun.enterprise.admin.cli.cluster;
 
 import java.io.*;
 import java.net.ConnectException;
+import java.text.DateFormat;
 import java.util.*;
 import java.util.logging.*;
 import java.util.zip.*;
@@ -56,6 +57,7 @@ import com.sun.enterprise.admin.cli.*;
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 import com.sun.enterprise.util.cluster.SyncRequest;
 import com.sun.enterprise.util.io.FileUtils;
+import org.glassfish.common.util.admin.AuthTokenManager;
 
 /**
  * Synchronize a local server instance.
@@ -67,12 +69,16 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
     @Param(name = "instance_name", primary = true, optional = true)
     private String instanceName0;
 
-    @Param(name = "sync", optional=true, defaultValue="normal", acceptableValues="none, normal, full")
+    @Param(name = "sync", optional = true, defaultValue = "normal",
+        acceptableValues = "none, normal, full")
     protected String sync="normal";
 
     private RemoteCommand syncCmd;
 
     private static enum SyncLevel { TOP, FILES, DIRECTORY, RECURSIVE };
+
+    // the name of the sync state file, relative to the instance directory
+    private static final String SYNC_STATE_FILE = ".syncstate";
 
     @Override
     protected void validate() throws CommandException {
@@ -89,7 +95,7 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
         if (synchronizeInstance())
             return SUCCESS;
         else {
-            logger.info(Strings.get("Sync.noConnect",
+            logger.info(Strings.get("Sync.failed",
                                     programOpts.getHost(),
                                     Integer.toString(programOpts.getPort())));
             return ERROR;
@@ -110,7 +116,6 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
                 Strings.get("Sync.noDASConfigured", dasProperties.toString()));
             return false;
         }
-
         setDasDefaults(dasProperties);
 
         /*
@@ -123,13 +128,38 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
          */
         final String origAuthToken = programOpts.getAuthToken();
         if (origAuthToken != null) {
-            if ( ! origAuthToken.endsWith("+")) {
-                programOpts.setAuthToken(origAuthToken + "+");
-            }
+            programOpts.setAuthToken(AuthTokenManager.markTokenForReuse(origAuthToken));
         }
 
         syncCmd = new RemoteCommand("_synchronize-files", programOpts, env);
         syncCmd.setFileOutputDirectory(instanceDir);
+
+        /*
+         * The sync state file records the fact that we're in the middle
+         * of a synchronization attempt.  When we're done, we remove it.
+         * If we crash, it will be left behind, and the next sync attempt
+         * will notice it and force a full sync.
+         */
+        File syncState = new File(instanceDir, SYNC_STATE_FILE);
+
+        boolean doFullSync = false;
+        if (sync.equals("normal") && syncState.exists()) {
+            String lastSync = DateFormat.getDateTimeInstance().format(
+                                new Date(syncState.lastModified()));
+            logger.info(Strings.get("Sync.fullRequired", lastSync));
+            doFullSync = true;
+        }
+
+        /*
+         * Create the sync state file to indicate that
+         * we've started synchronization.
+         */
+        try {
+            syncState.createNewFile();
+        } catch (IOException ex) {
+            logger.warning(
+                Strings.get("Sync.cantCreateSyncState", syncState));
+        }
 
         /*
          * If --sync full, we remove all local state related to the instance,
@@ -137,9 +167,8 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
          * synchronized from the DAS; any other local directories (logs,
          * instance-private state) are left alone.
          */
-        if (sync.equals("full")) {
-            logger.fine(
-                                Strings.get("Instance.fullsync", instanceName));
+        if (sync.equals("full") || doFullSync) {
+            logger.fine(Strings.get("Instance.fullsync", instanceName));
             removeSubdirectory("config");
             removeSubdirectory("applications");
             removeSubdirectory("generated");
@@ -147,14 +176,15 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
             removeSubdirectory("docroot");
         }
 
+        File domainXml =
+                    new File(new File(instanceDir, "config"), "domain.xml");
+        long dtime = domainXml.exists() ? domainXml.lastModified() : -1;
+
+        CommandException exc = null;
         try {
             /*
              * First, synchronize the config directory.
              */
-            File domainXml =
-                new File(new File(instanceDir, "config"), "domain.xml");
-            long dtime = domainXml.lastModified();
-
             SyncRequest sr = getModTimes("config", SyncLevel.FILES);
             synchronizeFiles(sr);
 
@@ -164,6 +194,14 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
              */
             if (domainXml.lastModified() == dtime) {
                 logger.fine(Strings.get("Sync.alreadySynced"));
+                syncState.delete();
+                /*
+                 * Note that we earlier marked the token for reuse.  It's OK
+                 * to return immediately here with the DAS still willing to
+                 * accept the same token again.  The token will expire and be
+                 * cleaned up in a little while and it was never exposed in a
+                 * way that could be intercepted and used illicitly.
+                 */
                 return true;
             }
 
@@ -183,8 +221,7 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
             for (File adir : FileUtils.listFiles(archiveDir)) {
                 File[] af = FileUtils.listFiles(adir);
                 if (af.length != 1) {
-                    logger.finer("IGNORING " + adir +
-                                                ", # files " + af.length);
+                    logger.finer("IGNORING " + adir + ", # files " + af.length);
                     continue;
                 }
                 File archive = af[0];
@@ -230,24 +267,51 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
                     continue;
                 getFileModTimes(f, configDir, sr, SyncLevel.DIRECTORY);
             }
+            /*
+             * Before sending the last sync request revert to using the original
+             * auth token, if one is present.  The token would be retired
+             * later when it expires anyway, but this is just a little cleaner.
+             */
+            if (origAuthToken != null) {
+                syncCmd.getProgramOptions().setAuthToken(origAuthToken);
+            }
             synchronizeFiles(sr);
         } catch (ConnectException cex) {
             logger.finer("Couldn't connect to DAS: " + cex);
-            return false;
-        } finally {
             /*
-             * If authToken was present, we asked to reuse it when we first
-             * constructed the command.  Because we won't reuse the token
-             * further we need to tell the DAS to discard it which we do by
-             * running any command.
+             * Don't chain the exception, otherwise asadmin will think it
+             * it was a connect failure and will list the closest matching
+             * local command.  Not what we want here.
              */
-            if (origAuthToken != null) {
-                programOpts.setAuthToken(origAuthToken);
-                RemoteCommand discardCommand = new RemoteCommand("uptime", programOpts, env);
-                discardCommand.executeAndReturnOutput();
+            exc = new CommandException(
+                        Strings.get("Sync.connectFailed", cex.getMessage()));
+        } catch (CommandException ex) {
+            logger.finer("Exception during synchronization: " + ex);
+            exc = ex;
+        }
+        
+        if (exc != null) {
+            /*
+             * Some unexpected failure.  If the domain.xml hasn't
+             * changed, assume no local state has changed and it's safe
+             * to remove the sync state file.  Otherwise, something has
+             * changed, and we don't know how much has changed, so leave
+             * the sync state file so we'll do a full sync the next time.
+             * If nothing has changed, allow the server to come up.
+             */
+            if (domainXml != null && domainXml.exists() &&
+                    domainXml.lastModified() == dtime) {
+                // nothing changed
+                syncState.delete();
+                return false;
             }
+            throw exc;
         }
 
+        /*
+         * Success!  Remove sync state file.
+         */
+        syncState.delete();
         return true;
     }
 
@@ -330,18 +394,18 @@ public class SynchronizeInstanceCommand extends LocalInstanceCommand {
         } catch (IOException ex) {
             logger.finer("Got exception: " + ex);
             throw new CommandException(
-                Strings.get("Sync.failed", sr.dir, ex.toString()), ex);
+                Strings.get("Sync.dirFailed", sr.dir, ex.toString()), ex);
         } catch (JAXBException jex) {
             logger.finer("Got exception: " + jex);
             throw new CommandException(
-                Strings.get("Sync.failed", sr.dir, jex.toString()), jex);
+                Strings.get("Sync.dirFailed", sr.dir, jex.toString()), jex);
         } catch (CommandException cex) {
             logger.finer("Got exception: " + cex);
             logger.finer("  cause: " + cex.getCause());
             if (cex.getCause() instanceof ConnectException)
                 throw (ConnectException)cex.getCause();
             throw new CommandException(
-                Strings.get("Sync.failed", sr.dir, cex.getMessage()), cex);
+                Strings.get("Sync.dirFailed", sr.dir, cex.getMessage()), cex);
         } finally {
             // remove tempFile
             if (tempFile != null)

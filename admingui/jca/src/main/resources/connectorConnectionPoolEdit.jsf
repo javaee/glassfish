@@ -60,7 +60,12 @@
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
         setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.encodedName}");
         setPageSessionAttribute(key="rest-api" value="true");
+        setPageSessionAttribute(key="poolGeneralAttrs" value={"name" "resourceAdapterName" "connectionDefinitionName"
+            "ping" "description" "steadyPoolSize" "maxPoolSize" "poolResizeQuantity"
+            "idleTimeoutInSeconds" "maxWaitTimeInMillis" "isConnectionValidationRequired"
+            "failAllConnections" "transactionSupport"});
         gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
+        gf.filterMap(map="#{pageSession.valueMap}" attrNames="#{pageSession.poolGeneralAttrs}" resultMap="#{pageSession.valueMap}");
 
         setPageSessionAttribute(key="convertToFalseList" value={"ping" "isConnectionValidationRequired" "failAllConnections" "associateWithThread" "ConnectionLeakReclaim" "lazyConnectionAssociation" "lazyConnectionEnlistment" "matchConnections" });
         setPageSessionAttribute(key="skipAttrsList", value={"JndiName"});
@@ -142,7 +147,7 @@
 #include "/common/shared/editPageLoadDefaultButton.inc"
     <sun:button id="flush" text="$resource{i18njca.button.Flush}" primary="#{false}" >
         <!command
-            gf.createAttributeMap(keys={"id"} values={"$pageSession{encodedName}"} map="#{requestScope.attrMap}");
+            gf.createAttributeMap(keys={"id"} values={"$pageSession{Name}"} map="#{requestScope.attrMap}");
             gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/flush-connection-pool"
                            attrs="#{requestScope.attrMap}"
                            method="POST"
@@ -154,7 +159,7 @@
     </sun:button>
     <sun:button id="ping"  text="$resource{i18n.button.Ping}" primary="#{false}" >
         <!command
-            gf.createAttributeMap(keys={"id"} values={"$pageSession{encodedName}"} map="#{requestScope.attrMap}");
+            gf.createAttributeMap(keys={"id"} values={"$pageSession{Name}"} map="#{requestScope.attrMap}");
             gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/ping-connection-pool"
                            attrs="#{requestScope.attrMap}"
                            method="GET"

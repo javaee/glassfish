@@ -61,7 +61,7 @@
         setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}");
         
         gf.getDefaultValues(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
-#include "/common/shared/targetsConfig.inc"
+        mapPut(map="#{pageSession.valueMap}" key="target" value="#{pageSession.configName}");
         gf.getChildrenNamesList(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/http-service/virtual-server" result="#{pageSession.vsList}");
         setPageSessionAttribute(key="childType2" value="http");
         setPageSessionAttribute(key="parentUrl2", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/network-config/protocols/protocol/admin-listener");
@@ -85,6 +85,7 @@
 #include "protocolNewButtons.inc"
     </sun:title>
     <sun:propertySheet id="propertySheet">
+#include "/common/shared/configNameSection.inc"
 #include "/web/grizzly/protocolAttr.inc"
 #include "/web/grizzly/fileCacheAttrs.inc"
 #include "/web/grizzly/httpAttr.inc"

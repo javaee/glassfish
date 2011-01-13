@@ -991,6 +991,12 @@ public class NestedAppClientDeployerHelper extends AppClientDeployerHelper {
             }
 
             final Attributes mainAttrs = jarManifest.getMainAttributes();
+            if (mainAttrs == null) {
+                logger.log(Level.WARNING,
+                            "enterprise.deployment.appclient.jws.depJarNoMainAttrs",
+                            fileURI.toASCIIString());
+                    return;
+            }
 
             final String jarClassPath = mainAttrs.getValue(Attributes.Name.CLASS_PATH);
             if (jarClassPath != null) {

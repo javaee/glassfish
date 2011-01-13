@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,12 +37,12 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.admin.cli.cluster;
 
 import com.sun.enterprise.admin.cli.CLICommand;
 import com.sun.enterprise.admin.cli.remote.*;
 import java.io.*;
+import org.glassfish.api.Param;
 import org.glassfish.api.admin.CommandException;
 import org.glassfish.api.admin.CommandValidationException;
 import org.jvnet.hk2.annotations.*;
@@ -58,11 +58,18 @@ import org.jvnet.hk2.component.PerLookup;
 @Scoped(PerLookup.class)
 public class RestartLocalInstanceCommand extends StopLocalInstanceCommand {
 
+    @Param(name = "debug", optional = true)
+    private Boolean debug;
     @Inject
     private Habitat habitat;
+
     @Override
     protected final int doRemoteCommand() throws CommandException {
-        // first, find out how long the server has been up
+        // see StopLocalInstance for comments.  These 2 lines can be refactored.
+        setLocalPassword();
+        programOpts.setInteractive(false);
+
+        // find out how long the server has been up
         long uptimeOldServer = getUptime();  // may throw CommandException
 
         // get the timestamp BEFORE calling the server!
@@ -72,7 +79,12 @@ public class RestartLocalInstanceCommand extends StopLocalInstanceCommand {
 
         // run the remote restart-domain command and throw away the output
         RemoteCommand cmd = new RemoteCommand("_restart-instance", programOpts, env);
-        cmd.executeAndReturnOutput("_restart-instance");
+
+        if (debug != null)
+            cmd.executeAndReturnOutput("_restart-instance", "--debug", debug.toString());
+        else
+            cmd.executeAndReturnOutput("_restart-instance");
+
         waitForRestart(pwFile, timestamp, uptimeOldServer);
         return 0;
     }

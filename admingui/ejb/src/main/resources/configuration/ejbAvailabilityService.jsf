@@ -50,6 +50,7 @@
 <!define name="content">
     <event>
     <!beforeCreate
+        setSessionAttribute(key="availabilityTabs" value="ejbAvailabilityTab");
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
         setPageSessionAttribute(key="childType" value="ejb-container-availability");
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/availability-service");
@@ -79,19 +80,28 @@
 #include "/common/shared/editPageButtons.inc"
     </sun:title>
         <sun:propertySheet id="propertySheet">
+#include "/common/shared/configNameSection.inc"
             <sun:propertySheetSection id="propertSectionTextField">
                 <sun:property id="AvailabilityEnabledProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.availability.availabilityService}" helpText="$resource{i18n_ejb.availability.ejbAvailabilityServiceHelp}">
                     <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['availabilityEnabled']}" selectedValue="true" />
                 </sun:property>
                 <sun:property id="HAPersistenceTypeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_ejb.availability.haPersistenceType}" helpText="$resource{i18n_ejb.availability.haPersistenceTypeHelp}">
-                    <sun:textField id="HAPersistenceType" columns="$int{15}" maxLength="#{sessionScope.fieldLengths['maxLength.availability.haPersistenceType']}" text="#{pageSession.valueMap['sfsbHaPersistenceType']}" />
-                 </sun:property>
-                 <sun:property id="SFSBPersistenceTypeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_ejb.availability.sfsbPersistenceType}" helpText="$resource{i18n_ejb.availability.sfsbPersistenceTypeHelp}">
-                     <sun:textField id="SFSBPersistenceType" columns="$int{15}" maxLength="#{sessionScope.fieldLengths['maxLength.availability.sfsbPersistenceType']}" text="#{pageSession.valueMap['sfsbPersistenceType']}" />
-                 </sun:property>
-                "<br /><br />
+                    <sun:dropDown id="HAPersistenceType" selected="#{pageSession.valueMap['sfsbHaPersistenceType']}" labels="#{pageSession.persistenceType}">
+                        <!beforeCreate
+                            createMap(result="#{pageSession.attrMap}");
+                            mapPut(map="#{pageSession.attrMap}" key="type" value="ejb");
+                            gf.restRequest(endpoint="#{sessionScope.REST_URL}/list-persistence-types" attrs="#{pageSession.attrMap}" method="GET" result="#{pageSession.result}");
+                            setPageSessionAttribute(key="persistenceType" value="#{pageSession.result.data.extraProperties.types}");
+                        />
+                    </sun:dropDown>
+                </sun:property>
+                <sun:property id="SFSBPersistenceTypeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_ejb.availability.sfsbPersistenceType}" helpText="$resource{i18n_ejb.availability.sfsbPersistenceTypeHelp}">
+                    <sun:dropDown id="SFSBPersistenceType" selected="#{pageSession.valueMap['sfsbPersistenceType']}" labels="#{pageSession.persistenceType}">
+                    </sun:dropDown>
+                </sun:property>
             </sun:propertySheetSection>
         </sun:propertySheet>
+    "<br/><br/>
 #include "/common/shared/propertyDescTable.inc"
     <sun:title id="propertyContentPage2">
 #include "/common/shared/editPageButtons_2.inc"

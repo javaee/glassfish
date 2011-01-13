@@ -58,8 +58,7 @@
         setPageSessionAttribute(key="rest-api" value="true");
         gf.getChildList(parentEndpoint="#{pageSession.parentUrl}", childType="#{pageSession.childType}", result="#{requestScope.listOfRows}");
         createMap(result="#{pageSession.valueMap}");
-        mapPut(map="#{pageSession.valueMap}" key="target" value="server");
-#include "/common/shared/targetsConfig.inc"
+        mapPut(map="#{pageSession.valueMap}" key="target" value="#{pageSession.configName}");
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18nc.msg.JS.confirmDeleteAuditModules}");
         setPageSessionAttribute(key="createLink" value="#{request.contextPath}/common/security/auditModules/auditModuleNew.jsf?configName=#{pageSession.configName}");
         setPageSessionAttribute(key="listLink" value="#{request.contextPath}/common/security/auditModules/auditModules.jsf?configName=#{pageSession.configName}");
@@ -74,6 +73,7 @@
      <sun:title id="propertyContentPage" title="$resource{i18nc.auditModule.PageTitle}"
                  helpText="$resource{i18nc.auditModule.PageHelp}" />
 		 "<br /> <br />
+#include "/common/shared/configNameSection.inc"
 
 <sun:table id="configs" title="#{tableTitle}"
     deselectMultipleButton="$boolean{true}"
@@ -98,12 +98,12 @@
             />
     </sun:tableColumn>
 
-    <sun:tableColumn headerText="$resource{i18nc.jacc.table.nameCol}"  sort="Name" rowHeader="$boolean{true}" id="col1">
+    <sun:tableColumn headerText="$resource{i18nc.jacc.table.nameCol}"  sort="name" rowHeader="$boolean{true}" id="col1">
         <sun:hyperlink id="link" text="#{td.value.name}"
             url="#{pageSession.editLink}&name=#{td.value.name}" />
     </sun:tableColumn>
 
-    <sun:tableColumn headerText="$resource{i18nc.realm.colClassname}"   rowHeader="$boolean{true}" id="col2">
+    <sun:tableColumn headerText="$resource{i18nc.realm.colClassname}"   sort="classname" rowHeader="$boolean{true}" id="col2">
         <sun:staticText escape="true" id="classnameCol" value="#{td.value.classname}" />
     </sun:tableColumn>
 

@@ -46,28 +46,29 @@
      Output: #{pageSession.nameAlreadyExists}
 -->
 <handler id="gfj.checkNameExist">
-    gf.checkIfEndPointExist(endpoint="#{sessionScope.REST_URL}/clusters/cluster/#{requestScope.nameToCheck}", exists="#{requestScope.exx}");
+    urlencode(value="#{requestScope.nameToCheck}" result="#{requestScope.encodedNameToCheck}");
+    gf.checkIfEndPointExist(endpoint="#{sessionScope.REST_URL}/clusters/cluster/#{requestScope.encodedNameToCheck}", exists="#{requestScope.exx}");
     if (#{requestScope.exx}){
         setAttribute(key="nameAlreadyExists" value="#{true}");
     }
     if ("!#{requestScope.exx}"){
-        gf.checkIfEndPointExist(endpoint="#{sessionScope.REST_URL}/servers/server/#{requestScope.nameToCheck}", exists="#{requestScope.exx}");
-    }
-    if (#{requestScope.exx}){
-        setAttribute(key="nameAlreadyExists" value="#{true}");
-    }
-    if ("!#{requestScope.exx}"){
-        gf.checkIfEndPointExist(endpoint="#{sessionScope.REST_URL}/configs/config/#{requestScope.nameToCheck}", exists="#{requestScope.exx}");
+        gf.checkIfEndPointExist(endpoint="#{sessionScope.REST_URL}/servers/server/#{requestScope.encodedNameToCheck}", exists="#{requestScope.exx}");
     }
     if (#{requestScope.exx}){
         setAttribute(key="nameAlreadyExists" value="#{true}");
     }
     if ("!#{requestScope.exx}"){
-        gf.checkIfEndPointExist(endpoint="#{sessionScope.REST_URL}/nodes/node/#{requestScope.nameToCheck}", exists="#{requestScope.nameAlreadyExists}");
+        gf.checkIfEndPointExist(endpoint="#{sessionScope.REST_URL}/configs/config/#{requestScope.encodedNameToCheck}", exists="#{requestScope.exx}");
+    }
+    if (#{requestScope.exx}){
+        setAttribute(key="nameAlreadyExists" value="#{true}");
+    }
+    if ("!#{requestScope.exx}"){
+        gf.checkIfEndPointExist(endpoint="#{sessionScope.REST_URL}/nodes/node/#{requestScope.encodedNameToCheck}", exists="#{requestScope.nameAlreadyExists}");
     }
 
     if (#{requestScope.nameAlreadyExists}){
-        setAttribute(key="errormsg" value="$resource{i18ncs.msg.error.nameExists, #{requestScope.nameToCheck}}")
+        setAttribute(key="errormsg" value="$resource{i18ncs.msg.error.nameExists, #{requestScope.encodedNameToCheck}}")
         gf.handleError(detail="#{requestScope.errormsg}");
     }
 
@@ -86,6 +87,7 @@
         method="GET"
         result="#{pageSession.props}");
     setAttribute(key="insList" value="#{pageSession.props.data.extraProperties.instanceList}" );
+    //println("======= insList = #{requestScope.insList}");
     createMap(result="#{pageSession.instanceStatusMap}");
     // if( "(#{requestScope.insList} = #{null})" ){
         //println("============= no instances found");
@@ -98,3 +100,42 @@
 </handler>
 
 
+<!--
+ This handler gets the running status of an instance.  The String returned is the running status in word followed by icon.
+ Input : #{pageSession.instanceName}     - required
+ Output: #{pageSession.statusString}
+-->
+<handler id="gfr.getStatusString" >
+    createMap(result="#{requestScope.listInstanceAttrMap}");
+    mapPut(map="#{requestScope.listInstanceAttrMap}" key="whichtarget" value="#{pageSession.instanceName}")
+    gfr.getInstancesStatus();
+    //println("-------- instanceStatusMap = #{pageSession.instanceStatusMap}");
+    mapGet(Map="#{pageSession.instanceStatusMap}" Key="#{pageSession.instanceName}" Value="#{pageSession.status}")
+    setPageSessionAttribute(key="statusString" value="$resource{i18nc.status.$pageSession{status}} $resource{i18nc.status.image.$pageSession{status}} ");
+
+</handler>
+
+
+    <!--
+    This handler gets the JDPA debug information.
+    Input: #{pageSession.instanceName}
+    Output" #{pageSession.instanceDebugInfo}
+    -->
+    <handler id="gfr.getInstanceDebugInfo" >
+        setAttribute(key="saveType", value="#{requestScope.alertType}");
+        setAttribute(key="saveSummary", value="#{requestScope.alertSummary}");
+        setAttribute(key="saveDetail", value="#{requestScope.alertDetail}");
+        createMap(result="#{requestScope._debugAttrMap}")
+        mapPut(map="#{requestScope._debugAttrMap}" key="target" value="#{pageSession.instanceName}")
+        gf.restRequest(endpoint="#{sessionScope.REST_URL}/get-runtime-info" attrs="#{requestScope._debugAttrMap}"
+            method="GET" result="#{requestScope.debugResult}");
+        setAttribute(key="debugF" value="#{requestScope.debugResult.data.subReports.get(0).properties.debug}");
+        setPageSessionAttribute(key="instanceDebugInfo" value="$resource{i18n.inst.notEnabled}");
+        if ("#{requestScope.debugF}=true"){
+            setAttribute(key="debugPort" value="#{requestScope.debugResult.data.subReports.get(0).properties.debugPort}");
+            setPageSessionAttribute(key="instanceDebugInfo" value="$resource{i18n.inst.debugEnabled} ${debugPort}");
+        }
+        setAttribute(key="alertType", value="#{requestScope.saveType}");
+        setAttribute(key="alertSummary", value="#{requestScope.saveSummary}");
+        setAttribute(key="alertDetail", value="#{requestScope.saveDetail}");
+    </handler>

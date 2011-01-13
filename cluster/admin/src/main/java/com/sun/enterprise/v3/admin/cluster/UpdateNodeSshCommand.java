@@ -246,13 +246,13 @@ public class UpdateNodeSshCommand implements AdminCommand  {
     }
 
    private void setDefaults() {
-        if (sshport == null) {
+        if (!StringUtils.ok(sshport)) {
             sshport = NodeUtils.NODE_DEFAULT_SSH_PORT;
         }
-        if (sshuser == null) {
+        if (!StringUtils.ok(sshuser)) {
             sshuser = NodeUtils.NODE_DEFAULT_SSH_USER;
         }
-        if (installdir == null) {
+        if (!StringUtils.ok(installdir)) {
             installdir = NodeUtils.NODE_DEFAULT_INSTALLDIR;
         }
     }

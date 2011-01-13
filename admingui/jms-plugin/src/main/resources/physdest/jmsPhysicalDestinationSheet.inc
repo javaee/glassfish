@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -63,12 +63,10 @@
             mapPut(map="#{requestScope.attrsMap}", key="target", value="#{pageSession.target}");
             mapPut(map="#{requestScope.attrsMap}", key="id", value="#{name}");
 
-            println("***** requestScope.attrsMap = #{requestScope.attrsMap}");
-
             gf.restRequest(endpoint="#{baseUrl}/create-jmsdest", method="post", attrs="#{requestScope.attrsMap}", result="#{requestScope.result}");
 
 //            updatePhysicalDestination(name="#{pageSession.destName}", type="#{pageSession.destType}", attributes="#{pageSession.valueMap}");
-            gf.redirect(page="#{pageSession.parentPage}&target=#{pageSession.target}");
+        gf.redirect(page="#{request.contextPath}/#{pageSession.parentPage}");
         />
     </sun:button>
      <sun:button id="updateButton" rendered="#{edit}" text="$resource{i18n.button.Save}"
@@ -81,18 +79,16 @@
             mapPut(map="#{requestScope.attrsMap}", key="desttype", value="#{pageSession.destType}");
             mapPut(map="#{requestScope.attrsMap}", key="target", value="#{pageSession.target}");
             mapPut(map="#{requestScope.attrsMap}", key="id", value="#{pageSession.valueMap.Name}");
-            println("***** requestScope.attrsMap = #{requestScope.attrsMap}");
-
+            prepareSuccessfulMsg();
             gf.restRequest(endpoint="#{baseUrl}/__update-jmsdest", method="post", attrs="#{requestScope.attrsMap}", result="#{requestScope.result}");
 
 //            updatePhysicalDestination(name="#{pageSession.destName}", type="#{pageSession.destType}", attributes="#{pageSession.valueMap}");
-            gf.redirect(page="#{pageSession.parentPage}&target=#{pageSession.target}");
+            gf.redirect(page="#{pageSession.selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}")
         />
     </sun:button>
     <sun:button id="cancelButton" immediate="#{true}" text="$resource{i18n.button.Cancel}" primary="#{false}">
         <!command
-            println("***** pageSession.parentPage = #{pageSession.parentPage}&target=#{pageSession.target}");
-            gf.redirect(page="#{pageSession.parentPage}&target=#{pageSession.target}");
+            gf.redirect(page="#{request.contextPath}/#{pageSession.parentPage}");
         />
   </sun:button>
 
@@ -124,7 +120,8 @@
         </sun:property>
         <sun:property id="limitBehaviorProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jmsPhysDestinations.LimitBehavior}" helpText="$resource{i18njms.jmsPhysDestinations.LimitBehaviorHelp}" >
             <sun:dropDown id="Type" values={"REJECT_NEWEST", "FLOW_CONTROL","REMOVE_OLDEST","REMOVE_LOW_PRIORITY"}
-                          labels={"Reject newest messages", "Slow down producers", "Throw out oldest", "Throw out lowest-priority messages"}
+                          labels={"$resource{i18njms.jmsPhysDestinations.REJECT_NEWEST}", "$resource{i18njms.jmsPhysDestinations.FLOW_CONTROL}", 
+                            "$resource{i18njms.jmsPhysDestinations.REMOVE_OLDEST}", "$resource{i18njms.jmsPhysDestinations.REMOVE_LOW_PRIORITY}"}
                           selected="#{pageSession.valueMap['LimitBehavior']}"/>
         </sun:property>
         <sun:property id="maxNumProducersProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jmsPhysDestinations.MaxNumProducers}" helpText="$resource{i18njms.jmsPhysDestinations.MaxNumProducersHelp}" >
@@ -140,13 +137,13 @@
             <sun:textField id="consumerFlowLimit" text="#{pageSession.valueMap['ConsumerFlowLimit']}" columns="$int{6}" maxLength="#{sessionScope.fieldLengths['maxLength.jmsPhysDestinations.ConsumerFlowLimit']}" />
         </sun:property>
         <sun:property id="localDeliveryPreferredProp" labelAlign="left" noWrap="#{false}" overlapLabel="#{false}" rendered="#{pageSession.destType != 'topic'}" label="$resource{i18njms.jmsPhysDestinations.LocalDeliveryPreferred}" helpText="$resource{i18njms.jmsPhysDestinations.LocalDeliveryPreferredHelp}" >
-            <sun:dropDown id="localDeliveryPreferred" values={"true", "false"} labels={"True", "False"} selected="#{pageSession.valueMap['LocalDeliveryPreferred']}" selectedValue="true"/>
+            <sun:dropDown id="localDeliveryPreferred" values={"true", "false"} labels={"$resource{i18n.common.true}", "$resource{i18n.common.false}"} selected="#{pageSession.valueMap['LocalDeliveryPreferred']}" selectedValue="true"/>
         </sun:property>
         <sun:property id="useDmqProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jmsPhysDestinations.UseDMQ}" helpText="$resource{i18njms.jmsPhysDestinations.UseDMQHelp}" >
-            <sun:dropDown id="useDmq" values={"true", "false"} labels={"True", "False"} selected="#{pageSession.valueMap['UseDMQ']}" selectedValue="true"/>
+            <sun:dropDown id="useDmq" values={"true", "false"} labels={"$resource{i18n.common.true}", "$resource{i18n.common.false}"} selected="#{pageSession.valueMap['UseDMQ']}" selectedValue="true"/>
         </sun:property>
         <sun:property id="validateSchemaProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jmsPhysDestinations.ValidateXMLSchemaEnabled}" helpText="$resource{i18njms.jmsPhysDestinations.ValidateXMLSchemaEnabledHelp}" >
-            <sun:dropDown id="validateXMLSchemaEnabled" values={"true", "false"} labels={"True", "False"} selected="#{pageSession.valueMap['ValidateXMLSchemaEnabled']}" selectedValue="true"/>
+            <sun:dropDown id="validateXMLSchemaEnabled" values={"true", "false"} labels={"$resource{i18n.common.true}", "$resource{i18n.common.false}"} selected="#{pageSession.valueMap['ValidateXMLSchemaEnabled']}" selectedValue="true"/>
         </sun:property>
         <sun:property id="xmlSchemeUrlProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.jmsPhysDestinations.XMLSchemaURIList}" helpText="$resource{i18njms.jmsPhysDestinations.XMLSchemaURIListHelp}" >
             <sun:textField id="xmlSchemaURIList" text="#{pageSession.valueMap['XmlSchemaURIList']}" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.jmsPhysDestinations.XMLSchemaURIList']}" />

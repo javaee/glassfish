@@ -42,22 +42,20 @@ package com.sun.enterprise.admin.util;
 
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Server;
+import java.util.logging.Level;
 import org.glassfish.api.Startup;
 import org.glassfish.api.admin.*;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.PostConstruct;
-import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.component.Singleton;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import java.util.logging.Logger;
 
@@ -67,10 +65,7 @@ import java.util.logging.Logger;
  */
 @Service
 @Scoped(Singleton.class)
-public class InstanceStateService implements Startup, PostConstruct {
-
-    @Inject
-    private Habitat habitat;
+public class InstanceStateService implements Startup {
 
     @Inject
     private ServerEnvironment serverEnv;
@@ -81,60 +76,73 @@ public class InstanceStateService implements Startup, PostConstruct {
     @Inject
     private Logger logger;
 
+    @Inject
+    private CommandThreadPool cmdPool;
+
     private InstanceStateFileProcessor stateProcessor;
-
-    private HashMap<String, InstanceState> instanceStates = new HashMap<String, InstanceState>();
-
+    private HashMap<String, InstanceState> instanceStates;
     private final int MAX_RECORDED_FAILED_COMMANDS = 10;
 
     public InstanceStateService() {}
 
-    /**
-     * Process the instance file if this is DAS and there are instances configured already in this domain
+    /*
+     * Perform lazy-initialization for the object, since this InstanceStateService
+     * is not needed if there are not any instances.
      */
-    @Override
-    public void postConstruct() {
-        // If this is not the DAS, no need for instance state processing
-        if(serverEnv.isInstance()) {
-            return;
-        }
-        stateProcessor = new InstanceStateFileProcessor(habitat, instanceStates, domain,
-                serverEnv.getConfigDirPath().getAbsolutePath()+ File.separatorChar+".instancestate");
-        // There are no instances configured in this domain as yet; no need for instance state service
-        if(domain.getServers().getServer().size() == 1) {
-            return;
-        }
+    private void init() {
+        if (instanceStates != null) return;
+        instanceStates = new HashMap<String, InstanceState>();
+        File stateFile = new File(serverEnv.getConfigDirPath().getAbsolutePath(),
+                            ".instancestate");
         try {
-            stateProcessor.parse();
-        } catch (Exception e) {
-            logger.severe("Error while parsing instance state file : " + e.getLocalizedMessage());
+            stateProcessor = new InstanceStateFileProcessor(instanceStates,
+                        stateFile);
+        } catch (IOException ioe) {
+            logger.log(Level.INFO, "unable to read instance state file {0}, recreating", stateFile);
+            instanceStates = new HashMap<String, InstanceState>();
+            // Even though instances may already exist, do not populate the
+            // instancesStates array because it will be repopulated as it is
+            // used. Populating it early causes problems during instance
+            // creation.
+            try {
+                stateProcessor = InstanceStateFileProcessor.createNew(instanceStates, stateFile);
+            } catch (IOException ex) {
+                logger.log(Level.SEVERE, "unable to create instance state file " + stateFile, ex);
+                stateProcessor = null;
+            }
         }
     }
 
     public synchronized void addServerToStateService(String instanceName) {
-        if(instanceStates.get(instanceName) != null)
-            return;
+        init();
+        instanceStates.put(instanceName, new InstanceState(InstanceState.StateType.NEVER_STARTED));
         try {
-            instanceStates.put(instanceName, new InstanceState(InstanceState.StateType.NO_RESPONSE));
             stateProcessor.addNewServer(instanceName);
         } catch (Exception e) {
-            logger.severe("Error while adding new server state to instance state : " + e.getLocalizedMessage());
+            logger.log(Level.SEVERE, "Error while adding new server state to instance state: {0}", e.getLocalizedMessage());
         }
     }
 
-    public synchronized void addFailedCommandToInstance(String instance, String cmdDetails) {
+    public synchronized void addFailedCommandToInstance(String instance, String cmd, ParameterMap params) {
+        init();
+        String cmdDetails = cmd;
+        String defArg = params.getOne("DEFAULT");
+        if (defArg != null) cmdDetails += " " + defArg;
+
         try {
             InstanceState i = instanceStates.get(instance);
-            if( (i != null) && (i.getFailedCommands().size() < MAX_RECORDED_FAILED_COMMANDS) ) {
+            if (i != null && i.getState() != InstanceState.StateType.NEVER_STARTED &&
+                    i.getFailedCommands().size() < MAX_RECORDED_FAILED_COMMANDS) {
                 i.addFailedCommands(cmdDetails);
                 stateProcessor.addFailedCommand(instance, cmdDetails);
             }
         } catch (Exception e) {
-            logger.severe("Error while adding new server state to instance state : " + e.getLocalizedMessage());
+            logger.log(Level.SEVERE, "Error while adding failed command to instance state: {0}", e.getLocalizedMessage());
         }
     }
 
     public synchronized void removeFailedCommandsForInstance(String instance) {
+        init();
         try {
             InstanceState i = instanceStates.get(instance);
             if(i != null) {
@@ -142,71 +150,80 @@ public class InstanceStateService implements Startup, PostConstruct {
                 stateProcessor.removeFailedCommands(instance);
             }
         } catch (Exception e) {
-            logger.severe("Error while failed commands from instance state : " + e.getLocalizedMessage());
+            logger.log(Level.SEVERE, "Error while removing failed commands from instance state: {0}", e.getLocalizedMessage());
         }
     }
 
     public InstanceState.StateType getState(String instanceName) {
+        init();
         InstanceState s = instanceStates.get(instanceName);
-        if(s == null)
-            return InstanceState.StateType.NO_RESPONSE;
+        if (s == null)
+            return InstanceState.StateType.NEVER_STARTED;
         return s.getState();
     }
 
     public List<String> getFailedCommands(String instanceName) {
+        init();
         InstanceState s = instanceStates.get(instanceName);
         if(s == null)
             return new ArrayList<String>();
-        return(s.getFailedCommands());
+        return s.getFailedCommands();
     }
 
     public synchronized InstanceState.StateType setState(String name, InstanceState.StateType newState, boolean force) {
+        init();
         boolean updateXML = false;
         InstanceState.StateType ret = newState;
-        InstanceState.StateType currState = instanceStates.get(name).getState();
-        if(currState == null) {
+        InstanceState is = instanceStates.get(name);
+        InstanceState.StateType currState;
+        if (is == null || (currState = is.getState()) == null) {
             instanceStates.put(name, new InstanceState(newState));
             updateXML = true;
             ret = newState;
-        } else {
-            if(!force && currState.equals(InstanceState.StateType.RESTART_REQUIRED)) {
-                // If current state is RESTART_REQUIRED, no updates to state is allowed because
-                // only an instance restart can move this instance out of RESTART_REQD state
-                updateXML = false;
-                ret = currState;
-            } else {
-                // Do update only if there is a change from RUNNING to NO_RESPONSE or vice versa
-                if(!currState.equals(newState)) {
-                    instanceStates.get(name).setState(newState);
-                    updateXML = true;
-                    ret = newState;
-                }
-            }
+        } else if (!force && currState == InstanceState.StateType.RESTART_REQUIRED) {
+            // If current state is RESTART_REQUIRED, no updates to state is allowed because
+            // only an instance restart can move this instance out of RESTART_REQD state
+            updateXML = false;
+            ret = currState;
+        } else if (!force && currState == InstanceState.StateType.NEVER_STARTED &&
+                    (newState == InstanceState.StateType.NOT_RUNNING ||
+                     newState == InstanceState.StateType.RESTART_REQUIRED ||
+                     newState == InstanceState.StateType.NO_RESPONSE)) {
+            // invalid state change
+            updateXML = false;
+            ret = currState;
+        } else if (!currState.equals(newState)) {
+            instanceStates.get(name).setState(newState);
+            updateXML = true;
+            ret = newState;
         }
+
         try {
-            if(force || updateXML) {
+            if (updateXML) {
                 stateProcessor.updateState(name, newState.getDescription());
             }
         } catch (Exception e) {
-            logger.severe("Error while setting instance state : " + e.getLocalizedMessage());
+            logger.log(Level.SEVERE, "Error while setting instance state: {0}", e.getLocalizedMessage());
         }
         return ret;
     }
 
     public synchronized void removeInstanceFromStateService(String name) {
+        init();
         instanceStates.remove(name);
         try {
             stateProcessor.removeInstanceNode(name);
         } catch (Exception e) {
-            logger.severe("Error while removing instance node : " + e.getLocalizedMessage());
+            logger.log(Level.SEVERE, "Error while removing instance: {0}", e.getLocalizedMessage());
         }
     }
 
+    /*
+     * For now, this just submits the job directly to the pool.  In the future
+     * it might be possible to avoid submitting the job
+     */
     public Future<InstanceCommandResult> submitJob(Server server, InstanceCommand ice, InstanceCommandResult r) {
-        InstanceState s = instanceStates.get(server.getName());
-        if(s == null)
-            return null;
-        return s.submitJob(ice, r);
+        return cmdPool.submitJob(ice, r);
     }
 
     @Override

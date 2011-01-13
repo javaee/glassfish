@@ -53,14 +53,12 @@
 	    childExpanded="false"
 	    childURL="/corba/iiopListenerEdit.jsf?name=#{$this{valueBinding}.text}&configName=${configName}"
 	    text="$resource{i18n.tree.iiopListeners}"
+            imageURL="/resource/corba/images/orb.gif"
 	    url="/corba/iiopListeners.jsf?configName=${configName}">
 	<ui:event type="beforeCreate">
 	    gf.restRequest(endpoint="#{sessionScope.REST_URL}/configs/config/${configName}/iiop-service/iiop-listener.json" method="get" result="#{requestScope.resp}");
 	    setAttribute(key="children" value="#{requestScope.resp.data.extraProperties.childResources}");
 	</ui:event>
-        <!facet image>
-            <sun:iconHyperlink id="treeIcon" icon="TREE_FOLDER" url="/corba/iiopListeners.jsf?configName=${configName}"  border="0" immediate="true" alt="$resource{i18n.tree.iiopListeners}"/>
-        </facet>
     </dynamicTreeNode>
     <!beforeCreate
         setResourceBundle(key="i18n_corba" bundle="org.glassfish.corba.admingui.Strings")

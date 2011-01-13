@@ -60,52 +60,17 @@ import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.HashMap;
-import java.util.StringTokenizer;
 
 import org.glassfish.admingui.common.util.GuiUtil;
-import org.glassfish.admingui.common.util.RestResponse;
+import org.glassfish.admingui.common.util.RestUtil;
 
 public class InstanceHandler {
 
     /** Creates a new instance of InstanceHandler */
     public InstanceHandler() {
     }
-
-
-     @Handler(id = "getDebugInfo",
-    input = {
-        @HandlerInput(name = "debugOptions", type = String.class, required = true),
-        @HandlerInput(name = "debugEnabled", type = Boolean.class, required = true)
-    },
-    output = {
-        @HandlerOutput(name = "debugInfo", type = String.class)
-    })
-    public static void getDebugInfo(HandlerContext handlerCtx) {
-
-        String debugOptions = (String) handlerCtx.getInputValue("debugOptions");
-        String debugPort = "";
-        StringTokenizer tokens = new StringTokenizer(debugOptions, ",");
-        String doption = "";
-        while (tokens.hasMoreTokens()) {
-            doption = tokens.nextToken().trim();
-            if (doption.startsWith("address")) {
-                int pos = doption.indexOf("=");
-                if (pos >= 0) {
-                    debugPort = doption.substring(pos + 1).trim();
-                    break;
-                }
-            }
-        }
-
-        Boolean debugEnabled = (Boolean) handlerCtx.getInputValue("debugEnabled");
-        String msg = ("true".equals(""+debugEnabled)) ?
-            GuiUtil.getMessage("inst.debugEnabled") + debugPort :
-            GuiUtil.getMessage("inst.notEnabled");
-        handlerCtx.setOutputValue("debugInfo", msg);
-
-     }
-
 
     @Handler(id="getJvmOptionsValues",
         input={
@@ -119,8 +84,11 @@ public class InstanceHandler {
             ArrayList<String> list = getJvmOptions(handlerCtx);
             handlerCtx.setOutputValue("result", GuiUtil.convertArrayToListOfMap(list.toArray(), "value"));
         }catch (Exception ex){
-            ex.printStackTrace();
             handlerCtx.setOutputValue("result", new HashMap());
+            GuiUtil.getLogger().info(GuiUtil.getCommonMessage("log.error.getJvmOptionsValues") + ex.getLocalizedMessage());
+            if (GuiUtil.getLogger().isLoggable(Level.FINE)){
+                ex.printStackTrace();
+            }
         }
     }
     
@@ -130,7 +98,7 @@ public class InstanceHandler {
         if (!endpoint.endsWith(".json"))
             endpoint = endpoint + ".json";
         Map<String, Object> attrs = (Map<String, Object>) handlerCtx.getInputValue("attrs");
-        Map result = (HashMap) RestApiHandlers.restRequest(endpoint, attrs, "get", handlerCtx, false).get("data");
+        Map result = (HashMap) RestUtil.restRequest(endpoint, attrs, "get", handlerCtx, false).get("data");
         list = (ArrayList<String>) ((Map<String, Object>) result.get("extraProperties")).get("leafList");
         if (list == null)
             list = new ArrayList<String>();
@@ -140,53 +108,57 @@ public class InstanceHandler {
    @Handler(id="saveJvmOptionValues",
         input={
             @HandlerInput(name="endpoint",   type=String.class, required=true),
+            @HandlerInput(name="target",   type=String.class, required=true),
             @HandlerInput(name="attrs", type=Map.class, required=false),
-            @HandlerInput(name="options",   type=List.class)} )
+            @HandlerInput(name="options",   type=List.class),
+            @HandlerInput(name="deleteProfileEndpoint",   type=String.class),
+            @HandlerInput(name="origList",   type=List.class)
+            } )
    public static void saveJvmOptionValues(HandlerContext handlerCtx) {
+        String endpoint = (String) handlerCtx.getInputValue("endpoint");
+        String target = (String) handlerCtx.getInputValue("target");
         try {
-            String endpoint = (String) handlerCtx.getInputValue("endpoint");
-            List<Map<String, String>> options = (List) handlerCtx.getInputValue("options");
+            List<Map> options = (List<Map>) handlerCtx.getInputValue("options");
             Map<String, Object> payload = new HashMap<String, Object>();
-            deleteJvmOptions(handlerCtx);
-            for (Map<String, String> oneRow : options) {
-                String str = oneRow.get(PROPERTY_VALUE);
-                ArrayList kv = getKeyValuePair(str);
-                payload.put((String)kv.get(0), kv.get(1));
-                addJvmOption(endpoint,payload);
+            if (endpoint.contains("profiler")) {
+                payload.put("profiler", "true");
             }
+            prepareJvmOptionPayload(payload, target, options);
+            RestUtil.restRequest(endpoint, payload, "POST", null, false, true);
         } catch (Exception ex) {
+            //If this is called during create profile, we want to delete the profile which was created, and stay at the same
+            //place for user to fix the jvm options.
+            String deleteProfileEndpoint = (String) handlerCtx.getInputValue("deleteProfileEndpoint");
+            if (!GuiUtil.isEmpty(deleteProfileEndpoint)){
+                Map attrMap = new HashMap();
+                attrMap.put("target", (String) handlerCtx.getInputValue("target"));
+                RestUtil.restRequest(deleteProfileEndpoint, attrMap, "DELETE", null, false, false);
+            }
+
+            //If the origList is not empty,  we want to restore it. Since POST remove all options first and then add it back. As a
+            //result, all previous existing option is gone.
+            List<Map> origList = (List<Map>) handlerCtx.getInputValue("origList");
+            Map<String, Object> payload1 = new HashMap<String, Object>();
+            if (endpoint.contains("profiler")) {
+                payload1.put("profiler", "true");
+            }
+            if ( (origList != null) && origList.size()>0){
+                prepareJvmOptionPayload(payload1, target, origList);
+                RestUtil.restRequest(endpoint, payload1, "POST", null, false, false);
+            }
             GuiUtil.handleException(handlerCtx, ex);
         }
     }
 
-    public static void addJvmOption(String endpoint, Map payload) throws Exception{
-        if (endpoint.contains("profiler")) {
-            payload.put("profiler", "true");
-        }
-        RestResponse response = RestApiHandlers.post(endpoint, payload);
-        if (!response.isSuccess()) {
-            throw new Exception (response.getResponseBody());
+    private static void prepareJvmOptionPayload(Map payload, String target, List<Map> options){
+        payload.put("target", target);
+        for (Map oneRow : options) {
+            String str = (String) oneRow.get(PROPERTY_VALUE);
+            ArrayList kv = getKeyValuePair(str);
+            payload.put((String)kv.get(0), kv.get(1));
         }
     }
 
-    public static void deleteJvmOptions(HandlerContext handlerCtx) throws Exception{
-        Map<String, Object> payload = new HashMap<String, Object>();
-        String endpoint = (String) handlerCtx.getInputValue("endpoint");
-        ArrayList list = getJvmOptions(handlerCtx);
-        for (Object s: list) {
-            String str = (String)s;
-            ArrayList kv = getKeyValuePair(str);
-            payload.put((String)kv.get(0), kv.get(1));
-            if (endpoint.contains("/profiler")) {
-                endpoint = endpoint.substring(0, endpoint.indexOf("/profiler")) + "/jvm-options";
-                payload.put("profiler", "true");
-            }
-            RestResponse response = RestApiHandlers.delete(endpoint, payload);
-            if (!response.isSuccess()) {
-                throw new Exception (response.getResponseBody());
-            }
-        }
-    }
 
     public static ArrayList getKeyValuePair(String str) {
         ArrayList list = new ArrayList(2);

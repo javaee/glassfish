@@ -190,11 +190,20 @@ public class RestoreManager extends BackupRestoreManager {
     //////////////////////////////////////////////////////////////////////////
 
     private void copyBackups() throws IOException    { 
-        if(backupDir != null) {
-            File tempRestoreDirBackups = new File(tempRestoreDir,
+
+        File domainBackupDir = 
+            new File(request.domainDir, Constants.BACKUP_DIR);
+ 
+        /**
+         * If an existing backup directory does not exist then there
+         * is nothing to copy.
+         */
+        if(!FileUtils.safeIsDirectory(domainBackupDir))
+            return;
+        
+        File tempRestoreDirBackups = new File(tempRestoreDir,
                                                   Constants.BACKUP_DIR);
-            FileUtils.copyTree(backupDir, tempRestoreDirBackups);
-        }
+        FileUtils.copyTree(domainBackupDir, tempRestoreDirBackups);
     }
     
     //////////////////////////////////////////////////////////////////////////
@@ -233,11 +242,14 @@ public class RestoreManager extends BackupRestoreManager {
         // in the domain dir now.
         File propsFile = new File(request.domainDir, Constants.PROPS_FILENAME);
         Status status = new Status();
+        String mesg = new String("");
 
-        String mesg = StringHelper.get("backup-res.SuccessfulRestore", 
-            request.domainName, request.domainDir );
+ 
+        if (request.verbose == true || request.terse != true)
+            mesg = StringHelper.get("backup-res.SuccessfulRestore", 
+                                    request.domainName, request.domainDir );
 
-        if(request.terse == false)
+        if(request.verbose == true)
             mesg += "\n" + status.read(propsFile, false);
         
         if(!propsFile.delete())

@@ -122,6 +122,26 @@ public class AppClientFacade {
 
 
     /**
+     * Prepares the ACC (if not already done by the agent) and then transfers
+     * control to the ACC.
+     * <p>
+     * Eventually, the Java runtime will invoke this method as the main method
+     * of the application, whether or not the command line specified the
+     * Java agent.  If the agent has already run, then it will have prepared
+     * the ACC already.  If the agent has not already run, then this method 
+     * prepares it.
+     * <p>
+     * If the user has run the generated app client JAR directly - not using
+     * the appclient script - then the Java runtime will invoke this method
+     * directly and the command-line arguments should be intended for the client
+     * only; no agent or ACC settings are possible.  If the user has used the
+     * appclient script, then the script will have created a Java command which
+     * specifies the agent, constructs an agent argument string, and passes as
+     * command line arguments only those values which should be passed to the
+     * client.  The net result is that, no matter how the app client was
+     * launched, the args array contains only the arguments that are for the
+     * client's consumption, without any agent or ACC arguments.
+     * 
      * @param args the command line arguments
      */
     public static void main(String[] args) {
@@ -131,9 +151,17 @@ public class AppClientFacade {
                  * The facade JAR has been run directly, not via the appclient
                  * script and not via Java Web Start.  So we have no agent
                  * arguments and no instrumentation for registering transformations.
+                 * 
+                 * Because the agent has not run, we prepare the ACC here.  (The
+                 * agent would have done so itself had it run.)
                  */
                 prepareACC(null, null);
             }
+            
+            /*
+             * In any case, the ACC is now prepared.  Launch the app client in
+             * the prepared ACC.
+             */
             acc.launch(args);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -163,50 +191,36 @@ public class AppClientFacade {
                     "Current Java version {0} is too low; {1} or later required",
                     new Object[] {javaVersion.versionString, "1.6"}));
         }
+        
+        /*
+         * Analyze the agent argument string.  
+         */
         AgentArguments agentArgs = AgentArguments.newInstance(agentArgsText);
 
-        List<String> effectiveCommandLineArgs = new ArrayList<String>();
-
         /*
-        * If the agent arguments includes an args file specification, then
-        * open it and read the command-line arguments from the file.
-        */
-//            final String argFilePath = agentArgs.namedValues().getProperty(
-//                    AppClientArgumentsFile.AGENT_ARGS_FILE_PROPERTY);
-//            if (argFilePath != null) {
-//
-//                final String argsFileFormat = agentArgs.namedValues().getProperty(
-//                                AppClientArgumentsFile.AGENT_ARGS_FORMAT_PROPERTY);
-//
-//                AppClientArgumentsFile argsFile = AppClientArgumentsFile
-//                        .newInstance(argFilePath, argsFileFormat);
-//
-//                effectiveCommandLineArgs.addAll(
-//                        skipJVMArgs(argsFile.getArguments()));
-//            }
-
-        /*
-         * Add any arguments specified to the agent to the end of the list so
-         * settings specified as agent arguments override settings on the
-         * command line.
+         * The agent arguments that correspond to the ones that we want to
+         * pass to the ACC are the ones with the "arg=" keyword prefix.  These
+         * will include arguments with meaning to the ACC (-textauth for example)
+         * as well as arguments to be passed on to the client's main method.
          */
-        effectiveCommandLineArgs.addAll(agentArgs.unnamedValues());
+        appClientCommandArgs = AppclientCommandArguments
+                .newInstance(agentArgs.namedValues("arg"));
 
-
-
-        AppclientCommandArguments appClientCommandArgs = AppclientCommandArguments
-                .newInstance(effectiveCommandLineArgs);
-
-        /*
-         * Process the agent arguments which include most of the appclient script
-         * arguments.
-         */
-        launchInfo = CommandLaunchInfo.newInstance(agentArgsText);
-        if (launchInfo.getAppclientCommandArguments().isUsage()) {
+        if (appClientCommandArgs.isUsage()) {
             usage(0);
-        } else if (launchInfo.getAppclientCommandArguments().isHelp()) {
+        } else if (appClientCommandArgs.isHelp()) {
             help();
         }
+        
+        /*
+         * Examine the agent arguments for settings about how to launch the
+         * client.
+         */
+        launchInfo = CommandLaunchInfo.newInstance(agentArgs);
+        if (launchInfo.getClientLaunchType() == ClientLaunchType.UNKNOWN) {
+            throw new IllegalArgumentException();
+        }
+
         /*
          * Handle the legacy env. variable APPCPATH.
          */
@@ -221,11 +235,6 @@ public class AppClientFacade {
          * initialization using the ACC start-up context.  That happens during
          * the ACCModulesManager warm-up.
          */
-
-        if (launchInfo.getClientLaunchType() == ClientLaunchType.UNKNOWN) {
-            throw new IllegalArgumentException();
-        }
-        appClientCommandArgs = launchInfo.getAppclientCommandArguments();
 
         /*
          * Load the ACC configuration XML file.
@@ -258,7 +267,8 @@ public class AppClientFacade {
          * of the command line arguments and agent arguments.
          */
         final AppClientContainer newACC = createContainer(builder,
-                launchInfo);
+                launchInfo,
+                appClientCommandArgs);
 
         /*
          * Because the JMV might invoke the client's main class, the agent
@@ -424,7 +434,8 @@ public class AppClientFacade {
 
     private static AppClientContainer createContainer(
             final Builder builder,
-            final CommandLaunchInfo launchInfo) throws Exception, UserError {
+            final CommandLaunchInfo launchInfo,
+            final AppclientCommandArguments appClientArgs) throws Exception, UserError {
 
         /*
          * The launchInfo already knows something about how to conduct the
@@ -443,16 +454,16 @@ public class AppClientFacade {
                 container = createContainerForAppClientArchiveOrDir(
                         builder,
                         launchInfo.getClientName(),
-                        launchInfo.getAppclientCommandArguments().getMainclass(),
-                        launchInfo.getAppclientCommandArguments().getName());
+                        appClientArgs.getMainclass(),
+                        appClientArgs.getName());
                 break;
 
             case URL:
                 container = createContainerForJWSLaunch(
                         builder,
                         launchInfo.getClientName(),
-                        launchInfo.getAppclientCommandArguments().getMainclass(),
-                        launchInfo.getAppclientCommandArguments().getName());
+                        appClientArgs.getMainclass(),
+                        appClientArgs.getName());
                 break;
 
             case CLASS:
@@ -479,7 +490,7 @@ public class AppClientFacade {
 
         URI uri = Util.getURI(new File(appClientPath));
         return builder.newContainer(uri, null /* callbackHandler */, mainClassName, clientName,
-                launchInfo.getAppclientCommandArguments().isTextauth());
+                appClientCommandArgs.isTextauth());
     }
 
     private static AppClientContainer createContainerForJWSLaunch(
@@ -567,7 +578,7 @@ public class AppClientFacade {
              * from a disk file.
              */
             File configFile = checkXMLFile(configPath);
-            checkXMLFile(launchInfo.getAppclientCommandArguments().getConfigFilePath());
+            checkXMLFile(appClientCommandArgs.getConfigFilePath());
             configReader = new FileReader(configFile);
         }
         /*

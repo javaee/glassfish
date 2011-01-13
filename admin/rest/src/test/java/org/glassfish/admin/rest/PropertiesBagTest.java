@@ -73,37 +73,6 @@ public class PropertiesBagTest extends RestTestBase {
     }
 
     @Test
-    public void addDomainProperties() {
-        final String propName = "property_" + generateRandomString();
-        final String propValue = generateRandomString();
-        final Map<String, String> domainProps = new HashMap<String, String>() {{
-            put("name", propName);
-            put("value", propValue);
-        }};
-
-        try {
-            createProperties(URL_DOMAIN_PROPERTIES, new ArrayList<Map<String, String>>() {{ add(domainProps); }});
-        } finally {
-            restoreDomainProperties();
-        }
-    }
-
-    @Test
-    public void deleteDomainProperties() {
-        try {
-            ClientResponse response = delete(URL_DOMAIN_PROPERTIES);
-            checkStatusForSuccess(response);
-            response = get(URL_DOMAIN_PROPERTIES);
-            checkStatusForSuccess(response);
-            List<Map<String, String>> properties = getProperties(response);
-            assertEquals(0, properties.size());
-        } finally {
-            restoreDomainProperties();
-        }
-
-    }
-
-    @Test
     public void javaConfigProperties() {
         createAndDeleteProperties(URL_JAVA_CONFIG_PROPERTIES);
     }

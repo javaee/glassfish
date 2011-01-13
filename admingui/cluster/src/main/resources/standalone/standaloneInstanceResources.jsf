@@ -51,6 +51,7 @@
     <event>
     <!beforeCreate
         getRequestValue(key="instanceName" value="#{pageSession.target}");
+        setPageSessionAttribute(key="instanceName" value="#{pageSession.target}");
         getRequestValue(key="filterValue" value="#{pageSession.filterValue}");
         urlencode(value="#{pageSession.target}" encoding="UTF-8" result="#{pageSession.encodedInstanceName}");
         setSessionAttribute(key="standaloneInstanceTabs" value="resources");
@@ -69,7 +70,7 @@
 
 <sun:title id="propertyContentPage" title="$resource{i18nc.resourcesTarget.pageTitle}"
                  helpText="$resource{i18nc.resourcesTarget.pageTitleHelp}" />
-"<br/>
+#include "/common/shared/nameSection.inc"
 #include "/common/resourceNode/targetResourceTable.inc"
 
 <sun:hidden id="helpKey" value="$resource{help_cluster.standaloneInstanceResources}" />

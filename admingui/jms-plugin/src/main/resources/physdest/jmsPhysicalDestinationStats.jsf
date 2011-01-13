@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -50,13 +50,14 @@
     <event>
     <!beforeCreate
         setPageSessionAttribute(key="pageTitle" value="$resource{i18njms.jmsPhysDestinations.statsPageTitle}");
-        setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jms/jmsPhysicalDestinations.jsf");
+        //setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/jms/physdest/jmsPhysicalDestinations.jsf");
         setPageSessionAttribute(key="edit" value="#{true}");
         getRequestValue(key="name" value=>$page{destName});
         getRequestValue(key="type" value=>$page{destType});
+        getRequestValue(key="target" value=>$page{target});
+        getRequestValue(key="parent" value=>$page{parentPage});
 
-        getPhysicalDestinationStats(name="#{pageSession.destName}", type="#{pageSession.destType}", statsData="#{statsData}");
-        //guiLog(message="***** statsData = #{statsData}");
+        getPhysicalDestinationStats(name="#{pageSession.destName}", type="#{pageSession.destType}", target="#{pageSession.target}", statsData="#{statsData}");
     />
     </event>
 #include "/common/shared/alertMsg.inc"

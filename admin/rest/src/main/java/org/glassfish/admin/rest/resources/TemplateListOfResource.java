@@ -40,10 +40,10 @@
 
 package org.glassfish.admin.rest.resources;
 
+import java.net.HttpURLConnection;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.jersey.api.core.ResourceContext;
 import com.sun.jersey.multipart.FormDataMultiPart;
-import org.glassfish.admin.rest.CliFailureException;
 import org.glassfish.admin.rest.ResourceUtil;
 import org.glassfish.admin.rest.RestService;
 import org.glassfish.admin.rest.Util;
@@ -138,8 +138,6 @@ public abstract class TemplateListOfResource {
             String resourceToCreate = uriInfo.getAbsolutePath() + "/";
 
             if (null != commandName) {
-                // TODO: Not needed anymore?
-//                data = __resourceUtil.translateCamelCasedNamesToCommandParamNames(data,commandName, RestService.getHabitat(), RestService.logger);
                 ResourceUtil.adjustParameters(data); //adjusting for DEFAULT is required only while executing a CLI command
                 resourceToCreate += data.get("DEFAULT");
                 String typeOfResult = ResourceUtil.getResultType(requestHeaders);
@@ -171,7 +169,9 @@ public abstract class TemplateListOfResource {
                 } catch (TransactionFailure ex) {
                     throw new CliFailureException(ex.getMessage(), ex);
                 }*/
-                     throw new CliFailureException("No CRUD Create possible.");
+
+                ActionReportResult arr = ResourceUtil.getActionReportResult(400, "No CRUD Create possible.", requestHeaders, uriInfo);
+                return Response.status(HttpURLConnection.HTTP_INTERNAL_ERROR).entity(arr).build();
 
 
             }
@@ -358,7 +358,6 @@ public abstract class TemplateListOfResource {
         String command = getPostCommand();
         if (command != null) {
             MethodMetaData postMethodMetaData = ResourceUtil.getMethodMetaData(command, habitat, RestService.logger);
-            postMethodMetaData.setDescription("Create");
             if (Util.getResourceName(uriInfo).equals("Application")) {
                 postMethodMetaData.setIsFileUploadOperation(true);
             }

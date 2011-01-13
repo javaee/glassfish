@@ -85,6 +85,7 @@
 #include "/common/shared/editPageButtons.inc"
 </sun:title>
     <sun:propertySheet id="propertySheet">
+#include "/common/shared/configNameSection.inc"
 
         <sun:propertySheetSection id="http" >
             <sun:property id="acLog" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.access.SsoEnbaled}">

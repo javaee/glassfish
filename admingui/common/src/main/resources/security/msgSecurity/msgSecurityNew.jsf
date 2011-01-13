@@ -98,8 +98,9 @@
         </sun:panelGroup>
     </facet>
         </sun:title>
-        "<br><br>
     <sun:propertySheet id="propertySheet">
+#include "/common/shared/configNameSection.inc"
+
         <sun:propertySheetSection id="propertySheetSection">
             <sun:property id="AuthLayerProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.msgSecurity.authLayerLabel}" >
                  <sun:dropDown id="AuthLayer" selected="#{pageSession.valueMap['AuthLayer']}" labels="$pageSession{layers}"  required="#{true}" >

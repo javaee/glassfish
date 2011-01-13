@@ -80,9 +80,6 @@ public final class InstanceInfo {
         timeoutInMsec = timeout0;
         this.report = report;
         this.stateService = stateService;
-        /*
-        state = uptime == -1 ? NOT_RUNNING : formatTime(uptime);
-         */
 
         if (!StringUtils.ok(cluster0))
             cluster = null;
@@ -143,23 +140,23 @@ public final class InstanceInfo {
 
 
     public final String getDisplayState() {
-        String display = (isRunning()) ? InstanceState.StateType.RUNNING.getDisplayString()
-                : InstanceState.StateType.NOT_RUNNING.getDisplayString();
-        List<String> failedCmds = stateService.getFailedCommands(name);
-        InstanceState.StateType istate = isRunning()
-                ? (stateService.setState(name, InstanceState.StateType.RUNNING, false))
-                : (stateService.setState(name, InstanceState.StateType.NOT_RUNNING, false));
+        StringBuilder display = new StringBuilder();
+        display.append(isRunning() ?
+            InstanceState.StateType.RUNNING.getDisplayString() :
+            InstanceState.StateType.NOT_RUNNING.getDisplayString());
 
-        if (istate == InstanceState.StateType.RESTART_REQUIRED) {
+        if (ssState == InstanceState.StateType.RESTART_REQUIRED) {
             if (isRunning()) {
-                display += ("; " + InstanceState.StateType.RESTART_REQUIRED.getDisplayString());
+                display.append("; ").append(InstanceState.StateType.RESTART_REQUIRED.getDisplayString());
             }
-            String list = "";
-            for (String z : failedCmds)
-                list += (z + "; ");
-            display += (" [pending config changes are: " + list + "]");
+            List<String> failedCmds = stateService.getFailedCommands(name);
+            if (!failedCmds.isEmpty()) {
+                StringBuilder list = new StringBuilder();
+                for (String z : failedCmds) list.append(z).append("; ");
+                display.append(" [pending config changes are: ").append(list).append("]");
+            }
         }
-        return display;
+        return display.toString();
     }
 
     public final String getState() {
@@ -190,10 +187,13 @@ public final class InstanceInfo {
                 state = NOT_RUNNING;
                 running = false;
                 pid = -1;
+                ssState = stateService.setState(name, InstanceState.StateType.NOT_RUNNING, false);
             }
             else {
-                String uptimeStr = res.getReport().getTopMessagePart().getProps().getProperty("Uptime");
-                String pidstr = res.getReport().getTopMessagePart().getProps().getProperty("Pid");
+                Properties props = res.getReport().getTopMessagePart().getProps();
+                String uptimeStr = props.getProperty("Uptime");
+                String pidstr = props.getProperty("Pid");
+                String restartstr = props.getProperty("Restart-Required");
 
                 try {
                     pid = Integer.parseInt(pidstr);
@@ -202,6 +202,11 @@ public final class InstanceInfo {
                     // no I don't want to use the enclosing catch...
                     pid = -1;
                 }
+                ssState = stateService.setState(name,
+                        Boolean.parseBoolean(restartstr) ?
+                            InstanceState.StateType.RESTART_REQUIRED :
+                            InstanceState.StateType.RUNNING,
+                        false);
                 uptime = new Long(uptimeStr);
                 state = formatTime(uptime);
                 running = true;
@@ -210,6 +215,7 @@ public final class InstanceInfo {
         catch (Exception e) {
             uptime = -1;
             state = NOT_RUNNING;
+            ssState = stateService.setState(name, InstanceState.StateType.NOT_RUNNING, false);
             running = false;
             pid = -1;
         }
@@ -281,6 +287,7 @@ public final class InstanceInfo {
     private final String name;
     private long uptime = -1;
     private String state = null;
+    private InstanceState.StateType ssState;
     private final String cluster;
     private final Logger logger;
     private final int timeoutInMsec;

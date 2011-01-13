@@ -128,7 +128,7 @@ public class GMSAdapterService implements Startup, PostConstruct, ConfigListener
             }
         }
         if (clusters != null) {
-            if (server.isDas()) {
+            if (env.isDas()) {
                 checkAllClusters(clusters);
             } else {
                 Cluster cluster = server.getCluster();

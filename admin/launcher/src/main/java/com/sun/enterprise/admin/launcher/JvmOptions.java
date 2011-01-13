@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,11 +37,16 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.admin.launcher;
 
-import com.sun.enterprise.universal.StringUtils;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import com.sun.enterprise.util.OS;
+import com.sun.enterprise.util.StringUtils;
+
+import static com.sun.enterprise.util.StringUtils.ok;
 
 /**
  *
@@ -203,7 +208,10 @@ class JvmOptions {
         }
     }
 
-    /** 
+    /**
+     * Filters out unwanted properties and filters in interested properties that
+     * may need to be present by default in certain environments (OS, vm.vendor)
+     *
      * bnevins September 2009
      * There may be System Properties from V2 that cause havoc.  
      * E.g. the MBean Server sys prop from V2 will be removed by upgrade code in
@@ -211,6 +219,7 @@ class JvmOptions {
      * We need to remove it carefully.  I.e. the user may want to set up their own
      * MBean Server Factory so we just check to see if the value is identical to
      * the V2 class...
+     *
      */
     private void filter() {
         // there is only one forbidden sys prop now so no need yet for fancy
@@ -228,13 +237,29 @@ class JvmOptions {
 
         if(val != null && val.startsWith(forbiddenStart) && val.endsWith(forbiddenEnd))
             sysProps.remove(key);
+
+        if (OS.isDarwin() && System.getProperty("java.vm.vendor").equals("Apple Inc.")) {
+            // on Mac OS, unless the property is specified in the domain.xml, we add
+            // the -d32 flag to start the JVM in 32 bits mode
+            Pattern pattern = Pattern.compile("d\\d+");
+            boolean settingPresent = false;
+            for (String propName : plainProps.keySet()) {
+                Matcher m = pattern.matcher(propName);
+                if (m.matches()) {
+                    settingPresent = true;
+                }
+            }
+            if (!settingPresent) {
+                addPlainProp("-d32");
+            }
+        }
     }
 
     private void setOsgiPort() {
         String s = sysProps.get("osgi.shell.telnet.port");
 
         // not configured
-        if(!StringUtils.ok(s))
+        if(!ok(s))
             return;
 
         try {

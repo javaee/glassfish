@@ -127,6 +127,10 @@ public class ClusterOperationUtil {
         Map<String, Future<InstanceCommandResult>> futures = new HashMap<String, Future<InstanceCommandResult>>();
         try {
             for(Server svr : instancesForReplication) {
+                if (instanceState.getState(svr.getName()) == InstanceState.StateType.NEVER_STARTED) {
+                    // Do not replicate commands to instances that have never been started.
+                    continue;
+                }
                 String host = svr.getAdminHost();
                 int port = rich.getAdminPort(svr);
                 ActionReport aReport = context.getActionReport().addSubActionsReport();
@@ -134,7 +138,7 @@ public class ClusterOperationUtil {
                 InstanceCommandExecutor ice =
                         new InstanceCommandExecutor(habitat, commandName, failPolicy, offlinePolicy,
                                 svr, host, port, logger, parameters, aReport, aResult);
-                if(CommandTarget.DAS.isValid(habitat, ice.getServer().getName()))
+                if (CommandTarget.DAS.isValid(habitat, ice.getServer().getName()))
                     continue;
                 if (intermediateDownloadDir != null) {
                     ice.setFileOutputDirectory(
@@ -191,7 +195,7 @@ public class ClusterOperationUtil {
                     returnValue = finalResult;
                 if(finalResult != ActionReport.ExitCode.SUCCESS) {
                     instanceState.setState(s, InstanceState.StateType.RESTART_REQUIRED, false);
-                    instanceState.addFailedCommandToInstance(s, commandName+" "+parameters.getOne("DEFAULT"));
+                    instanceState.addFailedCommandToInstance(s, commandName, parameters);
                 }
             } catch (Exception ex) {
                 ActionReport aReport = context.getActionReport().addSubActionsReport();
@@ -209,7 +213,7 @@ public class ClusterOperationUtil {
                 if(returnValue == ActionReport.ExitCode.SUCCESS)
                     returnValue = finalResult;
                 instanceState.setState(s, InstanceState.StateType.RESTART_REQUIRED, false);
-                instanceState.addFailedCommandToInstance(s, commandName+" "+parameters.getOne("DEFAULT"));
+                instanceState.addFailedCommandToInstance(s, commandName, parameters);
             }
         }
         return returnValue;
@@ -272,7 +276,7 @@ public class ClusterOperationUtil {
                     InstanceStateService instanceState = habitat.getComponent(InstanceStateService.class);
                     for(Server s : targetService.getInstances(t)) {
                         instanceState.setState(s.getName(), InstanceState.StateType.RESTART_REQUIRED, false);
-                        instanceState.addFailedCommandToInstance(s.getName(), commandName+" "+parameters.getOne("DEFAULT"));
+                        instanceState.addFailedCommandToInstance(s.getName(), commandName, parameters);
                     }
                     result = ActionReport.ExitCode.WARNING;
                     continue;

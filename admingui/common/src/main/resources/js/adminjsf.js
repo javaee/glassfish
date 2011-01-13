@@ -62,16 +62,17 @@ function submitAndDisable(button, msg, target) {
     disableBtnComponent(button.id);
     button.value=msg;
     if (target) {
-	// In this case we want the non-ajax behavior
-	var oldaction = button.form.action;
-	var oldtarget = button.form.target;
-	button.form.target = target;
-	var sep = (button.form.action.indexOf("?") > -1) ? "&" : "?";
-	button.form.action += sep + button.name + "=" + encodeURI(button.value) + "&bare=false"; //bug# 6294035
-	button.form.submit();
-	button.form.action = oldaction;
-	button.form.target = oldtarget;
-	return false;
+        // In this case we want the non-ajax behavior, but we still need the indicator
+        admingui.ajax.ajaxStart();
+        var oldaction = button.form.action;
+        var oldtarget = button.form.target;
+        button.form.target = target;
+        var sep = (button.form.action.indexOf("?") > -1) ? "&" : "?";
+        button.form.action += sep + button.name + "=" + encodeURI(button.value) + "&bare=false"; //bug# 6294035
+        button.form.submit();
+        button.form.action = oldaction;
+        button.form.target = oldtarget;
+        return false;
     }
     var args = {};
     args[button.id] = button.id;
@@ -143,17 +144,17 @@ function disableComponent(componentName, type) {
         component = getSelectElement(componentName);
     } else {
         component = getTextElement(componentName);
-	if (component != null) {
-	    component.value='';
-	}
+        if (component != null) {
+            component.value='';
+        }
     }
     if (component != null) {
-	if (typeof(component.setDisabled) === 'function') {
-	    component.setDisabled(true);
-	} else {
-	    component.disabled=true;
-	    component.className='TxtFldDis_sun4';
-	}
+        if (typeof(component.setDisabled) === 'function') {
+            component.setDisabled(true);
+        } else {
+            component.disabled=true;
+            component.className='TxtFldDis_sun4';
+        }
     }
 }
 
@@ -189,21 +190,27 @@ disableComponent.select = getSelectElement;
 function disableBtnComponent(componentName) {
     var el = document.getElementById(componentName);
     if (typeof(el.setDisabled) === 'function') {
-	el.setDisabled(true);
+        el.setDisabled(true);
     } else if (el.setProps) {
-	document.getElementById(componentName).setProps({disabled: true, className: 'Btn1Dis_sun4'});
+        document.getElementById(componentName).setProps({
+            disabled: true, 
+            className: 'Btn1Dis_sun4'
+        });
     } else {
-	el.disabled = true;
-	el.className = 'Btn1Dis_sun4'; // Primary style
+        el.disabled = true;
+        el.className = 'Btn1Dis_sun4'; // Primary style
     }
 }
 
 function enableBtnComponent(componentName) {
     var el = document.getElementById(componentName);
     if (typeof(el.setDisabled) === 'function') {
-	el.setDisabled(false);
+        el.setDisabled(false);
     } else if (el.setProps) {
-        document.getElementById(componentName).setProps({disabled: false, className: 'Btn1_sun4'});
+        document.getElementById(componentName).setProps({
+            disabled: false, 
+            className: 'Btn1_sun4'
+        });
     } else {
         el.disabled = false;
         el.className = 'Btn1_sun4';  // Primary style
@@ -219,20 +226,27 @@ function enableComponent(componentName, type) {
     } else {
         component = getTextElement(componentName);
     }
+    if (component == null){
+        return;
+    }
     if (typeof(component.setDisabled) === 'function') {
-	component.setDisabled(false);
+        component.setDisabled(false);
     } else {
-	component.className='TxtFld_sun4';
-	component.disabled=false;
+        component.className='TxtFld_sun4';
+        component.disabled=false;
     }
 }
 
 function disableDOMComponent(componentName) {
     var el = document.getElementById(componentName);
     if (typeof(el.setDisabled) === 'function') {
-	component.setDisabled(true);
+        component.setDisabled(true);
     } else if (el.setProps) {
-        document.getElementById(componentName).setProps({disabled: true, className: 'TxtFldDis_sun4', value: ' '});
+        document.getElementById(componentName).setProps({
+            disabled: true, 
+            className: 'TxtFldDis_sun4', 
+            value: ' '
+        });
     } else {
         //YAHOO.util.Dom.setStyle(el, 'disabled', 'true');
         el.disabled = true;
@@ -244,7 +258,10 @@ function disableDOMComponent(componentName) {
 function enableDOMComponent(componentName) {
     var el = document.getElementById(componentName);
     if (el.setProps) {
-        document.getElementById(componentName).setProps({disabled: false, className: 'TxtFld_sun4'});
+        document.getElementById(componentName).setProps({
+            disabled: false, 
+            className: 'TxtFld_sun4'
+        });
     } else {
         //YAHOO.util.Dom.setStyle(el, 'disabled', 'false');
         el.disabled = false;
@@ -266,16 +283,16 @@ function isChecked (elementName) {
 
 function checkForValue(formField) { 
     if (!formField) {
-	return false; // No field, so no value
+        return false; // No field, so no value
     }
     var value = formField.value;
     if (formField.getProps) {
-	// Use Woodstock's api to get correct value
-	value = formField.getProps().value;
+        // Use Woodstock's api to get correct value
+        value = formField.getProps().value;
     }
     var result = (value != '') && (isWhitespace(value) == false); 
     if (!result) {
-	formField.select();
+        formField.select();
     }
     return result; 
 }
@@ -297,10 +314,10 @@ function getCookie(name) {
 
     for (var i = 0; i < cookies.length; i++) {
         var current = cookies[i].split("=");
-	var currentName = current[0];
-	if (typeof(current[0].trim) === 'function') {
-	    currentName = currentName.trim();
-	}
+        var currentName = current[0];
+        if (typeof(current[0].trim) === 'function') {
+            currentName = currentName.trim();
+        }
         if (name == currentName) {
             if (current.length > 1) {
                 cookieValue = unescape(current[1]);
@@ -315,145 +332,6 @@ function getCookie(name) {
 
 //===========================================================
 
-/** 
- * Relating to Deployment
- */
-
-function setVisible(type) {
-    var fixedValue = 'form:title:ps:psec:';
-    if (type == "webApp") {
-        var fields = new Array();
-        fields[0] = fixedValue.concat("wsp");
-        fields[1] = "form:title:ps:advancedSection";
-        fields[2] = fixedValue.concat("threadpoolProp");
-        fields[3] = fixedValue.concat("registryProp");
-        setVisibleFields(fields, false);
-        fields = new Array();
-        fields[0] = fixedValue.concat("cxp");
-        fields[1] = fixedValue.concat("vsp");
-        fields[2] = fixedValue.concat("precmplProp");
-        fields[3] = fixedValue.concat("librariesProp");
-        fields[4] = fixedValue.concat("enableProp");
-        setVisibleFields(fields, true);
-        setTargetSection(true);
-        setHaProp(fixedValue.concat("haProp"), true);
-    }
-    else if (type == "application") {
-        var fields = new Array();
-        fields[0] = fixedValue.concat("cxp");
-        fields[1] = fixedValue.concat("threadpoolProp");
-        fields[2] = fixedValue.concat("registryProp");
-        setVisibleFields(fields, false);
-        var fields = new Array();
-        fields[0] = fixedValue.concat("vsp");
-        fields[1] = fixedValue.concat("wsp");
-        fields[2] = fixedValue.concat("precmplProp");
-        fields[3] = "form:title:ps:advancedSection";
-        fields[4] = fixedValue.concat("librariesProp");
-        fields[5] = fixedValue.concat("enableProp");
-        setVisibleFields(fields, true);
-        setTargetSection(true);
-        setHaProp(fixedValue.concat("haProp"),true);
-    }
-    else if (type == "ejbModule") {
-        webui.suntheme.common.setVisible("form:title:ps:advancedSection", true);
-        webui.suntheme.common.setVisible(fixedValue.concat("librariesProp"), true);
-        webui.suntheme.common.setVisible(fixedValue.concat("enableProp"), true);
-        var fields = new Array();
-        fields[0] = fixedValue.concat("wsp");
-        fields[1] = fixedValue.concat("cxp");
-        fields[2] = fixedValue.concat("vsp");
-        fields[3] = fixedValue.concat("precmplProp");
-        fields[4] = fixedValue.concat("threadpoolProp");
-        fields[5] = fixedValue.concat("registryProp");
-        setVisibleFields(fields, false);
-        setTargetSection(true);
-        setHaProp(fixedValue.concat("haProp"),true);
-    }
-    else if (type == "appclient") {
-        webui.suntheme.common.setVisible(fixedValue.concat("wsp"), true);
-        webui.suntheme.common.setVisible("form:ps:advancedSection", true);
-
-        var fields = new Array();
-        fields[0] = fixedValue.concat("librariesProp");
-        fields[1] = fixedValue.concat("enableProp");
-        fields[2] = fixedValue.concat("precmplProp");
-        fields[3] = fixedValue.concat("cxp");
-        fields[4] = fixedValue.concat("vsp");
-        fields[5] = fixedValue.concat("threadpoolProp");
-        fields[6] = fixedValue.concat("registryProp");
-        setVisibleFields(fields, false);
-        setTargetSection(false);
-        setHaProp(fixedValue.concat("haProp"),false);
-    }
-    else if (type == "connector") {
-        webui.suntheme.common.setVisible("form:title:ps:advancedSection", false);
-        var fields = new Array();
-        fields[0] = fixedValue.concat("precmplProp");
-        fields[1] = fixedValue.concat("cxp");
-        fields[2] = fixedValue.concat("vsp");
-        fields[3] = fixedValue.concat("wsp");
-        fields[4] = fixedValue.concat("librariesProp");
-        fields[5] = fixedValue.concat("targetSectionId");
-        setVisibleFields(fields, false);
-
-        fields = new Array();
-        fields[0] = fixedValue.concat("threadpoolProp");
-        fields[1] = fixedValue.concat("registryProp");
-        setVisibleFields(fields, true);
-        setTargetSection(true);
-        setHaProp(fixedValue.concat("haProp"), false);
-    }
-}
-
-function setVisibleFields(fields, value) {
-    for (ctr=0; ctr < fields.length; ctr++) {
-        webui.suntheme.common.setVisible(fields[ctr], value);
-    }
-}
-
-
-function checkExtension(appType, extensionId, msg, reqdMsg){
-    var extension = getTextElement(extensionId).value;
-    //alert(appType + ',' + extension + ',' +  msg);
-    if (extension.length <= 0) {
-        return true;
-    }
-    if (((appType == "webApp") && (extension != ".war")) ||
-        ((appType == "application") && (extension != ".ear")) ||
-        ((appType == "ejbModule") && (extension != ".jar")) ||
-        ((appType == "appclient") && (extension != ".jar")) ||
-        ((appType == "connector") && (extension != ".rar")) ) {
-        return showAlert(msg);
-    }
-    else
-        return true;
-
-}
-
-
-function setTargetSection(value){
-    var id = "form:title:ps:targetSectionId";
-    component = document.getElementById(id);
-    if (component != null)
-        webui.suntheme.common.setVisible(id, value);
-}
-
-function setHaProp(id, value){
-    var component = document.getElementById(id);
-    if (component != null) {
-        webui.suntheme.common.setVisible(id, value);
-    }
-}
-
-function checkRedeployRequired(form, reqdMesg) {
-    var uploadField = getField(form, "fileupload_com.sun.webui.jsf.upload");
-    var dirField = getField(form, "dirPath_field");
-    if (uploadField.value=='' && dirField.value=='') {
-        return showAlert(reqdMesg);
-    }
-    return true;
-}
 
 function extractName(value) {
     var appName="";
@@ -486,89 +364,6 @@ function getSuffix(fullName){
         return fullName.substring(index, fullName.length);
 }
 
-function setFieldValue(appNameId, value,  typeId, contextRootId, extensionId) {
-    var appName = extractName(value);
-    var pfex = getPrefix(appName);
-    var sfex = getSuffix(appName);
-
-    var component = getTextElement(extensionId);
-    component.value=sfex;
-
-    if (appNameId==null || appNameId.length <=0)
-        return;
-    component = getTextElement(appNameId);
-    component.value=pfex
-
-    //TODO: v3 may need to adjust for other supported type.
-//    component = getSelectElement(typeId);
-//    if (component.value == "webApp") {
-//        component = getTextElement(contextRootId);
-//        component.value = pfex
-//    }
-    if ( sfex == ".war"){
-        component = getTextElement(contextRootId);
-        if (component != null){
-            component.value = pfex;
-        }
-    }
-}
-
-function populateDirAndAppName(fileChooserId, dirPathId, appNameId, typeId, ctxRootId, extensionId){ 
-    var fc = document.getElementById(fileChooserId).getSelectionValue();
-    window.opener.getTextElement(dirPathId).value = fc;
-
-    var appName = extractName(fc);
-    if (appNameId.length > 0) {
-        window.opener.getTextElement(appNameId).value=getPrefix(appName);
-    }
-    if (extensionId.length > 0) {
-        window.opener.getTextElement(extensionId).value=getSuffix(appName);
-    }
-
-//    if (typeId.length > 0) {
-//        type = window.opener.getSelectElement(typeId).value;
-//        if (type == "webApp") {
-//            component = window.opener.getTextElement(ctxRootId);
-//            component.value = getPrefix(appName);
-//        }
-//    }
-
-    //TODO V3: may need to adjust other type.
-    if (getSuffix(appName) == ".war"){
-        component = window.opener.getTextElement(ctxRootId);
-        if (component != null){
-            component.value = getPrefix(appName);
-        }
-    }
-    window.close();
-}
-
-function populatorDirAndAppName(fileChooserId, txtFld2Id){ 
-    var fc = document.getElementById(fileChooserId).getSelectionValue();
- 	window.opener.getTextElement(txtFld2Id).value = fc;
-    window.close();
- }
-
-
-function checkType(theButton, typeId, extensionId, msg){
-
-    var appType = getSelectElement(typeId).value;
-    var extension = getTextElement(extensionId).value;
-
-    if (extension.length <= 0)
-        return true;
-    if (((appType == "webApp") && (extension != ".war")) ||
-        ((appType == "application") && (extension != ".ear")) ||
-        ((appType == "ejbModule") && (extension != ".jar")) ||
-        ((appType == "appclient") && (extension != ".jar")) ||
-        ((appType == "connector") && (extension != ".rar")) ) {
-        return getConfirm(theButton, msg);
-    }
-    else
-        return true;
-
-}
-
 // End of Deployment code
 
 //===========================================================================
@@ -578,7 +373,7 @@ function findFrameRecursive( winOrFrame, frameName ) {
     // home string is being checked to take care of the complex
     // frameset in PE homepage. Need to fix this in a Generic way later.
     if ( (winOrFrame.name && (winOrFrame.name == frameName)) ||
-         winOrFrame.name == "home" )
+        winOrFrame.name == "home" )
         return winOrFrame;
 
     // 2. SEARCH SUBFRAMES.  note: when there are no sub-frames,
@@ -633,13 +428,13 @@ admingui.util = {
      *	on the given object, it will look at the parent.
      */
     getWoodstockProp: function(node, propName) {
-	if (node == null) {
-	    return;
-	}
-	if (node.getProps != null) {
-	    return node.getProps()[propName];
-	}
-	return admingui.util.getWoodstockProp(node.parentNode, propName);
+        if (node == null) {
+            return;
+        }
+        if (node.getProps != null) {
+            return node.getProps()[propName];
+        }
+        return admingui.util.getWoodstockProp(node.parentNode, propName);
     },
 
     /**
@@ -689,8 +484,12 @@ admingui.util = {
      *	will automatically prefix "glassfish/" to the given String.
      */
     setPreference: function(root, key, value) {
-	root = 'glassfish/' + root;
-	admingui.ajax.invoke("setPreference", {root:root, key:key, value:value});
+        root = 'glassfish/' + root;
+        admingui.ajax.invoke("setPreference", {
+            root:root, 
+            key:key, 
+            value:value
+        });
     },
 
     log : function(msg) {
@@ -712,7 +511,7 @@ admingui.nav = {
         var node2 = admingui.nav.getTreeFrameElementById(admingui.nav.TREE_ID + ':clusters2');
         var node3 = admingui.nav.getTreeFrameElementById(admingui.nav.TREE_ID + ':clusters2_children');
         var tree = admingui.nav.getTreeFrameElementById(admingui.nav.TREE_ID);
-	// FIXME: This needs the viewId where clusters2 is defined
+        // FIXME: This needs the viewId where clusters2 is defined
         admingui.nav.refreshTree(admingui.nav.TREE_ID + ':clusters2');
         if (hasCluster=='true' || hasCluster=='TRUE') {
             node1.style.display='none';
@@ -720,8 +519,8 @@ admingui.nav = {
             node3.style.display='block';
             tree.selectTreeNode(admingui.nav.TREE_ID + ':clusters2');
         } else {
-	    //there is a problem in hiding clusters2,  it doesn' hide it, maybe because of the 
-	    //dynamic treenode under it ? still need to figure this out.
+            //there is a problem in hiding clusters2,  it doesn' hide it, maybe because of the 
+            //dynamic treenode under it ? still need to figure this out.
             node3.style.display='none';
             node2.style.display='none';
             node1.style.display='block';
@@ -769,8 +568,8 @@ admingui.nav = {
     },
 
     requestTreeUpdate: function(source, event, nodeId, params, previousState) {
-	// Ping header to make sure header stays "fresh"
-	admingui.ajax.pingHeader();
+        // Ping header to make sure header stays "fresh"
+        admingui.ajax.pingHeader();
         jsf.ajax.request(source, event, {
             execute: "treeForm treeForm:update",
             render: nodeId + " " + nodeId + "_children",
@@ -816,8 +615,8 @@ admingui.nav = {
                         childNodes.innerHTML = newChildren.innerHTML;
                     }
                 } catch (err) {
-alert(err);
-// FIXME: Log error
+                //alert(err);
+                // FIXME: Log error
                 }
             } else {
                 var element = document.getElementById(nodeId);
@@ -851,7 +650,9 @@ alert(err);
         }
 
         if (responseType.nodeName === "redirect") {
-            admingui.ajax.loadPage({url: responseType.getAttribute("url")});
+            admingui.ajax.loadPage({
+                url: responseType.getAttribute("url")
+            });
             return null;
         }
 
@@ -906,9 +707,9 @@ alert(err);
                     if (name == dest.childNodes[cnt].id) {
                         dest.childNodes[cnt].style["display"] = src.childNodes[idx].style["display"];
                         dest.childNodes[cnt].className = src.childNodes[idx].className;
-			if (src.childNodes[idx].nodeName == 'IMG'){
-			   dest.childNodes[cnt].src = src.childNodes[idx].src; 
-			}
+                        if (src.childNodes[idx].nodeName == 'IMG'){
+                            dest.childNodes[cnt].src = src.childNodes[idx].src; 
+                        }
                         admingui.nav.copyStyleAndClass(src.childNodes[idx], dest.childNodes[cnt]);
                     }
                 }
@@ -1006,7 +807,7 @@ alert(err);
                 tree.selectTreeNode(treeNode.id);
                 admingui.nav.expandNode(treeNode);
             } catch (err) {
-                //console.log(err);
+            //console.log(err);
             }
         }
     },
@@ -1016,10 +817,10 @@ alert(err);
         var index = id.lastIndexOf(":");
         while (index > -1) {
             id = id.substring(0, index);
-	    var toSetStyle = document.getElementById(id+"_children");
-	    if (toSetStyle) {
-		toSetStyle.style.display = "block";
-	    }
+            var toSetStyle = document.getElementById(id+"_children");
+            if (toSetStyle) {
+                toSetStyle.style.display = "block";
+            }
             index = id.lastIndexOf(":");
         }
     },
@@ -1065,7 +866,7 @@ alert(err);
      *	This function provides access to DOM objects in the tree window.
      */
     getTreeFrameElementById: function(id) {
-	return document.getElementById(id);
+        return document.getElementById(id);
     },
 
     /**
@@ -1094,231 +895,241 @@ admingui.help = {
     pluginId : null,
 
     showHelpPage: function(url, targetNode) {
-	if (targetNode) {
-	    if (typeof(targetNode) === 'string') {
-		// We have a String
-		targetNode = document.getElementById(targetNode);
-	    }
-	}
-	if (targetNode) {
-	    var req = admingui.ajax.getXMLHttpRequestObject();
-	    if (req) {
-		req.onreadystatechange =
-		    function() {
-			if (req.readyState == 4) {
-			    // Make a tempoary elemnt to contain the help content
-			    var tmpDiv = document.createElement("div");
-			    tmpDiv.innerHTML = req.responseText;
+        if (targetNode) {
+            if (typeof(targetNode) === 'string') {
+                // We have a String
+                targetNode = document.getElementById(targetNode);
+            }
+        }
+        if (targetNode) {
+            var req = admingui.ajax.getXMLHttpRequestObject();
+            if (req) {
+                req.onreadystatechange =
+                function() {
+                    if (req.readyState == 4) {
+                        // Make a tempoary elemnt to contain the help content
+                        var tmpDiv = document.createElement("div");
+                        tmpDiv.innerHTML = req.responseText;
 
-			    // Fix URLs in the help content...
-			    admingui.help.fixHelpURLs(url, tmpDiv);
+                        // Fix URLs in the help content...
+                        admingui.help.fixHelpURLs(url, tmpDiv);
 
-			    // Show the help content...
-			    targetNode.innerHTML = tmpDiv.innerHTML;
-			}
-		    };
-		req.open("GET", url, true);
-		req.send("");
-	    }
-	}
+                        // Show the help content...
+                        targetNode.innerHTML = tmpDiv.innerHTML;
+                    }
+                };
+                req.open("GET", url, true);
+                req.send("");
+            }
+        }
     },
 
     fixTreeOnclick: function(node) {
-	if ((node.nodeType == 1) && (node.nodeName == "A")) {
-	    if (node.href) {
-		node.oldonclick = null;
-		if (node.onclick) {
-		    node.oldonclick = node.onclick;
-		}
-		node.onclick = function () { if (this.oldonclick != null) { this.oldonclick(); } admingui.help.showHelpPage(this.href, 'helpContent'); return false; };
-	    }
-	} else {
-	    // Not a href, so walk its children
-	    for (var idx=node.childNodes.length-1; idx>-1; idx--) {
-		admingui.help.fixTreeOnclick(node.childNodes[idx]);
-	    }
-	}
+        if ((node.nodeType == 1) && (node.nodeName == "A")) {
+            if (node.href) {
+                node.oldonclick = null;
+                if (node.onclick) {
+                    node.oldonclick = node.onclick;
+                }
+                node.onclick = function () {
+                    if (this.oldonclick != null) {
+                        this.oldonclick();
+                    }
+                    admingui.help.showHelpPage(this.href, 'helpContent');
+                    return false;
+                };
+            }
+        } else {
+            // Not a href, so walk its children
+            for (var idx=node.childNodes.length-1; idx>-1; idx--) {
+                admingui.help.fixTreeOnclick(node.childNodes[idx]);
+            }
+        }
     },
 
     fixHelpURLs: function(baseURL, node) {
-	// Walk the DOM looking for "A" nodes, repair their URLs
-	if ((node.nodeType == 1) && (node.nodeName == "A")) {
-	    var relPath = node.getAttribute("href");
-	    if (relPath) {
-		if (relPath.indexOf("#") == 0) {
-		    // In-page link...
-		    return;
-		}
-		if (relPath.indexOf("://") !== -1) {
-		    // Full URL or IE7...
-		    if (relPath.indexOf(window.location.href) == 0) {
-			// Same Path...
-			if (relPath.indexOf("#") == -1) {
-			    // Not an in-page link, make it one...
-			    node.href = "#";
-			}
+        // Walk the DOM looking for "A" nodes, repair their URLs
+        if ((node.nodeType == 1) && (node.nodeName == "A")) {
+            var relPath = node.getAttribute("href");
+            if (relPath) {
+                if (relPath.indexOf("#") == 0) {
+                    // In-page link...
+                    return;
+                }
+                if (relPath.indexOf("://") !== -1) {
+                    // Full URL or IE7...
+                    if (relPath.indexOf(window.location.href) == 0) {
+                        // Same Path...
+                        if (relPath.indexOf("#") == -1) {
+                            // Not an in-page link, make it one...
+                            node.href = "#";
+                        }
 
-			// Nothing to do here...
-			return;
-		    }
-		    var idx = relPath.indexOf("/common/help/");
-		    if (idx != -1) {
-			// IE7 does not give the real value, but instead tranlates it
-			// all urls will be relative to "/common/help/" in this case,
-			// so strip it off...
-			relPath = relPath.substring(idx+13);
-		    } else {
-			if (relPath.indexOf(window.location.hostname) != -1) {
-			    // From same host... Assume IE7 messed up URL
-			    idx = relPath.indexOf('/', relPath.indexOf('://') + 3);
-			    relPath = "../../../" + relPath.substring(idx+1);
-			} else {
-			    // Must be a real external URL...
-			    if ((node.target == null)
-				    || (node.target == "")
-				    || (typeof(node.target) === "undefined")) {
-				// Default external targets to _blank
-				node.target = "_blank";
-			    }
-			    return;
-			}
-		    }
-		}
+                        // Nothing to do here...
+                        return;
+                    }
+                    var idx = relPath.indexOf("/common/help/");
+                    if (idx != -1) {
+                        // IE7 does not give the real value, but instead tranlates it
+                        // all urls will be relative to "/common/help/" in this case,
+                        // so strip it off...
+                        relPath = relPath.substring(idx+13);
+                    } else {
+                        if (relPath.indexOf(window.location.hostname) != -1) {
+                            // From same host... Assume IE7 messed up URL
+                            idx = relPath.indexOf('/', relPath.indexOf('://') + 3);
+                            relPath = "../../../" + relPath.substring(idx+1);
+                        } else {
+                            // Must be a real external URL...
+                            if ((node.target == null)
+                                || (node.target == "")
+                                || (typeof(node.target) === "undefined")) {
+                                // Default external targets to _blank
+                                node.target = "_blank";
+                            }
+                            return;
+                        }
+                    }
+                }
 
-		// Fix for Issue #: 11017
-		if ((idx = relPath.indexOf('#')) != -1) {
-		    // Remove '#' from IE Ajax URLs b/c IE can't handle it!!
-		    relPath = relPath.substring(0, idx);
-		}
+                // Fix for Issue #: 11017
+                if ((idx = relPath.indexOf('#')) != -1) {
+                    // Remove '#' from IE Ajax URLs b/c IE can't handle it!!
+                    relPath = relPath.substring(0, idx);
+                }
 
-		// Take filename off baseURL
-		baseURL = baseURL.substring(0, baseURL.lastIndexOf('/'));
+                // Take filename off baseURL
+                baseURL = baseURL.substring(0, baseURL.lastIndexOf('/'));
 
-		// Remove leading ../'s
-		while (relPath.indexOf("../") != -1) {
-		    relPath = relPath.substring(3);
-		    var idx = baseURL.lastIndexOf("/");
-		    if (idx != 0) {
-			baseURL = baseURL.substring(0, idx);
-		    }
-		}
+                // Remove leading ../'s
+                while (relPath.indexOf("../") != -1) {
+                    relPath = relPath.substring(3);
+                    var idx = baseURL.lastIndexOf("/");
+                    if (idx != 0) {
+                        baseURL = baseURL.substring(0, idx);
+                    }
+                }
 
-		// Fix href...
-		node.href = baseURL + "/" + relPath;
-		node.setAttribute("onclick", "admingui.help.showHelpPage('" + node.href + "', 'helpContent'); return false;");
-	    }
-	} else {
-	    // Not a href, so walk its children
-	    for (var idx=node.childNodes.length-1; idx>-1; idx--) {
-		admingui.help.fixHelpURLs(baseURL, node.childNodes[idx]);
-	    }
-	}
+                // Fix href...
+                node.href = baseURL + "/" + relPath;
+                node.setAttribute("onclick", "admingui.help.showHelpPage('" + node.href + "', 'helpContent'); return false;");
+            }
+        } else {
+            // Not a href, so walk its children
+            for (var idx=node.childNodes.length-1; idx>-1; idx--) {
+                admingui.help.fixHelpURLs(baseURL, node.childNodes[idx]);
+            }
+        }
     },
 
     launchHelp: function(url) {
-	var helpLink = "/common/help/help.jsf";
-	var helpKeys = admingui.util.findNodes(document,
-	    function(node, name) {
-		if ((typeof(node.id) === "undefined") || (node.id == null)) {
-		    return false;
-		}
-		var pos = node.id.lastIndexOf(':');
-		var shortName = (pos > -1) ? node.id.substring(pos+1) : node.id;
-		return (shortName == name);
-	    },
-	    "helpKey");
-	if (helpKeys !== null) {
-            admingui.ajax.invoke("calculateHelpUrl", {pluginId: admingui.help.pluginId, helpKey: helpKeys[0].value, url:"url"},
-                function(result) {
-		    admingui.help.openHelpWindow(helpLink + "?contextRef=" + "/resource/" + admingui.help.pluginId + result.url);
-                }, 3, false);
-	} else {
+        var helpLink = "/common/help/help.jsf";
+        var helpKeys = admingui.util.findNodes(document,
+            function(node, name) {
+                if ((typeof(node.id) === "undefined") || (node.id == null)) {
+                    return false;
+                }
+                var pos = node.id.lastIndexOf(':');
+                var shortName = (pos > -1) ? node.id.substring(pos+1) : node.id;
+                return (shortName == name);
+            },
+            "helpKey");
+        if (helpKeys !== null) {
+            admingui.ajax.invoke("calculateHelpUrl", {
+                pluginId: admingui.help.pluginId, 
+                helpKey: helpKeys[0].value, 
+                url:"url"
+            },
+            function(result) {
+                admingui.help.openHelpWindow(helpLink + "?contextRef=" + "/resource/" + admingui.help.pluginId + result.url);
+            }, 3, false);
+        } else {
             admingui.help.openHelpWindow(helpLink);
         }
     },
 
     openHelpWindow: function (url) {
-	var win = window.open(url, "HelpWindow" , "width=800, height=530, resizable");
-	if (win) {
-	    win.focus();
-	}
+        var win = window.open(url, "HelpWindow" , "width=800, height=530, resizable");
+        if (win) {
+            win.focus();
+        }
     },
 
     switchTab: function(tabElement, toShow, toHide) {
-	// 
-	// Perform an ajax request on the tab panel element
-	// 
+        // 
+        // Perform an ajax request on the tab panel element
+        // 
 
-	// set up the parameters to the ajax request
-	var props = {}; 
-	var tabsetId = document.getElementById('tabForm:helpTabs').id;
-	props.render = tabsetId;
-	props.execute = tabElement.id + ', ' + tabsetId;
-	props[tabElement.id + '_submittedField'] = tabElement.id;
+        // set up the parameters to the ajax request
+        var props = {}; 
+        var tabsetId = document.getElementById('tabForm:helpTabs').id;
+        props.render = tabsetId;
+        props.execute = tabElement.id + ', ' + tabsetId;
+        props[tabElement.id + '_submittedField'] = tabElement.id;
 
-	// launch the request
-	// Note: in help window, don't ping -- only 1 JSF page
-	jsf.ajax.request(tabElement, null, props);
+        // launch the request
+        // Note: in help window, don't ping -- only 1 JSF page
+        jsf.ajax.request(tabElement, null, props);
 
-	// 
-	// Use DOM to show/hide the proper tree
-	// 
+        // 
+        // Use DOM to show/hide the proper tree
+        // 
 
-	var tree = document.getElementById(toHide);
-	tree.style.display = "none";
-	tree = document.getElementById(toShow);
-	tree.style.display = "block";
+        var tree = document.getElementById(toHide);
+        tree.style.display = "none";
+        tree = document.getElementById(toShow);
+        tree.style.display = "block";
     },
 
     loadHelpPageFromContextRef: function(contextRef, targetNode) {
-	if (typeof contextRef == 'undefined' || contextRef === "") {
-	    contextRef = "docinfo.html";
-	}
-	// Derive the prefix somehow
-	//contextRef = prefix + contextRef;
-	admingui.help.showHelpPage(contextRef, targetNode);
-	admingui.help.nav.selectTreeNodeWithURL(contextRef);
+        if (typeof contextRef == 'undefined' || contextRef === "") {
+            contextRef = "docinfo.html";
+        }
+        // Derive the prefix somehow
+        //contextRef = prefix + contextRef;
+        admingui.help.showHelpPage(contextRef, targetNode);
+        admingui.help.nav.selectTreeNodeWithURL(contextRef);
     },
 
     nav: {
-	TREE_ID: "tocTree",
-	lastTreeNodeSelected: null,
+        TREE_ID: "tocTree",
+        lastTreeNodeSelected: null,
 	
-	/**
+        /**
 	 *	This function selects a treeNode matching the given URL.
 	 */
-	selectTreeNodeWithURL: function(url) {
-	    var tree = document.getElementById(admingui.help.nav.TREE_ID);
-	    var matches = admingui.util.findNodes(tree, admingui.nav.matchURL, url);
-	    if (matches) {
-		// FIXME: Find "best" match... this will be needed if the URL
-		// is ambiguous, which may happen if post requests occur which
-		// leave off QUERY_STRING data that is needed to identify the
-		// URL.  It's probably best to leave the highlighting alone in
-		// many of these cases... perhaps search for the nearest match
-		// to the currently selected node.  Anyway, for now I will
-		// ignore this until we need to fix it...
-		// FIXME: This really should highlight the selected node.
-		admingui.help.nav.selectTreeNode(document.getElementById(matches[0].id));
-	    } 
-	},
+        selectTreeNodeWithURL: function(url) {
+            var tree = document.getElementById(admingui.help.nav.TREE_ID);
+            var matches = admingui.util.findNodes(tree, admingui.nav.matchURL, url);
+            if (matches) {
+                // FIXME: Find "best" match... this will be needed if the URL
+                // is ambiguous, which may happen if post requests occur which
+                // leave off QUERY_STRING data that is needed to identify the
+                // URL.  It's probably best to leave the highlighting alone in
+                // many of these cases... perhaps search for the nearest match
+                // to the currently selected node.  Anyway, for now I will
+                // ignore this until we need to fix it...
+                // FIXME: This really should highlight the selected node.
+                admingui.help.nav.selectTreeNode(document.getElementById(matches[0].id));
+            } 
+        },
 
-	/**
+        /**
 	 *	This function selects the given treeNode.
 	 */
-	selectTreeNode: function(treeNode) {
-	    var tree = document.getElementById(admingui.help.nav.TREE_ID);// admingui.help.nav.getTree(treeNode);
-	    if (tree) {
-		try {
-		    admingui.nav.clearTreeSelection(admingui.help.nav.TREE_ID);
-		    tree.clearAllHighlight(tree.id);
-		    tree.selectTreeNode(treeNode.id);
-		    admingui.nav.expandNode(treeNode);
-		} catch (err) {
-		    //console.log(err);
-		}
-	    }
-	}
+        selectTreeNode: function(treeNode) {
+            var tree = document.getElementById(admingui.help.nav.TREE_ID);// admingui.help.nav.getTree(treeNode);
+            if (tree) {
+                try {
+                    admingui.nav.clearTreeSelection(admingui.help.nav.TREE_ID);
+                    tree.clearAllHighlight(tree.id);
+                    tree.selectTreeNode(treeNode.id);
+                    admingui.nav.expandNode(treeNode);
+                } catch (err) {
+                //console.log(err);
+                }
+            }
+        }
     }
 };
 
@@ -1327,14 +1138,39 @@ admingui.help = {
   *   Validation functions
   */
 
+function checkPSW(ps1Id, ps2Id, notMatchMsg, emptyMsg) {
+    var ps1Comp = getTextElement(ps1Id);
+    var ps2Comp = getTextElement(ps2Id);
+    var ps1 = ps1Comp.value;
+    var ps2 = ps2Comp.value;
+    if (ps1 != ps2){
+        ps1Comp.select();
+        ps1Comp.focus();
+        showAlert(notMatchMsg);
+        return false;
+    }
+    if ( (ps1==null || ps1=='') && (ps2==null || ps2=='')){
+        ps1Comp.select();
+        ps1Comp.focus();
+        if ( getConfirm(this, emptyMsg) ){
+            return true;
+        }else{
+            return false;
+        }
+    }
+    return true;
+}
+
+
+
 function guiValidate(reqMsg, reqInt, reqPort) {
     var inputs = document.getElementsByTagName("input");
     var styleClass = null;
     var component = null;
     for ( i=0; i < inputs.length; i++) {
         component = inputs[i];
-	// Find the styleClass for this input
-	// styleClass = admingui.util.getWoodstockProp(inputs[i], "className");  This is the woodstock 4.4.0.1 style
+        // Find the styleClass for this input
+        // styleClass = admingui.util.getWoodstockProp(inputs[i], "className");  This is the woodstock 4.4.0.1 style
         styleClass = component.className;
         if (styleClass == null || styleClass == '') {
             continue;
@@ -1396,13 +1232,13 @@ function guiValidate(reqMsg, reqInt, reqPort) {
 function guiValidateWithDropDown(reqMsg,reqInt, reqPort, reqMsgSelect){
     var selectFields = document.getElementsByTagName("select");
     if (!guiValidate(reqMsg, reqInt, reqPort)) {
-	return false;
+        return false;
     }
     var component = null;
     var styleClass = null;
     for (i=0; i < selectFields.length; i++) {
         component = selectFields[i];
-	// Find the styleClass for this input
+        // Find the styleClass for this input
         // styleClass = admingui.util.getWoodstockProp(selectFields[i], "className");  This is the woodstock 4.4.0.1 style
         styleClass = component.className;
         if (styleClass == null || styleClass == '') {
@@ -1426,38 +1262,38 @@ function getLabel(component) {
     var label = document.getElementById(labelid);
     var val = '';
     if (label != null) {
-	//IE doesn't have textContent, need to use innerText;
-	//firefox 2.0.0.1 doesn't have innerText, so need to test both.
-	//val = label.textContent.substring(1);
-	//val = label.innerText.substring(1);
+        //IE doesn't have textContent, need to use innerText;
+        //firefox 2.0.0.1 doesn't have innerText, so need to test both.
+        //val = label.textContent.substring(1);
+        //val = label.innerText.substring(1);
 
-	val = label.innerText;
-	if (val ==null) {
-	    val = label.textContent;
-	}
+        val = label.innerText;
+        if (val ==null) {
+            val = label.textContent;
+        }
 
-	// Need to remove leading newline characters...
-// FIXME: Consider using isWhitespace(val.charAt(0))
-// FIXME: I didn't add it now b/c isWhitespace is defined in selectElements.js
-// FIXME: and I don't have time to test that that file is included everywhere
-// FIXME: that this function is called.
-	while (val.charAt(0) == '\n') {
-	    val = val.substring(1);
-	}
+        // Need to remove leading newline characters...
+        // FIXME: Consider using isWhitespace(val.charAt(0))
+        // FIXME: I didn't add it now b/c isWhitespace is defined in selectElements.js
+        // FIXME: and I don't have time to test that that file is included everywhere
+        // FIXME: that this function is called.
+        while (val.charAt(0) == '\n') {
+            val = val.substring(1);
+        }
 
-	// Need to remove trailing newline characters...
-// FIXME: Consider using isWhitespace(val.charAt(val.length-1))
-// FIXME: I didn't add it now b/c isWhitespace is defined in selectElements.js
-// FIXME: and I don't have time to test that that file is included everywhere
-// FIXME: that this function is called.
-	while ((val.charAt(val.length-1) == '\n') || (val.charAt(val.length-1) == ' ')) {
-	    val = val.substring(0, val.length-1);
-	}
+        // Need to remove trailing newline characters...
+        // FIXME: Consider using isWhitespace(val.charAt(val.length-1))
+        // FIXME: I didn't add it now b/c isWhitespace is defined in selectElements.js
+        // FIXME: and I don't have time to test that that file is included everywhere
+        // FIXME: that this function is called.
+        while ((val.charAt(val.length-1) == '\n') || (val.charAt(val.length-1) == ' ')) {
+            val = val.substring(0, val.length-1);
+        }
 
-	// Strip off the ':' so that it doesn't show in the alert.
-	if (val.charAt(val.length-1) == ':') {
-	    val = val.substring(0, val.length-1);
-	}
+        // Strip off the ':' so that it doesn't show in the alert.
+        if (val.charAt(val.length-1) == ':') {
+            val = val.substring(0, val.length-1);
+        }
     }
     return val;
 }
@@ -1515,11 +1351,11 @@ function checkForNumericValueOrEmpty(value) {
 function checkForNumericValue(value) {
     var result = (value != '') && isInCharSet(value, "0123456789.");
     //if (result == false) {
-		//This comment is by Senthil on Apr 11 2007. I think this is an
-		//existing bug in this API.
-		//formField isn't defined, or passed to this method, so just return the
-		//result for now. Fixing this API now might involve lots of other changes, at this release time, so decided to live with this bug for now.
-        //formField.select();
+    //This comment is by Senthil on Apr 11 2007. I think this is an
+    //existing bug in this API.
+    //formField isn't defined, or passed to this method, so just return the
+    //result for now. Fixing this API now might involve lots of other changes, at this release time, so decided to live with this bug for now.
+    //formField.select();
     //}
     return result;
 }
@@ -1538,6 +1374,17 @@ function checkPoolAttr(componentId, msg){
     component.focus();
     return false;
 
+}
+
+function checkForBackslash(componentId, msg){
+    var component = getTextElement(componentId);
+    var val = component.value;
+    var result = (val != null) && (val != '') && (val.indexOf('\\') == -1);
+    if (!result) {
+        showAlert(msg + ' ' + getLabel(component));
+        component.focus();
+    }
+    return result;
 }
 
 function checkRequired(componentId, reqMsg){
@@ -1576,104 +1423,104 @@ function isWhitespace(s) {
 }
 
 function compareDate(beginDate, endDate, pattern) {
-	var endDateSet = false;
-	var formatNumber = getDateFormat(pattern);
-	var returnValue = true;
-	if(beginDate == '') {
-		return false;
-	}
-	if(endDate == '') {
-		endDate = new Date();
-		endDateSet = true;
-	}
-	beginDate = getUSDateFormat(beginDate, formatNumber);
-	var endDateArr;
-	var endDateValue;
-	if(!endDateSet) {
-		endDate = getUSDateFormat(endDate, formatNumber);
-		endDateArr = endDate.split('/');
-		if(endDateArr[2].length == 2) {
-			endDateArr[2] = '20' + endDateArr[2];
-		}
-		endDateValue = new Date(endDateArr[2], endDateArr[0], endDateArr[1]);
-	}
-	if(endDateSet) {
-		endDateValue = endDate;
-	}
-	var beginDateArr = beginDate.split('/');
-	if(beginDateArr[2].length == 2) {
-		//make sure this is in YYYY format
-		beginDateArr[2] = '20' + beginDateArr[2];
-	}
-	var beginDateValue = new Date(beginDateArr[2], beginDateArr[0]-1, beginDateArr[1]);
-	if(beginDateValue > endDateValue) {
-		returnValue = false;
-	}
-	return returnValue;
+    var endDateSet = false;
+    var formatNumber = getDateFormat(pattern);
+    var returnValue = true;
+    if(beginDate == '') {
+        return false;
+    }
+    if(endDate == '') {
+        endDate = new Date();
+        endDateSet = true;
+    }
+    beginDate = getUSDateFormat(beginDate, formatNumber);
+    var endDateArr;
+    var endDateValue;
+    if(!endDateSet) {
+        endDate = getUSDateFormat(endDate, formatNumber);
+        endDateArr = endDate.split('/');
+        if(endDateArr[2].length == 2) {
+            endDateArr[2] = '20' + endDateArr[2];
+        }
+        endDateValue = new Date(endDateArr[2], endDateArr[0], endDateArr[1]);
+    }
+    if(endDateSet) {
+        endDateValue = endDate;
+    }
+    var beginDateArr = beginDate.split('/');
+    if(beginDateArr[2].length == 2) {
+        //make sure this is in YYYY format
+        beginDateArr[2] = '20' + beginDateArr[2];
+    }
+    var beginDateValue = new Date(beginDateArr[2], beginDateArr[0]-1, beginDateArr[1]);
+    if(beginDateValue > endDateValue) {
+        returnValue = false;
+    }
+    return returnValue;
 }
 
 function checkDatePattern(date, pattern, delim) {
-	var separatorChar;
-	var format = new Array();
-	var regExp = new RegExp(/\s+/);
+    var separatorChar;
+    var format = new Array();
+    var regExp = new RegExp(/\s+/);
 
-	if(delim == '') {
-		separatorChar = new Array("/", "-", ":", " ");
-	}
-	else {
-		separatorChar = delim;
-	}
+    if(delim == '') {
+        separatorChar = new Array("/", "-", ":", " ");
+    }
+    else {
+        separatorChar = delim;
+    }
 	
-	if(pattern != '') {
-		for(i = 0; i < separatorChar.length; i++) {
-			if(pattern.indexOf(separatorChar[i]) != -1) {
-				if(separatorChar[i] == ' ') {
-					//split any number of whitespaces
-					separatorChar[i] = regExp;
-				}
-				delim = '/';
-				format = pattern.split(separatorChar[i]);
-				dateArr = date.split(separatorChar[i]);
-				if(format.length != dateArr.length) {
-					return false;
-				}
-				pattern = '';
-				break;
-			}
-		}
-		for(i = 0; i < format.length; i++) {
-			if(pattern.length > 0) {
-				pattern += delim;
-			}
-			if(format[i].toLowerCase == "yy") {
-				format[i] += format[i];
-			} 
-			pattern += format[i]; 
-		}
-	}	
-	formatNumber = getDateFormat(pattern);
-	if(!checkForValidDate(date, formatNumber, '')) {
-		return false;
-	}
-	return true;
+    if(pattern != '') {
+        for(i = 0; i < separatorChar.length; i++) {
+            if(pattern.indexOf(separatorChar[i]) != -1) {
+                if(separatorChar[i] == ' ') {
+                    //split any number of whitespaces
+                    separatorChar[i] = regExp;
+                }
+                delim = '/';
+                format = pattern.split(separatorChar[i]);
+                dateArr = date.split(separatorChar[i]);
+                if(format.length != dateArr.length) {
+                    return false;
+                }
+                pattern = '';
+                break;
+            }
+        }
+        for(i = 0; i < format.length; i++) {
+            if(pattern.length > 0) {
+                pattern += delim;
+            }
+            if(format[i].toLowerCase == "yy") {
+                format[i] += format[i];
+            } 
+            pattern += format[i]; 
+        }
+    }	
+    formatNumber = getDateFormat(pattern);
+    if(!checkForValidDate(date, formatNumber, '')) {
+        return false;
+    }
+    return true;
 }
 
 //This API returns the format number for the given date pattern
 function getDateFormat(pattern) {
-	if(pattern == '') {
-		return 1; //default mm/dd/yyyy pattern
-	}
-	pattern = pattern.toLowerCase();
-	format = new Array("mm/dd/yyyy", "dd/mm/yyyy", "mm/yyyy/dd",
-						"dd/yyyy/mm", "yyyy/mm/dd", "yyyy/dd/mm" );
+    if(pattern == '') {
+        return 1; //default mm/dd/yyyy pattern
+    }
+    pattern = pattern.toLowerCase();
+    format = new Array("mm/dd/yyyy", "dd/mm/yyyy", "mm/yyyy/dd",
+        "dd/yyyy/mm", "yyyy/mm/dd", "yyyy/dd/mm" );
 
-	for(i=0; i < format.length; i++) {
-		if(format[i] == pattern) {
-			return i+1;
-		}
-	}
-	//default mm/dd/yyyy pattern
-	return 1;
+    for(i=0; i < format.length; i++) {
+        if(format[i] == pattern) {
+            return i+1;
+        }
+    }
+    //default mm/dd/yyyy pattern
+    return 1;
 
 }
 
@@ -1681,187 +1528,174 @@ function getDateFormat(pattern) {
 //We support only two formats for now
 
 function checkDateRanges(startComponent, endComponent, format, separatorChar) {
-	start = getTextElement(startComponent);
-	end = getTextElement(endComponent);
+    start = getTextElement(startComponent);
+    end = getTextElement(endComponent);
 
-	startDate = start.value;
-	endDate = end.value;
+    startDate = start.value;
+    endDate = end.value;
 
-	if(startDate != '') {
-		if(!checkForValidDate(startDate, format, separatorChar)){
-			start.focus;
-			return false;
-		}
-	}
-	if(endDate != '') {
-		if(!checkForValidDate(endDate, format, separatorChar)){
-			end.focus;
-			return false;
-		}
-	}
-	return true;
+    if(startDate != '') {
+        if(!checkForValidDate(startDate, format, separatorChar)){
+            start.focus;
+            return false;
+        }
+    }
+    if(endDate != '') {
+        if(!checkForValidDate(endDate, format, separatorChar)){
+            end.focus;
+            return false;
+        }
+    }
+    return true;
 }
 
 function getUSDateFormat(date, format) {
-	if(format == '' || format == 1 || date == '' || date.length < 3) {
-		//In US Date format already, no need to convert
-		return date;
-	}
-	else if(format == 2) {
-		// We received date in dd//mm/yyyy format
-		// Our API always treats in mm/dd/yyyy format, so shuffle accordingly.
-		tmp = date[0];
-		date[0] = date[1];
-		date[1] = tmp;
-	}
-	else if(format == 3) {
-		// We received date in mm/yyyy/dd format
-		// Our API always treats in mm/dd/yyyy format, so shuffle accordingly.
-		tmp = date[1];
-		date[1] = date[2];
-		date[2] = tmp;
-	}
-	else if(format == 4) {
-		// We received date in dd/yyyy/mm format
-		// Our API always treats in mm/dd/yyyy format, so shuffle accordingly.
-		tmp = date[1];
-		date[1] = date[0];
-		date[0] = date[2];
-		date[2] = tmp;
-	}
-	else if(format == 5) {
-		// We received date in yyyy/mm/dd format
-		// Our API always treats in mm/dd/yyyy format, so shuffle accordingly.
-		tmp = date[1];
-		date[0] = date[1];
-		date[1] = date[2];
-		date[2] = tmp;
-	}
-	else if(format == 6) {
-		// We received date in yyyy/dd/mm format
-		// Our API always treats in mm/dd/yyyy format, so shuffle accordingly.
-		tmp = date[2];
-		date[0] = date[2];
-		date[2] = tmp;
-	}
-	return date;
+    if(format == '' || format == 1 || date == '' || date.length < 3) {
+        //In US Date format already, no need to convert
+        return date;
+    }
+    else if(format == 2) {
+        // We received date in dd//mm/yyyy format
+        // Our API always treats in mm/dd/yyyy format, so shuffle accordingly.
+        tmp = date[0];
+        date[0] = date[1];
+        date[1] = tmp;
+    }
+    else if(format == 3) {
+        // We received date in mm/yyyy/dd format
+        // Our API always treats in mm/dd/yyyy format, so shuffle accordingly.
+        tmp = date[1];
+        date[1] = date[2];
+        date[2] = tmp;
+    }
+    else if(format == 4) {
+        // We received date in dd/yyyy/mm format
+        // Our API always treats in mm/dd/yyyy format, so shuffle accordingly.
+        tmp = date[1];
+        date[1] = date[0];
+        date[0] = date[2];
+        date[2] = tmp;
+    }
+    else if(format == 5) {
+        // We received date in yyyy/mm/dd format
+        // Our API always treats in mm/dd/yyyy format, so shuffle accordingly.
+        tmp = date[1];
+        date[0] = date[1];
+        date[1] = date[2];
+        date[2] = tmp;
+    }
+    else if(format == 6) {
+        // We received date in yyyy/dd/mm format
+        // Our API always treats in mm/dd/yyyy format, so shuffle accordingly.
+        tmp = date[2];
+        date[0] = date[2];
+        date[2] = tmp;
+    }
+    return date;
 }
 
 function checkForValidDate(date, format, delim) {
-	var dateValue;
-	var splitChar;
-	var separatorChar;
-	var regExp = new RegExp(/\s+/);
+    var dateValue;
+    var splitChar;
+    var separatorChar;
+    var regExp = new RegExp(/\s+/);
 
-	if(delim == '') {
-		separatorChar = new Array("/", "-", ":", " ");
-	}
-	else {
-		separatorChar = delim;
-	}
-	var dateFound = false;
+    if(delim == '') {
+        separatorChar = new Array("/", "-", ":", " ");
+    }
+    else {
+        separatorChar = delim;
+    }
+    var dateFound = false;
 
-	if(format == '') {
-		//default format mm/dd/yyyy
-		format = 1;
-	}
+    if(format == '') {
+        //default format mm/dd/yyyy
+        format = 1;
+    }
 
-	for(i = 0; i < separatorChar.length; i++) {
-		if(date.indexOf(separatorChar[i]) != -1) {
-			if(separatorChar[i] == ' ') {
-				//split any number of whitespaces
-				separatorChar[i] = regExp;
-			}
-			dateValue = date.split(separatorChar[i]);
-			dateFound = true;
-			break;
-		}
-	}
+    for(i = 0; i < separatorChar.length; i++) {
+        if(date.indexOf(separatorChar[i]) != -1) {
+            if(separatorChar[i] == ' ') {
+                //split any number of whitespaces
+                separatorChar[i] = regExp;
+            }
+            dateValue = date.split(separatorChar[i]);
+            dateFound = true;
+            break;
+        }
+    }
 
-	if(dateValue == '' || dateFound == false || dateValue.length != 3) {
-		return false;
-	}
+    if(dateValue == '' || dateFound == false || dateValue.length != 3) {
+        return false;
+    }
 
-	if(format > 1) {
-		// We received date in non-us format
-		// Our API always treats in mm/dd/yyyy format, so shuffle accordingly.
-		dateValue = getUSDateFormat(dateValue, format);
-	}
+    if(format > 1) {
+        // We received date in non-us format
+        // Our API always treats in mm/dd/yyyy format, so shuffle accordingly.
+        dateValue = getUSDateFormat(dateValue, format);
+    }
 
-	if(dateValue[2].length == 2) {
-		//make sure this is in YYYY format
-		dateValue[2] = '20' + dateValue[2];
-	}
-	else {
-		if(dateValue[2].length != 4) {
-			return false;
-		}
-	}
+    if(dateValue[2].length == 2) {
+        //make sure this is in YYYY format
+        dateValue[2] = '20' + dateValue[2];
+    }
+    else {
+        if(dateValue[2].length != 4) {
+            return false;
+        }
+    }
 
-	var range = new Array(3);
-	range[0] = new Array(1, 12);
-	range[1] = new Array(1, 31);
-	range[2] = new Array(2000, 2100);
+    var range = new Array(3);
+    range[0] = new Array(1, 12);
+    range[1] = new Array(1, 31);
+    range[2] = new Array(2000, 2100);
 
-	for(i=0; i < 3; i++) {
-		if(!checkForNumericValue(dateValue[i])) {
-			return false;
-		}
+    for(i=0; i < 3; i++) {
+        if(!checkForNumericValue(dateValue[i])) {
+            return false;
+        }
 
-		if(!checkNumbericRange(dateValue[i], range[i][0], range[i][1])) {
-			return false;
-		}
-	}
-	if(!checkForAllowedDays(dateValue[0], dateValue[1], dateValue[2])) {
-		return false;
-	}
-	return true;
+        if(!checkNumbericRange(dateValue[i], range[i][0], range[i][1])) {
+            return false;
+        }
+    }
+    if(!checkForAllowedDays(dateValue[0], dateValue[1], dateValue[2])) {
+        return false;
+    }
+    return true;
 }
 
 function checkForAllowedDays(month, day, year) {
-	if(day < 1) {
-		return false;
-	}
-	if((month == 1 || month == 3 || month == 5 || month == 7 || month == 8 ||
-		month == 10 || month == 12) && (day > 31 )) {
-			return false;
-	}
-	if((month == 4 || month == 6 || month == 9 || month == 11) &&
-		(day > 30)) {
-			return false;
-	}
-	if(month == 2) {
-		if(leapYear(year) && (day > 29)) {
-			return false;
-		}
-		else {
-			if(day > 28) {
-				return false;
-			}
-		}
-	}
-	return true;
+    if(day < 1) {
+        return false;
+    }
+    if((month == 1 || month == 3 || month == 5 || month == 7 || month == 8 ||
+        month == 10 || month == 12) && (day > 31 )) {
+        return false;
+    }
+    if((month == 4 || month == 6 || month == 9 || month == 11) &&
+        (day > 30)) {
+        return false;
+    }
+    if(month == 2) {
+        if(leapYear(year) && (day > 29)) {
+            return false;
+        }
+        else {
+            if(day > 28) {
+                return false;
+            }
+        }
+    }
+    return true;
 }
 
 function leapYear(year) {
-	if((year % 4 == 0) && !(year % 100 == 0 || year % 400 == 0)) {
-		return true;
-	}
-	return false;
-}
-/*
-function checkObjectName(componentId) {
-    var val = document.getElementById(componentId);
-    var val = formField.value;
-    var result = (val != '') && 
-        isInCharSet(val, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-.");
-    if (result == false){
-        formField.select();
+    if((year % 4 == 0) && !(year % 100 == 0 || year % 400 == 0)) {
+        return true;
     }
-    return result;
+    return false;
 }
-
-*/
 
 var lastSelectedIndex = 0;
 
@@ -1935,24 +1769,24 @@ function toggleSelectAll(checkbox,optionListId,dropDownId) {
  */
 
 function submitenter(e, id, msg) {
-	var keyCode;
-	if(window.event) {
-		keyCode = window.event.keyCode;
-	}
-	else if(e) {
-		keyCode = e.which;
-	}
-	else {
-		return true;
-	}
-	if(keyCode == 13) {
-    		button = document.getElementById(id);
-		submitAndDisable(button, msg);
-		return false;
-	}
-	else {
-		return true;
-	}
+    var keyCode;
+    if(window.event) {
+        keyCode = window.event.keyCode;
+    }
+    else if(e) {
+        keyCode = e.which;
+    }
+    else {
+        return true;
+    }
+    if(keyCode == 13) {
+        button = document.getElementById(id);
+        submitAndDisable(button, msg);
+        return false;
+    }
+    else {
+        return true;
+    }
 }
 
 function getSelectedValue(field) {
@@ -1960,16 +1794,16 @@ function getSelectedValue(field) {
     var selectedValue;
     for(i = 0; i < theForm.elements.length; i++) {
         var value = theForm.elements[i].name;
-	if(value == null) {
+        if(value == null) {
             continue;
-	}
-	var extnsn = value.lastIndexOf(".");
-	var name = value.substr(extnsn+1);
-	var fieldName = theForm.elements[i];
-	if(name == field && fieldName.checked) {
+        }
+        var extnsn = value.lastIndexOf(".");
+        var name = value.substr(extnsn+1);
+        var fieldName = theForm.elements[i];
+        if(name == field && fieldName.checked) {
             selectedValue = fieldName.value;
-	    break;
-	}
+            break;
+        }
     }
     return selectedValue;
 }
@@ -1979,18 +1813,18 @@ function getSelectedValueFromForm(theForm, field) {
     var testField = null;
     var name = null;
     if (theForm) {
-	for (var i = 0; i < theForm.elements.length; i++) {
-	    testField = theForm.elements[i];
-	    name = testField.name;
-	    if (name == null) {
-		continue;
-	    }  
-	    name = name.substr(name.lastIndexOf(".")+1);
-	    if ((name == field) && testField.checked) {
-		selectedValue = testField.value;
-		break;
-	    }
-	}
+        for (var i = 0; i < theForm.elements.length; i++) {
+            testField = theForm.elements[i];
+            name = testField.name;
+            if (name == null) {
+                continue;
+            }  
+            name = name.substr(name.lastIndexOf(".")+1);
+            if ((name == field) && testField.checked) {
+                selectedValue = testField.value;
+                break;
+            }
+        }
     }
     return selectedValue;
 }
@@ -2005,23 +1839,24 @@ function checkForSelectedValue(fieldId) {
 
 function reloadHeaderFrame() {
     var mastheadForm = document.getElementById('af');
-    admingui.ajax.postAjaxRequest(mastheadForm, {render: 'af'}, 'af');
+    admingui.ajax.postAjaxRequest(mastheadForm, {
+        render: 'af'
+    }, 'af');
 }
 
 admingui.deploy = {
-    // FIXME: similar functions are defined in uploadJS.inc :(
     uploadInit: function(dirPathId, dirSelectBtnId, filSelectBtnId, fileuploadId) {
-            //
-            //We need to set a timeout to delay the call to getTextElement inside disable component.
-            //otherwise getTextElement will always return null, causing JS error.
-            //disableComponent(dirPathId, 'text');
-            window.setTimeout("disableComponent('" + dirPathId+ "', 'text')", 1);
-            if(getSelectedValueFromForm(document.forms['form'], 'uploadRdBtn')=='serverSide'){
-                enableDOMComponent(dirPathId);
-                enableBtnComponent(dirSelectBtnId);
-                enableBtnComponent(filSelectBtnId);
-                disableComponent(fileuploadId, 'file');
-            }
+        //
+        //We need to set a timeout to delay the call to getTextElement inside disable component.
+        //otherwise getTextElement will always return null, causing JS error.
+        //disableComponent(dirPathId, 'text');
+        window.setTimeout("disableComponent('" + dirPathId+ "', 'text')", 1);
+        if(getSelectedValueFromForm(document.forms['form'], 'uploadRdBtn')=='serverSide'){
+            enableDOMComponent(dirPathId);
+            enableBtnComponent(dirSelectBtnId);
+            enableBtnComponent(filSelectBtnId);
+            disableComponent(fileuploadId, 'file');
+        }
     },
 
     uploadRdBtnAction : function(dirPathId, dirSelectBtnId, filSelectBtnId, fileuploadId, radioChoosenId) {
@@ -2050,18 +1885,18 @@ admingui.deploy = {
         var sheets = appTypeString.split(',');
         if (propSheetId.length <=0){
             for( ix=0; ix < sheets.length; ix++){
-                comp = document.getElementById('form:' + sheets[ix]);
+                comp = obj.document.getElementById('form:' + sheets[ix]);
                 if (comp != null)
                     comp.style.display='none';
             }
         }else{
             for (i=0; i < sheets.length; i++){
-                cc = document.getElementById('form:'+sheets[i]);
+                cc = obj.document.getElementById('form:'+sheets[i]);
                 if (cc == null){
                     continue;
                 }
                 if (propSheetId == sheets[i]){
-                     cc.style.display='block';
+                    cc.style.display='block';
                 }else{
                     cc.style.display='none';
                 }
@@ -2071,12 +1906,11 @@ admingui.deploy = {
         if (typeof(appName) != 'undefined' ) {
             admingui.deploy.setAppName(appNameId, appName, obj, appTypeString);
             //may as well set context root if it exist.
-            //component = obj.getTextElement(contextRootId);
-            var component = document.getElementById(contextRootId);
+            var component = obj.document.getElementById(contextRootId);
             if (component != null){
                 component.value = getPrefix(appName);
             }
-         }
+        }
     },
 
     setAppName : function (appNameId, appName, obj, appTypeString){
@@ -2087,15 +1921,14 @@ admingui.deploy = {
         var sfex2 = sfex.substr(1);   //remove the '.'
         // Fill in application name
         if (appNameId==null || appNameId.length <=0){
-            // shouldn't be.
+        // shouldn't be.
         }else{
             var ix = appNameId.indexOf(":");
             var ix2 = appNameId.substr(ix+1).indexOf(":");
             var str3 = appNameId.substr(ix+1+ix2);
             var sheets = appTypeString.split(',');
             for( idx=0; idx < sheets.length; idx++){
-                //var comp = obj.getTextElement('form:'+sheets[idx]+str3);
-                var comp = document.getElementById('form:'+sheets[idx]+str3);
+                var comp = obj.document.getElementById('form:'+sheets[idx]+str3);
                 if (comp != null){
                     comp.value=pfex;
                 }
@@ -2105,12 +1938,9 @@ admingui.deploy = {
 
     setFieldValue : function(appNameId, value, dropDownProp, typeId, contextRootId, extensionId, obj, appTypeString) {
         var appName = extractName(value);
-        //var pfex = getPrefix(appName);
         var sfex = getSuffix(appName);
         var sfex2 = '';
-
-        //obj.getTextElement(extensionId).value=sfex;
-        document.getElementById(extensionId).value = sfex;
+        obj.document.getElementById(extensionId).value=sfex;
         var appTypes = ','+appTypeString+',';
 
         //If no extension for file choosen, or no plugin for that extension, show dropDown type and don't fill in anything, then return;
@@ -2122,18 +1952,21 @@ admingui.deploy = {
                 sfex2 = '';
             }
         }
-        //obj.getSelectElement(typeId).value = sfex2;
-        document.getElementById(typeId).value = sfex2;
-        document.getElementById(dropDownProp).style.display = 'block';
-        admingui.deploy.showPropertySheet(sfex2, obj, appNameId, contextRootId, appTypeString, appName);
+        
+        //for redeploy, there is no dropdown type to choose from.
+        if (typeId != ""){
+            obj.document.getElementById(typeId).value = sfex2;
+            obj.document.getElementById(dropDownProp).style.display = 'block';
+            admingui.deploy.showPropertySheet(sfex2, obj, appNameId, contextRootId, appTypeString, appName);
+        }
     },
 
-    populateDirAndAppName : function(fileChooserId, dirPathId, appNameId, typeId, dropDownProp, contextRootId, extensionId){
+    populateDirAndAppName : function(fileChooserId, dirPathId, appNameId, typeId, dropDownProp, contextRootId, extensionId, appTypeString){
         var fc = document.getElementById(fileChooserId).getSelectionValue();
         window.opener.getTextElement(dirPathId).value = fc;
         //for redeploy, there is no dropdown for app type, there is no need to fill in any field.
         if (dropDownProp != ""){
-            admingui.deploy.setFieldValue(appNameId, fc, dropDownProp, typeId, contextRootId, extensionId, window.opener);
+            admingui.deploy.setFieldValue(appNameId, fc, dropDownProp, typeId, contextRootId, extensionId, window.opener, appTypeString);
         }
     },
 
@@ -2151,7 +1984,31 @@ admingui.deploy = {
             component.focus();
         }
         return result;
+    },
+
+
+    checkTarget : function (onlyDAS, addRemoveId, confirmMsg){
+        if (onlyDAS=='true') return true;
+        var component = document.getElementById(addRemoveId);
+        if (component != null){
+            var target = document.getElementById(addRemoveId).value;
+            if (target==null || target==""){
+                return getConfirm(this, confirmMsg);
+            }
+        }
+        return true;
+    },
+
+    checkType: function( typeId, alertMsg){
+        var value = document.getElementById(typeId).value;
+        var result = (value != null) && (value != '') && (isWhitespace(value) == false);
+        if (result == false) {
+            showAlert(alertMsg);
+            return false;
+        }
+        return true;
     }
+
 }
 
 admingui.table = {
@@ -2189,8 +2046,8 @@ admingui.table = {
             for (count=0; count < buttons.length; count++) {
                 var element = document.getElementById(buttons[count]);
                 if (element) {
-                   element.disabled = disabled;
-                   element.className = disabled ? "Btn2Dis_sun4" : "Btn1_sun4";
+                    element.disabled = disabled;
+                    element.className = disabled ? "Btn2Dis_sun4" : "Btn1_sun4";
                 }
             }
         } catch (err) {
@@ -2207,35 +2064,36 @@ admingui.table = {
 admingui.ajax = {
     lastPageLoaded : '',
     ajaxCount: 0,
+    ajaxTimer: null,
 
     getXMLHttpRequestObject: function() {
-	var reqObj = null;
-	if (window.XMLHttpRequest) {
-	    reqObj = new XMLHttpRequest();
-	} else if (window.ActiveXObject) {
-	    try {
-		reqObj = new ActiveXObject("Msxml2.XMLHTTP");
-	    } catch (ex) {
-		reqObj = new ActiveXObject("Microsoft.XMLHTTP");
-	    }
-	}
-	return reqObj;
+        var reqObj = null;
+        if (window.XMLHttpRequest) {
+            reqObj = new XMLHttpRequest();
+        } else if (window.ActiveXObject) {
+            try {
+                reqObj = new ActiveXObject("Msxml2.XMLHTTP");
+            } catch (ex) {
+                reqObj = new ActiveXObject("Microsoft.XMLHTTP");
+            }
+        }
+        return reqObj;
     },
 
     get: function(url, targetId, callback) {
-	// Ping header to make sure header stays "fresh"
-	if (targetId && (targetId == 'content')) {
-	    admingui.ajax.pingHeader();
-	}
+        // Ping header to make sure header stays "fresh"
+        if (targetId && (targetId == 'content')) {
+            admingui.ajax.pingHeader();
+        }
 
-	var req = admingui.ajax.getXMLHttpRequestObject();
-	if (req) {
-	    req.targetId = targetId;
-	    req.onreadystatechange =
-		function() {
-		    if (req.readyState == 4) {
-			callback(req, targetId, url);
-			/*
+        var req = admingui.ajax.getXMLHttpRequestObject();
+        if (req) {
+            req.targetId = targetId;
+            req.onreadystatechange =
+            function() {
+                if (req.readyState == 4) {
+                    callback(req, targetId, url);
+                /*
 			// Make a tempoary elemnt to contain the help content
 			var tmpDiv = document.createElement("div");
 			tmpDiv.innerHTML = req.responseText;
@@ -2246,37 +2104,69 @@ admingui.ajax = {
 			// Show the help content...
 			targetNode.innerHTML = tmpDiv.innerHTML;
 			*/
-		    }
-		};
-	    req.open("GET", url, true);
-	    req.send("");
-	}
+                }
+            };
+            req.open("GET", url, true);
+            req.send("");
+        }
     },
     
     ajaxStart : function() {
+        admingui.ajax._setVisibility('ajaxIndicator', 'visible');
+        admingui.ajax._clearAjaxTimer();
+        admingui.ajax.ajaxTimer = setTimeout("admingui.ajax._displayAjaxLoadingPanel()", 2000);
+    },
+    
+    _displayAjaxLoadingPanel : function() {
         var ajaxPanel = document.getElementById('ajaxPanel');
-        ajaxPanel.style.visibility = "visible";
+        if (ajaxPanel != null) {
+            window.onscroll = function () { 
+                ajaxPanel.style.top = document.body.scrollTop; 
+            };
+            ajaxPanel.style.display = "block";
+            ajaxPanel.style.top = document.body.scrollTop;            
+            ajaxPanel.style.visibility = "visible";
+        }
+    },
+    
+    _setVisibility : function (id, state) {
+        var el = document.getElementById(id);
+        if (el != null) {
+            el.style.visibilty = state;
+        }
+    },
+    
+    _clearAjaxTimer : function() {
+        if (admingui.ajax.ajaxTimer != null) {
+            clearTimeout(admingui.ajax.ajaxTimer);
+            admingui.ajax.ajaxTimer = null;
+        }
     },
     
     ajaxComplete : function() {
+        admingui.ajax._clearAjaxTimer();
         var ajaxPanel = document.getElementById('ajaxPanel');
-        ajaxPanel.style.visibility = "hidden";
+        if (ajaxPanel != null) {
+            ajaxPanel.style.display = "none";
+            ajaxPanel.style.visibility = "hidden";
+        }
+        admingui.ajax._setVisibility('ajaxIndicator',  'hidden');
     },
 
     loadPage : function (args) {
         admingui.ajax.ajaxStart();
         var url = admingui.ajax.modifyUrl(args.url);
         //args.lastPage = document.getElementById(admingui.nav.TREE_ID).getSelectedTreeNode;
-	//admingui.util.log("Loading " + url + " via ajax.");
+        //admingui.util.log("Loading " + url + " via ajax.");
 
-	// Make cursor spin...
-	document.body.style.cursor = 'wait';
+        // Make cursor spin...
+        document.body.style.cursor = 'wait';
 
-	// Make request
-	admingui.ajax.get(url, "content", admingui.ajax.defaultGetCallback);
-	if (typeof oldOnClick == 'function') {
-	    admingui.util.log('Skipping onclick...' + oldOnClick);
-//          oldOnClick();
+        // Make request
+        admingui.ajax.get(url, "content", admingui.ajax.defaultGetCallback);
+        if (typeof oldOnClick == 'function') {
+            admingui.util.log('Skipping onclick...' + oldOnClick);
+        //          oldOnClick();
         }
         return false;
     },
@@ -2292,67 +2182,67 @@ admingui.ajax = {
             contentNode = document.getElementById("content");
         }
         contentNode.innerHTML = o.responseText;
-	// FIXME: These 2 functions only need to be replaced after a FPR...
+        // FIXME: These 2 functions only need to be replaced after a FPR...
         webui.suntheme.hyperlink.submit = admingui.woodstock.hyperLinkSubmit;
         webui.suntheme.jumpDropDown.changed = admingui.woodstock.dropDownChanged;
         admingui.ajax.processElement(o, contentNode, true);
         admingui.ajax.processScripts(o);
-	// Restore cursor
-	document.body.style.cursor = 'auto';
+        // Restore cursor
+        document.body.style.cursor = 'auto';
         var node = o.argument.sourceNode;
         if (typeof node != 'undefined') {
-            //admingui.nav.selectTreeNodeById(node.parentNode.parentNode.id);
+        //admingui.nav.selectTreeNodeById(node.parentNode.parentNode.id);
         }
         admingui.nav.selectTreeNodeWithURL(o.argument.url);
     },
 
     postAjaxRequest : function (component, args, respTarget) {
         admingui.ajax.ajaxStart();
-	if ((respTarget === null) || (typeof(respTarget) === 'undefined')) {
-	    respTarget = 'content';
-	}
-	component.respTarget = respTarget;
-	var params = {
-	    // I need to do this by default so all form values get processed.
-	    execute: '@all',
-	    bare: true,
-	    render: '@all'
-	};
-	if ((args !== null) && (typeof(args) !== 'undefined')) {
-	    for (var name in args) {
-		params[name] = args[name];
-	    }
-	}
-	if (params.render == "@all") {
-	    // Don't do this for user-defined render value
-	    params.onComplete = admingui.ajax.handleResponse;
+        if ((respTarget === null) || (typeof(respTarget) === 'undefined')) {
+            respTarget = 'content';
+        }
+        component.respTarget = respTarget;
+        var params = {
+            // I need to do this by default so all form values get processed.
+            execute: '@all',
+            bare: true,
+            render: '@all'
+        };
+        if ((args !== null) && (typeof(args) !== 'undefined')) {
+            for (var name in args) {
+                params[name] = args[name];
+            }
+        }
+        if (params.render == "@all") {
+            // Don't do this for user-defined render value
+            params.onComplete = admingui.ajax.handleResponse;
 
-	    // Make cursor spin... (only do this when we're handling the response)
-	    document.body.style.cursor = 'wait';
-	}
-	// Ping header to make sure header stays "fresh"
-	admingui.ajax.pingHeader();
-	jsf.ajax.request(component, null, params);
+            // Make cursor spin... (only do this when we're handling the response)
+            document.body.style.cursor = 'wait';
+        }
+        // Ping header to make sure header stays "fresh"
+        admingui.ajax.pingHeader();
+        jsf.ajax.request(component, null, params);
     },
 
     defaultGetCallback: function(xmlReq, target, url) {
-	if (window != top) {
-	    // May be inside a frame...
-	    return top.admingui.ajax.defaultGetCallback(xmlReq, target, url);
-	}
+        if (window != top) {
+            // May be inside a frame...
+            return top.admingui.ajax.defaultGetCallback(xmlReq, target, url);
+        }
         var contentNode = target;
-	if (typeof(contentNode) === 'string') {
+        if (typeof(contentNode) === 'string') {
             contentNode = document.getElementById(contentNode);
-	}
+        }
         if ((contentNode === null) || (typeof(contentNode) === 'undefined')) {
             contentNode = top.document.getElementById("content");
         }
 
-	if (typeof(webui) !== 'undefined') {
-	    // FIXME: These 2 functions (should) only need be replaced after FPR...
-	    webui.suntheme.hyperlink.submit = admingui.woodstock.hyperLinkSubmit;
-	    webui.suntheme.jumpDropDown.changed = admingui.woodstock.dropDownChanged;
-	}
+        if (typeof(webui) !== 'undefined') {
+            // FIXME: These 2 functions (should) only need be replaced after FPR...
+            webui.suntheme.hyperlink.submit = admingui.woodstock.hyperLinkSubmit;
+            webui.suntheme.jumpDropDown.changed = admingui.woodstock.dropDownChanged;
+        }
 
         contentNode.innerHTML = xmlReq.responseText;
 
@@ -2360,7 +2250,7 @@ admingui.ajax = {
         admingui.ajax.processElement(contextObj, contentNode, true);
         admingui.ajax.processScripts(contextObj);
 
-	// Restore cursor
+        // Restore cursor
         document.body.style.cursor = 'auto';
 
         admingui.nav.selectTreeNodeWithURL(url);
@@ -2377,72 +2267,72 @@ admingui.ajax = {
      *	innerHTML.
      */
     handleResponse : function () {
-	admingui.ajax.fixQue(this.que);
+        admingui.ajax.fixQue(this.que);
         //admingui.ajax.updateCurrentPageLink(o.argument.url);  <-- find a better way to get the viewId
         var contentNode = null;
-	if ((this.context) && (this.context.source)) {
-	    contentNode = this.context.source.respTarget;
-	}
+        if ((this.context) && (this.context.source)) {
+            contentNode = this.context.source.respTarget;
+        }
         if ((contentNode === null) || (typeof(contentNode) === 'undefined')) {
             contentNode = document.getElementById("content");
         } else if (typeof(contentNode) === 'string') {
             contentNode = document.getElementById(contentNode);
-	}
+        }
         var result = this.xmlReq.responseText;
         var len = (result.length > 200) ? 200 : result.length;
         var testString = result.substring(0, len);
         var viewState = null;
         if (testString.indexOf("<changes>") > 0) {
-	    // We have a JSF response... if id="javax.faces.ViewRoot", handle it
-	    var idx = testString.indexOf('id="javax.faces.ViewRoot"');
-	    if (idx > 0) {
-		try {
-		    var nodes = this.xmlReq.responseXML.getElementsByTagName("partial-response")[0].childNodes[0].childNodes;
-		    for (var cnt=0; cnt<nodes.length; cnt++) {
-			var node = nodes[cnt];
-			if (node.getAttribute('id') === 'javax.faces.ViewRoot') {
-			    result = node.textContent;
-			}
-			if (node.getAttribute('id') === 'javax.faces.ViewState') {
-			    // NOTE: see jsf.ajax.doUpdate for more info....
-			    viewState = node.firstChild;
-			}
-		    }
-		} catch (ex) {
-		    admingui.util.log("***** Unable to parse XML:  " + ex);
-		}
-	    }
-	}
+            // We have a JSF response... if id="javax.faces.ViewRoot", handle it
+            var idx = testString.indexOf('id="javax.faces.ViewRoot"');
+            if (idx > 0) {
+                try {
+                    var nodes = this.xmlReq.responseXML.getElementsByTagName("partial-response")[0].childNodes[0].childNodes;
+                    for (var cnt=0; cnt<nodes.length; cnt++) {
+                        var node = nodes[cnt];
+                        if (node.getAttribute('id') === 'javax.faces.ViewRoot') {
+                            result = node.textContent;
+                        }
+                        if (node.getAttribute('id') === 'javax.faces.ViewState') {
+                            // NOTE: see jsf.ajax.doUpdate for more info....
+                            viewState = node.firstChild;
+                        }
+                    }
+                } catch (ex) {
+                    admingui.util.log("***** Unable to parse XML:  " + ex);
+                }
+            }
+        }
         contentNode.innerHTML = result;
-	if (viewState != null) {
-	    var form = document.getElementById(this.context.formid);
-	    if (!form) {
-		admingui.util.log("***** Unable to find form! " + this.context.formid);
-		return;
-	    }
-	    var field = form.elements['javax.faces.ViewState'];
-	    if (typeof(field) === 'undefined') {
-		field = document.createElement("input");
-		field.type = "hidden";
-		field.name = "javax.faces.ViewState";
-		field.id = "javax.faces.ViewState";
-		form.appendChild(field);
-	    }
-	    field.value = viewState.nodeValue;
-	}
+        if (viewState != null) {
+            var form = document.getElementById(this.context.formid);
+            if (!form) {
+                admingui.util.log("***** Unable to find form! " + this.context.formid);
+                return;
+            }
+            var field = form.elements['javax.faces.ViewState'];
+            if (typeof(field) === 'undefined') {
+                field = document.createElement("input");
+                field.type = "hidden";
+                field.name = "javax.faces.ViewState";
+                field.id = "javax.faces.ViewState";
+                form.appendChild(field);
+            }
+            field.value = viewState.nodeValue;
+        }
 
-	// FIXME: These 2 functions (should) only need be replaced after FPR...
+        // FIXME: These 2 functions (should) only need be replaced after FPR...
         webui.suntheme.hyperlink.submit = admingui.woodstock.hyperLinkSubmit;
         webui.suntheme.jumpDropDown.changed = admingui.woodstock.dropDownChanged;
         var contextObj = {};
-	admingui.ajax.processElement(contextObj, contentNode, true);
+        admingui.ajax.processElement(contextObj, contentNode, true);
         admingui.ajax.processScripts(contextObj);
 
-	// Restore cursor
-	document.body.style.cursor = 'auto';
+        // Restore cursor
+        document.body.style.cursor = 'auto';
 
-	// Tree select code??  FIXME: broken...
-	/* 
+        // Tree select code??  FIXME: broken...
+        /* 
         var node = o.argument.sourceNode;
         if (typeof node != 'undefined') {
             admingui.nav.selectTreeNodeById(node.parentNode.parentNode.id);
@@ -2452,27 +2342,27 @@ admingui.ajax = {
     },
 
     fixQue: function(que) {
-	while (!que.isEmpty()) {
-	    // dump everything for now...
-	    que.dequeue();
-	}
+        while (!que.isEmpty()) {
+            // dump everything for now...
+            que.dequeue();
+        }
     },
 
     updateCurrentPageLink : function (url) {
         admingui.ajax.lastPageLoaded = url;
-        //document.getElementById("currentPageLink").href = url;
+    //document.getElementById("currentPageLink").href = url;
     },
 
     processElement : function (context, node, queueScripts) {
-	var recurse = true;
+        var recurse = true;
         //console.log("nodeName = " + node.nodeName);
         if (node.nodeName == 'A') {
-	    // FIXME: For exteral URLs, we should not replace... however, we
-	    // FIXME: may want to ensure they have a _blank target.  May need
-	    // FIXME: to compare the host to see if a URL is an external URL
-	    // FIXME: b/c M$ makes it hard to determine relative URLs, and full
-	    // FIXME: URLs to the same host "might" want be valid for
-	    // FIXME: replacement.
+            // FIXME: For exteral URLs, we should not replace... however, we
+            // FIXME: may want to ensure they have a _blank target.  May need
+            // FIXME: to compare the host to see if a URL is an external URL
+            // FIXME: b/c M$ makes it hard to determine relative URLs, and full
+            // FIXME: URLs to the same host "might" want be valid for
+            // FIXME: replacement.
             if (!admingui.ajax._isTreeNodeControl(node) && (node.target == '')) { //  && (typeof node.onclick != 'function'))
                 var shouldReplace = true;
                 if ((typeof node.onclick == 'function') && (node.id.indexOf("treeForm:tree") == -1)) {
@@ -2495,19 +2385,19 @@ admingui.ajax = {
                 }
             }
         } else if (node.nodeName == 'IFRAME') {
-	    recurse = false;
+            recurse = false;
         } else if (node.nodeName == 'INPUT') {
-	    if (((node.type == 'submit') || (node.type == 'image'))
-		    && ((node.onclick === null) || (typeof(node.onclick) === 'undefined') || (node.onclick == ''))) {
-		// Submit button w/o any JS, make it a partial page submit
-		node.onclick = function() {
-			var args = {};
-			args[node.id] = node.id;
-			admingui.ajax.postAjaxRequest(this, args);
-			return false;
-		    };
-	    }
-	    /*
+            if (((node.type == 'submit') || (node.type == 'image'))
+                && ((node.onclick === null) || (typeof(node.onclick) === 'undefined') || (node.onclick == ''))) {
+                // Submit button w/o any JS, make it a partial page submit
+                node.onclick = function() {
+                    var args = {};
+                    args[node.id] = node.id;
+                    admingui.ajax.postAjaxRequest(this, args);
+                    return false;
+                };
+            }
+        /*
         } else if (node.nodeName == 'FORM') {
             admingui.util.log("***** form action:  " + node.action);
             if (node.target == '') {
@@ -2518,25 +2408,25 @@ admingui.ajax = {
             }
 	    */
         } else if (node.nodeName == 'TITLE') {
-	    // bareLayout.xhtml handles this for ajax requests...
-	    recurse = false;
+            // bareLayout.xhtml handles this for ajax requests...
+            recurse = false;
         } else if (node.nodeName == 'SCRIPT') {
-	    recurse = false;  // don't walk scripts
-	    if (queueScripts) {
-		// Queue it...
-		if (typeof(context.scriptQueue) === "undefined") {
-		    context.scriptQueue = new Array();
-		}
-		context.scriptQueue.push(node);
-	    }
-	}
+            recurse = false;  // don't walk scripts
+            if (queueScripts) {
+                // Queue it...
+                if (typeof(context.scriptQueue) === "undefined") {
+                    context.scriptQueue = new Array();
+                }
+                context.scriptQueue.push(node);
+            }
+        }
 
-	// If recurse flag is true... recurse
-	if (recurse && node.childNodes) {
-	    for (var i = 0; i < node.childNodes.length; i++) {
-		admingui.ajax.processElement(context, node.childNodes[i], queueScripts);
-	    }
-	}
+        // If recurse flag is true... recurse
+        if (recurse && node.childNodes) {
+            for (var i = 0; i < node.childNodes.length; i++) {
+                admingui.ajax.processElement(context, node.childNodes[i], queueScripts);
+            }
+        }
     },
 
     _isTreeNodeControl : function (node) {
@@ -2544,11 +2434,11 @@ admingui.ajax = {
     },
 
     processScripts : function(context) {
-	if (typeof(context.scriptQueue) === "undefined") {
-	    // Nothing to do...
-	    return;
-	}
-	globalEvalNextScript(context.scriptQueue);
+        if (typeof(context.scriptQueue) === "undefined") {
+            // Nothing to do...
+            return;
+        }
+        globalEvalNextScript(context.scriptQueue);
     },
 
     modifyUrl : function (url) {
@@ -2588,85 +2478,88 @@ admingui.ajax = {
      *	async - false if a syncronous request is desired, default: true
      */
     invoke: function(handler, args, callback, depth, async) {
-	if ((typeof(handler) === 'undefined') || (handler == '')) {
-	    return;
-	}
-	if (typeof(callback) === 'undefined') {
-	    callback = function() {};
-	}
-	var params = '';
-	for (var param in args) {
-	    // Create a String to represent all the parameters
-	    // escape, this will prevent the server-side from (fully)
-	    // urldecoding it.  Allowing me to first parse the commas, then
-	    // decode the content.
-	    params += param + ':' + escape(args[param]) + ',';
-	}
-	if (typeof(async) === 'undefined') {
-	    async = true;
-	}
-	if (!(typeof(jsf) === 'undefined') && !(typeof(jsf.ajax) === 'undefined')) {
-	    // Warp user's function to make easier to use
-	    var func = function(data) {
-		if (data.status === 'success') {
-		    var respElt = document.getElementById('execResp');
-		    if (typeof(respElt) !== 'undefined') {
-			var result = '';
-			if (respElt.value != '') {
-			    result = '(' + respElt.value + ')';
-			    result = eval(result);
-			}
-			callback(result, data);
-		    }
-		}
-	    }
-	    if (typeof(depth) === 'undefined') {
-		depth = 3;
-	    }
-	    var src = document.getElementById('execButton');
-	    if ((src == null) || (typeof(src) === 'undefined')) {
-		alert("'execButton' not found!  Unable to submit JSF2 Ajax Request!");
-	    } else {
-		// Don't ping b/c this is from the header and therefor is a ping
-		jsf.ajax.request(src, null,
-		    {
-			execute: 'execButton',
-			render: 'execResp',
-			execButton: 'execButton',
-			h: handler,
-			d: depth,
-			a: params,
-			onevent: func,
-			async: async
-		    });
-	    }
-	} else {
-	    alert('JSF2+ Ajax Missing!');
-	}
+        if ((typeof(handler) === 'undefined') || (handler == '')) {
+            return;
+        }
+        if (typeof(callback) === 'undefined') {
+            callback = function() {};
+        }
+        var params = '';
+        for (var param in args) {
+            // Create a String to represent all the parameters
+            // escape, this will prevent the server-side from (fully)
+            // urldecoding it.  Allowing me to first parse the commas, then
+            // decode the content.
+            params += param + ':' + escape(args[param]) + ',';
+        }
+        if (typeof(async) === 'undefined') {
+            async = true;
+        }
+        if (!(typeof(jsf) === 'undefined') && !(typeof(jsf.ajax) === 'undefined')) {
+            // Warp user's function to make easier to use
+            var func = function(data) {
+                if (data.status === 'success') {
+                    var respElt = document.getElementById('execResp');
+                    if (typeof(respElt) !== 'undefined') {
+                        var result = '';
+                        if (respElt.value != '') {
+                            result = '(' + respElt.value + ')';
+                            result = eval(result);
+                        }
+                        callback(result, data);
+                    }
+                }
+            }
+            if (typeof(depth) === 'undefined') {
+                depth = 3;
+            }
+            var src = document.getElementById('execButton');
+            if ((src == null) || (typeof(src) === 'undefined')) {
+                alert("'execButton' not found!  Unable to submit JSF2 Ajax Request!");
+            } else {
+                // Don't ping b/c this is from the header and therefor is a ping
+                jsf.ajax.request(src, null,
+                {
+                    execute: 'execButton',
+                    render: 'execResp',
+                    execButton: 'execButton',
+                    h: handler,
+                    d: depth,
+                    a: params,
+                    onevent: func,
+                    async: async
+                });
+            }
+        } else {
+            alert('JSF2+ Ajax Missing!');
+        }
     },
 
     getResource: function(path, callback) {
-	admingui.ajax.invoke("gf.serveResource", {path:path, content:content}, callback, 1, true);
+        admingui.ajax.invoke("gf.serveResource", {
+            path:path, 
+            content:content
+        }, callback, 1, true);
     },
 
     /**
      *	This ensure the header "page" (view state data) stays in JSF's history
      */
     pingHeader: function() {
-	// Ping every 6 Ajax requests...
-	if ((++admingui.ajax.ajaxCount) > 5) {
-	    // Reset counter...
-	    admingui.ajax.ajaxCount = 0;
+        // Ping every 6 Ajax requests...
+        if ((++admingui.ajax.ajaxCount) > 5) {
+            // Reset counter...
+            admingui.ajax.ajaxCount = 0;
 
-	    // Get element from header form...
-	    var src = document.getElementById('execButton');
-	    var options = {
-		// noop
-		execute: '@none',
-		render: '@none'
-	    };
-	    jsf.ajax.request(src, null, options);
-	}
+            // Get element from header form...
+            var src = document.getElementById('execButton');
+            var options = {
+                // noop
+                execute: '@none',
+                render: '@none'
+            };
+            jsf.ajax.request(src, null, options);
+        }
     }
 }
 
@@ -2674,11 +2567,11 @@ admingui.woodstock = {
     hyperLinkSubmit: function(hyperlink, formId, params) {
         var form = document.getElementById(formId);
 
-	// Add any extra args that are necessary...
-	var args = {};
-	var linkId = hyperlink.id;
-	args[linkId + "_submittedField"] = linkId;
-	/*
+        // Add any extra args that are necessary...
+        var args = {};
+        var linkId = hyperlink.id;
+        args[linkId + "_submittedField"] = linkId;
+        /*
 	 * Not needed we're executing everything anyway
 	var idx = linkId.indexOf('row');
 	if (idx > 0) {
@@ -2696,71 +2589,73 @@ admingui.woodstock = {
         //so params[0] and params[1] form the name and value of the first param
         if (params != null) {
             for (var i = 0; i < params.length; i+=2) {
-		args[params[i]] = params[i+1];
+                args[params[i]] = params[i+1];
             }
         }
 
-	// Check target
-	var oldtarget = form.target;
+        // Check target
+        var oldtarget = form.target;
         if (hyperlink.target != "") {
             form.target = hyperlink.target;
         }
         admingui.ajax.postAjaxRequest(hyperlink, args);
 
-	// Retore form
-	form.target = oldtarget;
+        // Retore form
+        form.target = oldtarget;
 
         return false;
     },
 
     dropDownChanged: function(jumpDropdown) {
-	if (typeof(jumpDropdown) === "string") {
-	    jumpDropdown = webui.suntheme.dropDown.getSelectElement(jumpDropdown);
-	}
+        if (typeof(jumpDropdown) === "string") {
+            jumpDropdown = webui.suntheme.dropDown.getSelectElement(jumpDropdown);
+        }
 
-	// Force WS "submitter" flag to true
-	var submitterFieldId = jumpDropdown.id + "_submitter";
-	var submitterField = document.getElementById(submitterFieldId);
-	if (!submitterField) {
-	    submitterFieldId = jumpDropdown.parentNode.id + "_submitter";
-	    submitterField = document.getElementById(submitterFieldId);
-	    if (!submitterField) {
-		admingui.util.log("Unable to find dropDown submitter for: "
-		    + jumpDropdown.id);
-		return false;
-	    }
-	}
-	submitterField.value = "true";
+        // Force WS "submitter" flag to true
+        var submitterFieldId = jumpDropdown.id + "_submitter";
+        var submitterField = document.getElementById(submitterFieldId);
+        if (!submitterField) {
+            submitterFieldId = jumpDropdown.parentNode.id + "_submitter";
+            submitterField = document.getElementById(submitterFieldId);
+            if (!submitterField) {
+                admingui.util.log("Unable to find dropDown submitter for: "
+                    + jumpDropdown.id);
+                return false;
+            }
+        }
+        submitterField.value = "true";
 
-// FIXME: Not sure why the following is done...
-	var listItem = jumpDropdown.options;
-	for (var cntr=0; cntr < listItem.length; ++cntr) {
-	    if (listItem[cntr].className ==
-			webui.suntheme.props.jumpDropDown.optionSeparatorClassName
-		    || listItem[cntr].className ==
-			webui.suntheme.props.jumpDropDown.optionGroupClassName) {
-		continue;
-	    } else if (listItem[cntr].disabled) {
-		// Regardless if the option is currently selected or not,
-		// the disabled option style should be used when the option
-		// is disabled. So, check for the disabled item first.
-		// See CR 6317842.
-		listItem[cntr].className = webui.suntheme.props.jumpDropDown.optionDisabledClassName;
-	    } else if (listItem[cntr].selected) {
-		listItem[cntr].className = webui.suntheme.props.jumpDropDown.optionSelectedClassName;
-	    } else {
-		listItem[cntr].className = webui.suntheme.props.jumpDropDown.optionClassName;
-	    }
-	}
-	admingui.ajax.postAjaxRequest(jumpDropdown);
+        // FIXME: Not sure why the following is done...
+        var listItem = jumpDropdown.options;
+        for (var cntr=0; cntr < listItem.length; ++cntr) {
+            if (listItem[cntr].className ==
+                webui.suntheme.props.jumpDropDown.optionSeparatorClassName
+                || listItem[cntr].className ==
+                webui.suntheme.props.jumpDropDown.optionGroupClassName) {
+                continue;
+            } else if (listItem[cntr].disabled) {
+                // Regardless if the option is currently selected or not,
+                // the disabled option style should be used when the option
+                // is disabled. So, check for the disabled item first.
+                // See CR 6317842.
+                listItem[cntr].className = webui.suntheme.props.jumpDropDown.optionDisabledClassName;
+            } else if (listItem[cntr].selected) {
+                listItem[cntr].className = webui.suntheme.props.jumpDropDown.optionSelectedClassName;
+            } else {
+                listItem[cntr].className = webui.suntheme.props.jumpDropDown.optionClassName;
+            }
+        }
+        admingui.ajax.postAjaxRequest(jumpDropdown);
         return false;
     },
 
     commonTaskHandler : function(treeNode, targetUrl) {
-        admingui.ajax.loadPage({url: targetUrl});
-	if ((treeNode != null) && (treeNode != '')) {
-	    admingui.nav.selectTreeNodeById(treeNode);
-	}
+        admingui.ajax.loadPage({
+            url: targetUrl
+        });
+        if ((treeNode != null) && (treeNode != '')) {
+            admingui.nav.selectTreeNodeById(treeNode);
+        }
         return false;
     }
 }
@@ -2781,18 +2676,27 @@ var globalEvalNextScript = function(scriptQueue) {
         globalEvalNextScript(scriptQueue);
     } else {
         // Get via Ajax
-        admingui.ajax.getResource(node.src, function(result) {globalEval(result.content);globalEvalNextScript(scriptQueue);} );
-        // This gets a relative URL vs. a full URL with http://... needed
-        // when we properly serve resources w/ rlubke's recent fix that
-        // will be integrated soon.  We need to handle the response
-        // differently also.
-        //admingui.ajax.getResource(node.attributes['src'].value, function(result) { globalEval(result.content); globalEvalNextScript(scriptQueue);} );
+        admingui.ajax.getResource(node.src, function(result) {
+            globalEval(result.content);
+            globalEvalNextScript(scriptQueue);
+        } );
+    // This gets a relative URL vs. a full URL with http://... needed
+    // when we properly serve resources w/ rlubke's recent fix that
+    // will be integrated soon.  We need to handle the response
+    // differently also.
+    //admingui.ajax.getResource(node.attributes['src'].value, function(result) { globalEval(result.content); globalEvalNextScript(scriptQueue);} );
     }
 }
 
 var globalEval = function(src) {
     if (window.execScript) {
-        window.execScript(src);
+        try {
+            window.execScript(src);
+        } catch (error) {
+            if (console && console.log) {
+                console.log(error);
+            }
+        }
         return;
     }
     var fn = function() {

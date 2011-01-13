@@ -41,84 +41,143 @@
 
 package com.sun.enterprise.admin.cli.optional;
 
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.Set;
-
-import org.jvnet.hk2.annotations.*;
-import org.jvnet.hk2.component.*;
-
-import org.glassfish.api.Param;
-import org.glassfish.api.admin.*;
-import com.sun.enterprise.admin.util.CommandModelData.ParamModelData;
-import com.sun.enterprise.admin.cli.LocalDomainCommand;
-import com.sun.enterprise.admin.servermgmt.DomainConfig;
-import com.sun.enterprise.admin.servermgmt.pe.PEDomainsManager;
-import com.sun.enterprise.util.HostAndPort;
+import com.sun.enterprise.admin.cli.CLICommand;
+import com.sun.enterprise.util.io.DomainDirs;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import org.glassfish.api.Param;
+import org.glassfish.api.admin.CommandException;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.PerLookup;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * The change-master-password command.
+ * This is a command which can operate on both the DAS and the node
+ * The master password is the password that is used to encrypt the DAS (and instances) keystore. Therefore the DAS and associated server instances need the password to open the keystore at startup.
+ * The master password is the same for the DAS and all instances in the domain
+ * The default master password is "changeit"and can be saved in a master-password file:
+
+ * 1. DAS: domains/domainname/master-password
+ * 2. Instance: nodes/node-name/master-password
+ * The master-password may be changed on the DAS by running change-master-password.
+ * The DAS must be down to run this command. change-master-password supports the --savemasterpassword option.
+ * To change the master-password file on a node you run change-master-password with --nodedir
+ * and the node name.  The instances must be down to run this command on a node
+ * 
+ * If --nodedir is not specified it will look in the default location of nodes folder and find
+ * the node
  *
- * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net)
+ * If the domain and node have the same name it will execute the command for the domain. Incase
+ * you want the command to be executed for a node when the domain and node name is same
+ * you will need to specify the --nodedir option
+ *
+ * @author Bhakti Mehta
  */
 @Service(name = "change-master-password")
 @Scoped(PerLookup.class)
-@ExecuteOn(RuntimeType.DAS)
-public class ChangeMasterPasswordCommand extends LocalDomainCommand {
+public class ChangeMasterPasswordCommand extends CLICommand {
+
+    @Inject
+    private Habitat habitat;
+
     @Param(name = "savemasterpassword", optional = true, defaultValue = "false")
     private boolean savemp;
 
-    @Param(name = "domain_name", primary = true, optional = true)
-    private String domainName0;
+    @Param(name = "domain_name_or_node_name", primary = true, optional = true)
+    private String domainNameOrNodeName;
+
+    @Param(name = "nodedir", optional = true)
+    protected String nodeDir;
+
+    @Param(name = "domaindir", optional = true)
+    protected String domainDirParam = null;
+
+    private final String CHANGE_MASTER_PASSWORD_DAS =
+            "_change-master-password-das";
+
+    private final String CHANGE_MASTER_PASSWORD_NODE =
+            "_change-master-password-node";
 
     private static final LocalStringsImpl strings =
-            new LocalStringsImpl(ChangeMasterPasswordCommand.class);
+       new LocalStringsImpl(ChangeMasterPasswordCommand.class);
 
     @Override
-    protected void validate()
-            throws CommandException, CommandValidationException  {
-        setDomainName(domainName0);
-        super.validate();
+    protected int executeCommand() throws CommandException {
+        return 0;
     }
 
     @Override
-    protected int executeCommand()
-                    throws CommandException, CommandValidationException {
+    public int execute(String... args) throws CommandException {
+        super.execute(args);
+        CLICommand command = null;
+
+        if (domainDirParam != null && nodeDir != null) {
+            throw new CommandException(strings.get("both.domaindir.nodedir.not.allowed"));
+        }
         try {
-            HostAndPort adminAddress = getAdminAddress();
-            if (isRunning(adminAddress.getHost(), adminAddress.getPort()))
-                throw new CommandException(strings.get("domain.is.running",
-                                                    getDomainName(), getDomainRootDir()));
-            DomainConfig domainConfig = new DomainConfig(getDomainName(),
-                getDomainsDir().getAbsolutePath());
-            PEDomainsManager manager = new PEDomainsManager();
-            String mp = super.readFromMasterPasswordFile();
-            if (mp == null) {
-                mp = passwords.get("AS_ADMIN_MASTERPASSWORD");
-                if (mp == null) {
-                    mp = super.readPassword(strings.get("current.mp"));
-                }
+            if (isDomain()) {  // is it domain
+                command = CLICommand.getCommand(habitat,
+                        CHANGE_MASTER_PASSWORD_DAS);
+                return command.execute(args);
             }
-            if (mp == null)
-                throw new CommandException(strings.get("no.console"));
-            if (!super.verifyMasterPassword(mp))
-                throw new CommandException(strings.get("incorrect.mp"));
-            ParamModelData nmpo = new ParamModelData("New_Master_Password",
-                String.class, false, null);
-            nmpo.param._password = true;
-            String nmp = super.getPassword(nmpo, null, true);
-            if (nmp == null)
-                throw new CommandException(strings.get("no.console"));
-            domainConfig.put(DomainConfig.K_MASTER_PASSWORD, mp);
-            domainConfig.put(DomainConfig.K_NEW_MASTER_PASSWORD, nmp);
-            domainConfig.put(DomainConfig.K_SAVE_MASTER_PASSWORD, savemp);
-            manager.changeMasterPassword(domainConfig);
-            // Implementation note: Not sure if keys in domain-passwords
-            // are reencrypted - TODO - km@dev.java.net
-            return 0;
-        } catch(Exception e) {
-            throw new CommandException(e);
+
+            if (nodeDir != null) {
+                command = CLICommand.getCommand(habitat,
+                        CHANGE_MASTER_PASSWORD_NODE);
+                return command.execute(args);
+            } else {
+
+                // nodeDir is not specified and domainNameOrNodeName is not a domain.
+                // It could be a node
+                // We add defaultNodeDir parameter to args
+                ArrayList arguments = new ArrayList<String>(Arrays.asList(args));
+                arguments.remove(args.length -1);
+                arguments.add("--nodedir");
+                arguments.add(getDefaultNodesDirs().getAbsolutePath());
+                arguments.add(domainNameOrNodeName);
+                String[] newargs = (String[]) arguments.toArray(new String[0]);
+
+                command = CLICommand.getCommand(habitat,
+                        CHANGE_MASTER_PASSWORD_NODE);
+                return command.execute(newargs);
+            }
+        } catch (IOException e) {
+            throw new CommandException(e.getMessage(),e);
         }
     }
+
+    private boolean isDomain() throws IOException {
+        DomainDirs domainDirs = null;
+        //if both domainDir and domainNameOrNodeName are null get default domaindir
+        if (domainDirParam == null && domainNameOrNodeName == null ) {
+            domainDirs = new DomainDirs(DomainDirs.getDefaultDomainsDir());
+        } else  {
+            if (domainDirParam != null) {
+                domainDirs = new DomainDirs(new File(domainDirParam),domainNameOrNodeName);
+            }
+            if (domainNameOrNodeName != null) {
+                return new File(DomainDirs.getDefaultDomainsDir(),domainNameOrNodeName).isDirectory();
+            }
+        }
+        //It can be null in the case when this is not a domain but a node
+        if (domainDirs != null) {
+            return domainDirs.getDomainsDir().isDirectory();
+        }
+        return false;
+
+    }
+
+    private File getDefaultNodesDirs() throws IOException {
+        return new File(DomainDirs.getDefaultDomainsDir().getParent(),
+                "nodes");
+    }
+
+
 }

@@ -40,17 +40,17 @@
 
 -->
 
-<!-- editDefaultType.jsf -->
+<!-- editDefaultType.jsf  this is basically for osgi type jar -->
 
 
 <!initPage
-    setPageSessionAttribute(key="showJavaWebStart" value="#{true}")
-    setPageSessionAttribute(key="showVS" value="#{true}")
-    setPageSessionAttribute(key="showContextRoot" value="#{true}")
-    setPageSessionAttribute(key="showAvailability" value="#{true}")
+    setPageSessionAttribute(key="showJavaWebStart" value="#{false}")
+    setPageSessionAttribute(key="showVS" value="#{false}")
+    setPageSessionAttribute(key="showContextRoot" value="#{false}")
+    setPageSessionAttribute(key="showAvailability" value="#{false}")
+    setPageSessionAttribute(key="showOsgiType" value="#{true}")
     setPageSessionAttribute(key="editPage" value="#{request.contextPath}/common/applications/editDefaultType.jsf")
     setPageSessionAttribute(key="convertToFalseProp" value={"javaWebStartEnabled"})
-
 />
 
 <!composition template="/common/applications/appEdit.layout"   >

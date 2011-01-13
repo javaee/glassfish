@@ -55,7 +55,7 @@
         setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}");
         setPageSessionAttribute(key="rest-api" value="true");
         gf.getDefaultValues(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
-#include "/common/shared/targetsConfig.inc"
+        mapPut(map="#{pageSession.valueMap}" key="target" value="#{pageSession.configName}");
         createList(size="0", result="#{pageSession.tableList}");
         //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{false}" );
@@ -72,7 +72,6 @@
         <sun:title id="propertyContentPage" title="$resource{i18nc.jacc.NewPageTitle}" helpText="$resource{i18nc.jacc.NewPageHelp}">
 #include "/common/shared/editPageButtons.inc"
         </sun:title>
-        "<br><br>
 #include "/common/security/jacc/jaccProvider.inc"
 #include "/common/shared/propertyDescTable.inc"
 

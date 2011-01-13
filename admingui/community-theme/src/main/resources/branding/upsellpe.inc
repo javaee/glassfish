@@ -41,6 +41,7 @@
 -->
 
 <ui:event type="initPage">
+    setResourceBundle(key="i18nce" bundle="org.glassfish.admingui.community-theme.Strings");
     setPageSessionAttribute(key="contentCSS" value="position:absolute; overflow:auto; top:0px; width:100%; height:auto; bottom:200px;");
 </ui:event>
 <f:verbatim>
@@ -50,7 +51,7 @@
     <script type="text/javascript">
 	function frameOnload() {
 	    var adframe = document.getElementById('adframe');
-	    adframe.innerHTML = '<iframe id="upsell" style="height:100%; width:100%;" frameborder="0" src="#{request.scheme}://www.sun.com/software/products/appsrvr/promotions/v3.html#instance_urn=$session{productInstanceURN}"></iframe>';
+	    adframe.innerHTML = '<iframe id="upsell" style="height:100%; width:100%;" frameborder="0" src="#{request.scheme}://$resource{i18nce.promotionLink}"></iframe>';
 	}
     </script>
 </f:verbatim>

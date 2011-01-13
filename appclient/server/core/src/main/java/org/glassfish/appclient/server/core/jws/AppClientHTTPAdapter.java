@@ -63,6 +63,7 @@ import org.glassfish.grizzly.http.Method;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.grizzly.http.server.util.MimeType;
+import org.glassfish.enterprise.iiop.api.GlassFishORBFactory;
 
 /**
  * GrizzlyAdapter for serving static and dynamic content.
@@ -91,6 +92,7 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
     private final Properties tokens;
 
     private final IiopService iiopService;
+    private final GlassFishORBFactory orbFactory;
     private final ACCConfigContent accConfigContent;
     private final LoaderConfigContent loaderConfigContent;
 
@@ -99,14 +101,16 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
             final Properties tokens,
             final File domainDir,
             final File installDir,
-            final IiopService iiopService) throws IOException {
+            final IiopService iiopService,
+            final GlassFishORBFactory orbFactory) throws IOException {
         this(contextRoot,
                 new HashMap<String,StaticContent>(),
                 new HashMap<String,DynamicContent>(),
                 tokens,
                 domainDir,
                 installDir,
-                iiopService);
+                iiopService,
+                orbFactory);
     }
     
     public AppClientHTTPAdapter(
@@ -116,11 +120,13 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
             final Properties tokens,
             final File domainDir,
             final File installDir,
-            final IiopService iiopService) throws IOException {
+            final IiopService iiopService,
+            final GlassFishORBFactory orbFactory) throws IOException {
         super(contextRoot, staticContent);
         this.dynamicContent = dynamicContent;
         this.tokens = tokens;
         this.iiopService = iiopService;
+        this.orbFactory = orbFactory;
         this.accConfigContent = new ACCConfigContent(
                 new File(domainDir, "config"),
                 new File(new File(installDir, "lib"), "appclient"));
@@ -268,7 +274,6 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
         answer.setProperty("loader.config",
                 Util.toXMLEscaped(loaderConfigContent.content()));
 
-        answer.setProperty("request.iiop.properties", buildIIOPProperties());
         /*
          *Treat query parameters with the name "arg" as command line arguments to the
          *app client.
@@ -291,17 +296,6 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
         return answer;
     }
 
-    private String buildIIOPProperties() {
-        final StringBuilder sb = new StringBuilder();
-        final String indent = "        ";
-        for (IiopListener listener : iiopService.getIiopListener()) {
-            final String propPrefix = "appclient.iiop.listener." + listener.getId() + ".";
-            sb.append(propertyDef(indent, propPrefix + "port", listener.getPort()));
-            sb.append(propertyDef(indent, propPrefix + "isSecure", listener.getSecurityEnabled()));
-        }
-        return sb.toString();
-    }
-
     private String propertyDef(final String indent, final String name, final String value) {
         return indent + "<property name=\"" + name + "\" value=\"" + value + "\"/>" + LINE_SEP;
     }
@@ -316,14 +310,28 @@ public class AppClientHTTPAdapter extends RestrictedContentAdapter {
      * @return
      */
     private String targetServerSetting(final Properties props) {
-        String port = null;
-        for (IiopListener listener : iiopService.getIiopListener()) {
-            if (listener.getId().equals(DEFAULT_ORB_LISTENER_ID)) {
-                port = listener.getPort();
-                break;
+        String result = null;
+        try {
+            result = orbFactory.getIIOPEndpoints();
+        } catch (NullPointerException npe) {
+            /*
+             * orbFactory.getIIOPEndpoints is supposed to return a valid
+             * answer whether this server is in a cluster or not.  A bug
+             * causes it to throw a NullPointerException in the non-cluster case.
+             * So catch that and use the configured listener for this server.
+             *
+             * Find the IIOP listener with the default listener ID.
+             */
+            String port = null;
+            for (IiopListener listener : iiopService.getIiopListener()) {
+                if (listener.getId().equals(DEFAULT_ORB_LISTENER_ID)) {
+                    port = listener.getPort();
+                    break;
+                }
             }
+            result = props.getProperty("request.host") + ":" + port;
         }
-        return props.getProperty("request.host") + ":" + port;
+        return result;
     }
 
     private void processQueryParameters(String queryString, final Properties answer) {

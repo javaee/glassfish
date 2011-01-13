@@ -49,7 +49,8 @@
 <!composition template="/templates/default.layout"
     guiTitle="$resource{i18njca.connectorConnectionPools.pageTitle}"
     guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:resources:Connectors');
-        admingui.nav.refreshTree('treeForm:tree:resources:jmsResources:jmsConnectionFactories');"
+        admingui.nav.refreshTree('treeForm:tree:resources:jmsResources:jmsConnectionFactories');
+        setTimeout('admingui.table.changeOneTableButton(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0);"
 >
 <!define name="content">
     <event>

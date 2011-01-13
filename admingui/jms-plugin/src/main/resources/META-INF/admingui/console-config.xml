@@ -66,7 +66,7 @@
     <integration-point
                 id="jmsavailabilitytabs"
                 type="org.glassfish.admingui:availabilityTabs"
-                priority="20"
+                priority="60"
                 parentId="availabilityTabs"
                 content="jmsAvailabilityTabs.inc"
     />

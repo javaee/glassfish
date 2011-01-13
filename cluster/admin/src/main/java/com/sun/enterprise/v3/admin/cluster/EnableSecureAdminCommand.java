@@ -40,29 +40,53 @@
 
 package com.sun.enterprise.v3.admin.cluster;
 
-import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.SecureAdmin;
-import java.beans.PropertyVetoException;
-import org.glassfish.api.ActionReport;
+import java.util.Iterator;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
-import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.RetryableException;
-import org.jvnet.hk2.config.SingleConfigCode;
-import org.jvnet.hk2.config.Transaction;
-import org.jvnet.hk2.config.TransactionFailure;
 
 /**
- * Adjusts each configuration in the domain to use secure admin.
+ * Records that secure admin is to be used and adjusts each admin listener
+ * configuration in the domain to use secure admin.
+ *
+ * The command changes the admin-listener set-up within each separate
+ * configuration as if by running
+ * these commands:
+ * <pre>
+ * {@code
+        ###
+	### onEnable new protocol for secure admin
+	###
+	asadmin onEnable-protocol --securityenabled=true sec-admin-listener
+	asadmin onEnable-http --default-virtual-server=__asadmin sec-admin-listener
+	#asadmin onEnable-network-listener --listenerport 4849 --protocol sec-admin-listener sec-admin-listener
+	asadmin onEnable-ssl --type network-listener --certname s1as --ssl2enabled=false --ssl3enabled=false --clientauthenabled=false sec-admin-listener
+        asadmin set configs.config.server-config.network-config.protocols.protocol.sec-admin-listener.ssl.client-auth=want
+	asadmin set configs.config.server-config.network-config.protocols.protocol.sec-admin-listener.ssl.classname=com.sun.enterprise.security.ssl.GlassfishSSLImpl
+	asadmin set configs.config.server-config.security-service.message-security-config.HttpServlet.provider-config.GFConsoleAuthModule.property.restAuthURL=https://localhost:4848/management/sessions
+
+
+	###
+	### onEnable the port redirect config
+	###
+	asadmin onEnable-protocol --securityenabled=false admin-http-redirect
+	asadmin onEnable-http-redirect --secure-redirect true admin-http-redirect
+	#asadmin onEnable-http-redirect --secure-redirect true --redirect-port 4849 admin-http-redirect
+	asadmin onEnable-protocol --securityenabled=false pu-protocol
+	asadmin onEnable-protocol-finder --protocol pu-protocol --targetprotocol sec-admin-listener --classname com.sun.grizzly.config.HttpProtocolFinder http-finder
+	asadmin onEnable-protocol-finder --protocol pu-protocol --targetprotocol admin-http-redirect --classname com.sun.grizzly.config.HttpProtocolFinder admin-http-redirect
+
+	###
+	### update the admin listener
+	###
+	asadmin set configs.config.server-config.network-config.network-listeners.network-listener.admin-listener.protocol=pu-protocol
+ * }
+ *
  *
  * @author Tim Quinn
  */
@@ -70,69 +94,77 @@ import org.jvnet.hk2.config.TransactionFailure;
 @Scoped(PerLookup.class)
 @I18n("enable.secure.admin.command")
 @ExecuteOn(RuntimeType.ALL)
-public class EnableSecureAdminCommand implements AdminCommand {
+public class EnableSecureAdminCommand extends SecureAdminCommand {
 
-    @Param(optional = true, defaultValue="s1as")
+    @Param(optional = true)
     public String adminalias;
 
-    @Param(optional = true, defaultValue="glassfish-instance")
+    @Param(optional = true)
     public String instancealias;
 
-//    @Inject
-//    private Configs configs;
-
-    @Inject
-    private Domain domain;
-
     @Override
-    public void execute(AdminCommandContext context) {
-        final ActionReport report = context.getActionReport();
-        try {
-            ConfigSupport.apply(new SingleConfigCode<Domain>() {
-                @Override
-                public Object run(Domain d) throws PropertyVetoException, TransactionFailure {
-
-                    // get the transaction
-                    Transaction t = Transaction.getTransaction(d);
-                    if (t!=null) {
-
-                        try {
-                            // TODO - adjust the Grizzly config in all configs
-    //                        for (Config c : configs.getConfig()) {
-    //                            report.getTopMessagePart().addChild().setMessage(c.getName());
-    //                        }
-                            /*
-                             * Create the secure admin node if it is not already there.
-                             */
-                            SecureAdmin secureAdmin_w;
-                            SecureAdmin secureAdmin = d.getSecureAdmin();
-                            if (secureAdmin == null) {
-                                secureAdmin_w = d.createChild(SecureAdmin.class);
-                                d.setSecureAdmin(secureAdmin_w);
-                            } else {
-                                secureAdmin_w = t.enroll(secureAdmin);
-                            }
-                            secureAdmin_w.setEnabled("true");
-                            if (adminalias != null) {
-                                secureAdmin_w.setDasAlias(adminalias);
-                            }
-                            if (instancealias != null) {
-                                secureAdmin_w.setInstanceAlias(instancealias);
-                            }
-
-                            t.commit();
-                        } catch (RetryableException ex) {
-                            throw new RuntimeException(ex);
-                        }
-                    }
-
-                    return Boolean.TRUE;
-                }
-            }, domain);
-            report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-        } catch (TransactionFailure ex) {
-            report.failure(context.getLogger(), Strings.get("enable.secure.admin.errenable"), ex);
-        }
+    Iterator<Work<TopLevelContext>> secureAdminSteps() {
+        return stepsIterator(secureAdminSteps);
     }
 
+    @Override
+    Iterator<Work<ConfigLevelContext>> perConfigSteps() {
+        return stepsIterator(perConfigSteps);
+    }
+
+    /**
+     * Iterator which returns array elements from front to back.
+     * @param <T>
+     * @param steps
+     * @return
+     */
+    private <T  extends SecureAdminCommand.Context> Iterator<Work<T>> stepsIterator(Step<T>[] steps) {
+        return new Iterator<Work<T>> () {
+            private Step<T>[] steps;
+            private int nextSlot;
+
+            @Override
+            public boolean hasNext() {
+                return nextSlot < steps.length;
+            }
+
+            @Override
+            public Work<T> next() {
+                return steps[nextSlot++].enableWork();
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
+
+            Iterator<Work<T>> init(Step<T>[] values) {
+                this.steps = values;
+                nextSlot  = 0;
+                return this;
+            }
+
+        }.init(steps);
+    }
+    
+    @Override
+    protected boolean updateSecureAdminSettings(
+            final SecureAdmin secureAdmin_w) {
+        /*
+         * Apply the values for the aliases, if the user provided them on the
+         * command invocation.
+         */
+        if (adminalias != null) {
+            secureAdmin_w.setDasAlias(adminalias);
+        }
+        if (instancealias != null) {
+            secureAdmin_w.setInstanceAlias(instancealias);
+        }
+        return true;
+    }
+
+    @Override
+    protected String transactionErrorMessageKey() {
+        return "enable.secure.admin.errenable";
+    }
 }

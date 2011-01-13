@@ -41,9 +41,13 @@ package com.sun.enterprise.v3.admin.cluster;
 
 import com.sun.enterprise.admin.remote.RemoteAdminCommand;
 import com.sun.enterprise.admin.remote.ServerRemoteAdminCommand;
+import com.sun.enterprise.admin.util.*;
 import com.sun.enterprise.admin.util.RemoteInstanceCommandHelper;
 import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.util.ObjectAnalyzer;
 import com.sun.enterprise.util.StringUtils;
+import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.api.*;
 import org.glassfish.api.admin.*;
@@ -61,77 +65,141 @@ import org.jvnet.hk2.component.PerLookup;
 @I18n("restart.instance.command")
 @ExecuteOn(RuntimeType.DAS)
 public class RestartInstanceCommand implements AdminCommand {
-
     @Override
     public void execute(AdminCommandContext context) {
-        helper = new RemoteInstanceCommandHelper(habitat);
-        report = context.getActionReport();
-        logger = context.getLogger();
+        try {
+            helper = new RemoteInstanceCommandHelper(habitat);
+            report = context.getActionReport();
+            logger = context.getLogger();
+            report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
 
-        if (env.isDas())
-            errorMessage = callInstance();
-        else
-            errorMessage = Strings.get("restart.instance.notDas",
-                    env.getRuntimeType().toString());
+            if (!env.isDas())
+                setError(Strings.get("restart.instance.notDas", env.getRuntimeType().toString()));
 
-        if (errorMessage != null) {
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setMessage(errorMessage);
+            prepare();
+            setOldPid();
+            logger.fine("Restart-instance old-pid = " + oldPid);
+            callInstance();
+            waitForRestart();
+            String msg = Strings.get("restart.instance.success", instanceName);
+            logger.info(msg);
+            report.setMessage(msg);
+        }
+        catch (CommandException ex) {
+            setError(Strings.get("restart.instance.racError", instanceName,
+                    ex.getLocalizedMessage()));
+        }
+    }
+
+    private void prepare() {
+        if (isError())
+            return;
+
+        if (!StringUtils.ok(instanceName)) {
+            setError(Strings.get("stop.instance.noInstanceName"));
             return;
         }
 
-        // todo -- verify it really stopped
-        // waiting for IT for Vijay to get done -- API for status
-        // we are GUARANTEED that instanceName is set...
-        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-        report.setMessage(Strings.get("restart.instance.success", instanceName));
+        instance = helper.getServer(instanceName);
+
+        if (instance == null) {
+            setError(Strings.get("stop.instance.noSuchInstance", instanceName));
+            return;
+        }
+
+        host = instance.getAdminHost();
+
+        if (host == null) {
+            setError(Strings.get("stop.instance.noHost", instanceName));
+            return;
+        }
+        port = helper.getAdminPort(instance);
+
+        if (port < 0) {
+            setError(Strings.get("stop.instance.noPort", instanceName));
+            return;
+        }
+        logger.finer(ObjectAnalyzer.toString(this));
     }
 
     /**
      * return null if all went OK...
      *
      */
-    private String callInstance() {
-        String cmdName = "restart-instance";
+    private void callInstance() throws CommandException {
+        if (isError())
+            return;
 
-        if (!StringUtils.ok(instanceName))
-            return Strings.get("stop.instance.noInstanceName", cmdName);
+        String cmdName = "_restart-instance";
 
-        final Server instance = helper.getServer(instanceName);
+        RemoteAdminCommand rac = createRac(cmdName);
+        // notice how we do NOT send in the instance's name as an operand!!
+        ParameterMap map = new ParameterMap();
 
-        if (instance == null)
-            return Strings.get("stop.instance.noSuchInstance", instanceName);
+        if (debug != null)
+            map.add("debug", debug);
 
-        String host = instance.getAdminHost();
-
-        if (host == null)
-            return Strings.get("stop.instance.noHost", instanceName);
-
-        int port = helper.getAdminPort(instance);
-
-        if (port < 0)
-            return Strings.get("stop.instance.noPort", instanceName);
-
-        try {
-            // TODO complicated calls to determine when the remote instance has started??
-            RemoteAdminCommand rac = new ServerRemoteAdminCommand(habitat, "_restart-instance",
-                    host, port, false, "admin", null, logger);
-
-            // notice how we do NOT send in the instance's name as an operand!!
-            ParameterMap map = new ParameterMap();
-
-            if (debug != null)
-                map.add("debug", debug);
-
-            rac.executeCommand(map);
-        }
-        catch (CommandException ex) {
-            return Strings.get("restart.instance.racError", instanceName,
-                    ex.getLocalizedMessage());
-        }
-
-        return null;
+        rac.executeCommand(map);
     }
+
+    private void waitForRestart() {
+        if (isError())
+            return;
+
+        long deadline = System.currentTimeMillis() + WAIT_TIME_MS;
+
+        while (System.currentTimeMillis() < deadline) {
+            try {
+                String newpid = getPid();
+
+                // when the next statement is true -- the server has restarted.
+                if (StringUtils.ok(newpid) && !newpid.equals(oldPid)) {
+                    logger.fine("Restarted instance pid = " + newpid);
+                    return;
+                }
+            }
+            catch (Exception e) {
+                // ignore.  This is normal!
+            }
+        }
+        setError(Strings.get("restart.instance.timeout", instanceName));
+    }
+
+    private RemoteAdminCommand createRac(String cmdName) throws CommandException {
+        // I wonder why the signature is so unwieldy?
+        // hiding it here...
+        return new ServerRemoteAdminCommand(habitat, cmdName, host,
+                port, false, "admin", null, logger);
+    }
+
+    private void setError(String s) {
+        report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+        report.setMessage(s);
+    }
+
+    private boolean isError() {
+        return report.getActionExitCode() == ActionReport.ExitCode.FAILURE;
+    }
+
+    private void setOldPid() throws CommandException {
+        if (isError())
+            return;
+
+        oldPid = getPid();
+
+        if (!StringUtils.ok(oldPid))
+            setError(Strings.get("restart.instance.nopid", instanceName));
+    }
+
+    private String getPid() throws CommandException {
+        String cmdName = "_get-runtime-info";
+        RemoteAdminCommand rac = createRac(cmdName);
+        rac.executeCommand(new ParameterMap());
+        Map<String, String> map = rac.getAttributes();
+        return map.get("pid_value");
+    }
+    @Inject
+    InstanceStateService stateSvc;
     @Inject
     private Habitat habitat;
     @Inject
@@ -145,12 +213,9 @@ public class RestartInstanceCommand implements AdminCommand {
     private RemoteInstanceCommandHelper helper;
     private ActionReport report;
     private String errorMessage = null;
+    private final static long WAIT_TIME_MS = 600000; // 10 minutes
+    private Server instance;
+    private String host;
+    private int port;
+    private String oldPid;
 }
-/**
- *
-@Inject
-InstanceStateService stateSvc;
-
-stateSvc.getState(String instanceName) will give you the latest status
-
- */

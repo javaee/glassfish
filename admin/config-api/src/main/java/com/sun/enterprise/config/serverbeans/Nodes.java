@@ -43,6 +43,7 @@ package com.sun.enterprise.config.serverbeans;
 import org.glassfish.api.I18n;
 import org.glassfish.config.support.*;
 import org.jvnet.hk2.config.Configured;
+import org.jvnet.hk2.config.Dom;
 import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
@@ -71,6 +72,13 @@ public interface Nodes extends ConfigBeanProxy, Injectable {
 
     public List<Node> getNode();
     
+    /**
+     * Return the default local node, localhost-<domain_name>, or null if no such node exists.
+     *
+     * @return          the Node object, or null if no such node
+     */
+    @DuckTyped
+    public Node getDefaultLocalNode();
 
     /**
      * Return the node with the given name, or null if no such node exists.
@@ -88,6 +96,20 @@ public interface Nodes extends ConfigBeanProxy, Injectable {
             }
             for (Node node : nodes.getNode()) {
                 if (node.getName().equals(name)) {
+                    return node;
+                }
+            }
+            return null;
+        }
+
+        public static Node getDefaultLocalNode(Nodes nodes) {
+            if (nodes == null) {
+                return null;
+            }
+            Dom serverDom = Dom.unwrap(nodes);
+            Domain domain = serverDom.getHabitat().getComponent(Domain.class);
+            for (Node node : nodes.getNode()) {
+                if (node.getName().equals("localhost-"+domain.getName())) {
                     return node;
                 }
             }

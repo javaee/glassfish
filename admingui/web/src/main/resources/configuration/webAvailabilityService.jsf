@@ -50,6 +50,7 @@
 <!define name="content">
     <event>
     <!beforeCreate
+        setSessionAttribute(key="availabilityTabs" value="webAvailabilityTab");
         getRequestValue(key="configName" value=>$page{configName} default="server-config");
         setPageSessionAttribute(key="childType" value="web-container-availability");
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/availability-service");
@@ -79,6 +80,7 @@
 #include "/common/shared/editPageButtons.inc"
     </sun:title>
         <sun:propertySheet id="propertySheet">
+#include "/common/shared/configNameSection.inc"
             <sun:propertySheetSection id="propertSectionTextField">
                 <sun:property id="AvailabilityEnabledProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18ncs.availability.availabilityService}" helpText="$resource{i18n_web.availability.webContainerAvailabilityInfoHelp}">
                     <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['availabilityEnabled']}" selectedValue="true" />
@@ -101,9 +103,6 @@
                 </sun:property>
                 <sun:property id="SingleSignOnProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.availability.singleSignOn}" helpText="$resource{i18n_web.availability.singleSignOnHelp}">
                     <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['ssoFailoverEnabled']}" selectedValue="true" />
-                </sun:property>
-                <sun:property id="PersistenceHealthCheckProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.availability.persistenceHealthCheck}">
-                    <sun:checkbox label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['persistenceStoreHealthCheckEnabled']}"  selectedValue="true" />
                 </sun:property>
                 "<br /><br />
             </sun:propertySheetSection>

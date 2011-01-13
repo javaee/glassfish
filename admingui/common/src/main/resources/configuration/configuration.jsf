@@ -45,11 +45,12 @@
     setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
     setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.configuration.pageTitle}" >
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.configuration.pageTitle}"
+    guiOnLoad="admingui.nav.selectTreeNodeWithURL('#{request.contextPath}/common/configuration/configuration.jsf?configName=#{pageSession.configName}');" >
 <!define name="content">
     <event>
         <!beforeCreate
-            getRequestValue(key="configName" value=>$page{configName});
+            getRequestValue(key="configName" value="#{pageSession.configName}");
         />
     </event>
     <sun:form id="configForm">
@@ -62,8 +63,9 @@
             <!afterCreate
                     getClientId(component="$this{component}" clientId=>$attribute{sheetId});
                 />
+#include "/common/shared/configNameSection.inc"
             <sun:propertySheetSection id="propSheetSection">
-            </sun:propertySheetSection>
+                </sun:propertySheetSection>
         </sun:propertySheet>
         <event>
             <!afterCreate
@@ -72,6 +74,7 @@
             />
         </event>
         <sun:hidden id="helpKey" value="$resource{help_common.configuration}" />
+        "<br /><br />
     </sun:form>
 </define>
 </composition>

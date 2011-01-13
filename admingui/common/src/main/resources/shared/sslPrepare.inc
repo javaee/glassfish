@@ -55,7 +55,8 @@ if (#{requestScope.exist}){
 }
 if (! #{requestScope.exist}){
     setPageSessionAttribute(key="edit" value="#{false}" )
-    gf.getDefaultValues(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}")
+    gf.createEntity(endpoint="#{pageSession.createSslUrl}" attrs="#{pageSession.valueMap}" convertToFalse="#{pageSession.convertToFalseList}");
+    gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}.json" valueMap="#{pageSession.valueMap}");
     convertToDifferentCiphersGroup(ciphers="#{pageSession.valueMap['ssl3TlsCiphers']}"
         CommonCiphersList="#{pageSession.selectedCommon}"
         EphemeralCiphersList="#{pageSession.selectedEphemeral}"
@@ -65,6 +66,7 @@ if (! #{requestScope.exist}){
 
 //set the following for including buttons.inc
 setPageSessionAttribute(key="convertToFalseList" value={"ssl3Enabled" "tlsEnabled" "clientAuthEnabled" })
+setPageSessionAttribute(key="skipAttrsList", value={"sslInactivityTimeout"});
 setPageSessionAttribute(key="showDefaultButton" value="#{false}" )
 setPageSessionAttribute(key="hasPropertySheet" value="#{true}" )
 setPageSessionAttribute(key="hasPropertyTable" value="#{false}" )

@@ -37,36 +37,38 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-/* 
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
+var fso = WScript.CreateObject("Scripting.FileSystemObject");
 
 var wshShell = WScript.CreateObject("WScript.Shell");
 var envVars = wshShell.Environment("PROCESS");
 
 var pathSep = ";";
 
-var prelim_AS_INSTALL = new String(envVars("AS_INSTALL"));
-var javaProgram = new String(envVars("JAVA"));
+var prelim_AS_INSTALL = new String(envVars("_AS_INSTALL"));
+var javaProgram = new String(quoteStringIfNeeded(envVars("JAVA")));
 var driveLetter = prelim_AS_INSTALL.substring(0,1).toUpperCase();
 var AS_INSTALL = driveLetter + prelim_AS_INSTALL.substring(1);
 
 var AS_INSTALL_MOD = AS_INSTALL + "\\modules";
 
-var builtinEndorsedDirSetting = AS_INSTALL + "\\lib\\endorsed" + pathSep +
-    AS_INSTALL_MOD + "\\endorsed";
+var builtinEndorsedDirSetting = quoteMultiStringIfNeeded(
+    AS_INSTALL +
+    "\\lib\\endorsed" +
+    pathSep +
+    AS_INSTALL_MOD + 
+    "\\endorsed", pathSep);
+
 var mainClassIdentRequired = 1;
 
 var appcPath = envVars("APPCPATH");
 
-var accJar="\"" + AS_INSTALL_MOD + "\\gf-client.jar\"";
+var accJar=quoteStringIfNeeded(AS_INSTALL + "\\lib\\gf-client.jar");
 
-var fso = WScript.CreateObject("Scripting.FileSystemObject");
-var jvmArgs="-Dcom.sun.aas.installRoot=\"" + AS_INSTALL +
-    "\" -Djava.security.policy=\"" + AS_INSTALL + "\\lib\\appclient\\client.policy\"" +
+var jvmArgs="-Dcom.sun.aas.installRoot=" + quoteStringIfNeeded(AS_INSTALL) +
+    " -Djava.security.policy=" + quoteStringIfNeeded(AS_INSTALL + "\\lib\\appclient\\client.policy") +
     " -Djava.system.class.loader=org.glassfish.appclient.client.acc.agent.ACCAgentClassLoader" +
-    " -Djava.security.auth.login.config=\"" + AS_INSTALL + "\\lib\\appclient\\appclientlogin.conf\"";
+    " -Djava.security.auth.login.config=" + quoteStringIfNeeded(AS_INSTALL + "\\lib\\appclient\\appclientlogin.conf");
 var VMARGS = envVars("VMARGS");
 if (VMARGS != "") {
     jvmArgs += " " + VMARGS;
@@ -74,32 +76,34 @@ if (VMARGS != "") {
 
 var inputArgs = new String(envVars("inputArgs"));
 
-var accArgs = "=mode=acscript";
-var appArgs = "";
-var jvmMainArgs = "";
-var userEndorsedDirSetting = null;
-var accMainArgs = "";
-var mainClassIdent = null;
+var accArgs;
+var appArgs;
+var jvmMainArgs;
+var userEndorsedDirSetting;
+var accMainArgs;
+var mainClassIdent;
 
-recordACCArg("-configxml", "\"" + AS_INSTALL + "\\domains\\domain1\\config\\sun-acc.xml\"");
+var expecting;
 
-var expecting=null;
-
-var ACCArgType="ACC";
-var JVMArgType="JVM";
+var ACCArgType;
+var JVMArgType;
 
 var matched = false;
-
+if (inputArgs.length == 0) {
+    inputArgs="-usage";
+}
 processArgs();
 
 if (appcPath != "") {
     accArgs += ",appcpath=" + appcPath;
 }
-
 if (jvmMainArgs == "") {
     if (mainClassIdentRequired == 1) {
-        accMainArgs = "-usage";
-        jvmMainArgs = "-jar " + accJar;
+        inputArgs="-usage";
+        processArgs();
+        //recordACCArg("usage");
+        //accMainArgs = "-usage";
+        //jvmMainArgs = "-jar " + accJar;
     }
 }
 /*
@@ -117,8 +121,25 @@ WScript.StdOut.WriteLine("set javaCmd=" + javaCmd);
 
 // return to shell here
 
+function prepareArgProcessing() {
+    accArgs = "=mode=acscript";
+    appArgs = "";
+    jvmMainArgs = "";
+    userEndorsedDirSetting = null;
+    accMainArgs = "";
+    mainClassIdent = null;
+    expecting=null;
+
+    ACCArgType="ACC";
+    JVMArgType="JVM";
+    recordACCArg("-configxml", quoteStringIfNeeded(AS_INSTALL + "\\domains\\domain1\\config\\sun-acc.xml"));
+
+    //matched = false;
+
+}
 
 function processArgs() {
+    prepareArgProcessing();
     var jvmValuedOptions = ["-classpath", "-cp", "-jar"];
     var accValuedOptions = ["-client", "-mainclass", "-name", "-xml",
         "-configxml", "-user", "-password", "-passwordfile",
@@ -229,6 +250,7 @@ function recordClientArg(value) {
             accMainArgs = "client=jar="  + value;
         }
         mainClassIdent = "tentative";
+        mainClassIdentRequired = 0;
     }
 }
 
@@ -272,6 +294,7 @@ function recordMainClass(arg1, arg2) {
     }
     ACCArgType = "APP";
     JVMArgType = "APP";
+    mainClassIdentRequired = 0;
 }
 
 function recordJVMArg(arg1, arg2) {
@@ -288,7 +311,7 @@ function recordJVMArg(arg1, arg2) {
                  * just remember the user's setting
                  * and do not add it to the jvm args...yet.
                  */
-                userEndorsedDirSetting = arg1
+                userEndorsedDirSetting = arg2;
             }
             jvmArgs += " " + arg1;
             if (arg2 != null) {
@@ -308,7 +331,8 @@ function finishJVMArgs() {
     if (userEndorsedDirSetting != null) {
         endorsedDirSetting = userEndorsedDirSetting + pathSep + builtinEndorsedDirSetting;
     } else {
-        endorsedDirSetting = "-Djava.endorsed.dirs=\"" + builtinEndorsedDirSetting + "\"" + pathSep + jreEndorsedDirValue();
+        endorsedDirSetting = "-Djava.endorsed.dirs=" +
+            builtinEndorsedDirSetting + pathSep + jreEndorsedDirValue();
     }
     return jvmArgs + " " + endorsedDirSetting;
 }
@@ -319,6 +343,28 @@ function recordNonACCOption(value) {
     } else {
         recordAPPArg(value);
     }
+}
+
+function quoteStringIfNeeded(s) {
+    var result = s;
+    if (s.indexOf(" ") != -1) {
+        result = "\"" + s + "\"";
+    }
+    return result;
+}
+
+function quoteMultiStringIfNeeded(s, sep) {
+    var result = new String();
+    var sepLoc;
+    var scanStart = 0;
+    var parts = s.split(sep);
+    for (var part in parts) {
+        if (result.length > 0) {
+            result = result + sep;
+        }
+        result = result + quoteStringIfNeeded(parts[part]);
+    }
+    return result;
 }
 
 function recordLoneArg(token) {
@@ -339,7 +385,7 @@ function jreEndorsedDirValue() {
             jreEndorsedDir = fso.getFolder(endorsedPath).Path;
         }
     }
-    return jreEndorsedDir;
+    return quoteMultiStringIfNeeded(jreEndorsedDir, pathSep);
 }
 
 function jreHome(osPath) {

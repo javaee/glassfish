@@ -61,8 +61,8 @@
         
         //For Security Manager
         setPageSessionAttribute(key="additionalSaveHandler" value="saveSecurityManagerValue");
-        setPageSessionAttribute(key="additionalSaveHandlerArgs" value="value:%23{pageSession.securityManagerStatus}");
-        setPageSessionAttribute(key="convertToFalseList" value={"AuditEnabled"})
+        setPageSessionAttribute(key="additionalSaveHandlerArgs" value="value:%23{pageSession.securityManagerStatus},configName:%23{pageSession.configName}"); 
+        setPageSessionAttribute(key="convertToFalseList" value={"auditEnabled","activateDefaultPrincipalToRoleMapping"})
         
         //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{true}" );
@@ -79,7 +79,6 @@
         <sun:title id="propertyContentPage" title="$resource{i18nc.security.Security}" helpText="$resource{i18nc.security.SecurityPageHelp}">
 #include "/common/shared/editPageButtons.inc"
         </sun:title>
-        "<br><br>
 #include "/common/security/securityAttrs.inc"
 #include "/common/shared/propertyDescTable.inc"
 

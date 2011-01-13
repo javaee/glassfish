@@ -50,6 +50,7 @@ import org.glassfish.api.admin.CommandException;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.admin.CommandRunner;
+import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.ActionReport.ExitCode;
 import com.sun.enterprise.config.serverbeans.Domain;
@@ -64,6 +65,9 @@ public class StopClusterCommand implements AdminCommand {
 
     @Param(optional=true, obsolete=true)
     private boolean autohadboverride = false;
+
+    @Param(optional=true, defaultValue="false")
+    private boolean kill = false;
 
     @Inject
     private ServerEnvironment env;
@@ -97,10 +101,15 @@ public class StopClusterCommand implements AdminCommand {
         ClusterCommandHelper clusterHelper = new ClusterCommandHelper(domain,
                 runner);
 
+        ParameterMap map = null;
+        if (kill) {
+            map = new ParameterMap();
+            map.add("kill", "true");
+        }
         try {
             // Run start-instance against each instance in the cluster
             String commandName = "stop-instance";
-            clusterHelper.runCommand(commandName, null, clusterName, context,
+            clusterHelper.runCommand(commandName, map, clusterName, context,
                     verbose);
         } catch (CommandException e) {
             String msg = e.getLocalizedMessage();

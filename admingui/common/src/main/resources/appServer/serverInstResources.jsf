@@ -65,7 +65,9 @@
 <sun:title id="propertyContentPage" title="$resource{i18nc.resourcesTarget.pageTitle}"
                  helpText="$resource{i18nc.resourcesTarget.pageTitleHelp}" />
 "<br/>
+#include "/common/shared/nameSection.inc"
 #include "/common/resourceNode/targetResourceTable.inc"
+<sun:hidden id="helpKey" value="$resource{help_common.serverInstResources}" />
 </sun:form>
 </define>
 </composition>

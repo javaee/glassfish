@@ -47,6 +47,7 @@ import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.Servers;
 import com.sun.enterprise.config.serverbeans.ServerRef;
 import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.util.ExceptionUtil;
 import java.io.IOException;
 import org.glassfish.api.ActionReport;
 import com.sun.enterprise.util.io.InstanceDirs;
@@ -110,8 +111,8 @@ public class CreateInstanceCommand implements AdminCommand {
     @Param(name="cluster", optional=true)
     String clusterName;
 
-    @Param(name="lbenabled", optional = true, acceptableValues = "true,false")
-    private String lbEnabled;
+    @Param(name="lbenabled", optional = true)
+    private Boolean lbEnabled;
 
     @Param(name = "checkports", optional = true, defaultValue = "true")
     private boolean checkPorts;
@@ -170,7 +171,7 @@ public class CreateInstanceCommand implements AdminCommand {
         }
 
         nodeHost = theNode.getNodeHost();
-        nodeDir = theNode.getNodeDir();
+        nodeDir = theNode.getNodeDirAbsolute();
         installDir = theNode.getInstallDir();
 
         if (!StringUtils.ok(nodeHost)) {
@@ -220,6 +221,11 @@ public class CreateInstanceCommand implements AdminCommand {
         }
 
         registerInstanceMessage = report.getMessage();
+
+        if (!validateDasOptions(context)) {
+            report.setActionExitCode(ActionReport.ExitCode.WARNING);
+            return;
+        }
 
         // Then go create the instance filesystem on the node
         createInstanceFilesystem(context);            
@@ -323,14 +329,19 @@ public class CreateInstanceCommand implements AdminCommand {
             bootHelper.bootstrapInstance();
             return 0;
         } catch (Exception ex) {
+            String exmsg = ex.getMessage();
+            if (exmsg == null) {
+                // The root cause message is better than no message at all
+                exmsg = ExceptionUtil.getRootCause(ex).toString();
+            }
             String msg = Strings.get(
                     "create.instance.remote.boot.failed",
                     instance,
                     (ex instanceof SecureAdminBootstrapHelper.BootstrapException ? 
                         ((SecureAdminBootstrapHelper.BootstrapException)ex).sshSettings() : null),
-                    ex.getMessage(),
+                    exmsg,
                     nodeHost);
-            logger.severe(msg);
+            logger.log(Level.SEVERE, msg, ex);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setMessage(msg);
             return 1;
@@ -339,7 +350,8 @@ public class CreateInstanceCommand implements AdminCommand {
 
     public void createInstanceFilesystem(AdminCommandContext context) {
         ActionReport report = ctx.getActionReport();
-       
+        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+
         NodeUtils nodeUtils = new NodeUtils(habitat, logger);
         Server dasServer =
                 servers.getServer(SystemPropertyConstants.DAS_SERVER_NAME);
@@ -374,7 +386,7 @@ public class CreateInstanceCommand implements AdminCommand {
         if (!theNode.isLocal() && !theNode.getType().equals("SSH")){
             String msg = Strings.get("create.instance.config",
                     instance, humanCommand);
-            report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+            msg = StringUtils.cat(NL, registerInstanceMessage, msg );
             report.setMessage(msg);
             return;
         }
@@ -390,6 +402,9 @@ public class CreateInstanceCommand implements AdminCommand {
                 humanCommand, output);
 
         if (report.getActionExitCode() != ActionReport.ExitCode.SUCCESS) {
+            // something went wrong with the nonlocal command don't continue but set status to warning
+            // because config was updated correctly or we would not be here.
+            report.setActionExitCode(ActionReport.ExitCode.WARNING);            
             return;
         }
 
@@ -408,6 +423,63 @@ public class CreateInstanceCommand implements AdminCommand {
         } else {
             bootstrapSecureAdminRemotely();
         }
+        if (report.getActionExitCode() != ActionReport.ExitCode.SUCCESS) {
+
+             // something went wrong with the nonlocal command don't continue but set status to warning
+            // because config was updated correctly or we would not be here.
+            report.setActionExitCode(ActionReport.ExitCode.WARNING);
+        }
+    }
+
+    /**
+     * This ensures we don't step on another domain's node files on a remote
+     * instance. See bug GLASSFISH-14985.
+     */
+    public boolean validateDasOptions(AdminCommandContext context) {
+        boolean isDasOptionsValid = true;
+        if (theNode.isLocal() || (!theNode.isLocal() && theNode.getType().equals("SSH"))) {
+            ActionReport report = ctx.getActionReport();
+            report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+
+            NodeUtils nodeUtils = new NodeUtils(habitat, logger);
+            Server dasServer =
+                    servers.getServer(SystemPropertyConstants.DAS_SERVER_NAME);
+            String dasHost = dasServer.getAdminHost();
+            String dasPort = Integer.toString(dasServer.getAdminPort());
+
+            ArrayList<String> command = new ArrayList<String>();
+            String humanCommand = null;
+
+            if (!theNode.isLocal()) {
+            // Only specify the DAS host if the node is remote. See issue 13993
+                command.add("--host");
+                command.add(dasHost);
+            }
+
+            command.add("--port");
+            command.add(dasPort);
+
+            command.add("_validate-das-options");
+
+            if (nodeDir != null) {
+                command.add("--nodedir");
+                command.add(nodeDir); //XXX escape spaces?
+            }
+
+            command.add("--node");
+            command.add(node);
+
+            command.add(instance);
+
+            // Run the command on the node
+            nodeUtils.runAdminCommandOnNode(theNode, command, ctx, "", null, null);
+
+            if (report.getActionExitCode() != ActionReport.ExitCode.SUCCESS) {
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                isDasOptionsValid = false;
+            }
+        }
+        return isDasOptionsValid;
     }
 
     private String makeCommandHuman(List<String> command) {

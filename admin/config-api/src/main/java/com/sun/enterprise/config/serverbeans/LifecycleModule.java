@@ -65,6 +65,7 @@ import javax.validation.constraints.Min;
 }) */
 
 @Configured
+@Deprecated
 public interface LifecycleModule extends Injectable, ApplicationName, PropertyBag {
 
     /**

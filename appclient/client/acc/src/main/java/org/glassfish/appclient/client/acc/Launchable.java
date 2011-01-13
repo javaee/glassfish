@@ -157,7 +157,7 @@ interface Launchable {
             return acDesc;
 
         }
-        static boolean matchesMainClassName(final ReadableArchive archive, final String callerSpecifiedMainClassName) throws IOException {
+        static boolean matchesAnyClass(final ReadableArchive archive, final String callerSpecifiedMainClassName) throws IOException {
             return (callerSpecifiedMainClassName != null) &&
                             archive.exists(classNameToArchivePath(callerSpecifiedMainClassName));
         }

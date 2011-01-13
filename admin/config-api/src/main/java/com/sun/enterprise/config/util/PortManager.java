@@ -79,13 +79,13 @@ public final class PortManager {
 
             host = new ServerHelper(theNewServer, config).getAdminHost();
 
-            allPorts = new ArrayList<Integer>();
+            allPorts = new TreeSet<Integer>();
             newServerPorts = new ServerPorts(cluster, config, domain, newServer);
 
             if (!StringUtils.ok(host))
                 throw new TransactionFailure(Strings.get("PortManager.noHost", serverName));
 
-            isLocal = NetUtils.IsThisHostLocal(host);
+            isLocal = NetUtils.isThisHostLocal(host);
 
 
             allServers = domain.getServers().getServer();
@@ -121,7 +121,7 @@ public final class PortManager {
             createServerList();
 
             // create a sorted list of every port on every other server on the same machine.
-            createAllPortsList();
+            populateAllPorts();
 
             // we have a list of all possible conflicting server ports.
             // let's find some unused ports and reassign the variables inside
@@ -193,7 +193,7 @@ public final class PortManager {
         for (Server server : allServers) {
             if (server.isDas())
                 serversOnHost.add(new ServerPorts(domain, server));
-            else if (NetUtils.IsThisHostLocal(server.getAdminHost())) {
+            else if (NetUtils.isThisHostLocal(server.getAdminHost())) {
                 serversOnHost.add(new ServerPorts(domain, server));
             }
         }
@@ -236,8 +236,10 @@ public final class PortManager {
         while (num < max) {
             num = getNextUnassignedPort(num);
 
-            if (isPortFree(num))
+            if (isPortFree(num)) {
+                allPorts.add(num);
                 return num;
+            }
             else
                 ++num;
         }
@@ -275,25 +277,19 @@ public final class PortManager {
         return NetUtils.isPortFree(host, num);
     }
 
-    private void createAllPortsList() {
+    private void populateAllPorts() {
 
         for (ServerPorts sp : serversOnHost) {
-            Collection<Integer> ii = sp.getMap().values();
-
-            // do not want duplicates!!
-            for (Integer i : ii)
-                if (!allPorts.contains(i))
-                    allPorts.add(i);
+            allPorts.addAll(sp.getMap().values());
         }
-
-        Collections.sort(allPorts);
     }
+
     private final String serverName;
     private final Server newServer;
     private final boolean isLocal;
     private final Domain domain;
     private final String host;
-    private final List<Integer> allPorts;
+    private final Set<Integer> allPorts;
     private final List<Server> allServers;
     private final List<ServerPorts> serversOnHost;
     private final ServerPorts newServerPorts;

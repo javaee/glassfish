@@ -56,6 +56,7 @@ import com.sun.enterprise.util.io.FileUtils;
 public class SSHUtil {
     private static final List<Connection> activeConnections = 
                             new ArrayList<Connection>();
+    private static final String NL = System.getProperty("line.separator");
 
    /**
        * Closes all the registered connections.
@@ -128,7 +129,7 @@ public class SSHUtil {
         try {
             String f = FileUtils.readSmallFile(sshkeyfile);
             if (f.startsWith("-----BEGIN ") && f.contains("ENCRYPTED")
-                    && f.endsWith(" PRIVATE KEY-----\n")) {
+                    && f.endsWith(" PRIVATE KEY-----" + NL)) {
                 result=true;
             }
         } catch (Exception ex) {

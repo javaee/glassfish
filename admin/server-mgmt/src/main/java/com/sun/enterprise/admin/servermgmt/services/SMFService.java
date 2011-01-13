@@ -37,10 +37,12 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.admin.servermgmt.services;
 
+import com.sun.enterprise.universal.process.ProcessManager;
+import com.sun.enterprise.universal.process.ProcessManagerException;
 import com.sun.enterprise.util.OS;
+import static com.sun.enterprise.util.StringUtils.ok;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.ProcessExecutor;
 import com.sun.enterprise.util.io.FileUtils;
@@ -59,6 +61,8 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Properties;
 import static com.sun.enterprise.admin.servermgmt.services.Constants.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /** Represents the SMF Service.
  * Holds the tokens and their values that are consumed by the SMF templates. The recommended
@@ -72,7 +76,6 @@ import static com.sun.enterprise.admin.servermgmt.services.Constants.*;
  * @author Kedar Mhaswade
  */
 public final class SMFService extends ServiceAdapter {
-
     public static final String TIMEOUT_SECONDS_DV = "0";
     public static final String AS_ADMIN_USER_DEF_VAL = "admin";
     public static final String SP_DELIMITER = ":";
@@ -91,6 +94,7 @@ public final class SMFService extends ServiceAdapter {
     private static final String MANIFEST_FILE_SUFFIX = "Domain-service-smf.xml";
     private static final String MANIFEST_FILE_TEMPL_SUFFIX = MANIFEST_FILE_SUFFIX + ".template";
     private static final String REL_PATH_TEMPLATES = "lib/install/templates";
+
     /**
      * Creates SMFService instance. All the tokens are initialized to default values. 
      * Callers must verify that the tokens are properly token-replaced before
@@ -112,7 +116,7 @@ public final class SMFService extends ServiceAdapter {
     /** Creates the service on the given platform.
      */
     @Override
-    public void createServiceInternal(){
+    public void createServiceInternal() {
         boolean success = false;
         boolean previousManifestExists = new File(getManifestFilePath()).exists();
         try {
@@ -133,6 +137,31 @@ public final class SMFService extends ServiceAdapter {
                 cleanupManifest();
             }
             throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void deleteServiceInternal() {
+        try {
+            String serviceName = info.serviceName;
+            if (!ok(serviceName))
+                throw new RuntimeException(Strings.get("internal.error", "no service name is set"));
+            String me = System.getProperty("user.name");
+            StringBuilder sb = new StringBuilder();
+            if (!isUserSmfAuthorized(me, sb))
+                throw new RuntimeException(Strings.get("noSmfAuth", me, sb.toString()));
+            ProcessManager pm = new ProcessManager(SVCADM, "disable", info.serviceName);
+            pm.setEcho(false);
+            pm.execute();
+            pm = new ProcessManager(SVCCFG, "delete", info.serviceName);
+            pm.setEcho(false);
+            pm.execute();
+        }
+        catch (RuntimeException re) {
+            throw re;
+        }
+        catch (Exception ex) {
+            throw new RuntimeException(ex);
         }
     }
 
@@ -163,7 +192,6 @@ public final class SMFService extends ServiceAdapter {
         }
         getTokenMap().put(TIMEOUT_SECONDS_TN, to.toString());
     }
-
 
     /** Sets the OS-level user-id who should start and own the processes started
      * by this service. This user is the same as the value returned by
@@ -289,8 +317,6 @@ public final class SMFService extends ServiceAdapter {
     private static boolean ok(String s) {
         return s != null && s.length() > 0;
     }
-
-
 
     /** Returns a String representation of the SMFService. It contains a new-line
     separated "name=value" String that contains the name and value of each of

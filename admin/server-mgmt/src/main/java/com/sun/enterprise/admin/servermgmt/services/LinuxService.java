@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,17 +37,24 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.admin.servermgmt.services;
 
+import com.sun.enterprise.universal.io.SmartFile;
 import com.sun.enterprise.universal.process.ProcessManager;
 import com.sun.enterprise.universal.process.ProcessManagerException;
 import com.sun.enterprise.util.OS;
 import com.sun.enterprise.util.ObjectAnalyzer;
 import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.util.io.ServerDirs;
 import java.io.File;
+import java.lang.String;
+import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import static com.sun.enterprise.admin.servermgmt.services.Constants.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -55,6 +62,9 @@ import static com.sun.enterprise.admin.servermgmt.services.Constants.*;
  */
 public class LinuxService extends NonSMFServiceAdapter {
     static boolean apropos() {
+        if (LINUX_HACK)
+            return true;
+
         return OS.isLinux();
     }
 
@@ -65,19 +75,17 @@ public class LinuxService extends NonSMFServiceAdapter {
             throw new IllegalArgumentException(Strings.get("internal.error",
                     "Constructor called but Linux Services are not available."));
         }
+        setRcDirs();
     }
 
     @Override
-    public final void initializeInternal() {
+    public void initializeInternal() {
         try {
             getTokenMap().put(SERVICEUSER_START_TN, getServiceUserStart());
             getTokenMap().put(SERVICEUSER_STOP_TN, getServiceUserStop());
             setTemplateFile(TEMPLATE_FILE_NAME);
-            checkWritePermissions();
+            checkFileSystem();
             setTarget();
-            handlePreExisting(info.force);
-            ServicesUtils.tokenReplaceTemplateAtDestination(getTokenMap(), getTemplateFile().getPath(), target.getPath());
-            trace("Target file written: " + target);
         }
         catch (RuntimeException e) {
             throw e;
@@ -90,14 +98,30 @@ public class LinuxService extends NonSMFServiceAdapter {
     @Override
     public final void createServiceInternal() {
         try {
+            handlePreExisting(info.force);
+            ServicesUtils.tokenReplaceTemplateAtDestination(getTokenMap(), getTemplateFile().getPath(), target.getPath());
+            trace("Target file written: " + target);
             trace("**********   Object Dump  **********\n" + this.toString());
 
-            if (uninstall() == 0 && !info.dryRun)
+            if (deleteLinks() == 0 && !info.dryRun)
                 System.out.println(Strings.get("linux.services.uninstall.good"));
             else
                 trace("No preexisting Service with that name was found");
 
             install();
+        }
+        catch (RuntimeException ex) {
+            throw ex;
+        }
+        catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    @Override
+    public final void deleteServiceInternal() {
+        try {
+            uninstall();
         }
         catch (RuntimeException ex) {
             throw ex;
@@ -130,7 +154,7 @@ public class LinuxService extends NonSMFServiceAdapter {
 
     @Override
     public final String toString() {
-        return ObjectAnalyzer.toString(this);
+        return ObjectAnalyzer.toStringWithSuper(this);
     }
 
     @Override
@@ -149,27 +173,101 @@ public class LinuxService extends NonSMFServiceAdapter {
         // exactly the same on Linux
         return getLocationArgsStart();
     }
-
     ///////////////////////////////////////////////////////////////////////
     //////////////////////////   ALL PRIVATE BELOW    /////////////////////
     ///////////////////////////////////////////////////////////////////////
-    private void checkWritePermissions() {
-        File initd = new File(INITD);
 
-        if (!initd.isDirectory())
-            throw new RuntimeException(Strings.get("no_initd", INITD));
+    private void setRcDirs() {
+        // Yes -- they differ on different platforms!
+        // I Know what Sol10, Ubuntu, Debian, SuSE, RH and OEL look like
+        // on SuSE the rc?.d dirs are in /init.d/
+        // On RH, OEL they are linked dirs to the real dirs under /etc/rc.d/ 
+        // On Ubuntu they are real dirs in /etc
 
-        if (!initd.canWrite())
-            throw new RuntimeException(Strings.get("no_write_initd", INITD));
+        // try to make this as forgiving as possible.
+        File[] rcDirs = new File[8];    // 0, 1, 2...6, S
+        if (!setRcDirs(new File("/etc"), rcDirs))
+            if (!setRcDirs(new File("/etc/init.d"), rcDirs))
+                throw new RuntimeException(Strings.get("no_rc2"));
+
+        // now we have an array of at least some rc directories.
+        addKills(rcDirs);
+        addStarts(rcDirs);
     }
 
-    private void setTarget() {
-        targetName = "GlassFish_" + info.serverDirs.getServerName();
-        target = new File(INITD + "/" + targetName);
+    private boolean setRcDirs(File dir, File[] rcDirs) {
+        // some have 4 missing, some have S missing etc.  All seem to have 5
+        if (!new File(dir, "rc5.d").isDirectory())
+            return false;
+
+        for (int i = 0; i < 7; i++) {
+            rcDirs[i] = new File(dir, "rc" + i + ".d");
+        }
+
+        rcDirs[7] = new File(dir, "rcS.d");
+
+        for (int i = 0; i < 8; i++) {
+            rcDirs[i] = validate(rcDirs[i]);
+        }
+
+        return true;
+    }
+
+    private void addKills(File[] rcDirs) {
+        if (rcDirs[0] != null)
+            killDirs.add(rcDirs[0]);
+        if (rcDirs[1] != null)
+            killDirs.add(rcDirs[1]);
+        if (rcDirs[6] != null)
+            killDirs.add(rcDirs[6]);
+        if (rcDirs[7] != null)
+            killDirs.add(rcDirs[7]);
+    }
+
+    private void addStarts(File[] rcDirs) {
+        if (rcDirs[2] != null)
+            startDirs.add(rcDirs[2]);
+        if (rcDirs[3] != null)
+            startDirs.add(rcDirs[3]);
+        if (rcDirs[4] != null)
+            startDirs.add(rcDirs[4]);
+        if (rcDirs[5] != null)
+            startDirs.add(rcDirs[5]);
+    }
+
+    private File validate(File rcdir) {
+        if (rcdir == null)
+            return null;
+
+        // On OEL for instance the files are links to the real dir like this:
+        //  /etc/rc0.d --> /etc/rc.d/rc0.d
+        // let's use the REAL dirs just to be safe...
+        rcdir = FileUtils.safeGetCanonicalFile(rcdir);
+
+        if (!rcdir.isDirectory())
+            return null;
+
+        return rcdir;
+    }
+
+    private void checkFileSystem() {
+        File initd = new File(INITD);
+        checkDir(initd, "no_initd");
+    }
+
+    /**
+     * Make sure that the dir exists and that we can write into it
+     */
+    private void checkDir(File dir, String notDirMsg) {
+        if (!dir.isDirectory())
+            throw new RuntimeException(Strings.get(notDirMsg, dir));
+
+        if (!dir.canWrite())
+            throw new RuntimeException(Strings.get("no_write_dir", dir));
     }
 
     private void handlePreExisting(boolean force) {
-        if (target.isFile()) {
+        if (isPreExisting()) {
             if (force) {
                 target.delete();
                 // we call this same method to make sure they were deleted
@@ -181,66 +279,149 @@ public class LinuxService extends NonSMFServiceAdapter {
         }
     }
 
+    private boolean isPreExisting() {
+        return target.isFile();
+    }
+
+    private void install() throws ProcessManagerException {
+        createLinks();
+    }
+
+    // meant to be overridden bu subclasses
+    int uninstall() {
+        if (target.delete())
+            trace("Deleted " + target);
+
+        return deleteLinks();
+    }
+
+    private int deleteLinks() {
+        trace("Deleting link files...");
+        List<File> deathRow = new LinkedList<File>();
+
+        if (!StringUtils.ok(targetName)) // invariant
+            throw new RuntimeException("Programmer Internal Error");
+
+        String regexp = REGEXP_PATTERN_BEGIN + targetName;
+
+        List<File> allDirs = new ArrayList<File>(killDirs);
+        allDirs.addAll(startDirs);
+
+        for (File dir : allDirs) {
+            File[] matches = FileUtils.findFilesInDir(dir, regexp);
+
+            if (matches.length < 1)
+                continue; // perfectly normal
+            else if (matches.length == 1)
+                deathRow.add(matches[0]);
+            else {
+                tooManyLinks(matches);  // error!!
+            }
+        }
+
+        // YES -- Error handling properly is ~~ 95% of the code in here!
+        for (File f : deathRow) {
+            if (!f.canWrite()) {
+                throw new RuntimeException(Strings.get("cant_delete", f));
+            }
+        }
+
+        // OK we shook out all the errors possible.  Now we do the irreversible stuff
+        for (File f : deathRow) {
+            if (info.dryRun) {
+                dryRun("Would have deleted: " + f);
+            }
+            else {
+                if (!f.delete())
+                    throw new RuntimeException(Strings.get("cant_delete", f));
+                else
+                    trace("Deleted " + f);
+            }
+        }
+        return deathRow.size();
+    }
+
+    private void createLinks() {
+        String[] cmds = new String[4];
+        cmds[0] = "ln";
+        cmds[1] = "-s";
+        cmds[2] = target.getAbsolutePath();
+
+        createLinks(cmds, kFile, killDirs);
+        createLinks(cmds, sFile, startDirs);
+    }
+
+    // This is what happens when you hate copy&paste code duplication.  Lots of methods!!
+    private void createLinks(String[] cmds, String linkname, List<File> dirs) {
+        String path = target.getAbsolutePath();
+
+        for (File dir : dirs) {
+            File link = new File(dir, linkname);
+            cmds[3] = link.getAbsolutePath();
+            String cmd = toString(cmds);
+
+            if (LINUX_HACK)
+                trace(cmd);
+            else if (info.dryRun)
+                dryRun(cmd);
+            else
+                createLink(link, cmds);
+        }
+    }
+
+    private void createLink(File link, String[] cmds) {
+        try {
+            ProcessManager mgr = new ProcessManager(cmds);
+            mgr.setEcho(false);
+            mgr.execute();
+            trace("Create Link Output: " + mgr.getStdout() + mgr.getStderr());
+            link.setExecutable(true, false);
+            trace("Created link file: " + link);
+        }
+        catch (ProcessManagerException e) {
+            throw new RuntimeException(Strings.get("ln_error", toString(cmds), e));
+        }
+    }
+
+    private void tooManyLinks(File[] matches) {
+        // this is complicated enough to turn it into a method
+        String theMatches = "";
+        boolean first = true;
+        for (File f : matches) {
+            if (first)
+                first = false;
+            else
+                theMatches += "\n";
+
+            theMatches += f.getAbsolutePath();
+        }
+        throw new RuntimeException(Strings.get("too_many_links", theMatches));
+    }
+
+    private void setTarget() {
+        targetName = "GlassFish_" + info.serverDirs.getServerName();
+        target = new File(INITD + "/" + targetName);
+        kFile = "K" + info.kPriority + targetName;
+        sFile = "S" + info.sPriority + targetName;
+    }
+
     private String getServiceUserStart() {
         // if the user is root (e.g. called with sudo and no serviceuser arg given)
         // then do NOT specify a user.
         // on the other hand -- if they specified one or they are logged in as a'privileged'
         // user then use that account.
         String u = getFinalUserButNotRoot();
+        hasStartStopTokens = (u != null);
 
-        if (u != null)
+        if (hasStartStopTokens)
             return "su --login " + u + " --command \"";
-
         return "";
     }
 
     private String getServiceUserStop() {
-        if (StringUtils.ok(info.serviceUser))
+        if(hasStartStopTokens)
             return "\"";
         return "";
-    }
-
-    private int install() throws ProcessManagerException {
-        if (info.dryRun)
-            return 0;
-
-        target.setExecutable(true, false);
-        // it is NOT an error to not be able to uninstall
-        ProcessManager mgr = new ProcessManager(getInstallCommand());
-        mgr.execute();
-        trace("Uninstall STDERR: " + mgr.getStderr());
-        trace("Uninstall STDOUT: " + mgr.getStdout());
-        return mgr.getExitValue();
-    }
-
-    private int uninstall() throws ProcessManagerException {
-        if (info.dryRun)
-            return 0;
-
-        // it is NOT an error to not be able to uninstall
-        ProcessManager mgr = new ProcessManager(getUninstallCommand());
-        mgr.execute();
-        trace("Uninstall STDERR: " + mgr.getStderr());
-        trace("Uninstall STDOUT: " + mgr.getStdout());
-        return mgr.getExitValue();
-    }
-
-    private String[] getInstallCommand() {
-        String[] cmds = new String[3];
-        cmds[0] = UPDATER;
-        cmds[1] = target.getName();
-        cmds[2] = "defaults";
-
-        return cmds;
-    }
-
-    private String[] getUninstallCommand() {
-        String[] cmds = new String[3];
-        cmds[0] = UPDATER;
-        cmds[1] = target.getName();
-        cmds[2] = "remove";
-
-        return cmds;
     }
 
     private String getFinalUser() {
@@ -258,9 +439,22 @@ public class LinuxService extends NonSMFServiceAdapter {
 
         return u;
     }
+
+    private String toString(String[] arr) {
+        // for creating messages/error reports
+        StringBuilder sb = new StringBuilder();
+
+        for (String s : arr)
+            sb.append(s).append(" ");
+
+        return sb.toString();
+    }
     private String targetName;
-    private File target;
+    File target;
     private static final String TEMPLATE_FILE_NAME = "linux-service.template";
-    private static final String INITD = "/etc/init.d";
-    private static final String UPDATER = "update-rc.d";
+    private List<File> killDirs = new ArrayList<File>();
+    private List<File> startDirs = new ArrayList<File>();
+    private String sFile;
+    private String kFile;
+    private boolean hasStartStopTokens = false;
 }

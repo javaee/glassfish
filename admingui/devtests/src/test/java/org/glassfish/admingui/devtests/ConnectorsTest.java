@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -46,17 +46,17 @@ import org.junit.Test;
 import static org.junit.Assert.assertTrue;
 
 public class ConnectorsTest extends BaseSeleniumTestClass {
-    private static final String TRIGGER_CONNECTOR_CONNECTION_POOLS = "Click New to create a new connector connection pool.";
-    private static final String TRIGGER_NEW_CONNECTOR_CONNECTION_POOL_STEP_1 = "New Connector Connection Pool (Step 1 of 2)";
-    private static final String TRIGGER_NEW_CONNECTOR_CONNECTION_POOL_STEP_2 = "New Connector Connection Pool (Step 2 of 2)";
-    private static final String TRIGGER_EDIT_CONNECTOR_CONNECTION_POOL = "Edit Connector Connection Pool";
-    private static final String TRIGGER_CONNECTOR_RESOURCE = "A connector resource is a program object";
-    private static final String TRIGGER_NEW_CONNECTOR_RESOURCE = "New Connector Resource";
-    private static final String TRIGGER_EDIT_CONNECTOR_RESOURCE = "Edit Connector Resource";
+    private static final String TRIGGER_CONNECTOR_CONNECTION_POOLS = "i18njca.connectorConnectionPools.pageTitleHelp";
+    private static final String TRIGGER_NEW_CONNECTOR_CONNECTION_POOL_STEP_1 = "i18njca.connectorConnectionPool.step1PageTitle";
+    private static final String TRIGGER_NEW_CONNECTOR_CONNECTION_POOL_STEP_2 = "i18njca.connectorConnectionPool.step2PageTitle";
+    private static final String TRIGGER_EDIT_CONNECTOR_CONNECTION_POOL = "i18njca.connectorConnectionPool.editPageTitle";
+    private static final String TRIGGER_CONNECTOR_RESOURCE = "i18njca.connectorResources.pageTitleHelp";
+    private static final String TRIGGER_NEW_CONNECTOR_RESOURCE = "i18njca.connectorResource.newPageTitle";
+    private static final String TRIGGER_EDIT_CONNECTOR_RESOURCE = "i18njca.connectorResource.editPageTitle";
 
-    private static final String TRIGGER_CONNECTOR_SECURITY_MAPS = "Connector Connection Pool Security Maps";
-    private static final String TRIGGER_NEW_CONNECTOR_SECURITY_MAP = "New Connector Connection Pool Security Map";
-    private static final String TRIGGER_EDIT_CONNECTOR_SECURITY_MAP = "Edit Connector Connection Pool Security Map";
+    private static final String TRIGGER_CONNECTOR_SECURITY_MAPS = "i18njca.connectorSecurityMaps.pageTitle";
+    private static final String TRIGGER_NEW_CONNECTOR_SECURITY_MAP = "i18njca.connectorSecurityMap.newPageTitle";
+    private static final String TRIGGER_EDIT_CONNECTOR_SECURITY_MAP = "i18njca.connectorSecurityMap.editPageTitle";
 
     @Test
     public void testConnectorResources() {
@@ -160,7 +160,7 @@ public class ConnectorsTest extends BaseSeleniumTestClass {
         clickAndWait("propertyForm:resourcesTable:topActionsGroup1:newButton", TRIGGER_NEW_CONNECTOR_RESOURCE);
 
         selenium.type("form:propertySheet:propertSectionTextField:jndiTextProp:jnditext", testConnector);
-        selenium.select("form:propertySheet:propertSectionTextField:poolNameProp:PoolName", "label=" + testPool);
+        selectDropdownOption("form:propertySheet:propertSectionTextField:poolNameProp:PoolName", testPool);
 
         int count = addTableRow("form:basicTable", "form:basicTable:topActionsGroup1:addSharedTableButton");
         selenium.type("form:basicTable:rowGroup1:0:col2:col1St", "property" + generateRandomString());

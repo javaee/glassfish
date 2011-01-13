@@ -47,6 +47,7 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.CommandLock;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.gms.bootstrap.GMSAdapter;
 import org.glassfish.gms.bootstrap.GMSAdapterService;
@@ -71,6 +72,7 @@ import java.util.logging.Logger;
 @Service(name="get-health")
 @I18n("get.health.command")
 @Scoped(PerLookup.class)
+@CommandLock(CommandLock.LockType.NONE)
 public class GetHealthCommand implements AdminCommand {
 
     @Inject

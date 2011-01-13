@@ -109,6 +109,7 @@ public interface AvailabilityService extends ConfigBeanProxy, Injectable, Proper
      *         {@link String }
      */
     @Attribute
+    @Deprecated
     String getHaAgentHosts();
 
     /**
@@ -131,6 +132,7 @@ public interface AvailabilityService extends ConfigBeanProxy, Injectable, Proper
     @Attribute
     @Max(value=65535)
     @Min(value=1)
+    @Deprecated
     String getHaAgentPort();
 
     /**
@@ -149,6 +151,7 @@ public interface AvailabilityService extends ConfigBeanProxy, Injectable, Proper
      *         {@link String }
      */
     @Attribute
+    @Deprecated
     String getHaAgentPassword();
 
     /**
@@ -167,6 +170,7 @@ public interface AvailabilityService extends ConfigBeanProxy, Injectable, Proper
      *         {@link String }
      */
     @Attribute
+    @Deprecated
     String getHaStoreName();
 
     /**
@@ -189,6 +193,7 @@ public interface AvailabilityService extends ConfigBeanProxy, Injectable, Proper
      *         {@link String }
      */
     @Attribute (defaultValue="false",dataType=Boolean.class)
+    @Deprecated
     String getAutoManageHaStore();
 
     /**
@@ -219,6 +224,7 @@ public interface AvailabilityService extends ConfigBeanProxy, Injectable, Proper
      *         {@link String }
      */
     @Attribute
+    @Deprecated
     String getStorePoolName();
 
     /**
@@ -242,6 +248,7 @@ public interface AvailabilityService extends ConfigBeanProxy, Injectable, Proper
      *         {@link String }
      */
     @Attribute (defaultValue="false",dataType=Boolean.class)
+    @Deprecated
     String getHaStoreHealthcheckEnabled();
 
     /**
@@ -262,6 +269,7 @@ public interface AvailabilityService extends ConfigBeanProxy, Injectable, Proper
      */
     @Attribute (defaultValue="5")
     @Min(value=1)
+    @Deprecated
     String getHaStoreHealthcheckIntervalInSeconds();
 
     /**

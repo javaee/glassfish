@@ -40,12 +40,16 @@
 
 package org.glassfish.appclient.server.admin;
 
+import com.sun.enterprise.config.serverbeans.Application;
+import com.sun.enterprise.config.serverbeans.Applications;
+import com.sun.enterprise.config.serverbeans.Module;
 import com.sun.enterprise.util.LocalStringManager;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.CommandLock;
 import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.appclient.server.core.AppClientDeployer;
@@ -57,11 +61,17 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
 
 /**
+ * Returns the path part (not host or port) of the URI for launching
+ * an app client using Java Web Start.
+ * <p>
+ * Used primarily from the admin console to support the Java Web Start
+ * client launch feature.
  *
  * @author Tim Quinn
  */
 @Service(name="_get-relative-jws-uri")
 @Scoped(PerLookup.class)
+@CommandLock(CommandLock.LockType.NONE)
 @ExecuteOn(value={RuntimeType.DAS})
 public class GetRelativeJWSURICommand implements AdminCommand {
 
@@ -80,22 +90,35 @@ public class GetRelativeJWSURICommand implements AdminCommand {
 
     @Inject
     private AppClientDeployer appClientDeployer;
+    
+    @Inject
+    private Applications apps;
 
     @Override
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
-        /*
-         * Find the requested app or app/module combination.
-         */
-        AppClientServerApplication acApp = null;
-
-        for (AppClientServerApplication candidate : appClientDeployer.appClientApps()) {
-            if (candidate.matches(appname, modulename)) {
-                final String result = JWSAdapterManager.userFriendlyContextRoot(candidate);
-                report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-                report.getTopMessagePart().addProperty(URI_PROPERTY_NAME, result);
-                report.setMessage(result);
-                return;
+        
+        final Application app = apps.getApplication(appname);
+        if (app != null) {
+            Module appClient = app.getModule(modulename);
+            if (appClient == null) {
+                appClient = app.getModule(modulename + ".jar");
+            }
+            if (appClient != null) {
+                String result = appClient.getPropertyValue("jws.user.friendly.path");
+                /*
+                 * For stand-alone app clients the property is stored at the
+                 * application level instead of the module level.
+                 */
+                if (result == null) {
+                    result = app.getPropertyValue("jws.user.friendly.path");
+                }
+                if (result != null) {
+                    report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+                    report.getTopMessagePart().addProperty(URI_PROPERTY_NAME, result);
+                    report.setMessage(result);
+                    return;
+                }
             }
         }
         report.setActionExitCode(ActionReport.ExitCode.FAILURE);

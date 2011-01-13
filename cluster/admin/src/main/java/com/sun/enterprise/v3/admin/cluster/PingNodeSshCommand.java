@@ -61,6 +61,7 @@ import org.jvnet.hk2.component.Habitat;
 @Service(name = "ping-node-ssh")
 @I18n("ping.node.ssh")
 @Scoped(PerLookup.class)
+@CommandLock(CommandLock.LockType.NONE)
 @ExecuteOn({RuntimeType.DAS})
 public class PingNodeSshCommand implements AdminCommand  {
 

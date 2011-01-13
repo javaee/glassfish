@@ -37,11 +37,12 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.admin.cli.cluster;
 
 import com.sun.enterprise.admin.cli.remote.DASUtils;
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
+import com.sun.enterprise.universal.process.ProcessUtils;
+import com.sun.enterprise.util.io.FileUtils;
 import java.io.*;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
@@ -55,13 +56,17 @@ import com.sun.enterprise.util.HostAndPort;
  * @author Bill Shannon
  * @author Byron Nevins
  *
+ * 
  */
 @Service(name = "stop-local-instance")
 @Scoped(PerLookup.class)
 public class StopLocalInstanceCommand extends LocalInstanceCommand {
-
+    @Param(optional = true, defaultValue = "true")
+    private Boolean force;
     @Param(name = "instance_name", primary = true, optional = true)
     private String userArgInstanceName;
+    @Param(optional = true, defaultValue = "false")
+    Boolean kill;
 
     @Override
     protected void validate()
@@ -106,16 +111,10 @@ public class StopLocalInstanceCommand extends LocalInstanceCommand {
         String serverName = getServerDirs().getServerName();
         HostAndPort addr = getAdminAddress(serverName);
         programOpts.setHostAndPort(addr);
+
         logger.finer("StopInstance.stoppingMessage" + addr.getPort());
 
-        /*
-         * If we're using the local password, we don't want to prompt
-         * for a new password.  If the local password doesn't work it
-         * most likely means we're talking to the wrong server.
-         */
-        programOpts.setInteractive(false);
-
-        if (!isThisServer(serverDir, "Instance-Root_value"))
+        if (!isRunning())
             return instanceNotRunning();
 
         logger.finer("It's the correct Instance");
@@ -127,6 +126,9 @@ public class StopLocalInstanceCommand extends LocalInstanceCommand {
      * we detect that the DAS is not running.
      */
     protected int instanceNotRunning() throws CommandException {
+        if (kill)
+            return kill();
+
         // by definition this is not an error
         // https://glassfish.dev.java.net/issues/show_bug.cgi?id=8387
 
@@ -148,12 +150,38 @@ public class StopLocalInstanceCommand extends LocalInstanceCommand {
     /**
      * Execute the actual stop-domain command.
      */
-    protected int doRemoteCommand()
-            throws CommandException, CommandValidationException {
-        // run the remote stop-domain command and throw away the output
-        RemoteCommand cmd = new RemoteCommand("_stop-instance", programOpts, env);
-        cmd.executeAndReturnOutput("_stop-instance");
-        waitForDeath();
+    protected int doRemoteCommand() throws CommandException {
+
+        // put the local-password for the instance  in programOpts
+        // we don't do this for ALL local-instance commands because if they call
+        // DAS with the instance's local-password it will cause BIG trouble...
+        setLocalPassword();
+
+        /*
+         * If we're using the local password, we don't want to prompt
+         * for a new password.  If the local password doesn't work it
+         * most likely means we're talking to the wrong server.
+         */
+        programOpts.setInteractive(false);
+
+        try {
+            // run the remote stop-domain command and throw away the output
+            RemoteCommand cmd = new RemoteCommand("_stop-instance", programOpts, env);
+            cmd.executeAndReturnOutput("_stop-instance", "--force", force.toString());
+            waitForDeath();
+        }
+        catch (CommandException e) {
+            // 1.  We can't access the server at all
+            // 2.  We timed-out waiting for it to die
+            if(!kill)
+                throw e;
+        }
+
+        if (kill) {
+            // do NOT make this an error -- user specified a kill
+            // if kill throws a CE -- then it WILL get tossed back as an error
+            kill();
+        }
         return 0;
     }
 
@@ -195,5 +223,31 @@ public class StopLocalInstanceCommand extends LocalInstanceCommand {
 
     private boolean timedOut(long startTime) {
         return (System.currentTimeMillis() - startTime) > CLIConstants.DEATH_TIMEOUT_MS;
+    }
+
+    private int kill() throws CommandException {
+        File prevPid = null;
+        String pids = null;
+
+        try {
+            prevPid = new File(getServerDirs().getPidFile().getPath() + ".prev");
+
+            if (!prevPid.canRead())
+                throw new CommandException(Strings.get("StopInstance.nopidprev", prevPid));
+
+            pids = FileUtils.readSmallFile(prevPid).trim();
+            String s = ProcessUtils.kill(Integer.parseInt(pids));
+
+            if (s != null)
+                logger.finer(s);
+        }
+        catch (CommandException ce) {
+            throw ce;
+        }
+        catch (Exception ex) {
+            throw new CommandException(Strings.get("StopInstance.pidprevreaderror",
+                    prevPid, ex.getMessage()));
+        }
+        return 0;
     }
 }

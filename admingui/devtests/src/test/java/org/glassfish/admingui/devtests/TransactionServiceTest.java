@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -52,7 +52,7 @@ import static org.junit.Assert.assertEquals;
  * To change this template use File | Settings | File Templates.
  */
 public class TransactionServiceTest extends BaseSeleniumTestClass {
-    private static final String TRIGGER_TRANSACTION_SERVICE = "Modify general transaction service settings.";
+    private static final String TRIGGER_TRANSACTION_SERVICE = "i18n_jts.ts.PageHelp";
 
     @Test
     public void testTransactionService() {
@@ -71,8 +71,8 @@ public class TransactionServiceTest extends BaseSeleniumTestClass {
         selenium.type("propertyForm:basicTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
         selenium.type("propertyForm:basicTable:rowGroup1:0:col3:col1St", "value");
         selenium.type("propertyForm:basicTable:rowGroup1:0:col4:col1St", "description");
-        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
-        clickAndWait("treeForm:tree:ct", "Please Register");
+        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
+        reset();
 
         clickAndWait("treeForm:tree:configurations:server-config:transactionService:transactionService_link", TRIGGER_TRANSACTION_SERVICE);
         assertEquals(true, selenium.isChecked("propertyForm:propertySheet:propertSectionTextField:onRestartProp:enabled"));

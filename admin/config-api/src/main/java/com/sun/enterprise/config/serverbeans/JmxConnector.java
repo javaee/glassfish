@@ -40,17 +40,19 @@
 
 package com.sun.enterprise.config.serverbeans;
 
+import com.sun.enterprise.util.LocalStringManagerImpl;
+
 import java.beans.PropertyVetoException;
 import java.util.List;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import javax.validation.Payload;
 
 import org.jvnet.hk2.config.types.Property;
 import org.jvnet.hk2.config.types.PropertyBag;
 import org.glassfish.api.admin.config.Named;
 import org.glassfish.grizzly.config.dom.Ssl;
+import static org.glassfish.config.support.Constants.NAME_REGEX;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.quality.ToDo;
 import org.jvnet.hk2.component.Injectable;
@@ -67,7 +69,12 @@ import org.jvnet.hk2.config.*;
 }) */
 
 @Configured
-public interface JmxConnector extends ConfigBeanProxy, Injectable, Named, PropertyBag {
+public interface JmxConnector extends ConfigBeanProxy, Injectable, Named, PropertyBag, Payload {
+    final static String PORT_PATTERN = "\\$\\{[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*\\}"
+            + "|[1-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9][0-9][0-9]"
+            + "|[1-5][0-9][0-9][0-9][0-9]|6[0-4][0-9][0-9][0-9]"
+            + "|65[0-4][0-9][0-9]|655[0-2][0-9]|6553[0-5]";
+    
     /**
      * Gets the value of the enabled property.
      *
@@ -139,8 +146,9 @@ public interface JmxConnector extends ConfigBeanProxy, Injectable, Named, Proper
      *         {@link String }
      */
     @Attribute
-    @Max(value=65535)
-    @Min(value=1)    
+    @Pattern(regexp=PORT_PATTERN,
+             message="{port-pattern}",
+             payload=JmxConnector.class)
     String getPort();
 
     /**
@@ -186,7 +194,7 @@ public interface JmxConnector extends ConfigBeanProxy, Injectable, Named, Proper
     @Deprecated
     @Attribute
     @NotNull
-    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")
+    @Pattern(regexp=NAME_REGEX)
     String getAuthRealmName();
 
     /**

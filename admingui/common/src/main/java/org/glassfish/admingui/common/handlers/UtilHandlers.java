@@ -51,6 +51,7 @@ package org.glassfish.admingui.common.handlers;
 
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.JSONUtil;
+import org.glassfish.admingui.common.util.RestUtil;
 
 import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput;
@@ -71,6 +72,7 @@ import java.net.URLDecoder;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -78,6 +80,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Map;
+import java.util.logging.Level;
 
 import javax.faces.component.UIViewRoot;
 
@@ -381,6 +384,21 @@ public class UtilHandlers {
 
 
     /**
+     * <p> sort a <code>List</code></p>
+     * <p> Input list: "list" -- Type: <code>java.util.List</code>
+     *
+     * @param handlerCtx The HandlerContext
+     */
+    @Handler(id="gf.listSort",
+    	input={
+            @HandlerInput(name="list", type=List.class, required=true)}
+    )
+    public static void listSort(HandlerContext handlerCtx) {
+        List list = (List)handlerCtx.getInputValue("list");
+        Collections.sort(list);
+    }
+
+    /**
      * <p> Combine 2 lists <code>List</code> by adding the object in the 2nd list to the first list</p>
      * <p> Input value: "list" -- Type: <code>java.util.List</code>
      * <p> Input value: "list2" -- Type: <code>java.util.List</code>
@@ -392,7 +410,9 @@ public class UtilHandlers {
     	input={
             @HandlerInput(name="list", type=List.class, required=true),
             @HandlerInput(name="list2", type=List.class, required=true)
-        }
+        },
+        output={
+            @HandlerOutput(name="result", type=List.class)}
     )
     public static void listCombine(HandlerContext handlerCtx) {
         List list = (List)handlerCtx.getInputValue("list");
@@ -400,12 +420,12 @@ public class UtilHandlers {
         if (list == null) {
             list = new ArrayList();            
         }
-        if (list2 == null) {
-            return;
+        if (list2 != null) {
+            for(Object one : list2) {
+                    list.add(one);
+            }
         }
-        for(Object one : list2) {
-                list.add(one);
-        }
+        handlerCtx.setOutputValue("result", list);
     }
 
     /**
@@ -485,7 +505,22 @@ public class UtilHandlers {
         String detail = (String) handlerCtx.getInputValue("detail");
         GuiUtil.prepareAlert(type, summary, detail);
     }
-     
+
+    /**
+     *	<p> This handler will test if a String starts with another String.</p>
+     */
+    @Handler(id="startsWith",
+    	input={
+            @HandlerInput(name="testStr", type=String.class, required=true),
+            @HandlerInput(name="pattern", type=String.class, required=true)},
+        output={
+            @HandlerOutput(name="result", type=Boolean.class)})
+    public static void startsWith(HandlerContext handlerCtx) {
+        String testStr = ((String) handlerCtx.getInputValue("testStr"));
+        String pattern = ((String) handlerCtx.getInputValue("pattern"));
+        handlerCtx.setOutputValue("result", testStr.startsWith(pattern));
+    }
+
     /**
      * <p> This method decodes a String using "UTF-8" as default
      * if scheme is not specified.
@@ -511,8 +546,11 @@ public class UtilHandlers {
             String output=URLDecoder.decode(str, scheme);
             handlerCtx.setOutputValue("output", output);
         }catch(UnsupportedEncodingException ex) {
-            ex.printStackTrace();
             handlerCtx.setOutputValue("output", str);
+            GuiUtil.getLogger().info(GuiUtil.getCommonMessage("log.error.decodeString") + ex.getLocalizedMessage());
+            if (GuiUtil.getLogger().isLoggable(Level.FINE)){
+                ex.printStackTrace();
+            }
         }
      }
 
@@ -531,8 +569,11 @@ public class UtilHandlers {
             String output = (input==null)? "": df.format(input);
             handlerCtx.setOutputValue("output", output);
         }catch (Exception ex){
-            ex.printStackTrace();
             handlerCtx.setOutputValue("output", "");
+            GuiUtil.getLogger().info(GuiUtil.getCommonMessage("log.error.roundTo2DecimalPoint") + ex.getLocalizedMessage());
+            if (GuiUtil.getLogger().isLoggable(Level.FINE)){
+                ex.printStackTrace();
+            }
         }
     }
 
@@ -623,6 +664,22 @@ public class UtilHandlers {
 			commaString = GuiUtil.listToString(list, ",");
 		}
         handlerCtx.setOutputValue("commaString", commaString);
+    }
+
+    @Handler(id = "gf.resolveTokens",
+    input = {
+        @HandlerInput(name = "tokens", type = List.class, required = true),
+        @HandlerInput(name = "endPoint", type = String.class, required = true)},
+    output = {
+        @HandlerOutput(name = "resolvedTokens", type = List.class)})
+    public static void resolveTokens(HandlerContext handlerCtx) {
+        List<String> tokens = (List<String>)handlerCtx.getInputValue("tokens");
+        ArrayList<String> resolvedTokens = new ArrayList();
+
+        String endPoint = (String)handlerCtx.getInputValue("endPoint");
+        for (String token : tokens) 
+            resolvedTokens.add(RestUtil.resolveToken(endPoint, token));
+        handlerCtx.setOutputValue("resolvedTokens", resolvedTokens);
     }
 
     @Handler(id = "convertListToArray",

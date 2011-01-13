@@ -46,13 +46,13 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
 
 import java.beans.PropertyVetoException;
-import java.io.Serializable;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 import org.glassfish.api.admin.RestRedirects;
 import org.glassfish.api.admin.RestRedirect;
+import static org.glassfish.config.support.Constants.NAME_REGEX;
 
 /**
  * Syntax for supplying system properties as name value pairs        
@@ -77,7 +77,7 @@ public interface SystemProperty extends ConfigBeanProxy, Injectable  {
      */
     @Attribute(key=true)
     @NotNull
-    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")
+    @Pattern(regexp=NAME_REGEX)
     public String getName();
 
     /**

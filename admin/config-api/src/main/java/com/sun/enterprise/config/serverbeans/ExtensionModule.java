@@ -55,6 +55,7 @@ import java.util.List;
 import javax.validation.constraints.NotNull;
 
 @Configured
+@Deprecated
 public interface ExtensionModule extends Injectable, ApplicationName, PropertyBag {
 
 

@@ -40,26 +40,17 @@
 
 package org.glassfish.ant.embedded.tasks;
 
-import org.apache.tools.ant.Task;
 import org.apache.tools.ant.BuildException;
 
-import org.glassfish.api.embedded.Server;
-import org.glassfish.api.embedded.EmbeddedDeployer;
-import org.glassfish.api.deployment.DeployCommandParameters;
-
-import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class DeployTask extends TaskBase {
 
     String serverID = Constants.DEFAULT_SERVER_ID;
     String app = null; // a default value?
-
-    DeployCommandParameters cmdParams = new DeployCommandParameters();
-
-
-    public DeployTask() {
-    }
+    List<String> deployParams = new ArrayList();
 
     public void setServerID(String serverID) {
         this.serverID = serverID;
@@ -70,93 +61,76 @@ public class DeployTask extends TaskBase {
     }
 
     public void setName(String name) {
-        cmdParams.name = name;
+        deployParams.add("--name=" + name);
     }
 
     public void setContextroot(String contextroot) {
-        cmdParams.contextroot = contextroot;
+        deployParams.add("--contextroot=" + contextroot);
     }
 
-
     public void setForce(boolean force) {
-        cmdParams.force = force;
+        deployParams.add("--force=" + force);
     }
 
 
     public void setPrecompilejsp(boolean precompilejsp) {
-        cmdParams.precompilejsp = precompilejsp;
+        deployParams.add("--precompilejsp=" + precompilejsp);
     }
 
     public void setVerify(boolean verify) {
-        cmdParams.verify = verify;
+        deployParams.add("--verify=" + verify);
     }
 
     public void setCreatetables(boolean createtables) {
-        cmdParams.createtables = createtables;
+        deployParams.add("--createtables=" + createtables);
     }
 
     public void setDropandcreatetables(boolean dropandcreatetables) {
-        cmdParams.dropandcreatetables = dropandcreatetables;
+        deployParams.add("--dropandcreatetables=" + dropandcreatetables);
     }
 
     public void setUniquetablenames(boolean uniquetablenames) {
-        cmdParams.uniquetablenames = uniquetablenames;
+        deployParams.add("--uniquetablenames=" + uniquetablenames);
     }
 
     public void setEnabled(boolean enabled) {
-        cmdParams.enabled = enabled;
+        deployParams.add("--enabled=" + enabled);
     }
 
     public void setAvailabilityenabled(boolean availabilityenabled) {
-        cmdParams.availabilityenabled = availabilityenabled;
+        deployParams.add("--availabilityenabled=" + availabilityenabled);
     }
 
     public void setDescription(String description) {
-        cmdParams.description = description;
+        deployParams.add("--description=" + description);
     }
 
     public void setVirtualservers(String virtualservers) {
-        cmdParams.virtualservers = virtualservers;
+        deployParams.add("--virtualservers=" + virtualservers);
     }
 
     public void setRetrievestubs(String retrieve) {
-        cmdParams.retrieve = retrieve;
+        deployParams.add("--retrieve=" + retrieve);
     }
 
-    
     public void setdbvendorname(String dbvendorname) {
-        cmdParams.dbvendorname = dbvendorname;
+        deployParams.add("--dbvendorname=" + dbvendorname);
     }
 
     public void setLibraries(String libraries) {
-        cmdParams.libraries = libraries;
+        deployParams.add("--libraries=" + libraries);
     }
 
     public void setDeploymentPlan(String deploymentplan) {
-        if (deploymentplan != null)
-            cmdParams.deploymentplan = new File(deploymentplan);
+        deployParams.add("--deploymentplan=" + deploymentplan);
     }
 
     public void execute() throws BuildException {
-        if (app == null) {
-            error("app not specified");
-            return;
+        try {
+            Util.deploy(app, serverID, deployParams);
+        } catch (Exception ex) {
+            error(ex.getMessage());
         }
-        log("deploying " + app);
-
-        File f = new File(app);
-        if (!f.exists()) {
-            error (app + " not found");
-            return;
-        }
-        Server server = Server.getServer(serverID);
-
-        if (server == null) {
-           error("Embedded Server [" + serverID + "] not running");
-           return;
-        }
-        EmbeddedDeployer deployer = server.getDeployer();
-        deployer.deploy(new File(app), cmdParams);
     }
 
 }

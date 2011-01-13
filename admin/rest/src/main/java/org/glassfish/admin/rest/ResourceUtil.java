@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,6 +41,42 @@
 package org.glassfish.admin.rest;
 
 
+import java.util.Locale;
+import org.glassfish.admin.rest.generator.CommandResourceMetaData;
+import java.lang.reflect.Method;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Pattern;
+import org.glassfish.api.ActionReport;
+import org.glassfish.api.Param;
+import org.jvnet.hk2.component.Habitat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.TreeMap;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import org.glassfish.api.admin.CommandModel;
+import org.glassfish.api.admin.CommandRunner;
+import org.glassfish.api.admin.ParameterMap;
+import org.glassfish.api.admin.RestRedirect;
+import org.glassfish.api.admin.RestRedirects;
+import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.ConfigModel;
+import org.jvnet.hk2.config.Dom;
+import org.jvnet.hk2.config.DomDocument;
+import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.Domain;
 import org.glassfish.admin.rest.generator.ResourcesGeneratorBase;
 import org.glassfish.admin.rest.provider.MethodMetaData;
 import org.glassfish.admin.rest.provider.ParameterMetaData;
@@ -49,18 +85,7 @@ import org.glassfish.admin.rest.results.ActionReportResult;
 import org.glassfish.admin.rest.utils.ConfigModelComparator;
 import org.glassfish.admin.rest.utils.DomConfigurator;
 import org.glassfish.admin.rest.utils.xml.RestActionReporter;
-import org.glassfish.api.ActionReport;
-import org.glassfish.api.Param;
-import org.glassfish.api.admin.*;
-import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.config.*;
 
-import javax.ws.rs.core.*;
-import java.lang.reflect.Method;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.regex.Pattern;
 
 import static org.glassfish.admin.rest.Util.*;
 import static org.glassfish.admin.rest.provider.ProviderUtil.getElementLink;
@@ -199,31 +224,17 @@ public class ResourceUtil {
         return ar;
     }
 
-    /**
-     * Constructs and returns the resource method meta-data.
-     *
-     * @param command the command associated with the resource method
-     * @param habitat the habitat
-     * @param logger  the logger to use
-     * @return MethodMetaData the meta-data store for the resource method.
-     */
-    public static MethodMetaData getMethodMetaData(String command, Habitat habitat, Logger logger) {
-        return getMethodMetaData(command, Constants.MESSAGE_PARAMETER,
-                habitat, logger);
-    }
 
     /**
      * Constructs and returns the resource method meta-data.
      *
      * @param command       the command associated with the resource method
-     * @param parameterType the type of parameter. Possible values are
-     *                      Constants.QUERY_PARAMETER and Constants.MESSAGE_PARAMETER
      * @param habitat       the habitat
      * @param logger        the logger to use
      * @return MethodMetaData the meta-data store for the resource method.
      */
-    public static MethodMetaData getMethodMetaData(String command, int parameterType, Habitat habitat, Logger logger) {
-        return getMethodMetaData(command, null, parameterType, habitat, logger);
+    public static MethodMetaData getMethodMetaData(String command,  Habitat habitat, Logger logger) {
+        return getMethodMetaData(command, null,  habitat, logger);
     }
 
     /**
@@ -232,13 +243,11 @@ public class ResourceUtil {
      * @param command             the command assocaited with the resource method
      * @param commandParamsToSkip the command parameters for which not to
      *                            include the meta-data.
-     * @param parameterType       the type of parameter. Possible values are
-     *                            Constants.QUERY_PARAMETER and Constants.MESSAGE_PARAMETER
      * @param habitat             the habitat
      * @param logger              the logger to use
      * @return MethodMetaData the meta-data store for the resource method.
      */
-    public static MethodMetaData getMethodMetaData(String command, HashMap<String, String> commandParamsToSkip, int parameterType,
+    public static MethodMetaData getMethodMetaData(String command, HashMap<String, String> commandParamsToSkip, 
                                                    Habitat habitat, Logger logger) {
         MethodMetaData methodMetaData = new MethodMetaData();
 
@@ -267,12 +276,8 @@ public class ResourceUtil {
                     parameterName = alias;
                 }
 
-                if (parameterType == Constants.QUERY_PARAMETER) {
-                    methodMetaData.putQueryParamMetaData(parameterName, parameterMetaData);
-                } else {
-                    //message parameter
-                    methodMetaData.putParameterMetaData(parameterName, parameterMetaData);
-                }
+
+                methodMetaData.putParameterMetaData(parameterName, parameterMetaData);
             }
         }
 
@@ -293,7 +298,7 @@ public class ResourceUtil {
             String key;
             while (iterator.hasNext()) {
                 key = iterator.next();
-                if (commandParams.get(key).equals(Constants.PARENT_NAME_VARIABLE)) {
+                if (commandParams.get(key).equals(Constants.VAR_PARENT)) {
                     commandParams.put(key, parent);
                     break;
                 }
@@ -301,27 +306,15 @@ public class ResourceUtil {
         }
     }
 
-    /**
-     * Constructs and returns the resource method meta-data. This method is
-     * called to get meta-data in case of update method (POST).
-     *
-     * @param configBeanModel the config bean associated with the resource.
-     * @return MethodMetaData the meta-data store for the resource method.
-     */
-    public static MethodMetaData getMethodMetaData(ConfigModel configBeanModel) {
-        return getMethodMetaData(configBeanModel, Constants.MESSAGE_PARAMETER);
-    }
 
     /**
      * Constructs and returns the resource method meta-data. This method is
      * called to get meta-data in case of update method (POST).
      *
      * @param configBeanModel    the config bean associated with the resource.
-     * @param parameterType the type of parameter. Possible values are
-     *                      Constants.QUERY_PARAMETER and Constants.MESSAGE_PARAMETER
      * @return MethodMetaData the meta-data store for the resource method.
      */
-    public static MethodMetaData getMethodMetaData(ConfigModel configBeanModel, int parameterType) {
+    public static MethodMetaData getMethodMetaData(ConfigModel configBeanModel) {
         MethodMetaData methodMetaData = new MethodMetaData();
 
         Class<? extends ConfigBeanProxy> configBeanProxy = null;
@@ -331,27 +324,32 @@ public class ResourceUtil {
             Set<String> attributeNames = configBeanModel.getAttributeNames();
             for (String attributeName : attributeNames) {
                 String methodName = getAttributeMethodName(attributeName);
+                Method method = null;
                 try {
-                    Method method = configBeanProxy.getMethod(methodName);
-                    Attribute attribute = method.getAnnotation(Attribute.class);
-                    if (attribute != null) {
-                        ParameterMetaData parameterMetaData = getParameterMetaData(attribute);
-                        Deprecated dep = method.getAnnotation(Deprecated.class);
-                        if (dep != null) {
-                            parameterMetaData.putAttribute(Constants.DEPRECATED, "true");
-                        }
-
-                        //camelCase the attributeName before passing out
-                        attributeName = eleminateHypen(attributeName);
-                        if (parameterType == Constants.QUERY_PARAMETER) {
-                            methodMetaData.putQueryParamMetaData(attributeName, parameterMetaData);
-                        } else {
-                            //message parameter
-                            methodMetaData.putParameterMetaData(attributeName, parameterMetaData);
+                    method = configBeanProxy.getMethod(methodName);
+                } catch (NoSuchMethodException e) {
+                    // Method not found, so let's try a brute force method if the method
+                    // can't be found via the method above.  For example: for
+                    // Ssl.getSSLInactivityTimeout(), we calculate getSslInactivityTimeout,
+                    // which doesn't match due to case.
+                    for (Method m : configBeanProxy.getMethods()) {
+                        if (m.getName().equalsIgnoreCase(methodName)) {
+                            method = m;
                         }
                     }
-                } catch (NoSuchMethodException e) {
-                    e.printStackTrace();
+                }
+                Attribute attribute = method.getAnnotation(Attribute.class);
+                if (attribute != null) {
+                    ParameterMetaData parameterMetaData = getParameterMetaData(attribute);
+                    if (method.getAnnotation(Deprecated.class) != null) {
+                        parameterMetaData.putAttribute(Constants.DEPRECATED, "true");
+                    }
+
+                    //camelCase the attributeName before passing out
+                    attributeName = eleminateHypen(attributeName);
+
+                    methodMetaData.putParameterMetaData(attributeName, parameterMetaData);
+
                 }
             }
         } catch (ClassNotFoundException e) {
@@ -414,12 +412,9 @@ public class ResourceUtil {
                 } catch (NoSuchMethodException e) {
                 }
 
-                if (parameterType == Constants.QUERY_PARAMETER) {
-                    methodMetaData.putQueryParamMetaData(attributeName, parameterMetaData);
-                } else {
-                    //message parameter
-                    methodMetaData.putParameterMetaData(attributeName, parameterMetaData);
-                }
+
+                methodMetaData.putParameterMetaData(attributeName, parameterMetaData);
+    
             }
         } catch (ClassNotFoundException cnfe) {
             throw new RuntimeException(cnfe);
@@ -704,37 +699,7 @@ public class ResourceUtil {
         return methodNameFromDtdName(attributeName, "get");
     }
 
-    /**
-     * Translates all param names in </code>sourceMap</code> that corresponds to camelCasedName of a command param into corresponding command param name
-     *
-     * @param sourceMap   - The input. Contains untranslated names
-     * @param commandName - The command we want to translate for
-     * @param habitat
-     * @param logger
-     * @return A HashMap<String, String> that contains (1) all the entries from <code>sourceMap<code> whose key matches camleCaseName of
-     *         one of the parameters of command. The key of this entry is translated to corresponding command param name (2)
-     *         All the remaining entries from sourceMap as it is.
-     */
-    public static HashMap<String, String> translateCamelCasedNamesToCommandParamNames(HashMap<String, String> sourceMap, String commandName, Habitat habitat, Logger logger) {
-        //TODO after Bills changes to call toLowerCase() this translation might not be required as he will accept camleCased parameters. Remove this code then.
-        CommandRunner cr = habitat.getComponent(CommandRunner.class);
-        CommandModel cm = cr.getModel(commandName, logger);
-        Collection<CommandModel.ParamModel> paramModels = cm.getParameters();
-        HashMap<String, String> translatedMap = new HashMap<String, String>();
-        for (CommandModel.ParamModel paramModel : paramModels) {
-            Param param = paramModel.getParam();
-            String camelCaseName = param.alias();
-            if (sourceMap.containsKey(camelCaseName)) {
-                String paramValue = sourceMap.remove(camelCaseName);
-                translatedMap.put(paramModel.getName(), paramValue);
-            }
-        }
-        //Copy over the remaining values from sourceMap
-        translatedMap.putAll(sourceMap);
 
-        return translatedMap;
-
-    }
 
     private static String split(String lookback, String lookahead) {
         return "((?<=" + lookback + ")(?=" + lookahead + "))";
@@ -756,7 +721,7 @@ public class ResourceUtil {
             if (buf.length() > 0) {
                 buf.append('-');
             }
-            buf.append(t.toLowerCase());
+            buf.append(t.toLowerCase(Locale.US));
         }
         return buf.toString();
     }
@@ -801,21 +766,21 @@ public class ResourceUtil {
         }
     }
 
-    public static Map buildMethodMetadataMap(MethodMetaData mmd, boolean isQuery) { // yuck
+    public static Map buildMethodMetadataMap(MethodMetaData mmd) { // yuck
         Map<String, Map> map = new TreeMap<String, Map>();
-        Set<String> params = isQuery ? mmd.queryParams() : mmd.parameters();
+        Set<String> params =  mmd.parameters();
         Iterator<String> iterator = params.iterator();
         String param;
         while (iterator.hasNext()) {
             param = iterator.next();
-            ParameterMetaData parameterMetaData = isQuery ? mmd.getQueryParamMetaData(param) : mmd.getParameterMetaData(param);
+            ParameterMetaData parameterMetaData =  mmd.getParameterMetaData(param);
             map.put(param, processAttributes(parameterMetaData.attributes(), parameterMetaData));
         }
 
         return map;
     }
 
-    public static Map<String, String> processAttributes(Set<String> attributes, ParameterMetaData parameterMetaData) {
+    private static Map<String, String> processAttributes(Set<String> attributes, ParameterMetaData parameterMetaData) {
         Map <String, String> pmdm = new HashMap<String, String>();
 
         Iterator<String> attriter = attributes.iterator();
@@ -828,41 +793,66 @@ public class ResourceUtil {
 
         return pmdm;
     }
+    
+    /* REST can now be configured via RestConfig to show or hide the deprecated elements and attributes
+     * @return true if this model is deprecated
+     */
+    static public boolean isDeprecated(ConfigModel model) {
+        Class<? extends ConfigBeanProxy> cbp = null;
+        try {
+            cbp = (Class<? extends ConfigBeanProxy>) model.classLoaderHolder.get().loadClass(model.targetTypeName);
+            Deprecated dep = cbp.getAnnotation(Deprecated.class);
+            return dep != null;
+        } catch (ClassNotFoundException e) {
+            //e.printStackTrace();
+        }
+        return false;
 
-  public static Map<String, String> getResourceLinks(Dom dom, UriInfo uriInfo) {
+    }
+
+    public static Map<String, String> getResourceLinks(Dom dom, UriInfo uriInfo, boolean canShowDeprecated) {
         Map<String, String> links = new TreeMap<String, String>();
         Set<String> elementNames = dom.model.getElementNames();
 
-        //expose ../applications/application resource to enable deployment
-        //when no applications deployed on server
-//        if (elementNames.isEmpty()) {
-//            if("applications".equals(Util.getName(uriInfo.getPath(), '/'))) {
-//                elementNames.add("application");
-//            }
-//        }
         for (String elementName : elementNames) { //for each element
             if (elementName.equals("*")) {
                 ConfigModel.Node node = (ConfigModel.Node) dom.model.getElement(elementName);
                 ConfigModel childModel = node.getModel();
-                    List<ConfigModel> lcm = getRealChildConfigModels( childModel,  dom.document) ;
+                List<ConfigModel> lcm = getRealChildConfigModels(childModel, dom.document);
 
-                    Collections.sort(lcm, new ConfigModelComparator());
-                    if (lcm != null) {
-                        for (ConfigModel cmodel : lcm) {
+                Collections.sort(lcm, new ConfigModelComparator());
+                if (lcm != null) {
+                    for (ConfigModel cmodel : lcm) {
+                        if ((!isDeprecated(cmodel) || canShowDeprecated)) {
                             links.put(cmodel.getTagName(), ProviderUtil.getElementLink(uriInfo, cmodel.getTagName()));
                         }
                     }
+                }
 
             } else {
-                links.put(elementName, ProviderUtil.getElementLink(uriInfo, elementName));
+                ConfigModel.Property childElement = dom.model.getElement(elementName);
+                boolean deprec = false;
+
+                if (childElement instanceof ConfigModel.Node) {
+                    ConfigModel.Node node = (ConfigModel.Node) childElement;
+                    deprec = isDeprecated(node.getModel());
+                }
+                for (String annotation : childElement.getAnnotations()) {
+                    if (annotation.equals(Deprecated.class.getName())) {
+                        deprec = true;
+                    }
+                }
+                if ((!deprec || canShowDeprecated)) {
+                    links.put(elementName, ProviderUtil.getElementLink(uriInfo, elementName));
+                }
+
             }
         }
 
         String beanName = getUnqualifiedTypeName(dom.model.targetTypeName);
-        for (String[] resource : ResourcesGeneratorBase.configBeanCustomResources) {
-            if (resource[0].equals(beanName)) {
-                links.put(resource[2], ProviderUtil.getElementLink(uriInfo, resource[2]));
-            }
+        
+        for (CommandResourceMetaData cmd : CommandResourceMetaData.getCustomResourceMapping(beanName)) {
+            links.put(cmd.resourcePath, ProviderUtil.getElementLink(uriInfo, cmd.resourcePath));
         }
 
         return links;
@@ -975,11 +965,11 @@ public class ResourceUtil {
         Map<String, Object> postMetaDataMap = new HashMap<String, Object>();
         if (postMetaData != null) {
             postMetaDataMap.put("name", "POST");
-            if (postMetaData.sizeQueryParamMetaData() > 0) {
-                postMetaDataMap.put(QUERY_PARAMETERS, buildMethodMetadataMap(postMetaData, true));
-            }
+//            if (postMetaData.sizeQueryParamMetaData() > 0) {
+//                postMetaDataMap.put(QUERY_PARAMETERS, buildMethodMetadataMap(postMetaData, true));
+//            }
             if (postMetaData.sizeParameterMetaData() > 0) {
-                postMetaDataMap.put(MESSAGE_PARAMETERS, buildMethodMetadataMap(postMetaData, false));
+                postMetaDataMap.put(MESSAGE_PARAMETERS, buildMethodMetadataMap(postMetaData));
             }
             methodMetaData.add(postMetaDataMap);
         }
@@ -989,11 +979,39 @@ public class ResourceUtil {
             Map<String, Object> deleteMetaDataMap = new HashMap<String, Object>();
 
             deleteMetaDataMap.put("name", "DELETE");
-            deleteMetaDataMap.put(MESSAGE_PARAMETERS,  buildMethodMetadataMap(deleteMetaData, false));
+            deleteMetaDataMap.put(MESSAGE_PARAMETERS,  buildMethodMetadataMap(deleteMetaData));
             methodMetaData.add(deleteMetaDataMap);
         }
 
         ar.getExtraProperties().put("methods", methodMetaData);
     }
+    
+     public static RestConfig getRestConfig(Habitat habitat) {
+        if (habitat == null) {
+            return null;
+        }
+        Domain domain = habitat.getComponent(Domain.class);
+        if (domain != null) {
+            Config config = domain.getConfigNamed("server-config");
+            if (config != null) {
+                return config.getExtensionByType(RestConfig.class);
 
+            }
+        }
+        return null;
+
+    }
+    /*
+     * returns true if the HTML viewer displays the deprecated elements or attributes
+     * of a config bean
+     */
+
+    public static boolean canShowDeprecatedItems(Habitat habitat) {
+
+        RestConfig rg = getRestConfig(habitat);
+        if ((rg != null) && (rg.getShowDeprecatedItems().equalsIgnoreCase("true"))) {
+            return true;
+        }
+        return false;
+    }
 }

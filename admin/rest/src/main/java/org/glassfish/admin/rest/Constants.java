@@ -46,8 +46,6 @@ package org.glassfish.admin.rest;
  */
 public interface Constants {
     public static final String INDENT = "  ";
-    public static final int QUERY_PARAMETER = 0;
-    public static final int MESSAGE_PARAMETER = 1;
     public static final String JAVA_STRING_TYPE = "java.lang.String";
     public static final String JAVA_BOOLEAN_TYPE = "java.lang.Boolean";
     public static final String JAVA_INT_TYPE = "java.lang.Integer";
@@ -61,6 +59,10 @@ public interface Constants {
     public static final String OPTIONAL = "optional";
     public static final String DEFAULT_VALUE = "defaultValue";
     public static final String ACCEPTABLE_VALUES = "acceptableValues";
-    public static final String PARENT_NAME_VARIABLE = "$parent";
     public static final String DEPRECATED = "deprecated";
+
+    public static final String VAR_PARENT = "$parent";
+    public static final String VAR_GRANDPARENT = "$grandparent";
+    
+    public static final String ENCODING = "UTF-8";
 }

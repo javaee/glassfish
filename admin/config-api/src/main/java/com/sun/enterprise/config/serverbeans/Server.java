@@ -42,6 +42,8 @@ package com.sun.enterprise.config.serverbeans;
 
 import com.sun.enterprise.config.util.InstanceRegisterInstanceCommandParameters;
 import static com.sun.enterprise.config.util.RegisterInstanceCommandParameters.ParameterNames.*;
+import com.sun.enterprise.config.serverbeans.customvalidators.ConfigRefConstraint;
+import com.sun.enterprise.config.serverbeans.customvalidators.ConfigRefValidator;
 import com.sun.enterprise.config.serverbeans.customvalidators.NotTargetKeyword;
 import com.sun.enterprise.config.serverbeans.customvalidators.NotDuplicateTargetName;
 import com.sun.enterprise.config.util.ServerHelper;
@@ -70,6 +72,7 @@ import org.glassfish.api.admin.config.Named;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.ReferenceContainer;
 import org.glassfish.quality.ToDo;
+import static org.glassfish.config.support.Constants.*;
 
 import java.beans.PropertyVetoException;
 import java.util.List;
@@ -78,8 +81,9 @@ import java.util.Iterator;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
+import javax.validation.Payload;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 import org.glassfish.api.admin.ServerEnvironment;
@@ -95,9 +99,10 @@ import org.glassfish.api.admin.CommandRunner;
  * User applications cannot be deployed to an Administration Server instance
  */
 @Configured
+@ConfigRefConstraint(message="{configref.invalid}", payload=ConfigRefValidator.class)
 @SuppressWarnings("unused")
-@NotDuplicateTargetName
-public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named, SystemPropertyBag, ReferenceContainer, RefContainer {
+@NotDuplicateTargetName(message="{server.duplicate.name}", payload=Server.class)
+public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named, SystemPropertyBag, ReferenceContainer, RefContainer, Payload {
 
     String lbEnabledSystemProperty = "org.glassfish.lb-enabled-default";
 
@@ -105,8 +110,8 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
     @Override
     public void setName(String value) throws PropertyVetoException;
 
-    @NotTargetKeyword
-    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")
+    @NotTargetKeyword(message="{server.reserved.name}", payload=Server.class)
+    @Pattern(regexp=NAME_SERVER_REGEX, message="{server.invalid.name}", payload=Server.class)
     @Override
     public String getName();
 
@@ -120,8 +125,9 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      *         {@link String }
      */
     @Attribute
-    @NotTargetKeyword
-    @Pattern(regexp = "[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")
+    @NotNull
+    @NotTargetKeyword(message="{server.reserved.name}", payload=Server.class)
+    @Pattern(regexp = NAME_SERVER_REGEX)
     String getConfigRef();
 
     /**
@@ -164,7 +170,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      * @throws PropertyVetoException if a listener vetoes the change
      */
     @Param(name = PARAM_NODE, optional = true)
-    void setNode(String value) throws PropertyVetoException;
+    void setNodeRef(String value) throws PropertyVetoException;
 
     /**
      * Gets the value of the node property.
@@ -175,8 +181,8 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
      *         {@link String }
      */
     @Attribute
-    String getNode();
-
+    String getNodeRef();
+    
     /**
      * Gets the value of the lbWeight property.
      *
@@ -670,7 +676,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
                 Node n = domain.getNodeNamed(node);
                 if (n != null) {
                     String nodeHost = n.getNodeHost();
-                    if (nodeHost == null || nodeHost.equals("localhost") || NetUtils.IsThisHostLocal(nodeHost)) { // instance on same host as DAS
+                    if (NetUtils.isThisHostLocal(nodeHost)) { // instance on same host as DAS
                         int dasAdminPort = domain.getServerNamed("server").getAdminPort();
                         // Don't use the getAdminPort duck type method directly on the instance being created
                         int instanceAdminPort = new ServerHelper(instance, config).getAdminPort();
@@ -713,19 +719,23 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
         private void addClusterRefs(Cluster cluster, Server instance) throws TransactionFailure, PropertyVetoException {
             if (cluster != null) {
                 for (ApplicationRef appRef : cluster.getApplicationRef()) {
-                    ApplicationRef newAppRef = instance.createChild(ApplicationRef.class);
-                    newAppRef.setRef(appRef.getRef());
-                    newAppRef.setDisableTimeoutInMinutes(appRef.getDisableTimeoutInMinutes());
-                    newAppRef.setEnabled(appRef.getEnabled());
-                    newAppRef.setLbEnabled(appRef.getLbEnabled());
-                    newAppRef.setVirtualServers(appRef.getVirtualServers());
-                    instance.getApplicationRef().add(newAppRef);
+                    if (instance.getApplicationRef(appRef.getRef()) == null) {
+                        ApplicationRef newAppRef = instance.createChild(ApplicationRef.class);
+                        newAppRef.setRef(appRef.getRef());
+                        newAppRef.setDisableTimeoutInMinutes(appRef.getDisableTimeoutInMinutes());
+                        newAppRef.setEnabled(appRef.getEnabled());
+                        newAppRef.setLbEnabled(appRef.getLbEnabled());
+                        newAppRef.setVirtualServers(appRef.getVirtualServers());
+                        instance.getApplicationRef().add(newAppRef);
+                    }
                 }
                 for (ResourceRef rr : cluster.getResourceRef()) {
-                    ResourceRef newRR = instance.createChild(ResourceRef.class);
-                    newRR.setRef(rr.getRef());
-                    newRR.setEnabled(rr.getEnabled());
-                    instance.getResourceRef().add(newRR);
+                    if (instance.getResourceRef(rr.getRef()) == null) {
+                        ResourceRef newRR = instance.createChild(ResourceRef.class);
+                        newRR.setRef(rr.getRef());
+                        newRR.setEnabled(rr.getEnabled());
+                        instance.getResourceRef().add(newRR);
+                    }
                 }
             }
         }

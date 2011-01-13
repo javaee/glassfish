@@ -37,15 +37,23 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admin.rest.resources.custom;
 
+import com.sun.enterprise.config.serverbeans.Cluster;
+import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.Server;
+import com.sun.enterprise.config.serverbeans.SystemProperty;
+import com.sun.enterprise.config.serverbeans.SystemPropertyBag;
 import com.sun.jersey.api.core.ResourceContext;
 import com.sun.jersey.spi.container.ContainerRequest;
+import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -56,23 +64,27 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import org.glassfish.admin.rest.CliFailureException;
 import org.glassfish.admin.rest.ResourceUtil;
 import org.glassfish.admin.rest.resources.TemplateExecCommand;
-import org.glassfish.admin.rest.resources.generated.SystemPropertyResource;
 import org.glassfish.admin.rest.results.ActionReportResult;
 import org.glassfish.admin.rest.results.OptionsResult;
 import org.glassfish.admin.rest.utils.xml.RestActionReporter;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.CommandLock;
+import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.ParameterMap;
+import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.config.support.CommandTarget;
+import org.glassfish.config.support.TargetType;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.ConfigBean;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.Dom;
 import org.jvnet.hk2.config.TransactionFailure;
 import org.jvnet.hk2.config.ValidationException;
+import org.jvnet.hk2.config.types.Property;
 
 /**
  *
@@ -80,16 +92,20 @@ import org.jvnet.hk2.config.ValidationException;
  */
 @Produces({"text/html;qs=2", MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
 @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
+@CommandLock(CommandLock.LockType.NONE)
+@ExecuteOn({RuntimeType.DAS})
+@TargetType(value = {CommandTarget.CLUSTER, CommandTarget.CLUSTERED_INSTANCE, CommandTarget.CONFIG, CommandTarget.DAS,
+    CommandTarget.DOMAIN, CommandTarget.STANDALONE_INSTANCE})
 public class SystemPropertiesCliResource extends TemplateExecCommand {
     protected static final String TAG_SYSTEM_PROPERTY = "system-property";
 
     @Context
     protected ResourceContext resourceContext;
 
-    @Context
-    protected Habitat habitat;
     protected Dom entity;
 //    protected Dom parent;
+
+    protected Domain domain;
 
     public SystemPropertiesCliResource() {
         super(SystemPropertiesCliResource.class.getSimpleName(), "", "", "", "", true);
@@ -105,21 +121,36 @@ public class SystemPropertiesCliResource extends TemplateExecCommand {
 
     @GET
     public ActionReportResult get() {
-        Dom server = getEntity();
+        domain = habitat.getComponent(Domain.class);
+
         ParameterMap data = new ParameterMap();
         processCommandParams(data);
         addQueryString(((ContainerRequest) requestHeaders).getQueryParameters(), data);
         adjustParameters(data);
-        List<Map<String, String>> properties = new ArrayList<Map<String, String>>();
+        Map<String, Map<String, String>> properties = new TreeMap<String, Map<String, String>>();
 
         RestActionReporter actionReport = new RestActionReporter();
-        for (Dom child : server.nodeElements("system-property")) {
-            Map<String, String> property = new HashMap<String, String>();
-            property.put("name", child.getKey());
-            property.put("value", child.attribute("value"));
-            properties.add(property);
+
+        Property domainProp = domain.getProperty("administrative.domain.name");
+        String domainName = domainProp.getValue();
+        SystemPropertyBag spb = null;
+        String target = getEntity().attribute("name");
+
+        if ("domain".equals(target) || target.equals(domainName)) {
+            spb = domain;
+        } else {
+            spb = domain.getConfigNamed(target);
+            if (spb == null) {
+                spb = domain.getClusterNamed(target);
+                if (spb == null) {
+                    spb = domain.getServerNamed(target);
+                }
+            }
         }
-        actionReport.getExtraProperties().put("systemProperties", properties);
+
+        getSystemProperties(properties, spb, false);
+
+        actionReport.getExtraProperties().put("systemProperties", new ArrayList(properties.values()));
         if (properties.isEmpty()) {
             actionReport.getTopMessagePart().setMessage("Nothing to list."); // i18n
         }
@@ -129,28 +160,68 @@ public class SystemPropertiesCliResource extends TemplateExecCommand {
     }
 
     @POST
-    public ActionReportResult create(HashMap<String, String> data) {
-        return clearThenSaveProperties(data);
+    public Response create(HashMap<String, String> data) {
+        deleteExistingProperties();
+        return saveProperties(data);
     }
 
     @PUT
-    public ActionReportResult update(HashMap<String, String> data) {
-        return clearThenSaveProperties(data);
+    public Response update(HashMap<String, String> data) {
+        return saveProperties(data);
     }
 
     @Path("{Name}/")
-    public SystemPropertyResource getSystemPropertyResource(@PathParam("Name") String id) {
-        Dom parent = getEntity();
-        for (Dom child : parent.nodeElements(TAG_SYSTEM_PROPERTY)) {
-            if (child.getKey().equals(id)) {
-                SystemPropertyResource resource = resourceContext.getResource(SystemPropertyResource.class);
-                resource.setEntity(child);
+    @POST
+    public Response getSystemPropertyResource(@PathParam("Name") String id, HashMap<String, String> data) {
+        data.put(id, data.get("value"));
+        data.remove("value");
+        List<PathSegment> segments = uriInfo.getPathSegments(true);
+        String grandParent = segments.get(segments.size() - 3).getPath();
 
-                return resource;
+        return saveProperties(grandParent, data);
+    }
+
+    protected void getSystemProperties(Map<String, Map<String, String>> properties, SystemPropertyBag spb, boolean getDefaults) {
+        try {
+            List<SystemProperty> sysProps = spb.getSystemProperty();
+            if (!sysProps.isEmpty()) {
+                for (SystemProperty prop : sysProps) {
+                    Map<String, String> currValue = properties.get(prop.getName());
+                    if (currValue == null) {
+                        currValue = new HashMap<String, String>();
+                        currValue.put("name", prop.getName());
+                        if (getDefaults) {
+                            currValue.put("defaultValue", prop.getValue());
+                        } else {
+                            currValue.put("value", prop.getValue());
+                        }
+                        if (prop.getDescription() != null) {
+                            currValue.put("description", prop.getDescription());
+                        }
+                        properties.put(prop.getName(), currValue);
+                    } else {
+                        // Only add a default value if there isn't one already
+                        if (currValue.get("defaultValue") == null) {
+                            currValue.put("defaultValue", prop.getValue());
+                        }
+                    }
+                }
             }
+        } catch (Exception e) {
         }
 
-        throw new WebApplicationException(Status.NOT_FOUND);
+        // Recurse back up the config inheritance tree
+        if (spb instanceof Server) {
+            Server server = (Server) spb;
+            if (server.getCluster() != null) {
+                getSystemProperties(properties, server.getCluster(), true);
+            } else {
+                getSystemProperties(properties, server.getConfig(), true);
+            }
+        } else if (spb instanceof Cluster) {
+            String configRef = ((Cluster) spb).getConfigRef();
+            getSystemProperties(properties, domain.getConfigNamed(configRef), true);
+        }
     }
 
     protected String convertPropertyMapToString(HashMap<String, String> data) {
@@ -167,43 +238,38 @@ public class SystemPropertiesCliResource extends TemplateExecCommand {
         return options.toString();
     }
 
-    protected ActionReportResult clearThenSaveProperties(HashMap<String, String> data) {
-        try {
-            deleteExistingProperties();
-            String propertiesString = convertPropertyMapToString(data);
-
-            data = new HashMap<String, String>();
-            data.put("DEFAULT", propertiesString);
-            data.put("target", getParent(uriInfo));
-
-            RestActionReporter actionReport = ResourceUtil.runCommand("create-system-properties", data, habitat, "");
-            ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
-            ActionReportResult results = new ActionReportResult(commandName, actionReport, new OptionsResult());
-
-            if (exitCode != ActionReport.ExitCode.FAILURE) {
-                results.setStatusCode(200); /*200 - ok*/
-            } else {
-                Throwable ex = actionReport.getFailureCause();
-                throw (ex == null)
-                        ? new CliFailureException(actionReport.getMessage())
-                        : new CliFailureException(actionReport.getMessage(), ex);
-            }
-
-            return results;
-        } catch (Exception ex) {
-            if (ex.getCause() instanceof ValidationException) {
-                return ResourceUtil.getActionReportResult(400, ex.getMessage(), requestHeaders, uriInfo);
-            } else {
-                throw new WebApplicationException(ex, Response.Status.INTERNAL_SERVER_ERROR);
-            }
-        }
+    protected Response saveProperties(HashMap<String, String> data) {
+        return saveProperties(null, data);
     }
 
-    protected void deleteExistingProperties() throws TransactionFailure {
+    protected Response saveProperties(String parent, HashMap<String, String> data) {
+        String propertiesString = convertPropertyMapToString(data);
+
+        data = new HashMap<String, String>();
+        data.put("DEFAULT", propertiesString);
+        data.put("target", (parent == null) ? getParent(uriInfo) : parent);
+
+        RestActionReporter actionReport = ResourceUtil.runCommand("create-system-properties", data, habitat, "");
+        ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
+        ActionReportResult results = new ActionReportResult(commandName, actionReport, new OptionsResult());
+
+        int status = HttpURLConnection.HTTP_OK; /*200 - ok*/
+        if (exitCode == ActionReport.ExitCode.FAILURE) {
+            status = HttpURLConnection.HTTP_INTERNAL_ERROR;
+        }
+        results.setStatusCode(status);
+
+        return Response.status(status).entity(results).build();
+    }
+
+    protected void deleteExistingProperties() {
         Dom parent = getEntity();
         for (Dom existingProp : parent.nodeElements(TAG_SYSTEM_PROPERTY)) {
-            ConfigSupport.deleteChild((ConfigBean) parent, (ConfigBean) existingProp);
+            try {
+                ConfigSupport.deleteChild((ConfigBean) parent, (ConfigBean) existingProp);
+            } catch (TransactionFailure ex) {
+                Logger.getLogger(SystemPropertiesCliResource.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
-
 }

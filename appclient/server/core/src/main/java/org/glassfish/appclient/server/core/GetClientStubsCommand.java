@@ -50,6 +50,7 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.CommandLock;
 import org.glassfish.deployment.admin.DeployCommand;
 import org.glassfish.deployment.versioning.VersioningSyntaxException;
 import org.glassfish.deployment.versioning.VersioningUtils;
@@ -65,6 +66,7 @@ import org.jvnet.hk2.component.PerLookup;
 @Service(name="get-client-stubs")
 @I18n("get.client.stubs")
 @Scoped(PerLookup.class)
+@CommandLock(CommandLock.LockType.NONE)
 public class GetClientStubsCommand implements AdminCommand {
 
     private final static String APPNAME = "appname";

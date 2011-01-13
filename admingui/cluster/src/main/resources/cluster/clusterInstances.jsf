@@ -49,7 +49,6 @@
 />
 <!composition template="/templates/default.layout"
     guiTitle="$resource{i18ncs.cluster.InstancesTitle}"
-    guiTemplateOnLoad="admingui.nav.refreshTree();"
 >
 
 #include "/cluster/shared/instancesExtraButtons.inc"
@@ -62,6 +61,7 @@
         getRequestValue(key="clusterName" value="#{pageSession.clusterName}");
         urlencode(value="#{pageSession.clusterName}" encoding="UTF-8" result="#{pageSession.encodedClusterName}");
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18ncs.msg.JS.confirmDeleteInstances}");
+        setSessionAttribute(key="backPage" value="clusterInstances");
         setPageSessionAttribute(key="listLink" value="#{request.contextPath}/cluster/cluster/clusterInstances.jsf?clusterName=#{pageSession.encodedClusterName}");
         setPageSessionAttribute(key="editLink" value="#{request.contextPath}/cluster/cluster/clusterInstanceEdit.jsf?clusterName=#{pageSession.encodedClusterName}");
         setPageSessionAttribute(key="tableTitle" value="$resource{i18ncs.cluster.instancesTableTitle}");
@@ -88,7 +88,7 @@
 
 #include "/cluster/shared/saveInstanceWtButton.inc"
 </sun:title>
-#include "/cluster/cluster/clusterNameSection.inc"
+#include "/common/shared/nameSection.inc"
 #include "/cluster/shared/instancesTable.inc"
 
 <sun:hidden id="helpKey" value="$resource{help_cluster.clusterInstances}" />

@@ -46,7 +46,9 @@
         gf.updateEntity(endpoint="#{pageSession.selfUrl}", attrs="#{pageSession.valueMap}", skipAttrs="#{pageSession.skipAttrsList}",
             convertToFalse="#{pageSession.convertToFalseList}"
         );
-        gf.updateEntity(endpoint="#{pageSession.resourceRefUrl}", attrs="#{pageSession.resourceRef}", convertToFalse={"enabled"});
+        if(#{pageSession.resourceRefUrl}) {
+            gf.updateEntity(endpoint="#{pageSession.resourceRefUrl}", attrs="#{pageSession.resourceRef}", convertToFalse={"enabled"});
+        }
 
         removeEmptyProps(props="#{newList}" modifiedProps="#{newList}");
         javaToJSON(obj="#{pageSession.tableList}" json="#{requestScope.tmpJSON}");
@@ -57,7 +59,7 @@
     />
 </sun:button>
 <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
-        onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
+        onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}') && checkForBackslash('#{resCompId}', '$resource{i18n.msg.JS.resources.resName}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
     <!command
         // Create connector-resource
         // Update the connector-resource with the Name specified on the connector-connection-pool
@@ -76,7 +78,7 @@
         //We need to create source-ref of the selected targets.
         convertArrayToCommaString(array="#{pageSession.selectedTargets}" commaString="#{requestScope.cs}")
         convertStringtoList(str="#{requestScope.cs}" result="#{requestScope.targetList}");
-        println("===========#{requestScope.targetList}");
+        //println("===========#{requestScope.targetList}");
         setAttribute(key="nTargets" value="#{requestScope.targetList.size()}");
         dec(number="#{requestScope.nTargets}" value="#{requestScope.endRef}");
         forLoop(end="#{requestScope.endRef}"  varName="nn"){

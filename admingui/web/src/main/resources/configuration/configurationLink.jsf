@@ -48,7 +48,7 @@
 <sun:property>
     <sun:hyperlink 
         toolTip="$resource{i18n_web.tree.httpService.tooltip}" 
-        url="/web/configuration/accessLog.jsf?configName=server-config"
+        url="/web/configuration/accessLog.jsf?configName=#{configName}"
         >
     <sun:image url="/resource/web/images/httpservice.gif" />
     <sun:staticText text="$resource{i18n_web.tree.httpService}" />

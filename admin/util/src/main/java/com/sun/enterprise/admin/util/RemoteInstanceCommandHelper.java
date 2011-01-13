@@ -107,7 +107,7 @@ public final class RemoteInstanceCommandHelper {
         if (server == null)
             return null;
 
-        String node = server.getNode();
+        String node = server.getNodeRef();
 
         if (StringUtils.ok(node))
             return node;

@@ -66,6 +66,7 @@ import java.util.logging.Logger;
 
 
 import org.glassfish.admingui.common.util.GuiUtil;
+import org.glassfish.admingui.common.util.RestUtil;
 
 public class JdbcTempHandler {
 
@@ -147,6 +148,7 @@ public class JdbcTempHandler {
                         extra.put("DSList", "");
                         extra.put("DatasourceClassnameField", "");
                         extra.put("dsClassname", Boolean.FALSE);
+                        extra.put("driverClassname", dslName);
                     } else {
                         extra.put("DSList", dsl);
                         extra.put("DList", "");
@@ -170,7 +172,10 @@ public class JdbcTempHandler {
                         handlerCtx.getFacesContext().getExternalContext().getSessionMap().put("wizardPoolProperties", noprops);
                     }
                 } catch (Exception ex) {
-                    ex.printStackTrace();
+                    GuiUtil.getLogger().info(GuiUtil.getCommonMessage("log.error.updateJDBCPoolWizardStep1" + ex.getLocalizedMessage()));
+                    if (GuiUtil.getLogger().isLoggable(Level.FINE)){
+                        ex.printStackTrace();
+                    }
                 }
             } else {
                 // Allow user to provide DataSource ClassName when resourceType is not of type Driver
@@ -257,7 +262,7 @@ public class JdbcTempHandler {
         attrs.put("introspect", ((Boolean) introspect).toString());
         List<String> jdbcClassNames = new ArrayList<String>();
         try {
-            Map<String, Object> responseMap = RestApiHandlers.restRequest(endpoint, attrs, "GET", null, false);
+            Map<String, Object> responseMap = RestUtil.restRequest(endpoint, attrs, "GET", null, false);
             Map<String, Object> extraPropsMap = (Map<String, Object>) ((Map<String, Object>) responseMap.get("data")).get("extraProperties");
             if ( extraPropsMap != null) {
                 jdbcClassNames = (List<String>) extraPropsMap.get("driverClassNames");
@@ -274,7 +279,7 @@ public class JdbcTempHandler {
         endpoint = endpoint + "/resources/get-database-vendor-names";
         List<String> vendorList = new ArrayList<String>();
         try {
-            Map<String, Object> responseMap = RestApiHandlers.restRequest(endpoint, null, "GET", null, false);
+            Map<String, Object> responseMap = RestUtil.restRequest(endpoint, null, "GET", null, false);
             Map<String, Object> extraPropsMap = (Map<String, Object>) ((Map<String, Object>) responseMap.get("data")).get("extraProperties");
             if ( extraPropsMap != null) {
                 vendorList = (List<String>) extraPropsMap.get("vendorNames");
@@ -294,7 +299,7 @@ public class JdbcTempHandler {
         attrs.put("restype", resType);
         Map<String, String> connDefProps = new HashMap<String, String>();
         try {
-            Map<String, Object> responseMap = RestApiHandlers.restRequest(endpoint, attrs, "GET", null, false);
+            Map<String, Object> responseMap = RestUtil.restRequest(endpoint, attrs, "GET", null, false);
             Map<String, Object> extraPropsMap = (Map<String, Object>) ((Map<String, Object>) responseMap.get("data")).get("extraProperties");
             if ( extraPropsMap != null) {
                 connDefProps = (Map<String, String>) extraPropsMap.get("connectionDefinitionPropertiesAndDefaults");
@@ -305,7 +310,7 @@ public class JdbcTempHandler {
         }
         return connDefProps;
     }
-    public static Logger guiLogger = GuiUtil.getLogger();
+    public static final Logger guiLogger = GuiUtil.getLogger();
     public static final String REASON_FAILED_KEY = "ReasonFailedKey";
     //public static final  String SET_KEY = "SetKey";
     //public static final  String BOOLEAN_KEY = "BooleanKey";

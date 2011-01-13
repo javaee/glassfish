@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admin.rest.adapter;
 
 import com.sun.enterprise.config.serverbeans.Domain;
@@ -50,6 +49,7 @@ import org.glassfish.admin.rest.generator.ResourcesGenerator;
 import org.glassfish.admin.rest.resources.GeneratorResource;
 import org.glassfish.admin.rest.resources.StatusGenerator;
 
+import org.glassfish.admin.rest.resources.custom.ManagementProxyResource;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.config.ConfigModel;
 import org.jvnet.hk2.config.Dom;
@@ -71,7 +71,7 @@ public class RestManagementAdapter extends RestAdapter {
     @Override
     protected Set<Class<?>> getResourcesConfig() {
 
-         Class domainResourceClass =null;//org.glassfish.admin.rest.resources.generated.DomainResource.class;
+        Class domainResourceClass = null;//org.glassfish.admin.rest.resources.generated.DomainResource.class;
 
         generateASM();
         try {
@@ -88,14 +88,17 @@ public class RestManagementAdapter extends RestAdapter {
         //r.add(ActionReportResource.class);
 
         r.add(domainResourceClass);
+        r.add(ManagementProxyResource.class);
         r.add(org.glassfish.admin.rest.resources.SessionsResource.class); //TODO this needs to be added to all rest adapters that want to be secured. Decide on it after the discussion to unify RestAdapter is concluded
         r.add(org.glassfish.admin.rest.resources.StaticResource.class);
-        
+
         //body readers, not in META-INF/services anymore
         r.add(org.glassfish.admin.rest.readers.FormReader.class);
         r.add(org.glassfish.admin.rest.readers.ParameterMapFormReader.class);
         r.add(org.glassfish.admin.rest.readers.JsonHashMapProvider.class);
         r.add(org.glassfish.admin.rest.readers.JsonPropertyListReader.class);
+        r.add(org.glassfish.admin.rest.readers.JsonParameterMapProvider.class);
+
         r.add(org.glassfish.admin.rest.readers.XmlHashMapProvider.class);
         r.add(org.glassfish.admin.rest.readers.XmlPropertyListReader.class);
 
@@ -104,9 +107,6 @@ public class RestManagementAdapter extends RestAdapter {
         r.add(org.glassfish.admin.rest.provider.ActionReportResultJsonProvider.class);
         r.add(org.glassfish.admin.rest.provider.ActionReportResultXmlProvider.class);
 
-        r.add(org.glassfish.admin.rest.provider.CommandResourceGetResultHtmlProvider.class);
-        r.add(org.glassfish.admin.rest.provider.CommandResourceGetResultJsonProvider.class);
-        r.add(org.glassfish.admin.rest.provider.CommandResourceGetResultXmlProvider.class);
 
         r.add(org.glassfish.admin.rest.provider.FormWriter.class);
 
@@ -122,8 +122,8 @@ public class RestManagementAdapter extends RestAdapter {
 
     private void generateASM() {
         try {
-        Domain entity = habitat.getComponent(Domain.class);
-        Dom dom = Dom.unwrap(entity);
+            Domain entity = habitat.getComponent(Domain.class);
+            Dom dom = Dom.unwrap(entity);
             DomDocument document = dom.document;
             ConfigModel rootModel = dom.document.getRoot().model;
 

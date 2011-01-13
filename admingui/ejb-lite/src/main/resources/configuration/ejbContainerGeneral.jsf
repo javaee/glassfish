@@ -82,6 +82,8 @@
 </sun:title>
      <!-- PropertySheet .... -->
      <sun:propertySheet id="propertySheet">
+#include "/common/shared/configNameSection.inc"
+
          <!-- General Settings section -->
          <sun:propertySheetSection id="generalPropertySection">
              <sun:property id="SessionStoreProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_ejbLite.ejbSettings.sessionStoreLabel}" helpText="$resource{i18n_ejbLite.ejbSettings.sessionStoreHelp}">

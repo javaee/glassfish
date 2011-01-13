@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -61,8 +61,15 @@
         setPageSessionAttribute(key="childType" value="ssl")
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/network-config/protocols/protocol/#{pageSession.Name}");
         setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}");
+        setPageSessionAttribute(key="createSslUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/network-config/network-listeners/network-listener/#{pageSession.listenerName}/create-ssl");
+        if ("#{pageSession.protocol}=true") {
+            setPageSessionAttribute(key="createSslUrl", value="#{pageSession.parentUrl}/create-ssl");
+        }
         setPageSessionAttribute(key="rest-api" value="true");
         setPageSessionAttribute(key="showCancelButton" value="#{true}" )
+        createMap(result="#{pageSession.valueMap}");
+        mapPut(map="#{pageSession.valueMap}" key="target" value="#{pageSession.configName}");
+        mapPut(map="#{pageSession.valueMap}" key="certName" value="");
 #include "/common/shared/sslPrepare.inc"
       />
   </event>
@@ -76,9 +83,7 @@
         <sun:title id="propertyContentPage" title="$resource{i18n_web.grizzly.sslPageTitle}" helpText="$resource{i18n_web.grizzly.sslPageTitleHelp}">
 #include "/common/shared/sslButtons.inc"
         </sun:title>
-        "<br><br>
 #include "/common/shared/sslAttrs.inc"
-
 	<sun:hidden id="helpKey" value="$resource{help_web.protocolSSLEdit}" />
 </sun:form>
 #include "/common/shared/changeButtonsJS.inc"

@@ -50,7 +50,8 @@
 />
 <!composition template="/templates/default.layout"
     guiTitle="$resource{i18njmail.javaMailSessions.pageTitle}"
-    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:resources:mailResources');"
+    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:resources:mailResources');
+        setTimeout('admingui.table.changeThreeTableButtons(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0);"
 >
 <!define name="content">
     <event>
@@ -85,6 +86,10 @@ foreach(var="entry" list="#{requestScope.entries}") {
         setPageSessionAttribute(key="listLink" value="#{request.contextPath}/full/mailResources.jsf");
         setPageSessionAttribute(key="editLink" value="#{request.contextPath}/full/mailResourceEdit.jsf");
         setPageSessionAttribute(key="tableTitle" value="$resource{i18njmail.resourcesTable.sessions}");
+
+        setPageSessionAttribute(key="generalPage" value="#{request.contextPath}/full/mailResourceEdit.jsf");
+        setPageSessionAttribute(key="targetPage" value="#{request.contextPath}/common/resourceNode/resourceEditTargets.jsf");
+        
         setPageSessionAttribute(key="hasPool" value="#{false}" );
         setPageSessionAttribute(key="hasResType" value="#{false}" );
     />

@@ -41,6 +41,7 @@
 package com.sun.enterprise.admin.remote;
 
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import com.sun.enterprise.universal.collections.ManifestUtils;
 
 /**
  *
@@ -61,7 +62,9 @@ class PlainTextManager implements ResponseManager{
         // "PlainTextActionReporterFAILURE..." 
         String good = MAGIC + SUCCESS;
         String bad  = MAGIC + FAILURE;
-        
+
+        response = ManifestUtils.decode(response);
+
         if (response.startsWith(good)) {
             throw new RemoteSuccessException(response.substring(good.length()));
         } else if (response.startsWith(bad)) {
@@ -75,5 +78,5 @@ class PlainTextManager implements ResponseManager{
     private static final String SUCCESS = "SUCCESS";
     private static final String FAILURE = "FAILURE";
     private static final String MAGIC = "PlainTextActionReporter";
-    private final String response;
+    private String response;
 }

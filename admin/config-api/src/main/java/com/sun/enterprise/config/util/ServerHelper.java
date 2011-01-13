@@ -107,6 +107,7 @@ public class ServerHelper {
         }
 
         Dom serverDom = Dom.unwrap(server);
+        Domain domain = serverDom.getHabitat().getComponent(Domain.class);
         Nodes nodes = serverDom.getHabitat().getComponent(Nodes.class);
         ServerEnvironment env =
                 serverDom.getHabitat().getComponent(ServerEnvironment.class);
@@ -124,7 +125,7 @@ public class ServerHelper {
         String hostName = null;
 
         // Get it from the node associated with the server
-        String nodeName = server.getNode();
+        String nodeName = server.getNodeRef();
         if (StringUtils.ok(nodeName)) {
             Node node = nodes.getNode(nodeName);
             if (node != null) {
@@ -132,7 +133,7 @@ public class ServerHelper {
             }
             // XXX Hack to get around the fact that the default localhost
             // node entry is malformed
-            if (hostName == null && nodeName.equals("localhost")) {
+            if (hostName == null && nodeName.equals("localhost-" + domain.getName())) {
                 hostName = "localhost";
             }
         }

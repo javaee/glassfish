@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -45,8 +45,8 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 public class GMSTest extends BaseSeleniumTestClass {
-    private static final String TRIGGER_GMS = "in-process service";
-    private static final String TRIGGER_CONFIGURATION = "Configuration";
+    private static final String TRIGGER_GMS = "i18ncs.gms.TitlePageHelp";
+    private static final String TRIGGER_CONFIGURATION = "i18ncs.common.ConfigurationCol";
 
     @Test
     public void testConfig() {
@@ -54,7 +54,7 @@ public class GMSTest extends BaseSeleniumTestClass {
         clickAndWait("treeForm:tree:configurations:default-config:default-config_turner:default-config_turner_image", TRIGGER_CONFIGURATION);
         clickAndWait("treeForm:tree:configurations:default-config:gms:gms_link", TRIGGER_GMS);
         selenium.type("propertyForm:propertySheet:propertSectionTextField:fdMax:fdMax", protocolMaxTrial);
-        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton","New values successfully saved");
+        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
         assertEquals(protocolMaxTrial, selenium.getValue("propertyForm:propertySheet:propertSectionTextField:fdMax:fdMax"));
         
         int count = addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton");
@@ -62,7 +62,7 @@ public class GMSTest extends BaseSeleniumTestClass {
         selenium.type("propertyForm:basicTable:rowGroup1:0:col3:col1St", "b");
         selenium.type("propertyForm:basicTable:rowGroup1:0:col4:col1St", "c");
         selenium.click("propertyForm:propertyContentPage:topButtons:saveButton");
-        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton","New values successfully saved");
+        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
         assertTableRowCount("propertyForm:basicTable", count);
     }
 }

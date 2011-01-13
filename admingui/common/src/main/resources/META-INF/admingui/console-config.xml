@@ -100,14 +100,15 @@
                 parentId="propSheetSection"
                 content="monitor/configurationLink.jsf"
         />
-
-	<!-- navNode IPs -->
         <integration-point
-                id="common_reg"
-                type="org.glassfish.admingui:navNode"
-                priority="100"
-                parentId="tree"
-                content="pluginTreeNodeRegistration.jsf" />
+                id="sysPropsConfigurationLink"
+                type="org.glassfish.admingui:configuration"
+                priority="900"
+                parentId="propSheetSection"
+                content="configuration/systemPropsConfigurationLink.jsf"
+        />
+	<!-- navNode IPs -->
+        
         <integration-point
                 id="common_domain"
                 type="org.glassfish.admingui:navNode"
@@ -168,6 +169,12 @@
                 priority="800"
                 parentId="#{configNameId}"
                 content="monitor/monitoringNode.jsf" />
+        <integration-point
+                id="sysprops_node"
+                type="org.glassfish.admingui:navNode"
+                priority="900"
+                parentId="#{configNameId}"
+                content="configuration/pluginTreeNodeConfigSysProps.jsf"/>
 
         <integration-point
                 id="monitoring"

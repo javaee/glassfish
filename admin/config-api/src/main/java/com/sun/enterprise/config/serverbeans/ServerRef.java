@@ -45,9 +45,10 @@ import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
+import static org.glassfish.config.support.Constants.NAME_SERVER_REGEX;
 
 import java.beans.PropertyVetoException;
-
+import javax.validation.Payload;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 /**
@@ -59,7 +60,7 @@ import javax.validation.constraints.Pattern;
 }) */
 
 @Configured
-public interface ServerRef extends ConfigBeanProxy, Injectable, Ref  {
+public interface ServerRef extends ConfigBeanProxy, Injectable, Ref, Payload  {
 
     /**
      * Gets the value of the ref property.
@@ -72,7 +73,7 @@ public interface ServerRef extends ConfigBeanProxy, Injectable, Ref  {
     @Override
     @Attribute(key=true)
     @NotNull
-    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_.;]*")
+    @Pattern(regexp=NAME_SERVER_REGEX, message="{server.invalid.name}", payload=ServerRef.class)
     public String getRef();
 
     /**

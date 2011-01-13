@@ -41,28 +41,24 @@
 
 package com.sun.enterprise.admin.cli.cluster;
 
-import com.sun.enterprise.admin.cli.CLICommand;
-import com.sun.enterprise.admin.cli.remote.RemoteCommand;
-import com.sun.enterprise.config.serverbeans.Node;
-import com.sun.enterprise.util.SystemPropertyConstants;
-import com.trilead.ssh2.SCPClient;
-import com.trilead.ssh2.SFTPv3DirectoryEntry;
+import com.sun.enterprise.util.io.FileUtils;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.CommandException;
-//import org.glassfish.api.admin.ExecuteOn;
-//import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.cluster.ssh.launcher.SSHLauncher;
 import org.glassfish.cluster.ssh.sftp.SFTPClient;
+import org.glassfish.cluster.ssh.util.SSHUtil;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
+import org.jvnet.hk2.component.Habitat;
+import org.glassfish.internal.api.Globals;
 
-import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
-import java.util.Map;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Set;
 
 /**
  * @author Rajiv Mordani
@@ -71,52 +67,56 @@ import java.util.List;
 
 @Service(name = "uninstall-node")
 @Scoped(PerLookup.class)
-//@ExecuteOn({RuntimeType.DAS})
-public class UninstallNodeCommand extends CLICommand {
-
-    @Param(optional = true)
-    private String sshuser;
-
-    @Param(optional=true)
-    private int sshport;
-
-    @Param(optional = true)
-    private String sshkeyfile;
-
-    @Param(optional = false, primary = true, multiple = true)
-    private String[] hosts;
-
-    @Param(name="installdir", optional = true)
+public class UninstallNodeCommand extends SSHCommandsBase {
+    @Param(name="installdir", optional = true, defaultValue = "${com.sun.aas.productRoot}")
     private String installDir;
 
-    private String sshpassword;
-
-    private String sshkeypassphrase=null;
-
-    private boolean promptPass=false;
-
+    @Param(optional = true, defaultValue = "false")
+    private boolean force;
+    
+    @Inject
+    private Habitat habitat;
+    
     @Inject
     SSHLauncher sshLauncher;
 
-    @Inject
-    Node[] nodeList;
-
+    @Override
     protected void validate() throws CommandException {
-        for (String host: hosts) {
-            for (Node node: nodeList) {
-                if (node.getNodeHost().equals(host)) {
-                    throw new CommandException("delete-node-ssh needs to be called to delete node for " + host + " before uninstall-node is called");
+        Globals.setDefaultHabitat(habitat);
+        installDir = resolver.resolve(installDir);
+        if (!force) {
+            for (String host: hosts) {
+                if(checkIfNodeExistsForHost(host)) {
+                    throw new CommandException(Strings.get("call.delete.node.ssh", host));
                 }
             }
+        }       
+        sshuser = resolver.resolve(sshuser);
+        if (sshkeyfile == null) {
+            //if user hasn't specified a key file check if key exists in
+            //default location
+            String existingKey = SSHUtil.getExistingKeyFile();
+            if (existingKey == null) {
+                promptPass=true;
+            } else {
+                sshkeyfile = existingKey;
+            }
+        } else {
+            validateKeyFile(sshkeyfile);
         }
+        
+        //we need the key passphrase if key is encrypted
+        if(sshkeyfile != null && isEncryptedKey()){
+            sshkeypassphrase=getSSHPassphrase(true);
+        }
+        
     }
 
     @Override
     protected int executeCommand() throws CommandException {
+
         try {
-            //String baseRootValue = executeLocationsCommand();
-            String baseRootValue = getSystemProperty(SystemPropertyConstants.INSTALL_ROOT_PROPERTY) + "/../";
-            deleteFromHosts(baseRootValue);
+            deleteFromHosts();
         } catch (IOException ioe) {
             throw new CommandException(ioe);
         }  catch (InterruptedException e) {
@@ -126,51 +126,57 @@ public class UninstallNodeCommand extends CLICommand {
         return SUCCESS;
     }
 
-    private void deleteFromHosts(String baseRootValue) throws IOException, InterruptedException {
-
-        if (installDir == null) {
-            installDir = baseRootValue;
-        }
+    private void deleteFromHosts() throws CommandException, IOException, InterruptedException {
 
         for (String host: hosts) {
             sshLauncher.init(sshuser, host, sshport, sshpassword, sshkeyfile, sshkeypassphrase, logger);
 
+            if (sshkeyfile != null && !sshLauncher.checkConnection()) {
+                //key auth failed, so use password auth
+                promptPass=true;
+            }
+            
+            if (promptPass) {                
+                sshpassword=getSSHPassword(host);
+                //re-initialize
+                sshLauncher.init(sshuser, host, sshport, sshpassword, sshkeyfile, sshkeypassphrase, logger);
+            }
+            
             SFTPClient sftpClient = sshLauncher.getSFTPClient();
 
 
             if (!sftpClient.exists(installDir)) {
                 throw new IOException (installDir + " Directory does not exist");
             }
+            
+            //File all = new File(resolver.resolve("${com.sun.aas.productRoot}"));
+            String ins = resolver.resolve("${com.sun.aas.installRoot}") + "/../";
 
-            //ArrayList<String> remoteDirectories = new ArrayList<String>();
-            //deleteRemoteFiles(sftpClient, installDir, remoteDirectories);
-            deleteRemoteFiles(sftpClient, installDir);
-            sftpClient.rmdir(installDir);
-        }
-    }
+            File all = new File(ins);
+            Set files = FileUtils.getAllFilesAndDirectoriesUnder(all);
 
-    //private void deleteRemoteFiles(SFTPClient sftpClient, String dir,
-    //ArrayList<String> remoteDirectories) {
-    private void deleteRemoteFiles(SFTPClient sftpClient, String dir)
-    throws IOException {
-        for (SFTPv3DirectoryEntry directoryEntry: (List<SFTPv3DirectoryEntry>)sftpClient.ls(dir)) {
-            if (directoryEntry.filename.equals(".") || directoryEntry.filename.equals("..")) {
-                continue;
-            } else if (directoryEntry.attributes.isDirectory()) {
-                deleteRemoteFiles(sftpClient, dir+"/"+directoryEntry.filename);
-                sftpClient.rmdir(dir  +"/"+directoryEntry.filename);
-            } else {
-                sftpClient.rm(dir+"/"+directoryEntry.filename);
+            logger.finer("Total number of files under " + ins + " = " + files.size());
+            String remoteDir = installDir;
+            List<String> modList = new ArrayList<String>();
+            if (!installDir.endsWith("/"))
+                remoteDir = remoteDir + "/";
+
+            for (Object f:files) {
+                modList.add(remoteDir+FileUtils.makeForwardSlashes(((File)f).getPath()));
+            }
+            
+            deleteRemoteFiles(sftpClient, modList, installDir, force);
+            
+            if(sftpClient.ls(installDir).isEmpty()) {
+                sftpClient.rmdir(installDir);
             }
         }
     }
-
-    private String executeLocationsCommand() throws CommandException {
-        RemoteCommand cmd =
-                new RemoteCommand("__locations", programOpts, env);
-        Map<String, String> attrs =
-                cmd.executeAndReturnAttributes(new String[]{"__locations"});
-        return attrs.get("Base-Root_value");
-
+    
+    private void validateKeyFile(String file) throws CommandException {
+        File f = new File(file);
+        if (!f.exists()) {
+            throw new CommandException(Strings.get("KeyDoesNotExist", file));
+        }
     }
 }

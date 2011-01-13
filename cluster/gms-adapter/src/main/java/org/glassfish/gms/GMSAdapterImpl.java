@@ -47,6 +47,7 @@ import com.sun.enterprise.ee.cms.core.GroupManagementService;
 import com.sun.enterprise.ee.cms.impl.client.*;
 import com.sun.enterprise.ee.cms.logging.GMSLogDomain;
 import com.sun.enterprise.ee.cms.spi.MemberStates;
+import com.sun.enterprise.mgmt.transport.NetworkUtility;
 import com.sun.enterprise.mgmt.transport.grizzly.GrizzlyConfigConstants;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.Startup;
@@ -116,6 +117,7 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
             new ConcurrentHashMap<CallBack, PlannedShutdownActionFactory>();
     private EventListener glassfishEventListener = null;
     private boolean aliveAndReadyLoggingEnabled = false;
+    private boolean testFailureRecoveryHandler = false;
 
     @Inject
     Events events;
@@ -136,10 +138,6 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
 
     @Override
     public void postConstruct() {
-        // workaround until we can set level to CONFIG in server
-        if (logger.isLoggable(Level.INFO) && !logger.isLoggable(Level.CONFIG)) {
-            logger.setLevel(Level.CONFIG);
-        }
     }
 
     AtomicBoolean initialized = new AtomicBoolean(false);
@@ -171,26 +169,24 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
 
             Domain domain = habitat.getComponent(Domain.class);
             instanceName = env.getInstanceName();
-
             isDas = env.isDas();
-            if (isDas) {
+            cluster = server.getCluster();
+            if (cluster == null && clusters != null) {
+                // must be the DAS since it not direclty considered a member of cluster by domain.xml.
+                // iterate over all clusters to find the cluster that has name passed in.
                 for (Cluster clusterI : clusters.getCluster()) {
                     if (clusterName.compareTo(clusterI.getName()) == 0) {
                         cluster = clusterI;
                         break;
                     }
                 }
-
-                // only want to do this in the case of the DAS
-                initializeHealthHistory(cluster);
-            } else {
-                cluster = server.getCluster();
-                assert (clusterName.equals(cluster.getName()));
             }
-
             if (cluster == null) {
                 logger.log(Level.WARNING, "gmsservice.nocluster.warning");
                 return false;       //don't enable GMS
+            } else if (isDas) {
+                // only want to do this in the case of the DAS
+                initializeHealthHistory(cluster);
             }
 
             clusterConfig = domain.getConfigNamed(clusterName + "-config");
@@ -202,11 +198,14 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
             try {
                 initializeGMS();
             } catch (GMSException e) {
-                logger.log(Level.WARNING, "gmsexception.occurred",
-                    e.getLocalizedMessage());
-                if (logger.isLoggable(Level.FINE)) {
-                    logger.log(Level.FINE, "stack trace:", e);
-                }
+                logger.log(Level.SEVERE, "gmsservice.failed.to.start", e);
+                // prevent access to a malformed gms object.
+                return false;
+
+            // also ensure for any unchecked exceptions (such as NPE during initialization) during initialization
+            // that the malformed gms object is not allowed to be accesssed through the gms adapter.
+            } catch (Throwable t) {
+                logger.log(Level.SEVERE, "gmsservice.failed.to.start.unexpected", t);
                 // prevent access to a malformed gms object.
                 return false;
             }
@@ -322,10 +321,13 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                             // todo: remove check for value length greater than 1.
                             // this value could be anything from IPv4 address, IPv6 address, hostname, network interface name.
                             // Only supported IPv4 address in gf v2.
-
-                            // todo: handle invalid inputs.  for this case, validate that value can be associated with a network interface on machine.
-                            // need to provide admin feedback when this value is not set correctly.
-                            configProps.put(keyName, value);
+                            if (NetworkUtility.isBindAddressValid(value)) {
+                                configProps.put(keyName, value);
+                            } else {
+                                logger.log(Level.SEVERE,
+                                    "gmsservice.bind.int.address.invalid",
+                                    value);
+                            }
                         }
                     }
                     break;
@@ -468,7 +470,9 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                             // special case mapping.  Glassfish Cluster property GMS_LISTENER_PORT maps to Grizzly Config Constants TCPSTARTPORT and TCPENDPORT.
                             configProps.put(GrizzlyConfigConstants.TCPSTARTPORT.toString(), value);
                             configProps.put(GrizzlyConfigConstants.TCPENDPORT.toString(), value);
-                         } else {
+                        } else if (name.compareTo("TEST_FAILURE_RECOVERY") == 0) {
+                            testFailureRecoveryHandler = Boolean.parseBoolean(value);
+                        } else {
                             // handle normal case.  one to one mapping.
                             configProps.put(name, value);
                             logger.log(Level.CONFIG,
@@ -509,7 +513,6 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
         printProps(configProps);
 
         String memberType = (String) configProps.get(MEMBERTYPE_STRING);
-        GMSLogDomain.getLogger(GMSLogDomain.GMS_LOGGER).setLevel(Level.CONFIG);
         gms = (GroupManagementService) GMSFactory.startGMSModule(instanceName, clusterName,
                 GroupManagementService.MemberType.valueOf(memberType), configProps);
         //remove GMSLogDomain.getLogger(GMSLogDomain.GMS_LOGGER).setLevel(gmsLogLevel);
@@ -523,10 +526,10 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
                 registerFailureSuspectedListener(this);
 
                 //fix gf it 12905
-                if (! env.isDas()) {
+                if (testFailureRecoveryHandler && ! env.isDas()) {
 
                     // this must be here or appointed recovery server notification is not printed out for automated testing.
-                    registerFailureRecoveryListener("GlassfishV31", this);
+                    registerFailureRecoveryListener("GlassfishFailureRecoveryHandlerTest", this);
                 }
 
                 glassfishEventListener = new org.glassfish.api.event.EventListener() {
@@ -574,8 +577,7 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
             } catch (GMSException e) {
                 // failed to start so unregister event listener that calls GMS.
                 events.unregister(glassfishEventListener);
-                logger.log(Level.WARNING, "gmsexception.occurred",
-                    e.getLocalizedMessage());
+                throw e;
             }
 
             logger.log(Level.INFO, "gmsservice.started",
@@ -660,16 +662,16 @@ public class GMSAdapterImpl implements GMSAdapter, PostConstruct, CallBack {
             logger.log(Level.WARNING, "gmsexception.update.health.history",
                 t.getLocalizedMessage());
         }
-//        if (signal instanceof FailureRecoverySignal) {
-//            FailureRecoverySignal frsSignal = (FailureRecoverySignal)signal;
-//            logger.log(Level.INFO, "gmsservice.failurerecovery.start.notification", new Object[]{frsSignal.getComponentName(), frsSignal.getMemberToken()});
-//            try {
-//                Thread.sleep(20 * 1000); // sleep 20 seconds. simulate wait time to allow instance to restart and do self recovery before another instance does it.
-//            } catch (InterruptedException ie) {
-//
-//            }
-//            logger.log(Level.INFO, "gmsservice.failurerecovery.completed.notification", new Object[]{frsSignal.getComponentName(), frsSignal.getMemberToken()});
-//        }
+        // testing only.  one must set cluster property GMS_TEST_FAILURE_RECOVERY to true for the following to execute. */
+        if (testFailureRecoveryHandler && signal instanceof FailureRecoverySignal) {
+            FailureRecoverySignal frsSignal = (FailureRecoverySignal)signal;
+            logger.log(Level.INFO, "gmsservice.failurerecovery.start.notification", new Object[]{frsSignal.getComponentName(), frsSignal.getMemberToken()});
+            try {
+                Thread.sleep(20 * 1000); // sleep 20 seconds. simulate wait time to allow instance to restart and do self recovery before another instance does it.
+            } catch (InterruptedException ie) {
+            }
+            logger.log(Level.INFO, "gmsservice.failurerecovery.completed.notification", new Object[]{frsSignal.getComponentName(), frsSignal.getMemberToken()});
+        }
         if (this.aliveAndReadyLoggingEnabled) {
             if (signal instanceof JoinedAndReadyNotificationSignal ||
                 signal instanceof FailureNotificationSignal ||

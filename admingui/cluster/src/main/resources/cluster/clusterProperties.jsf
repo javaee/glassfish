@@ -57,6 +57,7 @@
             urlencode(value="#{pageSession.clusterName}" encoding="UTF-8" result="#{pageSession.encodedClusterName}");
             setSessionAttribute(key="clusterTabs" value="clusterInstanceProps");
 
+            setPageSessionAttribute(key="parentPage", value="#{request.contextPath}/cluster/cluster/clusterGeneral.jsf?clusterName=#{encodedClusterName}");
             setPageSessionAttribute(key="selfPage", value="#{request.contextPath}/cluster/cluster/clusterProperties.jsf?clusterName=#{encodedClusterName}");
             setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/clusters/cluster/#{pageSession.encodedClusterName}");
             setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}");
@@ -73,11 +74,18 @@
     <sun:form id="propertyForm">
 #include "/cluster/cluster/clusterTabs.inc"
     <sun:title id="propertyContentPage" title="$resource{i18ncs.cluster.ClusterProperties}" >
-#include "/common/shared/editPageButtons.inc"
+        <!facet pageButtonsTop>
+#include "clusterPropertiesButtons.jsf"
+        </facet>
     </sun:title>
 #include "/common/shared/alertMsg.inc"
+#include "/common/shared/nameSection.inc"
 #include "/common/shared/propertyDescTable.inc"
-#include "/common/shared/editPageBottomButtons.inc"
+    <sun:title id="title2">
+        <!facet pageButtonsTop>
+#include "clusterPropertiesButtons.jsf"
+        </facet>
+    </sun:title>
 
 <sun:hidden id="helpKey" value="$resource{help_cluster.clusterProperties}" />
     </sun:form>

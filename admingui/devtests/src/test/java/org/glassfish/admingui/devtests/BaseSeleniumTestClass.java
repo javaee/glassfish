@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,6 +44,7 @@ import com.thoughtworks.selenium.Selenium;
 import com.thoughtworks.selenium.SeleniumException;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -60,8 +61,11 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.ResourceBundle;
 import org.junit.AfterClass;
 import org.junit.Rule;
 import org.openqa.selenium.By;
@@ -71,15 +75,18 @@ import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverBackedSelenium;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.ie.InternetExplorerDriver;
 
 public class BaseSeleniumTestClass {
 
     public static final String CURRENT_WINDOW = "selenium.browserbot.getCurrentWindow()";
-    public static final String MSG_NEW_VALUES_SAVED = "New values successfully saved.";
-    public static final String TRIGGER_COMMON_TASKS = "Please Register";
+    public static final String TRIGGER_NEW_VALUES_SAVED = "New values successfully saved.";
+    public static final String TRIGGER_COMMON_TASKS = "Other Tasks";
     public static final String TRIGGER_REGISTRATION_PAGE = "Receive patch information and bug updates, screencasts and tutorials, support and training offerings, and more";
-    public static final String MSG_ERROR_OCCURED = "An error has occurred";
+    public static final String TRIGGER_ERROR_OCCURED = "An error has occurred";
+    private static final String AJAX_INDICATOR = "ajaxIndicator";
 
     @Rule
     public SpecificTestRule specificTestRule = new SpecificTestRule();
@@ -89,8 +96,34 @@ public class BaseSeleniumTestClass {
     protected static final int TIMEOUT = 90;
     protected static final int BUTTON_TIMEOUT = 750;
     private static String currentTestClass = "";
-    protected static boolean debug;
+    protected static boolean debug = Boolean.parseBoolean(getParameter("debug", "false"));
     private boolean processingLogin = false;
+    protected Logger logger = Logger.getLogger(BaseSeleniumTestClass.class.getName());
+    
+    private static Map<String, String> bundles = new HashMap<String, String>() {{
+        put("i18n", "org.glassfish.admingui.core.Strings"); // core
+        put("i18nUC", "org.glassfish.updatecenter.admingui.Strings"); // update center
+        put("i18n_corba", "org.glassfish.corba.admingui.Strings");
+        put("i18n_ejb", "org.glassfish.ejb.admingui.Strings");
+        put("i18n_ejbLite", "org.glassfish.ejb-lite.admingui.Strings");
+        put("i18n_jts" ,"org.glassfish.jts.admingui.Strings"); // JTS
+        put("i18n_web", "org.glassfish.web.admingui.Strings"); // WEB
+        put("common", "org.glassfish.common.admingui.Strings");
+        put("i18nc", "org.glassfish.common.admingui.Strings"); // common -- apparently we use both in the app :|
+        put("i18nce", "org.glassfish.admingui.community-theme.Strings");
+        put("i18ncs", "org.glassfish.cluster.admingui.Strings"); // cluster
+        put("i18njca", "org.glassfish.jca.admingui.Strings"); // JCA
+        put("i18njdbc", "org.glassfish.jdbc.admingui.Strings"); // JDBC
+        put("i18njmail", "org.glassfish.full.admingui.Strings");
+        put("i18njms", "org.glassfish.jms.admingui.Strings"); // JMS
+        put("theme", "org.glassfish.admingui.community-theme.Strings");
+
+        // These conflict with core and should probably be changed in the pages
+        //put("i18n", "org.glassfish.common.admingui.Strings");
+        //put("i18n", "org.glassfish.web.admingui.Strings");
+        //put("i18nc", "org.glassfish.web.admingui.Strings");
+    }};
+    
     
     @BeforeClass
     public static void setUp() throws Exception {
@@ -98,8 +131,14 @@ public class BaseSeleniumTestClass {
         String port = getParameter("admin.port", "4848");
         String seleniumPort = getParameter("selenium.port", "4444");
         String baseUrl = "http://localhost:" + port;
-        debug = Boolean.parseBoolean(getParameter("debug", "true"));
-        driver = new FirefoxDriver();
+        
+        if ("firefox".equals(browser)) {
+            driver = new FirefoxDriver();
+        } else if ("chrome".equals(browser)) {
+            driver = new ChromeDriver();
+        } else if ("ie".contains(browser)) {
+            driver = new InternetExplorerDriver();
+        }
 
         if (selenium == null) {
             selenium = new WebDriverBackedSelenium(driver, baseUrl);
@@ -129,6 +168,9 @@ public class BaseSeleniumTestClass {
     @AfterClass
     public static void captureLog() {
         try {
+            selenium.stop();
+            selenium = null;
+
             if (!currentTestClass.isEmpty() && !debug) {
                 URL url = new URL("http://localhost:" + getParameter("admin.port", "4848") + "/management/domain/view-log");
     //            URLConnection urlC = url.openConnection();
@@ -143,8 +185,8 @@ public class BaseSeleniumTestClass {
                 in.close();
                 out.close();
             }
-            selenium.stop();
-            selenium = null;
+        } catch (FileNotFoundException fnfe) {
+            //
         } catch (Exception ex) {
             Logger.getLogger(BaseSeleniumTestClass.class.getName()).log(Level.INFO, null, ex);
         }
@@ -153,7 +195,7 @@ public class BaseSeleniumTestClass {
     @Before
     public void reset() {
         currentTestClass = this.getClass().getName();
-        clickAndWait("treeForm:tree:registration:registration_link", TRIGGER_REGISTRATION_PAGE);
+        clickAndWait("treeForm:tree:ct", TRIGGER_COMMON_TASKS);
     }
 
     protected String generateRandomString() {
@@ -209,6 +251,12 @@ public class BaseSeleniumTestClass {
         insureElementIsVisible(id);
         selenium.click(id);
         waitForPageLoad(triggerText, seconds);
+    }
+    
+    protected void clickAndWait(String id, WaitForLoadCallBack callback) {
+        insureElementIsVisible(id);
+        selenium.click(id);
+        waitForLoad(TIMEOUT, callback);
     }
 
     protected void clickAndWaitForElement(String clickId, final String elementId) {
@@ -271,7 +319,7 @@ public class BaseSeleniumTestClass {
             }
             */
             try {
-                RenderedWebElement ajaxPanel = (RenderedWebElement) driver.findElement(By.id("ajaxPanel"));
+                RenderedWebElement ajaxPanel = (RenderedWebElement) driver.findElement(By.id(AJAX_INDICATOR));
                 if (!ajaxPanel.isDisplayed()) {
                     if (callback.executeTest()) {
                         break;
@@ -364,6 +412,23 @@ public class BaseSeleniumTestClass {
 
         return null;
         */
+    }
+    
+    protected boolean isTextPresent(String text) {
+        return selenium.isTextPresent(resolveTriggerText(text));
+    }
+    
+    protected void selectDropdownOption(String id, String label) {
+        try {
+            label = resolveTriggerText(label);
+            selenium.select(id, "label="+label);
+        } catch (SeleniumException se) {
+            logger.info("An invalid option was requested.  Here are the valid options:");
+            for (String option : selenium.getSelectOptions(id)) {
+                logger.log(Level.INFO, "\t{0}", option);
+            }
+            throw se;
+        }
     }
 
     protected void selectTableRowByValue(String tableId, String value) {
@@ -504,8 +569,8 @@ public class BaseSeleniumTestClass {
 
     protected int addTableRow(String tableId, String buttonId, String countLabel) {
         int count = getTableRowCount(tableId);
-        clickAndWait(buttonId, countLabel + " (" + (++count) + ")");
-        return count;
+        clickAndWait(buttonId, new AddTableRowCallBack(tableId, count));
+        return ++count;
     }
 
     protected void assertTableRowCount(String tableId, int count) {
@@ -605,9 +670,9 @@ public class BaseSeleniumTestClass {
         final String enableStatus = "Enabled on 2 of 2 Target(s)";
         final String disableStatus = "Enabled on 0 of 2 Target(s)";
         final String TRIGGER_MANAGE_TARGETS = "Manage Resource Targets";
-        final String TRIGGGER_VALUES_SAVED = "New values successfully saved.";
         final String DEFAULT_SERVER = "server";
 
+        reset();
         clickAndWait(resourcesLinkId, resourcesTriggerText);
         clickAndWait(getLinkIdByLinkText(resourcesTableId, jndiName), resEditTriggerText);
         //Click on the target tab and verify whether the target is in the target table or not.
@@ -638,13 +703,13 @@ public class BaseSeleniumTestClass {
         clickAndWait("propertyForm:targetTable:topActionsGroup1:manageTargetButton", TRIGGER_MANAGE_TARGETS);
         selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_selected", "label=" + DEFAULT_SERVER);
         selenium.click("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_removeButton");
-        clickAndWait("form:propertyContentPage:topButtons:saveButton", TRIGGGER_VALUES_SAVED);
+        clickAndWait("form:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
 
         //Test the issue : 13280
         //If server instance is not one of the target, edit resource was failing. Fixed that and added a test
         clickAndWait(resourcesLinkId, resourcesTriggerText);
         clickAndWait(getLinkIdByLinkText(resourcesTableId, jndiName), resEditTriggerText);
-        Assert.assertTrue(selenium.isTextPresent(jndiName));
+        Assert.assertTrue(isTextPresent(jndiName));
         clickAndWait(resTargetTabId, TRIGGER_EDIT_RESOURCE_TARGETS);
 
         //Test the manage targets : Remove the instance and add the server.
@@ -659,9 +724,9 @@ public class BaseSeleniumTestClass {
         waitForButtonEnabled("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
         selenium.click("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
         waitForButtonDisabled("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
-        clickAndWait("form:propertyContentPage:topButtons:saveButton", TRIGGGER_VALUES_SAVED);
+        clickAndWait("form:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
         waitForPageLoad(instanceName, false);
-        Assert.assertTrue(selenium.isTextPresent(DEFAULT_SERVER));
+        Assert.assertTrue(isTextPresent(DEFAULT_SERVER));
 
         //Go Back to Resources Page
         clickAndWait(resourcesLinkId, resourcesTriggerText);
@@ -669,15 +734,34 @@ public class BaseSeleniumTestClass {
     
     protected void logDebugMessage(String message) {
         if (debug) {
-            Logger logger = Logger.getLogger(BaseSeleniumTestClass.class.getName());
             logger.info(message);
         }
     }
 
-    private static String getParameter(String paramName, String defaultValue) {
+    protected static String getParameter(String paramName, String defaultValue) {
         String value = System.getProperty(paramName);
 
         return value != null ? value : defaultValue;
+    }
+    
+    protected String resolveTriggerText(String original) {
+        String triggerText = original;
+        int index = original.indexOf(".");
+        if (index > -1) {
+            String bundleName = original.substring(0, index);
+            String key = original.substring(index + 1);
+            String bundle = bundles.get(bundleName);
+            if (bundle != null) {
+                ResourceBundle res = ResourceBundle.getBundle(bundle);
+                if (res != null) {
+                    // Strip out HTML. Hopefully this will be robust enough
+                    triggerText = res.getString(key).replaceAll("<.*?>", "");
+                } else {
+                    Logger.getLogger(BaseSeleniumTestClass.class.getName()).log(Level.WARNING, null, "An invalid resource bundle was specified: " + original);
+                }
+            }
+        }
+        return triggerText;
     }
     
     private void insureElementIsVisible (final String id) {
@@ -710,7 +794,7 @@ public class BaseSeleniumTestClass {
 
         public PageLoadCallBack(String triggerText, boolean textShouldBeMissing) {
             this.textShouldBeMissing = textShouldBeMissing;
-            this.triggerText = triggerText;
+            this.triggerText = resolveTriggerText(triggerText);
         }
 
         
@@ -725,9 +809,12 @@ public class BaseSeleniumTestClass {
                     if (selenium.isTextPresent(triggerText)) {
                         found = true;
                     }
-                } else {
-                    if (!selenium.isTextPresent(triggerText)) {
+                } else if (!selenium.isTextPresent(triggerText)) {
                         found = true;
+                    
+                } else {
+                    if (selenium.isTextPresent("RuntimeException")) {
+                        throw new RuntimeException("Exception detected on page. Please check the logs for details");
                     }
                 }
             } catch (SeleniumException se) {
@@ -763,6 +850,23 @@ public class BaseSeleniumTestClass {
         }
         
     }
+    
+    class AddTableRowCallBack implements WaitForLoadCallBack {
+        private final String tableId;
+        private final int initialCount;
+
+        public AddTableRowCallBack(String tableId, int initialCount) {
+            this.tableId = tableId;
+            this.initialCount = initialCount;
+        }
+        
+        @Override
+        public boolean executeTest() {
+            int count = getTableRowCount(tableId);
+            return count > initialCount;
+        }
+        
+    };
     
     class ButtonDisabledStateCallBack implements WaitForLoadCallBack {
         private String buttonId;

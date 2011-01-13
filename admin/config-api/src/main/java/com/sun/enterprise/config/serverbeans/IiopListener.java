@@ -55,12 +55,16 @@ import org.jvnet.hk2.config.types.PropertyBag;
 import org.glassfish.api.admin.RestRedirects;
 import org.glassfish.api.admin.RestRedirect;
 import org.glassfish.grizzly.config.dom.Ssl;
+import static org.glassfish.config.support.Constants.NAME_REGEX;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.quality.ToDo;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import javax.validation.Payload;
+
 /**
  *
  */
@@ -75,7 +79,13 @@ import javax.validation.constraints.Pattern;
  @RestRedirect(opType = RestRedirect.OpType.POST, commandName = "create-iiop-listener"),
  @RestRedirect(opType = RestRedirect.OpType.DELETE, commandName = "delete-iiop-listener")
 })
-public interface IiopListener extends ConfigBeanProxy, Injectable, PropertyBag {
+public interface IiopListener extends ConfigBeanProxy, Injectable, PropertyBag, Payload {
+
+    final static String PORT_PATTERN = "\\$\\{[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*\\}"
+            + "|[1-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9][0-9][0-9]"
+            + "|[1-5][0-9][0-9][0-9][0-9]|6[0-4][0-9][0-9][0-9]"
+            + "|65[0-4][0-9][0-9]|655[0-2][0-9]|6553[0-5]";
+
 
     /**
      * Gets the value of the id property.
@@ -87,7 +97,7 @@ public interface IiopListener extends ConfigBeanProxy, Injectable, PropertyBag {
      */
     @Attribute(key=true)
     @NotNull
-    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")
+    @Pattern(regexp=NAME_REGEX)
     String getId();
 
     /**
@@ -127,8 +137,9 @@ public interface IiopListener extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="1072")
-    @Min(value=1)
-    @Max(value=65535)
+    @Pattern(regexp=PORT_PATTERN,
+            message="{port-pattern}",
+            payload=IiopListener.class)
     String getPort();
 
     /**

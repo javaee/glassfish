@@ -37,14 +37,20 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admin.rest;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.v3.common.ActionReporter;
 import org.glassfish.admin.rest.provider.ProviderUtil;
 import javax.ws.rs.core.UriInfo;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import javax.ws.rs.core.PathSegment;
+import org.glassfish.api.admin.ParameterMap;
+import org.jvnet.hk2.component.Habitat;
 
 /**
  * Utilities class. Extended by ResourceUtil and ProviderUtil utilities. Used by
@@ -56,7 +62,6 @@ public class Util {
     public final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(Util.class);
 
     private Util() {
-        
     }
 
     /**
@@ -74,6 +79,13 @@ public class Util {
             return null;
         }
         return getParentName(uriInfo.getPath());
+    }
+
+    public static String getGrandparentName(UriInfo uriInfo) {
+        if (uriInfo == null) {
+            return null;
+        }
+        return getGrandparentName(uriInfo.getPath());
     }
 
     /**
@@ -115,8 +127,25 @@ public class Util {
         String name = getName(url, '/');
         // Find the : to skip past the protocal part of the URL, as that is causing
         // problems with resources named 'http'.
-        int nameIndex = url.indexOf(name,url.indexOf(":")+1);
+        int nameIndex = url.indexOf(name, url.indexOf(":") + 1);
         return getName(url.substring(0, nameIndex - 1), '/');
+    }
+
+    public static String getGrandparentName(String url) {
+        if ((url == null) || ("".equals(url))) {
+            return url;
+        }
+        String name = getParentName(url);
+        // Find the : to skip past the protocal part of the URL, as that is causing
+        // problems with resources named 'http'.
+        int nameIndex = url.indexOf(name, url.indexOf(":") + 1);
+        return getName(url.substring(0, nameIndex - 1), '/');
+    }
+    
+    public static void main (String... args) {
+        String url = "http://localhost:4848/management/domain/configs/config/server-config/java-config/generate-jvm-report";
+        String gp = getGrandparentName(url);
+        System.out.println("gp = " + gp);
     }
 
     /**
@@ -167,7 +196,7 @@ public class Util {
         if (string == null || string.length() <= 0) {
             return string;
         }
-        return string.substring(0, 1).toUpperCase() + string.substring(1);
+        return string.substring(0, 1).toUpperCase(Locale.US) + string.substring(1);
     }
 
     /**
@@ -176,21 +205,21 @@ public class Util {
      * @param uriInfo the uriInfo context of the request
      * @return String the html representation of the given message
      */
-    protected static String getHtml(String message, UriInfo uriInfo,boolean delete) {
+    protected static String getHtml(String message, UriInfo uriInfo, boolean delete) {
         String result = ProviderUtil.getHtmlHeader(uriInfo.getBaseUri().toASCIIString());
         String uri = uriInfo.getAbsolutePath().toString();
-        if (delete){
-            uri=uri+"/..";
+        if (delete) {
+            uri = uri + "/..";
         }
         String name = upperCaseFirstLetter(eleminateHypen(getName(uri, '/')));
         String parentName =
-               upperCaseFirstLetter(eleminateHypen(getParentName(uri)));
+                upperCaseFirstLetter(eleminateHypen(getParentName(uri)));
 
         result = result + "<h1>" + name + "</h1>";
-        result = result + message ;//+ "<br><br>";
+        result = result + message;//+ "<br><br>";
         result = result + "<a href=\"" + uri + "\">Back</a>";
 
-      //  result =  result +  "<br>";
+        //  result =  result +  "<br>";
         result = result + "</body></html>";
         return result;
     }
@@ -222,5 +251,45 @@ public class Util {
         }
         String methodName = upperCaseFirstLetter(elementName);
         return methodName = prefix + methodName;
+    }
+
+
+    /**
+     * Apply changes passed in <code>data</code> using CLI "set".
+     * @param data The set of changes to be applied
+     * @return ActionReporter containing result of "set" execution
+     */
+    public static ActionReporter applyChanges(Map<String, String> data, UriInfo uriInfo, Habitat habitat) {
+        List<PathSegment> pathSegments = uriInfo.getPathSegments();
+
+        // Discard the last segment if it is empty. This happens if some one accesses the resource
+        // with trailing '/' at end like in htto://host:port/mangement/domain/.../pathelement/
+        PathSegment lastSegment = pathSegments.get(pathSegments.size() - 1);
+        if(lastSegment.getPath().isEmpty()) {
+            pathSegments = pathSegments.subList(0, pathSegments.size() - 1);
+        }
+
+        List<PathSegment> candidatePathSegment = null;
+        if(pathSegments.size() != 1) {
+            // Discard "domain"
+            candidatePathSegment = pathSegments.subList(1, pathSegments.size());
+        } else {
+            // We are being called for a config change at domain level.
+            // CLI "set" requires name to be of form domain.<attribute-name>. 
+            // Preserve "domain"
+            candidatePathSegment = pathSegments;
+        }
+
+        StringBuilder setBasePath = new StringBuilder();
+        for(PathSegment pathSegment :  candidatePathSegment) {
+            setBasePath.append(pathSegment.getPath());
+            setBasePath.append('.');
+        }
+        ParameterMap parameters = new ParameterMap();
+        for (Map.Entry<String, String> entry : data.entrySet()) {
+            StringBuilder setExpression = new StringBuilder(setBasePath);
+            parameters.add("DEFAULT", setExpression.append(entry.getKey()).append('=').append(entry.getValue()).toString());
+        }
+        return ResourceUtil.runCommand("set", parameters, habitat, ""); //TODO The last parameter is resultType and is not used. Refactor the called method to remove it
     }
 }

@@ -54,6 +54,7 @@ import java.util.Map;
 import org.glassfish.api.ActionReport.MessagePart;
 import org.glassfish.internal.api.Globals;
 import org.jvnet.hk2.component.Habitat;
+import com.sun.enterprise.v3.common.ActionReporter;
 
 /**
  * Provides a DeploymentFacility implementation that local clients
@@ -141,7 +142,11 @@ public class LocalDeploymentFacility extends AbstractDeploymentFacility {
             final ParameterMap parameters = prepareParameters(commandOptions, operands);
        		commandRunner.getCommandInvocation(commandName, report).parameters(parameters).execute();
             final DFDeploymentStatus status = actionReportToStatus(report);
-            return status;
+            // add a wrapper deployment status so it's the same layout
+            // as the remote case
+            final DFDeploymentStatus finalStatus = new DFDeploymentStatus(); 
+            finalStatus.addSubStage(status);
+            return finalStatus;
         }
 
         /**
@@ -190,6 +195,14 @@ public class LocalDeploymentFacility extends AbstractDeploymentFacility {
 
         for (final MessagePart messagePart : topMessagePart.getChildren()) {
             result.addSubStage(messagePartToStatus(messagePart));
+        }
+
+        if (report instanceof ActionReporter) {
+            for (ActionReporter subReport : ((ActionReporter)report).getSubActionsReport()) {
+                if (subReport.getMessage() != null) {
+                    result.addSubStage(actionReportToStatus(subReport));
+                }
+            }
         }
         return result;
     }

@@ -51,6 +51,7 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.security.auth.callback.CallbackHandler;
 
@@ -61,6 +62,7 @@ import org.glassfish.appclient.client.acc.config.MessageSecurityConfig;
 import org.glassfish.appclient.client.acc.config.Property;
 import org.glassfish.appclient.client.acc.config.TargetServer;
 import org.glassfish.appclient.client.acc.config.util.XML;
+import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
 import org.jvnet.hk2.component.Habitat;
 import org.xml.sax.SAXParseException;
 
@@ -77,6 +79,8 @@ import org.xml.sax.SAXParseException;
  * @author tjquinn
  */
 public class AppClientContainerBuilder implements AppClientContainer.Builder {
+
+    private final static String ENDPOINTS_PROPERTY_NAME = "com.sun.appserv.iiop.endpoints";
 
     private static final LocalStringManager localStrings = new LocalStringManagerImpl(AppClientContainerBuilder.class);
     /** caller-specified target servers */
@@ -98,6 +102,8 @@ public class AppClientContainerBuilder implements AppClientContainer.Builder {
     private ClientCredential clientCredential = null;
 
     private boolean sendPassword = true;
+
+    private GlassFishORBHelper orbHelper;
 
     /** caller-provided message security configurations */
     private final List<MessageSecurityConfig> messageSecurityConfigs = new ArrayList<MessageSecurityConfig>();
@@ -127,7 +133,7 @@ public class AppClientContainerBuilder implements AppClientContainer.Builder {
 
     public AppClientContainer newContainer(final Class mainClass,
             final CallbackHandler callerSpecifiedCallbackHandler) throws Exception {
-        prepareHabitatAndNaming();
+        prepareHabitat();
         Launchable client = Launchable.LaunchableUtil.newLaunchable(
                 ACCModulesManager.getHabitat(), mainClass);
         AppClientContainer container = createContainer(client, 
@@ -155,7 +161,8 @@ public class AppClientContainerBuilder implements AppClientContainer.Builder {
             final String callerSpecifiedMainClassName,
             final String callerSpecifiedAppClientName,
             final boolean isTextAuth) throws Exception, UserError {
-        prepareHabitatAndNaming();
+        prepareHabitat();
+        prepareIIOP(targetServers, containerProperties);
         Launchable client = Launchable.LaunchableUtil.newLaunchable(
                 clientURI,
                 callerSpecifiedMainClassName,
@@ -194,14 +201,96 @@ public class AppClientContainerBuilder implements AppClientContainer.Builder {
         return null;
     }
 
-    private void prepareHabitatAndNaming() throws URISyntaxException {
+    private void prepareHabitat() throws URISyntaxException {
         ACCModulesManager.initialize(Thread.currentThread().getContextClassLoader());
-        ClientNamingConfigurator namingConfig = ACCModulesManager.getHabitat().getByContract(ClientNamingConfigurator.class);
-        if (targetServers.length > 0) {
-            namingConfig.setDefaultHost(targetServers[0].getAddress());
-            namingConfig.setDefaultPort(Integer.toString(targetServers[0].getPort()));
+        orbHelper = ACCModulesManager.getComponent(GlassFishORBHelper.class);
+    }
+
+    /**
+     * Prepares the client ORB to bootstrap into the server ORB(s) specified
+     * by the TargetServer objects.
+     * @param targetServers the TargetServer endpoints to which the client ORB can try to connect
+     * @param containerProperties Properties, if specified, which might indicate that SSL is to be used
+     * @return ORB-related properties to define host and port for bootstrapping
+     */
+    private void prepareIIOP(final TargetServer[] targetServers, Properties containerProperties) {
+        if (targetServers.length == 0) {
+            throw new IllegalArgumentException();
+        }
+
+        final StringBuilder sb = new StringBuilder();
+        for (TargetServer ts : targetServers) {
+            if (sb.length() > 0) {
+                sb.append(",");
+            }
+            sb.append(ts.getAddress()).append(":").append(ts.getPort());
+        }
+
+        /*
+         * If the user has explicitly defined the ORB-related properties, do
+         * not override those settings.
+         */
+        if (targetServers.length == 1) {
+            defineIfNotDefined(GlassFishORBHelper.OMG_ORB_INIT_HOST_PROPERTY,
+                    targetServers[0].getAddress());
+            defineIfNotDefined(GlassFishORBHelper.OMG_ORB_INIT_PORT_PROPERTY,
+                    Integer.toString(targetServers[0].getPort()));
+        } else {
+            /*
+             * Currently, set a system property to specify multiple endpoints.
+             */
+            defineIfNotDefined(ENDPOINTS_PROPERTY_NAME, sb.toString());
+        }
+
+        if (isSSLRequired(targetServers, containerProperties)) {
+            orbHelper.setCSIv2Prop(GlassFishORBHelper.ORB_SSL_CLIENT_REQUIRED, "true");
+        }
+        logger.log(Level.CONFIG, "Using endpoint address(es): {0}", sb.toString());
+
+    }
+
+    /**
+     * Define the specified system property using the new value unless the
+     * property is already set.
+     * @param propName name of the property to check and, possibly, set
+     * @param newPropValue value to set if the property is not already set
+     */
+    private void defineIfNotDefined(final String propName, final String newPropValue) {
+        if (System.getProperty(propName) == null) {
+            System.setProperty(propName, newPropValue);
         }
     }
+
+    /**
+     * Reports whether the ORB should be requested to use SSL.
+     * <p>
+     * If any TargetServer specifies SSL or the container-level properties
+     * specify SSL then report "true."
+     * @param targetServers configured TargetServer(s)
+     * @param containerProperties configured container-level properties
+     * @return whether the target servers or the properties implies the use of SSL
+     */
+    private boolean isSSLRequired(final TargetServer[] targetServers, final Properties containerProperties) {
+        if (containerProperties != null) {
+            String sslPropertyValue = containerProperties.getProperty("ssl");
+            if ("required".equals(sslPropertyValue)) {
+                return true;
+            }
+        }
+        for (TargetServer ts : targetServers) {
+            /*
+             * If this target server has the optional security sub-item then
+             * the security sub-item must have an ssl sub-item.  So we can just
+             * look for the security sub-item.
+             */
+            if (ts.getSecurity() != null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
 //    /**
 //     * Returns an AppClientContainer prepared to execute the app client implied
 //     * by the launch info and the app client args.

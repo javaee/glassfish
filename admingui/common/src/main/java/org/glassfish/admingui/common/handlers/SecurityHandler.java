@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -50,8 +50,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.RestResponse;
+import org.glassfish.admingui.common.util.RestUtil;
 
 
 /**
@@ -99,9 +102,9 @@ public class SecurityHandler {
 
         String endpoint = (String) handlerCtx.getInputValue("endpoint");
 
-        HashMap<String, Object> realmMap = (HashMap<String, Object>) RestApiHandlers.getEntityAttrs(endpoint, "entity");
+        HashMap<String, Object> realmMap = (HashMap<String, Object>) RestUtil.getEntityAttrs(endpoint, "entity");
         
-        HashMap<String, Object> responseMap = (HashMap<String, Object>) RestApiHandlers.restRequest(endpoint + "/property.json", null, "GET", null, false);
+        HashMap<String, Object> responseMap = (HashMap<String, Object>) RestUtil.restRequest(endpoint + "/property.json", null, "GET", null, false);
         HashMap propsMap = (HashMap) ((Map<String, Object>) responseMap.get("data")).get("extraProperties");
         ArrayList<HashMap> propList = (ArrayList<HashMap>) propsMap.get("properties");
         HashMap origProps = new HashMap();
@@ -167,7 +170,7 @@ public class SecurityHandler {
             handlerCtx.setOutputValue("classnameOption", "input");
             attrMap.put("predefinedClassname", Boolean.FALSE);
             attrMap.put("classnameInput", classname);
-            List<HashMap> props = getListfromMap(origProps);
+            List props = getChildrenMapForTableList(origProps, "property", null);
             handlerCtx.setOutputValue("properties", props);
         }
 
@@ -219,9 +222,12 @@ public class SecurityHandler {
         @HandlerInput(name="endpoint",   type=String.class),
         @HandlerInput(name="classnameOption",   type=String.class),
         @HandlerInput(name="attrMap",      type=Map.class),
-        @HandlerInput(name="edit",      type=Boolean.class),
+        @HandlerInput(name="edit",      type=Boolean.class, required=true),
         @HandlerInput(name="contentType", type=String.class, required=false),
         @HandlerInput(name="propList", type=List.class)
+    },
+    output={
+        @HandlerOutput(name="newPropList", type=List.class)
     })
     public static void saveRealm(HandlerContext handlerCtx) {
         String option = (String) handlerCtx.getInputValue("classnameOption");
@@ -242,6 +248,8 @@ public class SecurityHandler {
                 putOptional(attrMap, propList, "assign-groups", "fileAsGroups");
             }else
             if(classname.indexOf("LDAPRealm")!= -1){
+                attrMap.put("baseDn", "\"" + attrMap.get("baseDn") + "\"");
+                attrMap.put("directory", "\"" + attrMap.get("directory") + "\"");
                 putOptional(attrMap, propList, "jaas-context", "ldapJaax");
                 putOptional(attrMap, propList, "base-dn", "baseDn");
                 putOptional(attrMap, propList, "directory", "directory");
@@ -279,11 +287,11 @@ public class SecurityHandler {
 
         Boolean edit = (Boolean) handlerCtx.getInputValue("edit");
         String endpoint = (String) handlerCtx.getInputValue("endpoint");
-        if (edit.booleanValue()) {
-            HashMap attrs = new HashMap<String, Object>();
-            attrs.put("target", attrMap.get("target"));
-            RestApiHandlers.delete(endpoint, attrs);
-            endpoint = endpoint.substring(0, endpoint.indexOf("/auth-realm"));
+        //for edit case, only properties will be changed since we don't allow classname change.
+        //return the prop list so it can continue processing in the .jsf
+        if (edit){
+            handlerCtx.setOutputValue("newPropList", propList);
+            return;
         }
         Map<String, Object> cMap = new HashMap();
         cMap.put("name", attrMap.get("Name"));
@@ -296,7 +304,7 @@ public class SecurityHandler {
         endpoint = endpoint + "/auth-realm";
         cMap.put("target", attrMap.get("target"));
         cMap.put("property", propertyStr);
-        RestApiHandlers.restRequest(endpoint, cMap, "post", handlerCtx, false);
+        RestUtil.restRequest(endpoint, cMap, "post", handlerCtx, false);
       }catch(Exception ex){
           GuiUtil.handleException(handlerCtx, ex);
       }
@@ -345,12 +353,19 @@ public class SecurityHandler {
             if (password == null) {
                 password = "";
             }
+            // before save user synchronize realm, for the case if keyfile is changed
+            String tmpEP = GuiUtil.getSessionValue("REST_URL") + "/configs/config/"
+                                                    + configName + "/synchronize-realm-from-config";
             HashMap attrs = new HashMap<String, Object>();
+            attrs.put("id", configName);
+            attrs.put("realmName", realmName);
+            RestUtil.restRequest(tmpEP, attrs, "POST", handlerCtx, false);
+            attrs = new HashMap<String, Object>();
             if ((createNew == null)) {
                 String endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + configName +
-                                                            "/security-service/auth-realm/" + realmName + "/delete-user";
+                                                            "/security-service/auth-realm/" + realmName + "/delete-user?target=" + configName;
                 attrs.put("username", userid);
-                RestResponse response = RestApiHandlers.delete(endpoint, attrs);
+                RestResponse response = RestUtil.delete(endpoint, attrs);
                 if (!response.isSuccess()) {
                     GuiUtil.getLogger().severe("Remove user failed.  parent=" + endpoint + "; attrs =" + attrs);
                     GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.error.checkLog"));
@@ -359,18 +374,19 @@ public class SecurityHandler {
             }
             if ((createNew != null) && (createNew == Boolean.TRUE)) {
                 String endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + configName +
-                                                                "/security-service/auth-realm/" + realmName + "/create-user";
+                                                                "/security-service/auth-realm/" + realmName + "/create-user?target=" + configName;
                 attrs = new HashMap<String, Object>();
                 attrs.put("username", userid);
                 attrs.put("authrealmname", realmName);
                 attrs.put("userpassword", password);
+                attrs.put("target", configName);
                 if (grouplist != null && grouplist.contains(","))
                     grouplist = grouplist.replace(',', ':');
                 List<String> grpList = new ArrayList();
                 if (grouplist != null && !grouplist.equals(""))
                     grpList.add(grouplist);
                 attrs.put("groups", grpList);
-                RestResponse response = RestApiHandlers.post(endpoint, attrs);
+                RestResponse response = RestUtil.post(endpoint, attrs);
                 if (!response.isSuccess()) {
                     GuiUtil.getLogger().severe("Add user failed.  parent=" + endpoint + "; attrs =" + attrs);
                     GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.error.checkLog"));
@@ -422,8 +438,8 @@ public class SecurityHandler {
         List result = new ArrayList();
         try{
             String endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + configName +
-                                                                "/security-service/auth-realm/" + realmName + "/list-users.json";
-            Map<String, Object> responseMap = RestApiHandlers.restRequest(endpoint, null, "get", handlerCtx, false);
+                                                                "/security-service/auth-realm/" + realmName + "/list-users.json?target=" + configName;
+            Map<String, Object> responseMap = RestUtil.restRequest(endpoint, null, "get", handlerCtx, false);
             responseMap = (Map<String, Object>) responseMap.get("data");
             List<HashMap> children = (List<HashMap>) responseMap.get("children");
             if(children != null) {
@@ -467,7 +483,7 @@ public class SecurityHandler {
             for(Map oneRow : selectedRows){
                 String user = (String)oneRow.get("name");
                 String endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + configName + "/admin-service/jmx-connector/system.json";
-                Map<String, Object> responseMap = RestApiHandlers.restRequest(endpoint, null, "get", handlerCtx, false);
+                Map<String, Object> responseMap = RestUtil.restRequest(endpoint, null, "get", handlerCtx, false);
                 Map<String, Object> valueMap = (Map<String, Object>) responseMap.get("data");
                 valueMap = (Map<String, Object>) ((Map<String, Object>) valueMap.get("extraProperties")).get("entity");
                 String authRealm = (String) valueMap.get("authRealmName");
@@ -477,9 +493,9 @@ public class SecurityHandler {
                 }else{
                     HashMap attrs = new HashMap<String, Object>();
                     endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + configName +
-                                                                "/security-service/auth-realm/" + realmName + "/delete-user";
+                                                                "/security-service/auth-realm/" + realmName + "/delete-user?target=" + configName;
                     attrs.put("name", user);
-                    RestResponse response = RestApiHandlers.delete(endpoint, attrs);
+                    RestResponse response = RestUtil.delete(endpoint, attrs);
                     if (!response.isSuccess()) {
                         GuiUtil.getLogger().severe("Remove user failed.  parent=" + endpoint + "; attrs =" + attrs);
                         error = GuiUtil.getMessage("msg.error.checkLog");
@@ -498,13 +514,16 @@ public class SecurityHandler {
     private static String getGroupNames(String realmName, String userName, String configName, HandlerContext handlerCtx){
         try{
             String endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + configName +
-                                                                "/security-service/auth-realm/" + realmName + "/list-group-names?username=" + userName;
-            Map<String, Object> responseMap = RestApiHandlers.restRequest(endpoint, null, "get", handlerCtx, false);
+                                                                "/security-service/auth-realm/" + realmName + "/list-group-names?username=" + userName + "&target=" + configName;
+            Map<String, Object> responseMap = RestUtil.restRequest(endpoint, null, "get", handlerCtx, false);
             HashMap children = (HashMap)((Map<String, Object>) responseMap.get("data")).get("extraProperties");
             String name = (String)((List)children.get("groups")).get(0);
             return name;
         }catch(Exception ex){
-            ex.printStackTrace();
+            GuiUtil.getLogger().info(GuiUtil.getCommonMessage("log.error.getGroupNames") + ex.getLocalizedMessage());
+            if (GuiUtil.getLogger().isLoggable(Level.FINE)){
+                ex.printStackTrace();
+            }
             return "";
         }
     }
@@ -514,7 +533,7 @@ public class SecurityHandler {
     private static List realmClassList = new ArrayList();
     static {
         String endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/server-config/security-service/auth-realm/list-predefined-authrealm-classnames";
-        Map<String, Object> responseMap = RestApiHandlers.restRequest(endpoint, null, "GET", null, false);
+        Map<String, Object> responseMap = RestUtil.restRequest(endpoint, null, "GET", null, false);
         Map<String, Object> valueMap = (Map<String, Object>) responseMap.get("data");
         ArrayList<HashMap> classNames = (ArrayList<HashMap>) ((ArrayList<HashMap>) valueMap.get("children"));
         for (HashMap className : classNames) {
@@ -557,13 +576,13 @@ public class SecurityHandler {
 
         String endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + configName
                                         + "/security-service/message-security-config/" + msgSecurityName;
-        Map<String, Object> valueMap = (Map<String, Object>) RestApiHandlers.getEntityAttrs(endpoint, "entity");
+        Map<String, Object> valueMap = (Map<String, Object>) RestUtil.getEntityAttrs(endpoint, "entity");
         String defaultProvider = (String) valueMap.get("defaultProvider");
         String defaultClientProvider = (String) valueMap.get("defaultClientProvider");
         String trueStr = GuiUtil.getMessage("common.true");
         String falseStr = GuiUtil.getMessage("common.false");
         for(Map oneRow : providerList){
-            if (defaultProvider.length() > 0 || defaultClientProvider.length() > 0){
+            if ((defaultProvider != null && defaultProvider.length() > 0) || (defaultClientProvider != null && defaultClientProvider.length() > 0)){
                 oneRow.put("default", trueStr);
             }else{
                 oneRow.put("default", falseStr);
@@ -586,7 +605,7 @@ public class SecurityHandler {
         layers.add("SOAP");
         layers.add("HttpServlet");
         String endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + configName + "/security-service/message-security-config";
-        Set<String> msgSecurityCfgs = (Set<String>) (RestApiHandlers.getChildMap(endpoint)).keySet();
+        Set<String> msgSecurityCfgs = (Set<String>) (RestUtil.getChildMap(endpoint)).keySet();
         for(String name : msgSecurityCfgs){
             if (layers.contains(name)) {
                 layers.remove(name);
@@ -610,9 +629,9 @@ public class SecurityHandler {
         String msgSecurityName = (String) handlerCtx.getInputValue("msgSecurityName");
         String endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + configName +
                                 "/security-service/message-security-config/" + msgSecurityName + "/provider-config";
-        List<String> providers = (List<String>) RestApiHandlers.getChildList(endpoint);
+        List<String> providers = (List<String>) RestUtil.getChildList(endpoint);
         for(String providerEndpoint : providers){
-            Map providerAttrs = (HashMap) RestApiHandlers.getAttributesMap(providerEndpoint);
+            Map providerAttrs = (HashMap) RestUtil.getAttributesMap(providerEndpoint);
             String providerType = (String) providerAttrs.get("providerType");
             if (type.contains(providerType)) {
                 result.add(com.sun.jsftemplating.util.Util.htmlEscape((String)providerAttrs.get("providerId")));
@@ -645,26 +664,25 @@ public class SecurityHandler {
         String providerEndpoint = endpoint + "/" + providerName;
 
         if (edit.equals("true")){
-            boolean providerExist = RestApiHandlers.get(providerEndpoint).isSuccess();
+            boolean providerExist = RestUtil.get(providerEndpoint).isSuccess();
             if (!providerExist){
                 GuiUtil.handleError(handlerCtx, GuiUtil.getMessage(COMMON_BUNDLE, "msg.error.noSuchProvider")); //normally won't happen.
                 return;
             }else{
-                Map<String, Object> providerMap = (Map<String, Object>)RestApiHandlers.getEntityAttrs(providerEndpoint, "entity");
+                Map<String, Object> providerMap = (Map<String, Object>)RestUtil.getEntityAttrs(providerEndpoint, "entity");
                 providerMap.put("className", attrMap.get("ClassName"));
                 providerMap.put("providerType", attrMap.get("ProviderType"));
-                RestApiHandlers.sendUpdateRequest(endpoint, providerMap, null, null, null);
+                RestUtil.sendUpdateRequest(endpoint, providerMap, null, null, null);
             }
         }else{
+            endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + configName +
+                                "/security-service/message-security-config";
             Map attrs = new HashMap();
-            attrs.put("providerId", attrMap.get("Name"));
-            attrs.put("className", attrMap.get("ClassName"));
-            attrs.put("providerType", attrMap.get("ProviderType"));
-            if (propList.size() > 0){
-                Map[] propMaps = (Map[])propList.toArray(new Map[propList.size()]);
-                attrs.put("property", propMaps);
-            }
-            RestApiHandlers.sendCreateRequest(endpoint, attrs, null, null, null);
+            attrs.put("id", attrMap.get("Name"));
+            attrs.put("classname", attrMap.get("ClassName"));
+            attrs.put("providertype", attrMap.get("ProviderType"));
+            attrs.put("layer", attrMap.get("msgSecurityName"));
+            RestUtil.sendCreateRequest(endpoint, attrs, null, null, null);
         }
 
         //if we pass in "", backend will throw bean violation, since it only accepts certain values.
@@ -679,13 +697,13 @@ public class SecurityHandler {
         reqPolicyMap.put("authSource", attrMap.get("Request-AuthSource"));
         reqPolicyMap.put("authRecipient", attrMap.get("Request-AuthRecipient"));
         String reqPolicyEP = providerEndpoint + "/request-policy";
-        RestApiHandlers.sendUpdateRequest(reqPolicyEP, reqPolicyMap, null, null, null);
+        RestUtil.sendUpdateRequest(reqPolicyEP, reqPolicyMap, null, null, null);
 
         Map respPolicyMap = new HashMap();
         respPolicyMap.put("authSource", attrMap.get("Response-AuthSource"));
         respPolicyMap.put("authRecipient", attrMap.get("Response-AuthRecipient"));
         String respPolicyEP = providerEndpoint + "/response-policy";
-        RestApiHandlers.sendUpdateRequest(respPolicyEP, respPolicyMap, null, null, null);
+        RestUtil.sendUpdateRequest(respPolicyEP, respPolicyMap, null, null, null);
     }
 
 
@@ -702,7 +720,7 @@ public class SecurityHandler {
             String endpoint = GuiUtil.getSessionValue("REST_URL") +
                     "/configs/config/" + configName + "/java-config/jvm-options.json";
             ArrayList<String> list;
-            Map result = (HashMap) RestApiHandlers.restRequest(endpoint, null, "GET", null, false).get("data");
+            Map result = (HashMap) RestUtil.restRequest(endpoint, null, "GET", null, false).get("data");
             list = (ArrayList<String>) ((Map<String, Object>) result.get("extraProperties")).get("leafList");
             if (list == null)
                 list = new ArrayList<String>();
@@ -714,11 +732,11 @@ public class SecurityHandler {
                 return;
             }
 
-            ArrayList newOptions = new ArrayList();
+            ArrayList<String> newOptions = new ArrayList();
             Object [] origOptions = list.toArray();
             if (userValue){
                 for(int i=0; i<origOptions.length; i++){
-                    newOptions.add(origOptions[i]);
+                    newOptions.add((String)origOptions[i]);
                 }
                 newOptions.add(JVM_OPTION_SECURITY_MANAGER);
             } else{
@@ -726,34 +744,17 @@ public class SecurityHandler {
                     String str = (String) origOptions[i];
                     if (! (str.trim().equals(JVM_OPTION_SECURITY_MANAGER) ||
                             str.trim().startsWith(JVM_OPTION_SECURITY_MANAGER_WITH_EQUAL))){
-                       newOptions.add(origOptions[i]);
+                       newOptions.add((String)origOptions[i]);
                     }
                 }
             }
-            // delete all the jvm options
-            Map<String, Object> payload = null;
-            for (Object s: list) {
-                String str = (String)s;
-                payload = new HashMap<String, Object>();
-                ArrayList kv = InstanceHandler.getKeyValuePair(str);
+            Map<String, Object> payload = new HashMap<String, Object>();
+            payload.put("target", configName);
+            for (String option : newOptions) {
+                ArrayList kv = InstanceHandler.getKeyValuePair(option);
                 payload.put((String)kv.get(0), kv.get(1));
-                RestResponse response = RestApiHandlers.delete(endpoint, payload);
-                if (!response.isSuccess()) {
-                    throw new Exception (response.getResponseBody());
-                }
             }
-
-            // add all the new jvm options
-            for (Object s : newOptions) {
-                String str = (String)s;
-                payload = new HashMap<String, Object>();
-                ArrayList kv = InstanceHandler.getKeyValuePair(str);
-                payload.put((String)kv.get(0), kv.get(1));
-                RestResponse response = RestApiHandlers.post(endpoint, payload);
-                if (!response.isSuccess()) {
-                    throw new Exception (response.getResponseBody());
-                }
-            }
+            RestUtil.restRequest(endpoint, payload, "POST", handlerCtx, false);
         }catch(Exception ex){
             GuiUtil.handleException(handlerCtx, ex);
         }

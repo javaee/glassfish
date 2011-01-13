@@ -70,7 +70,6 @@
             }
         />
     </event>
-"    <script type="text/javascript">admingui.nav.selectTreeNodeById(admingui.nav.TREE_ID+"#{pageSession.highLight}");</script>
     <sun:form id="form">
         <!afterCreate
             getClientId(component="$this{component}" clientId=>$attribute{formId})

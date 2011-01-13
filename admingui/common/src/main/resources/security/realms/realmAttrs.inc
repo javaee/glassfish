@@ -42,19 +42,21 @@
 
 <!-- security/realms/realmAttrs.inc -->
 
-
-    <sun:propertySheet id="propertySheet" requiredFields="true">			 
+    <sun:propertySheet id="propertySheet" requiredFields="true">
+#include "/common/shared/configNameSection.inc"
         <sun:propertySheetSection id="propertySectionTextField">
             <sun:property id="NameProp"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.realm.realmName}" >
                 <sun:staticText id="NameStatic" text="#{pageSession.Name}"/>
-            </sun:property> 
-
+            </sun:property>
+            <sun:property id="classname"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.realm.Classname}" >
+                <sun:staticText id="classname" text="#{attrMap.classname}"/>
+            </sun:property>
             <sun:property id="NameTextProp"  rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.Name}">
                 <sun:textField id="NameText" styleClass="required"  text="#{attrMap.Name}" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.common.Name']}" required="#{true}" />
             </sun:property> 
 
-            <sun:property id="cp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.realm.Classname}" helpText="$resource{i18nc.realm.ClassnameHelp}<br /><br />">                           
-                <sun:radioButton id="optA"  name="classnameOption" selected="#{classnameOption}" selectedValue="predefine" 
+            <sun:property id="cp"  visible="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.realm.Classname}" helpText="$resource{i18nc.realm.ClassnameHelp}<br /><br />">
+                <sun:radioButton id="optA"  name="classnameOption" selected="#{classnameOption}" selectedValue="predefine"
                     onClick="enableClassnameFields('predefine'); "
                 />                              
                 <sun:dropDown id="Classname" labels="$pageSession{realmClasses}" selected="#{attrMap.classname}" 
@@ -80,7 +82,7 @@
             </sun:property> 
         </sun:propertySheetSection>
     </sun:propertySheet>
-
+"<br><br>
     <sun:propertySheetSection id="fileSection" visible="#{false}" label="$resource{i18nc.realm.specificProps}" >
         <!afterCreate
             getClientId(component="$this{component}" clientId=>$page{fileSectionId});

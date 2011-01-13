@@ -73,6 +73,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.admingui.common.util.DeployUtil;
 import org.glassfish.admingui.common.util.GuiUtil;
+import org.glassfish.admingui.common.util.RestUtil;
 import org.glassfish.admingui.common.util.TargetUtil;
 
 
@@ -80,9 +81,6 @@ import org.glassfish.admingui.common.util.TargetUtil;
  *
  */
 public class DeploymentHandler {
-
-    //should be the same as in DeploymentProperties in deployment/common
-    public static final String KEEP_SESSIONS = "keepSessions";
 
     @Handler(id = "deploy",
     input = {
@@ -102,6 +100,7 @@ public class DeploymentHandler {
         Map attrMap = new HashMap((Map) allMaps.get(appType));
 
         if (GuiUtil.isEmpty(origPath)) {
+            GuiUtil.getLogger().info("deploy(): origPath is NULL");
             String mesg = GuiUtil.getMessage("msg.deploy.nullArchiveError");
             GuiUtil.handleError(handlerCtx, mesg);
             return;
@@ -205,21 +204,14 @@ public class DeploymentHandler {
         @HandlerInput(name = "origPath", type = String.class, required = true),
         @HandlerInput(name = "deployMap", type = Map.class, required = true),
         @HandlerInput(name = "convertToFalse", type = List.class, required = true),
-        @HandlerInput(name = "appProps", type = List.class, required = true)
+        @HandlerInput(name = "valueMap", type = Map.class, required = true)
     })
     public static void redeploy(HandlerContext handlerCtx) {
         try {
             String filePath = (String) handlerCtx.getInputValue("filePath");
             String origPath = (String) handlerCtx.getInputValue("origPath");
             Map<String,String> deployMap = (Map) handlerCtx.getInputValue("deployMap");
-            //Map<String,String> appProps = (Map) handlerCtx.getInputValue("appProps");
-            List<Map<String, String>> obj =  (List) handlerCtx.getInputValue("appProps");
-            Map<String, String> appProps = new HashMap();
-            if (obj != null){
-                for(Map oneProp: obj){
-                    appProps.put((String)oneProp.get("name"), (String)oneProp.get("value"));
-                }
-            }
+            Map<String,String> valueMap = (Map) handlerCtx.getInputValue("valueMap");
             List<String> convertToFalsList = (List<String>) handlerCtx.getInputValue("convertToFalse");
             if (convertToFalsList != null)
             for (String one : convertToFalsList) {
@@ -231,40 +223,49 @@ public class DeploymentHandler {
             DFDeploymentProperties deploymentProps = new DFDeploymentProperties();
 
              //If we are redeploying a web app, we want to preserve context root.
-             String ctxRoot = (String) RestApiHandlers.getEntityAttrs(
-                     GuiUtil.getSessionValue("REST_URL")+"/applications/application/" +appName ,"entity").get("contextRoot");
-
+             String ctxRoot = valueMap.get(DFDeploymentProperties.CONTEXT_ROOT);
              if (ctxRoot != null){
                  deploymentProps.setContextRoot(ctxRoot);
              }
 
-             Properties props = new Properties();
-             if (appProps != null){
-                 String jws = appProps.get("javaWebStartEnabled");
-                 if (jws != null){
-                     props.setProperty("javaWebStartEnabled", (jws.equals("true"))? "true" : "false");
-                 }
-
-                 String ava = appProps.get("availabilityEnabled");
-                 if (ava != null){
-                     props.setProperty("availabilityEnabled", (ava.equals("true"))? "true" : "false");
-                 }
+             String availabilityEnabled = valueMap.get(DFDeploymentProperties.AVAILABILITY_ENABLED);
+             if (availabilityEnabled != null){
+                deploymentProps.setAvailabilityEnabled(Boolean.parseBoolean(availabilityEnabled));
+             }
+             String keepState = deployMap.get("keepState");
+             if (keepState != null){
+                deploymentProps.setProperty("keepState", keepState);
              }
 
              deploymentProps.setForce(true);
              deploymentProps.setUpload(false);
              deploymentProps.setName(appName);
-             deploymentProps.setVerify(Boolean.parseBoolean(deployMap.get("verify")));
-             deploymentProps.setPrecompileJSP(Boolean.parseBoolean(deployMap.get("precompilejsp")));
+             deploymentProps.setVerify(Boolean.parseBoolean(deployMap.get(DFDeploymentProperties.VERIFY)));
+             deploymentProps.setPrecompileJSP(Boolean.parseBoolean(deployMap.get(DFDeploymentProperties.PRECOMPILE_JSP)));
              if ("osgi".equals(deployMap.get("type"))){
                  deploymentProps.setProperty("type", "osgi");
              }
-             props.setProperty(KEEP_SESSIONS, ""+deployMap.get("keepSessions"));
+             Properties props = new Properties();
+             _setProps(deployMap, props, DFDeploymentProperties.DEPLOY_OPTION_JAVA_WEB_START_ENABLED);
+             _setProps(deployMap, props, "preserveAppScopedResources");
              deploymentProps.setProperties(props);
-             
-             DeployUtil.invokeDeploymentFacility(null, deploymentProps, filePath, handlerCtx);
+
+             //deploy to the same target
+             List<String> targetList = DeployUtil.getApplicationTarget(appName, "application-ref");
+             String[] targetArray = null;
+             if ( ! targetList.isEmpty()){
+                 targetArray = (String[])targetList.toArray(new String[targetList.size()]);
+             }
+             DeployUtil.invokeDeploymentFacility( targetArray, deploymentProps, filePath, handlerCtx, "redeploy.warning");
         } catch (Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);
+        }
+    }
+
+    private static void _setProps(Map deployMap, Properties props, String pName){
+        String str = (String) deployMap.get(pName);
+        if (str != null){
+            props.setProperty(pName, str);
         }
     }
 
@@ -288,8 +289,8 @@ public class DeploymentHandler {
 //                dProps.put(DFDeploymentProperties.CASCADE, "true");
 //        }
 
-        List errorList = new ArrayList();
-        List undeployedAppList = new ArrayList();
+        //List errorList = new ArrayList();
+        //List undeployedAppList = new ArrayList();
         List selectedRows = (List) obj;
         DFProgressObject progressObject = null;
         DeploymentFacility df = GuiUtil.getDeploymentFacility();
@@ -312,7 +313,7 @@ public class DeploymentHandler {
             //re-generate the table data because there may be some apps thats been undeployed 
             //successfully.  If we stopProcessing, the table data is stale and still shows the
             //app that has been gone.
-            if (DeployUtil.checkDeployStatus(status, handlerCtx, false)) {
+            if (DeployUtil.checkDeployStatus(status, handlerCtx, false, "undeploy.warning")) {
                 if(! domainOnly){
                     removeFromDefaultWebModule(appName, targets);
                 }
@@ -338,19 +339,19 @@ public class DeploymentHandler {
             try{
                 //find the config ref. by this target
                 String endpoint = TargetUtil.getTargetEndpoint(oneTarget);
-                String configName = (String) RestApiHandlers.getEntityAttrs(endpoint, "entity").get("configRef");
+                String configName = (String) RestUtil.getEntityAttrs(endpoint, "entity").get("configRef");
                 String encodedConfigName = URLEncoder.encode(configName, "UTF-8");
 
                 //get all the VS of this config
                 String vsEndpoint =  prefix + encodedConfigName + "/http-service/virtual-server";
-                Map vsMap = RestApiHandlers.getChildMap( vsEndpoint );
+                Map vsMap = RestUtil.getChildMap( vsEndpoint );
 
                 //for each VS, look at the defaultWebModule
                 if (vsMap != null && vsMap.size()>0){
                     List<String> vsList = new ArrayList(vsMap.keySet());
                     for(String oneVs : vsList){
                         String oneEndpoint = vsEndpoint+"/" + oneVs ;
-                        String defWebModule = (String) RestApiHandlers.getEntityAttrs( oneEndpoint , "entity").get("defaultWebModule");
+                        String defWebModule = (String) RestUtil.getEntityAttrs( oneEndpoint , "entity").get("defaultWebModule");
                         if (GuiUtil.isEmpty(defWebModule)){
                             continue;
                         }
@@ -359,7 +360,7 @@ public class DeploymentHandler {
                             defWebModule = defWebModule.substring(0, index);
                         }
                         if (undeployedAppName.equals(defWebModule)){
-                            RestApiHandlers.restRequest(oneEndpoint, attrsMap, "POST", null, false);
+                            RestUtil.restRequest(oneEndpoint, attrsMap, "POST", null, false);
                         }
                     }
                 }

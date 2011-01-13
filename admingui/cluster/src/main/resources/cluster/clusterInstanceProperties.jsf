@@ -58,7 +58,7 @@
             setSessionAttribute(key="clusterTabs" value="clusterInstanceProps");
             setSessionAttribute(key="clusterInstanceTabs" value="instanceProps");
 
-            setPageSessionAttribute(key="parentPage", value="#{request.contextPath}/cluster/cluster/clusterInstances.jsf?clusterName=#{pageSession.encodedClusterName}");
+            setPageSessionAttribute(key="parentPage", value="#{request.contextPath}/cluster/cluster/clusterInstanceEdit.jsf?clusterName=#{pageSession.encodedClusterName}&instanceName=#{pageSession.encodedInstanceName}");
             setPageSessionAttribute(key="selfPage", value="#{request.contextPath}/cluster/cluster/clusterInstanceProperties.jsf?clusterName=#{encodedClusterName}&instanceName=#{pageSession.encodedInstanceName}");
             setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/servers/server/#{pageSession.encodedInstanceName}");
             setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}");
@@ -67,21 +67,26 @@
             setPageSessionAttribute(key="edit" value="#{true}" );
             setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
             setPageSessionAttribute(key="showDefaultButton" value="#{false}" );
-
+            setPageSessionAttribute(key="showInstance" value="#{true}" );
             gf.restRequest(endpoint="#{pageSession.selfUrl}/property", method="GET", result="#{requestScope.propTable}");
             setPageSessionAttribute(key="tableList", value="#{requestScope.propTable.data.extraProperties.properties}");
         />
     </event>
     <sun:form id="propertyForm">
 #include "/cluster/cluster/clusterInstanceTabs.inc"
-    <sun:title id="propertyContentPage" title="$resource{i18ncs.PropertiesTitle}" >
-#include "/common/shared/editPageButtons.inc"
+    <sun:title id="propertyContentPage" title="$resource{i18ncs.cluster.InstanceProperties}" >
+#include "/cluster/shared/instancePropertiesButtons.jsf"
     </sun:title>
-#include "/common/shared/alertMsg.inc"
-#include "/common/shared/propertyDescTable.inc"
-#include "/common/shared/editPageBottomButtons.inc"
 
-<sun:hidden id="helpKey" value="$resource{help_cluster.clusterInstanceProperties}" />
+#include "/common/shared/alertMsg.inc"
+#include "/common/shared/nameSection.inc"
+#include "/common/shared/propertyDescTable.inc"
+
+    <sun:title id="bottomTitle" >
+#include "/cluster/shared/instancePropertiesButtons.jsf"
+    </sun:title>
+    
+    <sun:hidden id="helpKey" value="$resource{help_cluster.clusterInstanceProperties}" />
 
     </sun:form>
 #include "/common/shared/changeButtonsJS.inc"

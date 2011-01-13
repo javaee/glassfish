@@ -37,24 +37,26 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admin.rest.readers;
 
+import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
-import org.glassfish.admin.rest.provider.ProviderUtil;
+import org.codehaus.jettison.json.JSONObject;
 
 /**
- * @author Rajeshwar Patil
+ * @author Ludovic Champenois
  */
 @Consumes(MediaType.APPLICATION_JSON)
 @Provider
@@ -67,17 +69,55 @@ public class JsonHashMapProvider implements MessageBodyReader<HashMap<String, St
 
     @Override
     public HashMap<String, String> readFrom(Class<HashMap<String, String>> type, Type genericType,
-        Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> headers, 
-        InputStream in) throws IOException {
+            Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> headers,
+            InputStream in) throws IOException {
+
+
+
+        JSONObject obj;
         try {
-            JsonInputObject jsonObject = new JsonInputObject(in);
-            return ProviderUtil.getStringMap((HashMap)jsonObject.initializeMap());
-        } catch (InputException exception) {
+            obj = new JSONObject(inputStreamAsString(in));
+            Iterator  iter=obj.keys();
+                        HashMap map = new HashMap();
+
+            while (iter.hasNext()){
+                String k = (String) iter.next();
+                map.put(k, ""+obj.get(k));
+              
+            }
+            return map;
+
+        } catch (Exception ex) {
             HashMap map = new HashMap();
-            map.put("error", "Entity Parsing Error: " + exception.getMessage());
+            map.put("error", "Entity Parsing Error: " + ex.getMessage());
 
             //throw new RuntimeException(exception);
             return map;
         }
+
+//        try {
+//
+//
+//            JsonInputObject jsonObject = new JsonInputObject(in);
+//            return ProviderUtil.getStringMap((HashMap) jsonObject.initializeMap());
+//        } catch (InputException exception) {
+//            HashMap map = new HashMap();
+//            map.put("error", "Entity Parsing Error: " + exception.getMessage());
+//
+//            //throw new RuntimeException(exception);
+//            return map;
+//        }
+    }
+
+    public static String inputStreamAsString(InputStream stream) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(stream));
+        StringBuilder sb = new StringBuilder();
+        String line = null;
+
+        while ((line = br.readLine()) != null) {
+            sb.append(line);
+        }
+        br.close();
+        return sb.toString();
     }
 }

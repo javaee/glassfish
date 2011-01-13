@@ -52,7 +52,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>server-mgmt</artifactId>
     <packaging>hk2-jar</packaging>
-    <name>Admin Server Management</name>
+    <name>admin-server-management</name>
     <description>Server Management</description>
 
     <build>
@@ -79,7 +79,7 @@
                 <configuration>
                     <archive>
 		        <manifestEntries>
-			    <Class-Path>server-mgmt-l10n.jar</Class-Path>
+			    <Class-Path>common-l10n.jar</Class-Path>
                         </manifestEntries>
                     </archive>
                 </configuration>
@@ -87,11 +87,6 @@
         </plugins>
     </build>
     <dependencies>
-        <dependency>
-            <groupId>org.glassfish.security</groupId>
-            <artifactId>security</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>common-util</artifactId>

@@ -113,7 +113,7 @@ public class AdminTask extends Task {
         log ("Running command " + commandExec);
         String installDirectory = getInstallDir();
         if (installDirectory == null) {
-            log("Install Directory of application server not known. Sepcify either the installDir attribute or the asinstall.dir property",
+            log("Install Directory of application server not known. Specify either the installDir attribute or the asinstall.dir property",
                 Project.MSG_WARN);
             return;
         }

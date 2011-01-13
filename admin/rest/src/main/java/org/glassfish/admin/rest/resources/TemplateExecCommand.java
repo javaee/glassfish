@@ -41,6 +41,7 @@
 package org.glassfish.admin.rest.resources;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import java.net.HttpURLConnection;
 import org.glassfish.admin.rest.ResourceUtil;
 import org.glassfish.admin.rest.RestService;
 import org.glassfish.admin.rest.provider.MethodMetaData;
@@ -52,15 +53,17 @@ import org.glassfish.api.admin.ParameterMap;
 
 import javax.ws.rs.OPTIONS;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.*;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.Set;
-import org.glassfish.admin.rest.CliFailureException;
+import java.util.logging.Logger;
+import org.glassfish.admin.rest.Constants;
+import org.glassfish.admin.rest.Util;
 import org.jvnet.hk2.component.Habitat;
 
 /**
@@ -83,11 +86,8 @@ public class TemplateExecCommand {
     protected String commandAction;
 //    protected HashMap<String, String> commandParams = null;
     protected boolean isLinkedToParent = false;
-    /* * parameterType the type of parameter. Possible values are
-     *        Constants.QUERY_PARAMETER and Constants.MESSAGE_PARAMETER
-     *
-     */
-    protected int parameterType;
+    protected Logger logger = Logger.getLogger(TemplateExecCommand.class.getName());
+
 
     public TemplateExecCommand(String resourceName, String commandName, String commandMethod, String commandAction, String commandDisplayName,
                                boolean isLinkedToParent) {
@@ -105,39 +105,38 @@ public class TemplateExecCommand {
             MediaType.APPLICATION_JSON,
             "text/html;qs=2",
             MediaType.APPLICATION_XML})
-    public OptionsResult options() {
-        OptionsResult optionsResult = new OptionsResult(resourceName);
-        try {
-            //command method metadata
-            MethodMetaData methodMetaData = ResourceUtil.getMethodMetaData(
-                    commandName, getCommandParams(), parameterType, habitat, RestService.logger);
-            optionsResult.putMethodMetaData(commandMethod, methodMetaData);
-        } catch (Exception e) {
-            throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
-        }
+    public ActionReportResult options() {
+        RestActionReporter ar = new RestActionReporter();
+        ar.setExtraProperties(new Properties());
+        ar.setActionDescription(commandDisplayName);
 
-        return optionsResult;
+        OptionsResult optionsResult = new OptionsResult(resourceName);
+        Map<String, MethodMetaData> mmd = new HashMap<String, MethodMetaData>();
+        MethodMetaData methodMetaData = ResourceUtil.getMethodMetaData(commandName, getCommandParams(),  habitat, RestService.logger);
+
+        optionsResult.putMethodMetaData(commandMethod, methodMetaData);
+        mmd.put(commandMethod, methodMetaData);
+        ResourceUtil.addMethodMetaData(ar, mmd);
+
+        ActionReportResult ret=  new ActionReportResult(ar, null, optionsResult);
+        ret.setCommandDisplayName(commandDisplayName);
+        return ret;
     }
 
-    protected ActionReportResult executeCommand(ParameterMap data) {
+    protected Response executeCommand(ParameterMap data) {
         RestActionReporter actionReport = ResourceUtil.runCommand(commandName, data, habitat,
                 ResourceUtil.getResultType(requestHeaders));
         ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
-        ActionReportResult results = new ActionReportResult(commandName, actionReport, options());
-
-        if (exitCode != ActionReport.ExitCode.FAILURE) {
-            results.setStatusCode(200); /*200 - ok*/
-        } else {
-            Throwable ex = actionReport.getFailureCause();
-            if (ex!=null){
-                 throw  new CliFailureException(actionReport.getMessage(), ex);
-            } else {
-                throw new CliFailureException(actionReport.getMessage());
-            }
-            
+        ActionReportResult results = new ActionReportResult(commandName, actionReport, options().getMetaData());
+        results.setCommandDisplayName(commandDisplayName);
+        int status =HttpURLConnection.HTTP_OK; /*200 - ok*/
+        if (exitCode == ActionReport.ExitCode.FAILURE) {
+            status = HttpURLConnection.HTTP_INTERNAL_ERROR;         
         }
+        results.setStatusCode(status); 
 
-        return results;
+        return Response.status(status).entity(results).build();
+
     }
 
     /*override it
@@ -152,6 +151,12 @@ public class TemplateExecCommand {
     protected void processCommandParams(ParameterMap data) {
         HashMap<String, String> commandParams = getCommandParams();
         if (commandParams != null) {
+            for (Map.Entry<String, String> entry : commandParams.entrySet()) {
+                String value = entry.getValue();
+                if (Constants.VAR_GRANDPARENT.equals(value)) {
+                    entry.setValue(Util.getGrandparentName(uriInfo));
+                }
+            }
             //formulate parent-link attribute for this command resource
             //Parent link attribute may or may not be the id/target attribute
             if (isLinkedToParent) {

@@ -48,8 +48,8 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import org.glassfish.admin.rest.resources.TemplateExecCommand;
-import org.glassfish.admin.rest.results.ActionReportResult;
+import javax.ws.rs.core.Response;
+import org.glassfish.admin.rest.resources.TemplateCommandPostResource;
 import org.glassfish.api.admin.ParameterMap;
 import org.jvnet.hk2.config.Dom;
 
@@ -57,7 +57,7 @@ import org.jvnet.hk2.config.Dom;
  *
  * @author jasonlee
  */
-public class SetDomainConfigResource extends TemplateExecCommand {
+public class SetDomainConfigResource extends TemplateCommandPostResource {
     public SetDomainConfigResource() {
         super("SetDomainConfigResource", "set", "POST", "commandAction", "set", false);
     }
@@ -69,7 +69,7 @@ public class SetDomainConfigResource extends TemplateExecCommand {
     @POST
     @Produces({"text/html;qs=2",MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
-    public ActionReportResult setDomainConfig(HashMap<String, String> data) {
+    public Response setDomainConfig(HashMap<String, String> data) {
 
         final Iterator<Entry<String, String>> iterator = data.entrySet().iterator();
         if (iterator.hasNext()) {
@@ -77,7 +77,7 @@ public class SetDomainConfigResource extends TemplateExecCommand {
             Map.Entry entry = iterator.next();
             fixed.add("DEFAULT", entry.getKey()+"="+entry.getValue());
 
-            return executeCommand(fixed);
+            return super.executeCommand(fixed);
         }
 
         throw new RuntimeException("You must supply exactly one configuration option."); //i18n

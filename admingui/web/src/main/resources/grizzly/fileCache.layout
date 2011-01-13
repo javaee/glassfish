@@ -91,10 +91,10 @@
                 <sun:title id="propertyContentPage" title="$resource{i18n_web.grizzly.fileCachePageTitle}" helpText="$resource{i18n_web.grizzly.fileCachePageTitleHelp}">
 #include "/common/shared/editPageButtons.inc"
                 </sun:title>
-                "<br>
 
                 <!-- PropertySheet .... -->
 <sun:propertySheet id="propertySheet">
+#include "/common/shared/configNameSection.inc"
 #include "/web/grizzly/fileCacheAttrs.inc"
                     </sun:propertySheet>
 

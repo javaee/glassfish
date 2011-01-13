@@ -43,6 +43,7 @@
 <!-- securityAttrs.inc -->
 
 <sun:propertySheet id="propertySheet">
+#include "/common/shared/configNameSection.inc"
     <!-- Text Field section -->
     <sun:propertySheetSection id="propertSectionTextField">
         <sun:property id="securityManagerProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.security.SecurityManager}"  helpText="$resource{i18nc.security.SecurityManagerHelp}">

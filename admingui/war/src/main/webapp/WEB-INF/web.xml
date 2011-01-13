@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
 <!--
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
@@ -42,10 +41,10 @@
 
 -->
 
-<web-app>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.0" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
     <context-param>
         <param-name>com.sun.jsftemplating.DEBUG</param-name>
-        <param-value>true</param-value>
+        <param-value>false</param-value>
     </context-param>
     <context-param>
         <param-name>com.sun.jsftemplating.FS_DENY_PATHS</param-name>
@@ -122,32 +121,28 @@
         <servlet-name>ThemeServlet</servlet-name>
         <url-pattern>/theme/*</url-pattern>
     </servlet-mapping>
+    <session-config>
+        <cookie-config>
+            <http-only>true</http-only>
+        </cookie-config>
+    </session-config>
     <welcome-file-list>
         <welcome-file>/index.jsf</welcome-file>
     </welcome-file-list>
     <error-page>
-	<exception-type>javax.faces.application.ViewExpiredException</exception-type>
+        <exception-type>javax.faces.application.ViewExpiredException</exception-type>
         <location>/</location>
     </error-page>
     <!--
     <error-page>
-	<error-code>403</error-code>
-	<location>/</location>
+        <error-code>403</error-code>
+        <location>/</location>
     </error-page>
     -->
     <security-constraint>
         <web-resource-collection>
-            <web-resource-name>noaccess</web-resource-name>
-	    <url-pattern>/*</url-pattern>
-        </web-resource-collection>
-        <auth-constraint>
-            <role-name>noaccess</role-name>
-	</auth-constraint>
-    </security-constraint>
-    <security-constraint>
-        <web-resource-collection>
             <web-resource-name>protected</web-resource-name>
-	    <url-pattern>/*</url-pattern>
+            <url-pattern>/*</url-pattern>
             <http-method>GET</http-method>
             <http-method>POST</http-method>
         </web-resource-collection>

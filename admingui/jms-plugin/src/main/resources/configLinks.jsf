@@ -43,7 +43,7 @@
 <sun:property>
     <sun:hyperlink 
         toolTip="$resource{i18n.tree.javaMessageService.tooltip}"
-        url="#{request.contextPath}/jms/jmsService.jsf?configName=server-config"
+        url="#{request.contextPath}/jms/jmsService.jsf?configName=#{configName}"
         >
         <sun:image url="#{request.contextPath}/resource/images/jms.gif" />
         <sun:staticText text="$resource{i18n.tree.javaMessageService}" />

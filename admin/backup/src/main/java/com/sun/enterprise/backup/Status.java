@@ -52,6 +52,7 @@ import java.util.*;
 import java.util.zip.*;
 
 import com.sun.appserv.server.util.Version;
+import org.glassfish.branding.GlassFishBranding;
 
 /**
  *
@@ -165,6 +166,20 @@ class Status {
         return props.getProperty(Constants.PROPS_USER_NAME);
     }
 
+    // Return the full path to the backup file.
+    String getBackupPath() {
+        if(props == null)
+            return null;
+        
+        try {
+            File f = new File(props.getProperty(Constants.PROPS_BACKUP_FILE));
+
+            return f.getAbsolutePath();
+        } catch (NullPointerException e) {
+            return null;
+        }
+    }
+
     // Return the filename portion of the path.
     String getFileName() {
         if(props == null)
@@ -181,9 +196,9 @@ class Status {
 
     String getBackupConfigName(){
        if(props == null)
-            return null;
+            return new String("");
 
-        return props.getProperty(Constants.BACKUP_CONFIG);
+        return props.getProperty(Constants.BACKUP_CONFIG, "");
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -199,7 +214,6 @@ class Status {
     private void setPropsFromFile(File file) {
         props = null;
         ZipInputStream zis = null;
-
 
         if(file.getName().toLowerCase().endsWith(".properties")) {
             readPropertiesFile(file);
@@ -265,8 +279,15 @@ class Status {
                           request.description);
         props.setProperty(Constants.PROPS_TIMESTAMP_HUMAN,
                           new Date(request.timestamp).toString());
+
+        GlassFishBranding br = new GlassFishBranding();
+        br.postConstruct();
+        Version version = new Version();
+        version.setBranding(br);
+        version.postConstruct();
         props.setProperty(Constants.PROPS_VERSION,
-                          Version.getFullVersion());
+                          version.getFullVersion());
+         
         String type = request.configOnly ? Constants.CONFIG_ONLY :
                 Constants.FULL;
         props.setProperty(Constants.PROPS_TYPE,type);
@@ -285,32 +306,29 @@ class Status {
             sb.append(StringHelper.get(pre + Constants.PROPS_DESCRIPTION,
                 props.getProperty(Constants.PROPS_DESCRIPTION)));
             sb.append("\n");
-            sb.append(StringHelper.get(pre + Constants.PROPS_BACKUP_FILE,
-                props.getProperty(Constants.PROPS_BACKUP_FILE)));
-            sb.append("\n");
-            sb.append(StringHelper.get(pre + Constants.PROPS_TIMESTAMP_HUMAN,
-                props.getProperty(Constants.PROPS_TIMESTAMP_HUMAN)));
-            sb.append("\n");
-            sb.append(StringHelper.get(pre + Constants.PROPS_DOMAINS_DIR, 
-                props.getProperty(Constants.PROPS_DOMAINS_DIR)));
-            sb.append("\n");
-            sb.append(StringHelper.get(pre + Constants.PROPS_DOMAIN_DIR, 
-                props.getProperty(Constants.PROPS_DOMAIN_DIR)));
-            sb.append("\n");
-            sb.append(StringHelper.get(pre + Constants.PROPS_DOMAIN_NAME, 
-                props.getProperty(Constants.PROPS_DOMAIN_NAME)));
+            sb.append(StringHelper.get(pre + Constants.PROPS_VERSION,
+                props.getProperty(Constants.PROPS_VERSION)));
             sb.append("\n");
             sb.append(StringHelper.get(pre + Constants.PROPS_USER_NAME, 
                 props.getProperty(Constants.PROPS_USER_NAME)));
             sb.append("\n");
-            sb.append(StringHelper.get(pre + Constants.PROPS_VERSION,
-                props.getProperty(Constants.PROPS_VERSION)));
+            sb.append(StringHelper.get(pre + Constants.PROPS_TIMESTAMP_HUMAN,
+                props.getProperty(Constants.PROPS_TIMESTAMP_HUMAN)));
+            sb.append("\n");
+            sb.append(StringHelper.get(pre + Constants.PROPS_DOMAIN_NAME, 
+                props.getProperty(Constants.PROPS_DOMAIN_NAME)));
             sb.append("\n");
             sb.append(StringHelper.get(pre + Constants.PROPS_TYPE,
                 props.getProperty(Constants.PROPS_TYPE)));
             sb.append("\n");
             sb.append(StringHelper.get(pre + Constants.BACKUP_CONFIG,
                 props.getProperty(Constants.BACKUP_CONFIG)));
+            sb.append("\n");
+            sb.append(StringHelper.get(pre + Constants.PROPS_BACKUP_FILE,
+                props.getProperty(Constants.PROPS_BACKUP_FILE)));
+            sb.append("\n");
+            sb.append(StringHelper.get(pre + Constants.PROPS_DOMAIN_DIR, 
+                props.getProperty(Constants.PROPS_DOMAIN_DIR)));
         }
 
         return sb.toString();

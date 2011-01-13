@@ -77,7 +77,7 @@ public interface DasConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="false",dataType=Boolean.class)
+    @Attribute (defaultValue="true",dataType=Boolean.class)
     String getDynamicReloadEnabled();
 
     /**
@@ -123,7 +123,7 @@ public interface DasConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="false",dataType=Boolean.class)
+    @Attribute (defaultValue="true",dataType=Boolean.class)
     String getAutodeployEnabled();
 
     /**
@@ -166,7 +166,7 @@ public interface DasConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @return possible object is
      *         {@link String }
      */
-    @Attribute (defaultValue="autodeploy")
+    @Attribute (defaultValue="${com.sun.aas.instanceRoot}/autodeploy")
     String getAutodeployDir();
 
     /**

@@ -130,7 +130,7 @@ public class DeleteInstanceCommand implements AdminCommand {
         // from the config no matter if we could delete the files or not.
 
         // Get the name of the node from the instance's node-ref field
-        noderef = instance.getNode();
+        noderef = instance.getNodeRef();
         if(!StringUtils.ok(noderef)) {
             msg = Strings.get("missingNodeRef", instanceName);
             fsfailure = true;
@@ -143,7 +143,7 @@ public class DeleteInstanceCommand implements AdminCommand {
         }
 
         if (!fsfailure) {
-            nodedir = theNode.getNodeDir();
+            nodedir = theNode.getNodeDirAbsolute();
             deleteInstanceFilesystem(context);
             report = context.getActionReport();
             if (report.getActionExitCode() != ActionReport.ExitCode.SUCCESS) {
@@ -179,10 +179,11 @@ public class DeleteInstanceCommand implements AdminCommand {
             msg = msg + NL + NL + Strings.get("delete.instance.config.failed",
                     instanceName, instanceHost);
         } else if (!configfailure && fsfailure) {
+            report.setActionExitCode(ActionReport.ExitCode.WARNING);            
             // leave msg as is
         }
 
-        if (configfailure || fsfailure) {
+        if (configfailure) {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setMessage(msg);
         }

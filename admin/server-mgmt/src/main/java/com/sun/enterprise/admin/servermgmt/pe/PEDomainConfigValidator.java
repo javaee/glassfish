@@ -77,8 +77,6 @@ class PEDomainConfigValidator extends DomainConfigValidator
     private static final String lAdminPort      = strMgr.getString("adminPort");
     private static final String lInstancePort   = strMgr.getString("instancePort");
     private static final String lHostName       = strMgr.getString("hostName");
-    private static final String lJmsUser        = strMgr.getString("jmsUser");
-    private static final String lJmsPasswd      = strMgr.getString("jmsPassword");
     private static final String lJmsPort        = strMgr.getString("jmsPort");
     private static final String lOrbPort        = strMgr.getString("orbPort");
 
@@ -99,12 +97,6 @@ class PEDomainConfigValidator extends DomainConfigValidator
         new DomainConfigEntryInfo(DomainConfig.K_HOST_NAME, 
                                   "java.lang.String", lHostName,
                                   new StringValidator(lHostName)),
-        new DomainConfigEntryInfo(DomainConfig.K_JMS_USER, 
-                                  "java.lang.String", lJmsUser,
-                                  new StringValidator(lJmsUser)),
-        new DomainConfigEntryInfo(DomainConfig.K_JMS_PASSWORD, 
-                                  "java.lang.String", lJmsPasswd,
-                                  new StringValidator(lJmsPasswd)),
         new DomainConfigEntryInfo(DomainConfig.K_ORB_LISTENER_PORT, 
                                   "java.lang.Integer", lOrbPort,
                                   new PortValidator(lOrbPort)),

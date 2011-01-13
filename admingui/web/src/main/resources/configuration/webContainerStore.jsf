@@ -79,6 +79,8 @@
 </sun:title>
 
     <sun:propertySheet id="storePropSheet" requiredFields="#{hasRequiredFields}">
+#include "/common/shared/configNameSection.inc"
+
     <sun:propertySheetSection id="storePropSheetSection" >
         <!-- commented out, refer to issue# 8903 -->
         <!--

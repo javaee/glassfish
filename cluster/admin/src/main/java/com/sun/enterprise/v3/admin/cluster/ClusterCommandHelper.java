@@ -50,6 +50,7 @@ import java.util.logging.Logger;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.admin.CommandException;
@@ -58,6 +59,7 @@ import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.admin.CommandRunner.CommandInvocation;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.ActionReport.ExitCode;
+import com.sun.enterprise.admin.remote.RemoteAdminCommand;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.Cluster;
 import com.sun.enterprise.config.serverbeans.Domain;
@@ -120,6 +122,9 @@ class ClusterCommandHelper {
             AdminCommandContext context,
             boolean verbose) throws CommandException {
 
+        // When we started
+        final long startTime = System.currentTimeMillis();
+
         Logger logger = context.getLogger();
         ActionReport report = context.getActionReport();
 
@@ -147,6 +152,7 @@ class ClusterCommandHelper {
         // not work so we can summarize our results.
         StringBuilder failedServerNames = new StringBuilder();
         StringBuilder succeededServerNames = new StringBuilder();
+        List<String> waitingForServerNames = new ArrayList<String>();
         String msg;
         ReportResult reportResult = new ReportResult();
         boolean failureOccurred = false;
@@ -186,6 +192,7 @@ class ClusterCommandHelper {
         // instance name, and hand it off to the threadpool.
         for (Server server : targetServers) {
             String iname = server.getName();
+            waitingForServerNames.add(iname);
 
             ParameterMap instanceParameterMap = new ParameterMap(map);
             // Set the instance name as the operand for the commnd
@@ -214,11 +221,26 @@ class ClusterCommandHelper {
         logger.fine(String.format("%s commands queued, waiting for responses",
                 command));
 
+        // Make sure we don't wait longer than the admin read timeout. Set
+        // our limit to be 3 seconds less.
+        long adminTimeout = RemoteAdminCommand.getReadTimeout() - 3000;
+        if (adminTimeout <= 0) {
+            // This should never be the case
+            adminTimeout = 57 * 1000;
+        }
+        logger.fine(String.format("Initial cluster command timeout: %d ms",
+                adminTimeout));
+
         // Now go get results from the response queue.
         for (int n = 0; n < nInstances; n++) {
+            long timeLeft = adminTimeout - (System.currentTimeMillis() - startTime);
+            if (timeLeft < 0) {
+                timeLeft = 0;
+            }
             CommandRunnable cmdRunnable = null;
             try {
-                cmdRunnable = responseQueue.take();
+                //cmdRunnable = responseQueue.take();
+                cmdRunnable = responseQueue.poll(timeLeft, TimeUnit.MILLISECONDS);
             } catch (InterruptedException e) {
                 // This thread has been interrupted. Abort
                 threadPool.shutdownNow();
@@ -232,7 +254,13 @@ class ClusterCommandHelper {
                 Thread.currentThread().interrupt();
                 break;
             }
+
+            if (cmdRunnable == null) {
+                // We've timed out.
+                break;
+            }
             String iname = cmdRunnable.getName();
+            waitingForServerNames.remove(iname);
             ActionReport instanceReport = cmdRunnable.getActionReport();
             logger.fine(String.format("Instance %d of %d (%s) has responded with %s",
                     n+1, nInstances, iname, instanceReport.getActionExitCode()));
@@ -278,6 +306,18 @@ class ClusterCommandHelper {
                 // No instance started. Failure
                 report.setActionExitCode(ExitCode.FAILURE);
             }
+        }
+
+        // Check for server that did not respond
+        if (!waitingForServerNames.isEmpty()) {
+            msg = Strings.get("cluster.command.instancesTimedOut",
+                    command, listToString(waitingForServerNames));
+            logger.warning(msg);
+            if (output.length() > 0) {
+                output.append(NL);
+            }
+            output.append(msg);
+            report.setActionExitCode(ExitCode.WARNING);
         }
 
         report.setMessage(output.toString());
@@ -329,7 +369,7 @@ class ClusterCommandHelper {
         // Distribute servers into serverTable
         int count = 0;
         for (Server server : original) {
-            String nodeName = server.getNode();
+            String nodeName = server.getNodeRef();
 
             List<Server> serverList = serverTable.get(nodeName);
             if (serverList == null) {
@@ -357,12 +397,20 @@ class ClusterCommandHelper {
         return optimized;
     }
 
-    private String serverListToString(List<Server> servers) {
+    private static String serverListToString(List<Server> servers) {
         StringBuilder sb = new StringBuilder();
         for (Server s : servers) {
-            sb.append(s.getNode() + "-" + s.getName() + " ");
+            sb.append(s.getNodeRef() + ":" + s.getName() + " ");
         }
-        return sb.toString();
+        return sb.toString().trim();
+    }
+
+    private static String listToString(List<String> slist) {
+        StringBuilder sb = new StringBuilder();
+        for (String s : slist) {
+            sb.append(s + " ");
+        }
+        return sb.toString().trim();
     }
 
     static public class ReportResult {

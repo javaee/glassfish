@@ -115,7 +115,7 @@
         type="org.glassfish.admingui:appTypeDropdown"
         priority="400"
         parentId="form"
-        content="ejb|org.glassfish.admingui.core.Strings|deploy.type.ejb"
+        content="jar|org.glassfish.admingui.core.Strings|deploy.type.ejb"
     />
      <integration-point
         id="full_edit_ejb"

@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -73,12 +73,6 @@
                     gf.redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                 />
             </sun:button>
-
-            <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" rendered="#{pageSession.showCancelButton}" text="$resource{i18n.button.Cancel}" >
-                <!command
-                    gf.redirect(page="#{parentPage}?configName=#{configName}");
-                />
-            </sun:button>
         </sun:panelGroup>
     </facet>
 
@@ -86,8 +80,8 @@
     <!-- PropertySheet .... -->
     <sun:propertySheet id="propertySheet">
         <!-- Text Field section -->
+#include "/common/shared/configNameSection.inc"
         <sun:propertySheetSection id="propertSectionTextField">
-
             <sun:property id="NativeLibraryPathPrefixProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.NativeLibraryPathPrefix}" helpText="$resource{i18nc.jvm.NativeLibraryPathPrefixHelp}">
                 <sun:textArea id="NativeLibraryPathPrefix" rows="$int{4}" columns="$int{75}" maxLength="#{sessionScope.fieldLengths['maxLength.jvm.NativeLibraryPathPrefix']}" text="#{pageSession.valueMap['nativeLibraryPathPrefix']}"/>
             </sun:property>

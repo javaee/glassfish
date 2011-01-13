@@ -126,6 +126,7 @@ public interface AdminService extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link DasConfig }
      */
     @Element("das-config")
+    @NotNull
     DasConfig getDasConfig();
 
     /**

@@ -54,6 +54,7 @@ import org.jvnet.hk2.component.*;
 import org.jvnet.hk2.config.*;
 import com.sun.logging.LogDomains;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.logging.Level;
@@ -89,7 +90,7 @@ public class GenericCreateCommand extends GenericCrudCommand implements AdminCom
         create = getAnnotation(targetMethod, Create.class);
         resolverType = create.resolver();
         try {
-            model = new GenericCommandModel(targetType, create.cluster(), create.i18n(),
+            model = new GenericCommandModel(targetType, true, create.cluster(), create.i18n(),
                     new LocalStringManagerImpl(targetType),
                     habitat.getComponent(DomDocument.class),
                     commandName, create.resolver(), create.decorator());
@@ -206,10 +207,9 @@ public class GenericCreateCommand extends GenericCrudCommand implements AdminCom
         } catch(TransactionFailure e) {
             String msg = localStrings.getLocalString(GenericCrudCommand.class,
                     "GenericCreateCommand.transaction_exception",
-                    "Exception while adding the new configuration {0}",
+                    "Exception while adding the new configuration : {0} ",
                     getRootCauseMessage(e));
-            logger.log(Level.SEVERE, msg, e);
-            result.failure(logger, msg, e);
+            result.failure(logger, msg);
         }
     }
 

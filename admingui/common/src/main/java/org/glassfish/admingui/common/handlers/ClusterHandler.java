@@ -61,11 +61,12 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-
+import java.util.logging.Level;
 import java.util.Map;
 import java.util.List;
-import javax.faces.context.FacesContext;
 import org.glassfish.admingui.common.util.GuiUtil;
+import org.glassfish.admingui.common.util.RestUtil;
+import org.glassfish.api.admin.InstanceState;
 
 public class ClusterHandler {
 
@@ -85,28 +86,51 @@ public class ClusterHandler {
         output = {
             @HandlerOutput(name = "numRunning", type = String.class),
             @HandlerOutput(name = "numNotRunning", type = String.class),
-            @HandlerOutput(name = "status", type = String.class)
+            @HandlerOutput(name = "numRequireRestart", type = String.class),
+            @HandlerOutput(name = "disableStart", type = Boolean.class),
+            @HandlerOutput(name = "disableStop", type = Boolean.class),
+            @HandlerOutput(name = "disableEjb", type = Boolean.class)
         })
     public static void getClusterStatusSummary(HandlerContext handlerCtx) {
         Map statusMap = (Map) handlerCtx.getInputValue("statusMap");
         int running=0;
         int notRunning=0;
+        int requireRestart=0;
+        int unknown = 0;
         try{
-
             for (Iterator it=statusMap.values().iterator(); it.hasNext(); ) {
                 Object value = it.next();
-                if (value.toString().equals(RUNNING)){
+                if (value.toString().equals(InstanceState.StateType.RUNNING.getDescription())){
                     running++;
-                }else{
+                }else
+                if (value.toString().equals(InstanceState.StateType.NOT_RUNNING.getDescription())){
                     notRunning++;
+                }else
+                if (value.toString().equals(InstanceState.StateType.RESTART_REQUIRED.getDescription())){
+                    requireRestart++;
+                }else {
+                    unknown++;
+                    GuiUtil.getLogger().severe("Unknown Status");
                 }
             }
 
-            handlerCtx.setOutputValue( "numRunning" , GuiUtil.getMessage(CLUSTER_RESOURCE_NAME, "cluster.number.instance.running", new String[]{""+running}));
-            handlerCtx.setOutputValue( "numNotRunning" , GuiUtil.getMessage(CLUSTER_RESOURCE_NAME, "cluster.number.instance.notRunning", new String[]{""+notRunning}));
+            handlerCtx.setOutputValue("disableEjb", (notRunning > 0) ? false :true);  //refer to bug#6342445
+            handlerCtx.setOutputValue("disableStart", (notRunning > 0) ? false :true);
+            handlerCtx.setOutputValue("disableStop", ( (running+requireRestart) > 0) ? false :true);
+            handlerCtx.setOutputValue( "numRunning" , (running > 0) ? 
+                GuiUtil.getMessage(CLUSTER_RESOURCE_NAME, "cluster.number.instance.running", new String[]{""+running, GuiUtil.getCommonMessage("status.image.RUNNING")} ) : "");
+
+            handlerCtx.setOutputValue( "numNotRunning" , (notRunning > 0) ? 
+                GuiUtil.getMessage(CLUSTER_RESOURCE_NAME, "cluster.number.instance.notRunning", new String[]{""+notRunning , GuiUtil.getCommonMessage("status.image.NOT_RUNNING")}) : "");
+
+            handlerCtx.setOutputValue( "numRequireRestart" , (requireRestart > 0) ?
+                GuiUtil.getMessage(CLUSTER_RESOURCE_NAME, "cluster.number.instance.requireRestart", new String[]{""+requireRestart, GuiUtil.getCommonMessage("status.image.REQUIRES_RESTART")}) : "");
         }catch(Exception ex){
-            //Log exception ?
-             handlerCtx.setOutputValue("status", GuiUtil.getMessage(CLUSTER_RESOURCE_NAME, "cluster.status.unknown"));
+            handlerCtx.setOutputValue("numRunning", GuiUtil.getMessage(CLUSTER_RESOURCE_NAME, "cluster.status.unknown"));
+            GuiUtil.getLogger().info(GuiUtil.getCommonMessage("log.error.getClusterStatusSummary") + ex.getLocalizedMessage());
+            if (GuiUtil.getLogger().isLoggable(Level.FINE)){
+                ex.printStackTrace();
+            }
          }
      }
 
@@ -121,12 +145,12 @@ public class ClusterHandler {
 
         String prefix = GuiUtil.getSessionValue("REST_URL") + "/servers/server/";
         for (Map oneRow : rows) {
-            String instanceName = (String) oneRow.get("Name");
+            String instanceName = (String) oneRow.get("encodedName");
             String endpoint = GuiUtil.getSessionValue("REST_URL") + "/servers/server/instanceName" ;
             Map attrsMap = new HashMap();
-            attrsMap.put("lbWeight", oneRow.get("LbWeight"));
+            attrsMap.put("lbWeight", oneRow.get("lbWeight"));
             try{
-                response = RestApiHandlers.restRequest( prefix+instanceName , attrsMap, "post" , null, false);
+                response = RestUtil.restRequest( prefix+instanceName , attrsMap, "post" , null, false);
             }catch (Exception ex){
                 GuiUtil.getLogger().severe(
                         GuiUtil.getCommonMessage("LOG_SAVE_INSTANCE_WEIGHT_ERROR" ,  new Object[]{prefix+instanceName, attrsMap}));
@@ -169,7 +193,9 @@ public class ClusterHandler {
                 }
             }
             try{
-                RestApiHandlers.restRequest( prefix + clusterName + "/" + action, null, "post" ,null, false);
+                String endpoint = prefix + clusterName + "/" + action;
+                GuiUtil.getLogger().info(endpoint);
+                RestUtil.restRequest( endpoint, null, "post" ,null, false);
             }catch (Exception ex){
                 GuiUtil.prepareAlert("error", GuiUtil.getMessage("msg.Error"), ex.getMessage());
                 return;
@@ -197,7 +223,9 @@ public class ClusterHandler {
                 }
             }else{
                 try {
-                   RestApiHandlers.restRequest(prefix + instanceName + "/" + action , null, "post" ,null, false);
+                    String endpoint = prefix + instanceName + "/" + action;
+                    GuiUtil.getLogger().info(endpoint);
+                    RestUtil.restRequest(endpoint , null, "post" ,null, false);
                 } catch (Exception ex){
                     String endpoint=prefix + instanceName + "/" + action;
                     GuiUtil.getLogger().severe(
@@ -211,7 +239,7 @@ public class ClusterHandler {
             try {
                 Thread.sleep(5000);
             } catch (InterruptedException e) {
-                //e.printStackTrace();
+                //noop.
             }
         }
      }
@@ -229,16 +257,15 @@ public class ClusterHandler {
             nodeInstanceMap=new HashMap();
         }
         List<Map> rows =  (List<Map>) handlerCtx.getInputValue("rows");
-        List errorInstances = new ArrayList();
         Map response = null;
         String prefix = GuiUtil.getSessionValue("REST_URL") + "/nodes/node/";
 
         for (Map oneRow : rows) {
-            int code = 500;
             String nodeName = (String) oneRow.get("name");
-            if (nodeName.equals("localhost")){
+            final String localhostNodeName = (String) GuiUtil.getSessionValue("localhostNodeName");
+            if (nodeName.equals(localhostNodeName)){
                 GuiUtil.prepareAlert("error",  GuiUtil.getMessage("msg.Error"),
-                        GuiUtil.getMessage(CLUSTER_RESOURCE_NAME, "node.error.removeLocalhost"));
+                        GuiUtil.getMessage(CLUSTER_RESOURCE_NAME, "node.error.removeLocalhost" , new String[]{localhostNodeName}));
                 return;
             }
             List instancesList = (List)nodeInstanceMap.get(nodeName);
@@ -249,7 +276,9 @@ public class ClusterHandler {
             }
             if(action.equals("delete-node")){
                 try{
-                       response = RestApiHandlers.restRequest(prefix + nodeName + "/" + action + ".json" , null, "post" ,null, false);
+                    String endpoint = prefix + nodeName + "/" + action;
+                    GuiUtil.getLogger().info(endpoint);
+                    response = RestUtil.restRequest(endpoint, null, "post",null, false);
                 }catch (Exception ex){
                     GuiUtil.getLogger().severe(
                             GuiUtil.getCommonMessage("LOG_NODE_ACTION_ERROR", new Object[]{prefix + nodeName, action , "null"}));
@@ -276,13 +305,23 @@ public class ClusterHandler {
             attrsMap.put("name", oneInstance.get("name"));
             attrsMap.put("cluster", clusterName);
             attrsMap.put("node", oneInstance.get("node"));
-            //ignore for now till issue# 12646 is fixed
-            //attrsMap.put("weight", oneInstance.get("weight"));
             try{
-                response = RestApiHandlers.restRequest( endpoint , attrsMap, "post" ,null, false);
+                GuiUtil.getLogger().info(endpoint);
+                GuiUtil.getLogger().info(attrsMap.toString());
+                response = RestUtil.restRequest( endpoint , attrsMap, "post" ,null, false);
+                //set lb weight
+                String wt = (String) oneInstance.get("weight");
+                if ( !GuiUtil.isEmpty(wt)) {
+                    String encodedInstanceName = URLEncoder.encode((String)oneInstance.get("name"), "UTF-8");
+                    String ep = GuiUtil.getSessionValue("REST_URL") + "/servers/server/" + encodedInstanceName ;
+                    Map wMap = new HashMap();
+                    wMap.put("lbWeight", wt);
+                    response = RestUtil.restRequest( ep , wMap, "post" , null, false);
+                }
             }catch (Exception ex){
                 GuiUtil.getLogger().severe(
-                    GuiUtil.getCommonMessage("LOG_CREATE_CLUSTER" ,  new Object[]{endpoint, attrsMap}));
+                    GuiUtil.getCommonMessage("LOG_CREATE_CLUSTER_INSTANCE" ,  new Object[]{clusterName,endpoint, attrsMap}));
+                GuiUtil.prepareException(handlerCtx, ex);
             }
         }
 
@@ -331,7 +370,9 @@ public class ClusterHandler {
     // If successfully deleted the instance, null will be returned, otherwise, return the error string to be displayed to user.
     private static String deleteInstance(String instanceName){
         try{
-            RestApiHandlers.restRequest( GuiUtil.getSessionValue("REST_URL") + "/servers/server/" + instanceName + "/delete-instance", null ,"post", null, false );
+            String endpoint = GuiUtil.getSessionValue("REST_URL") + "/servers/server/" + instanceName + "/delete-instance";
+            GuiUtil.getLogger().info(endpoint);
+            RestUtil.restRequest( endpoint, null,"post", null, false );
             return null;
         }catch(Exception ex){
             String endpoint = GuiUtil.getSessionValue("REST_URL") + "/servers/server/" + instanceName + "/delete-instance\n";
@@ -368,7 +409,7 @@ public class ClusterHandler {
         }
         String endpoint = GuiUtil.getSessionValue("REST_URL")+"/list-instances";
         try{
-            Map responseMap = RestApiHandlers.restRequest( endpoint , attrs, "GET" , handlerCtx, false);
+            Map responseMap = RestUtil.restRequest( endpoint , attrs, "GET" , handlerCtx, false);
             Map extraPropertiesMap = (Map)((Map)responseMap.get("data")).get("extraProperties");
             if (extraPropertiesMap != null){
                 List<Map> instanceList = (List)extraPropertiesMap.get("instanceList");
@@ -389,108 +430,6 @@ public class ClusterHandler {
         handlerCtx.setOutputValue("listEmpty", instances.isEmpty());
     }
 
-    @Handler(id = "gf.getInstanceInfo",
-        input = {
-            @HandlerInput(name="instanceName", type=String.class, required=true)
-        },
-        output = {
-            @HandlerOutput(name = "info", type = Map.class)
-        })
-    public static void getInstanceInfoHandler(HandlerContext handlerCtx) {
-        String instanceName = (String)handlerCtx.getInputValue("instanceName");
-
-        handlerCtx.setOutputValue("info", getInstanceInfo(instanceName));
-    }
-
-    public static Map<String, Object> getInstanceInfo(final String instanceName) {
-        Map<String, Object> info = new HashMap<String, Object>();
-        final String REST_URL = (String)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("REST_URL");
-        final String instanceUrl = REST_URL + "/servers/server/" + instanceName;
-        Map<String, Object> result = RestApiHandlers.restRequest(instanceUrl, null, "get", null, false);
-        String instanceConfig = (String)((Map)getExtraPropertiesEntry(result, "entity")).get("configRef");
-
-        // Server status
-        String serverStatus = "RUNNING";
-        if (!"server".equals(instanceName)) {
-            result = RestApiHandlers.restRequest(REST_URL+"/list-instances", new HashMap<String, Object>() {{ put ("id", instanceName); }}, "get", null, false);
-            List instanceList = (List)getExtraPropertiesEntry(result, "instanceList");
-            serverStatus = (String) ((Map)instanceList.get(0)).get("status");
-        }
-
-        // Config object
-        String configUrl = REST_URL+ "/configs/config/" + instanceConfig;
-        result = RestApiHandlers.restRequest(configUrl, null, "get", null, false);
-        Map<String, Object> config = (Map<String, Object>)((Map<String, Object>)result.get("data")).get("extraProperties");
-
-        // Server version
-        result = RestApiHandlers.restRequest(configUrl + "/java-config/generate-jvm-report", null, "post", null, false);
-        Map<String, String> jvmReport = buildExtraProperties((String)((Map<String, Object>)result.get("data")).get("message"));
-        String version = (String)jvmReport.get("glassfish.version");
-        String configRoot = (String)jvmReport.get("com.sun.aas.configRoot");
-
-        // Debug
-        result = RestApiHandlers.restRequest(configUrl + "/java-config", null, "get", null, false);
-        Map<String, String> entity = (Map)getExtraPropertiesEntry(result, "entity");
-
-        // http ports
-        result = RestApiHandlers.restRequest(configUrl + "/network-config/network-listeners/network-listener", null, "get", null, false);
-        Map<String, String> children = (Map<String, String>)getExtraPropertiesEntry(result, "childResources");
-        if ((children != null) && (!children.isEmpty())) {
-            List<String> httpPorts = new ArrayList<String>();
-            for (String child : children.values()) {
-                result = RestApiHandlers.restRequest(child, null, "get", null, false);
-                Map<String, String> iiopListener = (Map<String, String>)getExtraPropertiesEntry(result, "entity");
-                httpPorts.add(iiopListener.get("port"));
-            }
-            info.put("httpPorts", httpPorts);
-        }
-
-        //iiop ports
-        result = RestApiHandlers.restRequest(configUrl + "/iiop-service/iiop-listener", null, "get", null, false);
-        children = (Map<String, String>)getExtraPropertiesEntry(result, "childResources");
-        if ((children != null) && (!children.isEmpty())) {
-            List<String> iiopPorts = new ArrayList<String>();
-            for (String child : children.values()) {
-                result = RestApiHandlers.restRequest(child, null, "get", null, false);
-                Map<String, String> iiopListener = (Map<String, String>)getExtraPropertiesEntry(result, "entity");
-                iiopPorts.add(iiopListener.get("port"));
-            }
-            info.put("iiopPorts", iiopPorts);
-        }
-
-        info.put("config", instanceConfig);
-        info.put("status", serverStatus);
-        info.put("version", version);
-        info.put("configRoot", configRoot);
-        info.put("debugEnabled", (String)entity.get("debugEnabled"));
-        return info;
-    }
-
-    protected static Object getExtraPropertiesEntry(Map<String, Object> responseMap, String epKey) {
-        Map<String, Object> data = (Map<String, Object>)responseMap.get("data");
-        Map<String, Object> ep =  (Map<String, Object>)data.get("extraProperties");
-        return ep.get(epKey);
-    }
-
-    private static Map<String, String> buildExtraProperties(String jvmReport) {
-        final String SEP = System.getProperty("line.separator");
-        Map<String, String> report = new HashMap<String, String>();
-        String lines[] = jvmReport.split(SEP);
-        for (String line : lines) {
-            int valueSepIdx = line.indexOf("=");
-            if (valueSepIdx == -1) {
-                valueSepIdx = line.indexOf(":");
-            }
-            if (valueSepIdx > -1) {
-                String key = line.substring(0, valueSepIdx).trim();
-                String value = line.substring(valueSepIdx+1).trim();
-                report.put(key, value);
-            }
-        }
-
-        return report;
-    }
-
     @Handler(id = "gf.getClusterNameForInstance",
         input = {
             @HandlerInput(name="instanceName", type=String.class, required=true)},
@@ -500,10 +439,10 @@ public class ClusterHandler {
 
         String instanceName = (String) handlerCtx.getInputValue("instanceName");
         try{
-            List<String> clusterList = new ArrayList(RestApiHandlers.getChildMap(GuiUtil.getSessionValue("REST_URL")+"/clusters/cluster").keySet());
+            List<String> clusterList = new ArrayList(RestUtil.getChildMap(GuiUtil.getSessionValue("REST_URL")+"/clusters/cluster").keySet());
             for(String oneCluster : clusterList){
                 String encodedClusterName = URLEncoder.encode(oneCluster, "UTF-8");
-                List<String> serverRefs = new ArrayList (RestApiHandlers.getChildMap(GuiUtil.getSessionValue("REST_URL")+ "/clusters/cluster/" +
+                List<String> serverRefs = new ArrayList (RestUtil.getChildMap(GuiUtil.getSessionValue("REST_URL")+ "/clusters/cluster/" +
                         URLEncoder.encode(oneCluster, "UTF-8") + "/server-ref").keySet());
                 if (serverRefs.contains(instanceName)){
                     handlerCtx.setOutputValue("clusterName", oneCluster);
@@ -512,8 +451,50 @@ public class ClusterHandler {
             }
         }catch(Exception ex){
             GuiUtil.getLogger().info(GuiUtil.getCommonMessage("LOG_GET_CLUSTERNAME_FOR_INSTANCE"));
-            ex.printStackTrace();
+            if (GuiUtil.getLogger().isLoggable(Level.FINE)){
+                ex.printStackTrace();
+            }
         }
+    }
+
+
+    @Handler(id = "gf.convertNodePswd",
+        input = {
+            @HandlerInput(name="pswd", type=String.class, required=true)},
+        output = {
+            @HandlerOutput(name = "pswdText", type = String.class),
+            @HandlerOutput(name = "pswdAlias", type = String.class),
+            @HandlerOutput(name = "psSelected", type = String.class)})
+    public static void convertNodePswd(HandlerContext handlerCtx) {
+
+        String pswd = (String) handlerCtx.getInputValue("pswd");
+        if (GuiUtil.isEmpty(pswd)){
+            handlerCtx.setOutputValue("psSelected", 1);
+            return;
+        }
+        if (pswd.startsWith("${ALIAS=") && pswd.endsWith("}")){
+            String pswdAlias = pswd.substring(8, pswd.length()-1);
+            handlerCtx.setOutputValue("pswdAlias", pswdAlias);
+            handlerCtx.setOutputValue("psSelected", 3);
+            return;
+        }
+        handlerCtx.setOutputValue("psSelected", 2);
+        handlerCtx.setOutputValue("pswdText", pswd);
+    }
+
+//gf.convertToAlias(in="#{pageSession.pswdAlias}" out="#{requestScope.tmpv}");
+    @Handler(id = "gf.convertToAlias",
+        input = {
+            @HandlerInput(name="in", type=String.class, required=true)},
+        output = {
+            @HandlerOutput(name = "out", type = String.class)})
+    public static void convertToAlias(HandlerContext handlerCtx) {
+        String in = (String) handlerCtx.getInputValue("in");
+        String out = null;
+        if (! GuiUtil.isEmpty(in)){
+            out = "${ALIAS="+in+"}";
+        }
+        handlerCtx.setOutputValue("out",  out);
     }
 
     public static final String CLUSTER_RESOURCE_NAME = "org.glassfish.cluster.admingui.Strings";

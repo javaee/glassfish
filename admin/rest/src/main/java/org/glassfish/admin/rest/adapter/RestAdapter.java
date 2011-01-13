@@ -42,6 +42,7 @@ package org.glassfish.admin.rest.adapter;
 
 import com.sun.enterprise.config.serverbeans.AdminService;
 import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.SecureAdmin;
 import com.sun.enterprise.module.common_impl.LogHelper;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.v3.admin.AdminAdapter;
@@ -68,6 +69,7 @@ import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
 
 import java.net.HttpURLConnection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -77,7 +79,7 @@ import java.util.StringTokenizer;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
-import org.glassfish.admin.rest.CliFailureException;
+import org.glassfish.admin.rest.Constants;
 import org.glassfish.admin.rest.provider.ActionReportResultHtmlProvider;
 import org.glassfish.admin.rest.provider.ActionReportResultJsonProvider;
 import org.glassfish.admin.rest.provider.ActionReportResultXmlProvider;
@@ -151,6 +153,7 @@ public abstract class RestAdapter extends HttpHandler implements Adapter, PostCo
         LogHelper.getDefaultLogger().finer("Received resource request: " + req.getRequestURI());
 
         try {
+            res.setCharacterEncoding(Constants.ENCODING);
             if (!latch.await(20L, TimeUnit.SECONDS)) {
                 String msg = localStrings.getLocalString("rest.adapter.server.wait",
                         "Server cannot process this command at this time, please wait");
@@ -211,8 +214,6 @@ public abstract class RestAdapter extends HttpHandler implements Adapter, PostCo
             String msg = localStrings.getLocalString("rest.adapter.auth.error", "Error authenticating");
             reportError(req, res, HttpURLConnection.HTTP_UNAUTHORIZED, msg); //authentication error
             return;
-        } catch (CliFailureException e) {
-            reportError(req, res, HttpURLConnection.HTTP_INTERNAL_ERROR, e.getMessage());
         } catch (Exception e) {
             StringWriter result = new StringWriter();
             PrintWriter printWriter = new PrintWriter(result);
@@ -243,7 +244,7 @@ public abstract class RestAdapter extends HttpHandler implements Adapter, PostCo
     /**
      *	<p> This method should return <code>true</code> if there is an
      *	    <em>anonymous user</em>.  It should also set an attribute called
-     *	    "<code>restUser</code>" on the <code>GrizzlyRequest</code>
+     *	    "<code>restUser</code>" on the <code>Request</code>
      *	    containing the username of the anonymous user.  If the anonymous
      *	    user is not valid, then this method should return
      *	    <code>false</code>.</p>
@@ -309,9 +310,27 @@ public abstract class RestAdapter extends HttpHandler implements Adapter, PostCo
         String password = up.length > 1 ? up[1] : "";
         AdminAccessController authenticator = habitat.getByContract(AdminAccessController.class);
         if (authenticator != null) {
-            return authenticator.loginAsAdmin(user, password, as.getAuthRealmName());
+            return authenticator.loginAsAdmin(user, password, as.getAuthRealmName(), req.getRemoteHost(),
+                    getAuthRelatedHeaders(req), req.getUserPrincipal()) != AdminAccessController.Access.NONE;
         }
         return true;   //if the authenticator is not available, allow all access - per Jerome
+    }
+
+    /**
+     * Extract authentication related headers from Grizzly request.
+     * This headers enables us to authenticate a request coming from DAS without a password.
+     * The headers will be present if secured admin is not turned on and a request is sent from DAS to an instance.
+     * @param req
+     * @return Authentication related headers
+     */
+    private Map<String, String> getAuthRelatedHeaders(Request req) {
+        Map<String, String> authRelatedHeaders = Collections.EMPTY_MAP;
+        String adminIndicatorHeader = req.getHeader(SecureAdmin.Util.ADMIN_INDICATOR_HEADER_NAME);
+        if(adminIndicatorHeader != null) {
+            authRelatedHeaders = new HashMap<String, String>(1);
+            authRelatedHeaders.put(SecureAdmin.Util.ADMIN_INDICATOR_HEADER_NAME, adminIndicatorHeader);
+        }
+        return authRelatedHeaders;
     }
 
 
@@ -320,7 +339,7 @@ public abstract class RestAdapter extends HttpHandler implements Adapter, PostCo
      * the connection header, the underlying socket transport will be closed
      */
 //    @Override
-//    public void afterService(GrizzlyRequest req, GrizzlyResponse res) throws Exception {
+//    public void afterService(Request req, Response res) throws Exception {
 //
 //    }
 
@@ -420,7 +439,7 @@ public abstract class RestAdapter extends HttpHandler implements Adapter, PostCo
         return type;
     }
 
-//    private ActionReport getClientActionReport(GrizzlyRequest req) {
+//    private ActionReport getClientActionReport(Request req) {
 //        ActionReport report=null;
 //        String requestURI = req.getRequestURI();
 //        String acceptedMimeType = getAcceptedMimeType(req);
@@ -455,6 +474,7 @@ public abstract class RestAdapter extends HttpHandler implements Adapter, PostCo
             // have time at the moment.  jdlee 8/11/10
             RestActionReporter report = new RestActionReporter(); //getClientActionReport(req);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setActionDescription("Error");
             report.setMessage(msg);
             BaseProvider<ActionReportResult> provider;
             String type = getAcceptedMimeType(req);
@@ -465,7 +485,7 @@ public abstract class RestAdapter extends HttpHandler implements Adapter, PostCo
                 res.setContentType("application/json");
                 provider = new ActionReportResultJsonProvider();
             } else {
-                res.setContentType("test/html");
+                res.setContentType("text/html");
                 provider = new ActionReportResultHtmlProvider();
             }
             res.setStatus(statusCode);

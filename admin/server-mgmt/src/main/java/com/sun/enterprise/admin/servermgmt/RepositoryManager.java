@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -49,36 +49,27 @@ package com.sun.enterprise.admin.servermgmt;
 import com.sun.enterprise.admin.util.TokenValue;
 import com.sun.enterprise.admin.util.TokenValueSet;
 import com.sun.enterprise.admin.util.LineTokenReplacer;
+import com.sun.enterprise.util.*;
 import com.sun.enterprise.util.io.FileUtils;
-import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.admin.servermgmt.pe.PEFileLayout;
-//import com.sun.enterprise.admin.servermgmt.pe.PEInstancesManager;
 import com.sun.enterprise.admin.servermgmt.pe.PEDomainsManager;
 import com.sun.enterprise.util.i18n.StringManager;
 
 import com.sun.enterprise.admin.util.AdminConstants;
-import com.sun.enterprise.security.auth.realm.file.FileRealm;
-import com.sun.enterprise.security.auth.realm.BadRealmException;
-import com.sun.enterprise.security.auth.realm.NoSuchRealmException;
-import com.sun.enterprise.security.util.IASSecurityException;
 import com.sun.enterprise.security.store.PasswordAdapter;
 
 //import com.sun.enterprise.admin.common.Status;
 //import com.sun.enterprise.util.system.GFSystem;
-import java.io.BufferedReader;
+import java.io.*;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FilenameFilter;
-import java.io.IOException;
+import java.nio.charset.Charset;
+import java.security.SecureRandom;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.logging.Level;
 
 import com.sun.enterprise.util.zip.ZipFile;
 
@@ -93,8 +84,7 @@ import com.sun.enterprise.util.zip.ZipFile;
 //import javax.jms.JMSException;
 
 import com.sun.enterprise.util.SystemPropertyConstants;
-import com.sun.enterprise.util.OS;
-import com.sun.enterprise.util.ProcessExecutor;
+import org.glassfish.internal.api.SharedSecureRandom;
 //import com.sun.enterprise.util.ExecException;
 
 /**
@@ -637,17 +627,94 @@ public class RepositoryManager extends MasterPasswordFileManager {
      * Runtime uses.
     */
     private void modifyKeyFile(File keyFile, String user, String password) throws
-    IOException, BadRealmException, IASSecurityException, 
-        NoSuchRealmException
+        IOException
     {
         final String keyFilePath = keyFile.getAbsolutePath();
-        final FileRealm fileRealm = new FileRealm(keyFilePath);       
+/*        final FileRealm fileRealm = new FileRealm(keyFilePath);
         final String[] group = 
             new String[]{AdminConstants.DOMAIN_ADMIN_GROUP_NAME};
         fileRealm.addUser(user, password, group);
         fileRealm.writeKeyFile(keyFilePath);
+*/
+        writeKeyFile(user, password, keyFilePath);
         appendKeyFileComment(keyFilePath);
     }
+
+
+    private static final String FIELD_SEP=";";
+    private static final String GROUP_SEP=",";
+    private static final String algoSHA256 = "SHA-256";
+    // Number of bytes of salt for SSHA
+    private static final int SALT_SIZE=8;
+
+    /**
+     * Write keyfile data out to disk. The file generation is sychronized
+     * within this class only, caller is responsible for any other
+     * file locking or revision management as deemed necessary.
+     *
+     * @param filename The name of the output file to create.
+     * @throws IOException If write fails.
+     *
+     */
+    public void writeKeyFile(String user, String password, String filename)
+         throws IOException
+    {
+            FileOutputStream out = null;
+            try {
+                out = new FileOutputStream(filename);
+
+                String entry = encodeUser(user, password);
+                out.write(entry.getBytes());
+            } catch (Exception e) {
+//                String msg = sm.getString("filerealm.badwrite", e.toString());
+                throw new IOException(e);
+            } finally {
+                if (out != null) {
+                    out.close();
+                }
+            }
+    }
+
+    private static String encodeUser(String name, String pwd)  throws IOException
+    {
+        //Copy the password to another reference before storing it to the
+        //instance field.
+        byte[] pwdBytes = null;
+
+        try {
+            pwdBytes = Utility.convertCharArrayToByteArray(pwd.toCharArray(), Charset.defaultCharset().displayName());
+        } catch(Exception ex) {
+            throw new IOException(ex);
+        }
+
+        SecureRandom rng= SharedSecureRandom.get();
+        byte[] salt=new byte[SALT_SIZE];
+        rng.nextBytes(salt);
+
+        byte[] hash = SSHA.compute(salt, pwdBytes, algoSHA256);
+
+        StringBuffer sb = new StringBuffer();
+
+        sb.append(name);
+        sb.append(FIELD_SEP);
+
+        String ssha = SSHA.encode(salt, hash, algoSHA256);
+
+        sb.append(ssha);
+        sb.append(FIELD_SEP);
+
+        String[] groups = new String[]{AdminConstants.DOMAIN_ADMIN_GROUP_NAME};
+        for (int grp = 0; grp < groups.length; grp++) {
+            if (grp > 0) {
+                sb.append(GROUP_SEP);
+            }
+            sb.append(groups[grp]);
+        }
+        sb.append("\n");
+        return sb.toString();
+    }
+
+
     
     private void appendKeyFileComment(String fileName)
     {        

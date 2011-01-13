@@ -60,6 +60,8 @@ import org.glassfish.quality.ToDo;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Max;
+import javax.validation.constraints.Pattern;
+import javax.validation.Payload;
 
 /**
  *
@@ -74,7 +76,12 @@ import javax.validation.constraints.Max;
  @RestRedirect(opType = RestRedirect.OpType.POST, commandName = "create-jms-host"),
  @RestRedirect(opType = RestRedirect.OpType.DELETE, commandName = "delete-jms-host")
 })
-public interface JmsHost extends ConfigBeanProxy, Injectable, PropertyBag {
+public interface JmsHost extends ConfigBeanProxy, Injectable, PropertyBag, Payload {
+
+    final static String PORT_PATTERN = "\\$\\{[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*\\}"
+            + "|[1-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9][0-9][0-9]"
+            + "|[1-5][0-9][0-9][0-9][0-9]|6[0-4][0-9][0-9][0-9]"
+            + "|65[0-4][0-9][0-9]|655[0-2][0-9]|6553[0-5]";
 
     /**
      * Gets the value of the name property.
@@ -122,8 +129,9 @@ public interface JmsHost extends ConfigBeanProxy, Injectable, PropertyBag {
      *         {@link String }
      */
     @Attribute (defaultValue="7676")
-    @Min(value=1)
-    @Max(value=65535)
+    @Pattern(regexp=PORT_PATTERN,
+            message="{port-pattern}",
+            payload=JmsHost.class)   
     String getPort();
 
     /**
@@ -141,7 +149,7 @@ public interface JmsHost extends ConfigBeanProxy, Injectable, PropertyBag {
      *
      * @return true or false
      */
-    @Attribute(defaultValue="false", dataType=Boolean.class)
+    @Attribute(defaultValue="true", dataType=Boolean.class)
     String getLazyInit();
 
     /**

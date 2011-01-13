@@ -49,6 +49,7 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.CommandLock;
 import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.config.ReferenceContainer;
@@ -71,6 +72,7 @@ import java.util.LinkedList;
 @Service(name = "list-configs")
 @I18n("list.configs.command")
 @Scoped(PerLookup.class)
+@CommandLock(CommandLock.LockType.NONE)
 @ExecuteOn({RuntimeType.DAS})
 @TargetType(value={CommandTarget.CLUSTER,
 CommandTarget.CONFIG, CommandTarget.DAS, CommandTarget.DOMAIN, CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTERED_INSTANCE})
@@ -130,7 +132,15 @@ public final class ListConfigsCommand implements AdminCommand {
         if (!StringUtils.ok(target))
             return allConfigs.getConfig();
 
+        Config c = domain.getConfigNamed(target);
+        if (c != null) {
+            List<Config> cl = new LinkedList<Config>();
+            cl.add(c);
+            return cl;
+        }
+
         ReferenceContainer rc = domain.getReferenceContainerNamed(target);
+        if (rc == null) return null;
 
         if (rc.isServer()) {
             Server s =((Server) rc);
@@ -144,8 +154,7 @@ public final class ListConfigsCommand implements AdminCommand {
             cl.add(domain.getConfigNamed(cluster.getConfigRef()));
             return cl;
         }
-        else
-            return null;
+        else return null;
     }
 
 }

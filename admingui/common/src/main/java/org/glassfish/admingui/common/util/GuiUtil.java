@@ -69,6 +69,7 @@ import java.net.URLEncoder;
 import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
+import java.io.File;
 
 import java.io.UnsupportedEncodingException;
 import javax.faces.context.ExternalContext;
@@ -80,7 +81,6 @@ import org.glassfish.deployment.client.DeploymentFacility;
 import org.glassfish.deployment.client.ServerConnectionIdentifier;
 
 import org.jvnet.hk2.component.Habitat;
-import org.glassfish.admingui.common.handlers.RestApiHandlers;
 
 /**
  *
@@ -134,11 +134,7 @@ public class GuiUtil {
     private static String formatMessage(String msg, Object[] args){
         if (args != null) {
             MessageFormat mf = new MessageFormat(msg);
-            Object[] mfArgs = new Object[args.length];
-            for (int i = 0; i < args.length; i++) {
-                mfArgs[i] = getMessage(args[i].toString());
-            }
-            msg = mf.format(mfArgs);
+            msg = mf.format(args);
         }
         return msg;
     }
@@ -148,7 +144,7 @@ public class GuiUtil {
 
         Logger logger = GuiUtil.getLogger();
         if (logger.isLoggable(Level.INFO)) {
-            logger.log(Level.FINE,  GuiUtil.getCommonMessage("LOG_INIT_SESSION"));
+            logger.log(Level.INFO,  GuiUtil.getCommonMessage("LOG_INIT_SESSION"));
         }
         ExternalContext externalCtx = FacesContext.getCurrentInstance().getExternalContext();
         Map<String, Object> sessionMap = externalCtx.getSessionMap();
@@ -156,25 +152,39 @@ public class GuiUtil {
         Object request = externalCtx.getRequest();
         if (request instanceof javax.servlet.ServletRequest){
             ServletRequest srequest = (ServletRequest) request;
-            String serverName = (String) sessionMap.get(AdminConsoleAuthModule.REST_SERVER_NAME);
-	    if (serverName == null) {
+            sessionMap.put("hostName", srequest.getServerName());
+            String restServerName = (String) sessionMap.get(AdminConsoleAuthModule.REST_SERVER_NAME);
+	    if (restServerName == null) {
 		throw new IllegalStateException("REST Server Name not set!");
 	    }
             int port = (Integer) sessionMap.get(AdminConsoleAuthModule.REST_SERVER_PORT);
 	    sessionMap.put("requestIsSecured", srequest.isSecure());
-	    sessionMap.put("REST_URL", "http" + (srequest.isSecure() ? "s" : "") + "://" + serverName + ":" + port + "/management/domain");
-	    sessionMap.put("MONITOR_URL", "http" + (srequest.isSecure() ? "s" : "") + "://" + serverName + ":" + port + "/monitoring/domain");
+	    sessionMap.put("REST_URL", "http" + (srequest.isSecure() ? "s" : "") + "://" + restServerName + ":" + port + "/management/domain");
+	    sessionMap.put("MONITOR_URL", "http" + (srequest.isSecure() ? "s" : "") + "://" + restServerName + ":" + port + "/monitoring/domain");
         } else {
             //should never get here.
-            sessionMap.put("serverName", "");
+            sessionMap.put("hostName", "");
         }
-        sessionMap.put("domainName", RestUtil.getPropValue((String)(sessionMap.get("REST_URL")), "administrative.domain.name", null));
+        final String domainName = RestUtil.getPropValue((String) (sessionMap.get("REST_URL")), "administrative.domain.name", null);
+        sessionMap.put("domainName", domainName);
+        sessionMap.put("localhostNodeName", "localhost-"+domainName);
         sessionMap.put("_noNetwork", (System.getProperty("com.sun.enterprise.tools.admingui.NO_NETWORK", "false").equals("true"))? Boolean.TRUE: Boolean.FALSE);
         sessionMap.put("supportCluster", Boolean.FALSE);
-        Map version = RestApiHandlers.restRequest(sessionMap.get("REST_URL")+"/version", null, "GET" ,null, false);
+        Map version = RestUtil.restRequest(sessionMap.get("REST_URL")+"/version", null, "GET" ,null, false);
         sessionMap.put("appServerVersion", ((Map)version.get("data")).get("message"));
-        Map locations = RestApiHandlers.restRequest(sessionMap.get("REST_URL")+"/location", null, "GET" ,null, false);
-        sessionMap.put("installationDir", ((Map)((Map)locations.get("data")).get("properties")).get("Base-Root"));
+        Map locations = RestUtil.restRequest(sessionMap.get("REST_URL")+"/location", null, "GET" ,null, false);
+        final String installDir = (String)((Map) ((Map) locations.get("data")).get("properties")).get("Base-Root");
+        sessionMap.put("baseRootDir", installDir);
+        sessionMap.put("topDir", (new File (installDir)).getParent());
+        Map runtimeInfoMap = RestUtil.restRequest(sessionMap.get("REST_URL")+"/get-runtime-info", null, "GET" ,null, false);
+        String debugFlag = (String) ((Map)((Map)runtimeInfoMap.get("data")).get("properties")).get("debug");
+        if("true".equals(debugFlag)){
+            String debugPort = (String) ((Map)((Map)runtimeInfoMap.get("data")).get("properties")).get("debugPort");
+            sessionMap.put("debugInfo", GuiUtil.getMessage("inst.debugEnabled") + debugPort );
+        }else{
+            sessionMap.put("debugInfo", GuiUtil.getMessage("inst.notEnabled"));
+        }
+        
         sessionMap.put("reqMsg", GuiUtil.getMessage("msg.JS.enterValue"));
         sessionMap.put("reqMsgSelect", GuiUtil.getMessage("msg.JS.selectValue"));
         sessionMap.put("reqInt", GuiUtil.getMessage("msg.JS.enterIntegerValue"));
@@ -189,7 +199,7 @@ public class GuiUtil {
          * Otherwise GUI's main page can't come up.
          */
         try {
-            Map result = RestApiHandlers.restRequest(GuiUtil.getSessionValue("REST_URL")+"/configs/config/server-config/admin-service/das-config", null, "GET", null, false);
+            Map result = RestUtil.restRequest(GuiUtil.getSessionValue("REST_URL")+"/configs/config/server-config/admin-service/das-config", null, "GET", null, false);
             String timeOut = (String)((Map)((Map)((Map)result.get("data")).get("extraProperties")).get("entity")).get("adminSessionTimeoutInMinutes");
             if ((timeOut != null) && (!timeOut.equals(""))) {
                 int time = new Integer(timeOut).intValue();
@@ -201,10 +211,11 @@ public class GuiUtil {
             }
         } catch (Exception nfe) {
             ((HttpServletRequest) request).getSession().setMaxInactiveInterval(-1);
-            nfe.printStackTrace();
+            GuiUtil.getLogger().info(GuiUtil.getCommonMessage("log.error.initSession") + nfe.getLocalizedMessage());
+            if (GuiUtil.getLogger().isLoggable(Level.FINE)){
+                nfe.printStackTrace();
+            }
         }
-
-
     }
 
 
@@ -393,8 +404,10 @@ public class GuiUtil {
     public static void prepareException(HandlerContext handlerCtx, Throwable ex) {
         Throwable rootException = getRootCause(ex);
         prepareAlert("error", GuiUtil.getMessage("msg.Error"), rootException.getMessage());
-	GuiUtil.getLogger().log(Level.SEVERE,
-                GuiUtil.getMessage(COMMON_RESOURCE_NAME, "LOG_EXCEPTION_OCCURED"), ex);
+        GuiUtil.getLogger().info(GuiUtil.getCommonMessage("LOG_EXCEPTION_OCCURED") + ex.getLocalizedMessage());
+        if (GuiUtil.getLogger().isLoggable(Level.FINE)){
+            ex.printStackTrace();
+        }
     }
 
     /* This method sets up the attributes of the <sun:alert> message box so that any
@@ -411,15 +424,18 @@ public class GuiUtil {
         } else {
             attrMap.put("alertType", type);
         }
-        if (detail != null && detail.length() > 500) {
-            detail = detail.substring(0, 500) + "...";
+        if (detail != null && detail.length() > 1000) {
+            detail = detail.substring(0, 1000) + " .... " + GuiUtil.getMessage("msg.seeServerLog");
         }
         try {
             attrMap.put("alertDetail", isEmpty(detail) ? "" : URLEncoder.encode(detail, "UTF-8"));
             attrMap.put("alertSummary", isEmpty(summary) ? "" : URLEncoder.encode(summary, "UTF-8"));
         } catch (UnsupportedEncodingException ex) {
             //we'll never get here.
-            ex.printStackTrace();
+            GuiUtil.getLogger().info(GuiUtil.getCommonMessage("log.error.prepareAlert") + ex.getLocalizedMessage());
+            if (GuiUtil.getLogger().isLoggable(Level.FINE)){
+                ex.printStackTrace();
+            }
         }
 
     }

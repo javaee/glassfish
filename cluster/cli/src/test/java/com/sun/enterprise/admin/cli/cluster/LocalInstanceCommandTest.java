@@ -84,6 +84,7 @@ public class LocalInstanceCommandTest extends LocalInstanceCommand{
         try {
             nodeDir = nodeAgentsDir.getAbsolutePath();
             instanceName = "i1";
+            isCreateInstanceFilesystem = true;
             validate();
         }
         catch(CommandException e) {

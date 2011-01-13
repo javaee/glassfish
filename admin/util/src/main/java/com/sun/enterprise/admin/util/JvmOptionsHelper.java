@@ -285,14 +285,22 @@ class JvmOptionsElement
         {
             throw new IllegalArgumentException();
         }
-        //4923404
-        QuotedStringTokenizer strTok = new QuotedStringTokenizer(options, " \t");
-        //4923404
-        while (strTok.hasMoreTokens())
-        {
-            String option = strTok.nextToken();
-            checkValidOption(option);
-            jvmOptions.add(option);
+        //Need to exclude the gogo shell args that was added for issue 14173.
+        //Otherwise performance tuner breaks saying that noop=true is not valid
+        //because it does not begin with a '-'.
+        String gogoArgs = "-Dgosh.args=--noshutdown -c noop=true";
+        if (!options.equals(gogoArgs)) {
+            //4923404
+            QuotedStringTokenizer strTok = new QuotedStringTokenizer(options, " \t");
+            //4923404
+            while (strTok.hasMoreTokens())
+            {
+                String option = strTok.nextToken();
+                checkValidOption(option);
+                jvmOptions.add(option);
+            }
+        } else {
+            jvmOptions.add(gogoArgs);
         }
         next = DEFAULT;
     }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -58,7 +58,7 @@ public class AdminServiceTest extends BaseSeleniumTestClass {
         selenium.type("form1:basicTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
         selenium.type("form1:basicTable:rowGroup1:0:col3:col1St", "value");
         selenium.type("form1:basicTable:rowGroup1:0:col4:col1St", "description");
-        clickAndWait("form1:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
+        clickAndWait("form1:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
         clickAndWait("form1:jmxConnectorTab:jmxSSLEdit", TRIGGER_SSL);
         clickAndWait("treeForm:tree:configurations:server-config:adminService:adminService_link", TRIGGER_EDIT_JMX_CONNECTOR);
         assertEquals(address, selenium.getValue("form1:propertySheet:propertySheetSection:AddressProp:Address"));
@@ -84,9 +84,9 @@ public class AdminServiceTest extends BaseSeleniumTestClass {
 //        selenium.click("propertyForm:propertySheet:sun_propertySheetSection433:EphemeralCiphersProp:ephemeralAddRemove:ephemeralAddRemove_addAllButton");
 //        selenium.click("propertyForm:propertySheet:sun_propertySheetSection433:OtherCiphersProp:otherAddRemove:otherAddRemove_addAllButton");
         if (selenium.isElementPresent("propertyForm:propertyContentPage:topButtons:newButton")) {
-            clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", MSG_NEW_VALUES_SAVED);
+            clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_NEW_VALUES_SAVED);
         } else {
-            clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
+            clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
         }
         clickAndWait("treeForm:tree:configurations:server-config:adminService:adminService_link", TRIGGER_EDIT_JMX_CONNECTOR);
         clickAndWait("form1:jmxConnectorTab:jmxSSLEdit", TRIGGER_SSL);

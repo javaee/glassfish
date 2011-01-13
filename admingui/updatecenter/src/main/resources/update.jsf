@@ -66,9 +66,9 @@
         setPageSessionAttribute(key="sizeColHeader" value="$resource{i18nUC.ucTable.change}");
         setPageSessionAttribute(key="confirmMsg" value="$resource{i18nUC.msg.JS.confirmUpdateCenterInstall}");
         setPageSessionAttribute(key="successMsg" value="$resource{i18nUC.msg.upgradeSuccess}")
-        getInstalledPath(result=>$attribute{installedPath});
-        getAuthority(result=>$attribute{authority});
-        getUcList(state="update", result=>$attribute{listOfRows} );
+        setPageSessionAttribute(key="state" value="update")
+        checkConnectionInfo(connectionInfo="#{pageSession.connectionInfo}"  noConnection="#{pageSession.noConnection}");
+
     />
     </event>
 #include "updateCenterContent.jsf"

@@ -47,25 +47,32 @@
         <sun:button id="saveButton"  text="$resource{i18n.button.Save}"
                 onClick="if (checkPoolAttr('#{timeoutId}', '#{reqInt}') && guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
             <!command
-            if ("#{pageSession.valueMap['lazyConnectionAssociation']}") {
-                    setValueExpression(expression="#{pageSession.valueMap['lazyConnectionEnlistment']}", value="true");
-            }
+                if ("#{pageSession.myOption}=dropdown") {
+                    setValueExpression(expression="#{pageSession.valueMap['validationTableName']}", value="#{pageSession.tableDropDownValue}");
+                }
+                if ("#{pageSession.myOption}=text") {
+                    setValueExpression(expression="#{pageSession.valueMap['validationTableName']}", value="#{pageSession.tableTextValue}");
+                }
+                
+                if ("#{pageSession.valueMap['lazyConnectionAssociation']}") {
+                        setValueExpression(expression="#{pageSession.valueMap['lazyConnectionEnlistment']}", value="true");
+                }
 
-            gf.createEntity(endpoint="#{pageSession.resourceUrl}"
-                        attrs="#{pageSession.valueMap}"
-                        skipAttrs="#{pageSession.skipAttrsList}"
-                        convertToFalse="#{pageSession.convertToFalseList}"
-                    );
-            if ("#{valueMap['ping']}") {
-                urlencode(value="#{valueMap['name']}" encoding="UTF-8" result="#{pageSession.encodeName}");
-                gf.createAttributeMap(keys={"id"} values={"$pageSession{encodeName}"} map="#{requestScope.attrMap}");
-                gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/ping-connection-pool.json"
-                               attrs="#{requestScope.attrMap}"
-                               method="get"
-                               result="#{requestScope.result}");
-            }
-            prepareSuccessfulMsg();
-            gf.redirect(page="#{pageSession.selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                gf.createEntity(endpoint="#{pageSession.resourceUrl}"
+                            attrs="#{pageSession.valueMap}"
+                            skipAttrs="#{pageSession.skipAttrsList}"
+                            convertToFalse="#{pageSession.convertToFalseList}"
+                        );
+                if ("#{valueMap['ping']}") {
+                    urlencode(value="#{valueMap['name']}" encoding="UTF-8" result="#{pageSession.encodeName}");
+                    gf.createAttributeMap(keys={"id"} values={"$pageSession{encodeName}"} map="#{requestScope.attrMap}");
+                    gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/ping-connection-pool.json"
+                                   attrs="#{requestScope.attrMap}"
+                                   method="get"
+                                   result="#{requestScope.result}");
+                }
+                prepareSuccessfulMsg();
+                gf.redirect(page="#{pageSession.selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
             />
         </sun:button>
         <sun:button id="cancelButton" immediate="#{true}" primary="#{false}"text="$resource{i18n.button.Cancel}" >

@@ -1,7 +1,7 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
 #
 # The contents of this file are subject to the terms of either the GNU
 # General Public License Version 2 only ("GPL") or the Common Development
@@ -43,11 +43,15 @@
 DynamicImport-Package: \
                         com.sun.jersey.api.container, \
                         com.sun.jersey.api.core, \
+                        com.sun.jersey.spi.inject, \
+                        com.sun.jersey.api.container.filter, \
+                        com.sun.jersey.api.client, \
                         com.sun.jersey.core.header, \
                         com.sun.jersey.multipart, \
                         com.sun.jersey.spi, \
                         com.sun.jersey.spi.container, \
                         com.sun.jersey.core.impl.provider.header, \
+                        com.sun.jersey.client.urlconnection, \
                         com.sun.ws.rs.ext, \
                         javax.ws.rs, \
                         javax.ws.rs.core, \
@@ -56,5 +60,9 @@ DynamicImport-Package: \
                         org.glassfish.external.statistics, \
                         org.glassfish.external.statistics.impl, \
                         org.glassfish.flashlight, \
-                        org.glassfish.flashlight.datatree \
+                        org.glassfish.flashlight.datatree, \
+                        com.sun.enterprise.security, \
+                        com.sun.enterprise.security.auth.login, \
+                        com.sun.enterprise.security.auth.realm, \
+                        com.sun.enterprise.security.ssl
 

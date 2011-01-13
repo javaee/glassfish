@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -45,10 +45,8 @@
 <!initPage
     setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
     setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
-    getProductInstanceURN();
-#include "/common/sysnet/regInit.inc"
 />
-<!composition template="/templates/default.layout" guiTitle="$resource{i18n.commonTasks.title}" guiOnLoad="if (#{askRegistration}) {initReminderBox();}; if (frameOnload) {frameOnload();};">
+<!composition template="/templates/default.layout" guiTitle="$resource{i18n.commonTasks.title}" guiOnLoad="if (frameOnload) {frameOnload();};">
 <!define name="guiExtraHead">
 <f:verbatim>
     <style type="text/css">
@@ -66,21 +64,29 @@
       <sun:form id="form"> 
         <sun:commonTasksSection id="commonTasksSection" helpText="$resource{i18n.commonTasks.help}"  title="$resource{i18n.commonTasks.title}" columns="$int{2}" style="visibility: #{commonTaskVisibility}">
           <sun:commonTasksGroup  title="$resource{i18n.commonTasks.task.regAndSupport}">
-            <sun:commonTask rendered="#{sessionScope.showRegTreeNode}"
-                            text="$resource{i18n.tree.registration}"
-                            toolTip="registration"
-                            onClick="return admingui.woodstock.commonTaskHandler('treeForm:tree:registration','#{request.contextPath}/common/sysnet/registration.jsf');">
-            </sun:commonTask>
-            <sun:commonTask rendered="#{!sessionScope._noNetwork}"
-                            text="$resource{i18n.tree.support}"
-                            toolTip="$resource{i18n.tree.support}"
-                            onClick="return admingui.woodstock.commonTaskHandler('treeForm:tree:support','#{request.contextPath}/common/sysnet/support.jsf');">
+            <sun:commonTask
+                rendered="#{pageSession.isRegistrationEnabled}"
+                text="$resource{i18n.tree.registration}"
+                toolTip="$resource{i18n.tree.registration}"
+                onClick="javascript:var win=window.open('#{request.contextPath}/common/registration.jsf','_blank');if (win) {win.focus();}; return false;">
             </sun:commonTask>
             <sun:commonTask
-              text="$resource{i18n.commonTasks.task.subscriptions}"
-              toolTip="$resource{i18n.commonTasks.task.subscriptions.toolTip}"
-              onClick="javascript:var win=window.open('http://www.sun.com/service/applicationserversubscriptions/','_blank');if (win) {win.focus();}; return false;">
+                rendered="#{!sessionScope._noNetwork}"
+                text="$resource{i18n.commonTasks.task.glassfishNews}"
+                toolTip="$resource{i18n.commonTasks.task.glassfishNews}"
+                onClick="javascript:var win=window.open('#{request.contextPath}/common/sysnet/support.jsf','_blank');if (win) {win.focus();}; return false;">
             </sun:commonTask>
+            <sun:commonTask
+              text="$resource{i18n.commonTasks.task.support}"
+              toolTip="$resource{i18n.commonTasks.task.support.toolTip}"
+              onClick="javascript:var win=window.open('$resource{i18n.commonTasks.task.supportLink}','_blank');if (win) {win.focus();}; return false;">
+            </sun:commonTask>
+            <event>
+                <!beforeCreate
+                    gf.isRegistrationEnabled(isEnabled="#{pageSession.isRegistrationEnabled}");
+                    setSessionAttribute(key="gf_application_cancel_page" value="/common/commonTask.jsf");
+                />
+            </event>
           </sun:commonTasksGroup>
 
           <sun:commonTasksGroup id="deployment" title="$resource{i18n.commonTasks.group.Deployment}" >
@@ -111,7 +117,6 @@
           includeIntegrations(type="org.glassfish.admingui:commonTask" root="#{component}");
           />
         </event>
-#include "/common/sysnet/regReminder.inc"
         <sun:hidden id="helpKey" value="$resource{help_common.commonTask}" />
       </sun:form>
     "</div>
@@ -121,6 +126,8 @@
     admingui.nav.clearTreeSelection(admingui.nav.TREE_ID);
 </f:verbatim>
 </sun:script>
+
+
 
       <!--  Customizing pe bottom frame -->
           <event>

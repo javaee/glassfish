@@ -77,6 +77,7 @@ public class ServerRemoteAdminCommand extends RemoteAdminCommand {
     }
 
     private void completeInit(final Habitat habitat) {
+        this.habitat = habitat;
         secureAdmin = habitat.getComponent(SecureAdmin.class);
         serverEnv = habitat.getComponent(ServerEnvironment.class);
     }

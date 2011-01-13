@@ -86,18 +86,26 @@
     </facet>
 </sun:title>
 <sun:propertySheet id="propertySheet">
+#include "/common/shared/configNameSection.inc"
     <sun:propertySheetSection id="propertSectionTextField">
+        <!afterCreate
+            getClientId(component="$this{component}" clientId=>$attribute{sheetId});
+        />
+
         <sun:property id="monServiceProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{common.monitoring.monService}"  helpText="$resource{common.monitoring.monServiceHelp}">
             <sun:checkbox id="momServiceCheckbox"  label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['monitoringEnabled']}" selectedValue="true" />
         </sun:property>
         <sun:property id="monMbeansProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{common.monitoring.monMbeans}"  helpText="$resource{common.monitoring.monMbeansHelp}">
             <sun:checkbox id="momBbeanCheckbox" label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['mbeanEnabled']}" selectedValue="true" />
         </sun:property>
-        <sun:property id="dtraceProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{common.monitoring.DTrace}" helpText="$resource{common.monitoring.DTraceHelp}">
-            <sun:checkbox id="dtraceCheckbox"  label="$resource{i18n.common.Enabled}" selected="#{pageSession.valueMap['dtraceEnabled']}" selectedValue="true" />
-        </sun:property>
-        "<br /><br />
+        "<br />
     </sun:propertySheetSection>
+    <event>
+        <!afterCreate
+            getUIComponent(clientId="#{sheetId}"  component=>$attribute{component})
+            includeIntegrations(type="org.glassfish.admingui:monitoringCheckbox" root="#{component}");
+        />
+    </event>
 </sun:propertySheet>
 <!-- Table .... -->
 <sun:table id="basicTable"  style="padding: 10pt" title="$resource{common.monitoring.MonitorLevelTableTitle}"  sortPanelToggleButton="#{false}"

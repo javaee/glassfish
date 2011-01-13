@@ -85,7 +85,7 @@
                     <sun:panelGroup id="topButtons" >
                         <sun:button id="selectButton"
                              text="$pageSession{buttonLabel}" 
-                             onClick="populateDirAndAppName('#{fileChooserId}', '#{dirPathId}', '#{appNameId}','#{typeId}',  '#{dropDownProp}', '#{ctxRootId}', '#{extensionId}' ); window.close(); " >
+                             onClick="admingui.deploy.populateDirAndAppName('#{fileChooserId}', '#{dirPathId}', '#{appNameId}','#{typeId}',  '#{dropDownProp}', '#{ctxRootId}', '#{extensionId}', '#{sessionScope.appTypeString}' ); window.close(); " >
                               <!afterCreate
                                 getClientId(component="$this{component}" clientId=>$page{selectButtonId});
                               />
@@ -97,7 +97,6 @@
             </sun:propertySheetSection>
         </sun:propertySheet> 
     </sun:form>
-#include "/common/applications/uploadJS.inc"
     </sun:body>
 </sun:html>
 </sun:page>

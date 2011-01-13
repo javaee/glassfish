@@ -42,9 +42,9 @@
 
 <sun:table id="deployTable" title="$resource{i18n.deployTable.applications}" sortPanelToggleButton="#{false}"
        deselectMultipleButton="$boolean{true}"
-        deselectMultipleButtonOnClick="setTimeout('admingui.table.changeButtonAndDropDown(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0)"
+        deselectMultipleButtonOnClick="setTimeout('admingui.table.changeThreeTableButtons(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0)"
         selectMultipleButton="$boolean{true}"
-        selectMultipleButtonOnClick="setTimeout('admingui.table.changeButtonAndDropDown(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0)" >
+        selectMultipleButtonOnClick="setTimeout('admingui.table.changeThreeTableButtons(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0)" >
          <!afterCreate
             getClientId(component="$this{component}" clientId=>$page{tableId});
         />
@@ -59,8 +59,19 @@
                 <!command
 		    gf.redirect(page="#{pageSession.nextPageLink}") />
             </sun:button>
-                
-            <sun:button id="button1" text="$resource{i18n.button.Remove}" disabled="#{true}" primary="#{false}"
+            <sun:button id="button1" text="$resource{i18n.button.Undeploy}" disabled="#{true}" primary="#{false}"
+                    onClick="if ( getConfirm(this,'$pageSession{confirmDeleteMsg}') )
+                        { return submitAndDisable(this, '$resource{i18n.button.Processing}');}
+                        else {return false;} " >
+                <!command
+                    getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
+                    getSelectedSingleMapRows(TableRowGroup="$attribute{tableRowGroup}" selectedRows=>$attribute{selectedRows});
+                    gf.undeploy(selectedRows="${selectedRows}" );
+                    gf.redirect(page="#{listPageLink}?#{extraArgs}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                />
+             </sun:button>s
+
+            <sun:button id="button2" text="$resource{i18n.button.Remove}" disabled="#{true}" primary="#{false}"
                     onClick="if (!getConfirm(this,'$resource{i18n.msg.JS.confirmRemoveTarget}'))
                                return false;
                     return submitAndDisable(this, '$resource{i18n.button.Processing}');"  >

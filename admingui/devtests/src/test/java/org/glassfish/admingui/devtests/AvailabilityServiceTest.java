@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -45,70 +45,80 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 public class AvailabilityServiceTest extends BaseSeleniumTestClass {
-    private static final String TRIGGER_CONFIGURATION = "Configuration";
-    private static final String TRIGGER_AVAILABILTY_SERVICE = "Availability for the server instance";
-    private static final String TRIGGER_WEB_AVAILABILTY = "Availability for the web container";
-    private static final String TRIGGER_EJB_AVAILABILTY = "Availability for the EJB container";
-    private static final String TRIGGER_JMS_AVAILABILTY = "Availability for JMS";
-    private static final String TRIGGER_SUCCESS_MSG = "New values successfully saved";
+    public static final String ID_AVAILABILITY_SERVICE_TREE_NODE = "treeForm:tree:configurations:default-config:availabilityService:availabilityService_link";
+    private static final String ID_DEFAULT_CONFIG_TURNER = "treeForm:tree:configurations:default-config:default-config_turner:default-config_turner_image";
+    private static final String TRIGGER_AVAILABILTY_SERVICE_NODE = "i18ncs.tree.availsvc";
+    private static final String TRIGGER_AVAILABILTY_SERVICE_PAGE = "i18ncs.availabilty.TitlePageHelp";
+    private static final String TRIGGER_WEB_AVAILABILTY = "i18n_web.availability.webContainerAvailabilityInfo";
+    private static final String TRIGGER_EJB_AVAILABILTY = "i18n_ejb.availability.ejbContainerAvailabilityInfo";
+    private static final String TRIGGER_JMS_AVAILABILTY = "i18njms.availability.jmsAvailabilityInfo";
+//    private static final String TRIGGER_SUCCESS_MSG = "New values successfully saved";
 
     @Test
     public void testAvailabilityService() {
-        final String haAgentPort = Integer.toString(generateRandomNumber(65535));
-        clickAndWait("treeForm:tree:configurations:default-config:default-config_turner:default-config_turner_image", TRIGGER_CONFIGURATION);
-        clickAndWait("treeForm:tree:configurations:default-config:availabilityService:availabilityService_link", TRIGGER_AVAILABILTY_SERVICE);
+        // Expand node
+        if (!isTextPresent(TRIGGER_AVAILABILTY_SERVICE_NODE)) {
+            clickAndWait(ID_DEFAULT_CONFIG_TURNER, TRIGGER_AVAILABILTY_SERVICE_NODE);
+        }
+        clickAndWait(ID_AVAILABILITY_SERVICE_TREE_NODE, TRIGGER_AVAILABILTY_SERVICE_PAGE);
 
         int count = addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton");
-        selenium.type("propertyForm:basicTable:rowGroup1:0:col2:col1St", "a");
+        selenium.type("propertyForm:basicTable:rowGroup1:0:col2:col1St", generateRandomString());
         selenium.type("propertyForm:basicTable:rowGroup1:0:col3:col1St", "b");
         selenium.type("propertyForm:basicTable:rowGroup1:0:col4:col1St", "c");
-        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_SUCCESS_MSG);
+        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
         assertTableRowCount("propertyForm:basicTable", count);
     }
 
     @Test
     public void testWebContainerAvailability() {
-        clickAndWait("treeForm:tree:configurations:default-config:default-config_turner:default-config_turner_image", TRIGGER_CONFIGURATION);
-        clickAndWait("treeForm:tree:configurations:default-config:availabilityService:availabilityService_link", TRIGGER_AVAILABILTY_SERVICE);
+        if (!isTextPresent(TRIGGER_AVAILABILTY_SERVICE_NODE)) {
+            clickAndWait(ID_DEFAULT_CONFIG_TURNER, TRIGGER_AVAILABILTY_SERVICE_NODE);
+        }
+        clickAndWait(ID_AVAILABILITY_SERVICE_TREE_NODE, TRIGGER_AVAILABILTY_SERVICE_PAGE);
         clickAndWait("propertyForm:availabilityTabs:webAvailabilityTab", TRIGGER_WEB_AVAILABILTY);
 
         int count = addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton");
-        selenium.type("propertyForm:basicTable:rowGroup1:0:col2:col1St", "a");
+        selenium.type("propertyForm:basicTable:rowGroup1:0:col2:col1St", generateRandomString());
         selenium.type("propertyForm:basicTable:rowGroup1:0:col3:col1St", "b");
         selenium.type("propertyForm:basicTable:rowGroup1:0:col4:col1St", "c");
-        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_SUCCESS_MSG);
+        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
         assertTableRowCount("propertyForm:basicTable", count);
     }
 
     @Test
     public void testEjbContainerAvailability() {
-        clickAndWait("treeForm:tree:configurations:default-config:default-config_turner:default-config_turner_image", TRIGGER_CONFIGURATION);
-        clickAndWait("treeForm:tree:configurations:default-config:availabilityService:availabilityService_link", TRIGGER_AVAILABILTY_SERVICE);
+        if (!isTextPresent(TRIGGER_AVAILABILTY_SERVICE_NODE)) {
+            clickAndWait(ID_DEFAULT_CONFIG_TURNER, TRIGGER_AVAILABILTY_SERVICE_NODE);
+        }
+        clickAndWait(ID_AVAILABILITY_SERVICE_TREE_NODE, TRIGGER_AVAILABILTY_SERVICE_PAGE);
         clickAndWait("propertyForm:availabilityTabs:ejbAvailabilityTab", TRIGGER_EJB_AVAILABILTY);
 
         int count = addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton");
-        selenium.type("propertyForm:basicTable:rowGroup1:0:col2:col1St", "a");
+        selenium.type("propertyForm:basicTable:rowGroup1:0:col2:col1St", generateRandomString());
         selenium.type("propertyForm:basicTable:rowGroup1:0:col3:col1St", "b");
         selenium.type("propertyForm:basicTable:rowGroup1:0:col4:col1St", "c");
-        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_SUCCESS_MSG);
+        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
         assertTableRowCount("propertyForm:basicTable", count);
     }
 
     @Test
     public void testJMSAvailability() {
         final String storePoolName = "test" + Integer.toString(generateRandomNumber(100));
-        clickAndWait("treeForm:tree:configurations:default-config:default-config_turner:default-config_turner_image", TRIGGER_CONFIGURATION);
-        clickAndWait("treeForm:tree:configurations:default-config:availabilityService:availabilityService_link", TRIGGER_AVAILABILTY_SERVICE);
+        if (!isTextPresent(TRIGGER_AVAILABILTY_SERVICE_NODE)) {
+            clickAndWait(ID_DEFAULT_CONFIG_TURNER, TRIGGER_AVAILABILTY_SERVICE_NODE);
+        }
+        clickAndWait(ID_AVAILABILITY_SERVICE_TREE_NODE, TRIGGER_AVAILABILTY_SERVICE_PAGE);
         clickAndWait("propertyForm:availabilityTabs:jmsAvailabilityTab", TRIGGER_JMS_AVAILABILTY);
         selenium.type("propertyForm:propertySheet:propertSectionTextField:StorePoolNameProp:StorePoolName", storePoolName);
-        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_SUCCESS_MSG);
+        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
         assertEquals(storePoolName, selenium.getValue("propertyForm:propertySheet:propertSectionTextField:StorePoolNameProp:StorePoolName"));
 
         int count = addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton");
-        selenium.type("propertyForm:basicTable:rowGroup1:0:col2:col1St", "a");
+        selenium.type("propertyForm:basicTable:rowGroup1:0:col2:col1St", generateRandomString());
         selenium.type("propertyForm:basicTable:rowGroup1:0:col3:col1St", "b");
         selenium.type("propertyForm:basicTable:rowGroup1:0:col4:col1St", "c");
-        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_SUCCESS_MSG);
+        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
         assertTableRowCount("propertyForm:basicTable", count);
     }
 }

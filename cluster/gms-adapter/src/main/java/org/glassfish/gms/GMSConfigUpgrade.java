@@ -61,7 +61,7 @@ import java.util.logging.Level;
  * @author Bhakti Mehta
  *
  */
-@Service
+@Service(name="gmsupgrade")
 public class GMSConfigUpgrade implements ConfigurationUpgrade, PostConstruct {
 
     @Inject

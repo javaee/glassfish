@@ -60,7 +60,7 @@
                 <!command gf.redirect(page="#{createLink}?configName=#{configName}"); />
             </sun:button>
               
-            <sun:button id="deleteButton" text="$resource{i18n.button.Delete}" disabled="#{false}" primary="#{false}"
+            <sun:button id="button1" text="$resource{i18n.button.Delete}" disabled="#{true}" primary="#{false}"
                 onClick="if (getConfirm(this,'$pageSession{confirmDeleteMsg}') ) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
             <!command 
                 getUIComponent(clientId="$pageSession{configsTableRowGroupId}", component=>$attribute{tableRowGroup});      
@@ -85,15 +85,15 @@
                       onClick="setTimeout('admingui.table.changeOneTableButton(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\'); admingui.table.initAllRows(\\\\\'#{pageSession.tableId}\\\\\');', 0);"/>
         </sun:tableColumn>
 
-        <sun:tableColumn headerText="$resource{i18n.common.PropertyName}"  rowHeader="$boolean{true}" id="colName">
+        <sun:tableColumn headerText="$resource{i18n.common.PropertyName}"  sort="name" rowHeader="$boolean{true}" id="colName">
             <sun:hyperlink id="link" text="#{td.value.name}" url="#{editLink}?name=#{td.value.name}&configName=#{configName}" />
         </sun:tableColumn>
 
-        <sun:tableColumn headerText="$resource{i18njms.resourcesTable.Host}" rowHeader="$boolean{true}" id="colHost">
+        <sun:tableColumn headerText="$resource{i18njms.resourcesTable.Host}" sort="host" rowHeader="$boolean{true}" id="colHost">
             <sun:staticText escape="true" id="hostCol" rendered="#{hasHost}" value="#{td.value.host}" />
         </sun:tableColumn>
 
-        <sun:tableColumn headerText="$resource{i18njms.edJmsHost.colPort}" rowHeader="$boolean{true}" id="colPort">
+        <sun:tableColumn headerText="$resource{i18njms.edJmsHost.colPort}" sort="port" rowHeader="$boolean{true}" id="colPort">
             <sun:staticText escape="true" id="portCol" rendered="#{hasPort}" value="#{td.value.port}" />
         </sun:tableColumn>
     </sun:tableRowGroup>

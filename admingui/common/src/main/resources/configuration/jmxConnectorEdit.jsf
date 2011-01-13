@@ -82,7 +82,8 @@
 #include "/common/shared/editPageButtons.inc"
 </sun:title>
 
-<sun:propertySheet id="propertySheet" requiredFields="#{hasRequiredFields}">
+<sun:propertySheet id="propertySheet" >
+#include "/common/shared/configNameSection.inc"
     <sun:propertySheetSection id="propertySheetSection">
             <sun:property id="JmxNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.edJmxConnector.jmxNameLabel}" >
                 <sun:staticText id="JmxName" text="#{pageSession.valueMap['name']}" />

@@ -42,16 +42,24 @@
 
 package org.glassfish.admingui.common.handlers;
 
-import java.util.*;
+//import java.util.*;
+
 
 import com.sun.jsftemplating.annotation.HandlerInput;
 import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 
-import org.glassfish.admingui.common.handlers.RestApiHandlers;
 import org.glassfish.admingui.common.util.GuiUtil;
 import java.text.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import org.glassfish.admingui.common.util.RestUtil;
 /**
  *
  * @author Siraj
@@ -94,7 +102,7 @@ public class ScheduleHandlers {
             String endPoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/server-config/schedules/schedule/" +
                     scheduleName;
 
-            Map attribs = RestApiHandlers.getAttributesMap(endPoint);
+            Map attribs = RestUtil.getAttributesMap(endPoint);
 
             dayOfWeek = (String)attribs.get(DAY_OF_WEEK);
             dayOfMonth = (String)attribs.get(DAY_OF_MONTH);
@@ -169,7 +177,10 @@ public class ScheduleHandlers {
                     str = str + data[val];
                 }
             } catch(Exception ex) {
-                ex.printStackTrace();
+                GuiUtil.getLogger().info(GuiUtil.getCommonMessage("log.error.convertScheduleToString") + ex.getLocalizedMessage());
+                if (GuiUtil.getLogger().isLoggable(Level.FINE)){
+                    ex.printStackTrace();
+                }
             }
         }
         if (str.length() == 0)
@@ -200,7 +211,10 @@ public class ScheduleHandlers {
                     Date date1 = formatter.parse("01-" + month + "-00");
                     dateList.add(date1);
                 } catch (Exception ex) {
-                    ex.printStackTrace();
+                    GuiUtil.getLogger().info(GuiUtil.getCommonMessage("log.error.sortMonths") + ex.getLocalizedMessage());
+                    if (GuiUtil.getLogger().isLoggable(Level.FINE)){
+                        ex.printStackTrace();
+                    }
                 }
             }
         }

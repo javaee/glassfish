@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -83,8 +83,11 @@ public class V2ToV3ConfigUpgrade implements ConfigurationUpgrade, PostConstruct 
                 if (jc == null) {
                     continue;
                 }
+
+                // fix issues where each new config gets 2x, 3x, 4x the data
+                newJvmOptions.clear();
                 oldJvmOptions = Collections.unmodifiableList(jc.getJvmOptions());
-                doAdditions();
+                doAdditions("server-config".equals(c.getName()));
                 doRemovals();
                 ConfigSupport.apply(new JavaConfigChanger(), jc);
             }
@@ -106,9 +109,18 @@ public class V2ToV3ConfigUpgrade implements ConfigurationUpgrade, PostConstruct 
         }
     }
 
-    private void doAdditions() {
+    private void doAdditions(boolean isDas) {
         // add new options
-        for(String s : ADD_LIST) {
+        doAdditionsFrom(ADD_LIST);
+        if (isDas) {
+            doAdditionsFrom(ADD_LIST_DAS);
+        } else {
+            doAdditionsFrom(ADD_LIST_NOT_DAS);
+        }
+    }
+
+    private void doAdditionsFrom(String [] strings) {
+        for (String s : strings) {
             newJvmOptions.add(s);
         }
     }
@@ -140,20 +152,35 @@ public class V2ToV3ConfigUpgrade implements ConfigurationUpgrade, PostConstruct 
             "-XX:LogFile",
         };
 
+    // these are added to all configs
     private static final String[] ADD_LIST = new String[] {
         "-XX:+UnlockDiagnosticVMOptions",
         "-XX:+LogVMOutput",
         "-XX:LogFile=${com.sun.aas.instanceRoot}/logs/jvm.log",
         "-DANTLR_USE_DIRECT_CLASS_LOADING=true",
-        "-Dosgi.shell.telnet.port=6666",
         "-Dosgi.shell.telnet.maxconn=1",
         "-Dosgi.shell.telnet.ip=127.0.0.1",
+        "-Dgosh.args=--noshutdown -c noop=true",
         "-Dfelix.fileinstall.dir=${com.sun.aas.installRoot}/modules/autostart/",
         "-Dfelix.fileinstall.poll=5000",
-        "-Dfelix.fileinstall.debug=1",
+        "-Dfelix.fileinstall.debug=3",
         "-Dfelix.fileinstall.bundles.new.start=true",
+        "-Dfelix.fileinstall.bundles.startTransient=true",
+        "-Dfelix.fileinstall.disableConfigSave=false",
+        "-Dfelix.fileinstall.log.level=2",
         "-Djavax.management.builder.initial=com.sun.enterprise.v3.admin.AppServerMBeanServerBuilder",
         "-Dorg.glassfish.web.rfc2109_cookie_names_enforced=false",
+        "-Djava.ext.dirs=${com.sun.aas.javaRoot}/lib/ext${path.separator}${com.sun.aas.javaRoot}/jre/lib/ext${path.separator}${com.sun.aas.instanceRoot}/lib/ext",
+    };
+
+    // these are added to DAS only
+    private static final String[] ADD_LIST_DAS = new String[] {
+        "-Dosgi.shell.telnet.port=6666"
+    };
+
+    // these are added to instances
+    private static final String[] ADD_LIST_NOT_DAS = new String[] {
+        "-Dosgi.shell.telnet.port=${OSGI_SHELL_TELNET_PORT}"
     };
 
     private static final List<String> REMOVAL_LIST = new ArrayList<String>();

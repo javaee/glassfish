@@ -63,8 +63,7 @@
     foreach (var="oneRow" list="#{pageSession.tmpRows}") {
         setAttribute(key="resourceTargets" value={});
         setAttribute(key="enabledTargetsCount" value="$int{0}");
-        <!--setAttribute(key="disabledTargetsCount" value="$int{0}");-->
-        setAttribute(key="enabledStr" value="");
+        setAttribute(key="enableURL" value="");
         createMap(result=>$attribute{targetsMap});
         setAttribute(key="targetUrls" value={});
 
@@ -97,35 +96,40 @@
                 if ("#{refAttrs.enabled} = true") {
                     inc(number="#{enabledTargetsCount}" value="#{enabledTargetsCount}");
                 }
-                if ("#{refAttrs.enabled} = false") {
-                    inc(number="#{disabledTargetsCount}" value="#{disabledTargetsCount}");
-                }
             }
         }
         setAttribute(key="resourceTargetSize" value="#{resourceTargets.size()}");
         //get Target Enable info
         if (#{requestScope.targetSize}=#{requestScope.one}) {
             //"resourceTargetSize=0" means that there is no target associated with the resource.
+            setPageSessionAttribute(key="onlyDASExist" value="#{true}");
             if (#{resourceTargetSize} = #{zero}) {
-               setAttribute(key="enabledStr" value="#{oneRow['enabled']}");
+               setAttribute(key="enabledVal" value="#{oneRow['enabled']}");
             }
             if (#{resourceTargetSize} > #{zero}) {
                 gf.getEntityAttrs(endpoint="#{sessionScope.REST_URL}/servers/server/server/resource-ref/#{oneRow['encodedName']}" valueMap="#{requestScope.refAttrs}");
-                setAttribute(key="enabledStr" value="#{refAttrs.enabled}");
+                setAttribute(key="enabledVal" value="#{refAttrs.enabled}");
+            }
+            if ("#{enabledVal}=true") {
+                setAttribute(key="enableURL" value="/resource/images/enabled.png");
+            }
+            if ("#{enabledVal}=false") {
+                setAttribute(key="enableURL" value="/resource/images/disabled.png");
             }
         }
         if (#{requestScope.targetSize} > #{requestScope.one}){
             //"resourceTargetSize=0" means that there is no target associated with the resource.
+            setPageSessionAttribute(key="onlyDASExist" value="#{false}");
             if (#{resourceTargetSize} = #{zero}) {
-                setAttribute(key="enabledStr" value="$resource{i18n.deploy.noTarget}");
+                setAttribute(key="enableURL" value="$resource{i18n.deploy.noTarget}");
             }
-            if ("#{enabledStr} = #{emptyStr}") {
-                setAttribute(key="enabledStr" value="$resource{i18n.deploy.someEnabled,$attribute{enabledTargetsCount},$attribute{resourceTargetSize}}");
+            if ("#{enableURL} = #{emptyStr}") {
+                setAttribute(key="enableURL" value="$resource{i18n.deploy.someEnabled,$attribute{enabledTargetsCount},$attribute{resourceTargetSize}}");
             }
         }
         mapPut(map="#{oneRow}" key="targetUrls" value="#{targetUrls}");
         mapPut(map="#{oneRow}" key="targetsMap" value="#{targetsMap}");
-        mapPut(map="#{oneRow}" key="enabled" value="#{enabledStr}");
+        mapPut(map="#{oneRow}" key="enableURL" value="#{enableURL}");
 
         listAdd(list="#{pageSession.listOfRows}" value="#{oneRow}");
     }

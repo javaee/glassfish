@@ -41,6 +41,7 @@
 package com.sun.enterprise.admin.servermgmt.services;
 
 import com.sun.enterprise.universal.io.SmartFile;
+import com.sun.enterprise.util.ObjectAnalyzer;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.io.ServerDirs;
@@ -60,6 +61,8 @@ public class PlatformServicesInfo {
             throw new RuntimeException(Strings.get("bad.server.dirs"));
 
         type = theType;
+        kPriority = 20;
+        sPriority = 20;
     }
 
     public void validate() {
@@ -115,6 +118,11 @@ public class PlatformServicesInfo {
             appserverUser = user;
     }
 
+    @Override
+    public String toString() {
+        return ObjectAnalyzer.toString(this);
+    }
+    
     //////////////////////////////////////////////////////////////////////
     //////////////          private         //////////////////////////////
     //////////////////////////////////////////////////////////////////////
@@ -175,4 +183,6 @@ public class PlatformServicesInfo {
     // private to this implementation
     private boolean valid;
     private File installRootDir;
+    int sPriority;
+    int kPriority;
 }

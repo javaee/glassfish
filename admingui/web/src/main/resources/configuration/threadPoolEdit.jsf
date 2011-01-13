@@ -78,7 +78,6 @@
                 <sun:title id="propertyContentPage" title="$resource{i18n_web.configuration.threadPoolEditPageTitle}" helpText="$resource{i18n_web.configuration.threadPoolEditPageTitleHelp}">
 #include "/common/shared/editPageButtons.inc"
                 </sun:title>
-                "<br>
 #include "/web/configuration/threadPoolAttrs.inc"
   
 	<sun:hidden id="helpKey" value="$resource{help_web.threadPoolEdit}" />

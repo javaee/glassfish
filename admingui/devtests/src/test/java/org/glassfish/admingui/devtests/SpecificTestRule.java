@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,6 +39,11 @@
  */
 package org.glassfish.admingui.devtests;
 
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.Ignore;
@@ -51,8 +56,9 @@ import org.junit.runners.model.Statement;
  * @author jasonlee
  */
 public class SpecificTestRule implements MethodRule {
+    protected static boolean debug;
     public SpecificTestRule() {
-        
+        debug = Boolean.parseBoolean(BaseSeleniumTestClass.getParameter("debug", "false"));
     }
 
     @Override
@@ -61,19 +67,32 @@ public class SpecificTestRule implements MethodRule {
             @Override
             public void evaluate() throws Throwable {
                 boolean runMethod = false;
+                final Logger logger = Logger.getLogger(BaseSeleniumTestClass.class.getName());
                 String method = System.getProperty("method");
+                Set<String> methods = new HashSet<String>();
+                if (method != null) {
+                    String[] parts = method.split(",");
+                    methods.addAll(Arrays.asList(parts));
+                }
                 Ignore ignore = frameworkMethod.getAnnotation(Ignore.class);
 
-                if (frameworkMethod.getName().equals(method)) {
+                if (methods.contains(frameworkMethod.getName())) {
                     runMethod = true;
                 } else if ((method == null) && (ignore == null)) {
                     runMethod = true;
                 }
 
                 if (runMethod) {
+                    if (debug) {
+                        logger.log(Level.INFO, "Executing test {0} at {1}",
+                                new String[]{
+                                    frameworkMethod.getName(),
+                                    (new SimpleDateFormat("yyyy-MM-dd-hh.mm.ss")).format(new Date())
+                                });
+                    }
                     statement.evaluate();
                 } else {
-                    Logger.getLogger(BaseSeleniumTestClass.class.getName()).log(Level.INFO, "Skipping test:  {0}", frameworkMethod.getName());
+                    logger.log(Level.INFO, "Skipping test:  {0}", frameworkMethod.getName());
                 }
             }
         };

@@ -94,6 +94,7 @@ public class ListManager extends BackupRestoreManager
         List<Integer> badPropsList = null;
         ColumnFormatter cf = null;
         boolean itemInRow = false;
+        TreeSet<Status>statusSet = new TreeSet<Status>(new FileNameComparator());
         
         // If a backup config was not provided then look for all zips
         // including those in the backup config directories.
@@ -101,40 +102,56 @@ public class ListManager extends BackupRestoreManager
         // that backup config directory.
         findZips(request.backupConfig == null);
 
+        badPropsList = new ArrayList<Integer>();
+
         // it is GUARANTEED that the length > 0
         for(int i = 0; i < zips.length; i++) {
             Status status = new Status();
 
-            if (request.verbose) {
-                sb.append(status.read(zips[i], request.terse));
-                sb.append("\n\n");
-            } else {
-                if (cf == null) {
-                    cf = new ColumnFormatter(headings);
-                    badPropsList = new ArrayList<Integer>();
-                }
-
+            if (!status.loadProps(zips[i]))
+                badPropsList.add(new Integer(i));
+            else {
                 //XXX: if (request.terse)  How indicate no headers?
 
-                if (!status.loadProps(zips[i])) {
-                    badPropsList.add(new Integer(i));
+                statusSet.add(status);
+                itemInRow = true;
+            }
+        }
+
+        if (itemInRow) {
+            for (Status status : statusSet) { 
+                if (request.verbose) {
+                    File f = null;
+
+                    try {
+                        f = new File(status.getBackupPath());
+                    } catch (NullPointerException e) {
+                    }
+
+                    if (f != null) {
+                        sb.append(status.read(f, request.terse));
+                        sb.append("\n\n");
+                    }
                 } else {
                     String filename = status.getFileName();
+
+                    if (cf == null) {
+                        cf = new ColumnFormatter(headings);
+                    }
 
                     if (filename == null)
                         filename = strings.get("backup-list.unavailable");
 
                     cf.addRow(new Object[] {
-                        status.getBackupConfigName(),
-                        status.getUserName(),
-                        status.getTimeStamp(),
-                        filename
-                    });
-
-                    itemInRow = true;
+                              status.getBackupConfigName(),
+                              status.getUserName(),
+                              status.getTimeStamp(),
+                              filename
+                         });
                 }
             }
         }
+
 
         if (cf != null) 
             sb.append(cf.toString());
@@ -194,8 +211,9 @@ public class ListManager extends BackupRestoreManager
         files = getBackupDirectory(request).listFiles(new ZipFilenameFilter());
 
         if (subdirs) {
-            for (int i = 0; files != null && i < files.length; i++)
+            for (int i = 0; files != null && i < files.length; i++) {
                 zipList.add(files[i]);
+            }
 
             // Get the list of directories
             dirs = getBackupDirectory(request).listFiles(new DirectoryFilter());
@@ -204,8 +222,9 @@ public class ListManager extends BackupRestoreManager
             for(int i = 0; dirs != null && i < dirs.length; i++) {
                 files = dirs[i].listFiles(new ZipFilenameFilter());
                     // Add the files with a zip extension to the List
-                    for (int j = 0; files != null && j < files.length; j++)
+                    for (int j = 0; files != null && j < files.length; j++) {
                         zipList.add(files[j]);
+                    }
             }
 
             if (zipList.size() > 0) 
@@ -214,10 +233,54 @@ public class ListManager extends BackupRestoreManager
         } else
             zips = files;
 
+
         if(zips == null || zips.length <= 0)
             throw new BackupWarningException("backup-res.NoBackupFiles", 
                                              getBackupDirectory(request));
     }
+
+    /*
+     * When camparing the Status in order to order the list output
+     * we first sort by backup-config and then by file name.
+     */
+    private class FileNameComparator implements Comparator<Status> {
+
+        public int compare(Status s1, Status s2) {
+
+            if (s1.getBackupConfigName().equals(s2.getBackupConfigName())) {
+                return compareFiles(s1.getFileName(), s2.getFileName());
+            }
+
+            return s1.getBackupConfigName().compareTo(s2.getBackupConfigName());
+        }
+
+        private int compareFiles(String f1, String f2) {
+            int f1Num, f2Num;
+
+            if (f1 == null)
+                f1 = strings.get("backup-list.unavailable");
+
+            if (f2 == null)
+                f2 = strings.get("backup-list.unavailable");
+
+            f1 = f1.substring(f1.lastIndexOf("_v")+2, f1.length() - 4);
+            try {
+                f1Num = Integer.parseInt(f1);
+            } catch(Exception e) {
+                f1Num = -1;
+            }
+
+            f2 = f2.substring(f2.lastIndexOf("_v")+2, f2.length() - 4);
+            try {
+                f2Num = Integer.parseInt(f2);
+            } catch(Exception e) {
+                f2Num = -1;
+            }
+
+            return f1Num - f2Num;
+        }
+    }
+ 
 
     private static final LocalStringsImpl strings =
                 new LocalStringsImpl(ListManager.class);

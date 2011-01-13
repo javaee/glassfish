@@ -46,7 +46,6 @@
     setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
     setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
 />
-/>
 <!composition template="/templates/default.layout"  guiTitle="$resource{i18nc.jvm.ProfilerPageName}" >
 <!define name="content">
     <event>
@@ -70,10 +69,9 @@
         if(#{edit}) {
             gf.getEntityAttrs(endpoint="#{pageSession.parentUrl}/java-config/profiler.json", valueMap="#{pageSession.valueMap}");
             getJvmOptionsValues(endpoint="#{pageSession.profilerUrl}/jvm-options.json"  result=>$attribute{tableList});
+            gf.listCombine(list="#{null}" list2="$attribute{tableList}", result="#{pageSession.origList}");
         }
-        if(!#{edit}) {
-            gf.getEntityAttrs(endpoint="#{pageSession.parentUrl}/java-config/profiler.json", valueMap="#{pageSession.valueMap}");
-        }
+        setPageSessionAttribute(key="onlyUseAttrs" value={"name", "target", "classpath", "enabled","nativeLibraryPath"})
         setPageSessionAttribute(key="convertToFalseList" value={"enabled"});
     />
     </event>

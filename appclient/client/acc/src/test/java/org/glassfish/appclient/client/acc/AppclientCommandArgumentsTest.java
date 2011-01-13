@@ -40,7 +40,11 @@
 
 package org.glassfish.appclient.client.acc;
 
+import com.sun.enterprise.transaction.JavaEETransactionManagerSimplified;
+import com.sun.logging.LogDomains;
+import java.util.logging.Logger;
 import java.util.Arrays;
+import java.util.MissingResourceException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -55,6 +59,7 @@ public class AppclientCommandArgumentsTest {
 
     private static final String USER_VALUE = "joe-the-user";
     private static final String PASSWORDFILE_NAME = "topSecret.stuff";
+    private static final String EXPECTED_TARGETSERVER_VALUE = "A:1234,B:5678";
 
     public AppclientCommandArgumentsTest() {
     }
@@ -119,4 +124,26 @@ public class AppclientCommandArgumentsTest {
         }
     }
 
+    @Test
+    public void allowMultiValuedTargetServer() throws Exception, UserError {
+        final AppclientCommandArguments cmdArgs = AppclientCommandArguments.newInstance(
+                Arrays.asList("-targetserver","\"" + EXPECTED_TARGETSERVER_VALUE + "\""));
+        assertEquals("did not process targetserver list correctly",
+                EXPECTED_TARGETSERVER_VALUE,
+                cmdArgs.getTargetServer());
+    }
+
+    @Test
+    public void useTransactionLogString() {
+        final Logger logger = LogDomains.getLogger(JavaEETransactionManagerSimplified.class,
+                LogDomains.JTA_LOGGER);
+        final String target = "enterprise_used_delegate_name";
+        try {
+            final String result = logger.getResourceBundle().getString(target);
+            assertTrue("message key look-up failed", (result != null &&
+                    ! target.equals(result)));
+        } catch (MissingResourceException ex) {
+            fail("could not find message key");
+        }
+    }
 }

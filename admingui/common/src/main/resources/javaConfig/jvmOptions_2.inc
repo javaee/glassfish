@@ -43,27 +43,27 @@
 <!-- shared/jvmOptions_2.jsf -->
 
 #include "/common/shared/alertMsg.inc"
-            <!-- Page Title -->
-            <sun:title id="propertyContentPage" title="$resource{i18nc.jvmOptions.Title}"
-                helpText="$resource{i18nc.jvmOptions.PageHelp}">
+    <sun:title id="propertyContentPage" title="$resource{i18nc.jvmOptions.Title}" helpText="$resource{i18nc.jvmOptions.PageHelp}">
     <!facet pageButtonsTop>
         <sun:panelGroup id="topButtons">
             <sun:button id="saveButton" rendered="#{edit}" text="$resource{i18n.button.Save}" >
                 <!command
                     getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                     getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                    saveJvmOptionValues(endpoint="#{pageSession.selfUrl}" options="$attribute{newList}");
-                prepareSuccessfulMsg();
-                gf.redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                    prepareSuccessfulMsg();
+                    saveJvmOptionValues(endpoint="#{pageSession.selfUrl}", target="#{pageSession.configName}", options="$attribute{newList}" , origList="#{pageSession.origList}");
+                    gf.redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                 />
             </sun:button>
         </sun:panelGroup>
     </facet>
-                </sun:title>
+    </sun:title>
+#include "/common/shared/configNameSection.inc"
+
 #include "/common/javaConfig/jvmOptionsTable.inc"
 
 	<sun:hidden id="helpKey" value="$resource{help_common.serverJvmOptions}" />
          </sun:form>
-//#include "/common/shared/changeButtonsJS.inc"
 </define>
 </composition>
+

@@ -46,31 +46,9 @@
                 getClientId(component="$this{component}" clientId=>$page{topActionGroup});
         />
 
-        <sun:button id="newButton" text="$resource{i18n.button.New}" >
+        <sun:button id="newButton" disabled="#{pageSession.disableNewButton}" text="$resource{i18n.button.New}" >
             <!command gf.redirect(page="#{pageSession.createLink}") />
         </sun:button>
-
-        <!insert name="listTableDeleteButton">
-        <sun:button id="button1" text="$resource{i18n.button.Delete}" disabled="#{true}" primary="#{false}"
-            onClick="if ( getConfirm(this,'$pageSession{confirmDeleteMsg}') )
-            { return submitAndDisable(this, '$resource{i18n.button.Processing}');}
-            else {return false;} "
-        >
-        <!command
-            getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
-            getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
-
-            gf.deleteCascade(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}", id="#{pageSession.deleteKey}", selectedRows="${selectedRows}");
-            //REST-TODO: need to ensure page that has additionalDeleteHandler to change to use rest-api
-            if (#{pageSession.additionalDeleteHandler}){
-                gf.invokeHandler(handler="#{pageSession.additionalDeleteHandler}", args="#{pageSession.additionalDeleteHandlerArgs}" );
-            }
-
-            gf.redirect(page="#{pageSession.listLink}");
-        />
-
-        </sun:button>
-        </insert>
 
         <!insert name="extraButton2">
         </insert>

@@ -56,8 +56,15 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>com.sun.enterprise</groupId>
-                <artifactId>hk2-maven-plugin</artifactId>
+              <groupId>com.sun.enterprise</groupId>
+              <artifactId>hk2-maven-plugin</artifactId>
+              <configuration>
+                <archive>
+                  <manifestEntries>
+                    <Class-Path>cluster-l10n.jar</Class-Path>
+                  </manifestEntries>
+                </archive>
+              </configuration>
             </plugin>
         </plugins>
         <resources>
@@ -95,6 +102,17 @@
         <dependency>
             <groupId>org.glassfish.common</groupId>
             <artifactId>internal-api</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        
+        <!--
+            Next dependency is for the utility classes
+            which send data to asadmin's System.in when launched
+            from NodeRunner.
+        -->
+        <dependency>
+            <groupId>org.glassfish.common</groupId>
+            <artifactId>common-util</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
 

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -45,8 +45,8 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 public class LoggerSettingsTest extends BaseSeleniumTestClass {
-    private static final String TRIGGER_LOGGER_SETTINGS = "GlassFish Server logging messages are recorded in the server log";
-    private static final String TRIGGER_LOG_LEVELS = "Specify log levels for individual loggers.";
+    private static final String TRIGGER_LOGGER_SETTINGS = "i18nc.log.LoggingSettingsHelp";
+    private static final String TRIGGER_LOG_LEVELS = "i18nc.log.LogLevelsPageTitleHelp";
 
     @Test
     public void testLoggerSettings() {
@@ -60,7 +60,7 @@ public class LoggerSettingsTest extends BaseSeleniumTestClass {
         selenium.type("form1:general:sheetSection:FileRotationLimitProp:FileRotationLimit", rotationLimit);
         selenium.type("form1:general:sheetSection:FileRotationTimeLimitProp:FileRotationTimeLimit", rotationTimeLimit);
         selenium.type("form1:general:sheetSection:FlushFrequencyProp:FlushFrequency", flushFrequency);
-        clickAndWait("form1:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
+        clickAndWait("form1:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
 
         clickAndWait("form1:loggingTabs:loggerLevels", TRIGGER_LOG_LEVELS);
 
@@ -79,17 +79,19 @@ public class LoggerSettingsTest extends BaseSeleniumTestClass {
         if ("WARNING".equals(selenium.getValue("form1:basicTable:rowGroup1:0:col3:level"))) {
             newLevel = "INFO";
         }
+
         selenium.select("form1:basicTable:topActionsGroup1:change_list", "label=" + newLevel);
-        selenium.click("form1:basicTable:_tableActionsTop:_selectMultipleButton");
+        selenium.click("form1:basicTable:_tableActionsTop:_selectMultipleButton:_selectMultipleButton_image");
+
         waitForButtonEnabled("form1:basicTable:topActionsGroup1:button1");
 
         selenium.click("form1:basicTable:topActionsGroup1:button1");
         waitForButtonDisabled("form1:basicTable:topActionsGroup1:button1");
 
-        clickAndWait("form1:title:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
+        clickAndWait("form1:title:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
 
         clickAndWait("form1:loggingTabs:loggerGeneral", TRIGGER_LOGGER_SETTINGS);
         clickAndWait("form1:loggingTabs:loggerLevels", TRIGGER_LOG_LEVELS);
-        assertEquals(newLevel, selenium.getValue("form1:basicTable:rowGroup1:0:col3:level"));
-    }
+        assertEquals(newLevel, selenium.getValue("form1:basicTable:rowGroup1:0:col3:level")); 
+    } 
 }

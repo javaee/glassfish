@@ -50,7 +50,8 @@
     guiTitle="$resource{i18njms.destinationResources.pageTitle}"
     guiTemplateOnLoad="
         admingui.nav.refreshTree('treeForm:tree:resources:Connectors:adminObjectResources');
-        admingui.nav.refreshTree('treeForm:tree:resources:jmsResources:jmsDestinationResources');"
+        admingui.nav.refreshTree('treeForm:tree:resources:jmsResources:jmsDestinationResources');
+        setTimeout('admingui.table.toggleButtons(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\'); admingui.table.initAllRows(\\\\\'#{pageSession.tableId}\\\\\');', 0);"
 >
 <!define name="content">
     <event>
@@ -64,6 +65,9 @@
             setPageSessionAttribute(key="editLink" value="/jms/jmsDestinationEdit.jsf");
             setPageSessionAttribute(key="listLink" value="/jms/jmsDestinations.jsf");
             setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18njms.resourcesTable.deleteDestMessage}");
+
+            setPageSessionAttribute(key="generalPage" value="#{request.contextPath}/jms/jmsDestinationEdit.jsf");
+            setPageSessionAttribute(key="targetPage" value="#{request.contextPath}/common/resourceNode/resourceEditTargets.jsf");
 
             setPageSessionAttribute(key="resourceType" value="adminObjectResource");
             setPageSessionAttribute(key="hasPool" value="#{false}");

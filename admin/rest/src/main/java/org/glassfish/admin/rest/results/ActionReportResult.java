@@ -115,6 +115,13 @@ public class ActionReportResult extends Result {
     public String getCommandDisplayName() {
         return commandDisplayName;
     }
+    
+    /**
+     * change display name for command associated with the command resource.
+     */
+    public void setCommandDisplayName(String s) {
+         commandDisplayName =s;
+    }
     /**
      * Returns OptionsResult - the meta-data of this resource.
      */

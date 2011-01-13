@@ -63,11 +63,4 @@
         toolTip="$resource{i18n.commonTasks.task.deployGuide.toolTip}"
         onClick="var win=window.open('$resource{i18n.commonTasks.doc.deployGuide}','_blank');if (win) {win.focus();}; return false;">
     </sun:commonTask>
-<!--
-    <sun:commonTask
-        text="$resource{i18n.commonTasks.task.deployPlanningGuide}"
-        toolTip="$resource{i18n.commonTasks.task.deployPlanningGuide.toolTip}"
-        onClick="var win=window.open('$resource{i18n.commonTasks.doc.deployPlanningGuide}','_blank');if (win) {win.focus();}; return false;">
-    </sun:commonTask> 
--->                       
 </sun:commonTasksGroup>

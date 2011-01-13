@@ -40,28 +40,28 @@
 
 package com.sun.enterprise.v3.admin.cluster;
 
-import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.SecureAdmin;
-import java.beans.PropertyVetoException;
-import org.glassfish.api.ActionReport;
+import java.util.Iterator;
 import org.glassfish.api.I18n;
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
-import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.RetryableException;
-import org.jvnet.hk2.config.SingleConfigCode;
-import org.jvnet.hk2.config.Transaction;
-import org.jvnet.hk2.config.TransactionFailure;
 
 /**
- * Adjusts each configuration in the domain to turn off secure admin.
+ * Adjusts each configuration in the domain to turn off secure admin, as if by
+ * executing these commands:
+ * <pre>
+ * {@code
+
+asadmin -s set configs.config.server-config.network-config.network-listeners.network-listener.admin-listener.protocol=admin-listener
+
+asadmin -s set configs.config.server-config.security-service.message-security-config.HttpServlet.provider-config.GFConsoleAuthModule.property.restAuthURL=http://localhost:4848/management/sessions
+
+asadmin -s delete-protocol sec-admin-listener
+asadmin -s delete-protocol admin-http-redirect
+asadmin -s delete-protocol pu-protocol
+}
  * 
  * @author Tim Quinn
  */
@@ -69,51 +69,59 @@ import org.jvnet.hk2.config.TransactionFailure;
 @Scoped(PerLookup.class)
 @I18n("disable.secure.admin.command")
 @ExecuteOn(RuntimeType.ALL)
-public class DisableSecureAdminCommand implements AdminCommand {
-
-//    @Inject
-//    private Configs configs;
-
-    @Inject
-    private Domain domain;
+public class DisableSecureAdminCommand extends SecureAdminCommand {
 
     @Override
-    public void execute(AdminCommandContext context) {
-        final ActionReport report = context.getActionReport();
-        try {
-            ConfigSupport.apply(new SingleConfigCode<Domain>() {
-                @Override
-                public Object run(Domain d) throws PropertyVetoException, TransactionFailure {
-                    // get the transaction
-                    Transaction t = Transaction.getTransaction(d);
-                    if (t!=null) {
-                        try {
-                            // TODO - restore Grizzly config in all configs to non-secure settings
-    //                        for (Config c : configs.getConfig()) {
-    //                            report.getTopMessagePart().addChild().setMessage(c.getName());
-    //                        }
-                            SecureAdmin secureAdmin_w;
-                            SecureAdmin secureAdmin = d.getSecureAdmin();
-                            if (secureAdmin == null) {
-                                secureAdmin_w = d.createChild(SecureAdmin.class);
-                                d.setSecureAdmin(secureAdmin_w);
-                            } else {
-                                secureAdmin_w = t.enroll(secureAdmin);
-                            }
-                            secureAdmin_w.setEnabled("false");
-
-                            t.commit();
-                        } catch (RetryableException ex) {
-                            throw new RuntimeException(ex);
-                        }
-                    }
-                    return Boolean.TRUE;
-                }
-            }, domain);
-            report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-        } catch (TransactionFailure ex) {
-            report.failure(context.getLogger(), Strings.get("disable.secure.admin.errdisable"), ex);
-        }
+    protected String transactionErrorMessageKey() {
+        return "disable.secure.admin.errdisable";
     }
 
+    @Override
+    Iterator<Work<TopLevelContext>> secureAdminSteps() {
+        return reverseStepsIterator(secureAdminSteps);
+    }
+
+    @Override
+    Iterator<Work<ConfigLevelContext>> perConfigSteps() {
+        return reverseStepsIterator(perConfigSteps);
+    }
+
+    /**
+     * Iterator which returns array elements from back to front.
+     * @param <T>
+     * @param steps
+     * @return
+     */
+    private <T extends SecureAdminCommand.Context> Iterator<Work<T>> reverseStepsIterator(Step<T>[] steps) {
+        return new Iterator<Work<T>> () {
+            private Step<T>[] steps;
+            private int nextSlot;
+
+            @Override
+            public boolean hasNext() {
+                return nextSlot >= 0;
+            }
+
+            /**
+             * Returns the disable work associated with the next step we should
+             * process for disabling secure admin.
+             */
+            @Override
+            public Work<T> next() {
+                return steps[nextSlot--].disableWork();
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
+
+            Iterator<Work<T>> init(Step<T>[] steps) {
+                this.steps = steps;
+                nextSlot = this.steps.length - 1;
+                return this;
+            }
+
+        }.init(steps);
+    }
 }

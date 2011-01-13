@@ -60,6 +60,11 @@ import java.util.logging.Logger;
 
 /**
  * Encapsulates handling of appclient script command arguments and options.
+ * <p>
+ * This class processes a list of strings which are the ACC and client arguments
+ * passed on the appclient script.  It makes each ACC argument available
+ * explicitly by its own method ({@link #getTargetServer} for example).  The arguments
+ * to be passed to the app client itself are available using {@link #getAppArgs }.
  *
  *
  * @author tjquinn
@@ -141,7 +146,9 @@ public class AppclientCommandArguments {
     }
 
     /**
-     * Creates and returns a new AppclientCommandArguments.
+     * Creates and returns a new AppclientCommandArguments object from which
+     * the ACC argument settings and the arguments to be passed to the app
+     * client can be retrieved.
      *
      * @param appclientCommandArgs appclient command arguments to use in
      * populating the launch info object
@@ -215,11 +222,11 @@ public class AppclientCommandArguments {
         String pathToUse = null;
         if ((pathToUse = getXML()) != null) {
             if (isConfig) {
-                logger.config("Choosing app client container config from -xml option: " + pathToUse);
+                logger.log(Level.CONFIG, "Choosing app client container config from -xml option: {0}", pathToUse);
             }
         } else if ((pathToUse = getConfigXML()) != null ) {
             if (isConfig) {
-                logger.config("Choosing app client container config from -configxml option: " + pathToUse);
+                logger.log(Level.CONFIG, "Choosing app client container config from -configxml option: {0}", pathToUse);
             }
 //        } else if (isJWS) {
 //            /*

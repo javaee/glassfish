@@ -49,7 +49,8 @@
 />
 <!composition template="/templates/default.layout"
     guiTitle="$resource{i18njmail.customResources.pageTitle}"
-    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:resources:jndi:customResources');"
+    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:resources:jndi:customResources');
+        setTimeout('admingui.table.changeThreeTableButtons(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\'); admingui.table.initAllRows(\\\\\'#{pageSession.tableId}\\\\\');', 0);"
 >
 
 <!define name="content">
@@ -63,6 +64,10 @@
         setPageSessionAttribute(key="listLink" value="#{request.contextPath}/full/customResources.jsf");
         setPageSessionAttribute(key="editLink" value="#{request.contextPath}/full/customResourceEdit.jsf");
         setPageSessionAttribute(key="tableTitle" value="$resource{i18njmail.resourcesTable.resources}");
+
+        setPageSessionAttribute(key="generalPage" value="#{request.contextPath}/full/customResourceEdit.jsf");
+        setPageSessionAttribute(key="targetPage" value="#{request.contextPath}/common/resourceNode/resourceEditTargets.jsf");
+
         setPageSessionAttribute(key="hasPool" value="#{false}" );
         setPageSessionAttribute(key="hasResType" value="#{true}" );
     />

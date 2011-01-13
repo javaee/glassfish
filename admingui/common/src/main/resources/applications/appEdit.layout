@@ -44,7 +44,10 @@
     setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
     setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.enterpriseApplications.editPageTitle}" guiTemplateOnLoad="admingui.help.pluginId = 'common';">
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18n.enterpriseApplications.editPageTitle}"
+    guiTemplateOnLoad="admingui.help.pluginId = 'common';"
+    guiOnLoad="admingui.nav.selectTreeNodeWithURL('#{request.contextPath}/common/applications/applicationEdit.jsf?appName=#{pageSession.appName}');"
+>
 <!define name="content">
     <event>
     <!beforeCreate
@@ -63,10 +66,12 @@
             mapPut(map="#{pageSession.valueMap2}"  key="enabled" value="#{pageSession.status}");
             setPageSessionAttribute(key="origState" value="#{pageSession.status}");
             setPageSessionAttribute(key="finalShowVS" value="#{pageSession.showVS}");
+            setPageSessionAttribute(key="finalShowAvail" value="#{false}");
         }
 
         if (!#{pageSession.onlyDASExist}){
             setPageSessionAttribute(key="finalShowVS" value="#{false}");
+            setPageSessionAttribute(key="finalShowAvail" value="#{pageSession.showAvailability}");
         }
 
         if (! #{pageSession.hasPageTitle}){
@@ -77,7 +82,7 @@
             setPageSessionAttribute(key="pageTitleHelp" value="$resource{i18n.enterpriseApplications.editPageTitleHelp}");
         }
         setPageSessionAttribute(key="convertToFalseList2" value={"enabled"});
-        setPageSessionAttribute(key="convertToFalseList" value={"enabled"});
+        setPageSessionAttribute(key="convertToFalseList" value={"enabled", "availabilityEnabled"});
 
         gf.restRequest(endpoint="#{pageSession.selfUrl}/property.json" method="GET" result="#{requestScope.propTable}");
         setPageSessionAttribute(key="tableList" value="#{requestScope.propTable.data.extraProperties.properties}");
@@ -138,35 +143,15 @@
                         setPageSessionAttribute(key="javaWebStartEnabled" value="false");
                     }
                     foreach (var="oneProp" list="#{pageSession.tableList}") {
-                        if (#{requestScope.oneProp.name}=javaWebStartEnabled){
+                        if (#{requestScope.oneProp.name}=$constant{org.glassfish.deployment.client.DFDeploymentProperties.DEPLOY_OPTION_JAVA_WEB_START_ENABLED}){
                             setAttribute(key="found" value="true");
                             mapPut(map="#{requestScope.oneProp}" key="value" value="#{pageSession.javaWebStartEnabled}")
                         }
                     }
                     if (!#{requestScope.found}){
                         createMap(result="#{requestScope.jmap}");
-                        mapPut(map="#{requestScope.jmap}" key="name" value="javaWebStartEnabled")
+                        mapPut(map="#{requestScope.jmap}" key="name" value="$constant{org.glassfish.deployment.client.DFDeploymentProperties.DEPLOY_OPTION_JAVA_WEB_START_ENABLED}")
                         mapPut(map="#{requestScope.jmap}" key="value" value="#{pageSession.javaWebStartEnabled}")
-                        listAdd(list="#{pageSession.tableList}" value="#{requestScope.jmap}");
-                    }
-                }
-
-
-                if (#{pageSession.showAvailability){
-                    if(!#{pageSession.availabilityEnabled}){
-                        //will be null if checkbox is unchecked.
-                        setPageSessionAttribute(key="availabilityEnabled" value="false");
-                    }
-                    foreach (var="oneProp" list="#{pageSession.tableList}") {
-                        if (#{requestScope.oneProp.name}=availabilityEnabled){
-                            setAttribute(key="found" value="true");
-                            mapPut(map="#{requestScope.oneProp}" key="value" value="#{pageSession.availabilityEnabled}")
-                        }
-                    }
-                    if (!#{requestScope.found}){
-                        createMap(result="#{requestScope.jmap}");
-                        mapPut(map="#{requestScope.jmap}" key="name" value="availabilityEnabled")
-                        mapPut(map="#{requestScope.jmap}" key="value" value="#{pageSession.availabilityEnabled}")
                         listAdd(list="#{pageSession.tableList}" value="#{requestScope.jmap}");
                     }
                 }

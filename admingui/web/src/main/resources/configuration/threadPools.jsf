@@ -76,7 +76,7 @@
 #include "/common/shared/alertMsg.inc"
                  <sun:title id="propertyContentPage" title="$resource{i18n_web.configuration.threadPoolPageTitle}"
                  helpText="$resource{i18n_web.configuration.threadPoolPageTitleHelp}" />
-		 "<br /> <br />
+#include "/common/shared/configNameSection.inc"
 
 <sun:table id="configs" title="#{tableTitle}"
     deselectMultipleButton="$boolean{true}"
@@ -101,24 +101,24 @@
             />
     </sun:tableColumn>
 
-    <sun:tableColumn headerText="$resource{i18n_web.threadPool.threadPoolIdCol}" sort="Name" rowHeader="$boolean{true}" id="col1">
+    <sun:tableColumn headerText="$resource{i18n_web.threadPool.threadPoolIdCol}" sort="name" rowHeader="$boolean{true}" id="col1">
         <sun:hyperlink id="link" text="#{td.value.name}"
             url="#{pageSession.editLink}&name=#{td.value.name}" />
     </sun:tableColumn>
 
-    <sun:tableColumn headerText="$resource{i18n_web.threadPool.maxThreadCol}"   rowHeader="$boolean{true}" id="max">
+    <sun:tableColumn headerText="$resource{i18n_web.threadPool.maxThreadCol}"  sort="maxThreadPoolSize"  rowHeader="$boolean{true}" id="max">
         <staticText id="max" value="#{td.value.maxThreadPoolSize}" />
     </sun:tableColumn>
 
-    <sun:tableColumn headerText="$resource{i18n_web.threadPool.minThreadCol}"  rowHeader="$boolean{true}" id="min">
+    <sun:tableColumn headerText="$resource{i18n_web.threadPool.minThreadCol}"  sort="minThreadPoolSize" rowHeader="$boolean{true}" id="min">
         <staticText id="min" value="#{td.value.minThreadPoolSize}" />
     </sun:tableColumn>
 
-    <sun:tableColumn headerText="$resource{i18n_web.threadPool.maxQueueCol}"  rowHeader="$boolean{true}" id="maxq">
+    <sun:tableColumn headerText="$resource{i18n_web.threadPool.maxQueueCol}" sort="maxQueueSize" rowHeader="$boolean{true}" id="maxq">
         <staticText id="maxq" value="#{td.value.maxQueueSize}" />
     </sun:tableColumn>
 
-    <sun:tableColumn headerText="$resource{i18n_web.threadPool.timeoutCol}"  rowHeader="$boolean{true}" id="idle">
+    <sun:tableColumn headerText="$resource{i18n_web.threadPool.timeoutCol}"   sort="idleThreadTimeoutSeconds" rowHeader="$boolean{true}" id="idle">
         <staticText id="idle" value="#{td.value.idleThreadTimeoutSeconds}" />
     </sun:tableColumn>
 

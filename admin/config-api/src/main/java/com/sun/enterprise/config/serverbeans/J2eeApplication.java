@@ -54,6 +54,7 @@ import org.jvnet.hk2.config.types.PropertyBag;
 import org.glassfish.quality.ToDo;
 
 @Configured(name="j2ee-application") // name is necessary as hk2 name mangling will create j2-ee-application
+@Deprecated
 public interface J2eeApplication extends Injectable, ApplicationName, PropertyBag {
 
     /**

@@ -58,8 +58,10 @@ import java.text.NumberFormat;
 import java.util.Locale;
 import java.util.Date;
 import java.util.ListIterator;
+import java.util.logging.Level;
 
 import org.glassfish.admingui.common.util.RestResponse;
+import org.glassfish.admingui.common.util.RestUtil;
 
 /**
  *
@@ -79,7 +81,7 @@ public class MonitoringHandlers {
         List result = new ArrayList();
         try {
             String monitoringServiceEndPoint = endpoint + "/monitoring-service";
-            Map<String,Object> attrs = RestApiHandlers.getEntityAttrs(monitoringServiceEndPoint+"/container-monitoring", "entitiy");
+            Map<String,Object> attrs = RestUtil.getEntityAttrs(monitoringServiceEndPoint+"/container-monitoring", "entitiy");
 
             if (attrs != null) {
                 for (String prop : attrs.keySet()) {
@@ -103,7 +105,7 @@ public class MonitoringHandlers {
             }
 
             String monitoringLevelsEndPoint = monitoringServiceEndPoint + "/module-monitoring-levels";
-            attrs = RestApiHandlers.getEntityAttrs(monitoringLevelsEndPoint, "entity");
+            attrs = RestUtil.getEntityAttrs(monitoringLevelsEndPoint, "entity");
             for (String oneMonComp : attrs.keySet()) {
                 Map oneRow = new HashMap();
                 String name = null;
@@ -155,7 +157,7 @@ public class MonitoringHandlers {
         try {
             //This check is to get the correct type of statistics.
             if ((type == null || statType == null) || type.equals(statType)) {
-                if (doesProxyExist(endpoint)) {
+                if (RestUtil.doesProxyExist(endpoint)) {
                     Map<String, Object> stats = getMonitoringStatInfo(endpoint);
                     //Jersey monitoring data format
                     if (statType != null && statType.equals("jersey")) {
@@ -364,7 +366,7 @@ public class MonitoringHandlers {
             Map<String,Object> attrMap = new HashMap<String,Object>();
             attrMap.put((value == null) ? name : value, oneRow.get("level"));
             String entityUrl = (objectNameStr == null) ? containerEndpoint+"/"+name : objectNameStr ;
-            RestResponse response = RestApiHandlers.sendUpdateRequest(entityUrl, attrMap, null, null, null);
+            RestResponse response = RestUtil.sendUpdateRequest(entityUrl, attrMap, null, null, null);
             if (!response.isSuccess()) {
                 GuiUtil.getLogger().severe("Update monitor level failed.  parent=" + endpoint + "; attrsMap =" + attrMap);
                 GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.error.checkLog"));
@@ -435,9 +437,9 @@ public class MonitoringHandlers {
         String appName = name;
         String fullName = name;
         try {
-            List<String> applications = new ArrayList<String>(RestApiHandlers.getChildMap(endpoint).keySet());
+            List<String> applications = new ArrayList<String>(RestUtil.getChildMap(endpoint).keySet());
             for (String oneApp : applications) {
-                List<String> modules = new ArrayList<String>(RestApiHandlers.getChildMap(endpoint + "/" + oneApp + "/module").keySet());
+                List<String> modules = new ArrayList<String>(RestUtil.getChildMap(endpoint + "/" + oneApp + "/module").keySet());
                 if (modules.contains(name)) {
                     appName = oneApp;
                     break;
@@ -496,7 +498,7 @@ public class MonitoringHandlers {
                     if (moduleProps.containsKey(compStrs[1]) && moduleProps.get(compStrs[1]).equals("Servlet")) {
                         monitorEndpoint = monitorEndpoint + "/" + URLEncoder.encode(compStrs[0], "UTF-8") + "/" + URLEncoder.encode(compStrs[1], "UTF-8");
 
-                        if (doesProxyExist(monitorEndpoint)) {
+                        if (RestUtil.doesProxyExist(monitorEndpoint)) {
                             webServletUrl = monitorEndpoint;
                             statType = "ServletInstance";
                         }
@@ -504,7 +506,10 @@ public class MonitoringHandlers {
                 }
             }
         } catch (UnsupportedEncodingException ex) {
-            ex.printStackTrace();
+            GuiUtil.getLogger().info(GuiUtil.getCommonMessage("log.error.getWebStatsUrl" )+ ex.getLocalizedMessage());
+            if (GuiUtil.getLogger().isLoggable(Level.FINE)){
+                ex.printStackTrace();
+            }
         }
         handlerCtx.setOutputValue("webServletUrl", webServletUrl);
         handlerCtx.setOutputValue("webServletType", statType);
@@ -538,10 +543,13 @@ public class MonitoringHandlers {
                     statUrl = statUrl  + "/" + URLEncoder.encode(str, "UTF-8");
                 }                
             } catch (UnsupportedEncodingException ex) {
+                GuiUtil.getLogger().info(GuiUtil.getCommonMessage("log.error.getStatsUrl") + ex.getLocalizedMessage());
+            if (GuiUtil.getLogger().isLoggable(Level.FINE)){
                 ex.printStackTrace();
             }
+            }
 
-            if (doesProxyExist(statUrl)) {               
+            if (RestUtil.doesProxyExist(statUrl)) {
                 if (compStrs.length == 1) {
                     statType = (String) moduleProps.get(compStrs[0]);
                 } else {
@@ -601,7 +609,7 @@ public class MonitoringHandlers {
         String endpoint = (String) handlerCtx.getInputValue("endpoint");
         Boolean result = false;
         try {
-            List<String> poolNames = new ArrayList<String>(RestApiHandlers.getChildMap(endpoint).keySet());
+            List<String> poolNames = new ArrayList<String>(RestUtil.getChildMap(endpoint).keySet());
             if (poolNames.contains(poolName)) {
                 result = true;
             }
@@ -637,8 +645,8 @@ public class MonitoringHandlers {
         String firstConnector = null;
 
         try {
-            List<String> jdbcPools = new ArrayList<String>(RestApiHandlers.getChildMap(endpoint + "/jdbc-connection-pool").keySet());
-            List<String> connectorPools = new ArrayList<String>(RestApiHandlers.getChildMap(endpoint + "/connector-connection-pool").keySet());
+            List<String> jdbcPools = new ArrayList<String>(RestUtil.getChildMap(endpoint + "/jdbc-connection-pool").keySet());
+            List<String> connectorPools = new ArrayList<String>(RestUtil.getChildMap(endpoint + "/connector-connection-pool").keySet());
             for (String poolName : poolNames) {
                 if (jdbcPools.contains(poolName)) {
                     jdbcMonitorList.add(poolName);
@@ -664,32 +672,7 @@ public class MonitoringHandlers {
        })
     public static void getInstanceMonitorURL(HandlerContext handlerCtx) {
         String instanceName = (String) handlerCtx.getInputValue("instanceName");
-        String monitorURL = null;
-        String serverRestURL = (String) GuiUtil.getSessionValue("REST_URL");
-        String port = null;
-
-        if (instanceName.equals("server")) {
-            monitorURL = (String) GuiUtil.getSessionValue("MONITOR_URL") + "/server";
-        } else {
-            if (doesProxyExist(serverRestURL + "/servers/server/" + instanceName + "/system-property/ASADMIN_LISTENER_PORT")) {
-                port = (String) RestApiHandlers.getAttributesMap(serverRestURL + "/servers/server/" + instanceName + "/system-property/ASADMIN_LISTENER_PORT").get("value");
-            } else {
-                String configName = (String) RestApiHandlers.getAttributesMap(serverRestURL + "/servers/server/" + instanceName).get("configRef");
-                port = (String) RestApiHandlers.getAttributesMap(serverRestURL + "/configs/config/" + configName + "/network-config/network-listeners/network-listener/admin-listener").get("port");
-                port = port.trim();
-                if (port.startsWith("${")) {
-                    port = port.substring(2, port.length() - 1);
-                    port = (String) RestApiHandlers.getAttributesMap(serverRestURL + "/configs/config/" + configName + "/system-property/ASADMIN_LISTENER_PORT").get("value");
-                }
-            }
-            String node = (String) RestApiHandlers.getAttributesMap(serverRestURL + "/servers/server/" + instanceName).get("node");
-            String nodeHost = (String) RestApiHandlers.getAttributesMap(serverRestURL + "/nodes/node/" + node).get("nodeHost");
-            if (serverRestURL.startsWith("https:")) {
-                monitorURL = "https://"+nodeHost+":"+ port + "/monitoring/domain/" + instanceName +"/server";
-            } else {
-                monitorURL = "http://"+nodeHost+":"+ port + "/monitoring/domain/" + instanceName +"/server";
-            }
-        }
+        String monitorURL = (String) GuiUtil.getSessionValue("MONITOR_URL") + "/" + instanceName;
         handlerCtx.setOutputValue("monitorURL", monitorURL);
     }
 
@@ -709,7 +692,7 @@ public class MonitoringHandlers {
         attrs.put("modulename", moduleName);
 
         try {
-            Map<String, Object> responseMap = RestApiHandlers.restRequest(endpoint, attrs, "GET", null, false);
+            Map<String, Object> responseMap = RestUtil.restRequest(endpoint, attrs, "GET", null, false);
             Map<String, Object> propsMap = (Map<String, Object>) ((Map<String, Object>) responseMap.get("data")).get("properties");
             if (propsMap != null && propsMap.size() > 0) {
                 return propsMap;
@@ -721,15 +704,8 @@ public class MonitoringHandlers {
         return null;
     }
 
-    public static Boolean doesProxyExist(String endpoint) {
-        if (RestApiHandlers.get(endpoint).isSuccess()) {
-            return true;
-        }
-        return false;
-    }
-
     public static Boolean doesMonitoringDataExist(String endpoint) {
-        if (RestApiHandlers.get(endpoint).isSuccess()) {
+        if (RestUtil.doesProxyExist(endpoint)) {
             if (getMonitoringStatInfo(endpoint).size() > 0) {
                 return true;
             }
@@ -808,12 +784,15 @@ public class MonitoringHandlers {
     private static Map<String, Object> getMonitoringStatInfo(String endpoint) {
         Map<String, Object> monitorInfoMap = new HashMap<String, Object>();
         try {
-            Map<String, Object> responseMap = RestApiHandlers.restRequest(endpoint, null, "GET", null, false);
+            Map<String, Object> responseMap = RestUtil.restRequest(endpoint, null, "GET", null, false);
             Map<String, Object> dataMap = (Map<String, Object>) responseMap.get("data");
             if (dataMap != null) {
                 Map<String, Object> extraPropsMap = (Map<String, Object>) dataMap.get("extraProperties");
                 if (extraPropsMap != null) {
-                    monitorInfoMap = (Map<String, Object>) extraPropsMap.get("entity");
+                    Map<String, Object> entityMap = (Map<String, Object>) extraPropsMap.get("entity");
+                    if (entityMap != null) {
+                        monitorInfoMap = entityMap;
+                    }
                 }
             }
         } catch (Exception ex) {

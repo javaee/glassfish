@@ -52,6 +52,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Calendar;
 import java.util.TimeZone;
 import java.util.logging.Level;
@@ -69,15 +70,15 @@ import org.jvnet.hk2.component.Habitat;
  */
 public abstract class SecureAdminBootstrapHelper {
 
-    private static final URI DOMAIN_XML_URI = URI.create("config/domain.xml");
-    private static final URI[] SECURE_ADMIN_FILE_REL_URIS_TO_COPY = new URI[] {
-        DOMAIN_XML_URI,
-        URI.create("config/keystore.jks"),
-        URI.create("config/cacerts.jks")
+    private static final String DOMAIN_XML_PATH = "config/domain.xml";
+    private static final String[] SECURE_ADMIN_FILE_REL_URIS_TO_COPY = new String[] {
+        DOMAIN_XML_PATH,
+        "config/keystore.jks",
+        "config/cacerts.jks"
     };
 
-    private static final URI[] SECURE_ADMIN_FILE_DIRS_TO_CREATE = new URI[] {
-        URI.create("config")
+    private static final String[] SECURE_ADMIN_FILE_DIRS_TO_CREATE = new String[] {
+        "config"
     };
 
     /**
@@ -125,7 +126,7 @@ public abstract class SecureAdminBootstrapHelper {
         return new LocalHelper(existingInstanceDir, newInstanceDir);
     }
 
-    protected abstract void mkdirs(URI dirURI) throws IOException;
+    protected abstract void mkdirs(String dirURI) throws IOException;
 
     /**
      * Copies the bootstrap files from their origin to their destination.
@@ -173,8 +174,8 @@ public abstract class SecureAdminBootstrapHelper {
     }
 
     private void mkdirs() throws IOException {
-        for (URI dirURI : SECURE_ADMIN_FILE_DIRS_TO_CREATE) {
-            mkdirs(dirURI);
+        for (String dirPath : SECURE_ADMIN_FILE_DIRS_TO_CREATE) {
+            mkdirs(dirPath);
         }
     }
 
@@ -187,8 +188,8 @@ public abstract class SecureAdminBootstrapHelper {
         private final SSHLauncher launcher;
         private final File dasInstanceDir;
         private final String instance;
-        private final URI remoteNodeDirURI;
-        private final URI remoteInstanceURI;
+        private final String remoteNodeDir;
+        private final String remoteInstanceDir;
 
         private final long domainXMLTimestamp;
 
@@ -204,9 +205,9 @@ public abstract class SecureAdminBootstrapHelper {
             this.dasInstanceDir = dasInstanceDir;
             this.instance = instance;
             this.logger = logger;
-            remoteNodeDir = remoteNodeDir(node, remoteNodeDir);
-            remoteNodeDirURI = URI.create(remoteNodeDir);
-            remoteInstanceURI = remoteInstanceURI(remoteNodeDir);
+
+            this.remoteNodeDir = remoteNodeDirUnixStyle(node, remoteNodeDir);
+            remoteInstanceDir = remoteInstanceDir(this.remoteNodeDir);
             domainXMLTimestamp = dasDomainXMLTimestamp(dasInstanceDir);
             launcher = habitat.getComponent(SSHLauncher.class);
             launcher.init(node, logger);
@@ -218,7 +219,7 @@ public abstract class SecureAdminBootstrapHelper {
         }
 
         private long dasDomainXMLTimestamp(final File dasInstanceDir) {
-            return new File(dasInstanceDir.toURI().resolve(DOMAIN_XML_URI)).lastModified();
+            return new File(dasInstanceDir.toURI().resolve(DOMAIN_XML_PATH)).lastModified();
         }
 
         private String ensureTrailingSlash(final String path) {
@@ -229,52 +230,69 @@ public abstract class SecureAdminBootstrapHelper {
             }
         }
 
-        private String remoteNodeDir(final Node node, final String remoteNodeDir) {
+        private String remoteNodeDirUnixStyle(final Node node, final String remoteNodeDir) {
             /*
              * Use the node dir if it was specified when the node was created.
              * Otherwise derive it: ${remote-install-dir}/glassfish/${node-name}
              */
-            return (remoteNodeDir != null ? remoteNodeDir :
-                (new StringBuilder(ensureTrailingSlash(node.getInstallDirUnixStyle()))
-                    .append("glassfish/nodes/")
-                    .append(node.getName())).toString());
+            String result;
+            if (remoteNodeDir != null) {
+                result = remoteNodeDir;
+            } else {
+                result = new StringBuilder(ensureTrailingSlash(node.getInstallDirUnixStyle()))
+                        .append("glassfish/nodes/")
+                        .append(node.getName()).toString();
+            }
+            
+            return ensureTrailingSlash(result.replaceAll("\\\\","/"));
         }
 
-        private URI remoteInstanceURI(final String remoteNodeDirPath) {
+        private String remoteInstanceDir(final String remoteNodeDirPath) {
             final StringBuilder remoteInstancePath = new StringBuilder(remoteNodeDirPath);
             if ( ! remoteNodeDirPath.endsWith("/")) {
                 remoteInstancePath.append("/");
             }
             remoteInstancePath.append(instance).append("/");
-            return URI.create(remoteInstancePath.toString().replaceAll("\\\\","/"));
+            return remoteInstancePath.toString().replaceAll("\\\\","/");
         }
 
         @Override
-        protected void mkdirs(URI dirURI) throws IOException {
-            Integer instanceDirPermissions = ftpClient.lstat(remoteNodeDirURI.getPath()).permissions;
-            URI remoteFileURI = remoteInstanceURI.resolve(dirURI);
+        protected void mkdirs(String dir) throws IOException {
+            String remoteDir = remoteInstanceDir + dir;
+            logger.log(Level.FINE, "Trying to create directories for remote path {0}",
+                    remoteDir);
+            Integer instanceDirPermissions;
+            try {
+                instanceDirPermissions = ftpClient.lstat(remoteNodeDir).permissions;
+            } catch (IOException ex) {
+                throw new IOException(remoteNodeDir, ex);
+            }
             logger.log(Level.FINE, "Creating remote bootstrap directory " +
-                       remoteFileURI.getPath() + " with permissions " +
+                       remoteDir + " with permissions " +
                        instanceDirPermissions.toString());
-            ftpClient.mkdirs(remoteFileURI.getPath(), instanceDirPermissions);
+            try {
+                ftpClient.mkdirs(remoteDir, instanceDirPermissions);
+            } catch (IOException ex) {
+                throw new IOException(remoteDir, ex);
+            }
         }
 
 
         @Override
         protected void copyBootstrapFiles() throws FileNotFoundException, IOException {
-            for (URI fileRelativeURI : SECURE_ADMIN_FILE_REL_URIS_TO_COPY) {
+            for (String fileRelativePath : SECURE_ADMIN_FILE_REL_URIS_TO_COPY) {
                 InputStream is = null;
-                URI remoteFileURI = null;
+                String remoteFilePath = null;
                 try {
                     is = new BufferedInputStream(
                             new FileInputStream(
-                                new File(dasInstanceDir.toURI().resolve(fileRelativeURI))));
-                    remoteFileURI = remoteInstanceURI.resolve(fileRelativeURI);
-                    writeToFile(remoteFileURI.getPath(), is);
-                    logger.log(Level.FINE, "Copied bootstrap file to {0}", remoteFileURI.toASCIIString());
+                                new File(dasInstanceDir.toURI().resolve(fileRelativePath))));
+                    remoteFilePath = remoteInstanceDir + fileRelativePath;
+                    writeToFile(remoteFilePath, is);
+                    logger.log(Level.FINE, "Copied bootstrap file to {0}", remoteFilePath);
                 } catch (Exception ex) {
                     if (logger.isLoggable(Level.FINE)) {
-                        logger.log(Level.FINE, "Error copying bootstrap file to " + remoteFileURI.toASCIIString(), ex);
+                        logger.log(Level.FINE, "Error copying bootstrap file to " + remoteFilePath, ex);
                     }
                     throw new IOException(ex);
                 } finally {
@@ -287,9 +305,9 @@ public abstract class SecureAdminBootstrapHelper {
 
         @Override
         protected void backdateInstanceDomainXML() throws BootstrapException {
-            final URI remoteDomainXMLURI = remoteInstanceURI.resolve(DOMAIN_XML_URI);
+            final String remoteDomainXML = remoteInstanceDir + DOMAIN_XML_PATH;
             try {
-                setLastModified(remoteDomainXMLURI.getPath(), 0);
+                setLastModified(remoteDomainXML, 0);
             } catch (IOException ex) {
                 throw new BootstrapException(launcher, ex);
             }
@@ -340,23 +358,23 @@ public abstract class SecureAdminBootstrapHelper {
         }
 
         @Override
-        protected void mkdirs(URI dirURI) {
-            new File(newInstanceDirURI.resolve(dirURI)).mkdirs();
+        protected void mkdirs(String dir) {
+            new File(newInstanceDirURI.resolve(dir)).mkdirs();
         }
 
 
         @Override
         public void copyBootstrapFiles() throws IOException {
-            for (URI relativeURIToFile : SECURE_ADMIN_FILE_REL_URIS_TO_COPY) {
-                final File origin = new File(existingInstanceDirURI.resolve(relativeURIToFile));
-                final File dest = new File(newInstanceDirURI.resolve(relativeURIToFile));
+            for (String relativePathToFile : SECURE_ADMIN_FILE_REL_URIS_TO_COPY) {
+                final File origin = new File(existingInstanceDirURI.resolve(relativePathToFile));
+                final File dest = new File(newInstanceDirURI.resolve(relativePathToFile));
                 FileUtils.copyFile(origin, dest);
             }
         }
 
         @Override
         protected void backdateInstanceDomainXML() throws BootstrapException {
-            final File newDomainXMLFile = new File(newInstanceDirURI.resolve(DOMAIN_XML_URI));
+            final File newDomainXMLFile = new File(newInstanceDirURI.resolve(DOMAIN_XML_PATH));
             newDomainXMLFile.setLastModified(0);
         }
     }

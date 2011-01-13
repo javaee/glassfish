@@ -72,9 +72,7 @@ public class DomainConfig extends RepositoryConfig
     public static final String K_PROFILE        = "domain.profile";
     public static final String K_DOMAINS_ROOT    = "domains.root";
     public static final String K_HOST_NAME      = "domain.hostName";
-    public static final String K_JMS_PASSWORD   = "jms.password";
     public static final String K_JMS_PORT       = "jms.port";
-    public static final String K_JMS_USER       = "jms.user";
     public static final String K_ORB_LISTENER_PORT  = "orb.listener.port";    
     public static final String K_SERVERID      = "server.id";
     public static final String K_TEMPLATE_NAME = "template.name";
@@ -119,8 +117,7 @@ public class DomainConfig extends RepositoryConfig
      */
     public DomainConfig(String domainName, Integer adminPort, String domainRoot, 
         String adminUser, String adminPassword, String masterPassword,
-        Boolean saveMasterPassword, Integer instancePort,
-        String jmsUser, String jmsPassword, Integer jmsPort, 
+        Boolean saveMasterPassword, Integer instancePort, Integer jmsPort, 
         Integer orbPort, Integer httpSSLPort, 
         Integer iiopSSLPort, Integer iiopMutualAuthPort,
         Integer jmxAdminPort, Integer osgiShellTelnetPort,
@@ -130,8 +127,6 @@ public class DomainConfig extends RepositoryConfig
         this(domainName, domainRoot);
         try {
             put(K_ADMIN_PORT, adminPort);
-            put(K_JMS_USER, jmsUser);
-            put(K_JMS_PASSWORD, jmsPassword);
             put(K_PASSWORD, adminPassword);
             put(K_MASTER_PASSWORD, masterPassword);
             put(K_SAVE_MASTER_PASSWORD, saveMasterPassword);

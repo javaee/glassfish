@@ -44,10 +44,12 @@
     setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings")
     setResourceBundle(key="help_common" bundle="org.glassfish.common.admingui.Helplinks");
 />
-<!composition template="/templates/default.layout"  guiTitle="$resource{i18nc.support.PageTitle}"
-        guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:registration');">
-<!define name="content">
 
+<sun:page id="page1">
+<!--
+<!composition template="/templates/default.layout"  guiTitle="$resource{i18nc.support.PageTitle}">
+<!define name="content">
+-->
 <sun:script>
     // Should move this to JS to our adminjsf.js file
     <f:verbatim>
@@ -74,17 +76,23 @@
     </f:verbatim>
 </sun:script>
 
+<sun:html id="html2">
+<sun:head id="propertyhead" title="$resource{i18nc.support.PageTitle}" debug="false" parseOnLoad="false">
+    <sun:script url="/resource/common/js/adminjsf.js" />
+</sun:head>
+<sun:body  id="body3">
 <sun:form id="propertyForm">
     <!beforeCreate
-        
+
         getSupportImages(count="5", imageList=>$page{imageList});
-        getIssueQueryString(query=>$page{IssueQuery});
     />
     <!-- Page Title -->
     //<sun:title id="propertyContentPage" title="$resource{i18nc.support.PageTitle}" helpText="$resource{i18nc.support.PageTitleHelp}">
     //</sun:title>
+
     <sun:hidden id="helpKey" value="$resource{help_common.support}" />
 </sun:form>
+
 <f:verbatim>
     <link rel="stylesheet" type="text/css" href="#{request.contextPath}/resource/common/sysnet/support.css"/>
     <style type="text/css">
@@ -149,28 +157,7 @@
         <p>
         <div id="twocolumn">
             <div id="leftcolumn">
-                <div id="box" class="md1">
-                    <div class="hd">
-                        <h2>$resource{i18nc.support.events}</h2>
-                    </div>
-                    <div id="boxbd" class="bd">
-                        <div class="innerbox">
-                            <image src="#{request.contextPath}/resource/common/images/squares/#{imageList[0]}" alt="" border=0 align="right"  style="float:right; margin:5px 20px 0px 20px;" >
-                            <font face=arial size=-1> $resource{i18nc.support.techDays}<br>$resource{i18nc.support.techDaysDesc}</font>
-    </f:verbatim>
-                            <jmaki:widget name="jmaki.blockList" service="/xhp?key=events" args="{count:2}" template="/resources/jmaki/blockList/events.htm" />
-    <f:verbatim>
-                            <br clear="all"><center><hr></center>
-    </f:verbatim>
-                            <jmaki:widget name="jmaki.blockList" service="/xhp?key=sdnevents" args="{count:2}" template="/resources/jmaki/blockList/sdn.htm" />
-    <f:verbatim>
-                            <br clear="all">
-                            <div class="moreInfo"><a href="$resource{i18nc.support.eventsLink}" target="_blank">$resource{i18nc.support.moreDevEvents}</a></div>
-                        </div>
-                    </div>
-                </div>
-                <p>
-
+\
                 <div id="box" class="md1">
                     <div class="hd">
                         <h2>$resource{i18nc.support.techTips}</h2>
@@ -211,44 +198,19 @@
 
                 <div id="box" class="md1">
                     <div class="hd">
-                        <h2>$resource{i18nc.support.sunDevNews}</h2>
+                        <h2>$resource{i18nc.support.podcast}</h2>
                     </div>
                     <div id="boxbd" class="bd">
                         <div class="innerbox">
-                            <img src="#{request.contextPath}/resource/common/images/squares/#{imageList[3]}" alt="" border=0 align="right" style="float:right; margin:2px 20px 0px 20px;">
-    <!--
-                            <h3>Enterprise Java</h3>
     </f:verbatim>
-                            <jmaki:widget name="jmaki.blockList" service="/xhp?key=sdnEENews" args="{count:2}" template="/resources/jmaki/blockList/sdndevnews.htm" />
+                            <jmaki:widget name="jmaki.blockList" id="podcast" args="{count:1}" service="/xhp?key=podcast" template="/resources/jmaki/blockList/podcast.htm" />
     <f:verbatim>
-                            <br><br><center><hr></center><p>
-                            <h3> All SDN News</h3>
-    -->
-    </f:verbatim>
-                            <jmaki:widget name="jmaki.blockList" id="sdndevnews" service="/xhp?key=sdndevnews" args="{count:2}" template="/resources/jmaki/blockList/sdndevnews.htm" />
-    <f:verbatim>
-                            <br clear="all"><div class="moreInfo"><a href="$resource{i18nc.support.devNewsLink}" target="_blank">$resource{i18nc.support.sunDevNews}</a></div>
+                            <br clear="all"><div class="moreInfo"><a href="$resource{i18nc.support.podcastLink}" target="_blank">$resource{i18nc.support.morePodCast}</a></div>
                         </div>
                     </div>
                 </div>
                 <p>
 
-                <div id="box" class="md1">
-                    <div class="hd">
-                        <h2>$resource{i18nc.support.gfIssues}</h2>
-
-                    </div>
-                    <div id="boxbd" class="bd">
-                        <div class="innerbox">
-                            <font face=arial size=-1>$resource{i18nc.support.bugList}</font>
-    </f:verbatim>
-                            <jmaki:widget name="jmaki.blockList" id="issues" args="{count:5}" service="/xhp?key=issues&count=20" template="/resources/jmaki/blockList/issues.htm" />
-    <f:verbatim>
-                            <br clear="all">
-                            <div class="moreInfo"><a href="#{IssueQuery}" target="_blank">$resource{i18nc.support.moreIssues}</a></div>
-                        </div>
-                    </div>
-                </div>
             </div>
             <div id="rightcolumn">
                 <div id="box" class="md1">
@@ -324,19 +286,6 @@
                 </div>
                 <p>
 
-                <div id="box" class="md1">
-                    <div class="hd">
-                        <h2>$resource{i18nc.support.podcast}</h2>
-                    </div>
-                    <div id="boxbd" class="bd">
-                        <div class="innerbox">
-    </f:verbatim>
-                            <jmaki:widget name="jmaki.blockList" id="podcast" args="{count:1}" service="/xhp?key=podcast" template="/resources/jmaki/blockList/podcast.htm" />
-    <f:verbatim>
-                            <br clear="all"><div class="moreInfo"><a href="$resource{i18nc.support.podcastLink}" target="_blank">$resource{i18nc.support.morePodCast}</a></div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -357,5 +306,11 @@
         }
     </f:verbatim>
 </sun:script>
+
+</sun:body>
+</sun:html>
+</sun:page>
+<!--
 </define>
 </composition>
+-->

@@ -41,6 +41,8 @@
 package org.glassfish.admin.cli.resources;
 
 import com.sun.enterprise.config.serverbeans.*;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+import org.glassfish.resource.common.ResourceStatus;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 
@@ -56,7 +58,14 @@ public class BindableResourcesHelper {
     @Inject
     private ConfigBeansUtilities configBeanUtilities;
 
+    @Inject
+    private ResourceUtil resourceUtil;
+
     private final static String DOMAIN = "domain";
+
+    final private static LocalStringManagerImpl localStrings =
+            new LocalStringManagerImpl(BindableResourcesHelper.class);
+
 
     public boolean resourceExists(String jndiName, String target) {
         boolean exists = false;
@@ -81,5 +90,84 @@ public class BindableResourcesHelper {
             }
         }
         return exists;
+    }
+
+    /**
+     * checks whether duplicate resource exists or resource is already created but not resource-ref or
+     * resource-ref already exists.
+     * @param resources resources
+     * @param jndiName resource-name
+     * @param validateResourceRef whether to validate resource-ref
+     * @param target target instance/cluster/domain
+     * @param resourceTypeToValidate type of resource
+     * @return ResourceStatus indicating Success or Failure
+     */
+    public ResourceStatus validateBindableResourceForDuplicates(Resources resources, String jndiName,
+                                                          boolean validateResourceRef, String target,
+                                                          Class<? extends BindableResource> resourceTypeToValidate){
+        // ensure we don't already have one of this name
+        BindableResource duplicateResource = (BindableResource)
+                resources.getResourceByName(BindableResource.class, jndiName);
+        if (duplicateResource != null) {
+            String msg ;
+            if(validateResourceRef && (getResourceByClass(duplicateResource).equals(resourceTypeToValidate))){
+                if(target.equals("domain")){
+                    msg = localStrings.getLocalString("duplicate.resource.found",
+                            "A {0} by name {1} already exists.", getResourceTypeName(duplicateResource), jndiName);
+                }else if(resourceUtil.getTargetsReferringResourceRef(jndiName).contains(target)){
+                    msg = localStrings.getLocalString("duplicate.resource.found.in.target",
+                            "A {0} by name {1} already exists with resource reference in target {2}.",
+                            getResourceTypeName(duplicateResource), jndiName, target);
+                }else{
+                    msg = localStrings.getLocalString("duplicate.resource.need.to.create.resource.ref",
+                            "A {0} named {1} already exists. If you are trying to create the existing resource" +
+                                    "configuration in target {2}, please use 'create-resource-ref' command " +
+                                    "(or create resource-ref using admin console).",
+                            getResourceTypeName(duplicateResource), jndiName, target);
+                }
+            }else{
+                msg = localStrings.getLocalString("duplicate.resource.found",
+                        "A {0} by name {1} already exists.", getResourceTypeName(duplicateResource), jndiName);
+            }
+            return new ResourceStatus(ResourceStatus.FAILURE, msg, true);
+        }else{
+            return new ResourceStatus(ResourceStatus.SUCCESS, "Validation Successful");
+        }
+    }
+
+    public Class getResourceByClass(BindableResource resource){
+        Class<? extends BindableResource> type = BindableResource.class;
+        if (resource instanceof JdbcResource) {
+            type = JdbcResource.class;
+        } else if (resource instanceof ConnectorResource) {
+            type = ConnectorResource.class;
+        } else if (resource instanceof ExternalJndiResource) {
+            type = ExternalJndiResource.class;
+        } else if (resource instanceof CustomResource) {
+            type = CustomResource.class;
+        } else if (resource instanceof AdminObjectResource) {
+            type = AdminObjectResource.class;
+        } else if (resource instanceof MailResource) {
+            type = MailResource.class;
+        }
+        return type;
+    }
+
+    public String getResourceTypeName(BindableResource resource){
+        String type = "Resource";
+        if (resource instanceof JdbcResource) {
+            type = "JdbcResource";
+        } else if (resource instanceof ConnectorResource) {
+            type = "ConnectorResource";
+        } else if (resource instanceof ExternalJndiResource) {
+            type = "ExternalJndiResource";
+        } else if (resource instanceof CustomResource) {
+            type = "CustomResource";
+        } else if (resource instanceof AdminObjectResource) {
+            type = "AdminObjectResource";
+        } else if (resource instanceof MailResource) {
+            type = "MailResource";
+        }
+        return type;
     }
 }

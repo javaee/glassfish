@@ -47,8 +47,6 @@ import java.io.*;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
 
-import com.sun.enterprise.universal.StringUtils;
-
 /**
  * A class that's supposed to capture all the behavior common to operation
  * on a "local" domain.  It's supposed to act as the abstract base class that
@@ -129,15 +127,7 @@ public abstract class LocalDomainCommand extends LocalServerCommand {
         } catch (Exception e) {
             throw new CommandException(e.getMessage(), e);
         }
-
-        String pw = getServerDirs().getLocalPassword();
-
-        if (ok(pw)) {
-            programOpts.setPassword(pw,
-                            ProgramOptions.PasswordLocation.LOCAL_PASSWORD);
-            logger.finer("Using local password");
-        } else
-            logger.finer("Not using local password");
+        setLocalPassword();
     }
 
     protected boolean isThisDAS(File ourDir) {

@@ -39,6 +39,16 @@ REM  only if the new code is made subject to such option by the copyright
 REM  holder.
 REM
 setlocal
-set AS_INSTALL=%~dp0..
-set AS_INSTALL_MOD=%AS_INSTALL%\modules
-java  -classpath "%AS_INSTALL_MOD%\gf-client.jar" org.glassfish.appclient.client.packageappclient.PackageAppClient %*
+set _AS_INSTALL=%~dp0..
+call "%_AS_INSTALL%\config\asenv.bat"
+REM
+REM Run with the user-specified Java, if any.
+REM 
+if "%AS_JAVA%x" == "x" goto UsePath
+set JAVA="%AS_JAVA%\bin\java"
+goto run
+:UsePath
+set JAVA=java
+:run
+set _AS_INSTALL_LIB=%_AS_INSTALL%\lib
+%JAVA% -classpath "%_AS_INSTALL_LIB%\gf-client.jar" org.glassfish.appclient.client.packageappclient.PackageAppClient %*

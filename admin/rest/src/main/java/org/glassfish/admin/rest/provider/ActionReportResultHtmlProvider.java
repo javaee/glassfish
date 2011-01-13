@@ -71,32 +71,42 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
         RestActionReporter ar = (RestActionReporter) proxy.getActionReport();
         StringBuilder result = new StringBuilder(ProviderUtil.getHtmlHeader(getBaseUri()));
 
-        result.append("<h1>")
-                .append(ar.getActionDescription())
-                .append("</h1><div>");
+//        result.append("<h1>")
+//                .append(ar.getActionDescription())
+//                .append("</h1><div>");
 
         if (proxy.isError()) {
-            result.append("<h2>Error:</h2>")
+            result.append("<h2>").append(ar.getActionDescription() +" Error:</h2>")
                     .append(proxy.getErrorMessage());
         } else {
             final Map<String, String> childResources = (Map<String, String>) ar.getExtraProperties().get("childResources");
             final List<Map<String, String>> commands = (List<Map<String, String>>) ar.getExtraProperties().get("commands");
             final MethodMetaData postMetaData = proxy.getMetaData().getMethodMetaData("POST");
+            final MethodMetaData deleteMetaData = proxy.getMetaData().getMethodMetaData("DELETE");
+            final MethodMetaData getMetaData = proxy.getMetaData().getMethodMetaData("GET");
+            final ConfigBean entity = proxy.getEntity();
 
-            if (proxy.getCommandDisplayName()!=null) {//for commands, we want the output of the command before the form
-                //  result.append("<h2>Raw Output</h2>");
-                result.append(processReport(ar));
+            if ((proxy.getCommandDisplayName()!=null) &&(getMetaData!=null)) {//for commands, we want the output of the command before the form
+                if (entity==null) {//show extra properties only for non entity pages
+                    result.append(processReport(ar));
+                }
             }
             
-            final ConfigBean entity = proxy.getEntity();
             if ((postMetaData != null) && (entity == null)) {
                 String postCommand = getHtmlRespresentationsForCommand(postMetaData, "POST", ( proxy.getCommandDisplayName()==null )? "Create" : proxy.getCommandDisplayName(), uriInfo);
                 result.append(getHtmlForComponent(postCommand, "Create " + ar.getActionDescription(), ""));
             }
-
+            if ((deleteMetaData != null) && (entity == null)) {
+                String deleteCommand = getHtmlRespresentationsForCommand(deleteMetaData, "DELETE", ( proxy.getCommandDisplayName()==null )? "Delete" : proxy.getCommandDisplayName(), uriInfo);
+                result.append(getHtmlForComponent(deleteCommand, "Delete " + ar.getActionDescription(), ""));
+            }
+            if ((getMetaData != null) && (entity == null) &&(proxy.getCommandDisplayName()!=null )) {
+                String getCommand = getHtmlRespresentationsForCommand(getMetaData, "GET", ( proxy.getCommandDisplayName()==null )? "Get" : proxy.getCommandDisplayName(), uriInfo);
+                result.append(getHtmlForComponent(getCommand, "Get " + ar.getActionDescription(), ""));
+            }           
             if (entity != null) {
                 String attributes = ProviderUtil.getHtmlRepresentationForAttributes(proxy.getEntity(), uriInfo);
-                result.append(ProviderUtil.getHtmlForComponent(attributes, "Attributes", ""));
+                result.append(ProviderUtil.getHtmlForComponent(attributes, ar.getActionDescription() + " Attributes", ""));
 
                 String deleteCommand = ProviderUtil.getHtmlRespresentationsForCommand(proxy.getMetaData().getMethodMetaData("DELETE"), "DELETE", (proxy.getCommandDisplayName() == null) ? "Delete" : proxy.getCommandDisplayName(), uriInfo);
                 result.append(ProviderUtil.getHtmlForComponent(deleteCommand, "Delete " + entity.model.getTagName(), ""));
@@ -119,7 +129,7 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
 
                 if ((vals != null) && (!vals.isEmpty())) {
                     result.append("<ul>");
-
+                    
                     for (Map.Entry entry : (Set<Map.Entry>) vals.entrySet()) {
 
                         Object object = entry.getValue();
@@ -142,7 +152,11 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
                         } else if (object instanceof Map) {
                             if (!((Map) object).isEmpty()) {
                                 Map m = (Map) object;
-                                result.append("<li>").append(entry.getKey());
+                                if (vals.size() != 1) {//add a link if more than 1 child
+                                    result.append("<li>").append("<a href=\"" + uriInfo.getAbsolutePath().toString() + "/" + entry.getKey() + "\">" + entry.getKey() + "</a>");
+                                } else {
+                                    result.append("<li>").append(entry.getKey());
+                                }
                                 result.append("<ul>");
 
                                 for (Map.Entry anEntry : (Set<Map.Entry>) m.entrySet()) {
@@ -182,10 +196,6 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
                 result.append(ProviderUtil.getHtmlForComponent(commandLinks, "Commands", ""));
             }
 
-            if (proxy.getCommandDisplayName()==null) {//for NON commands, we want the output of the command after the form
-                //  result.append("<h2>Raw Output</h2>");
-                result.append(processReport(ar));
-            }
         }
         return result.append("</div></body></html>").toString();
     }
@@ -234,12 +244,20 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
     }
 
     protected String processReport(ActionReporter ar) {
+        
         StringBuilder result = new StringBuilder();
-        result.append("<h2>")
-                .append(ar.getActionDescription())
+        String des=ar.getActionDescription();
+        //check for no description, make it blank
+        if (des==null){
+            des="";
+        }
+        if (ar.getMessage()!=null){
+            result.append("<h2>")
+                .append(des)
                 .append(" output:</h2><h3>")
-                .append(ar.getMessage() != null ? "<pre>"+ar.getMessage()+"</pre>" : "")
+                .append("<pre>"+ar.getMessage()+"</pre>")
                 .append("</h3>");
+        }
         if (ar.getActionExitCode() != ExitCode.SUCCESS) {
             result.append("<h3>Exit Code: " + ar.getActionExitCode().toString() + "</h3>");
 
@@ -252,7 +270,11 @@ public class ActionReportResultHtmlProvider extends BaseProvider<ActionReportRes
 
         Properties extraProperties = ar.getExtraProperties();
         if ((extraProperties != null) && (!extraProperties.isEmpty())) {
-            result.append(getExtraProperties(extraProperties));
+            if ((extraProperties.size()==1)&&(extraProperties.get("methods")!=null)){
+                //do not show only methods metadata in html, not really needed
+            } else {
+                result.append(getExtraProperties(extraProperties));
+            }
         }
 
         List<ActionReport.MessagePart> children = ar.getTopMessagePart().getChildren();

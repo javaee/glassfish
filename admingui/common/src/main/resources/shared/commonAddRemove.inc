@@ -49,7 +49,7 @@
 	selected="#{pageSession.selectedTargets}"
 	availableItemsLabel="$resource{i18n.manageTargets.AvailableTargets}:"
 	selectedItemsLabel="$resource{i18n.manageTargets.SelectedTargets}:">
-	<!beforeCreate
+	<!afterCreate
 	    getClientId(component="$this{component}" clientId="#{pageSession.commonAddRemoveId}");
 	/>
 	<!facet selectedLabel>

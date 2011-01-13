@@ -113,8 +113,7 @@
             mapPut(map="#{protocol}" key="listenerList"  value="#{pageSession.listenerList}");
         }
         createMap(result="#{pageSession.valueMap}");
-        mapPut(map="#{pageSession.valueMap}" key="target" value="server");
-#include "/common/shared/targetsConfig.inc"
+        mapPut(map="#{pageSession.valueMap}" key="target" value="#{pageSession.configName}");
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n_web.msg.JS.confirmDeleteProtocol}");
         setPageSessionAttribute(key="createLink" value="#{request.contextPath}/web/grizzly/protocolNew.jsf?configName=#{configName}");
         setPageSessionAttribute(key="listLink" value="#{request.contextPath}/web/grizzly/protocols.jsf?configName=#{configName}");
@@ -127,7 +126,7 @@
 #include "/common/shared/alertMsg.inc"
      <sun:title id="propertyContentPage" title="$resource{i18n_web.grizzly.protocolsPageTitle}"
      helpText="$resource{i18n_web.grizzly.protocolsPageTitleHelp}" />
-		 "<br /> <br />
+#include "/common/shared/configNameSection.inc"
 <sun:table id="configs" title="#{tableTitle}"
             deselectMultipleButton="$boolean{true}"
             deselectMultipleButtonOnClick="setTimeout('admingui.table.changeOneTableButton(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0)"
@@ -151,20 +150,20 @@
             />
     </sun:tableColumn>
 
-    <sun:tableColumn headerText="$resource{i18n_web.grizzly.protocol.nameCol}" sort="Name" rowHeader="$boolean{true}" id="col1">
+    <sun:tableColumn headerText="$resource{i18n_web.grizzly.protocol.nameCol}" sort="name" rowHeader="$boolean{true}" id="col1">
         <sun:hyperlink id="link" text="#{td.value.name}"
             url="#{pageSession.editLink}&name=#{td.value.name}&cancelTo=protocols.jsf" />
     </sun:tableColumn>
 
 
-    <sun:tableColumn headerText="$resource{i18n_web.grizzly.protocol.listenerNameCol}"  rowHeader="$boolean{true}" id="colnet">
+    <sun:tableColumn headerText="$resource{i18n_web.grizzly.protocol.listenerNameCol}" sort="name"  rowHeader="$boolean{true}" id="colnet">
         <foreach key="listenerName" list="#{td.value.listenerList}" >
             <sun:hyperlink  text="#{listenerName}" url="#{request.contextPath}/web/grizzly/networkListenerEdit.jsf?name=#{listenerName}&cancelTo=protocols.jsf" />"<br>
        </foreach>
     </sun:tableColumn>
 
 
-    <sun:tableColumn headerText="$resource{i18n_web.grizzly.protocol.securityEnabledCol}"  rowHeader="$boolean{true}" id="ss">
+    <sun:tableColumn headerText="$resource{i18n_web.grizzly.protocol.securityEnabledCol}" sort="securityEnabled" rowHeader="$boolean{true}" id="ss">
         <staticText id="ss" value="#{td.value.securityEnabled}" />
     </sun:tableColumn>
 

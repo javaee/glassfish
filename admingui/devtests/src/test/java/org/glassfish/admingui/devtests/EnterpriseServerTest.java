@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -46,13 +46,12 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-
 public class EnterpriseServerTest extends BaseSeleniumTestClass {
-    private static final String TRIGGER_ADVANCED_APPLICATIONS_CONFIGURATION = "Enable reloading so that changes to deployed applications are detected and the modified classes reloaded. Also enable and configure automatic deployment of applications. Click Add Property to specify additional settings.";
-    private static final String TRIGGER_GENERAL_INFORMATION = "General Information";
-    private static final String TRIGGER_ADVANCED_DOMAIN_ATTRIBUTES = "Directory from which applications are deployed";
-    private static final String TRIGGER_SYSTEM_PROPERTIES = "A system property defines a common value for a setting at the server level. You can refer to a system property in a text field by enclosing it in a dollar sign and curly braces.";
-    public static final String TRIGGER_RESOURCES = "Enable, disable, or create a new resource type to associate with the instance.";
+    public static final String TRIGGER_ADVANCED_APPLICATIONS_CONFIGURATION = "i18nc.domain.AppsConfigPageHelp";
+    public static final String TRIGGER_GENERAL_INFORMATION = "i18n.instance.GeneralTitle";
+    public static final String TRIGGER_ADVANCED_DOMAIN_ATTRIBUTES = "i18nc.domain.DomainAttrsPageTitleHelp";
+    public static final String TRIGGER_SYSTEM_PROPERTIES = "i18n.common.AdditionalProperties"; // There is no page help on sysprops pages anymore, it seems
+    public static final String TRIGGER_RESOURCES = "i18nc.resourcesTarget.pageTitleHelp";
 
     // Disabling this test.  I'm not sure where this is trying to go.  jdl 10/6/10
 //    @Test
@@ -72,7 +71,7 @@ public class EnterpriseServerTest extends BaseSeleniumTestClass {
         selenium.type("propertyForm:basicTable:rowGroup1:0:col3:col1St", value);
         selenium.type("propertyForm:basicTable:rowGroup1:0:col4:col1St", description);
 
-        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
+        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
 
         clickAndWait("propertyForm:serverInstTabs:advanced:domainAttrs", TRIGGER_ADVANCED_DOMAIN_ATTRIBUTES);
         clickAndWait("propertyForm:serverInstTabs:advanced:appConfig", TRIGGER_ADVANCED_APPLICATIONS_CONFIGURATION);
@@ -87,7 +86,7 @@ public class EnterpriseServerTest extends BaseSeleniumTestClass {
     public void testAdvancedDomainAttributes() {
         clickAndWait("treeForm:tree:nodes:nodes_link", TRIGGER_ADVANCED_DOMAIN_ATTRIBUTES);
         selenium.type("propertyForm:propertySheet:propertSectionTextField:localeProp:Locale", "fr");
-        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
+        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
 
         clickAndWait("propertyForm:domainTabs:appConfig", TRIGGER_ADVANCED_APPLICATIONS_CONFIGURATION);
         clickAndWait("propertyForm:domainTabs:domainAttrs", TRIGGER_ADVANCED_DOMAIN_ATTRIBUTES);
@@ -95,28 +94,27 @@ public class EnterpriseServerTest extends BaseSeleniumTestClass {
         assertEquals("fr", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:localeProp:Locale"));
         selenium.type("propertyForm:propertySheet:propertSectionTextField:localeProp:Locale", "");
         selenium.click("propertyForm:propertyContentPage:topButtons:saveButton");
-        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
+        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
     }
 
     @Test
     public void testSystemProperties() {
-        final String property = "a2255bf3277b9f18e026b85aefc8a80809"; //generateRandomString();
+        final String property = generateRandomString();
         final String value = property + "value";
         final String description = property + "description";
 
         gotoDasPage();
-        clickAndWait("propertyForm:serverInstTabs:token", TRIGGER_SYSTEM_PROPERTIES);
+        clickAndWait("propertyForm:serverInstTabs:serverInstProps", TRIGGER_SYSTEM_PROPERTIES);
 
-        int count = addTableRow("form1:basicTable", "form1:basicTable:topActionsGroup1:addSharedTableButton");
-        selenium.type("form1:basicTable:rowGroup1:0:col2:col1St", property);
-        selenium.type("form1:basicTable:rowGroup1:0:col3:col1St", value);
-        selenium.type("form1:basicTable:rowGroup1:0:col4:col1St", description);
+        int count = addTableRow("propertyForm:sysPropsTable", "propertyForm:sysPropsTable:topActionsGroup1:addSharedTableButton");
+        selenium.type("propertyForm:sysPropsTable:rowGroup1:0:col2:col1St", property);
+        selenium.type("propertyForm:sysPropsTable:rowGroup1:0:overrideValCol:overrideVal", value);
 
-        clickAndWait("form1:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
-        clickAndWait("form1:serverInstTabs:general", TRIGGER_GENERAL_INFORMATION);
-        clickAndWait("propertyForm:serverInstTabs:token", TRIGGER_SYSTEM_PROPERTIES);
+        clickAndWait("propertyForm:SysPropsPage:topButtons:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
+        gotoDasPage();
+        clickAndWait("propertyForm:serverInstTabs:serverInstProps", TRIGGER_SYSTEM_PROPERTIES);
 
-        assertTableRowCount("form1:basicTable", count);
+        assertTableRowCount("propertyForm:sysPropsTable", count);
     }
 
     @Test

@@ -47,7 +47,7 @@
               productImageHeight="23"
               userInfo="#{userName}"  userInfoLabel="$resource{i18n.masthead.userInfoLabel}"
               roleInfo="#{domainName}" roleInfoLabel="$resource{i18n.masthead.domainInfoLabel}"
-              serverInfo="#{serverName}" serverInfoLabel="$resource{i18n.masthead.serverInfoLabel}"
+              serverInfo="#{hostName}" serverInfoLabel="$resource{i18n.masthead.serverInfoLabel}"
               dateTime="$boolean{false}" notificationMsg="$attribute{null}">
 
 

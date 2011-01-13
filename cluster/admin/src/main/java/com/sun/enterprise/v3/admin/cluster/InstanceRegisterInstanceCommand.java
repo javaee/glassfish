@@ -170,7 +170,7 @@ public class InstanceRegisterInstanceCommand extends InstanceRegisterInstanceCom
                         newServer.setConfigRef(config);
                         //newServer.setLbWeight(lbWeight);
                         newServer.setName(instanceName);
-                        newServer.setNode(node);
+                        newServer.setNodeRef(node);
 
                         // comment out - not needed
                         /*if (resourceRefs != null && !resourceRefs.isEmpty()) {

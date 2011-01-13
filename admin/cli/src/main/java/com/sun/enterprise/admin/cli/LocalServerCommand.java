@@ -37,9 +37,10 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.admin.cli;
 
+import com.sun.enterprise.util.OS;
+import com.sun.enterprise.util.io.FileUtils;
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -50,6 +51,8 @@ import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 import com.sun.enterprise.security.store.PasswordAdapter;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.universal.io.SmartFile;
+import com.sun.enterprise.universal.process.Jps;
+import com.sun.enterprise.universal.process.ProcessUtils;
 import com.sun.enterprise.universal.xml.MiniXmlParser;
 import com.sun.enterprise.universal.xml.MiniXmlParserException;
 import com.sun.enterprise.util.HostAndPort;
@@ -69,7 +72,6 @@ public abstract class LocalServerCommand extends CLICommand {
     ////////////////////////////////////////////////////////////////
     /// Section:  protected methods that are OK to override
     ////////////////////////////////////////////////////////////////
-
     /**
      * Override this method and return false to turn-off the file validation.
      * E.g. it demands that config/domain.xml be present.  In special cases like
@@ -115,13 +117,31 @@ public abstract class LocalServerCommand extends CLICommand {
                 return addrSet.get(0);
             else
                 throw new CommandException(strings.get("NoAdminPort"));
-        } catch (MiniXmlParserException ex) {
+        }
+        catch (MiniXmlParserException ex) {
             throw new CommandException(strings.get("NoAdminPortEx", ex), ex);
         }
     }
 
     protected final void setServerDirs(ServerDirs sd) {
         serverDirs = sd;
+    }
+
+    protected final void setLocalPassword() {
+        String pw = serverDirs == null ? null : serverDirs.getLocalPassword();
+
+        if (ok(pw)) {
+            programOpts.setPassword(pw,
+                    ProgramOptions.PasswordLocation.LOCAL_PASSWORD);
+            logger.finer("Using local password");
+        }
+        else
+            logger.finer("Not using local password");
+    }
+
+    protected final void unsetLocalPassword() {
+        programOpts.setPassword(null,
+                ProgramOptions.PasswordLocation.LOCAL_PASSWORD);
     }
 
     protected final void resetServerDirs() throws IOException {
@@ -160,10 +180,19 @@ public abstract class LocalServerCommand extends CLICommand {
     }
 
     protected final boolean verifyMasterPassword(String mpv) {
-        // only tries to open the keystore
+        //issue : 14971, should ideally use javax.net.ssl.keyStore and
+        //javax.net.ssl.keyStoreType system props here but they are
+        //unavailable to asadmin start-domain hence falling back to
+        //cacerts.jks instead of keystore.jks. Since the truststore
+        //is less-likely to be Non-JKS
+
+        return loadAndVerifyKeystore(getJKS(),mpv);
+    }
+
+    protected boolean loadAndVerifyKeystore(File jks,String mpv) {
         FileInputStream fis = null;
         try {
-            fis = new FileInputStream(getJKS());
+            fis = new FileInputStream(jks);
             KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
             ks.load(fis, mpv.toCharArray());
             return true;
@@ -288,8 +317,69 @@ public abstract class LocalServerCommand extends CLICommand {
     /**
      * Is the server still running?
      * This is only called when we're hanging around waiting for the server to die.
+     * Byron Nevins, Nov 7, 2010 - Check to see if the process itself is still running
+     * We use OS tools to figure this out.  See ProcessUtils for details.
+     * Failover to the JPS check if necessary
      */
-    protected final boolean isRunning() {
+    protected boolean isRunning() {
+        int pp = getPrevPid();
+
+        if (pp < 0)
+            return isRunningByCheckingForPidFile();
+
+        Boolean b = ProcessUtils.isProcessRunning(pp);
+
+        if (b == null) // this means it couldn't find out!
+            return isRunningUsingJps();
+        else
+            return b.booleanValue();
+    }
+
+    protected final void waitForRestart(File pwFile, long oldTimeStamp, long uptimeOldServer) throws CommandException {
+        if (oldTimeStamp <= 0 || !usingLocalPassword())
+            waitForRestartRemote(uptimeOldServer);
+        else
+            waitForRestartLocal(pwFile, oldTimeStamp, uptimeOldServer);
+    }
+
+    // todo move prevpid to ServerDirs ???
+    protected final int getPrevPid() {
+        try {
+            File prevPidFile = new File(getServerDirs().getPidFile().getPath() + ".prev");
+
+            if (!prevPidFile.canRead())
+                return -1;
+
+            String pids = FileUtils.readSmallFile(prevPidFile).trim();
+            return Integer.parseInt(pids);
+        }
+        catch (Exception ex) {
+            return -1;
+        }
+    }
+
+    /**
+     * Is the server still running?
+     * This is only called when we're hanging around waiting for the server to die.
+     * Byron Nevins, Nov 7, 2010 - Check to see if the process itself is still running
+     * We use jps to check
+     * If there are any problems fall back to the previous implementation of
+     * isRunning() which looks for the pidfile to get deleted
+     */
+    private final boolean isRunningUsingJps() {
+        int pp = getPrevPid();
+
+        if (pp < 0)
+            return isRunningByCheckingForPidFile();
+
+        return Jps.isPid(pp);
+    }
+
+    /**
+     * Is the server still running?
+     * This is only called when we're hanging around waiting for the server to die.
+     */
+    private boolean isRunningByCheckingForPidFile() {
         File pf = getServerDirs().getPidFile();
 
         if (pf != null) {
@@ -298,13 +388,6 @@ public abstract class LocalServerCommand extends CLICommand {
         else
             return isRunning(programOpts.getHost(), // remote case
                     programOpts.getPort());
-    }
-
-    protected final void waitForRestart(File pwFile, long oldTimeStamp, long uptimeOldServer) throws CommandException {
-        if (oldTimeStamp <= 0 || !usingLocalPassword())
-            waitForRestartRemote(uptimeOldServer);
-        else
-            waitForRestartLocal(pwFile, oldTimeStamp, uptimeOldServer);
     }
 
     /**
@@ -417,7 +500,7 @@ public abstract class LocalServerCommand extends CLICommand {
         if (serverDirs == null)
             return null;
 
-        File mp = new File(new File(serverDirs.getServerDir(), "config"), "keystore.jks");
+        File mp = new File(new File(serverDirs.getServerDir(), "config"), "cacerts.jks");
         if (!mp.canRead())
             return null;
         return mp;

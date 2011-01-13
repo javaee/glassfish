@@ -49,7 +49,8 @@
 />
 <!composition template="/templates/default.layout"
     guiTitle="$resource{i18njdbc.jdbcResources.pageTitle}"
-    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:resources:JDBC:jdbcResources');"
+    guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:resources:JDBC:jdbcResources');
+        setTimeout('admingui.table.changeThreeTableButtons(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\');', 0)"
 >
 <!define name="content">
     <event>
@@ -67,6 +68,9 @@
         setPageSessionAttribute(key="hasPool" value="#{true}" );
         setPageSessionAttribute(key="hasResType" value="#{false}" );
         setPageSessionAttribute(key="editPoolLink" value="#{request.contextPath}/jdbc/jdbcConnectionPoolEdit.jsf");
+
+        setPageSessionAttribute(key="generalPage" value="#{request.contextPath}/jdbc/jdbcResourceEdit.jsf");
+        setPageSessionAttribute(key="targetPage" value="#{request.contextPath}/common/resourceNode/resourceEditTargets.jsf");
     />
     </event>
 "    <script type="text/javascript">admingui.nav.selectTreeNodeById(admingui.nav.TREE_ID+":resources:JDBC:jdbcResources");</script>

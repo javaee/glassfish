@@ -77,7 +77,7 @@ public class InstanceDirUtils{
          * then use it.  Otherwise, use the default node directory of
          * ${installDir}/glassfish/nodes/${nodeName}.
          */
-        String nodeDir = node.getNodeDir();
+        String nodeDir = node.getNodeDirAbsolute();
         final File nodeDirFile = (nodeDir != null ?
             new File(nodeDir) :
             defaultLocalNodeDirFile());

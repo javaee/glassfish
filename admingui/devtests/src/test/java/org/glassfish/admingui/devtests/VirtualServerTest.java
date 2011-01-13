@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -45,9 +45,9 @@ import org.junit.Test;
 import static org.junit.Assert.assertTrue;
 
 public class VirtualServerTest extends BaseSeleniumTestClass {
-    public static final String TRIGGER_VIRTUAL_SERVERS = "A virtual server, sometimes called a virtual host, is an object that allows";
-    public static final String TRIGGER_NEW_VIRTUAL_SERVER = "New Virtual Server";
-    public static final String TRIGGER_EDIT_VIRTUAL_SERVER = "Edit Virtual Server";
+    public static final String TRIGGER_VIRTUAL_SERVERS = "i18n_web.vs.ListPageHelp";
+    public static final String TRIGGER_NEW_VIRTUAL_SERVER = "i18n_web.vs.NewPageHelp";
+    public static final String TRIGGER_EDIT_VIRTUAL_SERVER = "i18n_web.vs.PageHelp";
 
     @Test
     public void testAddVirtualServer() {
@@ -57,9 +57,9 @@ public class VirtualServerTest extends BaseSeleniumTestClass {
         clickAndWait("propertyForm:configs:topActionsGroup1:newButton", TRIGGER_NEW_VIRTUAL_SERVER);
         selenium.type("propertyForm:propertySheet:propertSectionTextField:IdTextProp:IdText", serverName);
         selenium.type("propertyForm:propertySheet:propertSectionTextField:hostsProp:Hosts", "localhost");
-        selenium.check("propertyForm:propertySheet:propertSectionTextField:stateProp:disabled");
-        selenium.check("propertyForm:propertySheet:propertSectionTextField:enableLog:dis");
-        selenium.check("propertyForm:propertySheet:al:enableLog:dis");
+        selectDropdownOption("propertyForm:propertySheet:propertSectionTextField:stateProp:state", "i18n_web.vs.StateOn");
+        selectDropdownOption("propertyForm:propertySheet:propertSectionTextField:enableLog:state", "i18n_web.vs.alwaysEnable");
+        selectDropdownOption("propertyForm:propertySheet:al:enableLog:log", "i18n_web.vs.alwaysEnable");
         selenium.type("propertyForm:propertySheet:propertSectionTextField:logFileProp:LogFile", "logfile.txt");
         selenium.type("propertyForm:propertySheet:propertSectionTextField:docroot:docroot", "/tmp");
         selenium.addSelection("propertyForm:propertySheet:propertSectionTextField:nwProps:nw", "label=http-listener-1");

@@ -47,8 +47,8 @@ import java.util.logging.*;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
 import org.glassfish.api.Param;
-import org.glassfish.api.embedded.*;
-import org.glassfish.api.embedded.Server;
+import org.glassfish.internal.embedded.*;
+import org.glassfish.internal.embedded.Server;
 import org.glassfish.api.admin.config.*;
 import org.glassfish.api.admin.*;
 import org.glassfish.api.admin.CommandModel.ParamModel;
@@ -90,8 +90,6 @@ public final class CreateDomainCommand extends CLICommand {
     private static final String INSTANCE_PORT = "instanceport";
     private static final String DOMAIN_PROPERTIES = "domainproperties";
     private static final String PORTBASE_OPTION = "portbase";
-    private static final String DEFAULT_JMS_USER = "admin";
-    private static final String DEFAULT_JMS_PASSWORD = "admin";
 
     private String adminUser = null;
 
@@ -101,7 +99,7 @@ public final class CreateDomainCommand extends CLICommand {
     @Param(name = PORTBASE_OPTION, optional = true)
     private String portBase;
 
-    @Param(name = "profile", optional = true)
+    @Param(obsolete=true, name = "profile", optional = true)
     private String profile;
 
     @Param(name = "template", optional = true)
@@ -115,6 +113,9 @@ public final class CreateDomainCommand extends CLICommand {
 
     @Param(name = SAVE_MASTER_PASSWORD, optional = true, defaultValue = "false")
     private boolean saveMasterPassword = false;
+
+    @Param(name = "usemasterpassword", optional = true, defaultValue = "false")
+    private boolean useMasterPassword = false;
 
     @Param(name = DOMAIN_PROPERTIES, optional = true, separator = ':')
     private Properties domainProperties;
@@ -314,10 +315,8 @@ public final class CreateDomainCommand extends CLICommand {
         if (!ok(adminUser)) {
             adminUser = SystemPropertyConstants.DEFAULT_ADMIN_USER;
             adminPassword = SystemPropertyConstants.DEFAULT_ADMIN_PASSWORD;
-            masterPassword = DEFAULT_MASTER_PASSWORD;
         } else if (noPassword) {
             adminPassword = SystemPropertyConstants.DEFAULT_ADMIN_PASSWORD;
-            masterPassword = DEFAULT_MASTER_PASSWORD;
         } else {
             /*
              * If the admin password was supplied in the password
@@ -337,27 +336,15 @@ public final class CreateDomainCommand extends CLICommand {
                 adminPassword = getAdminPassword();
             }
             validatePassword(adminPassword, adminPasswordOption);
-            if (haveAdminPwd)
-                masterPassword = passwords.get(MASTER_PASSWORD);
-            else
-                masterPassword = getMasterPassword();
-            if (masterPassword == null)
-                masterPassword = DEFAULT_MASTER_PASSWORD;
-            validatePassword(masterPassword, masterPasswordOption);
         }
 
-        /*
-         * Decide whether to save the master password.
-         * Normally this is based on the --savemasterpassword command
-         * line option, but if we're using the default master password
-         * we always save it.  This means, in the default case, start-domain
-         * will always find the master password and will never need to
-         * prompt for it.
-         */
-        if (masterPassword != null &&
-                masterPassword.equals(DEFAULT_MASTER_PASSWORD)) {
-            saveMasterPassword = true;
-        }
+        if (saveMasterPassword)
+            useMasterPassword = true;
+        if (useMasterPassword)
+            masterPassword = getMasterPassword();
+        if (masterPassword == null)
+            masterPassword = DEFAULT_MASTER_PASSWORD;
+        validatePassword(masterPassword, masterPasswordOption);
 
         try {
             // verify admin port is valid if specified on command line
@@ -507,21 +494,6 @@ public final class CreateDomainCommand extends CLICommand {
                 DomainConfig.K_JMS_PORT, null,
                 Integer.toString(DEFAULT_JMS_PORT), "JMS");
 
-        /*
-         * Bug# 4859518
-         * The authentication of jms broker will fail if the jms user is not in
-         * the user database referred by jms broker. Setting the jms user and
-         * password to "admin" which is always present in the user db. Once
-         * the mechanism to update the user db with given jms user/password is
-         * in place we should set the user specified values for jms user and
-         * password.
-
-        final String jmsUser = adminUser;
-        final String jmsPassword = adminPassword;
-         */
-        final String jmsUser = DEFAULT_JMS_USER;
-        final String jmsPassword = DEFAULT_JMS_PASSWORD;
-
         final Integer orbPort = getPort(domainProperties,
                 DomainConfig.K_ORB_LISTENER_PORT,
                 null, Integer.toString(DEFAULT_IIOP_PORT),
@@ -567,8 +539,8 @@ public final class CreateDomainCommand extends CLICommand {
                 adminPortInt, domainPath, adminUser,
                 adminPassword,
                 masterPassword,
-                saveMasterPassword, instancePortInt, jmsUser,
-                jmsPassword, jmsPort, orbPort,
+                saveMasterPassword, instancePortInt,
+                jmsPort, orbPort,
                 httpSSLPort, iiopSSLPort,
                 iiopMutualAuthPort, jmxPort, osgiShellTelnetPort, javaDebuggerPort,
                 domainProperties);

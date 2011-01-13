@@ -55,14 +55,23 @@
                         else {return false;}" >
                 <!command
                     mapPut(map="#{pageSession.valueMap}" key="target" value="#{pageSession.configName}");
+                    getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
+                    getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
+                    foreach(var="oneRow" list="#{requestScope.newList}"){
+                        startsWith(testStr="#{requestScope.oneRow.value}" pattern="-" result="#{requestScope.valid}")
+                        if ("!#{requestScope.valid}"){
+                            gf.handleError( detail="$resource{i18nc.msg.jvmOptionInvalid, #{requestScope.oneRow.value}}");
+                        }
+                    }
+                    
                     gf.createEntity(endpoint="#{pageSession.createProfilerUrl}"
                             attrs="#{pageSession.valueMap}"
                             convertToFalse="#{pageSession.convertToFalseList}"
+                            onlyUseAttrs="#{pageSession.onlyUseAttrs}"
                             result => $attribute{objStr});
-                    getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
-                    getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                    saveJvmOptionValues(endpoint="#{pageSession.profilerUrl}/jvm-options" options="$attribute{newList}");
-                    prepareSuccessfulMsg();
+                    prepareAlertMsg(type="success", summary="$resource{i18nc.jvm.ProfilerCreated}");
+                    saveJvmOptionValues(endpoint="#{pageSession.profilerUrl}/jvm-options", target="#{pageSession.configName}", options="$attribute{newList}" ,
+                        deleteProfileEndpoint="#{pageSession.deleteProfilerUrl}");
                     gf.redirect(page="#{selfPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}&configName=#{pageSession.configName}");
                 />
             </sun:button>
@@ -78,9 +87,9 @@
                             onlyUseAttrs="#{pageSession.onlyUseAttrs}");
                     getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                     getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
-                    saveJvmOptionValues(endpoint="#{pageSession.profilerUrl}/jvm-options" options="$attribute{newList}");
-                prepareSuccessfulMsg();
-                gf.redirect(page="#{selfPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}&configName=#{pageSession.configName}");
+                    saveJvmOptionValues(endpoint="#{pageSession.profilerUrl}/jvm-options", target="#{pageSession.configName}", options="$attribute{newList}" , origList="#{pageSession.origList}");
+                    prepareSuccessfulMsg();
+                    gf.redirect(page="#{selfPage}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}&name=#{pageSession.Name}&configName=#{pageSession.configName}");
                 />
             </sun:button>
 
@@ -103,6 +112,8 @@
         <!-- PropertySheet .... -->
         <sun:propertySheet id="propertySheet">
             <!-- Text Field section -->
+#include "/common/shared/configNameSection.inc"
+
             <sun:propertySheetSection id="propertSectionTextField">
                 <sun:property id="profilerNameProp" rendered="#{!edit}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.ProfilerName}">
                     <sun:textField id="ProfilerName"  styleClass="required" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.jvm.ProfilerName']}" text="#{pageSession.valueMap['name']}" required="#{true}"/>
@@ -122,6 +133,7 @@
                 "<br /><br />
             </sun:propertySheetSection>
         </sun:propertySheet>
+"<br/>
 #include "/common/javaConfig/jvmOptionsTable.inc"
                 
 	<sun:hidden id="helpKey" value="$resource{help_common.serverInstProfiler}" />

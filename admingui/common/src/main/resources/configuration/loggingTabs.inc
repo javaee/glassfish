@@ -47,14 +47,14 @@
     <sun:tab id="loggerGeneral" immediate="true" text="$resource{i18n.common.General}" toolTip="$resource{i18n.common.GeneralTab}">
 	<!command
             setSessionAttribute(key="loggingTabs" value="loggerGeneral");
-            gf.redirect(page="#{request.contextPath}/common/configuration/loggerGeneral.jsf");
+            gf.redirect(page="#{request.contextPath}/common/configuration/loggerGeneral.jsf?configName=#{configName}");
 	/>
     </sun:tab>
 
     <sun:tab id="loggerLevels" immediate="true" text="$resource{i18nc.log.LogLevels}" toolTip="$resource{i18nc.log.LogLevelsTab}">
 	<!command
             setSessionAttribute(key="loggingTabs" value="loggerLevels");
-            gf.redirect(page="#{request.contextPath}/common/configuration/loggerLevels.jsf");
+            gf.redirect(page="#{request.contextPath}/common/configuration/loggerLevels.jsf?configName=#{configName}");
 	/>
     </sun:tab>
 </sun:tabSet>

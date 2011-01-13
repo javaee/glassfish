@@ -111,7 +111,7 @@
         />
     </sun:tableColumn>
 
-    <sun:tableColumn headerText="$resource{i18n.common.name.header}" rowHeader="$boolean{true}" valign="top" id="col1">
+    <sun:tableColumn headerText="$resource{i18n.common.name.header}" sort="name" rowHeader="$boolean{true}" valign="top" id="col1">
         <event>
             <!beforeEncode
                 setPageSessionAttribute(key="configName" value="#{td.value.name}");

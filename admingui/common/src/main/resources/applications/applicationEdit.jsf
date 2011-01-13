@@ -65,9 +65,10 @@
                 setAttribute(key="found" value="true");
             }
         }
-        if(! #{requestScope.found}){                gf.restRequest(endpoint="#{sessionScope.REST_URL}/applications/application/#{pageSession.appName}/module"                method="GET", result="#{requestScope.result}");
-        gf.getMapKeys(Map="#{requestScope.result.data.extraProperties.childResources}" Keys="#{requestScope.keys}");
-        gf.restRequest(endpoint="#{sessionScope.REST_URL}/applications/application/#{pageSession.appName}/module/#{requestScope.keys[0]}/engine" method="GET", result="#{requestScope.result}");
+        if(! #{requestScope.found}){
+            gf.restRequest(endpoint="#{sessionScope.REST_URL}/applications/application/#{pageSession.appName}/module"   method="GET", result="#{requestScope.result}");
+            gf.getMapKeys(Map="#{requestScope.result.data.extraProperties.childResources}" Keys="#{requestScope.keys}");
+            gf.restRequest(endpoint="#{sessionScope.REST_URL}/applications/application/#{pageSession.appName}/module/#{requestScope.keys[0]}/engine" method="GET", result="#{requestScope.result}");
             setAttribute(key="snifferMap" value="#{requestScope.result.data.extraProperties.childResources}");
             gf.getApplicationType(snifferMap="#{requestScope.result.data.extraProperties.childResources}", appType="#{pageSession.appType}");
         }

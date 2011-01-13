@@ -54,7 +54,6 @@ import javax.ws.rs.DELETE;
 import org.glassfish.admin.rest.Constants;
 import org.glassfish.admin.rest.ResourceUtil;
 import org.glassfish.admin.rest.results.ActionReportResult;
-import org.glassfish.admin.rest.results.CommandResourceGetResult;
 
 
 
@@ -67,11 +66,11 @@ import org.glassfish.api.admin.ParameterMap;
  * that contains the logic for mapped commands RS Resources
  *
  */
+@Produces({"text/html;qs=2", MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class TemplateCommandDeleteResource extends TemplateExecCommand {
 
     public TemplateCommandDeleteResource(String resourceName, String commandName, String commandMethod, String commandAction, String commandDisplayName,  boolean b) {
         super(resourceName, commandName, commandMethod, commandAction, commandDisplayName, b);
-        parameterType = Constants.MESSAGE_PARAMETER;
     }
 
     @DELETE
@@ -79,11 +78,7 @@ public class TemplateCommandDeleteResource extends TemplateExecCommand {
         MediaType.APPLICATION_JSON,
         MediaType.APPLICATION_XML,
         MediaType.APPLICATION_FORM_URLENCODED})
-    @Produces({
-        "text/html;qs=2",
-        MediaType.APPLICATION_JSON,
-        MediaType.APPLICATION_XML})
-    public ActionReportResult processDelete(ParameterMap data) {
+    public Response processDelete(ParameterMap data) {
         if (data == null) {
             data = new ParameterMap();
         }
@@ -128,11 +123,7 @@ public class TemplateCommandDeleteResource extends TemplateExecCommand {
         MediaType.APPLICATION_JSON,
         MediaType.APPLICATION_XML,
         MediaType.APPLICATION_FORM_URLENCODED})
-    @Produces({
-        "text/html;qs=2",
-        MediaType.APPLICATION_JSON,
-        MediaType.APPLICATION_XML})
-    public ActionReportResult hack(ParameterMap data) {
+    public Response hack(ParameterMap data) {
         if (data.containsKey("operation")) {
             List<String> l = data.get("operation");
             if (l.contains("__deleteoperation")) {
@@ -144,15 +135,7 @@ public class TemplateCommandDeleteResource extends TemplateExecCommand {
     }
 
     @GET
-    @Produces({
-        "text/html;qs=2",
-        MediaType.APPLICATION_JSON,
-        MediaType.APPLICATION_XML})
-    public CommandResourceGetResult get() {
-        try {
-            return new CommandResourceGetResult(resourceName, commandName, commandDisplayName, commandMethod, commandAction, options());
-        } catch (Exception e) {
-            throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
-        }
+    public ActionReportResult get() {
+        return options();
     }
 }

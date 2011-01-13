@@ -56,14 +56,10 @@
             urlencode(value="#{pageSession.clusterName}" encoding="UTF-8" result="#{pageSession.encodedClusterName}");
             setSessionAttribute(key="clusterTabs" value="clusterSystemProps");
 
+            setPageSessionAttribute(key="parentPage", value="#{request.contextPath}/cluster/cluster/clusterGeneral.jsf?clusterName=#{encodedClusterName}");
             setPageSessionAttribute(key="selfPage", value="#{request.contextPath}/cluster/cluster/clusterSystemProperties.jsf?clusterName=#{encodedClusterName}");
             setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/clusters/cluster/#{pageSession.encodedClusterName}");
             setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/system-properties");
-
-            setPageSessionAttribute(key="rest-api" value="true");
-            setPageSessionAttribute(key="edit" value="#{true}" );
-            setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
-            setPageSessionAttribute(key="showDefaultButton" value="#{false}" );
 
             gf.restRequest(endpoint="#{pageSession.selfUrl}", method="GET", result="#{requestScope.propTable}");
             setPageSessionAttribute(key="tableList", value="#{requestScope.propTable.data.extraProperties.systemProperties}");
@@ -71,36 +67,26 @@
     </event>
     <sun:form id="propertyForm">
 #include "/cluster/cluster/clusterTabs.inc"
-    <sun:title id="propertyContentPage" title="$resource{i18ncs.cluster.ClusterSystemProperties}" >
-        <!facet pageButtonsTop>
-            <sun:panelGroup id="topButtons">
-                <sun:button id="saveButton" text="$resource{i18n.button.Save}"
-                        onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
-                    <!command
-                        //javaToJSON(obj="#{pageSession.tableList}" json="#{requestScope.tmpJSON}");
-                        createMap(result="#{requestScope.data}");
-                        foreach (var="row" list="#{pageSession.tableList}") {
-                            mapPut(map="#{requestScope.data}", key="#{row.name}", value="#{row.value}");
-                        }
-                        gf.restRequest(endpoint="#{pageSession.selfUrl}", method="POST", data="#{requestScope.data}", contentType="application/x-www-form-urlencoded", result="#{requestScope.restResponse}");
-                        prepareSuccessfulMsg();
-                        gf.redirect(page="#{pageSession.selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
-                    />
-                </sun:button>
+        <sun:title id="clusterSysPropsPage" title="$resource{i18ncs.cluster.ClusterSystemProperties}" >
+            <!facet pageButtonsTop>
+                <sun:panelGroup id="topButtons">
+#include "/common/configuration/systemPropertiesButtons.jsf"
+                </sun:panelGroup>
+            </facet>
+        </sun:title>
 
-                <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" rendered="#{pageSession.showCancelButton}" text="$resource{i18n.button.Cancel}" >
-                    <!command
-                        gf.redirect(page="#{parentPage}?configName=#{configName}");
-                    />
-                </sun:button>
-            </sun:panelGroup>
-        </facet>
-    </sun:title>
 #include "/common/shared/alertMsg.inc"
-#include "/common/shared/propertyTable.inc"
+#include "/common/shared/nameSection.inc"
+#include "/common/configuration/systemProperties.jsf"
 
-<sun:hidden id="helpKey" value="$resource{help_cluster.clusterSystemProperties}" />
-
+        <sun:title>
+            <!facet pageButtonsTop>
+                <sun:panelGroup id="bottomButtons">
+#include "/common/configuration/systemPropertiesButtons.jsf"
+                </sun:panelGroup>
+            </facet>
+        </sun:title>
+        <sun:hidden id="helpKey" value="$resource{help_cluster.clusterSystemProperties}" />
     </sun:form>
 #include "/common/shared/changeButtonsJS.inc"
 </define>

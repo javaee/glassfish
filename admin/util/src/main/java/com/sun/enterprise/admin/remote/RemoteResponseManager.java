@@ -45,9 +45,10 @@ import java.util.*;
 import java.util.jar.*;
 import java.util.logging.Logger;
 
-import com.sun.enterprise.universal.StringUtils;
-import com.sun.enterprise.universal.io.FileUtils;
+import com.sun.enterprise.util.io.FileUtils;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+
+import static com.sun.enterprise.util.StringUtils.ok;
 
 /**
  * This class is responsible for handling the Remote Server response.
@@ -75,12 +76,12 @@ public class RemoteResponseManager implements ResponseManager {
         // make a copy of the stream.  O/w if Manifest.read() blows up -- the
         // data would be gone!
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        FileUtils.copyStream(in, baos);
+        FileUtils.copy(in, baos, 0);
         
         responseStream = new ByteArrayInputStream(baos.toByteArray());
         response = baos.toString();
         
-        if(!StringUtils.ok(response))
+        if(!ok(response))
             throw new RemoteFailureException(strings.get("emptyResponse"));
         
         logger.finer("------- RAW RESPONSE  ---------");
@@ -131,5 +132,5 @@ public class RemoteResponseManager implements ResponseManager {
     final String                    response;
     private static final int        HTTP_SUCCESS_CODE = 200;
     private Manifest                m;
-    private Map<String, String>     mainAtts;
+    private Map<String, String>     mainAtts = Collections.emptyMap();
 }

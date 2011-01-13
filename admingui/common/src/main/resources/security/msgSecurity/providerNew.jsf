@@ -54,6 +54,7 @@
         getRequestValue(key="configName" value="#{pageSession.configName}" default="server-config");
         getRequestValue(key="msgSecurityName" value="#{pageSession.msgSecurityName}");
         createMap(result="#{pageSession.valueMap}")
+        createList(size="0", result="#{pageSession.tableList}");
         mapPut(map="#{pageSession.valueMap}" key="msgSecurityName" value="#{pageSession.msgSecurityName}");
         mapPut(map="#{pageSession.valueMap}" key="configName" value="#{pageSession.configName}");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/common/security/msgSecurity/providers.jsf?name=#{pageSession.msgSecurityName}&configName=#{pageSession.configName}");
@@ -69,8 +70,9 @@
         <sun:title id="propertyContentPage" title="$resource{i18nc.msgSecProvider.NewPageTitle}" helpText="$resource{i18nc.msgSecProvider.NewPageTitleHelp}">
 #include "providerButtons.inc"
         </sun:title>
-        "<br><br>
         <sun:propertySheet id="propertySheet">
+#include "/common/shared/configNameSection.inc"
+
 #include "providerAttr.inc"
 #include "providerAttr_2.inc"
          </sun:propertySheet>

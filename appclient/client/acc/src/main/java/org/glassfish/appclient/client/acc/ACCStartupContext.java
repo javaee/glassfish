@@ -40,21 +40,19 @@
 
 package org.glassfish.appclient.client.acc;
 
+import com.sun.enterprise.glassfish.bootstrap.ASMainHelper;
 import com.sun.enterprise.module.bootstrap.StartupContext;
-import com.sun.enterprise.util.SystemPropertyConstants;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Singleton;
 
 /**
- * The startup context is not used to furnish any directory information
- * when used in the ACC.
+ * Start-up context for the ACC.  Note that this context is used also for
+ * Java Web Start launches.
  * 
  * @author tjquinn
  */
@@ -62,15 +60,24 @@ import org.jvnet.hk2.component.Singleton;
 @Scoped(Singleton.class)
 public class ACCStartupContext extends StartupContext {
 
-    private final long timeZero;
-    private final Properties args = new Properties();
 
     public ACCStartupContext() {
-        this.timeZero = System.currentTimeMillis();
-        args.setProperty("com.sun.aas.installRoot", getRootDirectory().getAbsolutePath());
+        super(accEnvironment());
     }
 
-    private File getRootDirectory() {
+    /**
+     * Creates a Properties object containing setting for the definitions
+     * in the asenv[.bat|.conf] file.
+     *
+     * @return
+     */
+    private static Properties accEnvironment() {
+        final Properties result = ASMainHelper.parseAsEnv(getRootDirectory());
+        result.setProperty("com.sun.aas.installRoot", getRootDirectory().getAbsolutePath());
+        return result;
+    }
+
+    private static File getRootDirectory() {
         /*
          * During launches not using Java Web Start the root directory
          * is important; it is used in setting some system properties.
@@ -91,15 +98,5 @@ public class ACCStartupContext extends StartupContext {
         File jarFile = new File(jarURI);
         File dirFile = jarFile.getParentFile().getParentFile();
         return dirFile;
-    }
-
-    @Override
-    public Properties getArguments() {
-        return args;
-    }
-
-    @Override
-    public long getCreationTime() {
-        return timeZero;
     }
 }

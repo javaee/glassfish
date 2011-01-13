@@ -40,10 +40,12 @@
 
 package org.glassfish.admin.rest.resources;
 
+import org.glassfish.admin.rest.utils.ProxyImpl;
 import org.jvnet.hk2.component.Habitat;
+
+import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Context;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Properties;
 import java.util.TreeMap;
@@ -61,8 +63,6 @@ import javax.ws.rs.PathParam;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
-import org.glassfish.admin.rest.clientutils.MarshallingUtils;
 import org.glassfish.admin.rest.results.ActionReportResult;
 import org.glassfish.admin.rest.utils.xml.RestActionReporter;
 import org.glassfish.external.statistics.Statistic;
@@ -89,10 +89,11 @@ public class MonitoringResource {
 
     @Context
     protected Habitat habitat;
-
-
+    
+    @Context
+    protected Client client;
+    
     @GET
-    //@Produces({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML,"text/html;qs=2"})
     public ActionReportResult getChildNodes() {
         List<TreeNode> list = new ArrayList<TreeNode>();
@@ -131,8 +132,15 @@ public class MonitoringResource {
                 //levels are turned OFF.
                 //Issue: 9921
                 if (!serverNode.getEnabledChildNodes().isEmpty()) {
-                    list.add(serverNode);
-                    constructEntity(list,  ar);
+                    list.add(serverNode);                  
+                    constructEntity(list,  ar);                    
+                    Domain domain = habitat.getComponent(Domain.class);
+                    Map<String, String> links = (Map<String, String>) ar.getExtraProperties().get("childResources");
+                    for (Server s : domain.getServers().getServer()) {
+                        if (!s.getName().equals("server")) {// add all non 'server' instances
+                            links.put(s.getName(), getElementLink(uriInfo, s.getName()));
+                        }
+                    }                   
                 }
                 return result;
             } else {
@@ -151,11 +159,13 @@ public class MonitoringResource {
         if(!path.startsWith(currentInstanceName)) {
             //TODO need to make sure we are actually running on DAS else do not try to forward.
             // forward the request to instance
-            proxyRequestForInstanceData(ar);
+            Properties proxiedResponse = new MonitoringProxyImpl().proxyRequest(uriInfo, client, habitat);
+
+            ar.setExtraProperties(proxiedResponse);
             return result;
         }
 
-        //replace all . with \.
+        //replace all . with \. Monitoring code expects a '.' to be escaped to distinguish from normal field seperator
         path = path.replaceAll("\\.", "\\\\.");
 
         String dottedName = path.replace('/', '.');
@@ -163,8 +173,8 @@ public class MonitoringResource {
         String root;
         int index =  dottedName.indexOf('.');
         if (index != -1) {
-            root = dottedName.substring(0, dottedName.indexOf('.'));
-            dottedName = dottedName.substring(dottedName.indexOf('.') + 1 );
+            root = dottedName.substring(0, index);
+            dottedName = dottedName.substring(index + 1 );
         } else {
             root = dottedName;
             dottedName = "";
@@ -207,52 +217,6 @@ public class MonitoringResource {
         return result;
     }
 
-    private void proxyRequestForInstanceData(RestActionReporter ar) {
-        String targetInstanceName = path.substring(0, path.indexOf('/'));
-        Client client = null;
-        try {
-            client = Client.create();
-            Domain domain = habitat.getComponent(Domain.class);
-            Server server = domain.getServerNamed(targetInstanceName);
-            if (server != null) {
-                //forward to URL that has same path as current request. Host and Port are replaced to that of targetInstanceName
-                String forwardURL = uriInfo.getAbsolutePathBuilder().host(server.getAdminHost()).port(server.getAdminPort()).build().toASCIIString();
-
-                ClientResponse response = client.resource(forwardURL).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class); //TODO if the target server is down, we get ClientResponseException. Need to handle it
-                ClientResponse.Status status = ClientResponse.Status.fromStatusCode(response.getStatus());
-                if (status.getFamily() == javax.ws.rs.core.Response.Status.Family.SUCCESSFUL) {
-                    String jsonDoc = response.getEntity(String.class);
-                    Map responseMap = MarshallingUtils.buildMapFromDocument(jsonDoc);
-                    Map resultExtraProperties = (Map) responseMap.get("extraProperties");
-                    if (resultExtraProperties != null) {
-                        Properties responseExtraProperties = ar.getExtraProperties();
-                        responseExtraProperties.put("entity", resultExtraProperties.get("entity"));
-                        @SuppressWarnings({"unchecked"}) Map<String, String> childResources = (Map<String, String>) resultExtraProperties.get("childResources");
-                        for (Map.Entry<String, String> entry : childResources.entrySet()) {
-                            String targetURL = null;
-                            try {
-                                URL originalURL = new URL(entry.getValue());
-                                //Construct targetURL which has host+port of DAS and path from originalURL
-                                targetURL = uriInfo.getBaseUriBuilder().replacePath(originalURL.getFile()).build().toASCIIString();
-                            } catch (MalformedURLException e) {
-                                //TODO There was an exception while parsing URL. Need to decide what to do. For now ignore the child entry
-                            }
-                            entry.setValue(targetURL);
-                        }
-                        responseExtraProperties.put("childResources", childResources);
-                    }
-                }
-            } else { // server == null
-                // TODO error to user. Can not locate server for whom data is being looked for
-
-            }
-        } finally {
-            if (client != null) {
-                client.destroy();
-            }
-        }
-    }
-
     private void constructEntity(List<TreeNode> nodeList, RestActionReporter ar) {
         Map map = new TreeMap();
         for (TreeNode node : nodeList) {
@@ -293,7 +257,8 @@ public class MonitoringResource {
         for (TreeNode node : nodeList) {
             //process only the non-leaf nodes, if any
             if (node.hasChildNodes()) {
-                links.put(node.getName(), getElementLink(uriInfo, node.getName()));
+                String name = node.getName();
+                links.put(name, getElementLink(uriInfo, name));
             }
 
         }
@@ -301,5 +266,21 @@ public class MonitoringResource {
 
     }
 
+    private static class MonitoringProxyImpl extends ProxyImpl {
+        @Override
+        public UriBuilder constructTargetURLPath(UriInfo sourceUriInfo, URL responseURLReceivedFromTarget) {
+            return sourceUriInfo.getBaseUriBuilder().replacePath(responseURLReceivedFromTarget.getFile());
+        }
 
+        @Override
+        public UriBuilder constructForwardURLPath(UriInfo sourceUriInfo) {
+            //forward to URL that has same path as source request.
+            return sourceUriInfo.getAbsolutePathBuilder();
+        }
+
+        @Override
+        public String extractTargetInstanceName(UriInfo uriInfo) {
+            return uriInfo.getPathSegments().get(1).getPath(); //pathSegment[0] == "monitoring"
+        }
+    }
 }

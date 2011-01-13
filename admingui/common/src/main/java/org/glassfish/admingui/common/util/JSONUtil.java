@@ -40,6 +40,7 @@
 
 package org.glassfish.admingui.common.util;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.text.StringCharacterIterator;
@@ -50,6 +51,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -62,6 +65,10 @@ import java.util.Stack;
  *	<li>{@link #javaToJSON(Object obj, int depth)}</li></ul>
  */
 public class JSONUtil {
+    private static final String	ABORT_PROCESSING    =	"____EnD___";
+    private static final String	COLON		    =	"____CoLoN___";
+    private static final String	COMMA		    =	"____CoMmA___";
+    private static final String	NULL		    =	"____NuLl___";
 
     /**
      *	<p> This method returns a Java representation of the given JSON
@@ -70,7 +77,7 @@ public class JSONUtil {
      *	    specified by the JSON String.</p>
      */
     public static Object jsonToJava(String json) {
-	return replaceSpecial(jsonToJava(new JSONBytes(json)));
+	return replaceSpecial(jsonToJava(new JsonChars(json)));
     }
 
     /**
@@ -290,10 +297,11 @@ public class JSONUtil {
      *	<p> This is the primary switching method which determines the context
      *	    in which the processing should occur.</p>
      */
-    private static Object jsonToJava(JSONBytes json) {
+    private static Object jsonToJava(JsonChars json) {
 	Object value = null;
 	while (json.hasNext() && (value == null)) {
-	    switch (json.next()) {
+            char ch = json.next();
+	    switch (ch) {
 		case '{' :
 		    value = readObject(json);
 		    break;
@@ -356,7 +364,7 @@ public class JSONUtil {
 		    break;
 		default:
 		    throw new IllegalArgumentException(
-			"Unexpected character '" + (char) json.current() + "' near: " + json.getContext(30) + "!");
+			"Unexpected char '" + json.current() + "' near: " + json.getContext(30) + "!");
 	    }
 	}
 	return value;
@@ -365,9 +373,9 @@ public class JSONUtil {
     /**
      *	<p> This method creates a HashMap to represent the JSON Object.</p>
      */
-    private static Map<String, Object> readObject(JSONBytes json) {
+    private static Map<String, Object> readObject(JsonChars json) {
 	// Save the ending char...
-	json.pushContextEnd((byte) '}');
+	json.pushContextEnd('}');
 
 	// Create the Map
 	Map<String, Object> map = new HashMap<String, Object>(10);
@@ -417,9 +425,9 @@ public class JSONUtil {
      *	<p> This function will process a JSON string and convert it into
      *	    an array.</p>
      */
-    private static List<Object> readArray(JSONBytes json) {
+    private static List<Object> readArray(JsonChars json) {
 	// Save the ending char...
-	json.pushContextEnd((byte) ']');
+	json.pushContextEnd(']');
 
 	// Create the List
 	List<Object> list = new ArrayList<Object>(10);
@@ -454,16 +462,16 @@ public class JSONUtil {
     /**
      *	<p> This function reads a String and returns it.</p>
      */
-    private static String readString(JSONBytes json) {
+    private static String readString(JsonChars json) {
 	// Save the ending char...
 	json.pushContextEnd(json.current());
 
 	// Build the String...
 	StringBuilder builder = new StringBuilder();
-	char ch = (char) json.next();
+	char ch = json.next();
 	while (!json.isAtContextEnd()) {
 	    if (ch == '\\') {
-		ch = (char) json.next();
+		ch = json.next();
 		switch (ch) {
 		    case 'b' :
 			ch = '\b';
@@ -498,7 +506,7 @@ public class JSONUtil {
 		}
 	    }
 	    builder.append(ch);
-	    ch = (char) json.next();
+	    ch = json.next();
 	}
 
 	// Return the result
@@ -509,12 +517,12 @@ public class JSONUtil {
     /**
      *	<p> Returns either a Float or an Long depending on the data.</p>
      */
-    private static Object readNumber(JSONBytes json) {
+    private static Object readNumber(JsonChars json) {
 	StringBuilder builder = new StringBuilder();
-	char ch = (char) json.current();
+	char ch = json.current();
 	if (ch == '-') {
 	    builder.append('-');
-	    ch = (char) json.next();
+	    ch = json.next();
 	}
 	boolean hasDecimal = false;
 	boolean hasExp = false;
@@ -536,8 +544,7 @@ public class JSONUtil {
 		case '.' :
 		    if (hasDecimal) {
 			throw new IllegalArgumentException(
-			    "Error while parsing number!  " +
-			    "Found multiple decimal points.");
+			    "Error while parsing number!  Found multiple decimal points.");
 		    }
 		    hasDecimal = true;
 		    builder.append(ch);
@@ -547,20 +554,18 @@ public class JSONUtil {
 		    // We have an exponent
 		    if (hasExp) {
 			throw new IllegalArgumentException(
-			    "An attempt was made to parse an Long value, "
-			    + "however, it was malformed (had to exponents).");
+			    "An attempt was made to parse an Long value, however, it was malformed (had to exponents).");
 		    }
 		    hasExp = true;
 		    builder.append(ch);
-		    ch = (char) json.next();
+		    ch = json.next();
 		    if ((ch == '-') || (ch == '+')) {
 			builder.append(ch);
-			ch = (char) json.next();
+			ch = json.next();
 		    }
 		    if ((ch < '0') || (ch > '9')) {
 			throw new IllegalArgumentException(
-			    "Required a digit after an exponent, "
-			    + "however received: '" + ch + "'.");
+			    "Required a digit after an exponent, however received: '" + ch + "'.");
 		    }
 		    builder.append(ch);
 		    break;
@@ -568,7 +573,11 @@ public class JSONUtil {
 		    done = true;
 		    continue;
 	    }
-	    ch = (char) json.next();
+            try {
+                ch = json.next();
+            } catch (IndexOutOfBoundsException ioobe) {
+                done = true;
+            }
 	}
 	// Numbers don't have an ending delimiter, so we need to push the last
 	// value back onto the queue
@@ -584,13 +593,13 @@ public class JSONUtil {
      *	<p> This method attempts to read a true/false/null value and returns a
      *	    Boolean for true/false values or {@link #NULL} for null values.</p>
      */
-    private static Object readConstant(JSONBytes json, String constant) {
+    private static Object readConstant(JsonChars json, String constant) {
 	byte[] good = constant.getBytes();
 	int len = good.length;
 	char ch;
 	boolean match = true;
 	for (int idx=1; idx<len; idx++) {
-	    ch = (char) json.next();
+	    ch = json.next();
 	    if (ch != good[idx]) {
 		throw new IllegalArgumentException(
 		    "Expected constant (" + constant + ")!");
@@ -601,27 +610,33 @@ public class JSONUtil {
 	return constant.equals("null") ? NULL : Boolean.valueOf(constant);
     }
 
-    static class JSONBytes {
-	/**
+    static class JsonChars {
+        private String string;
+	private int len;
+	private int loc = 0;
+	private Stack<Character> endContext = new Stack<Character>();
+
+        /**
 	 *  Constructor.
 	 */
-	JSONBytes(String json) {
-	    bytes = json.getBytes();
-	    len = bytes.length;
+	JsonChars(String json) {
+            string = json;
+            len = string.length();
 	}
 
 	/**
 	 *  <p>	Returns the current byte.</p>
 	 */
-	byte current() {
-	    return bytes[loc-1];
+	char current() {
+	    return string.charAt(loc-1);
 	}
 
 	/**
 	 *  <p>	Returns the current byte and increments the location by 1.</p>
 	 */
-	byte next() {
-	    return (loc<len) ? bytes[loc++] : -1;
+	char next() {
+            return string.charAt(loc++);
+	    //return (loc<len) ? string.charAt(loc++) : null;
 	}
 
 	/**
@@ -646,7 +661,8 @@ public class JSONUtil {
 	    if (after > len) {
 		after = len;
 	    }
-	    return new String(bytes, before, after - before);
+	    return string.substring(before, after - before);
+//                    new String(bytes, before, after - before);
 	}
 
 	/**
@@ -669,22 +685,17 @@ public class JSONUtil {
 	 *	Object is a '}' byte.</p>
 	 */
 	boolean isAtContextEnd() {
-	    return !hasNext() || (bytes[loc-1] == endContext.peek());
+	    return !hasNext() || (string.charAt(loc-1) == endContext.peek());
 	}
-	void pushContextEnd(byte end) {
+	void pushContextEnd(char end) {
 	    endContext.push(end);
 	}
-	byte popContextEnd() {
+	char popContextEnd() {
 	    return endContext.pop();
 	}
-	byte peekContextEnd() {
+	char peekContextEnd() {
 	    return endContext.peek();
 	}
-
-	private byte[] bytes;
-	private int len;
-	private int loc = 0;
-	private Stack<Byte> endContext = new Stack<Byte>();
     }
 
     /**
@@ -706,52 +717,4 @@ public class JSONUtil {
 	}
 	return val;
     }
-
-    /**
-     *	Used for testing...
-     */
-    public static void main(String args[]) {
-	// FIXME: Convert to a real test...
-	test("3");
-	test("true");
-	test("false");
-	test("null");
-	test("[null]");
-	test("[true,false,null,{'a':'b'},['1','2','3']]");
-	test("[true,false,null,{'a':'b'},[1,2,3]]");
-	test("[true,false,null,{'a':'b'},[1.1,2.2,3.3]]");
-	test("[true,false,null,{'a':'b'},['1',2,3.3]]");
-	test("{'x':['foo',null ,{'a':true, 'b':false }]}");
-	test("{	    'key'   :	\"value\" ,\n  \r \"key2\"   :   {  'innerKey'  : [  3.3E-2 , false  , 800e+8, null , 37  , \"test\" ] , \n \"innerKey2\" : {'a' : 'b', 'c' : 'd'}, 'innerKey3' : true} }");
-
-	testJavaToJSON(new HashMap<String, String>() {{ put("foo", "bar"); }});
-
-	System.out.println("\n\n");
-	encodeDecodeTest("[true,false,null,{'a':'b'},['1','2','3']]");
-	encodeDecodeTest("3");
-	encodeDecodeTest("true");
-	encodeDecodeTest("false");
-	encodeDecodeTest("null");
-	encodeDecodeTest("[null]");
-	encodeDecodeTest("[true,false,null,{'a':'b'},['1','2','3']]");
-	encodeDecodeTest("[true,false,null,{'a':'b'},[1,2,3]]");
-	encodeDecodeTest("[true,false,null,{'a':'b'},[1.1,2.2,3.3]]");
-	encodeDecodeTest("[true,false,null,{'a':'b'},['1',2,3.3]]");
-	encodeDecodeTest("{'x':['foo',null ,{'a':true, 'b':false }]}");
-	encodeDecodeTest("{	    'key'   :	\"value\" ,\n  \r \"key2\"   :   {  'innerKey'  : [  3.3E-2 , false  , 800e+8, null , 37  , \"test\" ] , \n \"innerKey2\" : {'a' : 'b', 'c' : 'd'}, 'innerKey3' : true} }");
-    }
-    private static void test(String json) {
-	System.out.println("src:\t\t" + json + "\n\tresult:\t" + jsonToJava(json));
-    }
-    private static void testJavaToJSON(Object obj) {
-	System.out.println("obj:\t\t" + obj + "\n\tJSON Result:\t" + javaToJSON(obj, 2));
-    }
-    private static void encodeDecodeTest(String json) {
-	System.out.println("before:\t\t" + json + "\n\tafter:\t" + javaToJSON(jsonToJava(json), 9));
-    }
-
-    private static final String	ABORT_PROCESSING    =	"____EnD___";
-    private static final String	COLON		    =	"____CoLoN___";
-    private static final String	COMMA		    =	"____CoMmA___";
-    private static final String	NULL		    =	"____NuLl___";
 }

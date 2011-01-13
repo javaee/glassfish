@@ -48,8 +48,8 @@
         setAttribute(key="fieldMap" value="appClient");
         createMap(result="#{pageSession.appClient}")
         mapPut(map="#{pageSession.deployMap}", key="appClient", value="#{pageSession.appClient}");
-        mapPut(map="#{pageSession.appClient}", key="convertToFalseList", value={ "verify", ,"force" , "PROPERTY-javaWebStartEnabled"} );
-        mapPut(map="#{pageSession.appClient}", key="PROPERTY-javaWebStartEnabled" , value="true" );
+        mapPut(map="#{pageSession.appClient}", key="convertToFalseList", value={ "verify", ,"force" , "PROPERTY-$constant{org.glassfish.deployment.client.DFDeploymentProperties.DEPLOY_OPTION_JAVA_WEB_START_ENABLED}"} );
+        mapPut(map="#{pageSession.appClient}", key="PROPERTY-$constant{org.glassfish.deployment.client.DFDeploymentProperties.DEPLOY_OPTION_JAVA_WEB_START_ENABLED}" , value="true" );
      />
     <!afterCreate
         getClientId(component="$this{component}" clientId=>$page{appClientId});
@@ -58,24 +58,23 @@
 
 <sun:property id="nameProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.ApplicationName}" visible="#{true}">
     <sun:textField id="appName" columns="$int{40}" maxLength="#{sessionScope.fieldLengths['maxLength.deploy.ApplicationName']}" text="#{pageSession.appClient['name']}" styleClass="required" required="#{true}"
-        onChange="javascript: setAppName('#{appNameId}', this.value, window)">
+        onChange="javascript: admingui.deploy.setAppName('#{appNameId}', this.value, window, '#{sessionScope.appTypeString}')">
         <!afterCreate
             getClientId(component="$this{component}" clientId=>$page{appNameId});
         />
     </sun:textField>
 </sun:property>
 
-<sun:property id="v2" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.run}" helpText="$resource{i18n.deploy.runHelp}">
-        <sun:checkbox id="ver2" label="$resource{i18n.common.Enabled}" selected="#{pageSession.appClient['verify']}" selectedValue="true" />
+<sun:property id="jw" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.JavaWebStart}" helpText="$resource{i18n.deploy.JavaWebStartHelp}">
+	<sun:checkbox id="jwt" label="$resource{i18n.common.Enabled}" selected="#{pageSession.appClient['PROPERTY-$constant{org.glassfish.deployment.client.DFDeploymentProperties.DEPLOY_OPTION_JAVA_WEB_START_ENABLED}']}" selectedValue="true" />
 </sun:property>
 
+<sun:property id="v2" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.run}" helpText="$resource{i18n.deploy.runHelp}">
+        <sun:checkbox id="ver2" label=" " selected="#{pageSession.appClient['verify']}" selectedValue="true" />
+</sun:property>
 
 <sun:property id="force" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.forceRedeploy}" helpText="$resource{i18n.deploy.forceRedeployHelp}">
-        <sun:checkbox id="force"  selected="#{pageSession.appClient['force']}" selectedValue="true" />
-</sun:property>
-
-<sun:property id="jw" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.deploy.JavaWebStart}" helpText="$resource{i18n.deploy.JavaWebStartHelp}">
-	<sun:checkbox id="jwt" label="$resource{i18n.common.Enabled}" selected="#{pageSession.appClient['PROPERTY-javaWebStartEnabled']}" selectedValue="true" />
+        <sun:checkbox id="force"  label=" " selected="#{pageSession.appClient['force']}" selectedValue="true" />
 </sun:property>
 
 <sun:property id="descriptionProp" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.description}" helpText="$resource{i18n.deploy.descHelp}" >

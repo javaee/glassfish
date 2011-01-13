@@ -125,4 +125,6 @@ import java.util.Map;
      PlatformServicesInfo getInfo();
      void initializeInternal();
      void createServiceInternal();
+     void deleteService();
+     void deleteServiceInternal();
 }

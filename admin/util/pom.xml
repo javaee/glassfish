@@ -53,7 +53,7 @@
     </parent>
     <artifactId>admin-util</artifactId>
     <packaging>hk2-jar</packaging>
-    <name>Admin Utilities classes</name>
+    <name>admin-util</name>
     <description>Admin Utilities</description>
 
     <developers>
@@ -76,17 +76,49 @@
                 <configuration>
                     <archive>
 		        <manifestEntries>
-			    <Class-Path>admin-util-l10n.jar </Class-Path>
+			    <Class-Path>common-l10n.jar</Class-Path>
                         </manifestEntries>
                     </archive>
                 </configuration>
             </plugin>
+               <plugin>
+                   <groupId>org.apache.maven.plugins</groupId>
+                   <artifactId>maven-dependency-plugin</artifactId>
+                   <executions>
+                       <execution>
+                           <id>unpack</id>
+                           <phase>process-classes</phase>
+                           <goals>
+                             <goal>unpack</goal>
+                           </goals>
+                           <configuration>
+                               <artifactItems>
+                                   <artifactItem>
+                                       <groupId>org.glassfish.docs.man</groupId>
+                                       <artifactId>admin-util-manpage</artifactId>
+                                       <version>${v3-docs.version}</version>
+                                       <type>jar</type>
+                                       <overWrite>true</overWrite>
+                                       <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+                                       <excludes>META-INF/**</excludes>
+                                   </artifactItem>
+                                </artifactItems>
+                           </configuration>
+                      </execution>
+                   </executions>
+              </plugin>
         </plugins>
         <resources>
             <resource>
                 <directory>src/main/java</directory>
                 <includes>
                     <include>**/*.properties</include>
+                </includes>
+            </resource>
+           <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*.1</include>
                 </includes>
             </resource>
         </resources>

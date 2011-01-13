@@ -45,9 +45,10 @@ import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.component.Injectable;
+import static org.glassfish.config.support.Constants.NAME_APP_REGEX;
 
 import java.beans.PropertyVetoException;
-
+import javax.validation.Payload;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.NotNull;
 
@@ -58,7 +59,7 @@ import javax.validation.constraints.NotNull;
 /* @XmlType(name = "") */
 
 @Configured
-public interface ApplicationRef extends ConfigBeanProxy, Injectable  {
+public interface ApplicationRef extends ConfigBeanProxy, Injectable, Payload  {
 
     /**
      * Gets the value of the enabled property.
@@ -142,7 +143,7 @@ public interface ApplicationRef extends ConfigBeanProxy, Injectable  {
      */
     @Attribute(key=true)
     @NotNull
-    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;:#]*")
+    @Pattern(regexp=NAME_APP_REGEX, message="{appref.invalid.name}", payload=ApplicationRef.class)
     public String getRef();
 
     /**

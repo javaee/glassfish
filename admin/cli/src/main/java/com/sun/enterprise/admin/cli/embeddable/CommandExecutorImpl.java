@@ -40,18 +40,13 @@
 
 package com.sun.enterprise.admin.cli.embeddable;
 
-import com.sun.enterprise.admin.cli.CLICommand;
-import com.sun.enterprise.admin.cli.Environment;
 import com.sun.enterprise.admin.cli.Parser;
-import com.sun.enterprise.admin.cli.ProgramOptions;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.CommandException;
 import org.glassfish.api.admin.CommandModel;
 import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.admin.ParameterMap;
-import org.glassfish.common.util.admin.CommandModelImpl;
 import org.glassfish.embeddable.CommandResult;
-import org.glassfish.embeddable.GlassFishException;
 import org.jvnet.hk2.annotations.ContractProvided;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
@@ -85,26 +80,20 @@ public class CommandExecutorImpl implements org.glassfish.embeddable.CommandRunn
 
     private Logger logger = Logger.getAnonymousLogger();
 
-    public CommandResult run(String command, String... args) throws GlassFishException {
+    public CommandResult run(String command, String... args){
         try {
             ActionReport actionReport = executeCommand(command, args);
             return convert(actionReport);
-        } catch (CommandException e) {
-            throw new GlassFishException(e);
+        } catch (Exception e) {
+            return convert(e);
         }
     }
 
     private ParameterMap getParameters(String command, String[] args) throws CommandException {
-//        // I don't think we should be adding the ProgramOptions here. This should be done
-//        // upfront based on information supplied by user during bootstrap process. No?
-//        ProgramOptions po = new ProgramOptions(new Environment());
-//        if (habitat.getComponent(ProgramOptions.class) == null) {
-//            habitat.addComponent("program-options", po);
-//        }
-//
-//        CLICommand cliCommand = CLICommand.getCommand(habitat, command);
-//        CommandModelImpl commandModel = new CommandModelImpl(cliCommand.getClass());
         CommandModel commandModel = commandRunner.getModel(command, logger);
+        if (command == null) {
+            throw new CommandException("No command called " + command);
+        }
         Parser parser = new Parser(args, 0, commandModel.getParameters(), false);
         ParameterMap options = parser.getOptions();
         List<String> operands = parser.getOperands();
@@ -165,6 +154,22 @@ public class CommandExecutorImpl implements org.glassfish.embeddable.CommandRunn
 
             public Throwable getFailureCause() {
                 return actionReport.getFailureCause();
+            }
+        };
+    }
+
+    private CommandResult convert(final Exception e) {
+        return new CommandResult() {
+            public ExitStatus getExitStatus() {
+                return ExitStatus.FAILURE;
+            }
+
+            public String getOutput() {
+                return "Exception while executing command.";
+            }
+
+            public Throwable getFailureCause() {
+                return e;
             }
         };
     }

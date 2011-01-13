@@ -552,8 +552,9 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
             return; // nothing to do!
 
         if (parseLevelsBoolean(enabledStr)) {
-            logger.log(Level.INFO,
-                        "enableStatsMonitoring", new Object[] {enabledStr});
+            if (logger.isLoggable(Level.FINE))
+                logger.log(Level.FINE,
+                        "enableStatsMonitoring", new Object[] {propName, enabledStr});
             try {
                 spmd.enableStatsProviders(propName);
             } catch(RuntimeException rte) {
@@ -562,8 +563,9 @@ public class MonitoringBootstrap implements Init, PostConstruct, PreDestroy, Eve
                     logger.log(Level.FINE, "", rte);
             }
         } else {
-            logger.log(Level.INFO,
-                        "disableStatsMonitoring");
+            if (logger.isLoggable(Level.FINE))
+                logger.log(Level.FINE,
+                        "disableStatsMonitoring", propName);
             spmd.disableStatsProviders(propName);
         }
     }

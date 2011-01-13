@@ -43,7 +43,6 @@ package com.sun.enterprise.v3.admin.cluster;
 import org.jvnet.hk2.component.Habitat;
 import org.glassfish.internal.api.RelativePathResolver;
 import com.sun.enterprise.universal.process.ProcessManagerException;
-import org.glassfish.internal.api.ServerContext;
 import com.sun.enterprise.config.serverbeans.Node;
 import com.sun.enterprise.config.serverbeans.SshConnector;
 import com.sun.enterprise.config.serverbeans.SshAuth;
@@ -57,7 +56,6 @@ import com.sun.enterprise.universal.glassfish.TokenResolver;
 import org.glassfish.cluster.ssh.launcher.SSHLauncher;
 import org.glassfish.cluster.ssh.connect.NodeRunner;
 import java.util.logging.Logger;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.FileNotFoundException;
@@ -90,6 +88,7 @@ public class NodeUtils {
     static final String PARAM_SSHPASSWORD = "sshpassword";
     static final String PARAM_SSHKEYPASSPHRASE = "sshkeypassphrase";
     static final String PARAM_TYPE = "type";
+    static final String PARAM_INSTALL = "install";
     static final String LANDMARK_FILE = "glassfish/modules/admin-cli.jar";    
 
     private static final String NL = System.getProperty("line.separator");
@@ -98,7 +97,7 @@ public class NodeUtils {
     private Logger logger = null;
     private Habitat habitat = null;
 
-    private SSHLauncher sshL = null;
+    SSHLauncher sshL = null;
 
     NodeUtils(Habitat habitat, Logger logger) {
         this.logger = logger;
@@ -154,7 +153,7 @@ public class NodeUtils {
         map.add("DEFAULT", node.getName());
         map.add(NodeUtils.PARAM_INSTALLDIR, node.getInstallDir());
         map.add(NodeUtils.PARAM_NODEHOST, node.getNodeHost());
-        map.add(NodeUtils.PARAM_NODEDIR, node.getNodeDir());
+        map.add(NodeUtils.PARAM_NODEDIR, node.getNodeDirAbsolute());
 
         SshConnector sshc = node.getSshConnector();
         if (sshc != null) {
@@ -204,9 +203,10 @@ public class NodeUtils {
         validatePassword(map.getOne(PARAM_SSHPASSWORD));
         validatePassword(map.getOne(PARAM_SSHKEYPASSPHRASE));
 
-        validateHostName(map.getOne(PARAM_NODEHOST));
+        String  nodehost = map.getOne(PARAM_NODEHOST);
+        validateHostName(nodehost);
 
-        if (sshL != null) {
+        if (sshL != null && ! nodehost.equals("localhost")) {
             validateSSHConnection(map);
         }
     }
@@ -293,6 +293,7 @@ public class NodeUtils {
         String sshkeyfile = map.getOne(PARAM_SSHKEYFILE);
         String sshpassword = map.getOne(PARAM_SSHPASSWORD);
         String sshkeypassphrase = map.getOne(PARAM_SSHKEYPASSPHRASE);
+        boolean installFlag = Boolean.parseBoolean(map.getOne(PARAM_INSTALL));
 
         // We use the resolver to expand any system properties
         if (! NetUtils.isPortStringValid(resolver.resolve(sshport))) {
@@ -326,7 +327,8 @@ public class NodeUtils {
             }
             if (e instanceof FileNotFoundException) {
                 logger.warning(StringUtils.cat(": ", m1, m2, sshL.toString()));
-                throw new CommandValidationException(StringUtils.cat(NL,
+                if (!installFlag)
+                    throw new CommandValidationException(StringUtils.cat(NL,
                                             m1, m2));
             } else {
                 String msg = Strings.get("ssh.bad.connect", nodehost);
@@ -393,6 +395,10 @@ public class NodeUtils {
         String nodeName = node.getName();
         String installDir = node.getInstallDir();
 
+        if (output == null) {
+            output = new StringBuilder();
+        }
+
         if (StringUtils.ok(humanCommand)) {
             msg3 = Strings.get("node.ssh.tocomplete",
                         nodeHost, installDir, humanCommand);
@@ -406,7 +412,7 @@ public class NodeUtils {
                 // Command ran, but didn't succeed. Log full information
                 msg2 = Strings.get("node.command.failed", nodeName,
                         nodeHost, output.toString().trim(), nr.getLastCommandRun());
-                logger.warning(StringUtils.cat(": ", msg1, msg2));
+                logger.warning(StringUtils.cat(": ", msg1, msg2, msg3));
                 // Don't expose command name to user in case it is a hidden command
                 msg2 = Strings.get("node.command.failed.short", nodeName,
                         nodeHost, output.toString().trim());
@@ -421,20 +427,20 @@ public class NodeUtils {
             String msg = Strings.get("node.command.failed.ssh.details",
                     nodeName, nodeHost, ec.getCommandRun(), ec.getMessage(),
                     ec.getSSHSettings());
-            logger.warning(StringUtils.cat(": ", msg1, msg));
+            logger.warning(StringUtils.cat(": ", msg1, msg, msg3));
         } catch (ProcessManagerException ex) {
             msg2 = Strings.get("node.command.failed.local.details",
                     ex.getMessage(), nr.getLastCommandRun());
-            logger.warning(StringUtils.cat(": ", msg1, msg2));
+            logger.warning(StringUtils.cat(": ", msg1, msg2, msg3));
             // User message doesn't have command that was run
             msg2 = Strings.get("node.command.failed.local.exception",
                     ex.getMessage());
         } catch (UnsupportedOperationException e) {
             msg2 = Strings.get("node.not.ssh", nodeName, nodeHost);
-            logger.warning(StringUtils.cat(": ", msg1, msg2));
+            logger.warning(StringUtils.cat(": ", msg1, msg2, msg3));
         } catch (IllegalArgumentException e) {
             msg2 = e.getMessage();
-            logger.warning(StringUtils.cat(": ", msg1, msg2));
+            logger.warning(StringUtils.cat(": ", msg1, msg2, msg3));
         }
 
         if (failure) {
@@ -443,6 +449,7 @@ public class NodeUtils {
         } else {
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
        }
+       
 
        return;
    }

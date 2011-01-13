@@ -49,6 +49,7 @@ import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.*;
 import org.jvnet.hk2.config.types.Property;
 import org.jvnet.hk2.config.types.PropertyBag;
+import static org.glassfish.config.support.Constants.NAME_REGEX;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -84,7 +85,7 @@ public interface AuthRealm extends ConfigBeanProxy, Injectable, PropertyBag {
      */
     @Attribute(key=true)
     @NotNull
-    @Pattern(regexp="[\\p{L}\\p{N}_][\\p{L}\\p{N}\\-_./;#]*")
+    @Pattern(regexp=NAME_REGEX)
     String getName();
 
     /**

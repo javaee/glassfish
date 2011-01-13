@@ -51,6 +51,7 @@ import org.jvnet.hk2.config.DomDocument;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -255,11 +256,8 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
     }
 
     private void generateCustomResourceMapping(String beanName, ClassWriter classWriter) {
-        for (int i = 0; i < configBeanCustomResources.length; i++) {
-            String row[] = configBeanCustomResources[i];
-            if (row[0].equals(beanName)) {
-                classWriter.createCustomResourceMapping(row[1], row[2]);
-            }
+        for (CommandResourceMetaData cmd : CommandResourceMetaData.getCustomResourceMapping(beanName)) {
+            classWriter.createCustomResourceMapping(cmd.customClassName, cmd.resourcePath);
         }
     }
 
@@ -277,7 +275,6 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
      * @param parentWriter
      */
     private void generateCommandResources(String parentBeanName, ClassWriter parentWriter)  {
-
         List<CommandResourceMetaData> commandMetaData = CommandResourceMetaData.getMetaData(parentBeanName);
         if(commandMetaData.size() > 0) {
             for (CommandResourceMetaData metaData : commandMetaData) {
@@ -324,8 +321,8 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
 
         boolean isLinkedToParent = false;
         if(metaData.commandParams != null) {
-            for(CommandResourceMetaData.ParameterMetaData parameterMeraData : metaData.commandParams) {
-                if(Constants.PARENT_NAME_VARIABLE.equals(parameterMeraData.value) ) {
+            for(CommandResourceMetaData.ParameterMetaData parameterMetaData : metaData.commandParams) {
+                if(Constants.VAR_PARENT.equals(parameterMetaData.value) ) {
                     isLinkedToParent = true;
                 }
             }
@@ -367,7 +364,7 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
         boolean nextisUpper = true;
         for (int i = 0; i < elementName.length(); i++) {
             if (nextisUpper == true) {
-                ret = ret + elementName.substring(i, i + 1).toUpperCase();
+                ret = ret + elementName.substring(i, i + 1).toUpperCase(Locale.US);
                 nextisUpper = false;
             } else {
                 if (elementName.charAt(i) == '-') {
@@ -428,29 +425,83 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
             }
         }
     }
-
+    
     //TODO - fetch command name from config bean(RestRedirect annotation).
+    //RESTREdirect currently only support automatically these deletes:
+    /*
+        delete-admin-object
+        delete-audit-module
+        delete-auth-realm
+        delete-connector-connection-pool
+        delete-connector-resource
+        delete-custom-resource
+        delete-http-listener
+        delete-iiop-listener
+        delete-javamail-resource
+        delete-jdbc-connection-pool
+        delete-jdbc-resource
+        delete-jms-host
+        delete-message-security-provider
+        delete-profiler
+        delete-resource-adapter-config
+        delete-resource-ref
+        delete-system-property
+        delete-virtual-server
+
+     What is missing is:
+     * 
+delete-jms-resource
+delete-jmsdest
+delete-jndi-resource
+delete-lifecycle-module
+delete-message-security-provider
+delete-connector-security-map           
+delete-connector-work-security-map      
+delete-node-config
+delete-node-ssh
+delete-file-user                        
+delete-password-alias                      
+delete-http-health-checker                          
+delete-http-lb-ref                                         
+delete-http-redirect                    
+delete-instance                    
+
+             */
+
+            
     private static final Map<String, String> configBeanToDELETECommand = new HashMap<String, String>() {{
-        put("AmxPref", "GENERIC-DELETE");
+        put("AdminObjectResource", "delete-admin-object");
+        put("AuditModule", "delete-audit-module");
+        put("AuthRealm", "delete-auth-realm");
         put("ApplicationRef", "delete-application-ref");
+        put("Cluster", "delete-cluster");
+        put("ConnectorConnectionPool", "delete-connector-connection-pool");
+        put("Config", "delete-config");
+        put("ConnectorConnectionPool", "delete-connector-connection-pool");
+        put("ConnectorResource", "delete-connector-resource");
+        put("CustomResource", "delete-custom-resource");
         put("ExternalJndiResource", "delete-jndi-resource");
-        put("GroupMap", "GENERIC-DELETE");
+        put("HttpListener", "delete-http-listener");
+        put("Http", "delete-http");
+        put("IiopListener", "delete-iiop-listener");
+        put("JdbcResource", "delete-jdbc-resource");       
         put("JaccProvider", "delete-jacc-provider");
+//        put("JmsHost", "delete-jms-host");
         put("LbConfig", "delete-http-lb-config");
         put("LoadBalancer", "delete-http-lb");
         put("NetworkListener", "delete-network-listener");
-        put("Principal", "GENERIC-DELETE");
-        put("PrincipalMap", "GENERIC-DELETE");
         put("Profiler", "delete-profiler");
-        put("Property", "GENERIC-DELETE");
         put("Protocol", "delete-protocol");
         put("ProtocolFilter", "delete-protocol-filter");
         put("ProtocolFinder", "delete-protocol-finder");
+        put("ProviderConfig", "delete-message-security-provider");
+        put("ResourceAdapterConfig", "delete-resource-adapter-config");
         put("SecurityMap", "delete-connector-security-map");
+        put("Ssl", "delete-ssl");
         put("Transport", "delete-transport");
         put("ThreadPool", "delete-threadpool");
-        put("UserGroup", "GENERIC-DELETE");
-        put("WorkSecurityMap", "delete-connector-work-security-map");
+        put("VirtualServer", "delete-virtual-server");
+        put("WorkSecurityMap", "delete-connector-work-security-map");    
     }};
 
     //TODO - fetch command name from config bean(RestRedirect annotation).
@@ -464,7 +515,7 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
         put("ListAuditModule", "create-audit-module");
         put("ListAuthRealm", "create-auth-realm");
         put("ListCluster", "create-cluster");
-        put("ListConfig", "create-config");
+        put("ListConfig", "_create-config");
         put("ListConnectorConnectionPool", "create-connector-connection-pool");
         put("ListConnectorResource", "create-connector-resource");
         put("ListCustomResource", "create-custom-resource");
@@ -492,17 +543,6 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
         put("ProtocolFinder", "create-protocol-finder");
         put("ListSecurityMap", "create-connector-security-map");
     }};
-
-    public static final String[][] configBeanCustomResources = {
-        // ConfigBean, Custom Resource Class, path
-        {"Cluster", "SystemPropertiesCliResource", "system-properties"},
-        {"Config", "SystemPropertiesCliResource", "system-properties"},
-        {"Domain", "JmxServiceUrlsResource", "jmx-urls"},
-        {"Domain", "LogViewerResource", "view-log"},
-        {"Domain", "SetDomainConfigResource", "set"},
-        {"NetworkListener", "FindHttpProtocolResource", "find-http-protocol"},
-        {"Server", "SystemPropertiesCliResource", "system-properties"}
-    };
 
     private static class CollectionLeafMetaData {
         String postCommandName;

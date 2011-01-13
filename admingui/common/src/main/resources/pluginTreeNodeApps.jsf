@@ -51,6 +51,7 @@
 	url="/common/applications/applications.jsf"
 	expanded="false"
 	childImageURL="/resource/images/webModule.gif"
+        imageURL="/resource/images/application.gif"
 	childExpanded="false"
 	childURL="/common/applications/applicationEdit.jsf?appName=#{$this{valueBinding}.text}">
     <ui:event type="beforeCreate">
@@ -59,22 +60,17 @@
 	gf.restRequest(endpoint="#{sessionScope.REST_URL}/applications/application/list-components.json" attrs="#{requestScope.attrsMap}" method="get" result="#{requestScope.resp}");
 	setAttribute(key="children" value="#{requestScope.resp.data.properties}");
     </ui:event>
-    <!facet image>
-	<sun:iconHyperlink id="treeLink" icon="TREE_FOLDER"
-		url="/common/applications/applications.jsf"
-		alt="$resource{i18n.tree.applications}"
-		border="0" immediate="true" />
-    </facet>
 </dynamicTreeNode>
 
 <dynamicTreeNode  childNameKey="message"
-	id="lifecycle"
+	id="lifecycles"
 	treeAdaptorClass="org.glassfish.admingui.common.tree.ListTreeAdaptor"
 	children="#{requestScope.children}"
 	text="$resource{i18n.tree.lifecycle}"
 	url="/common/applications/lifecycles.jsf"
+        imageURL="/resource/images/lifecycle.gif"
 	expanded="false"
-	childImageURL="/resource/images/webModule.gif"
+	childImageURL="/resource/images/lifecycle.gif"
 	childExpanded="false"
 	childURL="/common/applications/lifecycleEdit.jsf?appName=#{$this{valueBinding}.text}">
     <ui:event type="beforeCreate">
@@ -83,8 +79,4 @@
 	gf.restRequest(endpoint="#{sessionScope.REST_URL}/applications/application/list-lifecycle-modules.json"  attrs="#{requestScope.attrsMap}" method="get" result="#{requestScope.resp}");
 	setAttribute(key="children" value="#{requestScope.resp.data.children}");
     </ui:event>
-    <!facet image>
-	<sun:iconHyperlink id="treeLink" icon="TREE_FOLDER" url="/common/applications/lifecycles.jsf"
-	    alt="$resource{i18n.tree.lifecycle}" border="0" immediate="true" />
-    </facet>
 </dynamicTreeNode>

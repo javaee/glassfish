@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -52,7 +52,7 @@
         setSessionAttribute(key="clusterTabs" value="general");
         getRequestValue(key="clusterName" value="#{pageSession.clusterName}");
         urlencode(value="#{pageSession.clusterName}" encoding="UTF-8" result="#{pageSession.encodedClusterName}");
-        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/cluster/clusterGeneral.jsf?clusterName=#{pageSession.encodedClusterName}");
+        setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/cluster/cluster/clusterGeneral.jsf?clusterName=#{pageSession.encodedClusterName}");
         setPageSessionAttribute(key="parentPage" value="#{request.contextPath}/cluster/cluster/clusters.jsf");
         setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/clusters");
         setPageSessionAttribute(key="childType" value="cluster");
@@ -61,8 +61,10 @@
 
         gf.getEntityAttrs(endpoint="#{pageSession.resourceUrl}.json", valueMap="#{pageSession.valueMap}");
         gf.getChildrenNamesList(endpoint="#{pageSession.resourceUrl}/server-ref" id="ref" result="#{pageSession.instanceList}" );
-        //TODO: determine #instance thats up and #instance that is down
-
+        gf.listInstances(optionKeys={"id"} optionValues={"$pageSession{clusterName}"}, statusMap="#{requestScope.statusMap}");
+        gf.getClusterStatusSummary(statusMap ="#{requestScope.statusMap}" ,
+            numRunning="#{pageSession.numRunning}"  numNotRunning="#{pageSession.numNotRunning}" numRequireRestart="#{pageSession.numRequireRestart}"
+            disableStart="#{pageSession.disableStart}"  disableStop="#{pageSession.disableStop}" disableEjb="#{pageSession.disableEjb}");
         setPageSessionAttribute(key="convertToFalseList" value={ "gmsEnabled"} );
         //set the following for including buttons.inc
         setPageSessionAttribute(key="edit" value="#{true}" );
@@ -85,21 +87,59 @@
                     <!command
                         gf.updateEntity(endpoint="#{pageSession.resourceUrl}" attrs="#{pageSession.valueMap}"  convertToFalse="#{pageSession.convertToFalseList}");
                         prepareSuccessfulMsg();
-                        gf.redirect(page="#{selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+                        gf.redirect(page="#{pageSession.selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
                     />
                 </sun:button>
                 <sun:button id="cancelButton" immediate="#{true}" primary="#{false}" rendered="#{pageSession.showCancelButton}" text="$resource{i18n.button.Cancel}" >
                     <!command
-                        gf.redirect(page="#{parentPage}");
+                        gf.redirect(page="#{pageSession.parentPage}");
                     />
                 </sun:button>
             </sun:panelGroup>
         </facet>
     </sun:title>
-    <sun:button id="migrateTimesButton" text="$resource{i18ncs.button.migrateEjbTimer}">
+
+    <sun:button id="startButton" text="$resource{i18ncs.button.startCluster}" disabled="#{disableStart}" primary="#{false}"
+        onClick="if ( getConfirm(this,'$resource{i18ncs.msg.JS.confirmStartClusters}') )
+                { return submitAndDisable(this, '$resource{i18n.button.Processing}');}  else {return false;} " >
+        <!command
+            println("Starting Clustser...");
+            println("#{sessionScope.REST_URL}/clusters/cluster/#{pageSession.encodedClusterName}/start-cluster");
+            gf.restRequest(endpoint="#{sessionScope.REST_URL}/clusters/cluster/#{pageSession.encodedClusterName}/start-cluster" method="POST");
+            gf.redirect(page="#{pageSession.selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+        />
+    </sun:button>
+
+    <sun:button id="stopButton" text="$resource{i18ncs.button.stopCluster}" disabled="#{disableStop}" primary="#{false}"
+        onClick="if ( getConfirm(this,'$resource{i18ncs.msg.JS.confirmStopClusters}') )
+                { return submitAndDisable(this, '$resource{i18n.button.Processing}');}  else {return false;} " >
+        <!command
+            println("Stopping Cluster...");
+            println("#{sessionScope.REST_URL}/clusters/cluster/#{pageSession.encodedClusterName}/stop-cluster");
+            gf.restRequest(endpoint="#{sessionScope.REST_URL}/clusters/cluster/#{pageSession.encodedClusterName}/stop-cluster" method="POST");
+            gf.redirect(page="#{pageSession.selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
+        />
+    </sun:button>
+
+    <sun:button id="migrateTimesButton" text="$resource{i18ncs.button.migrateEjbTimer}"  disabled="#{disableEjb}" primary="false">
         <!command
             gf.redirect(page="#{request.contextPath}/cluster/migrateEjbTimers.jsf?clusterName=#{pageSession.encodedClusterName}");
         />
+    </sun:button>
+
+    <sun:button id="rotateLog" text="$resource{i18n.button.rotateLog}" primary="#{false}"
+        onClick="if ( getConfirm(this, '$resource{i18nc.msg.JS.confirmRotateLog}') )
+        { return submitAndDisable(this, '$resource{i18n.button.Processing}', target='_top');}
+            else {return false;} " >
+            <!command
+                createMap(result="#{requestScope.map}");
+                mapPut(map="#{requestScope.map}", key="target", value="#{pageSession.encodedClusterName}");
+                gf.restRequest(
+                    endpoint="#{sessionScope.REST_URL}/rotate-log"
+                    attrs="#{requestScope.map}"
+                    method="POST"
+                    result="#{pageSession.props}");
+            gf.redirect("#{pageSession.selfPage}");/>
     </sun:button>
 
     <sun:propertySheet id="propertySheet">
@@ -130,16 +170,16 @@
             </sun:property>
 
             <sun:property id="instanceStatusProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n.common.status}" >
-                <event>
-                <!beforeCreate
-                    gf.listInstances(optionKeys={"id"} optionValues={"$pageSession{clusterName}"}, statusMap="#{requestScope.statusMap}");
-                    gf.getClusterStatusSummary(statusMap ="#{requestScope.statusMap}" ,
-                        numRunning="#{pageSession.numRunning}"  numNotRunning="#{pageSession.numNotRunning}"  );
-                />
-                </event>
+                <if condition="#{pageSession.numNotRunning}">
+                    <sun:staticText id="instanceStatusStopped" text=" #{pageSession.numNotRunning}" />
+                    "<br />
+                </if>
+                <if condition="#{pageSession.numRequireRestart}">
+                    <sun:staticText id="instanceStatusRequireRestart" text="#{pageSession.numRequireRestart}" />
+                    "<br />
+                </if>
                 <sun:staticText id="instanceStatusRunning" text="#{pageSession.numRunning}" />
                 "<br />
-                <sun:staticText id="instanceStatusStopped" text="#{pageSession.numNotRunning}" />
             </sun:property>
         </sun:propertySheetSection>
 

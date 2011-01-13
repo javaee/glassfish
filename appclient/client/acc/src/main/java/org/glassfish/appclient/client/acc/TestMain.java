@@ -40,9 +40,6 @@
 
 package org.glassfish.appclient.client.acc;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /**
  *
  * @author tjquinn
@@ -58,7 +55,9 @@ public class TestMain {
      */
     public static void main(String[] args) {
         try {
-            CommandLaunchInfo info = CommandLaunchInfo.newInstance("mode=acscript" + ",client=jar=" + JAR_CLIENT_NAME + ",arg=-textauth" + ",arg=-user,arg=" + USER_VALUE);
+            final AgentArguments agentArgs = AgentArguments.newInstance(
+                    "mode=acscript" + ",client=jar=" + JAR_CLIENT_NAME + ",arg=-textauth" + ",arg=-user,arg=" + USER_VALUE);
+            CommandLaunchInfo info = CommandLaunchInfo.newInstance(agentArgs);
         } catch (UserError ex) {
             System.err.println(ex.getLocalizedMessage());
             

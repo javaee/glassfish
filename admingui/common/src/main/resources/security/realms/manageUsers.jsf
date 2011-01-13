@@ -53,7 +53,7 @@
         urlencode(value="#{pageSession.Name}" encoding="UTF-8" result="#{pageSession.encodedName}");
         urlencode(value="#{pageSession.configName}" encoding="UTF-8" result="#{pageSession.encodedConfigName}");
         //getFileUsers(Realm="#{Name}", configName="#{pageSession.configName}", result=>$attribute{listOfRows} );
-        gf.restRequest(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/security-service/auth-realm/#{Name}/list-users",
+        gf.restRequest(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/security-service/auth-realm/#{Name}/list-users?target=#{pageSession.encodedConfigName}",
             method="get", result="#{requestScope.listUsersResult}");
         setPageSessionAttribute(key="listOfRows", value="#{requestScope.listUsersResult.data.extraProperties.users}");
         println("***** users = #{pageSession.listOfRows}");
@@ -85,9 +85,9 @@
 
                     </sun:panelGroup>
                     </facet>                       
-                    "<br /> <br />
                 </sun:title>
-                 <sun:propertySheet id="propertySheet">             
+                 <sun:propertySheet id="propertySheet">
+#include "/common/shared/configNameSection.inc"
                 <sun:propertySheetSection id="propertySectionTextField">
                     <sun:property id="NameProp"  rendered="#{edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.realm.realmName}" >
                         <sun:staticText id="NameStatic" text="#{Name}"/>

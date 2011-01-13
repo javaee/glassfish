@@ -40,11 +40,11 @@
 
 -->
 
-<sun:treeNode	id="monitor"
-		text="$resource{i18nc.tree.monitoring}"
-		url="/common/monitor/monitoringPage.jsf?configName=${configName}"
-		imageURL="/resource/common/images/monitor.gif"
-        expanded="$boolean{true}" >
+<sun:treeNode id="monitor"
+              text="$resource{i18nc.tree.monitoring}"
+              url="/common/monitor/monitoringPage.jsf?configName=${configName}"
+              imageURL="/resource/common/images/monitor.gif"
+              expanded="$boolean{true}" >
     <!beforeCreate
         setResourceBundle(key="i18nc" bundle="org.glassfish.common.admingui.Strings");
     />

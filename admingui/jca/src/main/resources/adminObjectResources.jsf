@@ -52,7 +52,8 @@
     guiTitle="$resource{i18njca.adminObjectResources.pageTitle}"
     guiTemplateOnLoad="
         admingui.nav.refreshTree('treeForm:tree:resources:jmsResources:jmsDestinationResources');
-        admingui.nav.refreshTree('treeForm:tree:resources:Connectors:adminObjectResources');"
+        admingui.nav.refreshTree('treeForm:tree:resources:Connectors:adminObjectResources');
+        setTimeout('admingui.table.changeThreeTableButtons(\\\\\'#{pageSession.topActionGroup}\\\\\', \\\\\'#{pageSession.tableId}\\\\\'); admingui.table.initAllRows(\\\\\'#{pageSession.tableId}\\\\\');', 0);"
 >
 <!define name="content">
     <event>
@@ -65,6 +66,10 @@
         setPageSessionAttribute(key="listLink" value="#{request.contextPath}/jca/adminObjectResources.jsf");
         setPageSessionAttribute(key="editLink" value="#{request.contextPath}/jca/adminObjectEdit.jsf");
         setPageSessionAttribute(key="tableTitle" value="$resource{i18njca.resourcesTable.resources}");
+
+        setPageSessionAttribute(key="generalPage" value="#{request.contextPath}/jca/adminObjectEdit.jsf");
+        setPageSessionAttribute(key="targetPage" value="#{request.contextPath}/common/resourceNode/resourceEditTargets.jsf");
+        
         setPageSessionAttribute(key="hasPool" value="#{false}" );
         setPageSessionAttribute(key="hasResType" value="#{true}" );
     />

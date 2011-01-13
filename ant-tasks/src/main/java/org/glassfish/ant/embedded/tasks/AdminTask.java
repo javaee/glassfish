@@ -40,138 +40,27 @@
 
 package org.glassfish.ant.embedded.tasks;
 
-import org.apache.tools.ant.Task;
 import org.apache.tools.ant.BuildException;
-import org.glassfish.api.admin.CommandRunner;
-import org.glassfish.api.admin.ParameterMap;
-
-import org.glassfish.api.embedded.Server;
-import org.glassfish.api.ActionReport;
-import com.sun.enterprise.admin.cli.Parser;
-import com.sun.enterprise.admin.cli.ArgumentTokenizer;
-
-import java.util.*;
 
 public class AdminTask extends TaskBase {
 
     String serverID = Constants.DEFAULT_SERVER_ID;
-    String command, commandLine;
-    CommandProperty commandProperty;
-    List<CommandProperty> commandProperties = new ArrayList<CommandProperty>();
+    String commandLine;
 
     public void setServerID(String serverID) {
         this.serverID = serverID;
     }
 
-    public void setCommand(String command) {
-        this.command = command;
-    }
-
-
     public void setCommandLine(String cmdLine) {
         this.commandLine = cmdLine;
     }
 
-    public CommandProperty createCommandProperty() {
-        commandProperty = new CommandProperty();
-        commandProperties.add(commandProperty);
-        return commandProperty;
-    }
-  
-    public CommandProperty createCommandProperty(String name, String value) {
-        CommandProperty property = new CommandProperty();
-        property.setName(name);
-        return property;
-    }
-
-    private ParameterMap getCommandParameters() {
-        ParameterMap params = new ParameterMap();
-        for (CommandProperty property : commandProperties) {
-            params.set(property.getName(), property.getValue());
-        }
-        return params;
-    }
-
-
-
     public void execute() throws BuildException {
-        if (command == null && commandLine == null) {
-            error("Either command or commandLine should be specified");
-            return;
+        try {
+            Util.runCommand(commandLine, serverID);
+        } catch (Exception ex) {
+            error(ex.getMessage());
         }
-        Server server = Server.getServer(serverID);
-        if (server == null) {
-           error("Embedded Server [" + serverID + "] not running");
-           return;
-        }
-        CommandRunner runner = server.getHabitat().getComponent(CommandRunner.class);
-        ActionReport report = server.getHabitat().getComponent(ActionReport.class);
-
-        if (commandLine != null) {
-            try {
-            log("executing admin task[serverID=" + serverID + "] : " + commandLine);
-                String args[] = getArgs(commandLine);
-                if (args.length == 0) {
-                   error("admin command not specified");
-                   return;
-                }
-                if (args[0].equalsIgnoreCase("set") && args.length > 1) {
-                    commandLine = args[0] + " --values = " + commandLine.substring(args[0].length() + 1);
-                    args = getArgs(commandLine);
-                }
-                Parser parser = new Parser(args, 1,  null, true);
-                ParameterMap pMap = parser.getOptions();
-                pMap.set("DEFAULT", parser.getOperands());
-                runner.getCommandInvocation(args[0], report).parameters(pMap).execute();
-                if (report.hasFailures())
-                    throw new Exception(report.getFailureCause());
-
-                if (report.hasWarnings())
-                    System.out.println(report.getMessage());
-
-                System.out.println("executed : " + commandLine);
-            } catch (Exception ex) {
-                error(ex);
-            }
-        }
-        else {
-            log("executing admin command: " + command + " serverID = " + serverID);
-            runner.getCommandInvocation(command, report).
-		parameters(getCommandParameters()).execute();
-        }
-        log("admin task executed");
-    }
-
-    private String[] getArgs(String line)
-                                throws ArgumentTokenizer.ArgumentException {
-        List<String> args = new ArrayList<String>();
-        ArgumentTokenizer t = new ArgumentTokenizer(line);
-        while (t.hasMoreTokens()) {
-            args.add(t.nextToken());
-        }
-        return args.toArray(new String[args.size()]);
-    }
-
-    public class CommandProperty  {
-        String name, value;
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public void setValue(String value) {
-            this.value = value;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getValue() {
-            return value;
-        }
-
-
     }
 
 }

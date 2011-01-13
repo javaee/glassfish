@@ -51,7 +51,6 @@ import org.jvnet.hk2.component.*;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
 import org.glassfish.internal.api.Globals;
-import com.sun.enterprise.admin.cli.CLICommand;
 import org.glassfish.cluster.ssh.launcher.SSHLauncher;
 import org.glassfish.cluster.ssh.util.SSHUtil;
 
@@ -64,35 +63,15 @@ import com.sun.enterprise.universal.glassfish.TokenResolver;
 @Service(name = "setup-ssh")
 @Scoped(PerLookup.class)
 @ExecuteOn({RuntimeType.DAS})
-public final class SetupSshKey extends CLICommand {
-    
-    @Param(optional = true, defaultValue="${user.name}")
-    private String sshuser;
-
-    @Param(optional=true, defaultValue="22")
-    private int sshport;
-
-    @Param(optional = true)
-    private String sshkeyfile;
-
+public final class SetupSshKey extends SSHCommandsBase {
     @Param(optional = true)
     private String sshpublickeyfile;
 
     @Param(optional = true, defaultValue="false")
     private boolean generatekey;
 
-    @Param(name="hosts", optional = false, primary = true, multiple = true)
-    private String[] nodes;
-
     @Inject
     private Habitat habitat;
-
-    private String sshpassword;
-    private String sshkeypassphrase=null;
-
-    private boolean promptPass=false;
-
-    private TokenResolver resolver = null;
 
     public SetupSshKey() {
         // Create a resolver that can replace system properties in strings
@@ -106,6 +85,7 @@ public final class SetupSshKey extends CLICommand {
     @Override
     protected void validate()
             throws CommandException {
+        Globals.setDefaultHabitat(habitat);
         
         sshuser = resolver.resolve(sshuser);
 
@@ -124,13 +104,13 @@ public final class SetupSshKey extends CLICommand {
                 sshkeyfile = existingKey;
                 
                 if(isEncryptedKey()) {
-                    sshkeypassphrase=getSSHPassphrase();
+                    sshkeypassphrase=getSSHPassphrase(false);
                 }
             }
         } else {
             validateKeyFile(sshkeyfile);
             if(isEncryptedKey()) {
-                sshkeypassphrase=getSSHPassphrase();
+                sshkeypassphrase=getSSHPassphrase(false);
             }
         }
 
@@ -147,11 +127,10 @@ public final class SetupSshKey extends CLICommand {
             throws CommandException {
 
         SSHLauncher sshL=habitat.getComponent(SSHLauncher.class);
-        Globals.setDefaultHabitat(habitat);
 
         String previousPassword = null;
         boolean status = false;
-        for (String node : nodes) {
+        for (String node : hosts) {
             sshL.init(sshuser, node,  sshport, sshpassword, sshkeyfile, sshkeypassphrase, logger);
             if (generatekey || promptPass) {
                 //prompt for password iff required
@@ -210,44 +189,6 @@ public final class SetupSshKey extends CLICommand {
             throw new CommandException(Strings.get("KeyDoesNotExist", file));
         }
     }
-    /**
-     * Get SSH password from password file or user.
-     */
-    private String getSSHPassword(String node) throws CommandException {
-        String password = getFromPasswordFile("AS_ADMIN_SSH_PASSWORD");
-
-        //get password from user if not found in password file
-        if (password == null) {
-            if (programOpts.isInteractive()) {
-                password=readSSHPassword(Strings.get("SSHPasswordPrompt", sshuser, node));
-            } else {
-                throw new CommandException(Strings.get("SSHPasswordNotFound"));
-            }
-        }
-        return password;
-    }
-
-    /**
-     * Get SSH key passphrase from password file or user.
-     */
-    private String getSSHPassphrase() throws CommandException {
-        String passphrase = getFromPasswordFile("AS_ADMIN_SSH_KEYPASSPHRASE");
-
-        //get password from user if not found in password file
-        if (passphrase == null) {
-            if (programOpts.isInteractive()) {
-                //i18n
-                passphrase=readSSHPassword(Strings.get("SSHPassphrasePrompt", sshkeyfile));
-            } else {
-                passphrase=""; //empty passphrase
-            }
-        }
-        return passphrase;
-    }
-
-    private String getFromPasswordFile(String name) {
-        return passwords.get(name);
-    }
 
     /**
      * Prompt for key generation
@@ -264,7 +205,7 @@ public final class SetupSshKey extends CLICommand {
         if (cons != null) {
             String val = null;
             do {
-                cons.printf("%s", Strings.get("GenerateKeyPairPrompt", sshuser, Arrays.toString(nodes)));
+                cons.printf("%s", Strings.get("GenerateKeyPairPrompt", sshuser, Arrays.toString(hosts)));
                 val = cons.readLine();
                 if (val != null && (val.equalsIgnoreCase("yes") || val.equalsIgnoreCase("y"))) {
                     if(logger.isLoggable(Level.FINER)) {
@@ -277,34 +218,5 @@ public final class SetupSshKey extends CLICommand {
             } while (val != null && !isValidAnswer(val));
         }
         return false;
-    }
-
-    private boolean isValidAnswer(String val) {
-        return val.equalsIgnoreCase("yes") || val.equalsIgnoreCase("no")
-                || val.equalsIgnoreCase("y") || val.equalsIgnoreCase("n") ;
-    }
-    /**
-     * Display the given prompt and read a password without echoing it.
-     * Returns null if no console available.
-     */
-    protected String readSSHPassword(String prompt) {
-        String password = null;
-        Console cons = System.console();
-        if (cons != null) {
-            char[] pc = cons.readPassword("%s", prompt);
-            // yes, yes, yes, it would be safer to not keep it in a String
-            password = new String(pc);
-        }
-        return password;
-    }
-
-    private boolean isEncryptedKey() throws CommandException {
-        boolean res = false;
-        try {
-            res = SSHUtil.isEncryptedKey(sshkeyfile);
-        } catch (IOException ioe) {
-            throw new CommandException(Strings.get("ErrorParsingKey", sshkeyfile, ioe.getMessage()));
-        }
-        return res;
     }
 }

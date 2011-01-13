@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -72,7 +72,7 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
         assertTrue(selenium.isTextPresent(instanceName));
         assertEquals(instanceName, selenium.getText(prefix + "col1:link"));
         assertEquals(instanceName+"-config", selenium.getText(prefix + "col3:configlink"));
-        assertEquals("localhost", selenium.getText(prefix + "col5:nodeAgentlink"));
+        assertEquals("localhost-domain1", selenium.getText(prefix + "col5:nodeAgentlink"));
         assertEquals("Stopped", selenium.getText(prefix + "col6"));
         assertEquals("100", selenium.getValue(prefix + "col2:weight"));
 
@@ -95,7 +95,7 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
         int sysPropCount = addTableRow("propertyForm:sysPropsTable", "propertyForm:sysPropsTable:topActionsGroup1:addSharedTableButton");
         selenium.type("propertyForm:sysPropsTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
         selenium.type("propertyForm:sysPropsTable:rowGroup1:0:overrideValCol:overrideVal", "value");
-        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
+        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
 
         // Go to instance props page
         selenium.click("propertyForm:standaloneInstanceTabs:standaloneProp:instanceProps");
@@ -104,7 +104,7 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
         int instancePropCount = addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton");
         selenium.type("propertyForm:basicTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
         selenium.type("propertyForm:basicTable:rowGroup1:0:col3:col1St", "value");
-        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", MSG_NEW_VALUES_SAVED);
+        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
 
         // Verify that properties were persisted
         clickAndWait("propertyForm:standaloneInstanceTabs:standaloneProp:configProps", TRIGGER_SYS_PROPS);
@@ -157,7 +157,7 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
         gotoStandaloneInstancesPage();
         clickAndWait("propertyForm:instancesTable:topActionsGroup1:newButton", TRIGGER_NEW_PAGE );
         selenium.type("propertyForm:propertySheet:propertSectionTextField:NameTextProp:NameText", instanceName);
-        selenium.select("propertyForm:propertySheet:propertSectionTextField:node:node", "label=localhost");
+        selectDropdownOption("propertyForm:propertySheet:propertSectionTextField:node:node", "localhost-domain1");
         selenium.select("propertyForm:propertySheet:propertSectionTextField:configProp:Config", "label=default-config");
         selenium.check("propertyForm:propertySheet:propertSectionTextField:configOptionProp:optC");
         clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_INSTANCES_PAGE);

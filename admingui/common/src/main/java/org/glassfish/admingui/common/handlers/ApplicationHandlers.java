@@ -57,23 +57,27 @@ import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;
 import java.net.URLEncoder;
+import java.net.InetAddress;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.Map;
 import java.util.Iterator;
 import java.util.Collection;
+import java.util.Collections;
 
-import java.util.Set;
-import java.util.HashSet;
 import java.util.TreeSet;
+import java.util.Set;
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.DeployUtil;
 import org.glassfish.admingui.common.util.RestUtil;
 import org.glassfish.admingui.common.util.TargetUtil;
 import org.glassfish.admingui.common.util.AppUtil;
+import org.glassfish.deployment.client.DFDeploymentProperties;
+
 
 
 
@@ -87,14 +91,12 @@ public class ApplicationHandlers {
     @Handler(id = "gf.getDeployedAppsInfo",
         input = {
             @HandlerInput(name = "appPropsMap", type = Map.class, required=true),
-            @HandlerInput(name = "serverName", type = String.class, defaultValue="server"),
             @HandlerInput(name = "filterValue", type = String.class)},
         output = {
             @HandlerOutput(name = "filters", type = java.util.List.class),
             @HandlerOutput(name = "result", type = java.util.List.class)})
 
     public static void getDeployedAppsInfo(HandlerContext handlerCtx) {
-        String serverName = (String) handlerCtx.getInputValue("serverName");
         Map<String, String> appPropsMap = (Map) handlerCtx.getInputValue("appPropsMap");
         String filterValue = (String) handlerCtx.getInputValue("filterValue");
         Set filters = new TreeSet();
@@ -103,35 +105,42 @@ public class ApplicationHandlers {
             filterValue = null;
         }
         List result = new ArrayList();
+        if (appPropsMap == null){
+            handlerCtx.setOutputValue("result", result);
+            return;
+        }
+        List<String> keys = new ArrayList(appPropsMap.keySet());
+        Collections.sort(keys);
 
-	if (appPropsMap != null) {
-	    for(String oneAppName : appPropsMap.keySet()){
-              try{
-		String engines = appPropsMap.get(oneAppName);
-		HashMap oneRow = new HashMap();
-		oneRow.put("name", oneAppName);
-                oneRow.put("encodedName", URLEncoder.encode(oneAppName, "UTF-8"));
-		oneRow.put("selected", false);
-		oneRow.put("enableURL", DeployUtil.getTargetEnableInfo(oneAppName, true, true));
-		oneRow.put("sniffers", engines);
+        for(String oneAppName : keys){
+          try{
+            String engines = appPropsMap.get(oneAppName);
+            HashMap oneRow = new HashMap();
+            oneRow.put("name", oneAppName);
+            oneRow.put("encodedName", URLEncoder.encode(oneAppName, "UTF-8"));
+            oneRow.put("selected", false);
+            oneRow.put("enableURL", DeployUtil.getTargetEnableInfo(oneAppName, true, true));
+            oneRow.put("sniffers", engines);
 
-		List sniffersList = GuiUtil.parseStringList(engines, ",");
-		oneRow.put("sniffersList", sniffersList);
-		for(int ix=0; ix< sniffersList.size(); ix++)
-		    filters.add(sniffersList.get(ix));
-		if (filterValue != null){
-		    if (! sniffersList.contains(filterValue))
-			continue;
-		}
+            List sniffersList = GuiUtil.parseStringList(engines, ",");
+            oneRow.put("sniffersList", sniffersList);
+            for(int ix=0; ix< sniffersList.size(); ix++)
+                filters.add(sniffersList.get(ix));
+            if (filterValue != null){
+                if (! sniffersList.contains(filterValue))
+                    continue;
+            }
 
-                getLaunchInfo(oneAppName, null, oneRow);
+            getLaunchInfo(oneAppName, null, oneRow);
 
-		result.add(oneRow);
-              }catch(Exception ex){
+            result.add(oneRow);
+          }catch(Exception ex){
+            GuiUtil.getLogger().info(GuiUtil.getCommonMessage("log.error.getDeployedAppsInfo") + ex.getLocalizedMessage());
+            if (GuiUtil.getLogger().isLoggable(Level.FINE)){
                 ex.printStackTrace();
-              }
-	    }
-	}
+            }
+          }
+        }
         handlerCtx.setOutputValue("result", result);
         handlerCtx.setOutputValue("filters", new ArrayList(filters));
     }
@@ -162,17 +171,17 @@ public class ApplicationHandlers {
                 oneRow.put("hasAppClientLaunch", false);
                 oneRow.put("sniffers", snifferList.toString());
 
-                if (snifferList.contains("web") &&  AppUtil.isApplicationEnabled(appName, "server")) {
+                if (snifferList.contains("web")) {
                     String endpoint =  GuiUtil.getSessionValue("REST_URL") + "/applications/application/get-context-root.xml?appname="
                             + encodedAppName + "&modulename=" + encodedModuleName;
-                    Map map = (Map)RestApiHandlers.restRequest(endpoint, null, "GET", null, false).get("data");
+                    Map map = (Map)RestUtil.restRequest(endpoint, null, "GET", null, false).get("data");
                     Map props = (Map)map.get("properties");
                     String contextRoot = (String) props.get("contextRoot");
                     getLaunchInfo(appName, contextRoot, oneRow);
                 }
 
                 if (snifferList.contains("appclient")){
-                    String jwEnabled = RestUtil.getPropValue(GuiUtil.getSessionValue("REST_URL") + "/applications/application/"+encodedAppName, "javaWebStartEnabled",  handlerCtx);
+                    String jwEnabled = RestUtil.getPropValue(GuiUtil.getSessionValue("REST_URL") + "/applications/application/"+encodedAppName, DFDeploymentProperties.DEPLOY_OPTION_JAVA_WEB_START_ENABLED,  handlerCtx);
                     if (!GuiUtil.isEmpty(jwEnabled) && jwEnabled.equals("true") ){
                         List<String> targetList = DeployUtil.getApplicationTarget(appName, "application-ref");
                         oneRow.put("hasAppClientLaunch", (targetList.isEmpty())? false: true);
@@ -182,7 +191,10 @@ public class ApplicationHandlers {
                 getSubComponentDetail(appName, moduleName, snifferList, result);
             }
           }catch(Exception ex){
-              ex.printStackTrace();
+            GuiUtil.getLogger().info(GuiUtil.getCommonMessage("log.error.getSubComponents") + ex.getLocalizedMessage());
+            if (GuiUtil.getLogger().isLoggable(Level.FINE)){
+                ex.printStackTrace();
+            }
           }
           handlerCtx.setOutputValue("result", result);
     }
@@ -201,7 +213,7 @@ public class ApplicationHandlers {
             attrMap.put("appName", encodedAppName);
             attrMap.put("moduleName", encodedModuleName);
             String prefix = GuiUtil.getSessionValue("REST_URL") + "/applications/application/";
-            Map subMap = RestApiHandlers.restRequest(prefix + "list-sub-components", attrMap, "GET", null, false);
+            Map subMap = RestUtil.restRequest(prefix + "list-sub-components", attrMap, "GET", null, false);
             Map data = (Map)subMap.get("data");
             if(data != null){
                 Map<String, Object> props = (Map) data.get("properties");
@@ -226,7 +238,10 @@ public class ApplicationHandlers {
                 }
             }
         }catch(Exception ex){
-            ex.printStackTrace();
+            GuiUtil.getLogger().info(GuiUtil.getCommonMessage("log.error.getSubComponentDetail") + ex.getLocalizedMessage());
+            if (GuiUtil.getLogger().isLoggable(Level.FINE)){
+                ex.printStackTrace();
+            }
         }
         return result;
     }
@@ -258,7 +273,10 @@ public class ApplicationHandlers {
                 oneRow.put("enableURL", DeployUtil.getTargetEnableInfo(name, true, true));
                 result.add(oneRow);
             }catch(Exception ex){
-                ex.printStackTrace();
+                GuiUtil.getLogger().info(GuiUtil.getCommonMessage("log.error.getLifecyclesInfo") + ex.getLocalizedMessage());
+                if (GuiUtil.getLogger().isLoggable(Level.FINE)){
+                    ex.printStackTrace();
+                }
             }
         }
         handlerCtx.setOutputValue("result", result);
@@ -283,10 +301,10 @@ public class ApplicationHandlers {
                 List<Map> appRefs = DeployUtil.getRefEndpoints(name, "application-ref");
                 for(Map  oneRef:  appRefs){
                     attrs.put("target", oneRef.get("targetName"));
-                    RestApiHandlers.restRequest((String)oneRef.get("endpoint"), attrs, "DELETE", null, false);
+                    RestUtil.restRequest((String)oneRef.get("endpoint"), attrs, "DELETE", null, false);
                 }
                 attrs.put("target", "domain");
-                RestApiHandlers.restRequest( endpoint, attrs, "POST", handlerCtx, false);
+                RestUtil.restRequest( endpoint, attrs, "POST", handlerCtx, false);
             }
         }catch(Exception ex){
             GuiUtil.prepareException(handlerCtx, ex);
@@ -295,7 +313,7 @@ public class ApplicationHandlers {
 
     private static void getLaunchInfo(String appName, String contextRoot, Map oneRow) {
         String endpoint = GuiUtil.getSessionValue("REST_URL") + "/applications/application/" + appName + ".json";
-        Map map = RestApiHandlers.restRequest(endpoint, null, "GET", null, false);
+        Map map = RestUtil.restRequest(endpoint, null, "GET", null, false);
         Map data = (Map)map.get("data");
         boolean enabled = false;
         if (data != null) {
@@ -320,7 +338,7 @@ public class ApplicationHandlers {
         for(String target : targetList) {
             String virtualServers = getVirtualServers(target, appName);
             String ep = TargetUtil.getTargetEndpoint(target) + "/application-ref/" + appName;
-            enabled = Boolean.parseBoolean((String)RestApiHandlers.getAttributesMap(ep).get("enabled"));
+            enabled = Boolean.parseBoolean((String)RestUtil.getAttributesMap(ep).get("enabled"));
             if (!enabled)
                 continue;
             if (virtualServers != null && virtualServers.length() > 0) {
@@ -340,7 +358,7 @@ public class ApplicationHandlers {
             ep = ep + "/servers/server/" + target + "/application-ref/" + appName;
         }
         String virtualServers =
-                (String)RestApiHandlers.getAttributesMap(ep).get("virtualServers");
+                (String)RestUtil.getAttributesMap(ep).get("virtualServers");
         return virtualServers;
     }
 
@@ -393,7 +411,7 @@ public class ApplicationHandlers {
             String endpoint = (String) oneRow.get("endpoint");
             if(forLB){
                 attrs.put("lbEnabled", Enabled);
-                RestApiHandlers.restRequest(prefix+endpoint, attrs, "post", handlerCtx, false);
+                RestUtil.restRequest(prefix+endpoint, attrs, "post", handlerCtx, false);
             }else{
                 DeployUtil.enableApp( (String)oneRow.get("name"), (String) oneRow.get("targetName"), handlerCtx,
                         Boolean.parseBoolean(Enabled));
@@ -438,7 +456,7 @@ public class ApplicationHandlers {
                 if (status != null){
                     attrs.put("enabled", status);
                 }
-                RestApiHandlers.restRequest(endpoint, attrs, "post", handlerCtx, false);
+                RestUtil.restRequest(endpoint, attrs, "post", handlerCtx, false);
             }
          }
 
@@ -451,7 +469,7 @@ public class ApplicationHandlers {
             }
             Map attrMap = new HashMap();
             attrMap.put("target", oTarget);
-            RestApiHandlers.restRequest(endpoint + "/application-ref/" + appName, attrMap, "delete", handlerCtx, false);
+            RestUtil.restRequest(endpoint + "/application-ref/" + appName, attrMap, "delete", handlerCtx, false);
         }
     }
 
@@ -494,7 +512,7 @@ public class ApplicationHandlers {
         String endpoint = GuiUtil.getSessionValue("REST_URL")+"/configs/config/"+targetConfig+"/http-service/virtual-server";
         List vsList = new ArrayList();
         try{
-            vsList = new ArrayList(RestApiHandlers.getChildMap(endpoint).keySet());
+            vsList = new ArrayList(RestUtil.getChildMap(endpoint).keySet());
             vsList.remove("__asadmin");
        }catch(Exception ex){
            //TODO: error handling.
@@ -522,10 +540,10 @@ public class ApplicationHandlers {
             HashMap oneRow = new HashMap();
             if (clusters.contains(oneTarget)){
                 endpoint = prefix + "/clusters/cluster/" + oneTarget + "/application-ref/" + appName;
-                attrs = RestApiHandlers.getAttributesMap(endpoint);
+                attrs = RestUtil.getAttributesMap(endpoint);
             }else{
                 endpoint = prefix+"/servers/server/" + oneTarget + "/application-ref/" + appName;
-                attrs = RestApiHandlers.getAttributesMap(endpoint);
+                attrs = RestUtil.getAttributesMap(endpoint);
             }
             oneRow.put("name", appName);
             oneRow.put("selected", false);
@@ -572,7 +590,7 @@ public class ApplicationHandlers {
                     String encodedName = URLEncoder.encode(oneAppName, "UTF-8");
                     oneRow.put("targetName", target);
                     oneRow.put("selected", false);
-                    Map appRefAttrsMap = RestApiHandlers.getAttributesMap(prefix + appRefEndpoint + encodedName);
+                    Map appRefAttrsMap = RestUtil.getAttributesMap(prefix + appRefEndpoint + encodedName);
                     String image = (appRefAttrsMap.get("enabled").equals("true")) ?  "/resource/images/enabled.png" : "/resource/images/disabled.png";
                     oneRow.put("enabled", image);
                     image = (appRefAttrsMap.get("lbEnabled").equals("true")) ?  "/resource/images/enabled.png" : "/resource/images/disabled.png";
@@ -609,19 +627,28 @@ public class ApplicationHandlers {
 	String appID = (String)handlerCtx.getInputValue("AppID");
         String contextRoot = (String)handlerCtx.getInputValue("contextRoot");
         String ctxRoot = calContextRoot(contextRoot);
-
+        Set<String> URLs = new TreeSet();
         List<String> targetList = DeployUtil.getApplicationTarget(appID, "application-ref");
-        Set URLs = new HashSet();
         for(String target : targetList) {
             String ep = TargetUtil.getTargetEndpoint(target) + "/application-ref/" + appID;
-            boolean enabled = Boolean.parseBoolean((String)RestApiHandlers.getAttributesMap(ep).get("enabled"));
+            boolean enabled = Boolean.parseBoolean((String)RestUtil.getAttributesMap(ep).get("enabled"));
             if (!enabled)
                 continue;
 
             String virtualServers = getVirtualServers(target, appID);
             String configName = TargetUtil.getConfigName(target);
             Collection<String> hostNames = TargetUtil.getHostNames(target);
-            URLs.addAll(getURLs(GuiUtil.parseStringList(virtualServers, ","), configName, hostNames));
+
+            List clusters = TargetUtil.getClusters();
+            List<String> instances = new ArrayList();
+            if (clusters.contains(target)){
+                instances = TargetUtil.getClusteredInstances(target);
+            } else {
+                instances.add(target);
+            }
+
+            for (String instance : instances)
+                URLs.addAll(getURLs(GuiUtil.parseStringList(virtualServers, ","), configName, hostNames, instance));
         }
 
 	Iterator it = URLs.iterator();
@@ -629,11 +656,11 @@ public class ApplicationHandlers {
         ArrayList list = new ArrayList();
 	while (it.hasNext()) {
 	    url = (String)it.next();
-            HashMap m = new HashMap();
+            HashMap<String, String> m = new HashMap();
             m.put("url", url + ctxRoot);
             list.add(m);
 	}
-
+        
         handlerCtx.setOutputValue("URLList", list);
 
     }
@@ -651,9 +678,11 @@ public class ApplicationHandlers {
             @HandlerOutput(name = "appType", type = String.class)})
     public static void getApplicationType(HandlerContext handlerCtx) {
         Map<String,String> snifferMap = (Map) handlerCtx.getInputValue("snifferMap");
-        String appType = "ejb";
+        String appType = "other";
         if (! GuiUtil.isEmpty(snifferMap.get("web"))){
             appType="war";
+        }if (! GuiUtil.isEmpty(snifferMap.get("ejb"))){
+            appType="ejb";
         }else
         if (! GuiUtil.isEmpty(snifferMap.get("connector"))){
             appType="rar";
@@ -684,8 +713,8 @@ public class ApplicationHandlers {
 /********************/
 
 
-    private static Set getURLs(List<String> vsList, String configName, Collection<String> hostNames) {
-        Set URLs = new HashSet();
+    private static Set getURLs(List<String> vsList, String configName, Collection<String> hostNames, String target) {
+        Set URLs = new TreeSet();
         if (vsList == null || vsList.size() == 0) {
             return URLs;
         }
@@ -698,10 +727,19 @@ public class ApplicationHandlers {
         ep = ep + "/configs/config/" + configName + "/http-service/virtual-server";
         Map vsInConfig = new HashMap();
         try{
-            vsInConfig = RestApiHandlers.getChildMap(ep);
+            vsInConfig = RestUtil.getChildMap(ep);
 
         }catch (Exception ex){
-            ex.printStackTrace();
+            GuiUtil.getLogger().info(GuiUtil.getCommonMessage("log.error.getURLs") + ex.getLocalizedMessage());
+                if (GuiUtil.getLogger().isLoggable(Level.FINE)){
+                    ex.printStackTrace();
+                }
+        }
+        String localHostName = null;
+        try {
+            localHostName = InetAddress.getLocalHost().getHostName();
+        } catch (Exception ex) {
+            // ignore exception
         }
 
         for (String vsName : vsList) {
@@ -712,7 +750,7 @@ public class ApplicationHandlers {
             if (vs != null) {
                 ep = (String)GuiUtil.getSessionValue("REST_URL") + "/configs/config/" +
                         configName + "/http-service/virtual-server/" + vsName;
-                String listener = (String)RestApiHandlers.getAttributesMap(ep).get("networkListeners");
+                String listener = (String)RestUtil.getAttributesMap(ep).get("networkListeners");
 
                 if (GuiUtil.isEmpty(listener)) {
                     continue;
@@ -722,26 +760,28 @@ public class ApplicationHandlers {
                         ep = (String)GuiUtil.getSessionValue("REST_URL") +
 "/configs/config/" + configName + "/network-config/network-listeners/network-listener/" + one;
 
-                        Map nlAttributes = RestApiHandlers.getAttributesMap(ep);
+                        Map nlAttributes = RestUtil.getAttributesMap(ep);
                         if ("false".equals((String)nlAttributes.get("enabled"))) {
                             continue;
                         }
 //                        String security = (String)oneListener.findProtocol().attributesMap().get("SecurityEnabled");
                         ep = (String)GuiUtil.getSessionValue("REST_URL") + "/configs/config/" +
                                 configName + "/network-config/protocols/protocol/" + (String)nlAttributes.get("protocol");
-                        String security = (String)RestApiHandlers.getAttributesMap(ep).get("securityEnabled");
+                        String security = (String)RestUtil.getAttributesMap(ep).get("securityEnabled");
 
                         String protocol = "http";
                         if ("true".equals(security))
                             protocol = "https";
-/*                        URLs.add(protocol + "://" + vsName + ":" +
-                                (String)nlAttributes.get("port"));
- *
- */
+
                         String port = (String)nlAttributes.get("port");
+                        if (port == null)
+                            port = "";
                         String resolvedPort = RestUtil.resolveToken((String)GuiUtil.getSessionValue("REST_URL") +
-                                "/configs/config/" + configName, port);
+                                "/servers/server/" + target, port);
+
                         for (String hostName : hostNames) {
+                            if (localHostName != null && hostName.equalsIgnoreCase("localhost"))
+                                hostName = localHostName;
                             URLs.add(protocol + "://" + hostName + ":" + resolvedPort);
                         }
                     }

@@ -100,7 +100,7 @@ public interface LbConfig extends ConfigBeanProxy, Injectable, PropertyBag {
      * @param value allowed object is
      *              {@link String }
      */
-    @Param (name = "name", optional=true)
+    @Param (name = "name", primary=true)
     void setName(String value) throws PropertyVetoException;
 
     /**
@@ -285,7 +285,7 @@ public interface LbConfig extends ConfigBeanProxy, Injectable, PropertyBag {
     @Scoped(PerLookup.class)
     class Decorator implements CreationDecorator<LbConfig> {
 
-        @Param (primary=true, optional=true)
+        @Param (name = "name", optional=true)
         String config_name;
 
         @Param(optional=true)

@@ -54,7 +54,7 @@
         <integration-point
                 id="ejbavailabilitytabs"
                 type="org.glassfish.admingui:availabilityTabs"
-                priority="20"
+                priority="40"
                 parentId="availabilityTabs"
                 content="configuration/ejbAvailabilityTabs.inc"
         />

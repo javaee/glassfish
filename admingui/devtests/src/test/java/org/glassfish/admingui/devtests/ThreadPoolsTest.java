@@ -46,9 +46,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class ThreadPoolsTest extends BaseSeleniumTestClass {
-    private static final String TRIGGER_THREAD_POOLS = "Use thread pools to limit a service to a specific number of concurrent threads.";
-    private static final String TRIGGER_EDIT_THREAD_POOL = "Edit Thread Pool";
-    private static final String TRIGGER_NEW_THREAD_POOL = "New Thread Pool";
+    private static final String TRIGGER_THREAD_POOLS = "i18n_web.configuration.threadPoolPageTitleHelp";
+    private static final String TRIGGER_EDIT_THREAD_POOL = "i18n_web.configuration.threadPoolEditPageTitle";
+    private static final String TRIGGER_NEW_THREAD_POOL = "i18n_web.configuration.threadPoolNewPageTitle";
 
     @Test
     public void testAddThreadPool() {

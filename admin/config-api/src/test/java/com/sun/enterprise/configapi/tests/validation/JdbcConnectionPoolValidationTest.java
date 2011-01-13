@@ -57,11 +57,12 @@ import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 
+import javax.validation.ConstraintViolationException;
+
 /**
  *
  * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net)
  */
-@Ignore
 public class JdbcConnectionPoolValidationTest extends ConfigApiTest {
 
     private JdbcConnectionPool pool = null;
@@ -88,7 +89,7 @@ public class JdbcConnectionPoolValidationTest extends ConfigApiTest {
     // TODO add test methods here.
     // The methods must be annotated with annotation @Test. For example:
     //
-    @Test (expected=ValidationException.class)
+    @Test (expected= ConstraintViolationException.class)
     public void testBooleanDoesNotTakeInteger1() throws Throwable {
         try {
             ConfigSupport.apply(new SingleConfigCode<JdbcConnectionPool>() {

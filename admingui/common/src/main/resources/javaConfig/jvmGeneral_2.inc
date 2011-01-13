@@ -50,7 +50,8 @@
                 </sun:title>
                     <!-- PropertySheet .... -->
                     <sun:propertySheet id="propertySheet" requiredFields="true">	
-                        <!-- Text Field section -->               
+                        <!-- Text Field section -->
+#include "/common/shared/configNameSection.inc"
                         <sun:propertySheetSection id="propertSectionTextField">
                             <sun:property id="javaHomeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.jvm.JavaHomeLabel}" helpText="$resource{i18nc.jvm.JavaHomeHelp}">
                                 <sun:textField id="JavaHome"  styleClass="required" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.jvm.JavaHome']}" text="#{pageSession.valueMap['javaHome']}" required="#{true}"/> 

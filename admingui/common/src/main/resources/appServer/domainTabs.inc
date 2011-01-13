@@ -61,4 +61,16 @@
             gf.redirect(page="#{request.contextPath}/common/appServer/serverInstAdminPassword.jsf");
         />
     </sun:tab>
+    <sun:tab id="pswdAliases" immediate="true" text="$resource{i18nc.pswdAlias.tab}" toolTip="$resource{i18nc.pswdAlias.tabTip}" >
+    <!command
+        setSessionAttribute(key="domainTabs" value="pswdAliases");
+        gf.redirect(page="#{request.contextPath}/common/appServer/pswdAliases.jsf");
+    />
+    </sun:tab>
 </sun:tabSet>
+<event>
+    <!afterCreate
+        includeIntegrations(type="org.glassfish.admingui:domainTab");
+    />
+</event>
+

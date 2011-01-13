@@ -52,7 +52,7 @@
     
     <artifactId>cli-optional</artifactId>
     <packaging>hk2-jar</packaging>
-    <name>Admin Optional CLI</name>
+    <name>admin-cli-optional</name>
     
     <developers>
         <developer>
@@ -121,7 +121,7 @@
                 <configuration>
                     <archive>
                         <manifestEntries>
-                               <Class-Path>config-api.jar internal-api.jar config-types.jar grizzly-config.jar</Class-Path>
+                               <Class-Path>config-api.jar internal-api.jar config-types.jar grizzly-config.jar common-l10n.jar</Class-Path>
                         </manifestEntries>
                     </archive>
                 </configuration>
