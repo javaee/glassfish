@@ -69,8 +69,6 @@ public class ReplicatedBackingStoreFactory
     public <K extends Serializable, V extends Serializable> BackingStore<K, V> createBackingStore(BackingStoreConfiguration<K, V> conf)
             throws BackingStoreException {
 
-        System.out.println("Entered GlassFish2ShoalBackingStoreFactory.createBackingStore...");
-
         KeyMapper keyMapper = new GlassFishKeyMapper(conf.getInstanceName(), conf.getClusterName());
         conf.getVendorSpecificSettings().put("key.mapper", keyMapper);
         

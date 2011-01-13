@@ -92,18 +92,22 @@ public class ReplicationStoreProxy2
 
     @Override
     public void postConstruct() {
-        BackingStoreFactoryRegistry.register("replication", this);
-        Logger.getLogger(ReplicationStoreProxy2.class.getName()).log(Level.INFO, "Registered ReplicationStoreProxy with persistence-type = replication");
-        EventListener glassfishEventListener = new EventListener() {
-            @Override
-            public void event(Event event) {
-                if (event.is(EventTypes.SERVER_SHUTDOWN)) {
-                    BackingStoreFactoryRegistry.unregister("replication");
-                    Logger.getLogger(ReplicationStoreProxy2.class.getName()).log(Level.INFO, "Unregistered ReplicationStoreProxy with persistence-type = replication");                                              
-                } //else if (event.is(EventTypes.SERVER_READY)) { }                                                                                        
-            }
-        };
-        events.register(glassfishEventListener);
+// TBD:   Delete this proxy once we are certain that no subsystem is using "replication".
+//        For now, commented out registering/unregistering "replication" to fix gf 13546.
+
+
+//        BackingStoreFactoryRegistry.register("replication", this);
+//        Logger.getLogger(ReplicationStoreProxy2.class.getName()).log(Level.FINE, "Registered ReplicationStoreProxy with persistence-type = replication");
+//        EventListener glassfishEventListener = new EventListener() {
+//            @Override
+//            public void event(Event event) {
+//                if (event.is(EventTypes.SERVER_SHUTDOWN)) {
+//                    // BackingStoreFactoryRegistry.unregister("replication");
+//                    //Logger.getLogger(ReplicationStoreProxy2.class.getName()).log(Level.FINE, "Unregistered ReplicationStoreProxy with persistence-type = replication");
+//                } //else if (event.is(EventTypes.SERVER_READY)) { }
+//            }
+//        };
+//        events.register(glassfishEventListener);
     }
 
     @Override

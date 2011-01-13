@@ -40,12 +40,16 @@
 
 package org.glassfish.flashlight.cli;
 
+import com.sun.enterprise.util.*;
+import org.glassfish.api.admin.*;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport.ExitCode;
+import org.glassfish.config.support.*;
+import org.glassfish.internal.api.*;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
@@ -65,10 +69,19 @@ import org.glassfish.flashlight.impl.client.FlashlightProbeClientMediator;
 @Service(name="enable-monitoring")
 @Scoped(PerLookup.class)
 @I18n("enable.monitoring")
+@ExecuteOn({RuntimeType.DAS, RuntimeType.INSTANCE})
+@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
+
 public class EnableMonitoring implements AdminCommand {
 
     @Inject
     MonitoringService ms;
+
+    @Inject
+    Target targetService;
+
+    @Param(name="target", optional=true, defaultValue = SystemPropertyConstants.DAS_SERVER_NAME)
+    String target;
 
     @Param(optional=true)
     private String pid;

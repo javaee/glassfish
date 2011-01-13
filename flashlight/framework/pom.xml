@@ -53,7 +53,7 @@
     <groupId>org.glassfish.flashlight</groupId>
     <artifactId>flashlight-framework</artifactId>
     <packaging>hk2-jar</packaging>
-    <name>GlassFish Flashlight Framework</name>
+    <name>flashlight-framework</name>
 
     <profiles>
         <profile>

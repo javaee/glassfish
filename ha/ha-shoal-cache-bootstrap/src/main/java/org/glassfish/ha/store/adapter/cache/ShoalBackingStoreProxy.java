@@ -85,21 +85,24 @@ public class ShoalBackingStoreProxy
         try {
             BackingStoreFactory storeFactory = habitat.getComponent(BackingStoreFactory.class, "shoal-backing-store-factory");
             return storeFactory.createBackingStore(conf);
+        } catch (IllegalStateException ex) {
+            String msg = "ReplicatedBackingStore requires GMS to be running in the target cluster before the application is deployed. ";
+            throw new BackingStoreException("Exception while creating replicated BackingStore. " + msg, ex);
         } catch (Exception ex) {
-            throw new BackingStoreException("Exception while created shoal cache", ex);
+            throw new BackingStoreException("Exception while creating shoal cache", ex);
         }
     }
 
     @Override
     public void postConstruct() {
         BackingStoreFactoryRegistry.register("replicated", this);
-        Logger.getLogger(ShoalBackingStoreProxy.class.getName()).log(Level.INFO, "Registered SHOAL BackingStore Proxy with persistence-type = replicated");
+        Logger.getLogger(ShoalBackingStoreProxy.class.getName()).log(Level.FINE, "Registered SHOAL BackingStore Proxy with persistence-type = replicated");
         EventListener glassfishEventListener = new EventListener() {
             @Override
             public void event(Event event) {
                 if (event.is(EventTypes.SERVER_SHUTDOWN)) {
                     BackingStoreFactoryRegistry.unregister("replicated");
-                    Logger.getLogger(ShoalBackingStoreProxy.class.getName()).log(Level.INFO, "Unregistered SHOAL BackingStore Proxy with persistence-type = replicated");                                                            
+                    Logger.getLogger(ShoalBackingStoreProxy.class.getName()).log(Level.FINE, "Unregistered SHOAL BackingStore Proxy with persistence-type = replicated");
                 } // else if (event.is(EventTypes.SERVER_READY)) {  }
             }
         };
@@ -113,7 +116,7 @@ public class ShoalBackingStoreProxy
             return storeFactory.createBackingStoreTransaction();
         } catch (Exception ex) {
             //FIXME avoid runtime exception
-            throw new RuntimeException("Exception while created shoal cache", ex);
+            throw new RuntimeException("Exception while creating shoal cache", ex);
         }
     }
 }
