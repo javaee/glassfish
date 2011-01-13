@@ -42,6 +42,10 @@ import org.osgi.framework.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.*;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -64,11 +68,23 @@ public final class ServiceLoaderImpl extends org.glassfish.hk2.osgiresourcelocat
     public ServiceLoaderImpl() {
         ClassLoader cl = getClass().getClassLoader();
         if (cl instanceof BundleReference) {
-            bundleContext = BundleReference.class.cast(cl).getBundle().getBundleContext();
+            bundleContext = getBundleContextSecured(BundleReference.class.cast(cl).getBundle());
         }
         if (bundleContext == null) {
             throw new RuntimeException("There is no bundle context available yet. " +
                     "Instatiate this class in STARTING or ACTIVE state only");
+        }
+    }
+
+    private BundleContext getBundleContextSecured(final Bundle bundle) {
+        if (System.getSecurityManager() != null) {
+            return AccessController.doPrivileged(new PrivilegedAction<BundleContext>() {
+                public BundleContext run() {
+                    return bundle.getBundleContext();
+                }
+            });
+        } else {
+            return bundle.getBundleContext();
         }
     }
 
@@ -125,7 +141,7 @@ public final class ServiceLoaderImpl extends org.glassfish.hk2.osgiresourcelocat
                 }
                 for (String providerName : providerNames) {
                     try {
-                        final Class providerClass = bundle.loadClass(providerName);
+                        final Class providerClass = loadClassSecured(bundle, providerName);
                         if (isCompatible(providerClass, serviceClass)) {
                             providerClasses.add(providerClass);
                         }
@@ -137,6 +153,23 @@ public final class ServiceLoaderImpl extends org.glassfish.hk2.osgiresourcelocat
             return providerClasses;
         } finally {
             rwLock.readLock().unlock();
+        }
+    }
+
+    private Class loadClassSecured(final Bundle bundle, final String name)
+            throws ClassNotFoundException {
+        if (System.getSecurityManager()!=null) {
+            try {
+                return AccessController.doPrivileged(new PrivilegedExceptionAction<Class>(){
+                    public Class run() throws ClassNotFoundException {
+                        return bundle.loadClass(name);
+                    }
+                });
+            } catch (PrivilegedActionException e) {
+                throw ClassNotFoundException.class.cast(e.getException());
+            }
+        } else {
+            return bundle.loadClass(name);
         }
     }
 
