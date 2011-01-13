@@ -46,12 +46,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class NetworkConfigTest extends BaseSeleniumTestClass {
-    private static final String TRIGGER_NETWORK_LISTENERS = "Click New to define a new network listener. Click the name of an existing listener to modify its settings.";
-    private static final String TRIGGER_NEW_NETWORK_LISTENER = "New Network Listener";
+    private static final String TRIGGER_NETWORK_LISTENERS = "i18n_web.grizzly.networkListenersPageTitleHelp";
+    private static final String TRIGGER_NEW_NETWORK_LISTENER = "i18n_web.grizzly.networkListenerNewPageTitle";
     private static final String TRIGGER_PROTOCOLS = "Click New to define a new protocol.";
-    private static final String TRIGGER_NEW_PROTOCOL = "Create a new protocol.";
-    private static final String TRIGGER_TRANSPORTS = "Click New to define a new transport. Click the name of an existing transport to modify its settings.";
-    private static final String TRIGGER_NEW_TRANSPORT = "Create a new transport.";
+    private static final String TRIGGER_NEW_PROTOCOL = "i18n_web.grizzly.protocolNewPageTitleHelp";
+    private static final String TRIGGER_TRANSPORTS = "i18n_web.transport.listPageTitleHelp";
+    private static final String TRIGGER_NEW_TRANSPORT = "i18n_web.transport.newPageTitleHelp";
 
     @Test
     public void testAddingNetworkListener() {
