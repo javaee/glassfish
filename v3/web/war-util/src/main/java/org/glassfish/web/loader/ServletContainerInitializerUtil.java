@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,7 +41,6 @@
 package org.glassfish.web.loader;
 
 import com.sun.logging.LogDomains;
-import org.apache.naming.Util;
 import org.glassfish.deployment.common.ClassDependencyBuilder;
 import org.glassfish.hk2.classmodel.reflect.*;
 
@@ -108,7 +107,7 @@ public class ServletContainerInitializerUtil {
                 if (!"file".equals(classLoaderUrl.getProtocol())) {
                     continue;
                 }
-                File file = new File(Util.urlDecode(classLoaderUrl.getFile()));
+                File file = new File(classLoaderUrl.getFile());
                 try {
                     file = file.getCanonicalFile();
                 } catch (IOException e) {
@@ -258,7 +257,7 @@ public class ServletContainerInitializerUtil {
             if (types==null || Boolean.getBoolean("org.glassfish.web.parsing")) {
                 ClassDependencyBuilder classInfo = new ClassDependencyBuilder();
                 for(URL u : ((URLClassLoader)cl).getURLs()) {
-                    String path = Util.urlDecode(u.getPath());
+                    String path = u.getPath();
                     try {
                         if(path.endsWith(".jar")) {
                             JarFile jf = new JarFile(path);

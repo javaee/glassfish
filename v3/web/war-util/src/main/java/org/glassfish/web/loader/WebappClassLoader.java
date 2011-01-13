@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -372,7 +372,7 @@ public class WebappClassLoader
 
         if (urls != null && urls.length > 0) {
             for (URL url : urls) {
-                super.addURL(escapePlus(url));
+                super.addURL(url);
             }
         }
 
@@ -617,7 +617,7 @@ public class WebappClassLoader
     }
 
     public void addRepository(URL url) {
-        super.addURL(escapePlus(url));
+        super.addURL(url);
         hasExternalRepositories = true;
     }
 
@@ -2522,7 +2522,7 @@ public class WebappClassLoader
         } catch (IOException e) {
             // Ignore
         }
-        return escapePlus(realFile.toURI().toURL());
+        return realFile.toURI().toURL();
 
     }
 
@@ -2539,24 +2539,8 @@ public class WebappClassLoader
             // Ignore
         }
 
-        return escapePlus(file.toURI().toURL());
+        return file.toURI().toURL();
 
-    }
-
-    private URL escapePlus(URL url) {
-        URL result = url;
-        if ("file".equals(url.getProtocol())) {
-            String path = url.getPath();
-            if (path != null && path.contains("+")) {
-                try {
-                    result = new URL(url.getProtocol(), url.getHost(),
-                        url.getPort(), path.replace("+", "%2B"));
-                } catch(MalformedURLException ex) {
-                    throw new IllegalStateException(ex);
-                }
-            }
-        }
-        return result;
     }
 
 
