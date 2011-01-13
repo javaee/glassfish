@@ -53,7 +53,9 @@ import org.jvnet.hk2.component.PerLookup;
 
 import java.io.*;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Properties;
 
 /**
  * This is an implementation of {@link Deployer}.
@@ -126,7 +128,14 @@ public class DeployerImpl implements Deployer {
     }
 
     public Collection<String> getDeployedApplications() throws GlassFishException {
-        throw new UnsupportedOperationException("Not yet implemented");
+        try {
+            CommandExecutorImpl executer = habitat.getComponent(CommandExecutorImpl.class);
+            ActionReport report = executer.executeCommand("list-components");
+            Properties props = report.getTopMessagePart().getProps();
+            return new ArrayList(props.keySet());
+        } catch (Exception e) {
+            throw new GlassFishException(e);
+        }
     }
 
     private File convertToFile(URI archive) throws IOException {
