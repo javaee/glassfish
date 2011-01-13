@@ -83,8 +83,8 @@ import org.jvnet.hk2.annotations.Inject;
 @Service(name="create-password-alias")
 @Scoped(PerLookup.class)
 @I18n("create.password.alias")
-@ExecuteOn({RuntimeType.DAS, RuntimeType.INSTANCE})
-@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER})
+@ExecuteOn({RuntimeType.DAS})
+@TargetType({CommandTarget.DAS,CommandTarget.DOMAIN})
 public class CreatePasswordAlias implements AdminCommand {
     
     final private static LocalStringManagerImpl localStrings = 
@@ -95,11 +95,6 @@ public class CreatePasswordAlias implements AdminCommand {
     
     @Param(name="aliaspassword", password=true)
     private String aliasPassword;
-
-    //TODO: not sure what to do with --target here
-    @Param(name = "target", optional = true, defaultValue =
-    SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
-    private String target;
 
     @Inject(name="Security SSL Password Provider Service")
     private MasterPassword masterPasswordHelper;

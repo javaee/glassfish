@@ -64,6 +64,9 @@
        <stage-distribution-fragments graphid="all-modules" />
 
 
+       <mkdir dir="target/stage/${install.dir.name}/glassfish/modules/autostart"/>
+       <move file="target/stage/${install.dir.name}/glassfish/modules/osgi-jta.jar" todir="target/stage/${install.dir.name}/glassfish/modules/autostart" failonerror="false"/>
+
        <if test="${compression}">
 	       <antcall target="pack.compression" />
        </if>

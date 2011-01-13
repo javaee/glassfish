@@ -73,6 +73,7 @@ import org.glassfish.webservices.monitoring.AuthenticationListener;
 import org.glassfish.webservices.monitoring.Endpoint;
 import org.glassfish.webservices.monitoring.WebServiceEngineImpl;
 import com.sun.enterprise.security.audit.AuditManager;
+import com.sun.enterprise.security.authorize.PolicyContextHandlerImpl;
 import com.sun.enterprise.security.jauth.ServerAuthContext;
 import com.sun.enterprise.security.jmac.provider.ClientAuthConfig;
 import com.sun.enterprise.security.jmac.provider.ServerAuthConfig;
@@ -83,6 +84,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.security.jacc.PolicyContext;
 import javax.xml.soap.SOAPMessage;
 import org.jvnet.hk2.annotations.Inject;
 
@@ -130,10 +132,9 @@ public class SecurityServiceImpl implements SecurityService {
         try {
             //calling this for a GET request WSDL query etc can cause problems
             String method = hreq.getMethod();
-            if (method.equals("POST") && hreq.getUserPrincipal() == null) {
-                //request is not in a session so start clean
-                resetSecurityContext();
-            }
+//            if (method.equals("POST") /*&& hreq.getUserPrincipal() == null*/) {
+//                resetSecurityContext();
+//            }
 
             if (context != null) {
                 context.setUserPrincipal(null);
@@ -166,7 +167,7 @@ public class SecurityServiceImpl implements SecurityService {
                     _logger.log(Level.WARNING, "BASIC AUTH username/password " + "http header parsing error for " + endpointName);
                 }
             } else {
-
+                //org.apache.coyote.request.X509Certificate
                 X509Certificate certs[] = (X509Certificate[]) hreq.getAttribute(Globals.CERTIFICATES_ATTR);
                 if ((certs == null) || (certs.length < 1)) {
                     certs = (X509Certificate[]) hreq.getAttribute(Globals.SSL_CERTIFICATE_ATTR);
@@ -191,8 +192,9 @@ public class SecurityServiceImpl implements SecurityService {
                 sendAuthenticationEvents(false, hreq.getRequestURI(), webPrincipal);
                 _logger.fine("authentication failed for " + endpointName);
             } else {
+                sendAuthenticationEvents(true, hreq.getRequestURI(), webPrincipal);
             }
-            sendAuthenticationEvents(true, hreq.getRequestURI(), webPrincipal);
+            
             if (epInfo instanceof Ejb2RuntimeEndpointInfo) {
                 // For JAXRPC based EJb endpoints the rest of the steps are not needed
                 return authenticated;
@@ -254,6 +256,12 @@ public class SecurityServiceImpl implements SecurityService {
     public void resetSecurityContext() {
         SecurityContext.setUnauthenticatedContext();
     }
+
+    public void resetPolicyContext() {
+       ((PolicyContextHandlerImpl)PolicyContextHandlerImpl.getInstance()).reset();
+       PolicyContext.setContextID(null);
+    }
+
 
     public SystemHandlerDelegate getSecurityHandler(WebServiceEndpoint endpoint) {
 

@@ -135,11 +135,12 @@ public class JdbcStatsProvider {
      * @param poolName
      * @param sql
      */
-    @ProbeListener(JdbcRAConstants.SQL_TRACING_DOTTED_NAME + JdbcRAConstants.CACHE_SQL_QUERY)
-    public void cacheSqlQueryEvent(@ProbeParam("poolName") String poolName,
+    @ProbeListener(JdbcRAConstants.SQL_TRACING_DOTTED_NAME + JdbcRAConstants.TRACE_SQL)
+    public void traceSQLEvent(
+                                   @ProbeParam("poolName") String poolName,
                                    @ProbeParam("appName") String appName,
                                    @ProbeParam("moduleName") String moduleName,
-            @ProbeParam("sql") String sql) {
+                                   @ProbeParam("sql") String sql) {
 
         PoolInfo poolInfo = new PoolInfo(poolName, appName, moduleName);
         if(this.poolInfo.equals(poolInfo)){
@@ -158,8 +159,8 @@ public class JdbcStatsProvider {
      * @param poolName JdbcConnectionPool that has got a statement leak event.
      */
     @ProbeListener(JdbcRAConstants.STATEMENT_LEAK_DOTTED_NAME + JdbcRAConstants.POTENTIAL_STATEMENT_LEAK)
-    public void potentialStatementLeakEvent(@ProbeParam("connectionPoolName")
-            String connectionPoolName,
+    public void potentialStatementLeakEvent(
+                                   @ProbeParam("poolName") String poolName,
                                    @ProbeParam("appName") String appName,
                                    @ProbeParam("moduleName") String moduleName) {
 

@@ -40,10 +40,12 @@
 
 package org.glassfish.weld;
 
+import static org.glassfish.weld.WeldUtils.JAR_SUFFIX;
+import static org.glassfish.weld.WeldUtils.META_INF_BEANS_XML;
+import static org.glassfish.weld.WeldUtils.SEPARATOR_CHAR;
+
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.List;
 
 import org.glassfish.api.container.CompositeSniffer;
 import org.glassfish.api.deployment.DeploymentContext;
@@ -61,15 +63,11 @@ import org.jvnet.hk2.component.Singleton;
 @Scoped(Singleton.class)
 public class WeldCompositeSniffer extends WeldSniffer implements CompositeSniffer {
 
-    private static char SEPARATOR_CHAR = '/';
-    private static final String JAR_SUFFIX = ".jar";
-    private static final String META_INF_BEANS_XML = "META-INF" + SEPARATOR_CHAR + "beans.xml";
-
     public boolean handles(DeploymentContext context) {
         boolean isWeldApplication = false;
         ApplicationHolder holder = context.getModuleMetaData(ApplicationHolder.class);
         ReadableArchive appRoot = context.getSource();
-        if (null != holder && null != holder.app) {
+        if ((holder != null) && (holder.app != null)) {
             isWeldApplication = scanLibDir(appRoot, holder.app.getLibraryDirectory(), context);
         }
         return isWeldApplication;
@@ -81,7 +79,6 @@ public class WeldCompositeSniffer extends WeldSniffer implements CompositeSniffe
 
     private boolean scanLibDir(ReadableArchive archive, String libLocation, DeploymentContext context) {
         boolean entryPresent = false;
-        List libJars = null;
         if (libLocation != null && !libLocation.isEmpty()) {
             Enumeration<String> entries = archive.entries(libLocation);
             while (entries.hasMoreElements() && !entryPresent) {

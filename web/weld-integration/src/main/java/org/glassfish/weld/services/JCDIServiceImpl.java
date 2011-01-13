@@ -40,33 +40,28 @@
 
 package org.glassfish.weld.services;
 
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.component.Habitat;
-
-import java.util.Collection;
-
-import com.sun.enterprise.container.common.spi.JCDIService;
-
-import com.sun.enterprise.deployment.BundleDescriptor;
-import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.JndiNameEnvironment;
-
-import org.jboss.weld.bootstrap.spi.BeanDeploymentArchive;
-import org.jboss.weld.bootstrap.WeldBootstrap;
-import javax.enterprise.inject.spi.BeanManager;
-
-import org.glassfish.api.invocation.ComponentInvocation;
-import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
-import org.glassfish.api.invocation.InvocationManager;
-
-import javax.enterprise.inject.spi.InjectionTarget;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
-import org.jboss.weld.manager.api.WeldManager;
+import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.InjectionTarget;
 
+import org.glassfish.api.invocation.ComponentInvocation;
+import org.glassfish.api.invocation.InvocationManager;
+import org.glassfish.weld.BeanDeploymentArchiveImpl;
 import org.glassfish.weld.WeldDeployer;
+import org.jboss.weld.bootstrap.WeldBootstrap;
+import org.jboss.weld.bootstrap.spi.BeanDeploymentArchive;
+import org.jboss.weld.manager.api.WeldManager;
+import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
+
+import com.sun.enterprise.container.common.spi.JCDIService;
+import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
+import com.sun.enterprise.deployment.BundleDescriptor;
+import com.sun.enterprise.deployment.EjbDescriptor;
+import com.sun.enterprise.deployment.JndiNameEnvironment;
 
 
 @Service
@@ -217,8 +212,10 @@ public class JCDIServiceImpl implements JCDIService
         BeanManager beanManager = bootstrap.getManager(bda);
 
         AnnotatedType annotatedType = beanManager.createAnnotatedType(managedClass);
-        
-        InjectionTarget it = beanManager.createInjectionTarget(annotatedType);
+        InjectionTarget it = ((BeanDeploymentArchiveImpl)bda).getInjectionTarget(annotatedType);
+        if (it == null) {
+            it = beanManager.createInjectionTarget(annotatedType);
+        }
 
         CreationalContext cc = beanManager.createCreationalContext(null);
 

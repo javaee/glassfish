@@ -110,7 +110,7 @@ public class SQLTraceDelegator implements SQLTraceListener {
                         break;
                     }
                     if (sqlQuery != null) {
-                        probeProvider.cacheSqlQueryEvent(poolName, appName, moduleName, sqlQuery);
+                        probeProvider.traceSQLEvent(poolName, appName, moduleName, sqlQuery);
                     }
                 }
             }

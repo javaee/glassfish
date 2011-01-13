@@ -94,6 +94,7 @@ public class TransactionManagerHelper implements TransactionManager, Transaction
             throws InvalidTransactionException, IllegalStateException,
             SystemException {
         transactionManager.resume(tobj);
+        preInvokeTx(false);
     }
 
     
@@ -111,6 +112,7 @@ public class TransactionManagerHelper implements TransactionManager, Transaction
     }
 
     public Transaction suspend() throws SystemException {
+        postInvokeTx(true, false);
         return transactionManager.suspend();
     }
 
@@ -122,14 +124,14 @@ public class TransactionManagerHelper implements TransactionManager, Transaction
         } catch (javax.resource.spi.work.WorkException ex) {
             throw new IllegalStateException(ex);
         }
-        servletPreInvokeTx();
+        preInvokeTx(true);
     }
 
     public void release(Xid xid) {
         IllegalStateException rethrow = null;
         final JavaEETransactionManager tm = transactionManager;
      
-        servletPostInvokeTx(false);
+        postInvokeTx(false, true);
         try {
             tm.release(xid);    
         } catch (javax.resource.spi.work.WorkException ex) {
@@ -163,11 +165,11 @@ public class TransactionManagerHelper implements TransactionManager, Transaction
      * Precondition: assumes JTA transaction already associated with current 
      * thread.
      */
-    public void servletPreInvokeTx() {
+    public void preInvokeTx(boolean checkServletInvocation) {
         final ComponentInvocation inv = invocationManager.getCurrentInvocation();
-        if (inv != null && 
+        if (inv != null && (!checkServletInvocation ||
             inv.getInvocationType() == 
-                     ComponentInvocation.ComponentInvocationType.SERVLET_INVOCATION){
+                     ComponentInvocation.ComponentInvocationType.SERVLET_INVOCATION)){
             try { 
                 // Required side effect: note that 
                 // enlistComponentResources calls
@@ -191,17 +193,17 @@ public class TransactionManagerHelper implements TransactionManager, Transaction
      * @param suspend indicate whether the delisting is due to suspension or 
      * transaction completion(commmit/rollback)
      */
-    public void servletPostInvokeTx(boolean suspend) {
+    public void postInvokeTx(boolean suspend, boolean checkServletInvocation) {
         final ComponentInvocation inv = invocationManager.getCurrentInvocation();
-        if (inv != null && inv.getInvocationType() == 
-            ComponentInvocation.ComponentInvocationType.SERVLET_INVOCATION) {
+        if (inv != null && (!checkServletInvocation || inv.getInvocationType() == 
+            ComponentInvocation.ComponentInvocationType.SERVLET_INVOCATION)) {
             try {
                 transactionManager.delistComponentResources(suspend);
             } catch (java.rmi.RemoteException re) {
                 throw new IllegalStateException(re);
             } finally {   
-        inv.setTransaction(null);
-        }
+                inv.setTransaction(null);
+            }
         }
     }
     
@@ -228,12 +230,6 @@ public class TransactionManagerHelper implements TransactionManager, Transaction
             timeout = ((JavaEETransactionImpl)txn).getRemainingTimeout();
         }
         return timeout;
-    }
-
-    /** {@inheritDoc}
-    */
-    public String getTxLogLocation() {
-        return transactionManager.getTxLogLocation();
     }
 
     /** {@inheritDoc}

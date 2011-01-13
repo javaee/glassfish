@@ -270,7 +270,7 @@ public final class CreateHTTPLoadBalancerCommand extends LBCommandsBase
         map.add("reloadinterval", reloadinterval);
         map.add("monitor", monitor==null ? null : monitor.toString());
         map.add("routecookie", routecookie==null ? null : routecookie.toString());
-        map.add("config_name", config);
+        map.add("name", config);
         ci.parameters(map);
         ci.execute();
     }

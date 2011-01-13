@@ -40,13 +40,11 @@
 
 package org.glassfish.tests.embedded.web;
 
-import org.junit.Test;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.AfterClass;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.File;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.logging.Level;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,70 +56,72 @@ import org.apache.catalina.Deployer;
 import org.apache.catalina.logger.SystemOutLogger;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.embedded.*;
+import org.glassfish.embeddable.*;
 import org.glassfish.embeddable.web.*;
 import org.glassfish.grizzly.config.dom.NetworkConfig;
 import org.glassfish.grizzly.config.dom.NetworkListener;
-
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
- * Tests EmbeddedWebContainer#start correctly starts the server with default 8080 port
+ * Tests WebContainer#start correctly starts the server with default 8080 port
  * if no port is previously defined.
  *
  * @author Amy Roh
  */
 public class EmbeddedWebAPIDefaultStartTest {
 
-    static Server server;
-    static EmbeddedWebContainer embedded;
-    static File f;
+    static GlassFish glassfish;
+    static WebContainer embedded;
 
     @BeforeClass
-    public static void setupServer() throws Exception {
-        try {
-            Server.Builder builder = new Server.Builder("web-api");
-            server = builder.build();
-            f = new File(System.getProperty("basedir"));
-
-            // TODO :: change this to use
-            // org.glassfish.embeddable.GlassFish.lookupService
-            embedded = server.getHabitat().
-                    getComponent(EmbeddedWebContainer.class);
-        } catch(Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
+    public static void setupServer() throws GlassFishException {
+        glassfish = GlassFishRuntime.bootstrap().newGlassFish();
+        glassfish.start();
+        embedded = glassfish.getService(WebContainer.class);
+        System.out.println("================ Test Embedded Web API Default Start ");
+        System.out.println("Starting Web "+embedded);
+        embedded.setLogLevel(Level.INFO);
     }
     
     @Test
     public void testDefaultStart() throws Exception {
-        System.out.println("================ Test Embedded Web API Default Start ");
-        System.out.println("Starting Web " + server+" "+embedded);
-        embedded.setLogLevel(Level.INFO);
-        embedded.start();
 
-        NetworkConfig nc = server.getHabitat().getComponent(NetworkConfig.class);
-        List<NetworkListener> listeners = nc.getNetworkListeners().getNetworkListener();
-        System.out.println("Network listener size after default start " + listeners.size());
-        for (NetworkListener nl : listeners) {
-            System.out.println("Network listener " + nl.getPort());
-        }
+        HttpListener httpListener = new HttpListener();
+        httpListener.setPort(8080);
+        httpListener.setId("embedded-listener-1");
+        embedded.addWebListener(httpListener);
 
         List<WebListener> listenerList = new ArrayList(embedded.getWebListeners());
         Assert.assertTrue(listenerList.size()==1);
         for (WebListener listener : embedded.getWebListeners())
             System.out.println("Web listener "+listener.getId()+" "+listener.getPort());
 
-        EmbeddedDeployer deployer = server.getDeployer();
-        String p = System.getProperty("buildDir");
-        System.out.println("Root is " + p);
-        ScatteredArchive.Builder sa = new ScatteredArchive.Builder("sampleweb", new File(p));
-        sa.resources(new File(p));
-        sa.addClassPath((new File(p)).toURL());
-        DeployCommandParameters dp = new DeployCommandParameters(new File(p));
+        Deployer deployer = glassfish.getDeployer();
 
-        System.out.println("Deploying " + p);
-        String appName = deployer.deploy(sa.buildWar(), dp);
-        Assert.assertNotNull("Deployment failed!", appName);
+        URL source = WebHello.class.getClassLoader().getResource(
+                "org/glassfish/tests/embedded/web/WebHello.class");
+        String p = source.getPath().substring(0, source.getPath().length() -
+                "org/glassfish/tests/embedded/web/WebHello.class".length());
+        File path = new File(p).getParentFile().getParentFile();
+
+        String name = null;
+
+        if (path.getName().lastIndexOf('.') != -1) {
+            name = path.getName().substring(0, path.getName().lastIndexOf('.'));
+        } else {
+            name = path.getName();
+        }
+
+        System.out.println("Deploying " + path + ", name = " + name);
+
+        String appName = deployer.deploy(path.toURI(), "--name=" + name);
+
+        System.out.println("Deployed " + appName);
+
+        Assert.assertTrue(appName != null);
 
         URL servlet = new URL("http://localhost:8080/classes/hello");
         URLConnection yc = servlet.openConnection();
@@ -136,24 +136,18 @@ public class EmbeddedWebAPIDefaultStartTest {
         Assert.assertEquals("Hello World!", sb.toString());
 
         Thread.sleep(1000);
-
+        
         if (appName!=null)
-            deployer.undeploy(appName, null);
-
-        embedded.stop();  
+            deployer.undeploy(appName);
     }
-    
 
     @AfterClass
-    public static void shutdownServer() throws Exception {
-        System.out.println("shutdown initiated");
-        if (server!=null) {
-            try {
-                server.stop();
-            } catch (LifecycleException e) {
-                e.printStackTrace();
-                throw e;
-            }
+    public static void shutdownServer() throws GlassFishException {
+        System.out.println("Stopping server " + glassfish);
+        if (glassfish != null) {
+            glassfish.stop();
+            glassfish.dispose();
+            glassfish = null;
         }
     }
     

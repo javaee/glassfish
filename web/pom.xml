@@ -69,6 +69,8 @@
         <module>gf-web-connector</module>
         <module>javax.servlet</module>
         <module>weld-integration</module>
+        <module>weld-integration-fragment</module>
+        <module>weld-integration-test-fragment</module>
         <module>web-embed</module>
         <module>web-ha</module>
     </modules>

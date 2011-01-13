@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -153,6 +153,7 @@ import org.glassfish.web.valve.GlassFishValve;
  *
  * @author Remy Maucherat
  * @author Craig R. McClanahan
+ * @author Rajiv Mordani
  * @version $Revision: 1.67.2.9 $ $Date: 2008/04/17 18:37:34 $
  */
 public class Request
@@ -2010,24 +2011,24 @@ public class Request
             setUserPrincipal(webPrincipal);
             setAuthType("LOGIN");
 
-            AuthenticatorBase authenticator = (AuthenticatorBase) context.getAuthenticator();
-            if (authenticator != null && authenticator.getCache()) {
+            Session session = getSessionInternal(true);
+            session.setAuthType(authType);
+            session.setPrincipal(webPrincipal);
 
-                Session session = getSessionInternal(true);
-                if (session != null) {
-                    session.setAuthType(authType);
-                    session.setPrincipal(webPrincipal);
-                    if (username != null) {
-                        session.setNote(SESS_USERNAME_NOTE, username);
-                    } else {
-                        session.removeNote(SESS_USERNAME_NOTE);
-                    }
-                    if (password != null) {
-                        session.setNote(SESS_PASSWORD_NOTE, password);
-                    } else {
-                        session.removeNote(SESS_PASSWORD_NOTE);
-                    }
+            AuthenticatorBase authenticator = (AuthenticatorBase) context.getAuthenticator();
+            boolean noCache = (authenticator != null && !authenticator.getCache());
+            if (noCache) {
+                if (username != null) {
+                    session.setNote(SESS_USERNAME_NOTE, username);
+                } else {
+                    session.removeNote(SESS_USERNAME_NOTE);
                 }
+                if (password != null) {
+                    session.setNote(SESS_PASSWORD_NOTE, password);
+                } else {
+                    session.removeNote(SESS_PASSWORD_NOTE);
+                }
+
             }
 
         } catch (Exception ex) {
@@ -3038,6 +3039,9 @@ public class Request
 
         // Creating a new session cookie based on the newly created session
         if (session != null && getContext() != null) {
+            if (manager.isSessionVersioningSupported()) {
+                incrementSessionVersion((StandardSession) session, context);
+            }
 
             if (getContext().getCookies()) {
                 String jvmRoute = ((StandardContext) getContext()).getJvmRoute();
@@ -3073,6 +3077,7 @@ public class Request
      * @param cookie The JSESSIONID cookie to be configured
      */
     protected void configureSessionCookie(Cookie cookie) {
+        cookie.setHttpOnly(true);
         cookie.setMaxAge(-1);
         String contextPath = null;
         // START GlassFish 1024
@@ -3100,8 +3105,7 @@ public class Request
 
         // Override the default config with servlet context
         // sessionCookieConfig
-        if (context != null &&
-                context.isSessionCookieConfigInitialized()) {
+        if (context != null) {
             SessionCookieConfig sessionCookieConfig =
                     context.getSessionCookieConfig();
             if (sessionCookieConfig.getDomain() != null) {
@@ -3474,7 +3478,9 @@ public class Request
     /**
      * Parse session id in URL.
      */
-    protected void parseSessionId(String sessionParam, CharChunk uriBB) {
+    protected void parseSessionId(String sessionParameterName, CharChunk uriBB) {
+        //START GLASSFISH-15508
+        /*
         if (coyoteRequest.isRequestedSessionIdFromURL() &&
                 sessionParam.equals(Globals.SESSION_PARAMETER_NAME)) {
             setRequestedSessionURL(true);
@@ -3495,6 +3501,8 @@ public class Request
 
             int sessionIdStart = start + semicolon + sessionParam.length();
             int semicolon2 = uriBB.indexOf(';', sessionIdStart);
+        */
+        //END GLASSFISH-15508
             /* SJSAS 6346226
             if (semicolon2 >= 0) {
             setRequestedSessionId
@@ -3506,6 +3514,8 @@ public class Request
             end - sessionIdStart));
             }
              */
+            //START GLASSFISH-15508
+            /*
             // START SJSAS 6346226
             String sessionId = null;
             if (semicolon2 >= 0) {
@@ -3515,6 +3525,16 @@ public class Request
                 sessionId = new String(uriBB.getBuffer(), sessionIdStart,
                         end - sessionIdStart);
             }
+            */
+            //END GLASSFISH-15508
+        
+        // Parse session ID, and extract it from the decoded request URI
+        String sessionParam = ";" + sessionParameterName + "=";
+        String sessionId =
+            parseParameterFromRequestURI(uriBB, sessionParam);
+
+        if (sessionId != null) {
+            // START SJSAS 6346226
             int jrouteIndex = sessionId.lastIndexOf(':');
             if (jrouteIndex > 0) {
                 setRequestedSessionId(sessionId.substring(0, jrouteIndex));
@@ -3557,7 +3577,7 @@ public class Request
              * URI is not null, to allow for lazy evaluation
              */
             if (coyoteRequest.getRequestURI() != null) {
-                parseSessionIdFromRequestURI(sessionParam);
+                removeParameterFromRequestURI(sessionParam);
             }
             // END SJSWS 6376484
 
@@ -3568,11 +3588,82 @@ public class Request
     }
     // END CR 6309511
 
+    /**
+     * Parses and removes any session version (if present) from the request
+     * URI.
+     *
+     */
+    protected void parseSessionVersion(CharChunk uriCC) {
+        String sessionVersionString =
+            parseParameterFromRequestURI(uriCC, Globals.SESSION_VERSION_PARAMETER);
+
+        if (sessionVersionString != null) {
+            parseSessionVersionString(sessionVersionString);
+
+//            if (!coyoteRequest.requestURI().getByteChunk().isNull()) {
+                removeParameterFromRequestURI(Globals.SESSION_VERSION_PARAMETER);
+//            }
+        }
+    }
+
+    /**
+     * Parses and removes jreplica (if present) from the request URI.
+     */
+    protected void parseJReplica(CharChunk uriCC) {
+        String jreplica =
+            parseParameterFromRequestURI(uriCC, Globals.JREPLICA_PARAMETER);
+
+        if (jreplica != null) {
+            Session session = getSessionInternal(false);
+            if (session != null) {
+                session.setNote(Globals.JREPLICA_SESSION_NOTE, jreplica);
+            }
+//            if (!coyoteRequest.requestURI().getByteChunk().isNull()) {
+                removeParameterFromRequestURI(Globals.JREPLICA_PARAMETER);
+//            }
+        }
+
+    }
+
+    /**
+     * @param parameter  of the form ";" + parameterName + "="
+     * @return parameterValue
+     */
+    private String parseParameterFromRequestURI(CharChunk uriCC, String parameter) {
+
+        String parameterValue = null;
+
+        int semicolon = uriCC.indexOf(parameter, 0, parameter.length(), 0);
+        if (semicolon >= 0) {
+
+            int start = uriCC.getStart();
+            int end = uriCC.getEnd();
+
+            int parameterStart = start + semicolon + parameter.length();
+            int semicolon2 = uriCC.indexOf(';', semicolon + parameter.length());
+            if (semicolon2 >= 0) {
+                parameterValue = new String(
+                    uriCC.getBuffer(),
+                    parameterStart, 
+                    semicolon2 - semicolon - parameter.length());
+            } else {
+                parameterValue = new String(
+                    uriCC.getBuffer(),
+                    parameterStart, 
+                    end - parameterStart);
+            }
+
+        }
+
+        return parameterValue;
+    }
+
     // START SJSWS 6376484
     /**
-     * Extracts the session ID from the request URI.
+     * Removes the session version from the request URI.
+     * @param parameter   of the form ";" + parameterName + "="
      */
-    protected void parseSessionIdFromRequestURI(String sessionParam) {
+    private void removeParameterFromRequestURI(String parameter) {
 
         int semicolon, semicolon2;
 
@@ -3580,11 +3671,11 @@ public class Request
         
 //        start = uriBC.getStart();
 //        end = uriBC.getEnd();
-        semicolon = uriBC.indexOf(sessionParam, 0);
+        semicolon = uriBC.indexOf(parameter, 0);
 
         if (semicolon > 0) {
 //            sessionIdStart = semicolon;
-            semicolon2 = uriBC.indexOf(';', semicolon + sessionParam.length());
+            semicolon2 = uriBC.indexOf(';', semicolon + parameter.length());
             final int end = semicolon2 >= 0 ? semicolon2 : uriBC.getEnd();
             
             uriBC.delete(semicolon, end);
@@ -3594,7 +3685,8 @@ public class Request
 //                for (int i = 0; i < end - start - semicolon2; i++) {
 //                    buf[start + semicolon + i] = buf[start + i + semicolon2];
 //                }
-//                uriBC.setBytes(buf, start, semicolon + end - start - semicolon2);
+//                uriBC.setBytes(buf, start, semicolon
+//                               + (end - start - semicolon2));
 //            }
         }
     }

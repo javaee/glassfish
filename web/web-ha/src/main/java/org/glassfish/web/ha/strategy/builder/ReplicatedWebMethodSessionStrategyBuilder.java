@@ -47,6 +47,7 @@ import com.sun.enterprise.web.BasePersistenceStrategyBuilder;
 import com.sun.enterprise.web.ServerConfigLookup;
 import org.apache.catalina.Context;
 import org.apache.catalina.core.StandardContext;
+import org.glassfish.ha.store.util.SimpleMetadata;
 import org.glassfish.web.ha.session.management.*;
 import org.glassfish.web.valve.GlassFishValve;
 import org.jvnet.hk2.annotations.Inject;
@@ -85,6 +86,8 @@ public class ReplicatedWebMethodSessionStrategyBuilder extends BasePersistenceSt
         HashMap<String, Object> vendorMap = new HashMap<String, Object>();
         boolean asyncReplicationValue = serverConfigLookup.getAsyncReplicationFromConfig((WebModule)ctx);
         vendorMap.put("async.replication", asyncReplicationValue);
+        vendorMap.put("broadcast.remove.expired", false);
+        vendorMap.put("value.class.is.thread.safe", true);
         if (this.getPersistenceScope().equals("session")) {
             rwepMgr.setSessionFactory(new FullSessionFactory());
             store = new ReplicationStore(serverConfigLookup, ioUtils);
@@ -98,9 +101,13 @@ public class ReplicatedWebMethodSessionStrategyBuilder extends BasePersistenceSt
             store = new ReplicationAttributeStore(serverConfigLookup, ioUtils);
             rwepMgr.createBackingStore(this.getPassedInPersistenceType(), ctx.getPath(), CompositeMetadata.class, vendorMap);
         }
+
+
+        rwepMgr.setMaxActiveSessions(maxSessions);
+        rwepMgr.setMaxIdleBackup(0);
+        rwepMgr.setRelaxCacheVersionSemantics(relaxCacheVersionSemantics);
         rwepMgr.setStore(store);
-
-
+        
         ctx.setManager(rwepMgr);
         if(!((StandardContext)ctx).isSessionTimeoutOveridden()) {
             rwepMgr.setMaxInactiveInterval(sessionMaxInactiveInterval);

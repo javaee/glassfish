@@ -41,13 +41,17 @@
 package com.sun.enterprise.transaction.startup;
 
 import java.util.List;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
-import org.glassfish.api.Async;
 import org.glassfish.api.Startup;
-import org.glassfish.internal.api.*;
+import org.glassfish.api.event.EventTypes;
+import org.glassfish.api.event.Events;
+import org.glassfish.api.event.EventListener;
 import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.Application;
-import com.sun.enterprise.transaction.api.ResourceRecoveryManager;
+import com.sun.enterprise.transaction.api.JavaEETransactionManager;
+import com.sun.logging.LogDomains;
 
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
@@ -59,18 +63,50 @@ import org.jvnet.hk2.component.PostConstruct;
  * are applications deployed since the actual service has ORB dependency.
  */
 @Service
-public class TransactionRecoveryWrapper implements PostStartup, PostConstruct {
-
-    @Inject
-    Applications applications;
+public class TransactionRecoveryWrapper implements Startup, PostConstruct {
 
     @Inject
     Habitat habitat;
 
+    @Inject
+    Events events;
+
+    @Inject
+    Applications applications;
+
+    private static Logger _logger = LogDomains.getLogger(TransactionRecoveryWrapper.class, LogDomains.JTA_LOGGER);
+
+    @Override
     public void postConstruct() {
+        EventListener glassfishEventListener = new EventListener() {
+            @Override
+            public void event(Event event) {
+                if (event.is(EventTypes.SERVER_READY)) {
+                    _logger.fine("ON READY");
+                    onReady();
+                } else if (event.is(EventTypes.PREPARE_SHUTDOWN)) {  
+                    _logger.fine("ON SHUTDOWN");
+                    onShutdown();
+                }
+            }
+        };
+        events.register(glassfishEventListener);
+    }
+
+    public void onReady() {
         final List<Application> apps = applications.getApplications();
         if (apps!=null && apps.size()>0) {
-            habitat.getByContract(ResourceRecoveryManager.class);
+            JavaEETransactionManager tm = habitat.getByContract(JavaEETransactionManager.class);
+            tm.initRecovery(false);
         }
     }
+
+    public void onShutdown() {
+        // Later
+    }
+
+    public Startup.Lifecycle getLifecycle() {
+        return Startup.Lifecycle.SERVER;
+    }
+
 }

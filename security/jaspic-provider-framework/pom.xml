@@ -42,16 +42,17 @@
 -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <parent>
-        <groupId>org.glassfish</groupId>
-        <artifactId>api-pom</artifactId>
+     <modelVersion>4.0.0</modelVersion>
+     <parent>
+        <artifactId>securitymodule</artifactId>
+        <groupId>org.glassfish.security</groupId>
         <version>3.1-SNAPSHOT</version>
-        <relativePath>../../javaee-api/api-pom/pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
-    <artifactId>jaspic-provider-framework</artifactId>
-    <packaging>jar</packaging>
-
+    <groupId>org.glassfish.security</groupId>
+    <artifactId>jaspic.provider.framework</artifactId>
+    <name>JSR-196 Provider Framework Reference Implementation</name>
+    <packaging>hk2-jar</packaging>
     <dependencies>
         <dependency>
             <groupId>org.glassfish</groupId>
@@ -59,7 +60,6 @@
             <version>${project.version}</version>
             <!-- Don't set scope as provided. See issue #5992 -->
         </dependency>
-
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.security.auth.message</artifactId>
@@ -67,6 +67,4 @@
             <!-- Don't set scope as provided. See issue #5992 -->
         </dependency>
     </dependencies>
-
-
 </project>

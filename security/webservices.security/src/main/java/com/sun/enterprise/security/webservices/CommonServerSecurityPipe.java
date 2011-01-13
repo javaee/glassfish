@@ -84,13 +84,15 @@ public class CommonServerSecurityPipe extends AbstractFilterPipeImpl {
 
     private PipeHelper helper;
 
+    private static final String WSIT_SERVER_AUTH_CONTEXT ="com.sun.xml.wss.provider.wsit.WSITServerAuthContext";
+
+
     public CommonServerSecurityPipe(Map props, final Pipe next, 
 			     boolean isHttpBinding) {
         super(next);
 	props.put(PipeConstants.SECURITY_PIPE, this);
 	this.helper = new PipeHelper(PipeConstants.SOAP_LAYER,props,null);
-        this.isHttpBinding = isHttpBinding;
-       
+        this.isHttpBinding = isHttpBinding;     
     }    
     
     protected CommonServerSecurityPipe(CommonServerSecurityPipe that,
@@ -108,6 +110,17 @@ public class CommonServerSecurityPipe extends AbstractFilterPipeImpl {
      */
     public void preDestroy() {
 	helper.disable();
+         try {
+            Packet request = new Packet();
+            PacketMessageInfo info = new PacketMapMessageInfo(request, new Packet());
+            Subject subj = new Subject();
+            ServerAuthContext sAC = helper.getServerAuthContext(info, subj);
+            if (sAC != null && WSIT_SERVER_AUTH_CONTEXT.equals(sAC.getClass().getName())) {
+                sAC.cleanSubject(info, subj);
+            }
+        } catch (Exception ex) {
+        //ignore exceptions
+        }
         /**
          Fix for bug 3932/4052
          */

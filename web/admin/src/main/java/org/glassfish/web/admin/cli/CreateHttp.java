@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -89,21 +89,21 @@ public class CreateHttp implements AdminCommand {
         new LocalStringManagerImpl(CreateHttp.class);
     @Param(name = "protocolname", primary = true)
     String protocolName;
-    @Param(name = "request-timeout-seconds", optional = true)
+    @Param(name = "request-timeout-seconds", optional = true, alias="requestTimeoutSeconds")
     String requestTimeoutSeconds;
-    @Param(name = "timeout-seconds", defaultValue = "30", optional = true)
+    @Param(name = "timeout-seconds", defaultValue = "30", optional = true, alias="timeoutSeconds")
     String timeoutSeconds;
-    @Param(name = "max-connection", defaultValue = "256", optional = true)
+    @Param(name = "max-connection", defaultValue = "256", optional = true, alias="maxConnections")
     String maxConnections;
-    @Param(name = "default-virtual-server", alias="DefaultVirtualServer")
+    @Param(name = "default-virtual-server", alias="defaultVirtualServer")
     String defaultVirtualServer;
-    @Param(name = "dns-lookup-enabled", defaultValue = "false", optional = true)
+    @Param(name = "dns-lookup-enabled", defaultValue = "false", optional = true, alias="dnsLookupEnabled")
     Boolean dnsLookupEnabled = false;
-    @Param(name = "servername", optional = true)
+    @Param(name = "servername", optional = true, alias="serverName")
     String serverName;
-    @Param(name = "xpowered", optional = true, defaultValue = "true")
+    @Param(name = "xpowered", optional = true, defaultValue = "true", alias="xpoweredBy")
     Boolean xPoweredBy = false;
-    @Param(name = "target", optional = true, defaultValue = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
+    @Param(name = "target", optional = true, defaultValue = SystemPropertyConstants.DAS_SERVER_NAME)
     String target;
     @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Config config;
@@ -167,9 +167,8 @@ public class CreateHttp implements AdminCommand {
             }, protocol);
         } catch (TransactionFailure e) {
             report.setMessage(localStrings.getLocalString("create.http.redirect.fail",
-                "Failed to create http-redirect for {0}: {1}",
-                protocolName,
-                (e.getMessage() == null ? "No reason given." : e.getMessage())));
+                "Failed to create http-redirect for {0}: {1}", protocolName,
+                e.getMessage() == null ? "No reason given." : e.getMessage()));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             report.setFailureCause(e);
             return;

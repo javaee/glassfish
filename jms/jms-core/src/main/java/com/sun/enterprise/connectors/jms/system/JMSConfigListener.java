@@ -64,95 +64,136 @@ import com.sun.enterprise.connectors.jms.util.JmsRaUtil;
 public class JMSConfigListener implements ConfigListener{
     // Injecting @Configured type triggers the corresponding change
     // events to be sent to this instance
+    @Inject
+    private JmsHost jmshost;
+
     @Inject 
 	private JmsService jmsservice;
    
-    //@Inject 
-//	private Cluster cluster;
+   @Inject
+    private Servers servers;
+
+    //private Cluster cluster;
     private ActiveJmsResourceAdapter aresourceAdapter;
 
-   private static final Logger _logger = LogDomains.getLogger(
+    private static final Logger _logger = LogDomains.getLogger(
             JMSConfigListener.class, LogDomains.JMS_LOGGER);
 
-   // String Manager for Localization
-   private static StringManager sm
+    // String Manager for Localization
+    private static StringManager sm
         = StringManager.getManager(JMSConfigListener.class);
 
-   public void setActiveResourceAdapter(ActiveJmsResourceAdapter aresourceAdapter) {
-           this.aresourceAdapter = aresourceAdapter;
-   }
+    public void setActiveResourceAdapter(ActiveJmsResourceAdapter aresourceAdapter) {
+        this.aresourceAdapter = aresourceAdapter;
+    }
 
 
-    /** Implementation of org.jvnet.hk2.config.ConfigListener */
-   public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
+        /** Implementation of org.jvnet.hk2.config.ConfigListener */
+    public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
 
-     // Events that we can't process now because they require server restart.
-     //List<UnprocessedChangeEvent> unprocessedEvents = new ArrayList<UnprocessedChangeEvent>();
-     Domain domain = Globals.get(Domain.class);
-	_logger.log(Level.FINE, "In JMSConfigListener - recived config event");
-     for (PropertyChangeEvent event : events) {
-        String eventName = event.getPropertyName();
-        Object oldValue = event.getOldValue();
-        Object newValue = event.getNewValue();
+        // Events that we can't process now because they require server restart.
+        //List<UnprocessedChangeEvent> unprocessedEvents = new ArrayList<UnprocessedChangeEvent>();
+        _logger.log(Level.FINE, "In JMSConfigListener - received config event");
+        Domain domain = Globals.get(Domain.class);
+        String jmsProviderPort = null;
+        ServerContext serverContext = Globals.get(ServerContext.class);
+        Server thisServer = domain.getServerNamed(serverContext.getInstanceName());
 
-	_logger.log(Level.FINE, "In JMSConfigListener " + eventName + oldValue + newValue);
-        boolean accepted = true;
+        if(thisServer.isDas() || thisServer.getCluster() == null)
+        {
+            _logger.log(Level.FINE,"JMSConfigListerner server is either das or a stand-alone instance - hence ignoring");
+            return null;
+        }
+        for (int i=0; i< events.length; i++) {
+        //for (PropertyChangeEvent event : events) {
+            PropertyChangeEvent event = events[i];
+            String eventName = event.getPropertyName();
+            Object oldValue = event.getOldValue();
+            Object newValue = event.getNewValue();
+
+        _logger.log(Level.FINE, "In JMSConfigListener " + eventName + oldValue + newValue);
+
         if (oldValue != null && oldValue.equals(newValue)) {
-            _logger.log(Level.FINE, "Event " + eventName
-                    + " did not change existing value of " + oldValue);
-            continue;
+           _logger.log(Level.FINE, "Event " + eventName
+                        + " did not change existing value of " + oldValue);
+           continue;
+        }
+        if ("JMS_PROVIDER_PORT".equals(newValue)){
+            //The value is in the next event
+            PropertyChangeEvent nextevent = events[i+1] ;
+            jmsProviderPort = (String) nextevent.getNewValue();
         }
         if(event.getSource() instanceof JmsService ) {
-         if (eventName.equals(ServerTags.MASTER_BROKER)) {
-                 String oldMB = oldValue.toString();
-                 String newMB = newValue.toString();
+           if (eventName.equals(ServerTags.MASTER_BROKER)) {
+                     String oldMB = oldValue.toString();
+                     String newMB = newValue.toString();
 
             _logger.log(Level.FINE, "Got JmsService Master Broker change event "
                 + event.getSource() + " "
                 + eventName + " " + oldMB + " " + newMB);
+
              Server newMBServer = domain.getServerNamed(newMB);
              if(newMBServer != null)
              {
-                 Node node = domain.getNodeNamed(newMBServer.getNode());
+                 Node node = domain.getNodeNamed(newMBServer.getNodeRef());
                  String newMasterBrokerPort = JmsRaUtil.getJMSPropertyValue(newMBServer);
                  if(newMasterBrokerPort == null) newMasterBrokerPort = getDefaultJmsHost(jmsservice).getPort();
                  String newMasterBrokerHost = node.getNodeHost();
                  aresourceAdapter.setMasterBroker(newMasterBrokerHost + ":" + newMasterBrokerPort);
              }
-         }
-        }
-       if (event.getSource() instanceof Cluster) {
-	_logger.log(Level.FINE, "In JMSConfigListener - recieved cluster event " + event.getSource());
-           //String serverName = System.getProperty(SystemPropertyConstants.SERVER_NAME);
-           ServerContext serverContext = Globals.get(ServerContext.class);
-           Server server = domain.getServerNamed(serverContext.getInstanceName());
-           if (server != null){
-               Cluster changedCluster = (Cluster) event.getSource();
-               Cluster thisCluster = server.getCluster();
-               if (! changedCluster.getName().equals(thisCluster.getName())){
-                _logger.log(Level.FINE, "Got Cluster change event but ignoring the change since it does not pertain to this cluster"
-                + event.getSource() + " "
-                + eventName + " Changed Cluster: " + changedCluster.getName() + " this Cluster: " + thisCluster.getName());
-                   continue;
+            }
+        }   if (eventName.equals(ServerTags.SERVER_REF)){
+                //if(event instanceof ServerRef){
+                    String oldServerRef = oldValue != null ? oldValue.toString() : null;
+                    String newServerRef = newValue != null ? newValue.toString(): null;
+                    if(oldServerRef  != null && newServerRef == null) {//instance has been deleted
+                        _logger.log(Level.FINE, "Got Cluster change event for server_ref"
+                            + event.getSource() + " "
+                        + eventName + " " + oldServerRef + " " + newServerRef);
+                        String url = getBrokerList();
+                        aresourceAdapter.setClusterBrokerList(url);
+                        break;
+                   }//
+             } // else skip
+            if (event.getSource() instanceof Server) {
+               _logger.log(Level.FINE, "In JMSConfigListener - recieved cluster event " + event.getSource());
+               Server changedServer = (Server) event.getSource();
+               if (thisServer.isDas())return null;
+
+               if(jmsProviderPort != null){
+                    String nodeName = changedServer.getNodeRef();
+                    String nodeHost = null;
+
+                   if(nodeName != null)
+                      nodeHost = domain.getNodeNamed(nodeName).getNodeHost();
+                   String url = getBrokerList();
+                   url = url + ",mq://" + nodeHost + ":" + jmsProviderPort;
+                   aresourceAdapter.setClusterBrokerList(url);
+                   break;
                }
-           }
-            if (eventName.equals(ServerTags.SERVER_REF)) {
-                String oldServerRef = oldValue.toString();
-                String newServerRef = newValue.toString();
-                _logger.log(Level.FINE, "Got Cluster change event for server_ref"
-                + event.getSource() + " "
-                + eventName + " " + oldServerRef + " " + newServerRef);
-                //aresourceAdapter.
-            } // else skip
+
+            }
+
+         }
+            return null;
         }
-     }
-        return null;
+    private String getBrokerList(){
+        MQAddressList addressList = new MQAddressList();
+        try{
+            addressList.setup(true);
+        }catch(Exception ex){
+            _logger.log(Level.WARNING, "failed to create addresslist " + ex.getLocalizedMessage());
+            ex.printStackTrace();
+        }
+        return addressList.toString();
+
+
     }
      private JmsHost getDefaultJmsHost(JmsService jmsService){
 
             JmsHost jmsHost = null;
                 String defaultJmsHostName = jmsService.getDefaultJmsHost();
-                List jmsHostsList = jmsService.getJmsHost();
+                List <JmsHost> jmsHostsList = jmsService.getJmsHost();
 
                 for (int i=0; i < jmsHostsList.size(); i ++)
                 {
@@ -160,8 +201,8 @@ public class JMSConfigListener implements ConfigListener{
                    if (tmpJmsHost != null && tmpJmsHost.getName().equals(defaultJmsHostName))
                          jmsHost = tmpJmsHost;
                 }
+            if (jmsHost == null && jmsHostsList.size() >0)
+                jmsHost = jmsHostsList.get(0);
             return jmsHost;
           }
-
-
 }

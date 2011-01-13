@@ -47,27 +47,16 @@ import org.glassfish.api.admin.*;
 import org.glassfish.config.support.TargetType;
 import org.glassfish.config.support.CommandTarget;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.config.serverbeans.*;
 
-import org.glassfish.api.I18n;
-import org.glassfish.api.Param;
-import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.config.support.CommandTarget;
-import org.glassfish.config.support.TargetType;
-import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.admin.RuntimeType;
-import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.util.SystemPropertyConstants;
-import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.config.serverbeans.Cluster;
 import com.sun.enterprise.connectors.jms.util.JmsRaUtil;
 
 import org.glassfish.internal.api.ServerContext;
-import java.util.Properties;
-import java.util.Map;
+
 import java.util.List;
 import java.beans.PropertyVetoException;
 import org.jvnet.hk2.annotations.Service;
@@ -81,7 +70,6 @@ import org.jvnet.hk2.config.TransactionFailure;
 
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
-import java.beans.PropertyVetoException;
 
 
 /**
@@ -129,7 +117,7 @@ public class ChangeMasterBrokerCommand extends JMSDestination implements AdminCo
         final String newMB = newMasterBroker;
         Server newMBServer = domain.getServerNamed(newMasterBroker);
         if (newMBServer == null) {
-            report.setMessage(localStrings.getLocalString("configure.jms.cluster.invalidServerName",
+            report.setMessage(localStrings.getLocalString("change.master.broker.invalidServerName",
                             "Invalid server name specified. There is no server by this name"));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
@@ -137,7 +125,7 @@ public class ChangeMasterBrokerCommand extends JMSDestination implements AdminCo
         Cluster cluster = newMBServer.getCluster();//domain.getClusterNamed(clusterName);
 
         if (cluster == null) {
-            report.setMessage(localStrings.getLocalString("configure.jms.cluster.invalidClusterName",
+            report.setMessage(localStrings.getLocalString("change.master.broker.invalidClusterName",
                             "The server specified is not associated with a cluster. The server assocaited with the master broker has to be a part of the cluster"));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
@@ -178,11 +166,11 @@ public class ChangeMasterBrokerCommand extends JMSDestination implements AdminCo
 	      if(sp != null) oldMasterBrokerPort = sp.getValue();
        }
        if(oldMasterBrokerPort == null) oldMasterBrokerPort = getDefaultJmsHost(jmsservice).getPort();
-       String oldMasterBrokerHost = nodes.getNode(oldMBServer.getNode()).getNodeHost();
+       String oldMasterBrokerHost = nodes.getNode(oldMBServer.getNodeRef()).getNodeHost();
 
        String newMasterBrokerPort = JmsRaUtil.getJMSPropertyValue(newMBServer);
        if(newMasterBrokerPort == null) newMasterBrokerPort = getDefaultJmsHost(jmsservice).getPort();
-       String newMasterBrokerHost = nodes.getNode(newMBServer.getNode()).getNodeHost();
+       String newMasterBrokerHost = nodes.getNode(newMBServer.getNodeRef()).getNodeHost();
 
 
        String oldMasterBroker = oldMasterBrokerHost + ":" + oldMasterBrokerPort;
@@ -253,7 +241,7 @@ public class ChangeMasterBrokerCommand extends JMSDestination implements AdminCo
          try {
              MBeanServerConnection mbsc = mqInfo.getMQMBeanServerConnection();
              ObjectName on = new ObjectName(
-                 CLUSTER_MONITOR_MBEAN_NAME);
+                     CLUSTER_CONFIG_MBEAN_NAME);
              Object [] params = null;
 
              String []  signature = new String [] {

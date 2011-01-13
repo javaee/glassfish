@@ -64,8 +64,8 @@ package com.sun.jts.CosTransactions;
 
 // Import required classes.
 
+import com.sun.enterprise.util.i18n.StringManager;
 import java.io.*;
-import java.util.*;
 
 /**This class encapsulates file I/O operations and the file handle.
  *
@@ -83,6 +83,8 @@ import java.util.*;
 //-----------------------------------------------------------------------------
 
 class LogFileHandle {
+    private static final StringManager sm = StringManager.getManager(LogFileHandle.class);
+
     /**The log file should be accessed in read only mode.
      */
     final static int OPEN_RDONLY = 0x00000001;
@@ -273,7 +275,8 @@ class LogFileHandle {
                     if( bytesRead == -1 ) bytesRead = 0;
                 }
             } catch( Throwable exc ) {
-                throw new LogException(null,LogException.LOG_READ_FAILURE,1);
+                throw new LogException(LogException.LOG_READ_FAILURE, 1, 
+                         sm.getString("jts.log_read_failed_bytes", bytesRead), exc);
             }
 
         return bytesRead;
@@ -338,7 +341,7 @@ class LogFileHandle {
                 int errCode = LogException.LOG_WRITE_FAILURE;
                 //$     if( errno == ENOSPC )
                 //$       retCode = LogControl.LOG_NO_SPACE;
-                throw new LogException(null,errCode,1);
+                throw new LogException(errCode, 1, sm.getString("jts.log_write_failed"), e);
             }
 
         return buffer.length;
@@ -374,7 +377,8 @@ class LogFileHandle {
                 else
                     bufferData = new byte[0];
         } catch( Throwable e ) {
-            throw new LogException(null,LogException.LOG_OPEN_FAILURE,1);
+            throw new LogException(LogException.LOG_OPEN_FAILURE,1,
+                sm.getString("jts.log_open_failed", file), e);
         }
 
     }
@@ -404,7 +408,8 @@ class LogFileHandle {
 
             fhandle.close();
         } catch( Throwable e ) {
-            throw new LogException(null,LogException.LOG_CLOSE_FAILURE,1);
+            throw new LogException(LogException.LOG_CLOSE_FAILURE,1,
+                    sm.getString("jts.log_close_failed"), e);
         }
 
         // Reset the file handle and descriptor values.
@@ -453,7 +458,8 @@ class LogFileHandle {
                 fhandle.seek(absPos);
             }
         } catch( Throwable e ) {
-            throw new LogException(null,LogException.LOG_READ_FAILURE,1);
+            throw new LogException(LogException.LOG_READ_FAILURE,1,
+                    sm.getString("jts.log_file_seek_failed"), e);
         }
     }
 
@@ -482,7 +488,8 @@ class LogFileHandle {
                 bufferUpdateStart = -1;
                 bufferUpdateEnd   = -1;
             } catch (Throwable e) {
-                throw new LogException(null,LogException.LOG_READ_FAILURE,1);
+                throw new LogException(LogException.LOG_READ_FAILURE,1,
+                        sm.getString("jts.log_file_sync_failed"), e);
             }
 
     }

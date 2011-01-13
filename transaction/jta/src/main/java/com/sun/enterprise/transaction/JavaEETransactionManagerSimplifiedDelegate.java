@@ -204,6 +204,10 @@ public class JavaEETransactionManagerSimplifiedDelegate
         return false;
     }
 
+    public void initRecovery(boolean force) {
+        // No-op. Always called on server startup
+    }
+
     public void recover(XAResource[] resourceList) {
         throw new UnsupportedOperationException("recover");
     }

@@ -48,6 +48,7 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.CommandLock;
 import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.config.support.CommandTarget;
@@ -62,14 +63,15 @@ import org.jvnet.hk2.component.PerLookup;
  *
  * Usage: list-supported-cipher-suites
  *         [--help] [--user admin_user] [--passwordfile file_name]
- *         [ --target  target_name]
+ *         [target_name(default server)]
  **/
 
 @Service(name = "list-supported-cipher-suites")
 @Scoped(PerLookup.class)
+@CommandLock(CommandLock.LockType.NONE)
 @I18n("list.supported.cipher.suites")
-@ExecuteOn({RuntimeType.DAS, RuntimeType.INSTANCE})
-@TargetType({CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER})
+@ExecuteOn({RuntimeType.DAS})
+@TargetType({CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTERED_INSTANCE})
 public class ListSupportedCipherSuites implements AdminCommand {
 
     final private static LocalStringManagerImpl localStrings =

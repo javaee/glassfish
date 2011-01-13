@@ -210,7 +210,7 @@ public class InstanceReaderImpl implements InstanceReader {
                 return address;
             }
         }
-        String nodeName = _server.getNode();
+        String nodeName = _server.getNodeRef();
         Node node = _domain.getNodes().getNode(nodeName);
         if (node == null) {
             String msg = LbLogUtil.getStringManager().getString("UnableToGetNode", _server.getName());

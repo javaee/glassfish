@@ -42,6 +42,7 @@ package com.sun.enterprise.security.cli;
 
 import com.sun.enterprise.config.serverbeans.AuditModule;
 import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.Domain;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
@@ -99,6 +100,9 @@ public class DeleteAuditModule implements AdminCommand {
     private Config config;
 
     @Inject
+    private Configs configs;
+
+    @Inject
     private Domain domain;
 
     AuditModule auditModule = null;
@@ -115,13 +119,24 @@ public class DeleteAuditModule implements AdminCommand {
     public void execute(AdminCommandContext context) {
         
         
-        Server targetServer = domain.getServerNamed(target);
-        if (targetServer!=null) {
-            config = domain.getConfigNamed(targetServer.getConfigRef());
+        Config tmp = null;
+        try {
+            tmp = configs.getConfigByName(target);
+        } catch (Exception ex) {
         }
-        com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
-        if (cluster!=null) {
-            config = domain.getConfigNamed(cluster.getConfigRef());
+
+        if (tmp != null) {
+            config = tmp;
+        }
+        if (tmp == null) {
+            Server targetServer = domain.getServerNamed(target);
+            if (targetServer != null) {
+                config = domain.getConfigNamed(targetServer.getConfigRef());
+            }
+            com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
+            if (cluster != null) {
+                config = domain.getConfigNamed(cluster.getConfigRef());
+            }
         }
         SecurityService securityService = config.getSecurityService();
         ActionReport report = context.getActionReport();

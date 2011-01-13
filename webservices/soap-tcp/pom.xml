@@ -98,10 +98,9 @@
             <groupId>org.glassfish.grizzly</groupId>
             <artifactId>grizzly-framework</artifactId>
         </dependency>
-<!--        <dependency>
+        <dependency>
             <groupId>org.glassfish.grizzly</groupId>
             <artifactId>grizzly-portunif</artifactId>
-            <version>1.9.24</version>
-        </dependency>-->
+        </dependency>
     </dependencies>
 </project>

@@ -40,7 +40,7 @@
 
 package org.glassfish.tests.embedded.inplanted;
 
-import org.glassfish.api.embedded.*;
+import org.glassfish.internal.embedded.*;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.admin.*;
 import org.glassfish.api.container.Sniffer;

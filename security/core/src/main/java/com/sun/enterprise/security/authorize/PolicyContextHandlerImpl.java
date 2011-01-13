@@ -118,4 +118,12 @@ public class PolicyContextHandlerImpl implements PolicyContextHandler {
         }
         return handlerData;
     }
+
+    public void reset() {
+         HandlerData handlerData = (HandlerData)thisHandlerData.get();
+         if (handlerData != null) {
+            handlerData.reset();
+         }
+         thisHandlerData.set(null);
+    }
 }

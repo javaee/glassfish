@@ -73,8 +73,10 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.net.URL;
+import java.net.URL;       
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -144,6 +146,15 @@ public class StandardHost
     private String contextClass =
         "org.apache.catalina.core.StandardContext";
 
+    /**
+     * The default context.xml location
+     */
+    private String defaultContextXmlLocation;
+
+    /**
+     * The default web.xml location
+     */
+    private String defaultWebXmlLocation;
 
     /**
      * The <code>Deployer</code> to whom we delegate application
@@ -243,7 +254,9 @@ public class StandardHost
 
     // START SJSAS 6331392
     public void setPipeline(Pipeline pl) {
-        pl.setBasic(new StandardHostValve());
+        StandardHostValve shValve = new StandardHostValve();
+        configureStandardHostValve(shValve);
+        pl.setBasic(shValve);
         pipeline = pl;
         hasCustomPipeline = true;
     }    
@@ -607,15 +620,60 @@ public class StandardHost
 
 
      public String getNetworkListeners() {
-         String listeners = "";
-         if (networkListenerNames.length>0) {
-             listeners = networkListenerNames[0];
-             for (int i=1; i<networkListenerNames.length; i++) {
-                 listeners = listeners + "," + networkListenerNames[i];
+         List<String> list = Arrays.asList(networkListenerNames);
+         String listeners = null;
+         if (list.size() > 0) {
+             listeners = list.get(0);
+             for (int i = 1; i < list.size(); i++) {
+                 listeners = list.get(i) + "," + listeners ;
              }
          }
          return listeners;
      }
+
+     /**
+     * Gets the default-context.xml location of web modules deployed on this
+     * virtual server.
+     *
+     * @return default-context.xml location of web modules deployed on this
+     * virtual server
+     */
+    public String getDefaultContextXmlLocation() {
+        return defaultContextXmlLocation;
+    }
+
+    /**
+     * Sets the default-context.xml location for web modules deployed on this
+     * virtual server.
+     *
+     * @param defaultContextXmlLocation default-context.xml location for web modules
+     * deployed on this virtual server
+     */
+    public void setDefaultContextXmlLocation(String defaultContextXmlLocation) {
+        this.defaultContextXmlLocation = defaultContextXmlLocation;
+    }
+
+    /**
+     * Gets the default-web.xml location of web modules deployed on this
+     * virtual server.
+     *
+     * @return default-web.xml location of web modules deployed on this
+     * virtual server
+     */
+    public String getDefaultWebXmlLocation() {
+        return defaultWebXmlLocation;
+    }
+
+    /**
+     * Sets the default-web.xml location for web modules deployed on this
+     * virtual server.
+     *
+     * @param defaultWebXmlLocation default-web.xml location for web modules
+     * deployed on this virtual server
+     */
+    public void setDefaultWebXmlLocation(String defaultWebXmlLocation) {
+        this.defaultWebXmlLocation = defaultWebXmlLocation;
+    }
 
 
     // --------------------------------------------------------- Public Methods
@@ -940,25 +998,7 @@ public class StandardHost
         }
 
         // Set error report valve
-        if ((errorReportValveClass != null)
-            && !"".equals(errorReportValveClass)) {
-            try {
-                GlassFishValve valve = (GlassFishValve)
-                    Class.forName(errorReportValveClass).newInstance();
-                /* START SJSAS 6374691
-                addValve(valve);
-                */
-                // START SJSAS 6374691
-                ((StandardHostValve) pipeline.getBasic()).setErrorReportValve(valve);
-                // END SJSAS 6374691
-            } catch (Throwable t) {
-                log.log(
-                    Level.SEVERE,
-                    sm.getString("standardHost.invalidErrorReportValveClass", 
-                                 errorReportValveClass),
-                    t);
-            }
-        }
+        configureStandardHostValve((StandardHostValve) pipeline.getBasic());
 
         // START SJSAS_PE 8.1 5034793
         if (log.isLoggable(Level.FINE)) {
@@ -1328,5 +1368,32 @@ public class StandardHost
         if( log.isLoggable(Level.FINE))
             log.fine("Create ObjectName " + domain + " " + parent );
         return new ObjectName( domain + ":type=Host,host=" + getName());
+    }
+
+
+    // ------------------------------------------------------ Private Methods
+
+
+    private void configureStandardHostValve(StandardHostValve host) {
+        // Set error report valve
+        if ((errorReportValveClass != null)
+            && !"".equals(errorReportValveClass)) {
+            try {
+                GlassFishValve valve = (GlassFishValve)
+                    Class.forName(errorReportValveClass).newInstance();
+                /* START SJSAS 6374691
+                addValve(valve);
+                */
+                // START SJSAS 6374691
+                host.setErrorReportValve(valve);
+                // END SJSAS 6374691
+            } catch (Throwable t) {
+                log.log(
+                    Level.SEVERE,
+                    sm.getString("standardHost.invalidErrorReportValveClass", 
+                                 errorReportValveClass),
+                    t);
+            }
+        }
     }
 }

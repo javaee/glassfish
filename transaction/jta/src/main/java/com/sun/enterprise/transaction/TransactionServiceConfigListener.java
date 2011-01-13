@@ -143,9 +143,17 @@ public class TransactionServiceConfigListener implements ConfigListener {
             } else if (event.getPropertyName().equals("value")) {
                 eventName = ((Property)event.getSource()).getName();
                 _logger.log(Level.FINE, "Got Property change event for " + eventName);
-
-                // Not handled dynamically. Restart is required.
-                accepted = false;
+                if (eventName.equals("purge-cancelled-transactions-after")) {
+                    String v = (String)newValue;
+                    if (v == null || v.length() == 0) {
+                        tm.setPurgeCancelledTtransactionsAfter(0);
+                    } else {
+                        tm.setPurgeCancelledTtransactionsAfter(Integer.parseInt(v,10));
+                    }
+                } else {
+                    // Not handled dynamically. Restart is required.
+                    accepted = false;
+                }
 
             } else if (event.getPropertyName().equals("name")
                     || event.getPropertyName().equals("property")) {

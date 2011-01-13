@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -50,6 +50,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.enterprise.inject.spi.AnnotatedType;
+import javax.enterprise.inject.spi.InjectionTarget;
 import javax.servlet.Filter;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContextListener;
@@ -61,25 +62,24 @@ import org.glassfish.api.deployment.MetaData;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.Events;
+import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.deployment.common.DeploymentException;
 import org.glassfish.deployment.common.SimpleDeployer;
 import org.glassfish.internal.data.ApplicationInfo;
+import org.glassfish.internal.data.ApplicationRegistry;
 import org.glassfish.weld.services.EjbServicesImpl;
 import org.glassfish.weld.services.InjectionServicesImpl;
 import org.glassfish.weld.services.ProxyServicesImpl;
 import org.glassfish.weld.services.SecurityServicesImpl;
-import org.glassfish.weld.services.ServletServicesImpl;
 import org.glassfish.weld.services.TransactionServicesImpl;
 import org.glassfish.weld.services.ValidationServicesImpl;
 import org.jboss.weld.bootstrap.WeldBootstrap;
 import org.jboss.weld.bootstrap.api.Environments;
 import org.jboss.weld.bootstrap.spi.BeanDeploymentArchive;
-import org.jboss.weld.context.api.helpers.ConcurrentHashMapBeanStore;
 import org.jboss.weld.ejb.spi.EjbServices;
 import org.jboss.weld.injection.spi.InjectionServices;
 import org.jboss.weld.security.spi.SecurityServices;
 import org.jboss.weld.serialization.spi.ProxyServices;
-import org.jboss.weld.servlet.api.ServletServices;
 import org.jboss.weld.transaction.spi.TransactionServices;
 import org.jboss.weld.validation.spi.ValidationServices;
 import org.jvnet.hk2.annotations.Inject;
@@ -108,15 +108,18 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
 
     /* package */ static final String WELD_BOOTSTRAP = "org.glassfish.weld.WeldBootstrap";
 
+    private static final String WELD_CONTEXT_LISTENER = "org.glassfish.weld.WeldContextListener";
     private static final String WELD_LISTENER = "org.jboss.weld.servlet.WeldListener";
     private static final String WELD_SHUTDOWN = "false";
-    private static char SEPARATOR_CHAR = '/';
-
+    
     @Inject
     private Events events;
 
     @Inject
     private Habitat habitat;
+
+    @Inject
+    private ApplicationRegistry applicationRegistry;
 
     private Map<Application, WeldBootstrap> appToBootstrap =
             new HashMap<Application, WeldBootstrap>();
@@ -158,8 +161,10 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
                 if (_logger.isLoggable(Level.FINE)) {
                     _logger.fine(deploymentImpl.toString());
                 }
+                //get Current TCL
+                ClassLoader oldTCL = Thread.currentThread().getContextClassLoader();
                 try {
-                    bootstrap.startContainer(Environments.SERVLET, deploymentImpl, new ConcurrentHashMapBeanStore());
+                    bootstrap.startContainer(Environments.SERVLET, deploymentImpl/*, new ConcurrentHashMapBeanStore()*/);
                     bootstrap.startInitialization();
                     fireProcessInjectionTargetEvents(bootstrap, deploymentImpl);
                     bootstrap.deployBeans();
@@ -167,6 +172,13 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
                     DeploymentException de = new DeploymentException(t.getMessage());
                     de.initCause(t);
                     throw(de);
+                } finally {
+                    //The TCL is originally the EAR classloader
+                    //and is reset during Bean deployment to the 
+                    //corresponding module classloader in BeanDeploymentArchiveImpl.getBeans
+                    //for Bean classloading to succeed. The TCL is reset
+                    //to its old value here.
+                    Thread.currentThread().setContextClassLoader(oldTCL);
                 }
             }
         } else if ( event.is(org.glassfish.internal.deployment.Deployment.APPLICATION_STARTED) ) {
@@ -206,7 +218,7 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
             }
             WeldBootstrap bootstrap = (WeldBootstrap)appInfo.getTransientAppMetaData(WELD_BOOTSTRAP, 
                 WeldBootstrap.class);
-            if (null != bootstrap) {
+            if (bootstrap != null) {
                 try {
                     bootstrap.shutdown();  
                 } catch(Exception e) {
@@ -216,7 +228,7 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
             }
             DeploymentImpl deploymentImpl = (DeploymentImpl)appInfo.getTransientAppMetaData(
                 WELD_DEPLOYMENT, DeploymentImpl.class);
-            if (null != deploymentImpl) {
+            if (deploymentImpl != null) {
                 deploymentImpl.cleanup();
             }
         }
@@ -232,12 +244,13 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
     private void fireProcessInjectionTargetEvents(WeldBootstrap bootstrap, DeploymentImpl impl) {
         List<BeanDeploymentArchive> bdaList = impl.getBeanDeploymentArchives();
         for(BeanDeploymentArchive bda : bdaList) {
-            Collection<Class<?>> bdaClasses = bda.getBeanClasses();
+            Collection<Class<?>> bdaClasses = ((BeanDeploymentArchiveImpl)bda).getBeanClassObjects();
             for(Class<?> bdaClazz: bdaClasses) {
                 for(Class<?> nonClazz : NON_CONTEXT_CLASSES) {
                     if (nonClazz.isAssignableFrom(bdaClazz)) {
                         AnnotatedType at = bootstrap.getManager(bda).createAnnotatedType(bdaClazz);
-                        bootstrap.getManager(bda).fireProcessInjectionTarget(at);
+                        InjectionTarget<?> it = bootstrap.getManager(bda).fireProcessInjectionTarget(at);
+                        ((BeanDeploymentArchiveImpl)bda).putInjectionTarget(at, it);
                     }
                 }
             }
@@ -281,6 +294,9 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
     @Override
     public WeldApplicationContainer load(WeldContainer container, DeploymentContext context) {
 
+        DeployCommandParameters deployParams = context.getCommandParameters(DeployCommandParameters.class);
+        ApplicationInfo appInfo = applicationRegistry.get(deployParams.name);
+
         ReadableArchive archive = context.getSource();
 
         // See if a WeldBootsrap has already been created - only want one per app.
@@ -291,6 +307,9 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
             bootstrap = new WeldBootstrap();
             Application app = context.getModuleMetaData(Application.class);
             appToBootstrap.put(app, bootstrap);
+            // Stash the WeldBootstrap instance, so we may access the WeldManager later..
+            context.addTransientAppMetaData(WELD_BOOTSTRAP, bootstrap);
+            appInfo.addTransientAppMetaData(WELD_BOOTSTRAP, bootstrap);
         }
 
         Set<EjbDescriptor> ejbs = new HashSet<EjbDescriptor>();
@@ -315,10 +334,6 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
             deploymentImpl = new DeploymentImpl(archive, ejbs, context);
 
             // Add services
-
-            ServletServices servletServices = new ServletServicesImpl(context);
-            deploymentImpl.getServices().add(ServletServices.class, servletServices);
-
             TransactionServices transactionServices = new TransactionServicesImpl(habitat);
             deploymentImpl.getServices().add(TransactionServices.class, transactionServices);
 
@@ -341,17 +356,20 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
         }
         
 
+        BeanDeploymentArchive bda = deploymentImpl.getBeanDeploymentArchiveForArchive(archive.getName());
+
         WebBundleDescriptor wDesc = context.getModuleMetaData(WebBundleDescriptor.class);
         if( wDesc != null) {
             wDesc.setExtensionProperty(WELD_EXTENSION, "true");
             // Add the Weld Listener if it does not already exist..
             wDesc.addAppListenerDescriptor(new AppListenerDescriptorImpl(WELD_LISTENER));
+            // Add Weld Context Listener - this listener will ensure the WeldELContextListener is used
+            // for JSP's..
+            wDesc.addAppListenerDescriptor(new AppListenerDescriptorImpl(WELD_CONTEXT_LISTENER));
         }
 
         BundleDescriptor bundle = (wDesc != null) ? wDesc : ejbBundle;
         if( bundle != null ) {
-
-            BeanDeploymentArchive bda = deploymentImpl.getBeanDeploymentArchiveForArchive(archive.getURI().getPath());
 
             // Register EE injection manager at the bean deployment archive level.
             // We use the generic InjectionService service to handle all EE-style
@@ -368,9 +386,10 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
         WeldApplicationContainer wbApp = new WeldApplicationContainer(bootstrap);
 
         // Stash the WeldBootstrap instance, so we may access the WeldManager later..
-        context.addTransientAppMetaData(WELD_BOOTSTRAP, bootstrap);
+        //context.addTransientAppMetaData(WELD_BOOTSTRAP, bootstrap);
 
         context.addTransientAppMetaData(WELD_DEPLOYMENT, deploymentImpl);
+        appInfo.addTransientAppMetaData(WELD_DEPLOYMENT, deploymentImpl);
 
         return wbApp; 
     }

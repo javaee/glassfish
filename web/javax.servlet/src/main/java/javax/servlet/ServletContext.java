@@ -939,7 +939,7 @@ public interface ServletContext {
      * ServletRegistration objects corresponding to all servlets that have
      * been added via one of the <tt>addServlet</tt> methods.
      *
-     * <p>Any changes to the returned Map must not affect this
+     * <p>If permitted, any changes to the returned Map must not affect this
      * ServletContext.
      *
      * @return Map of the (complete and preliminary) ServletRegistration

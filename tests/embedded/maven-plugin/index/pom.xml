@@ -41,20 +41,16 @@
 
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.glassfish.tests</groupId>
-        <artifactId>maven-plugin</artifactId>
-        <version>3.1-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
-    </parent>
-    
-    <groupId>org.glassfish</groupId>
+
+    <groupId>org.glassfish.tests.embedded.maven-plugin</groupId>
     <artifactId>index</artifactId>
     <packaging>pom</packaging>
     <version>3.1-SNAPSHOT</version>
-    
+    <name>Index Page Test (maven-plugin/index)</name>
+
     <build>
         <defaultGoal>install</defaultGoal>
         <testSourceDirectory>src/test/java</testSourceDirectory>
@@ -62,7 +58,7 @@
             <plugin>
                 <groupId>org.glassfish</groupId>
                 <artifactId>maven-embedded-glassfish-plugin</artifactId>
-		<version>${project.version}</version>
+                <version>${project.version}</version>
                 <configuration>
                     <serverID>embedded</serverID>
                 </configuration>
@@ -85,6 +81,14 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <skip>true</skip>
@@ -102,7 +106,7 @@
                 </executions>
             </plugin>
         </plugins>
-        
+
         <extensions>
             <extension>
                 <groupId>org.jvnet.wagon-svn</groupId>
@@ -129,7 +133,19 @@
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.3.1</version>
+        </dependency>
     </dependencies>
+
+    <repositories>
+        <repository>
+            <id>glassfish-releases</id>
+            <url>http://download.java.net/maven/glassfish</url>
+        </repository>
+    </repositories>
 
 </project>
 

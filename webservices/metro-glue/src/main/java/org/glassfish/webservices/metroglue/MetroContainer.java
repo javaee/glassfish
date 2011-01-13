@@ -48,11 +48,20 @@ import java.util.logging.Logger;
 import java.text.MessageFormat;
 
 import com.sun.enterprise.config.serverbeans.AvailabilityService;
+import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.deployment.WebServiceEndpoint;
+import com.sun.enterprise.transaction.api.JavaEETransactionManager;
+import com.sun.enterprise.transaction.api.RecoveryResourceRegistry;
+import com.sun.enterprise.transaction.spi.RecoveryEventListener;
+import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.io.FileUtils;
+import org.glassfish.grizzly.config.dom.NetworkListener;
 import com.sun.logging.LogDomains;
 import com.sun.xml.ws.api.ha.HighAvailabilityProvider;
+import com.sun.xml.ws.tx.dev.WSATRuntimeConfig;
+import com.sun.xml.wss.impl.config.SecurityConfigProvider;
 
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.container.Container;
@@ -65,6 +74,7 @@ import org.glassfish.internal.api.ServerContext;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.server.ServerEnvironmentImpl;
+
 import org.glassfish.webservices.WebServiceDeploymentListener;
 import org.glassfish.webservices.WebServicesDeployer;
 
@@ -74,6 +84,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Singleton;
+import org.jvnet.hk2.config.types.Property;
 
 /**
  * @author Marek Potociar
@@ -98,9 +109,15 @@ public class MetroContainer implements PostConstruct, Container, WebServiceDeplo
     @Inject
     private ServerEnvironmentImpl env;
     @Inject
+    private RecoveryResourceRegistry recoveryRegistry;
+    @Inject
+    JavaEETransactionManager txManager;    
+    @Inject
     GMSAdapterService gmsAdapterService;
     @Inject(optional = true)
     private AvailabilityService availabilityService;
+    @Inject
+    private SecurityService secService;
 
     @Override
     public void postConstruct() {
@@ -113,6 +130,13 @@ public class MetroContainer implements PostConstruct, Container, WebServiceDeplo
 
             HighAvailabilityProvider.INSTANCE.initHaEnvironment(clusterName, instanceName);
             logger.info("metro.ha.environemt.initialized");
+        }
+
+        Property prop = secService.getProperty("MAX_NONCE_AGE");
+        long mnAge ;
+        if(prop != null){
+           mnAge = Long.parseLong(prop.getValue());
+           SecurityConfigProvider.INSTANCE.init(mnAge);
         }
     }
 
@@ -131,6 +155,7 @@ public class MetroContainer implements PostConstruct, Container, WebServiceDeplo
         logger.finest("endpoint.event.deployed");
         if (!wstxServicesDeployed.get() && !wstxServicesDeploying.get()) {
             deployWsTxServices();
+            initializeWsTxRuntime();
         }
 
     }
@@ -244,5 +269,90 @@ public class MetroContainer implements PostConstruct, Container, WebServiceDeplo
 //        }
 
         return haEnabled;
+    }
+
+    /**
+     * Initialization of WS-TX runtime configuration
+     */
+    private void initializeWsTxRuntime() {
+        final String serverName = serverContext.getInstanceName();            
+        final Config config  = serverContext.getConfigBean().getConfig();
+        
+        final WSATRuntimeConfig.TxlogLocationProvider txlogLocationProvider = new WSATRuntimeConfig.TxlogLocationProvider() {
+            @Override
+            public String getTxLogLocation() {
+                return txManager.getTxLogLocation();
+            }                    
+        };
+                        
+        WSATRuntimeConfig.initializer()
+                .hostName(getHostName())
+                .httpPort(getHttpPort(false, serverName, config))
+                .httpsPort(getHttpPort(true, serverName, config))
+                .txLogLocation(txlogLocationProvider)
+                .done();
+        
+        final WSATRuntimeConfig.RecoveryEventListener metroListener = WSATRuntimeConfig.getInstance().new WSATRecoveryEventListener();
+        recoveryRegistry.addEventListener(new RecoveryEventListener() {
+
+            @Override
+            public void beforeRecovery(boolean delegated, String instance) {
+                metroListener.beforeRecovery(delegated, instance);
+            }
+
+            @Override
+            public void afterRecovery(boolean success, boolean delegated, String instance) {
+                metroListener.afterRecovery(success, delegated, instance);
+            }
+        });
+    }
+    
+    /**
+     * Lookup the canonical host name of the system this server instance is running on.
+     *
+     * @return the canonical host name or null if there was an error retrieving it
+     */
+    private String getHostName() {
+        // this value is calculated from InetAddress.getCanonicalHostName when the AS is
+        // installed.  asadmin then passes this value as a system property when the server
+        // is started.
+        return System.getProperty(SystemPropertyConstants.HOST_NAME_PROPERTY);
+    }    
+
+    /**
+     * Get the http/https port number for the default virtual server of this server instance.
+     * <p/>
+     * If the 'secure' parameter is true, then return the secure http listener port, otherwise
+     * return the non-secure http listener port.
+     *
+     * @param secure true if you want the secure port, false if you want the non-secure port
+     * @return the port or null if there was an error retrieving it.
+     */
+    private String getHttpPort(boolean secure, String serverName, Config config) {
+        try {
+            final String networkListeners = config.getHttpService().getVirtualServerByName(serverName).getNetworkListeners();
+            if (networkListeners == null || networkListeners.isEmpty()) {
+                return null;
+            }
+            
+            final String[] networkListenerNames = networkListeners.split(",");
+
+            for (String listenerName : networkListenerNames) {
+                if (listenerName == null || listenerName.isEmpty()) {
+                    continue;
+                }
+
+                NetworkListener listener = config.getNetworkConfig().getNetworkListener(listenerName.trim());
+
+                if (secure == Boolean.valueOf(listener.findHttpProtocol().getSecurityEnabled())) {
+                    return listener.getPort();
+                }
+            }
+        } catch (Throwable t) {
+            // error condition handled in wsit code
+            logger.log(Level.FINEST, "Exception occurred retrieving port configuration for WSTX service", t);
+        }
+
+        return null;
     }
 }

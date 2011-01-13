@@ -109,7 +109,7 @@ public class JPASniffer  extends GenericSniffer implements Sniffer {
 
     protected boolean scanForPURootsInLibDir(ReadableArchive parentArchive, String libLocation) {
         boolean puRootPresent = false;
-        if (libLocation != null && !libLocation.isEmpty()) { // if an application disables lib dir by specifyig <library-directory></library-directory>, do not attempt to scan lib dir 
+        if (libLocation != null && !libLocation.isEmpty()) { // if an application disables lib dir by specifying <library-directory></library-directory>, do not attempt to scan lib dir
             Enumeration<String> entries = parentArchive.entries(libLocation);
             while (entries.hasMoreElements() && !puRootPresent) {
                 String entryName = entries.nextElement();

@@ -68,6 +68,7 @@ import java.util.Collection;
 @ExecuteOn(value={RuntimeType.DAS})
 @Service(name="list-jdbc-resources")
 @Scoped(PerLookup.class)
+@CommandLock(CommandLock.LockType.NONE)
 @I18n("list.jdbc.resources")
 public class ListJdbcResources implements AdminCommand {
     

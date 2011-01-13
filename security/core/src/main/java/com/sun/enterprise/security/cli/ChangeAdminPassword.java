@@ -172,8 +172,8 @@ public class ChangeAdminPassword implements AdminCommand {
         // We have the right impl so let's get to updating existing user 
         FileRealm fr = null;
         try {
-            realmsManager.createRealms(securityService);
-            fr = (FileRealm) realmsManager.getFromLoadedRealms(fileAuthRealm.getName());
+            realmsManager.createRealms(config);
+            fr = (FileRealm) realmsManager.getFromLoadedRealms(config.getName(), fileAuthRealm.getName());
             if (fr == null) {
                 throw new NoSuchRealmException(fileAuthRealm.getName());
             }

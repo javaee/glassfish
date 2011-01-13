@@ -289,7 +289,7 @@ public class CreateJdbcResourceTest extends ConfigApiTest {
         assertEquals(1, numDupRes);
         
         // Check the error message
-        assertEquals("A resource named dupRes already exists.", context.getActionReport().getMessage());
+        assertEquals("A JdbcResource by name dupRes already exists with resource-ref in target server.", context.getActionReport().getMessage());
         logger.fine("msg: " + context.getActionReport().getMessage());
     }
     

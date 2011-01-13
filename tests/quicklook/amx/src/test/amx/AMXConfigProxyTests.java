@@ -532,7 +532,6 @@ public final class AMXConfigProxyTests extends AMXTestBase
         final AMXProxy child = javaConfig.createChild( type, params );
         assert child != null : "Can't create profiler, got null back!";
         final Profiler profiler = child.as(Profiler.class);
-        final String[] jvmOptions = profiler.getJvmOptions();
         
         final ObjectName removed = javaConfig.removeChild(type);
         assert javaConfig.child(type)  == null : "Failed to remove profiler, child still exists";

@@ -40,26 +40,27 @@
 
 package org.glassfish.weld;
 
-import com.sun.enterprise.deployment.deploy.shared.Util;
+import static org.glassfish.weld.WeldUtils.EXPANDED_JAR_SUFFIX;
+import static org.glassfish.weld.WeldUtils.EXPANDED_RAR_SUFFIX;
+import static org.glassfish.weld.WeldUtils.JAR_SUFFIX;
+import static org.glassfish.weld.WeldUtils.META_INF_BEANS_XML;
+import static org.glassfish.weld.WeldUtils.SEPARATOR_CHAR;
+import static org.glassfish.weld.WeldUtils.WEB_INF;
+import static org.glassfish.weld.WeldUtils.WEB_INF_BEANS_XML;
+import static org.glassfish.weld.WeldUtils.WEB_INF_LIB;
 
-import org.glassfish.internal.deployment.GenericSniffer;
+import java.io.IOException;
+import java.util.Enumeration;
+
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.deployment.common.DeploymentUtils;
+import org.glassfish.internal.deployment.GenericSniffer;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Singleton;
 
-import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-
-
 /**
  * Implementation of the Sniffer for Weld.
- *
  */
 @Service(name="weld")
 @Scoped(Singleton.class)
@@ -67,13 +68,6 @@ public class WeldSniffer extends GenericSniffer implements Sniffer {
 
     private static final String[] containers = { "org.glassfish.weld.WeldContainer" };
 
-    private static char SEPARATOR_CHAR = '/';
-    private static final String WEB_INF = "WEB-INF";
-    private static final String WEB_INF_LIB = WEB_INF + SEPARATOR_CHAR + "lib";
-    private static final String WEB_INF_BEANS_XML = "WEB-INF" + SEPARATOR_CHAR + "beans.xml";
-    private static final String META_INF_BEANS_XML = "META-INF" + SEPARATOR_CHAR + "beans.xml";
-    private static final String JAR_SUFFIX = ".jar";
-    private static final String EXPANDED_JAR_SUFFIX = "_jar";
 
     public WeldSniffer() {
         // We do not haGenericSniffer(String containerName, String appStigma, String urlPattern
@@ -93,9 +87,7 @@ public class WeldSniffer extends GenericSniffer implements Sniffer {
             isWeldArchive = isEntryPresent(archive, WEB_INF_BEANS_XML);
 
             if (!isWeldArchive) {
-
                 // Check jars under WEB_INF/lib
-
                 if (isEntryPresent(archive, WEB_INF_LIB)) {
                     isWeldArchive = scanLibDir(archive, WEB_INF_LIB); 
                 } 
@@ -115,6 +107,10 @@ public class WeldSniffer extends GenericSniffer implements Sniffer {
             isWeldArchive = true;
         }     
 
+        if (!isWeldArchive && archiveName != null && archiveName.endsWith(EXPANDED_RAR_SUFFIX)) {
+            isWeldArchive = isEntryPresent(archive, META_INF_BEANS_XML);
+        }
+        
         return isWeldArchive;
     }
 

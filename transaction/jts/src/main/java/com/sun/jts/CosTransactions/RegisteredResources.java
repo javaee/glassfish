@@ -584,13 +584,16 @@ class RegisteredResources {
                 // which raised the exception.
 
                 boolean hazard = exc instanceof HeuristicHazard;
-                if (exc instanceof HeuristicMixed || hazard) {
+                boolean internal = exc instanceof INTERNAL;
+                if (exc instanceof HeuristicMixed || hazard || internal) {
 
-                    // Mark the Resource which threw the exception as
-                    // heuristic so that we do not
-                    // try to roll it back, but we do send it a forget.
+                    if (!internal) {
+                        // Mark the Resource which threw the exception as
+                        // heuristic so that we do not
+                        // try to roll it back, but we do send it a forget.
 
-                    resourceStates.set(i,ResourceStatus.Heuristic);
+                        resourceStates.set(i,ResourceStatus.Heuristic);
+                    }
 
                     try {
                         distributeRollback(true);
@@ -607,11 +610,11 @@ class RegisteredResources {
                     // Now throw the appropriate exception.
 
                     if (hazard) {
-                        HeuristicHazard ex2 = new HeuristicHazard();
-                        throw ex2;
+                        throw (HeuristicHazard) exc;
+                    } else if (internal) {
+                        throw (INTERNAL) exc;
                     } else {
-                        HeuristicMixed ex2 = new HeuristicMixed();
-                        throw ex2;
+                        throw (HeuristicMixed) exc;
                     }
                 } else if (exc instanceof RuntimeException) {
                         rmErr = true;
@@ -728,6 +731,7 @@ class RegisteredResources {
 
         boolean heuristicException = false;
         boolean heuristicMixed = false;
+        int heuristicRollback = 0;
 
         // First, get the retry count.
 
@@ -803,12 +807,17 @@ class RegisteredResources {
                         exceptionThrown = false;
                     } catch (Throwable exc) {
 
-                        if (exc instanceof HeuristicCommit) {
+                        if (exc instanceof HeuristicCommit || 
+                            // Work around the fact that org.omg.CosTransactions.ResourceOperations#commit
+                            // does not declare HeuristicCommit exception
+                            (exc instanceof HeuristicHazard && exc.getCause() instanceof XAException && 
+                                ((XAException)exc.getCause()).errorCode == XAException.XA_HEURCOM)) {
 
                             // If the exception is Heuristic Commit, remember
                             // that a heuristic exception has been raised.
                             heuristicException = true;
                             heuristicRaised = true;
+                            heuristicMixed = true;
                             exceptionThrown = false;
 
                         } else if (exc instanceof HeuristicRollback ||
@@ -820,6 +829,9 @@ class RegisteredResources {
                             // damage has occurred.
 
                             heuristicException = true;
+                            if (exc instanceof HeuristicRollback) {
+                                heuristicRollback++;
+                            }
                             heuristicMixed = !(exc instanceof HeuristicHazard);
                             heuristicRaised = true;
                             exceptionThrown = false;
@@ -932,9 +944,11 @@ class RegisteredResources {
         // The browse is complete.
         // If a heuristic exception was raised, perform forget processing. This
         // will then throw the appropriate heuristic exception to the caller.
+        // Note that HeuristicHazard exception with be converted to the HeuristicRolledbackException
+        // by the caller
 
         if (heuristicException)
-          distributeForget(commitRetries, infiniteRetry, heuristicMixed);
+          distributeForget(commitRetries, infiniteRetry, (heuristicRollback == nRes) ? false : heuristicMixed);
 
         if (!transactionCompleted) {
             if (coord != null)
@@ -1062,9 +1076,8 @@ class RegisteredResources {
                             // If the exception is TRANSACTION_ROLLED back,
                             // then continue.
                             exceptionThrown = false;
-                        }
 
-                        if (exc instanceof HeuristicRollback) {
+                        } else if (exc instanceof HeuristicRollback) {
 
                             // If the exception is Heuristic Rollback,
                             // remember that a heuristic exception
@@ -1616,7 +1629,10 @@ class RegisteredResources {
                     		heuristicExceptionFlowForget = true;
                     		heuristicRaisedSetStatus = true;
                     		exceptionThrownTryAgain = false;
-                    		heuristicMixed = false;
+            			if ((e!= null) && (e.errorCode == XAException.XA_HEURMIX)) 
+                    		    heuristicMixed = true;
+                                else
+                    		    heuristicMixed = false;
 						}
 						//IASRI END 4722883
 		

@@ -824,7 +824,8 @@ public final class StandardServer
         if( oname==null ) {
             try {
                 oname=new ObjectName( "Catalina:type=Server");
-                Registry.getRegistry(null, null).registerComponent(this, oname, null );
+                // Do not register unused tomcat mbeans
+                //Registry.getRegistry(null, null).registerComponent(this, oname, null );
             } catch (Exception e) {
                 log.log(Level.SEVERE, "Error registering ",e);
             }

@@ -54,7 +54,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import java.io.File;
 
-import com.sun.scn.servicetags.SvcTag;
 
 public class ServiceTag implements RegistrationDescriptor {
     

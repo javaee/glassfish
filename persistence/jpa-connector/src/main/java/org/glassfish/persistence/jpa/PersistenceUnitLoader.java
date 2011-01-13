@@ -330,7 +330,9 @@ public class PersistenceUnitLoader {
                 // Migrate the application to use EclipseLink
 
                 String defaultProvider = PersistenceUnitInfoImpl.getDefaultprovider();
-                logger.info("Switching Persistence Unit '" + pud.getName() + "' to use " + defaultProvider + " as JPA provider");
+                if(logger.isLoggable(Level.INFO)) {
+                    logger.log(Level.INFO, "puloader.defaulting.provider.on.upgrade", new Object[] {pud.getName(), defaultProvider});
+                }
 
                 // Change the provider name
                 pud.setProvider(defaultProvider);

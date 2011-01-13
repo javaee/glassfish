@@ -41,15 +41,16 @@
 package org.glassfish.osgijpa;
 
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
-import static org.osgi.framework.Constants.BUNDLE_CLASSPATH;
 import org.glassfish.osgijpa.dd.PersistenceXMLReaderWriter;
 import org.glassfish.osgijpa.dd.Persistence;
 import org.glassfish.osgijavaeebase.BundleResource;
 import org.glassfish.osgijavaeebase.OSGiBundleArchive;
+import org.osgi.framework.BundleReference;
 
+import java.io.Serializable;
 import java.net.URL;
-import java.net.URI;
 import java.net.MalformedURLException;
 import java.util.*;
 import java.util.logging.Logger;
@@ -60,7 +61,7 @@ import java.io.IOException;
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
 */
-class JPABundleProcessor
+class JPABundleProcessor implements Serializable // we write it to a file, so it must be serializable
 {
     private static final Logger logger =
             Logger.getLogger(JPABundleProcessor.class.getPackage().getName());
@@ -74,13 +75,14 @@ class JPABundleProcessor
     // This is used to avoid updating infinitely
     public static final String STATICALLY_WEAVED = "GlassFish-StaticallyWeaved";
 
-    private Bundle b;
+    private long bundleId; // store the id so that we don't have a hard reference to bundle
 
     private List<Persistence> persistenceXMLs;
+    private static final long serialVersionUID = -1293408086392301220L;
 
     JPABundleProcessor(Bundle b)
     {
-        this.b = b;
+        this.bundleId = b.getBundleId();
     }
 
     boolean isJPABundle() {
@@ -94,7 +96,7 @@ class JPABundleProcessor
         assert(persistenceXMLs == null);
         persistenceXMLs = new ArrayList<Persistence>();
         if (isFragment()) return;
-        for (BundleResource r : new OSGiBundleArchive(b)) {
+        for (BundleResource r : new OSGiBundleArchive(getBundle())) {
             if (PXML_PATH.equals(r.getPath())) {
                 URL pxmlURL;
                 try {
@@ -136,18 +138,34 @@ class JPABundleProcessor
         return true;
     }
 
-    void enhance() throws BundleException, IOException
+    InputStream enhance() throws BundleException, IOException
     {
         JPAEnhancer enhancer = new EclipseLinkEnhancer();
-        InputStream enhancedStream = enhancer.enhance(b, persistenceXMLs);
-        b.update(enhancedStream);
+        InputStream enhancedStream = enhancer.enhance(getBundle(), persistenceXMLs);
+        return enhancedStream;
     }
 
     public boolean isEnhanced() {
-        return b.getHeaders().get(STATICALLY_WEAVED)!=null;
+        return getBundle().getHeaders().get(STATICALLY_WEAVED)!=null;
     }
 
     private boolean isFragment() {
-        return b.getHeaders().get(org.osgi.framework.Constants.FRAGMENT_HOST) != null;
+        return getBundle().getHeaders().get(org.osgi.framework.Constants.FRAGMENT_HOST) != null;
+    }
+
+    public Bundle getBundle() {
+        Bundle b = getBundleContext().getBundle(bundleId);
+        if (b == null) {
+            throw new RuntimeException("Bundle with id " + bundleId + " has already been uninstalled");
+        }
+        return b;
+    }
+
+    private BundleContext getBundleContext() {
+        return BundleReference.class.cast(getClass().getClassLoader()).getBundle().getBundleContext();
+    }
+
+    /* package */ long getBundleId() {
+        return bundleId;
     }
 }

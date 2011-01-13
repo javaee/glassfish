@@ -100,4 +100,10 @@ public class HandlerData {
         }
 	return null;
     }
+
+    void reset() {
+       httpReq = null;
+       inv = null;
+       ejbDelegate = null;
+    }
 }

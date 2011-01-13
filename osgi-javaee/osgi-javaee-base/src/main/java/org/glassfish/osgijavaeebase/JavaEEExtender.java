@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,9 +41,15 @@
 
 package org.glassfish.osgijavaeebase;
 
-import org.osgi.framework.*;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleEvent;
+import org.osgi.framework.ServiceRegistration;
+import org.osgi.util.tracker.BundleTracker;
+import org.osgi.util.tracker.BundleTrackerCustomizer;
 
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.Map;
+import java.util.concurrent.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -52,70 +58,53 @@ import java.util.logging.Logger;
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class JavaEEExtender implements Extender, SynchronousBundleListener {
+public class JavaEEExtender implements Extender {
     /*
      * Implementation Note: All methods are synchronized, because we don't allow the extender to stop while it
      * is deploying or undeploying something. Similarly, while it is being stopped, we don't want it to deploy
      * or undeploy something.
-     * This is a synchronous bundle listener because it listens to LAZY_ACTIVATION event.
+     * After receiving the event, it spwans a separate thread to carry out the task so that we don't
+     * spend long time in the synchronous event listener. More over, that can lead to deadlocks as observed
+     * in https://glassfish.dev.java.net/issues/show_bug.cgi?id=14313.
      */
 
-    // TODO(Sahoo): We should consider using a BundleTracker instead of event listener.
-
-    private OSGiContainer c;
+    private volatile OSGiContainer c;
     private static final Logger logger =
             Logger.getLogger(JavaEEExtender.class.getPackage().getName());
     private BundleContext context;
     private ServiceRegistration reg;
+    private BundleTracker tracker;
+    private ExecutorService executorService;
 
     public JavaEEExtender(BundleContext context) {
         this.context = context;
     }
 
     public synchronized void start() {
+        executorService = Executors.newSingleThreadExecutor();
         c = new OSGiContainer(context);
         c.init();
         reg = context.registerService(OSGiContainer.class.getName(), c, null);
-        context.addBundleListener(this);
+        tracker = new BundleTracker(context, Bundle.ACTIVE | Bundle.STARTING, new HybridBundleTrackerCustomizer());
+        tracker.open();
     }
 
     public synchronized void stop() {
         if (c == null) return;
-        context.removeBundleListener(this);
-        if (c != null) c.shutdown();
+        OSGiContainer tmp = c;
         c = null;
+        tmp.shutdown();
+        if (tracker != null) tracker.close();
+        tracker = null;
         reg.unregister();
         reg = null;
+        executorService.shutdownNow();
     }
 
-    public void bundleChanged(BundleEvent event) {
-        Bundle bundle = event.getBundle();
-        switch (event.getType()) {
-            case BundleEvent.STARTED:
-                // A bundle with LAZY_ACTIVATION policy can be started with eager activation policy unless
-                // START_ACTIVATION_POLICY is set in the options while calling bundle.start(int options).
-                // So, we can't rely on LAZY_ACTIVATION event alone to deploy a bundle with lazy activation policy.
-                // At the same time, if a bundle with lazy activation policy is indeed started lazily, then
-                // we would have deployed the bundle upon receiving the LAZY_ACTIVATION event in which case we must
-                // avoid duplicate deployment upon receiving STARTED event. Hopefully this explains why we check
-                // c.isDeployed(bundle).
-                if (!c.isDeployed(bundle)) {
-                    deploy(bundle);
-                }
-                break;
-            case BundleEvent.LAZY_ACTIVATION:
-                deploy(bundle);
-                break;
-            case BundleEvent.STOPPED:
-                undeploy(bundle);
-                break;
-        }
-    }
-
-    private synchronized void deploy(Bundle b) {
-        if (!isStarted()) return;
+    private synchronized OSGiApplicationInfo deploy(Bundle b) {
+        if (!isStarted()) return null;
         try {
-            c.deploy(b);
+            return c.deploy(b);
         }
         catch (Exception e) {
             logger.logp(Level.SEVERE, "JavaEEExtender", "deploy",
@@ -124,6 +113,7 @@ public class JavaEEExtender implements Extender, SynchronousBundleListener {
             logger.logp(Level.SEVERE, "JavaEEExtender", "deploy",
                     "Exception Stack Trace", e);
         }
+        return null;
     }
 
     private synchronized void undeploy(Bundle b) {
@@ -142,7 +132,63 @@ public class JavaEEExtender implements Extender, SynchronousBundleListener {
         }
     }
 
-    private synchronized boolean isStarted() {
+    private boolean isStarted() {
+        // This method is deliberately made non-synchronized, because it is called from tracker customizer
         return c!= null;
+    }
+
+    private class HybridBundleTrackerCustomizer implements BundleTrackerCustomizer {
+        private Map<Long, Future<OSGiApplicationInfo>> deploymentTasks =
+                new ConcurrentHashMap<Long, Future<OSGiApplicationInfo>>();
+
+        public Object addingBundle(final Bundle bundle, BundleEvent event) {
+            if (!isStarted()) return null;
+            final int state = bundle.getState();
+            if (isReady(event, state)) {
+                Future<OSGiApplicationInfo> future = executorService.submit(new Callable<OSGiApplicationInfo>() {
+                    @Override
+                    public OSGiApplicationInfo call() throws Exception {
+                        return deploy(bundle);
+                    }
+                });
+                deploymentTasks.put(bundle.getBundleId(), future);
+                return bundle;
+            }
+            return null;
+        }
+
+        /**
+         * Bundle is ready when its state is ACTIVE or, when a lazy activation policy is used, STARTING
+         * @param event
+         * @param state
+         * @return
+         */
+        private boolean isReady(BundleEvent event, int state) {
+            return state == Bundle.ACTIVE ||
+                    (state == Bundle.STARTING && (event != null && event.getType() == BundleEvent.LAZY_ACTIVATION));
+        }
+
+        public void modifiedBundle(Bundle bundle, BundleEvent event, Object object) {
+        }
+
+        public void removedBundle(final Bundle bundle, BundleEvent event, Object object) {
+            if (!isStarted()) return;
+            Future<OSGiApplicationInfo> deploymentTask = deploymentTasks.remove(bundle.getBundleId());
+            if (deploymentTask == null) {
+                // We have never seen this bundle before. Ideally we should never get here.
+                assert(false);
+                return;
+            }
+            try {
+                OSGiApplicationInfo deployedApp = deploymentTask.get();
+                if (deployedApp != null) {
+                    undeploy(bundle); // undeploy synchronously to avoid any deadlock. See GF issue #
+                }
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e); // TODO(Sahoo): Proper Exception Handling
+            } catch (ExecutionException e) {
+                logger.logp(Level.FINE, "JavaEEExtender$HybridBundleTrackerCustomizer", "removedBundle", "e = {0}", new Object[]{e});
+            }
+        }
     }
 }

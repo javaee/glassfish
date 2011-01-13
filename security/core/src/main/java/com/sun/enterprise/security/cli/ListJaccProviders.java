@@ -41,19 +41,20 @@
 package com.sun.enterprise.security.cli;
 
 import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.JaccProvider;
 import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
-import java.beans.PropertyVetoException;
 import java.util.List;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.CommandLock;
 import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.ServerEnvironment;
@@ -63,9 +64,6 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.SingleConfigCode;
-import org.jvnet.hk2.config.TransactionFailure;
 
 /**
  *Usage: list-jacc-providers
@@ -75,9 +73,11 @@ import org.jvnet.hk2.config.TransactionFailure;
  */
 @Service(name="list-jacc-providers")
 @Scoped(PerLookup.class)
+@CommandLock(CommandLock.LockType.NONE)
 @I18n("list.jacc.provider")
-@ExecuteOn({RuntimeType.DAS, RuntimeType.INSTANCE})
-@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER, CommandTarget.CONFIG})
+@ExecuteOn({RuntimeType.DAS})
+@TargetType({CommandTarget.DAS,CommandTarget.CLUSTERED_INSTANCE,
+CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER, CommandTarget.CONFIG})
 public class ListJaccProviders implements AdminCommand {
 
     final private static LocalStringManagerImpl localStrings =
@@ -89,21 +89,36 @@ public class ListJaccProviders implements AdminCommand {
 
     @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
     private Config config;
+
+    @Inject
+    private Configs configs;
+
     @Inject
     private Domain domain;
 
     @Override
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
-        Server targetServer = domain.getServerNamed(target);
-        if (targetServer != null) {
-            config = domain.getConfigNamed(targetServer.getConfigRef());
+         Config tmp = null;
+        try {
+            tmp = configs.getConfigByName(target);
+        } catch (Exception ex) {
         }
-        com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
-        if (cluster != null) {
-            config = domain.getConfigNamed(cluster.getConfigRef());
+
+        if (tmp != null) {
+            config = tmp;
         }
-        SecurityService securityService = config.getSecurityService();
+        if (tmp == null) {
+            Server targetServer = domain.getServerNamed(target);
+            if (targetServer != null) {
+                config = domain.getConfigNamed(targetServer.getConfigRef());
+            }
+            com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
+            if (cluster != null) {
+                config = domain.getConfigNamed(cluster.getConfigRef());
+            }
+        }
+        final SecurityService securityService = config.getSecurityService();
 
         List<JaccProvider> jaccProviders = securityService.getJaccProvider();
         JaccProvider jprov = null;

@@ -85,7 +85,7 @@ public interface FilterRegistration extends Registration {
      * Gets the currently available servlet name mappings
      * of the Filter represented by this <code>FilterRegistration</code>.
      *
-     * <p>Any changes to the returned <code>Collection</code> must not 
+     * <p>If permitted, any changes to the returned <code>Collection</code> must not 
      * affect this <code>FilterRegistration</code>.
      *
      * @return a (possibly empty) <code>Collection</code> of the currently
@@ -130,7 +130,7 @@ public interface FilterRegistration extends Registration {
      * Gets the currently available URL pattern mappings of the Filter
      * represented by this <code>FilterRegistration</code>.
      *
-     * <p>Any changes to the returned <code>Collection</code> must not 
+     * <p>If permitted, any changes to the returned <code>Collection</code> must not 
      * affect this <code>FilterRegistration</code>.
      *
      * @return a (possibly empty) <code>Collection</code> of the currently

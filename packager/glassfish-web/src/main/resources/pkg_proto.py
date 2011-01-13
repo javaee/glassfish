@@ -54,6 +54,7 @@ pkg = {
                       },
     "depends"       : { 
                         "pkg:/glassfish-common" : {"type" : "require" },
+                        "pkg:/glassfish-jcdi" : {"type" : "require" },
                       },
     "dirtrees"      : [ "glassfish" ],
     "licenses"      : {

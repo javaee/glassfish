@@ -84,7 +84,7 @@ public class TransactionServiceStatsProvider {
                 + "service." );
 
     private StringStatisticImpl state = new StringStatisticImpl("State", "String", 
-                "Indicates if the transaction service has been frozen");
+                "Indicates if the transaction service has been frozen.");
 
     private boolean isFrozen = false;
 

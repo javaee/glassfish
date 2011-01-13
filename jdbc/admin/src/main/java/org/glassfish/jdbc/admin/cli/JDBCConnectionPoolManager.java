@@ -41,10 +41,12 @@
 package org.glassfish.jdbc.admin.cli;
 
 import java.beans.PropertyVetoException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Properties;
 import java.util.Map;
 
+import com.sun.enterprise.config.serverbeans.*;
 import org.glassfish.api.I18n;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.config.ConfigSupport;
@@ -53,13 +55,6 @@ import org.jvnet.hk2.config.TransactionFailure;
 import org.jvnet.hk2.config.types.Property;
 import static org.glassfish.resource.common.ResourceConstants.*;
 import org.glassfish.resource.common.ResourceStatus;
-import com.sun.enterprise.config.serverbeans.JdbcConnectionPool;
-import com.sun.enterprise.config.serverbeans.JdbcResource;
-import com.sun.enterprise.config.serverbeans.Resource;
-import com.sun.enterprise.config.serverbeans.ResourcePool;
-import com.sun.enterprise.config.serverbeans.Resources;
-import com.sun.enterprise.config.serverbeans.Server;
-import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.admin.cli.resources.ResourceManager;
 
@@ -197,7 +192,9 @@ public class JDBCConnectionPoolManager implements ResourceManager {
             newResource.setTransactionIsolationLevel(isolationlevel);
         }
         newResource.setSteadyPoolSize(steadypoolsize);
-        newResource.setStatementTimeoutInSeconds(statementTimeout);
+        if(statementTimeout != null){
+            newResource.setStatementTimeoutInSeconds(statementTimeout);
+        }
         if (restype != null) {
             newResource.setResType(restype);
         }
@@ -205,10 +202,18 @@ public class JDBCConnectionPoolManager implements ResourceManager {
         newResource.setNonTransactionalConnections(nontransactionalconnections);
         newResource.setMaxWaitTimeInMillis(maxwait);
         newResource.setMaxPoolSize(maxpoolsize);
-        newResource.setMaxConnectionUsageCount(maxConnectionUsageCount);
-        newResource.setMatchConnections(matchConnections);
-        newResource.setLazyConnectionEnlistment(lazyConnectionEnlistment);
-        newResource.setLazyConnectionAssociation(lazyConnectionAssociation);
+        if(maxConnectionUsageCount != null){
+            newResource.setMaxConnectionUsageCount(maxConnectionUsageCount);
+        }
+        if(matchConnections != null){
+            newResource.setMatchConnections(matchConnections);
+        }
+        if(lazyConnectionEnlistment != null){
+            newResource.setLazyConnectionEnlistment(lazyConnectionEnlistment);
+        }
+        if(lazyConnectionAssociation != null){
+            newResource.setLazyConnectionAssociation(lazyConnectionAssociation);
+        }
         newResource.setIsIsolationLevelGuaranteed(isisolationguaranteed);
         newResource.setIsConnectionValidationRequired(isconnectvalidatereq);
         newResource.setIdleTimeoutInSeconds(idletimeout);
@@ -217,22 +222,42 @@ public class JDBCConnectionPoolManager implements ResourceManager {
             newResource.setDatasourceClassname(datasourceclassname);
         }
         newResource.setConnectionValidationMethod(validationmethod);
-        newResource.setConnectionLeakTimeoutInSeconds(connectionLeakTimeout);
-        newResource.setConnectionLeakReclaim(connectionLeakReclaim);
-        newResource.setConnectionCreationRetryIntervalInSeconds(connectionCreationRetryInterval);
-        newResource.setConnectionCreationRetryAttempts(connectionCreationRetryAttempts);
-        newResource.setAssociateWithThread(associateWithThread);
-        newResource.setAllowNonComponentCallers(allownoncomponentcallers);
-        newResource.setStatementCacheSize(statementcachesize);
+        if(connectionLeakTimeout != null){
+            newResource.setConnectionLeakTimeoutInSeconds(connectionLeakTimeout);
+        }
+        if(connectionLeakReclaim != null){
+            newResource.setConnectionLeakReclaim(connectionLeakReclaim);
+        }
+        if(connectionCreationRetryInterval != null){
+            newResource.setConnectionCreationRetryIntervalInSeconds(connectionCreationRetryInterval);
+        }
+        if(connectionCreationRetryAttempts != null){
+            newResource.setConnectionCreationRetryAttempts(connectionCreationRetryAttempts);
+        }
+        if(associateWithThread != null){
+            newResource.setAssociateWithThread(associateWithThread);
+        }
+        if(allownoncomponentcallers != null){
+            newResource.setAllowNonComponentCallers(allownoncomponentcallers);
+        }
+        if(statementcachesize != null){
+            newResource.setStatementCacheSize(statementcachesize);
+        }
         if (validationclassname != null) {
             newResource.setValidationClassname(validationclassname);
         }
-        newResource.setInitSql(initsql);
+        if(initsql != null){
+            newResource.setInitSql(initsql);
+        }
         if (sqltracelisteners != null) {
             newResource.setSqlTraceListeners(sqltracelisteners);
         }
-        newResource.setPooling(pooling);
-        newResource.setPing(ping);
+        if(pooling != null){
+            newResource.setPooling(pooling);
+        }
+        if(ping != null){
+            newResource.setPing(ping);
+        }
         if (driverclassname != null) {
             newResource.setDriverClassname(driverclassname);
         }
@@ -290,7 +315,7 @@ public class JDBCConnectionPoolManager implements ResourceManager {
         driverclassname = (String) attrList.get(DRIVER_CLASSNAME);
     }
 
-    public ResourceStatus delete(Server[] servers, final Resources resources, final String cascade,
+    public ResourceStatus delete(Server[] servers, Cluster[] clusters, final Resources resources, final String cascade,
                                  final String poolName) throws Exception {
 
         if (poolName == null) {
@@ -310,7 +335,7 @@ public class JDBCConnectionPoolManager implements ResourceManager {
 
             // if cascade=true delete all the resources associated with this pool 
             // if cascade=false don't delete this connection pool if a resource is referencing it
-            Object obj = deleteAssociatedResources(servers, resources,
+            Object obj = deleteAssociatedResources(servers, clusters, resources,
                     Boolean.parseBoolean(cascade), poolName);
             if (obj instanceof Integer &&
                     (Integer) obj == ResourceStatus.FAILURE) {
@@ -351,39 +376,46 @@ public class JDBCConnectionPoolManager implements ResourceManager {
         return resources.getResourceByName(JdbcConnectionPool.class, poolName) != null;
     }
 
-    private Object deleteAssociatedResources(final Server[] servers, Resources resources,
-                                             final boolean cascade, final String poolName) throws TransactionFailure {
-        return ConfigSupport.apply(new SingleConfigCode<Resources>() {
-            public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
-                Resource res = null;
-                for (Resource resource : param.getResources()) {
-                    if (resource instanceof JdbcResource) {
-                        if (((JdbcResource) resource).getPoolName().equals(poolName)) {
-                            if (cascade) {
-                                // delete resource-refs
-                                deleteResourceRefs(servers, ((JdbcResource) resource).getJndiName());
-                                res = resource;
-                                break;
-                            } else {
-                                return ResourceStatus.FAILURE;
-                            }
-                        }
+    private Object deleteAssociatedResources(final Server[] servers, final Cluster[] clusters, Resources resources,
+                                           final boolean cascade, final String poolName) throws TransactionFailure {
+        if (cascade) {
+            ConfigSupport.apply(new SingleConfigCode<Resources>() {
+                public Object run(Resources param) throws PropertyVetoException, TransactionFailure {
+                    Collection<BindableResource> referringResources = param.getResourcesOfPool(poolName);
+                    for (BindableResource referringResource : referringResources) {
+                        // delete resource-refs
+                        deleteResourceRefs(servers, referringResource.getJndiName());
+                        deleteResourceRefs(clusters, referringResource.getJndiName());
+                        // remove the resource
+                        param.getResources().remove(referringResource);
                     }
+                    return true; //no-op
                 }
-                // delete jdbc-resource
-                if (res != null) {
-                    param.getResources().remove(res);
-                }
-                return null;
+            }, resources);
+        }else{
+            Collection<BindableResource> referringResources = resources.getResourcesOfPool(poolName);
+            if(referringResources.size() > 0){
+                return ResourceStatus.FAILURE;
             }
-        }, resources);
-
+        }
+        return true; //no-op
     }
 
     private void deleteResourceRefs(Server[] servers, final String refName)
             throws TransactionFailure {
-        for (Server server : servers) {
-            server.deleteResourceRef(refName);
+        if(servers != null){
+            for (Server server : servers) {
+                server.deleteResourceRef(refName);
+            }
+        }
+    }
+
+    private void deleteResourceRefs(Cluster[] clusters, final String refName)
+            throws TransactionFailure {
+        if(clusters != null){
+            for (Cluster cluster : clusters) {
+                cluster.deleteResourceRef(refName);
+            }
         }
     }
 

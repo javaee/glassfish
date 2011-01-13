@@ -60,6 +60,11 @@
             <name>Roger Kitain</name>
             <organization>Sun Microsystems, Inc.</organization>
         </developer>
+         <developer>
+            <id>sivakumart</id>
+            <name>Sivakumar Thyagarajan</name>
+            <organization>Sun Microsystems, Inc.</organization>
+        </developer>
     </developers>
     <build>
         <resources>

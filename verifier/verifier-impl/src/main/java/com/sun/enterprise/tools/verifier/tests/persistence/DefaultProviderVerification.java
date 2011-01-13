@@ -115,12 +115,15 @@ public class DefaultProviderVerification extends VerifierTest
         } catch (ValidationException ve) {
             addErrorDetails(result, getVerifierContext().getComponentNameConstructor());
             result.failed(ve.getMessage());
+            logger.logp(Level.FINE, "DefaultProviderVerification", "check", "Following exception occurred", ve);
         } catch(DatabaseException de) {
             addErrorDetails(result, getVerifierContext().getComponentNameConstructor());
             result.failed(de.getMessage());
+            logger.logp(Level.FINE, "DefaultProviderVerification", "check", "Following exception occurred", de);
         } catch(PersistenceException pe) {
             addErrorDetails(result, getVerifierContext().getComponentNameConstructor());
             result.failed(pe.getMessage());
+            logger.logp(Level.FINE, "DefaultProviderVerification", "check", "Following exception occurred", pe);
         } finally {
             if(emf != null) {
                 emf.close();

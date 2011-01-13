@@ -140,9 +140,13 @@ public class DescriptorFactory
                 context.setSource(archive);
             }
 
+            context.addTransientAppMetaData(ExtendedDeploymentContext.IS_TEMP_CLASSLOADER, Boolean.TRUE); // issue 14564
             ClassLoader cl = archiveHandler.getClassLoader(parentCl, context);
             Archivist archivist = archivistFactory.getArchivist(
                 archive, cl);
+            if (archivist == null) {
+                throw new IOException("Cannot determine the Java EE module type for " + archive.getURI());
+            }
             archivist.setAnnotationProcessingRequested(true);
             String xmlValidationLevel = dasConfig.getDeployXmlValidation();
             archivist.setXMLValidationLevel(xmlValidationLevel);

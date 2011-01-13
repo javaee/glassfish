@@ -42,6 +42,8 @@
 # classes from these packages need to be visible to generated *ConcreteImpl classes. 
 # com.sun.jdo.spi.persistence.support.ejb.codegen.CMPDeployerImpl is referred from EJBDeployer. However, the package need
 # not be exported because the class is looked up through habitat which uses bundle.loadClass() bypassing OSGI 
+# com.sun.jdo.spi.persistence.support.ejb.ejbqlc is needed by verifier.
 -exportcontents: \
 	com.sun.jdo.spi.persistence.support.ejb.ejbc; \
+        com.sun.jdo.spi.persistence.support.ejb.ejbqlc; \
 	com.sun.jdo.spi.persistence.support.ejb.cmp; version=${project.osgi.version}

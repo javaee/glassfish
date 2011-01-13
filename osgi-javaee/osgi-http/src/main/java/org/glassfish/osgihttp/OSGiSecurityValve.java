@@ -40,15 +40,18 @@
 
 package org.glassfish.osgihttp;
 
+import org.apache.catalina.HttpRequest;
 import org.apache.catalina.Request;
 import org.apache.catalina.Response;
 import org.apache.catalina.valves.ValveBase;
+import org.glassfish.security.common.PrincipalImpl;
 import org.osgi.service.http.HttpContext;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.security.Principal;
 
 /**
  * This valve is used to implement security in OSGi/HTTP service.
@@ -65,11 +68,33 @@ public class OSGiSecurityValve extends ValveBase {
     public int invoke(Request request, Response response) throws IOException, ServletException {
         if (httpContext.handleSecurity(HttpServletRequest.class.cast(request),
                 HttpServletResponse.class.cast(response))) {
+
+            // Issue #13283: If user has set username and auth type, we need to map it to appropriate catalina apis
+            // so that HttpServletRequest.getRemoteUser() and getAuthenticationType() will return appropriate values.
+            mapUser((HttpRequest) request);
+            mapAuthType((HttpRequest) request);
+
             return INVOKE_NEXT;
         } else {
 //            HttpServletResponse.class.cast(response).sendError(
 //                    HttpServletResponse.SC_FORBIDDEN);
             return END_PIPELINE;
+        }
+
+    }
+
+    private void mapAuthType(HttpRequest httpRequest) {
+        String authType = (String) httpRequest.getRequest().getAttribute(HttpContext.AUTHENTICATION_TYPE);
+        if (authType != null) {
+            httpRequest.setAuthType(authType);
+        }
+    }
+
+    private void mapUser(HttpRequest httpRequest) {
+        String userName = (String) httpRequest.getRequest().getAttribute(HttpContext.REMOTE_USER);
+        if (userName != null) {
+            Principal principal = new PrincipalImpl(userName);
+            httpRequest.setUserPrincipal(principal);
         }
     }
 }

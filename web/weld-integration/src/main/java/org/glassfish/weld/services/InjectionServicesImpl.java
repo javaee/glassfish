@@ -40,22 +40,19 @@
 
 package org.glassfish.weld.services;
 
-import org.jboss.weld.injection.spi.InjectionServices;
-import org.jboss.weld.injection.spi.InjectionContext;
-
-import org.glassfish.internal.api.Globals;
 import org.glassfish.ejb.api.EjbContainerServices;
+import org.glassfish.internal.api.Globals;
+import org.jboss.weld.injection.spi.InjectionContext;
+import org.jboss.weld.injection.spi.InjectionServices;
 import org.jvnet.hk2.component.Habitat;
 
-import com.sun.enterprise.container.common.spi.util.InjectionManager;
-import com.sun.enterprise.container.common.spi.util.InjectionException;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
-import com.sun.enterprise.deployment.JndiNameEnvironment;
-
+import com.sun.enterprise.container.common.spi.util.InjectionException;
+import com.sun.enterprise.container.common.spi.util.InjectionManager;
 import com.sun.enterprise.deployment.BundleDescriptor;
-import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.EjbBundleDescriptor;
-import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.deployment.EjbDescriptor;
+import com.sun.enterprise.deployment.JndiNameEnvironment;
 import com.sun.enterprise.deployment.ManagedBeanDescriptor;
 
 
@@ -92,7 +89,10 @@ public class InjectionServicesImpl implements InjectionServices {
             String targetClass = target.getClass().getName();
 
             if( componentEnv == null ) {
-                throw new IllegalStateException("No valid EE environment for injection of " + targetClass);
+                //throw new IllegalStateException("No valid EE environment for injection of " + targetClass);
+                System.err.println("No valid EE environment for injection of " + targetClass);
+                injectionContext.proceed();
+                return; 
             }
 
             // Perform EE-style injection on the target.  Skip PostConstruct since
@@ -145,5 +145,3 @@ public class InjectionServicesImpl implements InjectionServices {
     }
   
 }
-
-

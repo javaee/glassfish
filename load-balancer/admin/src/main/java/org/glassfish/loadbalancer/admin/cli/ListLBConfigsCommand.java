@@ -74,6 +74,7 @@ import org.glassfish.api.admin.*;
  */
 @Service(name = "list-http-lb-configs")
 @Scoped(PerLookup.class)
+@CommandLock(CommandLock.LockType.NONE)
 @org.glassfish.api.admin.ExecuteOn(RuntimeType.DAS)
 public final class ListLBConfigsCommand implements AdminCommand {
 

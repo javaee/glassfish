@@ -78,13 +78,21 @@
         <dependency>
             <groupId>com.sun.enterprise</groupId>
             <artifactId>hk2</artifactId>
+            <version>${hk2.version}</version>
+        </dependency>
+         <dependency>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>web-glue</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.sun.faces</groupId>
+            <scope>provided</scope>
             <artifactId>jsf-api</artifactId>
         </dependency>
         <dependency>
             <groupId>com.sun.faces</groupId>
+            <scope>provided</scope>
             <artifactId>jsf-impl</artifactId>
         </dependency>
         <dependency>

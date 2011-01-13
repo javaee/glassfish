@@ -41,9 +41,9 @@
 package org.glassfish.tests.embedded.utils;
 
 import org.junit.Assert;
-import org.glassfish.api.embedded.EmbeddedFileSystem;
-import org.glassfish.api.embedded.Server;
-import org.glassfish.api.embedded.LifecycleException;
+import org.glassfish.internal.embedded.LifecycleException;
+import org.glassfish.internal.embedded.EmbeddedFileSystem;
+import org.glassfish.internal.embedded.Server;
 
 import java.io.File;
 

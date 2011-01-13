@@ -46,6 +46,7 @@ import java.util.*;
 import static org.glassfish.resource.common.ResourceConstants.*;
 
 import com.sun.enterprise.config.serverbeans.*;
+import org.glassfish.admin.cli.resources.BindableResourcesHelper;
 import org.glassfish.admin.cli.resources.ResourceUtil;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.ServerEnvironment;
@@ -91,6 +92,9 @@ public class JDBCResourceManager implements ResourceManager {
     @Inject
     private ServerEnvironment environment;
 
+    @Inject
+    private BindableResourcesHelper resourcesHelper;
+
     public String getResourceType () {
         return ServerTags.JDBC_RESOURCE;
     }
@@ -100,7 +104,7 @@ public class JDBCResourceManager implements ResourceManager {
 
         setAttributes(attributes, target);
 
-        ResourceStatus validationStatus = isValid(resources);
+        ResourceStatus validationStatus = isValid(resources, true, target);
         if(validationStatus.getStatus() == ResourceStatus.FAILURE){
             return validationStatus;
         }
@@ -127,20 +131,22 @@ public class JDBCResourceManager implements ResourceManager {
         return new ResourceStatus(ResourceStatus.SUCCESS, msg);
     }
 
-    private ResourceStatus isValid(Resources resources){
+    private ResourceStatus isValid(Resources resources, boolean validateResourceRef, String target){
         ResourceStatus status = new ResourceStatus(ResourceStatus.SUCCESS, "Validation Successful");
+
+
         if (jndiName == null) {
             String msg = localStrings.getLocalString("create.jdbc.resource.noJndiName",
                             "No JNDI name defined for JDBC resource.");
             return new ResourceStatus(ResourceStatus.FAILURE, msg);
         }
-        // ensure we don't already have one of this name
-        if (resources.getResourceByName(BindableResource.class, jndiName) != null) {
-            String msg = localStrings.getLocalString("create.jdbc.resource.duplicate",
-                    "A resource named {0} already exists.", jndiName);
-            return  new ResourceStatus(ResourceStatus.FAILURE, msg, true);
-        }
 
+        status = resourcesHelper.validateBindableResourceForDuplicates(resources, jndiName, validateResourceRef,
+                target, JdbcResource.class);
+        if(status.getStatus() == ResourceStatus.FAILURE){
+            return status;
+        }
+        
         if(resources.getResourceByName(ResourcePool.class, poolName) == null){
             String msg = localStrings.getLocalString("create.jdbc.resource.connPoolNotFound",
                 "Attribute value (pool-name = {0}) is not found in list of jdbc connection pools.", poolName);
@@ -195,7 +201,7 @@ public class JDBCResourceManager implements ResourceManager {
         if(!validate){
             status = new ResourceStatus(ResourceStatus.SUCCESS,"");
         }else{
-            status = isValid(resources);
+            status = isValid(resources, false, null);
         }
         if(status.getStatus() == ResourceStatus.SUCCESS){
             return createConfigBean(resources, properties);

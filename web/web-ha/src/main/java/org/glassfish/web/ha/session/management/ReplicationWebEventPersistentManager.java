@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -138,7 +138,9 @@ public class ReplicationWebEventPersistentManager extends ReplicationManagerBase
     /** Creates a new instance of ReplicationWebEventPersistentManager */
     public ReplicationWebEventPersistentManager() {
         super();
-        _logger.info("ReplicationWebEventPersistentManager created");
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.fine("ReplicationWebEventPersistentManager created");
+        }
     }
     
     /**
@@ -268,7 +270,9 @@ public class ReplicationWebEventPersistentManager extends ReplicationManagerBase
 
     @Override
     public <T extends Serializable> void  createBackingStore(String persistenceType, String storeName, Class<T> metadataClass, HashMap vendorMap) {
-        _logger.info("Create backing store invoked with persistence type " + persistenceType + " and store name " + storeName);
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.fine("Create backing store invoked with persistence type " + persistenceType + " and store name " + storeName);
+        }
         BackingStoreFactory factory = habitat.getComponent(BackingStoreFactory.class, persistenceType);
         BackingStoreConfiguration<String, T> conf = new BackingStoreConfiguration<String, T>();
 
@@ -280,13 +284,16 @@ public class ReplicationWebEventPersistentManager extends ReplicationManagerBase
                 .setClusterName(clusterName)
                 .setInstanceName(instanceName)
                 .setStoreType(persistenceType)
-                .setKeyClazz(String.class).setValueClazz(metadataClass);
+                .setKeyClazz(String.class).setValueClazz(metadataClass)
+                .setClassLoader(this.getClass().getClassLoader());
         if (vendorMap != null) {
             conf.getVendorSpecificSettings().putAll(vendorMap);
         }
 
         try {
-            _logger.info("About to create backing store " + conf);
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.fine("About to create backing store " + conf);
+            }
             this.backingStore = factory.createBackingStore(conf);
         } catch (BackingStoreException e) {
             _logger.log(Level.WARNING, "Could not create backing store", e);  

@@ -63,6 +63,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.spi.PersistenceUnitInfo;
 import javax.persistence.spi.PersistenceProvider;
 
+import javax.persistence.spi.PersistenceUnitTransactionType;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.Statement;
@@ -216,7 +217,12 @@ public class JPAJava2DBProcessor {
         helper.setCreateTablesValue(userCreateTables && !ddlMode.equals(DDL_SQL_SCRIPT_GENERATION), 
                 bundle.getName());
 
-        helper.setJndiName(bundle.getJtaDataSource(), bundle.getName());
+
+        // For a RESOURCE_LOCAL, managed pu, only non-jta-data-source should be specified.
+        String dataSourceName =
+                (PersistenceUnitTransactionType.JTA == PersistenceUnitTransactionType.valueOf(bundle.getTransactionType()) )?
+                        bundle.getJtaDataSource() : bundle.getNonJtaDataSource();
+        helper.setJndiName(dataSourceName, bundle.getName());
         constructJdbcFileNames(bundle);
         if (logger.isLoggable(Level.FINE)) {
             logger.fine("Processing request to create files - create file: " + //NOI18N

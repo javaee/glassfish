@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.IiopListener;
 import com.sun.enterprise.config.serverbeans.IiopService;
@@ -103,7 +104,7 @@ public class IIOPUtils implements PostConstruct {
         if( processEnv.getProcessType().isServer()) {
 
             iiopService = habitat.getComponent(IiopService.class);
-            final Collection<ThreadPool> threadPool = habitat.getAllByContract(ThreadPool.class);
+            final Collection<ThreadPool> threadPool = iiopService.getParent(Config.class).getThreadPools().getThreadPool();
             final Collection<NetworkListener> listeners = habitat.getAllByContract(NetworkListener.class);
             final Set<String> names = new TreeSet<String>();
             threadPools = new ArrayList<ThreadPool>();

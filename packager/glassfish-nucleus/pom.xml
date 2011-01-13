@@ -95,6 +95,11 @@
            <artifactId>api-exporter</artifactId>
            <version>${project.version}</version>
        </dependency>
+        <dependency>
+           <groupId>org.glassfish.core</groupId>
+           <artifactId>api-exporter-fragment</artifactId>
+           <version>${project.version}</version>
+       </dependency>
        <dependency>
            <groupId>org.glassfish.core</groupId>
            <artifactId>glassfish</artifactId>

@@ -60,6 +60,7 @@ import com.sun.enterprise.util.zip.ZipFile;
 import com.sun.enterprise.util.zip.ZipFileException;
 import com.sun.logging.LogDomains;
 import org.glassfish.internal.api.Globals;
+import org.glassfish.internal.api.RelativePathResolver;
 import org.glassfish.internal.api.ServerContext;
 import org.jvnet.hk2.config.types.Property;
 
@@ -461,5 +462,17 @@ public class JmsRaUtil {
         if (sp != null) return sp.getValue();
 
         return null;
+    }
+
+    public static String getUnAliasedPwd(String alias){
+        try{
+            String unalisedPwd = RelativePathResolver.getRealPasswordFromAlias(alias);
+            if (unalisedPwd != null && "".equals(unalisedPwd));
+               return unalisedPwd;
+
+        }catch(Exception e){
+
+        }
+         return alias;
     }
 }

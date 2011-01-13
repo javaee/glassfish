@@ -45,18 +45,18 @@ import java.io.File;
 import java.net.URL;
 
 /**
- * Class that is used for configuring EmbeddedWebContainer instances.
+ * Class that is used for configuring WebContainer instances.
  *
- * @see org.glassfish.embeddable.web.EmbeddedWebContainer
+ * @see org.glassfish.embeddable.web.WebContainer
  */
 public class WebContainerConfig {
 
 
     private URL defaultWebXml;
     private File docRoot;
-    private String[] hostNames = new String[] {"localhost"};
+    private String hostNames = "${com.sun.aas.hostName}";
     private String  listenerName = "embedded-listener";
-    private boolean listings;
+    private boolean listings = false;
     private int port = 8080;    
     private String virtualServerId = "server";
 
@@ -101,9 +101,9 @@ public class WebContainerConfig {
      * Sets the host names of the default <tt>VirtualServer</tt>
      * (default: <i>localhost</i>).
      *
-     * @param hostNames the host names of the default <tt>VirtualServer</tt>
+     * @param hostNames the host names of the default <tt>VirtualServer</tt> seprated by commas.
      */
-    public void setHostNames(String... hostNames) {
+    public void setHostNames(String hostNames) {
         this.hostNames = hostNames;
     }
 
@@ -113,7 +113,7 @@ public class WebContainerConfig {
      *
      * @return the host names of the default <tt>VirtualServer</tt>
      */
-    public String[] getHostNames() {
+    public String getHostNames() {
         return hostNames;
     }
 

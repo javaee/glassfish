@@ -55,6 +55,7 @@ import org.jvnet.hk2.config.types.Property;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.config.serverbeans.AuthRealm;
+import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.security.auth.realm.file.FileRealm;
 import com.sun.enterprise.security.auth.realm.NoSuchRealmException;
@@ -62,12 +63,12 @@ import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.security.auth.realm.RealmsManager;
 import com.sun.enterprise.util.SystemPropertyConstants;
+import java.io.File;
 import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.config.support.CommandTarget;
 import org.glassfish.config.support.TargetType;
-import org.jvnet.hk2.component.PostConstruct;
 
 /**
  * Update File User Command
@@ -85,7 +86,7 @@ import org.jvnet.hk2.component.PostConstruct;
 @Scoped(PerLookup.class)
 @I18n("update.file.user")
 @ExecuteOn({RuntimeType.DAS, RuntimeType.INSTANCE})
-@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER})
+@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER, CommandTarget.CONFIG})
 public class UpdateFileUser implements AdminCommand {
     
     final private static LocalStringManagerImpl localStrings = 
@@ -112,6 +113,10 @@ public class UpdateFileUser implements AdminCommand {
 
     @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
     private Config config;
+
+    @Inject
+    private Configs configs;
+
     @Inject
     private Domain domain;
     @Inject
@@ -127,13 +132,24 @@ public class UpdateFileUser implements AdminCommand {
         
         final ActionReport report = context.getActionReport();
 
-        Server targetServer = domain.getServerNamed(target);
-        if (targetServer!=null) {
-            config = domain.getConfigNamed(targetServer.getConfigRef());
+        Config tmp = null;
+        try {
+            tmp = configs.getConfigByName(target);
+        } catch (Exception ex) {
         }
-        com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
-        if (cluster!=null) {
-            config = domain.getConfigNamed(cluster.getConfigRef());
+
+        if (tmp != null) {
+            config = tmp;
+        }
+        if (tmp == null) {
+            Server targetServer = domain.getServerNamed(target);
+            if (targetServer != null) {
+                config = domain.getConfigNamed(targetServer.getConfigRef());
+            }
+            com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
+            if (cluster != null) {
+                config = domain.getConfigNamed(cluster.getConfigRef());
+            }
         }
         final SecurityService securityService = config.getSecurityService();
 
@@ -185,6 +201,15 @@ public class UpdateFileUser implements AdminCommand {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;                                            
         }
+        boolean exists = (new File(keyFile)).exists();
+        if (!exists) {
+            report.setMessage(
+                localStrings.getLocalString("file.realm.keyfilenonexistent",
+                "The specified physical file {0} associated with the file realm {1} does not exist.",
+                new Object[]{keyFile, authRealmName}));
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
+        }
         
         // Now get all inputs ready. userid and groups are straightforward but
         // password is tricky. It is stored in the file passwordfile passed 
@@ -207,8 +232,8 @@ public class UpdateFileUser implements AdminCommand {
         //TODO: check and enclose the code below inside ConfigSupport.apply(...)
         FileRealm fr = null;
         try {
-            realmsManager.createRealms(securityService);
-            fr = (FileRealm) realmsManager.getFromLoadedRealms(authRealmName);
+            realmsManager.createRealms(config);
+            fr = (FileRealm) realmsManager.getFromLoadedRealms(config.getName(),authRealmName);
             if (fr == null) {
                 throw new NoSuchRealmException(authRealmName);
             }

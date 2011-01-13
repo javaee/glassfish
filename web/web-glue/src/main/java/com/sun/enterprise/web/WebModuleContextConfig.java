@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,6 +40,8 @@
 
 package com.sun.enterprise.web;
 
+import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.runtime.common.DefaultResourcePrincipal;
@@ -48,12 +50,14 @@ import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 import com.sun.enterprise.deployment.web.ContextParameter;
 import com.sun.logging.LogDomains;
 import org.apache.catalina.*;
+import org.apache.catalina.authenticator.DigestAuthenticator;
 import org.apache.catalina.core.ContainerBase;
 import org.apache.catalina.deploy.ApplicationParameter;
 import org.apache.catalina.deploy.ContextEnvironment;
 import org.apache.catalina.deploy.ContextResource;
 import org.apache.catalina.deploy.LoginConfig;
 import org.apache.catalina.startup.ContextConfig;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.web.valve.GlassFishValve;
 import org.jvnet.hk2.component.Habitat;
 
@@ -73,6 +77,7 @@ import java.util.logging.Logger;
 
 public class WebModuleContextConfig extends ContextConfig {
 
+    private static final String DEFAULT_DIGEST_ALGORITHM = "default-digest-algorithm";
     private static final Logger logger = LogDomains.getLogger(
         WebModuleContextConfig.class, LogDomains.WEB_LOGGER);
     
@@ -264,13 +269,26 @@ public class WebModuleContextConfig extends ContextConfig {
                 throw new LifecycleException(ne);
             }
         }
-        
-        TomcatDeploymentConfig.configureWebModule(
-            (WebModule)context, webBundleDescriptor);
-        authenticatorConfig();
-        managerConfig();
 
-        context.setConfigured(true);
+        try {
+            TomcatDeploymentConfig.configureWebModule(
+                (WebModule)context, webBundleDescriptor);
+            authenticatorConfig();
+            managerConfig();
+
+            context.setConfigured(true);
+        } catch(Throwable t) {
+            // clean up naming in case of errors
+            unbindFromComponentNamespace(namingMgr);
+
+            if (t instanceof RuntimeException) {
+                throw (RuntimeException)t;
+            } else if (t instanceof LifecycleException) {
+                throw (LifecycleException)t;
+            } else {
+                throw new LifecycleException(t);
+            }
+        }
     }
     
     
@@ -392,6 +410,18 @@ public class WebModuleContextConfig extends ContextConfig {
                 }
             }
         }
+
+        if (authenticator instanceof DigestAuthenticator) {
+            Config config = habitat.getComponent(Config.class, ServerEnvironment.DEFAULT_INSTANCE_NAME);
+            SecurityService securityService = config.getSecurityService();
+            String digestAlgorithm = null;
+            if (securityService != null) {
+                digestAlgorithm = securityService.getPropertyValue(DEFAULT_DIGEST_ALGORITHM);
+            }
+            if (digestAlgorithm != null) {
+                ((DigestAuthenticator)authenticator).setAlgorithm(digestAlgorithm);
+            }
+        }
     }
     
     
@@ -411,19 +441,23 @@ public class WebModuleContextConfig extends ContextConfig {
     protected synchronized void stop() {
         
         super.stop();
+        ComponentEnvManager namingMgr = habitat.getComponent(
+            com.sun.enterprise.container.common.spi.util.ComponentEnvManager.class);
+        unbindFromComponentNamespace(namingMgr);
 
-        try {
-            ComponentEnvManager namingMgr = habitat.getComponent(
-                com.sun.enterprise.container.common.spi.util.ComponentEnvManager.class);
-            if (namingMgr!=null) {
+    }
+
+    private void unbindFromComponentNamespace(ComponentEnvManager namingMgr) {
+        if (namingMgr != null) {
+            try {
                 namingMgr.unbindFromComponentNamespace(webBundleDescriptor);
-            }
-        } catch (javax.naming.NamingException ex) {
-            String msg = rb.getString(
-                "webModuleContextConfig.unbindNamespaceError");
-            msg = MessageFormat.format(msg, context.getName());
-            logger.log(Level.WARNING, msg, ex);
-        }        
+            } catch (javax.naming.NamingException ex) {
+                String msg = rb.getString(
+                    "webModuleContextConfig.unbindNamespaceError");
+                msg = MessageFormat.format(msg, context.getName());
+                logger.log(Level.WARNING, msg, ex);
+            }        
+        }
     }
 
 

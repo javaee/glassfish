@@ -125,6 +125,7 @@ public class JavaEETransactionManagerJTSDelegate
     private final static ReadWriteLock lock = new ReadWriteLock();
     private static JavaEETransactionManagerJTSDelegate instance = null;
     private volatile TransactionManager transactionManagerImpl = null;
+    private TransactionService txnService = null;
 
     public JavaEETransactionManagerJTSDelegate() {
         globalTransactions = new Hashtable();
@@ -403,6 +404,10 @@ public class JavaEETransactionManagerJTSDelegate
         return jtsTx;
     }
 
+    public void initRecovery(boolean force) {
+        TransactionServiceProperties.initRecovery(force);
+    }
+
     public void recover(XAResource[] resourceList) {
         setTransactionManager();
         TransactionManagerImpl.recover(
@@ -442,8 +447,9 @@ public class JavaEETransactionManagerJTSDelegate
         if (_logger.isLoggable(Level.FINE))
             _logger.log(Level.FINE,"TM: setTransactionManager: tm=" + tmLocal.get());
 
-        if (transactionManagerImpl == null) 
+        if (transactionManagerImpl == null) {
            transactionManagerImpl = TransactionManagerImpl.getTransactionManagerImpl();
+        }
 
         if (tmLocal.get() == null)
             tmLocal.set(transactionManagerImpl);
@@ -493,7 +499,7 @@ public class JavaEETransactionManagerJTSDelegate
 
     public void initTransactionProperties() {
         if (habitat != null) {
-            TransactionService txnService = habitat.getComponent(TransactionService.class);
+            txnService = habitat.getComponent(TransactionService.class);
 
             if (txnService != null) {
                 String value = txnService.getPropertyValue("use-last-agent-optimization");

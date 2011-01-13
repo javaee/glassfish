@@ -38,6 +38,27 @@ REM  only if the new code is made subject to such option by the copyright
 REM  holder.
 REM
 
+REM
+REM                       * * *    N O T E     * * *
+REM
+REM  Although the lines in this file are formatted as environment
+REM  variable assignments, this file is NOT typically invoked as a script
+REM  from another script to define these variables.  Rather, this file is read
+REM  and processed by a server as it starts up.  That scanning code resolves 
+REM  the relative paths against the GlassFish installation directory.
+REM
+REM  Yet, this file is also where users of earlier versions have sometimes added
+REM  a definition of AS_JAVA to control which version of Java GlassFish
+REM  should use.  As a result, in order to run a user-specified version of Java,
+REM  the asadmin and appclient scripts do indeed invoke this file as a
+REM  script - but ONLY to define AS_JAVA.  Any calling script should not
+REM  rely on the other settings because the relative paths will be resolved
+REM  against the current directory when the calling script is run, not the
+REM  installation directory of GlassFish, and such resolution will not work
+REM  correctly unless the script happens to be run from the GlassFish installation
+REM  directory.
+REM
+
 set AS_IMQ_LIB=..\..\mq\lib
 set AS_IMQ_BIN=..\..\mq\bin
 set AS_CONFIG=..\config

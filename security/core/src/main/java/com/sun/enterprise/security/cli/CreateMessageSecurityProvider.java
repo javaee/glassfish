@@ -186,13 +186,24 @@ public class CreateMessageSecurityProvider implements AdminCommand {
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
 
-        Server targetServer = domain.getServerNamed(target);
-        if (targetServer!=null) {
-            config = domain.getConfigNamed(targetServer.getConfigRef());
+        Config tmp = null;
+        try {
+            tmp = configs.getConfigByName(target);
+        } catch (Exception ex) {
         }
-        com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
-        if (cluster!=null) {
-            config = domain.getConfigNamed(cluster.getConfigRef());
+
+        if (tmp != null) {
+            config = tmp;
+        }
+        if (tmp == null) {
+            Server targetServer = domain.getServerNamed(target);
+            if (targetServer != null) {
+                config = domain.getConfigNamed(targetServer.getConfigRef());
+            }
+            com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
+            if (cluster != null) {
+                config = domain.getConfigNamed(cluster.getConfigRef());
+            }
         }
         SecurityService secService = config.getSecurityService();
                 

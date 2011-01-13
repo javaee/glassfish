@@ -209,6 +209,13 @@ public interface JavaEETransactionManager extends TransactionManager {
 
     public void recover(XAResource[] resourceList);
 
+    /**
+     * Initialize recovery framework
+     * @param force if true, forces initialization, otherwise relies on the TimerService 
+     * configuration.
+     */
+    public void initRecovery(boolean force);
+
     public void begin(int timeout)
         throws NotSupportedException, SystemException;
 
@@ -388,4 +395,14 @@ public interface JavaEETransactionManager extends TransactionManager {
      * @param xaResource XAResource to register for recovery
      */
     public void registerRecoveryResourceHandler(XAResource xaResource);
+
+    /**
+     * Returns the value to be used to purge transaction tasks after the specified number of cancelled tasks
+     */
+    public int getPurgeCancelledTtransactionsAfter();
+
+    /**
+     * Allows to purge transaction tasks after the specified value of cancelled tasks
+     */
+    public void setPurgeCancelledTtransactionsAfter(int value);
 }

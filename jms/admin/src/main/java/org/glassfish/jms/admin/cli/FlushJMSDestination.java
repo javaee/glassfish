@@ -201,12 +201,15 @@ public class FlushJMSDestination extends JMSDestination implements AdminCommand 
      }
 
        public void purgeJMSDestination(String destName, String destType, String tgtName)
-               throws Exception { {
+               throws Exception {
 
              logger.log(Level.FINE, "purgeJMSDestination ...");
-              MQJMXConnectorInfo mqInfo = getMQJMXConnectorInfo(target, config, serverContext, domain, connectorRuntime);
+              MQJMXConnectorInfo[] mqInfos = getMQJMXConnectorInfos(target, config, serverContext, domain, connectorRuntime);
 
-               try {
+               if (mqInfos != null && mqInfos.length > 0)
+               {
+                 for (MQJMXConnectorInfo mqInfo : mqInfos){
+                try {
 
                    MBeanServerConnection mbsc = mqInfo.getMQMBeanServerConnection();
 
@@ -233,7 +236,9 @@ public class FlushJMSDestination extends JMSDestination implements AdminCommand 
                            }
                        }
            }
+          }
        }
+
     private ObjectName createDestinationConfig(String destinationType,
 					String destinationName)
 				throws MalformedObjectNameException,

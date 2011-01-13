@@ -71,7 +71,7 @@ import org.jvnet.hk2.config.TransactionFailure;
 public class MQAddressList {
 
     static Logger logger = LogDomains.getLogger(MQAddressList.class,  LogDomains.JMS_LOGGER);
-    private static String myName =
+    private String myName =
                System.getProperty(SystemPropertyConstants.SERVER_NAME);
 
     private List<MQUrl> urlList = new ArrayList<MQUrl>();
@@ -116,7 +116,7 @@ public class MQAddressList {
         this.targetName = targetName;
     }
     public void setInstanceName(String instanceName){
-        MQAddressList.myName = instanceName;
+        myName = instanceName;
     }
     public void setup()throws Exception
     {
@@ -152,9 +152,11 @@ public class MQAddressList {
     }
 
     private void setupClusterViewFromRepository() throws Exception {
-        ServerContext context = Globals.get(ServerContext.class);//todo: ApplicationServer.getServerContext();
-        Server server = context.getConfigBean();
-        String domainurl = context.getServerConfigURL();
+        ServerContext context = Globals.get(ServerContext.class);
+        Domain domain = Globals.get(Domain.class);
+        String serverName = context.getInstanceName();
+        Server server = domain.getServerNamed(serverName); //context.getConfigBean();
+        //String domainurl = context.getServerConfigURL();
         //rep = new AppserverClusterViewFromCacheRepository(domainurl);
         try {
             nodeHost = getNodeHostName(server);
@@ -166,7 +168,7 @@ public class MQAddressList {
     }
 
     public String getNodeHostName(final Server as) throws Exception{
-        String nodeRef = as.getNode();
+        String nodeRef = as.getNodeRef();
         Nodes nodes = Globals.get(Nodes.class);
         Node node = nodes.getNode(nodeRef);
 
@@ -174,7 +176,7 @@ public class MQAddressList {
          {
             if (node.getNodeHost() != null) return node.getNodeHost();
             //localhostNode
-            else if ("localhost".equals(node.getName()))
+            else if (node.isDefaultLocalNode())
             {
                  String hostName = getHostNameFromDasProperties();
                  if ("localhost".equals(hostName))
@@ -312,11 +314,13 @@ public class MQAddressList {
          if (masterBrokerInstanceName != null){
              masterBrokerInstance = domain.getServerNamed(masterBrokerInstanceName);
          }
-        Server[] buddies = getServersInCluster(cluster);
-        // return the first valid host
+         else{
+            Server[] buddies = getServersInCluster(cluster);
+            // return the first valid host
 			// there may be hosts attached to an NA that is down
-        if (buddies != null && buddies.length > 0){
-            masterBrokerInstance = buddies[0];
+            if (buddies != null && buddies.length > 0){
+                masterBrokerInstance = buddies[0];
+            }
         }
         final JmsHost copy	  = getResolvedJmsHost(masterBrokerInstance);
 	    if (copy != null)

@@ -40,21 +40,23 @@
 
 package org.glassfish.tests.embedded.web;
 
-import org.junit.Test;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.AfterClass;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.File;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.logging.Level;
-import java.net.*;
-import org.apache.catalina.Deployer;
-import org.apache.catalina.logger.SystemOutLogger;
-import org.glassfish.api.embedded.*;
-import org.glassfish.embeddable.web.*;
-import org.glassfish.embeddable.web.config.*;
+import java.util.ArrayList;
+import java.util.List;
 import javax.servlet.Servlet;
 import javax.servlet.ServletRegistration;
-import org.glassfish.tests.webapi.HelloWeb;
+import org.glassfish.embeddable.*;
+import org.glassfish.embeddable.web.*;
+import org.glassfish.embeddable.web.config.*;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * Tests WebBuilding#setListings for directory listing feature
@@ -63,57 +65,39 @@ import org.glassfish.tests.webapi.HelloWeb;
  */
 public class EmbeddedSetDocRootTest {
 
-    static Server server;
-    static EmbeddedWebContainer embedded;
+    static GlassFish glassfish;
+    static WebContainer embedded;
     static File root;
+    static String contextRoot = "test";
 
     @BeforeClass
-    public static void setupServer() throws Exception {
-        try {
-            Server.Builder builder = new Server.Builder("dirserve");
-            server = builder.build();
-            File f = new File(System.getProperty("basedir"));
-
-            EmbeddedFileSystem.Builder fsBuilder = new EmbeddedFileSystem.Builder();
-            String p = System.getProperty("buildDir");
-            root = new File(p).getParentFile();
-            root =new File(root, "glassfish");
-            EmbeddedFileSystem fs = fsBuilder.instanceRoot(root).build();
-            //builder.embeddedFileSystem(fs);
-            //server = builder.build();
-
-            // TODO :: change this to use
-            // org.glassfish.embeddable.GlassFish.lookupService
-            embedded = server.getHabitat().
-                    getComponent(EmbeddedWebContainer.class);
-            WebContainerConfig config = new WebContainerConfig();
-            config.setListings(true);
-            config.setDocRootDir(root);
-            config.setPort(8080);
-            System.out.println("Added Web with base directory "+root.getAbsolutePath());
-            embedded.start(config);
-        } catch(Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
+    public static void setupServer() throws GlassFishException {
+        glassfish = GlassFishRuntime.bootstrap().newGlassFish();
+        glassfish.start();
+        embedded = glassfish.getService(WebContainer.class);
+        System.out.println("================ EmbeddedSetDocRoot Test");
+        System.out.println("Starting Web "+embedded);
+        embedded.setLogLevel(Level.INFO);
+        WebContainerConfig config = new WebContainerConfig();
+        config.setListings(true);
+        root = new File(System.getProperty("buildDir"));
+        config.setDocRootDir(root);
+        config.setPort(8080);
+        System.out.println("Added Web with base directory "+root.getAbsolutePath());
+        embedded.setConfiguration(config);
     }
     
     @Test
-    public void testEmbeddedWebAPIConfig() throws Exception {   
-            
-        System.out.println("================ EmbeddedSetDocRoot Test");
-                
-        /*VirtualServer vs = (VirtualServer)
+    public void testEmbeddedWebAPIConfig() throws Exception {
+        VirtualServer vs = (VirtualServer)
                 embedded.createVirtualServer("test-server", root);
+        VirtualServerConfig config = new VirtualServerConfig();
+        config.setHostNames("localhost");
+        vs.setConfig(config);
         embedded.addVirtualServer(vs);
-        Context context = (Context) embedded.createContext(root, null);
-        vs.addContext(context, "/test");
-        
-        Servlet hello = new HelloWeb();
-        ServletRegistration reg = context.addServlet("test-servlet", hello);
-        reg.addMapping(new String[] {"/hello"});*/
+        Context context = (Context) embedded.createContext(root, contextRoot, null);
 
-        URL servlet = new URL("http://localhost:8080");
+        URL servlet = new URL("http://localhost:8080/"+contextRoot);
         URLConnection yc = servlet.openConnection();
         BufferedReader in = new BufferedReader(
                                 new InputStreamReader(
@@ -131,15 +115,14 @@ public class EmbeddedSetDocRootTest {
      }
 
     @AfterClass
-    public static void shutdownServer() throws Exception {
-        System.out.println("shutdown initiated");
-        if (server!=null) {
-            try {
-                server.stop();
-            } catch (LifecycleException e) {
-                throw e;
-            }
+    public static void shutdownServer() throws GlassFishException {
+        System.out.println("Stopping server " + glassfish);
+        if (glassfish != null) {
+            glassfish.stop();
+            glassfish.dispose();
+            glassfish = null;
         }
     }
+    
     
 }

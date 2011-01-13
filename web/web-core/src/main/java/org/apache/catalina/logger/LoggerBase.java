@@ -565,8 +565,9 @@ public class LoggerBase
         // register this logger
         if ( getObjectName()==null ) {   
             ObjectName oname = createObjectName();   
-            try {   
-                Registry.getRegistry(null, null).registerComponent(this, oname, null);
+            try {
+                // Do not register unused tomcat mbeans
+                //Registry.getRegistry(null, null).registerComponent(this, oname, null);
                 if (log.isLoggable(Level.FINE)) {
                     log.fine("Registering logger " + oname);
                 }
@@ -591,8 +592,9 @@ public class LoggerBase
         // unregister this logger
         if ( getObjectName()!=null ) {   
             ObjectName oname = createObjectName();   
-            try {   
-                Registry.getRegistry(null, null).unregisterComponent(oname); 
+            try {
+                // Do not register unused tomcat mbeans
+                //Registry.getRegistry(null, null).unregisterComponent(oname);
                 if (log.isLoggable(Level.FINE)) {
                     log.fine("Unregistering logger " + oname);
                 }

@@ -64,6 +64,7 @@ public interface SecurityService {
     public Object mergeSOAPMessageSecurityPolicies(MessageSecurityBindingDescriptor desc);
     public boolean doSecurity(HttpServletRequest hreq, EjbRuntimeEndpointInfo ejbEndpoint, String realmName, WebServiceContextImpl context);
     public void resetSecurityContext();
+    public void resetPolicyContext();
     public SystemHandlerDelegate getSecurityHandler(WebServiceEndpoint endpoint);
     public boolean validateRequest(Object serverAuthConfig, StreamingHandler implementor, SOAPMessageContext context);
     public void secureResponse(Object serverAuthConfig, StreamingHandler implementor, SOAPMessageContext context);

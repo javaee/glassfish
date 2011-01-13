@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -59,10 +59,7 @@ import com.sun.enterprise.security.common.Util;
 import com.sun.enterprise.security.jmac.config.GFAuthConfigFactory;
 import com.sun.enterprise.security.ssl.SSLUtils;
 import org.glassfish.internal.api.ServerContext;
-import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.logging.LogDomains;
-import java.util.HashMap;
-import java.util.Map;
 import org.glassfish.api.Startup.Lifecycle;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.EventTypes;
@@ -115,14 +112,7 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
     @Inject
     private RealmsManager realmsManager;
     
-    private static Map statsProviders = new HashMap();
-    
-
-    
     private static WebSecurityDeployerStatsProvider webStatsProvider = null;
-        
-    private static final LocalStringManagerImpl _localStrings =
-	new LocalStringManagerImpl(SecurityLifecycle.class);
 
     private EventListener listener = null;
 

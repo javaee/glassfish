@@ -39,7 +39,7 @@
  */
 
 package com.sun.enterprise.web.reconfig;
-
+                                                    
 import com.sun.enterprise.config.serverbeans.AccessLog;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.ManagerProperties;
@@ -57,6 +57,7 @@ import java.beans.PropertyChangeEvent;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.grizzly.config.dom.NetworkListeners;
 import org.glassfish.grizzly.http.server.util.Mapper;
 
 
@@ -117,7 +118,15 @@ public class WebConfigListener implements ConfigListener, MapperUpdateListener {
                     logger.fine("Web container config changed "+type+" "+tClass+" "+t);
                 }
                 try {
-                    if (t instanceof VirtualServer) {
+                    if (t instanceof NetworkListener) {
+                        if (type==TYPE.ADD) {
+                            container.addConnector((NetworkListener) t, httpService, true);
+                        } else if (type==TYPE.REMOVE) {
+                            container.deleteConnector((NetworkListener) t);
+                        } else if (type==TYPE.CHANGE) {
+                            container.updateConnector((NetworkListener) t, httpService);
+                        }
+                    } else if (t instanceof VirtualServer) {
                         if (type==TYPE.ADD) {
                             container.createHost((VirtualServer) t, httpService, null);
                             container.loadDefaultWebModule((VirtualServer) t);
@@ -126,15 +135,29 @@ public class WebConfigListener implements ConfigListener, MapperUpdateListener {
                         } else if (type==TYPE.CHANGE) {
                             container.updateHost((VirtualServer)t);
                         }
-                        return null;
                     } else if (t instanceof AccessLog) {
                         container.updateAccessLog(httpService);
                     } else if (t instanceof ManagerProperties) {
                         return new NotProcessed("ManagerProperties requires restart");
                     } else if (t instanceof WebContainerAvailability) {
-                        // container.updateHttpService handles SingleSignOn valve configuration 
+                        // container.updateHttpService handles SingleSignOn valve configuration
+                        container.updateHttpService(httpService);
+                    } else if (t instanceof NetworkListeners) {
+                        // skip updates
+                    } else if (t instanceof Property) {
+                        ConfigBeanProxy config = ((Property)t).getParent();
+                        if (config instanceof HttpService) {
+                            container.updateHttpService((HttpService)config);
+                        } else if (config instanceof VirtualServer) {
+                            container.updateHost((VirtualServer)config);
+                        } else if (config instanceof NetworkListener) {
+                            container.updateConnector((NetworkListener)config, httpService);
+                        } else {
+                            container.updateHttpService(httpService);
+                        }
+                    } else {
+                        container.updateHttpService(httpService);
                     }
-                    container.updateHttpService(httpService);
                 } catch (LifecycleException le) {
                     logger.log(Level.SEVERE, "webcontainer.exceptionConfigHttpService", le);
                 }

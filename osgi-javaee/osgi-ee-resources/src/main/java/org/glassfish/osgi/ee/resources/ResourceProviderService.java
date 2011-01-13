@@ -42,10 +42,7 @@ package org.glassfish.osgi.ee.resources;
 
 import com.sun.enterprise.config.serverbeans.*;
 import org.glassfish.internal.api.ServerContext;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.Singleton;
 import org.jvnet.hk2.config.*;
 import org.osgi.framework.BundleContext;
 
@@ -322,10 +319,27 @@ public class ResourceProviderService implements ConfigListener {
             Habitat habitat = getHabitat();
             resourceManagers = new ArrayList<ResourceManager>();
             resourceManagers.add(new JDBCResourceManager(habitat));
-            resourceManagers.add(new JMSResourceManager(habitat));
-            resourceManagers.add(new JMSDestinationResourceManager(habitat));
+            if(runtimeSupportsJMS()){
+                registerJMSResources(resourceManagers, habitat);
+            }
         //}
         return resourceManagers;
+    }
+
+    private boolean runtimeSupportsJMS() {
+        boolean supports = false;
+        try{
+            Class.forName("javax.jms.QueueConnectionFactory");
+            supports = true;
+        }catch(Throwable e){
+            logger.finest("Exception while loading JMS API " + e);
+        }
+        return supports;
+    }
+
+    private void registerJMSResources(Collection<ResourceManager> resourceManagers, Habitat habitat) {
+        resourceManagers.add(new JMSResourceManager(habitat));
+        resourceManagers.add(new JMSDestinationResourceManager(habitat));
     }
 
     private ResourceHelper getResourceHelper() {

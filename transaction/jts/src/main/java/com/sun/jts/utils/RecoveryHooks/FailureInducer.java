@@ -105,6 +105,7 @@ public class FailureInducer {
     private static boolean crash = false;
     private static int waitPeriod = 0;
     private static int waitCount = 0;
+    private static int recoveryWaitDuration = 0;
     private static Hashtable crashList = new Hashtable();
     private static Hashtable waitList = new Hashtable();
     private static Hashtable waitTime = new Hashtable();
@@ -258,6 +259,27 @@ public class FailureInducer {
             // wait for the stipulated duration
             try {
                 Thread.sleep(waitDuration.intValue() * 1000L);
+            } catch (Exception e) {}
+        }
+    }
+
+    /**
+     * Enable wait action dyring delegated recovery via "add-wait-point-during-recovery"
+     * property added to the transaction-service config
+     */
+    public static void setWaitPointRecovery(int waitDuration) {
+        recoveryWaitDuration = waitDuration;
+    }
+
+    /**
+     * Perform wait action dyring delegated recovery
+     */
+    public static void waitInRecovery() {
+        if (recoveryWaitDuration > 0) {
+            _logger.log(Level.WARNING,"jts.failpoint", "RECOVERY");
+            // wait for the stipulated duration
+            try {
+                Thread.sleep(recoveryWaitDuration * 1000L);
             } catch (Exception e) {}
         }
     }

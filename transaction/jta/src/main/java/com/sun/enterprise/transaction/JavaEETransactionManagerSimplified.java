@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -124,6 +124,8 @@ public class JavaEETransactionManagerSimplified
     private int transactionTimeout;
     private ThreadLocal<Integer> txnTmout = new ThreadLocal();
 
+    private int purgeCancelledTtransactions = 0;
+
     // admin and monitoring related parameters
     private  static final Hashtable statusMap = new Hashtable();
     private Vector activeTransactions = new Vector();
@@ -205,6 +207,11 @@ public class JavaEETransactionManagerSimplified
                 transactionTimeout = Integer.parseInt(txnService.getTimeoutInSeconds());
                 // the delegates will do the rest if they support it
 
+                String v = txnService.getPropertyValue("purge-cancelled-transactions-after");
+                if (v != null && v.length() > 0) {
+                    purgeCancelledTtransactions = Integer.parseInt(v);
+                }
+
                 TransactionServiceConfigListener listener = 
                         habitat.getComponent(TransactionServiceConfigListener.class);
                 listener.setTM(this);
@@ -226,9 +233,7 @@ public class JavaEETransactionManagerSimplified
         // START IASRI 4705808 TTT004 -- monitor resource table stats
         try {
             // XXX TODO:
-            String doStats
-                = System.getProperty("MONITOR_JTA_RESOURCE_TABLE_STATISTICS");
-            if (Boolean.getBoolean(doStats)) {
+            if (Boolean.getBoolean("MONITOR_JTA_RESOURCE_TABLE_STATISTICS")) {
                 registerStatisticMonitorTask();
             }
 
@@ -276,6 +281,10 @@ public class JavaEETransactionManagerSimplified
      */
     public boolean isNullTransaction() {
         return getDelegate().isNullTransaction();
+    }
+
+    public void initRecovery(boolean force) {
+        getDelegate().initRecovery(force);
     }
 
     public void recover(XAResource[] resourceList) {
@@ -1033,6 +1042,22 @@ public class JavaEETransactionManagerSimplified
         // transactionTimeout = seconds;
     }
 
+    /**
+     * Modify the value to be used to purge transaction tasks after the 
+     * specified number of cancelled tasks.
+     */
+    public void setPurgeCancelledTtransactionsAfter(int num) {
+        purgeCancelledTtransactions = num;
+    }
+
+    /**
+     * Returns the value to be used to purge transaction tasks after the 
+     * specified number of cancelled tasks.
+     */
+    public int getPurgeCancelledTtransactionsAfter() {
+        return purgeCancelledTtransactions;
+    }
+
     public JavaEETransaction getCurrentTransaction() { 
         return transactions.get();
     }
@@ -1261,8 +1286,12 @@ public class JavaEETransactionManagerSimplified
                             delistResource(tran, h, flag);
                         }
                     } catch (IllegalStateException ex) {
+                        if (_logger.isLoggable(Level.FINE))
+                            _logger.log(Level.FINE,"TM: Exception in delistResource", ex);
                         // ignore error due to tx time out
                     }catch(Exception ex){
+                        if (_logger.isLoggable(Level.FINE))
+                            _logger.log(Level.FINE,"TM: Exception in delistResource", ex);
                         it.remove();
                         handleResourceError(h, ex, tran);
                     }
@@ -1459,7 +1488,7 @@ public class JavaEETransactionManagerSimplified
             setDelegate(d);
         }
 
-        if (delegate != null && _logger.isLoggable(Level.INFO))
+        if (delegate != null && _logger.isLoggable(Level.FINE))
         	_logger.log(Level.INFO, "enterprise_used_delegate_name", delegate.getClass().getName());
                 
     }
@@ -1506,7 +1535,7 @@ public class JavaEETransactionManagerSimplified
     }
 
     public boolean isInvocationStackEmpty() {
-        return invMgr.isInvocationStackEmpty();
+        return (invMgr == null || invMgr.isInvocationStackEmpty());
     }
 
     public void setTransactionCompeting(boolean b) {

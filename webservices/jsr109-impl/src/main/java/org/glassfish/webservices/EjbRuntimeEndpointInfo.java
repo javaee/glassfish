@@ -243,7 +243,8 @@ public class EjbRuntimeEndpointInfo {
                                 if(endpoint.getBundleDescriptor().getApplication().isVirtual()) {
                                     pkgedWsdl = deployedDir.resolve(endpoint.getWebService().getWsdlFileUri()).toURL();
                                 } else {
-                                    pkgedWsdl = deployedDir.resolve(endpoint.getBundleDescriptor().getModuleDescriptor().getArchiveUri().replaceAll("\\.", "_")).resolve(endpoint.getWebService().getWsdlFileUri()).toURL();
+                                    String moduleUri = endpoint.getBundleDescriptor().getModuleDescriptor().getArchiveUri().replaceAll("\\.", "_");
+                                    pkgedWsdl = deployedDir.resolve(moduleUri+"/"+endpoint.getWebService().getWsdlFileUri()).toURL();
                                 }
                             } else {
                                 pkgedWsdl = endpoint.getWebService().getWsdlFileUrl();

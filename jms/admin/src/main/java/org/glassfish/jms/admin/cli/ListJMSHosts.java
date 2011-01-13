@@ -45,6 +45,7 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.CommandLock;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.util.SystemPropertyConstants;
@@ -65,6 +66,7 @@ import java.util.ArrayList;
  */
 @Service(name="list-jms-hosts")
 @Scoped(PerLookup.class)
+@CommandLock(CommandLock.LockType.NONE)
 @I18n("list.jms.hosts")
 @ExecuteOn({RuntimeType.DAS})
 @TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
@@ -75,7 +77,7 @@ public class ListJMSHosts implements AdminCommand {
     @Param(name="target", optional=true)
     String target = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;
 
-    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    //@Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Config config;
 
     @Inject
@@ -89,7 +91,10 @@ public class ListJMSHosts implements AdminCommand {
     public void execute(AdminCommandContext context) {
 
         final ActionReport report = context.getActionReport();
-
+        Config targetConfig = domain.getConfigNamed(target);
+                if (targetConfig != null)
+                    config = targetConfig;
+                
         Server targetServer = domain.getServerNamed(target);
         //String configRef = targetServer.getConfigRef();
         if (targetServer!=null) {

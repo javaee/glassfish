@@ -69,6 +69,8 @@ import com.sun.enterprise.config.serverbeans.IiopListener;
 import com.sun.enterprise.config.serverbeans.IiopService;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.Servers;
+import com.sun.enterprise.config.serverbeans.Nodes;
+import com.sun.enterprise.config.serverbeans.Node;
 import com.sun.enterprise.ee.cms.core.CallBack;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -96,6 +98,8 @@ public class IiopFolbGmsClient implements CallBack {
     private Domain domain ;
 
     private Server myServer ;
+
+    private Nodes nodes ;
 
     private GMSAdapterService gmsAdapterService ;
 
@@ -133,6 +137,9 @@ public class IiopFolbGmsClient implements CallBack {
                 Servers servers = habitat.getComponent(Servers.class ) ;
                 fineLog( "IiopFolbGmsClient: servers {0}", servers );
 
+                nodes = habitat.getComponent(Nodes.class) ;
+                fineLog( "IiopFolbGmsClient: nodes {0}", nodes );
+
                 String instanceName = gmsAdapter.getModule().getInstanceName() ;
                 fineLog( "IiopFolbGmsClient: instanceName {0}", instanceName );
 
@@ -144,6 +151,8 @@ public class IiopFolbGmsClient implements CallBack {
 
                 currentMembers = getAllClusterInstanceInfo() ;
                 fineLog( "IiopFolbGmsClient: currentMembers = ", currentMembers ) ;
+
+                fineLog( "iiop instance info = " + getIIOPEndpoints() ) ;
 
                 gmsAdapter.registerFailureNotificationListener(this);
                 gmsAdapter.registerJoinedAndReadyNotificationListener(this);
@@ -333,16 +342,25 @@ public class IiopFolbGmsClient implements CallBack {
         final int weight = Integer.parseInt( server.getLbWeight() ) ;
         fineLog( "getClusterInstanceInfo: weight {0}", weight ) ;
 
-        String host = server.getNode() ;
-        if (host.equals("localhost")) {
-            try {
-                host = InetAddress.getLocalHost().getHostName() ;
-            } catch (UnknownHostException exc) {
-                fineLog( "getClusterInstanceInfo: caught exception for localhost lookup {0}",
-                    exc )  ;
+        final String nodeName = server.getNodeRef() ;
+        String hostName = nodeName ;
+        if (nodes != null) {
+            Node node = nodes.getNode( nodeName ) ;
+            if (node != null) {
+                if (node.isLocal()) {
+                    try {
+                        hostName = InetAddress.getLocalHost().getHostName() ;
+                    } catch (UnknownHostException exc) {
+                        fineLog( "getClusterInstanceInfo: caught exception for localhost lookup {0}",
+                            exc )  ;
+                    }
+                } else {
+                    hostName = node.getNodeHost() ;
+                }
             }
         }
-        fineLog( "getClusterInstanceInfo: host {0}", host ) ;
+
+        fineLog( "getClusterInstanceInfo: host {0}", hostName ) ;
 
         final IiopService iservice = config.getIiopService() ;
         fineLog( "getClusterInstanceInfo: iservice {0}", iservice ) ;
@@ -352,7 +370,7 @@ public class IiopFolbGmsClient implements CallBack {
 
         final List<SocketInfo> sinfos = new ArrayList<SocketInfo>() ;
         for (IiopListener il : listeners) {
-            SocketInfo sinfo = new SocketInfo( il.getId(), host,
+            SocketInfo sinfo = new SocketInfo( il.getId(), hostName,
                 resolvePort( server, il ) ) ;
             sinfos.add( sinfo ) ;
         }
@@ -416,6 +434,29 @@ public class IiopFolbGmsClient implements CallBack {
 
         fineLog( "getAllClusterInstanceInfo: result {0}", result ) ;
         return result ;
+    }
+
+    // return host:port,... string for all clear text ports in the cluster
+    // instance info.
+    public final String getIIOPEndpoints() {
+        final Map<String,ClusterInstanceInfo> cinfos = getAllClusterInstanceInfo() ;
+        final StringBuilder result = new StringBuilder() ;
+        boolean first = true ;
+        for (ClusterInstanceInfo cinfo : cinfos.values() ) {
+            for (SocketInfo sinfo : cinfo.endpoints()) {
+                if (!sinfo.type().startsWith( "SSL" )) {
+                    if (first) {
+                        first = false ;
+                    } else {
+                        result.append( ',' ) ;
+                    }
+
+                    result.append( sinfo.host() ).append( ':' )
+                        .append( sinfo.port() ) ;
+                }
+            }
+        }
+        return result.toString() ;
     }
 
     class GroupInfoServiceGMSImpl extends GroupInfoServiceBase {

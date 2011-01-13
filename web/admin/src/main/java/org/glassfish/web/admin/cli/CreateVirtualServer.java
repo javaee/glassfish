@@ -142,8 +142,9 @@ public class CreateVirtualServer implements AdminCommand {
         try {
             ConfigSupport.apply(new SingleConfigCode<HttpService>() {
                 public Object run(HttpService param) throws PropertyVetoException, TransactionFailure {
-                    boolean docrootAdded = false;
-                    boolean accessLogAdded = false;
+                    String docroot = "${com.sun.aas.instanceRoot}/docroot";    // default
+                    String accessLog = "${com.sun.aas.instanceRoot}/logs/access";    // default
+
                     VirtualServer newVirtualServer = param.createChild(VirtualServer.class);
                     newVirtualServer.setId(virtualServerId);
                     newVirtualServer.setHosts(hosts);
@@ -153,35 +154,29 @@ public class CreateVirtualServer implements AdminCommand {
                     newVirtualServer.setLogFile(logFile);
                     // 1. add properties
                     // 2. check if the access-log and docroot properties have
-                    //    been specified. We need to add those with default 
+                    //    been specified. We will use with default 
                     //    values if the properties have not been specified.
                     if (properties != null) {
                         for (Map.Entry entry : properties.entrySet()) {
-                            Property property = newVirtualServer.createChild(Property.class);
                             String pn = (String) entry.getKey();
-                            property.setName(pn);
-                            property.setValue((String) entry.getValue());
-                            newVirtualServer.getProperty().add(property);
+                            String pv = (String)entry.getValue();
+
                             if ("docroot".equals(pn)) {
-                                docrootAdded = true;
-                            }
-                            if ("accesslog".equals(pn)) {
-                                accessLogAdded = true;
+                                docroot = pv;
+                            } else if ("accesslog".equals(pn)) {
+                                accessLog = pv;
+                            } else {
+                                Property property = newVirtualServer.createChild(Property.class);
+                                property.setName(pn);
+                                property.setValue(pv);
+                                newVirtualServer.getProperty().add(property);
                             }
                         }
                     }
-                    if (!docrootAdded) {
-                        Property drp = newVirtualServer.createChild(Property.class);
-                        drp.setName("docroot");
-                        drp.setValue("${com.sun.aas.instanceRoot}/docroot");
-                        newVirtualServer.getProperty().add(drp);
-                    }
-                    if (!accessLogAdded) {
-                        Property alp = newVirtualServer.createChild(Property.class);
-                        alp.setName("accesslog");
-                        alp.setValue("${com.sun.aas.instanceRoot}/logs/access");
-                        newVirtualServer.getProperty().add(alp);
-                    }
+
+                    newVirtualServer.setDocroot(docroot);
+                    newVirtualServer.setAccessLog(accessLog);
+
                     param.getVirtualServer().add(newVirtualServer);
                     return newVirtualServer;
                 }

@@ -75,7 +75,7 @@ public interface ServletRegistration extends Registration {
      * Gets the currently available mappings of the
      * Servlet represented by this <code>ServletRegistration</code>.
      *
-     * <p>Any changes to the returned <code>Collection</code> must not 
+     * <p>If permitted, any changes to the returned <code>Collection</code> must not 
      * affect this <code>ServletRegistration</code>.
      *
      * @return a (possibly empty) <code>Collection</code> of the currently

@@ -48,7 +48,7 @@ import java.util.List;
 import javax.security.auth.callback.CallbackHandler;
 import org.glassfish.api.admin.ProcessEnvironment;
 import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
-import org.glassfish.api.embedded.Server;
+import org.glassfish.internal.embedded.Server;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;

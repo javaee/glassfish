@@ -445,7 +445,11 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
 
             JmsService jmsService = server.getConfig().getJmsService();
             AvailabilityService as = server.getConfig().getAvailabilityService();
-            boolean useMasterBroker = jmsService.getUseMasterBroker() != null ? Boolean.valueOf(jmsService.getUseMasterBroker()) :true;
+            boolean useMasterBroker = true;
+            if(as != null && as.getJmsAvailability() != null && ! MASTERBROKER.equalsIgnoreCase(as.getJmsAvailability().getConfigStoreType()))
+                useMasterBroker = false;
+
+            //jmsService.getUseMasterBroker() != null ? Boolean.valueOf(jmsService.getUseMasterBroker()) :true;
             boolean isJmsAvailabilityEnabled = this.isJMSAvailabilityOn(as);
 
             if (isClustered() && (!useMasterBroker || isJmsAvailabilityEnabled) ) {
@@ -501,7 +505,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
                                         "BrokerEnableHA flag","java.lang.Boolean");
                         setProperty(cd, envProp4);
 
-                        String nodeHostName = domain.getNodeNamed(server.getNode()).getNodeHost();
+                        String nodeHostName = domain.getNodeNamed(server.getNodeRef()).getNodeHost();
                         if (nodeHostName != null)  {
                                 ConnectorConfigProperty  envProp5 = new ConnectorConfigProperty  (
                                                 BROKERBINDADDRESS , nodeHostName,
@@ -799,7 +803,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
             String brokerPort = jmsHost.getPort();
             brkrPort = brokerPort;
             String adminUserName = jmsHost.getAdminUserName();
-            String adminPassword = jmsHost.getAdminPassword();
+            String adminPassword = JmsRaUtil.getUnAliasedPwd(jmsHost.getAdminPassword());
             List jmsHostProps= getJmsService().getProperty();
 
             String username = null;
@@ -1183,13 +1187,16 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
 
         JmsService jmsService = server.getConfig().getJmsService();
 
-        if (jmsService.getUseMasterBroker() != null && ! Boolean.parseBoolean(jmsService.getUseMasterBroker()))
-            return true;
+
+        //if (jmsService.getUseMasterBroker() != null && ! Boolean.parseBoolean(jmsService.getUseMasterBroker()))
+          //  return true;
 	if (as != null){
 		JmsAvailability jmsAvailability = as.getJmsAvailability();
         	if (jmsAvailability.getAvailabilityEnabled() != null && Boolean.parseBoolean(jmsAvailability.getAvailabilityEnabled())){
             		return true;
-		}
+		} else
+            if(jmsAvailability.getConfigStoreType() != null && ! "MASTERBROKER".equalsIgnoreCase(jmsAvailability.getConfigStoreType()))
+                return true;
         }
 
         return false;
@@ -2214,6 +2221,18 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
             }catch (Exception ex){
                    //throw new RuntimeException ("Error invoking PortMapperClientHandler.handleRequest. Cause - " + ex.getMessage(), ex);
                 _logger.log(Level.WARNING, "set.master.broker.fail", new Object[]{newMasterBroker, ex.getMessage()});
+        }
+    }
+    protected void setClusterBrokerList(String brokerList){
+        try{
+            Class c = resourceadapter_.getClass();
+            Method m = c.getMethod("setClusterBrokerList", String.class);
+            m.invoke(resourceadapter_, brokerList);
+             _logger.log(Level.INFO, "set.cluster.brokerlist.success", brokerList);
+
+            }catch (Exception ex){
+                   //throw new RuntimeException ("Error invoking PortMapperClientHandler.handleRequest. Cause - " + ex.getMessage(), ex);
+                _logger.log(Level.WARNING, "set.cluster.brokerlist.fail", new Object[]{brokerList, ex.getMessage()});
         }
     }
 }

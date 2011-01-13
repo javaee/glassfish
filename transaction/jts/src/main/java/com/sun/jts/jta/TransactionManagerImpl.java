@@ -195,7 +195,7 @@ public class TransactionManagerImpl implements TransactionManager {
                 current = dts.get_current();
             }
 
-            TransactionServiceProperties.startRecoveryThread(Globals.getDefaultHabitat());
+            TransactionServiceProperties.initRecovery(true);
             // V2-commented-out transactionStates = new Hashtable();
         } catch (InvalidName inex) { 
 			_logger.log(Level.SEVERE,
@@ -328,6 +328,7 @@ public class TransactionManagerImpl implements TransactionManager {
         } catch (HeuristicHazard ex) {
             throw new HeuristicRollbackException();
         } catch (Exception ex) {
+            // ex.printStackTrace();
             throw new SystemException(ex.toString());
         }
         /***

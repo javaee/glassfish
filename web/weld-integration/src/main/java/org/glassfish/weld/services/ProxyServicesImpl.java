@@ -42,84 +42,79 @@ package org.glassfish.weld.services;
 
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
-import java.security.ProtectionDomain;
 
-import org.jboss.weld.bean.proxy.util.SerializableProxy;
 import org.jboss.weld.serialization.spi.ProxyServices;
+
 /**
- * A simple implementation of the ProxyServices Service
+ * An implementation of the <code>ProxyServices</code> Service.
+ * 
+ * This implementation uses the thread context classloader (the application 
+ * classloader) as the classloader for loading the bean proxies. The classloader
+ * that loaded the Bean must be used to load and define the bean proxy to handle
+ * Beans with package-private constructor as discussed in WELD-737. 
+ *  
+ * Weld proxies today have references to some internal weld implementation classes
+ * such as javassist and org.jboss.weld.proxy.* packages. These classes are 
+ * temporarily re-exported through the weld-integration-fragment bundle so that
+ * when the bean proxies when loaded using the application classloader will have
+ * visibility to these internal implementation classes.
+ * 
+ * As a fix for WELD-737, Weld may use the Bean's classloader rather than asking
+ * the ProxyServices service implementation. Weld also plans to remove the 
+ * dependencies of the bean proxy on internal implementation classes. When that
+ * happens we can remove the weld-integration-fragment workaround and the 
+ * ProxyServices implementation
+ *  
  * @author Sivakumar Thyagarajan
  */
-public class ProxyServicesImpl implements ProxyServices
-{
+public class ProxyServicesImpl implements ProxyServices {
 
-   public ClassLoader getClassLoader(final Class<?> type)
-   {
-      SecurityManager sm = System.getSecurityManager();
-      if (sm != null)
-      {
-         return AccessController.doPrivileged(new PrivilegedAction<ClassLoader>()
-         {
-            public ClassLoader run()
-            {
-               return _getClassLoader(type);
+    @Override
+    public ClassLoader getClassLoader(final Class<?> proxiedBeanType) {
+        SecurityManager sm = System.getSecurityManager();
+        if (sm != null) {
+            return AccessController
+                    .doPrivileged(new PrivilegedAction<ClassLoader>() {
+                        public ClassLoader run() {
+                            return _getClassLoader();
+                        }
+                    });
+        } else {
+            return _getClassLoader();
+        }
+    }
+
+    private ClassLoader _getClassLoader() {
+        ClassLoader tcl = Thread.currentThread().getContextClassLoader();
+        return tcl;
+    }
+
+    @Override
+    public Class<?> loadBeanClass(final String className) {
+        try {
+            SecurityManager sm = System.getSecurityManager();
+            if (sm != null) {
+                return (Class<?>) AccessController
+                        .doPrivileged(new PrivilegedExceptionAction<Object>() {
+                            public Object run() throws Exception {
+                                ClassLoader cl = _getClassLoader();
+                                return Class.forName(className, true, cl);
+                            }
+                        });
+            } else {
+                ClassLoader cl = _getClassLoader();
+                return Class.forName(className, true, cl);
             }
-         });
-      }
-      else
-      {
-         return _getClassLoader(type);
-      }      
-   }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw new RuntimeException(ex);
+        }
+    }
 
-   private ClassLoader _getClassLoader(Class<?> type)
-   {
-      return Thread.currentThread().getContextClassLoader();
-   }
-
-   public ProtectionDomain getProtectionDomain(Class<?> type)
-   {
-      if (type.getName().startsWith("java"))
-      {
-         return this.getClass().getProtectionDomain();
-      }
-      else
-      {
-         return type.getProtectionDomain();
-      }
-   }
-
-   public void cleanup()
-   {
-      // This implementation requires no cleanup
-
-   }
-
-   public Object wrapForSerialization(Object proxyObject)
-   {
-      return new SerializableProxy(proxyObject);
-   }
-
-   public Class<?> loadBeanClass(final String className)
-   {
-      try
-      {
-         return (Class<?>) AccessController.doPrivileged(new PrivilegedExceptionAction<Object>()
-         {
-            public Object run() throws Exception
-            {
-               ClassLoader cl = Thread.currentThread().getContextClassLoader();
-               return Class.forName(className, true, cl);
-            }
-         });
-      }
-      catch (PrivilegedActionException pae)
-      {
-         pae.printStackTrace();
-         throw new RuntimeException(pae);
-      }
-   }
+    @Override
+    public void cleanup() {
+        // nothing to cleanup in this implementation.
+    }
 
 }

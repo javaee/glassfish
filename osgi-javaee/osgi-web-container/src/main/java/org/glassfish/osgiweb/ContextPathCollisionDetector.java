@@ -130,4 +130,20 @@ class ContextPathCollisionDetector {
     private Bundle getBundle() {
         return BundleReference.class.cast(getClass().getClassLoader()).getBundle();
     }
+
+    public synchronized void cleanUp(Bundle bundle) {
+        String contextPath = (String) bundle.getHeaders().get(Constants.WEB_CONTEXT_PATH);
+        List<Long> bundleIds = contextPath2BundlesMap.get(contextPath);
+        assert (bundleIds != null && bundleIds.size() >= 1);
+        if (bundleIds == null || bundleIds.isEmpty()) return;
+        int idx = bundleIds.indexOf(bundle.getBundleId());
+        assert (idx != -1);
+        if (idx == -1) {
+            return;
+        }
+        Long bundleId= bundleIds.remove(idx);
+        logger.logp(Level.INFO, "CollisionDetector", "cleanUp",
+                "Removed bundle {0} against context path {1} ", new Object[]{bundleId, contextPath});
+
+    }
 }

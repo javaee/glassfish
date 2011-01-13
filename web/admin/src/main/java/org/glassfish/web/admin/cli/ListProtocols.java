@@ -66,6 +66,7 @@ import org.jvnet.hk2.component.PerLookup;
  */
 @Service(name = "list-protocols")
 @Scoped(PerLookup.class)
+@CommandLock(CommandLock.LockType.NONE)
 @I18n("list.protocols")
 @ExecuteOn(RuntimeType.DAS)
 @TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})

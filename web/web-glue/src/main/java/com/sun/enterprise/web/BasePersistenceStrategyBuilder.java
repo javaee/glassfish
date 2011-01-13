@@ -83,6 +83,7 @@ public abstract class BasePersistenceStrategyBuilder
     protected final int DEFAULT_SESSION_TIMEOUT = 1800;   // 30 minute
     protected int sessionMaxInactiveInterval = DEFAULT_SESSION_TIMEOUT;
     protected String persistentCookieName = "GLASSFISHCOOKIE";
+    protected boolean relaxCacheVersionSemantics;
 
     // Special constant for Java Server Faces
     protected static final String JSF_HA_ENABLED = "com.sun.appserver.enableHighAvailability";    
@@ -298,6 +299,8 @@ public abstract class BasePersistenceStrategyBuilder
                         } catch (NumberFormatException e) {
                             // XXX need error message
                         }                        
+                    }  else if (name.equalsIgnoreCase("relaxCacheVersionSemantics")) {
+                        relaxCacheVersionSemantics = Boolean.parseBoolean(value);
                     } else if (name.equalsIgnoreCase("sessionFilename")) {
                         sessionFilename = value;                        
                     } else if (name.equalsIgnoreCase("persistenceFrequency")) {

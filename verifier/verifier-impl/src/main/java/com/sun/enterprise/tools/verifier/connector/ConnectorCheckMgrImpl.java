@@ -48,6 +48,7 @@ package com.sun.enterprise.tools.verifier.connector;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.net.URI;
 
 import com.sun.enterprise.deployment.ConnectorDescriptor;
 import com.sun.enterprise.deployment.Descriptor;
@@ -84,7 +85,7 @@ public class ConnectorCheckMgrImpl extends CheckMgr implements JarCheck {
         // run the ParseDD test
         if (getSchemaVersion(descriptor).compareTo("1.5") < 0) { // NOI18N
             ConnectorDeploymentDescriptorFile ddf = new ConnectorDeploymentDescriptorFile();
-            File file = new File(getAbstractArchiveUri(descriptor),
+            File file = new File(new File(URI.create(getAbstractArchiveUri(descriptor))),
                     ddf.getDeploymentDescriptorPath());
             FileInputStream is = new FileInputStream(file);
             try {

@@ -53,9 +53,11 @@ import com.sun.enterprise.web.ServerConfigLookup;
 import com.sun.logging.LogDomains;
 import org.apache.catalina.Container;
 import org.apache.catalina.Session;
+import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Loader;
 import org.glassfish.ha.store.api.BackingStore;
 import org.glassfish.ha.store.api.BackingStoreException;
+import org.glassfish.ha.store.util.SimpleMetadata;
 
 import java.io.*;
 import java.util.logging.Level;
@@ -163,7 +165,7 @@ public class ReplicationStore extends HAStoreBase {
         SimpleMetadata simpleMetadata =
             SimpleMetadataFactory.createSimpleMetadata(session.getVersion(),  //version
                 session.getLastAccessedTime(), //lastaccesstime
-                session.getMaxInactiveInterval(), //maxinactiveinterval
+                session.getMaxInactiveInterval()*1000L, //maxinactiveinterval
                 sessionState); //state
         if (_logger.isLoggable(Level.FINEST)) {
             _logger.finest("In doValveSave metadata is " + simpleMetadata);
@@ -196,6 +198,22 @@ public class ReplicationStore extends HAStoreBase {
 
     public void setSessions(BaseCache sesstable) {
         //FIXME;
+    }
+
+
+    public void stop() {
+        try {
+            super.stop();
+            ReplicationManagerBase mgr
+             = (ReplicationManagerBase)this.getManager();
+            BackingStore backingStore = mgr.getBackingStore();
+            backingStore.destroy();
+        } catch (BackingStoreException e) {
+
+        } catch (LifecycleException le) {
+         
+        }
+
     }
 
 
@@ -243,7 +261,7 @@ public class ReplicationStore extends HAStoreBase {
         SimpleMetadata simpleMetadata =
             SimpleMetadataFactory.createSimpleMetadata(session.getVersion(),  //version
                 session.getLastAccessedTime(), //lastaccesstime
-                session.getMaxInactiveInterval(), //maxinactiveinterval
+                session.getMaxInactiveInterval()*1000L, //maxinactiveinterval
                 sessionState); //state
 
         try {
@@ -333,7 +351,7 @@ public class ReplicationStore extends HAStoreBase {
      * that should be expired
      * @return number of removed sessions
      */    
-    public int removeExpiredSessions() {        
+    public int removeExpiredSessions() {
         if(_logger.isLoggable(Level.FINE)) {
             _logger.fine("IN ReplicationStore>>removeExpiredSessions");
         }
@@ -344,11 +362,12 @@ public class ReplicationStore extends HAStoreBase {
             return result;
         }
         BackingStore backingStore = mgr.getBackingStore();
-        try {
-            //XXX Need to get the idle for millis from settings somewhere
-            result = backingStore.removeExpired(30000);
-        } catch (BackingStoreException ex) {
-            _logger.log(Level.WARNING, "Exception during removing expired session from backing store", ex);
+        if (backingStore != null) {
+            try {
+                result = backingStore.removeExpired(mgr.getMaxInactiveInterval());
+            } catch (BackingStoreException ex) {
+                _logger.log(Level.WARNING, "Exception during removing expired session from backing store", ex);
+            }
         }
         if(_logger.isLoggable(Level.FINE)) {
             _logger.fine("ReplicationStore>>removeExpiredSessions():number of expired sessions = " + result);
@@ -427,9 +446,8 @@ public class ReplicationStore extends HAStoreBase {
             _logger.fine("ReplicationStore>>updateLastAccessTime: replicator: " + backingStore);                       
         }         
         try {
-            SimpleMetadata smd = SimpleMetadataFactory.createSimpleMetadata(session.getVersion(),
+            backingStore.updateTimestamp(session.getIdInternal(), ""+session.getVersion(),
                     ((BaseHASession)session).getLastAccessedTimeInternal());
-            backingStore.save(session.getIdInternal(), smd, !((HASession) session).isPersistent()); //version
         } catch (BackingStoreException ex) {
             //FIXME
         }

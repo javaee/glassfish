@@ -58,10 +58,10 @@
     <build>
         <resources>
             <resource>
-                <directory>src/main/java</directory>
+                <directory>src/main/resources</directory>
                 <includes>
+                    <include>**/*.html</include>
                     <include>**/*.properties</include>
-                    <include>**/*.xml</include>
                 </includes>
             </resource>
         </resources>
@@ -72,15 +72,5 @@
             <artifactId>registration-api</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.glassfish.external</groupId>
-            <artifactId>sysnet-registration-repackaged</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.external</groupId>
-            <artifactId>commons-codec-repackaged</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>        
     </dependencies>
 </project>

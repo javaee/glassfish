@@ -59,13 +59,28 @@ import org.glassfish.embeddable.GlassFishException;
  */
 public interface VirtualServer extends Lifecycle {
 
+
+    /**
+     * Sets the id of this <tt>VirtualServer</tt>.
+     *
+     * @param ID id of this <tt>VirtualServer</tt>.
+     */
+    public void setID(String ID);
+
     /**
      * Gets the id of this <tt>VirtualServer</tt>.
      * 
      * @return the id of this <tt>VirtualServer</tt>
      */
     public String getID();
-    
+
+    /**
+     * Sets the docroot of this <tt>VirtualServer</tt>.
+     *
+     * @param docRoot the docroot of this <tt>VirtualServer</tt>.
+     */
+    public void setDocRoot(File docRoot);
+
     /**
      * Gets the docroot of this <tt>VirtualServer</tt>.
      * 
@@ -128,7 +143,7 @@ public interface VirtualServer extends Lifecycle {
      * or <tt>null</tt> if no <tt>Context</tt> exists at the given context
      * root
      */
-    public Context findContext(String contextRoot);
+    public Context getContext(String contextRoot);
 
     /**
      * Gets the collection of <tt>Context</tt> instances registered with

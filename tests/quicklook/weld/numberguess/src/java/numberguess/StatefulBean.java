@@ -40,11 +40,14 @@
 
 package numberguess;
 
-import javax.ejb.*;
-import javax.annotation.*;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.annotation.Resource;
+import javax.ejb.EJB;
+import javax.ejb.EJBException;
+import javax.ejb.SessionContext;
+import javax.ejb.Stateful;
 import javax.interceptor.Interceptors;
-
-import javax.inject.Inject;
 
 @Stateful
 @SomeBindingType

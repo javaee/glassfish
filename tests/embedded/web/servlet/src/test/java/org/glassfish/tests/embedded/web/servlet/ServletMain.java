@@ -42,7 +42,7 @@ package org.glassfish.tests.embedded.web.servlet;
 
 import org.junit.*;
 import org.junit.Assert;
-import org.glassfish.api.embedded.*;
+import org.glassfish.internal.embedded.*;
 import org.glassfish.api.deployment.*;
 
 import javax.naming.*;

@@ -90,6 +90,7 @@ public class GMSCallBack implements CallBack {
     private DelegatedTransactionRecoveryFence fence;
     private GroupManagementService gms;
     private final long startTime;
+    private final static Object lock = new Object();
 
     public GMSCallBack(int waitTime, Habitat habitat) {
         GMSAdapterService gmsAdapterService = habitat.getComponent(GMSAdapterService.class);
@@ -151,11 +152,15 @@ public class GMSCallBack implements CallBack {
                   logdir = (String)failedMemberDetails.get(TXLOGLOCATION);
             }
 
-            doRecovery(logdir, instance, timestamp);
+            synchronized(lock) {
+                _logger.log(Level.INFO, "[GMSCallBack] Recovering for instance: " + instance);
+                doRecovery(logdir, instance, timestamp);
 
-            // Find records of not finished delegated recovery and do delegated recovery on those instances.
-            while (logdir != null) {
-                logdir = finishDelegatedRecovery(logdir, timestamp);
+                // Find records of not finished delegated recovery and do delegated recovery on those instances.
+                while (logdir != null) {
+                    logdir = finishDelegatedRecovery(logdir, timestamp);
+                }
+                _logger.log(Level.INFO, "[GMSCallBack] Finished recovery for instance: " + instance);
             }
         } else {
             if (_logger.isLoggable(Level.FINE)) {

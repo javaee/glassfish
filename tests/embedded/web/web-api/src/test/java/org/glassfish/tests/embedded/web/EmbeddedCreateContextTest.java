@@ -40,58 +40,56 @@
 
 package org.glassfish.tests.embedded.web;
 
-import org.junit.Test;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.File;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.logging.Level;
+import java.util.ArrayList;
+import java.util.List;
+import org.glassfish.embeddable.*;
+import org.glassfish.embeddable.web.*;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.AfterClass;
-import java.io.*;
-import java.util.logging.Level;
-import java.net.*;
-import org.apache.catalina.Deployer;
-import org.apache.catalina.logger.SystemOutLogger;
-import org.glassfish.api.embedded.*;
-import org.glassfish.embeddable.web.*;
-import javax.servlet.Servlet;
-import javax.servlet.ServletRegistration;
-import org.glassfish.tests.webapi.HelloWeb;
+import org.junit.Test;
 
 /**
- * Tests EmbeddedWebContainer#createContext
+ * Tests WebContainer#createContext
  * 
  * @author Amy Roh
  */
 public class EmbeddedCreateContextTest {
 
-    static Server server;
-    static EmbeddedWebContainer embedded;
+    static GlassFish glassfish;
+    static WebContainer embedded;
+    static String contextRoot = "test";
 
     @BeforeClass
-    public static void setupServer() throws Exception {
-        try {
-            Server.Builder builder = new Server.Builder("web-api");
-            server = builder.build();
-
-            // TODO :: change this to use
-            // org.glassfish.embeddable.GlassFish.lookupService
-            embedded = server.getHabitat().
-                    getComponent(EmbeddedWebContainer.class);
-        } catch(Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
+    public static void setupServer() throws GlassFishException {
+        glassfish = GlassFishRuntime.bootstrap().newGlassFish();
+        glassfish.start();
+        embedded = glassfish.getService(WebContainer.class);
+        System.out.println("================ EmbeddedCreateContext Test");
+        System.out.println("Starting Web "+embedded);
+        embedded.setLogLevel(Level.INFO);
     }
     
     @Test
-    public void test() throws Exception {   
-            
-        System.out.println("================ EmbeddedCreateContext Test");
+    public void test() throws Exception {
+        
+        HttpListener listener = new HttpListener();
+        listener.setPort(8080);
+        listener.setId("embedded-listener-1");
+        embedded.addWebListener(listener);
 
         String p = System.getProperty("buildDir");
         System.out.println("Root is " + p);
         File docRoot = new File(p);
-        Context context = (Context) embedded.createContext(docRoot,"hello", null);
+        Context context = (Context) embedded.createContext(docRoot, contextRoot, null);
 
-        URL servlet = new URL("http://localhost:8080/classes/hello");
+        URL servlet = new URL("http://localhost:8080/"+contextRoot+"/hello");
         URLConnection yc = servlet.openConnection();
         BufferedReader in = new BufferedReader(
                                 new InputStreamReader(
@@ -103,19 +101,15 @@ public class EmbeddedCreateContextTest {
             sb.append(inputLine);
         }
         in.close();
-        
-     }
+    } 
 
     @AfterClass
-    public static void shutdownServer() throws Exception {
-        System.out.println("shutdown initiated");
-        if (server!=null) {
-            try {
-                server.stop();
-            } catch (LifecycleException e) {
-                e.printStackTrace();
-                throw e;
-            }
+    public static void shutdownServer() throws GlassFishException {
+        System.out.println("Stopping server " + glassfish);
+        if (glassfish != null) {
+            glassfish.stop();
+            glassfish.dispose();
+            glassfish = null;
         }
     }
     

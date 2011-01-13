@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -54,6 +54,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.apache.catalina.valves.ValveBase;
+import org.apache.catalina.Globals;
 import org.apache.catalina.Manager;
 import org.apache.catalina.Request;
 import org.apache.catalina.Response;
@@ -109,12 +110,15 @@ public class HASessionStoreValve extends ValveBase {
                 Cookie[] cookies = httpServletrequest.getCookies();
                 if (cookies != null) {
                     for (Cookie cookie: cookies) {
-                        if (cookie.getName().equalsIgnoreCase("jreplica")) {
+                        if (cookie.getName().equalsIgnoreCase(Globals.JREPLICA_COOKIE_NAME)) {
                             oldJreplicaValue = cookie.getValue();
                         }
                     }
                     String replica = manager.getReplicaFromPredictor(sessionId, oldJreplicaValue);
-                    httpServletrequest.getSession(false).setAttribute("jreplicaLocation", replica);
+                    Session sess = request.getSessionInternal(false);
+                    if (sess != null) {
+                        sess.setNote(Globals.JREPLICA_SESSION_NOTE, replica);
+                    }
                 }
             }
         }

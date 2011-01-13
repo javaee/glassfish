@@ -57,6 +57,7 @@ import org.jvnet.hk2.config.types.Property;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.ServletContext;
 
 @Service
 @Scoped(PerLookup.class)
@@ -311,7 +312,6 @@ public class ServerConfigLookup {
             _logger.finest("webContainerAvailability = " + webContainerAvailability);
         }
 
-        //XXX Need to use the following code - haven't tried it out yet - Rajiv
         boolean webModuleAvailability = false;
         DeploymentContext dc = ctx.getWebModuleConfig().getDeploymentContext();
         if (dc != null) {
@@ -344,6 +344,13 @@ public class ServerConfigLookup {
 
         }
         return asyncReplication;
+    }
+
+    public DeploymentContext getDeploymentContext(ServletContext ctx) {
+        org.apache.catalina.core.ApplicationContext applicationContext =
+                ((org.apache.catalina.core.ApplicationContextFacade)ctx).getApplicationContext();
+        DeploymentContext dc = ((WebModule)applicationContext.getStandardContext()).getWebModuleConfig().getDeploymentContext();
+        return dc;
     }
 
     public PersistenceType getPersistenceTypeFromConfig() {

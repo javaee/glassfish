@@ -133,5 +133,8 @@ public class GlassFishORBFactoryImpl
                 (!gfORBManager.isIsACall(sri.operation())));
     }
 
-    
+    @Override
+    public String getIIOPEndpoints() {
+        return gfORBManager.getIIOPEndpoints() ;
+    }
 }

@@ -64,6 +64,7 @@ package com.sun.jts.CosTransactions;
 
 // Import required classes.
 
+import com.sun.enterprise.util.i18n.StringManager;
 import java.util.*;
 import java.io.*;
 
@@ -83,6 +84,7 @@ import java.io.*;
 //------------------------------------------------------------------------------
 
 public class LogControl {
+    private static final StringManager sm = StringManager.getManager(LogControl.class);
 
     /**Constants for file name extensions.
      */
@@ -250,7 +252,8 @@ public class LogControl {
         try {
             controlFH = new LogFileHandle(controlFile,openOptions);
         } catch( LogException le ) {
-            throw new LogException(null,LogException.LOG_OPEN_FAILURE,3);
+            throw new LogException(LogException.LOG_OPEN_FAILURE, 3,
+                sm.getString("jts.log_create_LogFileHandle_failed", controlFile), le);
         }
 
         // Allocate a Log_FileDescriptor block and initialise it
@@ -263,7 +266,8 @@ public class LogControl {
             logHandle = new LogHandle(this,logName,controlFH,upcallTarget); }
         catch( LogException le ) {
             controlFH.finalize();
-            throw new LogException(null,LogException.LOG_INSUFFICIENT_MEMORY,4);
+            throw new LogException(LogException.LOG_INSUFFICIENT_MEMORY,4,
+                    sm.getString("jts.log_create_LogHandle_failed", logName), le);
         }
 
 
@@ -274,7 +278,8 @@ public class LogControl {
             logHandle.restoreCushion(false); 
         } catch( LogException le ) {
             controlFH.finalize();
-            throw new LogException(null,LogException.LOG_INSUFFICIENT_MEMORY,9);
+            throw new LogException(LogException.LOG_INSUFFICIENT_MEMORY,9,
+                    sm.getString("jts.log_cushion_file_failed"), le);
         }
 
         // Issue a READ request for the control file, specifying the
@@ -291,7 +296,8 @@ public class LogControl {
             bytesRead = controlFH.fileRead(controlBytes); 
         } catch( LogException le ) {
             controlFH.finalize();
-            throw new LogException(null,LogException.LOG_READ_FAILURE,5);
+            throw new LogException(LogException.LOG_READ_FAILURE,5,
+                    sm.getString("jts.log_control_file_read_failed"), le);
         }
 
         if( bytesRead == 0 ) {
@@ -333,7 +339,8 @@ public class LogControl {
                     controlFH.allocFileStorage(LogHandle.CONTROL_FILE_SIZE); 
                 } catch( LogException le ) {
                     controlFH.finalize();
-                    throw new LogException(null,LogException.LOG_WRITE_FAILURE,6);
+                    throw new LogException(LogException.LOG_WRITE_FAILURE,6,
+                            sm.getString("jts.log_allocate_failed"), le);
                 }
 
                 logHandle.logControlDescriptor.toBytes(controlBytes,0);
@@ -341,7 +348,8 @@ public class LogControl {
                     bytesWritten = controlFH.fileWrite(controlBytes);
                 } catch( LogException le ) {
                     controlFH.finalize();
-                    throw new LogException(null,LogException.LOG_WRITE_FAILURE,7);
+                    throw new LogException(LogException.LOG_WRITE_FAILURE,7,
+                            sm.getString("jts.log_control_file_write_failed"), le);
                 }
 
                 LogExtent logEDP = null;
@@ -349,14 +357,16 @@ public class LogControl {
                     logEDP = logHandle.openExtent(logHandle.logControlDescriptor.nextLSN.extent);
                 } catch( LogException le ) {
                     controlFH.finalize();
-                    throw new LogException(null,LogException.LOG_NO_SPACE,10);
+                    throw new LogException(LogException.LOG_NO_SPACE,10,
+                            sm.getString("jts.log_open_extend_failed"), le);
                 }
 
                 try {
                     logEDP.fileHandle.allocFileStorage(LogHandle.ALLOCATE_SIZE); 
                 } catch( LogException le ) {
                     controlFH.finalize();
-                    throw new LogException(null,LogException.LOG_NO_SPACE,11);
+                    throw new LogException(LogException.LOG_NO_SPACE,11,
+                            sm.getString("jts.log_allocate_failed"), le);
                 }
 
                 logHandle.chunkRemaining = LogHandle.ALLOCATE_SIZE;
@@ -391,7 +401,8 @@ public class LogControl {
                     logEDP = logHandle.openExtent(currentExtent); 
                 } catch( LogException le ) {
                     controlFH.finalize();
-                    throw new LogException(null,LogException.LOG_OPEN_EXTENT_FAILURE,19);
+                    throw new LogException(LogException.LOG_OPEN_EXTENT_FAILURE,19,
+                            sm.getString("jts.log_open_extend_failed"), le);
                 }
 
             // Read the restart data for restart record one
@@ -407,7 +418,8 @@ public class LogControl {
                 logHandle.checkRestart(controlFH,1,restartValues1); 
             } catch( LogException le ) {
                 controlFH.finalize();
-                throw new LogException(null,LogException.LOG_READ_FAILURE,8);
+                throw new LogException(LogException.LOG_READ_FAILURE,8,
+                        sm.getString("jts.log_read_restart_data_failed"), le);
             }
 
             // Check that the record length was not equal to zero
@@ -435,7 +447,8 @@ public class LogControl {
                     logHandle.checkRestart(controlFH,2,restartValues2);
                 } catch( LogException le ) {
                     controlFH.finalize();
-                    throw new LogException(null,LogException.LOG_READ_FAILURE,9);
+                    throw new LogException(LogException.LOG_READ_FAILURE,9,
+                            sm.getString("jts.log_check_restart_failed"), le);
                 }
 
                 if( restartValues2[0] != 0 &&
@@ -486,7 +499,8 @@ public class LogControl {
             catch( LogException le ) {
                 controlFH.finalize();
                 removeFile(logHandle);
-                throw new LogException(null,LogException.LOG_OPEN_FAILURE,10);
+                throw new LogException(LogException.LOG_OPEN_FAILURE,10,
+                        sm.getString("jts.log_position_file_pointer_failed"), le);
             }
 
             // Issue a READ for the record header
@@ -507,7 +521,8 @@ public class LogControl {
             } catch( LogException le ) {
                 controlFH.finalize();
                 removeFile(logHandle);
-                throw new LogException(null,le.errorCode,11);
+                throw new LogException(le.errorCode,11,
+                        sm.getString("jts.log_read_header_failed"), le);
             }
             extentRec = new LogRecordHeader(headerBytes,0);
 
@@ -530,7 +545,8 @@ public class LogControl {
             } catch( LogException le ) {
                 controlFH.finalize();
                 removeFile(logHandle);
-                throw new LogException(null,LogException.LOG_OPEN_FAILURE,13);
+                throw new LogException(LogException.LOG_OPEN_FAILURE,13,
+                        sm.getString("jts.log_position_file_pointer_failed"), le);
             }
 
             linkRec = new LogRecordHeader();
@@ -548,7 +564,8 @@ public class LogControl {
                 } catch( LogException le ) {
                     controlFH.finalize();
                     removeFile(logHandle);
-                    throw new LogException(null,LogException.LOG_READ_FAILURE,14);
+                    throw new LogException(LogException.LOG_READ_FAILURE,14,
+                            sm.getString("jts.log_read_header_failed"), le);
                 }
                 if( bytesRead == -1 ) {
                     controlFH.finalize();
@@ -576,7 +593,8 @@ public class LogControl {
                         } catch( LogException le ) {
                             controlFH.finalize();
                             removeFile(logHandle);
-                            throw new LogException(null,le.errorCode,15);
+                            throw new LogException(le.errorCode,15,
+                                    sm.getString("jts.log_position_file_pointer_failed"), le);
                         }
                         continue;
                     } else
@@ -613,7 +631,8 @@ public class LogControl {
                     } catch( LogException le ) {
                         controlFH.finalize();
                         removeFile(logHandle);
-                        throw new LogException(null,le.errorCode,16);
+                        throw new LogException(le.errorCode,16,
+                                sm.getString("jts.log_position_file_pointer_failed"), le);
                     }
 
                     byte[] endingBytes = new byte[LogRecordEnding.SIZEOF];
@@ -623,7 +642,7 @@ public class LogControl {
                     } catch( LogException le ) {
                         controlFH.finalize();
                         removeFile(logHandle);
-                        throw new LogException(null,le.errorCode,17);
+                        throw new LogException(le.errorCode,17, null, le);
                     }
 
                     endRec = new LogRecordEnding(endingBytes,0);
@@ -697,7 +716,8 @@ public class LogControl {
         //   Return LOG_INVALID_FILE_DESCRIPTOR
 
         if( logHandle == null || logHandle.blockValid != logHandle )
-            throw new LogException(null,LogException.LOG_INVALID_FILE_DESCRIPTOR,2);
+            throw new LogException(LogException.LOG_INVALID_FILE_DESCRIPTOR,2,
+                sm.getString("jts.log_invalid_file_descriptor", logHandle), (Throwable) null);
 
         // Set the block valid to NULL
 

@@ -65,14 +65,18 @@ public class HandleDelegateNamingProxy implements NamedNamingObjectProxy {
     @Inject
     private Habitat habitat;
 
+    private volatile HandleDelegateFacade facade;
+
     public Object handle(String name) throws NamingException {
 
         HandleDelegate delegate = null;
 
         if (HANDLE_DELEGATE.equals(name)) {
             try {
-
-                HandleDelegateFacade facade = habitat.getByContract(HandleDelegateFacade.class);
+                if (facade == null) {
+                    HandleDelegateFacade hd = habitat.getByContract(HandleDelegateFacade.class);
+                    facade = hd;
+                }
                 delegate = facade.getHandleDelegate();
 
             } catch(Throwable t) {

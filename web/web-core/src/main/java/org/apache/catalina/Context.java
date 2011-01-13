@@ -58,30 +58,15 @@
 
 package org.apache.catalina;
 
+import org.apache.catalina.deploy.*;
+import org.apache.catalina.util.CharsetMapper;
+
+import javax.servlet.*;
 import java.util.EventListener;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.Servlet;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRegistration;
-import javax.servlet.ServletRequest;
-import javax.servlet.SessionCookieConfig;
-
-import org.apache.catalina.deploy.ApplicationParameter;
-import org.apache.catalina.deploy.ContextEjb;
-import org.apache.catalina.deploy.ContextEnvironment;
-import org.apache.catalina.deploy.ContextLocalEjb;
-import org.apache.catalina.deploy.ContextResource;
-import org.apache.catalina.deploy.ContextResourceLink;
-import org.apache.catalina.deploy.ErrorPage;
-import org.apache.catalina.deploy.FilterDef;
-import org.apache.catalina.deploy.FilterMap;
-import org.apache.catalina.deploy.LoginConfig;
-import org.apache.catalina.deploy.NamingResources;
-import org.apache.catalina.deploy.SecurityConstraint;
-import org.apache.catalina.util.CharsetMapper;
 import org.glassfish.grizzly.http.server.util.Mapper;
+
 
 /**
  * A <b>Context</b> is a Container that represents a servlet context, and
@@ -202,29 +187,21 @@ public interface Context extends Container {
      * @return the name that will be assigned to any session tracking
      * cookies created on behalf of this context
      */
-    String getSessionCookieName();
+    public String getSessionCookieName();
 
 
     /**
      * @return the session tracking cookie configuration of this
      * <tt>ServletContext</tt>.
      */
-    SessionCookieConfig getSessionCookieConfig();
- 
-
-    /**
-     * @return true if any of the setter methods have been
-     * called on the SessionCookieConfig object of this context, false
-     * otherwise
-     */
-    boolean isSessionCookieConfigInitialized();
+    public SessionCookieConfig getSessionCookieConfig();
 
 
     /**
      * @return the name that will be assigned to any session tracking
      * parameter created on behalf of this context
      */
-    String getSessionParameterName();
+    public String getSessionParameterName();
 
 
     /**
@@ -234,7 +211,7 @@ public interface Context extends Container {
      * @return true if the rewriting of URLs with the jsessionids of HTTP
      * sessions belonging to this context is enabled, false otherwise
      */
-    boolean isEnableURLRewriting();
+    public boolean isEnableURLRewriting();
 
 
     /**
@@ -245,7 +222,7 @@ public interface Context extends Container {
      * jsessionids of HTTP sessions belonging to this context should be
      * enabled, false otherwise
      */
-    void setEnableURLRewriting(boolean enableURLRewriting);
+    public void setEnableURLRewriting(boolean enableURLRewriting);
 
 
     /**
@@ -254,19 +231,19 @@ public interface Context extends Container {
     boolean getCrossContext();
 
 
-    
+
     /**
      * Return the alternate Deployment Descriptor name.
      */
     String getAltDDName();
-    
-    
+
+
     /**
      * Set an alternate Deployment Descriptor name.
      */
     void setAltDDName(String altDDName) ;
-    
-    
+
+
     /**
      * Set the "allow crossing servlet contexts" flag.
      *
@@ -555,7 +532,7 @@ public interface Context extends Container {
      * property group, we only care about the URL pattern here.  The
      * JSP container will parse the rest.
      *
-     * @param pattern URL pattern to be mapped 
+     * @param pattern URL pattern to be mapped
      */
     void addJspMapping(String pattern);
 
@@ -652,7 +629,7 @@ public interface Context extends Container {
     /**
      * Add a resource which will be watched for reloading by the host auto
      * deployer. Note: this will not be used in embedded mode.
-     * 
+     *
      * @param name Path to the resource, relative to docBase
      */
     void addWatchedResource(String name);
@@ -704,7 +681,7 @@ public interface Context extends Container {
      *
      * @param servletName the servlet name
      * @param instance the servlet instance
-     * @param initParams Map containing the initialization parameters for 
+     * @param initParams Map containing the initialization parameters for
      * the servlet
      *
      * @return the ServletRegistration through which the servlet may be
@@ -712,8 +689,8 @@ public interface Context extends Container {
      *
      * @throws ServletException if the servlet fails to be initialized
      */
-    ServletRegistration.Dynamic addServlet(String servletName,
-        Servlet instance, Map<String, String> initParams)
+    public ServletRegistration.Dynamic addServlet(String servletName,
+            Servlet instance, Map<String, String> initParams)
         throws ServletException;
 
 
@@ -723,7 +700,7 @@ public interface Context extends Container {
      *
      * @param servletName the servlet name
      * @param instance the servlet instance
-     * @param initParams Map containing the initialization parameters for 
+     * @param initParams Map containing the initialization parameters for
      * the servlet
      * @param urlPatterns the URL patterns that will be mapped to the servlet
      *
@@ -732,9 +709,9 @@ public interface Context extends Container {
      *
      * @throws ServletException if the servlet fails to be initialized
      */
-    ServletRegistration.Dynamic addServlet(String servletName,
-        Servlet instance, Map<String, String> initParams,
-        String... urlPatterns)
+    public ServletRegistration.Dynamic addServlet(String servletName,
+            Servlet instance, Map<String, String> initParams,
+            String... urlPatterns)
         throws ServletException;
 
 
@@ -756,7 +733,7 @@ public interface Context extends Container {
      * Checks whether this web application has any security constraints
      * defined.
      */
-    boolean hasConstraints();
+    public boolean hasConstraints();
 
 
     /**
@@ -825,7 +802,7 @@ public interface Context extends Container {
      * @return the default error page of this context, or null if this
      * context does not have any default error page
      */
-    ErrorPage getDefaultErrorPage();
+    public ErrorPage getDefaultErrorPage();
 
 
     /**
@@ -1185,15 +1162,15 @@ public interface Context extends Container {
      * Checks whether this web application has any watched resources
      * defined.
      */
-    boolean hasWatchedResources();
+    public boolean hasWatchedResources();
 
 
     /**
      * Clears any watched resources defined for this web application.
      */
-    void removeWatchedResources();
+    public void removeWatchedResources();
 
-    
+
     /**
      * Removes any Wrapper lifecycle listeners from this Context
      */
@@ -1206,7 +1183,7 @@ public interface Context extends Container {
     void removeWrapperListeners();
 
 
-    void removeWelcomeFiles();
+    public void removeWelcomeFiles();
 
 
     // START S1AS8PE 4817642
@@ -1223,7 +1200,7 @@ public interface Context extends Container {
     void setReuseSessionID(boolean reuse);
     // END S1AS8PE 4817642
 
-    
+
     // START RIMOD 4642650
     /**
      * Return whether this context allows sendRedirect() to redirect
@@ -1233,7 +1210,7 @@ public interface Context extends Container {
      */
     boolean getAllowRelativeRedirect();
 
-    
+
     /**
      * Set whether this context allows sendRedirect() to redirect
      * to a relative URL.
@@ -1279,11 +1256,11 @@ public interface Context extends Container {
      * Get the server.xml <context> attribute's xmlValidation.
      * @return true if validation is enabled.
      */
-     
+
 
     /**
      * Set the validation feature of the XML parser used when
-     * parsing tlds files. 
+     * parsing tlds files.
      * @param tldValidation true to enable xml instance validation
      */
     void setTldValidation(boolean tldValidation);
@@ -1312,7 +1289,7 @@ public interface Context extends Container {
     void setTldNamespaceAware(boolean tldNamespaceAware);
 
 
-    // START SJSAS 8.1 5049111    
+    // START SJSAS 8.1 5049111
     /**
      * Return <code>true</code> if this context contains the JSF servlet.
      */
@@ -1324,7 +1301,7 @@ public interface Context extends Container {
     /**
      * Indicates whether this web module contains any ad-hoc paths.
      *
-     * An ad-hoc path is a servlet path that is mapped to a servlet 
+     * An ad-hoc path is a servlet path that is mapped to a servlet
      * not declared in the web module's deployment descriptor.
      *
      * A web module all of whose mappings are for ad-hoc paths is called an
@@ -1384,7 +1361,7 @@ public interface Context extends Container {
      * web fragment JAR file with the given name is excluded from it;
      * false otherwise
      */
-    boolean isFragmentMissingFromAbsoluteOrdering(String jarName);
+    public boolean isFragmentMissingFromAbsoluteOrdering(String jarName);
 
     /**
      * Notifies all ServletRequestListener instances configured for this Context
@@ -1392,7 +1369,7 @@ public interface Context extends Container {
      *
      * @param request
      */
-    void fireRequestInitializedEvent(ServletRequest request);
+    public void fireRequestInitializedEvent(ServletRequest request);
 
     /**
      * Notifies all ServletRequestListener instances configured for this Context
@@ -1400,5 +1377,5 @@ public interface Context extends Container {
      *
      * @param request
      */
-    void fireRequestDestroyedEvent(ServletRequest request);
+    public void fireRequestDestroyedEvent(ServletRequest request);
 }

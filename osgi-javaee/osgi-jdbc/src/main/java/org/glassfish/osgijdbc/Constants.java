@@ -55,7 +55,7 @@ public interface Constants {
     String DRIVER = "java.sql.Driver";
     String DBVENDOR = "dbvendor";
 
-    String JDBC_DRIVER_SCHEME = "jdbc";
+    String JDBC_DRIVER_SCHEME = "jdbcdriver";
     String OSGI_RFC_122 = "OSGI_RFC_122";
     String IMPL_VERSION = "Implementation-Version";
     String IMPL_VENDOR = "Implementation-Vendor";

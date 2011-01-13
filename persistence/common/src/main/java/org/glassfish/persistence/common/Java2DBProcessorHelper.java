@@ -76,8 +76,7 @@ import java.util.logging.Logger;
 public class Java2DBProcessorHelper { 
 
     /** The logger */
-    private final static Logger logger = LogDomains.getLogger(
-            Java2DBProcessorHelper.class, LogDomains.DPL_LOGGER);
+    private final static Logger logger = LogDomains.getLogger(Java2DBProcessorHelper.class, LogDomains.PERSISTENCE_LOGGER);
 
     /** I18N message handler */
     private final static ResourceBundle messages = I18NHelper.loadBundle(

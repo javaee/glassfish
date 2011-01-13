@@ -1,0 +1,10 @@
+
+setOSConditions:
+
+asenv-unix:
+
+asenv-windows:
+
+restart-server:
+     [echo] Successfully restarted the domain
+     [echo] Command restart-domain executed successfully.

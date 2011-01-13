@@ -1,27 +1,31 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
- * may not use this file except in compliance with the License. You can obtain
- * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
- * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ * may not use this file except in compliance with the License.  You can
+ * obtain a copy of the License at
+ * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
  * When distributing the software, include this License Header Notice in each
- * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
- * Sun designates this particular file as subject to the "Classpath" exception
- * as provided by Sun in the GPL Version 2 section of the License file that
- * accompanied this code.  If applicable, add the following below the License
- * Header, with the fields enclosed by brackets [] replaced by your own
- * identifying information: "Portions Copyrighted [year]
- * [name of copyright owner]"
+ * file and include the License file at packager/legal/LICENSE.txt.
+ *
+ * GPL Classpath Exception:
+ * Oracle designates this particular file as subject to the "Classpath"
+ * exception as provided by Oracle in the GPL Version 2 section of the License
+ * file that accompanied this code.
+ *
+ * Modifications:
+ * If applicable, add the following below the License Header, with the fields
+ * enclosed by brackets [] replaced by your own identifying information:
+ * "Portions Copyright [year] [name of copyright owner]"
  *
  * Contributor(s):
- *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -36,9 +40,11 @@
 
 package com.sun.jaspic.config.helper;
 
-import delegate.*;
+import com.sun.jaspic.config.delegate.MessagePolicyDelegate;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.message.AuthException;
 import javax.security.auth.message.config.AuthConfigFactory;
@@ -59,8 +65,16 @@ public abstract class AuthConfigProviderHelper implements AuthConfigProvider {
     public static final String AUTH_MODULE_KEY = "auth.module.type";
     public static final String SERVER_AUTH_MODULE = "server.auth.module";
     public static final String CLIENT_AUTH_MODULE = "client.auth.module";
-    HashSet<String> selfRegistered = new HashSet<String>();
-    EpochCarrier providerEpoch = new EpochCarrier();
+    private ReentrantReadWriteLock instanceReadWriteLock = new ReentrantReadWriteLock();
+    private Lock rLock = instanceReadWriteLock.readLock();
+    private Lock wLock = instanceReadWriteLock.writeLock();
+    HashSet<String> selfRegistered;
+    EpochCarrier epochCarrier;
+
+    protected AuthConfigProviderHelper() {
+        selfRegistered = new HashSet<String>();
+        epochCarrier = new EpochCarrier();
+    }
 
     protected final String getProperty(String key, String defaultValue) {
         String rvalue = defaultValue;
@@ -96,7 +110,7 @@ public abstract class AuthConfigProviderHelper implements AuthConfigProvider {
         return rvalue;
     }
 
-    protected void selfRegister() {
+    protected void oldSelfRegister() {
         if (getFactory() != null) {
             selfRegistered.clear();
             RegistrationContext[] contexts = getSelfRegistrationContexts();
@@ -106,6 +120,55 @@ public abstract class AuthConfigProviderHelper implements AuthConfigProvider {
                         r.getDescription());
                 selfRegistered.add(id);
             }
+        }
+    }
+
+    protected void selfRegister() {
+        if (getFactory() != null) {
+            wLock.lock();
+            try {
+                RegistrationContext[] contexts = getSelfRegistrationContexts();
+                if (!selfRegistered.isEmpty()) {
+                    HashSet<String> toBeUnregistered = new HashSet<String>();
+                    // get the current self-registrations
+                    String[] regID = getFactory().getRegistrationIDs(this);
+                    for (String i : regID) {
+                        if (selfRegistered.contains(i)) {
+                            RegistrationContext c = getFactory().getRegistrationContext(i);
+                            if (c != null && !c.isPersistent()) {
+                                toBeUnregistered.add(i);
+                            }
+                        }
+                    }
+                    // remove self-registrations that already exist and should continue
+                    for (String i : toBeUnregistered) {
+                        RegistrationContext r = getFactory().getRegistrationContext(i);
+                        for (int j = 0; j < contexts.length; j++) {
+                            if (contextsAreEqual(contexts[j], r)) {
+                                toBeUnregistered.remove(i);
+                                contexts[j] = null;
+                            }
+                        }
+                    }
+                    // unregister those that should not continue to exist
+                    for (String i : toBeUnregistered) {
+                        selfRegistered.remove(i);
+                        getFactory().removeRegistration(i);
+                    }
+                }
+                // add new self-segistrations
+                for (RegistrationContext r : contexts) {
+                    if (r != null) {
+                        String id = getFactory().registerConfigProvider(this,
+                                r.getMessageLayer(), r.getAppContext(),
+                                r.getDescription());
+                        selfRegistered.add(id);
+                    }
+                }
+            } finally {
+                wLock.unlock();
+            }
+
         }
     }
 
@@ -131,8 +194,8 @@ public abstract class AuthConfigProviderHelper implements AuthConfigProvider {
 
     public ClientAuthConfig getClientAuthConfig(String layer, String appContext,
             CallbackHandler cbh) throws AuthException {
-        return new ClientAuthConfigHelper(getLoggerName(), providerEpoch,
-                getAuthContextHelper(appContext,true),
+        return new ClientAuthConfigHelper(getLoggerName(), epochCarrier,
+                getAuthContextHelper(appContext, true),
                 getMessagePolicyDelegate(appContext),
                 layer, appContext,
                 getClientCallbackHandler(cbh));
@@ -140,15 +203,34 @@ public abstract class AuthConfigProviderHelper implements AuthConfigProvider {
 
     public ServerAuthConfig getServerAuthConfig(String layer, String appContext,
             CallbackHandler cbh) throws AuthException {
-        return new ServerAuthConfigHelper(getLoggerName(), providerEpoch,
-                getAuthContextHelper(appContext,true),
+        return new ServerAuthConfigHelper(getLoggerName(), epochCarrier,
+                getAuthContextHelper(appContext, true),
                 getMessagePolicyDelegate(appContext),
                 layer, appContext,
                 getServerCallbackHandler(cbh));
     }
 
-    public void refresh() {
+    public boolean contextsAreEqual(RegistrationContext a, RegistrationContext b) {
+        if (a == null || b == null) {
+            return false;
+        } else if (a.isPersistent() != b.isPersistent()) {
+            return false;
+        } else if (!a.getAppContext().equals(b.getAppContext())) {
+            return false;
+        } else if (!a.getMessageLayer().equals(b.getMessageLayer())) {
+            return false;
+        } else if (!a.getDescription().equals(b.getDescription())) {
+            return false;
+        }
+        return true;
+    }
 
+    /**
+     * to be called by refresh on provider subclass, and after subclass impl.
+     * has reloaded its underlying configuration system.
+     * Note: Spec is silent as to whether self-registrations should be reprocessed.
+     */
+    public void oldRefresh() {
         if (getFactory() != null) {
             String[] regID = getFactory().getRegistrationIDs(this);
             for (String i : regID) {
@@ -160,7 +242,12 @@ public abstract class AuthConfigProviderHelper implements AuthConfigProvider {
                 }
             }
         }
-        providerEpoch.increment();
+        epochCarrier.increment();
+        selfRegister();
+    }
+
+    public void refresh() {
+        epochCarrier.increment();
         selfRegister();
     }
 
@@ -178,6 +265,4 @@ public abstract class AuthConfigProviderHelper implements AuthConfigProvider {
             boolean returnNullContexts) throws AuthException;
 
     public abstract MessagePolicyDelegate getMessagePolicyDelegate(String appContext) throws AuthException;
-
 }
-

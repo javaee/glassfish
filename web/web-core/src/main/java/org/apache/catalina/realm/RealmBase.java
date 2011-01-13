@@ -1422,8 +1422,8 @@ public abstract class RealmBase
     
         // unregister this realm
         if ( oname!=null ) {   
-            try {   
-                Registry.getRegistry(null, null).unregisterComponent(oname); 
+            try {
+                Registry.getRegistry(null, null).unregisterComponent(oname);
                 log.fine( "unregistering realm " + oname );   
             } catch( Exception ex ) {   
                 log.log(Level.SEVERE, "Can't unregister realm " + oname, ex);

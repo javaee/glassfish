@@ -151,6 +151,10 @@ public class ServletSecurityElement extends HttpConstraintElement {
      * Gets the (possibly empty) collection of HTTP Method specific
      * constraint elements.
      *
+     * <p>If permitted, any changes to the returned <code>Collection</code> must not
+     * affect this <code>ServletSecurityElement</code>.
+     *
+     *
      * @return the (possibly empty) collection of HttpMethodConstraintElement
      * objects
      */
@@ -159,9 +163,14 @@ public class ServletSecurityElement extends HttpConstraintElement {
     }
 
     /**
-     * Gets the set of HTTP methid names named by the HttpMethodConstraints.
+     * Gets the set of HTTP method names named by the HttpMethodConstraints.
      *
-     * @return the set of String method names
+     *  <p>If permitted, any changes to the returned <code>Collection</code> must not
+     * affect this <code>ServletSecurityElement</code>.
+     *
+
+     *
+     * @return the collection String method names
      */
     public Collection<String> getMethodNames() {
         return Collections.unmodifiableCollection(methodNames);

@@ -664,7 +664,8 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
     // --------------------------------------------------------- Public Methods
     public void destroy() {
         if( oname != null )
-            Registry.getRegistry(null, null).unregisterComponent(oname);
+            // Do not register unused tomcat mbeans
+            //Registry.getRegistry(null, null).unregisterComponent(oname);
         if (randomIS!=null) {
             try {
                 randomIS.close();
@@ -695,7 +696,8 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
                 }   
                 oname=new ObjectName(domain + ":type=Manager,path="
                 + path + ",host=" + hst.getName());
-                Registry.getRegistry(null, null).registerComponent(this, oname, null );
+                // Do not register unused tomcat mbeans
+                //Registry.getRegistry(null, null).registerComponent(this, oname, null );
             } catch (Exception e) {
                 log.log(Level.SEVERE, "Error registering ", e);
             }

@@ -173,7 +173,7 @@ public class WebModule extends PwcWebModule implements Context {
     // true if standalone WAR, false if embedded in EAR file
     private boolean isStandalone = true;
 
-     Habitat habitat;
+    Habitat habitat;
 
     /**
      * Constructor.
@@ -502,6 +502,10 @@ public class WebModule extends PwcWebModule implements Context {
         configureValves();
         configureCatalinaProperties();
         webModuleStartedEvent();
+        if (directoryListing) {
+            setDirectoryListing(directoryListing);
+        }
+
         hasStarted = true;
     }
 
@@ -516,12 +520,6 @@ public class WebModule extends PwcWebModule implements Context {
         if (hasStarted) {
             webModuleStoppedEvent();
             hasStarted = false;
-        }
-
-        if (webBundleDescriptor != null &&
-                webBundleDescriptor.getServiceReferenceDescriptors() != null) {
-            for (Object obj: webBundleDescriptor.getServiceReferenceDescriptors()) {
-            }
         }
 
         // Stop and unregister Tomcat mbeans
@@ -545,7 +543,7 @@ public class WebModule extends PwcWebModule implements Context {
     @Override
     protected Types getTypes() {
         if (wmInfo.getDeploymentContext()!=null) {
-            return wmInfo.getDeploymentContext().getModuleMetaData(Types.class);
+            return wmInfo.getDeploymentContext().getTransientAppMetaData(Types.class.getName(), Types.class);
         } else {
             return null;
         }
@@ -2109,11 +2107,17 @@ public class WebModule extends PwcWebModule implements Context {
     // --------------------------------------------------------- embedded Methods
     
     private SecurityConfig config;
+
+    /**
+     * Should we generate directory listings?
+     */
+    protected boolean directoryListing = false;
         
     /**
      * Enables or disables directory listings on this <tt>Context</tt>.
      */
     public void setDirectoryListing(boolean directoryListing) {
+        this.directoryListing = directoryListing;
         Wrapper wrapper = (Wrapper) findChild(
                 org.apache.catalina.core.Constants.DEFAULT_SERVLET_NAME);
         if (wrapper !=null) {
@@ -2127,17 +2131,9 @@ public class WebModule extends PwcWebModule implements Context {
     /**
      * Checks whether directory listings are enabled or disabled on this
      * <tt>Context</tt>.
-     */
-    public boolean isDirectoryListing() {   
-        Wrapper wrapper = (Wrapper) findChild(
-                org.apache.catalina.core.Constants.DEFAULT_SERVLET_NAME);
-        if (wrapper !=null) {
-            Servlet servlet = ((StandardWrapper)wrapper).getServlet();
-            if (servlet instanceof DefaultServlet) {
-                return ((DefaultServlet)servlet).isListings();
-            }
-        }
-        return false;
+     */ 
+    public boolean isDirectoryListing() {
+        return directoryListing;
     }
 
     /**

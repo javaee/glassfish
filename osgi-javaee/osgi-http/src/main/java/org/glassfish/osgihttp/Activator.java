@@ -153,7 +153,7 @@ public class Activator implements BundleActivator {
         standardContext.setDocBase(System.getProperty("java.io.tmpdir"));
         standardContext.setWorkDir(System.getProperty("java.io.tmpdir"));
         // standardContext.setJ2EEServer(System.getProperty("com.sun.aas.instanceName"));
-        standardContext.setJ2EEServer("server");
+        standardContext.setJ2EEServer(getInstanceName());
         standardContext.addLifecycleListener(new ContextConfig());
         Realm realm = Globals.getDefaultHabitat().getByContract(Realm.class);
         standardContext.setRealm(realm);
@@ -261,11 +261,10 @@ public class Activator implements BundleActivator {
         StringBuilder sb = new StringBuilder();
         boolean first = true;
         Domain domain = Globals.get(Domain.class);
-        String target = "server"; // Need to understand how to dynamically obtains this
+        String target = getInstanceName();
         Server server = domain.getServerNamed(target);
         if (server != null) {
-            Config config = domain.getConfigs().getConfigByName(
-                server.getConfigRef());
+            Config config = server.getConfig();
             if (config != null) {
                 com.sun.enterprise.config.serverbeans.HttpService httpService = config.getHttpService();
                 if (httpService != null) {
@@ -287,6 +286,12 @@ public class Activator implements BundleActivator {
         return sb.toString();
     }
 
+    private String getInstanceName() {
+        ServerEnvironment se = Globals.get(ServerEnvironment.class);
+        String target = se.getInstanceName();
+        return target;
+    }
+
     /**
      * @return the dafault virtual server
      */
@@ -294,4 +299,5 @@ public class Activator implements BundleActivator {
         org.glassfish.grizzly.config.dom.NetworkListener nl = Globals.get(org.glassfish.grizzly.config.dom.NetworkListener.class);
         return nl.findHttpProtocol().getHttp().getDefaultVirtualServer();
     }
+
 }

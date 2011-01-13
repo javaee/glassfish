@@ -286,21 +286,22 @@ public final class GlassFishORBManager {
         fineLog( "GlassFishORBManager: initProperties: processType {0}",
             processType ) ;
 
-        if( (processType == ProcessType.ACC) || (processType == ProcessType.Other) ) {
+        if (processType != ProcessType.ACC) {
+            String sslClientRequired = System.getProperty(
+                    ORB_SSL_STANDALONE_CLIENT_REQUIRED);
+            if (sslClientRequired != null
+                    && sslClientRequired.equals("true")) {
+                csiv2Props.put(
+                        GlassFishORBHelper.ORB_SSL_CLIENT_REQUIRED, "true");
+            }
+        }
+
+        if(!processType.isServer()) {
             // No access to domain.xml.  Just init properties.
             // In this case iiopListener beans will be null.
             checkORBInitialPort(EMPTY_PROPERTIES);
 
-            if(processType != ProcessType.ACC) {
-                String sslClientRequired = System.getProperty(
-                    ORB_SSL_STANDALONE_CLIENT_REQUIRED);
 
-                if ( sslClientRequired != null
-                    && sslClientRequired.equals("true")) {
-                    csiv2Props.put(
-                        GlassFishORBHelper.ORB_SSL_CLIENT_REQUIRED, "true");
-                }
-            }
         } else {
             iiopService = iiopUtils.getIiopService();
             iiopListeners = iiopService.getIiopListener() ;
@@ -417,7 +418,7 @@ public final class GlassFishORBManager {
                 + CSIv2SSLTaggedComponentHandlerImpl.class.getName(),"dummy");
        
 
-        if (processType == ProcessType.Server) {
+        if (processType.isServer()) {
             gmsClient = new IiopFolbGmsClient( habitat ) ;
 
             if (gmsClient.isGMSAvailable()) {
@@ -458,7 +459,7 @@ public final class GlassFishORBManager {
 
             // Standard OMG Properties.
             String orbDefaultServerId = DEFAULT_SERVER_ID;
-            if (!processType.isServer() && !processType.isStandaloneServer()) {
+            if (!processType.isServer()) {
                 orbDefaultServerId = ACC_DEFAULT_SERVER_ID;               
             }
 
@@ -541,7 +542,7 @@ public final class GlassFishORBManager {
              * (address in use exception) Having an IORInterceptor
              * (TxSecIORInterceptor) get called during ORB init always
              * results in a nested ORB.init call because of the call to getORB
-             * in the IORInterceptor.
+             * in the IORInterceptor.i
              */
                 
             // TODO Right now we need to explicitly set useOSGI flag.  If it's set to
@@ -588,7 +589,7 @@ public final class GlassFishORBManager {
                 logger.log(Level.SEVERE, "enterprise.orb_reference_exception", in);
             }
 
-            if( processType.isServer() ) {
+            if (processType.isServer()) {
                 // This MUST happen before new InitialGroupInfoService,
                 // or the ServerGroupManager will get initialized before the
                 // GIS is available.
@@ -726,7 +727,7 @@ public final class GlassFishORBManager {
         // Done to initialize the Persistent Server Port, before any
         // POAs are created. This was earlier done in POAEJBORB
         // Do it only in the appserver, not on appclient.  
-        if ( processType.isServer() ) {
+        if (processType.isServer()) {
             props.setProperty(ORBConstants.PERSISTENT_SERVER_PORT_PROPERTY,
                     initialPort);
         }
@@ -900,5 +901,9 @@ public final class GlassFishORBManager {
         }
         logger.log(Level.INFO, "corbaloc url ==> {0}", corbalocURL);
         return corbalocURL;
+    }
+
+    String getIIOPEndpoints() {
+        return gmsClient.getIIOPEndpoints() ;
     }
 }

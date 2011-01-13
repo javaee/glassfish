@@ -55,21 +55,12 @@ package com.sun.enterprise.registration.impl;
 */
 import com.sun.enterprise.registration.*;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 import java.util.Properties;
-import java.net.ConnectException;
-import java.net.UnknownHostException;
-import com.sun.scn.servicetags.SvcTag;
 //import com.sun.enterprise.util.RegistrationUtil;
 //import com.sun.enterprise.registration.SysnetRegistrationService;
 
 public class LocalServiceRegistry {
     
-    private ServiceTag  servicetag;
 
     //Revist: make the debug to true for debugging purpose
     boolean debug = false;

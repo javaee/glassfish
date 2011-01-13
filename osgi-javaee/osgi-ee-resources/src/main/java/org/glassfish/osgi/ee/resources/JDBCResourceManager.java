@@ -95,11 +95,11 @@ public class JDBCResourceManager extends BaseResourceManager implements Resource
                 String poolName = resource.getPoolName();
                 JdbcConnectionPool pool = (JdbcConnectionPool)
                         getResources().getResourceByName(JdbcConnectionPool.class, poolName);
-                String className;
-                if (pool.getResType().equalsIgnoreCase(Constants.DRIVER)) {
+                String className = pool.getDatasourceClassname();
+                // no need to use res-type to get driver/datasource-classname
+                // as either datasource-classname or driver-classname must be not null.
+                if(className == null){
                     className = pool.getDriverClassname();
-                } else {
-                    className = pool.getDatasourceClassname();
                 }
                 Class[] intf = new Class[]{javax.sql.DataSource.class, Invalidate.class};
                 Object proxy = getProxy(resource.getJndiName(), intf, getClassLoader());

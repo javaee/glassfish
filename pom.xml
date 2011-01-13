@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -56,38 +56,38 @@
     <version>3.1-SNAPSHOT</version>
     <name>GlassFish Parent Project</name>
     <scm>
-        <connection>scm:svn:https://svn.dev.java.net/svn/glassfish-svn/trunk/v3</connection>
-        <developerConnection>scm:svn:https://svn.dev.java.net/svn/glassfish-svn/trunk/v3</developerConnection>
+        <connection>scm:svn:https://svn.java.net/svn/glassfish~svn/trunk/v3</connection>
+        <developerConnection>scm:svn:https://svn.java.net/svn/glassfish~svn/trunk/v3</developerConnection>
     </scm>
     <issueManagement>
         <system>IssueTracker</system>
-        <url>https://glassfish.dev.java.net/servlets/ProjectIssues</url>
+        <url>http://java.net/jira/browse/GLASSFISH</url>
     </issueManagement>
 
     <mailingLists>
         <mailingList>
             <name>dev</name>
-            <subscribe>https://glassfish.dev.java.net/servlets/ProjectMailingListList</subscribe>
-            <post>dev@glassfish.dev.java.net</post>
-            <archive>https://glassfish.dev.java.net/servlets/SummarizeList?listName=dev</archive>
+            <subscribe>http://java.net/projects/glassfish/lists</subscribe>
+            <post>dev@glassfish.java.net</post>
+            <archive>http://java.net/projects/glassfish/lists/dev/archive</archive>
         </mailingList>
         <mailingList>
             <name>users</name>
-            <subscribe>https://glassfish.dev.java.net/servlets/ProjectMailingListList</subscribe>
-            <post>users@glassfish.dev.java.net</post>
-            <archive>https://glassfish.dev.java.net/servlets/SummarizeList?listName=users</archive>
+            <subscribe>http://java.net/projects/glassfish/lists</subscribe>
+            <post>users@glassfish.java.net</post>
+            <archive>http://java.net/projects/glassfish/lists/users/archive</archive>
         </mailingList>
         <mailingList>
             <name>issues</name>
-            <subscribe>https://glassfish.dev.java.net/servlets/ProjectMailingListList</subscribe>
-            <post>issues@glassfish.dev.java.net</post>
-            <archive>https://glassfish.dev.java.net/servlets/SummarizeList?listName=issues</archive>
+            <subscribe>http://java.net/projects/glassfish/lists</subscribe>
+            <post>issues@glassfish.java.net</post>
+            <archive>http://java.net/projects/glassfish/lists/issues/archive</archive>
         </mailingList>
         <mailingList>
-            <name>cvs</name>
-            <subscribe>https://glassfish.dev.java.net/servlets/ProjectMailingListList</subscribe>
-            <post>cvs@glassfish.dev.java.net</post>
-            <archive>https://glassfish.dev.java.net/servlets/SummarizeList?listName=cvs</archive>
+            <name>commits</name>
+            <subscribe>http://java.net/projects/glassfish/lists</subscribe>
+            <post>commits@glassfish.java.net</post>
+            <archive>http://java.net/projects/glassfish/lists/commits/archive</archive>
         </mailingList>
     </mailingLists>
 
@@ -95,32 +95,25 @@
         <!-- Set sourceEncoding property to eliminate warning with "File encoding not set" -->
         <!-- when running FindBugs plugin.  -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding> 
-        <mail.version>1.4.3</mail.version>
+        <mail.version>1.4.4-rc1</mail.version>
         <management-api.version>1.1-rev-1</management-api.version>
         <jms-api.version>1.1-rev-1</jms-api.version>
-        <jsp-api.version>2.2</jsp-api.version>
-        <jsp-impl.version>2.2.2-b03</jsp-impl.version>
+        <jsp-api.version>2.2.1-b02</jsp-api.version>
+        <jsp-impl.version>2.2.2-b06</jsp-impl.version>
         <el-api.version>2.2.1-b03</el-api.version>
         <el-impl.version>2.2.1-b03</el-impl.version>
         <jstl-impl.version>1.2</jstl-impl.version>
         <jstl-api.version>1.2</jstl-api.version>
-        <jsf-api.version>2.1.0-b06</jsf-api.version>
-        <jsf-impl.version>2.1.0-b06</jsf-impl.version>
+        <jsf-api.version>2.1.0-b10</jsf-api.version>
+        <jsf-impl.version>2.1.0-b10</jsf-impl.version>
         <jsf-ext.version>0.2</jsf-ext.version>
         <woodstock.version>4.0.2.6</woodstock.version>
         <jaxrpc-api.version>1.1</jaxrpc-api.version>
         <grizzly.version>2.0.0-SNAPSHOT</grizzly.version>
-        <jsr250-api.version>1.0</jsr250-api.version>
         <jsr181-api.version>1.0-MR1</jsr181-api.version>
         <saaj-api.version>1.3</saaj-api.version>
-        <commons.beanutils.version>1.6.1</commons.beanutils.version>
-        <commons.collections.version>2.1</commons.collections.version>
-        <commons.digester.version>1.5</commons.digester.version>
-        <commons.modeler.version>1.1</commons.modeler.version>
-        <hk2.version>1.0.58</hk2.version>
-        <hk2.plugin.version>1.0.58</hk2.plugin.version>
-        <jsr223-api.version>1.0</jsr223-api.version>
-        <phobos.version>0.5.10</phobos.version>
+        <hk2.version>1.0.72</hk2.version>
+        <hk2.plugin.version>1.0.72</hk2.plugin.version>
         <trilead-ssh2.version>build212-hudson-6</trilead-ssh2.version>
         <product.name>GlassFish Server Open Source Edition</product.name>
         <abbrev_product_name>glassfish</abbrev_product_name>
@@ -130,23 +123,19 @@
         <update_version></update_version>
         <version_suffix></version_suffix>
         <build.id>${user.name}-private</build.id><!-- on Hudson and RE, this gets replaced by real build ID -->
-        <jruby-scripting.version>1.0-b17</jruby-scripting.version>
-        <jmac-api.version>1.0-rev-1</jmac-api.version>
         <stax-api.version>1.0-2</stax-api.version>
         <jsftemplating.version>2.0.4</jsftemplating.version>
-        <scales.version>1.3.1</scales.version>
-        <glassfish-corba.version>3.1.0-b010</glassfish-corba.version>
-        <uc-pkg-client.version>1.122-38.2791</uc-pkg-client.version>
-        <uc-pkg-bootstrap.version>1.122-38.2791</uc-pkg-bootstrap.version>
-        
-        <webservices.version>2.1-b17</webservices.version>
+        <glassfish-corba.version>3.1.0-b021</glassfish-corba.version>
+        <uc-pkg-client.version>1.122-50.2809</uc-pkg-client.version>
+        <uc-pkg-bootstrap.version>1.122-50.2809</uc-pkg-bootstrap.version>
+        <webservices.version>2.1-b25</webservices.version>
         <woodstox.version>3.2.1.1</woodstox.version>
-        <jaxb-api.version>2.2.2-promoted-b95</jaxb-api.version>
-        <jaxb.version>2.2.2-promoted-b95</jaxb.version>
+        <jaxb-api.version>2.2.2</jaxb-api.version>
+        <jaxb.version>2.2.3</jaxb.version>
         <jaxrpc.api.version>1.1-b01</jaxrpc.api.version>
 
-        <javax-persistence-api.version>2.0.2</javax-persistence-api.version>
-        <eclipselink.version>2.1.1</eclipselink.version>
+        <javax-persistence-api.version>2.0.3</javax-persistence-api.version>
+        <eclipselink.version>2.2.0-RC1</eclipselink.version>
         <dbschema.version>RELEASE60</dbschema.version>
         <!-- osgi version string must start with a number. Manually mapping above dbschema.version to osgi.version here -->
         <dbschema.osgi.version>6.0</dbschema.osgi.version>
@@ -154,24 +143,24 @@
         <!-- osgi version string must start with a number. Manually mapping above schema2beans.version to osgi.version here -->
         <schema2beans.osgi.version>5.5</schema2beans.osgi.version>
         <antlr.version>2.7.6</antlr.version>
-        <mq.version>4.5-019</mq.version>
-        <javadb.version>10.5.3.0</javadb.version>
+        <mq.version>4.5-024</mq.version>
+        <javadb.version>10.6.2.1</javadb.version>
         <jaxr.version>JAXR_RA_20091012</jaxr.version>
-        <weld.version>1.1.0-01-glassfish</weld.version>
+        <weld.version>1.1.0.CR4</weld.version>
         <jersey.version>1.5-SNAPSHOT</jersey.version>
         <jbi.version>1.0</jbi.version>
         <wsdl4j.version>1.6.2</wsdl4j.version>
-        <gmbal.version>3.0.0-b023</gmbal.version>
-        <glassfish-management-api.version>3.0.0-b012</glassfish-management-api.version>
-        <mimepull.version>1.4</mimepull.version>
+        <gmbal.version>3.1.0-b001</gmbal.version>
+        <glassfish-management-api.version>3.1.0-b001</glassfish-management-api.version>
+        <mimepull.version>1.5</mimepull.version>
         <findbugs.exclude></findbugs.exclude>
         <btrace.version>1.0.5</btrace.version>
         <opendmk.version>1.0-b01-ea</opendmk.version>
-        <v3-docs.version>3.1-b02</v3-docs.version>
-        <l10n.version>3.0-b73</l10n.version>
+        <v3-docs.version>3.1-b10</v3-docs.version>
+        <l10n.version>3.1-b34</l10n.version>
         <asm.version>3.1</asm.version>
-        <shoal.version>1.5.20</shoal.version>
-        <ha-api.version>3.1.5</ha-api.version>
+        <shoal.version>1.5.25</shoal.version>
+        <ha-api.version>3.1.8</ha-api.version>
     </properties>
 
 
@@ -381,8 +370,6 @@
                 <module>extras/embedded/all</module>
                 <module>extras/embedded/web</module>
                 <module>extras/embedded/nucleus</module>
-                <module>extras/embedded/common</module>
-                <module>extras/embedded/glassfish-uber</module>
                 <module>osgi-javaee</module>
 		<module>ant-tasks</module>
             </modules>
@@ -437,8 +424,6 @@
                 <module>extras/embedded/all</module>
                 <module>extras/embedded/web</module>
                 <module>extras/embedded/nucleus</module>
-                <module>extras/embedded/common</module>
-                <module>extras/embedded/glassfish-uber</module>
                 <module>osgi-javaee</module>
                 <module>ant-tasks</module>
             </modules>
@@ -587,7 +572,7 @@
 
         <plugins>
 
-            <!-- Enforces maven 2.0.9 and jdk 1.6.0-04 and above to be used to build v3 -->
+            <!-- Enforces maven 2.2.1 and jdk 1.6.0-04 and above to be used to build v3 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
@@ -604,6 +589,10 @@
                                 <version>[1.6.0-4,)</version>
                                 <message>You need JDK 1.6.0_04 and above!</message>
                             </requireJavaVersion>
+                            <requireMavenVersion>
+                                <version>[2.2.1,)</version>
+                                <message>You need Maven 2.2.1 or above!</message>
+                            </requireMavenVersion>
                         </rules>
                         </configuration>
                     </execution>
@@ -1034,7 +1023,7 @@
             <dependency>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.eventadmin</artifactId>
-                <version>1.2.4</version>
+                <version>1.2.8</version>
             </dependency>
 
             <dependency>
@@ -1110,6 +1099,11 @@
             </dependency>
             <dependency>
                 <groupId>org.glassfish.admingui</groupId>
+                <artifactId>console-cluster-plugin-help</artifactId>
+                <version>${v3-docs.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.admingui</groupId>
                 <artifactId>console-corba-plugin-help</artifactId>
                 <version>${v3-docs.version}</version>
             </dependency>
@@ -1177,7 +1171,7 @@
             </dependency>
             <dependency>
                 <groupId>com.sun.woodstock.dependlibs</groupId>
-                <artifactId>dojo-ajax</artifactId>
+                <artifactId>dojo-ajax-nodemo</artifactId>
                 <version>0.4.1</version>
             </dependency>
             <dependency>
@@ -1254,6 +1248,11 @@
             </dependency>
             <dependency>
                 <groupId>com.sun.corba</groupId>
+                <artifactId>glassfish-corba-internal-api</artifactId>
+                <version>${glassfish-corba.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.corba</groupId>
                 <artifactId>glassfish-corba-codegen</artifactId>
                 <version>${glassfish-corba.version}</version>
             </dependency>
@@ -1294,8 +1293,8 @@
                 <version>4.3.1</version>
             </dependency>
             <dependency>
-                <groupId>javax.mail</groupId>
-                <artifactId>mail</artifactId>
+                <groupId>com.sun.mail</groupId>
+                <artifactId>javax.mail</artifactId>
                 <version>${mail.version}</version>
             </dependency>
             <dependency>
@@ -1395,19 +1394,9 @@
                 <version>2.0-20081121</version>
             </dependency>
             <dependency>
-                <groupId>com.sun.scn</groupId>
-                <artifactId>sysnet-registration</artifactId>
-                <version>1.0.2</version>
-            </dependency>
-            <dependency>
                 <groupId>com.sun</groupId>
                 <artifactId>ldapbp</artifactId>
                 <version>1.0</version>
-            </dependency>
-            <dependency>
-                <groupId>commons-codec</groupId>
-                <artifactId>commons-codec</artifactId>
-                <version>1.3</version>
             </dependency>
             <dependency>
                 <groupId>asm</groupId>

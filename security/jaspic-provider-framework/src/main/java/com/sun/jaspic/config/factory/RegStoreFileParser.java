@@ -1,27 +1,31 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
- * may not use this file except in compliance with the License. You can obtain
- * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
- * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ * may not use this file except in compliance with the License.  You can
+ * obtain a copy of the License at
+ * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
  * When distributing the software, include this License Header Notice in each
- * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
- * Sun designates this particular file as subject to the "Classpath" exception
- * as provided by Sun in the GPL Version 2 section of the License file that
- * accompanied this code.  If applicable, add the following below the License
- * Header, with the fields enclosed by brackets [] replaced by your own
- * identifying information: "Portions Copyrighted [year]
- * [name of copyright owner]"
+ * file and include the License file at packager/legal/LICENSE.txt.
+ *
+ * GPL Classpath Exception:
+ * Oracle designates this particular file as subject to the "Classpath"
+ * exception as provided by Oracle in the GPL Version 2 section of the License
+ * file that accompanied this code.
+ *
+ * Modifications:
+ * If applicable, add the following below the License Header, with the fields
+ * enclosed by brackets [] replaced by your own identifying information:
+ * "Portions Copyright [year] [name of copyright owner]"
  *
  * Contributor(s):
- *
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -36,6 +40,7 @@
 
 package com.sun.jaspic.config.factory;
 
+import com.sun.jaspic.config.helper.JASPICLogManager;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -45,6 +50,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -63,7 +69,7 @@ import javax.security.auth.message.config.AuthConfigFactory.RegistrationContext;
 public final class RegStoreFileParser {
 
     private static final Logger logger =
-            Logger.getLogger(RegStoreFileParser.class.getName());
+            Logger.getLogger(JASPICLogManager.JASPIC_LOGGER, JASPICLogManager.RES_BUNDLE);
 
     private static final String SEP = ":";
     private static final String CON_ENTRY = "con-entry";
@@ -76,43 +82,23 @@ public final class RegStoreFileParser {
 
     private final File confFile;
     private List<EntryInfo> entries;
+    private List<EntryInfo> defaultEntries;
 
     /*
      * Loads the configuration file from the given filename.
      * If a file is not found, then the default entries
-     * stored in GFAuthConfigFactory are used. Otherwise,
-     * the file is parsed to load the entries.
+     * are used. Otherwise the file is parsed to load the entries.
      *
-     * The boolean argument tells whether to create the config
-     * file always (true) or only if it's needed (false).
      */
-    RegStoreFileParser(String pathParent, String pathChild, boolean create) {
+    public RegStoreFileParser(String pathParent, String pathChild,List<EntryInfo> defaultEntries) {
         confFile = new File(pathParent, pathChild);
+        this.defaultEntries = defaultEntries == null ? new ArrayList<EntryInfo>() : defaultEntries;
         try {
-            if (confFile.exists()) {
-                loadEntries();
-            } else {
-                if (create) {
-                    synchronized (confFile) {
-                        entries = GFAuthConfigFactory.getDefaultProviders();
-                        writeEntries();
-                    }
-                } else {
-                    if (logger.isLoggable(Level.FINER)) {
-                        logger.log(Level.FINER, "jmac.factory_file_not_found",
-                            pathParent + File.pathSeparator + pathChild);
-                    }
-                }
-            }
+            loadEntries();
         } catch (IOException ioe) {
             logWarningDefault(ioe);
         } catch (IllegalArgumentException iae) {
             logWarningDefault(iae);
-        }
-
-        // file not parsed
-        if (entries == null) {
-            entries = GFAuthConfigFactory.getDefaultProviders();
         }
     }
 
@@ -132,6 +118,7 @@ public final class RegStoreFileParser {
 
     /*
      * Returns the in-memory list of entries.
+     * MUST Hold exclusive lock on calling factory while processing entries
      */
     List<EntryInfo> getPersistedEntries() {
         return entries;
@@ -192,11 +179,6 @@ public final class RegStoreFileParser {
             return true;
         }
 
-        // if constructor entry, don't need to check reg context
-        if (entry.isConstructorEntry()) {
-            return false;
-        }
-
         // otherwise, check reg contexts to see if there is a match
         if (entry.getRegContexts().contains(ctx)) {
             return false;
@@ -216,20 +198,30 @@ public final class RegStoreFileParser {
      */
     private boolean checkAndRemoveFromList(RegistrationContext target) {
         boolean retValue = false;
-        for (EntryInfo info : entries) {
-            if (info.isConstructorEntry()) {
-                continue;
-            }
+        try {
+            ListIterator<EntryInfo> lit = entries.listIterator();
+            while (lit.hasNext()) {
 
-            Iterator<RegistrationContext> iter =
-                    info.getRegContexts().iterator();
-            while (iter.hasNext()) {
-                RegistrationContext ctx = iter.next();
-                if (ctx.equals(target)) {
-                    iter.remove();
-                    retValue = true;
+                EntryInfo info = lit.next();
+                if (info.isConstructorEntry()) {
+                    continue;
+                }
+
+                Iterator<RegistrationContext> iter =
+                        info.getRegContexts().iterator();
+                while (iter.hasNext()) {
+                    RegistrationContext ctx = iter.next();
+                    if (ctx.equals(target)) {
+                        iter.remove();
+                        if (info.getRegContexts().isEmpty()) {
+                            lit.remove();
+                        }
+                        retValue = true;
+                    }
                 }
             }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
         return retValue;
     }
@@ -241,7 +233,7 @@ public final class RegStoreFileParser {
      */
     private EntryInfo getMatchingRegEntry(EntryInfo target) {
         for (EntryInfo info : entries) {
-            if (info.equals(target)) {
+            if (!info.isConstructorEntry() && info.matchConstructors(target)) {
                 return info;
             }
         }
@@ -253,9 +245,10 @@ public final class RegStoreFileParser {
      * current entries.
      */
     private void writeEntries() throws IOException {
-        if (!confFile.canWrite() && logger.isLoggable(Level.WARNING)) {
+        if (confFile.exists() && !confFile.canWrite()
+                && logger.isLoggable(Level.WARNING)) {
             logger.log(Level.WARNING, "jmac.factory_cannot_write_file",
-                confFile.getPath());
+                    confFile.getPath());
         }
         clearExistingFile();
         PrintWriter out = new PrintWriter(confFile);
@@ -332,10 +325,15 @@ public final class RegStoreFileParser {
     }
 
     private void clearExistingFile() throws IOException {
-        if (confFile.exists()) {
+        boolean newCreation = !confFile.exists();
+        if (!newCreation) {
             confFile.delete();
+        } 
+        if (newCreation) {
+            logger.log(Level.INFO, "jmac.factory_creating_conf_file",
+                    confFile.getPath());
         }
-        confFile.createNewFile();
+        confFile.createNewFile(); 
     }
 
     /*
@@ -344,17 +342,31 @@ public final class RegStoreFileParser {
      * entries are stored or deleted.
      */
     private void loadEntries() throws IOException {
-        entries = new ArrayList<EntryInfo>();
-        BufferedReader reader = new BufferedReader(new FileReader(confFile));
-        String line = reader.readLine();
-        while (line != null) {
-            String trimLine = line.trim(); // can't trim readLine() result
-            if (trimLine.startsWith(CON_ENTRY)) {
-                entries.add(readConEntry(reader));
-            } else if (trimLine.startsWith(REG_ENTRY)) {
-                entries.add(readRegEntry(reader));
+        synchronized (confFile) {
+            entries = new ArrayList<EntryInfo>();
+            if (confFile.exists()) {
+                BufferedReader reader = new BufferedReader(new FileReader(confFile));
+                String line = reader.readLine();
+                while (line != null) {
+                    String trimLine = line.trim(); // can't trim readLine() result
+                    if (trimLine.startsWith(CON_ENTRY)) {
+                        entries.add(readConEntry(reader));
+                    } else if (trimLine.startsWith(REG_ENTRY)) {
+                        entries.add(readRegEntry(reader));
+                    }
+                    line = reader.readLine();
+                }
+            } else {
+                if (logger.isLoggable(Level.FINER)) {
+                    logger.log(Level.FINER, "jmac.factory_file_not_found",
+                            confFile.getParent() + File.pathSeparator
+                            + confFile.getPath());
+                    
+                }
+                for (EntryInfo e : defaultEntries) {
+                    entries.add(new EntryInfo(e));
+                }
             }
-            line = reader.readLine();
         }
     }
 

@@ -1178,7 +1178,7 @@ public class WebappClassLoader
                         && !(name.endsWith(".jar"))) {
                     // Copy binary content to the work directory if not present
                     File resourceFile = new File(loaderDir, name);
-                    url = resourceFile.toURL();
+                    url = resourceFile.toURI().toURL();
                 }
             } catch (Exception e) {
                 // Ignore
@@ -1557,7 +1557,7 @@ public class WebappClassLoader
      * @return the search path of URLs for loading classes and resources.
      */
     @Override
-    public URL[] getURLs() {
+    public synchronized URL[] getURLs() {
 
         if (repositoryURLs != null) {
             return repositoryURLs;

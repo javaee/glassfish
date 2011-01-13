@@ -52,6 +52,7 @@ import java.util.Map;
 import java.util.List;
 import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.Collection;
 
 import org.glassfish.admin.amx.intf.config.*;
 import org.glassfish.admin.amx.core.*;
@@ -163,6 +164,7 @@ public final class AMXProxyTests extends AMXTestBase
                 }
                 catch( final Exception e )
                 {
+                    e.printStackTrace();
                     problems.add( "Error invoking " + m.getName() + "() on " + objectName + " = " + e );
                 }
             }
@@ -286,33 +288,6 @@ public final class AMXProxyTests extends AMXTestBase
     {
         final Resources resources = getDomainConfig().getResources();
         testProxyInterface( resources, Resources.class );
-        
-        final Map<String,CustomResource> cr = resources.getCustomResource();
-        assert cr != null;
-        
-        final Map<String,JndiResource> jndi = resources.getJndiResource();
-        assert jndi != null;
-        
-        final Map<String,JdbcResource> jdbc = resources.getJdbcResource();
-        assert jdbc != null;
-        
-        final Map<String,JdbcConnectionPool> jdbcCP = resources.getJdbcConnectionPool();
-        assert jdbcCP != null;
-        
-        final Map<String,ConnectorResource> connR = resources.getConnectorResource();
-        assert connR != null;
-        
-        final Map<String,ConnectorConnectionPool> ccp = resources.getConnectorConnectionPool();
-        assert ccp != null;
-        
-        final Map<String,AdminObjectResource> ao = resources.getAdminObjectResource();
-        assert ao != null;
-        
-        final Map<String,ResourceAdapter> ra = resources.getResourceAdapter();
-        assert ra != null;
-        
-        final Map<String,MailResource> mr = resources.getMailResource();
-        assert mr != null;
     }
 
     @Test

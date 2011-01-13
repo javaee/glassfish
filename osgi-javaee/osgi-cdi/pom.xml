@@ -50,9 +50,36 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>osgi-cdi</artifactId>
-    <packaging>hk2-jar</packaging>
+    <!-- We don't use bundle packaging as that interfers with other custom packaging types because of a maven bug
+     which is probably fixed in recent maven versions, but I have no time to test them. So, better be safe.-->
+    <packaging>jar</packaging>
     <name>GlassFish CDI Support for OSGi Bundles</name>
     
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <configuration>
+                    <supportedProjectTypes>
+                        <!-- Our parent project disables this plugin for jar type, so we have to enable it here -->
+                        <supportedProjectType>jar</supportedProjectType>
+                    </supportedProjectTypes>
+                </configuration>
+                <executions>
+                   <execution>
+                      <id>bundle</id>
+                      <phase>package</phase>
+                      <goals>
+                         <!-- We use bundle goal to be able to include osgi-cdi-api classes in this bundle, so that
+                              we have one self contained bundle. -->
+                         <goal>bundle</goal>
+                      </goals>
+                   </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
     <developers>
         <developer>
             <id>sivakumart</id>
@@ -94,6 +121,11 @@
             <version>6.0</version>
             <scope>provided</scope>
         </dependency>
-
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>osgi-cdi-api</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 </project>

@@ -40,6 +40,7 @@
 
 package org.glassfish.jdbc.admin.cli;
 
+import com.sun.enterprise.config.serverbeans.Cluster;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import java.util.logging.Level;
@@ -86,7 +87,10 @@ public class DeleteJdbcConnectionPool implements AdminCommand {
 
     @Inject
     private Server[] servers;
-    
+
+    @Inject
+    private Cluster[] clusters;
+
     /**
      * Executes the command with the command parameters passed as Properties
      * where the keys are the paramter names and the values the parameter values
@@ -98,7 +102,7 @@ public class DeleteJdbcConnectionPool implements AdminCommand {
 
         try {
             JDBCConnectionPoolManager jdbcConnMgr = new JDBCConnectionPoolManager();
-            ResourceStatus rs = jdbcConnMgr.delete(servers, domain.getResources(), cascade.toString(), poolName);
+            ResourceStatus rs = jdbcConnMgr.delete(servers, clusters, domain.getResources(), cascade.toString(), poolName);
             if (rs.getMessage() != null) report.setMessage(rs.getMessage());
             if (rs.getStatus() == ResourceStatus.SUCCESS) {
                 report.setActionExitCode(ActionReport.ExitCode.SUCCESS);       

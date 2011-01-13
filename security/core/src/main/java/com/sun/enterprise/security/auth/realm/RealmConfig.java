@@ -57,7 +57,10 @@ public class RealmConfig {
     private static Logger logger =
             LogDomains.getLogger(RealmConfig.class, LogDomains.SECURITY_LOGGER);
 
-     public static void createRealms(String defaultRealm, List<AuthRealm> realms) {
+    public static void createRealms(String defaultRealm, List<AuthRealm> realms) {
+        createRealms(defaultRealm, realms, null);
+    }
+    public static void createRealms(String defaultRealm, List<AuthRealm> realms, String configName) {
         assert(realms != null);
 
         String goodRealm = null; // need at least one good realm
@@ -76,8 +79,7 @@ public class RealmConfig {
                 for (Property realmProp : realmProps) {
                     props.setProperty(realmProp.getName(), realmProp.getValue());
                 }
-                Realm.instantiate(realmName, realmClass, props);
-
+                Realm.instantiate(realmName, realmClass, props, configName);
                 if (logger.isLoggable(Level.FINE)) {
                     logger.fine("Configured realm: " + realmName);
                 }

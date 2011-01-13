@@ -92,6 +92,7 @@ import com.sun.xml.ws.api.WSBinding;
 import com.sun.xml.ws.api.message.Message;
 
 import com.sun.xml.ws.api.model.JavaMethod;
+import com.sun.xml.ws.policy.PolicyMap;
 import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
@@ -99,7 +100,6 @@ import java.security.PrivilegedExceptionAction;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.UnmarshalException;
 import javax.xml.ws.handler.MessageContext;
-import org.glassfish.api.container.Container;
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
 
@@ -116,7 +116,7 @@ public class PipeHelper extends ConfigHelper {
     private SOAPVersion soapVersion;
     private InvocationManager invManager = null;
     private EJBPolicyContextDelegate ejbDelegate = null;
-    
+
     public PipeHelper(String layer, Map map, CallbackHandler cbh) {
         init(layer, getAppCtxt(map), map, cbh);
 
@@ -140,8 +140,9 @@ public class PipeHelper extends ConfigHelper {
         this.ejbDelegate = new EJBPolicyContextDelegate();
    }
 
-    public ClientAuthContext getClientAuthContext(MessageInfo info, Subject s) 
-    throws AuthException {
+    @Override
+    public ClientAuthContext getClientAuthContext(MessageInfo info, Subject s)
+            throws AuthException {
 	ClientAuthConfig c = (ClientAuthConfig)getAuthConfig(false);
 	if (c != null) {
             addModel(info, map);
@@ -150,11 +151,13 @@ public class PipeHelper extends ConfigHelper {
 	return null;
     }
 
+    @Override
     public ServerAuthContext getServerAuthContext(MessageInfo info, Subject s) 
     throws AuthException {
 	ServerAuthConfig c = (ServerAuthConfig)getAuthConfig(true);
 	if (c != null) {
             addModel(info, map);
+            addPolicy(info,map);
 	    return c.getAuthContext(c.getAuthContextID(info),s,map);
 	}
 	return null;
@@ -324,6 +327,12 @@ public class PipeHelper extends ConfigHelper {
     public Object getModelName() { 
  	WSDLPort wsdlModel = (WSDLPort) getProperty(PipeConstants.WSDL_MODEL);
  	return (wsdlModel == null ? "unknown" : wsdlModel.getName());
+    }
+
+    public void  addModelAndPolicy(Packet request) {
+ 	WSDLPort wsdlModel = (WSDLPort) getProperty(PipeConstants.WSDL_MODEL);
+ 	PolicyMap policyMap = (PolicyMap)getProperty(PipeConstants.POLICY);
+
     }
   
     // always returns response with embedded fault
@@ -531,6 +540,13 @@ public class PipeHelper extends ConfigHelper {
         Object model = map.get(PipeConstants.WSDL_MODEL);
         if (model != null) {
             info.getMap().put(PipeConstants.WSDL_MODEL,model);
+        }
+    }
+
+    private static void addPolicy(MessageInfo info, Map map) {
+        Object pol = map.get(PipeConstants.POLICY);
+        if (pol != null) {
+            info.getMap().put(PipeConstants.POLICY,pol);
         }
     }
 

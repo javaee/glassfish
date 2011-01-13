@@ -91,7 +91,7 @@ public class OSGIConsoleHandlers {
                     "for instance : " + instanceName);
         }
 
-        Node node = domain.getNodeNamed(server.getNode());
+        Node node = domain.getNodeNamed(server.getNodeRef());
         String host = node.getNodeHost();
         String consoleUrl = "http://" + host + ":" + port + consolePath;
         

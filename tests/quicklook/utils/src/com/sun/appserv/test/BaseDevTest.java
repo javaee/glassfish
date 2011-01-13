@@ -38,6 +38,12 @@
  * holder.
  */
 
+ /**
+ * This is the same class as the one in v2/appserv-tests/util/reportbuilder/src/main/java/com/sun/appserv/test.
+ *
+ * Please see the original svn logs for the contributions.
+ */
+
 package com.sun.appserv.test;
 
 import java.io.File;
@@ -196,8 +202,10 @@ public abstract class BaseDevTest {
 
     protected final void writeFailure() {
         System.out.println(FAILURE_START);
-        System.out.println(lastAsadminReturn.out);
-        System.out.println(lastAsadminReturn.err);
+        if (lastAsadminReturn != null) {
+            System.out.println(lastAsadminReturn.out);
+            System.out.println(lastAsadminReturn.err);
+        }
     }
 
     /**

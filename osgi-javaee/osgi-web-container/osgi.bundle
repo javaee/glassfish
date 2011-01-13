@@ -40,6 +40,6 @@
 
 -exportcontents: !*
 Bundle-Activator: org.glassfish.osgiweb.OSGiWebContainerActivator
-Import-Package: !com.sun.faces.spi, *
-DynamicImport-Package:com.sun.faces.spi 
+Import-Package: !com.sun.faces.spi, !javax.faces.*, *
+DynamicImport-Package:com.sun.faces.spi, javax.faces.*
 

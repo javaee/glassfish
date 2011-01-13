@@ -41,6 +41,7 @@
 package org.glassfish.webservices;
 
 
+import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.archivist.Archivist;
@@ -53,11 +54,10 @@ import com.sun.enterprise.deploy.shared.FileArchive;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.logging.LogDomains;
 import com.sun.tools.ws.util.xml.XmlUtil;
-import com.sun.xml.bind.api.JAXBRIContext;
+import org.glassfish.api.deployment.UndeployCommandParameters;
 import org.glassfish.loader.util.ASClassLoaderUtil;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.api.deployment.MetaData;
-import org.glassfish.api.deployment.UndeployCommandParameters;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.api.container.RequestDispatcher;
@@ -87,7 +87,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.deployment.common.Artifacts;
-import org.glassfish.deployment.common.DeploymentUtils;
 
 
 /**
@@ -117,8 +116,6 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
 
     @Inject
     private ArchiveFactory archiveFactory;
-
-    private WebServicesDeploymentMBean bean;
 
     private final static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(WebServicesDeployer.class);
 
@@ -185,6 +182,10 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
             }
             doWebServicesDeployment(app,dc);
             Thread.currentThread().setContextClassLoader(oldCl);
+            WebServicesContainer container = habitat.getComponent(WebServicesContainer.class);
+            WebServicesDeploymentMBean bean = container.getDeploymentBean();
+            WebServiceDeploymentNotifier notifier = getDeploymentNotifier();
+            bean.deploy(wsDesc,notifier);
             return true;
         } catch (Exception ex) {
             // re-throw all the exceptions as runtime exceptions
@@ -239,29 +240,23 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
             // If wsdl file is an http URL, download that WSDL and all embedded relative wsdls, schemas
             if (ws.getWsdlFileUri().startsWith("http")) {
                 try {
-                    downloadWsdlsAndSchemas( new URL(ws.getWsdlFileUri()), wsdlDir);
+                    wsdlFileUri = downloadWsdlsAndSchemas( new URL(ws.getWsdlFileUri()), wsdlDir);
                 } catch(Exception e) {
                     throw new DeploymentException(e.toString(), e);
                 }
-                wsdlFileUri = ws.getWsdlFileUri().substring(ws.getWsdlFileUri().lastIndexOf("/")+1);
                 wsdlFile = new File(wsdlDir, wsdlFileUri);
             } else {
                 wsdlFileUri = ws.getWsdlFileUri();
                 File wsdlFileAbs = new File(wsdlFileUri);
                 wsdlFile = wsdlFileAbs.isAbsolute()? wsdlFileAbs : new File(moduleDir, wsdlFileUri);
-
-                if (!wsdlFile.exists()) {
-                    String errorMessage =  format(rb.getString("wsdl.notfound"),
-                            ws.getWsdlFileUri(),bundle.getModuleDescriptor().getArchiveUri())  ;
-                    logger.severe(errorMessage);
-                    throw new DeploymentException(errorMessage);
-                }
             }
-        } else {
-            //make required dirs in case they are not present
-            wsdlFileUri = JAXBRIContext.mangleNameToClassName(ws.getName()) + ".wsdl";
-            wsdlDir.mkdirs();
-            wsdlFile = new File(wsdlDir, wsdlFileUri);
+
+            if (!wsdlFile.exists()) {
+                String errorMessage = format(rb.getString("wsdl.notfound"),
+                        ws.getWsdlFileUri(), bundle.getModuleDescriptor().getArchiveUri());
+                logger.severe(errorMessage);
+                throw new DeploymentException(errorMessage);
+            }
         }
     }
 
@@ -287,8 +282,16 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
     public MetaData getMetaData() {
         return new MetaData(false, null, new Class[] {Application.class});
     }
-    
-    private void downloadWsdlsAndSchemas( URL httpUrl, File wsdlDir) throws Exception {
+
+    /**
+     *  This method downloads the main wsdl/schema and its imports in to the directory specified and returns the name of downloded root
+     * document.
+     * @param httpUrl
+     * @param wsdlDir
+     * @return Returns the name of the root file downloaded with the invocation.
+     * @throws Exception
+     */
+    private String downloadWsdlsAndSchemas( URL httpUrl, File wsdlDir) throws Exception {
         // First make required directories and download this wsdl file
         wsdlDir.mkdirs();
         String fileName = httpUrl.toString().substring(httpUrl.toString().lastIndexOf("/")+1);
@@ -332,7 +335,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
             }
             downloadWsdlsAndSchemas( new URL(urlWithoutFileName+"/"+next.getLocation()), newWsdlDir);
         }
-
+        return fileName;
     }
     // If catalog file is present, get the mapped WSDL for given WSDL and replace the value in
     // the given WebService object
@@ -471,7 +474,9 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
         // We will use our little parser rather than using JAXRPC's heavy weight WSDL parser
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
-
+        //Validation is not needed as we want to be too strict in processing wsdls that are generated by buggy tools.
+        factory.setExpandEntityReferences(false);
+        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         InputStream is = null;
         try {
             DocumentBuilder builder = factory.newDocumentBuilder();
@@ -543,8 +548,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
             if(n != null) {
                 givenLocation = n.getNodeValue();
             }
-            if((givenLocation == null) ||
-                ((givenLocation != null) && givenLocation.startsWith("http"))) {
+            if(givenLocation == null || givenLocation.startsWith("http")) {
                 continue;
             }
             Import imp = new Import();
@@ -631,11 +635,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
 
                 // Create the generated WSDL in the generated directory; for that create the directories first
                 File genXmlDir =  dc.getScratchDir("xml");
-                /*if(!app.isVirtual()) {
-                    // Add module name to the generated xml dir for apps
-                    String subDirName = next.getBundleDescriptor().getModuleDescriptor().getArchiveUri();
-                    genXmlDir = new File(genXmlDir, subDirName.replaceAll("\\.", "_"));
-                }*/
+
                 String wsdlFileDir = next.getWsdlFileUri().substring(0, next.getWsdlFileUri().lastIndexOf('/'));
                 (new File(genXmlDir, wsdlFileDir)).mkdirs();
                 File genWsdlFile = new File(genXmlDir, next.getWsdlFileUri());
@@ -658,7 +658,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
          * Combining code from <code>com.sun.enterprise.deployment.backend.WebServiceDeployer</code>
          * in v2
          */
-        final WebServiceDeploymentNotifier notifier = getDeploymentNotifier();
+
         Collection<WebServiceEndpoint> endpoints =
             webBunDesc.getWebServices().getEndpoints();
         ClassLoader cl = webBunDesc.getClassLoader();
@@ -693,9 +693,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
                         "org.glassfish.webservices.JAXRPCServlet";
                 }
                 webComp.setWebComponentImplementation(containerServlet);
-                if (notifier != null) {
-                    notifier.notifyDeployed(nextEndpoint);
-                }
+
             } catch(ClassNotFoundException cex) {
                 throw new DeploymentException( format(rb.getString(
                         "enterprise.deployment.backend.cannot_find_servlet"),
@@ -751,7 +749,6 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
         Application app = container.getApplication();
         for(WebService svc : app.getWebServiceDescriptors()) {
             for(WebServiceEndpoint endpoint : svc.getEndpoints()) {
-                bean.undeploy(endpoint);
                 if (notifier != null) {
                     notifier.notifyUndeployed(endpoint);
                 }
@@ -762,18 +759,17 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
     @Override
     public void clean(DeploymentContext dc) {
         super.clean(dc);
-        /*
+
+        WebServicesContainer container = habitat.getComponent(WebServicesContainer.class);
+        WebServicesDeploymentMBean bean = container.getDeploymentBean();
         UndeployCommandParameters params = dc.getCommandParameters(UndeployCommandParameters.class);
         if (params != null)  {
-            final Artifacts generatedArtifacts = DeploymentUtils.generatedArtifacts(dc);
-            generatedArtifacts.clearArtifacts() ;
-        } */
-        
+            bean.undeploy(params.name);
+        }
     }
 
     @Override
     public WebServicesApplication load(WebServicesContainer container, DeploymentContext context) {
-        bean = container.getDeploymentBean();
         Set<String> publishedFiles = null;
         Application app = context.getModuleMetaData(Application.class);
         try {
@@ -781,11 +777,7 @@ public class WebServicesDeployer extends JavaEEDeployer<WebServicesContainer,Web
         } catch(Exception e) {
             throw new RuntimeException(e);
         }
-        for(WebService svc : app.getWebServiceDescriptors()) {
-            for(WebServiceEndpoint endpoint : svc.getEndpoints()) {
-                bean.deploy(endpoint);
-            }
-        }
+
 
         return new WebServicesApplication(context, env, dispatcher, config, habitat,publishedFiles);
     }

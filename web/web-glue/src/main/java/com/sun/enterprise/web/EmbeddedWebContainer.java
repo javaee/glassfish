@@ -41,7 +41,7 @@
 package com.sun.enterprise.web;
 
 import com.sun.enterprise.container.common.spi.util.InjectionManager;
-import com.sun.enterprise.web.logger.FileLoggerHandler;
+import com.sun.enterprise.web.logger.FileLoggerHandlerFactory;
 import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
 import com.sun.logging.LogDomains;
 import com.sun.web.server.WebContainerListener;
@@ -101,7 +101,7 @@ public final class EmbeddedWebContainer extends Embedded implements PostConstruc
      */
     private String logLevel;
 
-    private FileLoggerHandler logHandler;
+    private FileLoggerHandlerFactory fileLoggerHandlerFactory;
     
     void setWebContainer(WebContainer webContainer) {
         this.webContainer = webContainer;
@@ -115,15 +115,17 @@ public final class EmbeddedWebContainer extends Embedded implements PostConstruc
         this.logLevel = logLevel;
     }
             
-    void setLogHandler(FileLoggerHandler logHandler) {
-        this.logHandler = logHandler;
+    void setFileLoggerHandlerFactory(FileLoggerHandlerFactory fileLoggerHandlerFactory) {
+        this.fileLoggerHandlerFactory = fileLoggerHandlerFactory;
+    }
+    
+    void setWebContainerFeatureFactory(WebContainerFeatureFactory webContainerFeatureFactory) {
+        this.webContainerFeatureFactory = webContainerFeatureFactory;
     }
     
     // --------------------------------------------------------- Public Methods
     
     public void postConstruct() {
-        webContainerFeatureFactory = habitat.getByContract(
-                WebContainerFeatureFactory.class);
         invocationManager = habitat.getByContract(
                 InvocationManager.class);
         injectionManager = habitat.getByContract(
@@ -148,9 +150,10 @@ public final class EmbeddedWebContainer extends Embedded implements PostConstruc
                     MimeMap vsMimeMap) {
 
         VirtualServer vs = new VirtualServer();
+        vs.setFileLoggerHandlerFactory(fileLoggerHandlerFactory);
 
         vs.configure(vsID, vsBean, vsDocroot, vsLogFile, vsMimeMap,
-                     logServiceFile, logLevel, logHandler);
+                     logServiceFile, logLevel);
          
         ContainerListener listener = loadListener
             ("com.sun.enterprise.web.connector.extension.CatalinaListener");
@@ -200,6 +203,10 @@ public final class EmbeddedWebContainer extends Embedded implements PostConstruc
         context.setManagerChecksFrequency(1);
         context.setServerContext(serverContext);
         context.setWebModuleConfig(wmInfo);
+        context.setDefaultWebXml(defaultWebXmlLocation);
+        if (embeddedDirectoryListing) {
+            context.setDirectoryListing(embeddedDirectoryListing);
+        }
 
         if (configFile.exists()) {
             context.setConfigFile(configFile.getAbsolutePath());
@@ -258,6 +265,7 @@ public final class EmbeddedWebContainer extends Embedded implements PostConstruc
     /**
      * Return the list of engines created (from Embedded API)
      */
+    @Override
     public Engine[] getEngines() {
         return engines;
     }
@@ -283,6 +291,7 @@ public final class EmbeddedWebContainer extends Embedded implements PostConstruc
      * @param port Port number to listen to
      * @param protocol the http protocol to use.
      */
+    @Override
     public Connector createConnector(String address, int port,
 				     String protocol) {
 
@@ -336,6 +345,7 @@ public final class EmbeddedWebContainer extends Embedded implements PostConstruc
      * Do not create the JAAS default realm since all children will
      * have their own.
      */
+    @Override
     public Engine createEngine() {
 
         StandardEngine engine = new WebEngine(webContainer);
@@ -363,6 +373,7 @@ public final class EmbeddedWebContainer extends Embedded implements PostConstruc
             this.webContainer = webContainer;
         }
 
+        @Override
         public Realm getRealm(){
             return null;
         }

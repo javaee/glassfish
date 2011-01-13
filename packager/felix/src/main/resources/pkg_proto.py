@@ -58,7 +58,6 @@ pkg = {
                       },
     "files"         : { "glassfish/osgi/felix/conf/config.properties" : { "preserve" : "renameold"},
                         "glassfish/osgi/felix/conf/system.properties" : { "preserve" : "renameold"},
-                        "glassfish/osgi/felix/conf/config.properties.nojaxb" : { "preserve" : "renameold"},
                         "glassfish/modules/autostart/org.apache.felix.fileinstall-autodeploy-bundles.cfg" : { "preserve" : "renameold"},
                         "glassfish/modules/autostart/org.apache.felix.webconsole.internal.servlet.OsgiManager.cfg" : { "preserve" : "renameold"},
                       },

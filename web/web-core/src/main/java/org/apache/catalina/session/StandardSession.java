@@ -437,7 +437,7 @@ public class StandardSession
      * Sets the id of the SipApplicationSession that is the parent of this
      * StandardSession.
      *
-     * @param The SipApplicationSession id
+     * @param id SipApplicationSession id
      */
     public void setSipApplicationSessionId(String id) {
         sipAppSessionId = id;
@@ -1441,6 +1441,10 @@ public class StandardSession
      * out-of-band (i.e., non-http) request, false otherwise
      */      
     public synchronized boolean hasNonHttpLockOccurred() {
+        //in this case we are not using locks
+        //so just return false
+        if(_sessionLock == null)
+            return false;
         return _sessionLock.hasNonHttpLockOccurred();
     }
 

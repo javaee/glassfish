@@ -71,6 +71,7 @@ public class V3Module extends WSTCPModule {
     private final WSTCPDelegate delegate;
 
     V3Module() {
+        System.out.println("V3MODULE INIT!!!!!!!!");
         WSTCPModule.setInstance(this);
 
         WebServicesDeployer.getDeploymentNotifier().

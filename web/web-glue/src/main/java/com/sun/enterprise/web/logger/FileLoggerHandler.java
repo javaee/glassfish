@@ -45,61 +45,107 @@ package com.sun.enterprise.web.logger;
  * log-file when enabled
  */
 
-import org.glassfish.internal.api.LogManager;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.PostConstruct;
-
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.logging.Formatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
-//specify that the contract is provided by handler.class in the JDK
-@Service
-public class FileLoggerHandler extends Handler implements PostConstruct {
-    
+public class FileLoggerHandler extends Handler {
+    private static final int LOG_QUEUE_SIZE = 5000;
+    private static final int FLUSH_FREQUENCY = 1;
 
-    @Inject(optional=true)
-    LogManager logManager=null;
+    private volatile PrintWriter printWriter;
+    private String logFile;
 
-    @Inject(optional=true)
-    Formatter logFormatter;
+    private AtomicInteger association = new AtomicInteger(0);
+    private AtomicBoolean done = new AtomicBoolean(false);
+    private BlockingQueue<LogRecord> pendingRecords = new ArrayBlockingQueue<LogRecord>(LOG_QUEUE_SIZE);
+    private Thread pump;
 
-    private String webLogger = "javax.enterprise.system.container.web.com.sun.enterprise.web";
-    private String catalinaLogger = "org.apache.catalina";
+    FileLoggerHandler(String logFile) {
+        setLevel(Level.ALL);
+        this.logFile = logFile;
     
-    private FileOutputStream fileOutputStream;
-    private PrintWriter printWriter;
-
-    
-    public void postConstruct() {
-        setLevel(Level.OFF);
-        if (logFormatter != null) this.setFormatter(logFormatter);
-    }
-    
-    
-    public void setLogFile(String logFile) {
         try {
-            fileOutputStream = new FileOutputStream(logFile, true);
-            printWriter = new PrintWriter(fileOutputStream);
-            if (logManager!=null) {
-                logManager.addHandler(this);
-            }
+            printWriter = new PrintWriter(new FileOutputStream(logFile, true));
     	} catch (IOException e) {
+            //throw new RuntimeException(e);
     	}
+
+        pump = new Thread() {
+            public void run() {
+                try {
+                    while (!done.get()) {
+                        log();
+                    }
+                } catch(RuntimeException ex) {
+                }
+            }
+        };
+        pump.start();
     }
- 
+
+    private void writeLogRecord(LogRecord record) {
+        if (printWriter != null) {
+            printWriter.write(getFormatter().format(record)); 
+            printWriter.flush();
+        }
+    }
+
+    private void log() {
+        // write the first record
+        try {
+            writeLogRecord(pendingRecords.take());
+        } catch(InterruptedException e) {
+            // ignore
+        }
+
+        // write FLUSH_FREQUENCY record(s) more
+        List<LogRecord> list = new ArrayList<LogRecord>();
+        int numOfRecords = pendingRecords.drainTo(list, FLUSH_FREQUENCY);
+        for (int i = 0; i < numOfRecords; i++) {
+            writeLogRecord(list.get(i));
+        }
+        flush();
+    }
+
+    /**
+     * Increment the associations and return the result.
+     */
+    public int associate() {
+        return association.incrementAndGet();
+    }
+
+    /**
+     * Decrement the associations and return the result.
+     */
+    public int disassociate() {
+        return association.decrementAndGet();
+    }
+
+    public boolean isAssociated() {
+        return (association.get() > 0);
+    }
     
     /**
      * Overridden method used to capture log entries   
      *
      * @param record The log record to be written out.
      */
+    @Override
     public void publish(LogRecord record) {
+        if (done.get()) {
+            return;
+        }
+
         // first see if this entry should be filtered out
         // the filter should keep anything
         if ( getFilter()!=null ) {
@@ -107,25 +153,46 @@ public class FileLoggerHandler extends Handler implements PostConstruct {
                 return;
         }
         
-        // log-file hasn't been set 
-        if (fileOutputStream==null || printWriter==null) {
-            return; 
+        try {
+            pendingRecords.add(record);
+        } catch(IllegalStateException e) {
+            // queue is full, start waiting
+            try {
+                pendingRecords.put(record);
+            } catch(InterruptedException ex) {
+                // too bad, record is lost...
+            }
         }
-
-        if (webLogger.equals(record.getLoggerName()) || 
-            catalinaLogger.equals(record.getLoggerName()) ) {      
-            printWriter.write(getFormatter().format(record)); 
-            printWriter.flush();
-        }
-
     }
 
     
     /**
      * Called to close this log handler.
      */
+    @Override
     public void close() {
-        printWriter.close();
+        done.set(true);
+
+        pump.interrupt();
+
+        int size = pendingRecords.size();
+        if (size > 0) {
+            List<LogRecord> records = new ArrayList<LogRecord>(size);
+            pendingRecords.drainTo(records, size);
+            for (LogRecord record : records) {
+                writeLogRecord(record);
+            }
+        }
+
+        if (printWriter != null) {
+            try {
+                printWriter.flush();
+            } catch(Exception ex) {
+                // ignore
+            } finally {
+                printWriter.close();
+            }
+        }
     }
  
     
@@ -133,37 +200,17 @@ public class FileLoggerHandler extends Handler implements PostConstruct {
      * Called to flush any cached data that
      * this log handler may contain.
      */
+    @Override
     public void flush() {
-        printWriter.flush();
-    }
-    
-        
-    /**
-     * Set the verbosity level of this logger.  Messages logged with a
-     * higher verbosity than this level will be silently ignored.
-     *
-     * @param verbosityLevel The new verbosity level, as a string
-     */
-    public void setLevel(String logLevel) {
-            
-        if ("SEVERE".equalsIgnoreCase(logLevel)) {
-            setLevel(Level.SEVERE);
-        } else if ("WARNING".equalsIgnoreCase(logLevel)) {
-            setLevel(Level.WARNING);
-        } else if ("INFO".equalsIgnoreCase(logLevel)) {
-           setLevel(Level.INFO);
-        } else if ("CONFIG".equalsIgnoreCase(logLevel)) {
-           setLevel(Level.CONFIG);
-        } else if ("FINE".equalsIgnoreCase(logLevel)) {
-            setLevel(Level.FINE);
-        } else if ("FINER".equalsIgnoreCase(logLevel)) {
-            setLevel(Level.FINER);
-        } else if ("FINEST".equalsIgnoreCase(logLevel)) {
-            setLevel(Level.FINEST);
-        } else {
-            setLevel(Level.INFO);
+        if (printWriter != null) {
+            printWriter.flush();
         }
-        
     }
-    
+
+    /**
+     * Return location of log file associated to this handler.
+     */
+    public String getLogFile() {
+        return logFile;
+    }
 }

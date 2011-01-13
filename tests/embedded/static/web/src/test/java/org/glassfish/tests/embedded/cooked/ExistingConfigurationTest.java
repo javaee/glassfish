@@ -40,8 +40,8 @@
 
 package org.glassfish.tests.embedded.cooked;
 
-import org.glassfish.api.embedded.Server;
-import org.glassfish.api.embedded.EmbeddedFileSystem;
+import org.glassfish.internal.embedded.Server;
+import org.glassfish.internal.embedded.EmbeddedFileSystem;
 import org.junit.Assert;
 import org.junit.Test;
 import org.jvnet.hk2.component.Habitat;

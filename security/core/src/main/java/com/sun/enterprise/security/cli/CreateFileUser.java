@@ -55,6 +55,7 @@ import org.jvnet.hk2.config.types.Property;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.config.serverbeans.AuthRealm;
+import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.security.auth.realm.file.FileRealm;
 import com.sun.enterprise.security.auth.realm.Realm;
@@ -65,13 +66,13 @@ import com.sun.enterprise.security.auth.realm.RealmsManager;
 import com.sun.enterprise.security.common.Util;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import java.beans.PropertyVetoException;
+import java.io.File;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.config.support.CommandTarget;
 import org.glassfish.config.support.TargetType;
-import org.glassfish.internal.api.Globals;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
@@ -92,7 +93,7 @@ import org.jvnet.hk2.config.TransactionFailure;
 @Scoped(PerLookup.class)
 @I18n("create.file.user")
 @ExecuteOn({RuntimeType.DAS, RuntimeType.INSTANCE})
-@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER})
+@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER, CommandTarget.CONFIG})
 public class CreateFileUser implements /*UndoableCommand*/ AdminCommand {
     
     final private static LocalStringManagerImpl localStrings = 
@@ -117,6 +118,10 @@ public class CreateFileUser implements /*UndoableCommand*/ AdminCommand {
 
     @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
     private Config config;
+
+    @Inject
+    Configs configs;
+
     @Inject
     private Domain domain;
 
@@ -135,13 +140,24 @@ public class CreateFileUser implements /*UndoableCommand*/ AdminCommand {
     public void execute(AdminCommandContext context) {
         
         final ActionReport report = context.getActionReport();
-        Server targetServer = domain.getServerNamed(target);
-        if (targetServer!=null) {
-            config = domain.getConfigNamed(targetServer.getConfigRef());
+        Config tmp = null;
+        try {
+            tmp = configs.getConfigByName(target);
+        } catch (Exception ex) {
         }
-        com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
-        if (cluster!=null) {
-            config = domain.getConfigNamed(cluster.getConfigRef());
+
+        if (tmp != null) {
+            config = tmp;
+        }
+        if (tmp == null) {
+            Server targetServer = domain.getServerNamed(target);
+            if (targetServer != null) {
+                config = domain.getConfigNamed(targetServer.getConfigRef());
+            }
+            com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
+            if (cluster != null) {
+                config = domain.getConfigNamed(cluster.getConfigRef());
+            }
         }
         final SecurityService securityService = config.getSecurityService();
 
@@ -197,6 +213,15 @@ public class CreateFileUser implements /*UndoableCommand*/ AdminCommand {
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;                                            
         }
+        boolean exists = (new File(kf)).exists();
+        if (!exists) {
+            report.setMessage(
+                localStrings.getLocalString("file.realm.keyfilenonexistent",
+                "The specified physical file {0} associated with the file realm {1} does not exist.",
+                new Object[]{kf, authRealmName}));
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
+        }
         // Now get all inputs ready. userid and groups are straightforward but
         // password is tricky. It is stored in the file passwordfile passed 
         // through the CLI options. It is stored under the name 
@@ -222,10 +247,10 @@ public class CreateFileUser implements /*UndoableCommand*/ AdminCommand {
                 public Object run(SecurityService param)
                         throws PropertyVetoException, TransactionFailure {
                     try {
-                        realmsManager.createRealms(securityService);
+                        realmsManager.createRealms(config);
                         //If the (shared) keyfile is updated by an external process, load the users first
-                        refreshRealm(authRealmName);
-                        final FileRealm fr = (FileRealm) realmsManager.getFromLoadedRealms(authRealmName);
+                        refreshRealm(config.getName(),authRealmName);
+                        final FileRealm fr = (FileRealm) realmsManager.getFromLoadedRealms(config.getName(),authRealmName);
                         CreateFileUser.handleAdminGroup(authRealmName, groups);
                         String[] groups1 = groups.toArray(new String[groups.size()]);
                         try {
@@ -248,10 +273,11 @@ public class CreateFileUser implements /*UndoableCommand*/ AdminCommand {
                        //refreshRealm(authRealmName);
                         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
                     } catch (Exception e) {
+                        String localalizedErrorMsg = (e.getLocalizedMessage() == null)?"":e.getLocalizedMessage();
                         report.setMessage(
                                 localStrings.getLocalString("create.file.user.useraddfailed",
                                 "Adding User {0} to the file realm {1} failed",
-                                userName, authRealmName) + "  " + e.getLocalizedMessage());
+                                userName, authRealmName) + "  " + localalizedErrorMsg);
                         report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                         report.setFailureCause(e);
                     }
@@ -300,21 +326,22 @@ public class CreateFileUser implements /*UndoableCommand*/ AdminCommand {
        }
        return password;
    } */
-   public static void refreshRealm(String realmName){
-      if(realmName != null && realmName.length()  >0){
-         try{
-            Realm realm = Realm.getInstance(realmName);
-       
-	    if(realm != null){
-	       realm.refresh();
-	    }
-         }catch(com.sun.enterprise.security.auth.realm.NoSuchRealmException nre){
-            //	    _logger.fine("Realm: "+realmName+" is not configured");
-	 }catch(com.sun.enterprise.security.auth.realm.BadRealmException bre){
-            //	    _logger.fine("Realm: "+realmName+" is not configured");
-	 }
-      }
-  }
+
+    public static void refreshRealm(String configName, String realmName) {
+        if (realmName != null && realmName.length() > 0) {
+            try {
+                Realm realm = Realm.getInstance(configName, realmName);
+
+                if (realm != null) {
+                    realm.refresh(configName);
+                }
+            } catch (com.sun.enterprise.security.auth.realm.NoSuchRealmException nre) {
+                //	    _logger.fine("Realm: "+realmName+" is not configured");
+            } catch (com.sun.enterprise.security.auth.realm.BadRealmException bre) {
+                //	    _logger.fine("Realm: "+realmName+" is not configured");
+            }
+        }
+    }
     static void handleAdminGroup(String lr, List<String> lg) {
         String fr = "admin-realm";   //this should be a constant defined at a central place -- the name of realm for admin
         String fg = "asadmin";       //this should be a constant defined at a central place -- fixed name of admin group

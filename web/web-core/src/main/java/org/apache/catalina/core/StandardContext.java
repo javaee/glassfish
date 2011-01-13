@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -58,113 +58,18 @@
 
 package org.apache.catalina.core;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.Enumeration;
-import java.util.EventListener;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
-import java.util.TreeMap;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.management.MBeanRegistrationException;
-import javax.management.MBeanServer;
-import javax.management.MalformedObjectNameException;
-import javax.management.Notification;
-import javax.management.NotificationBroadcasterSupport;
-import javax.management.ObjectName;
-import javax.naming.Binding;
-import javax.naming.NamingException;
-import javax.naming.directory.DirContext;
-import javax.servlet.Filter;
-import javax.servlet.FilterConfig;
-import javax.servlet.FilterRegistration;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.Servlet;
-import javax.servlet.ServletContainerInitializer;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextAttributeListener;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRegistration;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletRequestAttributeListener;
-import javax.servlet.ServletRequestEvent;
-import javax.servlet.ServletRequestListener;
-import javax.servlet.SessionCookieConfig;
-import javax.servlet.SessionTrackingMode;
-import javax.servlet.SingleThreadModel;
-import javax.servlet.descriptor.JspConfigDescriptor;
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpSessionAttributeListener;
-import javax.servlet.http.HttpSessionListener;
-
-import org.apache.catalina.Auditor;
-import org.apache.catalina.Authenticator;
-import org.apache.catalina.Container;
-import org.apache.catalina.ContainerEvent;
-import org.apache.catalina.ContainerListener;
-import org.apache.catalina.Context;
-import org.apache.catalina.Engine;
-import org.apache.catalina.Globals;
-import org.apache.catalina.Host;
-import org.apache.catalina.InstanceListener;
-import org.apache.catalina.Lifecycle;
-import org.apache.catalina.LifecycleException;
-import org.apache.catalina.LifecycleListener;
-import org.apache.catalina.Loader;
-import org.apache.catalina.Pipeline;
-import org.apache.catalina.Wrapper;
-import org.apache.catalina.deploy.ApplicationParameter;
-import org.apache.catalina.deploy.ContextEjb;
-import org.apache.catalina.deploy.ContextEnvironment;
-import org.apache.catalina.deploy.ContextLocalEjb;
-import org.apache.catalina.deploy.ContextResource;
-import org.apache.catalina.deploy.ContextResourceLink;
-import org.apache.catalina.deploy.ErrorPage;
-import org.apache.catalina.deploy.FilterDef;
-import org.apache.catalina.deploy.FilterMap;
-import org.apache.catalina.deploy.FilterMaps;
-import org.apache.catalina.deploy.LoginConfig;
-import org.apache.catalina.deploy.MessageDestination;
-import org.apache.catalina.deploy.MessageDestinationRef;
-import org.apache.catalina.deploy.NamingResources;
-import org.apache.catalina.deploy.ResourceParams;
-import org.apache.catalina.deploy.SecurityCollection;
-import org.apache.catalina.deploy.SecurityConstraint;
-import org.apache.catalina.deploy.ServletMap;
+import org.glassfish.grizzly.http.server.util.AlternateDocBase;
+import org.glassfish.grizzly.http.server.util.Mapper;
+import org.glassfish.grizzly.http.server.util.MappingData;
+import org.apache.catalina.*;
+import org.apache.catalina.deploy.*;
 import org.apache.catalina.loader.WebappLoader;
 import org.apache.catalina.mbeans.MBeanUtils;
 import org.apache.catalina.session.ManagerBase;
 import org.apache.catalina.session.PersistentManagerBase;
 import org.apache.catalina.session.StandardManager;
 import org.apache.catalina.startup.ContextConfig;
-import org.apache.catalina.util.CharsetMapper;
-import org.apache.catalina.util.CustomObjectInputStream;
-import org.apache.catalina.util.ExtensionValidator;
-import org.apache.catalina.util.RequestUtil;
-import org.apache.catalina.util.URLEncoder;
+import org.apache.catalina.util.*;
 import org.apache.naming.ContextBindings;
 import org.apache.naming.resources.BaseDirContext;
 import org.apache.naming.resources.DirContextURLStreamHandler;
@@ -174,12 +79,32 @@ import org.apache.naming.resources.Resource;
 import org.apache.naming.resources.WARDirContext;
 import org.apache.tomcat.util.modeler.ManagedBean;
 import org.apache.tomcat.util.modeler.Registry;
-import org.glassfish.grizzly.http.server.util.AlternateDocBase;
-import org.glassfish.grizzly.http.server.util.Mapper;
 import org.glassfish.hk2.classmodel.reflect.Types;
-import org.glassfish.web.loader.ServletContainerInitializerUtil;
 import org.glassfish.web.loader.WebappClassLoader;
+import org.glassfish.web.loader.ServletContainerInitializerUtil;
 import org.glassfish.web.valve.GlassFishValve;
+
+import javax.management.*;
+import javax.naming.Binding;
+import javax.naming.NamingException;
+import javax.naming.directory.DirContext;
+import javax.servlet.*;
+import javax.servlet.descriptor.JspConfigDescriptor;
+import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpSessionAttributeListener;
+import javax.servlet.http.HttpSessionListener;
+import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URLDecoder;
+import java.net.URL;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.glassfish.grizzly.http.util.CharChunk;
+import org.glassfish.grizzly.http.util.MessageBytes;
 
 /**
  * Standard implementation of the <b>Context</b> interface.  Each
@@ -193,7 +118,7 @@ import org.glassfish.web.valve.GlassFishValve;
 
 public class StandardContext
     extends ContainerBase
-    implements Context, ServletContext
+    implements Context, Serializable, ServletContext
 {
     private static final transient Logger log = Logger.getLogger(
         StandardContext.class.getName());
@@ -241,10 +166,13 @@ public class StandardContext
         pipeline.setBasic(new StandardContextValve());
         namingResources.setContainer(this);
         broadcaster = new NotificationBroadcasterSupport();
-        mySecurityManager = new MySecurityManager();
-        
+        if (Globals.IS_SECURITY_ENABLED) {
+            mySecurityManager = (MySecurityManager)AccessController.doPrivileged(
+                    new PrivilegedCreateSecurityManager());
+        }
+
         //START PWC 6403328
-        logPrefix = sm.getString("standardContext.logPrefix", logName());
+        this.logPrefix = sm.getString("standardContext.logPrefix", logName());
         //END PWC 6403328
     }
 
@@ -253,13 +181,13 @@ public class StandardContext
     /**
      * The alternate deployment descriptor name.
      */
-    private String altDDName;
+    private String altDDName = null;
 
     /**
      * Associated host name.
      */
     private String hostName;
-    
+
     /**
      * The list of instantiated application event listeners
      */
@@ -287,17 +215,17 @@ public class StandardContext
     /**
      * The application available flag for this Context.
      */
-    private boolean available;
+    private boolean available = false;
 
     /**
      * The broadcaster that sends j2ee notifications.
      */
-    private transient NotificationBroadcasterSupport broadcaster;
+    private transient NotificationBroadcasterSupport broadcaster = null;
 
     /**
      * The Locale to character set mapper for this application.
      */
-    private transient CharsetMapper charsetMapper;
+    private transient CharsetMapper charsetMapper = null;
 
     /**
      * The Java class name of the CharsetMapper class to be created.
@@ -307,12 +235,12 @@ public class StandardContext
     /**
      * The path to a file to save this Context information.
      */
-    private String configFile;
+    private String configFile = null;
 
     /**
      * The "correctly configured" flag for this Context.
      */
-    private boolean configured;
+    private boolean configured = false;
 
     /**
      * The security constraints for this web application.
@@ -327,18 +255,18 @@ public class StandardContext
     /*
     private transient ApplicationContext context = null;
     */
-    protected transient ApplicationContext context;
+    protected transient ApplicationContext context = null;
     // END RIMOD 4894300
 
     /**
-     *  Is the context initialized. 
+     *  Is the context initialized.
      */
-    private boolean isContextInitializedCalled;
+    private boolean isContextInitializedCalled = false;
 
     /**
      * Compiler classpath to use.
      */
-    private String compilerClasspath;
+    private String compilerClasspath = null;
 
     /**
      * Should we attempt to use cookies for session id communication?
@@ -355,18 +283,18 @@ public class StandardContext
      * Should we allow the <code>ServletContext.getContext()</code> method
      * to access the context of other web applications in this server?
      */
-    private boolean crossContext;
+    private boolean crossContext = false;
 
     /**
      * The "follow standard delegation model" flag that will be used to
      * configure our ClassLoader.
      */
-    private boolean delegate;
+    private boolean delegate = false;
 
     /**
      * The display name of this web application.
      */
-    private String displayName;
+    private String displayName = null;
 
     /**
      * Override the default web xml location. ContextConfig is not configurable
@@ -377,18 +305,18 @@ public class StandardContext
     /**
      * The distributable flag for this web application.
      */
-    private boolean distributable;
-    
+    private boolean distributable = false;
+
     /**
      * Thread local data used during request dispatch.
      */
     private transient ThreadLocal<DispatchData> dispatchData =
         new ThreadLocal<DispatchData>();
-        
+
     /**
      * The document root for this web application.
      */
-    private String docBase;
+    private String docBase = null;
 
     /**
      * The exception pages for this web application, keyed by fully qualified
@@ -437,15 +365,15 @@ public class StandardContext
     /**
      * The login configuration descriptor for this web application.
      */
-    private LoginConfig loginConfig;
-    
+    private LoginConfig loginConfig = null;
+
     // START PWC 6403328
     /**
      * Log prefix string
      */
-    private String logPrefix;
+    private String logPrefix = null;
     // END PWC 6403328
-    
+
     /**
      * The mapper associated with this context.
      */
@@ -454,7 +382,7 @@ public class StandardContext
     /**
      * The naming context listener for this web application.
      */
-    private transient NamingContextListener namingContextListener;
+    private transient NamingContextListener namingContextListener = null;
 
     /**
      * The naming resources for this web application.
@@ -480,19 +408,19 @@ public class StandardContext
     /**
      * The request processing pause flag (while reloading occurs)
      */
-    private boolean paused;
+    private boolean paused = false;
 
     /**
      * The public identifier of the DTD for the web application deployment
      * descriptor version we are currently parsing.  This is used to support
      * relaxed validation rules when processing version 2.2 web.xml files.
      */
-    private String publicId;
+    private String publicId = null;
 
     /**
      * The reloadable flag for this web application.
      */
-    private boolean reloadable;
+    private boolean reloadable = false;
 
     /**
      * Unpack WAR property.
@@ -502,17 +430,17 @@ public class StandardContext
     /**
      * The DefaultContext override flag for this web application.
      */
-    private boolean override;
-       
+    private boolean override = false;
+
     /**
      * The original document root for this web application.
      */
-    private String originalDocBase;
+    private String originalDocBase = null;
 
     /**
      * The privileged flag for this web application.
      */
-    private boolean privileged;
+    private boolean privileged = false;
 
     /**
      * Should the next call to <code>addWelcomeFile()</code> cause replacement
@@ -521,7 +449,7 @@ public class StandardContext
      * choices <strong>replace</strong>, rather than append to, those defined
      * in the global descriptor.
      */
-    private boolean replaceWelcomeFiles;
+    private boolean replaceWelcomeFiles = false;
 
     /**
      * With proxy caching disabled, setting this flag to true adds
@@ -558,12 +486,12 @@ public class StandardContext
      * been over-ridden by web-xml
      * HERCULES:add
      */
-    private boolean sessionTimeoutOveridden;
+    private boolean sessionTimeoutOveridden = false;
 
     /**
      * The notification sequence number.
      */
-    private long sequenceNumber;
+    private long sequenceNumber = 0;
 
     /**
      * The status code error pages for this web application, keyed by
@@ -599,7 +527,7 @@ public class StandardContext
      * The pathname to the work directory for this context (relative to
      * the server's home if not absolute).
      */
-    private String workDir;
+    private String workDir = null;
 
     /**
      * JNDI use flag.
@@ -609,12 +537,12 @@ public class StandardContext
     /**
      * Filesystem based flag.
      */
-    private boolean filesystemBased;
+    private boolean filesystemBased = false;
 
     /**
      * Name of the associated naming context.
      */
-    private String namingContextName;
+    private String namingContextName = null;
 
     /**
      * Frequency of the session expiration, and related manager operations.
@@ -627,7 +555,7 @@ public class StandardContext
     /**
      * Iteration count for background processing.
      */
-    private int count;
+    private int count = 0;
 
     /**
      * Caching allowed flag.
@@ -642,7 +570,7 @@ public class StandardContext
     /**
      * Allow linking.
      */
-    protected boolean allowLinking;
+    protected boolean allowLinking = false;
 
     /**
      * Cache max size in KB.
@@ -657,7 +585,7 @@ public class StandardContext
     /**
      * Non proxied resources.
      */
-    private transient DirContext webappResources;
+    private transient DirContext webappResources = null;
 
     /*
      * Time (in milliseconds) it took to start this context
@@ -683,7 +611,7 @@ public class StandardContext
      * The flag that specifies whether to reuse the session id (if any) from
      * the request for newly created sessions
      */
-    private boolean reuseSessionID;
+    private boolean reuseSessionID = false;
     // END S1AS8PE 4817642
 
     // START RIMOD 4642650
@@ -691,13 +619,13 @@ public class StandardContext
      * The flag that specifies whether this context allows sendRedirect() to
      * redirect to a relative URL.
      */
-    private boolean allowRelativeRedirect;
+    private boolean allowRelativeRedirect = false;
 
     // END RIMOD 4642650
 
     /** Name of the engine. If null, the domain is used.
      */
-    private String engineName;
+    private String engineName = null;
     /* SJSAS 6340499
     private String j2EEApplication="none";
      */
@@ -710,7 +638,7 @@ public class StandardContext
     /**
      * List of configured Auditors for this context.
      */
-    private transient Auditor[] auditors;
+    private transient Auditor[] auditors = null;
     // END IASRI 4823322
 
     // START RIMOD 4868393
@@ -723,38 +651,38 @@ public class StandardContext
     /**
      * Attribute value used to turn on/off XML validation
      */
-    private boolean webXmlValidation;
+    private boolean webXmlValidation = false;
 
     private String jvmRoute;
 
     /**
      * Attribute value used to turn on/off XML namespace validation
      */
-    private boolean webXmlNamespaceAware;
+    private boolean webXmlNamespaceAware = false;
 
     /**
      * Attribute value used to turn on/off XML validation
      */
-    private boolean tldValidation;
+    private boolean tldValidation = false;
 
     /**
      * Attribute value used to turn on/off TLD XML namespace validation
      */
-    private boolean tldNamespaceAware;
+    private boolean tldNamespaceAware = false;
 
     /**
      * Is the context contains the JSF servlet.
      */
-    protected boolean isJsfApplication;
+    protected boolean isJsfApplication = false;
 
     // START S1AS8PE 4965017
-    private boolean isReload;
+    private boolean isReload = false;
     // END S1AS8PE 4965017
 
     /**
      * Alternate doc base resources
      */
-    private ArrayList<AlternateDocBase> alternateDocBases;
+    private ArrayList<AlternateDocBase> alternateDocBases = null;
 
     private boolean useMyFaces;
 
@@ -763,7 +691,7 @@ public class StandardContext
     /**
      * Encoded path.
      */
-    private String encodedPath;
+    private String encodedPath = null;
 
     /**
      * Session cookie config
@@ -776,9 +704,7 @@ public class StandardContext
      */
     private String sessionCookieName = Globals.SESSION_COOKIE_NAME;
 
-    private boolean sessionCookieConfigInitialized;
-
-    private boolean sessionCookieNameInitialized;
+    private boolean sessionCookieNameInitialized = false;
 
     protected ConcurrentHashMap<String, ServletRegistrationImpl> servletRegisMap =
         new ConcurrentHashMap<String, ServletRegistrationImpl>();
@@ -802,7 +728,7 @@ public class StandardContext
     // ServletContextListeners may be registered (via
     // ServletContext#addListener) only within the scope of
     // ServletContainerInitializer#onStartup
-    private boolean isProgrammaticServletContextListenerRegistrationAllowed;
+    private boolean isProgrammaticServletContextListenerRegistrationAllowed = false;
 
     /*
      * Security manager responsible for enforcing permission check on
@@ -811,13 +737,13 @@ public class StandardContext
     private transient MySecurityManager mySecurityManager;
 
     // Iterable over all ServletContainerInitializers that were discovered
-    private Iterable<ServletContainerInitializer> servletContainerInitializers;
+    private Iterable<ServletContainerInitializer> servletContainerInitializers = null;
 
     // The major Servlet spec version of the web.xml
-    private int effectiveMajorVersion;
+    private int effectiveMajorVersion = 0;
 
     // The minor Servlet spec version of the web.xml
-    private int effectiveMinorVersion;
+    private int effectiveMinorVersion = 0;
 
     // ----------------------------------------------------- Context Properties
 
@@ -968,11 +894,11 @@ public class StandardContext
     public List<EventListener> getApplicationEventListeners() {
         return eventListeners;
     }
-    
+
     public List<HttpSessionListener> getSessionListeners() {
         return sessionListeners;
     }
-    
+
     /**
      * Return the application available flag for this Context.
      */
@@ -998,17 +924,17 @@ public class StandardContext
     public CharsetMapper getCharsetMapper() {
 
         // Create a mapper the first time it is requested
-        if (charsetMapper == null) {
+        if (this.charsetMapper == null) {
             try {
                 Class clazz = Class.forName(charsetMapperClass);
-                charsetMapper =
+                this.charsetMapper =
                   (CharsetMapper) clazz.newInstance();
             } catch (Throwable t) {
-                charsetMapper = new CharsetMapper();
+                this.charsetMapper = new CharsetMapper();
             }
         }
 
-        return charsetMapper;
+        return (this.charsetMapper);
     }
 
     /**
@@ -1017,12 +943,12 @@ public class StandardContext
      * @param mapper The new mapper
      */
     public void setCharsetMapper(CharsetMapper mapper) {
-        CharsetMapper oldCharsetMapper = charsetMapper;
-        charsetMapper = mapper;
+        CharsetMapper oldCharsetMapper = this.charsetMapper;
+        this.charsetMapper = mapper;
         if( mapper != null )
-            charsetMapperClass = mapper.getClass().getName();
+            this.charsetMapperClass= mapper.getClass().getName();
         support.firePropertyChange("charsetMapper", oldCharsetMapper,
-            charsetMapper);
+                                   this.charsetMapper);
     }
 
     /**
@@ -1114,7 +1040,7 @@ public class StandardContext
      * @return the "allow crossing servlet contexts" flag
      */
     public boolean getCrossContext() {
-        return crossContext;
+        return (this.crossContext);
     }
 
     /**
@@ -1173,7 +1099,7 @@ public class StandardContext
      */
     public String getDisplayName() {
 
-        return displayName;
+        return (this.displayName);
 
     }
 
@@ -1334,7 +1260,7 @@ public class StandardContext
      */
     @Override
     public String getInfo() {
-        return info;
+        return (info);
     }
 
     public void setJvmRoute(String jvmRoute) {
@@ -1374,7 +1300,7 @@ public class StandardContext
      * Return the login configuration descriptor for this web application.
      */
     public LoginConfig getLoginConfig() {
-        return loginConfig;
+        return (this.loginConfig);
     }
 
     /**
@@ -1389,7 +1315,7 @@ public class StandardContext
             throw new IllegalArgumentException
                 (sm.getString("standardContext.loginConfig.required"));
         String loginPage = config.getLoginPage();
-        if (loginPage != null && !loginPage.startsWith("/")) {
+        if ((loginPage != null) && !loginPage.startsWith("/")) {
             if (isServlet22()) {
                 if (log.isLoggable(Level.FINE)) {
                     log.fine(sm.getString(
@@ -1404,7 +1330,7 @@ public class StandardContext
             }
         }
         String errorPage = config.getErrorPage();
-        if (errorPage != null && !errorPage.startsWith("/")) {
+        if ((errorPage != null) && !errorPage.startsWith("/")) {
             if (isServlet22()) {
                 if (log.isLoggable(Level.FINE)) {
                     log.fine(sm.getString(
@@ -1420,10 +1346,10 @@ public class StandardContext
         }
 
         // Process the property setting change
-        LoginConfig oldLoginConfig = loginConfig;
-        loginConfig = config;
+        LoginConfig oldLoginConfig = this.loginConfig;
+        this.loginConfig = config;
         support.firePropertyChange("loginConfig",
-                                   oldLoginConfig, loginConfig);
+                                   oldLoginConfig, this.loginConfig);
     }
 
     /**
@@ -1467,7 +1393,7 @@ public class StandardContext
      * Return the context path for this Context.
      */
     public String getPath() {
-        return getName();
+        return (getName());
     }
 
     /**
@@ -1533,9 +1459,9 @@ public class StandardContext
      * Is only set as deployment has change docRoot!
      */
     public String getOriginalDocBase() {
-        return originalDocBase;
+        return (this.originalDocBase);
     }
-    
+
     /**
      * Set the original document root for this Context, which can be an
      * absolute pathname, a relative pathname, or a URL.
@@ -1543,14 +1469,14 @@ public class StandardContext
      * @param docBase The original document root
      */
     public void setOriginalDocBase(String docBase) {
-        originalDocBase = docBase;
+        this.originalDocBase = docBase;
     }
-    
+
     /**
      * Return the privileged flag for this web application.
      */
     public boolean getPrivileged() {
-        return privileged;
+        return (this.privileged);
     }
 
     /**
@@ -1733,17 +1659,17 @@ public class StandardContext
      */
     public void setSessionTimeout(int timeout) {
 
-        int oldSessionTimeout = sessionTimeout;
+        int oldSessionTimeout = this.sessionTimeout;
 
         /*
          * SRV.13.4 ("Deployment Descriptor"):
          * If the timeout is 0 or less, the container ensures the default
          * behaviour of sessions is never to time out.
          */
-        sessionTimeout = timeout == 0 ? -1 : timeout;
+        this.sessionTimeout = (timeout == 0) ? -1 : timeout;
         support.firePropertyChange("sessionTimeout",
                                    Integer.valueOf(oldSessionTimeout),
-                                   Integer.valueOf(sessionTimeout));
+                                   Integer.valueOf(this.sessionTimeout));
         //HERCULES:add
         sessionTimeoutOveridden = true;
         //end HERCULES:add
@@ -1777,7 +1703,7 @@ public class StandardContext
                 (sm.getString("standardContext.resources.started"));
         }
 
-        DirContext oldResources = webappResources;
+        DirContext oldResources = this.webappResources;
         if (oldResources == resources)
             return;
 
@@ -1793,13 +1719,13 @@ public class StandardContext
             fileDirContext.setCaseSensitive(isCaseSensitive());
             fileDirContext.setAllowLinking(isAllowLinking());
         }
-        webappResources = resources;
+        this.webappResources = resources;
 
         // The proxied resources will be refreshed on start
         this.resources = null;
 
         support.firePropertyChange("resources", oldResources,
-            webappResources);
+                                   this.webappResources);
 
     }
 
@@ -1901,7 +1827,7 @@ public class StandardContext
      *
      */
     public void setAuditors(Auditor[] auditor) {
-        auditors =auditor;
+        this.auditors=auditor;
     }
     // END IASRI 4823322
 
@@ -1925,7 +1851,7 @@ public class StandardContext
      */
     public String getCharsetMapperClass() {
 
-        return charsetMapperClass;
+        return (this.charsetMapperClass);
 
     }
 
@@ -1937,11 +1863,11 @@ public class StandardContext
      */
     public void setCharsetMapperClass(String mapper) {
 
-        String oldCharsetMapperClass = charsetMapperClass;
-        charsetMapperClass = mapper;
+        String oldCharsetMapperClass = this.charsetMapperClass;
+        this.charsetMapperClass = mapper;
         support.firePropertyChange("charsetMapperClass",
                                    oldCharsetMapperClass,
-            charsetMapperClass);
+                                   this.charsetMapperClass);
 
     }
 
@@ -1974,7 +1900,7 @@ public class StandardContext
      */
     public String getWorkDir() {
 
-        return workDir;
+        return (this.workDir);
 
     }
 
@@ -2014,7 +1940,7 @@ public class StandardContext
     public void addApplicationParameter(ApplicationParameter parameter) {
         String newName = parameter.getName();
         Iterator<ApplicationParameter> i =
-            applicationParameters.iterator(); 
+            applicationParameters.iterator();
         while (i.hasNext()) {
             ApplicationParameter applicationParameter = i.next();
             if (newName.equals(applicationParameter.getName())) {
@@ -2076,8 +2002,8 @@ public class StandardContext
         if (createRegistration) {
             ServletRegistrationImpl regis = null;
             if (isProgrammatic ||
-                null == wrapper.getServletClassName() &&
-                    null == wrapper.getJspFile()) {
+                    (null == wrapper.getServletClassName() &&
+                        null == wrapper.getJspFile())) {
                 regis = createDynamicServletRegistrationImpl(
                     (StandardWrapper) wrapper);
             } else {
@@ -2116,7 +2042,7 @@ public class StandardContext
         }
 
         String jspFile = wrapper.getJspFile();
-        if (jspFile != null && !jspFile.startsWith("/")) {
+        if ((jspFile != null) && !jspFile.startsWith("/")) {
             if (isServlet22()) {
                 if (log.isLoggable(Level.FINE)) {
                     log.fine(sm.getString("standardContext.wrapper.warning",
@@ -2216,7 +2142,7 @@ public class StandardContext
     public void addEnvironment(ContextEnvironment environment) {
 
         ContextEnvironment env = findEnvironment(environment.getName());
-        if (env != null && !env.getOverride())
+        if ((env != null) && !env.getOverride())
             return;
         namingResources.addEnvironment(environment);
 
@@ -2250,7 +2176,7 @@ public class StandardContext
             throw new IllegalArgumentException
                 (sm.getString("standardContext.errorPage.required"));
         String location = errorPage.getLocation();
-        if (location != null && !location.startsWith("/")) {
+        if ((location != null) && !location.startsWith("/")) {
             if (isServlet22()) {
                 if (log.isLoggable(Level.FINE)) {
                     log.fine(sm.getString("standardContext.errorPage.warning",
@@ -2273,7 +2199,7 @@ public class StandardContext
         } else if (errorPage.getErrorCode() > 0) {
             synchronized (statusPages) {
                 int errorCode = errorPage.getErrorCode();
-                if (errorCode >= 400 && errorCode < 600) {
+                if ((errorCode >= 400) && (errorCode < 600)) {
                     statusPages.put(errorCode, errorPage);
                 } else {
                     log.severe(sm.getString(
@@ -2396,17 +2322,17 @@ public class StandardContext
             throw new IllegalArgumentException
                 (sm.getString("standardContext.filterMap.name", filterName));
         }
-        if (servletName == null && urlPattern == null) {
+        if ((servletName == null) && (urlPattern == null)) {
             throw new IllegalArgumentException
                 (sm.getString("standardContext.filterMap.either"));
         }
-        if (servletName != null && urlPattern != null) {
+        if ((servletName != null) && (urlPattern != null)) {
             throw new IllegalArgumentException
                 (sm.getString("standardContext.filterMap.either"));
         }
         // Because filter-pattern is new in 2.3, no need to adjust
         // for 2.2 backwards compatibility
-        if (urlPattern != null && !validateURLPattern(urlPattern)) {
+        if ((urlPattern != null) && !validateURLPattern(urlPattern)) {
             throw new IllegalArgumentException
                 (sm.getString("standardContext.filterMap.pattern",
                               urlPattern));
@@ -2484,7 +2410,7 @@ public class StandardContext
             filterDef.setFilterName(filterName);
             filterDef.setFilterClassName(className);
 
-            addFilterDef(filterDef, true, regis == null);
+            addFilterDef(filterDef, true, (regis == null));
             if (null == regis) {
                 regis = (DynamicFilterRegistrationImpl)
                     filterRegisMap.get(filterName);
@@ -2522,7 +2448,7 @@ public class StandardContext
         }
 
         /*
-         * Make sure the given Filter name and instance are unique within 
+         * Make sure the given Filter name and instance are unique within
          * this context
          */
         synchronized (filterDefs) {
@@ -2547,7 +2473,7 @@ public class StandardContext
             filterDef.setFilterName(filterName);
             filterDef.setFilter(filter);
 
-            addFilterDef(filterDef, true, regis == null);
+            addFilterDef(filterDef, true, (regis == null));
             if (null == regis) {
                 regis = (DynamicFilterRegistrationImpl)
                     filterRegisMap.get(filterName);
@@ -2594,7 +2520,7 @@ public class StandardContext
             filterDef.setFilterName(filterName);
             filterDef.setFilterClass(filterClass);
 
-            addFilterDef(filterDef, true, regis == null);
+            addFilterDef(filterDef, true, (regis == null));
             if (null == regis) {
                 regis = (DynamicFilterRegistrationImpl)
                     filterRegisMap.get(filterName);
@@ -2647,24 +2573,6 @@ public class StandardContext
     }
 
     /**
-     * @param initialized true if any of the setter methods have been
-     * called on the SessionCookieConfig object of this context, false
-     * otherwise
-     */
-    public void setSessionCookieConfigInitialized(boolean initialized) {
-        sessionCookieConfigInitialized = initialized;
-    }
-
-    /**
-     * @return true if any of the setter methods have been
-     * called on the SessionCookieConfig object of this context, false
-     * otherwise
-     */
-    public boolean isSessionCookieConfigInitialized() {
-        return sessionCookieConfigInitialized;
-    }
-
-    /**
      * Sets the name that will be assigned to any session tracking
      * cookies created on behalf of this context
      */
@@ -2687,11 +2595,11 @@ public class StandardContext
      */
     public String getSessionParameterName() {
         if (sessionCookieNameInitialized) {
-            if (sessionCookieName != null && !sessionCookieName.isEmpty()) {
-               return sessionCookieName; 
+            if (sessionCookieName != null && (!sessionCookieName.isEmpty())) {
+               return sessionCookieName;
             }
         }
-        
+
         return Globals.SESSION_PARAMETER_NAME;
     }
 
@@ -2750,8 +2658,8 @@ public class StandardContext
      * <tt>ServletContext</tt>
      */
     public Set<SessionTrackingMode> getEffectiveSessionTrackingModes() {
-        return sessionTrackingModes != null ? sessionTrackingModes :
-            DEFAULT_SESSION_TRACKING_MODES;
+        return (sessionTrackingModes != null ? sessionTrackingModes :
+            DEFAULT_SESSION_TRACKING_MODES);
     }
 
     /**
@@ -2777,7 +2685,7 @@ public class StandardContext
             addListener(loadListener(getClassLoader(), className),
                         isProgrammatic);
         } catch (Throwable t) {
-            throw new IllegalArgumentException(t); 
+            throw new IllegalArgumentException(t);
         }
     }
 
@@ -2806,9 +2714,9 @@ public class StandardContext
                              "addListener", getName()));
         }
 
-        if (t instanceof javax.servlet.ServletContextListener && isProgrammatic &&
+        if ((t instanceof ServletContextListener) && isProgrammatic &&
                 !isProgrammaticServletContextListenerRegistrationAllowed) {
-            throw new IllegalArgumentException("Not allowed to register " + 
+            throw new IllegalArgumentException("Not allowed to register " +
                 "ServletContextListener programmatically");
         }
 
@@ -2863,7 +2771,7 @@ public class StandardContext
         try {
             addListener(createListenerInstance(listenerClass));
         } catch (Throwable t) {
-            throw new IllegalArgumentException(t); 
+            throw new IllegalArgumentException(t);
         }
     }
 
@@ -2910,12 +2818,14 @@ public class StandardContext
      * ServletContext.
      */
     public ClassLoader getClassLoader() {
-        ClassLoader webappLoader = getLoader() != null ?
+        ClassLoader webappLoader = (getLoader() != null) ?
             getLoader().getClassLoader() : null;
         if (webappLoader == null) {
             return null;
         }
-        mySecurityManager.checkGetClassLoaderPermission(webappLoader);
+        if (mySecurityManager != null) {
+            mySecurityManager.checkGetClassLoaderPermission(webappLoader);
+        }
         return webappLoader;
     }
 
@@ -2936,7 +2846,7 @@ public class StandardContext
     public void setEffectiveMinorVersion(int effectiveMinorVersion) {
         this.effectiveMinorVersion = effectiveMinorVersion;
     }
-    
+
     public int getEffectiveMinorVersion() {
         return effectiveMinorVersion;
     }
@@ -3062,7 +2972,7 @@ public class StandardContext
      */
     public void addParameter(String name, String value) {
         // Validate the proposed context initialization parameter
-        if (name == null || value == null)
+        if ((name == null) || (value == null))
             throw new IllegalArgumentException
                 (sm.getString("standardContext.parameter.required"));
         if (parameters.get(name) != null)
@@ -3149,7 +3059,7 @@ public class StandardContext
     /**
      * Adds the given servlet mappings to this Context.
      *
-     * <p>If any of the specified URL patterns are already mapped to a 
+     * <p>If any of the specified URL patterns are already mapped to a
      * different Servlet, no updates will be performed.
      *
      * @param servletMap the Servlet mappings containing the Servlet name
@@ -3169,7 +3079,7 @@ public class StandardContext
     /**
      * Adds the given servlet mappings to this Context.
      *
-     * <p>If any of the specified URL patterns are already mapped to a 
+     * <p>If any of the specified URL patterns are already mapped to a
      * different Servlet, no updates will be performed.
      *
      * @param name the Servlet name
@@ -3194,7 +3104,7 @@ public class StandardContext
                 }
 
                 // Ignore any conflicts with the container provided
-                // Default- and JspServlet 
+                // Default- and JspServlet
                 String existing = servletMappings.get(pattern);
                 if (existing != null &&
                         !existing.equals(Constants.DEFAULT_SERVLET_NAME) &&
@@ -3214,7 +3124,7 @@ public class StandardContext
                 }
                 return Collections.EMPTY_SET;
             } else {
-                return conflicts;   
+                return conflicts;
             }
         }
     }
@@ -3261,7 +3171,7 @@ public class StandardContext
         }
 
         /*
-         * Add this mapping to our registered set. Make sure that it is 
+         * Add this mapping to our registered set. Make sure that it is
          * possible to override the mappings of the container provided
          * Default- and JspServlet, and that these servlets are prevented
          * from overriding any user-defined mappings (depending on the order
@@ -3327,7 +3237,7 @@ public class StandardContext
                     regis.setServletClassName(className);
                 }
                 wrapper.setName(servletName);
-                addChild(wrapper, true, null == regis);
+                addChild(wrapper, true, (null == regis));
                 if (null == regis) {
                     regis = (DynamicServletRegistrationImpl)
                         servletRegisMap.get(servletName);
@@ -3370,7 +3280,7 @@ public class StandardContext
                     regis.setServletClass(servletClass);
                 }
                 wrapper.setName(servletName);
-                addChild(wrapper, true, null == regis);
+                addChild(wrapper, true, (null == regis));
                 if (null == regis) {
                     regis = (DynamicServletRegistrationImpl)
                         servletRegisMap.get(servletName);
@@ -3393,7 +3303,7 @@ public class StandardContext
      *
      * @param servletName the servlet name
      * @param instance the servlet instance
-     * @param initParams Map containing the initialization parameters for 
+     * @param initParams Map containing the initialization parameters for
      * the servlet
      *
      * @throws ServletException if the servlet fails to be initialized
@@ -3409,7 +3319,7 @@ public class StandardContext
      *
      * @param servletName the servlet name
      * @param servlet the servlet instance
-     * @param initParams Map containing the initialization parameters for 
+     * @param initParams Map containing the initialization parameters for
      * the servlet
      * @param urlPatterns the URL patterns that will be mapped to the servlet
      *
@@ -3444,9 +3354,9 @@ public class StandardContext
                 }
             }
         }
-      
+
         /*
-         * Make sure the given Servlet name and instance are unique within 
+         * Make sure the given Servlet name and instance are unique within
          * this context
          */
         synchronized (children) {
@@ -3467,7 +3377,7 @@ public class StandardContext
                 // Complete preliminary servlet registration
                 wrapper = regis.getWrapper();
             }
-                         
+
             wrapper.setName(servletName);
             wrapper.setServlet(servlet);
             if (initParams != null) {
@@ -3476,7 +3386,7 @@ public class StandardContext
                 }
             }
 
-            addChild(wrapper, true, null == regis);
+            addChild(wrapper, true, (null == regis));
             if (null == regis) {
                 regis = (DynamicServletRegistrationImpl)
                     servletRegisMap.get(servletName);
@@ -3559,10 +3469,10 @@ public class StandardContext
      * false otherwise
      */
     public boolean isFragmentMissingFromAbsoluteOrdering(String jarName) {
-        return jarName2WebFragNameMap != null &&
+        return (jarName2WebFragNameMap != null &&
             absoluteOrderingList != null &&
             !absoluteOrderingList.contains(
-                jarName2WebFragNameMap.get(jarName));
+                jarName2WebFragNameMap.get(jarName)));
     }
 
     /**
@@ -3644,7 +3554,7 @@ public class StandardContext
                         sm.getString("standardContext.instanceListener",
                             instanceListener),
                         t);
-                    return null;
+                    return (null);
                 }
             }
         }
@@ -3669,11 +3579,11 @@ public class StandardContext
                     sm.getString("standardContext.lifecycleListener",
                                  wrapperLifecycle),
                     t);
-                return null;
+                return (null);
             }
         }
 
-        i = wrapperListeners.iterator(); 
+        i = wrapperListeners.iterator();
         while (i.hasNext()) {
             String wrapperListener = i.next();
             try {
@@ -3685,11 +3595,11 @@ public class StandardContext
                     sm.getString("standardContext.containerListener",
                                  wrapperListener),
                     t);
-                return null;
+                return (null);
             }
         }
 
-        return wrapper;
+        return (wrapper);
     }
 
     /**
@@ -3758,7 +3668,7 @@ public class StandardContext
      * @param errorCode Error code to look up
      */
     public ErrorPage findErrorPage(int errorCode) {
-        if (errorCode >= 400 && errorCode < 600) {
+        if ((errorCode >= 400) && (errorCode < 600)) {
             return statusPages.get(errorCode);
         }
 
@@ -4026,9 +3936,9 @@ public class StandardContext
             realRole = roleMappings.get(role);
         }
         if (realRole != null)
-            return realRole;
+            return (realRole);
         else
-            return role;
+            return (role);
     }
 
     /**
@@ -4049,7 +3959,7 @@ public class StandardContext
     public void removeSecurityRoles() {
         // Inform interested listeners
         if (notifyContainerListeners) {
-            Iterator<String> i = securityRoles.iterator(); 
+            Iterator<String> i = securityRoles.iterator();
             while (i.hasNext()) {
                 fireContainerEvent("removeSecurityRole", i.next());
             }
@@ -4121,7 +4031,7 @@ public class StandardContext
                 }
             }
         }
-        return false;
+        return (false);
     }
 
     /**
@@ -4136,7 +4046,7 @@ public class StandardContext
      * defined, a zero-length array is returned.
      */
     public String[] findWelcomeFiles() {
-        return welcomeFiles;
+        return (welcomeFiles);
     }
 
     /**
@@ -4229,7 +4139,7 @@ public class StandardContext
     public void removeApplicationParameter(String name) {
         ApplicationParameter match = null;
         Iterator<ApplicationParameter> i =
-            applicationParameters.iterator(); 
+            applicationParameters.iterator();
         while (i.hasNext()) {
             ApplicationParameter applicationParameter = i.next();
             // Make sure this parameter is currently present
@@ -4271,7 +4181,7 @@ public class StandardContext
     public void removeConstraints() {
         // Inform interested listeners
         if (notifyContainerListeners) {
-            Iterator<SecurityConstraint> i = constraints.iterator(); 
+            Iterator<SecurityConstraint> i = constraints.iterator();
             while (i.hasNext()) {
                 fireContainerEvent("removeConstraint", i.next());
             }
@@ -4360,7 +4270,7 @@ public class StandardContext
     public void removeFilterMaps() {
         // Inform interested listeners
         if (notifyContainerListeners) {
-            Iterator<FilterMap> i = filterMaps.iterator(); 
+            Iterator<FilterMap> i = filterMaps.iterator();
             while (i.hasNext()) {
                 fireContainerEvent("removeFilterMap", i.next());
             }
@@ -4575,7 +4485,7 @@ public class StandardContext
         synchronized (watchedResources) {
             // Inform interested listeners
             if (notifyContainerListeners) {
-                Iterator<String> i = watchedResources.iterator(); 
+                Iterator<String> i = watchedResources.iterator();
                 while (i.hasNext()) {
                     fireContainerEvent("removeWatchedResource", i.next());
                 }
@@ -4583,7 +4493,7 @@ public class StandardContext
             watchedResources.clear();
         }
     }
-         
+
     @Override
     public void removeWelcomeFiles() {
         if (notifyContainerListeners) {
@@ -4598,7 +4508,7 @@ public class StandardContext
     public void removeWrapperLifecycles() {
         // Inform interested listeners
         if (notifyContainerListeners) {
-            Iterator<String> i = wrapperLifecycles.iterator(); 
+            Iterator<String> i = wrapperLifecycles.iterator();
             while (i.hasNext()) {
                 fireContainerEvent("removeWrapperLifecycle", i.next());
             }
@@ -4610,7 +4520,7 @@ public class StandardContext
     public void removeWrapperListeners() {
         // Inform interested listeners
         if (notifyContainerListeners) {
-            Iterator<String> i = wrapperListeners.iterator(); 
+            Iterator<String> i = wrapperListeners.iterator();
             while (i.hasNext()) {
                 fireContainerEvent("removeWrapperListener", i.next());
             }
@@ -4664,7 +4574,7 @@ public class StandardContext
                 request);
             int len = listeners.size();
             for (int i = 0; i < len; i++) {
-                EventListener eventListener = listeners.get(len - 1 - i);
+                EventListener eventListener = listeners.get((len - 1) - i);
                 if (!(eventListener instanceof ServletRequestListener)) {
                     continue;
                 }
@@ -4723,7 +4633,7 @@ public class StandardContext
             }
         }
 
-        return ok;
+        return (ok);
 
     }
 
@@ -4748,7 +4658,7 @@ public class StandardContext
             }
             filterConfigs.clear();
         }
-        return true;
+        return (true);
     }
 
     /**
@@ -4809,7 +4719,7 @@ public class StandardContext
                         regis.getName()));
             }
         }
-        
+
         isContextInitializedCalled = true;
     }
 
@@ -4855,9 +4765,9 @@ public class StandardContext
             getServletContext());
         int len = contextListeners.size();
         for (int i = 0; i < len; i++) {
-            // Invoke in reverse order of declaration 
+            // Invoke in reverse order of declaration
             ServletContextListener listener =
-                contextListeners.get(len - 1 - i);
+                contextListeners.get((len - 1) - i);
             if (listener instanceof RestrictedServletContextListener) {
                 listener = ((RestrictedServletContextListener) listener).
                     getNestedListener();
@@ -4900,7 +4810,7 @@ public class StandardContext
             return true;
         }
 
-        Iterator<EventListener> iter = eventListeners.iterator(); 
+        Iterator<EventListener> iter = eventListeners.iterator();
         while (iter.hasNext()) {
             EventListener listener = iter.next();
             // ServletContextListeners and HttpSessionListeners
@@ -4911,7 +4821,7 @@ public class StandardContext
             }
             fireContainerEvent(ContainerEvent.PRE_DESTROY, listener);
         }
-        
+
         eventListeners.clear();
 
         return true;
@@ -4940,13 +4850,13 @@ public class StandardContext
             // Register the cache in JMX
             if(isCachingAllowed()) {
                 ObjectName resourcesName = new ObjectName(
-                    getDomain() + ":type=Cache,host="
+                    this.getDomain() + ":type=Cache,host="
                         + getHostname() + ",path="
-                    + ("".equals(encodedPath) ? "/" : encodedPath));
+                    + (("".equals(encodedPath)) ? "/" : encodedPath));
                 Registry.getRegistry(null, null).registerComponent
                     (proxyDirContext.getCache(), resourcesName, null);
             }
-            resources = proxyDirContext;
+            this.resources = proxyDirContext;
         } catch(Throwable t) {
             if(log.isLoggable(Level.FINE)) {
                 log.log(Level.SEVERE,
@@ -5023,10 +4933,10 @@ public class StandardContext
                 // Unregister the cache in JMX
                 if (isCachingAllowed()) {
                     ObjectName resourcesName =
-                        new ObjectName(getDomain()
+                        new ObjectName(this.getDomain()
                                        + ":type=Cache,host="
                                        + getHostname() + ",path="
-                                       + ("".equals(getPath()) ?"/"
+                                       + (("".equals(getPath()))?"/"
                                           :getPath()));
                     Registry.getRegistry(null, null).unregisterComponent(resourcesName);
                 }
@@ -5036,9 +4946,10 @@ public class StandardContext
                     sm.getString("standardContext.resourcesStop"), t);
             ok = false;
         }
-        resources = null;
 
-        return ok;
+        this.resources = null;
+
+        return (ok);
 
     }
 
@@ -5077,9 +4988,10 @@ public class StandardContext
                 }
             }
         }
-        alternateDocBases = null;
 
-        return ok;
+        this.alternateDocBases = null;
+
+        return (ok);
     }
 
     /**
@@ -5139,7 +5051,7 @@ public class StandardContext
      * Starts the session manager of this Context.
      */
     protected void managerStart() throws LifecycleException {
-        if (manager != null && manager instanceof org.apache.catalina.Lifecycle) {
+        if ((manager != null) && (manager instanceof Lifecycle)) {
             ((Lifecycle) getManager()).start();
         }
     }
@@ -5149,7 +5061,7 @@ public class StandardContext
      * Stops the session manager of this Context.
      */
     protected void managerStop() throws LifecycleException {
-        if (manager != null && manager instanceof org.apache.catalina.Lifecycle) {
+        if ((manager != null) && (manager instanceof Lifecycle)) {
             ((Lifecycle) manager).stop();
         }
     }
@@ -5187,8 +5099,8 @@ public class StandardContext
         // Set JMX object name for proper pipeline registration
         preRegisterJMX();
 
-        if (oname != null &&
-            org.apache.tomcat.util.modeler.Registry.getRegistry(null, null).getMBeanServer().isRegistered(oname)) {
+        if ((oname != null) &&
+            (Registry.getRegistry(null, null).getMBeanServer().isRegistered(oname))) {
             // As things depend on the JMX registration, the context
             // must be reregistered again once properly initialized
             Registry.getRegistry(null, null).unregisterComponent(oname);
@@ -5218,8 +5130,8 @@ public class StandardContext
                 log.fine("Configuring default Resources");
             }
             try {
-                if (docBase != null && docBase.endsWith(".war") &&
-                    !new java.io.File(docBase).isDirectory())
+                if ((docBase != null) && (docBase.endsWith(".war")) &&
+                        (!(new File(docBase).isDirectory())))
                     setResources(new WARDirContext());
                 else
                     setResources(new FileDirContext());
@@ -5240,7 +5152,7 @@ public class StandardContext
                 }
                 try {
                     if(docBase != null && docBase.endsWith(".war") &&
-                        !new java.io.File(docBase).isDirectory()) {
+                        (!(new File(docBase).isDirectory()))) {
                         setAlternateResources(alternateDocBase,
                             new WARDirContext());
                     } else {
@@ -5297,8 +5209,8 @@ public class StandardContext
 
         // Reading the "catalina.useNaming" environment variable
         String useNamingProperty = System.getProperty("catalina.useNaming");
-        if (useNamingProperty != null &&
-            "false".equals(useNamingProperty)) {
+        if ((useNamingProperty != null) &&
+                ("false".equals(useNamingProperty))) {
             useNaming = false;
         }
 
@@ -5321,9 +5233,9 @@ public class StandardContext
             started = true;
 
             // Start our subordinate components, if any
-            if (loader != null && loader instanceof org.apache.catalina.Lifecycle)
+            if ((loader != null) && (loader instanceof Lifecycle))
                 ((Lifecycle) loader).start();
-            if (logger != null && logger instanceof org.apache.catalina.Lifecycle)
+            if ((logger != null) && (logger instanceof Lifecycle))
                 ((Lifecycle) logger).start();
 
             // Unbinding thread
@@ -5334,9 +5246,9 @@ public class StandardContext
             // Binding thread
             oldCCL = bindThread();
 
-            if (realm != null && realm instanceof org.apache.catalina.Lifecycle)
+            if ((realm != null) && (realm instanceof Lifecycle))
                 ((Lifecycle) realm).start();
-            if (resources != null && resources instanceof org.apache.catalina.Lifecycle)
+            if ((resources != null) && (resources instanceof Lifecycle))
                 ((Lifecycle) resources).start();
 
             // Start our child containers, if any
@@ -5355,11 +5267,6 @@ public class StandardContext
             // Notify our interested LifecycleListeners
             lifecycle.fireLifecycleEvent(START_EVENT, null);
             // END SJSAS 8.1 5049111
-
-            // START SJSAS 8.1 5049111
-            // Notify our interested LifecycleListeners
-            // lifecycle.fireLifecycleEvent(START_EVENT, null);
-            // END SJSAS 8.1 504911
         } catch (Throwable t) {
             throw new LifecycleException(t);
         } finally {
@@ -5398,7 +5305,7 @@ public class StandardContext
             contextListenerStart();
 
             // Start manager
-            if (manager != null && manager instanceof org.apache.catalina.Lifecycle) {
+            if ((manager != null) && (manager instanceof Lifecycle)) {
                 ((Lifecycle) getManager()).start();
             }
 
@@ -5440,7 +5347,7 @@ public class StandardContext
         // Send j2ee.state.running notification
         if (getObjectName() != null) {
             Notification notification =
-                new Notification("j2ee.state.running", getObjectName(),
+                new Notification("j2ee.state.running", this.getObjectName(),
                                  sequenceNumber++);
             broadcaster.sendNotification(notification);
         }
@@ -5479,7 +5386,7 @@ public class StandardContext
 
         // We have the list of initializers and the classes that satisfy
         // the condition. Time to call the initializers
-        ServletContext ctxt = getServletContext();
+        ServletContext ctxt = this.getServletContext();
         try {
             for (Class<? extends ServletContainerInitializer> initializer :
                     initializerList.keySet()) {
@@ -5526,7 +5433,7 @@ public class StandardContext
             if (log.isLoggable(Level.FINE)) {
                 log.fine("Configuring privileged default Loader");
             }
-            parent = getClass().getClassLoader();
+            parent = this.getClass().getClassLoader();
         } else {
             if (log.isLoggable(Level.FINE)) {
                 log.fine("Configuring non-privileged default Loader");
@@ -5570,9 +5477,9 @@ public class StandardContext
         lifecycle.fireLifecycleEvent(BEFORE_STOP_EVENT, null);
 
         // Send j2ee.state.stopping notification
-        if (getObjectName() != null) {
+        if (this.getObjectName() != null) {
             Notification notification =
-                new Notification("j2ee.state.stopping", getObjectName(),
+                new Notification("j2ee.state.stopping", this.getObjectName(),
                                 sequenceNumber++);
             broadcaster.sendNotification(notification);
         }
@@ -5597,7 +5504,7 @@ public class StandardContext
             // Stop ContainerBackgroundProcessor thread
             super.threadStop();
 
-            if (manager != null && manager instanceof org.apache.catalina.Lifecycle) {
+            if ((manager != null) && (manager instanceof Lifecycle)) {
                 if(manager instanceof StandardManager) {
                     ((StandardManager)manager).stop(isShutdown);
                 } else {
@@ -5646,10 +5553,10 @@ public class StandardContext
             resourcesStop();
             alternateResourcesStop();
 
-            if (realm != null && realm instanceof org.apache.catalina.Lifecycle) {
+            if ((realm != null) && (realm instanceof Lifecycle)) {
                 ((Lifecycle) realm).stop();
             }
-            if (logger != null && logger instanceof org.apache.catalina.Lifecycle) {
+            if ((logger != null) && (logger instanceof Lifecycle)) {
                 ((Lifecycle) logger).stop();
             }
             /* SJSAS 6347606
@@ -5657,6 +5564,22 @@ public class StandardContext
                 ((Lifecycle) loader).stop();
             }
             */
+        } catch(Throwable t) {
+            // started was "true" when it first enters the try block.
+            // Note that it is set to false after STOP_EVENT is fired.
+            // One need to fire STOP_EVENT to clean up naming information
+            // if START_EVENT is processed successfully.
+            if (started) {
+                lifecycle.fireLifecycleEvent(STOP_EVENT, null);
+            }
+
+            if (t instanceof RuntimeException) {
+                throw (RuntimeException)t;
+            } else if (t instanceof LifecycleException) {
+                throw (LifecycleException)t;
+            } else {
+                throw new LifecycleException(t);
+            }
         } finally {
 
             // Unbinding thread
@@ -5670,16 +5593,16 @@ public class StandardContext
              * context classloader (i.e., the webapp classloader) to load
              * Principal classes specified in the security policy file
              */
-            if (loader != null && loader instanceof org.apache.catalina.Lifecycle) {
+            if ((loader != null) && (loader instanceof Lifecycle)) {
                 ((Lifecycle) loader).stop();
             }
             // END SJSAS 6347606
         }
 
         // Send j2ee.state.stopped notification
-        if (getObjectName() != null) {
+        if (this.getObjectName() != null) {
             Notification notification =
-                new Notification("j2ee.state.stopped", getObjectName(),
+                new Notification("j2ee.state.stopped", this.getObjectName(),
                                 sequenceNumber++);
             broadcaster.sendNotification(notification);
         }
@@ -5720,7 +5643,7 @@ public class StandardContext
         if(oname != null) {
             // Send j2ee.object.deleted notification
             Notification notification =
-                new Notification("j2ee.object.deleted", getObjectName(),
+                new Notification("j2ee.object.deleted", this.getObjectName(),
                                 sequenceNumber++);
             broadcaster.sendNotification(notification);
         }
@@ -5772,7 +5695,7 @@ public class StandardContext
         sb.append("StandardContext[");
         sb.append(getName());
         sb.append("]");
-        return sb.toString();
+        return (sb.toString());
 
     }
 
@@ -5789,7 +5712,7 @@ public class StandardContext
 
         count = (count + 1) % managerChecksFrequency;
 
-        if (getManager() != null && count == 0) {
+        if ((getManager() != null) && (count == 0)) {
             if (getManager() instanceof StandardManager) {
                 ((StandardManager) getManager()).processExpires();
             } else if (getManager() instanceof PersistentManagerBase) {
@@ -5802,7 +5725,7 @@ public class StandardContext
         // START S1AS8PE 4965017
         if (isReload()) {
             if (getLoader() != null) {
-                if (reloadable && getLoader().modified()) {
+                if (reloadable && (getLoader().modified())) {
                     try {
                         Thread.currentThread().setContextClassLoader
                             (standardContextClassLoader);
@@ -5836,16 +5759,16 @@ public class StandardContext
     protected String adjustURLPattern(String urlPattern) {
 
         if (urlPattern == null)
-            return urlPattern;
+            return (urlPattern);
         if (urlPattern.startsWith("/") || urlPattern.startsWith("*."))
-            return urlPattern;
+            return (urlPattern);
         if (!isServlet22())
-            return urlPattern;
+            return (urlPattern);
         if (log.isLoggable(Level.FINE)) {
             log.fine(sm.getString("standardContext.urlPattern.patternWarning",
                                   urlPattern));
         }
-        return "/" + urlPattern;
+        return ("/" + urlPattern);
 
     }
 
@@ -5864,10 +5787,10 @@ public class StandardContext
     protected File engineBase() {
         String base=System.getProperty("catalina.base");
         if( base == null ) {
-            StandardEngine eng=(StandardEngine) getParent().getParent();
+            StandardEngine eng=(StandardEngine)this.getParent().getParent();
             base=eng.getBaseDir();
         }
-        return new java.io.File(base);
+        return (new File(base));
     }
 
 
@@ -5920,14 +5843,14 @@ public class StandardContext
         File file = new File(docBase);
         if (!file.isAbsolute()) {
             if (container == null) {
-                basePath = new java.io.File(engineBase(), docBase).getPath();
+                basePath = (new File(engineBase(), docBase)).getPath();
             } else {
                 // Use the "appBase" property of this container
                 String appBase = ((Host) container).getAppBase();
                 file = new File(appBase);
                 if (!file.isAbsolute())
                     file = new File(engineBase(), appBase);
-                basePath = new java.io.File(file, docBase).getPath();
+                basePath = (new File(file, docBase)).getPath();
             }
         } else {
             basePath = file.getPath();
@@ -5992,7 +5915,7 @@ public class StandardContext
         } else {
             basename = path.substring(1).replace('/', '_');
         }
-        return basename + ".xml";
+        return (basename + ".xml");
     }
 
     /**
@@ -6089,7 +6012,7 @@ public class StandardContext
         if (parentHost != null) {
             hostName = parentHost.getName();
         }
-        if (hostName == null || hostName.length() < 1)
+        if ((hostName == null) || (hostName.length() < 1))
             hostName = "_";
         return hostName;
     }
@@ -6118,9 +6041,9 @@ public class StandardContext
                    engineName = parentEngine.getName();
                 }
             }
-            if (hostName == null || hostName.length() < 1)
+            if ((hostName == null) || (hostName.length() < 1))
                 hostName = "_";
-            if (engineName == null || engineName.length() < 1)
+            if ((engineName == null) || (engineName.length() < 1))
                 engineName = "_";
 
             String temp = getPath();
@@ -6191,8 +6114,8 @@ public class StandardContext
             } else
                 return false;
         }
-        if ( urlPattern.startsWith("/") &&
-            !urlPattern.contains("*.")) {
+        if ( (urlPattern.startsWith("/")) &&
+                (!urlPattern.contains("*."))) {
             checkUnusualURLPattern(urlPattern);
             return true;
         } else
@@ -6229,7 +6152,7 @@ public class StandardContext
         for(ContextEnvironment env : envs) {
             try {
                 ObjectName oname =
-                    MBeanUtils.createObjectName(getEngineName(), env);
+                    MBeanUtils.createObjectName(this.getEngineName(), env);
                 results.add(oname.toString());
             } catch(MalformedObjectNameException e) {
                 IllegalArgumentException iae = new IllegalArgumentException
@@ -6254,7 +6177,7 @@ public class StandardContext
         for(ContextResource resource : resources) {
             try {
                 ObjectName oname =
-                    MBeanUtils.createObjectName(getEngineName(), resource);
+                    MBeanUtils.createObjectName(this.getEngineName(), resource);
                 results.add(oname.toString());
             } catch(MalformedObjectNameException e) {
                 IllegalArgumentException iae = new IllegalArgumentException
@@ -6278,7 +6201,7 @@ public class StandardContext
         for(ContextResourceLink link : links) {
             try {
                 ObjectName oname =
-                    MBeanUtils.createObjectName(getEngineName(), link);
+                    MBeanUtils.createObjectName(this.getEngineName(), link);
                 results.add(oname.toString());
             } catch(MalformedObjectNameException e) {
                 IllegalArgumentException iae = new IllegalArgumentException
@@ -6320,7 +6243,7 @@ public class StandardContext
         ManagedBean managed = Registry.getRegistry(null, null).findManagedBean("ContextEnvironment");
         ObjectName oname =
             MBeanUtils.createObjectName(managed.getDomain(), env);
-        return oname.toString();
+        return (oname.toString());
 
     }
 
@@ -6351,7 +6274,7 @@ public class StandardContext
         ManagedBean managed = Registry.getRegistry(null, null).findManagedBean("ContextResource");
         ObjectName oname =
             MBeanUtils.createObjectName(managed.getDomain(), resource);
-        return oname.toString();
+        return (oname.toString());
     }
 
     /**
@@ -6383,7 +6306,7 @@ public class StandardContext
         ManagedBean managed = Registry.getRegistry(null, null).findManagedBean("ContextResourceLink");
         ObjectName oname =
             MBeanUtils.createObjectName(managed.getDomain(), resourceLink);
-        return oname.toString();
+        return (oname.toString());
     }
 
     @Override
@@ -6394,8 +6317,8 @@ public class StandardContext
         StandardHost hst=(StandardHost)getParent();
 
         String hostName=getParent().getName();
-        String name= "//" + (hostName==null ? "DEFAULT" : hostName) +
-                ("".equals(encodedPath) ? "/" : encodedPath);
+        String name= "//" + ((hostName==null)? "DEFAULT" : hostName) +
+                (("".equals(encodedPath)) ? "/" : encodedPath);
 
         String suffix=",J2EEApplication=" +
                 getJ2EEApplication() + ",J2EEServer=" +
@@ -6410,11 +6333,27 @@ public class StandardContext
         return new ObjectName(getDomain() + ":" + onameStr);
     }
 
+    public void updateObjectName() {
+        try {
+            StandardHost host = (StandardHost) getParent();
+            oname = createObjectName(host.getDomain(), host.getJmxName());
+            controller = oname;
+            for (Container wrapper : findChildren()) {
+                ((StandardWrapper)wrapper).registerJMX(this);
+            }
+        } catch(Exception ex) {
+            log.log(Level.INFO,
+                    "Error updating ctx with jmx " + this + " " +
+                    oname + " " + ex.toString(),
+                    ex );
+        }
+    }
+
     private void preRegisterJMX() {
         try {
             StandardHost host = (StandardHost) getParent();
-            if (oname == null
-                || oname.getKeyProperty("j2eeType") == null) {
+            if ((oname == null)
+                    || (oname.getKeyProperty("j2eeType") == null)) {
                 oname = createObjectName(host.getDomain(), host.getJmxName());
                 controller = oname;
             }
@@ -6437,9 +6376,9 @@ public class StandardContext
                     this, oname, null);
 
                 // Send j2ee.object.created notification
-                if (getObjectName() != null) {
+                if (this.getObjectName() != null) {
                     Notification notification = new Notification(
-                        "j2ee.object.created", getObjectName(),
+                        "j2ee.object.created", this.getObjectName(),
                         sequenceNumber++);
                     broadcaster.sendNotification(notification);
                 }
@@ -6498,7 +6437,7 @@ public class StandardContext
     @Override
     public void init() throws Exception {
 
-        if(getParent() == null ) {
+        if( this.getParent() == null ) {
             ObjectName parentName=getParentName();
 
             if( ! mserver.isRegistered(parentName)) {
@@ -6512,7 +6451,7 @@ public class StandardContext
                 mserver.invoke(parentName, "init", new Object[] {}, new String[] {} );
             }
             ContextConfig config = new ContextConfig();
-            addLifecycleListener(config);
+            this.addLifecycleListener(config);
 
             if (log.isLoggable(Level.FINE)) {
                 log.fine( "AddChild " + parentName + " " + this);
@@ -6539,9 +6478,9 @@ public class StandardContext
         // END GlassFish 2439
 
         // Send j2ee.state.starting notification
-        if (getObjectName() != null) {
+        if (this.getObjectName() != null) {
             Notification notification = new Notification("j2ee.state.starting",
-                getObjectName(), sequenceNumber++);
+                this.getObjectName(), sequenceNumber++);
             broadcaster.sendNotification(notification);
         }
 
@@ -6567,15 +6506,15 @@ public class StandardContext
             hostName=path.substring(0, delim);
             path = path.substring(delim);
             if ("/".equals(path)) {
-                setName("");
+                this.setName("");
             } else {
-                setName(path);
+                this.setName(path);
             }
         } else {
             if (log.isLoggable(Level.FINE)) {
                 log.fine("Setting path " +  path );
             }
-            setName( path );
+            this.setName( path );
         }
         // XXX  The service and domain should be the same.
         String parentDomain=getEngineName();
@@ -6587,9 +6526,9 @@ public class StandardContext
     public void create() throws Exception{
         init();
     }
-    
+
     // ------------------------------------------------- ServletContext Methods
-            
+
     /**
      * Return the value of the specified context attribute, if any;
      * otherwise return <code>null</code>.
@@ -6597,15 +6536,15 @@ public class StandardContext
     public Object getAttribute(String name) {
         return context.getAttribute(name);
     }
-    
+
     /**
      * Return an enumeration of the names of the context attributes
      * associated with this context.
      */
     public Enumeration<String> getAttributeNames() {
         return context.getAttributeNames();
-    }      
-        
+    }
+
     /**
      * Returns the context path of the web application.
      */
@@ -6615,13 +6554,13 @@ public class StandardContext
 
     /**
      * Return a <code>ServletContext</code> object that corresponds to a
-     * specified URI on the server.  
+     * specified URI on the server.
      */
-    public ServletContext getContext(String uri) {       
-        
+    public ServletContext getContext(String uri) {
+
         // Validate the format of the specified argument
-        if (uri == null || !uri.startsWith("/")) {
-            return null;
+        if ((uri == null) || (!uri.startsWith("/"))) {
+            return (null);
         }
 
         Context child = null;
@@ -6638,11 +6577,11 @@ public class StandardContext
                 mapuri = mapuri.substring(0, slash);
             }
         } catch (Throwable t) {
-            return null;
+            return (null);
         }
 
         if (child == null) {
-            return null;
+            return (null);
         }
 
         if (getCrossContext()) {
@@ -6653,10 +6592,10 @@ public class StandardContext
             return getServletContext();
         } else {
             // Nothing to return
-            return null;
+            return (null);
         }
     }
-    
+
     /**
      * Return the value of the specified initialization parameter, or
      * <code>null</code> if this parameter does not exist.
@@ -6672,7 +6611,7 @@ public class StandardContext
     public Enumeration<String> getInitParameterNames() {
         return context.getInitParameterNames();
     }
-    
+
     /**
      * @return true if the context initialization parameter with the given
      * name and value was set successfully on this ServletContext, and false
@@ -6681,8 +6620,8 @@ public class StandardContext
      */
     public boolean setInitParameter(String name, String value) {
         return context.setInitParameter(name, value);
-    }    
-        
+    }
+
     /**
      * Return the major version of the Java Servlet API that we implement.
      */
@@ -6696,58 +6635,58 @@ public class StandardContext
     public int getMinorVersion() {
         return context.getMinorVersion();
     }
-        
+
     /**
      * Return the MIME type of the specified file, or <code>null</code> if
      * the MIME type cannot be determined.
      */
     public String getMimeType(String file) {
-        
+
         if (file == null)
-            return null;
+            return (null);
         int period = file.lastIndexOf(".");
         if (period < 0)
-            return null;
+            return (null);
         String extension = file.substring(period + 1);
         if (extension.length() < 1)
-            return null;
-        return findMimeMapping(extension);
-        
+            return (null);
+        return (findMimeMapping(extension));
+
     }
-        
+
     /**
      * Return a <code>RequestDispatcher</code> object that acts as a
      * wrapper for the named servlet.
      */
     public RequestDispatcher getNamedDispatcher(String name) {
-        
+
         // Validate the name argument
         if (name == null)
-            return null;
+            return (null);
 
         // Create and return a corresponding request dispatcher
         Wrapper wrapper = (Wrapper) findChild(name);
         if (wrapper == null)
-            return null;
-        
+            return (null);
+
         return new ApplicationDispatcher(wrapper, null, null, null, null, name);
-        
+
     }
-    
+
     /**
      * Return the display name of this web application.
      */
     public String getServletContextName() {
         return getDisplayName();
     }
-        
+
     /**
      * Remove the context attribute with the specified name, if any.
      */
     public void removeAttribute(String name) {
         context.removeAttribute(name);
     }
-            
+
     /**
      * Bind the specified value with the specified context attribute name,
      * replacing any existing value for that name.
@@ -6755,14 +6694,14 @@ public class StandardContext
     public void setAttribute(String name, Object value) {
         context.setAttribute(name, value);
     }
-        
+
     /**
      * Return the name and version of the servlet container.
      */
     public String getServerInfo() {
         return context.getServerInfo();
     }
-        
+
     /**
      * Return the real path corresponding to the given virtual path, or
      * <code>null</code> if the container was unable to perform the
@@ -6796,19 +6735,15 @@ public class StandardContext
                 // Try looking up resource in
                 // WEB-INF/lib/[*.jar]/META-INF/resources
                 URL u = getMetaInfResource(path);
-                String realPath = urlEncoder.encode(file.getAbsolutePath());
-                if (realPath.length() > Constants.CHAR_LIMIT) {
-                    realPath = realPath.substring(0, Constants.CHAR_LIMIT);
-                }
-                return u != null ? u.getPath() : realPath;
+                return (u != null ? u.getPath() : file.getAbsolutePath());
             } catch (Exception e) {
                 return null;
             }
         } else {
             return file.getAbsolutePath();
         }
-    }    
-    
+    }
+
     /**
      * Writes the specified message to a servlet log file.
      */
@@ -6823,16 +6758,16 @@ public class StandardContext
             //END PWC 6403328
         }
     }
-    
+
     /**
      * Writes the specified exception and message to a servlet log file.
      */
-    public void log(Exception exception, String message) {     
+    public void log(Exception exception, String message) {
         org.apache.catalina.Logger logger = getLogger();
         if (logger != null)
             logger.log(exception, logName() + message);
-    }       
-        
+    }
+
     /**
      * Writes the specified message and exception to a servlet log file.
      */
@@ -6841,19 +6776,19 @@ public class StandardContext
         if (logger != null)
             logger.log(logName() + message, throwable);
     }
-        
+
     public Servlet getServlet(String name) {
         return context.getServlet(name);
     }
-    
+
     public Enumeration<String> getServletNames() {
         return context.getServletNames();
-    }            
-        
+    }
+
     public Enumeration<Servlet> getServlets() {
         return context.getServlets();
     }
-        
+
     /**
      * Return the requested resource as an <code>InputStream</code>.  The
      * path must be specified according to the rules described under
@@ -6863,11 +6798,11 @@ public class StandardContext
     public InputStream getResourceAsStream(String path) {
 
         if (path == null || !path.startsWith("/"))
-            return null;
+            return (null);
 
         path = RequestUtil.normalize(path);
         if (path == null)
-            return null;
+            return (null);
 
         DirContext resources = null;
 
@@ -6889,27 +6824,27 @@ public class StandardContext
             try {
                 Object resource = resources.lookup(path);
                 if (resource instanceof Resource)
-                    return ((org.apache.naming.resources.Resource) resource).streamContent();
+                    return (((Resource) resource).streamContent());
             } catch (Exception e) {
                 try {
                     // Try looking up resource in
                     // WEB-INF/lib/[*.jar]/META-INF/resources
                     URL u = getMetaInfResource(path);
-                    return u != null ? u.openStream() : null;
+                    return (u != null ? u.openStream() : null);
                 } catch (Exception ee) {
                     // do nothing
                 }
             }
         }
-        return null;
+        return (null);
     }
-        
+
     /**
      * Return the URL to the resource that is mapped to a specified path.
      * The path must begin with a "/" and is interpreted as relative to the
      * current context root.
      */
-    public URL getResource(String path)
+    public java.net.URL getResource(String path)
         throws MalformedURLException {
 
         if (path == null || !path.startsWith("/")) {
@@ -6917,13 +6852,13 @@ public class StandardContext
                 sm.getString("applicationContext.resourcePaths.iae",
                              path));
         }
-        
+
         path = RequestUtil.normalize(path);
         if (path == null)
-            return null;
+            return (null);
 
         String libPath = "/WEB-INF/lib/";
-        if (path.startsWith(libPath) && path.endsWith(".jar")) {
+        if ((path.startsWith(libPath)) && (path.endsWith(".jar"))) {
             File jarFile = null;
             if (isFilesystemBased()) {
                 jarFile = new File(getBasePath(docBase), path);
@@ -6958,7 +6893,7 @@ public class StandardContext
                 String hostName = getParent().getName();
                 try {
                     resources.lookup(path);
-                    return new URL
+                    return new java.net.URL
                         /* SJSAS 6318494
                         ("jndi", null, 0, getJNDIUri(hostName, fullPath),
                          */
@@ -6978,9 +6913,9 @@ public class StandardContext
             }
         }
 
-        return null;
+        return (null);
     }
-        
+
     /**
      * Return a Set containing the resource paths of resources member of the
      * specified collection. Each path will be a String starting with
@@ -6998,7 +6933,7 @@ public class StandardContext
 
         path = RequestUtil.normalize(path);
         if (path == null)
-            return null;
+            return (null);
 
         DirContext resources = null;
 
@@ -7017,12 +6952,12 @@ public class StandardContext
         }
 
         if (resources != null) {
-            return getResourcePathsInternal(resources, path);
+            return (getResourcePathsInternal(resources, path));
         }
 
-        return null;
-    }    
-    
+        return (null);
+    }
+
     /**
      * Internal implementation of getResourcesPath() logic.
      *
@@ -7041,7 +6976,7 @@ public class StandardContext
         try {
             // Trigger expansion of bundled JAR files
             URL u = getMetaInfResource(path);
-            String realPath = u != null ? u.getPath() : null;
+            String realPath = (u != null ? u.getPath() : null);
             if (realPath != null) {
                 File[] children = new File(realPath).listFiles();
                 StringBuilder sb = null;
@@ -7060,14 +6995,14 @@ public class StandardContext
         }
         return Collections.unmodifiableSet(set);
     }
-         
+
     /**
      * Return a <code>RequestDispatcher</code> instance that acts as a
      * wrapper for the resource at the given path.  The path must begin
      * with a "/" and is interpreted as relative to the current context root.
      */
     public RequestDispatcher getRequestDispatcher(String path) {
-        
+
         // Validate the path argument
         if (path == null) {
             return null;
@@ -7089,7 +7024,7 @@ public class StandardContext
 
         path = RequestUtil.normalize(path);
         if (path == null)
-            return null;
+            return (null);
 
         pos = path.length();
 
@@ -7100,14 +7035,14 @@ public class StandardContext
             dispatchData.set(dd);
         }
 
-        org.glassfish.grizzly.http.util.MessageBytes uriMB = dd.uriMB;
+        MessageBytes uriMB = dd.uriMB;
         uriMB.recycle();
 
         // Retrieve the thread local mapping data
-        org.glassfish.grizzly.http.server.util.MappingData mappingData = dd.mappingData;
+        MappingData mappingData = dd.mappingData;
 
         // Map the URI
-        org.glassfish.grizzly.http.util.CharChunk uriCC = uriMB.getCharChunk();
+        CharChunk uriCC = uriMB.getCharChunk();
         try {
             uriCC.append(getPath(), 0, getPath().length());
             /*
@@ -7121,7 +7056,7 @@ public class StandardContext
             uriCC.append(path, 0, semicolon > 0 ? semicolon : pos);
             getMapper().map(uriMB, mappingData);
             if (mappingData.wrapper == null) {
-                return null;
+                return (null);
             }
             /*
              * Append any trailing path params (separated by ';') that were
@@ -7134,7 +7069,7 @@ public class StandardContext
         } catch (Exception e) {
             // Should never happen
             log(sm.getString("applicationContext.mapping.error"), e);
-            return null;
+            return (null);
         }
 
         Wrapper wrapper = (Wrapper) mappingData.wrapper;
@@ -7142,14 +7077,14 @@ public class StandardContext
         String pathInfo = mappingData.pathInfo.toString();
 
         mappingData.recycle();
-        
+
         // Construct a RequestDispatcher to process this request
         return new ApplicationDispatcher
-            (wrapper, uriCC.toString(), wrapperPath, pathInfo, 
+            (wrapper, uriCC.toString(), wrapperPath, pathInfo,
              queryString, null);
     }
-    
-        
+
+
     // ------------------------------------------------------------- Attributes
 
 
@@ -7243,8 +7178,8 @@ public class StandardContext
      */
     public void setTldNamespaceAware(boolean tldNamespaceAware){
         this.tldNamespaceAware= tldNamespaceAware;
-    }    
-    
+    }
+
     /**
      * Sets the list of ordered libs, which will be used as the value of the
      * ServletContext attribute with name javax.servlet.context.orderedLibs
@@ -7264,9 +7199,9 @@ public class StandardContext
             return 1; // RUNNING
         }
         if( initialized ) {
-            return 0; // starting ? 
+            return 0; // starting ?
         }
-        if( ! available ) { 
+        if( ! available ) {
             return 4; //FAILED
         }
         // 2 - STOPPING
@@ -7315,23 +7250,23 @@ public class StandardContext
      */
     public ObjectOutputStream createObjectOutputStream(OutputStream os)
             throws IOException {
-        return new ObjectOutputStream(os); 
+        return new ObjectOutputStream(os);
     }
 
     /**
      * Gets the time this context was started.
      *
      * @return Time (in milliseconds since January 1, 1970, 00:00:00) when this
-     * context was started 
+     * context was started
      */
     public long getStartTimeMillis() {
         return startTimeMillis;
     }
-    
+
     public boolean isEventProvider() {
         return false;
     }
-    
+
     public boolean isStatisticsProvider() {
         return false;
     }
@@ -7378,7 +7313,7 @@ public class StandardContext
     public void sessionPassivatedEndEvent(HttpSession session) {
         // Deliberate noop
     }
-    
+
     public static class RestrictedServletContextListener
             implements ServletContextListener {
 
@@ -7394,7 +7329,7 @@ public class StandardContext
                 ServletContextListener delegate) {
             this.delegate = delegate;
         }
-        
+
         public void contextInitialized(ServletContextEvent sce) {
             delegate.contextInitialized(sce);
         }
@@ -7461,8 +7396,8 @@ public class StandardContext
         }
 
         /*
-         * Checks whether access to the webapp class loader associated 
-         * with this Context should be granted to the caller of 
+         * Checks whether access to the webapp class loader associated
+         * with this Context should be granted to the caller of
          * ServletContext#getClassLoader.
          *
          * If no security manager exists, this method returns immediately.
@@ -7502,10 +7437,16 @@ public class StandardContext
              * CHANGES, E.G., DUE TO CODE BEING REORGANIZED
              */
             ClassLoader ccl = classContext[5].getClassLoader();
-            if (ccl != null && ccl != webappLoader && 
+            if (ccl != null && ccl != webappLoader &&
                     !isAncestor(webappLoader, ccl)) {
                 sm.checkPermission(GET_CLASSLOADER_PERMISSION);
             }
+        }
+    }
+
+    private static class PrivilegedCreateSecurityManager implements PrivilegedAction {
+        public Object run() {
+            return new MySecurityManager();
         }
     }
 
@@ -7532,7 +7473,7 @@ public class StandardContext
             set.add(childPath.toString());
         }
     }
-    
+
     /**
      * Get full path, based on the host name and the context path.
      */
@@ -7542,20 +7483,20 @@ public class StandardContext
         else
             return "/" + hostName + path;
     }
-    
+
     /**
      * Internal class used as thread-local storage when doing path
      * mapping during dispatch.
      */
     private static final class DispatchData {
-        public org.glassfish.grizzly.http.util.MessageBytes uriMB;
-        public org.glassfish.grizzly.http.server.util.MappingData mappingData;
+        public MessageBytes uriMB;
+        public MappingData mappingData;
 
         public DispatchData() {
-            uriMB = org.glassfish.grizzly.http.util.MessageBytes.newInstance();
-            org.glassfish.grizzly.http.util.CharChunk uriCC = uriMB.getCharChunk();
+            uriMB = MessageBytes.newInstance();
+            CharChunk uriCC = uriMB.getCharChunk();
             uriCC.setLimit(-1);
-            mappingData = new org.glassfish.grizzly.http.server.util.MappingData();
+            mappingData = new MappingData();
         }
     }
 

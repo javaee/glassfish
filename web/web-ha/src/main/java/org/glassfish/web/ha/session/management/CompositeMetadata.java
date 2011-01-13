@@ -346,6 +346,17 @@ public final class CompositeMetadata implements Storeable {
         }
     }
 
+    @Override
+    public String toString() {
+        return "CompositeMetadata{" +
+                "version=" + version +
+                ", maxInactiveInterval=" + maxInactiveInterval +
+                ", lastAccessTime=" + lastAccessTime +
+                ", state=" + (state ==null ? 0 : state.length) +
+                ", _dirtyAttributeNames=" + _dirtyAttributeNames +
+                ", storeableEntryMap=" + storeableEntryMap +
+                '}';
+    }
 
     private static class SessionAttributesMapImpl
             extends HashMap<String, byte[]>

@@ -44,6 +44,7 @@ import java.util.List;
 
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.CommandLock;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
@@ -78,9 +79,11 @@ import org.glassfish.config.support.TargetType;
 
 @Service(name="list-message-security-providers")
 @Scoped(PerLookup.class)
+@CommandLock(CommandLock.LockType.NONE)
 @I18n("list.message.security.provider")
-@ExecuteOn({RuntimeType.DAS, RuntimeType.INSTANCE})
-@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
+@ExecuteOn({RuntimeType.DAS})
+@TargetType({CommandTarget.DAS,CommandTarget.CLUSTERED_INSTANCE,
+CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER, CommandTarget.CONFIG})
 public class ListMessageSecurityProvider implements AdminCommand {
     
     final private static LocalStringManagerImpl localStrings = 
@@ -112,15 +115,26 @@ public class ListMessageSecurityProvider implements AdminCommand {
         
         final ActionReport report = context.getActionReport();
 
-        Server targetServer = domain.getServerNamed(target);
-        if (targetServer!=null) {
-            config = domain.getConfigNamed(targetServer.getConfigRef());
+        Config tmp = null;
+        try {
+            tmp = configs.getConfigByName(target);
+        } catch (Exception ex) {
         }
-        com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
-        if (cluster!=null) {
-            config = domain.getConfigNamed(cluster.getConfigRef());
+
+        if (tmp != null) {
+            config = tmp;
         }
-        SecurityService secService = config.getSecurityService();
+        if (tmp == null) {
+            Server targetServer = domain.getServerNamed(target);
+            if (targetServer != null) {
+                config = domain.getConfigNamed(targetServer.getConfigRef());
+            }
+            com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
+            if (cluster != null) {
+                config = domain.getConfigNamed(cluster.getConfigRef());
+            }
+        }
+        final SecurityService secService = config.getSecurityService();
         List<MessageSecurityConfig> mscs = secService.getMessageSecurityConfig();
 
         report.getTopMessagePart().setMessage(

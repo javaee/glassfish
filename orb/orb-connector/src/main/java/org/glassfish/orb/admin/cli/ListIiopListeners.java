@@ -44,6 +44,7 @@ package org.glassfish.orb.admin.cli;
 import com.sun.enterprise.config.serverbeans.Config;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.CommandLock;
 
 import org.glassfish.api.I18n;
 import org.glassfish.api.ActionReport;
@@ -75,10 +76,12 @@ import org.jvnet.hk2.component.Habitat;
 
 @Service(name="list-iiop-listeners")
 @Scoped(PerLookup.class)
+@CommandLock(CommandLock.LockType.NONE)
 @I18n("list.iiop.listeners")
 @ExecuteOn(value={RuntimeType.DAS})
 @TargetType(value={CommandTarget.CLUSTER,CommandTarget.CONFIG,
-    CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE }
+    CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,
+    CommandTarget.CLUSTERED_INSTANCE, CommandTarget.DOMAIN }
 )
 public class ListIiopListeners implements AdminCommand {
 

@@ -47,6 +47,10 @@
 	<target name="create.package">
 	<echo message="Staging files"/>
 
+        <move file="target/stage/${install.dir.name}/glassfish/modules/osgi-cdi.jar"
+            todir="target/stage/${install.dir.name}/glassfish/modules/autostart"
+            failonerror="false"/>
+
         <if test="${compression}">
 	       <antcall target="pack.compression" />
 	</if>

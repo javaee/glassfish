@@ -104,6 +104,10 @@ public class ApplicationContext implements ServletContext {
                      Boolean.valueOf(context.isUseMyFaces()));
     }
 
+    public StandardContext getStandardContext() {
+        return context;
+    }
+
 
     // ----------------------------------------------------- Class Variables
 

@@ -42,7 +42,7 @@ package org.glassfish.tests.weball;
 
 import org.glassfish.grizzly.config.dom.NetworkConfig;
 import org.glassfish.api.deployment.DeployCommandParameters;
-import org.glassfish.api.embedded.*;
+import org.glassfish.internal.embedded.*;
 import org.glassfish.api.embedded.web.*;
 import org.junit.Assert;
 import org.junit.BeforeClass;

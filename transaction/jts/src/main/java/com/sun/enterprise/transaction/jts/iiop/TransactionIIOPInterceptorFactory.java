@@ -121,6 +121,8 @@ public class TransactionIIOPInterceptorFactory implements IIOPInterceptorFactory
             }
 
             initJTSProperties(true);
+        } else {
+            initJTSProperties(false);
         }
 
         try {
@@ -186,7 +188,7 @@ public class TransactionIIOPInterceptorFactory implements IIOPInterceptorFactory
         }
     }
 
-    private void initJTSProperties(boolean lateRegistration) {
+    private void initJTSProperties(boolean isServer) {
         if (habitat != null) {
             jtsProperties = TransactionServiceProperties.getJTSProperties(habitat, true);
             if (_logger.isLoggable(Level.FINE)) {
@@ -194,7 +196,9 @@ public class TransactionIIOPInterceptorFactory implements IIOPInterceptorFactory
                             "++++ Server id: "
                             + jtsProperties.getProperty(ORBConstants.ORB_SERVER_ID_PROPERTY));
             }
-            Configuration.setProperties(jtsProperties);
+            if (isServer) {
+                Configuration.setProperties(jtsProperties);
+            }
         }
     }
 

@@ -297,7 +297,8 @@ final class WebModuleListener
         try {
             invocationMgr.preInvoke(inv);
             JCDIService jcdiService = defaultHabitat.getByContract(JCDIService.class);
-            if (jcdiService.isCurrentModuleJCDIEnabled()) {
+            // JCDIService can be absent if weld integration is missing in the runtime, so check for null is needed.
+            if (jcdiService != null && jcdiService.isCurrentModuleJCDIEnabled()) {
                 InitialContext context = new InitialContext();
                 BeanManager beanManager = (BeanManager)
                     context.lookup("java:comp/BeanManager");

@@ -45,6 +45,7 @@ import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.CommandLock;
 import org.glassfish.internal.api.ServerContext;
 
 import java.util.*;
@@ -75,6 +76,7 @@ import com.sun.logging.LogDomains;
  */
 @Service(name="list-jmsdest")
 @Scoped(PerLookup.class)
+@CommandLock(CommandLock.LockType.NONE)
 @I18n("list.jms.dests")
 @ExecuteOn({RuntimeType.DAS})
 @TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})

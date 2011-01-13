@@ -47,6 +47,7 @@ import java.util.logging.Level;
 
 import com.sun.jts.CosTransactions.Configuration;
 import com.sun.jts.CosTransactions.RecoveryManager;
+import com.sun.jts.utils.RecoveryHooks.FailureInducer;
 
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.api.admin.ProcessEnvironment;
@@ -79,10 +80,12 @@ public class TransactionServiceProperties {
     private static final String JTS_XA_SERVER_NAME = "com.sun.jts.xa-servername";
     private static final String J2EE_SERVER_ID_PROP = "com.sun.enterprise.J2EEServerId";
     private static final String JTS_SERVER_ID = "com.sun.jts.persistentServerId";
+    private static final String HABITAT = "HABITAT";
     private static final int DEFAULT_SERVER_ID = 100 ;
 
     private static Properties properties = null;
     private static volatile boolean orbAvailable = false;
+    private static volatile boolean recoveryInitialized = false;
 
     public static synchronized Properties getJTSProperties (Habitat habitat, boolean isORBAvailable) {
         if (orbAvailable == isORBAvailable && properties != null) {
@@ -92,6 +95,7 @@ public class TransactionServiceProperties {
 
         Properties jtsProperties = new Properties();
         if (habitat != null) {
+            jtsProperties.put(HABITAT, habitat);
             ProcessEnvironment processEnv = habitat.getComponent(ProcessEnvironment.class);
             if( processEnv.getProcessType().isServer()) {
                 TransactionService txnService = habitat.getComponent(TransactionService.class);
@@ -143,6 +147,20 @@ public class TransactionServiceProperties {
                             if (isValueSet(value)) {
                                 jtsProperties.put("pending-txn-cleanup-interval", value);
                             }
+        
+                        } else if (name.equals(Configuration.COMMIT_ONE_PHASE_DURING_RECOVERY)) {
+                            if (isValueSet(value)) {
+                                jtsProperties.put(Configuration.COMMIT_ONE_PHASE_DURING_RECOVERY, value);
+                            }
+                        } else if (name.equals("add-wait-point-during-recovery")) {
+                            if (isValueSet(value)) {
+                                try {
+                                    FailureInducer.setWaitPointRecovery(Integer.parseInt(value));
+                                } catch (Exception e) {
+                                    _logger.log(Level.WARNING, e.getMessage());
+                                }
+                            }
+
                         }
                     }
 
@@ -260,25 +278,39 @@ public class TransactionServiceProperties {
         return properties;
     }
 
-    public static void startRecoveryThread(Habitat habitat) {
-        if (habitat != null) {
-            ProcessEnvironment processEnv = habitat.getComponent(ProcessEnvironment.class);
-            if( processEnv.getProcessType().isServer()) {
+    public static void initRecovery(boolean force) {
+        if (recoveryInitialized) {
+            // Only start initial recovery if it wasn't started before
+            return;
+        }
 
-                if (properties == null) {
-                    _logger.log(Level.WARNING, "", new IllegalStateException());
-                    return;
-                }
+        if (properties == null) {
+            if (force) {
+                _logger.log(Level.WARNING, "", new IllegalStateException());
+            }
+            return;
+        }
 
-                String value = properties.getProperty("pending-txn-cleanup-interval");
-                if (isValueSet(value)) {
-                    int interval = Integer.parseInt(value);
-                    new RecoveryHelperThread(habitat, interval).start();
-                    if (_logger.isLoggable(Level.FINE)) {
-                       _logger.log(Level.FINE,"Asynchronous thread for incomplete "
-                               + "tx is enabled with interval " + interval);
+        // Start if force is true or automatic-recovery is set
+        String value = properties.getProperty(Configuration.MANUAL_RECOVERY);
+        if (force || (isValueSet(value) && "true".equals(value))) {
+            recoveryInitialized = true;
+
+            Habitat habitat = (Habitat)properties.get(HABITAT);
+            if (habitat != null) {
+                ProcessEnvironment processEnv = habitat.getComponent(ProcessEnvironment.class);
+                if( processEnv.getProcessType().isServer()) {
+                    value = properties.getProperty("pending-txn-cleanup-interval");
+                    int interval = -1;
+                    if (isValueSet(value)) {
+                        interval = Integer.parseInt(value);
                     }
+                    new RecoveryHelperThread(habitat, interval).start();
                 }
+                // Release all locks
+                RecoveryManager.startResyncThread();
+                if (_logger.isLoggable(Level.FINE))
+                    _logger.log(Level.FINE,"[JTS] Started ResyncThread");
             }
         }
     }
@@ -300,16 +332,26 @@ public class TransactionServiceProperties {
 
     private static class RecoveryHelperThread extends Thread {
         private int interval;
-        private ResourceRecoveryManager recoveryManager;
+        private Habitat habitat;
 
         RecoveryHelperThread(Habitat habitat, int interval) {
             setName("Recovery Helper Thread");
             setDaemon(true);
+            this.habitat = habitat;
             this.interval = interval;
-            recoveryManager = habitat.getByContract(ResourceRecoveryManager.class);
         }
 
         public void run() {
+            ResourceRecoveryManager recoveryManager = habitat.getByContract(ResourceRecoveryManager.class);
+            if (interval <= 0) {
+                // Only start the recovery thread if the interval value is set, and set to a positive value
+                return;
+            }
+
+            if (_logger.isLoggable(Level.INFO)) {
+               _logger.log(Level.INFO,"Asynchronous thread for incomplete "
+                       + "tx is enabled with interval " + interval);
+            }
             int prevSize = 0;
             try {
                 while(true) {

@@ -131,4 +131,18 @@ public class HASingleSignOnEntryMetadata implements Serializable {
     boolean removeHASessionData(HASessionData sessionData) {
         return sessionDataSet.remove(sessionData);
     }
+
+    @Override
+    public String toString() {
+        return "HASingleSignOnEntryMetadata{" +
+                "id='" + id + '\'' +
+                ", authType='" + authType + '\'' +
+                ", sessionDataSet.size=" + sessionDataSet.size() +
+                ", username='" + username + '\'' +
+                ", realmName='" + realmName + '\'' +
+                ", lastAccessTime=" + lastAccessTime +
+                ", maxIdleTime=" + maxIdleTime +
+                ", version=" + version +
+                '}';
+    }
 }

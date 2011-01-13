@@ -590,8 +590,9 @@ public class WebappLoader
                                            ":type=Loader,path=" +
                                            path + ",host=" +
                                            ctx.getParent().getName());
-                    Registry.getRegistry(null, null).registerComponent(this, oname,
-                                                             null);
+                    // Do not register unused tomcat mbeans
+                    //Registry.getRegistry(null, null).registerComponent(this, oname,
+                    //                                         null);
                     controller = oname;
                 } catch (Exception e) {
                     log.log(Level.SEVERE, "Error registering loader", e);
@@ -607,8 +608,8 @@ public class WebappLoader
 
     public void destroy() {
         if( controller==oname ) {
-            // Self-registration, undo it
-            Registry.getRegistry(null, null).unregisterComponent(oname);
+            // Do not register unused tomcat mbeans
+            //Registry.getRegistry(null, null).unregisterComponent(oname);
             oname = null;
         }
         initialized = false;

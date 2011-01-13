@@ -121,13 +121,6 @@ public abstract class AuthenticatorBase
         "org.apache.catalina.authenticator.AuthenticatorBase/1.0";
 
     /**
-     * The default message digest algorithm to use if we cannot use
-     * the requested one.
-     */
-    protected static final String DEFAULT_ALGORITHM = "MD5";
-    
-    
-    /**
      * The number of random bytes to include when generating a
      * session identifier.
      */
@@ -148,14 +141,6 @@ public abstract class AuthenticatorBase
 
     // ----------------------------------------------------- Instance Variables    
     /**
-     * The message digest algorithm to be used when generating session
-     * identifiers.  This must be an algorithm supported by the
-     * <code>java.security.MessageDigest</code> class on your platform.
-     */
-    protected String algorithm = DEFAULT_ALGORITHM;
-    
-    
-    /**
      * Should we cache authenticated Principals if the request is part of
      * an HTTP session?
      */
@@ -172,13 +157,6 @@ public abstract class AuthenticatorBase
      * The Context to which this Valve is attached.
      */
     protected Context context = null;
-    
-    
-    /**
-     * Return the MessageDigest implementation to be used when
-     * creating session identifiers.
-     */
-    protected MessageDigest digest = null;
     
     
     /**
@@ -244,24 +222,6 @@ public abstract class AuthenticatorBase
 
     // ------------------------------------------------------------- Properties
         
-    /**
-     * Return the message digest algorithm for this Manager.
-     */
-    public String getAlgorithm() {    
-        return (this.algorithm);
-    }
-    
-    
-    /**
-     * Set the message digest algorithm for this Manager.
-     *
-     * @param algorithm The new message digest algorithm
-     */
-    public void setAlgorithm(String algorithm) {
-        this.algorithm = algorithm;
-    }
-    
-    
     /**
      * Return the cache authenticated Principals flag.
      */
@@ -730,7 +690,6 @@ public abstract class AuthenticatorBase
         // Generate a byte array containing a session identifier
         byte bytes[] = new byte[SESSION_ID_BYTES];
         getRandom().nextBytes(bytes);
-        bytes = getDigest().digest(bytes);
         
         // Render the result as a String of hexadecimal digits
         StringBuilder result = new StringBuilder();
@@ -747,30 +706,6 @@ public abstract class AuthenticatorBase
                 result.append((char) ('A' + (b2 - 10)));
         }
         return (result.toString());
-        
-    }
-    
-    
-    /**
-     * Return the MessageDigest object to be used for calculating
-     * session identifiers.  If none has been created yet, initialize
-     * one the first time this method is called.
-     */
-    protected synchronized MessageDigest getDigest() {
-        
-        if (this.digest == null) {
-            try {
-                this.digest = MessageDigest.getInstance(algorithm);
-            } catch (NoSuchAlgorithmException e) {
-                try {
-                    this.digest = MessageDigest.getInstance(DEFAULT_ALGORITHM);
-                } catch (NoSuchAlgorithmException f) {
-                    this.digest = null;
-                }
-            }
-        }
-        
-        return (this.digest);
         
     }
     

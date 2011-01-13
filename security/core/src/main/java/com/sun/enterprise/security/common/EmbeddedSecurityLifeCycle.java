@@ -54,9 +54,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.glassfish.api.embedded.EmbeddedFileSystem;
-import org.glassfish.api.embedded.EmbeddedLifecycle;
-import org.glassfish.api.embedded.Server;
+import org.glassfish.internal.embedded.EmbeddedFileSystem;
+import org.glassfish.internal.embedded.EmbeddedLifecycle;
+import org.glassfish.internal.embedded.Server;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 

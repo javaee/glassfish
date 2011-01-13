@@ -66,7 +66,6 @@
                            group=":default"/>
                            <!-- privileges="%%%PRIVILEGES%%%" -->
       </method_context>
-      <propval name='ignore_error' type='astring' value='core,signal' />
     </exec_method>
     <exec_method type="method"
                  name="stop"
@@ -78,6 +77,10 @@
       </method_context>
       <stability value="Evolving"/>
     </exec_method>
+    <property_group name='startd'  type='framework'>
+      <!-- sub-process core dumps shouldn't restart session -->
+      <propval name='ignore_error' type='astring' value='core,signal' />
+    </property_group>
     <instance name="default" enabled="false">
         <dependency
                 name='network'

@@ -197,7 +197,7 @@ public class RecoveryManager {
 				_logger.logp(Level.FINE,"RecoveryManager","initialise()",
 						"Before starting ResyncThread ");
 	    	}
-            resyncThread.start();
+            //resyncThread.start();
         } else {
 
             // If the process is non-recoverable, but there is a valid server
@@ -926,10 +926,12 @@ public class RecoveryManager {
         /*  This method has been newly added - Ram Jeyaraman */
 
         Enumeration xaResources = RecoveryManager.uniqueRMSet;
+/**
         if (xaResources == null) {
             // TODO - check that automatic recovery works in a clustered instance
             return;
         }
+**/
 
         String manualRecovery =
             Configuration.getPropertyValue(Configuration.MANUAL_RECOVERY);
@@ -1164,6 +1166,8 @@ public class RecoveryManager {
 
         Set uniqueXids = new HashSet();
 
+        // if flag is set use commit_one_phase (old style), otherwise use commit
+        boolean one_phase = getCommitOnePhaseDuringRecovery();
         while (xaResources.hasMoreElements()) {
 
             XAResource xaResource = (XAResource) xaResources.nextElement();
@@ -1213,7 +1217,7 @@ public class RecoveryManager {
                             if (localTID == null) {
                                  xaResource.rollback(inDoubtXids[i]);
                             } else {
-                                 xaResource.commit(inDoubtXids[i], true);
+                                 xaResource.commit(inDoubtXids[i], one_phase);
                                  LogDBHelper.getInstance().deleteRecord(localTID.longValue());
                             }
                             } catch (Exception ex) { ex.printStackTrace(); }
@@ -1433,6 +1437,7 @@ public class RecoveryManager {
             }
         }
     }
+
     static void addToIncompleTx(CoordinatorImpl coord, boolean commit) {
         inCompleteTxMap.put(coord, new Boolean(commit));
     }
@@ -1523,6 +1528,9 @@ public class RecoveryManager {
                     }
                 }
             } // while (true)
+
+            // if flag is set use commit_one_phase (old style), otherwise use commit
+            boolean commit_one_phase = getCommitOnePhaseDuringRecovery();
             for (int i = 0; i < otsResources.size(); i++) {
                 OTSResourceImpl otsResource = (OTSResourceImpl) otsResources.elementAt(i);
                 GlobalTID globalTID = new GlobalTID(otsResource.getGlobalTID());
@@ -1542,7 +1550,11 @@ public class RecoveryManager {
                             while (exceptionisThrown) {
                                 try {
                                     if (commit.booleanValue()) {
-                                        otsResource.commit_one_phase();
+                                        if (commit_one_phase) {
+                                            otsResource.commit_one_phase();
+                                        } else {
+                                            otsResource.commit();
+                                        }
                                         if(_logger.isLoggable(Level.FINE)) {
                                             _logger.logp(Level.FINE,"RecoveryManager",
                                                          "recoverIncompleteTx",
@@ -1650,6 +1662,29 @@ public class RecoveryManager {
         }
 
         return logDir;
+    }
+
+    /**
+     * return true if commit_one_phase should be used during recovery
+     */
+    private static boolean getCommitOnePhaseDuringRecovery() {
+        String propValue = Configuration.getPropertyValue(Configuration.COMMIT_ONE_PHASE_DURING_RECOVERY);
+        if (propValue != null && propValue.equalsIgnoreCase("true"/*#Frozen*/)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Start resync thread
+     */
+    public static void startResyncThread() {
+        if (resyncThread == null) {
+            initialise();
+        }
+        if (Configuration.isRecoverable()) {
+            resyncThread.start();
+        }
     }
 
     /**
@@ -1813,15 +1848,16 @@ class ResyncThread extends Thread  {
                     RecoveryManager.resync();
                 }
             }
-            RecoveryManager.resyncComplete(false,false);// Extra Gaurd
         } catch (Throwable ex) {
+            _logger.log(Level.SEVERE,"jts.log_exception_at_recovery",ex);
+        } finally {
             try {
                 RecoveryManager.resyncComplete(false,false);
             } catch (Throwable tex) {tex.printStackTrace();} // forget any exeception in resyncComplete
-            _logger.log(Level.SEVERE,"jts.log_exception_at_recovery",ex);
         }
         if(RecoveryManager.getTransactionRecoveryFence() != null)
             RecoveryManager.getTransactionRecoveryFence().lowerFence();
+
     }
 
 

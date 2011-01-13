@@ -43,6 +43,7 @@ package com.sun.enterprise.security.cli;
 
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.CommandLock;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
@@ -53,6 +54,7 @@ import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.config.serverbeans.AuditModule;
+import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.config.serverbeans.Server;
@@ -74,9 +76,11 @@ import org.glassfish.config.support.TargetType;
 
 @Service(name="list-audit-modules")
 @Scoped(PerLookup.class)
+@CommandLock(CommandLock.LockType.NONE)
 @I18n("list.audit.module")
-@ExecuteOn({RuntimeType.DAS, RuntimeType.INSTANCE})
-@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
+@ExecuteOn({RuntimeType.DAS})
+@TargetType({CommandTarget.DAS,CommandTarget.CLUSTERED_INSTANCE,
+CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
 public class ListAuditModule implements AdminCommand {
     
     final private static LocalStringManagerImpl localStrings = 
@@ -90,6 +94,9 @@ public class ListAuditModule implements AdminCommand {
     private Config config;
 
     @Inject
+    private Configs configs;
+
+    @Inject
     private Domain domain;
 
     /**
@@ -100,16 +107,26 @@ public class ListAuditModule implements AdminCommand {
      */
     public void execute(AdminCommandContext context) {
 
+        Config tmp = null;
+        try {
+            tmp = configs.getConfigByName(target);
+        } catch (Exception ex) {
+        }
 
-        Server targetServer = domain.getServerNamed(target);
-        if (targetServer!=null) {
-            config = domain.getConfigNamed(targetServer.getConfigRef());
+        if (tmp != null) {
+            config = tmp;
         }
-        com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
-        if (cluster!=null) {
-            config = domain.getConfigNamed(cluster.getConfigRef());
+        if (tmp == null) {
+            Server targetServer = domain.getServerNamed(target);
+            if (targetServer != null) {
+                config = domain.getConfigNamed(targetServer.getConfigRef());
+            }
+            com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
+            if (cluster != null) {
+                config = domain.getConfigNamed(cluster.getConfigRef());
+            }
         }
-        SecurityService securityService = config.getSecurityService();
+        final SecurityService securityService = config.getSecurityService();
         
         final ActionReport report = context.getActionReport();
 

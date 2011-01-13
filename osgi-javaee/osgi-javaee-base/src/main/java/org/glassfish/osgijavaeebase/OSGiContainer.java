@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -105,12 +105,12 @@ public class OSGiContainer {
         return shutdown;
     }
 
-    private synchronized void redeploy(Bundle b) throws Exception {
-        if (isShutdown()) return;
+    private synchronized OSGiApplicationInfo redeploy(Bundle b) throws Exception {
+        if (isShutdown()) return null;
         if (isDeployed(b)) {
             undeploy(b);
         }
-        deploy(b);
+        return deploy(b);
     }
 
     /**
@@ -120,26 +120,33 @@ public class OSGiContainer {
      *
      * @param b Bundle to be deployed.
      */
-    public synchronized void deploy(Bundle b) {
-        if (isShutdown()) return;
+    public synchronized OSGiApplicationInfo deploy(Bundle b) {
+        if (isShutdown()) return null;
+        // By the time this extender is processing the bundle, if the bundle has already changed
+        // state to STOPPING, then cancel the deployment operation.
+        if (b.getState() == Bundle.STOPPING) {
+            logger.logp(Level.INFO, "OSGiContainer", "deploy",
+                    "Bundle {0} is already moved to STOPPING state, so it won't be deployed.", new Object[]{b});
+            return null;
+        }
         OSGiApplicationInfo osgiAppInfo = applications.get(b);
         if (osgiAppInfo != null) {
             logger.logp(Level.WARNING, "OSGiContainer", "deploy",
                     "Bundle {0} is already deployed at {1} ", new Object[]{b,
                             osgiAppInfo.getAppInfo().getSource()});
-            return;
+            return null;
         }
         ServiceReference/*OSGiDeployer*/ osgiDeployerRef = selectDeployer(b);
         if (osgiDeployerRef == null) {
             // No deployer recognises this bundle, so return
-            return;
+            return null;
         }
         OSGiDeployer osgiDeployer = (OSGiDeployer) context.getService(osgiDeployerRef);
         if (osgiDeployer == null) {
             logger.logp(Level.WARNING, "OSGiContainer", "deploy",
                     "Bundle {0} can't be deployed because corresponding deployer {1} has vanished!!!", new Object[]{b,
                             osgiDeployer});
-            return;
+            return null;
         }
 
         // deploy the java ee artifacts
@@ -148,7 +155,7 @@ public class OSGiContainer {
         } catch (Exception e) {
             logger.logp(Level.WARNING, "OSGiContainer", "deploy",
                     "Failed to deploy bundle " + b, e);
-            return;
+            return null;
         }
         osgiAppInfo.setDeployer(osgiDeployerRef);
         applications.put(b, osgiAppInfo);
@@ -157,6 +164,7 @@ public class OSGiContainer {
         logger.logp(Level.INFO, "OSGiContainer", "deploy",
                 "deployed bundle {0} at {1}",
                 new Object[]{osgiAppInfo.getBundle(), osgiAppInfo.getAppInfo().getSource().getURI()});
+        return osgiAppInfo;
     }
 
     /**

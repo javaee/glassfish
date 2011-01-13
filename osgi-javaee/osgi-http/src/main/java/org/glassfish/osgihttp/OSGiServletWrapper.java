@@ -71,6 +71,7 @@ public class OSGiServletWrapper extends StandardWrapper implements Wrapper {
     public OSGiServletWrapper(String name, Servlet servlet, OSGiServletConfig config, String urlMapping) {
         this.servlet = servlet;
         this.config = config;
+        setOSGi(true);
         setServlet(servlet);
         setName(name);
         addMapping(urlMapping);

@@ -48,8 +48,9 @@ package org.glassfish.web.ha.authenticator;
 
 
 import com.sun.enterprise.container.common.spi.util.JavaEEIOUtils;
-import com.sun.enterprise.web.ServerConfigLookup;
+
 import com.sun.enterprise.web.SSOFactory;
+import com.sun.enterprise.web.session.PersistenceType;
 import com.sun.enterprise.security.web.GlassFishSingleSignOn;
 
 import org.glassfish.gms.bootstrap.GMSAdapterService;
@@ -77,10 +78,7 @@ public class HASSOFactory implements SSOFactory {
 
     @Inject
     private Habitat habitat;
-
-    @Inject
-    private ServerConfigLookup serverConfigLookup;
-
+   
     @Inject
     private JavaEEIOUtils ioUtils;
     
@@ -91,30 +89,11 @@ public class HASSOFactory implements SSOFactory {
      */
     @Override
     public GlassFishSingleSignOn createSingleSignOnValve(String virtualServerName) {
-        if (isSsoFailoverEnabled()) {
-            //XXX hard code as there is no other alternative in this moment
-            String persistenceType = "replication";
-            return new HASingleSignOn(ioUtils,
-                    getSsoEntryMetadataBackingStore(persistenceType, STORE_NAME, habitat));
-        } else {
-            return new GlassFishSingleSignOn();
-        }
+        String persistenceType = PersistenceType.REPLICATED.getType();
+        return new HASingleSignOn(ioUtils,
+                getSsoEntryMetadataBackingStore(persistenceType, STORE_NAME, habitat));
     }   
     
-   /**
-     * check sso-failover-enabled in web-container-availability
-     * @return return true only if the value of sso-failover-enabled is "true"
-     * and availability-enabled in web-container-availability is "true"
-     * otherwise, return false.
-     */
-    private boolean isSsoFailoverEnabled() {
-        boolean webContainerAvailabilityEnabled =
-            serverConfigLookup.getWebContainerAvailabilityEnabledFromConfig();        
-        boolean isSsoFailoverEnabled =
-            serverConfigLookup.isSsoFailoverEnabledFromConfig();
-        return isSsoFailoverEnabled && webContainerAvailabilityEnabled;
-    }    
-
     protected static synchronized BackingStore getSsoEntryMetadataBackingStore(
             String persistenceType, String storeName, Habitat habitat) {
 
@@ -130,6 +109,7 @@ public class HASSOFactory implements SSOFactory {
                 clusterName = gmsAdapterService.getGMSAdapter().getClusterName();
                 instanceName = gmsAdapterService.getGMSAdapter().getModule().getInstanceName();
             }
+
             conf.setStoreName(storeName)
                     .setClusterName(clusterName)
                     .setInstanceName(instanceName)

@@ -123,7 +123,8 @@ public class CoyoteConnectorLauncher implements ProtocolHandler, MBeanRegistrati
      * The string manager for this package.
      */
     protected static final StringManager sm =
-        StringManager.getManager(Constants.Package);
+        StringManager.getManager(Constants.Package,
+                                 Constants.class.getClassLoader());
 
     /** Pass config info
      */

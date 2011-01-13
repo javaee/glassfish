@@ -123,6 +123,8 @@ public class WSSchemaLocation extends WSTest implements WSCheck {
                                reqSchemaLocationSub1[i], reqSchemaLocationSub2[i]);
                        if(rslt) break;
                    }
+               } else {
+                   rslt = true; // schemaLocation is optional
                }
            }
            if (rslt) {

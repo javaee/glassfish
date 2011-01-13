@@ -351,8 +351,8 @@ public abstract class ValveBase
         if (started)
             return;
         lifecycle.fireLifecycleEvent(START_EVENT, null);
-        // Register the MBean when the valve is started
-        registerMBean();
+        // Do not register unused tomcat mbeans
+        //registerMBean();
         started = true;
     }
 
@@ -371,8 +371,8 @@ public abstract class ValveBase
         if (!started)
             return;
         lifecycle.fireLifecycleEvent(STOP_EVENT, null);
-        // Deregister the MBean when the valve is stopped
-        unregisterMBean();
+        // Do not register unused tomcat mbeans
+        //unregisterMBean();
         started = false;
 
     }

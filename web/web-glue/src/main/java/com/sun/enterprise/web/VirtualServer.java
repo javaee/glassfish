@@ -40,15 +40,23 @@
 
 package com.sun.enterprise.web;
 
-import com.sun.enterprise.config.serverbeans.*;
+import com.sun.enterprise.config.serverbeans.ApplicationRef;
+import com.sun.enterprise.config.serverbeans.Applications;
+import com.sun.enterprise.config.serverbeans.AuthRealm;
+import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
+import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.HttpService;
+import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.config.serverbeans.Server;
-import com.sun.enterprise.config.serverbeans.WebModule;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.archivist.WebArchivist;
 import com.sun.enterprise.security.web.GlassFishSingleSignOn;
+import com.sun.enterprise.server.logging.GFFileHandler;
 import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.web.logger.CatalinaLogger;
 import com.sun.enterprise.web.logger.FileLoggerHandler;
+import com.sun.enterprise.web.logger.FileLoggerHandlerFactory;
 import com.sun.enterprise.web.pluggable.WebContainerFeatureFactory;
 import com.sun.enterprise.web.session.SessionCookieConfig;
 import com.sun.logging.LogDomains;
@@ -61,6 +69,7 @@ import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.deploy.ErrorPage;
 import org.apache.catalina.valves.RemoteAddrValve;
 import org.apache.catalina.valves.RemoteHostValve;
+import org.glassfish.embeddable.*;
 import org.glassfish.embeddable.web.Context;
 import org.glassfish.embeddable.web.ConfigException;
 import org.glassfish.embeddable.web.WebListener;
@@ -70,7 +79,6 @@ import org.glassfish.internal.api.ServerContext;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.data.ApplicationRegistry;
-import org.glassfish.embeddable.GlassFishException;
 import org.glassfish.web.loader.WebappClassLoader;
 import org.glassfish.web.valve.GlassFishValve;
 import org.jvnet.hk2.component.Habitat;
@@ -79,12 +87,12 @@ import org.jvnet.hk2.config.types.Property;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
+import java.util.logging.Handler;
 import java.util.logging.Level;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
+import java.util.logging.LogRecord;
 
 /**
  * Standard implementation of a virtual server (aka virtual host) in
@@ -101,6 +109,17 @@ public class VirtualServer extends StandardHost
     private static final String DISABLED = "disabled";
     private static final String OFF = "off";
     private static final String ON = "on";
+
+    /**
+     * The logger to use for logging this virtual server
+     */
+    private static final Logger DEFAULT_LOGGER =
+        LogDomains.getLogger(VirtualServer.class, LogDomains.WEB_LOGGER);
+
+    /**
+     * The resource bundle containing the message strings for _logger.
+     */
+    protected static final ResourceBundle rb = DEFAULT_LOGGER.getResourceBundle();
 
     // ------------------------------------------------------------ Constructor
 
@@ -143,15 +162,9 @@ public class VirtualServer extends StandardHost
     private String _id = null;
 
     /**
-     * The logger to use for logging ALL web container related messages.
+     * The logger to use for logging this virtual server
      */
-    protected static final Logger _logger =
-        LogDomains.getLogger(VirtualServer.class, LogDomains.WEB_LOGGER);
-
-    /**
-     * The resource bundle containing the message strings for _logger.
-     */
-    protected static final ResourceBundle rb = _logger.getResourceBundle();
+    protected volatile Logger _logger = DEFAULT_LOGGER;
 
     /**
      * Indicates whether the logger level is set to any one of
@@ -187,16 +200,6 @@ public class VirtualServer extends StandardHost
      */
     private boolean allowLinking = false;
 
-    /*
-     * default context.xml location
-     */
-    private String defaultContextXmlLocation;
-
-    /*
-     * default-web.xml location
-     */
-    private String defaultWebXmlLocation;
-
     private String[] cacheControls;
 
     // Is this virtual server active?
@@ -223,6 +226,10 @@ public class VirtualServer extends StandardHost
 
     private ServerContext serverContext;
 
+    private boolean ssoFailoverEnabled = false;
+
+    private volatile FileLoggerHandler fileLoggerHandler = null;
+    private volatile FileLoggerHandlerFactory fileLoggerHandlerFactory = null;
 
     // ------------------------------------------------------------- Properties
 
@@ -265,51 +272,7 @@ public class VirtualServer extends StandardHost
             }
         }
     }
-
-    /**
-     * Gets the default-context.xml location of any web modules deployed
-     * on this virtual server.
-     *
-     * @return default-context.xml location of any web modules deployed on
-     * this virtual server
-     */
-    public String getDefaultContextXmlLocation() {
-        return defaultContextXmlLocation;
-    }
-
-    /**
-     * Sets the default-context.xml location for any web modules deployed
-     * on this virtual server.
-     *
-     * @param defaultContextXmlLocation default-context.xml location for any
-     * web modules deployed on this virtual server
-     */
-    public void setDefaultContextXmlLocation(String defaultContextXmlLocation) {
-        this.defaultContextXmlLocation = defaultContextXmlLocation;
-    }
-
-    /**
-     * Gets the default-web.xml location of any web modules deployed on this
-     * virtual server.
-     *
-     * @return default-web.xml location of any web modules deployed on this
-     * virtual server
-     */
-    public String getDefaultWebXmlLocation() {
-        return defaultWebXmlLocation;
-    }
-
-    /**
-     * Sets the default-web.xml location for any web modules deployed
-     * on this virtual server.
-     *
-     * @param defaultWebXmlLocation default-web.xml location for any
-     * web modules deployed on this virtual server
-     */
-    public void setDefaultWebXmlLocation(String defaultWebXmlLocation) {
-        this.defaultWebXmlLocation = defaultWebXmlLocation;
-    }
-
+    
     /**
      * Gets the value of the allowLinking property of this virtual server.
      *
@@ -390,6 +353,10 @@ public class VirtualServer extends StandardHost
 
     public void setDefaultContextPath(String defaultContextPath) {
         this.defaultContextPath = defaultContextPath;
+    }
+
+    public void setFileLoggerHandlerFactory(FileLoggerHandlerFactory factory) {
+        fileLoggerHandlerFactory = factory;
     }
 
     @Override
@@ -566,7 +533,7 @@ public class VirtualServer extends StandardHost
      * this virtual server's list of modules (only then will one know whether
      * the user has already configured a default web module or not).
      */
-    protected WebModuleConfig createSystemDefaultWebModuleIfNecessary(
+    public WebModuleConfig createSystemDefaultWebModuleIfNecessary(
             WebArchivist webArchivist) {
 
         WebModuleConfig wmInfo = null;
@@ -586,7 +553,7 @@ public class VirtualServer extends StandardHost
             wmInfo.setLocation(new File(docroot));
             wmInfo.setDescriptor(wbd);
             wmInfo.setParentLoader(
-                EmbeddedWebContainer.class.getClassLoader());
+                serverContext.getCommonClassLoader());
             WebappClassLoader loader = new WebappClassLoader(
                 wmInfo.getParentLoader());
             loader.start();            
@@ -607,7 +574,7 @@ public class VirtualServer extends StandardHost
      * Determines whether the specified web module is "active" under this
      * virtual server.
      */
-    private boolean isActive(WebModule wm) {
+    private boolean isActive(com.sun.enterprise.config.serverbeans.WebModule wm) {
         return isActive(wm, true);
     }
 
@@ -637,7 +604,7 @@ public class VirtualServer extends StandardHost
      * @return     <code>true</code> if all the criteria are satisfied and
      *             <code>false</code> otherwise.
      */
-    protected boolean isActive(WebModule wm, boolean matchVSID) {
+    protected boolean isActive(com.sun.enterprise.config.serverbeans.WebModule wm, boolean matchVSID) {
 
         String vsID = getID();
 
@@ -820,6 +787,25 @@ public class VirtualServer extends StandardHost
         }
     }
 
+    private void close(FileLoggerHandler handler) {
+        if (handler != null && !handler.isAssociated()) {
+            if (fileLoggerHandlerFactory != null) {
+                // should always be here
+                fileLoggerHandlerFactory.removeHandler(handler.getLogFile());
+            }
+            handler.flush();
+            handler.close();
+        }
+    }
+
+    private void setLogger(Logger newLogger, String logLevel) {
+        _logger = newLogger;
+        // wrap into a cataline logger
+        CatalinaLogger catalinaLogger = new CatalinaLogger(newLogger);
+        catalinaLogger.setLevel(logLevel);
+        setLogger(catalinaLogger);
+    }
+
     /**
      * @return The properties of this virtual server
      */
@@ -837,8 +823,7 @@ public class VirtualServer extends StandardHost
                     String vsLogFile,
                     MimeMap vsMimeMap,
                     String logServiceFile,
-                    String logLevel,
-                    FileLoggerHandler logHandler) {
+                    String logLevel) {
         setDebug(debug);
         setAppBase(vsDocroot);
         setName(vsID);
@@ -882,14 +867,7 @@ public class VirtualServer extends StandardHost
             setIsActive(Boolean.parseBoolean(state));
         }
 
-        if (vsLogFile != null && !vsLogFile.equals(logServiceFile)) {
-            /*
-             * Configure separate logger for this virtual server only if
-             * 'log-file' attribute of this <virtual-server> and 'file'
-             * attribute of <log-service> are different (See 6189219).
-             */
-            setLogFile(vsLogFile, logLevel, logHandler);
-        }
+        setLogFile(vsLogFile, logLevel, logServiceFile);
     }
 
     /**
@@ -929,8 +907,8 @@ public class VirtualServer extends StandardHost
      * @param logFile The value of the virtual server's log-file attribute in
      * the domain.xml
      */
-    void setLogFile(String logFile, String logLevel, FileLoggerHandler logHandler) {
-   
+    synchronized void setLogFile(String logFile, String logLevel, String logServiceFile) {
+
         /** catalina file logger code
         String logPrefix = logFile;
         String logDir = null;
@@ -966,8 +944,122 @@ public class VirtualServer extends StandardHost
         contextLogger.setLevel(logLevel); 
          */
         
-        logHandler.setLogFile(logFile);
-        logHandler.setLevel(logLevel);
+
+        /*
+         * Configure separate logger for this virtual server only if
+         * 'log-file' attribute of this <virtual-server> and 'file'
+         * attribute of <log-service> are different (See 6189219).
+         */
+        boolean noCustomLog =
+            (logFile == null || logFile.equals(logServiceFile));
+
+        if ((fileLoggerHandler == null && noCustomLog) ||
+                (fileLoggerHandler != null && logFile != null &&
+                logFile.equals(fileLoggerHandler.getLogFile()))) {
+            return;
+        }
+
+        Logger newLogger = null;
+        FileLoggerHandler oldHandler = fileLoggerHandler;
+        //remove old handler
+        if (oldHandler != null) {
+            _logger.removeHandler(oldHandler);
+        }
+
+        if (noCustomLog) {
+            fileLoggerHandler = null;
+            newLogger = DEFAULT_LOGGER;
+        } else {
+            // append the logger name with "._vs.<virtual-server-id>"
+            String lname = DEFAULT_LOGGER.getName() + "._vs." + getID();
+            newLogger = LogManager.getLogManager().getLogger(lname);
+            if (newLogger == null) {
+                newLogger = new Logger(lname, null) {
+                    // set thread id, see LogDomains.getLogger method
+                    @Override
+                    public void log(LogRecord record) {
+                        if (record.getResourceBundle() == null) {
+                            ResourceBundle bundle = getResourceBundle();
+                            if (bundle != null) {
+                                record.setResourceBundle(bundle);
+                            }
+                        }
+                        record.setThreadID((int)Thread.currentThread().getId());
+                        super.log(record);
+                    }
+
+                    // use the same resource bundle as default vs logger
+                    @Override
+                    public ResourceBundle getResourceBundle() {
+                        return rb;
+                    }
+
+                    @Override
+                    public synchronized void addHandler(Handler handler) {
+                        super.addHandler(handler);
+                        if (handler instanceof FileLoggerHandler) {
+                            ((FileLoggerHandler)handler).associate();
+                        }
+                    }
+
+                    @Override
+                    public synchronized void removeHandler(Handler handler) {
+                        if (!(handler instanceof FileLoggerHandler)) {
+                            super.removeHandler(handler);
+                        } else {
+                            boolean hasHandler = false;
+                            Handler[] hs = getHandlers();
+                            if (hs != null) {
+                                for (Handler h : hs) {
+                                    if (h == handler) {
+                                        hasHandler = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (hasHandler) {
+                                super.removeHandler(handler);
+                                ((FileLoggerHandler)handler).disassociate();
+                            }
+                        }
+                    }
+                };
+
+                synchronized(Logger.class) {
+                    LogManager.getLogManager().addLogger(newLogger);
+                }
+            }
+
+            // remove old handlers if necessary
+            Handler[] handlers = newLogger.getHandlers();
+            if (handlers != null) {
+                for (Handler h : handlers) {
+                    newLogger.removeHandler(h);
+                }
+            }
+
+            // add handlers from root that is not GFFileHandler
+            Logger rootLogger = Logger.global.getParent();
+            if (rootLogger != null) {
+                Handler[] rootHandlers = rootLogger.getHandlers();
+                if (rootHandlers != null) {
+                    for (Handler h : rootHandlers) {
+                        if (!(h instanceof GFFileHandler)) {
+                            newLogger.addHandler(h);
+                        }
+                    }
+                }
+            }
+
+            // create and add new handler
+            fileLoggerHandler = fileLoggerHandlerFactory.getHandler(logFile);
+            newLogger.addHandler(fileLoggerHandler);
+
+            newLogger.setUseParentHandlers(false);
+        }
+
+        setLogger(newLogger, logLevel);
+        close(oldHandler);
     }
 
     /**
@@ -1296,7 +1388,9 @@ public class VirtualServer extends StandardHost
      * Configures the SSO valve of this VirtualServer.
      */
     void configureSingleSignOn(boolean globalSSOEnabled,
-            WebContainerFeatureFactory webContainerFeatureFactory) {
+            WebContainerFeatureFactory webContainerFeatureFactory,
+            boolean ssoFailoverEnabled) {
+
 
         if (!isSSOEnabled(globalSSOEnabled)) {
             /*
@@ -1319,6 +1413,7 @@ public class VirtualServer extends StandardHost
                 }
             }
 
+            this.ssoFailoverEnabled = ssoFailoverEnabled;
             if (hasExistingSSO) {
                 setSingleSignOnForChildren(null);
             }
@@ -1343,10 +1438,17 @@ public class VirtualServer extends StandardHost
                 }
             }
 
+            if (sso != null && this.ssoFailoverEnabled != ssoFailoverEnabled) {
+                removeValve(sso);
+                sso = null;
+                // then SSO Valve will be recreated
+            }
+
             if (sso == null) {
                 SSOFactory ssoFactory =
                     webContainerFeatureFactory.getSSOFactory();
                 sso = ssoFactory.createSingleSignOnValve(getName());
+                this.ssoFailoverEnabled = ssoFailoverEnabled;
                 setSingleSignOnForChildren(sso);
                 addValve((GlassFishValve) sso);
             }
@@ -1643,7 +1745,10 @@ public class VirtualServer extends StandardHost
      * @return The value of the sso-enabled property for this VirtualServer
      */
     private boolean isSSOEnabled(boolean globalSSOEnabled) {
-        String ssoEnabled = vsBean.getSsoEnabled();
+        String ssoEnabled = "inherit";
+        if (vsBean != null) {
+            ssoEnabled = vsBean.getSsoEnabled();
+        }
         return "inherit".equals(ssoEnabled) && globalSSOEnabled
             || ConfigBeansUtilities.toBoolean(ssoEnabled); 
     }
@@ -1734,6 +1839,17 @@ public class VirtualServer extends StandardHost
     
     private VirtualServerConfig config;
     
+    private List<WebListener> listeners = new ArrayList<WebListener>();
+
+    /**
+     * Sets the docroot of this <tt>VirtualServer</tt>.
+     *
+     * @param docRoot the docroot of this <tt>VirtualServer</tt>.
+     */
+    public void setDocRoot(File docRoot) {
+        this.setAppBase(docRoot.getPath());
+    }
+    
     /**
      * Gets the docroot of this <tt>VirtualServer</tt>.
      */
@@ -1742,12 +1858,25 @@ public class VirtualServer extends StandardHost
     }
 
     /**
+     * Sets the collection of <tt>WebListener</tt> instances from which
+     * this <tt>VirtualServer</tt> receives requests.
+     *
+     * @param webListeners the collection of <tt>WebListener</tt> instances from which
+     * this <tt>VirtualServer</tt> receives requests.
+     */
+    public void setWebListeners(WebListener...  webListeners) {
+        listeners = Arrays.asList(webListeners);
+    }
+
+    /**
      * Gets the collection of <tt>WebListener</tt> instances from which
+     * this <tt>VirtualServer</tt> receives requests.
+     *
+     * @return the collection of <tt>WebListener</tt> instances from which
      * this <tt>VirtualServer</tt> receives requests.
      */
     public Collection<WebListener> getWebListeners() {
-        // TODO
-        return null;
+        return listeners;
     }
 
     /**
@@ -1759,16 +1888,22 @@ public class VirtualServer extends StandardHost
      */
     public void addContext(Context context, String contextRoot)
         throws ConfigException, GlassFishException {
-        
-        if (findContext(contextRoot)!=null) {
+
+        if (_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE, "Virtual server "+getName()+" added context "+contextRoot);
+        }
+        if (!contextRoot.startsWith("/")) {
+            contextRoot = "/"+ contextRoot;
+        }
+        if (getContext(contextRoot)!=null) {
             throw new ConfigException("Context with contextRoot "+
                     contextRoot+" is already registered");
         }
-        context.setPath(contextRoot);
-        addChild((Container)context);
-        if (_logger.isLoggable(Level.FINE)) {
-            _logger.log(Level.INFO, "Added context "+context.getPath());
-        }
+        WebModule wm = ((WebModule)context);
+        wm.setPath(contextRoot);
+        wm.getWebBundleDescriptor().setContextRoot(contextRoot);
+        wm.updateObjectName();
+        addChild(wm);
     }
 
     /**
@@ -1782,7 +1917,7 @@ public class VirtualServer extends StandardHost
     /**
      * Finds the <tt>Context</tt> registered at the given context root.
      */
-    public Context findContext(String contextRoot) {
+    public Context getContext(String contextRoot) {
         Context context = null;
         for (Context c : getContexts()) {
             if (c.getPath().equals(contextRoot)) {
@@ -1819,7 +1954,8 @@ public class VirtualServer extends StandardHost
         this.config = config;
         configureSingleSignOn(config.isSsoEnabled(), 
                 Globals.getDefaultHabitat().getComponent(
-                PEWebContainerFeatureFactoryImpl.class));
+                PEWebContainerFeatureFactoryImpl.class),
+                false);
         if (config.isAccessLoggingEnabled()) {
             enableAccessLogging();
         } else {
@@ -1841,6 +1977,18 @@ public class VirtualServer extends StandardHost
         return config;
     }
         
+    @Override
+    public synchronized void stop() throws LifecycleException {
+        if (fileLoggerHandler != null) {
+           _logger.removeHandler(fileLoggerHandler);
+           close(fileLoggerHandler);
+           fileLoggerHandler = null;
+        }
+        setLogger(DEFAULT_LOGGER, "INFO");
+        
+        super.stop();
+    }
+
     /**
      * Enables this component.
      * 
@@ -1866,6 +2014,4 @@ public class VirtualServer extends StandardHost
             throw new GlassFishException(e);
         }        
     }
-    
-
 }

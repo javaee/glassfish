@@ -408,8 +408,12 @@ public class TomcatDeploymentConfig {
                 wrapper.addInitParameter(initP.getName(), initP.getValue());
             }
 
-            wrapper.setLoadOnStartup(webComponentDesc.getLoadOnStartUp());
-            wrapper.setIsAsyncSupported(webComponentDesc.isAsyncSupported());
+            if (webComponentDesc.getLoadOnStartUp() != null) {
+                wrapper.setLoadOnStartup(webComponentDesc.getLoadOnStartUp());
+            }
+            if (webComponentDesc.isAsyncSupported() != null) {
+                wrapper.setIsAsyncSupported(webComponentDesc.isAsyncSupported());
+            }
 
             if (webComponentDesc.getRunAsIdentity() != null) {
                 wrapper.setRunAs(webComponentDesc.getRunAsIdentity().getRoleName());

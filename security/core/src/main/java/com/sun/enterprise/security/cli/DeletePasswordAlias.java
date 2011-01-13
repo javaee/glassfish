@@ -81,8 +81,8 @@ import org.jvnet.hk2.component.PerLookup;
 @Service(name="delete-password-alias")
 @Scoped(PerLookup.class)
 @I18n("delete.password.alias")
-@ExecuteOn({RuntimeType.DAS, RuntimeType.INSTANCE})
-@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER})
+@ExecuteOn({RuntimeType.DAS})
+@TargetType({CommandTarget.DAS,CommandTarget.DOMAIN})
 public class DeletePasswordAlias implements AdminCommand {
 
     final private static LocalStringManagerImpl localStrings =
@@ -92,11 +92,6 @@ public class DeletePasswordAlias implements AdminCommand {
     private String aliasName;
     @Inject(name="Security SSL Password Provider Service")
     private MasterPassword masterPasswordHelper;
-
-    //TODO: not sure what to do with --target here
-    @Param(name = "target", optional = true, defaultValue =
-    SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
-    private String target;
 
 
     /**

@@ -62,7 +62,7 @@ import java.util.logging.Logger;
  * @author  lwhite
  * @author Rajiv Mordani
  */
-public class ModifiedAttributeHASession extends BaseHASession 
+public class ModifiedAttributeHASession extends BaseHASession
     implements HttpSession, HASession, Serializable {
     
     private static final Logger _logger = LogDomains.getLogger(ModifiedAttributeHASession.class,  LogDomains.WEB_LOGGER);
@@ -207,8 +207,8 @@ public class ModifiedAttributeHASession extends BaseHASession
         synchronized (attributes) {         
             super.setAttribute(name, value);        
             SessionAttributeState attributeState = getAttributeState(name);
-            if (_logger.isLoggable(Level.INFO)) {
-                _logger.info("ModifiedAttributeHASession>>setAttribute name=" + name + " attributeState=" + attributeState);
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.fine("ModifiedAttributeHASession>>setAttribute name=" + name + " attributeState=" + attributeState);
             }
             if(value == null) {
                 if(attributeState != null) {

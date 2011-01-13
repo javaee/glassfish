@@ -325,7 +325,7 @@ public final class J2EEInstanceListener implements InstanceListener {
             if (eventType == InstanceEvent.EventType.AFTER_DESTROY_EVENT &&
                     !DefaultServlet.class.equals(instance.getClass()) &&
                     !JspServlet.class.equals(instance.getClass())) {
-                injectionMgr.destroyManagedObject(instance);
+                injectionMgr.destroyManagedObject(instance, false);
             }
         } catch (InjectionException ie) {
             String msg = _rb.getString(
@@ -366,8 +366,9 @@ public final class J2EEInstanceListener implements InstanceListener {
                         // clear security context
                         Realm ra = context.getRealm();
                         if (ra != null && (ra instanceof RealmInitializer)) {
-                            //((RealmInitializer)ra).logout();
-                            securityContext.setCurrentSecurityContext(null);
+                            //cleanup not only securitycontext but also PolicyContext
+                            ((RealmInitializer)ra).logout();
+                            //securityContext.setCurrentSecurityContext(null);
                         }
                     } catch (Exception ex) {
                         String msg = _rb.getString(

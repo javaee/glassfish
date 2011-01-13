@@ -40,7 +40,7 @@
 
 package org.glassfish.tests.embedded.inplanted;
 
-import org.glassfish.api.embedded.*;
+import org.glassfish.internal.embedded.*;
 import org.glassfish.tests.embedded.utils.EmbeddedServerUtils;
 import org.junit.BeforeClass;
 import org.junit.Assert;

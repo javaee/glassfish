@@ -63,7 +63,7 @@ import org.apache.catalina.HttpRequest;
 import org.apache.catalina.HttpResponse;
 import org.apache.catalina.Realm;
 import org.apache.catalina.deploy.LoginConfig;
-import org.apache.catalina.util.MD5Encoder;
+import org.apache.catalina.util.DigestEncoder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -112,7 +112,7 @@ public class DigestAuthenticator
     /**
      * The MD5 helper object for this class.
      */
-    protected static final MD5Encoder md5Encoder = new MD5Encoder();
+    protected static final DigestEncoder digestEncoder = new DigestEncoder();
 
 
     /**
@@ -122,26 +122,35 @@ public class DigestAuthenticator
         "org.apache.catalina.authenticator.DigestAuthenticator/1.0";
 
 
+    /**
+     * The default message digest algorithm to use if we cannot use
+     * the requested one.
+     */
+    protected static final String DEFAULT_ALGORITHM = "MD5";
+
+
     // ----------------------------------------------------------- Constructors
 
     public DigestAuthenticator() {
         super();
-        try {
-            if (md5Helper == null)
-                md5Helper = MessageDigest.getInstance("MD5");
-        } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException(
-                "MD5 digest algorithm not available", e);
-        }
     }
 
 
-    // ----------------------------------------------------- Instance Variables
+    // ----------------------------------------------------- Static Variables
+
+    /**
+     * The message digest algorithm to be used when generating session
+     * identifiers. This must be an algorithm supported by the
+     * <code>java.security.MessageDigest</code> class on your platform.
+     */
+    protected static volatile String algorithm = DEFAULT_ALGORITHM;
 
     /**
      * MD5 message digest provider.
      */
-    protected volatile static MessageDigest md5Helper;
+    protected volatile static MessageDigest messageDigest;
+
+    // ----------------------------------------------------- Instance Variables
 
     /**
      * No once hashtable.
@@ -169,6 +178,25 @@ public class DigestAuthenticator
 
 
     // ------------------------------------------------------------- Properties
+
+    /**
+     * Return the message digest algorithm for this Manager.
+     */
+    public static String getAlgorithm() {
+        return algorithm;
+    }
+
+
+    /**
+     * Set the message digest algorithm for this Manager.
+     *
+     * @param algorithm The new message digest algorithm
+     */
+    public static synchronized void setAlgorithm(String alg) {
+        algorithm = alg;
+        // reset the messageDigest
+        messageDigest = null;
+    }
 
     /**
      * Return descriptive information about this Valve implementation.
@@ -316,11 +344,8 @@ public class DigestAuthenticator
         String a2 = method + ":" + uri;
         //System.out.println("A2:" + a2);
 
-        byte[] buffer = null;
-        synchronized (md5Helper) {
-            buffer = md5Helper.digest(a2.getBytes());
-        }
-        char[] md5a2 = md5Encoder.encode(buffer);
+        byte[] buffer = digest(a2.getBytes());
+        char[] md5a2 = digestEncoder.encode(buffer);
         char[] responseCharArray = ((response != null) ? response.toCharArray() : null);
 
         return (realm.authenticate(userName, responseCharArray, nOnce, nc, cnonce, qop,
@@ -403,8 +428,8 @@ public class DigestAuthenticator
         String nOnceValue = request.getRemoteAddr() + ":" +
             currentTime + ":" + key;
 
-        byte[] buffer = md5Helper.digest(nOnceValue.getBytes());
-        nOnceValue = String.valueOf(md5Encoder.encode(buffer));
+        byte[] buffer = digest(nOnceValue.getBytes());
+        nOnceValue = String.valueOf(digestEncoder.encode(buffer));
 
         // Updating the value in the no once hashtable
         nOnceTokens.put(nOnceValue, Long.valueOf(currentTime + nOnceTimeout));
@@ -450,17 +475,37 @@ public class DigestAuthenticator
         if (realmName == null)
             realmName = REALM_NAME;
 
-        byte[] buffer = null;
-        synchronized (md5Helper) {
-            buffer = md5Helper.digest(nOnce.getBytes());
-        }
+        byte[] buffer = digest(nOnce.getBytes());
 
         String authenticateHeader = "Digest realm=\"" + realmName + "\", "
             +  "qop=\"auth\", nonce=\"" + nOnce + "\", " + "opaque=\""
-            + String.valueOf(md5Encoder.encode(buffer)) + "\"";
+            + String.valueOf(digestEncoder.encode(buffer)) + "\"";
         response.setHeader("WWW-Authenticate", authenticateHeader);
 
     }
 
 
+    protected static synchronized MessageDigest getMessageDigest() {
+        if (messageDigest == null) {
+            try {
+                messageDigest = MessageDigest.getInstance(algorithm);
+            } catch(NoSuchAlgorithmException e) {
+                throw new IllegalStateException(
+                        algorithm + " digest algorithm not available", e);
+            }
+        }
+
+        return messageDigest;
+    }
+
+    protected static byte[] digest(byte[] data) {
+        byte[] buffer = null;
+
+        MessageDigest md = getMessageDigest();
+        synchronized(md) {
+            buffer = md.digest(data);
+        }
+
+        return buffer;
+    }
 }
