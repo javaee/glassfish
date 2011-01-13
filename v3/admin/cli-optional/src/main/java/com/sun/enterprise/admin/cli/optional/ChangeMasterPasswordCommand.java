@@ -108,14 +108,10 @@ public class ChangeMasterPasswordCommand extends CLICommand {
     private static final LocalStringsImpl strings =
        new LocalStringsImpl(ChangeMasterPasswordCommand.class);
 
-    @Override
-    protected int executeCommand() throws CommandException {
-        return 0;
-    }
+    private String[] args;
 
     @Override
-    public int execute(String... args) throws CommandException {
-        super.execute(args);
+    protected int executeCommand() throws CommandException {
         CLICommand command = null;
 
         if (domainDirParam != null && nodeDir != null) {
@@ -151,6 +147,15 @@ public class ChangeMasterPasswordCommand extends CLICommand {
         } catch (IOException e) {
             throw new CommandException(e.getMessage(),e);
         }
+    }
+
+    @Override
+    public int execute(String... args) throws CommandException {  
+        this.args = args;
+        //This will parse the args and call executeCommand
+        super.execute(args);
+        return 0;
+       
     }
 
     private boolean isDomain() throws IOException {
