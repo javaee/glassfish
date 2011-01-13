@@ -37,8 +37,6 @@
 # only if the new code is made subject to such option by the copyright
 # holder.
 #
-
-#
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ COMMON STUFF ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 PRODUCT_NAME=GlassFish Server Open Source Edition Web Profile
 
@@ -95,7 +93,7 @@ btnpanel_bgcolor=e8e9ed
 button_font=Sans-Serif-BOLD-14
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~W E L C O M E   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Welcome_WELCOME_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Willkommen zur ${PRODUCT_NAME}-Installation.&lt;BR&gt;Dieses Tool dient zum Installieren von ${PRODUCT_NAME}. &lt;BR&gt;&lt;BR&gt;GlassFish Server ist ein serienreifer Java EE 6-kompatibler Anwendungsserver, &lt;BR&gt;der unter einer Open Source-Lizenz entwickelt wurde. Zu den Vorteilen z\u00e4hlen eine modulare &lt;BR&gt;Laufzeitumgebung, die den Ressourcenverbrauch minimiert, eine benutzerfreundliche &lt;BR&gt;Administrationskonsole, ein Befehlszeilen-Tool mit umfangreichen Funktionen, eine zentrale &lt;BR&gt;Administration und hochverf\u00fcgbares Clustering. Au\u00dferdem ist GlassFish Server &lt;BR&gt;der derzeit schnellste Open Source-Anwendungsserver.&lt;BR&gt;&lt;BR&gt;Weitere Informationen finden Sie auf der &lt;a href=https://glassfish.dev.java.net&gt; GlassFish-Projektseite&lt;/a&gt;. &lt;BR&gt;&lt;BR&gt;Klicken Sie zum Fortfahren auf 'Weiter'. &lt;BR&gt;&lt;BR&gt;&lt;/BODY&gt;&lt;/HTML&gt;
+Welcome_WELCOME_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Willkommen zur ${PRODUCT_NAME}-Installation.&lt;BR&gt;Dieses Tool dient zum Installieren von ${PRODUCT_NAME}. &lt;BR&gt;&lt;BR&gt;GlassFish Server ist ein serienreifer Java EE 6-kompatibler Anwendungsserver, der unter einer Open Source-Lizenz entwickelt wurde. Zu den Vorteilen z\u00e4hlen eine modulare Laufzeitumgebung, die den Ressourcenverbrauch minimiert, eine benutzerfreundliche Administrationskonsole, ein Befehlszeilen-Tool mit umfangreichen Funktionen, eine zentrale Administration und hochverf\u00fcgbares Clustering. Au\u00dferdem ist GlassFish Server der derzeit schnellste Open Source-Anwendungsserver.&lt;BR&gt;&lt;BR&gt;Weitere Informationen finden Sie auf der &lt;a href=https://glassfish.dev.java.net&gt; GlassFish-Projektseite&lt;/a&gt;. &lt;BR&gt;&lt;BR&gt;Klicken Sie zum Fortfahren auf 'Weiter'. &lt;BR&gt;&lt;BR&gt;&lt;/BODY&gt;&lt;/HTML&gt;
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~I N S T A L L    H O M E   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -134,7 +132,7 @@ UPDATE_TOOL_PRIVACY_NOTICE=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt
 
 ADMINISTRATION_SERVICE_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Geben Sie den Namen des Windows-Diensts oder eines Solaris SMF-Diensts an.&lt;BODY&gt;&lt;HTML&gt;
 
-ADMINISTRATION_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif' size=3 &gt;Konfigurieren Sie die Verwaltungseinstellungen f\u00fcr den Server. Geben Sie den Benutzernamen&lt;BR&gt;und das Passwort f\u00fcr den Server an. Sie k\u00f6nnen die Passwortfelder leer lassen, wenn Sie den&lt;BR&gt;Server f\u00fcr nicht authentifizierte Anmeldungen konfigurieren m\u00f6chten. &lt;/BODY&gt;&lt;HTML&gt;
+ADMINISTRATION_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif' size=3 &gt;Konfigurieren Sie die Verwaltungseinstellungen f\u00fcr den Server. Geben Sie den&lt;BR&gt;Benutzernamen und das Passwort f\u00fcr den Server an. Sie k\u00f6nnen die Passwortfelder&lt;BR&gt;leer lassen, wenn Sie den Server f\u00fcr nicht authentifizierte Anmeldungen konfigurieren&lt;BR&gt;m\u00f6chten. &lt;/BODY&gt;&lt;HTML&gt;
 
 ANONYMOUS=Als anonymer Benutzer konfigurieren
 NON_ANONYMOUS= Benutzername und Passwort angeben 

@@ -37,8 +37,6 @@
 # only if the new code is made subject to such option by the copyright
 # holder.
 #
-
-#
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ COMMON STUFF ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 PRODUCT_NAME=GlassFish Server Open Source Edition Web Profile
 
@@ -95,7 +93,7 @@ btnpanel_bgcolor=e8e9ed
 button_font=Sans-Serif-BOLD-14
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~W E L C O M E   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Welcome_WELCOME_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Introduzione all'installazione di ${PRODUCT_NAME}.&lt;BR&gt;Strumento per l'installazione di ${PRODUCT_NAME}. &lt;BR&gt;&lt;BR&gt;GlassFish Server \u00e8 un server di applicazioni pronto per la produzione compatibile con Java EE 6, &lt;BR&gt;sviluppato con una licenza open source. Offre numerosi vantaggi, tra cui un runtime modulare &lt;BR&gt;, che consente di ridurre al massimo l'utilizzo di risorse, una console di &lt;BR&gt;amministrazione di facile utilizzo, uno strumento da riga di comando ricco di funzionalit\u00e0,&lt;BR&gt;amministrazione centralizzata e clustering ad alta disponibilit\u00e0. GlassFish Server rappresenta inoltre &lt;BR&gt;il pi\u00f9 rapido server di applicazioni open source disponibile.&lt;BR&gt;&lt;BR&gt;Per ulteriori informazioni, visitare la &lt;a href=https://glassfish.dev.java.net&gt; pagina del progetto GlassFishPage&lt;/a&gt;. &lt;BR&gt;&lt;BR&gt;Fare clic su Avanti per continuare. &lt;BR&gt;&lt;/BODY&gt;&lt;/HTML&gt;
+Welcome_WELCOME_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Introduzione all'installazione di ${PRODUCT_NAME}.&lt;BR&gt;Strumento per l'installazione di ${PRODUCT_NAME}. &lt;BR&gt;&lt;BR&gt;GlassFish Server \u00e8 un server di applicazioni pronto per la produzione compatibile con Java EE 6, sviluppato con una licenza open source. Offre numerosi vantaggi, tra cui un runtime modulare, che consente di ridurre al massimo l'utilizzo di risorse, una console di amministrazione di facile utilizzo, uno strumento da riga di comando ricco di funzionalit\u00e0, amministrazione centralizzata e clustering ad alta disponibilit\u00e0. GlassFish Server rappresenta inoltre il pi\u00f9 rapido server di applicazioni open source disponibile.&lt;BR&gt;&lt;BR&gt;Per ulteriori informazioni, visitare la &lt;a href=https://glassfish.dev.java.net&gt; pagina del progetto GlassFishPage&lt;/a&gt;. &lt;BR&gt;&lt;BR&gt;Fare clic su Avanti per continuare. &lt;BR&gt;&lt;/BODY&gt;&lt;/HTML&gt;
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~I N S T A L L    H O M E   P A G E~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -130,7 +128,7 @@ ALTERNATE_JDK=Percorso Java(TM) SDK alternativo
 UPDATETOOL_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt; Lo strumento di aggiornamento verifica periodicamente la disponibilit\u00e0 di&lt;BR&gt;aggiornamenti per GlassFish Server in modo da consentire agli utenti&lt;BR&gt;di mantenersi aggiornati con le build pi\u00f9 recenti.&lt;BODY&gt;&lt;HTML&gt;
 
 
-UPDATE_TOOL_PRIVACY_NOTICE=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt; Lo strumento di aggiornamento verifica periodicamente la disponibilit\u00e0 di&lt;BR&gt;aggiornamenti e raccoglie alcuni dati di sistema. Per ulteriori informazioni, vedere&lt;BR&gt;la pagina &lt;a href=http://wikis.sun.com/display/glassfish/UsageMetricsV3&gt; GlassFish Usage Metrics&lt;/a&gt; &lt;BR&gt;all'indirizzo http://wikis.sun.com/display/GlassFish/UsageMetricsV3.&lt;BODY&gt;&lt;HTML&gt;
+UPDATE_TOOL_PRIVACY_NOTICE=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt; Lo strumento di aggiornamento verifica periodicamente la disponibilit\u00e0 di&lt;BR&gt;aggiornamenti e raccoglie alcuni dati di sistema. Per ulteriori informazioni,&lt;BR&gt;vederela pagina &lt;a href=http://wikis.sun.com/display/glassfish/UsageMetricsV3&gt; GlassFish Usage Metrics&lt;/a&gt; &lt;BR&gt;all'indirizzo http://wikis.sun.com/display/GlassFish/UsageMetricsV3.&lt;BODY&gt;&lt;HTML&gt;
 
 ADMINISTRATION_SERVICE_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Specificare il nome del servizio Windows o di un servizio SMF Solaris.&lt;BODY&gt;&lt;HTML&gt;
 
@@ -242,7 +240,7 @@ NO_CONFIGURATION=Ignora configurazione
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~INSTANCE INFORMATION PAGE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-CONFIGURATION_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Per creare e configurare un'istanza, specificare le informazioni seguenti. Il server di&lt;BR&gt;amministrazione del dominio deve essere in esecuzione nell' host e sulla porta&lt;BR&gt;specificati.&lt;BODY&gt;&lt;HTML&gt; 
+CONFIGURATION_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Per creare e configurare un'istanza, specificare le informazioni seguenti.&lt;BR&gt;Il server di amministrazione del dominio deve essere in esecuzione nell' host&lt;BR&gt;e sulla porta specificati.&lt;BODY&gt;&lt;HTML&gt; 
 
 CLUSTERED_CONFIGURATION_TOP_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;Specificare le informazioni necessarie per creare un'istanza server locale. \u00c8 inoltre possibile&lt;BR&gt; scegliere di aggiungere questa istanza al cluster.&lt;BODY&gt;&lt;HTML&gt; 
 
