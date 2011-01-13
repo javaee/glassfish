@@ -9,6 +9,7 @@ tests/community/web/jruby/helloapp/public/javascripts/
 admingui/war/src/main/webapp/3rd-party-license
 /MANIFEST.MF
 /META-INF/services/
+/META-INF/hiddenservices/
 /README
 /adminpassword.txt
 packager/legal/
