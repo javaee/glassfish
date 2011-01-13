@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -57,7 +57,7 @@ import java.io.StringWriter;
 import java.net.InetAddress;
 import javax.security.auth.login.LoginException;
 
-import org.glassfish.admin.rest.LazyJerseyInit;
+import org.glassfish.admin.rest.LazyJerseyInterface;
 import org.glassfish.admin.rest.RestService;
 import org.glassfish.admin.rest.SessionManager;
 import org.glassfish.api.ActionReport;
@@ -75,23 +75,16 @@ import org.jvnet.hk2.component.PostConstruct;
 import java.net.HttpURLConnection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.StringTokenizer;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import org.glassfish.admin.rest.Constants;
-import org.glassfish.admin.rest.provider.ActionReportResultHtmlProvider;
-import org.glassfish.admin.rest.provider.ActionReportResultJsonProvider;
-import org.glassfish.admin.rest.provider.ActionReportResultXmlProvider;
-import org.glassfish.admin.rest.provider.BaseProvider;
-import org.glassfish.admin.rest.results.ActionReportResult;
-import org.glassfish.admin.rest.utils.xml.RestActionReporter;
+
 import org.glassfish.internal.api.AdminAccessController;
 import org.glassfish.internal.api.ServerContext;
-
+import java.util.logging.Level;
 
 /**
  * Adapter for REST interface
@@ -120,6 +113,8 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
 
     @Inject
     ServerEnvironment serverEnvironment;
+    
+    private volatile LazyJerseyInterface lazyJerseyInterface =null;
 
     private Map<Integer, String> httpStatus = new HashMap<Integer, String>() {{
         put(404, "Resource not found");
@@ -398,37 +393,6 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
 
     protected abstract Set<Class<?>> getResourcesConfig();
 
-    private String getAcceptedMimeType(GrizzlyRequest req) {
-        String type = null;
-        String requestURI = req.getRequestURI();
-        Set<String> acceptableTypes = new HashSet<String>() {{ add("html"); add("xml"); add("json"); }};
-
-        // first we look at the command extension (ie list-applications.[json | html | mf]
-        if (requestURI.indexOf('.')!=-1) {
-            type = requestURI.substring(requestURI.indexOf('.')+1);
-        } else {
-            String userAgent = req.getHeader("User-Agent");
-            if (userAgent != null) {
-                String accept = req.getHeader("Accept");
-                if (accept != null) {
-                    if (accept.indexOf("html") != -1) {//html is possible so get it...
-                        return "html";
-                    }
-                    StringTokenizer st = new StringTokenizer(accept, ",");
-                    while (st.hasMoreElements()) {
-                        String scheme=st.nextToken();
-                        scheme = scheme.substring(scheme.indexOf('/')+1);
-                        if (acceptableTypes.contains(scheme)) {
-                            type = scheme;
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-
-        return type;
-    }
 
 //    private ActionReport getClientActionReport(GrizzlyRequest req) {
 //        ActionReport report=null;
@@ -444,6 +408,29 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
 //        return report;
 //    }
 
+    /*
+     * dynamically load the class that contains all references to Jersey APIs
+     * so that Jersey is not loaded when the RestAdapter is loaded at boot time
+     * gain a few 100millis at GlassFish startyp time
++     */
+    protected LazyJerseyInterface getLazyJersey() {
+        if (lazyJerseyInterface != null) {
+            return lazyJerseyInterface;
+        }
+        synchronized (com.sun.grizzly.tcp.Adapter.class) {
+            if (lazyJerseyInterface == null) {
+               try {
+                    Class<?> lazyInitClass = Class.forName("org.glassfish.admin.rest.LazyJerseyInit");
+                    lazyJerseyInterface = (LazyJerseyInterface) lazyInitClass.newInstance();
+                } catch (Exception ex) {
+                    logger.log(Level.SEVERE,
+                            "Error trying to call org.glassfish.admin.rest.LazyJerseyInit via instrospection: ", ex);
+                }
+            }
+        }
+        return lazyJerseyInterface;
+
+    }
 
     private void exposeContext()
             throws EndpointRegistrationException {
@@ -451,7 +438,8 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
         logger.fine("Exposing rest resource context root: " + context);
         if ((context != null) || (!"".equals(context))) {
             Set<Class<?>> classes = getResourcesConfig();
-            adapter = LazyJerseyInit.exposeContext(classes, sc, habitat);
+           // adapter = LazyJerseyInit.exposeContext(classes, sc, habitat);
+            adapter = getLazyJersey().exposeContext(classes, sc, habitat);
             ((GrizzlyAdapter) adapter).setResourcesContextPath(context);
             
             logger.info("Listening to REST requests at context: " + context + "/domain");
@@ -460,32 +448,9 @@ public abstract class RestAdapter extends GrizzlyAdapter implements Adapter, Pos
 
 
     private void reportError(GrizzlyRequest req, GrizzlyResponse res, int statusCode, String msg) {
-        try {
-            // TODO: There's a lot of arm waving and flailing here.  I'd like this to be cleaner, but I don't
-            // have time at the moment.  jdlee 8/11/10
-            RestActionReporter report = new RestActionReporter(); //getClientActionReport(req);
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setActionDescription("Error");
-            report.setMessage(msg);
-            BaseProvider<ActionReportResult> provider;
-            String type = getAcceptedMimeType(req);
-            if ("xml".equals(type)) {
-                res.setContentType("application/xml");
-                provider = new ActionReportResultXmlProvider();
-            } else if ("json".equals(type)) {
-                res.setContentType("application/json");
-                provider = new ActionReportResultJsonProvider();
-            } else {
-                res.setContentType("text/html");
-                provider = new ActionReportResultHtmlProvider();
-            }
-            res.setStatus(statusCode);
-            res.getOutputStream().write(provider.getContent(new ActionReportResult(report)).getBytes());
-            res.getOutputStream().flush();
-            res.finishResponse();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        // delegate to the class that knows about all Jersey API
+        // for faster startup of this adapter.
+        getLazyJersey().reportError(req, res, statusCode, msg);
     }
 
     private volatile com.sun.grizzly.tcp.Adapter adapter = null;

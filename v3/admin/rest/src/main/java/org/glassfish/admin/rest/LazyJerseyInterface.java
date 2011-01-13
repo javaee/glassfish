@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,31 +37,37 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.admin.rest.adapter;
+package org.glassfish.admin.rest;
 
+import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
+import com.sun.grizzly.tcp.http11.GrizzlyRequest;
+import com.sun.grizzly.tcp.http11.GrizzlyResponse;
 import java.util.Set;
-
-import org.jvnet.hk2.annotations.Service;
+import org.glassfish.api.container.EndpointRegistrationException;
+import org.glassfish.internal.api.ServerContext;
+import org.jvnet.hk2.component.Habitat;
 
 /**
- * Adapter for REST management interface
- * @author Rajeshwar Patil , Ludovic Champenois
+ *
+ * @author ludo
  */
-@Service
-public class RestManagementAdapter extends RestAdapter {
-    private static final String CONTEXT = "/management";
+public interface LazyJerseyInterface {
 
-    @Override
-    public String getContextRoot() {
-        return CONTEXT;
-    }
+    /**
+     * Called via introspection in the RestAdapter service() method only when the GrizzlyAdapter is not initialized
+     * @param classes set of Jersey Resources classes
+     * @param sc the current ServerContext, needed to find the correct classpath
+     * @return the correct GrizzlyAdapter
+     * @throws EndpointRegistrationException
+     */
+    GrizzlyAdapter exposeContext(Set classes, ServerContext sc, Habitat habitat)
+            throws EndpointRegistrationException;
 
-    @Override
-    protected Set<Class<?>> getResourcesConfig() {
+    RestConfig getRestConfig(Habitat habitat);
 
-         return getLazyJersey().getResourcesConfigForManagement(habitat);
+    void reportError(GrizzlyRequest req, GrizzlyResponse res, int statusCode, String msg);
 
-    }
+    Set<Class<?>> getResourcesConfigForMonitoring(Habitat habitat);
 
-
+    Set<Class<?>> getResourcesConfigForManagement(Habitat habitat);
 }
