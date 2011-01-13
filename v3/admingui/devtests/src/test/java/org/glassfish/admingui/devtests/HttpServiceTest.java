@@ -46,8 +46,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class HttpServiceTest extends BaseSeleniumTestClass {
-    private static final String TRIGGER_HTTP_SERVICE = "Configure rotation of the HTTP access log files. Access logs for virtual servers are in the install_dir/domains/domain_name/logs/access directory.";
-
+    private static final String TRIGGER_HTTP_SERVICE = "i18n_web.httpService.pageTitleHelp";
+    
     @Test
     public void testHttpService() {
         final String interval = Integer.toString(generateRandomNumber(2880));
@@ -70,7 +70,6 @@ public class HttpServiceTest extends BaseSeleniumTestClass {
         
         clickAndWait("treeForm:tree:configurations:server-config:httpService:httpService_link", TRIGGER_HTTP_SERVICE);
         assertEquals(true, selenium.isChecked("form1:propertySheet:http:acLog:ssoEnabled"));
-        assertTrue(selenium.isTextPresent(TRIGGER_HTTP_SERVICE));
         assertEquals(interval, selenium.getValue("form1:propertySheet:accessLog:intervalProp:Interval"));
         assertEquals(maxFiles, selenium.getValue("form1:propertySheet:accessLog:MaxHistoryFiles:MaxHistoryFiles"));
         assertEquals(bufferSize, selenium.getValue("form1:propertySheet:accessLog:accessLogBufferSize:accessLogBufferSize"));
