@@ -38,10 +38,6 @@
  * holder.
  */
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.glassfish.flashlight.datatree.impl;
 
 import com.sun.enterprise.util.ObjectAnalyzer;
@@ -390,7 +386,9 @@ public abstract class AbstractTreeNode implements TreeNode, Comparable {
             if (aname == null)
                 continue;   // defensive pgming
 
-            if (pattern.startsWith(aname)) {
+            // JIRA 15500 -- there may be a backslash in the name!
+
+            if (pattern.startsWith(aname) || pattern.startsWith(aname.replace("\\", ""))) {
                 int thisLength = aname.length();
 
                 // keep the longest match ONLY!

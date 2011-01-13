@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -71,6 +71,8 @@ import static com.sun.enterprise.util.SystemPropertyConstants.SLASH;
  *
  * @author Byron Nevins
  * First breathed life on November 6, 2010
+ * The copyright says 1997 because one method in here has code moved verbatim
+ * from GetCommand.java which started life in 1997
  *
  * Note: what do you suppose is the worst possible name for a TreeNode class?
  * Correct!  TreeNode!  Clashing names is why we have to explicitly use this ghastly
@@ -488,12 +490,53 @@ public class MonitoringReporter extends V2DottedNameSupport {
         // after the fact...
 
         if (exactMatch != null) {
-            Object val = map.get(exactMatch);
+            Object val = getIgnoreBackslash(map, exactMatch);
             map.clear();
 
             if (val != null)
                 map.put(exactMatch, val);
         }
+    }
+
+    /*
+     * bnevins, 1-11-11
+     * Note that we can not GUESS where to put the backslash into 'pattern'.
+     * If so -- we could simply add it into pattern and do a get on the HashMap.
+     * Instead we have to get each and every key in the map, remove backslashes
+     * and compare.
+     */
+    private Object getIgnoreBackslash(TreeMap map, String pattern) {
+
+        if(pattern == null)
+            return null;
+
+        Object match = map.get(pattern);
+
+        if(match != null)
+            return match;
+
+        pattern = pattern.replace("\\", "");
+        match = map.get(pattern);
+
+        if(match != null)
+            return match;
+
+        // No easy match...
+
+        Set<Map.Entry> elems = map.entrySet();
+
+        for(Map.Entry elem : elems) {
+            Object key = elem.getKey();
+
+            if(key == null)
+                continue;
+
+            String name = key.toString().replace("\\", "");
+
+            if(pattern.equals(name))
+                return elem.getValue();
+        }
+        return null;
     }
 
     private void addStatisticInfo(Object value, String name, TreeMap map) {
