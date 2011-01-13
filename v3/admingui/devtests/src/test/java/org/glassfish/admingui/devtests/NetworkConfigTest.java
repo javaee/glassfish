@@ -134,8 +134,6 @@ public class NetworkConfigTest extends BaseSeleniumTestClass {
         clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_PROTOCOLS);
         assertTrue(selenium.isTextPresent(protocol));
         
-        // Disabling checks for now.  There seems to be some backend issues plaguing this piece
-/*
         clickAndWait(getLinkIdByLinkText("propertyForm:configs", protocol), "Edit Protocol");
         assertTrue(selenium.isTextPresent(protocol));
         
@@ -148,7 +146,7 @@ public class NetworkConfigTest extends BaseSeleniumTestClass {
         assertEquals(headerBLength, selenium.getValue("propertyForm:propertySheet:httpTextField:headerBLength:headerBLength"));
         assertEquals(maxPostSize, selenium.getValue("propertyForm:propertySheet:httpTextField:MaxPostSize:headerBLength"));
         assertEquals(compressableMime, selenium.getValue("propertyForm:propertySheet:httpTextField:compressableMime:compressableMime"));
-        assertEquals("on", selenium.getValue("propertyForm:propertySheet:httpTextField:Comet:sun_checkbox7808"));
+        assertEquals("true", selenium.getValue("propertyForm:propertySheet:httpTextField:Comet:cometEnabled"));
 
         clickAndWait("propertyForm:protocolTabs:fileCacheTab", "Modify file cache settings for the protocol.");
         assertEquals(maxAge, selenium.getValue("propertyForm:propertySheet:fileTextField:maxAge:maxAge"));
@@ -156,7 +154,7 @@ public class NetworkConfigTest extends BaseSeleniumTestClass {
         assertEquals(maxFile, selenium.getValue("propertyForm:propertySheet:fileTextField:maxFile:maxFile"));
 
         clickAndWait("propertyForm:propertyContentPage:topButtons:cancelButton", TRIGGER_PROTOCOLS);
-*/
+
 
         deleteRow("propertyForm:configs:topActionsGroup1:button1", "propertyForm:configs", protocol);
 
