@@ -3,7 +3,7 @@
 /* 
 * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER. 
 * 
-* Copyright 2010 Sun Microsystems, Inc. All rights reserved. 
+* Copyright 2010-2011 Sun Microsystems, Inc. All rights reserved. 
 * 
 * The contents of this file are subject to the terms of either the GNU 
 * General Public License Version 2 only ("GPL") or the Common Development 
@@ -53,8 +53,8 @@
          with hk2-jar packaging type -->
     <packaging>jar</packaging>
     <scm>
-      <connection>scm:svn:https://hk2.dev.java.net/svn/hk2/trunk/hk2/osgi-resource-locator</connection>
-      <developerConnection>scm:svn:https://hk2.dev.java.net/svn/hk2/trunk/hk2/osgi-resource-locator</developerConnection>             
+      <connection>scm:svn:svn+ssh://janey@svn.java.net/hk2~svn/trunk/hk2/osgi-resource-locator</connection>
+      <developerConnection>scm:svn:svn+ssh://janey@svn.java.net/hk2~svn/trunk/hk2/osgi-resource-locator</developerConnection>             
     </scm>
     <build>
         <plugins>
@@ -120,6 +120,17 @@
             <version>4.2.0</version>
             <scope>provided</scope>
         </dependency>
-
     </dependencies>
+
+   <!-- override distributionManagement from parent pom -->
+    <distributionManagement>
+        <!-- our internal staging repository, to be pushed to http://download.java.net/maven/glassfish/ -->
+        <repository>            
+            <uniqueVersion>false</uniqueVersion>
+            <!-- the ID maps to ~/.m2/settings.xml, so don't change the ID -->
+            <id>rator.sfbay</id>
+            <url>dav:http://glassfish-maven-repository.us.oracle.com/maven/repositories/glassfish/</url>
+        </repository>
+    </distributionManagement>
+
 </project>
