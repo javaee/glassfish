@@ -45,7 +45,7 @@
     </parent>
     <groupId>org.glassfish.hk2</groupId>
     <artifactId>osgi-resource-locator</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2-SNAPSHOT</version>
     <name>OSGi resource locator bundle - used by various API providers that rely on META-INF/services mechanism to locate providers.</name>
     <description> See http://wiki.glassfish.java.net/Wiki.jsp?page=JdkSpiOsgi for more information</description>
     <!-- We don't use packaging type bundle as it requires us to 
@@ -53,8 +53,8 @@
          with hk2-jar packaging type -->
     <packaging>jar</packaging>
     <scm>
-      <connection>scm:svn:svn+ssh://janey@svn.java.net/hk2~svn/tags/osgi-resource-locator-1.0.1</connection>
-      <developerConnection>scm:svn:svn+ssh://janey@svn.java.net/hk2~svn/tags/osgi-resource-locator-1.0.1</developerConnection>             
+      <connection>scm:svn:svn+ssh://janey@svn.java.net/hk2~svn/trunk/hk2/osgi-resource-locator</connection>
+      <developerConnection>scm:svn:svn+ssh://janey@svn.java.net/hk2~svn/trunk/hk2/osgi-resource-locator</developerConnection>             
     </scm>
     <build>
         <plugins>
