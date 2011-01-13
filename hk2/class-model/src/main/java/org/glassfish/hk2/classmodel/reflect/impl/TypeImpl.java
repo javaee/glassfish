@@ -37,6 +37,8 @@ package org.glassfish.hk2.classmodel.reflect.impl;
 
 import org.glassfish.hk2.classmodel.reflect.*;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.net.URI;
 
@@ -64,6 +66,12 @@ public class TypeImpl extends AnnotatedElementImpl implements Type {
 
     void addDefiningURI(URI uri) {
         definingURIs.add(uri);
+        try {
+            definingURIs.add(new File(uri).getCanonicalFile().toURI());
+        } catch (IOException e) {
+            // ignore, this is a safeguard for confused user's code that do not
+            // deal well with file path.
+        }
     }
 
     @Override
