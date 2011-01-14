@@ -1147,14 +1147,14 @@ public class Request
         // XXX Should move to Globals
         if (Constants.SSL_CERTIFICATE_ATTR.equals(name)) {
             // @TODO Implement SSL rehandshake
-//            coyoteRequest.action(ActionCode.ACTION_REQ_SSL_CERTIFICATE, null);
+            coyoteRequest.populateCertificateAttribute();
             attr = getAttribute(Globals.CERTIFICATES_ATTR);
             if (attr != null) {
                 attributes.put(name, attr);
             }
         } else if (isSSLAttribute(name)) {
             /* SJSAS 6419950
-            coyoteRequest.action(ActionCode.ACTION_REQ_SSL_ATTRIBUTE, 
+            coyoteRequest.action(ActionCode.ACTION_REQ_SSL_ATTRIBUTE,
             coyoteRequest);
             attr = coyoteRequest.getAttribute(Globals.CERTIFICATES_ATTR);
             if( attr != null) {
@@ -4250,9 +4250,7 @@ public class Request
 
     // START SJSAS 6419950
     private void populateSSLAttributes() {
-        // @TODO Implement SSL rehandshake
-//        coyoteRequest.action(ActionCode.ACTION_REQ_SSL_ATTRIBUTE,
-//                coyoteRequest);
+        coyoteRequest.populateSSLAttributes();
         Object attr = coyoteRequest.getAttribute(Globals.CERTIFICATES_ATTR);
         if (attr != null) {
             attributes.put(Globals.CERTIFICATES_ATTR, attr);
