@@ -213,7 +213,7 @@ final class RMIConnectorStarter extends ConnectorStarter {
                 restoreRMIHostname(saved, addr);
             }
         } else {
-            Util.getLogger().info("Binding RMI port to *:" + port);
+            Util.getLogger().fine("Binding RMI port to *:" + port);
             registry = _startRegistry(port);
         }
         return registry;
