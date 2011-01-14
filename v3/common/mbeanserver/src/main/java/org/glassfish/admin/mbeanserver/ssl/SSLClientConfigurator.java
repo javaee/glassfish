@@ -121,15 +121,8 @@ public class SSLClientConfigurator {
      * 
      * @return SSLContext
      */
-    public SSLContext configure() {
-        // If no SSLParams are set , create one.
-        if(sslParams == null) {
-            _logger.log(Level.WARNING, "Null SSL params. Creating defaults ");
-            sslParams = new SSLParams( new File(System.getProperty("javax.net.ssl.trustStore")),
-                    System.getProperty("javax.net.ssl.trustStoreType", "JKS"),
-                    System.getProperty("javax.net.ssl.trustStorePassword","changeit"));
-            
-        }
+    public SSLContext configure(SSLParams sslParams) {
+        this.sslParams = sslParams;
         
         // get the protocol and the SSLContext.
         String protocol = sslParams.getProtocol();

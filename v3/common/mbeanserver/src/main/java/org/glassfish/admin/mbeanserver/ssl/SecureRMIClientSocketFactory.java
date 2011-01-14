@@ -130,7 +130,7 @@ import javax.rmi.ssl.SslRMIClientSocketFactory;
             _logger.log(Level.INFO, "Setting SSLParams @ " +
                      sslParams);
             sslCC.setSSLParams(sslParams);
-            SSLContext sslContext = sslCC.configure();
+            SSLContext sslContext = sslCC.configure(sslParams);
             SSLSocket sslSocket =
                     (SSLSocket)sslContext.getSocketFactory().createSocket(mAddress, port);
             configureSSLSocket(sslSocket, sslCC);
