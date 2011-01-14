@@ -46,12 +46,12 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class JdbcTest extends BaseSeleniumTestClass {
-    public static final String TRIGGER_JDBC_CONNECTION_POOLS = "To store, organize, and retrieve data, most applications use relational databases.";
-    public static final String TRIGGER_JDBC_RESOURCES = "JDBC resources provide applications with a means to connect to a database.";
-    public static final String TRIGGER_EDIT_JDBC_RESOURCE = "Edit JDBC Resource";
-    public static final String TRIGGER_NEW_JDBC_CONNECTION_POOL_STEP_1 = "New JDBC Connection Pool (Step 1 of 2)";
-    public static final String TRIGGER_NEW_JDBC_CONNECTION_POOL_STEP_2 = "New JDBC Connection Pool (Step 2 of 2)";
-    public static final String TRIGGER_NEW_JDBC_RESOURCE = "New JDBC Resource";
+    public static final String TRIGGER_JDBC_CONNECTION_POOLS = "i18njdbc.jdbcConnectionPools.pageTitleHelp";
+    public static final String TRIGGER_JDBC_RESOURCES = "i18njdbc.jdbcResources.pageTitleHelp";
+    public static final String TRIGGER_EDIT_JDBC_RESOURCE = "i18njdbc.jdbcResource.editPageTitleHelp";
+    public static final String TRIGGER_NEW_JDBC_CONNECTION_POOL_STEP_1 = "i18njdbc.jdbcConnection.step1PageHelp";
+    public static final String TRIGGER_NEW_JDBC_CONNECTION_POOL_STEP_2 = "i18njdbc.jdbcConnection.step2PageHelp";
+    public static final String TRIGGER_NEW_JDBC_RESOURCE = "i18njdbc.jdbcResource.newPageTitleHelp";
 
     @Test
     public void testPoolPing() {

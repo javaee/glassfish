@@ -506,12 +506,17 @@ public class BaseSeleniumTestClass {
     }
 
     // TODO: write javadocs for this
-    protected int getTableRowCountByValue(String tableId, String value, String valueColId) {
+    protected int getTableRowCountByValue(String tableId, String value, String valueColId, Boolean isLabel) {
         int tableCount = getTableRowCount(tableId);
         int selectedCount = 0;
         try {
             for (int i = 0; i < tableCount; i++) {
-                String text = selenium.getText(tableId + ":rowGroup1:" + i + ":" + valueColId);
+                String text = "";
+                if (isLabel) {
+                    text = selenium.getText(tableId + ":rowGroup1:" + i + ":" + valueColId);
+                } else {
+                    text = selenium.getValue(tableId + ":rowGroup1:" + i + ":" + valueColId);
+                }
                 if (text.equals(value)) {
                     selectedCount++;
                 }
@@ -521,6 +526,10 @@ public class BaseSeleniumTestClass {
             return 0;
         }
         return selectedCount;
+    }
+
+    protected int getTableRowCountByValue(String tableId, String value, String valueColId) {
+        return getTableRowCountByValue(tableId, value, valueColId, true);
     }
     
     protected List<String> getTableColumnValues(String tableId, String columnId) {

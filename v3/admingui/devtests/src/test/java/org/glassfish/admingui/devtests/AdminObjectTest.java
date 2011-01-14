@@ -46,9 +46,9 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 
 public class AdminObjectTest extends BaseSeleniumTestClass {
-    private static final String TRIGGER_ADMIN_OBJECT_RESOURCES = "An administered object resource provides specialized functionality that is defined by the resource adapter for the deployed connector module.";
-    private static final String TRIGGER_NEW_ADMIN_OBJECT_RESOURCE = "New Admin Object Resource";
-    private static final String TRIGGER_EDIT_ADMIN_OBJECT_RESOURCE = "Edit Admin Object Resource";
+    private static final String TRIGGER_ADMIN_OBJECT_RESOURCES = "i18njca.adminObjectResources.pageTitleHelp";
+    private static final String TRIGGER_NEW_ADMIN_OBJECT_RESOURCE = "i18njca.adminObject.NewPageTitleHelp";
+    private static final String TRIGGER_EDIT_ADMIN_OBJECT_RESOURCE = "i18njca.adminObjectResource.editPageHelp";
 
     @Test
     public void testAdminObjectResources() throws Exception {
@@ -73,6 +73,8 @@ public class AdminObjectTest extends BaseSeleniumTestClass {
         selenium.type("form:basicTable:rowGroup1:0:col2:col1St", "property" + generateRandomString());
         selenium.type("form:basicTable:rowGroup1:0:col3:col1St", "value");
         selenium.type("form:basicTable:rowGroup1:0:col4:col1St", "description");
+        int emptyCount = getTableRowCountByValue("form:basicTable", "", "col3:col1St", false);
+        count = count - emptyCount;
         clickAndWait("form:propertyContentPage:topButtons:newButton", TRIGGER_ADMIN_OBJECT_RESOURCES);
 
         assertTrue(selenium.isTextPresent(resName));
@@ -127,6 +129,9 @@ public class AdminObjectTest extends BaseSeleniumTestClass {
         selenium.type("form:basicTable:rowGroup1:0:col3:col1St", "value");
         selenium.type("form:basicTable:rowGroup1:0:col4:col1St", "description");
 
+        int emptyCount = getTableRowCountByValue("form:basicTable", "", "col3:col1St", false);
+        count = count - emptyCount;
+
         selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=" + instanceName);
         selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=server");
         selenium.click("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
@@ -176,4 +181,4 @@ public class AdminObjectTest extends BaseSeleniumTestClass {
         clickAndWait("treeForm:tree:standaloneTreeNode:standaloneTreeNode_link", instanceTest.TRIGGER_INSTANCES_PAGE);
         deleteRow("propertyForm:instancesTable:topActionsGroup1:button1", "propertyForm:instancesTable", instanceName);
     }
-}
+                }

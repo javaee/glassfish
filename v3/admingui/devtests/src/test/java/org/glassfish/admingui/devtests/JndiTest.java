@@ -46,18 +46,15 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class JndiTest extends BaseSeleniumTestClass {
-    private static final String TRIGGER_CUSTOM_RESOURCES = "Custom resources are nonstandard resources";
-    private static final String TRIGGER_NEW_CUSTOM_RESOURCE = "New Custom Resource";
-    private static final String TRIGGER_EDIT_CUSTOM_RESOURCE = "Edit Custom Resource";
-    private static final String TRIGGER_EDIT_EXTERNAL_RESOURCE = "Edit External Resource";
-    private static final String TRIGGER_EXTERNAL_RESOURCES = "Manage external JNDI resources when";
-    private static final String TRIGGER_NEW_EXTERNAL_RESOURCE = "New External Resource";
+    private static final String TRIGGER_CUSTOM_RESOURCES = "i18njmail.customResources.pageTitleHelp";
+    private static final String TRIGGER_NEW_CUSTOM_RESOURCE = "i18njmail.customResource.newPageTitleHelp";
+    private static final String TRIGGER_EDIT_CUSTOM_RESOURCE = "i18njmail.customResource.editPageTitleHelp";
+    private static final String TRIGGER_EDIT_EXTERNAL_RESOURCE = "i18njmail.jndiResource.editPageTitleHelp";
+    private static final String TRIGGER_EXTERNAL_RESOURCES = "i18njmail.externalResources.pageTitleHelp";
+    private static final String TRIGGER_NEW_EXTERNAL_RESOURCE = "i18njmail.jndiResource.newPageTitleHelp";
 
-    private static final String TRIGGER_EDIT_RESOURCE_TARGETS = "Resource Targets";
     private static final String ENABLE_STATUS = "Enabled on 2 of 2 Target(s)";
     private static final String DISABLE_STATUS = "Enabled on 0 of 2 Target(s)";
-    private static final String TRIGGER_MANAGE_TARGETS = "Manage Targets";
-    private static final String TRIGGGER_VALUES_SAVED = "New values successfully saved.";
 
     @Test
     public void testCustomResources() {
