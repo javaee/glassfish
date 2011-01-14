@@ -108,7 +108,7 @@ public class ChangeMasterPasswordCommand extends CLICommand {
     private static final LocalStringsImpl strings =
        new LocalStringsImpl(ChangeMasterPasswordCommand.class);
 
-    private String[] args;
+
 
     @Override
     protected int executeCommand() throws CommandException {
@@ -121,20 +121,20 @@ public class ChangeMasterPasswordCommand extends CLICommand {
             if (isDomain()) {  // is it domain
                 command = CLICommand.getCommand(habitat,
                         CHANGE_MASTER_PASSWORD_DAS);
-                return command.execute(args);
+                return command.execute(argv);
             }
 
             if (nodeDir != null) {
                 command = CLICommand.getCommand(habitat,
                         CHANGE_MASTER_PASSWORD_NODE);
-                return command.execute(args);
+                return command.execute(argv);
             } else {
 
                 // nodeDir is not specified and domainNameOrNodeName is not a domain.
                 // It could be a node
                 // We add defaultNodeDir parameter to args
-                ArrayList arguments = new ArrayList<String>(Arrays.asList(args));
-                arguments.remove(args.length -1);
+                ArrayList arguments = new ArrayList<String>(Arrays.asList(argv));
+                arguments.remove(argv.length -1);
                 arguments.add("--nodedir");
                 arguments.add(getDefaultNodesDirs().getAbsolutePath());
                 arguments.add(domainNameOrNodeName);
@@ -151,7 +151,7 @@ public class ChangeMasterPasswordCommand extends CLICommand {
 
     @Override
     public int execute(String... args) throws CommandException {  
-        this.args = args;
+        
         //This will parse the args and call executeCommand
         super.execute(args);
         return 0;
