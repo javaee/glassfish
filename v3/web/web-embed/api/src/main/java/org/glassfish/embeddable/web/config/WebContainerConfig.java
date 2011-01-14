@@ -47,7 +47,24 @@ import java.net.URL;
 /**
  * Class that is used for configuring WebContainer instances.
  *
+ * <p/> Usage example:
+ * <pre>
+ *      // Create and start Glassfish
+ *      GlassFish glassfish = GlassFishRuntime.bootstrap().newGlassFish();
+ *      glassfish.start();
+ *
+ *      // Access WebContainer
+ *      WebContainer container = glassfish.getService(WebContainer.class);
+ *
+ *      WebContainerConfig config = new WebContainerConfig();
+ *      config.setListings(true);
+ *      config.setPort(9090);
+ *      config.setHostNames("localhost");
+ *      container.setConfiguration(config);
+ * </pre>
+ *
  * @see org.glassfish.embeddable.web.WebContainer
+ *
  */
 public class WebContainerConfig {
 
@@ -188,5 +205,4 @@ public class WebContainerConfig {
         return virtualServerId;
     }
 
-    
 }

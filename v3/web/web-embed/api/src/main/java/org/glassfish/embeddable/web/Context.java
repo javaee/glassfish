@@ -47,12 +47,13 @@ import org.glassfish.embeddable.web.config.SecurityConfig;
 /**
  * Representation of a web application.
  *
+ * <p/>See {@link WebContainer} for usage example.
+ *
  * @author Rajiv Mordani
  * @author Jan Luehe
  */
 // TODO: Add support for configuring environment entries
 public interface Context extends ServletContext, Lifecycle {
-
     
     /**
      * Adds the given <tt>Valve</tt> to this <tt>Context</tt>.
@@ -143,7 +144,11 @@ public interface Context extends ServletContext, Lifecycle {
      */
     public SecurityConfig getSecurityConfig();
     
-    
+    /**
+     * Set the location of the default web xml that will be used.
+     *
+     * @param defaultWebXml the defaultWebXml path to be used
+     */
     public void setDefaultWebXml(String defaultWebXml);
     
     /**

@@ -48,6 +48,8 @@ import org.glassfish.embeddable.web.config.WebListenerConfig;
  * <p>Instances of <tt>WebListener</tt> may be in one of two states:
  * <i>stopped</i> or <i>started</i>.
  *
+ * <p/>See {@link WebContainer} for usage example.
+ *
  * @author Rajiv Mordani
  * @author Amy Roh
  */

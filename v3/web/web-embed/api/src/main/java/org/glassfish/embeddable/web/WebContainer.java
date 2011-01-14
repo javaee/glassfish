@@ -52,6 +52,37 @@ import org.glassfish.embeddable.GlassFishException;
  * programmatic creation of different types of web protocol listeners
  * and virtual servers, and the registration of static and dynamic
  * web resources into the URI namespace.
+ * 
+ * WebContainer service can be accessed using GlassFish instance.
+ *
+ * <p/> Usage example:
+ *
+ * <pre>
+ *      // Create and start Glassfish
+ *      GlassFish glassfish = GlassFishRuntime.bootstrap().newGlassFish();
+ *      glassfish.start();
+ *
+ *      // Access WebContainer
+ *      WebContainer container = glassfish.getService(WebContainer.class);
+ *
+ *      // Create and add {@link WebListener}
+ *      WebListener listener = container.createWebListener("listener-1", HttpListener.class);
+ *      listener.setPort(9090);
+ *      container.addWebListener(listener);
+ *
+ *      // Create and register web resources {@link Context}.
+ *      File docroot = new File(path_to_web_resources);
+ *      Context context = embedded.createContext(docroot);
+ *      embedded.addContext(context, "contextroot_to_register");
+ *
+ *      // Create and add {@link VirtualServer}
+ *      VirtualServer virtualServer = (VirtualServer)
+ *          embedded.createVirtualServer("embedded-server", new File(docroot_of_VirtualServer));
+ *      VirtualServerConfig config = new VirtualServerConfig();
+ *      config.setHostNames("localhost");
+ *      virtualServer.setConfig(config);
+ *      embedded.addVirtualServer(virtualServer);
+ * </pre>
  */
 
 public interface WebContainer {
@@ -96,7 +127,7 @@ public interface WebContainer {
      * class on which this method is called will be used.
      *
      * @param docRoot the docroot of the <tt>Context</tt>
-     * @param contextRoot
+     * @param contextRoot the contextroot at which to register
      * @param classLoader the classloader of the <tt>Context</tt>
      *
      * @return the new <tt>Context</tt>
@@ -322,7 +353,7 @@ public interface WebContainer {
     /**
      * Sets log level
      * 
-     * @param level
+     * @param level log level
      */
     public void setLogLevel(Level level);
        

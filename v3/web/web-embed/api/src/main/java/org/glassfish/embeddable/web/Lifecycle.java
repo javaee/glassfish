@@ -43,7 +43,7 @@ package org.glassfish.embeddable.web;
 import org.glassfish.embeddable.GlassFishException;
 
 /**
- * Interface for lifecycle events
+ * Interface for lifecycle events.
  */
 public interface Lifecycle {
 
