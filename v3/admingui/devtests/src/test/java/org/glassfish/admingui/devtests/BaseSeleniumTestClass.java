@@ -438,11 +438,11 @@ public class BaseSeleniumTestClass {
      * matched the value given, returning the number of rows selected.
      */
     protected int selectTableRowsByValue(String tableId, String value, String selectColId, String valueColId) {
-        List<String> rows = getTableRowsByValue("propertyForm:instancesTable", value, "col6");
+        List<String> rows = getTableRowsByValue(tableId, value, valueColId);
         if (!rows.isEmpty()) {
             for (String row : rows) {
-                selenium.click(row + ":col0:select");
-                selenium.check(row + ":col0:select");
+                selenium.click(row + ":" + selectColId + ":select");
+                selenium.check(row + ":" + selectColId + ":select");
             }
         }
 

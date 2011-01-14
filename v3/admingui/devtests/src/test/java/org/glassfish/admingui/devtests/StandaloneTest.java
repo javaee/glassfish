@@ -52,10 +52,24 @@ import static org.junit.Assert.assertTrue;
  * @author anilam
  */
 public class StandaloneTest  extends BaseSeleniumTestClass {
-    public static final String TRIGGER_INSTANCES_PAGE = "Create and manage standalone instances.";
-    public static final String TRIGGER_NEW_PAGE = "Configuration:";
-    public static final String TRIGGER_GENERAL_INFO_PAGE = "General Information";
+    public static final String TRIGGER_INSTANCES_PAGE = "i18ncs.standaloneInstances.PageTitleHelp";
+    public static final String TRIGGER_NEW_PAGE = "i18ncs.clusterNew.Configuration";
+    public static final String TRIGGER_GENERAL_INFO_PAGE = "i18n.instance.GeneralTitle";
     public static final String TRIGGER_SYS_PROPS = "i18nc.instanceProperties.SystemPropertiesTitle";
+    public static final String STATUS_RUNNING = "Running";
+    public static final String STATUS_STOPPED = "Stopped";
+    public static final String TRIGGER_INSTANCE_TABLE = "i18ncs.standaloneInstances.TableTitle" ;
+    public static final String TRIGGER_PROPS_TABLE = "i18n.common.AdditionalProperties";
+
+    public static final String ID_INSTANCE_TABLE_NEW_BUTTON = "propertyForm:instancesTable:topActionsGroup1:newButton";
+    public static final String ID_INSTANCE_TABLE_DELETE_BUTTON = "propertyForm:instancesTable:topActionsGroup1:button1";
+    public static final String ID_INSTANCE_TABLE_START_BUTTON = "propertyForm:instancesTable:topActionsGroup1:button2";
+    public static final String ID_INSTANCE_TABLE_STOP_BUTTON = "propertyForm:instancesTable:topActionsGroup1:button3";
+    public static final String ID_INSTANCE_TABLE = "propertyForm:instancesTable";
+    public static final String ID_INSTANCE_PROP_TAB = "propertyForm:standaloneInstanceTabs:standaloneProp";
+    public static final String INSTANCE_PREFIX = "standAlone" ;
+    public static final String NODE_NAME = "localhost-domain1" ;
+    public static final String DEFAULT_WEIGHT = "100" ;
 
     @BeforeClass
     public static void beforeClass() {
@@ -63,34 +77,34 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
     }
 
     @Test
-    public void testCreateAndDeleteStandaloneInstance() {
-        String instanceName = "standAlone" + generateRandomString();
+    public void testCreateStartStopAndDeleteStandaloneInstance() {
+        String instanceName = INSTANCE_PREFIX + generateRandomString();
         createStandAloneInstance(instanceName);
         
-        String prefix = getTableRowByValue("propertyForm:instancesTable", instanceName, "col1");
+        String prefix = getTableRowByValue(ID_INSTANCE_TABLE, instanceName, "col1");
         assertTrue(selenium.isTextPresent(instanceName));
         assertEquals(instanceName, selenium.getText(prefix + "col1:link"));
         assertEquals(instanceName+"-config", selenium.getText(prefix + "col3:configlink"));
-        assertEquals("localhost-domain1", selenium.getText(prefix + "col5:nodeAgentlink"));
-        assertEquals("Stopped", selenium.getText(prefix + "col6"));
-        assertEquals("100", selenium.getValue(prefix + "col2:weight"));
+        assertEquals(NODE_NAME, selenium.getText(prefix + "col5:nodeAgentlink"));
+        assertEquals(STATUS_STOPPED, selenium.getText(prefix + "col6"));
+        assertEquals(DEFAULT_WEIGHT, selenium.getValue(prefix + "col2:weight"));
 
         startInstance(instanceName);
-        assertEquals("Running", selenium.getText(prefix + "col6"));
+        assertEquals(STATUS_RUNNING, selenium.getText(prefix + "col6"));
 
         stopInstance(instanceName);
-        assertEquals("Stopped", selenium.getText(prefix + "col6"));
+        assertEquals(STATUS_STOPPED, selenium.getText(prefix + "col6"));
 
         deleteStandAloneInstance(instanceName);
     }
 
     @Test
     public void testProperties() {
-        String instanceName = "standAlone" + generateRandomString();
+        String instanceName = INSTANCE_PREFIX + generateRandomString();
         createStandAloneInstance(instanceName);
 
-        clickAndWait(getLinkIdByLinkText("propertyForm:instancesTable", instanceName), TRIGGER_GENERAL_INFO_PAGE);
-        clickAndWait("propertyForm:standaloneInstanceTabs:standaloneProp", TRIGGER_SYS_PROPS);
+        clickAndWait(getLinkIdByLinkText(ID_INSTANCE_TABLE, instanceName), TRIGGER_GENERAL_INFO_PAGE);
+        clickAndWait(ID_INSTANCE_PROP_TAB, TRIGGER_SYS_PROPS);
         int sysPropCount = addTableRow("propertyForm:sysPropsTable", "propertyForm:sysPropsTable:topActionsGroup1:addSharedTableButton");
         selenium.type("propertyForm:sysPropsTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
         selenium.type("propertyForm:sysPropsTable:rowGroup1:0:overrideValCol:overrideVal", "value");
@@ -120,7 +134,7 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
     @Test
     public void testStandaloneInstanceResourcesPage() {
         final String jndiName = "jdbcResource"+generateRandomString();
-        String target = "standAlone" + generateRandomString();
+        String target = INSTANCE_PREFIX + generateRandomString();
         final String description = "devtest test for standalone instance->resources page- " + jndiName;
         final String tableID = "propertyForm:resourcesTable";
 
@@ -128,7 +142,7 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
         jdbcTest.createJDBCResource(jndiName, description, target, MonitoringTest.TARGET_STANDALONE_TYPE);
 
         clickAndWait("treeForm:tree:standaloneTreeNode:standaloneTreeNode_link", TRIGGER_INSTANCES_PAGE);
-        clickAndWait(getLinkIdByLinkText("propertyForm:instancesTable", target), TRIGGER_GENERAL_INFO_PAGE);
+        clickAndWait(getLinkIdByLinkText(ID_INSTANCE_TABLE, target), TRIGGER_GENERAL_INFO_PAGE);
         clickAndWait("propertyForm:standaloneInstanceTabs:resources", EnterpriseServerTest.TRIGGER_RESOURCES);
         assertTrue(selenium.isTextPresent(jndiName));
 
@@ -156,9 +170,9 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
 
     public void createStandAloneInstance(String instanceName){
         gotoStandaloneInstancesPage();
-        clickAndWait("propertyForm:instancesTable:topActionsGroup1:newButton", TRIGGER_NEW_PAGE );
+        clickAndWait(ID_INSTANCE_TABLE_NEW_BUTTON, TRIGGER_NEW_PAGE );
         selenium.type("propertyForm:propertySheet:propertSectionTextField:NameTextProp:NameText", instanceName);
-        selectDropdownOption("propertyForm:propertySheet:propertSectionTextField:node:node", "localhost-domain1");
+        selectDropdownOption("propertyForm:propertySheet:propertSectionTextField:node:node", NODE_NAME);
         selenium.select("propertyForm:propertySheet:propertSectionTextField:configProp:Config", "label=default-config");
         selenium.check("propertyForm:propertySheet:propertSectionTextField:configOptionProp:optC");
         clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_INSTANCES_PAGE);
@@ -166,43 +180,42 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
 
     public void deleteStandAloneInstance(String instanceName) {
         gotoStandaloneInstancesPage();
-        stopInstance(instanceName); // Just in case it's running. If it's not, the GUI will report an error, but that's OK
-        deleteRow("propertyForm:instancesTable:topActionsGroup1:button1", "propertyForm:instancesTable", instanceName);
+        rowActionWithConfirm(ID_INSTANCE_TABLE_STOP_BUTTON, ID_INSTANCE_TABLE, instanceName);
+        deleteRow(ID_INSTANCE_TABLE_DELETE_BUTTON, ID_INSTANCE_TABLE, instanceName);
     }
 
     public void deleteAllStandaloneInstances() {
         gotoStandaloneInstancesPage();
-        
-        if (selenium.isTextPresent("Server Instances (0)")) {
+        if (getTableRowCount(ID_INSTANCE_TABLE) == 0) {
             return;
         }
 
         // Stop all instances
-        if (selectTableRowsByValue("propertyForm:instancesTable", "Running", "col0", "col6") > 0) {
-            waitForButtonEnabled("propertyForm:instancesTable:topActionsGroup1:button3");
+        if (selectTableRowsByValue(ID_INSTANCE_TABLE, STATUS_RUNNING, "col0", "col6") > 0) {
+            waitForButtonEnabled(ID_INSTANCE_TABLE_STOP_BUTTON);
             selenium.chooseOkOnNextConfirmation();
-            selenium.click("propertyForm:instancesTable:topActionsGroup1:button3");
+            selenium.click(ID_INSTANCE_TABLE_STOP_BUTTON);
             if (selenium.isConfirmationPresent()) {
                 selenium.getConfirmation();
             }
-            this.waitForButtonDisabled("propertyForm:instancesTable:topActionsGroup1:button3");
+            this.waitForButtonDisabled(ID_INSTANCE_TABLE_STOP_BUTTON);
         }
 
         // Delete all instances
-        deleteAllTableRows("propertyForm:instancesTable");
+        deleteAllTableRows(ID_INSTANCE_TABLE );  //"propertyForm:instancesTable");
     }
 
     public void startInstance(String instanceName) {
-        rowActionWithConfirm("propertyForm:instancesTable:topActionsGroup1:button2", "propertyForm:instancesTable", instanceName);
-        waitForCondition("document.getElementById('propertyForm:instancesTable:topActionsGroup1:button2').value != 'Processing...'", 300000);
+        rowActionWithConfirm(ID_INSTANCE_TABLE_START_BUTTON, ID_INSTANCE_TABLE, instanceName);
+        waitForCondition("document.getElementById('" + ID_INSTANCE_TABLE_START_BUTTON + "').value != 'Processing...'", 300000);
     }
 
     public void stopInstance(String instanceName) {
-        String rowId = getTableRowByValue("propertyForm:instancesTable", instanceName, "col1");
+        String rowId = getTableRowByValue(ID_INSTANCE_TABLE, instanceName, "col1");
         String status = selenium.getText(rowId+"col6");
-        if (!"Stopped".equals(status)) {
-            rowActionWithConfirm("propertyForm:instancesTable:topActionsGroup1:button3", "propertyForm:instancesTable", instanceName);
-            waitForCondition("document.getElementById('propertyForm:instancesTable:topActionsGroup1:button3').value != 'Processing...'", 300000);
+        if (! STATUS_STOPPED.equals(status)) {
+            rowActionWithConfirm(ID_INSTANCE_TABLE_STOP_BUTTON, ID_INSTANCE_TABLE, instanceName);
+            waitForCondition("document.getElementById('" + ID_INSTANCE_TABLE_STOP_BUTTON + "').value != 'Processing...'", 300000);
         }
     }
 
