@@ -162,7 +162,7 @@ public final class CompositeMetadata implements Storeable {
     }
 
     public long getVersion() {
-        return 0L;
+        return version;
     }
 
     @Override
@@ -292,7 +292,7 @@ public final class CompositeMetadata implements Storeable {
                 int len = dis.readInt();
                 if (len > 0) {
                     state = new byte[len];
-                    dis.read(state);
+                    dis.readFully(state);
                 }
             }
 
@@ -300,7 +300,7 @@ public final class CompositeMetadata implements Storeable {
                 int len = dis.readInt();
                 if (len > 0) {
                     byte[] sd = new byte[len];
-                    dis.read(sd);
+                    dis.readFully(sd);
                     stringExtraParam = new String(sd);
                 }
             }
@@ -311,13 +311,13 @@ public final class CompositeMetadata implements Storeable {
 
                     int opNameLen = dis.readInt();
                     byte[] opnameData = new byte[opNameLen];
-                    dis.read(opnameData);
+                    dis.readFully(opnameData);
                     String opName = new String(opnameData);
 
                     int attrNameLen = dis.readInt();
                     if (attrNameLen > 0) {
                         byte[] sd = new byte[attrNameLen];
-                        dis.read(sd);
+                        dis.readFully(sd);
                         String attrName = new String(sd);
 
                         SessionAttributeMetadata.Operation smdOpcode = SessionAttributeMetadata.Operation.valueOf(opName);
@@ -326,7 +326,7 @@ public final class CompositeMetadata implements Storeable {
                             case UPDATE:
                                 int dataLen = dis.readInt();
                                 byte[] attrData = new byte[dataLen];
-                                dis.read(attrData);
+                                dis.readFully(attrData);
                                 attributesMap.put(attrName, new SessionAttributeMetadata(attrName, smdOpcode, attrData));
                                 break;
 
