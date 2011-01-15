@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -66,6 +66,7 @@ import org.apache.catalina.loader.WebappLoader;
 import org.apache.catalina.servlets.DefaultServlet;
 import org.apache.catalina.session.StandardManager;
 import org.apache.jasper.servlet.JspServlet;
+import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.embeddable.web.Context;
 import org.glassfish.embeddable.web.config.SecurityConfig;
@@ -91,6 +92,8 @@ import java.io.*;
 import java.lang.ClassLoader;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.*;
@@ -1247,6 +1250,18 @@ public class WebModule extends PwcWebModule implements Context {
         docBase = docBase.trim();
 
         addAlternateDocBase(urlPattern, docBase);
+    }
+
+    List<URI> getDeployAppLibs() {
+        List<URI> uris = null;
+        if (wmInfo.getDeploymentContext() != null) {
+            try {
+                uris = wmInfo.getDeploymentContext().getAppLibs();
+            } catch(URISyntaxException e) {
+                throw new IllegalArgumentException(e);
+            }
+        }
+        return uris;
     }
 
     private boolean validateURLPattern(String urlPattern) {
