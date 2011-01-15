@@ -93,8 +93,6 @@ public class CLIBootstrap {
 
     final static String ENV_VAR_PROP_PREFIX = "acc.";
 
-    private final static String JAVA_NAME = (File.separatorChar == '/' ? "java" : "java.exe");
-
     /** options to the ACC that take a value */
     private final static String ACC_VALUED_OPTIONS_PATTERN = 
             "-mainclass|-name|-xml|-configxml|-user|-password|-passwordfile|-targetserver";
@@ -337,6 +335,8 @@ public class CLIBootstrap {
         private final Pattern pattern;
         Matcher matcher;
 
+        private final Pattern whiteSpacePattern = Pattern.compile("[\\r\\n]");
+
         /** allows multiple values; not all command line elements support this*/
         final List<String> values = new ArrayList<String>();
 
@@ -369,7 +369,15 @@ public class CLIBootstrap {
          * another option or there is no next element)
          */
         int processValue(String[] args, int slot) throws UserError {
-            values.add(args[slot++]);
+            /*
+             * Ignore an argument that is just unquoted white space.
+             */
+            final Matcher m = whiteSpacePattern.matcher(args[slot]);
+            if ( ! m.matches()) {
+                values.add(args[slot++]);
+            } else {
+                slot++;
+            }
             return slot;
         }
 
@@ -820,7 +828,7 @@ public class CLIBootstrap {
             /*
              * Strip off the introducing (pattern)= to extract the value.
              */
-            for (String pathElement : args[slot++].substring(introducer.length() + 1).split(File.pathSeparator)) {
+            for (String pathElement : args[slot++].substring(introducer.length() + 1).split(java.pathSeparator())) {
                 values.add(pathElement);
                 }
             return slot;
@@ -851,7 +859,7 @@ public class CLIBootstrap {
             boolean needSep = false;
             for (String value : combinedValues) {
                 if (needSep) {
-                    commandLine.append(File.pathSeparatorChar);
+                    commandLine.append(java.pathSeparator());
                 }
                 commandLine.append(quoteSuppressTokenSubst(value));
                 needSep = true;
@@ -911,7 +919,7 @@ public class CLIBootstrap {
             }
         }
         
-        final StringBuilder command = new StringBuilder(quote(java.javaExe.getAbsolutePath()));
+        final StringBuilder command = new StringBuilder(quote(java.javaExe));
 
         addProperties(command);
 
@@ -1028,28 +1036,55 @@ public class CLIBootstrap {
      */
     class JavaInfo {
 
-        protected File javaExe;
+        private final static String CYGWIN_PROP_NAME = "org.glassfish.isCygwin";
+
+        /*
+         * The appclient and appclient.bat scripts set ACCJava and might set
+         * ACCJavaHome (if the user has specified AS_JAVA or JAVA_HOME).
+         * Properties would be nicer instead of env vars, but the Windows
+         * script handling of command line args in the for statement treats
+         * the = in -Dprop=value as an argument separator and breaks the
+         * property assignment apart into two arguments.
+         */
+        private final static String ACCJavaHome_ENV_VAR_NAME = "ACCJavaHome";
+        private final static String ACCJava_ENV_VAR_NAME = "ACCJava";
+
+        private final boolean useWindowsSyntax = File.separatorChar == '\\' &&
+                ! Boolean.getBoolean(CYGWIN_PROP_NAME);
+
+
+        protected String javaExe;
         protected File javaHome;
 
         private JavaInfo() {
             init();
         }
 
+        private String getDefaultedEnv(final String envVarName, final String defaultValue) {
+            String result = System.getenv(envVarName);
+            if (result == null) {
+                result = defaultValue;
+            }
+            return result;
+        }
+
         protected void init() {
-            javaHome = new File(System.getProperty("java.home"));
+            final String javaHomeToUse = getDefaultedEnv(ACCJavaHome_ENV_VAR_NAME,
+                    System.getProperty("java.home"));
+            javaHome = new File(javaHomeToUse);
             javaExe = javaExe();
         }
 
         protected boolean isValid() {
-            return javaExe != null && javaExe.canExecute();
+            return javaExe != null && new File(javaExe).canExecute();
         }
 
         protected File javaBinDir() {
             return new File(javaHome, "bin");
         }
 
-        File javaExe() {
-            return new File(javaBinDir(), JAVA_NAME);
+        String javaExe() {
+            return System.getenv(ACCJava_ENV_VAR_NAME);
         }
 
         File endorsed() {
@@ -1062,6 +1097,10 @@ public class CLIBootstrap {
 
         File lib() {
             return new File(javaHome, "lib");
+        }
+
+        String pathSeparator() {
+            return useWindowsSyntax ? ";" : ":";
         }
     }
 

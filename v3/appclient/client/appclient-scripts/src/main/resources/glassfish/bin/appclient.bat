@@ -57,6 +57,7 @@ rem JAVA to the found java executable.
        set javaSearchType=AS_JAVA
        set javaSearchTarget="%AS_JAVA%"
        set JAVA=%AS_JAVA%\bin\java.exe
+       for %%a in ("%AS_JAVA%") do set ACCJavaHome=%%~sa
        goto :verifyJava
 
 :checkJAVA_HOME
@@ -64,6 +65,7 @@ rem JAVA to the found java executable.
        set javaSearchType=JAVA_HOME
        set javaSearchTarget="%JAVA_HOME%"
        set JAVA=%JAVA_HOME%\bin\java.exe
+       for %%a in ("%JAVA_HOME%") do set ACCJavaHome=%%~sa
        goto :verifyJava
 
 :checkPATH
@@ -97,7 +99,7 @@ rem Windows "short" versions - with no spaces - so the
 rem for /F statement below will work correctly.  Spaces cause
 rem it great troubles.
 rem
-for %%a in ("%JAVA%") do set XJAVA=%%~sa%
+for %%a in ("%JAVA%") do set ACCJava=%%~sa%
 for %%a in ("%_AS_INSTALL%/lib/gf-client.jar") do set XCLASSPATH=%%~sa
-for /F "usebackq tokens=*" %%a in (`%XJAVA% -classpath %XCLASSPATH% org.glassfish.appclient.client.CLIBootstrap`) do set javaCmd=%%a
+for /F "usebackq tokens=*" %%a in (`%ACCJava% -classpath %XCLASSPATH% org.glassfish.appclient.client.CLIBootstrap`) do set javaCmd=%%a
 %javaCmd%
