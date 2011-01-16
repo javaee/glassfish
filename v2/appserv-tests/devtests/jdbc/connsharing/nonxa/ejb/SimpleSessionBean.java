@@ -21,6 +21,12 @@ public class SimpleSessionBean implements SessionBean {
     @Resource(mappedName="jdbc/connsharing")
     DataSource ds2;
 
+    @Resource(lookup="jdbc/assoc-with-thread-resource-1")
+    DataSource ds3;
+
+    @Resource(lookup="jdbc/assoc-with-thread-resource-2")
+    DataSource ds4;
+
 
     public void setSessionContext(SessionContext context) {
         ctxt_ = context;
@@ -326,6 +332,32 @@ public class SimpleSessionBean implements SessionBean {
             Connection con = ds.getConnection();
             con.close();
             result = true;
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    // with multiple assoc-with-thread pool based resources,
+    // they should return connections from appropriate resource/pool.
+    // Test-case for Issue : 15577
+    public boolean test8(){
+        boolean result = false;
+        try{
+            Connection ds3Conn = ds3.getConnection();
+            String ds3URL = ds3Conn.getMetaData().getURL();
+            System.out.println("ds3 url : " + ds3URL);
+            ds3Conn.close();
+
+            Connection ds4Conn = ds4.getConnection();
+            String ds4URL = ds4Conn.getMetaData().getURL();
+            System.out.println("ds4 url : " + ds4URL);
+            ds4Conn.close();
+
+            if(ds3URL.contains("awt-1") && ds4URL.contains("awt-2")){
+                result = true;
+            }
+
         }catch(Exception e){
             e.printStackTrace();
         }

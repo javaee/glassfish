@@ -59,13 +59,50 @@
         <param name="jdbc.conpool.name" value="jdbc-connsharing-pool"/>
       </antcall>
 
-      <antcall target="create-jdbc-resource-common">
-        <param name="jdbc.conpool.name" value="jdbc-connsharing-pool"/>
-	<param name="jdbc.resource.name" value="jdbc/connsharing"/>
+      <antcall target="create-jdbc-connpool-common">
+        <param name="jdbc.conpool.name" value="jdbc-assoc-with-thread-pool-1"/>
+        <param name="db.name" value="awt-1"/>
+        <param name="extra-params" value="--steadyPoolSize=2 --associateWithThread=true --nonTransactionalConnections=true"/>
       </antcall>
+
+        <antcall target="asadmin-common">
+            <param name="admin.command" value="set"/>
+            <param name="operand.props"
+                   value="${resources.dottedname.prefix}.jdbc-connection-pool.jdbc-assoc-with-thread-pool-1.property.connectionAttributes='create=true;'"/>
+        </antcall>
+
+
+      <antcall target="create-jdbc-connpool-common">
+        <param name="jdbc.conpool.name" value="jdbc-assoc-with-thread-pool-2"/>
+        <param name="db.name" value="awt-2"/>
+        <param name="extra-params" value="--steadyPoolSize=2 --associateWithThread=true --nonTransactionalConnections=true"/>
+      </antcall>
+
+        <antcall target="asadmin-common">
+            <param name="admin.command" value="set"/>
+            <param name="operand.props"
+                   value="${resources.dottedname.prefix}.jdbc-connection-pool.jdbc-assoc-with-thread-pool-2.property.connectionAttributes='create=true;'"/>
+        </antcall>
+
+
+        <antcall target="create-jdbc-resource-common">
+          <param name="jdbc.conpool.name" value="jdbc-assoc-with-thread-pool-1"/>
+          <param name="jdbc.resource.name" value="jdbc/assoc-with-thread-resource-1"/>
+        </antcall>
+
+        <antcall target="create-jdbc-resource-common">
+          <param name="jdbc.conpool.name" value="jdbc-assoc-with-thread-pool-2"/>
+          <param name="jdbc.resource.name" value="jdbc/assoc-with-thread-resource-2"/>
+        </antcall>
+
       <antcall target="create-jdbc-resource-common">
         <param name="jdbc.conpool.name" value="jdbc-connsharing-pool"/>
-	<param name="jdbc.resource.name" value="jdbc/connsharing2"/>
+	    <param name="jdbc.resource.name" value="jdbc/connsharing"/>
+      </antcall>
+
+      <antcall target="create-jdbc-resource-common">
+        <param name="jdbc.conpool.name" value="jdbc-connsharing-pool"/>
+	    <param name="jdbc.resource.name" value="jdbc/connsharing2"/>
       </antcall>
 
       <antcall target="deploy-common"/>
@@ -103,7 +140,23 @@
       <antcall target="delete-jdbc-connpool-common">
         <param name="jdbc.conpool.name" value="jdbc-connsharing-pool"/>
       </antcall>
-      
+
+        <antcall target="delete-jdbc-resource-common">
+          <param name="jdbc.resource.name" value="jdbc/assoc-with-thread-resource-1"/>
+        </antcall>
+
+        <antcall target="delete-jdbc-resource-common">
+          <param name="jdbc.resource.name" value="jdbc/assoc-with-thread-resource-2"/>
+        </antcall>
+
+        <antcall target="delete-jdbc-connpool-common">
+          <param name="jdbc.conpool.name" value="jdbc-assoc-with-thread-pool-1"/>
+        </antcall>
+
+        <antcall target="delete-jdbc-connpool-common">
+          <param name="jdbc.conpool.name" value="jdbc-assoc-with-thread-pool-2"/>
+        </antcall>
+
       <antcall target="undeploy-common"/>
     </target>   
 

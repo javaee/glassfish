@@ -65,6 +65,12 @@ public class Client {
             stat.addStatus(testSuite + " test7 : ", stat.FAIL);
         }
 
+        if (simpleSession.test8()) {
+            stat.addStatus(testSuite + " test8 : ", stat.PASS);
+        } else {
+            stat.addStatus(testSuite + " test8 : ", stat.FAIL);
+        }
+
         stat.printSummary();
     }
 }
