@@ -86,6 +86,7 @@
 <f:verbatim>
                 </div>
             </div>
+            <script src="#{request.contextPath}/resource/js/cj.js"></script>
             <script type="text/javascript">
                 var left = document.getElementById('body3').clientWidth;
                 document.getElementById('error').style.left = (left/2- 100) + 'px';
@@ -98,7 +99,6 @@
             <span>$resource{i18n.copyright.shortMessage}</span>
         </div>
     </div>
-    <script src="#{request.contextPath}/resource/js/cj.js"></script>
 </body>
 </html>
 </f:verbatim>
