@@ -26,7 +26,7 @@ public class Client {
     public static void main (String[] args) throws Exception {
 	stat.addDescription("webservices-simple-restful-svc");
         String endpointAddress = 
-            "http://localhost:8080/restful/webservice/AddNumbersService";
+            "http://HTTP_HOST:HTTP_PORT/restful/webservice/AddNumbersService";
         URL url = new URL(endpointAddress+"?num1=10&num2=20");
         System.out.println ("Invoking URL="+url);
         process(url, args);

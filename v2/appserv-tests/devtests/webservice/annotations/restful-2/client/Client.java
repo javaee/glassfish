@@ -33,7 +33,7 @@ public class Client {
     private static final QName portQName = new QName("http://duke.org", "AddNumbersPort");
 
     private static String endpointAddress =
-        "http://localhost:8080/restful-2/webservice/AddNumbersService";
+        "http://HTTP_HOST:HTTP_PORT/restful-2/webservice/AddNumbersService";
     private static String queryString = "num1=30&num2=20";
 
     public static void main (String[] args) throws Exception {

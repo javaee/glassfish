@@ -23,7 +23,7 @@ public class Client {
        public void doTest(String[] args) {
             try {
                 AddNumbersPortType port = service.getAddNumbersPort();
-                ((BindingProvider)port).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,"http://localhost:8080/soap12/webservice/AddNumbersService?WSDL");
+                ((BindingProvider)port).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,"http://HTTP_HOST:HTTP_PORT/soap12/webservice/AddNumbersService?WSDL");
                 int ret = port.addNumbers(100, 200);
 		if(ret != 300) {
                     System.out.println("Unexpected greeting " + ret);

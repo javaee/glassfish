@@ -61,8 +61,11 @@
       <mkdir dir="${build.classes.dir}/webclient/WEB-INF/classes"/>
       <antcall target="wsimport">
         <param name="wsimport.args"
-          value="-p client  -Xendorsed -keep -d ${build.classes.dir}/webclient/WEB-INF/classes http://localhost:8080/webservices13-respectbinding/webservice/SubtractNumbersService?wsdl"/>
+          value="-p client  -Xendorsed -keep -d ${build.classes.dir}/webclient/WEB-INF/classes http://${http.host}:${http.port}/webservices13-respectbinding/webservice/SubtractNumbersService?wsdl"/>
       </antcall>
+
+<replace file="webclient/Client.java" value="${http.host}" token="HTTP_HOST"/>
+      <replace file="webclient/Client.java" value="${http.port}" token="HTTP_PORT"/>
       <javac srcdir="." destdir="${build.classes.dir}/webclient/WEB-INF/classes"
             includes="webclient/**">
          <classpath refid="classpath"/>
@@ -121,6 +124,10 @@
         </classpath>
         <arg value="http://${http.host}:${http.port}/wsclient/RequestProcessor"/>
       </java>
+
+<!--restore the tokens back in file--> 
+         <replace file="webclient/Client.java" token="${http.host}" value="HTTP_HOST"/>
+         <replace file="webclient/Client.java" token="${http.port}" value="HTTP_PORT"/>
     </target>
 </project>
 

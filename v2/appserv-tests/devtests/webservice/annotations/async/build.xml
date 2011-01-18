@@ -40,6 +40,8 @@
     <target name="assemble-client" depends="init-common">
       <mkdir dir="${build.classes.dir}/client"/>
       <echo message="wsimporting http://${http.host}:${http.port}/${appname}/webservice/AsyncService?WSDL"/>
+<replace file="custom-client.xml" value="${http.host}" token="HTTP_HOST"/>
+      <replace file="custom-client.xml" value="${http.port}" token="HTTP_PORT"/>
       <antcall target="wsimport">
           <param name="wsimport.args"
                value="-keep -b custom-client.xml -d ${build.classes.dir}/client http://${http.host}:${http.port}/${appname}/webservice/AsyncService?WSDL"/>
@@ -64,6 +66,11 @@
         <param name="client-class" value="client.Client"/>
         <param name="other-args" value="async-web-svc-test"/>
       </antcall>
+
+
+<!--restore the tokens back in file--> 
+         <replace file="custom-client.xml" token="${http.host}" value="HTTP_HOST"/>
+         <replace file="custom-client.xml" token="${http.port}" value="HTTP_PORT"/>
     </target>
 </project>
 

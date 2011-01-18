@@ -55,6 +55,8 @@
         <param name="wsimport.args"
           value="-b custom-client.xml -extension -keep -d ${build.classes.dir}/appclient ${env.APS_HOME}/devtests/webservice/annotations/soap12/AddNumbers.wsdl"/>
       </antcall>
+      <replace file="appclient/Client.java" value="${http.host}" token="HTTP_HOST"/>
+      <replace file="appclient/Client.java" value="${http.port}" token="HTTP_PORT"/>
       <javac srcdir="." destdir="${build.classes.dir}/appclient"  
             classpath="${env.APS_HOME}/lib/reporter.jar:${env.S1AS_HOME}/lib/j2ee.jar:${env.S1AS_HOME}/lib/webservices-rt.jar:${env.S1AS_HOME}/lib/webservices-tools.jar"
             includes="appclient/**"/>
@@ -94,6 +96,9 @@
       <antcall target="runclient-common">
         <param name="appclient.application.args" value="http://${http.host}:${http.port}"/>
       </antcall>
+
+  <replace file="appclient/Client.java" token="${http.host}" value="HTTP_HOST"/>
+     <replace file="appclient/Client.java" token="${http.port}" value="HTTP_PORT"/>
     </target>
 </project>
 

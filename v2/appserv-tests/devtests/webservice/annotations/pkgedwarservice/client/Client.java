@@ -12,7 +12,7 @@ public class Client {
         private static SimpleReporterAdapter stat =
                 new SimpleReporterAdapter("appserv-tests");
 
-        @WebServiceRef(wsdlLocation="http://localhost:8080/pkghello/webservice/HelloService?WSDL")
+        @WebServiceRef(wsdlLocation="http://HTTP_HOST:HTTP_PORT/pkghello/webservice/HelloService?WSDL")
         static HelloService service;
 
         public static void main(String[] args) {
