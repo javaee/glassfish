@@ -60,8 +60,8 @@ public class FormLoginConfig {
      * Creates an instance of the <tt>FormLoginConfig</tt> with the specified <tt>loginPage</tt> and
      * <tt>errorPage</tt>
      * 
-     * @param loginPage
-     * @param errorPage
+     * @param loginPage the login page
+     * @param errorPage the form error page
      */
     public FormLoginConfig(String loginPage, String errorPage) {
         this.loginPage = loginPage;
