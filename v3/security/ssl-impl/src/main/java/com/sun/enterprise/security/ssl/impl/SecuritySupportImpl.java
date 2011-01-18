@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -98,7 +98,7 @@ public class SecuritySupportImpl extends SecuritySupport {
     private static final String DEFAULT_TRUSTSTORE_PASS = "changeit";
 
     protected static final Logger _logger =
-            LogDomains.getLogger(SecuritySupportImpl.class, LogDomains.SECURITY_LOGGER);
+            LogDomains.getLogger(SecuritySupportImpl.class, LogDomains.SECURITY_SSL_LOGGER);
     protected static boolean initialized = false;
     protected static final List<KeyStore> keyStores = new ArrayList<KeyStore>();
     protected static final List<KeyStore> trustStores = new ArrayList<KeyStore>();
