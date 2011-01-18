@@ -40,13 +40,13 @@
 
 package org.glassfish.admingui.devtests;
 
+import org.junit.Test;
+
 import java.io.File;
 import java.net.MalformedURLException;
-import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 
 /**
  * Created by IntelliJ IDEA.
@@ -100,14 +100,14 @@ public class MonitoringTest extends BaseSeleniumTestClass {
     }
 
     //Monitoring service related methods.
-    private void goToMonitoingServicePage(String target, String targetType) {
+    private void goToMonitoringServicePage(String target, String targetType) {
         goToMonitoringApplicationsPage(target, targetType);
         assertTrue(isElementPresent("link=Configure Monitoring"));
         clickAndWait("link=Configure Monitoring", TRIGGER_MONITORING_SERVICE);
     }
 
     private void setMonitorLevel(String component, String monLevel, boolean isAll, String target, String targetType) {
-        goToMonitoingServicePage(target, targetType);
+        goToMonitoringServicePage(target, targetType);
         waitForPageLoad("HTTP Service", 1000);
         if (isAll) {
             pressButton("form1:basicTable:_tableActionsTop:_selectMultipleButton:_selectMultipleButton_image");
@@ -122,7 +122,7 @@ public class MonitoringTest extends BaseSeleniumTestClass {
 
         //Test whether the level has changed to monLevel or not.
         //clickAndWait("treeForm:tree:configurations:server-config:monitor:monitor_link", TRIGGER_MONITORING_SERVICE);
-        goToMonitoingServicePage(target, targetType);
+        goToMonitoringServicePage(target, targetType);
         String level = null;
         if (isAll) {
             level = getSelectedLabel("form1:basicTable:rowGroup1:0:" + MONITOR_LEVEL_COL_ID + ":level");
