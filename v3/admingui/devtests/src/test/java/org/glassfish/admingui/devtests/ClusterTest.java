@@ -40,8 +40,9 @@
 package org.glassfish.admingui.devtests;
 
 import org.junit.Assert;
-import java.util.List;
 import org.junit.Test;
+
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -142,7 +143,7 @@ public class ClusterTest extends BaseSeleniumTestClass {
         setFieldValue("propertyForm:propertySheet:propertSectionTextField:gmsMulticastPort:gmsMulticastPort", "12345");
         setFieldValue("propertyForm:propertySheet:propertSectionTextField:gmsMulticastAddress:gmsMulticastAddress", "123.234.456.88");
         setFieldValue("propertyForm:propertySheet:propertSectionTextField:GmsBindInterfaceAddress:GmsBindInterfaceAddress", "${ABCDE}");
-        markCheckbox("propertyForm:propertySheet:propertSectionTextField:gmsEnabledProp:gmscb");
+        clearCheckbox("propertyForm:propertySheet:propertSectionTextField:gmsEnabledProp:gmscb");
         clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
 
         //ensure value is saved correctly
@@ -190,7 +191,7 @@ public class ClusterTest extends BaseSeleniumTestClass {
         clickAndWait("propertyForm:clusterSysPropsPage:topButtons:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
 
         // Go to cluster props page
-        markCheckbox("propertyForm:clusterTabs:clusterProps:clusterInstanceProps");
+        pressButton("propertyForm:clusterTabs:clusterProps:clusterInstanceProps");
         waitForPageLoad("Cluster System Properties", TIMEOUT, true);
 
         int clusterPropCount = addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton");
@@ -201,7 +202,7 @@ public class ClusterTest extends BaseSeleniumTestClass {
         // Verify that properties were persisted
         clickAndWait("propertyForm:clusterTabs:clusterProps:clusterSystemProps", "Cluster System Properties");
         assertTableRowCount("propertyForm:sysPropsTable", sysPropCount);
-        markCheckbox("propertyForm:clusterTabs:clusterProps:clusterInstanceProps");
+        pressButton("propertyForm:clusterTabs:clusterProps:clusterInstanceProps");
         waitForPageLoad("Cluster System Properties", TIMEOUT, true);
         assertTableRowCount("propertyForm:basicTable", clusterPropCount);
         

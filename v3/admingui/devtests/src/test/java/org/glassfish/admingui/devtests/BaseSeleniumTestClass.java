@@ -598,6 +598,7 @@ public class BaseSeleniumTestClass {
         boolean rowHighlighted = false;
 
         int iterations = 0;
+        this.log("Clicking on {0} in row {1} and making it sure it is highlighted", colId, rowId);
         while (!rowHighlighted && (iterations <= 50)) {
             selenium.click(rowId + ":" + colId + ":select");
             markCheckbox(rowId + ":" + colId + ":select");
@@ -605,6 +606,10 @@ public class BaseSeleniumTestClass {
             String rowClass = selenium.getAttribute("identifier="+rowId+"@class");
             rowHighlighted = ((rowClass != null) && (rowClass.contains("TblSelRow_sun4")));
             iterations++;
+        }
+
+        if (iterations >= 50) {
+            throw new RuntimeException("Timed out wait for row in " + rowId + " to be selected.");
         }
     }
 
