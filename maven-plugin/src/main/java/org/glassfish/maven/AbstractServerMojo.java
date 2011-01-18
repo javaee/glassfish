@@ -130,6 +130,11 @@ public abstract class AbstractServerMojo extends AbstractMojo {
      * @parameter expression="${configFile}"
      */
     protected String configFile;
+    
+    /**
+     * @parameter expression="${configFileReadOnly}" default-value="true"
+     */
+    protected Boolean configFileReadOnly;
 
     /**
      * @parameter
@@ -167,7 +172,7 @@ public abstract class AbstractServerMojo extends AbstractMojo {
     protected File systemPropertiesFile;
 
     /**
-     * @parameter expression="${autoDelete}"
+     * @parameter expression="${autoDelete}" default-value="true"
      */
     protected Boolean autoDelete;
 
@@ -386,6 +391,10 @@ public abstract class AbstractServerMojo extends AbstractMojo {
             }
         }
 
+        if(!configFileReadOnly) {
+            props.setProperty("org.glassfish.embeddable.configFileReadOnly", "false");
+        }
+        
         if (port != -1 && configFile == null) {
             String httpListener = String.format(NETWORK_LISTENER_KEY, "http-listener");
             props.setProperty(httpListener + ".port", String.valueOf(port));
@@ -401,6 +410,10 @@ public abstract class AbstractServerMojo extends AbstractMojo {
                     props.setProperty(networkListener + ".enabled", "true");
                 }
             }
+        }
+
+        if(!autoDelete) {
+            props.setProperty("org.glassfish.embeddable.autoDelete", "false");
         }
 
         load(glassfishPropertiesFile, props);
