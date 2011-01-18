@@ -553,7 +553,7 @@ public class BaseSeleniumTestClass {
     }
     
     protected boolean isTextPresent(String text) {
-        return isTextPresent(resolveTriggerText(text));
+        return selenium.isTextPresent(resolveTriggerText(text));
     }
     
     protected void selectTableRowByValue(String tableId, String value) {
@@ -565,8 +565,7 @@ public class BaseSeleniumTestClass {
         for (String row : rows) {
             // It seems this must be click for the JS to fire in the browser
             final String id = row + ":" + selectColId + ":select";
-            selenium.click(id); 
-            markCheckbox(id); 
+            selectTableRow(row, selectColId);
         }
     }
 
@@ -588,12 +587,22 @@ public class BaseSeleniumTestClass {
         List<String> rows = getTableRowsByValue(tableId, value, valueColId);
         if (!rows.isEmpty()) {
             for (String row : rows) {
-                selenium.click(row + ":" + selectColId + ":select");
-                markCheckbox(row + ":" + selectColId + ":select");
+                selectTableRow(row, selectColId);
             }
         }
 
         return rows.size();
+    }
+    
+    private void selectTableRow(String rowId, String colId) {
+        boolean rowHighlighted = false;
+        
+        while (!rowHighlighted) {
+            selenium.click(rowId + ":" + colId + ":select");
+            markCheckbox(rowId + ":" + colId + ":select");
+            String rowClass = selenium.getAttribute("class");
+            rowHighlighted = ((rowClass != null) && (rowClass.contains("TblSelRow_sun4")));
+        }
     }
 
     protected void deleteAllTableRows(String tableId) {
@@ -662,7 +671,7 @@ public class BaseSeleniumTestClass {
                 if (isLabel) {
                     text = getText(tableId + ":rowGroup1:" + i + ":" + valueColId);
                 } else {
-                    text = getValue(tableId + ":rowGroup1:" + i + ":" + valueColId);
+                    text = getFieldValue(tableId + ":rowGroup1:" + i + ":" + valueColId);
                 }
                 if (text.equals(value)) {
                     selectedCount++;
