@@ -600,7 +600,7 @@ public class BaseSeleniumTestClass {
         while (!rowHighlighted) {
             selenium.click(rowId + ":" + colId + ":select");
             markCheckbox(rowId + ":" + colId + ":select");
-            String rowClass = selenium.getAttribute("class");
+            String rowClass = selenium.getAttribute("identifier="+rowId+"@class");
             rowHighlighted = ((rowClass != null) && (rowClass.contains("TblSelRow_sun4")));
         }
     }
