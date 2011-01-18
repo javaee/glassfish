@@ -129,6 +129,13 @@ public class WebTest{
         String line = "";
         int index;
         try {
+            String header = connection.getHeaderField("Set-Cookie");
+            System.out.println(header);
+            if (!header.contains("Secure")) {
+                stat.addStatus("ssl-FILTER", stat.FAIL);
+                return;
+            }
+
             in = new BufferedReader(
                 new InputStreamReader(connection.getInputStream()));
 
@@ -143,7 +150,7 @@ public class WebTest{
                         stat.addStatus("ssl-" + line.substring(0,index),
                                        stat.PASS);
                     } else {
-                        stat.addStatus("ssl-FILTER", stat.FAIL);                       
+                        stat.addStatus("ssl-FILTER", stat.FAIL);
                     }
                     count++;
                 } 
