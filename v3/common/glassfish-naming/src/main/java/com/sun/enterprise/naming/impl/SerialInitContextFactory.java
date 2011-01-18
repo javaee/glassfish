@@ -257,8 +257,8 @@ public class SerialInitContextFactory implements InitialContextFactory {
     public Context getInitialContext(Hashtable env) throws NamingException {
         final Hashtable myEnv = env == null ? new Hashtable() : env ;
 
-        useLB = propertyIsSet(env, IIOP_ENDPOINTS_PROPERTY)
-            || propertyIsSet(env, LOAD_BALANCING_PROPERTY) ;
+        useLB = propertyIsSet(myEnv, IIOP_ENDPOINTS_PROPERTY)
+            || propertyIsSet(myEnv, LOAD_BALANCING_PROPERTY) ;
 
         if (useLB && !initialized) {
             synchronized( SerialInitContextFactory.class ) {
@@ -313,8 +313,8 @@ public class SerialInitContextFactory implements InitialContextFactory {
                 // If the IIOP endpoint list is explicitly set in the env,
                 // update rrPolicy to use that information, otherwise just
                 // rotate rrPolicy to the next element.
-                if (env.containsKey( IIOP_ENDPOINTS_PROPERTY ) ||
-                    env.containsKey( LOAD_BALANCING_PROPERTY )) {
+                if (myEnv.containsKey( IIOP_ENDPOINTS_PROPERTY ) ||
+                    myEnv.containsKey( LOAD_BALANCING_PROPERTY )) {
                     synchronized( SerialInitContextFactory.class ) {
                         final List<String> list = getEndpointList( myEnv ) ;
                         rrPolicy.setClusterInstanceInfoFromString(list);
