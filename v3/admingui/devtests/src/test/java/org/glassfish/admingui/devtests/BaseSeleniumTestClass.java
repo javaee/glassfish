@@ -261,7 +261,7 @@ public class BaseSeleniumTestClass {
             label = resolveTriggerText(label);
             selenium.select(id, "label="+label);
         } catch (SeleniumException se) {
-            logger.info("An invalid option was requested.  Here are the valid options:");
+            logger.log(Level.INFO, "An invalid option was requested.  Here are the valid options:");
             for (String option : selenium.getSelectOptions(id)) {
                 logger.log(Level.INFO, "\t{0}", option);
             }
