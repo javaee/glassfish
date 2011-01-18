@@ -58,7 +58,6 @@ public class EjbContainerTest extends BaseSeleniumTestClass {
 
         clickAndWait("treeForm:tree:configurations:server-config:ejbContainer:ejbContainer_link", TAB_EJB_SETTINGS);
 
-        markCheckbox("form1:propertySheet:generalPropertySection:commitOptionProp:optC");
         setFieldValue("form1:propertySheet:poolSettingSection:MinSizeProp:MinSize", minSize);
         setFieldValue("form1:propertySheet:poolSettingSection:MaxSizeProp:MaxSize", maxSize);
         setFieldValue("form1:propertySheet:poolSettingSection:PoolResizeProp:PoolResize", poolResize);
@@ -70,7 +69,6 @@ public class EjbContainerTest extends BaseSeleniumTestClass {
         clickAndWait("form1:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
         clickAndWait("form1:ejbContainerTabs:mdbSettingsTab", TAB_MDB_SETTINGS);
         clickAndWait("form1:ejbContainerTabs:ejbSettingsTab", TAB_EJB_SETTINGS);
-        assertEquals(true, isChecked("form1:propertySheet:generalPropertySection:commitOptionProp:optC"));
         assertEquals(minSize, getFieldValue("form1:propertySheet:poolSettingSection:MinSizeProp:MinSize"));
         assertEquals(maxSize, getFieldValue("form1:propertySheet:poolSettingSection:MaxSizeProp:MaxSize"));
         assertEquals(poolResize, getFieldValue("form1:propertySheet:poolSettingSection:PoolResizeProp:PoolResize"));
