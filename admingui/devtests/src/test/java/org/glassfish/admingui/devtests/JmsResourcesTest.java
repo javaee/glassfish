@@ -67,10 +67,10 @@ public class JmsResourcesTest extends BaseSeleniumTestClass {
         clickAndWait("treeForm:tree:resources:jmsResources:jmsConnectionFactories:jmsConnectionFactories_link", TRIGGER_JMS_CONNECTION_FACTORIES);
         clickAndWait("propertyForm:resourcesTable:topActionsGroup1:newButton", TRIGGER_NEW_JMS_CONN_FACT);
 
-        selenium.type("form:propertySheet:generalPropertySheet:jndiProp:jndiProp", poolName);
-        selenium.select("form:propertySheet:generalPropertySheet:resType:resType", "label=javax.jms.TopicConnectionFactory");
-        selenium.type("form:propertySheet:generalPropertySheet:descProp:descProp", description);
-        selenium.select("form:propertySheet:poolPropertySheet:transprop:trans", "label=LocalTransaction");
+        setFieldValue("form:propertySheet:generalPropertySheet:jndiProp:jndiProp", poolName);
+        selectDropdownOption("form:propertySheet:generalPropertySheet:resType:resType", "javax.jms.TopicConnectionFactory");
+        setFieldValue("form:propertySheet:generalPropertySheet:descProp:descProp", description);
+        selectDropdownOption("form:propertySheet:poolPropertySheet:transprop:trans", "LocalTransaction");
         clickAndWait("form:propertyContentPage:topButtons:newButton", TRIGGER_JMS_CONNECTION_FACTORIES);
         assertTrue(isTextPresent(poolName));
 
@@ -78,12 +78,12 @@ public class JmsResourcesTest extends BaseSeleniumTestClass {
         // The table should be fixed to be like the others (in terms of IDs) so the standard test API can be used here.
         selectTableRowByValue("propertyForm:resourcesTable", poolName, "colSelect", "colPoolName");
         waitForButtonEnabled("propertyForm:resourcesTable:topActionsGroup1:disableButton");
-        selenium.click("propertyForm:resourcesTable:topActionsGroup1:disableButton");
+        pressButton("propertyForm:resourcesTable:topActionsGroup1:disableButton");
         waitForButtonDisabled("propertyForm:resourcesTable:topActionsGroup1:disableButton");
 
         selectTableRowByValue("propertyForm:resourcesTable", poolName, "colSelect", "colPoolName");
         waitForButtonEnabled("propertyForm:resourcesTable:topActionsGroup1:enableButton");
-        selenium.click("propertyForm:resourcesTable:topActionsGroup1:enableButton");
+        pressButton("propertyForm:resourcesTable:topActionsGroup1:enableButton");
         waitForButtonDisabled("propertyForm:resourcesTable:topActionsGroup1:enableButton");
 
         deleteRow("propertyForm:resourcesTable:topActionsGroup1:deleteConnButton", "propertyForm:resourcesTable", poolName, "colSelect", "colPoolName");
@@ -101,14 +101,14 @@ public class JmsResourcesTest extends BaseSeleniumTestClass {
         clickAndWait("treeForm:tree:resources:jmsResources:jmsConnectionFactories:jmsConnectionFactories_link", TRIGGER_JMS_CONNECTION_FACTORIES);
         clickAndWait("propertyForm:resourcesTable:topActionsGroup1:newButton", TRIGGER_NEW_JMS_CONN_FACT);
 
-        selenium.type("form:propertySheet:generalPropertySheet:jndiProp:jndiProp", poolName);
+        setFieldValue("form:propertySheet:generalPropertySheet:jndiProp:jndiProp", poolName);
         selectDropdownOption("form:propertySheet:generalPropertySheet:resType:resType", "javax.jms.TopicConnectionFactory"); // i18n?
-        selenium.type("form:propertySheet:generalPropertySheet:descProp:descProp", description);
+        setFieldValue("form:propertySheet:generalPropertySheet:descProp:descProp", description);
         selectDropdownOption("form:propertySheet:poolPropertySheet:transprop:trans", "LocalTransaction"); //i18n
         
-        selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=" + instanceName);
-        selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=server");
-        selenium.click("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
+        addSelectSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", instanceName);
+        addSelectSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "server");
+        pressButton("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
         
         clickAndWait("form:propertyContentPage:topButtons:newButton", TRIGGER_JMS_CONNECTION_FACTORIES);
         assertTrue(isTextPresent(poolName));
@@ -117,12 +117,12 @@ public class JmsResourcesTest extends BaseSeleniumTestClass {
         // The table should be fixed to be like the others (in terms of IDs) so the standard test API can be used here.
         selectTableRowByValue("propertyForm:resourcesTable", poolName, "colSelect", "colPoolName");
         waitForButtonEnabled("propertyForm:resourcesTable:topActionsGroup1:disableButton");
-        selenium.click("propertyForm:resourcesTable:topActionsGroup1:disableButton");
+        pressButton("propertyForm:resourcesTable:topActionsGroup1:disableButton");
         waitForButtonDisabled("propertyForm:resourcesTable:topActionsGroup1:disableButton");
      
         selectTableRowByValue("propertyForm:resourcesTable", poolName, "colSelect", "colPoolName");
         waitForButtonEnabled("propertyForm:resourcesTable:topActionsGroup1:enableButton");
-        selenium.click("propertyForm:resourcesTable:topActionsGroup1:enableButton");
+        pressButton("propertyForm:resourcesTable:topActionsGroup1:enableButton");
         waitForButtonDisabled("propertyForm:resourcesTable:topActionsGroup1:enableButton");
 
         testManageTargets("treeForm:tree:resources:jmsResources:jmsConnectionFactories:jmsConnectionFactories_link",
@@ -156,9 +156,9 @@ public class JmsResourcesTest extends BaseSeleniumTestClass {
         clickAndWait("treeForm:tree:resources:jmsResources:jmsDestinationResources:jmsDestinationResources_link", TRIGGER_JMS_DESTINATION_RESOURCES);
         sleep(1000);
         clickAndWait("propertyForm:resourcesTable:topActionsGroup1:newButton", TRIGGER_NEW_JMS_DEST_RES);
-        selenium.type("form:propertyContentPage:propertySheet:propertSectionTextField:jndiProp:jndi", resourceName);
-        selenium.type("form:propertyContentPage:propertySheet:propertSectionTextField:nameProp:name", "somePhysicalDestination");
-        selenium.type("form:propertyContentPage:propertySheet:propertSectionTextField:descProp:desc", description);
+        setFieldValue("form:propertyContentPage:propertySheet:propertSectionTextField:jndiProp:jndi", resourceName);
+        setFieldValue("form:propertyContentPage:propertySheet:propertSectionTextField:nameProp:name", "somePhysicalDestination");
+        setFieldValue("form:propertyContentPage:propertySheet:propertSectionTextField:descProp:desc", description);
         clickAndWait("form:propertyContentPage:topButtons:newButton", TRIGGER_JMS_DESTINATION_RESOURCES);
         assertTrue(isTextPresent(resourceName) && isTextPresent(description));
 
@@ -166,12 +166,12 @@ public class JmsResourcesTest extends BaseSeleniumTestClass {
         // The table should be fixed to be like the others (in terms of IDs) so the standard test API can be used here.
         selectTableRowByValue("propertyForm:resourcesTable", resourceName, "colSelect", "colName");
         waitForButtonEnabled("propertyForm:resourcesTable:topActionsGroup1:disableButton");
-        selenium.click("propertyForm:resourcesTable:topActionsGroup1:disableButton");
+        pressButton("propertyForm:resourcesTable:topActionsGroup1:disableButton");
         waitForButtonDisabled("propertyForm:resourcesTable:topActionsGroup1:disableButton");
 
         selectTableRowByValue("propertyForm:resourcesTable", resourceName, "colSelect", "colName");
         waitForButtonEnabled("propertyForm:resourcesTable:topActionsGroup1:enableButton");
-        selenium.click("propertyForm:resourcesTable:topActionsGroup1:enableButton");
+        pressButton("propertyForm:resourcesTable:topActionsGroup1:enableButton");
         waitForButtonDisabled("propertyForm:resourcesTable:topActionsGroup1:enableButton");
 
         deleteRow("propertyForm:resourcesTable:topActionsGroup1:deleteDestButton", "propertyForm:resourcesTable", resourceName, "colSelect", "colName");
@@ -189,13 +189,13 @@ public class JmsResourcesTest extends BaseSeleniumTestClass {
         clickAndWait("treeForm:tree:resources:jmsResources:jmsDestinationResources:jmsDestinationResources_link", TRIGGER_JMS_DESTINATION_RESOURCES);
         sleep(1000);
         clickAndWait("propertyForm:resourcesTable:topActionsGroup1:newButton", TRIGGER_NEW_JMS_DEST_RES);
-        selenium.type("form:propertyContentPage:propertySheet:propertSectionTextField:jndiProp:jndi", resourceName);
-        selenium.type("form:propertyContentPage:propertySheet:propertSectionTextField:nameProp:name", "somePhysicalDestination");
-        selenium.type("form:propertyContentPage:propertySheet:propertSectionTextField:descProp:desc", description);
+        setFieldValue("form:propertyContentPage:propertySheet:propertSectionTextField:jndiProp:jndi", resourceName);
+        setFieldValue("form:propertyContentPage:propertySheet:propertSectionTextField:nameProp:name", "somePhysicalDestination");
+        setFieldValue("form:propertyContentPage:propertySheet:propertSectionTextField:descProp:desc", description);
 
-        selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=" + instanceName);
-        selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=server"); 
-        selenium.click("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
+        addSelectSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", instanceName);
+        addSelectSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "server"); 
+        pressButton("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
 
         clickAndWait("form:propertyContentPage:topButtons:newButton", TRIGGER_JMS_DESTINATION_RESOURCES);
         assertTrue(isTextPresent(resourceName) && isTextPresent(description));
@@ -204,12 +204,12 @@ public class JmsResourcesTest extends BaseSeleniumTestClass {
         // The table should be fixed to be like the others (in terms of IDs) so the standard test API can be used here.
         selectTableRowByValue("propertyForm:resourcesTable", resourceName, "colSelect", "colName");
         waitForButtonEnabled("propertyForm:resourcesTable:topActionsGroup1:disableButton");
-        selenium.click("propertyForm:resourcesTable:topActionsGroup1:disableButton");
+        pressButton("propertyForm:resourcesTable:topActionsGroup1:disableButton");
         waitForButtonDisabled("propertyForm:resourcesTable:topActionsGroup1:disableButton");
 
         selectTableRowByValue("propertyForm:resourcesTable", resourceName, "colSelect", "colName");
         waitForButtonEnabled("propertyForm:resourcesTable:topActionsGroup1:enableButton");
-        selenium.click("propertyForm:resourcesTable:topActionsGroup1:enableButton");
+        pressButton("propertyForm:resourcesTable:topActionsGroup1:enableButton");
         waitForButtonDisabled("propertyForm:resourcesTable:topActionsGroup1:enableButton");
 
         testManageTargets("treeForm:tree:resources:jmsResources:jmsDestinationResources:jmsDestinationResources_link",
@@ -237,15 +237,15 @@ public class JmsResourcesTest extends BaseSeleniumTestClass {
         verifyTrue(isTextPresent("Click New to define a new transport. Click the name of an existing transport to modify its settings."));
         selenium.click("propertyForm:configs:topActionsGroup1:newButton");
         verifyTrue(isTextPresent("New Transport"));
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:IdTextProp:IdText", "transport");
-        selenium.select("propertyForm:propertySheet:propertSectionTextField:ByteBufferType:ByteBufferType", "label=DIRECT");
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:BufferSizeBytes:BufferSizeBytes", "16384");
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:AcceptorThreads:AcceptorThreads", "2");
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:MaxConnectionsCount:MaxConnectionsCount", "8192");
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:IdleKeyTimeoutSeconds:IdleKeyTimeoutSeconds", "60");
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:ReadTimeoutMillis:ReadTimeoutMillis", "60000");
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:SelectorPollTimeoutMillis:SelectorPollTimeoutMillis", "2000");
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:WriteTimeoutMillis:WriteTimeoutMillis", "60000");
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:IdTextProp:IdText", "transport");
+        selectDropdownOption("propertyForm:propertySheet:propertSectionTextField:ByteBufferType:ByteBufferType", "DIRECT");
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:BufferSizeBytes:BufferSizeBytes", "16384");
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:AcceptorThreads:AcceptorThreads", "2");
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:MaxConnectionsCount:MaxConnectionsCount", "8192");
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:IdleKeyTimeoutSeconds:IdleKeyTimeoutSeconds", "60");
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:ReadTimeoutMillis:ReadTimeoutMillis", "60000");
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:SelectorPollTimeoutMillis:SelectorPollTimeoutMillis", "2000");
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:WriteTimeoutMillis:WriteTimeoutMillis", "60000");
         selenium.click("propertyForm:propertyContentPage:topButtons:newButton");
         verifyTrue(isTextPresent("Click New to define a new transport. Click the name of an existing transport to modify its settings."));
         assertTrue(isTextPresent("transport"));

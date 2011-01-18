@@ -74,20 +74,20 @@ public class ClusterTest extends BaseSeleniumTestClass {
         
         // Verify cluster information in table
         String prefix = getTableRowByValue(ID_CLUSTERS_TABLE, clusterName, "col1");
-        assertEquals(clusterName, selenium.getText(prefix + "col1:link"));
-        assertEquals(clusterName + "-config", selenium.getText(prefix + "col2:configlink"));
-        assertEquals(instanceName1, selenium.getText(prefix + "col3:iLink"));
+        assertEquals(clusterName, getText(prefix + "col1:link"));
+        assertEquals(clusterName + "-config", getText(prefix + "col2:configlink"));
+        assertEquals(instanceName1, getText(prefix + "col3:iLink"));
 
         // Start the cluster and verify
         rowActionWithConfirm("propertyForm:clustersTable:topActionsGroup1:button2", ID_CLUSTERS_TABLE, clusterName);
         waitForButtonDisabled("propertyForm:clustersTable:topActionsGroup1:button2");
         prefix = getTableRowByValue(ID_CLUSTERS_TABLE, clusterName, "col1");
-        assertTrue((selenium.getText(prefix + "col3").indexOf("Running") != -1));
+        assertTrue((getText(prefix + "col3").indexOf("Running") != -1));
 
         // Stop the cluster and verify
         rowActionWithConfirm("propertyForm:clustersTable:topActionsGroup1:button3", ID_CLUSTERS_TABLE, clusterName);
         waitForButtonDisabled("propertyForm:clustersTable:topActionsGroup1:button3");
-        assertTrue((selenium.getText(prefix + "col3").indexOf("Stopped") != -1));
+        assertTrue((getText(prefix + "col3").indexOf("Stopped") != -1));
         
         deleteCluster(clusterName);
     }
@@ -106,9 +106,9 @@ public class ClusterTest extends BaseSeleniumTestClass {
 
         clickAndWait("propertyForm:clusterTabs:general", TRIGGER_CLUSTER_GENERAL_PAGE);
         clickAndWait("propertyForm:migrateTimesButton", TRIGGER_MIGRATE_EJB_TIMERS);
-        Assert.assertFalse(selenium.isTextPresent(TRIGGER_CLUSTER_NO_RUNNING_INSTANCES));
-        selenium.select("propertyForm:propertySheet:propertSectionTextField:clusterSourceProp:source", "label=" + instanceName2);
-        selenium.select("propertyForm:propertySheet:propertSectionTextField:clusterDestProp:dest", "label=" + instanceName1);
+        Assert.assertFalse(isTextPresent(TRIGGER_CLUSTER_NO_RUNNING_INSTANCES));
+        selectDropdownOption("propertyForm:propertySheet:propertSectionTextField:clusterSourceProp:source", instanceName2);
+        selectDropdownOption("propertyForm:propertySheet:propertSectionTextField:clusterDestProp:dest", instanceName1);
 
         clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", "Migrated 0 timers");
         clickAndWait("propertyForm:clusterTabs:clusterInst", TRIGGER_CLUSTER_INSTANCES_PAGE);
@@ -125,35 +125,34 @@ public class ClusterTest extends BaseSeleniumTestClass {
         createCluster(clusterName, instanceName1, instanceName2);
 
         clickAndWait(getLinkIdByLinkText(ID_CLUSTERS_TABLE, clusterName), TRIGGER_CLUSTER_GENERAL_PAGE);
-        assertEquals(clusterName, selenium.getText("propertyForm:propertySheet:propertSectionTextField:clusterNameProp:clusterName"));
+        assertEquals(clusterName, getText("propertyForm:propertySheet:propertSectionTextField:clusterNameProp:clusterName"));
 
         //ensure config link is fine.
         //TODO:  how to ensure thats the correct configuration page ?
-        assertEquals(clusterName + "-config", selenium.getText("propertyForm:propertySheet:propertSectionTextField:configNameProp:configlink"));
+        assertEquals(clusterName + "-config", getText("propertyForm:propertySheet:propertSectionTextField:configNameProp:configlink"));
         clickAndWait("propertyForm:propertySheet:propertSectionTextField:configNameProp:configlink", TRIGGER_CONFIGURATION_TEXT);
 
         //Back to the Clusters page,  ensure default value is there.
         clickAndWait("treeForm:tree:clusterTreeNode:clusterTreeNode_link", TRIGGER_CLUSTER_PAGE);
         clickAndWait(getLinkIdByLinkText(ID_CLUSTERS_TABLE, clusterName), TRIGGER_CLUSTER_GENERAL_PAGE);
         //TODO: should try to use the String key
-        assertEquals("2 instances are stopped", selenium.getText("propertyForm:propertySheet:propertSectionTextField:instanceStatusProp:instanceStatusStopped"));
+        assertEquals("2 instances are stopped", getText("propertyForm:propertySheet:propertSectionTextField:instanceStatusProp:instanceStatusStopped"));
 
         //change value
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:gmsMulticastPort:gmsMulticastPort", "12345");
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:gmsMulticastAddress:gmsMulticastAddress", "123.234.456.88");
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:GmsBindInterfaceAddress:GmsBindInterfaceAddress", "${ABCDE}");
-        selenium.click("propertyForm:propertySheet:propertSectionTextField:gmsEnabledProp:gmscb");
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:gmsMulticastPort:gmsMulticastPort", "12345");
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:gmsMulticastAddress:gmsMulticastAddress", "123.234.456.88");
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:GmsBindInterfaceAddress:GmsBindInterfaceAddress", "${ABCDE}");
+        markCheckbox("propertyForm:propertySheet:propertSectionTextField:gmsEnabledProp:gmscb");
         clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
 
         //ensure value is saved correctly
-        assertEquals("12345", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:gmsMulticastPort:gmsMulticastPort"));
-        assertEquals("123.234.456.88", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:gmsMulticastAddress:gmsMulticastAddress"));
-        assertEquals("${ABCDE}", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:GmsBindInterfaceAddress:GmsBindInterfaceAddress"));
-        assertEquals(false, selenium.isChecked("propertyForm:propertySheet:propertSectionTextField:gmsEnabledProp:gmscb"));
+        assertEquals("12345", getFieldValue("propertyForm:propertySheet:propertSectionTextField:gmsMulticastPort:gmsMulticastPort"));
+        assertEquals("123.234.456.88", getFieldValue("propertyForm:propertySheet:propertSectionTextField:gmsMulticastAddress:gmsMulticastAddress"));
+        assertEquals("${ABCDE}", getFieldValue("propertyForm:propertySheet:propertSectionTextField:GmsBindInterfaceAddress:GmsBindInterfaceAddress"));
+        assertEquals(false, isChecked("propertyForm:propertySheet:propertSectionTextField:gmsEnabledProp:gmscb"));
         
         deleteCluster(clusterName);
     }
-
 
     @Test
     public void testClusterInstancesTab() {
@@ -164,12 +163,12 @@ public class ClusterTest extends BaseSeleniumTestClass {
 
         gotoClusterInstancesPage(clusterName);
 
-        assertTrue(selenium.isTextPresent(instanceName1));
+        assertTrue(isTextPresent(instanceName1));
 
         clickAndWait("propertyForm:instancesTable:topActionsGroup1:newButton", TRIGGER_CLUSTER_INSTANCE_NEW_PAGE);
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:NameTextProp:NameText", instanceName2);
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:NameTextProp:NameText", instanceName2);
         clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_CLUSTER_INSTANCES_PAGE);
-        assertTrue(selenium.isTextPresent(instanceName2));
+        assertTrue(isTextPresent(instanceName2));
         
         deleteCluster(clusterName);
     }
@@ -181,28 +180,28 @@ public class ClusterTest extends BaseSeleniumTestClass {
         createCluster(clusterName, instanceName1);
 
         clickAndWait(getLinkIdByLinkText(ID_CLUSTERS_TABLE, clusterName), TRIGGER_CLUSTER_GENERAL_PAGE);
-        assertEquals(clusterName, selenium.getText("propertyForm:propertySheet:propertSectionTextField:clusterNameProp:clusterName"));
+        assertEquals(clusterName, getText("propertyForm:propertySheet:propertSectionTextField:clusterNameProp:clusterName"));
 
         // Go to properties tab
         clickAndWait("propertyForm:clusterTabs:clusterProps", "Cluster System Properties");
         int sysPropCount = addTableRow("propertyForm:sysPropsTable", "propertyForm:sysPropsTable:topActionsGroup1:addSharedTableButton");
-        selenium.type("propertyForm:sysPropsTable:rowGroup1:0:col2:col1St", "property" + generateRandomString());
-        selenium.type("propertyForm:sysPropsTable:rowGroup1:0:overrideValCol:overrideVal", "value");
+        setFieldValue("propertyForm:sysPropsTable:rowGroup1:0:col2:col1St", "property" + generateRandomString());
+        setFieldValue("propertyForm:sysPropsTable:rowGroup1:0:overrideValCol:overrideVal", "value");
         clickAndWait("propertyForm:clusterSysPropsPage:topButtons:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
 
         // Go to cluster props page
-        selenium.click("propertyForm:clusterTabs:clusterProps:clusterInstanceProps");
+        markCheckbox("propertyForm:clusterTabs:clusterProps:clusterInstanceProps");
         waitForPageLoad("Cluster System Properties", TIMEOUT, true);
 
         int clusterPropCount = addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton");
-        selenium.type("propertyForm:basicTable:rowGroup1:0:col2:col1St", "property" + generateRandomString());
-        selenium.type("propertyForm:basicTable:rowGroup1:0:col3:col1St", "value");
+        setFieldValue("propertyForm:basicTable:rowGroup1:0:col2:col1St", "property" + generateRandomString());
+        setFieldValue("propertyForm:basicTable:rowGroup1:0:col3:col1St", "value");
         clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
 
         // Verify that properties were persisted
         clickAndWait("propertyForm:clusterTabs:clusterProps:clusterSystemProps", "Cluster System Properties");
         assertTableRowCount("propertyForm:sysPropsTable", sysPropCount);
-        selenium.click("propertyForm:clusterTabs:clusterProps:clusterInstanceProps");
+        markCheckbox("propertyForm:clusterTabs:clusterProps:clusterInstanceProps");
         waitForPageLoad("Cluster System Properties", TIMEOUT, true);
         assertTableRowCount("propertyForm:basicTable", clusterPropCount);
         
@@ -245,24 +244,24 @@ public class ClusterTest extends BaseSeleniumTestClass {
         clickAndWait("treeForm:tree:clusterTreeNode:clusterTreeNode_link", TRIGGER_CLUSTER_PAGE);
         clickAndWait(getLinkIdByLinkText(ID_CLUSTERS_TABLE, target), TRIGGER_CLUSTER_GENERAL_PAGE);
         clickAndWait("propertyForm:clusterTabs:clusterResources", TRIGGER_CLUSTER_RESOURCES_PAGE);
-        assertTrue(selenium.isTextPresent(jndiName));
+        assertTrue(isTextPresent(jndiName));
 
         int jdbcCount = getTableRowCountByValue(tableID, "JDBC Resources", "col3:type");
         int customCount = getTableRowCountByValue(tableID, "Custom Resources", "col3:type");
 
         EnterpriseServerTest adminServerTest = new EnterpriseServerTest();
-        selenium.select("propertyForm:resourcesTable:topActionsGroup1:filter_list", "label=Custom Resources");
+        selectDropdownOption("propertyForm:resourcesTable:topActionsGroup1:filter_list", "Custom Resources");
         adminServerTest.waitForTableRowCount(tableID, customCount);
 
-        selenium.select("propertyForm:resourcesTable:topActionsGroup1:filter_list", "label=JDBC Resources");
+        selectDropdownOption("propertyForm:resourcesTable:topActionsGroup1:filter_list", "JDBC Resources");
         adminServerTest.waitForTableRowCount(tableID, jdbcCount);
 
         selectTableRowByValue("propertyForm:resourcesTable", jndiName);
         waitForButtonEnabled("propertyForm:resourcesTable:topActionsGroup1:button1");
-        selenium.click("propertyForm:resourcesTable:topActionsGroup1:button1");
+        pressButton("propertyForm:resourcesTable:topActionsGroup1:button1");
         waitForButtonDisabled("propertyForm:resourcesTable:topActionsGroup1:button1");
 
-        /*selenium.select("propertyForm:resourcesTable:topActionsGroup1:actions", "label=JDBC Resources");
+        /*selectDropdownOption("propertyForm:resourcesTable:topActionsGroup1:actions", "JDBC Resources");
         waitForPageLoad(JdbcTest.TRIGGER_NEW_JDBC_RESOURCE, true);
         clickAndWait("form:propertyContentPage:topButtons:cancelButton", JdbcTest.TRIGGER_JDBC_RESOURCES);*/
 
@@ -272,14 +271,14 @@ public class ClusterTest extends BaseSeleniumTestClass {
     public void createCluster(String clusterName, String... instanceNames) {
         gotoClusterPage();
         clickAndWait("propertyForm:clustersTable:topActionsGroup1:newButton", TRIGGER_NEW_CLUSTER_PAGE);
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:NameTextProp:NameText", clusterName);
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:NameTextProp:NameText", clusterName);
 
         if (instanceNames != null) {
             for (String instanceName : instanceNames) {
                 if (instanceName != null && !instanceName.equals("")) {
                     addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton", 
                             "Server Instances to Be Created");
-                    selenium.type("propertyForm:basicTable:rowGroup1:0:col2:name", instanceName);
+                    setFieldValue("propertyForm:basicTable:rowGroup1:0:col2:name", instanceName);
 //                    createClusterInstance(clusterName, instanceName);
                 }
             }
@@ -290,7 +289,7 @@ public class ClusterTest extends BaseSeleniumTestClass {
     public void createClusterInstance(String clusterName, String instanceName) {
         gotoClusterInstancesPage(clusterName);
         clickAndWait("propertyForm:instancesTable:topActionsGroup1:newButton", "Name of the node machine on which the server instance will reside");
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:NameTextProp:NameText", instanceName);
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:NameTextProp:NameText", instanceName);
         clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_CLUSTER_INSTANCES_PAGE);
         Assert.assertNotNull(this.getTableRowByValue("propertyForm:instancesTable", instanceName, "col1"));
     }
@@ -298,7 +297,7 @@ public class ClusterTest extends BaseSeleniumTestClass {
     public void deleteCluster(String clusterName) {
         gotoClusterPage();
         rowActionWithConfirm(ID_CLUSTERS_TABLE_STOP_BUTTON, ID_CLUSTERS_TABLE, clusterName);
-        deleteRow(ID_CLUSTERS_TABLE_DELETE_BUTTON, ID_CLUSTERS_TABLE, clusterName);
+            deleteRow(ID_CLUSTERS_TABLE_DELETE_BUTTON, ID_CLUSTERS_TABLE, clusterName);
     }
 
     public void deleteAllClusters() {
@@ -313,7 +312,7 @@ public class ClusterTest extends BaseSeleniumTestClass {
         if (!rows.isEmpty()) {
             // Stop all instances
             for (String row : rows) {
-                String clusterName = selenium.getText(row + ":col1");
+                String clusterName = getText(row + ":col1");
                 this.selectTableRowByValue(ID_CLUSTERS_TABLE, clusterName);
                 //rowActionWithConfirm(ID_CLUSTERS_TABLE_STOP_BUTTON, ID_CLUSTERS_TABLE, clusterName);
 //                selenium.click(ID_CLUSTERS_TABLE_SELECT_ALL_BUTTON);
@@ -326,10 +325,10 @@ public class ClusterTest extends BaseSeleniumTestClass {
 //                waitForButtonDisabled(ID_CLUSTERS_TABLE_STOP_BUTTON);
             }
             waitForButtonEnabled(ID_CLUSTERS_TABLE_STOP_BUTTON);
-            selenium.chooseOkOnNextConfirmation();
-            selenium.click(ID_CLUSTERS_TABLE_STOP_BUTTON);
-            if (selenium.isConfirmationPresent()) {
-                selenium.getConfirmation();
+            chooseOkOnNextConfirmation();
+            pressButton(ID_CLUSTERS_TABLE_STOP_BUTTON);
+            if (isConfirmationPresent()) {
+                getConfirmation();
             }
             waitForButtonDisabled(ID_CLUSTERS_TABLE_STOP_BUTTON);
         }
@@ -361,24 +360,16 @@ public class ClusterTest extends BaseSeleniumTestClass {
     public void stopAllClusterInstances(String clusterName) {
         gotoClusterInstancesPage(clusterName);
 
-        if (selenium.isTextPresent("Server Instances (0)")) {
+        if (isTextPresent("Server Instances (0)")) {
             return;
         }
 
-//        selenium.click("propertyForm:instancesTable:_tableActionsTop:_selectMultipleButton:_selectMultipleButton_image");
-//        this.waitForButtonEnabled("propertyForm:instancesTable:topActionsGroup1:button1");
-//        selenium.chooseOkOnNextConfirmation();
-//        selenium.click("propertyForm:instancesTable:topActionsGroup1:button3");
-//        if (selenium.isConfirmationPresent()) {
-//            selenium.getConfirmation();
-//        }
-//        this.waitForButtonDisabled("propertyForm:instancesTable:topActionsGroup1:button1");
         if (selectTableRowsByValue("propertyForm:instancesTable", "Running", "col0", "col6") > 0) {
             waitForButtonEnabled("propertyForm:instancesTable:topActionsGroup1:button3");
-            selenium.chooseOkOnNextConfirmation();
-            selenium.click("propertyForm:instancesTable:topActionsGroup1:button3");
-            if (selenium.isConfirmationPresent()) {
-                selenium.getConfirmation();
+            chooseOkOnNextConfirmation();
+            pressButton("propertyForm:instancesTable:topActionsGroup1:button3");
+            if (isConfirmationPresent()) {
+                getConfirmation();
             }
             this.waitForButtonDisabled("propertyForm:instancesTable:topActionsGroup1:button3");
         }

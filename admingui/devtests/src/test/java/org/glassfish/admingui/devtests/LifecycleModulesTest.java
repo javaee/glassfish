@@ -63,8 +63,8 @@ public class LifecycleModulesTest extends BaseSeleniumTestClass {
 
         clickAndWait("treeForm:tree:lifecycles:lifecycles_link", TRIGGER_LIFECYCLE_MODULES);
         clickAndWait("propertyForm:deployTable:topActionsGroup1:newButton", TRIGGER_NEW_LIFECYCLE_MODULE);
-        selenium.type("form:propertySheet:propertSectionTextField:IdTextProp:IdText", lifecycleName);
-        selenium.type("form:propertySheet:propertSectionTextField:classNameProp:classname", lifecycleClassname);
+        setFieldValue("form:propertySheet:propertSectionTextField:IdTextProp:IdText", lifecycleName);
+        setFieldValue("form:propertySheet:propertSectionTextField:classNameProp:classname", lifecycleClassname);
 
         /*
         final String property = "property";
@@ -72,12 +72,12 @@ public class LifecycleModulesTest extends BaseSeleniumTestClass {
         final String description = "description";
         int count = addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton");
 
-        selenium.type("propertyForm:basicTable:rowGroup1:0:col2:col1St", property);
-        selenium.type("propertyForm:basicTable:rowGroup1:0:col3:col1St", value);
-        selenium.type("propertyForm:basicTable:rowGroup1:0:col4:col1St", description);
+        setFieldValue("propertyForm:basicTable:rowGroup1:0:col2:col1St", property);
+        setFieldValue("propertyForm:basicTable:rowGroup1:0:col3:col1St", value);
+        setFieldValue("propertyForm:basicTable:rowGroup1:0:col4:col1St", description);
         */
         clickAndWait("form:propertyContentPage:topButtons:newButton", TRIGGER_LIFECYCLE_MODULES);
-        assertTrue(selenium.isTextPresent(lifecycleName));
+        assertTrue(isTextPresent(lifecycleName));
 
         testDisableButton(lifecycleName, "propertyForm:deployTable", "propertyForm:deployTable:topActionsGroup1:button3",
                 "propertyForm:propertySheet:propertSectionTextField:statusEdit:status",

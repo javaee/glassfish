@@ -55,19 +55,19 @@ public class VirtualServerTest extends BaseSeleniumTestClass {
 
         clickAndWait("treeForm:tree:configurations:server-config:virtualServers:virtualServers_link", TRIGGER_VIRTUAL_SERVERS);
         clickAndWait("propertyForm:configs:topActionsGroup1:newButton", TRIGGER_NEW_VIRTUAL_SERVER);
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:IdTextProp:IdText", serverName);
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:hostsProp:Hosts", "localhost");
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:IdTextProp:IdText", serverName);
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:hostsProp:Hosts", "localhost");
         selectDropdownOption("propertyForm:propertySheet:propertSectionTextField:stateProp:state", "i18n_web.vs.StateOn");
         selectDropdownOption("propertyForm:propertySheet:propertSectionTextField:enableLog:state", "i18n_web.vs.alwaysEnable");
         selectDropdownOption("propertyForm:propertySheet:al:enableLog:log", "i18n_web.vs.alwaysEnable");
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:logFileProp:LogFile", "logfile.txt");
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:docroot:docroot", "/tmp");
-        selenium.addSelection("propertyForm:propertySheet:propertSectionTextField:nwProps:nw", "label=http-listener-1");
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:logFileProp:LogFile", "logfile.txt");
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:docroot:docroot", "/tmp");
+        addSelectSelection("propertyForm:propertySheet:propertSectionTextField:nwProps:nw", "http-listener-1");
         int count = addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton");
 
-        selenium.type("propertyForm:basicTable:rowGroup1:0:col2:col1St", "property");
-        selenium.type("propertyForm:basicTable:rowGroup1:0:col3:col1St", "value");
-        selenium.type("propertyForm:basicTable:rowGroup1:0:col4:col1St", "description");
+        setFieldValue("propertyForm:basicTable:rowGroup1:0:col2:col1St", "property");
+        setFieldValue("propertyForm:basicTable:rowGroup1:0:col3:col1St", "value");
+        setFieldValue("propertyForm:basicTable:rowGroup1:0:col4:col1St", "description");
 
         clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_VIRTUAL_SERVERS);
 

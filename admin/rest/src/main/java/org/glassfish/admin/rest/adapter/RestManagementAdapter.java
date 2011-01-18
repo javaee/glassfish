@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,21 +39,9 @@
  */
 package org.glassfish.admin.rest.adapter;
 
-import com.sun.enterprise.config.serverbeans.Domain;
-import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.glassfish.admin.rest.generator.ASMResourcesGenerator;
-import org.glassfish.admin.rest.generator.ResourcesGenerator;
-import org.glassfish.admin.rest.resources.GeneratorResource;
-import org.glassfish.admin.rest.resources.StatusGenerator;
 
-import org.glassfish.admin.rest.resources.custom.ManagementProxyResource;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.config.ConfigModel;
-import org.jvnet.hk2.config.Dom;
-import org.jvnet.hk2.config.DomDocument;
 
 /**
  * Adapter for REST management interface
@@ -71,67 +59,9 @@ public class RestManagementAdapter extends RestAdapter {
     @Override
     protected Set<Class<?>> getResourcesConfig() {
 
-        Class domainResourceClass = null;//org.glassfish.admin.rest.resources.generated.DomainResource.class;
+         return getLazyJersey().getResourcesConfigForManagement(habitat);
 
-        generateASM();
-        try {
-            domainResourceClass = Class.forName("org.glassfish.admin.rest.resources.generatedASM.DomainResource");
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(RestManagementAdapter.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        final Set<Class<?>> r = new HashSet<Class<?>>();
-
-        // uncomment if you need to run the generator:
-        r.add(GeneratorResource.class);
-        r.add(StatusGenerator.class);
-        //r.add(ActionReportResource.class);
-
-        r.add(domainResourceClass);
-        r.add(ManagementProxyResource.class);
-        r.add(org.glassfish.admin.rest.resources.SessionsResource.class); //TODO this needs to be added to all rest adapters that want to be secured. Decide on it after the discussion to unify RestAdapter is concluded
-        r.add(org.glassfish.admin.rest.resources.StaticResource.class);
-
-        //body readers, not in META-INF/services anymore
-        r.add(org.glassfish.admin.rest.readers.FormReader.class);
-        r.add(org.glassfish.admin.rest.readers.ParameterMapFormReader.class);
-        r.add(org.glassfish.admin.rest.readers.JsonHashMapProvider.class);
-        r.add(org.glassfish.admin.rest.readers.JsonPropertyListReader.class);
-        r.add(org.glassfish.admin.rest.readers.JsonParameterMapProvider.class);
-
-        r.add(org.glassfish.admin.rest.readers.XmlHashMapProvider.class);
-        r.add(org.glassfish.admin.rest.readers.XmlPropertyListReader.class);
-
-        //body writers
-        r.add(org.glassfish.admin.rest.provider.ActionReportResultHtmlProvider.class);
-        r.add(org.glassfish.admin.rest.provider.ActionReportResultJsonProvider.class);
-        r.add(org.glassfish.admin.rest.provider.ActionReportResultXmlProvider.class);
-
-
-        r.add(org.glassfish.admin.rest.provider.FormWriter.class);
-
-        r.add(org.glassfish.admin.rest.provider.GetResultListHtmlProvider.class);
-        r.add(org.glassfish.admin.rest.provider.GetResultListJsonProvider.class);
-        r.add(org.glassfish.admin.rest.provider.GetResultListXmlProvider.class);
-
-        r.add(org.glassfish.admin.rest.provider.OptionsResultJsonProvider.class);
-        r.add(org.glassfish.admin.rest.provider.OptionsResultXmlProvider.class);
-
-        return r;
     }
 
-    private void generateASM() {
-        try {
-            Domain entity = habitat.getComponent(Domain.class);
-            Dom dom = Dom.unwrap(entity);
-            DomDocument document = dom.document;
-            ConfigModel rootModel = dom.document.getRoot().model;
 
-            ResourcesGenerator resourcesGenerator = new ASMResourcesGenerator();
-            resourcesGenerator.generateSingle(rootModel, document);
-            resourcesGenerator.endGeneration();
-        } catch (Exception ex) {
-            Logger.getLogger(GeneratorResource.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
 }

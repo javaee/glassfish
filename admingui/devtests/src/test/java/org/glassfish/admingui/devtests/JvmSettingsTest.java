@@ -54,10 +54,10 @@ public class JvmSettingsTest extends BaseSeleniumTestClass {
     @Test
     public void testJvmGeneralSettings() {
         clickAndWait("treeForm:tree:configurations:server-config:jvmSettings:jvmSettings_link", TRIGGER_JVM_GENERAL_SETTINGS);
-        selenium.click("propertyForm:propertySheet:propertSectionTextField:debugEnabledProp:debug");
+        markCheckbox("propertyForm:propertySheet:propertSectionTextField:debugEnabledProp:debug");
         clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
         waitForPageLoad("Restart Required", 1000);
-        selenium.check("propertyForm:propertySheet:propertSectionTextField:debugEnabledProp:debug");
+        markCheckbox("propertyForm:propertySheet:propertSectionTextField:debugEnabledProp:debug");
         clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
     }
 
@@ -67,7 +67,7 @@ public class JvmSettingsTest extends BaseSeleniumTestClass {
         clickAndWait("propertyForm:javaConfigTab:jvmOptions", TRIGGER_JVM_OPTIONS);
 
         int count = addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton", "Options");
-        selenium.type("propertyForm:basicTable:rowGroup1:0:col3:col1St", "-Dfoo=" + generateRandomString());
+        setFieldValue("propertyForm:basicTable:rowGroup1:0:col3:col1St", "-Dfoo=" + generateRandomString());
         clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
         clickAndWait("propertyForm:javaConfigTab:pathSettings", TRIGGER_JVM_PATH_SETTINGS);
         clickAndWait("propertyForm:javaConfigTab:jvmOptions", TRIGGER_JVM_OPTIONS);
@@ -80,22 +80,22 @@ public class JvmSettingsTest extends BaseSeleniumTestClass {
         clickAndWait("treeForm:tree:configurations:server-config:jvmSettings:jvmSettings_link", TRIGGER_JVM_GENERAL_SETTINGS);
         clickAndWait("propertyForm:javaConfigTab:profiler", TRIGGER_JVM_PROFILER_SETTINGS);
 
-        if (selenium.isElementPresent("propertyForm:propertyContentPage:topButtons:deleteButton")) {
+        if (isElementPresent("propertyForm:propertyContentPage:topButtons:deleteButton")) {
             this.clickAndWait("propertyForm:propertyContentPage:topButtons:deleteButton", TRIGGER_JVM_PROFILER_DELETED);
-            if (selenium.isConfirmationPresent()) {
-                selenium.getConfirmation();
+            if (isConfirmationPresent()) {
+                getConfirmation();
             }
         }
         
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:profilerNameProp:ProfilerName", "profiler" + generateRandomString());
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:profilerNameProp:ProfilerName", "profiler" + generateRandomString());
         int count = addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton", "Options");
-        selenium.type("propertyForm:basicTable:rowGroup1:0:col3:col1St", "-Dfoo=" + generateRandomString());
+        setFieldValue("propertyForm:basicTable:rowGroup1:0:col3:col1St", "-Dfoo=" + generateRandomString());
         clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_JVM_PROFILER_CREATED);
         assertTableRowCount("propertyForm:basicTable", count);
 
         clickAndWait("propertyForm:javaConfigTab:pathSettings", TRIGGER_JVM_PATH_SETTINGS);
         clickAndWait("propertyForm:javaConfigTab:profiler", TRIGGER_JVM_PROFILER_SETTINGS);
-        selenium.click("propertyForm:propertyContentPage:topButtons:deleteButton");
-        assertTrue(selenium.getConfirmation().matches("^Profiler will be deleted\\.  Continue[\\s\\S]$"));
+        pressButton("propertyForm:propertyContentPage:topButtons:deleteButton");
+        assertTrue(getConfirmation().matches("^Profiler will be deleted\\.  Continue[\\s\\S]$"));
     }
 }

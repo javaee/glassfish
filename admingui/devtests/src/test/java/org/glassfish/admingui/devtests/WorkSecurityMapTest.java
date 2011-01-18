@@ -47,9 +47,9 @@ import static org.junit.Assert.assertTrue;
 
 public class WorkSecurityMapTest extends BaseSeleniumTestClass {
 
-    private static final String TRIGGER_WORK_SECURITY_MAPS = "A work security map maps the caller identity of the work submitted by a resource adapter EIS principal or EIS user group to a suitable principal or user group in the GlassFish Server security domain.";
-    private static final String TRIGGER_NEW_WORK_SECURITY_MAP = "New Work Security Map";
-    private static final String TRIGGER_EDIT_WORK_SECURITY_MAP = "Edit Work Security Map";
+    private static final String TRIGGER_WORK_SECURITY_MAPS = "i18njca.workSecurityMaps.pageTitleHelp";
+    private static final String TRIGGER_NEW_WORK_SECURITY_MAP = "i18njca.workSecurityMap.newPageTitleHelp";
+    private static final String TRIGGER_EDIT_WORK_SECURITY_MAP = "i18njca.workSecurityMap.editPageTitleHelp";
 
     @Test
     public void testWorkSecurityMaps() throws Exception {
@@ -61,13 +61,13 @@ public class WorkSecurityMapTest extends BaseSeleniumTestClass {
 
         clickAndWait("propertyForm:resourcesTable:topActionsGroup1:newButton", TRIGGER_NEW_WORK_SECURITY_MAP);
 
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:mapNameNew:mapName", testWorkSecurityMap);
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:groupProp:eisgrouptext", testGroupMapKey + "=" + testGroupMapValue);
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:mapNameNew:mapName", testWorkSecurityMap);
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:groupProp:eisgrouptext", testGroupMapKey + "=" + testGroupMapValue);
         clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_WORK_SECURITY_MAPS);
 
-        assertTrue(selenium.isTextPresent(testWorkSecurityMap));
+        assertTrue(isTextPresent(testWorkSecurityMap));
         clickAndWait(getLinkIdByLinkText("propertyForm:resourcesTable", testWorkSecurityMap), TRIGGER_EDIT_WORK_SECURITY_MAP);
-        Assert.assertEquals(testGroupMapKey + "=" + testGroupMapValue, selenium.getValue("propertyForm:propertySheet:propertSectionTextField:groupProp:eisgrouptext"));
+        Assert.assertEquals(testGroupMapKey + "=" + testGroupMapValue, getFieldValue("propertyForm:propertySheet:propertSectionTextField:groupProp:eisgrouptext"));
         clickAndWait("propertyForm:propertyContentPage:topButtons:cancelButton", TRIGGER_WORK_SECURITY_MAPS);
 
         deleteRow("propertyForm:resourcesTable:topActionsGroup1:button1", "propertyForm:resourcesTable", testWorkSecurityMap);

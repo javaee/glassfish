@@ -61,25 +61,25 @@ public class TransactionServiceTest extends BaseSeleniumTestClass {
         final String keypoint = Integer.toString(generateRandomNumber(65535));
 
         clickAndWait("treeForm:tree:configurations:server-config:transactionService:transactionService_link", TRIGGER_TRANSACTION_SERVICE);
-        selenium.check("propertyForm:propertySheet:propertSectionTextField:onRestartProp:enabled");
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:timeoutProp:Timeout", timeout);
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:retryProp:Retry", retry);
-        selenium.select("propertyForm:propertySheet:propertSectionTextField:heuristicProp:HeuristicDecision", "label=Commit");
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:keyPointProp:Keypoint", keypoint);
+        markCheckbox("propertyForm:propertySheet:propertSectionTextField:onRestartProp:enabled");
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:timeoutProp:Timeout", timeout);
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:retryProp:Retry", retry);
+        selectDropdownOption("propertyForm:propertySheet:propertSectionTextField:heuristicProp:HeuristicDecision", "Commit");
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:keyPointProp:Keypoint", keypoint);
         int count = addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton");
 
-        selenium.type("propertyForm:basicTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
-        selenium.type("propertyForm:basicTable:rowGroup1:0:col3:col1St", "value");
-        selenium.type("propertyForm:basicTable:rowGroup1:0:col4:col1St", "description");
+        setFieldValue("propertyForm:basicTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
+        setFieldValue("propertyForm:basicTable:rowGroup1:0:col3:col1St", "value");
+        setFieldValue("propertyForm:basicTable:rowGroup1:0:col4:col1St", "description");
         clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
         reset();
 
         clickAndWait("treeForm:tree:configurations:server-config:transactionService:transactionService_link", TRIGGER_TRANSACTION_SERVICE);
-        assertEquals(true, selenium.isChecked("propertyForm:propertySheet:propertSectionTextField:onRestartProp:enabled"));
-        assertEquals(timeout, selenium.getValue("propertyForm:propertySheet:propertSectionTextField:timeoutProp:Timeout"));
-        assertEquals(retry, selenium.getValue("propertyForm:propertySheet:propertSectionTextField:retryProp:Retry"));
-        assertEquals("commit", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:heuristicProp:HeuristicDecision"));
-        assertEquals(keypoint, selenium.getValue("propertyForm:propertySheet:propertSectionTextField:keyPointProp:Keypoint"));
+        assertEquals(true, isChecked("propertyForm:propertySheet:propertSectionTextField:onRestartProp:enabled"));
+        assertEquals(timeout, getFieldValue("propertyForm:propertySheet:propertSectionTextField:timeoutProp:Timeout"));
+        assertEquals(retry, getFieldValue("propertyForm:propertySheet:propertSectionTextField:retryProp:Retry"));
+        assertEquals("commit", getFieldValue("propertyForm:propertySheet:propertSectionTextField:heuristicProp:HeuristicDecision"));
+        assertEquals(keypoint, getFieldValue("propertyForm:propertySheet:propertSectionTextField:keyPointProp:Keypoint"));
         assertTableRowCount("propertyForm:basicTable", count);
     }
 }

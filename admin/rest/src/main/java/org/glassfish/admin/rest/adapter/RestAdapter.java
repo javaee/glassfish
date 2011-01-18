@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -53,7 +53,7 @@ import java.io.StringWriter;
 import java.net.InetAddress;
 import javax.security.auth.login.LoginException;
 
-import org.glassfish.admin.rest.LazyJerseyInit;
+import org.glassfish.admin.rest.LazyJerseyInterface;
 import org.glassfish.admin.rest.RestService;
 import org.glassfish.admin.rest.SessionManager;
 import org.glassfish.api.ActionReport;
@@ -93,7 +93,7 @@ import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.internal.api.AdminAccessController;
 import org.glassfish.internal.api.ServerContext;
-
+import java.util.logging.Level;
 
 /**
  * Adapter for REST interface
@@ -122,6 +122,8 @@ public abstract class RestAdapter extends HttpHandler implements Adapter, PostCo
 
     @Inject
     ServerEnvironment serverEnvironment;
+    
+    private volatile LazyJerseyInterface lazyJerseyInterface =null;
 
     @Inject
     private Logger logger;
@@ -453,6 +455,29 @@ public abstract class RestAdapter extends HttpHandler implements Adapter, PostCo
 //        return report;
 //    }
 
+    /*
+     * dynamically load the class that contains all references to Jersey APIs
+     * so that Jersey is not loaded when the RestAdapter is loaded at boot time
+     * gain a few 100millis at GlassFish startyp time
++     */
+    protected LazyJerseyInterface getLazyJersey() {
+        if (lazyJerseyInterface != null) {
+            return lazyJerseyInterface;
+        }
+        synchronized (HttpHandler.class) {
+            if (lazyJerseyInterface == null) {
+               try {
+                    Class<?> lazyInitClass = Class.forName("org.glassfish.admin.rest.LazyJerseyInit");
+                    lazyJerseyInterface = (LazyJerseyInterface) lazyInitClass.newInstance();
+                } catch (Exception ex) {
+                    logger.log(Level.SEVERE,
+                            "Error trying to call org.glassfish.admin.rest.LazyJerseyInit via instrospection: ", ex);
+                }
+            }
+        }
+        return lazyJerseyInterface;
+
+    }
 
     private void exposeContext()
             throws EndpointRegistrationException {
@@ -460,7 +485,7 @@ public abstract class RestAdapter extends HttpHandler implements Adapter, PostCo
         logger.fine("Exposing rest resource context root: " + context);
         if ((context != null) || (!"".equals(context))) {
             Set<Class<?>> classes = getResourcesConfig();
-            adapter = LazyJerseyInit.exposeContext(classes, sc, habitat);
+            adapter = lazyJerseyInterface.exposeContext(classes, sc, habitat);
 //            ((HttpHandler) adapter).setResourcesContextPath(context);
             
             logger.info("Listening to REST requests at context: " + context + "/domain");

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2006-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -117,6 +117,8 @@ public class RoundRobinPolicy {
 
     private int totalWeight = 0;
 
+    private List<String> resolvedEndpoints ;
+
     private static final int default_weight = 10;
 
     private static void warnLog( String fmt, Object... args ) {
@@ -224,6 +226,7 @@ public class RoundRobinPolicy {
 	//randomize the list before adding it to linked list
 	if (!newList.isEmpty()) {
 	    List<String> newList2 = randomize(newList);
+            resolvedEndpoints = new ArrayList<String>( newList2 ) ;
 	    List<ClusterInstanceInfo> targetServerList = 
 		new LinkedList <ClusterInstanceInfo> ();
 
@@ -239,7 +242,7 @@ public class RoundRobinPolicy {
 		setClusterInstanceInfo(targetServerList); 
 	    }
 	} else {
-	    warnLog( "no.endpoints" );
+	    fineLog( "no.endpoints" );
 	}
     }   
 
@@ -358,7 +361,9 @@ public class RoundRobinPolicy {
 
 		//add the remaining list
 		instanceInfo.addAll(endpointsList.subList(0, i));
-		
+
+                endpointsList = instanceInfo ;
+
 		//print the contents...
 		fineLog( "returning the following list...{0}",
                     instanceInfo.toString());
@@ -464,5 +469,9 @@ public class RoundRobinPolicy {
         }
         sb.append( ']' ) ;
         return sb.toString() ;
+    }
+
+    public List<String> getHostPortList() {
+        return resolvedEndpoints ;
     }
 }

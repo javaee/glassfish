@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,19 +44,40 @@ import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.jersey.api.container.ContainerFactory;
 import com.sun.jersey.api.core.ResourceConfig;
+import org.glassfish.admin.rest.resources.StatusGenerator;
+import org.glassfish.admin.rest.resources.custom.ManagementProxyResource;
+import org.glassfish.admin.rest.results.ActionReportResult;
+import org.glassfish.admin.rest.utils.xml.RestActionReporter;
+import org.glassfish.api.ActionReport;
 import org.glassfish.api.container.EndpointRegistrationException;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.container.filter.LoggingFilter;
 import com.sun.jersey.api.core.DefaultResourceConfig;
 import com.sun.jersey.spi.inject.SingletonTypeInjectableProvider;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import org.glassfish.admin.rest.adapter.Reloader;
+import org.glassfish.admin.rest.generator.ASMResourcesGenerator;
+import org.glassfish.admin.rest.generator.ResourcesGenerator;
+import org.glassfish.admin.rest.provider.ActionReportResultHtmlProvider;
+import org.glassfish.admin.rest.provider.ActionReportResultJsonProvider;
+import org.glassfish.admin.rest.provider.ActionReportResultXmlProvider;
+import org.glassfish.admin.rest.provider.BaseProvider;
+import org.glassfish.admin.rest.resources.GeneratorResource;
 import org.glassfish.admin.rest.resources.ReloadResource;
 import org.glassfish.grizzly.http.server.HttpHandler;
+import org.glassfish.grizzly.http.server.Request;
+import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.internal.api.ServerContext;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.config.ConfigModel;
+import org.jvnet.hk2.config.Dom;
+import org.jvnet.hk2.config.DomDocument;
 
 /**
  *
@@ -66,9 +87,10 @@ import org.jvnet.hk2.component.Habitat;
  * Class that initialize the Jersey container. It is called via introspection from RestAdapter
  * so that RestAdapter does not depend on Jersey classes. This way, we gain 90ms at startup time
  * and load the jersey classes only at the very last time, when needed.
+ * It is safe to have imports on com.sun.jersey.* APIs in this class.
  * @author ludo
  */
-public class LazyJerseyInit {
+public class LazyJerseyInit  implements LazyJerseyInterface{
 
     
     /**
@@ -78,7 +100,7 @@ public class LazyJerseyInit {
      * @return the correct GrizzlyAdapter
      * @throws EndpointRegistrationException
      */
-    public static HttpHandler exposeContext(Set classes, ServerContext sc, Habitat habitat)
+    public HttpHandler exposeContext(Set classes, ServerContext sc, Habitat habitat)
             throws EndpointRegistrationException {
         
 
@@ -130,7 +152,8 @@ public class LazyJerseyInit {
     }
     
     
-    static protected RestConfig getRestConfig(Habitat habitat) {
+    @Override 
+    public RestConfig getRestConfig(Habitat habitat) {
         if (habitat == null) {
             return null;
         }
@@ -145,4 +168,153 @@ public class LazyJerseyInit {
         return null;
 
     }
+
+    @Override
+    public void reportError(Request req, Response res, int statusCode, String msg) {
+        try {
+            // TODO: There's a lot of arm waving and flailing here.  I'd like this to be cleaner, but I don't
+            // have time at the moment.  jdlee 8/11/10
+            RestActionReporter report = new RestActionReporter(); //getClientActionReport(req);
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setActionDescription("Error");
+            report.setMessage(msg);
+            BaseProvider<ActionReportResult> provider;
+            String type = getAcceptedMimeType(req);
+            if ("xml".equals(type)) {
+                res.setContentType("application/xml");
+                provider = new ActionReportResultXmlProvider();
+            } else if ("json".equals(type)) {
+                res.setContentType("application/json");
+                provider = new ActionReportResultJsonProvider();
+            } else {
+                res.setContentType("text/html");
+                provider = new ActionReportResultHtmlProvider();
+ }
+            res.setStatus(statusCode);
+            res.getOutputStream().write(provider.getContent(new ActionReportResult(report)).getBytes());
+            res.getOutputStream().flush();
+            res.finish();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static String getAcceptedMimeType(Request req) {
+        String type = null;
+        String requestURI = req.getRequestURI();
+        Set<String> acceptableTypes = new HashSet<String>() {
+
+            {
+                add("html");
+                add("xml");
+                add("json");
+            }
+        };
+
+        // first we look at the command extension (ie list-applications.[json | html | mf]
+        if (requestURI.indexOf('.') != -1) {
+            type = requestURI.substring(requestURI.indexOf('.') + 1);
+        } else {
+            String userAgent = req.getHeader("User-Agent");
+            if (userAgent != null) {
+                String accept = req.getHeader("Accept");
+                if (accept != null) {
+                    if (accept.indexOf("html") != -1) {//html is possible so get it...
+                        return "html";
+                    }
+                    StringTokenizer st = new StringTokenizer(accept, ",");
+                    while (st.hasMoreElements()) {
+                        String scheme = st.nextToken();
+                        scheme = scheme.substring(scheme.indexOf('/') + 1);
+                        if (acceptableTypes.contains(scheme)) {
+                            type = scheme;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        return type;
+    }
+
+    @Override
+    public Set<Class<?>> getResourcesConfigForMonitoring(Habitat habitat) {
+        final Set<Class<?>> r = new HashSet<Class<?>>();
+        r.add(org.glassfish.admin.rest.resources.MonitoringResource.class);
+
+        r.add(org.glassfish.admin.rest.provider.ActionReportResultHtmlProvider.class);
+        r.add(org.glassfish.admin.rest.provider.ActionReportResultJsonProvider.class);
+        r.add(org.glassfish.admin.rest.provider.ActionReportResultXmlProvider.class);
+
+        return r;
+    }
+
+    @Override
+    public Set<Class<?>> getResourcesConfigForManagement(Habitat habitat) {
+
+        Class domainResourceClass = null;//org.glassfish.admin.rest.resources.generated.DomainResource.class;
+
+        generateASM(habitat);
+        try {
+            domainResourceClass = Class.forName("org.glassfish.admin.rest.resources.generatedASM.DomainResource");
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(LazyJerseyInit.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        final Set<Class<?>> r = new HashSet<Class<?>>();
+
+        // uncomment if you need to run the generator:
+        r.add(GeneratorResource.class);
+        r.add(StatusGenerator.class);
+        //r.add(ActionReportResource.class);
+
+        r.add(domainResourceClass);
+        r.add(ManagementProxyResource.class);
+        r.add(org.glassfish.admin.rest.resources.SessionsResource.class); //TODO this needs to be added to all rest adapters that want to be secured. Decide on it after the discussion to unify RestAdapter is concluded
+        r.add(org.glassfish.admin.rest.resources.StaticResource.class);
+
+        //body readers, not in META-INF/services anymore
+        r.add(org.glassfish.admin.rest.readers.FormReader.class);
+        r.add(org.glassfish.admin.rest.readers.ParameterMapFormReader.class);
+        r.add(org.glassfish.admin.rest.readers.JsonHashMapProvider.class);
+        r.add(org.glassfish.admin.rest.readers.JsonPropertyListReader.class);
+        r.add(org.glassfish.admin.rest.readers.JsonParameterMapProvider.class);
+
+        r.add(org.glassfish.admin.rest.readers.XmlHashMapProvider.class);
+        r.add(org.glassfish.admin.rest.readers.XmlPropertyListReader.class);
+
+        //body writers
+        r.add(org.glassfish.admin.rest.provider.ActionReportResultHtmlProvider.class);
+        r.add(org.glassfish.admin.rest.provider.ActionReportResultJsonProvider.class);
+        r.add(org.glassfish.admin.rest.provider.ActionReportResultXmlProvider.class);
+
+
+        r.add(org.glassfish.admin.rest.provider.FormWriter.class);
+
+        r.add(org.glassfish.admin.rest.provider.GetResultListHtmlProvider.class);
+        r.add(org.glassfish.admin.rest.provider.GetResultListJsonProvider.class);
+        r.add(org.glassfish.admin.rest.provider.GetResultListXmlProvider.class);
+
+        r.add(org.glassfish.admin.rest.provider.OptionsResultJsonProvider.class);
+        r.add(org.glassfish.admin.rest.provider.OptionsResultXmlProvider.class);
+
+        return r;
+    }
+
+    private void generateASM(Habitat habitat) {
+        try {
+            Domain entity = habitat.getComponent(Domain.class);
+            Dom dom = Dom.unwrap(entity);
+            DomDocument document = dom.document;
+            ConfigModel rootModel = dom.document.getRoot().model;
+
+            ResourcesGenerator resourcesGenerator = new ASMResourcesGenerator();
+            resourcesGenerator.generateSingle(rootModel, document);
+            resourcesGenerator.endGeneration();
+        } catch (Exception ex) {
+            Logger.getLogger(GeneratorResource.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 }
+

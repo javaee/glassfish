@@ -200,7 +200,7 @@ ACCOUNT_CREATION_FOOTER_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~USER TYPE OPTIONS PAGE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 INSTALLUSERTYPE_OPTIONS_HEADER=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;\u9078\u64c7\u5b89\u88dd\u985e\u578b\u3002&lt;BODY&gt;&lt;HTML&gt;
 
-BASIC_USER_FOOTER_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;\u5b89\u88dd GlassFish Server \u7ba1\u7406\u7db2\u57df\uff1b\u6700\u9069\u5408\u958b\u767c&lt;BR&gt;\u6216\u975e\u6538\u95dc\u696d\u52d9\u7684\u4f7f\u7528\u3002\u8acb\u78ba\u5b9a\u9023\u63a5\u57e0 4848 \u548cd&lt;BR&gt; 8080 \u53ef\u4f9b\u4f7f\u7528\u3002&lt;BODY&gt;&lt;HTML&gt;
+BASIC_USER_FOOTER_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;\u5b89\u88dd GlassFish Server \u7ba1\u7406\u7db2\u57df\uff1b\u6700\u9069\u5408\u958b\u767c&lt;BR&gt;\u6216\u975e\u6538\u95dc\u696d\u52d9\u7684\u4f7f\u7528\u3002\u8acb\u78ba\u5b9a\u9023\u63a5\u57e0 4848 \u548c&lt;BR&gt; 8080 \u53ef\u4f9b\u4f7f\u7528\u3002&lt;BODY&gt;&lt;HTML&gt;
 
 ADVANCED_USER_FOOTER_TEXT=&lt;HTML&gt;&lt;BODY&gt;&lt;font face='Sans-Serif'&gt;\u63d0\u4f9b\u50c5\u5b89\u88dd\u4e8c\u9032\u4f4d\u6a94\u3001\u7ba1\u7406\u7db2\u57df\u3001&lt;BR&gt;\u7368\u7acb\u5be6\u4f8b\u6216\u53e2\u96c6\u7684\u9078\u9805\u3002\u6b64\u9078\u9805\u6700\u9069\u5408\u7528\u65bc\u751f\u7522&lt;BR&gt;\u90e8\u7f72\u3002&lt;BODY&gt;&lt;HTML&gt;
 

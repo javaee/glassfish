@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,7 +42,7 @@ package com.sun.enterprise.v3.admin;
 import com.sun.enterprise.admin.util.ClusterOperationUtil;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.util.StringUtils;
+import static com.sun.enterprise.util.StringUtils.ok;
 import com.sun.enterprise.v3.common.ActionReporter;
 import com.sun.enterprise.v3.common.PlainTextActionReporter;
 import com.sun.enterprise.v3.common.PropsFileActionReporter;
@@ -71,6 +71,8 @@ import static com.sun.enterprise.util.SystemPropertyConstants.SLASH;
  *
  * @author Byron Nevins
  * First breathed life on November 6, 2010
+ * The copyright says 1997 because one method in here has code moved verbatim
+ * from GetCommand.java which started life in 1997
  *
  * Note: what do you suppose is the worst possible name for a TreeNode class?
  * Correct!  TreeNode!  Clashing names is why we have to explicitly use this ghastly
@@ -362,7 +364,7 @@ public class MonitoringReporter extends V2DottedNameSupport {
         // 2.  *
         // 3.  *.   --> which is a weird input but let's accept it anyway!
         // 4   .   --> very weird but we'll take it
-        if (!StringUtils.ok(userarg)
+        if (!ok(userarg)
                 || userarg.equals("*")
                 || userarg.equals(".")
                 || userarg.equals("*.")) {
@@ -484,16 +486,57 @@ public class MonitoringReporter extends V2DottedNameSupport {
 
         // IT 8985 bnevins
         // Hack to get single stats.  The code above above would take a lot of
-        // time to unwind.  For development speed we just remove unwanted items
+       // time to unwind.  For development speed we just remove unwanted items
         // after the fact...
-
         if (exactMatch != null) {
-            Object val = map.get(exactMatch);
+            NameValue nv = getIgnoreBackslash(map, exactMatch);
             map.clear();
 
-            if (val != null)
-                map.put(exactMatch, val);
+            if (nv != null) {
+                map.put(nv.name, nv.value);
+            }
         }
+    }
+
+    /*
+     * bnevins, 1-11-11
+     * Note that we can not GUESS where to put the backslash into 'pattern'.
+     * If so -- we could simply add it into pattern and do a get on the HashMap.
+     * Instead we have to get each and every key in the map, remove backslashes
+     * and compare.
+     */
+    private NameValue getIgnoreBackslash(TreeMap map, String pattern) {
+
+        if(pattern == null)
+            return null;
+
+        Object match = map.get(pattern);
+
+        if(match != null)
+            return new NameValue(pattern, match);
+
+        pattern = pattern.replace("\\", "");
+        match = map.get(pattern);
+
+        if(match != null)
+            return new NameValue(pattern, match);
+
+        // No easy match...
+
+        Set<Map.Entry> elems = map.entrySet();
+
+        for(Map.Entry elem : elems) {
+            String key = elem.getKey().toString();
+
+            if(key == null)
+                continue;
+
+            String name = key.replace("\\", "");
+
+            if(pattern.equals(name))
+                return new NameValue(key, elem.getValue());
+        }
+        return null;
     }
 
     private void addStatisticInfo(Object value, String name, TreeMap map) {
@@ -623,4 +666,14 @@ public class MonitoringReporter extends V2DottedNameSupport {
     private OutputType outputType;
     private final static String DOTTED_NAME = ".dotted-name";
     private final StringBuilder cliOutput = new StringBuilder();
+
+    private static class NameValue {
+        String name;
+        Object value;
+
+        private NameValue(String s, Object o) {
+            name = s;
+            value = o;
+        }
+    }
 }

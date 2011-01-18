@@ -46,12 +46,12 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class JdbcTest extends BaseSeleniumTestClass {
-    public static final String TRIGGER_JDBC_CONNECTION_POOLS = "To store, organize, and retrieve data, most applications use relational databases.";
-    public static final String TRIGGER_JDBC_RESOURCES = "JDBC resources provide applications with a means to connect to a database.";
-    public static final String TRIGGER_EDIT_JDBC_RESOURCE = "Edit JDBC Resource";
-    public static final String TRIGGER_NEW_JDBC_CONNECTION_POOL_STEP_1 = "New JDBC Connection Pool (Step 1 of 2)";
-    public static final String TRIGGER_NEW_JDBC_CONNECTION_POOL_STEP_2 = "New JDBC Connection Pool (Step 2 of 2)";
-    public static final String TRIGGER_NEW_JDBC_RESOURCE = "New JDBC Resource";
+    public static final String TRIGGER_JDBC_CONNECTION_POOLS = "i18njdbc.jdbcConnectionPools.pageTitleHelp";
+    public static final String TRIGGER_JDBC_RESOURCES = "i18njdbc.jdbcResources.pageTitleHelp";
+    public static final String TRIGGER_EDIT_JDBC_RESOURCE = "i18njdbc.jdbcResource.editPageTitleHelp";
+    public static final String TRIGGER_NEW_JDBC_CONNECTION_POOL_STEP_1 = "i18njdbc.jdbcConnection.step1PageHelp";
+    public static final String TRIGGER_NEW_JDBC_CONNECTION_POOL_STEP_2 = "i18njdbc.jdbcConnection.step2PageHelp";
+    public static final String TRIGGER_NEW_JDBC_RESOURCE = "i18njdbc.jdbcResource.newPageTitleHelp";
 
     @Test
     public void testPoolPing() {
@@ -67,14 +67,14 @@ public class JdbcTest extends BaseSeleniumTestClass {
         clickAndWait("treeForm:tree:resources:JDBC:connectionPoolResources:connectionPoolResources_link", TRIGGER_JDBC_CONNECTION_POOLS);
         clickAndWait("propertyForm:poolTable:topActionsGroup1:newButton", TRIGGER_NEW_JDBC_CONNECTION_POOL_STEP_1);
 
-        selenium.type("propertyForm:propertyContentPage:propertySheet:generalPropertySheet:jndiProp:name", poolName);
-        selenium.select("propertyForm:propertyContentPage:propertySheet:generalPropertySheet:resTypeProp:resType", "label=javax.sql.DataSource");
-        selenium.select("propertyForm:propertyContentPage:propertySheet:generalPropertySheet:dbProp:db", "label=Derby");
+        setFieldValue("propertyForm:propertyContentPage:propertySheet:generalPropertySheet:jndiProp:name", poolName);
+        selectDropdownOption("propertyForm:propertyContentPage:propertySheet:generalPropertySheet:resTypeProp:resType", "javax.sql.DataSource");
+        selectDropdownOption("propertyForm:propertyContentPage:propertySheet:generalPropertySheet:dbProp:db", "Derby");
         clickAndWait("propertyForm:propertyContentPage:topButtons:nextButton", TRIGGER_NEW_JDBC_CONNECTION_POOL_STEP_2);
 
-        selenium.type("form2:sheet:generalSheet:descProp:desc", description);
+        setFieldValue("form2:sheet:generalSheet:descProp:desc", description);
         clickAndWait("form2:propertyContentPage:topButtons:finishButton", TRIGGER_JDBC_CONNECTION_POOLS);
-        assertTrue(selenium.isTextPresent(poolName) && selenium.isTextPresent(description));
+        assertTrue(isTextPresent(poolName) && isTextPresent(description));
 
         deleteRow("propertyForm:poolTable:topActionsGroup1:button1", "propertyForm:poolTable", poolName);
     }
@@ -92,17 +92,17 @@ public class JdbcTest extends BaseSeleniumTestClass {
         clickAndWait("treeForm:tree:resources:JDBC:jdbcResources:jdbcResources_link", TRIGGER_JDBC_RESOURCES);
         clickAndWait("propertyForm:resourcesTable:topActionsGroup1:newButton", TRIGGER_NEW_JDBC_RESOURCE);
 
-        selenium.type("form:propertySheet:propertSectionTextField:nameNew:name", jndiName);
-        selenium.type("form:propertySheet:propertSectionTextField:descProp:desc", description);
+        setFieldValue("form:propertySheet:propertSectionTextField:nameNew:name", jndiName);
+        setFieldValue("form:propertySheet:propertSectionTextField:descProp:desc", description);
         int count = addTableRow("form:basicTable", "form:basicTable:topActionsGroup1:addSharedTableButton");
 
-        selenium.type("form:basicTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
-        selenium.type("form:basicTable:rowGroup1:0:col3:col1St", "value");
-        selenium.type("form:basicTable:rowGroup1:0:col4:col1St", "description");
+        setFieldValue("form:basicTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
+        setFieldValue("form:basicTable:rowGroup1:0:col3:col1St", "value");
+        setFieldValue("form:basicTable:rowGroup1:0:col4:col1St", "description");
         clickAndWait("form:propertyContentPage:topButtons:newButton", TRIGGER_JDBC_RESOURCES);
 
-        assertTrue(selenium.isTextPresent(jndiName));
-        assertTrue(selenium.isTextPresent(description));
+        assertTrue(isTextPresent(jndiName));
+        assertTrue(isTextPresent(description));
 
         clickAndWait(getLinkIdByLinkText("propertyForm:resourcesTable", jndiName), TRIGGER_EDIT_JDBC_RESOURCE);
 
@@ -143,22 +143,22 @@ public class JdbcTest extends BaseSeleniumTestClass {
         clickAndWait("treeForm:tree:resources:JDBC:jdbcResources:jdbcResources_link", TRIGGER_JDBC_RESOURCES);
         clickAndWait("propertyForm:resourcesTable:topActionsGroup1:newButton", TRIGGER_NEW_JDBC_RESOURCE);
 
-        selenium.type("form:propertySheet:propertSectionTextField:nameNew:name", jndiName);
-        selenium.type("form:propertySheet:propertSectionTextField:descProp:desc", description);
+        setFieldValue("form:propertySheet:propertSectionTextField:nameNew:name", jndiName);
+        setFieldValue("form:propertySheet:propertSectionTextField:descProp:desc", description);
         int count = addTableRow("form:basicTable", "form:basicTable:topActionsGroup1:addSharedTableButton");
 
-        selenium.type("form:basicTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
-        selenium.type("form:basicTable:rowGroup1:0:col3:col1St", "value");
-        selenium.type("form:basicTable:rowGroup1:0:col4:col1St", "description");
+        setFieldValue("form:basicTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
+        setFieldValue("form:basicTable:rowGroup1:0:col3:col1St", "value");
+        setFieldValue("form:basicTable:rowGroup1:0:col4:col1St", "description");
 
-        selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label="+instanceName);
-        selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=server");
-	selenium.click("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
+        addSelectSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", instanceName);
+        addSelectSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "server");
+	pressButton("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
 
         clickAndWait("form:propertyContentPage:topButtons:newButton", TRIGGER_JDBC_RESOURCES);
 
-        assertTrue(selenium.isTextPresent(jndiName));
-        assertTrue(selenium.isTextPresent(description));
+        assertTrue(isTextPresent(jndiName));
+        assertTrue(isTextPresent(description));
 
         clickAndWait(getLinkIdByLinkText("propertyForm:resourcesTable", jndiName), TRIGGER_EDIT_JDBC_RESOURCE);
 
@@ -211,26 +211,26 @@ public class JdbcTest extends BaseSeleniumTestClass {
         clickAndWait("treeForm:tree:resources:JDBC:jdbcResources:jdbcResources_link", TRIGGER_JDBC_RESOURCES);
         clickAndWait("propertyForm:resourcesTable:topActionsGroup1:newButton", TRIGGER_NEW_JDBC_RESOURCE);
 
-        selenium.type("form:propertySheet:propertSectionTextField:nameNew:name", jndiName);
-        selenium.type("form:propertySheet:propertSectionTextField:descProp:desc", description);
+        setFieldValue("form:propertySheet:propertSectionTextField:nameNew:name", jndiName);
+        setFieldValue("form:propertySheet:propertSectionTextField:descProp:desc", description);
 
         if (targetType.equals(MonitoringTest.TARGET_STANDALONE_TYPE)) {
-            selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=" + target);
-            selenium.click("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
+            addSelectSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", target);
+            pressButton("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
         } else if (targetType.equals(MonitoringTest.TARGET_CLUSTER_TYPE)) {
-            selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=" + target);
-            selenium.click("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
+            addSelectSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", target);
+            pressButton("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
         }
         clickAndWait("form:propertyContentPage:topButtons:newButton", TRIGGER_JDBC_RESOURCES);
 
-        assertTrue(selenium.isTextPresent(jndiName));
-        assertTrue(selenium.isTextPresent(description));
+        assertTrue(isTextPresent(jndiName));
+        assertTrue(isTextPresent(description));
     }
 
     public void deleteJDBCResource(String jndiName, String target, String targetType) {
         clickAndWait("treeForm:tree:resources:JDBC:jdbcResources:jdbcResources_link", TRIGGER_JDBC_RESOURCES);
         deleteRow("propertyForm:resourcesTable:topActionsGroup1:button1", "propertyForm:resourcesTable", jndiName);
-        assertFalse(selenium.isTextPresent(jndiName));
+        assertFalse(isTextPresent(jndiName));
         if (targetType.equals(MonitoringTest.TARGET_STANDALONE_TYPE)) {
             //Delete the instance
             clickAndWait("treeForm:tree:standaloneTreeNode:standaloneTreeNode_link", StandaloneTest.TRIGGER_INSTANCES_PAGE);

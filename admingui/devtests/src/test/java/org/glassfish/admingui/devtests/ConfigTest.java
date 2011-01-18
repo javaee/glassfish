@@ -53,9 +53,9 @@ public class ConfigTest extends BaseSeleniumTestClass {
         final String configName= "test-config-"+generateRandomString();
         clickAndWait("treeForm:tree:configurations:configurations_link", TRIGGER_CONFIGURATION);
         clickAndWait("propertyForm:configs:topActionsGroup1:newButton", TRIGGER_NEW_CONFIGURATION);
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:NameProp:Name", configName);
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:NameProp:Name", configName);
         clickAndWait("propertyForm:propertyContentPage:topButtons:okButton", TRIGGER_CONFIGURATION);
-        assertTrue(selenium.isTextPresent(configName));
+        assertTrue(isTextPresent(configName));
 
         deleteRow("propertyForm:configs:topActionsGroup1:button1", "propertyForm:configs", configName);
     }

@@ -56,9 +56,9 @@ public class LogViewerTest extends BaseSeleniumTestClass {
     @Test
     public void testLogViewer() {
         clickAndWait("treeForm:tree:applicationServer:applicationServer_link", TRIGGER_SERVER);
-        selenium.click("propertyForm:propertyContentPage:logViewer");
-        selenium.waitForPopUp("LogViewerWindow", "999999");
-        selenium.isTextPresent(TRIGGER_LV);
+        pressButton("propertyForm:propertyContentPage:logViewer");
+        waitForPopUp("LogViewerWindow", "999999");
+        isTextPresent(TRIGGER_LV);
     }
 }
 

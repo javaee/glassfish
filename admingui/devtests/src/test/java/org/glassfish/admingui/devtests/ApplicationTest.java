@@ -90,21 +90,21 @@ public class ApplicationTest extends BaseSeleniumTestClass {
         clickAndWaitForElement(ELEMENT_DEPLOY_BUTTON, ELEMENT_FILE_FIELD);
         File war = new File("src/test/resources/test.war");
         try {
-            selenium.attachFile(ELEMENT_FILE_FIELD, war.toURL().toString());
+            selectFile(ELEMENT_FILE_FIELD, war.toURL().toString());
         } catch (MalformedURLException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
 
-        assertEquals("test", selenium.getValue(ELEMENT_CONTEXT_ROOT));
-        assertEquals("test", selenium.getValue(ELEMENT_APP_NAME));
+        assertEquals("test", getFieldValue(ELEMENT_CONTEXT_ROOT));
+        assertEquals("test", getFieldValue(ELEMENT_APP_NAME));
 
-        selenium.type(ELEMENT_CONTEXT_ROOT, applicationName);
-        selenium.type(ELEMENT_APP_NAME, applicationName);
+        setFieldValue(ELEMENT_CONTEXT_ROOT, applicationName);
+        setFieldValue(ELEMENT_APP_NAME, applicationName);
 
         clickAndWait(ELEMENT_UPLOAD_BUTTON, TRIGGER_APPLICATIONS);
         String conf = "";
-        if (selenium.isAlertPresent()) {
-            conf = selenium.getAlert();
+        if (isAlertPresent()) {
+            conf = getAlertText();
         }
         int postCount = this.getTableRowCount(ELEMENT_DEPLOY_TABLE);
         assertTrue (preCount < postCount);
@@ -115,7 +115,7 @@ public class ApplicationTest extends BaseSeleniumTestClass {
         selectTableRowByValue(ELEMENT_DEPLOY_TABLE, applicationName);
         clickAndWait(ELEMENT_DISABLE_BUTTON, TRIGGER_APPLICATION_DISABLED);
         clickAndWait(getLinkIdByLinkText(ELEMENT_DEPLOY_TABLE, applicationName), TRIGGER_EDIT_APPLICATION);
-        assertEquals("off", selenium.getValue(ELEMENT_STATUS));
+        assertEquals("off", getFieldValue(ELEMENT_STATUS));
         clickAndWait(ELEMENT_CANCEL_BUTTON, TRIGGER_APPLICATIONS);
 
 //        testDisableButton(applicationName, ELEMENT_DEPLOY_TABLE, ELEMENT_DISABLE_BUTTON, ELEMENT_STATUS, ELEMENT_CANCEL_BUTTON, TRIGGER_APPLICATIONS, TRIGGER_EDIT_APPLICATION);
@@ -125,17 +125,17 @@ public class ApplicationTest extends BaseSeleniumTestClass {
         selectTableRowByValue(ELEMENT_DEPLOY_TABLE, applicationName);
         clickAndWait(ELEMENT_ENABLE_BUTTON, TRIGGER_APPLICATION_ENABLED, 300);
         clickAndWait(getLinkIdByLinkText(ELEMENT_DEPLOY_TABLE, applicationName), TRIGGER_EDIT_APPLICATION);
-        assertEquals("on", selenium.getValue(ELEMENT_STATUS));
+        assertEquals("on", getFieldValue(ELEMENT_STATUS));
         clickAndWait(ELEMENT_CANCEL_BUTTON, TRIGGER_APPLICATIONS);
 
 
 //        testEnableButton(applicationName, ELEMENT_DEPLOY_TABLE, ELEMENT_ENABLE_BUTTON, ELEMENT_STATUS, ELEMENT_CANCEL_BUTTON, TRIGGER_APPLICATIONS, TRIGGER_EDIT_APPLICATION);
 
         // Undeploy application
-        selenium.chooseOkOnNextConfirmation();
+        chooseOkOnNextConfirmation();
         selectTableRowByValue(ELEMENT_DEPLOY_TABLE, applicationName);
-        selenium.click(ELEMENT_UNDEPLOY_BUTTON);
-        selenium.getConfirmation();
+        pressButton(ELEMENT_UNDEPLOY_BUTTON);
+        getConfirmation();
         waitForPageLoad(applicationName, true);
         int postUndeployCount = this.getTableRowCount(ELEMENT_DEPLOY_TABLE);
         assertTrue (preCount == postUndeployCount);
@@ -146,16 +146,16 @@ public class ApplicationTest extends BaseSeleniumTestClass {
         final String adminTimeout = Integer.toString(generateRandomNumber(100));
         clickAndWait("treeForm:tree:nodes:nodes_link", TRIGGER_DOMAIN_ATTRIBUTES);
         clickAndWait("propertyForm:domainTabs:appConfig", TRIGGER_APPLICATION_CONFIGURATION);
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:AdminTimeoutProp:AdminTimeout", adminTimeout);
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:AdminTimeoutProp:AdminTimeout", adminTimeout);
         clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_SUCCESS);
-        assertEquals(adminTimeout, selenium.getValue("propertyForm:propertySheet:propertSectionTextField:AdminTimeoutProp:AdminTimeout"));
+        assertEquals(adminTimeout, getFieldValue("propertyForm:propertySheet:propertSectionTextField:AdminTimeoutProp:AdminTimeout"));
     }
 
     @Test
     public void testDomainAttributes() {
         clickAndWait("treeForm:tree:nodes:nodes_link", TRIGGER_DOMAIN_ATTRIBUTES);
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:localeProp:Locale", "en_UK");
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:localeProp:Locale", "en_UK");
         clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_SUCCESS);
-        assertEquals("en_UK", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:localeProp:Locale"));
+        assertEquals("en_UK", getFieldValue("propertyForm:propertySheet:propertSectionTextField:localeProp:Locale"));
     }
 }

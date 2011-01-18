@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.admin.cli;
 
 import java.io.File;
@@ -66,20 +65,21 @@ import static com.sun.enterprise.admin.cli.CLIConstants.WAIT_FOR_DAS_TIME_MS;
  * This class is designed to be thread-safe and IMMUTABLE
  * @author bnevins
  */
-public class StartServerHelper{
+public class StartServerHelper {
+
     public StartServerHelper(Logger logger0, boolean terse0,
-            ServerDirs serverDirs0, GFLauncher launcher0, 
+            ServerDirs serverDirs0, GFLauncher launcher0,
             String masterPassword0, boolean debug0) {
         logger = logger0;
         terse = terse0;
         launcher = launcher0;
         info = launcher.getInfo();
-        
-        if(info.isDomain())
+
+        if (info.isDomain())
             serverOrDomainName = info.getDomainName();
         else
             serverOrDomainName = info.getInstanceName();
-        
+
         addresses = info.getAdminAddresses();
         serverDirs = serverDirs0;
         pidFile = serverDirs.getPidFile();
@@ -90,7 +90,7 @@ public class StartServerHelper{
     // TODO check the i18n messages
     public void waitForServer() throws CommandException {
         long startWait = System.currentTimeMillis();
-        if(!terse) {
+        if (!terse) {
             // use stdout because logger always appends a newline
             System.out.print(strings.get("WaitServer", serverOrDomainName) + " ");
         }
@@ -99,10 +99,10 @@ public class StartServerHelper{
         int count = 0;
 
         pinged:
-        while(!timedOut(startWait)) {
-            if(pidFile != null) {
+        while (!timedOut(startWait)) {
+            if (pidFile != null) {
                 logger.finer("Check for pid file: " + pidFile);
-                if(pidFile.exists()) {
+                if (pidFile.exists()) {
                     alive = true;
                     break pinged;
                 }
@@ -126,14 +126,14 @@ public class StartServerHelper{
                 // uh oh, DAS died
                 String sname;
 
-                if(info.isDomain())
+                if (info.isDomain())
                     sname = "domain " + info.getDomainName();
                 else
                     sname = "instance " + info.getInstanceName();
 
                 ProcessStreamDrainer psd = launcher.getProcessStreamDrainer();
                 String output = psd.getOutErrString();
-                if(ok(output))
+                if (ok(output))
                     throw new CommandException(strings.get("serverDiedOutput",
                             sname, exitCode, output));
                 else
@@ -150,7 +150,7 @@ public class StartServerHelper{
             // wait before checking again
             try {
                 Thread.sleep(100);
-                if(!terse && count++ % 10 == 0)
+                if (!terse && count++ % 10 == 0)
                     System.out.print(".");
             }
             catch (InterruptedException ex) {
@@ -158,19 +158,19 @@ public class StartServerHelper{
             }
         }
 
-        if(!terse)
+        if (!terse)
             System.out.println();
 
-        if(!alive) {
+        if (!alive) {
             String msg;
             String time = "" + (WAIT_FOR_DAS_TIME_MS / 1000);
-            if(info.isDomain())
+            if (info.isDomain())
                 msg = strings.get("serverNoStart", strings.get("DAS"),
-                    info.getDomainName(), time);
+                        info.getDomainName(), time);
             else
                 msg = strings.get("serverNoStart", strings.get("INSTANCE"),
-                    info.getInstanceName(), time);
-            
+                        info.getInstanceName(), time);
+
             throw new CommandException(msg);
         }
     }
@@ -184,7 +184,7 @@ public class StartServerHelper{
         waitForParentToDie();
         setSecurity();
 
-        if(checkPorts() == false)
+        if (checkPorts() == false)
             return false;
 
         deletePidFile();
@@ -233,21 +233,20 @@ public class StartServerHelper{
         int debugPort = -1;
         String debugPortString = "-1";
 
-        if(debug) {
+        if (debug) {
             debugPort = launcher.getDebugPort();
             debugPortString = "" + debugPort;
         }
 
         logger.info(strings.get(
-                    "ServerStart.SuccessMessage",
-                    info.isDomain() ? "domain " : "instance",
-                    serverDirs.getServerName(),
-                    serverDirs.getServerDir(),
-                    logfile,
-                    adminPortString)
-                );
+                "ServerStart.SuccessMessage",
+                info.isDomain() ? "domain " : "instance",
+                serverDirs.getServerName(),
+                serverDirs.getServerDir(),
+                logfile,
+                adminPortString));
 
-        if(debugPort >= 0)
+        if (debugPort >= 0)
             logger.info(strings.get("ServerStart.DebuggerMessage", debugPortString));
     }
 
@@ -258,14 +257,14 @@ public class StartServerHelper{
      *  if the admin ports never free up
      */
     private void waitForParentToDie() throws CommandException {
-        if(Boolean.getBoolean(CLIConstants.RESTART_FLAG))
+        if (Boolean.getBoolean(CLIConstants.RESTART_FLAG))
             new ParentDeathWaiter();
     }
 
     private boolean checkPorts() {
         String err = adminPortInUse();
 
-        if(err != null) {
+        if (err != null) {
             logger.warning(err);
             return false;
         }
@@ -276,7 +275,7 @@ public class StartServerHelper{
     private void deletePidFile() {
         String msg = serverDirs.deletePidFile();
 
-        if(msg != null)
+        if (msg != null)
             logger.finer(msg);
     }
 
@@ -290,10 +289,11 @@ public class StartServerHelper{
 
     private String adminPortInUse(List<HostAndPort> adminAddresses) {
         // it returns a String for logging --- if desired
-        for(HostAndPort addr : adminAddresses)
-            if(!NetUtils.isPortFree(addr.getHost(), addr.getPort()))
+        for (HostAndPort addr : adminAddresses) {
+            if (!NetUtils.isPortFree(addr.getHost(), addr.getPort()))
                 return strings.get("ServerRunning",
-                                    Integer.toString(addr.getPort()));
+                        Integer.toString(addr.getPort()));
+        }
 
         return null;
     }
@@ -323,6 +323,7 @@ public class StartServerHelper{
      * see RestartDomainCommand in core/kernel for more details
      */
     private class ParentDeathWaiter implements Runnable {
+
         @Override
         @SuppressWarnings("empty-statement")
         public void run() {
@@ -330,15 +331,14 @@ public class StartServerHelper{
                 // When parent process is almost dead, in.read returns -1 (EOF)
                 // as the pipe breaks.
 
-                while(System.in.read() >= 0);
+                while (System.in.read() >= 0);
             }
             catch (IOException ex) {
                 // ignore
             }
 
             // The port may take some time to become free after the pipe breaks
-            while (adminPortInUse(addresses) != null)
-                ;
+            while (adminPortInUse(addresses) != null);
 
             success = true;
         }
@@ -353,7 +353,7 @@ public class StartServerHelper{
                 // ignore!
             }
 
-            if(!success)
+            if (!success)
                 throw new CommandException(
                         strings.get("deathwait_timeout", CLIConstants.DEATH_TIMEOUT_MS));
         }

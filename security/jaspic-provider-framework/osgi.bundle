@@ -38,7 +38,10 @@
 # holder.
 #
 -exportcontents: \
+                        com.sun.jaspic.config.delegate; \
                         com.sun.jaspic.config.factory; \
+                        com.sun.jaspic.config.jaas; \
+                        com.sun.jaspic.config.servlet; \
                         com.sun.logging.enterprise.system.jaspic.security; \
                         com.sun.jaspic.config.helper; version=${project.osgi.version}
 

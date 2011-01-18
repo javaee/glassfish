@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -47,6 +47,8 @@ import org.glassfish.embeddable.web.config.WebListenerConfig;
  *
  * <p>Instances of <tt>WebListener</tt> may be in one of two states:
  * <i>stopped</i> or <i>started</i>.
+ *
+ * <p/>See {@link WebContainer} for usage example.
  *
  * @author Rajiv Mordani
  * @author Amy Roh

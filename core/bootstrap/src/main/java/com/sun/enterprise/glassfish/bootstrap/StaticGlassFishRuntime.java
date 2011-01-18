@@ -220,7 +220,8 @@ public class StaticGlassFishRuntime extends GlassFishRuntime {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        gfProps.getProperties().setProperty(autoDelete, "true");
+        String autoDeleteVal = gfProps.getProperties().getProperty(autoDelete, "true");
+        gfProps.getProperties().setProperty(autoDelete, autoDeleteVal);
         return instanceRoot.getAbsolutePath();
     }
 

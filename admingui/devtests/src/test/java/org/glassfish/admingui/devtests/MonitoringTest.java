@@ -102,7 +102,7 @@ public class MonitoringTest extends BaseSeleniumTestClass {
     //Monitoring service related methods.
     private void goToMonitoingServicePage(String target, String targetType) {
         goToMonitoringApplicationsPage(target, targetType);
-        assertTrue(selenium.isElementPresent("link=Configure Monitoring"));
+        assertTrue(isElementPresent("link=Configure Monitoring"));
         clickAndWait("link=Configure Monitoring", TRIGGER_MONITORING_SERVICE);
     }
 
@@ -110,13 +110,13 @@ public class MonitoringTest extends BaseSeleniumTestClass {
         goToMonitoingServicePage(target, targetType);
         waitForPageLoad("HTTP Service", 1000);
         if (isAll) {
-            selenium.click("form1:basicTable:_tableActionsTop:_selectMultipleButton:_selectMultipleButton_image");
+            pressButton("form1:basicTable:_tableActionsTop:_selectMultipleButton:_selectMultipleButton_image");
         } else {
             selectTableRowByValue("form1:basicTable", component, MONITOR_COMP_SELECT_ID, MONITOR_COMP_COL_ID);
         }
         waitForButtonEnabled("form1:basicTable:topActionsGroup1:button1");
-        selenium.select("form1:basicTable:topActionsGroup1:change_list", "label=" + monLevel);
-        selenium.click("form1:basicTable:topActionsGroup1:button1");
+        selectDropdownOption("form1:basicTable:topActionsGroup1:change_list", monLevel);
+        pressButton("form1:basicTable:topActionsGroup1:button1");
         waitForButtonDisabled("form1:basicTable:topActionsGroup1:button1");
         clickAndWait("form1:title:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
 
@@ -125,10 +125,10 @@ public class MonitoringTest extends BaseSeleniumTestClass {
         goToMonitoingServicePage(target, targetType);
         String level = null;
         if (isAll) {
-            level = selenium.getSelectedLabel("form1:basicTable:rowGroup1:0:" + MONITOR_LEVEL_COL_ID + ":level");
+            level = getSelectedLabel("form1:basicTable:rowGroup1:0:" + MONITOR_LEVEL_COL_ID + ":level");
         } else {
             String id = getTableRowByValue("form1:basicTable", component, MONITOR_COMP_COL_ID);
-            level = selenium.getSelectedLabel(id + MONITOR_LEVEL_COL_ID + ":level");
+            level = getSelectedLabel(id + MONITOR_LEVEL_COL_ID + ":level");
         }
         assertEquals(monLevel, level);
     }
@@ -183,13 +183,13 @@ public class MonitoringTest extends BaseSeleniumTestClass {
         verifyMonitoringStat("runtimeStats", jvmRuntimeData, jvmRuntimeHeader);
         verifyMonitoringStat("jvmThreadStats", jvmThreadData, jvmThreadHeader);
 
-        selenium.select(dropDownId, "Copy");
+        selectDropdownOption(dropDownId, "Copy");
         waitForPageLoad(gcCopyHeader, 10000);
         verifyMonitoringStat("gcStats", gcCopyData, gcCopyHeader);
-        selenium.select(dropDownId, "label=MarkSweepCompact");
+        selectDropdownOption(dropDownId, "MarkSweepCompact");
         waitForPageLoad(gcMarkSweepHeader, 10000);
         verifyMonitoringStat("gcStats", gcMarkSweepData, gcMarkSweepHeader);
-        selenium.select(dropDownId, "label=thread-1");
+        selectDropdownOption(dropDownId, "thread-1");
         waitForPageLoad(threadHeader, 10000);
         verifyMonitoringStat("jvmThreadInfoStats", threadData, threadHeader);
 
@@ -257,13 +257,13 @@ public class MonitoringTest extends BaseSeleniumTestClass {
         setMonitorLevel("HTTP Service", MONITOR_LEVEL_HIGH, false, target, targetType);
         goToMonitoringServerPage(target, targetType);
 
-        selenium.select(dropDownId, "label=server");
+        selectDropdownOption(dropDownId, "server");
         waitForPageLoad(virtualStatsHeader, 10000);
 
         verifyMonitoringStat("virtualServerStats", virtualStatsData, virtualStatsHeader);
         verifyMonitoringStat("httpServiceStats", requestStatsData, requestStatsHeader);
 
-        selenium.select(dropDownId, "label=admin-listener");
+        selectDropdownOption(dropDownId, "admin-listener");
         waitForPageLoad(fileCacheStatsHeader, 10000);
         verifyMonitoringStat("fileCacheStats", fileCacheStatsData, fileCacheStatsHeader);
         verifyMonitoringStat("keepAliveStats", keepAliveStatsData, keepAliveStatsHeader);
@@ -274,9 +274,9 @@ public class MonitoringTest extends BaseSeleniumTestClass {
     }
 
     private void verifyMonitoringStat(String stat, String statData, String statHeader) {
-        assertTrue(selenium.isTextPresent(statHeader));
+        assertTrue(isTextPresent(statHeader));
         clickAndWait("propertyForm:propertyContentPage:basicTable:" + stat + ":_groupHeader:_groupPanelToggleButton:_groupPanelToggleButton_image", statData);
-        selenium.click("propertyForm:propertyContentPage:basicTable:" + stat + ":_groupHeader:_groupPanelToggleButton:_groupPanelToggleButton_image");
+        pressButton("propertyForm:propertyContentPage:basicTable:" + stat + ":_groupHeader:_groupPanelToggleButton:_groupPanelToggleButton_image");
     }
 
     private void goToMonitoringApplicationsPage(String target, String targetType) {
@@ -300,10 +300,10 @@ public class MonitoringTest extends BaseSeleniumTestClass {
         setMonitorLevel("EJB Container", MONITOR_LEVEL_HIGH, false, target, targetType);
         goToMonitoringApplicationsPage(target, targetType);
 
-        selenium.select(MONITORING_APPLICATIONS_COMPONENT_DROPDOWN_ID, "label=TimerSingleton");
+        selectDropdownOption(MONITORING_APPLICATIONS_COMPONENT_DROPDOWN_ID, "TimerSingleton");
         waitForPageLoad(statsHeader, 10000);
-        assertTrue(selenium.isTextPresent(statsHeader));
-        assertTrue(selenium.isTextPresent(statDescription));
+        assertTrue(isTextPresent(statsHeader));
+        assertTrue(isTextPresent(statDescription));
 
         setMonitorLevel("Web Container", MONITOR_LEVEL_OFF, false, target, targetType);
         setMonitorLevel("EJB Container", MONITOR_LEVEL_OFF, false, target, targetType);
@@ -322,15 +322,15 @@ public class MonitoringTest extends BaseSeleniumTestClass {
         setMonitorLevel("EJB Container", MONITOR_LEVEL_HIGH, false, target, targetType);
         goToMonitoringApplicationsPage(target, targetType);
 
-        selenium.select(MONITORING_APPLICATIONS_COMPONENT_DROPDOWN_ID, "label=SfulEJB");
+        selectDropdownOption(MONITORING_APPLICATIONS_COMPONENT_DROPDOWN_ID, "SfulEJB");
         waitForPageLoad(statefulStatsHeader, 10000);
-        assertTrue(selenium.isTextPresent(statefulStatsHeader));
-        assertTrue(selenium.isTextPresent(statefulStatDescription));
+        assertTrue(isTextPresent(statefulStatsHeader));
+        assertTrue(isTextPresent(statefulStatDescription));
 
-        selenium.select(MONITORING_APPLICATIONS_COMPONENT_DROPDOWN_ID, "label=SlessEJB");
+        selectDropdownOption(MONITORING_APPLICATIONS_COMPONENT_DROPDOWN_ID, "SlessEJB");
         waitForPageLoad(statelessStatsHeader, 10000);
-        assertTrue(selenium.isTextPresent(statelessStatsHeader));
-        assertTrue(selenium.isTextPresent(statelessStatDescription));
+        assertTrue(isTextPresent(statelessStatsHeader));
+        assertTrue(isTextPresent(statelessStatDescription));
 
         setMonitorLevel("Web Container", MONITOR_LEVEL_OFF, false, target, targetType);
         setMonitorLevel("EJB Container", MONITOR_LEVEL_OFF, false, target, targetType);
@@ -341,28 +341,28 @@ public class MonitoringTest extends BaseSeleniumTestClass {
         final String TRIGGER_APPLICATIONS = "Applications can be enterprise or web applications, or various kinds of modules.";
 
         clickAndWait("treeForm:tree:applications:applications_link", TRIGGER_APPLICATIONS);
-        if (selenium.isTextPresent(appName)) {
+        if (isTextPresent(appName)) {
             undeployApp(appName, target);
         }
         clickAndWaitForElement("propertyForm:deployTable:topActionsGroup1:deployButton", "form:sheet1:section1:prop1:fileupload");
         File war = new File(appLocation);
         try {
-            selenium.attachFile("form:sheet1:section1:prop1:fileupload", war.toURL().toString());
+            selectFile("form:sheet1:section1:prop1:fileupload", war.toURL().toString());
         } catch (MalformedURLException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
         //waitForCondition("document.getElementById('form:war:psection:nameProp:appName').value == '" + appName + "'", 300000);
-        assertEquals(appName, selenium.getValue("form:war:psection:nameProp:appName"));
+        assertEquals(appName, getFieldValue("form:war:psection:nameProp:appName"));
         clickAndWait("form:title:topButtons:uploadButton", TRIGGER_APPLICATIONS);
-        assertTrue(selenium.isTextPresent(appName));
+        assertTrue(isTextPresent(appName));
     }
 
     private void undeployApp(String applicationName, String target) {
         final String TRIGGER_APPLICATIONS = "Applications can be enterprise or web applications, or various kinds of modules.";
         clickAndWait("treeForm:tree:applications:applications_link", TRIGGER_APPLICATIONS);
         selectTableRowByValue("propertyForm:deployTable", applicationName);
-        selenium.click("propertyForm:deployTable:topActionsGroup1:button1");
-        selenium.getConfirmation();
+        pressButton("propertyForm:deployTable:topActionsGroup1:button1");
+        getConfirmation();
         waitForPageLoad(applicationName, true);
     }
 }

@@ -39,13 +39,27 @@
  */
 package org.glassfish.admin.mbeanserver;
 
+import org.glassfish.admin.mbeanserver.ssl.JMXMasterPasswordImpl;
 import org.glassfish.grizzly.config.dom.Ssl;
 
+import javax.management.MBeanServer;
+import javax.management.remote.JMXAuthenticator;
+import javax.management.remote.JMXConnectorServer;
+import javax.management.remote.JMXConnectorServerFactory;
+import javax.management.remote.JMXServiceURL;
+import javax.management.remote.rmi.RMIConnection;
+import javax.management.remote.rmi.RMIConnectorServer;
+import javax.management.remote.rmi.RMIJRMPServerImpl;
+import javax.net.ssl.SSLContext;
+import javax.rmi.ssl.SslRMIClientSocketFactory;
+import javax.security.auth.Subject;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.logging.Level;
 import javax.management.MBeanServer;
 
@@ -66,10 +80,6 @@ import javax.management.remote.rmi.RMIConnectorServer;
 import java.rmi.server.RMIClientSocketFactory;
 import java.rmi.server.RMIServerSocketFactory;
 import java.rmi.server.RMISocketFactory;
-import javax.security.auth.Subject;
-import java.rmi.registry.Registry;
-import java.rmi.registry.LocateRegistry;
-
 import java.rmi.server.UnicastRemoteObject;
 import java.security.Security;
 import javax.net.ssl.SSLContext;
@@ -84,7 +94,7 @@ import org.jvnet.hk2.component.*;
  * SSL support for connections to the JMX connector are supported. This is achieved
  * via the standard SslRMIClientSocketFactory and a custom SecureRMIServerCoketFactory which
  * extends the standard SslRMIServerSocketFactory.
- *
+ * <p/>
  * The connection to the Registry is secure and is provided using the same
  * SslRMIClientSocketFactory instance and SecureRMIServerSocketFactory  instance
  * which is exported via the RMIServer.
@@ -98,11 +108,14 @@ final class RMIConnectorStarter extends ConnectorStarter {
     private final Registry mRegistry;
     private final boolean mBindToSingleIP;
     private volatile MyRMIJRMPServerImpl mMyServer;
-    /** will be null if we don't need it */
+    /**
+     * will be null if we don't need it
+     */
     private final MyRMIServerSocketFactory mServerSocketFactory;
     private final SecureRMIServerSocketFactory sslServerSocketFactory;
     private final SslRMIClientSocketFactory sslCsf;
     private final Habitat habitat;
+    private String masterPassword = null;
 
     public RMIConnectorStarter(
             final MBeanServer mbeanServer,
@@ -116,6 +129,8 @@ final class RMIConnectorStarter extends ConnectorStarter {
             final Ssl sslConfig) throws UnknownHostException {
 
         super(mbeanServer, address, port, authRealmName, securityEnabled, habitat, bootListener, sslConfig);
+
+        masterPassword = new String(habitat.getComponent(JMXMasterPasswordImpl.class).getMasterPassword());
 
         if (!"rmi_jrmp".equals(protocol)) {
             throw new IllegalArgumentException("JMXConnectorServer not yet supporting protocol: " + protocol);
@@ -157,6 +172,7 @@ final class RMIConnectorStarter extends ConnectorStarter {
 
     /**
      * Utility method to get an InetAddress from the address string from the config
+     *
      * @param addrSpec
      * @return InetAddress
      * @throws UnknownHostException
@@ -177,7 +193,7 @@ final class RMIConnectorStarter extends ConnectorStarter {
     }
 
     private static void restoreRMIHostname(final String saved,
-            final String expectedValue) {
+                                           final String expectedValue) {
         if (saved == null) {
             System.clearProperty(RMI_HOSTNAME_PROP);
         } else {
@@ -193,7 +209,8 @@ final class RMIConnectorStarter extends ConnectorStarter {
         System.out.println("" + o);
     }
 
-    /** Starts the RMI Registry , where the RMIServer would be exported. If this
+    /**
+     * Starts the RMI Registry , where the RMIServer would be exported. If this
      * is a multihomed machine then the Registry is bound to a specific IP address
      * else its bound to a port alone.
      *
@@ -214,7 +231,7 @@ final class RMIConnectorStarter extends ConnectorStarter {
                 restoreRMIHostname(saved, addr);
             }
         } else {
-            Util.getLogger().info("Binding RMI port to *:" + port);
+            Util.getLogger().fine("Binding RMI port to *:" + port);
             registry = _startRegistry(port);
         }
         return registry;
@@ -222,6 +239,7 @@ final class RMIConnectorStarter extends ConnectorStarter {
 
     /**
      * Delegate method to start the registry based on security is enabled or not.
+     *
      * @param port
      * @return Registry
      */
@@ -230,7 +248,7 @@ final class RMIConnectorStarter extends ConnectorStarter {
         // to choose the object number - see java.rmi.server.ObjID
         System.setProperty("java.rmi.server.randomIDs", "true");
         try {
-            if(isSecurityEnabled() ){
+            if (isSecurityEnabled()) {
                 return LocateRegistry.createRegistry(port, sslCsf, sslServerSocketFactory);
             } else {
                 return LocateRegistry.createRegistry(port, null, mServerSocketFactory);
@@ -247,6 +265,7 @@ final class RMIConnectorStarter extends ConnectorStarter {
     /**
      * The start method which configures the SSLSockets needed and then starts the
      * JMXConnecterServer.
+     *
      * @return
      * @throws MalformedURLException
      * @throws IOException
@@ -322,6 +341,7 @@ final class RMIConnectorStarter extends ConnectorStarter {
 
     /**
      * This method sets up an environment based on passed in SSL configuration
+     *
      * @param sslConfig
      * @return SslRMIClientSocketFactory
      */
@@ -332,7 +352,13 @@ final class RMIConnectorStarter extends ConnectorStarter {
         // configure the context using these params
         SSLClientConfigurator sslCC = SSLClientConfigurator.getInstance();
         sslCC.setSSLParams(sslParams);
-        SSLContext sslContext = sslCC.configure();
+        if (sslParams == null) {
+            sslParams = new SSLParams(new File(System.getProperty("javax.net.ssl.trustStore")),
+                    System.getProperty("javax.net.ssl.trustStoreType", "JKS"),
+                    masterPassword);
+
+        }
+        SSLContext sslContext = sslCC.configure(sslParams);
 
         // Now pass this context to the ClientSocketFactory
         Object socketFactoryProvider = Security.getProperty("ssl.SocketFactory.provider");
@@ -363,6 +389,7 @@ final class RMIConnectorStarter extends ConnectorStarter {
     /**
      * Utility method to convert the SSLConfiguration to lightweight structure
      * which can be used without depending upon GlassFish.
+     *
      * @param sslConfig
      * @return
      */
@@ -372,14 +399,14 @@ final class RMIConnectorStarter extends ConnectorStarter {
         String trustStoreType =
                 sslConfig.getTrustStoreType() == null ? System.getProperty("javax.net.ssl.trustStoreType", "JKS") : sslConfig.getTrustStoreType();
         String trustStorePwd =
-                sslConfig.getTrustStorePassword() == null ? System.getProperty("javax.net.ssl.trustStorePassword", "changeit") : sslConfig.getTrustStorePassword();
+                sslConfig.getTrustStorePassword() == null ? masterPassword : sslConfig.getTrustStorePassword();
         File trustStore =
                 sslConfig.getTrustStore() == null ? new File(System.getProperty("javax.net.ssl.trustStore")) : new File(sslConfig.getTrustStore());
 
         String keyStoreType =
                 sslConfig.getTrustStoreType() == null ? System.getProperty("javax.net.ssl.keyStoreType", "JKS") : sslConfig.getKeyStoreType();
         String keyStorePwd =
-                sslConfig.getTrustStorePassword() == null ? System.getProperty("javax.net.ssl.keyStorePassword", "changeit") : sslConfig.getKeyStorePassword();
+                sslConfig.getTrustStorePassword() == null ? masterPassword : sslConfig.getKeyStorePassword();
         File keyStore =
                 sslConfig.getTrustStore() == null ? new File(System.getProperty("javax.net.ssl.keyStore")) : new File(sslConfig.getKeyStore());
 
@@ -414,7 +441,7 @@ final class RMIConnectorStarter extends ConnectorStarter {
      **************************************************************************/
 
     /**
-     *  Custom implementation of the RMISocketFactory used for multihomed machines
+     * Custom implementation of the RMISocketFactory used for multihomed machines
      */
     public static final class MyRMIServerSocketFactory extends RMISocketFactory {
 
@@ -432,7 +459,9 @@ final class RMIConnectorStarter extends ConnectorStarter {
             return s;
         }
 
-        /** shouldn't be called */
+        /**
+         * shouldn't be called
+         */
         public Socket createSocket(String host, int port) throws IOException {
             //debug( "MyRMIServerSocketFactory.createSocket(): " + host + " : " + port );
             final Socket s = new Socket(host, port);
@@ -448,8 +477,8 @@ final class RMIConnectorStarter extends ConnectorStarter {
         private final String mBindToAddr;
 
         public MyRMIJRMPServerImpl(final int port, final Map<String, ?> env,
-                final RMIServerSocketFactory serverSocketFactory,
-                final String bindToAddr) throws IOException {
+                                   final RMIServerSocketFactory serverSocketFactory,
+                                   final String bindToAddr) throws IOException {
             super(port,
                     (RMIClientSocketFactory) env.get(RMIConnectorServer.RMI_CLIENT_SOCKET_FACTORY_ATTRIBUTE),
                     serverSocketFactory,
@@ -457,7 +486,9 @@ final class RMIConnectorStarter extends ConnectorStarter {
             mBindToAddr = bindToAddr;
         }
 
-        /** must be 'synchronized': threads can't save/restore the same system property concurrently */
+        /**
+         * must be 'synchronized': threads can't save/restore the same system property concurrently
+         */
         protected synchronized void export(final String host) throws IOException {
             final String saved = setupRMIHostname(mBindToAddr);
             try {
@@ -468,7 +499,9 @@ final class RMIConnectorStarter extends ConnectorStarter {
             }
         }
 
-        /** must be 'synchronized': threads can't save/restore the same system property concurrently */
+        /**
+         * must be 'synchronized': threads can't save/restore the same system property concurrently
+         */
         protected synchronized RMIConnection makeClient(final String connectionId, final Subject subject) throws IOException {
             final String saved = setupRMIHostname(mBindToAddr);
             try {

@@ -52,16 +52,16 @@ public class AdminServiceTest extends BaseSeleniumTestClass {
     public void testEditJmxConntector() {
         String address = generateRandomNumber(255)+"."+generateRandomNumber(255)+"."+generateRandomNumber(255)+"."+generateRandomNumber(255);
         clickAndWait("treeForm:tree:configurations:server-config:adminService:adminService_link", TRIGGER_EDIT_JMX_CONNECTOR);
-        selenium.check("form1:propertySheet:propertySheetSection:SecurityProp:Security");
-        selenium.type("form1:propertySheet:propertySheetSection:AddressProp:Address", address);
+        markCheckbox("form1:propertySheet:propertySheetSection:SecurityProp:Security");
+        setFieldValue("form1:propertySheet:propertySheetSection:AddressProp:Address", address);
         int count = addTableRow("form1:basicTable","form1:basicTable:topActionsGroup1:addSharedTableButton");
-        selenium.type("form1:basicTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
-        selenium.type("form1:basicTable:rowGroup1:0:col3:col1St", "value");
-        selenium.type("form1:basicTable:rowGroup1:0:col4:col1St", "description");
+        setFieldValue("form1:basicTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
+        setFieldValue("form1:basicTable:rowGroup1:0:col3:col1St", "value");
+        setFieldValue("form1:basicTable:rowGroup1:0:col4:col1St", "description");
         clickAndWait("form1:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
         clickAndWait("form1:jmxConnectorTab:jmxSSLEdit", TRIGGER_SSL);
         clickAndWait("treeForm:tree:configurations:server-config:adminService:adminService_link", TRIGGER_EDIT_JMX_CONNECTOR);
-        assertEquals(address, selenium.getValue("form1:propertySheet:propertySheetSection:AddressProp:Address"));
+        assertEquals(address, getFieldValue("form1:propertySheet:propertySheetSection:AddressProp:Address"));
         assertTableRowCount("form1:basicTable", count);
     }
     
@@ -74,16 +74,16 @@ public class AdminServiceTest extends BaseSeleniumTestClass {
         clickAndWait("treeForm:tree:configurations:server-config:adminService:adminService_link", TRIGGER_EDIT_JMX_CONNECTOR);
         clickAndWait("form1:jmxConnectorTab:jmxSSLEdit", TRIGGER_SSL);
 
-        selenium.uncheck("propertyForm:propertySheet:propertySheetSection:SSL3Prop:SSL3");
-        selenium.uncheck("propertyForm:propertySheet:propertySheetSection:TLSProp:TLS");
-        selenium.check("propertyForm:propertySheet:propertySheetSection:ClientAuthProp:ClientAuth");
-        selenium.type("propertyForm:propertySheet:propertySheetSection:CertNicknameProp:CertNickname", nickname);
-        selenium.type("propertyForm:propertySheet:propertySheetSection:keystore:keystore", keystore);
-        selenium.type("propertyForm:propertySheet:propertySheetSection:maxCertLength:maxCertLength", maxCertLength);
+        clearCheckbox("propertyForm:propertySheet:propertySheetSection:SSL3Prop:SSL3");
+        clearCheckbox("propertyForm:propertySheet:propertySheetSection:TLSProp:TLS");
+        markCheckbox("propertyForm:propertySheet:propertySheetSection:ClientAuthProp:ClientAuth");
+        setFieldValue("propertyForm:propertySheet:propertySheetSection:CertNicknameProp:CertNickname", nickname);
+        setFieldValue("propertyForm:propertySheet:propertySheetSection:keystore:keystore", keystore);
+        setFieldValue("propertyForm:propertySheet:propertySheetSection:maxCertLength:maxCertLength", maxCertLength);
 //        selenium.click("propertyForm:propertySheet:sun_propertySheetSection433:CommonCiphersProp:commonAddRemove:commonAddRemove_addAllButton");
 //        selenium.click("propertyForm:propertySheet:sun_propertySheetSection433:EphemeralCiphersProp:ephemeralAddRemove:ephemeralAddRemove_addAllButton");
 //        selenium.click("propertyForm:propertySheet:sun_propertySheetSection433:OtherCiphersProp:otherAddRemove:otherAddRemove_addAllButton");
-        if (selenium.isElementPresent("propertyForm:propertyContentPage:topButtons:newButton")) {
+        if (isElementPresent("propertyForm:propertyContentPage:topButtons:newButton")) {
             clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_NEW_VALUES_SAVED);
         } else {
             clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
@@ -91,12 +91,12 @@ public class AdminServiceTest extends BaseSeleniumTestClass {
         clickAndWait("treeForm:tree:configurations:server-config:adminService:adminService_link", TRIGGER_EDIT_JMX_CONNECTOR);
         clickAndWait("form1:jmxConnectorTab:jmxSSLEdit", TRIGGER_SSL);
 
-        assertEquals(false, selenium.isChecked("propertyForm:propertySheet:propertySheetSection:SSL3Prop:SSL3"));
-        assertEquals(false, selenium.isChecked("propertyForm:propertySheet:propertySheetSection:TLSProp:TLS"));
-        assertEquals(true, selenium.isChecked("propertyForm:propertySheet:propertySheetSection:ClientAuthProp:ClientAuth"));
-        assertEquals(nickname, selenium.getValue("propertyForm:propertySheet:propertySheetSection:CertNicknameProp:CertNickname"));
-        assertEquals(keystore, selenium.getValue("propertyForm:propertySheet:propertySheetSection:keystore:keystore"));
-        assertEquals(maxCertLength, selenium.getValue("propertyForm:propertySheet:propertySheetSection:maxCertLength:maxCertLength"));
+        assertEquals(false, isChecked("propertyForm:propertySheet:propertySheetSection:SSL3Prop:SSL3"));
+        assertEquals(false, isChecked("propertyForm:propertySheet:propertySheetSection:TLSProp:TLS"));
+        assertEquals(true, isChecked("propertyForm:propertySheet:propertySheetSection:ClientAuthProp:ClientAuth"));
+        assertEquals(nickname, getFieldValue("propertyForm:propertySheet:propertySheetSection:CertNicknameProp:CertNickname"));
+        assertEquals(keystore, getFieldValue("propertyForm:propertySheet:propertySheetSection:keystore:keystore"));
+        assertEquals(maxCertLength, getFieldValue("propertyForm:propertySheet:propertySheetSection:maxCertLength:maxCertLength"));
 //        assertTrue(selenium.isTextPresent("SSL_RSA_WITH_RC4_128_MD5 SSL_RSA_WITH_RC4_128_SHA TLS_RSA_WITH_AES_128_CBC_SHA TLS_RSA_WITH_AES_256_CBC_SHA SSL_RSA_WITH_3DES_EDE_CBC_SHA __________________________________"));
 //        assertTrue(selenium.isTextPresent("TLS_DHE_RSA_WITH_AES_128_CBC_SHA TLS_DHE_RSA_WITH_AES_256_CBC_SHA SSL_DHE_RSA_WITH_3DES_EDE_CBC_SHA TLS_DHE_DSS_WITH_AES_128_CBC_SHA TLS_DHE_DSS_WITH_AES_256_CBC_SHA SSL_DHE_DSS_WITH_3DES_EDE_CBC_SHA ______________________________________"));
 //        assertTrue(selenium.isTextPresent("SSL_RSA_WITH_DES_CBC_SHA SSL_DHE_RSA_WITH_DES_CBC_SHA SSL_DHE_DSS_WITH_DES_CBC_SHA SSL_RSA_EXPORT_WITH_RC4_40_MD5 SSL_RSA_EXPORT_WITH_DES40_CBC_SHA SSL_DHE_RSA_EXPORT_WITH_DES40_CBC_SHA SSL_DHE_DSS_EXPORT_WITH_DES40_CBC_SHA __________________________________________"));

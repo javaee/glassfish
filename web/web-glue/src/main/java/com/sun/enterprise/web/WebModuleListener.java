@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -46,6 +46,7 @@ import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 import com.sun.enterprise.deployment.runtime.web.WebProperty;
 import com.sun.enterprise.deployment.util.WebValidatorWithCL;
+import com.sun.enterprise.util.net.JarURIPattern;
 import com.sun.enterprise.web.jsp.JspProbeEmitterImpl;
 import com.sun.enterprise.web.jsp.ResourceInjectorImpl;
 import com.sun.logging.LogDomains;
@@ -67,6 +68,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 //import com.sun.enterprise.server.PersistenceUnitLoaderImpl;
 //import com.sun.enterprise.server.PersistenceUnitLoader;
 //import com.sun.enterprise.config.ConfigException;
@@ -83,11 +85,6 @@ final class WebModuleListener
      * The logger used to log messages
      */
     private static final Logger _logger = LogDomains.getLogger(WebModuleListener.class, LogDomains.WEB_LOGGER);
-
-    /**
-     * This indicates whether debug logging is on or not
-     */
-    private static boolean _debugLog = _logger.isLoggable(Level.FINE);
 
     /**
      * Descriptor object associated with this web application.
@@ -170,6 +167,18 @@ final class WebModuleListener
             new Boolean(webModule.isStandalone()));
 
         // Find tld URI and set it to ServletContext attribute
+        List<URI> appLibUris = webModule.getDeployAppLibs();
+        Map<URI, List<String>> appLibTldMap = new HashMap<URI, List<String>>();
+        if (appLibUris != null && appLibUris.size() > 0) {
+            Pattern pattern = Pattern.compile("META-INF/.*\\.tld");
+            for (URI uri : appLibUris) {
+                List entries =  JarURIPattern.getJarEntries(uri, pattern);
+                if (entries != null && entries.size() > 0) {
+                    appLibTldMap.put(uri, entries);
+                }
+            }
+        }
+
         Collection<TldProvider> tldProviders =
             webContainer.getTldProviders();
         Map<URI, List<String>> tldMap = new HashMap<URI, List<String>>();
@@ -184,6 +193,7 @@ final class WebModuleListener
                 tldMap.putAll(tmap);
             }
         }
+        tldMap.putAll(appLibTldMap);
         servletContext.setAttribute(
                 "com.sun.appserv.tld.map", tldMap);
 
@@ -205,6 +215,7 @@ final class WebModuleListener
                 tldListenerMap.putAll(tmap);
             }
         }
+        tldListenerMap.putAll(appLibTldMap);
         servletContext.setAttribute(
             "com.sun.appserv.tldlistener.map", tldListenerMap);
 
@@ -232,7 +243,7 @@ final class WebModuleListener
             for (int i = 0; i < props.length; i++) {
                 String pname = props[i].getAttributeValue("name");
                 String pvalue = props[i].getAttributeValue("value");
-                if (_debugLog) {
+                if (_logger.isLoggable(Level.FINE)) {
                     _logger.fine("jsp-config property for [" +
                                  webModule.getID() + "] is [" + pname +
                                  "] = [" + pvalue + "]");
@@ -352,7 +363,7 @@ final class WebModuleListener
                 try {
                     // first start the CacheManager, if enabled
                     cm.start();
-                    if (_debugLog) {
+                    if (_logger.isLoggable(Level.FINE)) {
                         _logger.fine("Cache Manager started");
                     }
                     // set this manager as a context attribute so that 
@@ -375,7 +386,7 @@ final class WebModuleListener
         if (cm != null) {
             try {
                 cm.stop();
-                if (_debugLog) {
+                if (_logger.isLoggable(Level.FINE)) {
                     _logger.fine("Cache Manager stopped");
                 }
                 ctxt.removeAttribute(CacheManager.CACHE_MANAGER_ATTR_NAME);

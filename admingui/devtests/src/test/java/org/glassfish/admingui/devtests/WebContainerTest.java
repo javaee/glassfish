@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admingui.devtests;
 
 import org.junit.Test;
@@ -54,27 +53,30 @@ import static org.junit.Assert.assertTrue;
  */
 public class WebContainerTest extends BaseSeleniumTestClass {
     private static final String TAB_GENERAL_PROPERTIES = "i18n_web.headings.webGeneral";
+
     private static final String TAB_SESSION_PROPERTIES = "i18n_web.webSession.sessionTimeoutHelp";
+
     private static final String TAB_MANAGER_PROPERTIES = "i18n_web.webManager.reapIntervalHelp";
+
     private static final String TAB_STORE_PROPERTIES = "i18n_web.webStore.directoryHelp";
 
     @Test
     public void testGeneralTab() {
-        final String property = "property"+generateRandomString();
+        final String property = "property" + generateRandomString();
         final String value = generateRandomString();
         final String description = "Description for " + property;
-        
-		clickAndWait("treeForm:tree:configurations:server-config:webContainer:webContainer_link", TAB_GENERAL_PROPERTIES);
-        
+
+        clickAndWait("treeForm:tree:configurations:server-config:webContainer:webContainer_link", TAB_GENERAL_PROPERTIES);
+
         int count = addTableRow("form1:basicTable", "form1:basicTable:topActionsGroup1:addSharedTableButton");
 
-        selenium.type("form1:basicTable:rowGroup1:0:col2:col1St", property);
-        selenium.type("form1:basicTable:rowGroup1:0:col3:col1St", value);
-        selenium.type("form1:basicTable:rowGroup1:0:col4:col1St", description);
-		clickAndWait("form1:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
+        setFieldValue("form1:basicTable:rowGroup1:0:col2:col1St", property);
+        setFieldValue("form1:basicTable:rowGroup1:0:col3:col1St", value);
+        setFieldValue("form1:basicTable:rowGroup1:0:col4:col1St", description);
+        clickAndWait("form1:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
 
-		clickAndWait("form1:webContainerTabs:sessionTab", TAB_SESSION_PROPERTIES);
-		clickAndWait("form1:webContainerTabs:general", TAB_GENERAL_PROPERTIES);
+        clickAndWait("form1:webContainerTabs:sessionTab", TAB_SESSION_PROPERTIES);
+        clickAndWait("form1:webContainerTabs:general", TAB_GENERAL_PROPERTIES);
 
         assertTableRowCount("form1:basicTable", count);
     }
@@ -86,11 +88,11 @@ public class WebContainerTest extends BaseSeleniumTestClass {
 
         int count = addTableRow("form1:basicTable", "form1:basicTable:topActionsGroup1:addSharedTableButton");
 
-        selenium.type("form1:basicTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
-        selenium.type("form1:basicTable:rowGroup1:0:col3:col1St", "value");
-        selenium.type("form1:basicTable:rowGroup1:0:col4:col1St", "description");
+        setFieldValue("form1:basicTable:rowGroup1:0:col2:col1St", "property" + generateRandomString());
+        setFieldValue("form1:basicTable:rowGroup1:0:col3:col1St", "value");
+        setFieldValue("form1:basicTable:rowGroup1:0:col4:col1St", "description");
 
-        selenium.type("form1:sessionPropSheet:sessionPropSheetSection:SessionTimeoutProp:SessionTimeout", "300");
+        setFieldValue("form1:sessionPropSheet:sessionPropSheetSection:SessionTimeoutProp:SessionTimeout", "300");
         clickAndWait("form1:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
 
         clickAndWait("form1:webContainerTabs:general", TAB_GENERAL_PROPERTIES);
@@ -98,9 +100,9 @@ public class WebContainerTest extends BaseSeleniumTestClass {
         clickAndWait("form1:webContainerTabs:sessionTab", TAB_SESSION_PROPERTIES);
 
         assertTableRowCount("form1:basicTable", count);
-        assertEquals("300", selenium.getValue("form1:sessionPropSheet:sessionPropSheetSection:SessionTimeoutProp:SessionTimeout"));
+        assertEquals("300", getFieldValue("form1:sessionPropSheet:sessionPropSheetSection:SessionTimeoutProp:SessionTimeout"));
 
-        selenium.type("form1:sessionPropSheet:sessionPropSheetSection:SessionTimeoutProp:SessionTimeout", "300");
+        setFieldValue("form1:sessionPropSheet:sessionPropSheetSection:SessionTimeoutProp:SessionTimeout", "300");
         clickAndWait("form1:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
     }
 
@@ -114,22 +116,22 @@ public class WebContainerTest extends BaseSeleniumTestClass {
 
         clickAndWait("form1:webContainerTabs:managerTab", TAB_MANAGER_PROPERTIES);
 
-        selenium.type("form1:managerPropSheet:managerPropSheetSection:ReapIntervalProp:ReapInterval", reapInterval);
-        selenium.type("form1:managerPropSheet:managerPropSheetSection:MaxSessionsProp:MaxSessions", maxSessions);
-        selenium.type("form1:managerPropSheet:managerPropSheetSection:SessFileNameProp:SessFileName", sessFileName);
+        setFieldValue("form1:managerPropSheet:managerPropSheetSection:ReapIntervalProp:ReapInterval", reapInterval);
+        setFieldValue("form1:managerPropSheet:managerPropSheetSection:MaxSessionsProp:MaxSessions", maxSessions);
+        setFieldValue("form1:managerPropSheet:managerPropSheetSection:SessFileNameProp:SessFileName", sessFileName);
         int count = addTableRow("form1:basicTable", "form1:basicTable:topActionsGroup1:addSharedTableButton");
-        
-        selenium.type("form1:basicTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
-        selenium.type("form1:basicTable:rowGroup1:0:col3:col1St", "value");
-        selenium.type("form1:basicTable:rowGroup1:0:col4:col1St", "description");
+
+        setFieldValue("form1:basicTable:rowGroup1:0:col2:col1St", "property" + generateRandomString());
+        setFieldValue("form1:basicTable:rowGroup1:0:col3:col1St", "value");
+        setFieldValue("form1:basicTable:rowGroup1:0:col4:col1St", "description");
         clickAndWait("form1:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
 
         clickAndWait("form1:webContainerTabs:sessionTab", TAB_SESSION_PROPERTIES);
         clickAndWait("form1:webContainerTabs:managerTab", TAB_MANAGER_PROPERTIES);
 
-        assertEquals(reapInterval, selenium.getValue("form1:managerPropSheet:managerPropSheetSection:ReapIntervalProp:ReapInterval"));
-        assertEquals(maxSessions, selenium.getValue("form1:managerPropSheet:managerPropSheetSection:MaxSessionsProp:MaxSessions"));
-        assertEquals(sessFileName, selenium.getValue("form1:managerPropSheet:managerPropSheetSection:SessFileNameProp:SessFileName"));
+        assertEquals(reapInterval, getFieldValue("form1:managerPropSheet:managerPropSheetSection:ReapIntervalProp:ReapInterval"));
+        assertEquals(maxSessions, getFieldValue("form1:managerPropSheet:managerPropSheetSection:MaxSessionsProp:MaxSessions"));
+        assertEquals(sessFileName, getFieldValue("form1:managerPropSheet:managerPropSheetSection:SessFileNameProp:SessFileName"));
         assertTableRowCount("form1:basicTable", count);
     }
 
@@ -141,20 +143,20 @@ public class WebContainerTest extends BaseSeleniumTestClass {
 
         clickAndWait("form1:webContainerTabs:storeTab", TAB_STORE_PROPERTIES);
 
-        selenium.type("form1:storePropSheet:storePropSheetSection:DirectoryProp:Directory", directory);
+        setFieldValue("form1:storePropSheet:storePropSheetSection:DirectoryProp:Directory", directory);
         int count = addTableRow("form1:basicTable", "form1:basicTable:topActionsGroup1:addSharedTableButton");
 
-        selenium.type("form1:basicTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
-        selenium.type("form1:basicTable:rowGroup1:0:col3:col1St", "value");
-        selenium.type("form1:basicTable:rowGroup1:0:col4:col1St", "description");
+        setFieldValue("form1:basicTable:rowGroup1:0:col2:col1St", "property" + generateRandomString());
+        setFieldValue("form1:basicTable:rowGroup1:0:col3:col1St", "value");
+        setFieldValue("form1:basicTable:rowGroup1:0:col4:col1St", "description");
         clickAndWait("form1:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
 
         clickAndWait("form1:webContainerTabs:managerTab", TAB_MANAGER_PROPERTIES);
         clickAndWait("form1:webContainerTabs:storeTab", TAB_STORE_PROPERTIES);
-        assertEquals(directory, selenium.getValue("form1:storePropSheet:storePropSheetSection:DirectoryProp:Directory"));
+        assertEquals(directory, getFieldValue("form1:storePropSheet:storePropSheetSection:DirectoryProp:Directory"));
         assertTableRowCount("form1:basicTable", count);
 
-        selenium.type("form1:storePropSheet:storePropSheetSection:DirectoryProp:Directory", "");
+        setFieldValue("form1:storePropSheet:storePropSheetSection:DirectoryProp:Directory", "");
         clickAndWait("form1:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
     }
 }

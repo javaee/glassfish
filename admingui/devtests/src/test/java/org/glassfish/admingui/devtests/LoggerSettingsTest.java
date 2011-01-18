@@ -55,20 +55,20 @@ public class LoggerSettingsTest extends BaseSeleniumTestClass {
         final String flushFrequency = Integer.toString(generateRandomNumber());
 
         clickAndWait("treeForm:tree:configurations:server-config:loggerSetting:loggerSetting_link", TRIGGER_LOGGER_SETTINGS);
-        selenium.click("form1:general:sheetSection:writeSystemLogEnabledProp:writeSystemLogEnabled");
-        boolean enabled = selenium.isChecked("form1:general:sheetSection:writeSystemLogEnabledProp:writeSystemLogEnabled");
-        selenium.type("form1:general:sheetSection:FileRotationLimitProp:FileRotationLimit", rotationLimit);
-        selenium.type("form1:general:sheetSection:FileRotationTimeLimitProp:FileRotationTimeLimit", rotationTimeLimit);
-        selenium.type("form1:general:sheetSection:FlushFrequencyProp:FlushFrequency", flushFrequency);
+        markCheckbox("form1:general:sheetSection:writeSystemLogEnabledProp:writeSystemLogEnabled");
+        boolean enabled = isChecked("form1:general:sheetSection:writeSystemLogEnabledProp:writeSystemLogEnabled");
+        setFieldValue("form1:general:sheetSection:FileRotationLimitProp:FileRotationLimit", rotationLimit);
+        setFieldValue("form1:general:sheetSection:FileRotationTimeLimitProp:FileRotationTimeLimit", rotationTimeLimit);
+        setFieldValue("form1:general:sheetSection:FlushFrequencyProp:FlushFrequency", flushFrequency);
         clickAndWait("form1:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
 
         clickAndWait("form1:loggingTabs:loggerLevels", TRIGGER_LOG_LEVELS);
 
         clickAndWait("treeForm:tree:configurations:server-config:loggerSetting:loggerSetting_link", TRIGGER_LOGGER_SETTINGS);
-        assertEquals(enabled, selenium.isChecked("form1:general:sheetSection:writeSystemLogEnabledProp:writeSystemLogEnabled"));
-        assertEquals(rotationLimit, selenium.getValue("form1:general:sheetSection:FileRotationLimitProp:FileRotationLimit"));
-        assertEquals(rotationTimeLimit, selenium.getValue("form1:general:sheetSection:FileRotationTimeLimitProp:FileRotationTimeLimit"));
-        assertEquals(flushFrequency, selenium.getValue("form1:general:sheetSection:FlushFrequencyProp:FlushFrequency"));
+        assertEquals(enabled, isChecked("form1:general:sheetSection:writeSystemLogEnabledProp:writeSystemLogEnabled"));
+        assertEquals(rotationLimit, getFieldValue("form1:general:sheetSection:FileRotationLimitProp:FileRotationLimit"));
+        assertEquals(rotationTimeLimit, getFieldValue("form1:general:sheetSection:FileRotationTimeLimitProp:FileRotationTimeLimit"));
+        assertEquals(flushFrequency, getFieldValue("form1:general:sheetSection:FlushFrequencyProp:FlushFrequency"));
     }
 
     @Test
@@ -76,22 +76,22 @@ public class LoggerSettingsTest extends BaseSeleniumTestClass {
         clickAndWait("treeForm:tree:configurations:server-config:loggerSetting:loggerSetting_link", TRIGGER_LOGGER_SETTINGS);
         clickAndWait("form1:loggingTabs:loggerLevels", TRIGGER_LOG_LEVELS);
         String newLevel = "WARNING";
-        if ("WARNING".equals(selenium.getValue("form1:basicTable:rowGroup1:0:col3:level"))) {
+        if ("WARNING".equals(getFieldValue("form1:basicTable:rowGroup1:0:col3:level"))) {
             newLevel = "INFO";
         }
 
-        selenium.select("form1:basicTable:topActionsGroup1:change_list", "label=" + newLevel);
-        selenium.click("form1:basicTable:_tableActionsTop:_selectMultipleButton:_selectMultipleButton_image");
+        selectDropdownOption("form1:basicTable:topActionsGroup1:change_list", newLevel);
+        pressButton("form1:basicTable:_tableActionsTop:_selectMultipleButton:_selectMultipleButton_image");
 
         waitForButtonEnabled("form1:basicTable:topActionsGroup1:button1");
 
-        selenium.click("form1:basicTable:topActionsGroup1:button1");
+        pressButton("form1:basicTable:topActionsGroup1:button1");
         waitForButtonDisabled("form1:basicTable:topActionsGroup1:button1");
 
         clickAndWait("form1:title:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
 
         clickAndWait("form1:loggingTabs:loggerGeneral", TRIGGER_LOGGER_SETTINGS);
         clickAndWait("form1:loggingTabs:loggerLevels", TRIGGER_LOG_LEVELS);
-        assertEquals(newLevel, selenium.getValue("form1:basicTable:rowGroup1:0:col3:level")); 
+        assertEquals(newLevel, getFieldValue("form1:basicTable:rowGroup1:0:col3:level")); 
     } 
 }

@@ -61,6 +61,7 @@ import java.util.Map;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
+import java.util.logging.Level;
 
 import org.glassfish.admingui.common.util.GuiUtil;
 import org.glassfish.admingui.common.util.RestUtil;
@@ -139,6 +140,9 @@ public class LoggingHandlers {
             }
         }catch(Exception ex){
             GuiUtil.handleException(handlerCtx, ex);
+            if (GuiUtil.getLogger().isLoggable(Level.FINE)){
+                ex.printStackTrace();
+            }
         }
 
      }
@@ -165,6 +169,9 @@ public class LoggingHandlers {
             }
         }catch (Exception ex){
             GuiUtil.handleException(handlerCtx, ex);
+            if (GuiUtil.getLogger().isLoggable(Level.FINE)){
+                ex.printStackTrace();
+            }
         }
      }
 

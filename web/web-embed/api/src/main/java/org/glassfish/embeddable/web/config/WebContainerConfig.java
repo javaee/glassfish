@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -47,7 +47,24 @@ import java.net.URL;
 /**
  * Class that is used for configuring WebContainer instances.
  *
+ * <p/> Usage example:
+ * <pre>
+ *      // Create and start Glassfish
+ *      GlassFish glassfish = GlassFishRuntime.bootstrap().newGlassFish();
+ *      glassfish.start();
+ *
+ *      // Access WebContainer
+ *      WebContainer container = glassfish.getService(WebContainer.class);
+ *
+ *      WebContainerConfig config = new WebContainerConfig();
+ *      config.setListings(true);
+ *      config.setPort(9090);
+ *      config.setHostNames("localhost");
+ *      container.setConfiguration(config);
+ * </pre>
+ *
  * @see org.glassfish.embeddable.web.WebContainer
+ *
  */
 public class WebContainerConfig {
 
@@ -188,5 +205,4 @@ public class WebContainerConfig {
         return virtualServerId;
     }
 
-    
 }

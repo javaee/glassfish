@@ -42,63 +42,44 @@ package org.glassfish.admingui.devtests;
 
 import com.thoughtworks.selenium.Selenium;
 import com.thoughtworks.selenium.SeleniumException;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-
-import java.math.BigInteger;
-import java.net.URL;
-import java.net.URLConnection;
-import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.ResourceBundle;
-import org.junit.AfterClass;
-import org.junit.Rule;
-import org.openqa.selenium.By;
+import org.junit.*;
+import org.openqa.selenium.*;
 import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.RenderedWebElement;
-import org.openqa.selenium.StaleElementReferenceException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebDriverBackedSelenium;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 
-public class BaseSeleniumTestClass {
+import java.io.*;
+import java.math.BigInteger;
+import java.net.URL;
+import java.net.URLConnection;
+import java.security.SecureRandom;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+public class BaseSeleniumTestClass {
     public static final String CURRENT_WINDOW = "selenium.browserbot.getCurrentWindow()";
     public static final String TRIGGER_NEW_VALUES_SAVED = "New values successfully saved.";
     public static final String TRIGGER_COMMON_TASKS = "Other Tasks";
     public static final String TRIGGER_REGISTRATION_PAGE = "Receive patch information and bug updates, screencasts and tutorials, support and training offerings, and more";
     public static final String TRIGGER_ERROR_OCCURED = "An error has occurred";
-    private static final String AJAX_INDICATOR = "ajaxIndicator";
+    public static boolean DEBUG = Boolean.parseBoolean(getParameter("debug", "false"));
 
     @Rule
     public SpecificTestRule specificTestRule = new SpecificTestRule();
 
-    protected static Selenium selenium;
-    protected static WebDriver driver;
     protected static final int TIMEOUT = 90;
     protected static final int BUTTON_TIMEOUT = 750;
-    private static String currentTestClass = "";
-    protected static boolean debug = Boolean.parseBoolean(getParameter("debug", "false"));
-    private boolean processingLogin = false;
     protected Logger logger = Logger.getLogger(BaseSeleniumTestClass.class.getName());
+    
+    private static Selenium selenium;
+    private static WebDriver driver;
+    private static String currentTestClass = "";
+    private static int currentScreenshotNumber = 1;
+    private boolean processingLogin = false;
+    private static final String AJAX_INDICATOR = "ajaxIndicator";
+    
     
     private static Map<String, String> bundles = new HashMap<String, String>() {{
         put("i18n", "org.glassfish.admingui.core.Strings"); // core
@@ -129,8 +110,9 @@ public class BaseSeleniumTestClass {
     public static void setUp() throws Exception {
         String browser = getParameter("browser", "firefox");
         String port = getParameter("admin.port", "4848");
-        String seleniumPort = getParameter("selenium.port", "4444");
         String baseUrl = "http://localhost:" + port;
+        DEBUG = new Boolean(getParameter("debug", "false"));
+        currentScreenshotNumber = 1;
         
         if ("firefox".equals(browser)) {
             driver = new FirefoxDriver();
@@ -148,7 +130,7 @@ public class BaseSeleniumTestClass {
             (new BaseSeleniumTestClass()).openAndWait("/", TRIGGER_COMMON_TASKS, 480); // Make sure the server has started and the user logged in
         }
 
-        if (!debug) {
+        if (!DEBUG) {
             URL rotateLogUrl = new URL(baseUrl + "/management/domain/rotate-log");
             URLConnection conn = rotateLogUrl.openConnection();
             conn.setDoOutput(true);
@@ -171,7 +153,7 @@ public class BaseSeleniumTestClass {
             selenium.stop();
             selenium = null;
 
-            if (!currentTestClass.isEmpty() && !debug) {
+            if (!currentTestClass.isEmpty() && !DEBUG) {
                 URL url = new URL("http://localhost:" + getParameter("admin.port", "4848") + "/management/domain/view-log");
     //            URLConnection urlC = url.openConnection();
                 InputStream is = url.openStream();
@@ -197,6 +179,166 @@ public class BaseSeleniumTestClass {
         currentTestClass = this.getClass().getName();
         clickAndWait("treeForm:tree:ct", TRIGGER_COMMON_TASKS);
     }
+    
+    // *************************************************************************
+    // Wrappers for Selenium API                                              
+    // *************************************************************************
+    /**
+     * Returns the current value for the specified field
+     * @see DefaultSelenium.getValue(String)
+     * @param elem
+     * @return 
+     */
+    public String getFieldValue(String elem) {
+        return selenium.getValue(elem);
+    }
+    /**
+     * Types the specified text into the requested element
+     * @param elem
+     * @param text 
+     */
+    public void setFieldValue(String elem, String text) {
+        selenium.type(elem, text);
+    }
+    
+    /**
+     * Gets the text of an element.
+     * @see DefaultSelenium.getText(String)
+     * @param elem
+     * @return 
+     */
+    public String getText(String elem) {
+        return selenium.getText(elem);
+    }
+    
+    /**
+     * Deelects (unchecks) the specified checkbox.  After calling this method, the
+     * checkbox will be unchecked regardless of its initial state.
+     * @param cb 
+     */
+    public void markCheckbox(String cb) {
+        selenium.check(cb);
+    }
+
+    /**
+     * Selects (checks) the specified checkbox.  After calling this method, the
+     * checkbox will be checked regardless of its initial state.
+     * @param cb 
+     */
+    public void clearCheckbox(String cb) {
+        selenium.uncheck(cb);
+    }
+    
+    public void pressButton(String button) {
+        selenium.click(button);
+    }
+    
+    /**
+     * Return the selected value of the specified select element
+     * @param elem
+     * @return 
+     */
+    public String getSelectedValue(String elem) {
+        return selenium.getSelectedValue(elem);
+    }
+    
+    /**
+     * Returns true is the specified element is present on the page
+     * @param elem
+     * @return 
+     */
+    public boolean isElementPresent(String elem) {
+        return selenium.isElementPresent(elem);
+    }
+
+    /**
+     * Select the option requested in the given select element
+     * @param id
+     * @param label 
+     */
+    protected void selectDropdownOption(String id, String label) {
+        try {
+            label = resolveTriggerText(label);
+            selenium.select(id, "label="+label);
+        } catch (SeleniumException se) {
+            logger.info("An invalid option was requested.  Here are the valid options:");
+            for (String option : selenium.getSelectOptions(id)) {
+                logger.log(Level.INFO, "\t{0}", option);
+            }
+            throw se;
+        }
+    }
+    
+    /**
+     * Add a selection to the given select element
+     * @param elem
+     * @param label 
+     */
+    protected void addSelectSelection(String elem, String label) {
+        try {
+            label = resolveTriggerText(label);
+            selenium.addSelection(elem, "label="+label);
+        } catch (SeleniumException se) {
+            logger.info("An invalid option was requested.  Here are the valid options:");
+            for (String option : selenium.getSelectOptions(elem)) {
+                logger.log(Level.INFO, "\t{0}", option);
+            }
+            throw se;
+        }
+    }
+    
+    /**
+     * Returns true if the specified checkbox is selected
+     * @param elem
+     * @return 
+     */
+    protected boolean isChecked(String elem) {
+        return selenium.isChecked(elem);
+    }
+    
+    protected void selectFile(String uploadElement, String archivePath) {
+        selenium.attachFile(uploadElement, archivePath);
+    }
+    
+    protected boolean isAlertPresent() {
+        return selenium.isAlertPresent();
+    }
+    
+    protected boolean isConfirmationPresent() {
+        return selenium.isConfirmationPresent();
+    }
+    
+    protected String getAlertText() {
+        return selenium.getAlert();
+    }
+    
+    protected void chooseOkOnNextConfirmation() {
+        selenium.chooseOkOnNextConfirmation();
+    }
+    
+    protected String getConfirmation() {
+        return selenium.getConfirmation();
+    }
+    
+    protected void waitForPopUp(String windowId, String timeout) {
+        selenium.waitForPopUp(windowId, timeout);
+    }
+    
+    protected String getSelectedLabel(String elem) {
+        return selenium.getSelectedLabel(elem);
+    }
+    
+    protected void open(String url) {
+        selenium.open(url);
+    }
+    
+    protected void submitForm(String formId) {
+        selenium.submit(formId);
+    }
+
+    // *************************************************************************
+    // Wrappers for Selenium API                                              
+    // *************************************************************************
 
     protected String generateRandomString() {
         SecureRandom random = new SecureRandom();
@@ -222,7 +364,7 @@ public class BaseSeleniumTestClass {
     }
 
     protected int getTableRowCount(String id) {
-        String text = selenium.getText(id);
+        String text = getText(id);
         int count = Integer.parseInt(text.substring(text.indexOf("(") + 1, text.indexOf(")")));
 
         return count;
@@ -233,7 +375,7 @@ public class BaseSeleniumTestClass {
     }
 
     protected void openAndWait(String url, String triggerText, int timeout) {
-        selenium.open(url);
+        open(url);
         // wait for 2 minutes, as that should be enough time to insure that the admin console app has been deployed by the server
         waitForPageLoad(triggerText, timeout);
     }
@@ -248,23 +390,24 @@ public class BaseSeleniumTestClass {
     }
 
     protected void clickAndWait(String id, String triggerText, int seconds) {
+        log ("Clicking on {0} and waiting for \'{1}\'", id, triggerText);
         insureElementIsVisible(id);
-        selenium.click(id);
+        pressButton(id);
         waitForPageLoad(triggerText, seconds);
     }
     
     protected void clickAndWait(String id, WaitForLoadCallBack callback) {
         insureElementIsVisible(id);
-        selenium.click(id);
+        pressButton(id);
         waitForLoad(TIMEOUT, callback);
     }
 
     protected void clickAndWaitForElement(String clickId, final String elementId) {
-        selenium.click(clickId);
+        pressButton(clickId);
         waitForLoad(60, new WaitForLoadCallBack() {
             @Override
             public boolean executeTest() {
-                if (selenium.isElementPresent(elementId)) {
+                if (isElementPresent(elementId)) {
                     return true;
                 }
                 
@@ -275,7 +418,7 @@ public class BaseSeleniumTestClass {
     }
 
     protected void clickAndWaitForButtonEnabled(String id) {
-        selenium.click(id);
+        pressButton(id);
         waitForButtonEnabled(id);
     }
 
@@ -313,11 +456,6 @@ public class BaseSeleniumTestClass {
                 Assert.fail("The operation timed out waiting for the page to load.");
             }
 
-            /*
-            if (callback.executeTest()) {
-                break;
-            }
-            */
             try {
                 RenderedWebElement ajaxPanel = (RenderedWebElement) driver.findElement(By.id(AJAX_INDICATOR));
                 if (!ajaxPanel.isDisplayed()) {
@@ -334,8 +472,8 @@ public class BaseSeleniumTestClass {
 
     protected void handleLogin() {
         processingLogin = true;
-        selenium.type("j_username", "admin");
-        selenium.type("j_password", "");
+        setFieldValue("j_username", "admin");
+        setFieldValue("j_password", "");
         clickAndWait("loginButton", TRIGGER_COMMON_TASKS);
         processingLogin = false;
     }
@@ -371,16 +509,16 @@ public class BaseSeleniumTestClass {
 
     protected void rowActionWithConfirm(String buttonId, String tableId, String triggerText, String selectColId, String valueColId) {
         // A defensive getConfirmation()
-        if (selenium.isConfirmationPresent()) {
-            selenium.getConfirmation();
+        if (isConfirmationPresent()) {
+            getConfirmation();
         }
-        selenium.chooseOkOnNextConfirmation();
+        chooseOkOnNextConfirmation();
         selectTableRowByValue(tableId, triggerText, selectColId, valueColId);
         sleep(500); // argh!
         waitForButtonEnabled(buttonId);
-        selenium.click(buttonId);
-        if (selenium.isConfirmationPresent()) {
-            selenium.getConfirmation();
+        pressButton(buttonId);
+        if (isConfirmationPresent()) {
+            getConfirmation();
         }
         sleep(500); // argh!
         waitForButtonDisabled(buttonId);
@@ -418,19 +556,6 @@ public class BaseSeleniumTestClass {
         return selenium.isTextPresent(resolveTriggerText(text));
     }
     
-    protected void selectDropdownOption(String id, String label) {
-        try {
-            label = resolveTriggerText(label);
-            selenium.select(id, "label="+label);
-        } catch (SeleniumException se) {
-            logger.info("An invalid option was requested.  Here are the valid options:");
-            for (String option : selenium.getSelectOptions(id)) {
-                logger.log(Level.INFO, "\t{0}", option);
-            }
-            throw se;
-        }
-    }
-
     protected void selectTableRowByValue(String tableId, String value) {
         selectTableRowByValue(tableId, value, "col0", "col1");
     }
@@ -440,7 +565,7 @@ public class BaseSeleniumTestClass {
         for (String row : rows) {
             // It seems this must be click for the JS to fire in the browser
             final String id = row + ":" + selectColId + ":select";
-            selenium.click(id); 
+            selectTableRow(row, selectColId);
         }
     }
 
@@ -459,24 +584,35 @@ public class BaseSeleniumTestClass {
      * matched the value given, returning the number of rows selected.
      */
     protected int selectTableRowsByValue(String tableId, String value, String selectColId, String valueColId) {
-        List<String> rows = getTableRowsByValue("propertyForm:instancesTable", value, "col6");
+        List<String> rows = getTableRowsByValue(tableId, value, valueColId);
         if (!rows.isEmpty()) {
             for (String row : rows) {
-                selenium.click(row + ":col0:select");
+                selectTableRow(row, selectColId);
             }
         }
 
         return rows.size();
+    }
+    
+    private void selectTableRow(String rowId, String colId) {
+        boolean rowHighlighted = false;
+        
+        while (!rowHighlighted) {
+            selenium.click(rowId + ":" + colId + ":select");
+            markCheckbox(rowId + ":" + colId + ":select");
+            String rowClass = selenium.getAttribute("identifier="+rowId+"@class");
+            rowHighlighted = ((rowClass != null) && (rowClass.contains("TblSelRow_sun4")));
+        }
     }
 
     protected void deleteAllTableRows(String tableId) {
         String deleteButtonId = tableId + ":topActionsGroup1:button1";
         selectAllTableRows(tableId);
         waitForButtonEnabled(deleteButtonId);
-        selenium.chooseOkOnNextConfirmation();
-        selenium.click(deleteButtonId);
-        if (selenium.isConfirmationPresent()) {
-            selenium.getConfirmation();
+        chooseOkOnNextConfirmation();
+        pressButton(deleteButtonId);
+        if (isConfirmationPresent()) {
+            getConfirmation();
         }
         this.waitForButtonDisabled(deleteButtonId);
     }
@@ -485,7 +621,7 @@ public class BaseSeleniumTestClass {
         int count = getTableRowCount(tableId);
         for (int i = 0 ; i < count; i++) {
             selenium.click(tableId+":rowGroup1:" + i +":col0:select");
-            selenium.check(tableId+":rowGroup1:" + i +":col0:select");
+            markCheckbox(tableId+":rowGroup1:" + i +":col0:select");
         }
     }
 
@@ -495,7 +631,7 @@ public class BaseSeleniumTestClass {
             int row = 0;
             while (true) { // iterate over any rows
                 // Assume one row group for now and hope it doesn't bite us
-                String text = selenium.getText(tableId + ":rowGroup1:" + row + ":" + valueColId);
+                String text = getText(tableId + ":rowGroup1:" + row + ":" + valueColId);
                 if (text.equals(value)) {
                     return tableId + ":rowGroup1:" + row + ":";
                 }
@@ -513,7 +649,7 @@ public class BaseSeleniumTestClass {
             int row = 0;
             while (true) { // iterate over any rows
                 // Assume one row group for now and hope it doesn't bite us
-                String text = selenium.getText(tableId + ":rowGroup1:" + row + ":" + valueColId);
+                String text = getText(tableId + ":rowGroup1:" + row + ":" + valueColId);
                 if (text.contains(value)) {
                     rows.add(tableId + ":rowGroup1:" + row);
                 }
@@ -526,12 +662,17 @@ public class BaseSeleniumTestClass {
     }
 
     // TODO: write javadocs for this
-    protected int getTableRowCountByValue(String tableId, String value, String valueColId) {
+    protected int getTableRowCountByValue(String tableId, String value, String valueColId, Boolean isLabel) {
         int tableCount = getTableRowCount(tableId);
         int selectedCount = 0;
         try {
             for (int i = 0; i < tableCount; i++) {
-                String text = selenium.getText(tableId + ":rowGroup1:" + i + ":" + valueColId);
+                String text = "";
+                if (isLabel) {
+                    text = getText(tableId + ":rowGroup1:" + i + ":" + valueColId);
+                } else {
+                    text = getFieldValue(tableId + ":rowGroup1:" + i + ":" + valueColId);
+                }
                 if (text.equals(value)) {
                     selectedCount++;
                 }
@@ -542,6 +683,10 @@ public class BaseSeleniumTestClass {
         }
         return selectedCount;
     }
+
+    protected int getTableRowCountByValue(String tableId, String value, String valueColId) {
+        return getTableRowCountByValue(tableId, value, valueColId, true);
+    }
     
     protected List<String> getTableColumnValues(String tableId, String columnId) {
         List<String> values = new ArrayList<String>();
@@ -550,7 +695,7 @@ public class BaseSeleniumTestClass {
             int row = 0;
             while (true) { // iterate over any rows
                 // Assume one row group for now and hope it doesn't bite us
-                values.add(selenium.getText(tableId + ":rowGroup1:" + row + ":" + columnId));
+                values.add(getText(tableId + ":rowGroup1:" + row + ":" + columnId));
                 row++;
             }
         } catch (Exception e) {
@@ -619,18 +764,18 @@ public class BaseSeleniumTestClass {
             String state) {
         selectTableRowByValue(tableId, resourceName);
         waitForButtonEnabled(enableButtonId);
-        selenium.click(enableButtonId);
+        pressButton(enableButtonId);
         waitForButtonDisabled(enableButtonId);
 
         clickAndWait(getLinkIdByLinkText(tableId, resourceName), editTriggerText);
         // TODO: this is an ugly, ugly hack and needs to be cleaned up
         if(state.contains("Target")) {
-            Assert.assertEquals(state, selenium.getText(statusId));
+            Assert.assertEquals(state, getText(statusId));
         } else {
             if ("on".equals(state) || "off".equals(state)) {
-                Assert.assertEquals("on".equals(state), selenium.isChecked(statusId));
+                Assert.assertEquals("on".equals(state), isChecked(statusId));
             } else {
-                Assert.assertEquals(state, selenium.getValue(statusId));
+                Assert.assertEquals(state, getFieldValue(statusId));
             }
         }
         clickAndWait(backToTableButtonId, tableTriggerText);
@@ -644,13 +789,13 @@ public class BaseSeleniumTestClass {
             String generalTriggerText,
             String targetTriggerText,
             String state) {
-        selenium.click(tableSelectMutlipleId);
+        pressButton(tableSelectMutlipleId);
         waitForButtonEnabled(enableButtonId);
-        selenium.click(enableButtonId);
+        pressButton(enableButtonId);
         waitForButtonDisabled(enableButtonId);
 
         clickAndWait(generalTabId, generalTriggerText);
-        Assert.assertEquals(state, selenium.getText(statusId));
+        Assert.assertEquals(state, getText(statusId));
 
         clickAndWait(targetTabId, targetTriggerText);
     }
@@ -677,7 +822,7 @@ public class BaseSeleniumTestClass {
         clickAndWait(getLinkIdByLinkText(resourcesTableId, jndiName), resEditTriggerText);
         //Click on the target tab and verify whether the target is in the target table or not.
         clickAndWait(resTargetTabId, TRIGGER_EDIT_RESOURCE_TARGETS);
-        Assert.assertTrue(selenium.isTextPresent(instanceName));
+        Assert.assertTrue(isTextPresent(instanceName));
 
         //Disable all targets
         testEnableOrDisableTarget("propertyForm:targetTable:_tableActionsTop:_selectMultipleButton:_selectMultipleButton_image",
@@ -701,8 +846,8 @@ public class BaseSeleniumTestClass {
 
         //Test the manage targets : Remove the server from targets.
         clickAndWait("propertyForm:targetTable:topActionsGroup1:manageTargetButton", TRIGGER_MANAGE_TARGETS);
-        selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_selected", "label=" + DEFAULT_SERVER);
-        selenium.click("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_removeButton");
+        addSelectSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_selected", DEFAULT_SERVER);
+        pressButton("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_removeButton");
         clickAndWait("form:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
 
         //Test the issue : 13280
@@ -714,15 +859,15 @@ public class BaseSeleniumTestClass {
 
         //Test the manage targets : Remove the instance and add the server.
         clickAndWait("propertyForm:targetTable:topActionsGroup1:manageTargetButton", TRIGGER_MANAGE_TARGETS);
-        selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_selected", "label=" + instanceName);
+        addSelectSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_selected", instanceName);
         waitForButtonEnabled("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_removeButton");
-        selenium.click("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_removeButton");
+        pressButton("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_removeButton");
         waitForButtonDisabled("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_removeButton");
         selenium.removeAllSelections("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available");
 
-        selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=" + DEFAULT_SERVER);
+        addSelectSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", DEFAULT_SERVER);
         waitForButtonEnabled("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
-        selenium.click("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
+        pressButton("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
         waitForButtonDisabled("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
         clickAndWait("form:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
         waitForPageLoad(instanceName, false);
@@ -733,7 +878,7 @@ public class BaseSeleniumTestClass {
     }
     
     protected void logDebugMessage(String message) {
-        if (debug) {
+        if (DEBUG) {
             logger.info(message);
         }
     }
@@ -764,6 +909,16 @@ public class BaseSeleniumTestClass {
         return triggerText;
     }
     
+    protected void log(String message, String... args) {
+        if (DEBUG) {
+            String[] temp = new String[args.length];
+            for (int i = 0; i < args.length; i++) {
+                temp[i] = resolveTriggerText(args[i]);
+            }
+            logger.log(Level.INFO, message, temp);
+        }
+    }
+    
     private void insureElementIsVisible (final String id) {
         if (!id.contains("treeForm:tree")) {
             return;
@@ -784,10 +939,10 @@ public class BaseSeleniumTestClass {
             insureElementIsVisible(parentId);
             String grandParentId = parentId.substring(0, parentId.lastIndexOf(":"));
             String nodeId = grandParentId.substring(grandParentId.lastIndexOf(":")+1);
-            selenium.click(grandParentId + ":" + nodeId+"_turner");
+            pressButton(grandParentId + ":" + nodeId+"_turner");
         }
     }
-
+    
     class PageLoadCallBack implements WaitForLoadCallBack {
         boolean textShouldBeMissing;
         String triggerText;
@@ -802,18 +957,18 @@ public class BaseSeleniumTestClass {
         public boolean executeTest() {
             boolean found = false;
             try {
-                if (selenium.isElementPresent("j_username") && !processingLogin) {
+                if (isElementPresent("j_username") && !processingLogin) {
                     handleLogin();
                 }
                 if (!textShouldBeMissing) {
-                    if (selenium.isTextPresent(triggerText)) {
+                    if (isTextPresent(triggerText)) {
                         found = true;
                     }
-                } else if (!selenium.isTextPresent(triggerText)) {
+                } else if (!isTextPresent(triggerText)) {
                         found = true;
                     
                 } else {
-                    if (selenium.isTextPresent("RuntimeException")) {
+                    if (isTextPresent("RuntimeException")) {
                         throw new RuntimeException("Exception detected on page. Please check the logs for details");
                     }
                 }
@@ -880,8 +1035,12 @@ public class BaseSeleniumTestClass {
         @Override
         public boolean executeTest() {
 //            String attr = selenium.getEval("this.browserbot.findElement('id=" + buttonId + "').disabled"); // "Classic" Selenium
-            String attr = driver.findElement(By.id(buttonId)).getAttribute("disabled"); // WebDriver-backed Selenium
-            return (Boolean.parseBoolean(attr) == desiredState);
+            try {
+                String attr = driver.findElement(By.id(buttonId)).getAttribute("disabled"); // WebDriver-backed Selenium
+                return (Boolean.parseBoolean(attr) == desiredState);
+            } catch (Exception ex) {
+                return true;// ???
+            }
         }
         
         

@@ -59,18 +59,18 @@ public class ConnectorServiceTest extends BaseSeleniumTestClass {
         clickAndWait("treeForm:tree:configurations:server-config:connectorService:connectorService_link", TRIGGER_CONNECTOR_SERVICE);
 
         String policy = "derived";
-        if (selenium.getValue("propertyForm:propertySheet:propertSectionTextField:ClassLoadingPolicy:ClassLoadingPolicy").equals(policy)) {
+        if (getFieldValue("propertyForm:propertySheet:propertSectionTextField:ClassLoadingPolicy:ClassLoadingPolicy").equals(policy)) {
             policy = "global";
         }
         final String timeout = Integer.toString(generateRandomNumber(120));
 
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:timeout:tiimeout", timeout);
-        selenium.select("propertyForm:propertySheet:propertSectionTextField:ClassLoadingPolicy:ClassLoadingPolicy", "label="+policy);
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:timeout:tiimeout", timeout);
+        selectDropdownOption("propertyForm:propertySheet:propertSectionTextField:ClassLoadingPolicy:ClassLoadingPolicy", policy);
         clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
         reset();
         clickAndWait("treeForm:tree:configurations:server-config:connectorService:connectorService_link", TRIGGER_CONNECTOR_SERVICE);
-        assertEquals(timeout, selenium.getValue("propertyForm:propertySheet:propertSectionTextField:timeout:tiimeout"));
-        assertEquals(policy, selenium.getValue("propertyForm:propertySheet:propertSectionTextField:ClassLoadingPolicy:ClassLoadingPolicy"));
+        assertEquals(timeout, getFieldValue("propertyForm:propertySheet:propertSectionTextField:timeout:tiimeout"));
+        assertEquals(policy, getFieldValue("propertyForm:propertySheet:propertSectionTextField:ClassLoadingPolicy:ClassLoadingPolicy"));
 
     }
 }

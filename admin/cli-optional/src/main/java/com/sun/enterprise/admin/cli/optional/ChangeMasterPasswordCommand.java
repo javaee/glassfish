@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -108,14 +108,10 @@ public class ChangeMasterPasswordCommand extends CLICommand {
     private static final LocalStringsImpl strings =
        new LocalStringsImpl(ChangeMasterPasswordCommand.class);
 
-    @Override
-    protected int executeCommand() throws CommandException {
-        return 0;
-    }
+
 
     @Override
-    public int execute(String... args) throws CommandException {
-        super.execute(args);
+    protected int executeCommand() throws CommandException {
         CLICommand command = null;
 
         if (domainDirParam != null && nodeDir != null) {
@@ -125,20 +121,20 @@ public class ChangeMasterPasswordCommand extends CLICommand {
             if (isDomain()) {  // is it domain
                 command = CLICommand.getCommand(habitat,
                         CHANGE_MASTER_PASSWORD_DAS);
-                return command.execute(args);
+                return command.execute(argv);
             }
 
             if (nodeDir != null) {
                 command = CLICommand.getCommand(habitat,
                         CHANGE_MASTER_PASSWORD_NODE);
-                return command.execute(args);
+                return command.execute(argv);
             } else {
 
                 // nodeDir is not specified and domainNameOrNodeName is not a domain.
                 // It could be a node
                 // We add defaultNodeDir parameter to args
-                ArrayList arguments = new ArrayList<String>(Arrays.asList(args));
-                arguments.remove(args.length -1);
+                ArrayList arguments = new ArrayList<String>(Arrays.asList(argv));
+                arguments.remove(argv.length -1);
                 arguments.add("--nodedir");
                 arguments.add(getDefaultNodesDirs().getAbsolutePath());
                 arguments.add(domainNameOrNodeName);
@@ -151,6 +147,15 @@ public class ChangeMasterPasswordCommand extends CLICommand {
         } catch (IOException e) {
             throw new CommandException(e.getMessage(),e);
         }
+    }
+
+    @Override
+    public int execute(String... args) throws CommandException {  
+        
+        //This will parse the args and call executeCommand
+        super.execute(args);
+        return 0;
+       
     }
 
     private boolean isDomain() throws IOException {

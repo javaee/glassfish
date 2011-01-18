@@ -63,12 +63,12 @@
 glassfish_version="3.1,0-${build.id}"
 felix_version="3.0.7,0-0"
 javadb_version="10.5.3.0,0-0"
-corba_version="3.1.0,0-21"
+corba_version="3.1.0,0-23"
 jsf_version="2.1.0,0-10"
 grizzly_version="2.0.0-SNAPSHOT,0-0"
 metro_version="2.1,0-25"
 javahelp_version="2.0.2,0-1"
-shoal_version="1.5.25,0-0"
+shoal_version="1.5.26,0-0"
 
 #description
 glassfish_description="GlassFish Application Server"

@@ -40,12 +40,11 @@
 
 package com.sun.enterprise.v3.admin;
 
+import com.sun.enterprise.glassfish.bootstrap.StartupContextUtil;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.security.store.PasswordAdapter;
-import com.sun.enterprise.security.store.IdentityManagement;
-import com.sun.enterprise.glassfish.bootstrap.StartupContextUtil;
-import org.glassfish.security.common.MasterPassword;
 import org.glassfish.internal.api.Init;
+import org.glassfish.security.common.MasterPassword;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
@@ -54,10 +53,9 @@ import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.Singleton;
 
 import java.io.*;
+import java.util.Arrays;
 import java.util.Properties;
 import java.util.logging.Logger;
-import java.security.KeyStore;
-import java.util.Arrays;
 
 /** An implementation of the @link {IdentityManagement} that manages the password needs of the server.
  *  This implementation consults the Java KeyStore and assumes that the stores are available in server's
@@ -78,6 +76,9 @@ public class IdmService implements Init, PostConstruct/*, IdentityManagement*/ {
 
     @Inject(name="Security SSL Password Provider Service", optional=true)
     private MasterPassword masterPasswordHelper=null;
+
+    @Inject(name="JMX SSL Password Provider Service", optional=true)
+    private MasterPassword jmxMasterPasswordHelper=null;
 
     private volatile char[] masterPassword;
 
@@ -111,6 +112,10 @@ public class IdmService implements Init, PostConstruct/*, IdentityManagement*/ {
 
         if (masterPasswordHelper!=null)
             masterPasswordHelper.setMasterPassword(masterPassword);
+
+        if (jmxMasterPasswordHelper != null)
+          jmxMasterPasswordHelper.setMasterPassword(masterPassword);
+
         Arrays.fill(masterPassword, ' ');
         masterPassword = null;
     }

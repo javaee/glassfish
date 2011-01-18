@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2006-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -67,6 +67,7 @@ import javax.naming.NotContextException;
 import javax.naming.OperationNotSupportedException;
 import javax.naming.Reference;
 import javax.naming.Referenceable;
+import org.omg.CORBA.ORBPackage.InvalidName;
 
 import org.omg.CosNaming.NamingContext;
 import org.omg.CosNaming.NameComponent;
@@ -77,6 +78,8 @@ import org.glassfish.internal.api.ORBLocator;
 import org.glassfish.internal.api.ServerContext;
 
 import org.omg.CORBA.ORB;
+import org.omg.CosNaming.NamingContextPackage.CannotProceed;
+import org.omg.CosNaming.NamingContextPackage.NotFound;
 
 
 /**
@@ -98,10 +101,6 @@ public class SerialContext implements Context {
     private static final String JAVA_URL = "java:";
 
     private static final String JAVA_GLOBAL_URL = "java:global/";
-
-    private static final String IIOP_ENDPOINTSLIST =
-        "com.sun.appserv.ee.iiop.endpointslist" ;
-
 
     // Sets unmanaged SerialContext in test mode to prevent attempts to contact server. 
     static final String INITIAL_CONTEXT_TEST_MODE = "com.sun.enterprise.naming.TestMode";
@@ -286,7 +285,7 @@ public class SerialContext implements Context {
         // to be 'final'.
         JavaURLContext urlContextTemp = null;
 
-        if (myEnv.get(IIOP_ENDPOINTSLIST) != null) {
+        if (myEnv.get(SerialInitContextFactory.IIOP_URL_PROPERTY) != null) {
             urlContextTemp = new JavaURLContext(myEnv, this);
         } else {
             urlContextTemp = new JavaURLContext(myEnv, null);
@@ -375,12 +374,13 @@ public class SerialContext implements Context {
 
         String eplist = null ;
         if (myEnv != null) {
-            eplist = (String)myEnv.get(IIOP_ENDPOINTSLIST) ;
+            eplist = (String)myEnv.get(
+                SerialInitContextFactory.IIOP_URL_PROPERTY) ;
         }
 
         if (eplist != null) {
             key = new ProviderCacheKey(eplist) ;
-        } else if(targetHost == null) {
+        } else if (targetHost == null) {
             key = new ProviderCacheKey(myORB) ;
         }  else {
             key = new ProviderCacheKey(targetHost, targetPort);
@@ -391,7 +391,9 @@ public class SerialContext implements Context {
 
     private void clearProvider() {
         ProviderCacheKey key = getProviderCacheKey() ;
-        providerCache.remove( key ) ;
+        synchronized(SerialContext.class) {
+            providerCache.remove( key ) ;
+        }
         provider = null ;
     }
 
@@ -405,30 +407,14 @@ public class SerialContext implements Context {
             }
 
             if (cachedProvider == null) {
-                String eplist = null ;
-                if (myEnv != null) {
-                    eplist = (String)myEnv.get(IIOP_ENDPOINTSLIST) ;
-                }
-
-                org.omg.CORBA.Object objref = null;
-                if (eplist != null) {
-                    objref = orb.string_to_object(eplist) ;
-                } else if (targetHost != null) {
-                    String corbaloc = "corbaloc:iiop:1.2@" + targetHost + ":"
-                            + targetPort + "/NameService" ;
-                    objref = orb.string_to_object( corbaloc ) ;
-                } else {
-                    objref = orb.resolve_initial_references(
-                            "NameService");
-                }
-
-                SerialContextProvider tmpProvider = narrowProvider(objref);
+                // Don't hold lock during this call: remote invocation
+                SerialContextProvider newProvider = key.getNameService() ;
 
                 synchronized(SerialContext.class) {
                     cachedProvider = providerCache.get(key);
-                    if( cachedProvider == null ) {
-                        providerCache.put(key, tmpProvider);
-                        provider = tmpProvider;
+                    if (cachedProvider == null)  {
+                        providerCache.put(key, newProvider);
+                        provider = newProvider;
                     } else {
                         provider = cachedProvider;
                     }
@@ -441,28 +427,6 @@ public class SerialContext implements Context {
 
         return provider;
     }
-
-    /**
-     * Lookup object within server's CosNaming service that provides remote
-     * access to the app server's SerialContext naming service.
-     */
-    private SerialContextProvider narrowProvider(org.omg.CORBA.Object ref)
-        throws Exception {
-
-        final NamingContext nctx = NamingContextHelper.narrow(ref);
-
-        final NameComponent[] path =
-            { new NameComponent("SerialContextProvider", "") };
-
-        final org.omg.CORBA.Object obj = nctx.resolve(path) ;
-
-        SerialContextProvider result =
-            (SerialContextProvider)PortableRemoteObject.narrow( obj,
-                SerialContextProvider.class );
-
-        return result ;
-    }
-
 
     /**
      * The getNameInNamespace API is not supported in this context.
@@ -504,7 +468,7 @@ public class SerialContext implements Context {
          * be stores as a thread local variable.
          *
          */
-        if (myEnv.get(IIOP_ENDPOINTSLIST) != null) {
+        if (myEnv.get(SerialInitContextFactory.IIOP_URL_PROPERTY) != null) {
             grabSticky() ;
         }
 
@@ -1225,45 +1189,68 @@ public class SerialContext implements Context {
 
     @Override
     public String toString() {
-
         StringBuilder sb = new StringBuilder();
         sb.append("SerialContext[");
         if(testMode) {
             sb.append("( IN TEST MODE ) ");
         }
-        if( targetHost != null) {
-            sb.append("targetHost=").append(targetHost);
-        } else {
-            sb.append("targetHost=null");
-        }
-        if( targetPort != null) {
-            sb.append(",targetPort=").append(targetPort);
-        } else {
-            sb.append(",targetPort=null");
-        }
+
+        sb.append( "myEnv=" ) ;
+        sb.append( myEnv ) ;
 
         return sb.toString();
 
     }
 
     private class ProviderCacheKey {
-
         // Key is either orb OR host/port combo.
-        private ORB orb;
-
-        private String endpoints ;
+        private ORB localORB = null ;
+        private String endpoints = null ;
 
         ProviderCacheKey(ORB orb) {
-            this.orb = orb;
+            this.localORB  = orb;
         }
 
         // Host and Port must both be non-null
         ProviderCacheKey(String host, String port) {
-            endpoints = host + ":" + port ;
+            endpoints = "corbaloc:iiop:1.2@" + host + ":" + port
+                + "/NameService" ;
         }
 
         ProviderCacheKey( String endpoints ) {
             this.endpoints = endpoints ;
+        }
+
+        @Override
+        public String toString() {
+            if (localORB == null) {
+                return "ProviderCacheKey[" + endpoints + "]" ;
+            } else {
+                return "ProviderCacheKey[" + localORB + "]" ;
+            }
+        }
+
+        public SerialContextProvider getNameService() throws InvalidName,
+            NotFound, CannotProceed,
+            org.omg.CosNaming.NamingContextPackage.InvalidName {
+
+            org.omg.CORBA.Object objref = null;
+            if (endpoints == null) {
+                objref = orb.resolve_initial_references( "NameService");
+            } else {
+                objref = orb.string_to_object(endpoints) ;
+            }
+
+            final NamingContext nctx = NamingContextHelper.narrow(objref);
+            final NameComponent[] path =
+                { new NameComponent("SerialContextProvider", "") };
+            final org.omg.CORBA.Object obj = nctx.resolve(path) ;
+
+            SerialContextProvider result =
+                (SerialContextProvider)PortableRemoteObject.narrow( obj,
+                    SerialContextProvider.class );
+
+            return result ;
         }
 
         @Override
@@ -1273,24 +1260,25 @@ public class SerialContext implements Context {
 
         @Override
         public boolean equals(Object other) {
-            boolean equal = false;
-
-            if( (other != null) && (other instanceof ProviderCacheKey) ) {
-                ProviderCacheKey otherKey = (ProviderCacheKey) other;
-                if( orb != null ) {
-                    equal = (orb == otherKey.orb);
-                } else {
-                    if( (otherKey.endpoints != null)
-                        && endpoints.equals(otherKey.endpoints)) {
-
-                        equal = true;
-                    }
-                }
-
+            if (other == null) {
+                return false ;
             }
 
-            return equal;
+            if (!(other instanceof ProviderCacheKey)) {
+                return false ;
+            }
+
+            ProviderCacheKey otherKey = (ProviderCacheKey) other;
+
+            if (localORB != null) {
+                return localORB == otherKey.localORB ;
+            } else {
+                if (endpoints == null) {
+                    return otherKey.endpoints == null ;
+                }
+
+                return endpoints.equals(otherKey.endpoints) ;
+            }
         }
     }
-
 }

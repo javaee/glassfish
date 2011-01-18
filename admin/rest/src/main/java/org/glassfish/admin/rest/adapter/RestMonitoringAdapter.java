@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,7 +40,6 @@
 
 package org.glassfish.admin.rest.adapter;
 
-import java.util.HashSet;
 import java.util.Set;
 import org.jvnet.hk2.annotations.Service;
 
@@ -62,14 +61,8 @@ public class RestMonitoringAdapter extends RestAdapter {
 
     @Override
     protected  Set<Class<?>> getResourcesConfig(){
-        final Set<Class<?>> r = new HashSet<Class<?>>();
-        r.add(org.glassfish.admin.rest.resources.MonitoringResource.class);
+      return  getLazyJersey().getResourcesConfigForMonitoring(habitat);
 
-        r.add(org.glassfish.admin.rest.provider.ActionReportResultHtmlProvider.class);
-        r.add(org.glassfish.admin.rest.provider.ActionReportResultJsonProvider.class);
-        r.add(org.glassfish.admin.rest.provider.ActionReportResultXmlProvider.class);
-
-        return r;
     }
     public static final String CONTEXT = "/monitoring";
 }

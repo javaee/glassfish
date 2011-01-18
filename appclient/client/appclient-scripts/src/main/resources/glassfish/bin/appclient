@@ -2,7 +2,7 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
 #
 # The contents of this file are subject to the terms of either the GNU
 # General Public License Version 2 only ("GPL") or the Common Development
@@ -50,14 +50,21 @@ chooseJava() {
 # javaSearchTarget to the location (or path), and
 # JAVA to the found java executable.
 #
+# If the user specifies AS_JAVA or JAVA_HOME record that setting
+# to be passed as a property to the bootstrap program.
+#
     # Depends upon Java from ../config/asenv.conf
     if [ "${AS_JAVA}" != "" ]; then
         javaSearchType=AS_JAVA
         javaSearchTarget="$AS_JAVA"
+        ACCJavaHome="$AS_JAVA"
+        export ACCJavaHome
         JAVA="${AS_JAVA}/bin/java"
     elif [ "${JAVA_HOME}" != "" ]; then
         javaSearchType=JAVA_HOME
         javaSearchTarget="$JAVA_HOME"
+        ACCJavaHome="$JAVA_HOME"
+        export ACCJavaHome
         JAVA="${JAVA_HOME}/bin/java"
     else
         # Look in the PATH.
@@ -78,6 +85,8 @@ chooseJava() {
         ${JAVA}
         exit
     fi
+ACCJava="${JAVA}"
+export ACCJava
 }
 
 seekJavaOnPath() {
@@ -99,9 +108,10 @@ _AS_INSTALL=`dirname "$0"`/..
 export _AS_INSTALL
 case "`uname`" in
   CYGWIN*) _AS_INSTALL=`cygpath --windows $_AS_INSTALL`
+           cygwinProp=-Dorg.glassfish.isCygwin=true
 esac
 . "${_AS_INSTALL}/config/asenv.conf"
 
 chooseJava
 
-eval `"${JAVA}" -classpath "${_AS_INSTALL}/lib/gf-client.jar" org.glassfish.appclient.client.CLIBootstrap "$@"`
+eval `"${ACCJava}" $cygwinProp -classpath "${_AS_INSTALL}/lib/gf-client.jar" org.glassfish.appclient.client.CLIBootstrap "$@"`
