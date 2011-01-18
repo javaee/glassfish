@@ -3,7 +3,7 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
 #
 # The contents of this file are subject to the terms of either the GNU
 # General Public License Version 2 only ("GPL") or the Common Development
@@ -50,7 +50,7 @@ pkg = {
     "version"       : conf.glassfish_version,
     "attributes"    : {
                         "pkg.summary" : "GlassFish Ant Tasks",
-                        "pkg.description" : "GlassFish Ant Tasks Description Placeholder. " + conf.glassfish_description_long,
+                        "pkg.description" : "GlassFish Ant Tasks provide Ant tasks to manage the lifecycle and configuration of GlassFish in both regular and embedded modes. " + conf.glassfish_description_long,
                         "info.classification" : conf.glassfish_info_classification,
                       },
     "dirtrees"      : [ "glassfish" ],

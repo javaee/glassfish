@@ -3,7 +3,7 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
 #
 # The contents of this file are subject to the terms of either the GNU
 # General Public License Version 2 only ("GPL") or the Common Development
@@ -48,8 +48,8 @@ pkg = {
     "name"          : "glassfish-full-incorporation",
     "version"       : conf.glassfish_version,
     "attributes"    : {
-                        "pkg.summary" : "GlassFish Full Profile Incorporation",
-                        "pkg.description" : "GlassFish Full Profile Incorporation Package.  "+conf.glassfish_description_long,
+                        "pkg.summary" : "GlassFish Full Platform Incorporation",
+                        "pkg.description" : "GlassFish Full Platform Incorporation Package.  "+conf.glassfish_description_long,
                         "info.classification" : conf.glassfish_info_classification,
                       },
     "depends"       : { 

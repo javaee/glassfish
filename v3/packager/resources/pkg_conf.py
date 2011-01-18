@@ -72,5 +72,5 @@ shoal_version="1.5.28,0-0"
 
 #description
 glassfish_description="GlassFish Application Server"
-glassfish_description_long="GlassFish is an application server created using modular, lightweight, extensible architecture built on OSGi.  It is the first implementation of Java EE 6 standard and is a great developer platform, starts fast, is easy to use and has extensions to support dynamic languages like jRuby. "
+glassfish_description_long="GlassFish Server is a modular, lightweight, and extensible Java EE 6 application server built on OSGi. Key features include fast startup time, improved developer productivity, hybrid OSGi/Java EE applications, high availability clustering, centralized administration, and overall ease-of-use. "
 glassfish_info_classification="Application Servers"
