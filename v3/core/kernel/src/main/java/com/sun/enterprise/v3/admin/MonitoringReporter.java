@@ -42,7 +42,7 @@ package com.sun.enterprise.v3.admin;
 import com.sun.enterprise.admin.util.ClusterOperationUtil;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.util.StringUtils;
+import static com.sun.enterprise.util.StringUtils.ok;
 import com.sun.enterprise.v3.common.ActionReporter;
 import com.sun.enterprise.v3.common.PlainTextActionReporter;
 import com.sun.enterprise.v3.common.PropsFileActionReporter;
@@ -364,7 +364,7 @@ public class MonitoringReporter extends V2DottedNameSupport {
         // 2.  *
         // 3.  *.   --> which is a weird input but let's accept it anyway!
         // 4   .   --> very weird but we'll take it
-        if (!StringUtils.ok(userarg)
+        if (!ok(userarg)
                 || userarg.equals("*")
                 || userarg.equals(".")
                 || userarg.equals("*.")) {
@@ -486,15 +486,15 @@ public class MonitoringReporter extends V2DottedNameSupport {
 
         // IT 8985 bnevins
         // Hack to get single stats.  The code above above would take a lot of
-        // time to unwind.  For development speed we just remove unwanted items
+       // time to unwind.  For development speed we just remove unwanted items
         // after the fact...
-
         if (exactMatch != null) {
-            Object val = getIgnoreBackslash(map, exactMatch);
+            NameValue nv = getIgnoreBackslash(map, exactMatch);
             map.clear();
 
-            if (val != null)
-                map.put(exactMatch, val);
+            if (nv != null) {
+                map.put(nv.name, nv.value);
+            }
         }
     }
 
@@ -505,7 +505,7 @@ public class MonitoringReporter extends V2DottedNameSupport {
      * Instead we have to get each and every key in the map, remove backslashes
      * and compare.
      */
-    private Object getIgnoreBackslash(TreeMap map, String pattern) {
+    private NameValue getIgnoreBackslash(TreeMap map, String pattern) {
 
         if(pattern == null)
             return null;
@@ -513,28 +513,28 @@ public class MonitoringReporter extends V2DottedNameSupport {
         Object match = map.get(pattern);
 
         if(match != null)
-            return match;
+            return new NameValue(pattern, match);
 
         pattern = pattern.replace("\\", "");
         match = map.get(pattern);
 
         if(match != null)
-            return match;
+            return new NameValue(pattern, match);
 
         // No easy match...
 
         Set<Map.Entry> elems = map.entrySet();
 
         for(Map.Entry elem : elems) {
-            Object key = elem.getKey();
+            String key = elem.getKey().toString();
 
             if(key == null)
                 continue;
 
-            String name = key.toString().replace("\\", "");
+            String name = key.replace("\\", "");
 
             if(pattern.equals(name))
-                return elem.getValue();
+                return new NameValue(key, elem.getValue());
         }
         return null;
     }
@@ -666,4 +666,14 @@ public class MonitoringReporter extends V2DottedNameSupport {
     private OutputType outputType;
     private final static String DOTTED_NAME = ".dotted-name";
     private final StringBuilder cliOutput = new StringBuilder();
+
+    private static class NameValue {
+        String name;
+        Object value;
+
+        private NameValue(String s, Object o) {
+            name = s;
+            value = o;
+        }
+    }
 }

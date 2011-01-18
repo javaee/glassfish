@@ -421,6 +421,6 @@ public abstract class AbstractTreeNode implements TreeNode, Comparable {
     }
 
     private static String decodeName(String s) {
-        return s.replace(SLASH, "/").replace(MONDOT, ".");
+        return s.replace(SLASH, "/").replace(MONDOT, "\\.");
     }
 }
