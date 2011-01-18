@@ -62,7 +62,7 @@ public class VirtualServerTest extends BaseSeleniumTestClass {
         selectDropdownOption("propertyForm:propertySheet:al:enableLog:log", "i18n_web.vs.alwaysEnable");
         setFieldValue("propertyForm:propertySheet:propertSectionTextField:logFileProp:LogFile", "logfile.txt");
         setFieldValue("propertyForm:propertySheet:propertSectionTextField:docroot:docroot", "/tmp");
-        addSelectSelection("propertyForm:propertySheet:propertSectionTextField:nwProps:nw", "label=http-listener-1");
+        addSelectSelection("propertyForm:propertySheet:propertSectionTextField:nwProps:nw", "http-listener-1");
         int count = addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton");
 
         setFieldValue("propertyForm:basicTable:rowGroup1:0:col2:col1St", "property");

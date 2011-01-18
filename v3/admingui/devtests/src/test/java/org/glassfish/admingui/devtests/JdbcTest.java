@@ -215,10 +215,10 @@ public class JdbcTest extends BaseSeleniumTestClass {
         setFieldValue("form:propertySheet:propertSectionTextField:descProp:desc", description);
 
         if (targetType.equals(MonitoringTest.TARGET_STANDALONE_TYPE)) {
-            addSelectSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=" + target);
+            addSelectSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", target);
             pressButton("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
         } else if (targetType.equals(MonitoringTest.TARGET_CLUSTER_TYPE)) {
-            addSelectSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=" + target);
+            addSelectSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", target);
             pressButton("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
         }
         clickAndWait("form:propertyContentPage:topButtons:newButton", TRIGGER_JDBC_RESOURCES);

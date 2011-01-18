@@ -161,7 +161,7 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
         pressButton("propertyForm:resourcesTable:topActionsGroup1:button1");
         waitForButtonDisabled("propertyForm:resourcesTable:topActionsGroup1:button1");
 
-        /*selectDropdownOption("propertyForm:resourcesTable:topActionsGroup1:actions", "label=JDBC Resources");
+        /*selectDropdownOption("propertyForm:resourcesTable:topActionsGroup1:actions", "JDBC Resources");
         waitForPageLoad(JdbcTest.TRIGGER_NEW_JDBC_RESOURCE, true);
         clickAndWait("form:propertyContentPage:topButtons:cancelButton", JdbcTest.TRIGGER_JDBC_RESOURCES);*/
 
@@ -173,7 +173,7 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
         clickAndWait(ID_INSTANCE_TABLE_NEW_BUTTON, TRIGGER_NEW_PAGE );
         setFieldValue("propertyForm:propertySheet:propertSectionTextField:NameTextProp:NameText", instanceName);
         selectDropdownOption("propertyForm:propertySheet:propertSectionTextField:node:node", NODE_NAME);
-        selectDropdownOption("propertyForm:propertySheet:propertSectionTextField:configProp:Config", "label=default-config");
+        selectDropdownOption("propertyForm:propertySheet:propertSectionTextField:configProp:Config", "default-config");
         markCheckbox("propertyForm:propertySheet:propertSectionTextField:configOptionProp:optC");
         clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_INSTANCES_PAGE);
     }

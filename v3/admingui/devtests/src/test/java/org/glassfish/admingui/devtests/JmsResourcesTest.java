@@ -106,8 +106,8 @@ public class JmsResourcesTest extends BaseSeleniumTestClass {
         setFieldValue("form:propertySheet:generalPropertySheet:descProp:descProp", description);
         selectDropdownOption("form:propertySheet:poolPropertySheet:transprop:trans", "LocalTransaction"); //i18n
         
-        addSelectSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=" + instanceName);
-        addSelectSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=server");
+        addSelectSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", instanceName);
+        addSelectSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "server");
         pressButton("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
         
         clickAndWait("form:propertyContentPage:topButtons:newButton", TRIGGER_JMS_CONNECTION_FACTORIES);
@@ -193,8 +193,8 @@ public class JmsResourcesTest extends BaseSeleniumTestClass {
         setFieldValue("form:propertyContentPage:propertySheet:propertSectionTextField:nameProp:name", "somePhysicalDestination");
         setFieldValue("form:propertyContentPage:propertySheet:propertSectionTextField:descProp:desc", description);
 
-        addSelectSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=" + instanceName);
-        addSelectSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=server"); 
+        addSelectSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", instanceName);
+        addSelectSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "server"); 
         pressButton("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
 
         clickAndWait("form:propertyContentPage:topButtons:newButton", TRIGGER_JMS_DESTINATION_RESOURCES);
@@ -238,7 +238,7 @@ public class JmsResourcesTest extends BaseSeleniumTestClass {
         selenium.click("propertyForm:configs:topActionsGroup1:newButton");
         verifyTrue(isTextPresent("New Transport"));
         setFieldValue("propertyForm:propertySheet:propertSectionTextField:IdTextProp:IdText", "transport");
-        selectDropdownOption("propertyForm:propertySheet:propertSectionTextField:ByteBufferType:ByteBufferType", "label=DIRECT");
+        selectDropdownOption("propertyForm:propertySheet:propertSectionTextField:ByteBufferType:ByteBufferType", "DIRECT");
         setFieldValue("propertyForm:propertySheet:propertSectionTextField:BufferSizeBytes:BufferSizeBytes", "16384");
         setFieldValue("propertyForm:propertySheet:propertSectionTextField:AcceptorThreads:AcceptorThreads", "2");
         setFieldValue("propertyForm:propertySheet:propertSectionTextField:MaxConnectionsCount:MaxConnectionsCount", "8192");

@@ -64,7 +64,7 @@ public class TransactionServiceTest extends BaseSeleniumTestClass {
         markCheckbox("propertyForm:propertySheet:propertSectionTextField:onRestartProp:enabled");
         setFieldValue("propertyForm:propertySheet:propertSectionTextField:timeoutProp:Timeout", timeout);
         setFieldValue("propertyForm:propertySheet:propertSectionTextField:retryProp:Retry", retry);
-        selectDropdownOption("propertyForm:propertySheet:propertSectionTextField:heuristicProp:HeuristicDecision", "label=Commit");
+        selectDropdownOption("propertyForm:propertySheet:propertSectionTextField:heuristicProp:HeuristicDecision", "Commit");
         setFieldValue("propertyForm:propertySheet:propertSectionTextField:keyPointProp:Keypoint", keypoint);
         int count = addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton");
 

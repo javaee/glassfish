@@ -144,7 +144,7 @@ public class EnterpriseServerTest extends BaseSeleniumTestClass {
         pressButton("propertyForm:resourcesTable:topActionsGroup1:button1");
         waitForButtonDisabled("propertyForm:resourcesTable:topActionsGroup1:button1");
 
-        /*selenium.select("propertyForm:resourcesTable:topActionsGroup1:actions", "label=JDBC Resources");
+        /*selenium.select("propertyForm:resourcesTable:topActionsGroup1:actions", "JDBC Resources");
         waitForPageLoad(JdbcTest.TRIGGER_NEW_JDBC_RESOURCE, true);
         clickAndWait("form:propertyContentPage:topButtons:cancelButton", JdbcTest.TRIGGER_JDBC_RESOURCES);*/
 

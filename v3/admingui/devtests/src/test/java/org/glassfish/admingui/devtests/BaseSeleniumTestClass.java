@@ -226,7 +226,7 @@ public class BaseSeleniumTestClass {
      * @param cb 
      */
     public void clearCheckbox(String cb) {
-        selenium.check(cb);
+        selenium.uncheck(cb);
     }
     
     public void pressButton(String button) {
@@ -364,7 +364,7 @@ public class BaseSeleniumTestClass {
     }
 
     protected int getTableRowCount(String id) {
-        String text = selenium.getText(id);
+        String text = getText(id);
         int count = Integer.parseInt(text.substring(text.indexOf("(") + 1, text.indexOf(")")));
 
         return count;
@@ -375,7 +375,7 @@ public class BaseSeleniumTestClass {
     }
 
     protected void openAndWait(String url, String triggerText, int timeout) {
-        selenium.open(url);
+        open(url);
         // wait for 2 minutes, as that should be enough time to insure that the admin console app has been deployed by the server
         waitForPageLoad(triggerText, timeout);
     }
@@ -392,22 +392,22 @@ public class BaseSeleniumTestClass {
     protected void clickAndWait(String id, String triggerText, int seconds) {
         log ("Clicking on {0} and waiting for \'{1}\'", id, triggerText);
         insureElementIsVisible(id);
-        selenium.click(id);
+        pressButton(id);
         waitForPageLoad(triggerText, seconds);
     }
     
     protected void clickAndWait(String id, WaitForLoadCallBack callback) {
         insureElementIsVisible(id);
-        selenium.click(id);
+        pressButton(id);
         waitForLoad(TIMEOUT, callback);
     }
 
     protected void clickAndWaitForElement(String clickId, final String elementId) {
-        selenium.click(clickId);
+        pressButton(clickId);
         waitForLoad(60, new WaitForLoadCallBack() {
             @Override
             public boolean executeTest() {
-                if (selenium.isElementPresent(elementId)) {
+                if (isElementPresent(elementId)) {
                     return true;
                 }
                 
@@ -418,7 +418,7 @@ public class BaseSeleniumTestClass {
     }
 
     protected void clickAndWaitForButtonEnabled(String id) {
-        selenium.click(id);
+        pressButton(id);
         waitForButtonEnabled(id);
     }
 
@@ -472,8 +472,8 @@ public class BaseSeleniumTestClass {
 
     protected void handleLogin() {
         processingLogin = true;
-        selenium.type("j_username", "admin");
-        selenium.type("j_password", "");
+        setFieldValue("j_username", "admin");
+        setFieldValue("j_password", "");
         clickAndWait("loginButton", TRIGGER_COMMON_TASKS);
         processingLogin = false;
     }
@@ -509,16 +509,16 @@ public class BaseSeleniumTestClass {
 
     protected void rowActionWithConfirm(String buttonId, String tableId, String triggerText, String selectColId, String valueColId) {
         // A defensive getConfirmation()
-        if (selenium.isConfirmationPresent()) {
-            selenium.getConfirmation();
+        if (isConfirmationPresent()) {
+            getConfirmation();
         }
-        selenium.chooseOkOnNextConfirmation();
+        chooseOkOnNextConfirmation();
         selectTableRowByValue(tableId, triggerText, selectColId, valueColId);
         sleep(500); // argh!
         waitForButtonEnabled(buttonId);
-        selenium.click(buttonId);
-        if (selenium.isConfirmationPresent()) {
-            selenium.getConfirmation();
+        pressButton(buttonId);
+        if (isConfirmationPresent()) {
+            getConfirmation();
         }
         sleep(500); // argh!
         waitForButtonDisabled(buttonId);
@@ -553,7 +553,7 @@ public class BaseSeleniumTestClass {
     }
     
     protected boolean isTextPresent(String text) {
-        return selenium.isTextPresent(resolveTriggerText(text));
+        return isTextPresent(resolveTriggerText(text));
     }
     
     protected void selectTableRowByValue(String tableId, String value) {
@@ -566,7 +566,7 @@ public class BaseSeleniumTestClass {
             // It seems this must be click for the JS to fire in the browser
             final String id = row + ":" + selectColId + ":select";
             selenium.click(id); 
-            selenium.check(id); 
+            markCheckbox(id); 
         }
     }
 
@@ -589,7 +589,7 @@ public class BaseSeleniumTestClass {
         if (!rows.isEmpty()) {
             for (String row : rows) {
                 selenium.click(row + ":" + selectColId + ":select");
-                selenium.check(row + ":" + selectColId + ":select");
+                markCheckbox(row + ":" + selectColId + ":select");
             }
         }
 
@@ -600,10 +600,10 @@ public class BaseSeleniumTestClass {
         String deleteButtonId = tableId + ":topActionsGroup1:button1";
         selectAllTableRows(tableId);
         waitForButtonEnabled(deleteButtonId);
-        selenium.chooseOkOnNextConfirmation();
-        selenium.click(deleteButtonId);
-        if (selenium.isConfirmationPresent()) {
-            selenium.getConfirmation();
+        chooseOkOnNextConfirmation();
+        pressButton(deleteButtonId);
+        if (isConfirmationPresent()) {
+            getConfirmation();
         }
         this.waitForButtonDisabled(deleteButtonId);
     }
@@ -612,7 +612,7 @@ public class BaseSeleniumTestClass {
         int count = getTableRowCount(tableId);
         for (int i = 0 ; i < count; i++) {
             selenium.click(tableId+":rowGroup1:" + i +":col0:select");
-            selenium.check(tableId+":rowGroup1:" + i +":col0:select");
+            markCheckbox(tableId+":rowGroup1:" + i +":col0:select");
         }
     }
 
@@ -622,7 +622,7 @@ public class BaseSeleniumTestClass {
             int row = 0;
             while (true) { // iterate over any rows
                 // Assume one row group for now and hope it doesn't bite us
-                String text = selenium.getText(tableId + ":rowGroup1:" + row + ":" + valueColId);
+                String text = getText(tableId + ":rowGroup1:" + row + ":" + valueColId);
                 if (text.equals(value)) {
                     return tableId + ":rowGroup1:" + row + ":";
                 }
@@ -640,7 +640,7 @@ public class BaseSeleniumTestClass {
             int row = 0;
             while (true) { // iterate over any rows
                 // Assume one row group for now and hope it doesn't bite us
-                String text = selenium.getText(tableId + ":rowGroup1:" + row + ":" + valueColId);
+                String text = getText(tableId + ":rowGroup1:" + row + ":" + valueColId);
                 if (text.contains(value)) {
                     rows.add(tableId + ":rowGroup1:" + row);
                 }
@@ -660,9 +660,9 @@ public class BaseSeleniumTestClass {
             for (int i = 0; i < tableCount; i++) {
                 String text = "";
                 if (isLabel) {
-                    text = selenium.getText(tableId + ":rowGroup1:" + i + ":" + valueColId);
+                    text = getText(tableId + ":rowGroup1:" + i + ":" + valueColId);
                 } else {
-                    text = selenium.getValue(tableId + ":rowGroup1:" + i + ":" + valueColId);
+                    text = getValue(tableId + ":rowGroup1:" + i + ":" + valueColId);
                 }
                 if (text.equals(value)) {
                     selectedCount++;
@@ -686,7 +686,7 @@ public class BaseSeleniumTestClass {
             int row = 0;
             while (true) { // iterate over any rows
                 // Assume one row group for now and hope it doesn't bite us
-                values.add(selenium.getText(tableId + ":rowGroup1:" + row + ":" + columnId));
+                values.add(getText(tableId + ":rowGroup1:" + row + ":" + columnId));
                 row++;
             }
         } catch (Exception e) {
@@ -755,18 +755,18 @@ public class BaseSeleniumTestClass {
             String state) {
         selectTableRowByValue(tableId, resourceName);
         waitForButtonEnabled(enableButtonId);
-        selenium.click(enableButtonId);
+        pressButton(enableButtonId);
         waitForButtonDisabled(enableButtonId);
 
         clickAndWait(getLinkIdByLinkText(tableId, resourceName), editTriggerText);
         // TODO: this is an ugly, ugly hack and needs to be cleaned up
         if(state.contains("Target")) {
-            Assert.assertEquals(state, selenium.getText(statusId));
+            Assert.assertEquals(state, getText(statusId));
         } else {
             if ("on".equals(state) || "off".equals(state)) {
-                Assert.assertEquals("on".equals(state), selenium.isChecked(statusId));
+                Assert.assertEquals("on".equals(state), isChecked(statusId));
             } else {
-                Assert.assertEquals(state, selenium.getValue(statusId));
+                Assert.assertEquals(state, getFieldValue(statusId));
             }
         }
         clickAndWait(backToTableButtonId, tableTriggerText);
@@ -780,13 +780,13 @@ public class BaseSeleniumTestClass {
             String generalTriggerText,
             String targetTriggerText,
             String state) {
-        selenium.click(tableSelectMutlipleId);
+        pressButton(tableSelectMutlipleId);
         waitForButtonEnabled(enableButtonId);
-        selenium.click(enableButtonId);
+        pressButton(enableButtonId);
         waitForButtonDisabled(enableButtonId);
 
         clickAndWait(generalTabId, generalTriggerText);
-        Assert.assertEquals(state, selenium.getText(statusId));
+        Assert.assertEquals(state, getText(statusId));
 
         clickAndWait(targetTabId, targetTriggerText);
     }
@@ -813,7 +813,7 @@ public class BaseSeleniumTestClass {
         clickAndWait(getLinkIdByLinkText(resourcesTableId, jndiName), resEditTriggerText);
         //Click on the target tab and verify whether the target is in the target table or not.
         clickAndWait(resTargetTabId, TRIGGER_EDIT_RESOURCE_TARGETS);
-        Assert.assertTrue(selenium.isTextPresent(instanceName));
+        Assert.assertTrue(isTextPresent(instanceName));
 
         //Disable all targets
         testEnableOrDisableTarget("propertyForm:targetTable:_tableActionsTop:_selectMultipleButton:_selectMultipleButton_image",
@@ -837,8 +837,8 @@ public class BaseSeleniumTestClass {
 
         //Test the manage targets : Remove the server from targets.
         clickAndWait("propertyForm:targetTable:topActionsGroup1:manageTargetButton", TRIGGER_MANAGE_TARGETS);
-        selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_selected", "label=" + DEFAULT_SERVER);
-        selenium.click("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_removeButton");
+        addSelectSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_selected", DEFAULT_SERVER);
+        pressButton("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_removeButton");
         clickAndWait("form:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
 
         //Test the issue : 13280
@@ -850,15 +850,15 @@ public class BaseSeleniumTestClass {
 
         //Test the manage targets : Remove the instance and add the server.
         clickAndWait("propertyForm:targetTable:topActionsGroup1:manageTargetButton", TRIGGER_MANAGE_TARGETS);
-        selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_selected", "label=" + instanceName);
+        addSelectSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_selected", instanceName);
         waitForButtonEnabled("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_removeButton");
-        selenium.click("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_removeButton");
+        pressButton("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_removeButton");
         waitForButtonDisabled("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_removeButton");
         selenium.removeAllSelections("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available");
 
-        selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=" + DEFAULT_SERVER);
+        addSelectSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", DEFAULT_SERVER);
         waitForButtonEnabled("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
-        selenium.click("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
+        pressButton("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
         waitForButtonDisabled("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
         clickAndWait("form:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
         waitForPageLoad(instanceName, false);
@@ -930,7 +930,7 @@ public class BaseSeleniumTestClass {
             insureElementIsVisible(parentId);
             String grandParentId = parentId.substring(0, parentId.lastIndexOf(":"));
             String nodeId = grandParentId.substring(grandParentId.lastIndexOf(":")+1);
-            selenium.click(grandParentId + ":" + nodeId+"_turner");
+            pressButton(grandParentId + ":" + nodeId+"_turner");
         }
     }
     
@@ -948,18 +948,18 @@ public class BaseSeleniumTestClass {
         public boolean executeTest() {
             boolean found = false;
             try {
-                if (selenium.isElementPresent("j_username") && !processingLogin) {
+                if (isElementPresent("j_username") && !processingLogin) {
                     handleLogin();
                 }
                 if (!textShouldBeMissing) {
-                    if (selenium.isTextPresent(triggerText)) {
+                    if (isTextPresent(triggerText)) {
                         found = true;
                     }
-                } else if (!selenium.isTextPresent(triggerText)) {
+                } else if (!isTextPresent(triggerText)) {
                         found = true;
                     
                 } else {
-                    if (selenium.isTextPresent("RuntimeException")) {
+                    if (isTextPresent("RuntimeException")) {
                         throw new RuntimeException("Exception detected on page. Please check the logs for details");
                     }
                 }

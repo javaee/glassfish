@@ -139,10 +139,10 @@ public class ConnectorsTest extends BaseSeleniumTestClass {
         clickAndWait("propertyForm:poolTable:topActionsGroup1:newButton", TRIGGER_NEW_CONNECTOR_CONNECTION_POOL_STEP_1);
 
         setFieldValue("propertyForm:propertySheet:generalPropertySheet:jndiProp:name", testPool);
-        selectDropdownOption("propertyForm:propertySheet:generalPropertySheet:resAdapterProp:db", "label=jmsra");
+        selectDropdownOption("propertyForm:propertySheet:generalPropertySheet:resAdapterProp:db", "jmsra");
         waitForCondition("document.getElementById('propertyForm:propertySheet:generalPropertySheet:connectionDefProp:db').value != ''", 10000);
 
-        selectDropdownOption("propertyForm:propertySheet:generalPropertySheet:connectionDefProp:db", "label=javax.jms.QueueConnectionFactory");
+        selectDropdownOption("propertyForm:propertySheet:generalPropertySheet:connectionDefProp:db", "javax.jms.QueueConnectionFactory");
         waitForButtonEnabled("propertyForm:title:topButtons:nextButton");
 
         clickAndWait("propertyForm:title:topButtons:nextButton", TRIGGER_NEW_CONNECTOR_CONNECTION_POOL_STEP_2);
@@ -237,15 +237,15 @@ public class ConnectorsTest extends BaseSeleniumTestClass {
         clickAndWait("propertyForm:poolTable:topActionsGroup1:newButton", TRIGGER_NEW_CONNECTOR_CONNECTION_POOL_STEP_1);
 
         setFieldValue("propertyForm:propertySheet:generalPropertySheet:jndiProp:name", testPool);
-        selectDropdownOption("propertyForm:propertySheet:generalPropertySheet:resAdapterProp:db", "label=jmsra");
+        selectDropdownOption("propertyForm:propertySheet:generalPropertySheet:resAdapterProp:db", "jmsra");
         waitForCondition("document.getElementById('propertyForm:propertySheet:generalPropertySheet:connectionDefProp:db').value != ''", 10000);
 
-        selectDropdownOption("propertyForm:propertySheet:generalPropertySheet:connectionDefProp:db", "label=javax.jms.QueueConnectionFactory");
+        selectDropdownOption("propertyForm:propertySheet:generalPropertySheet:connectionDefProp:db", "javax.jms.QueueConnectionFactory");
         waitForButtonEnabled("propertyForm:title:topButtons:nextButton");
 
         clickAndWait("propertyForm:title:topButtons:nextButton", TRIGGER_NEW_CONNECTOR_CONNECTION_POOL_STEP_2);
 
-        selectDropdownOption("propertyForm:propertySheet:poolPropertySheet:transprop:trans", "label=NoTransaction");
+        selectDropdownOption("propertyForm:propertySheet:poolPropertySheet:transprop:trans", "NoTransaction");
         clickAndWait("propertyForm:propertyContentPage:topButtons:finishButton", TRIGGER_CONNECTOR_CONNECTION_POOLS);
         assertTrue(isTextPresent(testPool));
         //Create Connector Security Map

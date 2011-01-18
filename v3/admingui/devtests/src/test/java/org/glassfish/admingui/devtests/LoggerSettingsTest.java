@@ -80,7 +80,7 @@ public class LoggerSettingsTest extends BaseSeleniumTestClass {
             newLevel = "INFO";
         }
 
-        selectDropdownOption("form1:basicTable:topActionsGroup1:change_list", "label=" + newLevel);
+        selectDropdownOption("form1:basicTable:topActionsGroup1:change_list", newLevel);
         pressButton("form1:basicTable:_tableActionsTop:_selectMultipleButton:_selectMultipleButton_image");
 
         waitForButtonEnabled("form1:basicTable:topActionsGroup1:button1");

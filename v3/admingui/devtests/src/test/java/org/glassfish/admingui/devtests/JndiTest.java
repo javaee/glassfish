@@ -111,15 +111,15 @@ public class JndiTest extends BaseSeleniumTestClass {
         clickAndWait("propertyForm:resourcesTable:topActionsGroup1:newButton", TRIGGER_NEW_CUSTOM_RESOURCE);
 
         setFieldValue("form:propertySheet:propertSectionTextField:jndiTextProp:jnditext", resourceName);
-        selectDropdownOption("form:propertySheet:propertSectionTextField:cp:Classname", "label=java.lang.Double");
+        selectDropdownOption("form:propertySheet:propertSectionTextField:cp:Classname", "java.lang.Double");
         int count = addTableRow("form:basicTable", "form:basicTable:topActionsGroup1:addSharedTableButton");
 
         setFieldValue("form:basicTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
         setFieldValue("form:basicTable:rowGroup1:0:col3:col1St", "value");
         setFieldValue("form:basicTable:rowGroup1:0:col4:col1St", "description");
         
-        addSelectSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=" + instanceName);
-        addSelectSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=server");
+        addSelectSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", instanceName);
+        addSelectSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "server");
         pressButton("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
         clickAndWait("form:propertyContentPage:topButtons:newButton", TRIGGER_CUSTOM_RESOURCES);
 
@@ -176,7 +176,7 @@ public class JndiTest extends BaseSeleniumTestClass {
         clickAndWait("propertyForm:resourcesTable:topActionsGroup1:newButton", TRIGGER_NEW_EXTERNAL_RESOURCE);
 
         setFieldValue("form:propertySheet:propertSectionTextField:jndiTextProp:jnditext", resourceName);
-        selectDropdownOption("form:propertySheet:propertSectionTextField:cp:Classname", "label=java.lang.Double");
+        selectDropdownOption("form:propertySheet:propertSectionTextField:cp:Classname", "java.lang.Double");
         setFieldValue("form:propertySheet:propertSectionTextField:jndiLookupProp:jndiLookup", resourceName);
         setFieldValue("form:propertySheet:propertSectionTextField:descProp:desc", description);
         addTableRow("form:basicTable", "form:basicTable:topActionsGroup1:addSharedTableButton");
@@ -238,7 +238,7 @@ public class JndiTest extends BaseSeleniumTestClass {
         clickAndWait("propertyForm:resourcesTable:topActionsGroup1:newButton", TRIGGER_NEW_EXTERNAL_RESOURCE);
 
         setFieldValue("form:propertySheet:propertSectionTextField:jndiTextProp:jnditext", resourceName);
-        selectDropdownOption("form:propertySheet:propertSectionTextField:cp:Classname", "label=java.lang.Double");
+        selectDropdownOption("form:propertySheet:propertSectionTextField:cp:Classname", "java.lang.Double");
         setFieldValue("form:propertySheet:propertSectionTextField:jndiLookupProp:jndiLookup", resourceName);
         setFieldValue("form:propertySheet:propertSectionTextField:descProp:desc", description);
         int count = addTableRow("form:basicTable", "form:basicTable:topActionsGroup1:addSharedTableButton");
@@ -247,8 +247,8 @@ public class JndiTest extends BaseSeleniumTestClass {
         setFieldValue("form:basicTable:rowGroup1:0:col3:col1St", "value");
         setFieldValue("form:basicTable:rowGroup1:0:col4:col1St", "description");
 
-        addSelectSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=" + instanceName);
-        addSelectSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=server");
+        addSelectSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", instanceName);
+        addSelectSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "server");
         pressButton("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
         clickAndWait("form:propertyContentPage:topButtons:newButton", TRIGGER_EXTERNAL_RESOURCES);
 

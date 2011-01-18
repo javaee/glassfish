@@ -115,7 +115,7 @@ public class MonitoringTest extends BaseSeleniumTestClass {
             selectTableRowByValue("form1:basicTable", component, MONITOR_COMP_SELECT_ID, MONITOR_COMP_COL_ID);
         }
         waitForButtonEnabled("form1:basicTable:topActionsGroup1:button1");
-        selectDropdownOption("form1:basicTable:topActionsGroup1:change_list", "label=" + monLevel);
+        selectDropdownOption("form1:basicTable:topActionsGroup1:change_list", monLevel);
         pressButton("form1:basicTable:topActionsGroup1:button1");
         waitForButtonDisabled("form1:basicTable:topActionsGroup1:button1");
         clickAndWait("form1:title:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
@@ -186,10 +186,10 @@ public class MonitoringTest extends BaseSeleniumTestClass {
         selectDropdownOption(dropDownId, "Copy");
         waitForPageLoad(gcCopyHeader, 10000);
         verifyMonitoringStat("gcStats", gcCopyData, gcCopyHeader);
-        selectDropdownOption(dropDownId, "label=MarkSweepCompact");
+        selectDropdownOption(dropDownId, "MarkSweepCompact");
         waitForPageLoad(gcMarkSweepHeader, 10000);
         verifyMonitoringStat("gcStats", gcMarkSweepData, gcMarkSweepHeader);
-        selectDropdownOption(dropDownId, "label=thread-1");
+        selectDropdownOption(dropDownId, "thread-1");
         waitForPageLoad(threadHeader, 10000);
         verifyMonitoringStat("jvmThreadInfoStats", threadData, threadHeader);
 
@@ -257,13 +257,13 @@ public class MonitoringTest extends BaseSeleniumTestClass {
         setMonitorLevel("HTTP Service", MONITOR_LEVEL_HIGH, false, target, targetType);
         goToMonitoringServerPage(target, targetType);
 
-        selectDropdownOption(dropDownId, "label=server");
+        selectDropdownOption(dropDownId, "server");
         waitForPageLoad(virtualStatsHeader, 10000);
 
         verifyMonitoringStat("virtualServerStats", virtualStatsData, virtualStatsHeader);
         verifyMonitoringStat("httpServiceStats", requestStatsData, requestStatsHeader);
 
-        selectDropdownOption(dropDownId, "label=admin-listener");
+        selectDropdownOption(dropDownId, "admin-listener");
         waitForPageLoad(fileCacheStatsHeader, 10000);
         verifyMonitoringStat("fileCacheStats", fileCacheStatsData, fileCacheStatsHeader);
         verifyMonitoringStat("keepAliveStats", keepAliveStatsData, keepAliveStatsHeader);
@@ -300,7 +300,7 @@ public class MonitoringTest extends BaseSeleniumTestClass {
         setMonitorLevel("EJB Container", MONITOR_LEVEL_HIGH, false, target, targetType);
         goToMonitoringApplicationsPage(target, targetType);
 
-        selectDropdownOption(MONITORING_APPLICATIONS_COMPONENT_DROPDOWN_ID, "label=TimerSingleton");
+        selectDropdownOption(MONITORING_APPLICATIONS_COMPONENT_DROPDOWN_ID, "TimerSingleton");
         waitForPageLoad(statsHeader, 10000);
         assertTrue(isTextPresent(statsHeader));
         assertTrue(isTextPresent(statDescription));
@@ -322,12 +322,12 @@ public class MonitoringTest extends BaseSeleniumTestClass {
         setMonitorLevel("EJB Container", MONITOR_LEVEL_HIGH, false, target, targetType);
         goToMonitoringApplicationsPage(target, targetType);
 
-        selectDropdownOption(MONITORING_APPLICATIONS_COMPONENT_DROPDOWN_ID, "label=SfulEJB");
+        selectDropdownOption(MONITORING_APPLICATIONS_COMPONENT_DROPDOWN_ID, "SfulEJB");
         waitForPageLoad(statefulStatsHeader, 10000);
         assertTrue(isTextPresent(statefulStatsHeader));
         assertTrue(isTextPresent(statefulStatDescription));
 
-        selectDropdownOption(MONITORING_APPLICATIONS_COMPONENT_DROPDOWN_ID, "label=SlessEJB");
+        selectDropdownOption(MONITORING_APPLICATIONS_COMPONENT_DROPDOWN_ID, "SlessEJB");
         waitForPageLoad(statelessStatsHeader, 10000);
         assertTrue(isTextPresent(statelessStatsHeader));
         assertTrue(isTextPresent(statelessStatDescription));

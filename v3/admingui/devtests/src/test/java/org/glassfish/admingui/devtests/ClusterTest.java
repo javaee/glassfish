@@ -250,10 +250,10 @@ public class ClusterTest extends BaseSeleniumTestClass {
         int customCount = getTableRowCountByValue(tableID, "Custom Resources", "col3:type");
 
         EnterpriseServerTest adminServerTest = new EnterpriseServerTest();
-        selectDropdownOption("propertyForm:resourcesTable:topActionsGroup1:filter_list", "label=Custom Resources");
+        selectDropdownOption("propertyForm:resourcesTable:topActionsGroup1:filter_list", "Custom Resources");
         adminServerTest.waitForTableRowCount(tableID, customCount);
 
-        selectDropdownOption("propertyForm:resourcesTable:topActionsGroup1:filter_list", "label=JDBC Resources");
+        selectDropdownOption("propertyForm:resourcesTable:topActionsGroup1:filter_list", "JDBC Resources");
         adminServerTest.waitForTableRowCount(tableID, jdbcCount);
 
         selectTableRowByValue("propertyForm:resourcesTable", jndiName);
@@ -261,7 +261,7 @@ public class ClusterTest extends BaseSeleniumTestClass {
         pressButton("propertyForm:resourcesTable:topActionsGroup1:button1");
         waitForButtonDisabled("propertyForm:resourcesTable:topActionsGroup1:button1");
 
-        /*selectDropdownOption("propertyForm:resourcesTable:topActionsGroup1:actions", "label=JDBC Resources");
+        /*selectDropdownOption("propertyForm:resourcesTable:topActionsGroup1:actions", "JDBC Resources");
         waitForPageLoad(JdbcTest.TRIGGER_NEW_JDBC_RESOURCE, true);
         clickAndWait("form:propertyContentPage:topButtons:cancelButton", JdbcTest.TRIGGER_JDBC_RESOURCES);*/
 
