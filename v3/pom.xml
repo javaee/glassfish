@@ -131,7 +131,7 @@
         <webservices.version>2.1-b25</webservices.version>
         <woodstox.version>3.2.1.1</woodstox.version>
         <jaxb-api.version>2.2.2</jaxb-api.version>
-        <jaxb.version>2.2.3</jaxb.version>
+        <jaxb.version>2.2.3-1</jaxb.version>
         <jaxrpc.api.version>1.1-b01</jaxrpc.api.version>
 
         <javax-persistence-api.version>2.0.3</javax-persistence-api.version>
