@@ -82,18 +82,18 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
         createStandAloneInstance(instanceName);
         
         String prefix = getTableRowByValue(ID_INSTANCE_TABLE, instanceName, "col1");
-        assertTrue(selenium.isTextPresent(instanceName));
-        assertEquals(instanceName, selenium.getText(prefix + "col1:link"));
-        assertEquals(instanceName+"-config", selenium.getText(prefix + "col3:configlink"));
-        assertEquals(NODE_NAME, selenium.getText(prefix + "col5:nodeAgentlink"));
-        assertEquals(STATUS_STOPPED, selenium.getText(prefix + "col6"));
-        assertEquals(DEFAULT_WEIGHT, selenium.getValue(prefix + "col2:weight"));
+        assertTrue(isTextPresent(instanceName));
+        assertEquals(instanceName, getText(prefix + "col1:link"));
+        assertEquals(instanceName+"-config", getText(prefix + "col3:configlink"));
+        assertEquals(NODE_NAME, getText(prefix + "col5:nodeAgentlink"));
+        assertEquals(STATUS_STOPPED, getText(prefix + "col6"));
+        assertEquals(DEFAULT_WEIGHT, getFieldValue(prefix + "col2:weight"));
 
         startInstance(instanceName);
-        assertEquals(STATUS_RUNNING, selenium.getText(prefix + "col6"));
+        assertEquals(STATUS_RUNNING, getText(prefix + "col6"));
 
         stopInstance(instanceName);
-        assertEquals(STATUS_STOPPED, selenium.getText(prefix + "col6"));
+        assertEquals(STATUS_STOPPED, getText(prefix + "col6"));
 
         deleteStandAloneInstance(instanceName);
     }
@@ -106,8 +106,8 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
         clickAndWait(getLinkIdByLinkText(ID_INSTANCE_TABLE, instanceName), TRIGGER_GENERAL_INFO_PAGE);
         clickAndWait(ID_INSTANCE_PROP_TAB, TRIGGER_SYS_PROPS);
         int sysPropCount = addTableRow("propertyForm:sysPropsTable", "propertyForm:sysPropsTable:topActionsGroup1:addSharedTableButton");
-        selenium.type("propertyForm:sysPropsTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
-        selenium.type("propertyForm:sysPropsTable:rowGroup1:0:overrideValCol:overrideVal", "value");
+        setFieldValue("propertyForm:sysPropsTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
+        setFieldValue("propertyForm:sysPropsTable:rowGroup1:0:overrideValCol:overrideVal", "value");
         // FIXME: The app needs to be fixed here. should show success message
         clickAndWait("propertyForm:clusterSysPropsPage:topButtons:topButtons:saveButton", TRIGGER_SYS_PROPS);
         sleep(1000); // grr! FIXME
@@ -117,8 +117,8 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
 //        waitForPageLoad(TRIGGER_SYS_PROPS, TIMEOUT, true);
 
         int instancePropCount = addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton");
-        selenium.type("propertyForm:basicTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
-        selenium.type("propertyForm:basicTable:rowGroup1:0:col3:col1St", "value");
+        setFieldValue("propertyForm:basicTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
+        setFieldValue("propertyForm:basicTable:rowGroup1:0:col3:col1St", "value");
         clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
 
         // Verify that properties were persisted
@@ -144,24 +144,24 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
         clickAndWait("treeForm:tree:standaloneTreeNode:standaloneTreeNode_link", TRIGGER_INSTANCES_PAGE);
         clickAndWait(getLinkIdByLinkText(ID_INSTANCE_TABLE, target), TRIGGER_GENERAL_INFO_PAGE);
         clickAndWait("propertyForm:standaloneInstanceTabs:resources", EnterpriseServerTest.TRIGGER_RESOURCES);
-        assertTrue(selenium.isTextPresent(jndiName));
+        assertTrue(isTextPresent(jndiName));
 
         int jdbcCount = getTableRowCountByValue(tableID, "JDBC Resources", "col3:type");
         int customCount = getTableRowCountByValue(tableID, "Custom Resources", "col3:type");
 
         EnterpriseServerTest adminServerTest = new EnterpriseServerTest();
-        selenium.select("propertyForm:resourcesTable:topActionsGroup1:filter_list", "label=Custom Resources");
+        selectDropdownOption("propertyForm:resourcesTable:topActionsGroup1:filter_list", "Custom Resources");
         adminServerTest.waitForTableRowCount(tableID, customCount);
 
-        selenium.select("propertyForm:resourcesTable:topActionsGroup1:filter_list", "label=JDBC Resources");
+        selectDropdownOption("propertyForm:resourcesTable:topActionsGroup1:filter_list", "JDBC Resources");
         adminServerTest.waitForTableRowCount(tableID, jdbcCount);
 
         selectTableRowByValue("propertyForm:resourcesTable", jndiName);
         waitForButtonEnabled("propertyForm:resourcesTable:topActionsGroup1:button1");
-        selenium.click("propertyForm:resourcesTable:topActionsGroup1:button1");
+        pressButton("propertyForm:resourcesTable:topActionsGroup1:button1");
         waitForButtonDisabled("propertyForm:resourcesTable:topActionsGroup1:button1");
 
-        /*selenium.select("propertyForm:resourcesTable:topActionsGroup1:actions", "label=JDBC Resources");
+        /*selectDropdownOption("propertyForm:resourcesTable:topActionsGroup1:actions", "label=JDBC Resources");
         waitForPageLoad(JdbcTest.TRIGGER_NEW_JDBC_RESOURCE, true);
         clickAndWait("form:propertyContentPage:topButtons:cancelButton", JdbcTest.TRIGGER_JDBC_RESOURCES);*/
 
@@ -171,10 +171,10 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
     public void createStandAloneInstance(String instanceName){
         gotoStandaloneInstancesPage();
         clickAndWait(ID_INSTANCE_TABLE_NEW_BUTTON, TRIGGER_NEW_PAGE );
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:NameTextProp:NameText", instanceName);
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:NameTextProp:NameText", instanceName);
         selectDropdownOption("propertyForm:propertySheet:propertSectionTextField:node:node", NODE_NAME);
-        selenium.select("propertyForm:propertySheet:propertSectionTextField:configProp:Config", "label=default-config");
-        selenium.check("propertyForm:propertySheet:propertSectionTextField:configOptionProp:optC");
+        selectDropdownOption("propertyForm:propertySheet:propertSectionTextField:configProp:Config", "label=default-config");
+        markCheckbox("propertyForm:propertySheet:propertSectionTextField:configOptionProp:optC");
         clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_INSTANCES_PAGE);
     }
 
@@ -193,10 +193,10 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
         // Stop all instances
         if (selectTableRowsByValue(ID_INSTANCE_TABLE, STATUS_RUNNING, "col0", "col6") > 0) {
             waitForButtonEnabled(ID_INSTANCE_TABLE_STOP_BUTTON);
-            selenium.chooseOkOnNextConfirmation();
-            selenium.click(ID_INSTANCE_TABLE_STOP_BUTTON);
-            if (selenium.isConfirmationPresent()) {
-                selenium.getConfirmation();
+            chooseOkOnNextConfirmation();
+            pressButton(ID_INSTANCE_TABLE_STOP_BUTTON);
+            if (isConfirmationPresent()) {
+                getConfirmation();
             }
             this.waitForButtonDisabled(ID_INSTANCE_TABLE_STOP_BUTTON);
         }
@@ -212,7 +212,7 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
 
     public void stopInstance(String instanceName) {
         String rowId = getTableRowByValue(ID_INSTANCE_TABLE, instanceName, "col1");
-        String status = selenium.getText(rowId+"col6");
+        String status = getText(rowId+"col6");
         if (! STATUS_STOPPED.equals(status)) {
             rowActionWithConfirm(ID_INSTANCE_TABLE_STOP_BUTTON, ID_INSTANCE_TABLE, instanceName);
             waitForCondition("document.getElementById('" + ID_INSTANCE_TABLE_STOP_BUTTON + "').value != 'Processing...'", 300000);

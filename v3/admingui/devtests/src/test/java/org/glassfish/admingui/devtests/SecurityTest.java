@@ -87,7 +87,7 @@ public class SecurityTest extends BaseSeleniumTestClass {
             clickAndWait("propertyForm:javaConfigTab:jvmOptions", JVM_OPTION);
             int beforeCount = getTableRowCount("propertyForm:basicTable");
             clickAndWait("treeForm:tree:configurations:server-config:security:security_link", SECURITY_MGR);
-            selenium.click("propertyForm:propertySheet:propertSectionTextField:securityManagerProp:sun_checkbox133");
+            markCheckbox("propertyForm:propertySheet:propertSectionTextField:securityManagerProp:sun_checkbox133"); // TODO: Give this component an ID
             clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
             clickAndWait("treeForm:tree:configurations:server-config:jvmSettings:jvmSettings_link", JVM_CONFIG);
             clickAndWait("propertyForm:javaConfigTab:jvmOptions", JVM_OPTION);
@@ -105,12 +105,12 @@ public class SecurityTest extends BaseSeleniumTestClass {
         for (String configName : list) {
             clickAndWait("treeForm:tree:configurations:" + configName + ":security:realms:realms_link", TRIGGER_SECURITY_REALMS);
             clickAndWait("propertyForm:realmsTable:topActionsGroup1:newButton", TRIGGER_NEW_REALM);
-            selenium.type("form1:propertySheet:propertySectionTextField:NameTextProp:NameText", realmName);
-            selenium.select("form1:propertySheet:propertySectionTextField:cp:Classname", "label=com.sun.enterprise.security.auth.realm.file.FileRealm");
-            selenium.type("form1:fileSection:jaax:jaax", contextName);
-            selenium.type("form1:fileSection:keyFile:keyFile", "${com.sun.aas.instanceRoot}/config/testfile");
+            setFieldValue("form1:propertySheet:propertySectionTextField:NameTextProp:NameText", realmName);
+            selectDropdownOption("form1:propertySheet:propertySectionTextField:cp:Classname", "com.sun.enterprise.security.auth.realm.file.FileRealm");
+            setFieldValue("form1:fileSection:jaax:jaax", contextName);
+            setFieldValue("form1:fileSection:keyFile:keyFile", "${com.sun.aas.instanceRoot}/config/testfile");
             clickAndWait("form1:propertyContentPage:topButtons:newButton", TRIGGER_SECURITY_REALMS);
-            assertTrue(selenium.isTextPresent(realmName));
+            assertTrue(isTextPresent(realmName));
 
             deleteRow("propertyForm:realmsTable:topActionsGroup1:button1", "propertyForm:realmsTable", realmName);
         }
@@ -129,11 +129,11 @@ public class SecurityTest extends BaseSeleniumTestClass {
             clickAndWait("form1:propertyContentPage:manageUsersButton", TRIGGER_FILE_USERS);
             clickAndWait("propertyForm:users:topActionsGroup1:newButton", TRIGGER_NEW_FILE_REALM_USER);
 
-            selenium.type("propertyForm:propertySheet:propertSectionTextField:userIdProp:UserId", userId);
-            selenium.type("propertyForm:propertySheet:propertSectionTextField:newPasswordProp:NewPassword", password);
-            selenium.type("propertyForm:propertySheet:propertSectionTextField:confirmPasswordProp:ConfirmPassword", password);
+            setFieldValue("propertyForm:propertySheet:propertSectionTextField:userIdProp:UserId", userId);
+            setFieldValue("propertyForm:propertySheet:propertSectionTextField:newPasswordProp:NewPassword", password);
+            setFieldValue("propertyForm:propertySheet:propertSectionTextField:confirmPasswordProp:ConfirmPassword", password);
             clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_FILE_USERS);
-            assertTrue(selenium.isTextPresent(userId));
+            assertTrue(isTextPresent(userId));
 
             deleteRow("propertyForm:users:topActionsGroup1:button1", "propertyForm:users", userId);
         }
@@ -148,16 +148,16 @@ public class SecurityTest extends BaseSeleniumTestClass {
         for (String configName : list) {
             clickAndWait("treeForm:tree:configurations:" + configName + ":security:auditModules:auditModules_link", TRIGGER_AUDIT_MODULES);
             clickAndWait("propertyForm:configs:topActionsGroup1:newButton", TRIGGER_NEW_AUDIT_MODULE);
-            selenium.type("propertyForm:propertySheet:propertSectionTextField:IdTextProp:IdText", auditModuleName);
-            selenium.type("propertyForm:propertySheet:propertSectionTextField:classNameProp:ClassName", className);
+            setFieldValue("propertyForm:propertySheet:propertSectionTextField:IdTextProp:IdText", auditModuleName);
+            setFieldValue("propertyForm:propertySheet:propertSectionTextField:classNameProp:ClassName", className);
             int count = addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton");
 
-            selenium.type("propertyForm:basicTable:rowGroup1:0:col2:col1St", "property");
-            selenium.type("propertyForm:basicTable:rowGroup1:0:col3:col1St", "value");
-            selenium.type("propertyForm:basicTable:rowGroup1:0:col4:col1St", "description");
+            setFieldValue("propertyForm:basicTable:rowGroup1:0:col2:col1St", "property");
+            setFieldValue("propertyForm:basicTable:rowGroup1:0:col3:col1St", "value");
+            setFieldValue("propertyForm:basicTable:rowGroup1:0:col4:col1St", "description");
 
             clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_AUDIT_MODULES);
-            assertTrue(selenium.isTextPresent(auditModuleName));
+            assertTrue(isTextPresent(auditModuleName));
 
             clickAndWait(getLinkIdByLinkText("propertyForm:configs", auditModuleName), TRIGGER_EDIT_AUDIT_MODULE);
             assertTableRowCount("propertyForm:basicTable", count);
@@ -179,21 +179,21 @@ public class SecurityTest extends BaseSeleniumTestClass {
             clickAndWait("treeForm:tree:configurations:" + configName + ":security:jaccProviders:jaccProviders_link", TRIGGER_JACC_PROVIDERS);
             clickAndWait("propertyForm:configs:topActionsGroup1:newButton", TRIGGER_NEW_JACC_PROVIDER);
 
-            selenium.type("propertyForm:propertySheet:propertSectionTextField:IdTextProp:IdText", providerName);
-            selenium.type("propertyForm:propertySheet:propertSectionTextField:policyConfigProp:PolicyConfig", policyConfig);
-            selenium.type("propertyForm:propertySheet:propertSectionTextField:policyProviderProp:PolicyProvider", policyProvider);
+            setFieldValue("propertyForm:propertySheet:propertSectionTextField:IdTextProp:IdText", providerName);
+            setFieldValue("propertyForm:propertySheet:propertSectionTextField:policyConfigProp:PolicyConfig", policyConfig);
+            setFieldValue("propertyForm:propertySheet:propertSectionTextField:policyProviderProp:PolicyProvider", policyProvider);
 
             int count = addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton");
-            selenium.type("propertyForm:basicTable:rowGroup1:0:col2:col1St", "property");
-            selenium.type("propertyForm:basicTable:rowGroup1:0:col3:col1St", "value");
-            selenium.type("propertyForm:basicTable:rowGroup1:0:col4:col1St", "description");
+            setFieldValue("propertyForm:basicTable:rowGroup1:0:col2:col1St", "property");
+            setFieldValue("propertyForm:basicTable:rowGroup1:0:col3:col1St", "value");
+            setFieldValue("propertyForm:basicTable:rowGroup1:0:col4:col1St", "description");
 
             clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_JACC_PROVIDERS);
             assertTrue(tableContainsRow("propertyForm:configs", "col1", providerName));
 
             clickAndWait(getLinkIdByLinkText("propertyForm:configs", providerName), TRIGGER_EDIT_JACC_PROVIDER);
-            assertEquals(policyConfig, selenium.getValue("propertyForm:propertySheet:propertSectionTextField:policyConfigProp:PolicyConfig"));
-            assertEquals(policyProvider, selenium.getValue("propertyForm:propertySheet:propertSectionTextField:policyProviderProp:PolicyProvider"));
+            assertEquals(policyConfig, getFieldValue("propertyForm:propertySheet:propertSectionTextField:policyConfigProp:PolicyConfig"));
+            assertEquals(policyProvider, getFieldValue("propertyForm:propertySheet:propertSectionTextField:policyProviderProp:PolicyProvider"));
 
             assertTableRowCount("propertyForm:basicTable", count);
             clickAndWait("propertyForm:propertyContentPage:topButtons:cancelButton", TRIGGER_JACC_PROVIDERS);
@@ -214,18 +214,18 @@ public class SecurityTest extends BaseSeleniumTestClass {
             clickAndWait("propertyForm:msgSecurityTabs:providers", TRIGGER_PROVIDER_CONFIGURATION);
             clickAndWait("propertyForm:configs:topActionsGroup1:newButton", TRIGGER_NEW_PROVIDER_CONFIGURATION);
 
-            selenium.type("propertyForm:propertySheet:providerConfSection:ProviderIdTextProp:ProviderIdText", providerName);
-            selenium.type("propertyForm:propertySheet:providerConfSection:ClassNameProp:ClassName", className);
+            setFieldValue("propertyForm:propertySheet:providerConfSection:ProviderIdTextProp:ProviderIdText", providerName);
+            setFieldValue("propertyForm:propertySheet:providerConfSection:ClassNameProp:ClassName", className);
             int count = addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton");
 
-            selenium.type("propertyForm:basicTable:rowGroup1:0:col2:col1St", "property");
-            selenium.type("propertyForm:basicTable:rowGroup1:0:col3:col1St", "value");
-            selenium.type("propertyForm:basicTable:rowGroup1:0:col4:col1St", "description");
+            setFieldValue("propertyForm:basicTable:rowGroup1:0:col2:col1St", "property");
+            setFieldValue("propertyForm:basicTable:rowGroup1:0:col3:col1St", "value");
+            setFieldValue("propertyForm:basicTable:rowGroup1:0:col4:col1St", "description");
 
             clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_PROVIDER_CONFIGURATION);
-            assertTrue(selenium.isTextPresent(providerName));
+            assertTrue(isTextPresent(providerName));
             clickAndWait(getLinkIdByLinkText("propertyForm:configs", providerName), TRIGGER_EDIT_PROVIDER_CONFIGURATION);
-            assertEquals(className, selenium.getValue("propertyForm:propertySheet:providerConfSection:ClassNameProp:ClassName"));
+            assertEquals(className, getFieldValue("propertyForm:propertySheet:providerConfSection:ClassNameProp:ClassName"));
             assertTableRowCount("propertyForm:basicTable", count);
         }
     }
@@ -236,18 +236,18 @@ public class SecurityTest extends BaseSeleniumTestClass {
 
         clickAndWait("treeForm:tree:nodes:nodes_link", ADMIN_PWD_DOMAIN_ATTRIBUTES);
         clickAndWait("propertyForm:domainTabs:adminPassword", ADMIN_PWD_NEW_ADMINPWD);
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:newPasswordProp:NewPassword", userPassword);
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:confirmPasswordProp:ConfirmPassword", userPassword);
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:newPasswordProp:NewPassword", userPassword);
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:confirmPasswordProp:ConfirmPassword", userPassword);
         clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
     }
 
     public void createConfig(String configName) {
         clickAndWait("treeForm:tree:configurations:configurations_link", TRIGGER_CONFIGURATION);
-        if (!selenium.isTextPresent("new-config")) {
+        if (!isTextPresent("new-config")) {
             clickAndWait("propertyForm:configs:topActionsGroup1:newButton", TRIGGER_NEW_CONFIGURATION);
-            selenium.type("propertyForm:propertySheet:propertSectionTextField:NameProp:Name", configName);
+            setFieldValue("propertyForm:propertySheet:propertSectionTextField:NameProp:Name", configName);
             clickAndWait("propertyForm:propertyContentPage:topButtons:okButton", TRIGGER_CONFIGURATION);
-            assertTrue(selenium.isTextPresent(configName));
+            assertTrue(isTextPresent(configName));
         }
     }
 }

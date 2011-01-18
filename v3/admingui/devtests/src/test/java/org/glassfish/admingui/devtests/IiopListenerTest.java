@@ -59,20 +59,20 @@ public class IiopListenerTest extends BaseSeleniumTestClass {
 
         clickAndWait("treeForm:tree:configurations:server-config:orb:iiopListeners:iiopListeners_link", TRIGGER_IIOP_LISTENERS);
         clickAndWait("propertyForm:configs:topActionsGroup1:newButton", TRIGGER_NEW_IIOP_LISTENER);
-        selenium.type("propertyForm:propertySheet:generalSettingsSetion:IiopNameTextProp:IiopNameText", iiopName);
-        selenium.type("propertyForm:propertySheet:generalSettingsSetion:NetwkAddrProp:NetwkAddr", networkAddress);
-        selenium.type("propertyForm:propertySheet:generalSettingsSetion:ListenerPortProp:ListenerPort", listenerPort);
+        setFieldValue("propertyForm:propertySheet:generalSettingsSetion:IiopNameTextProp:IiopNameText", iiopName);
+        setFieldValue("propertyForm:propertySheet:generalSettingsSetion:NetwkAddrProp:NetwkAddr", networkAddress);
+        setFieldValue("propertyForm:propertySheet:generalSettingsSetion:ListenerPortProp:ListenerPort", listenerPort);
 
         int count = addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton");
-        selenium.type("propertyForm:basicTable:rowGroup1:0:col2:col1St", "a");
-        selenium.type("propertyForm:basicTable:rowGroup1:0:col3:col1St", "b");
-        selenium.type("propertyForm:basicTable:rowGroup1:0:col4:col1St", "c");
+        setFieldValue("propertyForm:basicTable:rowGroup1:0:col2:col1St", "a");
+        setFieldValue("propertyForm:basicTable:rowGroup1:0:col3:col1St", "b");
+        setFieldValue("propertyForm:basicTable:rowGroup1:0:col4:col1St", "c");
         clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_IIOP_LISTENERS);
-        assertTrue(selenium.isTextPresent(iiopName));
+        assertTrue(isTextPresent(iiopName));
 
         clickAndWait(getLinkIdByLinkText("propertyForm:configs", iiopName), TRIGGER_EDIT_IIOP_LISTENER);
-        assertEquals(networkAddress, selenium.getValue("propertyForm:propertySheet:generalSettingsSetion:NetwkAddrProp:NetwkAddr"));
-        assertEquals(listenerPort, selenium.getValue("propertyForm:propertySheet:generalSettingsSetion:ListenerPortProp:ListenerPort"));
+        assertEquals(networkAddress, getFieldValue("propertyForm:propertySheet:generalSettingsSetion:NetwkAddrProp:NetwkAddr"));
+        assertEquals(listenerPort, getFieldValue("propertyForm:propertySheet:generalSettingsSetion:ListenerPortProp:ListenerPort"));
 
         assertTableRowCount("propertyForm:basicTable", count);
 
@@ -86,16 +86,16 @@ public class IiopListenerTest extends BaseSeleniumTestClass {
         final String totalConn = "1048";
         final String maxMsgSize = "2048";
         clickAndWait("treeForm:tree:configurations:server-config:orb:orb_link", TRIGGER_ORB);
-        selenium.type("form1:propertySheet:propertySectionTextField:TotalConnsProp:TotalConns", totalConn);
-        selenium.select("form1:propertySheet:propertySectionTextField:MaxMsgSizeProp:MaxMsgSize", "label="+maxMsgSize);
+        setFieldValue("form1:propertySheet:propertySectionTextField:TotalConnsProp:TotalConns", totalConn);
+        selectDropdownOption("form1:propertySheet:propertySectionTextField:MaxMsgSizeProp:MaxMsgSize", maxMsgSize);
         clickAndWait("form1:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
-        assertEquals(totalConn, selenium.getValue("form1:propertySheet:propertySectionTextField:TotalConnsProp:TotalConns"));
-        assertEquals(maxMsgSize, selenium.getValue("form1:propertySheet:propertySectionTextField:MaxMsgSizeProp:MaxMsgSize"));
+        assertEquals(totalConn, getFieldValue("form1:propertySheet:propertySectionTextField:TotalConnsProp:TotalConns"));
+        assertEquals(maxMsgSize, getFieldValue("form1:propertySheet:propertySectionTextField:MaxMsgSizeProp:MaxMsgSize"));
 
 	// Load default button functionality is broken in all pages, once fixed need to uncomment
         //clickAndWaitForButtonEnabled("form1:propertyContentPage:loadDefaultsButton");
-        //assertEquals("1024", selenium.getValue("form1:propertySheet:propertySectionTextField:TotalConnsProp:TotalConns"));
-        //assertEquals("1024", selenium.getValue("form1:propertySheet:propertySectionTextField:MaxMsgSizeProp:MaxMsgSize"));
+        //assertEquals("1024", getFieldValue("form1:propertySheet:propertySectionTextField:TotalConnsProp:TotalConns"));
+        //assertEquals("1024", getFieldValue("form1:propertySheet:propertySectionTextField:MaxMsgSizeProp:MaxMsgSize"));
 
     }
 }

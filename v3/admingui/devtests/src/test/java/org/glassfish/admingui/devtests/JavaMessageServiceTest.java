@@ -62,22 +62,22 @@ public class JavaMessageServiceTest extends BaseSeleniumTestClass {
         final String attempts = Integer.toString(generateRandomNumber(10));
 
         clickAndWait("treeForm:tree:configurations:server-config:jmsConfiguration:jmsConfiguration_link", TRIGGER_JMS_SERVICE);
-        selenium.type("propertyForm:propertyContentPage:propertySheet:propertSectionTextField:timeoutProp:Timeout", timeout);
-        selenium.type("propertyForm:propertyContentPage:propertySheet:propertSectionTextField:intervalProp:Interval", interval);
-        selenium.type("propertyForm:propertyContentPage:propertySheet:propertSectionTextField:attemptsProp:Attempts", attempts);
-        selenium.select("propertyForm:propertyContentPage:propertySheet:propertSectionTextField:behaviorProp:Behavior", "label=priority");
+        setFieldValue("propertyForm:propertyContentPage:propertySheet:propertSectionTextField:timeoutProp:Timeout", timeout);
+        setFieldValue("propertyForm:propertyContentPage:propertySheet:propertSectionTextField:intervalProp:Interval", interval);
+        setFieldValue("propertyForm:propertyContentPage:propertySheet:propertSectionTextField:attemptsProp:Attempts", attempts);
+        selectDropdownOption("propertyForm:propertyContentPage:propertySheet:propertSectionTextField:behaviorProp:Behavior", "priority");
 
         int count = addTableRow("propertyForm:propertyContentPage:basicTable", "propertyForm:propertyContentPage:basicTable:topActionsGroup1:addSharedTableButton");
-        selenium.type("propertyForm:propertyContentPage:basicTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
-        selenium.type("propertyForm:propertyContentPage:basicTable:rowGroup1:0:col3:col1St", "value");
+        setFieldValue("propertyForm:propertyContentPage:basicTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
+        setFieldValue("propertyForm:propertyContentPage:basicTable:rowGroup1:0:col3:col1St", "value");
         clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
 
         clickAndWait("treeForm:tree:configurations:server-config:jmsConfiguration:jmsHosts:jmsHosts_link", TRIGGER_JMS_HOSTS);
         clickAndWait("treeForm:tree:configurations:server-config:jmsConfiguration:jmsConfiguration_link", TRIGGER_JMS_SERVICE);
 
-        assertEquals(timeout, selenium.getValue("propertyForm:propertyContentPage:propertySheet:propertSectionTextField:timeoutProp:Timeout"));
-        assertEquals(interval, selenium.getValue("propertyForm:propertyContentPage:propertySheet:propertSectionTextField:intervalProp:Interval"));
-        assertEquals(attempts, selenium.getValue("propertyForm:propertyContentPage:propertySheet:propertSectionTextField:attemptsProp:Attempts"));
+        assertEquals(timeout, getFieldValue("propertyForm:propertyContentPage:propertySheet:propertSectionTextField:timeoutProp:Timeout"));
+        assertEquals(interval, getFieldValue("propertyForm:propertyContentPage:propertySheet:propertSectionTextField:intervalProp:Interval"));
+        assertEquals(attempts, getFieldValue("propertyForm:propertyContentPage:propertySheet:propertSectionTextField:attemptsProp:Attempts"));
         assertTableRowCount("propertyForm:propertyContentPage:basicTable", count);
     }
 
@@ -89,16 +89,16 @@ public class JavaMessageServiceTest extends BaseSeleniumTestClass {
 
         clickAndWait("treeForm:tree:configurations:server-config:jmsConfiguration:jmsHosts:jmsHosts_link", TRIGGER_JMS_HOSTS);
         clickAndWait("propertyForm:configs:topActionsGroup1:newButton", TRIGGER_NEW_JMS_HOST);
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:JmsHostTextProp:JmsHostText", hostText);
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:HostProp:Host", host);
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:PortProp:Port", port);
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:AdminUserProp:AdminUser", "admin");
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:newPasswordProp:NewPassword", "admin");
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:confirmPasswordProp:ConfirmPassword", "admin");
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:JmsHostTextProp:JmsHostText", hostText);
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:HostProp:Host", host);
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:PortProp:Port", port);
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:AdminUserProp:AdminUser", "admin");
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:newPasswordProp:NewPassword", "admin");
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:confirmPasswordProp:ConfirmPassword", "admin");
         clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_NEW_VALUES_SAVED);
         clickAndWait(this.getLinkIdByLinkText("propertyForm:configs", hostText), "Edit JMS Host");
-        assertTrue(selenium.isTextPresent(hostText));
-        assertEquals(host, selenium.getValue("propertyForm:propertySheet:propertSectionTextField:HostProp:Host"));
+        assertTrue(isTextPresent(hostText));
+        assertEquals(host, getFieldValue("propertyForm:propertySheet:propertSectionTextField:HostProp:Host"));
         clickAndWait("propertyForm:propertyContentPage:topButtons:cancelButton", TRIGGER_JMS_HOSTS);
         deleteRow("propertyForm:configs:topActionsGroup1:button1", "propertyForm:configs", hostText, "col0", "colName");
     }
@@ -116,32 +116,32 @@ public class JavaMessageServiceTest extends BaseSeleniumTestClass {
         clickAndWait("propertyForm:serverInstTabs:jmsPhysDest", TRIGGER_JMS_PHYSICAL_DESTINATIONS);
         clickAndWait("propertyForm:configs:topActionsGroup1:newButton", TRIGGER_NEW_JMS_PHYSICAL_DESTINATION);
 
-        selenium.type("jmsPhysDestForm:propertySheet:propertSectionTextField:NameTextProp:NameText", name);
-        selenium.type("jmsPhysDestForm:propertySheet:propertSectionTextField:maxNumMsgsProp:maxNumMsgs", maxUnconsumed);
-        selenium.type("jmsPhysDestForm:propertySheet:propertSectionTextField:maxBytesPerMsgProp:maxBytesPerMsg", maxMessageSize);
-        selenium.type("jmsPhysDestForm:propertySheet:propertSectionTextField:maxTotalMsgBytesProp:maxTotalMsgBytes", maxTotalMemory);
+        setFieldValue("jmsPhysDestForm:propertySheet:propertSectionTextField:NameTextProp:NameText", name);
+        setFieldValue("jmsPhysDestForm:propertySheet:propertSectionTextField:maxNumMsgsProp:maxNumMsgs", maxUnconsumed);
+        setFieldValue("jmsPhysDestForm:propertySheet:propertSectionTextField:maxBytesPerMsgProp:maxBytesPerMsg", maxMessageSize);
+        setFieldValue("jmsPhysDestForm:propertySheet:propertSectionTextField:maxTotalMsgBytesProp:maxTotalMsgBytes", maxTotalMemory);
         selectDropdownOption("jmsPhysDestForm:propertySheet:propertSectionTextField:limitBehaviorProp:Type", "i18njms.jmsPhysDestinations.REMOVE_LOW_PRIORITY");
-        selenium.type("jmsPhysDestForm:propertySheet:propertSectionTextField:maxNumProducersProp:maxNumProducers", maxProducers);
-        selenium.type("jmsPhysDestForm:propertySheet:propertSectionTextField:consumerFlowLimitProp:consumerFlowLimit", consumerFlowLimit);
+        setFieldValue("jmsPhysDestForm:propertySheet:propertSectionTextField:maxNumProducersProp:maxNumProducers", maxProducers);
+        setFieldValue("jmsPhysDestForm:propertySheet:propertSectionTextField:consumerFlowLimitProp:consumerFlowLimit", consumerFlowLimit);
         selectDropdownOption("jmsPhysDestForm:propertySheet:propertSectionTextField:useDmqProp:useDmq", "i18n.common.false");
         selectDropdownOption("jmsPhysDestForm:propertySheet:propertSectionTextField:validateSchemaProp:validateXMLSchemaEnabled", "i18n.common.true");
         clickAndWait("jmsPhysDestForm:propertyContentPage:topButtons:newButton", TRIGGER_JMS_PHYSICAL_DESTINATIONS);
 
         clickAndWait(getLinkIdByLinkText("propertyForm:configs", name), TRIGGER_EDIT_JMS_PHYSICAL_DESTINATION);
 
-        assertTrue(selenium.isTextPresent(name));
-        assertEquals(maxUnconsumed, selenium.getValue("jmsPhysDestForm:propertySheet:propertSectionTextField:maxNumMsgsProp:maxNumMsgs"));
-        assertEquals(maxMessageSize, selenium.getValue("jmsPhysDestForm:propertySheet:propertSectionTextField:maxBytesPerMsgProp:maxBytesPerMsg"));
-        assertEquals(maxTotalMemory, selenium.getValue("jmsPhysDestForm:propertySheet:propertSectionTextField:maxTotalMsgBytesProp:maxTotalMsgBytes"));
+        assertTrue(isTextPresent(name));
+        assertEquals(maxUnconsumed, getFieldValue("jmsPhysDestForm:propertySheet:propertSectionTextField:maxNumMsgsProp:maxNumMsgs"));
+        assertEquals(maxMessageSize, getFieldValue("jmsPhysDestForm:propertySheet:propertSectionTextField:maxBytesPerMsgProp:maxBytesPerMsg"));
+        assertEquals(maxTotalMemory, getFieldValue("jmsPhysDestForm:propertySheet:propertSectionTextField:maxTotalMsgBytesProp:maxTotalMsgBytes"));
         
         // TODO: These options do not seem to be be supported by the backend. Passing these props to the CLI does not affect its value. Disabling for now.
         // FIXME
-//        assertEquals("REMOVE_LOW_PRIORITY", selenium.getValue("jmsPhysDestForm:propertySheet:propertSectionTextField:limitBehaviorProp:Type"));
-//        assertEquals(maxProducers, selenium.getValue("jmsPhysDestForm:propertySheet:propertSectionTextField:maxNumProducersProp:maxNumProducers"));
-//        assertEquals("false", selenium.getValue("jmsPhysDestForm:propertySheet:propertSectionTextField:useDmqProp:useDmq"));
+//        assertEquals("REMOVE_LOW_PRIORITY", getFieldValue("jmsPhysDestForm:propertySheet:propertSectionTextField:limitBehaviorProp:Type"));
+//        assertEquals(maxProducers, getFieldValue("jmsPhysDestForm:propertySheet:propertSectionTextField:maxNumProducersProp:maxNumProducers"));
+//        assertEquals("false", getFieldValue("jmsPhysDestForm:propertySheet:propertSectionTextField:useDmqProp:useDmq"));
 
-        assertEquals(consumerFlowLimit, selenium.getValue("jmsPhysDestForm:propertySheet:propertSectionTextField:consumerFlowLimitProp:consumerFlowLimit"));
-        assertEquals("true", selenium.getValue("jmsPhysDestForm:propertySheet:propertSectionTextField:validateSchemaProp:validateXMLSchemaEnabled"));
+        assertEquals(consumerFlowLimit, getFieldValue("jmsPhysDestForm:propertySheet:propertSectionTextField:consumerFlowLimitProp:consumerFlowLimit"));
+        assertEquals("true", getFieldValue("jmsPhysDestForm:propertySheet:propertSectionTextField:validateSchemaProp:validateXMLSchemaEnabled"));
         clickAndWait("jmsPhysDestForm:propertyContentPage:topButtons:cancelButton", TRIGGER_JMS_PHYSICAL_DESTINATIONS);
 
         this.selectTableRowByValue("propertyForm:configs", name);

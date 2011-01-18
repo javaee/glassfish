@@ -64,19 +64,19 @@ public class JavaMailTest extends BaseSeleniumTestClass {
         clickAndWait("treeForm:tree:resources:mailResources:mailResources_link", TRIGGER_JAVA_MAIL);
         clickAndWait("propertyForm:resourcesTable:topActionsGroup1:newButton", TRIGGER_NEW_JAVAMAIL_SESSION);
 
-        selenium.type("form:propertySheet:propertSectionTextField:nameNew:name", resourceName);
-        selenium.type("form:propertySheet:propertSectionTextField:hostProp:host", "localhost");
-        selenium.type("form:propertySheet:propertSectionTextField:userProp:user", "user");
-        selenium.type("form:propertySheet:propertSectionTextField:fromProp:from", "return@test.com");
-        selenium.type("form:propertySheet:propertSectionTextField:descProp:desc", description);
+        setFieldValue("form:propertySheet:propertSectionTextField:nameNew:name", resourceName);
+        setFieldValue("form:propertySheet:propertSectionTextField:hostProp:host", "localhost");
+        setFieldValue("form:propertySheet:propertSectionTextField:userProp:user", "user");
+        setFieldValue("form:propertySheet:propertSectionTextField:fromProp:from", "return@test.com");
+        setFieldValue("form:propertySheet:propertSectionTextField:descProp:desc", description);
         int count = addTableRow("form:basicTable", "form:basicTable:topActionsGroup1:addSharedTableButton");
 
-        selenium.type("form:basicTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
-        selenium.type("form:basicTable:rowGroup1:0:col3:col1St", "value");
-        selenium.type("form:basicTable:rowGroup1:0:col4:col1St", "description");
+        setFieldValue("form:basicTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
+        setFieldValue("form:basicTable:rowGroup1:0:col3:col1St", "value");
+        setFieldValue("form:basicTable:rowGroup1:0:col4:col1St", "description");
         clickAndWait("form:propertyContentPage:topButtons:newButton", TRIGGER_JAVA_MAIL);
 
-        assertTrue(selenium.isTextPresent(resourceName));
+        assertTrue(isTextPresent(resourceName));
 
         clickAndWait(getLinkIdByLinkText("propertyForm:resourcesTable", resourceName), TRIGGER_EDIT_JAVAMAIL_SESSION);
         assertTableRowCount("propertyForm:basicTable", count);
@@ -116,24 +116,24 @@ public class JavaMailTest extends BaseSeleniumTestClass {
         clickAndWait("treeForm:tree:resources:mailResources:mailResources_link", TRIGGER_JAVA_MAIL);
         clickAndWait("propertyForm:resourcesTable:topActionsGroup1:newButton", TRIGGER_NEW_JAVAMAIL_SESSION);
 
-        selenium.type("form:propertySheet:propertSectionTextField:nameNew:name", resourceName);
-        selenium.type("form:propertySheet:propertSectionTextField:hostProp:host", "localhost");
-        selenium.type("form:propertySheet:propertSectionTextField:userProp:user", "user");
-        selenium.type("form:propertySheet:propertSectionTextField:fromProp:from", "return@test.com");
-        selenium.type("form:propertySheet:propertSectionTextField:descProp:desc", description);
+        setFieldValue("form:propertySheet:propertSectionTextField:nameNew:name", resourceName);
+        setFieldValue("form:propertySheet:propertSectionTextField:hostProp:host", "localhost");
+        setFieldValue("form:propertySheet:propertSectionTextField:userProp:user", "user");
+        setFieldValue("form:propertySheet:propertSectionTextField:fromProp:from", "return@test.com");
+        setFieldValue("form:propertySheet:propertSectionTextField:descProp:desc", description);
         int count = addTableRow("form:basicTable", "form:basicTable:topActionsGroup1:addSharedTableButton");
 
-        selenium.type("form:basicTable:rowGroup1:0:col2:col1St", "property" + generateRandomString());
-        selenium.type("form:basicTable:rowGroup1:0:col3:col1St", "value");
-        selenium.type("form:basicTable:rowGroup1:0:col4:col1St", "description");
+        setFieldValue("form:basicTable:rowGroup1:0:col2:col1St", "property" + generateRandomString());
+        setFieldValue("form:basicTable:rowGroup1:0:col3:col1St", "value");
+        setFieldValue("form:basicTable:rowGroup1:0:col4:col1St", "description");
 
-        selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=" + instanceName);
-        selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=server");
-        selenium.click("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
+        addSelectSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", instanceName);
+        addSelectSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "server");
+        pressButton("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
 
         clickAndWait("form:propertyContentPage:topButtons:newButton", TRIGGER_JAVA_MAIL);
 
-        assertTrue(selenium.isTextPresent(resourceName));
+        assertTrue(isTextPresent(resourceName));
 
         clickAndWait(getLinkIdByLinkText("propertyForm:resourcesTable", resourceName), TRIGGER_EDIT_JAVAMAIL_SESSION);
         assertTableRowCount("propertyForm:basicTable", count);

@@ -53,15 +53,15 @@ public class GMSTest extends BaseSeleniumTestClass {
         final String protocolMaxTrial = Integer.toString(generateRandomNumber(100));
         clickAndWait("treeForm:tree:configurations:default-config:default-config_turner:default-config_turner_image", TRIGGER_CONFIGURATION);
         clickAndWait("treeForm:tree:configurations:default-config:gms:gms_link", TRIGGER_GMS);
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:fdMax:fdMax", protocolMaxTrial);
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:fdMax:fdMax", protocolMaxTrial);
         clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
-        assertEquals(protocolMaxTrial, selenium.getValue("propertyForm:propertySheet:propertSectionTextField:fdMax:fdMax"));
+        assertEquals(protocolMaxTrial, getFieldValue("propertyForm:propertySheet:propertSectionTextField:fdMax:fdMax"));
         
         int count = addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton");
-        selenium.type("propertyForm:basicTable:rowGroup1:0:col2:col1St", "a");
-        selenium.type("propertyForm:basicTable:rowGroup1:0:col3:col1St", "b");
-        selenium.type("propertyForm:basicTable:rowGroup1:0:col4:col1St", "c");
-        selenium.click("propertyForm:propertyContentPage:topButtons:saveButton");
+        setFieldValue("propertyForm:basicTable:rowGroup1:0:col2:col1St", "a");
+        setFieldValue("propertyForm:basicTable:rowGroup1:0:col3:col1St", "b");
+        setFieldValue("propertyForm:basicTable:rowGroup1:0:col4:col1St", "c");
+        pressButton("propertyForm:propertyContentPage:topButtons:saveButton");
         clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
         assertTableRowCount("propertyForm:basicTable", count);
     }

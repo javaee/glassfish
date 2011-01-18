@@ -55,6 +55,9 @@
 
     <property environment="env"/>
 
+    <property name="http.proxyHost" value=""/>
+    <property name="http.proxyPort" value=""/>
+
     <property name="GUI_ADMIN_PORT" value="4848"/>
     <property name="DOMAIN" value="domain1"/>
 
@@ -70,7 +73,6 @@
     </target>
 
     <target name="setup">
-        <taskdef resource="net/sf/antcontrib/antlib.xml" classpath="ant-contrib.jar"/>
         <taskdef resource="net/sf/antcontrib/antlib.xml" classpath="ant-contrib.jar"/>
         <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="antlib:org.apache.maven.artifact.ant"
                  classpath="maven-ant-tasks.jar"/>
@@ -98,11 +100,6 @@
     <target name="test" depends="download,setup">
         <trycatch>
             <try>
-                <property name="http.proxyHost" value=""/>
-                <property name="http.proxyPort" value=""/>
-                <echo>http.proxyHost = ${http.proxyHost}</echo>
-                <echo>http.proxyPort = ${http.proxyPort}</echo>
-                <echo>user.home = ${user.home}</echo>
                 <antcall target="start-server"/>
                 <artifact:mvn pom="pom.xml" fork="true" mavenHome="${env.MAVEN_HOME}" failonerror="false" resultproperty="test.result">
                     <arg value="-Dhttp.proxyHost=${http.proxyHost}"/>

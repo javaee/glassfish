@@ -63,9 +63,9 @@ public class AvailabilityServiceTest extends BaseSeleniumTestClass {
         clickAndWait(ID_AVAILABILITY_SERVICE_TREE_NODE, TRIGGER_AVAILABILTY_SERVICE_PAGE);
 
         int count = addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton");
-        selenium.type("propertyForm:basicTable:rowGroup1:0:col2:col1St", generateRandomString());
-        selenium.type("propertyForm:basicTable:rowGroup1:0:col3:col1St", "b");
-        selenium.type("propertyForm:basicTable:rowGroup1:0:col4:col1St", "c");
+        setFieldValue("propertyForm:basicTable:rowGroup1:0:col2:col1St", generateRandomString());
+        setFieldValue("propertyForm:basicTable:rowGroup1:0:col3:col1St", "b");
+        setFieldValue("propertyForm:basicTable:rowGroup1:0:col4:col1St", "c");
         clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
         assertTableRowCount("propertyForm:basicTable", count);
     }
@@ -79,9 +79,9 @@ public class AvailabilityServiceTest extends BaseSeleniumTestClass {
         clickAndWait("propertyForm:availabilityTabs:webAvailabilityTab", TRIGGER_WEB_AVAILABILTY);
 
         int count = addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton");
-        selenium.type("propertyForm:basicTable:rowGroup1:0:col2:col1St", generateRandomString());
-        selenium.type("propertyForm:basicTable:rowGroup1:0:col3:col1St", "b");
-        selenium.type("propertyForm:basicTable:rowGroup1:0:col4:col1St", "c");
+        setFieldValue("propertyForm:basicTable:rowGroup1:0:col2:col1St", generateRandomString());
+        setFieldValue("propertyForm:basicTable:rowGroup1:0:col3:col1St", "b");
+        setFieldValue("propertyForm:basicTable:rowGroup1:0:col4:col1St", "c");
         clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
         assertTableRowCount("propertyForm:basicTable", count);
     }
@@ -95,9 +95,9 @@ public class AvailabilityServiceTest extends BaseSeleniumTestClass {
         clickAndWait("propertyForm:availabilityTabs:ejbAvailabilityTab", TRIGGER_EJB_AVAILABILTY);
 
         int count = addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton");
-        selenium.type("propertyForm:basicTable:rowGroup1:0:col2:col1St", generateRandomString());
-        selenium.type("propertyForm:basicTable:rowGroup1:0:col3:col1St", "b");
-        selenium.type("propertyForm:basicTable:rowGroup1:0:col4:col1St", "c");
+        setFieldValue("propertyForm:basicTable:rowGroup1:0:col2:col1St", generateRandomString());
+        setFieldValue("propertyForm:basicTable:rowGroup1:0:col3:col1St", "b");
+        setFieldValue("propertyForm:basicTable:rowGroup1:0:col4:col1St", "c");
         clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
         assertTableRowCount("propertyForm:basicTable", count);
     }
@@ -110,14 +110,14 @@ public class AvailabilityServiceTest extends BaseSeleniumTestClass {
         }
         clickAndWait(ID_AVAILABILITY_SERVICE_TREE_NODE, TRIGGER_AVAILABILTY_SERVICE_PAGE);
         clickAndWait("propertyForm:availabilityTabs:jmsAvailabilityTab", TRIGGER_JMS_AVAILABILTY);
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:StorePoolNameProp:StorePoolName", storePoolName);
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:StorePoolNameProp:StorePoolName", storePoolName);
         clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
-        assertEquals(storePoolName, selenium.getValue("propertyForm:propertySheet:propertSectionTextField:StorePoolNameProp:StorePoolName"));
+        assertEquals(storePoolName, getFieldValue("propertyForm:propertySheet:propertSectionTextField:StorePoolNameProp:StorePoolName"));
 
         int count = addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton");
-        selenium.type("propertyForm:basicTable:rowGroup1:0:col2:col1St", generateRandomString());
-        selenium.type("propertyForm:basicTable:rowGroup1:0:col3:col1St", "b");
-        selenium.type("propertyForm:basicTable:rowGroup1:0:col4:col1St", "c");
+        setFieldValue("propertyForm:basicTable:rowGroup1:0:col2:col1St", generateRandomString());
+        setFieldValue("propertyForm:basicTable:rowGroup1:0:col3:col1St", "b");
+        setFieldValue("propertyForm:basicTable:rowGroup1:0:col4:col1St", "c");
         clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
         assertTableRowCount("propertyForm:basicTable", count);
     }

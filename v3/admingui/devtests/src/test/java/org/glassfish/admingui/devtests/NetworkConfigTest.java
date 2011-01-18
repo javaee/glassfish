@@ -64,19 +64,19 @@ public class NetworkConfigTest extends BaseSeleniumTestClass {
         for (String configName : list) {
             clickAndWait("treeForm:tree:configurations:" + configName + ":networkConfig:networkListeners:networkListeners_link", TRIGGER_NETWORK_LISTENERS);
             clickAndWait("propertyForm:configs:topActionsGroup1:newButton", TRIGGER_NEW_NETWORK_LISTENER);
-            selenium.type("propertyForm:propertySheet:propertSectionTextField:nameNew:name", listenerName);
-            selenium.click("propertyForm:propertySheet:propertSectionTextField:prop1:existingRdBtn");
-            selenium.select("propertyForm:propertySheet:propertSectionTextField:prop1:protocoldw", "label=http-listener-1");
-            selenium.type("propertyForm:propertySheet:propertSectionTextField:port:port", "1234");
+            setFieldValue("propertyForm:propertySheet:propertSectionTextField:nameNew:name", listenerName);
+            pressButton("propertyForm:propertySheet:propertSectionTextField:prop1:existingRdBtn");
+            selectDropdownOption("propertyForm:propertySheet:propertSectionTextField:prop1:protocoldw", "http-listener-1");
+            setFieldValue("propertyForm:propertySheet:propertSectionTextField:port:port", "1234");
             clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_NETWORK_LISTENERS);
-            assertTrue(selenium.isTextPresent(listenerName));
+            assertTrue(isTextPresent(listenerName));
 
             clickAndWait(getLinkIdByLinkText("propertyForm:configs", listenerName), "Edit Network Listener");
 
-            assertTrue(selenium.isTextPresent(listenerName));
-            assertTrue(selenium.isTextPresent("http-listener-1"));
+            assertTrue(isTextPresent(listenerName));
+            assertTrue(isTextPresent("http-listener-1"));
 
-            assertEquals("1234", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:port:port"));
+            assertEquals("1234", getFieldValue("propertyForm:propertySheet:propertSectionTextField:port:port"));
             clickAndWait("propertyForm:propertyContentPage:topButtons:cancelButton", TRIGGER_NETWORK_LISTENERS);
 
             deleteRow("propertyForm:configs:topActionsGroup1:button1", "propertyForm:configs", listenerName);
@@ -85,11 +85,11 @@ public class NetworkConfigTest extends BaseSeleniumTestClass {
 
     public void createConfig(String configName) {
         clickAndWait("treeForm:tree:configurations:configurations_link", TRIGGER_CONFIGURATION);
-        if (!selenium.isTextPresent("new-config")) {
+        if (!isTextPresent("new-config")) {
             clickAndWait("propertyForm:configs:topActionsGroup1:newButton", TRIGGER_NEW_CONFIGURATION);
-            selenium.type("propertyForm:propertySheet:propertSectionTextField:NameProp:Name", configName);
+            setFieldValue("propertyForm:propertySheet:propertSectionTextField:NameProp:Name", configName);
             clickAndWait("propertyForm:propertyContentPage:topButtons:okButton", TRIGGER_CONFIGURATION);
-            assertTrue(selenium.isTextPresent(configName));
+            assertTrue(isTextPresent(configName));
         }
     }
 
@@ -100,17 +100,17 @@ public class NetworkConfigTest extends BaseSeleniumTestClass {
         for (String configName : list) {
             clickAndWait("treeForm:tree:configurations:" + configName + ":networkConfig:transports:transports_link", TRIGGER_TRANSPORTS);
             clickAndWait("propertyForm:configs:topActionsGroup1:newButton", TRIGGER_NEW_TRANSPORT);
-            selenium.type("propertyForm:propertySheet:propertSectionTextField:IdTextProp:IdText", transportName);
-            selenium.select("propertyForm:propertySheet:propertSectionTextField:ByteBufferType:ByteBufferType", "label=DIRECT");
-            selenium.type("propertyForm:propertySheet:propertSectionTextField:BufferSizeBytes:BufferSizeBytes", "1000");
-            selenium.type("propertyForm:propertySheet:propertSectionTextField:AcceptorThreads:AcceptorThreads", "-1");
+            setFieldValue("propertyForm:propertySheet:propertSectionTextField:IdTextProp:IdText", transportName);
+            selectDropdownOption("propertyForm:propertySheet:propertSectionTextField:ByteBufferType:ByteBufferType", "DIRECT");
+            setFieldValue("propertyForm:propertySheet:propertSectionTextField:BufferSizeBytes:BufferSizeBytes", "1000");
+            setFieldValue("propertyForm:propertySheet:propertSectionTextField:AcceptorThreads:AcceptorThreads", "-1");
             clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_TRANSPORTS);
-            assertTrue(selenium.isTextPresent(transportName));
+            assertTrue(isTextPresent(transportName));
 
             clickAndWait(getLinkIdByLinkText("propertyForm:configs", transportName), "Edit Transport");
-            assertTrue(selenium.isTextPresent(transportName));
-            assertTrue(selenium.isTextPresent("DIRECT"));
-            assertEquals("1000", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:BufferSizeBytes:BufferSizeBytes"));
+            assertTrue(isTextPresent(transportName));
+            assertTrue(isTextPresent("DIRECT"));
+            assertEquals("1000", getFieldValue("propertyForm:propertySheet:propertSectionTextField:BufferSizeBytes:BufferSizeBytes"));
             clickAndWait("propertyForm:propertyContentPage:topButtons:cancelButton", TRIGGER_TRANSPORTS);
 
             deleteRow("propertyForm:configs:topActionsGroup1:button1", "propertyForm:configs", transportName);
@@ -136,42 +136,42 @@ public class NetworkConfigTest extends BaseSeleniumTestClass {
         for (String configName : list) {
             clickAndWait("treeForm:tree:configurations:" + configName +":networkConfig:protocols:protocols_link", TRIGGER_PROTOCOLS);
             clickAndWait("propertyForm:configs:topActionsGroup1:newButton", TRIGGER_NEW_PROTOCOL);
-            selenium.type("propertyForm:propertySheet:propertSectionTextField:nameNew:name", protocol);
-            selenium.type("propertyForm:propertySheet:fileTextField:maxAge:maxAge", maxAge);
-            selenium.type("propertyForm:propertySheet:fileTextField:maxCacheSizeBytes:maxCacheSizeBytes", maxCacheSizeBytes);
-            selenium.type("propertyForm:propertySheet:fileTextField:maxFile:maxFile", maxFile);
-            selenium.type("propertyForm:propertySheet:httpTextField:maxC:maxC", maxC);
-            selenium.type("propertyForm:propertySheet:httpTextField:TimeoutSeconds:TimeoutSeconds", timeoutSeconds);
-            selenium.type("propertyForm:propertySheet:httpTextField:connectionUploadTimeout:connectionUploadTimeout", connectionUploadTimeout);
-            selenium.type("propertyForm:propertySheet:httpTextField:RequestTimeoutSeconds:RequestTimeoutSeconds", requestTimeoutSeconds);
-            selenium.type("propertyForm:propertySheet:httpTextField:sendBsize:sendBsize", sendBsize);
-            selenium.type("propertyForm:propertySheet:httpTextField:headerBLength:headerBLength", headerBLength);
-            selenium.type("propertyForm:propertySheet:httpTextField:MaxPostSize:headerBLength", maxPostSize);
-            selenium.select("propertyForm:propertySheet:httpTextField:Compression:Compression", "label=on");
-            selenium.type("propertyForm:propertySheet:httpTextField:compressableMime:compressableMime", compressableMime);
-            selenium.check("propertyForm:propertySheet:httpTextField:Comet:cometEnabled");
+            setFieldValue("propertyForm:propertySheet:propertSectionTextField:nameNew:name", protocol);
+            setFieldValue("propertyForm:propertySheet:fileTextField:maxAge:maxAge", maxAge);
+            setFieldValue("propertyForm:propertySheet:fileTextField:maxCacheSizeBytes:maxCacheSizeBytes", maxCacheSizeBytes);
+            setFieldValue("propertyForm:propertySheet:fileTextField:maxFile:maxFile", maxFile);
+            setFieldValue("propertyForm:propertySheet:httpTextField:maxC:maxC", maxC);
+            setFieldValue("propertyForm:propertySheet:httpTextField:TimeoutSeconds:TimeoutSeconds", timeoutSeconds);
+            setFieldValue("propertyForm:propertySheet:httpTextField:connectionUploadTimeout:connectionUploadTimeout", connectionUploadTimeout);
+            setFieldValue("propertyForm:propertySheet:httpTextField:RequestTimeoutSeconds:RequestTimeoutSeconds", requestTimeoutSeconds);
+            setFieldValue("propertyForm:propertySheet:httpTextField:sendBsize:sendBsize", sendBsize);
+            setFieldValue("propertyForm:propertySheet:httpTextField:headerBLength:headerBLength", headerBLength);
+            setFieldValue("propertyForm:propertySheet:httpTextField:MaxPostSize:headerBLength", maxPostSize);
+            selectDropdownOption("propertyForm:propertySheet:httpTextField:Compression:Compression", "on");
+            setFieldValue("propertyForm:propertySheet:httpTextField:compressableMime:compressableMime", compressableMime);
+            markCheckbox("propertyForm:propertySheet:httpTextField:Comet:cometEnabled");
 
             clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_PROTOCOLS);
-            assertTrue(selenium.isTextPresent(protocol));
+            assertTrue(isTextPresent(protocol));
 
             clickAndWait(getLinkIdByLinkText("propertyForm:configs", protocol), "Edit Protocol");
-            assertTrue(selenium.isTextPresent(protocol));
+            assertTrue(isTextPresent(protocol));
 
             clickAndWait("propertyForm:protocolTabs:httpTab", "Modify HTTP settings for the protocol.");
-            assertEquals(maxC, selenium.getValue("propertyForm:propertySheet:httpTextField:maxC:maxC"));
-            assertEquals(timeoutSeconds, selenium.getValue("propertyForm:propertySheet:httpTextField:TimeoutSeconds:TimeoutSeconds"));
-            assertEquals(requestTimeoutSeconds, selenium.getValue("propertyForm:propertySheet:httpTextField:RequestTimeoutSeconds:RequestTimeoutSeconds"));
-            assertEquals(connectionUploadTimeout, selenium.getValue("propertyForm:propertySheet:httpTextField:connectionUploadTimeout:connectionUploadTimeout"));
-            assertEquals(sendBsize, selenium.getValue("propertyForm:propertySheet:httpTextField:sendBsize:sendBsize"));
-            assertEquals(headerBLength, selenium.getValue("propertyForm:propertySheet:httpTextField:headerBLength:headerBLength"));
-            assertEquals(maxPostSize, selenium.getValue("propertyForm:propertySheet:httpTextField:MaxPostSize:headerBLength"));
-            assertEquals(compressableMime, selenium.getValue("propertyForm:propertySheet:httpTextField:compressableMime:compressableMime"));
-            assertEquals("true", selenium.getValue("propertyForm:propertySheet:httpTextField:Comet:cometEnabled"));
+            assertEquals(maxC, getFieldValue("propertyForm:propertySheet:httpTextField:maxC:maxC"));
+            assertEquals(timeoutSeconds, getFieldValue("propertyForm:propertySheet:httpTextField:TimeoutSeconds:TimeoutSeconds"));
+            assertEquals(requestTimeoutSeconds, getFieldValue("propertyForm:propertySheet:httpTextField:RequestTimeoutSeconds:RequestTimeoutSeconds"));
+            assertEquals(connectionUploadTimeout, getFieldValue("propertyForm:propertySheet:httpTextField:connectionUploadTimeout:connectionUploadTimeout"));
+            assertEquals(sendBsize, getFieldValue("propertyForm:propertySheet:httpTextField:sendBsize:sendBsize"));
+            assertEquals(headerBLength, getFieldValue("propertyForm:propertySheet:httpTextField:headerBLength:headerBLength"));
+            assertEquals(maxPostSize, getFieldValue("propertyForm:propertySheet:httpTextField:MaxPostSize:headerBLength"));
+            assertEquals(compressableMime, getFieldValue("propertyForm:propertySheet:httpTextField:compressableMime:compressableMime"));
+            assertEquals("true", getFieldValue("propertyForm:propertySheet:httpTextField:Comet:cometEnabled"));
 
             clickAndWait("propertyForm:protocolTabs:fileCacheTab", "Modify file cache settings for the protocol.");
-            assertEquals(maxAge, selenium.getValue("propertyForm:propertySheet:fileTextField:maxAge:maxAge"));
-            assertEquals(maxCacheSizeBytes, selenium.getValue("propertyForm:propertySheet:fileTextField:maxCacheSizeBytes:maxCacheSizeBytes"));
-            assertEquals(maxFile, selenium.getValue("propertyForm:propertySheet:fileTextField:maxFile:maxFile"));
+            assertEquals(maxAge, getFieldValue("propertyForm:propertySheet:fileTextField:maxAge:maxAge"));
+            assertEquals(maxCacheSizeBytes, getFieldValue("propertyForm:propertySheet:fileTextField:maxCacheSizeBytes:maxCacheSizeBytes"));
+            assertEquals(maxFile, getFieldValue("propertyForm:propertySheet:fileTextField:maxFile:maxFile"));
 
             clickAndWait("propertyForm:propertyContentPage:topButtons:cancelButton", TRIGGER_PROTOCOLS);
 

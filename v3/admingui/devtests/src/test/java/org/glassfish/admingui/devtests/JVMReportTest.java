@@ -52,9 +52,9 @@ public class JVMReportTest extends BaseSeleniumTestClass {
     @Test
     public void testJVMLink() {
         clickAndWait("treeForm:tree:applicationServer:applicationServer_link", TRIGGER_SERVER);
-        selenium.isTextPresent("JVM Report");
+        isTextPresent("JVM Report");
         clickAndWait("propertyForm:propertySheet:serverGeneralPropSheet:jvmProp:jvmlink", TRIGGER_JVM);
-        selenium.isTextPresent("Operating System Information");
+        isTextPresent("Operating System Information");
     }        
 }
 

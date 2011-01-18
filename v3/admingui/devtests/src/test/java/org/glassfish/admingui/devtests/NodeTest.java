@@ -87,33 +87,33 @@ public class NodeTest extends BaseSeleniumTestClass {
         clickAndWait(ID_NODE_TREE_LINK, TRIGGER_NODES_PAGE);
         clickAndWait(ID_NEW_NODE_BUTTON, TRIGGER_NEW_NODE_PAGE);
 
-        selenium.type(ID_CREATE_NAME_FIELD, nodeName);
-        selenium.type(ID_NODEHOST_FIELD, "NodeHOST");
-        selenium.type(ID_NODEDIRECTORY_FIELD, "NodeDirectory");
-        //selenium.type(ID_INSTALLDIR_FIELD, "${com.sun.aas.productRoot}");
-        selenium.check(ID_FORCE_FIELD);
-        selenium.type("propertyForm:propertySheet:sshConnectorSection:sshport:sshport", "24");
+        setFieldValue(ID_CREATE_NAME_FIELD, nodeName);
+        setFieldValue(ID_NODEHOST_FIELD, "NodeHOST");
+        setFieldValue(ID_NODEDIRECTORY_FIELD, "NodeDirectory");
+        //enterText(ID_INSTALLDIR_FIELD, "${com.sun.aas.productRoot}");
+        markCheckbox(ID_FORCE_FIELD);
+        setFieldValue("propertyForm:propertySheet:sshConnectorSection:sshport:sshport", "24");
         selectDropdownOption("propertyForm:propertySheet:sshConnectorSection:psSelected:psSelected", "Key File");
-        selenium.type("propertyForm:propertySheet:sshConnectorSection:Keyfile:Keyfile", "/sshKeyFileLocation");
+        setFieldValue("propertyForm:propertySheet:sshConnectorSection:Keyfile:Keyfile", "/sshKeyFileLocation");
         clickAndWait(ID_CREATE_NODE_BUTTON, TRIGGER_NODES_PAGE);
         // Verify nodes information in table
         String prefix = getTableRowByValue(ID_NODES_TABLE, nodeName, "col1");
-        assertEquals(nodeName, selenium.getText(prefix + "col1:link"));
-        assertEquals("NodeHOST", selenium.getText(prefix + "col2"));
-        assertEquals("SSH", selenium.getText(prefix + "colType"));
+        assertEquals(nodeName, getText(prefix + "col1:link"));
+        assertEquals("NodeHOST", getText(prefix + "col2"));
+        assertEquals("SSH", getText(prefix + "colType"));
 
         //Verify the node is created with the value specified.
         clickAndWait( getLinkIdByLinkText("propertyForm:nodesTable", nodeName), TRIGGER_EDIT_NODE) ;
-        assertTrue(selenium.isTextPresent(nodeName));
+        assertTrue(isTextPresent(nodeName));
 
-        assertTrue(selenium.isTextPresent(nodeName));
-        assertEquals( "SSH", selenium.getSelectedValue(ID_TYPE_FIELD));
-        assertEquals("NodeHOST", selenium.getValue(ID_NODEHOST_FIELD));
-        assertEquals("NodeDirectory", selenium.getValue(ID_NODEDIRECTORY_FIELD));
-        assertEquals("${com.sun.aas.productRoot}", selenium.getValue(ID_INSTALLDIR_FIELD));
+        assertTrue(isTextPresent(nodeName));
+        assertEquals( "SSH", getSelectedValue(ID_TYPE_FIELD));
+        assertEquals("NodeHOST", getFieldValue(ID_NODEHOST_FIELD));
+        assertEquals("NodeDirectory", getFieldValue(ID_NODEDIRECTORY_FIELD));
+        assertEquals("${com.sun.aas.productRoot}", getFieldValue(ID_INSTALLDIR_FIELD));
 
-        assertEquals("24", selenium.getValue("propertyForm:propertySheet:sshConnectorSection:sshport:sshport"));
-        assertEquals("/sshKeyFileLocation", selenium.getValue("propertyForm:propertySheet:sshConnectorSection:Keyfile:Keyfile"));
+        assertEquals("24", getFieldValue("propertyForm:propertySheet:sshConnectorSection:sshport:sshport"));
+        assertEquals("/sshKeyFileLocation", getFieldValue("propertyForm:propertySheet:sshConnectorSection:Keyfile:Keyfile"));
         clickAndWait("propertyForm:propertyContentPage:topButtons:cancelButton", TRIGGER_NODES_PAGE);
 
         //Test Delete Node
@@ -127,36 +127,36 @@ public class NodeTest extends BaseSeleniumTestClass {
         clickAndWait(ID_NODE_TREE_LINK, TRIGGER_NODES_PAGE);
         clickAndWait(ID_NEW_NODE_BUTTON, TRIGGER_NEW_NODE_PAGE);
 
-        selenium.type(ID_CREATE_NAME_FIELD, nodeName);
-        selenium.type(ID_NODEHOST_FIELD, "NodeHOST2");
-        selenium.type(ID_NODEDIRECTORY_FIELD, "NodeDirectory2");
-        selenium.type(ID_INSTALLDIR_FIELD, "ProductRoot");
-        selenium.check(ID_FORCE_FIELD);
-        selenium.type("propertyForm:propertySheet:sshConnectorSection:sshport:sshport", "34");
+        setFieldValue(ID_CREATE_NAME_FIELD, nodeName);
+        setFieldValue(ID_NODEHOST_FIELD, "NodeHOST2");
+        setFieldValue(ID_NODEDIRECTORY_FIELD, "NodeDirectory2");
+        setFieldValue(ID_INSTALLDIR_FIELD, "ProductRoot");
+        markCheckbox(ID_FORCE_FIELD);
+        setFieldValue("propertyForm:propertySheet:sshConnectorSection:sshport:sshport", "34");
         selectDropdownOption("propertyForm:propertySheet:sshConnectorSection:psSelected:psSelected", "Password");
 
-        selenium.type("propertyForm:propertySheet:sshConnectorSection:newPasswordProp:NewPassword", "abcde");
-        selenium.type("propertyForm:propertySheet:sshConnectorSection:confirmPasswordProp:ConfirmPassword", "abcde");
+        setFieldValue("propertyForm:propertySheet:sshConnectorSection:newPasswordProp:NewPassword", "abcde");
+        setFieldValue("propertyForm:propertySheet:sshConnectorSection:confirmPasswordProp:ConfirmPassword", "abcde");
         clickAndWait(ID_CREATE_NODE_BUTTON, TRIGGER_NODES_PAGE);
         // Verify nodes information in table
         String prefix = getTableRowByValue(ID_NODES_TABLE, nodeName, "col1");
-        assertEquals(nodeName, selenium.getText(prefix + "col1:link"));
-        assertEquals("NodeHOST2", selenium.getText(prefix + "col2"));
-        assertEquals("SSH", selenium.getText(prefix + "colType"));
+        assertEquals(nodeName, getText(prefix + "col1:link"));
+        assertEquals("NodeHOST2", getText(prefix + "col2"));
+        assertEquals("SSH", getText(prefix + "colType"));
 
         //Verify the node is created with the value specified.
         clickAndWait( getLinkIdByLinkText("propertyForm:nodesTable", nodeName), TRIGGER_EDIT_NODE) ;
-        assertTrue(selenium.isTextPresent(nodeName));
+        assertTrue(isTextPresent(nodeName));
 
-        assertTrue(selenium.isTextPresent(nodeName));
-        assertEquals( "SSH", selenium.getSelectedValue(ID_TYPE_FIELD));
-        assertEquals("NodeHOST2", selenium.getValue(ID_NODEHOST_FIELD));
-        assertEquals("NodeDirectory2", selenium.getValue(ID_NODEDIRECTORY_FIELD));
-        assertEquals("ProductRoot", selenium.getValue(ID_INSTALLDIR_FIELD));
+        assertTrue(isTextPresent(nodeName));
+        assertEquals( "SSH", getSelectedValue(ID_TYPE_FIELD));
+        assertEquals("NodeHOST2", getFieldValue(ID_NODEHOST_FIELD));
+        assertEquals("NodeDirectory2", getFieldValue(ID_NODEDIRECTORY_FIELD));
+        assertEquals("ProductRoot", getFieldValue(ID_INSTALLDIR_FIELD));
 
-        assertEquals("34", selenium.getValue("propertyForm:propertySheet:sshConnectorSection:sshport:sshport"));
-        assertEquals("abcde", selenium.getValue("propertyForm:propertySheet:sshConnectorSection:newPasswordProp:NewPassword"));
-        assertEquals("abcde", selenium.getValue("propertyForm:propertySheet:sshConnectorSection:confirmPasswordProp:ConfirmPassword"));
+        assertEquals("34", getFieldValue("propertyForm:propertySheet:sshConnectorSection:sshport:sshport"));
+        assertEquals("abcde", getFieldValue("propertyForm:propertySheet:sshConnectorSection:newPasswordProp:NewPassword"));
+        assertEquals("abcde", getFieldValue("propertyForm:propertySheet:sshConnectorSection:confirmPasswordProp:ConfirmPassword"));
         clickAndWait("propertyForm:propertyContentPage:topButtons:cancelButton", TRIGGER_NODES_PAGE);
 
         //Test Delete Node
@@ -171,19 +171,19 @@ public class NodeTest extends BaseSeleniumTestClass {
         clickAndWait("treeForm:tree:nodes:nodes_link", TRIGGER_DOMAIN_PAGE);
         clickAndWait("propertyForm:domainTabs:pswdAliases", TRIGGER_PSWD_ALIASES_PAGE);
         clickAndWait("propertyForm:aliases:topActionsGroup1:newButton", TRIGGER_NEW_PSWD_ALIAS_PAGE);
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:aliasNameNew:aliasNameNew", pswdAliasName);
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:newPasswordProp:NewPassword", "abcde");
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:confirmPasswordProp:ConfirmPassword", "abcde");
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:aliasNameNew:aliasNameNew", pswdAliasName);
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:newPasswordProp:NewPassword", "abcde");
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:confirmPasswordProp:ConfirmPassword", "abcde");
         clickAndWait(ID_CREATE_NODE_BUTTON, TRIGGER_PSWD_ALIASES_PAGE);
 
         clickAndWait(ID_NODE_TREE_LINK, TRIGGER_NODES_PAGE);
         clickAndWait(ID_NEW_NODE_BUTTON, TRIGGER_NEW_NODE_PAGE);
-        selenium.type(ID_CREATE_NAME_FIELD, nodeName);
-        selenium.type(ID_NODEHOST_FIELD, "NodeHOST3");
-        selenium.type(ID_NODEDIRECTORY_FIELD, "NodeDirectory3");
-        selenium.type(ID_INSTALLDIR_FIELD, "ProductRoot3");
-        selenium.check(ID_FORCE_FIELD);
-        selenium.type("propertyForm:propertySheet:sshConnectorSection:sshport:sshport", "34");
+        setFieldValue(ID_CREATE_NAME_FIELD, nodeName);
+        setFieldValue(ID_NODEHOST_FIELD, "NodeHOST3");
+        setFieldValue(ID_NODEDIRECTORY_FIELD, "NodeDirectory3");
+        setFieldValue(ID_INSTALLDIR_FIELD, "ProductRoot3");
+        markCheckbox(ID_FORCE_FIELD);
+        setFieldValue("propertyForm:propertySheet:sshConnectorSection:sshport:sshport", "34");
         selectDropdownOption("propertyForm:propertySheet:sshConnectorSection:psSelected:psSelected", "Password Alias");
         selectDropdownOption("propertyForm:propertySheet:sshConnectorSection:pswdAlias:pswdAlias", pswdAliasName);
         clickAndWait(ID_CREATE_NODE_BUTTON, TRIGGER_NODES_PAGE);
@@ -191,23 +191,23 @@ public class NodeTest extends BaseSeleniumTestClass {
 
         // Verify nodes information in table
         String prefix = getTableRowByValue(ID_NODES_TABLE, nodeName, "col1");
-        assertEquals(nodeName, selenium.getText(prefix + "col1:link"));
-        assertEquals("NodeHOST3", selenium.getText(prefix + "col2"));
-        assertEquals("SSH", selenium.getText(prefix + "colType"));
+        assertEquals(nodeName, getText(prefix + "col1:link"));
+        assertEquals("NodeHOST3", getText(prefix + "col2"));
+        assertEquals("SSH", getText(prefix + "colType"));
 
         //Verify the node is created with the value specified.
         clickAndWait( getLinkIdByLinkText("propertyForm:nodesTable", nodeName), TRIGGER_EDIT_NODE) ;
-        assertTrue(selenium.isTextPresent(nodeName));
+        assertTrue(isTextPresent(nodeName));
 
-        assertTrue(selenium.isTextPresent(nodeName));
-        assertEquals( "SSH", selenium.getSelectedValue(ID_TYPE_FIELD));
-        assertEquals("NodeHOST3", selenium.getValue(ID_NODEHOST_FIELD));
-        assertEquals("NodeDirectory3", selenium.getValue(ID_NODEDIRECTORY_FIELD));
-        assertEquals("ProductRoot3", selenium.getValue(ID_INSTALLDIR_FIELD));
+        assertTrue(isTextPresent(nodeName));
+        assertEquals( "SSH", getSelectedValue(ID_TYPE_FIELD));
+        assertEquals("NodeHOST3", getFieldValue(ID_NODEHOST_FIELD));
+        assertEquals("NodeDirectory3", getFieldValue(ID_NODEDIRECTORY_FIELD));
+        assertEquals("ProductRoot3", getFieldValue(ID_INSTALLDIR_FIELD));
 
-        assertEquals("34", selenium.getValue("propertyForm:propertySheet:sshConnectorSection:sshport:sshport"));
-        assertTrue(selenium.isElementPresent("propertyForm:propertySheet:sshConnectorSection:psSelected:psSelected"));
-        assertTrue(selenium.isTextPresent(pswdAliasName));
+        assertEquals("34", getFieldValue("propertyForm:propertySheet:sshConnectorSection:sshport:sshport"));
+        assertTrue(isElementPresent("propertyForm:propertySheet:sshConnectorSection:psSelected:psSelected"));
+        assertTrue(isTextPresent(pswdAliasName));
         clickAndWait("propertyForm:propertyContentPage:topButtons:cancelButton", TRIGGER_NODES_PAGE);
 
         //Test Delete Node
@@ -228,34 +228,34 @@ public class NodeTest extends BaseSeleniumTestClass {
         clickAndWait(ID_NEW_NODE_BUTTON, TRIGGER_NEW_NODE_PAGE);
 
         selectDropdownOption(ID_TYPE_FIELD, "CONFIG");
-        assertTrue(!selenium.isTextPresent("Force:"));
-        assertTrue(!selenium.isTextPresent("SSH Port:"));
-        assertTrue(!selenium.isTextPresent("SSH User Name:"));
-        assertTrue(!selenium.isTextPresent("SSH User Authentication:"));
-        assertTrue(!selenium.isTextPresent("SSH Password:"));
-        assertTrue(!selenium.isTextPresent("Confirm SSH Password:"));
-        assertTrue(!selenium.isTextPresent("Password Alias:"));
-        assertTrue(!selenium.isTextPresent("Key File:"));
+        assertTrue(!isTextPresent("Force:"));
+        assertTrue(!isTextPresent("SSH Port:"));
+        assertTrue(!isTextPresent("SSH User Name:"));
+        assertTrue(!isTextPresent("SSH User Authentication:"));
+        assertTrue(!isTextPresent("SSH Password:"));
+        assertTrue(!isTextPresent("Confirm SSH Password:"));
+        assertTrue(!isTextPresent("Password Alias:"));
+        assertTrue(!isTextPresent("Key File:"));
 
-        selenium.type(ID_CREATE_NAME_FIELD, nodeName);
-        selenium.type(ID_NODEHOST_FIELD, "NodeHOSTCC");
-        selenium.type(ID_NODEDIRECTORY_FIELD, "NodeDirectoryCC");
-        selenium.type(ID_CONFIG_INSTALLDIR_FIELD, "/ProductRoot");
+        setFieldValue(ID_CREATE_NAME_FIELD, nodeName);
+        setFieldValue(ID_NODEHOST_FIELD, "NodeHOSTCC");
+        setFieldValue(ID_NODEDIRECTORY_FIELD, "NodeDirectoryCC");
+        setFieldValue(ID_CONFIG_INSTALLDIR_FIELD, "/ProductRoot");
         clickAndWait(ID_CREATE_NODE_BUTTON, TRIGGER_NODES_PAGE);
 
         // Verify nodes information in table
         String prefix = getTableRowByValue(ID_NODES_TABLE, nodeName, "col1");
-        assertEquals(nodeName, selenium.getText(prefix + "col1:link"));
-        assertEquals("NodeHOSTCC", selenium.getText(prefix + "col2"));
-        assertEquals("CONFIG", selenium.getText(prefix + "colType"));
+        assertEquals(nodeName, getText(prefix + "col1:link"));
+        assertEquals("NodeHOSTCC", getText(prefix + "col2"));
+        assertEquals("CONFIG", getText(prefix + "colType"));
 
         //Verify the node is created with the value specified.
         clickAndWait( getLinkIdByLinkText("propertyForm:nodesTable", nodeName), TRIGGER_EDIT_NODE) ;
-        assertTrue(selenium.isTextPresent(nodeName));
-        assertEquals( "CONFIG", selenium.getSelectedValue(ID_TYPE_FIELD));
-        assertEquals("NodeHOSTCC", selenium.getValue(ID_NODEHOST_FIELD));
-        assertEquals("NodeDirectoryCC", selenium.getValue(ID_NODEDIRECTORY_FIELD));
-        assertEquals("/ProductRoot", selenium.getValue(ID_CONFIG_INSTALLDIR_FIELD));
+        assertTrue(isTextPresent(nodeName));
+        assertEquals( "CONFIG", getSelectedValue(ID_TYPE_FIELD));
+        assertEquals("NodeHOSTCC", getFieldValue(ID_NODEHOST_FIELD));
+        assertEquals("NodeDirectoryCC", getFieldValue(ID_NODEDIRECTORY_FIELD));
+        assertEquals("/ProductRoot", getFieldValue(ID_CONFIG_INSTALLDIR_FIELD));
 
         clickAndWait("propertyForm:propertyContentPage:topButtons:cancelButton", TRIGGER_NODES_PAGE);
 
@@ -273,31 +273,31 @@ public class NodeTest extends BaseSeleniumTestClass {
 
         //create the config node
         selectDropdownOption(ID_TYPE_FIELD, "CONFIG");
-        selenium.type(ID_CREATE_NAME_FIELD, nodeName);
-        selenium.type(ID_NODEHOST_FIELD, "NodeHOSTCC");
-        selenium.type(ID_NODEDIRECTORY_FIELD, "NodeDirectoryCC");
-        selenium.type(ID_CONFIG_INSTALLDIR_FIELD, "/ProductRoot");
+        setFieldValue(ID_CREATE_NAME_FIELD, nodeName);
+        setFieldValue(ID_NODEHOST_FIELD, "NodeHOSTCC");
+        setFieldValue(ID_NODEDIRECTORY_FIELD, "NodeDirectoryCC");
+        setFieldValue(ID_CONFIG_INSTALLDIR_FIELD, "/ProductRoot");
         clickAndWait(ID_CREATE_NODE_BUTTON, TRIGGER_NODES_PAGE);
 
         //edit the node
         clickAndWait( getLinkIdByLinkText("propertyForm:nodesTable", nodeName), TRIGGER_EDIT_NODE) ;
-        assertTrue(selenium.isTextPresent(nodeName));
+        assertTrue(isTextPresent(nodeName));
 
 
-        assertEquals( "CONFIG", selenium.getSelectedValue(ID_TYPE_FIELD));
-        assertEquals("NodeHOSTCC", selenium.getValue(ID_NODEHOST_FIELD));
-        selenium.type(ID_NODEHOST_FIELD, "new-NodeHOSTCC");
+        assertEquals( "CONFIG", getSelectedValue(ID_TYPE_FIELD));
+        assertEquals("NodeHOSTCC", getFieldValue(ID_NODEHOST_FIELD));
+        setFieldValue(ID_NODEHOST_FIELD, "new-NodeHOSTCC");
         
-        assertEquals("NodeDirectoryCC", selenium.getValue(ID_NODEDIRECTORY_FIELD));
-        selenium.type(ID_NODEDIRECTORY_FIELD, "new-NodeDirectoryCC");
+        assertEquals("NodeDirectoryCC", getFieldValue(ID_NODEDIRECTORY_FIELD));
+        setFieldValue(ID_NODEDIRECTORY_FIELD, "new-NodeDirectoryCC");
         
-        assertEquals("/ProductRoot", selenium.getValue(ID_CONFIG_INSTALLDIR_FIELD));
-        selenium.type(ID_CONFIG_INSTALLDIR_FIELD, "/new-ProductRoot");
+        assertEquals("/ProductRoot", getFieldValue(ID_CONFIG_INSTALLDIR_FIELD));
+        setFieldValue(ID_CONFIG_INSTALLDIR_FIELD, "/new-ProductRoot");
         clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_SAVE_SUCCESS );
 
-        assertEquals("new-NodeHOSTCC", selenium.getValue(ID_NODEHOST_FIELD ));
-        assertEquals("new-NodeDirectoryCC", selenium.getValue(ID_NODEDIRECTORY_FIELD));
-        assertEquals("/new-ProductRoot", selenium.getValue(ID_CONFIG_INSTALLDIR_FIELD));
+        assertEquals("new-NodeHOSTCC", getFieldValue(ID_NODEHOST_FIELD ));
+        assertEquals("new-NodeDirectoryCC", getFieldValue(ID_NODEDIRECTORY_FIELD));
+        assertEquals("/new-ProductRoot", getFieldValue(ID_CONFIG_INSTALLDIR_FIELD));
 
         clickAndWait(ID_NODE_TREE_LINK, TRIGGER_NODES_PAGE);
         deleteRow(ID_DELETE_NODE_BUTTON, "propertyForm:nodesTable", nodeName);
@@ -315,7 +315,7 @@ public class NodeTest extends BaseSeleniumTestClass {
         // This part shoudl fail?
         rowActionWithConfirm(ID_DELETE_NODE_BUTTON, "propertyForm:nodesTable", nodeName);
         waitForCondition("document.getElementById('propertyForm:nodesTable:topActionsGroup1:button1').value != 'Processing...'", 50000);
-        assertTrue(selenium.isTextPresent("An error has occurred"));
+        assertTrue(isTextPresent("An error has occurred"));
 
         //cleanup
         clickAndWait(ID_STANDALONE_TREE_LINK, TRIGGER_INSTANCES_PAGE);
@@ -329,9 +329,9 @@ public class NodeTest extends BaseSeleniumTestClass {
         clickAndWait(ID_NODE_TREE_LINK, TRIGGER_NODES_PAGE);
         clickAndWait(ID_NEW_NODE_BUTTON, TRIGGER_NEW_NODE_PAGE);
 
-        selenium.type(ID_CREATE_NAME_FIELD, nodeName);
-        selenium.type(ID_NODEHOST_FIELD, "localhost");
-        selenium.check(ID_FORCE_FIELD);
+        setFieldValue(ID_CREATE_NAME_FIELD, nodeName);
+        setFieldValue(ID_NODEHOST_FIELD, "localhost");
+        markCheckbox(ID_FORCE_FIELD);
         clickAndWait(ID_CREATE_NODE_BUTTON, TRIGGER_NODES_PAGE);
         assertTrue(tableContainsRow("propertyForm:nodesTable", "col1", nodeName));
     }
@@ -339,10 +339,10 @@ public class NodeTest extends BaseSeleniumTestClass {
     private void createInstance(String instanceName, String nodeName){
         clickAndWait(ID_STANDALONE_TREE_LINK, TRIGGER_INSTANCES_PAGE);
         clickAndWait("propertyForm:instancesTable:topActionsGroup1:newButton", TRIGGER_NEW_INSTANCE_PAGE );
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:NameTextProp:NameText", instanceName);
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:NameTextProp:NameText", instanceName);
         selectDropdownOption("propertyForm:propertySheet:propertSectionTextField:node:node", nodeName);
         selectDropdownOption("propertyForm:propertySheet:propertSectionTextField:configProp:Config", "default-config");
-        selenium.click("propertyForm:propertySheet:propertSectionTextField:configOptionProp:optC");
+        markCheckbox("propertyForm:propertySheet:propertSectionTextField:configOptionProp:optC");
         clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_INSTANCES_PAGE);
         assertTrue(tableContainsRow("propertyForm:instancesTable", "col1", instanceName));
     }

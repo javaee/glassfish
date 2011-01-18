@@ -58,23 +58,23 @@ public class EjbContainerTest extends BaseSeleniumTestClass {
 
         clickAndWait("treeForm:tree:configurations:server-config:ejbContainer:ejbContainer_link", TAB_EJB_SETTINGS);
 
-        selenium.click("form1:propertySheet:generalPropertySection:commitOptionProp:optC");
-        selenium.type("form1:propertySheet:poolSettingSection:MinSizeProp:MinSize", minSize);
-        selenium.type("form1:propertySheet:poolSettingSection:MaxSizeProp:MaxSize", maxSize);
-        selenium.type("form1:propertySheet:poolSettingSection:PoolResizeProp:PoolResize", poolResize);
-        selenium.type("form1:propertySheet:poolSettingSection:TimeoutProp:Timeout", timeout);
+        markCheckbox("form1:propertySheet:generalPropertySection:commitOptionProp:optC");
+        setFieldValue("form1:propertySheet:poolSettingSection:MinSizeProp:MinSize", minSize);
+        setFieldValue("form1:propertySheet:poolSettingSection:MaxSizeProp:MaxSize", maxSize);
+        setFieldValue("form1:propertySheet:poolSettingSection:PoolResizeProp:PoolResize", poolResize);
+        setFieldValue("form1:propertySheet:poolSettingSection:TimeoutProp:Timeout", timeout);
         int count = addTableRow("form1:basicTable", "form1:basicTable:topActionsGroup1:addSharedTableButton");
-        selenium.type("form1:basicTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
-        selenium.type("form1:basicTable:rowGroup1:0:col3:col1St", "value");
-        selenium.type("form1:basicTable:rowGroup1:0:col4:col1St", "description");
+        setFieldValue("form1:basicTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
+        setFieldValue("form1:basicTable:rowGroup1:0:col3:col1St", "value");
+        setFieldValue("form1:basicTable:rowGroup1:0:col4:col1St", "description");
         clickAndWait("form1:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
         clickAndWait("form1:ejbContainerTabs:mdbSettingsTab", TAB_MDB_SETTINGS);
         clickAndWait("form1:ejbContainerTabs:ejbSettingsTab", TAB_EJB_SETTINGS);
-        assertEquals(true, selenium.isChecked("form1:propertySheet:generalPropertySection:commitOptionProp:optC"));
-        assertEquals(minSize, selenium.getValue("form1:propertySheet:poolSettingSection:MinSizeProp:MinSize"));
-        assertEquals(maxSize, selenium.getValue("form1:propertySheet:poolSettingSection:MaxSizeProp:MaxSize"));
-        assertEquals(poolResize, selenium.getValue("form1:propertySheet:poolSettingSection:PoolResizeProp:PoolResize"));
-        assertEquals(timeout, selenium.getValue("form1:propertySheet:poolSettingSection:TimeoutProp:Timeout"));
+        assertEquals(true, isChecked("form1:propertySheet:generalPropertySection:commitOptionProp:optC"));
+        assertEquals(minSize, getFieldValue("form1:propertySheet:poolSettingSection:MinSizeProp:MinSize"));
+        assertEquals(maxSize, getFieldValue("form1:propertySheet:poolSettingSection:MaxSizeProp:MaxSize"));
+        assertEquals(poolResize, getFieldValue("form1:propertySheet:poolSettingSection:PoolResizeProp:PoolResize"));
+        assertEquals(timeout, getFieldValue("form1:propertySheet:poolSettingSection:TimeoutProp:Timeout"));
         assertTableRowCount("form1:basicTable", count);
     }
 
@@ -88,24 +88,24 @@ public class EjbContainerTest extends BaseSeleniumTestClass {
         clickAndWait("treeForm:tree:configurations:server-config:ejbContainer:ejbContainer_link", TAB_EJB_SETTINGS);
         clickAndWait("form1:ejbContainerTabs:mdbSettingsTab", TAB_MDB_SETTINGS);
 
-        selenium.type("form1:propertySheet:propertySectionTextField:MinSizeProp:MinSize", minSize);
-        selenium.type("form1:propertySheet:propertySectionTextField:MaxSizeProp:MaxSize", maxSize);
-        selenium.type("form1:propertySheet:propertySectionTextField:PoolResizeProp:PoolResize", poolResize);
-        selenium.type("form1:propertySheet:propertySectionTextField:TimeoutProp:Timeout", timeout);
+        setFieldValue("form1:propertySheet:propertySectionTextField:MinSizeProp:MinSize", minSize);
+        setFieldValue("form1:propertySheet:propertySectionTextField:MaxSizeProp:MaxSize", maxSize);
+        setFieldValue("form1:propertySheet:propertySectionTextField:PoolResizeProp:PoolResize", poolResize);
+        setFieldValue("form1:propertySheet:propertySectionTextField:TimeoutProp:Timeout", timeout);
         int count = addTableRow("form1:basicTable", "form1:basicTable:topActionsGroup1:addSharedTableButton");
 
-        selenium.type("form1:basicTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
-        selenium.type("form1:basicTable:rowGroup1:0:col3:col1St", "value");
-        selenium.type("form1:basicTable:rowGroup1:0:col4:col1St", "description");
+        setFieldValue("form1:basicTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
+        setFieldValue("form1:basicTable:rowGroup1:0:col3:col1St", "value");
+        setFieldValue("form1:basicTable:rowGroup1:0:col4:col1St", "description");
         clickAndWait("form1:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
 
         clickAndWait("treeForm:tree:configurations:server-config:ejbContainer:ejbContainer_link", TAB_EJB_SETTINGS);
         clickAndWait("form1:ejbContainerTabs:mdbSettingsTab", TAB_MDB_SETTINGS);
 
-        assertEquals(minSize, selenium.getValue("form1:propertySheet:propertySectionTextField:MinSizeProp:MinSize"));
-        assertEquals(maxSize, selenium.getValue("form1:propertySheet:propertySectionTextField:MaxSizeProp:MaxSize"));
-        assertEquals(poolResize, selenium.getValue("form1:propertySheet:propertySectionTextField:PoolResizeProp:PoolResize"));
-        assertEquals(timeout, selenium.getValue("form1:propertySheet:propertySectionTextField:TimeoutProp:Timeout"));
+        assertEquals(minSize, getFieldValue("form1:propertySheet:propertySectionTextField:MinSizeProp:MinSize"));
+        assertEquals(maxSize, getFieldValue("form1:propertySheet:propertySectionTextField:MaxSizeProp:MaxSize"));
+        assertEquals(poolResize, getFieldValue("form1:propertySheet:propertySectionTextField:PoolResizeProp:PoolResize"));
+        assertEquals(timeout, getFieldValue("form1:propertySheet:propertySectionTextField:TimeoutProp:Timeout"));
         assertTableRowCount("form1:basicTable", count);
     }
 
@@ -119,25 +119,25 @@ public class EjbContainerTest extends BaseSeleniumTestClass {
         clickAndWait("treeForm:tree:configurations:server-config:ejbContainer:ejbContainer_link", TAB_EJB_SETTINGS);
         clickAndWait("form1:ejbContainerTabs:ejbTimerTab", TAB_EJB_TIMER_SERVICE);
 
-        selenium.type("form1:propertySheet:propertySectionTextField:MinDeliveryProp:MinDelivery", minDelivery);
-        selenium.type("form1:propertySheet:propertySectionTextField:MaxRedeliveryProp:MaxRedelivery", maxRedelivery);
-        selenium.type("form1:propertySheet:propertySectionTextField:RedeliveryIntrProp:RedeliveryIntr", redeliveryInterval);
-        selenium.type("form1:propertySheet:propertySectionTextField:TimerDatasourceProp:TimerDatasource", timerDatasource);
+        setFieldValue("form1:propertySheet:propertySectionTextField:MinDeliveryProp:MinDelivery", minDelivery);
+        setFieldValue("form1:propertySheet:propertySectionTextField:MaxRedeliveryProp:MaxRedelivery", maxRedelivery);
+        setFieldValue("form1:propertySheet:propertySectionTextField:RedeliveryIntrProp:RedeliveryIntr", redeliveryInterval);
+        setFieldValue("form1:propertySheet:propertySectionTextField:TimerDatasourceProp:TimerDatasource", timerDatasource);
         clickAndWait("form1:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
 
         clickAndWait("form1:ejbContainerTabs:mdbSettingsTab", TAB_MDB_SETTINGS);
         clickAndWait("form1:ejbContainerTabs:ejbTimerTab", TAB_EJB_TIMER_SERVICE);
 
-        assertEquals(minDelivery, selenium.getValue("form1:propertySheet:propertySectionTextField:MinDeliveryProp:MinDelivery"));
-        assertEquals(maxRedelivery, selenium.getValue("form1:propertySheet:propertySectionTextField:MaxRedeliveryProp:MaxRedelivery"));
-        assertEquals(redeliveryInterval, selenium.getValue("form1:propertySheet:propertySectionTextField:RedeliveryIntrProp:RedeliveryIntr"));
-        assertEquals(timerDatasource, selenium.getValue("form1:propertySheet:propertySectionTextField:TimerDatasourceProp:TimerDatasource"));
+        assertEquals(minDelivery, getFieldValue("form1:propertySheet:propertySectionTextField:MinDeliveryProp:MinDelivery"));
+        assertEquals(maxRedelivery, getFieldValue("form1:propertySheet:propertySectionTextField:MaxRedeliveryProp:MaxRedelivery"));
+        assertEquals(redeliveryInterval, getFieldValue("form1:propertySheet:propertySectionTextField:RedeliveryIntrProp:RedeliveryIntr"));
+        assertEquals(timerDatasource, getFieldValue("form1:propertySheet:propertySectionTextField:TimerDatasourceProp:TimerDatasource"));
 
         // Clean up after ourselves, just because... :)
-        selenium.type("form1:propertySheet:propertySectionTextField:MinDeliveryProp:MinDelivery", "1000");
-        selenium.type("form1:propertySheet:propertySectionTextField:MaxRedeliveryProp:MaxRedelivery", "1");
-        selenium.type("form1:propertySheet:propertySectionTextField:RedeliveryIntrProp:RedeliveryIntr", "5000");
-        selenium.type("form1:propertySheet:propertySectionTextField:TimerDatasourceProp:TimerDatasource", "");
+        setFieldValue("form1:propertySheet:propertySectionTextField:MinDeliveryProp:MinDelivery", "1000");
+        setFieldValue("form1:propertySheet:propertySectionTextField:MaxRedeliveryProp:MaxRedelivery", "1");
+        setFieldValue("form1:propertySheet:propertySectionTextField:RedeliveryIntrProp:RedeliveryIntr", "5000");
+        setFieldValue("form1:propertySheet:propertySectionTextField:TimerDatasourceProp:TimerDatasource", "");
         clickAndWait("form1:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
     }
 
@@ -147,16 +147,16 @@ public class EjbContainerTest extends BaseSeleniumTestClass {
 
         //Go to EJB Settings page, enter some random value
         clickAndWait("treeForm:tree:configurations:server-config:ejbContainer:ejbContainer_link", TAB_EJB_SETTINGS);
-        selenium.click("form1:propertySheet:generalPropertySection:commitOptionProp:optC");
-        selenium.type("form1:propertySheet:poolSettingSection:MinSizeProp:MinSize", "2");
-        selenium.type("form1:propertySheet:poolSettingSection:MaxSizeProp:MaxSize", "34");
-        selenium.type("form1:propertySheet:poolSettingSection:PoolResizeProp:PoolResize", "10");
-        selenium.type("form1:propertySheet:poolSettingSection:TimeoutProp:Timeout", "666");
-        selenium.type("form1:propertySheet:cacheSettingSection:MaxCacheProp:MaxCache", "520");
-        selenium.type("form1:propertySheet:cacheSettingSection:CacheResizeProp:CacheResize", "36");
-        selenium.type("form1:propertySheet:cacheSettingSection:RemTimoutProp:RemTimout", "5454");
-        selenium.select("form1:propertySheet:cacheSettingSection:RemPolicyProp:RemPolicy", "label=First In First Out (fifo)");
-        selenium.type("form1:propertySheet:cacheSettingSection:CacheIdleProp:CacheIdle", "666");
+        markCheckbox("form1:propertySheet:generalPropertySection:commitOptionProp:optC");
+        setFieldValue("form1:propertySheet:poolSettingSection:MinSizeProp:MinSize", "2");
+        setFieldValue("form1:propertySheet:poolSettingSection:MaxSizeProp:MaxSize", "34");
+        setFieldValue("form1:propertySheet:poolSettingSection:PoolResizeProp:PoolResize", "10");
+        setFieldValue("form1:propertySheet:poolSettingSection:TimeoutProp:Timeout", "666");
+        setFieldValue("form1:propertySheet:cacheSettingSection:MaxCacheProp:MaxCache", "520");
+        setFieldValue("form1:propertySheet:cacheSettingSection:CacheResizeProp:CacheResize", "36");
+        setFieldValue("form1:propertySheet:cacheSettingSection:RemTimoutProp:RemTimout", "5454");
+        selectDropdownOption("form1:propertySheet:cacheSettingSection:RemPolicyProp:RemPolicy", "First In First Out (fifo)");
+        setFieldValue("form1:propertySheet:cacheSettingSection:CacheIdleProp:CacheIdle", "666");
 
         //Save this, goto another tab and back
         clickAndWait("form1:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
@@ -168,27 +168,26 @@ public class EjbContainerTest extends BaseSeleniumTestClass {
         //Save and come back to the page to assert.
 
         //Location should not be changed by the default button
-        String location = selenium.getValue("form1:propertySheet:generalPropertySection:SessionStoreProp:SessionStore");
+        String location = getFieldValue("form1:propertySheet:generalPropertySection:SessionStoreProp:SessionStore");
 
         //We are testing that default button fills in the correct default value, not testing if the Save button works.
         //no need to click Save for this test.
         clickAndWaitForButtonEnabled("form1:propertyContentPage:loadDefaultsButton");
 
-        assertEquals(location, selenium.getValue("form1:propertySheet:generalPropertySection:SessionStoreProp:SessionStore"));
+        assertEquals(location, getFieldValue("form1:propertySheet:generalPropertySection:SessionStoreProp:SessionStore"));
         
-        assertEquals(true, selenium.isChecked("form1:propertySheet:generalPropertySection:commitOptionProp:optB"));
-        assertEquals("0", selenium.getValue("form1:propertySheet:poolSettingSection:MinSizeProp:MinSize"));
-        assertEquals("32", selenium.getValue("form1:propertySheet:poolSettingSection:MaxSizeProp:MaxSize"));
-        assertEquals("8", selenium.getValue("form1:propertySheet:poolSettingSection:PoolResizeProp:PoolResize"));
-        assertEquals("600", selenium.getValue("form1:propertySheet:poolSettingSection:TimeoutProp:Timeout"));
-        assertEquals("512", selenium.getValue("form1:propertySheet:cacheSettingSection:MaxCacheProp:MaxCache"));
-        assertEquals("32", selenium.getValue("form1:propertySheet:cacheSettingSection:CacheResizeProp:CacheResize"));
-        assertEquals("5400", selenium.getValue("form1:propertySheet:cacheSettingSection:RemTimoutProp:RemTimout"));
-        assertEquals("nru", selenium.getValue("form1:propertySheet:cacheSettingSection:RemPolicyProp:RemPolicy"));
-        assertEquals("600", selenium.getValue("form1:propertySheet:cacheSettingSection:CacheIdleProp:CacheIdle"));
+        assertEquals(true, isChecked("form1:propertySheet:generalPropertySection:commitOptionProp:optB"));
+        assertEquals("0", getFieldValue("form1:propertySheet:poolSettingSection:MinSizeProp:MinSize"));
+        assertEquals("32", getFieldValue("form1:propertySheet:poolSettingSection:MaxSizeProp:MaxSize"));
+        assertEquals("8", getFieldValue("form1:propertySheet:poolSettingSection:PoolResizeProp:PoolResize"));
+        assertEquals("600", getFieldValue("form1:propertySheet:poolSettingSection:TimeoutProp:Timeout"));
+        assertEquals("512", getFieldValue("form1:propertySheet:cacheSettingSection:MaxCacheProp:MaxCache"));
+        assertEquals("32", getFieldValue("form1:propertySheet:cacheSettingSection:CacheResizeProp:CacheResize"));
+        assertEquals("5400", getFieldValue("form1:propertySheet:cacheSettingSection:RemTimoutProp:RemTimout"));
+        assertEquals("nru", getFieldValue("form1:propertySheet:cacheSettingSection:RemPolicyProp:RemPolicy"));
+        assertEquals("600", getFieldValue("form1:propertySheet:cacheSettingSection:CacheIdleProp:CacheIdle"));
 
         //will be nice to have the default value back for the server.
         clickAndWait("form1:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
-
     }
 }

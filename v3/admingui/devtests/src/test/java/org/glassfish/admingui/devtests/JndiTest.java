@@ -68,16 +68,16 @@ public class JndiTest extends BaseSeleniumTestClass {
         clickAndWait("treeForm:tree:resources:jndi:customResources:customResources_link", TRIGGER_CUSTOM_RESOURCES);
         clickAndWait("propertyForm:resourcesTable:topActionsGroup1:newButton", TRIGGER_NEW_CUSTOM_RESOURCE);
 
-        selenium.type("form:propertySheet:propertSectionTextField:jndiTextProp:jnditext", resourceName);
-        selenium.select("form:propertySheet:propertSectionTextField:cp:Classname", "label=java.lang.Double");
+        setFieldValue("form:propertySheet:propertSectionTextField:jndiTextProp:jnditext", resourceName);
+        selectDropdownOption("form:propertySheet:propertSectionTextField:cp:Classname", "java.lang.Double");
         int count = addTableRow("form:basicTable", "form:basicTable:topActionsGroup1:addSharedTableButton");
 
-        selenium.type("form:basicTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
-        selenium.type("form:basicTable:rowGroup1:0:col3:col1St", "value");
-        selenium.type("form:basicTable:rowGroup1:0:col4:col1St", "description");
+        setFieldValue("form:basicTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
+        setFieldValue("form:basicTable:rowGroup1:0:col3:col1St", "value");
+        setFieldValue("form:basicTable:rowGroup1:0:col4:col1St", "description");
         clickAndWait("form:propertyContentPage:topButtons:newButton", TRIGGER_CUSTOM_RESOURCES);
 
-        assertTrue(selenium.isTextPresent(resourceName));
+        assertTrue(isTextPresent(resourceName));
 
         testDisableButton(resourceName,
                 "propertyForm:resourcesTable",
@@ -110,20 +110,20 @@ public class JndiTest extends BaseSeleniumTestClass {
         clickAndWait("treeForm:tree:resources:jndi:customResources:customResources_link", TRIGGER_CUSTOM_RESOURCES);
         clickAndWait("propertyForm:resourcesTable:topActionsGroup1:newButton", TRIGGER_NEW_CUSTOM_RESOURCE);
 
-        selenium.type("form:propertySheet:propertSectionTextField:jndiTextProp:jnditext", resourceName);
-        selenium.select("form:propertySheet:propertSectionTextField:cp:Classname", "label=java.lang.Double");
+        setFieldValue("form:propertySheet:propertSectionTextField:jndiTextProp:jnditext", resourceName);
+        selectDropdownOption("form:propertySheet:propertSectionTextField:cp:Classname", "label=java.lang.Double");
         int count = addTableRow("form:basicTable", "form:basicTable:topActionsGroup1:addSharedTableButton");
 
-        selenium.type("form:basicTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
-        selenium.type("form:basicTable:rowGroup1:0:col3:col1St", "value");
-        selenium.type("form:basicTable:rowGroup1:0:col4:col1St", "description");
+        setFieldValue("form:basicTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
+        setFieldValue("form:basicTable:rowGroup1:0:col3:col1St", "value");
+        setFieldValue("form:basicTable:rowGroup1:0:col4:col1St", "description");
         
-        selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=" + instanceName);
-        selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=server");
-        selenium.click("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
+        addSelectSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=" + instanceName);
+        addSelectSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=server");
+        pressButton("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
         clickAndWait("form:propertyContentPage:topButtons:newButton", TRIGGER_CUSTOM_RESOURCES);
 
-        assertTrue(selenium.isTextPresent(resourceName));
+        assertTrue(isTextPresent(resourceName));
         clickAndWait(getLinkIdByLinkText("propertyForm:resourcesTable", resourceName), TRIGGER_EDIT_CUSTOM_RESOURCE);
         assertTableRowCount("form1:basicTable", count);
         clickAndWait("form1:propertyContentPage:topButtons:cancelButton", TRIGGER_CUSTOM_RESOURCES);
@@ -175,15 +175,15 @@ public class JndiTest extends BaseSeleniumTestClass {
         clickAndWait("treeForm:tree:resources:jndi:externalResources:externalResources_link", TRIGGER_EXTERNAL_RESOURCES);
         clickAndWait("propertyForm:resourcesTable:topActionsGroup1:newButton", TRIGGER_NEW_EXTERNAL_RESOURCE);
 
-        selenium.type("form:propertySheet:propertSectionTextField:jndiTextProp:jnditext", resourceName);
-        selenium.select("form:propertySheet:propertSectionTextField:cp:Classname", "label=java.lang.Double");
-        selenium.type("form:propertySheet:propertSectionTextField:jndiLookupProp:jndiLookup", resourceName);
-        selenium.type("form:propertySheet:propertSectionTextField:descProp:desc", description);
-        int count = addTableRow("form:basicTable", "form:basicTable:topActionsGroup1:addSharedTableButton");
+        setFieldValue("form:propertySheet:propertSectionTextField:jndiTextProp:jnditext", resourceName);
+        selectDropdownOption("form:propertySheet:propertSectionTextField:cp:Classname", "label=java.lang.Double");
+        setFieldValue("form:propertySheet:propertSectionTextField:jndiLookupProp:jndiLookup", resourceName);
+        setFieldValue("form:propertySheet:propertSectionTextField:descProp:desc", description);
+        addTableRow("form:basicTable", "form:basicTable:topActionsGroup1:addSharedTableButton");
 
-        selenium.type("form:basicTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
-        selenium.type("form:basicTable:rowGroup1:0:col3:col1St", "value");
-        selenium.type("form:basicTable:rowGroup1:0:col4:col1St", "description");
+        setFieldValue("form:basicTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
+        setFieldValue("form:basicTable:rowGroup1:0:col3:col1St", "value");
+        setFieldValue("form:basicTable:rowGroup1:0:col4:col1St", "description");
         clickAndWait("form:propertyContentPage:topButtons:newButton", TRIGGER_EXTERNAL_RESOURCES);
 
         testDisableButton(resourceName,
@@ -237,22 +237,22 @@ public class JndiTest extends BaseSeleniumTestClass {
         clickAndWait("treeForm:tree:resources:jndi:externalResources:externalResources_link", TRIGGER_EXTERNAL_RESOURCES);
         clickAndWait("propertyForm:resourcesTable:topActionsGroup1:newButton", TRIGGER_NEW_EXTERNAL_RESOURCE);
 
-        selenium.type("form:propertySheet:propertSectionTextField:jndiTextProp:jnditext", resourceName);
-        selenium.select("form:propertySheet:propertSectionTextField:cp:Classname", "label=java.lang.Double");
-        selenium.type("form:propertySheet:propertSectionTextField:jndiLookupProp:jndiLookup", resourceName);
-        selenium.type("form:propertySheet:propertSectionTextField:descProp:desc", description);
+        setFieldValue("form:propertySheet:propertSectionTextField:jndiTextProp:jnditext", resourceName);
+        selectDropdownOption("form:propertySheet:propertSectionTextField:cp:Classname", "label=java.lang.Double");
+        setFieldValue("form:propertySheet:propertSectionTextField:jndiLookupProp:jndiLookup", resourceName);
+        setFieldValue("form:propertySheet:propertSectionTextField:descProp:desc", description);
         int count = addTableRow("form:basicTable", "form:basicTable:topActionsGroup1:addSharedTableButton");
 
-        selenium.type("form:basicTable:rowGroup1:0:col2:col1St", "property" + generateRandomString());
-        selenium.type("form:basicTable:rowGroup1:0:col3:col1St", "value");
-        selenium.type("form:basicTable:rowGroup1:0:col4:col1St", "description");
+        setFieldValue("form:basicTable:rowGroup1:0:col2:col1St", "property" + generateRandomString());
+        setFieldValue("form:basicTable:rowGroup1:0:col3:col1St", "value");
+        setFieldValue("form:basicTable:rowGroup1:0:col4:col1St", "description");
 
-        selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=" + instanceName);
-        selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=server");
-        selenium.click("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
+        addSelectSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=" + instanceName);
+        addSelectSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=server");
+        pressButton("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
         clickAndWait("form:propertyContentPage:topButtons:newButton", TRIGGER_EXTERNAL_RESOURCES);
 
-        assertTrue(selenium.isTextPresent(resourceName));
+        assertTrue(isTextPresent(resourceName));
         clickAndWait(getLinkIdByLinkText("propertyForm:resourcesTable", resourceName), TRIGGER_EDIT_EXTERNAL_RESOURCE);
         assertTableRowCount("form:basicTable", count);
         clickAndWait("form:propertyContentPage:topButtons:cancelButton", TRIGGER_EXTERNAL_RESOURCES);

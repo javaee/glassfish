@@ -59,27 +59,27 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class BaseSeleniumTestClass {
-
     public static final String CURRENT_WINDOW = "selenium.browserbot.getCurrentWindow()";
     public static final String TRIGGER_NEW_VALUES_SAVED = "New values successfully saved.";
     public static final String TRIGGER_COMMON_TASKS = "Other Tasks";
     public static final String TRIGGER_REGISTRATION_PAGE = "Receive patch information and bug updates, screencasts and tutorials, support and training offerings, and more";
     public static final String TRIGGER_ERROR_OCCURED = "An error has occurred";
-    private static final String AJAX_INDICATOR = "ajaxIndicator";
-    public static boolean DEBUG;
+    public static boolean DEBUG = Boolean.parseBoolean(getParameter("debug", "false"));
 
     @Rule
     public SpecificTestRule specificTestRule = new SpecificTestRule();
 
-    protected static Selenium selenium;
-    protected static WebDriver driver;
     protected static final int TIMEOUT = 90;
     protected static final int BUTTON_TIMEOUT = 750;
+    protected Logger logger = Logger.getLogger(BaseSeleniumTestClass.class.getName());
+    
+    private static Selenium selenium;
+    private static WebDriver driver;
     private static String currentTestClass = "";
     private static int currentScreenshotNumber = 1;
-    protected static boolean debug = Boolean.parseBoolean(getParameter("debug", "false"));
     private boolean processingLogin = false;
-    protected Logger logger = Logger.getLogger(BaseSeleniumTestClass.class.getName());
+    private static final String AJAX_INDICATOR = "ajaxIndicator";
+    
     
     private static Map<String, String> bundles = new HashMap<String, String>() {{
         put("i18n", "org.glassfish.admingui.core.Strings"); // core
@@ -130,7 +130,7 @@ public class BaseSeleniumTestClass {
             (new BaseSeleniumTestClass()).openAndWait("/", TRIGGER_COMMON_TASKS, 480); // Make sure the server has started and the user logged in
         }
 
-        if (!debug) {
+        if (!DEBUG) {
             URL rotateLogUrl = new URL(baseUrl + "/management/domain/rotate-log");
             URLConnection conn = rotateLogUrl.openConnection();
             conn.setDoOutput(true);
@@ -153,7 +153,7 @@ public class BaseSeleniumTestClass {
             selenium.stop();
             selenium = null;
 
-            if (!currentTestClass.isEmpty() && !debug) {
+            if (!currentTestClass.isEmpty() && !DEBUG) {
                 URL url = new URL("http://localhost:" + getParameter("admin.port", "4848") + "/management/domain/view-log");
     //            URLConnection urlC = url.openConnection();
                 InputStream is = url.openStream();
@@ -179,6 +179,166 @@ public class BaseSeleniumTestClass {
         currentTestClass = this.getClass().getName();
         clickAndWait("treeForm:tree:ct", TRIGGER_COMMON_TASKS);
     }
+    
+    // *************************************************************************
+    // Wrappers for Selenium API                                              
+    // *************************************************************************
+    /**
+     * Returns the current value for the specified field
+     * @see DefaultSelenium.getValue(String)
+     * @param elem
+     * @return 
+     */
+    public String getFieldValue(String elem) {
+        return selenium.getValue(elem);
+    }
+    /**
+     * Types the specified text into the requested element
+     * @param elem
+     * @param text 
+     */
+    public void setFieldValue(String elem, String text) {
+        selenium.type(elem, text);
+    }
+    
+    /**
+     * Gets the text of an element.
+     * @see DefaultSelenium.getText(String)
+     * @param elem
+     * @return 
+     */
+    public String getText(String elem) {
+        return selenium.getText(elem);
+    }
+    
+    /**
+     * Deelects (unchecks) the specified checkbox.  After calling this method, the
+     * checkbox will be unchecked regardless of its initial state.
+     * @param cb 
+     */
+    public void markCheckbox(String cb) {
+        selenium.check(cb);
+    }
+
+    /**
+     * Selects (checks) the specified checkbox.  After calling this method, the
+     * checkbox will be checked regardless of its initial state.
+     * @param cb 
+     */
+    public void clearCheckbox(String cb) {
+        selenium.check(cb);
+    }
+    
+    public void pressButton(String button) {
+        selenium.click(button);
+    }
+    
+    /**
+     * Return the selected value of the specified select element
+     * @param elem
+     * @return 
+     */
+    public String getSelectedValue(String elem) {
+        return selenium.getSelectedValue(elem);
+    }
+    
+    /**
+     * Returns true is the specified element is present on the page
+     * @param elem
+     * @return 
+     */
+    public boolean isElementPresent(String elem) {
+        return selenium.isElementPresent(elem);
+    }
+
+    /**
+     * Select the option requested in the given select element
+     * @param id
+     * @param label 
+     */
+    protected void selectDropdownOption(String id, String label) {
+        try {
+            label = resolveTriggerText(label);
+            selenium.select(id, "label="+label);
+        } catch (SeleniumException se) {
+            logger.info("An invalid option was requested.  Here are the valid options:");
+            for (String option : selenium.getSelectOptions(id)) {
+                logger.log(Level.INFO, "\t{0}", option);
+            }
+            throw se;
+        }
+    }
+    
+    /**
+     * Add a selection to the given select element
+     * @param elem
+     * @param label 
+     */
+    protected void addSelectSelection(String elem, String label) {
+        try {
+            label = resolveTriggerText(label);
+            selenium.addSelection(elem, "label="+label);
+        } catch (SeleniumException se) {
+            logger.info("An invalid option was requested.  Here are the valid options:");
+            for (String option : selenium.getSelectOptions(elem)) {
+                logger.log(Level.INFO, "\t{0}", option);
+            }
+            throw se;
+        }
+    }
+    
+    /**
+     * Returns true if the specified checkbox is selected
+     * @param elem
+     * @return 
+     */
+    protected boolean isChecked(String elem) {
+        return selenium.isChecked(elem);
+    }
+    
+    protected void selectFile(String uploadElement, String archivePath) {
+        selenium.attachFile(uploadElement, archivePath);
+    }
+    
+    protected boolean isAlertPresent() {
+        return selenium.isAlertPresent();
+    }
+    
+    protected boolean isConfirmationPresent() {
+        return selenium.isConfirmationPresent();
+    }
+    
+    protected String getAlertText() {
+        return selenium.getAlert();
+    }
+    
+    protected void chooseOkOnNextConfirmation() {
+        selenium.chooseOkOnNextConfirmation();
+    }
+    
+    protected String getConfirmation() {
+        return selenium.getConfirmation();
+    }
+    
+    protected void waitForPopUp(String windowId, String timeout) {
+        selenium.waitForPopUp(windowId, timeout);
+    }
+    
+    protected String getSelectedLabel(String elem) {
+        return selenium.getSelectedLabel(elem);
+    }
+    
+    protected void open(String url) {
+        selenium.open(url);
+    }
+    
+    protected void submitForm(String formId) {
+        selenium.submit(formId);
+    }
+
+    // *************************************************************************
+    // Wrappers for Selenium API                                              
+    // *************************************************************************
 
     protected String generateRandomString() {
         SecureRandom random = new SecureRandom();
@@ -396,19 +556,6 @@ public class BaseSeleniumTestClass {
         return selenium.isTextPresent(resolveTriggerText(text));
     }
     
-    protected void selectDropdownOption(String id, String label) {
-        try {
-            label = resolveTriggerText(label);
-            selenium.select(id, "label="+label);
-        } catch (SeleniumException se) {
-            logger.info("An invalid option was requested.  Here are the valid options:");
-            for (String option : selenium.getSelectOptions(id)) {
-                logger.log(Level.INFO, "\t{0}", option);
-            }
-            throw se;
-        }
-    }
-
     protected void selectTableRowByValue(String tableId, String value) {
         selectTableRowByValue(tableId, value, "col0", "col1");
     }
@@ -722,7 +869,7 @@ public class BaseSeleniumTestClass {
     }
     
     protected void logDebugMessage(String message) {
-        if (debug) {
+        if (DEBUG) {
             logger.info(message);
         }
     }
@@ -754,7 +901,7 @@ public class BaseSeleniumTestClass {
     }
     
     protected void log(String message, String... args) {
-        if (debug) {
+        if (DEBUG) {
             String[] temp = new String[args.length];
             for (int i = 0; i < args.length; i++) {
                 temp[i] = resolveTriggerText(args[i]);

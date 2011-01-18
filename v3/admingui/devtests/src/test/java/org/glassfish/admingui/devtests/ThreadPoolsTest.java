@@ -56,19 +56,19 @@ public class ThreadPoolsTest extends BaseSeleniumTestClass {
 
         clickAndWait("treeForm:tree:configurations:server-config:threadPools:threadPools_link", TRIGGER_THREAD_POOLS);
         clickAndWait("propertyForm:configs:topActionsGroup1:newButton", TRIGGER_NEW_THREAD_POOL);
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:nameProp:nameText", threadPoolName);
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:max:max", "8192");
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:maxThread:maxThread", "10");
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:minThread:minThread", "4");
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:timeout:timeout", "1800");
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:nameProp:nameText", threadPoolName);
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:max:max", "8192");
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:maxThread:maxThread", "10");
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:minThread:minThread", "4");
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:timeout:timeout", "1800");
         clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_THREAD_POOLS);
         
-        assertTrue(selenium.isTextPresent(threadPoolName));
+        assertTrue(isTextPresent(threadPoolName));
         clickAndWait(getLinkIdByLinkText("propertyForm:configs", threadPoolName), TRIGGER_EDIT_THREAD_POOL);
-        assertEquals("8192", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:max:max"));
-        assertEquals("10", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:maxThread:maxThread"));
-        assertEquals("4", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:minThread:minThread"));
-        assertEquals("1800", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:timeout:timeout"));
+        assertEquals("8192", getFieldValue("propertyForm:propertySheet:propertSectionTextField:max:max"));
+        assertEquals("10", getFieldValue("propertyForm:propertySheet:propertSectionTextField:maxThread:maxThread"));
+        assertEquals("4", getFieldValue("propertyForm:propertySheet:propertSectionTextField:minThread:minThread"));
+        assertEquals("1800", getFieldValue("propertyForm:propertySheet:propertSectionTextField:timeout:timeout"));
         clickAndWait("propertyForm:propertyContentPage:topButtons:cancelButton", TRIGGER_THREAD_POOLS);
 
         deleteRow("propertyForm:configs:topActionsGroup1:button1", "propertyForm:configs", threadPoolName);

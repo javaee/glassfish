@@ -66,19 +66,19 @@ public class AdminObjectTest extends BaseSeleniumTestClass {
         //New Admin Object Resources
         clickAndWait("propertyForm:resourcesTable:topActionsGroup1:newButton", TRIGGER_NEW_ADMIN_OBJECT_RESOURCE);
 
-        selenium.type("form:propertySheet:propertSectionTextField:nameNew:name", resName);
-        selenium.type("form:propertySheet:propertSectionTextField:descriptionProp:descAdaptor", description);
+        setFieldValue("form:propertySheet:propertSectionTextField:nameNew:name", resName);
+        setFieldValue("form:propertySheet:propertSectionTextField:descriptionProp:descAdaptor", description);
         int count = addTableRow("form:basicTable", "form:basicTable:topActionsGroup1:addSharedTableButton");
 
-        selenium.type("form:basicTable:rowGroup1:0:col2:col1St", "property" + generateRandomString());
-        selenium.type("form:basicTable:rowGroup1:0:col3:col1St", "value");
-        selenium.type("form:basicTable:rowGroup1:0:col4:col1St", "description");
+        setFieldValue("form:basicTable:rowGroup1:0:col2:col1St", "property" + generateRandomString());
+        setFieldValue("form:basicTable:rowGroup1:0:col3:col1St", "value");
+        setFieldValue("form:basicTable:rowGroup1:0:col4:col1St", "description");
         int emptyCount = getTableRowCountByValue("form:basicTable", "", "col3:col1St", false);
         count = count - emptyCount;
         clickAndWait("form:propertyContentPage:topButtons:newButton", TRIGGER_ADMIN_OBJECT_RESOURCES);
 
-        assertTrue(selenium.isTextPresent(resName));
-        assertTrue(selenium.isTextPresent(description));
+        assertTrue(isTextPresent(resName));
+        assertTrue(isTextPresent(description));
         clickAndWait(getLinkIdByLinkText("propertyForm:resourcesTable", resName), TRIGGER_EDIT_ADMIN_OBJECT_RESOURCE);
         assertTableRowCount("propertyForm:basicTable", count);
 
@@ -121,25 +121,25 @@ public class AdminObjectTest extends BaseSeleniumTestClass {
         //New Admin Object Resources
         clickAndWait("propertyForm:resourcesTable:topActionsGroup1:newButton", TRIGGER_NEW_ADMIN_OBJECT_RESOURCE);
 
-        selenium.type("form:propertySheet:propertSectionTextField:nameNew:name", resName);
-        selenium.type("form:propertySheet:propertSectionTextField:descriptionProp:descAdaptor", description);
+        setFieldValue("form:propertySheet:propertSectionTextField:nameNew:name", resName);
+        setFieldValue("form:propertySheet:propertSectionTextField:descriptionProp:descAdaptor", description);
         int count = addTableRow("form:basicTable", "form:basicTable:topActionsGroup1:addSharedTableButton");
 
-        selenium.type("form:basicTable:rowGroup1:0:col2:col1St", "property" + generateRandomString());
-        selenium.type("form:basicTable:rowGroup1:0:col3:col1St", "value");
-        selenium.type("form:basicTable:rowGroup1:0:col4:col1St", "description");
+        setFieldValue("form:basicTable:rowGroup1:0:col2:col1St", "property" + generateRandomString());
+        setFieldValue("form:basicTable:rowGroup1:0:col3:col1St", "value");
+        setFieldValue("form:basicTable:rowGroup1:0:col4:col1St", "description");
 
         int emptyCount = getTableRowCountByValue("form:basicTable", "", "col3:col1St", false);
         count = count - emptyCount;
 
-        selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=" + instanceName);
-        selenium.addSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "label=server");
-        selenium.click("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
+        addSelectSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", instanceName);
+        addSelectSelection("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove_available", "server");
+        pressButton("form:targetSection:targetSectionId:addRemoveProp:commonAddRemove:commonAddRemove_addButton");
 
         clickAndWait("form:propertyContentPage:topButtons:newButton", TRIGGER_ADMIN_OBJECT_RESOURCES);
 
-        assertTrue(selenium.isTextPresent(resName));
-        assertTrue(selenium.isTextPresent(description));
+        assertTrue(isTextPresent(resName));
+        assertTrue(isTextPresent(description));
         clickAndWait(getLinkIdByLinkText("propertyForm:resourcesTable", resName), TRIGGER_EDIT_ADMIN_OBJECT_RESOURCE);
         assertTableRowCount("propertyForm:basicTable", count);
 

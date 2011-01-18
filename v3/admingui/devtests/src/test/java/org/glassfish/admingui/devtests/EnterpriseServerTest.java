@@ -62,22 +62,22 @@ public class EnterpriseServerTest extends BaseSeleniumTestClass {
 
         gotoDasPage();
         clickAndWait("propertyForm:serverInstTabs:advanced", TRIGGER_ADVANCED_APPLICATIONS_CONFIGURATION);
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:reloadIntervalProp:ReloadInterval", "5");
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:AdminTimeoutProp:AdminTimeout", "30");
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:reloadIntervalProp:ReloadInterval", "5");
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:AdminTimeoutProp:AdminTimeout", "30");
 
         int count = addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton");
 
-        selenium.type("propertyForm:basicTable:rowGroup1:0:col2:col1St", property);
-        selenium.type("propertyForm:basicTable:rowGroup1:0:col3:col1St", value);
-        selenium.type("propertyForm:basicTable:rowGroup1:0:col4:col1St", description);
+        setFieldValue("propertyForm:basicTable:rowGroup1:0:col2:col1St", property);
+        setFieldValue("propertyForm:basicTable:rowGroup1:0:col3:col1St", value);
+        setFieldValue("propertyForm:basicTable:rowGroup1:0:col4:col1St", description);
 
         clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
 
         clickAndWait("propertyForm:serverInstTabs:advanced:domainAttrs", TRIGGER_ADVANCED_DOMAIN_ATTRIBUTES);
         clickAndWait("propertyForm:serverInstTabs:advanced:appConfig", TRIGGER_ADVANCED_APPLICATIONS_CONFIGURATION);
 
-        assertEquals("5", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:reloadIntervalProp:ReloadInterval"));
-        assertEquals("30", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:AdminTimeoutProp:AdminTimeout"));
+        assertEquals("5", getFieldValue("propertyForm:propertySheet:propertSectionTextField:reloadIntervalProp:ReloadInterval"));
+        assertEquals("30", getFieldValue("propertyForm:propertySheet:propertSectionTextField:AdminTimeoutProp:AdminTimeout"));
         
         assertTableRowCount("propertyForm:basicTable", count);
     }
@@ -85,15 +85,15 @@ public class EnterpriseServerTest extends BaseSeleniumTestClass {
     @Test
     public void testAdvancedDomainAttributes() {
         clickAndWait("treeForm:tree:nodes:nodes_link", TRIGGER_ADVANCED_DOMAIN_ATTRIBUTES);
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:localeProp:Locale", "fr");
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:localeProp:Locale", "fr");
         clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
 
         clickAndWait("propertyForm:domainTabs:appConfig", TRIGGER_ADVANCED_APPLICATIONS_CONFIGURATION);
         clickAndWait("propertyForm:domainTabs:domainAttrs", TRIGGER_ADVANCED_DOMAIN_ATTRIBUTES);
 
-        assertEquals("fr", selenium.getValue("propertyForm:propertySheet:propertSectionTextField:localeProp:Locale"));
-        selenium.type("propertyForm:propertySheet:propertSectionTextField:localeProp:Locale", "");
-        selenium.click("propertyForm:propertyContentPage:topButtons:saveButton");
+        assertEquals("fr", getFieldValue("propertyForm:propertySheet:propertSectionTextField:localeProp:Locale"));
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:localeProp:Locale", "");
+        pressButton("propertyForm:propertyContentPage:topButtons:saveButton");
         clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
     }
 
@@ -107,8 +107,8 @@ public class EnterpriseServerTest extends BaseSeleniumTestClass {
         clickAndWait("propertyForm:serverInstTabs:serverInstProps", TRIGGER_SYSTEM_PROPERTIES);
 
         int count = addTableRow("propertyForm:sysPropsTable", "propertyForm:sysPropsTable:topActionsGroup1:addSharedTableButton");
-        selenium.type("propertyForm:sysPropsTable:rowGroup1:0:col2:col1St", property);
-        selenium.type("propertyForm:sysPropsTable:rowGroup1:0:overrideValCol:overrideVal", value);
+        setFieldValue("propertyForm:sysPropsTable:rowGroup1:0:col2:col1St", property);
+        setFieldValue("propertyForm:sysPropsTable:rowGroup1:0:overrideValCol:overrideVal", value);
 
         clickAndWait("propertyForm:SysPropsPage:topButtons:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
         gotoDasPage();
@@ -128,20 +128,20 @@ public class EnterpriseServerTest extends BaseSeleniumTestClass {
         
         gotoDasPage();
         clickAndWait("propertyForm:serverInstTabs:resources", TRIGGER_RESOURCES);
-        assertTrue(selenium.isTextPresent(jndiName));
+        assertTrue(isTextPresent(jndiName));
 
         int jdbcCount = getTableRowCountByValue(tableID, "JDBC Resources", "col3:type");
         int customCount = getTableRowCountByValue(tableID, "Custom Resources", "col3:type");
 
-        selenium.select("propertyForm:resourcesTable:topActionsGroup1:filter_list", "label=Custom Resources");
+        selectDropdownOption("propertyForm:resourcesTable:topActionsGroup1:filter_list", "Custom Resources");
         waitForTableRowCount(tableID, customCount);
 
-        selenium.select("propertyForm:resourcesTable:topActionsGroup1:filter_list", "label=JDBC Resources");
+        selectDropdownOption("propertyForm:resourcesTable:topActionsGroup1:filter_list", "JDBC Resources");
         waitForTableRowCount(tableID, jdbcCount);
 
         selectTableRowByValue("propertyForm:resourcesTable", jndiName);
         waitForButtonEnabled("propertyForm:resourcesTable:topActionsGroup1:button1");
-        selenium.click("propertyForm:resourcesTable:topActionsGroup1:button1");
+        pressButton("propertyForm:resourcesTable:topActionsGroup1:button1");
         waitForButtonDisabled("propertyForm:resourcesTable:topActionsGroup1:button1");
 
         /*selenium.select("propertyForm:resourcesTable:topActionsGroup1:actions", "label=JDBC Resources");
