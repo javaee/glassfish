@@ -41,10 +41,14 @@
 package com.sun.enterprise.v3.admin;
 
 import java.beans.PropertyVetoException;
-import java.util.List;
 
-import org.glassfish.internal.api.Target;
-import com.sun.enterprise.config.serverbeans.*;
+import com.sun.enterprise.config.serverbeans.AdminService;
+import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.IiopListener;
+import com.sun.enterprise.config.serverbeans.IiopService;
+import com.sun.enterprise.config.serverbeans.JmxConnector;
+import com.sun.enterprise.config.serverbeans.SslClientConfig;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.grizzly.config.dom.NetworkConfig;
@@ -55,10 +59,14 @@ import com.sun.grizzly.config.dom.Ssl;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
-import org.glassfish.api.admin.*;
+import org.glassfish.api.admin.AdminCommand;
+import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.ExecuteOn;
+import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.config.support.CommandTarget;
 import org.glassfish.config.support.TargetType;
+import org.glassfish.internal.api.Target;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -92,21 +100,21 @@ public class CreateSsl implements AdminCommand {
     String certName;
     @Param(name = "type", acceptableValues = "network-listener, http-listener, iiop-listener, iiop-service, jmx-connector")
     String type;
-    @Param(name = "ssl2Enabled", optional = true, defaultValue = "true")
+    @Param(name = "ssl2Enabled", optional = true, defaultValue = Ssl.SSL2_ENABLED + "")
     Boolean ssl2Enabled;
     @Param(name = "ssl2Ciphers", optional = true)
     String ssl2ciphers;
-    @Param(name = "ssl3Enabled", optional = true, defaultValue = "true")
+    @Param(name = "ssl3Enabled", optional = true, defaultValue = Ssl.SSL3_ENABLED + "")
     Boolean ssl3Enabled;
     @Param(name = "ssl3TlsCiphers", optional = true)
     String ssl3tlsciphers;
-    @Param(name = "tlsEnabled", optional = true, defaultValue = "true")
+    @Param(name = "tlsEnabled", optional = true, defaultValue = Ssl.TLS_ENABLED + "")
     Boolean tlsenabled;
-    @Param(name = "tlsRollbackEnabled", optional = true, defaultValue = "true")
+    @Param(name = "tlsRollbackEnabled", optional = true, defaultValue = Ssl.TLS_ROLLBACK_ENABLED + "")
     Boolean tlsrollbackenabled;
-    @Param(name = "clientAuthEnabled", optional = true, defaultValue = "true")
+    @Param(name = "clientAuthEnabled", optional = true, defaultValue = Ssl.CLIENT_AUTH_ENABLED + "")
     Boolean clientauthenabled;
-    @Param(name = "target", optional = true, defaultValue = SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME)
+    @Param(name = "target", optional = true, defaultValue = SystemPropertyConstants.DAS_SERVER_NAME)
     String target;
     @Param(name = "listener_id", primary = true, optional = true)
     String listenerId;
