@@ -104,8 +104,8 @@ public class BaseSeleniumTestClass {
         //put("i18n", "org.glassfish.web.admingui.Strings");
         //put("i18nc", "org.glassfish.web.admingui.Strings");
     }};
-    
-    
+
+
     @BeforeClass
     public static void setUp() throws Exception {
         String browser = getParameter("browser", "firefox");
@@ -596,12 +596,15 @@ public class BaseSeleniumTestClass {
     
     private void selectTableRow(String rowId, String colId) {
         boolean rowHighlighted = false;
-        
-        while (!rowHighlighted) {
+
+        int iterations = 0;
+        while (!rowHighlighted && (iterations <= 50)) {
             selenium.click(rowId + ":" + colId + ":select");
             markCheckbox(rowId + ":" + colId + ":select");
+            sleep(500);
             String rowClass = selenium.getAttribute("identifier="+rowId+"@class");
             rowHighlighted = ((rowClass != null) && (rowClass.contains("TblSelRow_sun4")));
+            iterations++;
         }
     }
 
