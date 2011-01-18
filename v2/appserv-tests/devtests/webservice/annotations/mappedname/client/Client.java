@@ -10,7 +10,7 @@ public class Client {
    /*     private static SimpleReporterAdapter stat =
                 new SimpleReporterAdapter("appserv-tests");
 
-        @WebServiceRef(name="ignoredName", mappedName="MyMappedName", wsdlLocation="http://localhost:8080/Hello/HelloService?WSDL")
+        @WebServiceRef(name="ignoredName", mappedName="MyMappedName", wsdlLocation="http://HTTP_HOST:HTTP_PORT/Hello/HelloService?WSDL")
         static HelloService service;
 
         public static void main(String[] args) {

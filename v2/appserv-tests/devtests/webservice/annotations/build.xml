@@ -26,7 +26,6 @@
 	<ant dir="warservice" target="all"/>
 	<ant dir="wsdltojava" target="all"/>
 	<ant dir="wsctxt" target="all"/>
-	<ant dir="mappedname" target="all"/>
 	<ant dir="soap12" target="all"/>
 	<ant dir="oneway" target="all"/>
 	<ant dir="msgctxt" target="all"/>
@@ -36,6 +35,7 @@
 	<ant dir="restful" target="all"/>
 	<ant dir="restful-2" target="all"/>
 	<ant dir="pkgedwarservice" target="all"/>
+	<ant dir="mappedname" target="all"/>
 	<!--<ant dir="mbyte" target="all"/>-->
 	<ant dir="postconstruct" target="all"/>
 <!--	<ant dir="jaxrpcinjection" target="all"/>
