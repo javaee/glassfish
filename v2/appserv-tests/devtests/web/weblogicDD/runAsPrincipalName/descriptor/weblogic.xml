@@ -53,7 +53,7 @@
     </security-role-assignment>
 
     <servlet-descriptor>
-        <servlet-name>testServlet</servlet-name>
+        <servlet-name>test.TestServlet</servlet-name>
         <run-as-principal-name>aprincipal</run-as-principal-name>
     </servlet-descriptor>
 </weblogic-web-app>
