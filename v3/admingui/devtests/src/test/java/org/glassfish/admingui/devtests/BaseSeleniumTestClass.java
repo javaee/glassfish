@@ -767,6 +767,7 @@ public class BaseSeleniumTestClass {
             String tableTriggerText,
             String editTriggerText,
             String state) {
+        sleep(1000); // yuck
         selectTableRowByValue(tableId, resourceName);
         waitForButtonEnabled(enableButtonId);
         pressButton(enableButtonId);
