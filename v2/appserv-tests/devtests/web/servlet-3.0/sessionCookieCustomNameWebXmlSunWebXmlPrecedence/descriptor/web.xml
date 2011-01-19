@@ -67,6 +67,7 @@
     <cookie-config>
       <name>ABC</name>
       <http-only>true</http-only>
+      <secure>true</secure>
     </cookie-config>
   </session-config>
 
