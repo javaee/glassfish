@@ -11,7 +11,7 @@ import javax.xml.ws.soap.*;
 public class Client extends HttpServlet {
 
 
-       @WebServiceRef(wsdlLocation="http://localhost:8080/postconstruct/webservice/HelloService?WSDL")
+       @WebServiceRef(wsdlLocation="http://HTTP_HOST:HTTP_PORT/postconstruct/webservice/HelloService?WSDL")
         HelloService service;
 
        public void doGet(HttpServletRequest req, HttpServletResponse resp)
