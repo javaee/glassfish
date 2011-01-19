@@ -110,7 +110,7 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
     @Inject
     ProbeProviderFactory probeProviderFactory;
 
-    final Logger logger = LogDomains.getLogger(GrizzlyService1.class, LogDomains.CORE_LOGGER);
+    final Logger logger = LogDomains.getLogger(GrizzlyService.class, LogDomains.CORE_LOGGER);
 
     private final Collection<NetworkProxy> proxies = new LinkedBlockingQueue<NetworkProxy>();
     private final String JMS_DEFAULT_LISTENER_IP="0.0.0.0";
