@@ -177,7 +177,8 @@ public class BaseSeleniumTestClass {
     @Before
     public void reset() {
         currentTestClass = this.getClass().getName();
-        clickAndWait("treeForm:tree:ct", TRIGGER_COMMON_TASKS);
+        //clickAndWait("treeForm:tree:ct", TRIGGER_COMMON_TASKS);
+        openAndWait("/", TRIGGER_COMMON_TASKS);
     }
     
     // *************************************************************************
