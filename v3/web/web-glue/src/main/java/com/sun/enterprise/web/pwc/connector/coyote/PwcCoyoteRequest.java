@@ -147,8 +147,12 @@ public class PwcCoyoteRequest extends Request {
         PwcWebModule wm = (PwcWebModule) getContext();
         SessionCookieConfig cookieConfig = wm.getSessionCookieConfigFromSunWebXml();
         if (cookieConfig != null &&
-                cookieConfig.getSecure().equalsIgnoreCase(SessionCookieConfig.DYNAMIC_SECURE)) {
-            cookie.setSecure(isSecure());
+                !cookieConfig.getSecure().equalsIgnoreCase(SessionCookieConfig.DYNAMIC_SECURE)) {
+            // the dynamic is handled in super.configureSessionCookie
+            // and web.xml(secure=false) = glassfish-web.xml(cookieSecure=dynamic)
+            // one need to set "false" here again to support false cookieSecure property
+            // in glassfish-web.xml
+            cookie.setSecure(Boolean.parseBoolean(cookieConfig.getSecure()));
         }
     }
     
