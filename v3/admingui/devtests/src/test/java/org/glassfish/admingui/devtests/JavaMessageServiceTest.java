@@ -146,8 +146,11 @@ public class JavaMessageServiceTest extends BaseSeleniumTestClass {
 
         this.selectTableRowByValue("propertyForm:configs", name);
         clickAndWait("propertyForm:configs:topActionsGroup1:flushButton", TRIGGER_FLUSH);
-        this.selectTableRowByValue("propertyForm:configs", name); // Deselect row. This is ugly, but will have to stay this way for now
+//        this.selectTableRowByValue("propertyForm:configs", name); // Deselect row. This is ugly, but will have to stay this way for now
 
+        reset();
+        clickAndWait("treeForm:tree:applicationServer:applicationServer_link", TRIGGER_GENERAL_INFORMATION);
+        clickAndWait("propertyForm:serverInstTabs:jmsPhysDest", TRIGGER_JMS_PHYSICAL_DESTINATIONS);
         deleteRow("propertyForm:configs:topActionsGroup1:deleteButton", "propertyForm:configs", name);
     }
 }

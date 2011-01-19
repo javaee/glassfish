@@ -66,13 +66,14 @@ public class ClusterTest extends BaseSeleniumTestClass {
     public static final String TRIGGER_CLUSTER_INSTANCE_NEW_PAGE = "i18ncs.clusterInstanceNew.PageTitleHelp";
     public static final String TRIGGER_CLUSTER_INSTANCES_PAGE = "i18ncs.cluster.InstancesTitleHelp";
     public static final String TRIGGER_CLUSTER_RESOURCES_PAGE = "i18ncs.cluster.ResourcesTitleHelp";
+    public static final String TRIGGER_CLUSTER_SYSTEM_PROPERTIES = "i18ncs.cluster.ClusterSystemProperties";
 
     @Test
     public void testStartAndStopClusterWithOneInstance() {
         String clusterName = "clusterName" + generateRandomString();
         String instanceName1 = "instanceName" + generateRandomString();
         createCluster(clusterName, instanceName1);
-        
+
         // Verify cluster information in table
         String prefix = getTableRowByValue(ID_CLUSTERS_TABLE, clusterName, "col1");
         assertEquals(clusterName, getText(prefix + "col1:link"));
@@ -89,7 +90,7 @@ public class ClusterTest extends BaseSeleniumTestClass {
         rowActionWithConfirm("propertyForm:clustersTable:topActionsGroup1:button3", ID_CLUSTERS_TABLE, clusterName);
         waitForButtonDisabled("propertyForm:clustersTable:topActionsGroup1:button3");
         assertTrue((getText(prefix + "col3").indexOf("Stopped") != -1));
-        
+
         deleteCluster(clusterName);
     }
 
@@ -184,7 +185,7 @@ public class ClusterTest extends BaseSeleniumTestClass {
         assertEquals(clusterName, getText("propertyForm:propertySheet:propertSectionTextField:clusterNameProp:clusterName"));
 
         // Go to properties tab
-        clickAndWait("propertyForm:clusterTabs:clusterProps", "Cluster System Properties");
+        clickAndWait("propertyForm:clusterTabs:clusterProps", TRIGGER_CLUSTER_SYSTEM_PROPERTIES);
         int sysPropCount = addTableRow("propertyForm:sysPropsTable", "propertyForm:sysPropsTable:topActionsGroup1:addSharedTableButton");
         setFieldValue("propertyForm:sysPropsTable:rowGroup1:0:col2:col1St", "property" + generateRandomString());
         setFieldValue("propertyForm:sysPropsTable:rowGroup1:0:overrideValCol:overrideVal", "value");
@@ -192,7 +193,7 @@ public class ClusterTest extends BaseSeleniumTestClass {
 
         // Go to cluster props page
         pressButton("propertyForm:clusterTabs:clusterProps:clusterInstanceProps");
-        waitForPageLoad("Cluster System Properties", TIMEOUT, true);
+        waitForPageLoad(TRIGGER_CLUSTER_SYSTEM_PROPERTIES, TIMEOUT, true);
 
         int clusterPropCount = addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton");
         setFieldValue("propertyForm:basicTable:rowGroup1:0:col2:col1St", "property" + generateRandomString());
@@ -200,10 +201,10 @@ public class ClusterTest extends BaseSeleniumTestClass {
         clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
 
         // Verify that properties were persisted
-        clickAndWait("propertyForm:clusterTabs:clusterProps:clusterSystemProps", "Cluster System Properties");
+        clickAndWait("propertyForm:clusterTabs:clusterProps:clusterSystemProps", TRIGGER_CLUSTER_SYSTEM_PROPERTIES);
         assertTableRowCount("propertyForm:sysPropsTable", sysPropCount);
         pressButton("propertyForm:clusterTabs:clusterProps:clusterInstanceProps");
-        waitForPageLoad("Cluster System Properties", TIMEOUT, true);
+        waitForPageLoad(TRIGGER_CLUSTER_SYSTEM_PROPERTIES, TIMEOUT, true);
         assertTableRowCount("propertyForm:basicTable", clusterPropCount);
         
         deleteCluster(clusterName);
