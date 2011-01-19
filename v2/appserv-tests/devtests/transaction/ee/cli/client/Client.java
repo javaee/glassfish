@@ -98,6 +98,7 @@ public class Client extends AdminBaseDevTest {
             asadmin("start-cluster", CLUSTER_NAME);
             asadmin("set", "configs.config." + CLUSTER_NAME + "-config.monitoring-service.module-monitoring-levels.transaction-service=HIGH");
             asadmin("set", "configs.config." + CLUSTER_NAME + "-config.log-service.module-log-levels.jta=FINE");
+            // to force derby failure on recovery after it was killed: asadmin("set", "configs.config." + CLUSTER_NAME + "-config.transaction-service.property.commit-one-phase-during-recovery=true");
             //asadmin("set-log-level", "javax.enterprise.resource.jta=FINE");
             System.out.println("Started cluster. Setting up resources.");
 

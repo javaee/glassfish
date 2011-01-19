@@ -232,10 +232,8 @@
         <antcall target="run-recover"/>
         <antcall target="reset-tables"/>
         <antcall target="run-db-restart"/>
-<!--
         <antcall target="reset-tables"/>
         <antcall target="run-db-recover"/>
--->
     </target>
 
     <target name="run-rollback" depends="init-common">
@@ -335,7 +333,7 @@
            <antcall target="kill-database"/>
         </parallel>
 
-        <sleep seconds="65"/>
+        <sleep seconds="15"/>
         <antcall target="start-database"/>
 
         <sleep seconds="15"/>

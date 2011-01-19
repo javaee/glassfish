@@ -23,6 +23,12 @@ This test, when run with 'all' target performs the following steps:
     Test inserts 3 rows into the 1st xa database on in2
     Derby is restarted
     Expected result: 3 rows found when verified on in1
+  - reset-tables (clean data in tables)
+  - run-db-recover (kill Derby and run recover-transactions CLI on the same instance)
+    Test inserts 3 rows into the 1st and 2nd xa database on in1
+    Derby is killed and restarted
+    recover-transactions CLI is executed on in1
+    Expected result: 3 rows found in 2nd xa database when verified on in1
 
 - unsetup
   - unsetup-cluster (undeploy the application, stop and delete the cluster)
