@@ -206,7 +206,7 @@ public class GlassFishActivator implements BundleActivator, EventListener {
         // for more details. It is just simpler to do than registering a UpgradeService to do the needful.
         final String gosh_args = "gosh.args";
         if (bundleContext.getProperty(gosh_args) == null) {
-            final String gosh_args_value = "--noshutdown -c noop=true";
+            final String gosh_args_value = "--nointeractive";
             System.setProperty(gosh_args, gosh_args_value);
         }
         startBundle("org.apache.felix.shell");
