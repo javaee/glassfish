@@ -403,7 +403,12 @@ public abstract class AbstractTreeNode implements TreeNode, Comparable {
     }
 
     private String encodeNodeName(String nodeName) {
-        return nodeName.replace(".", MONDOT).replace("/", SLASH).replace("\\/", SLASH).replace("\\.", MONDOT);
+        // The order is important!!
+        return nodeName
+                .replace("\\.", MONDOT)
+                .replace(".", MONDOT)
+                .replace("\\/", SLASH)
+                .replace("/", SLASH);
     }
 
     private String encodePath(String thePath) {
