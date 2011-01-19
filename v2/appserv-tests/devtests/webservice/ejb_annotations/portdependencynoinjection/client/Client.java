@@ -9,7 +9,7 @@ import endpoint.HelloImpl;
 
 import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
 
-@WebServiceRef(name="service/helloport", wsdlLocation="http://localhost:8080/HelloImplService/HelloImpl?WSDL", type=endpoint.HelloImpl.class, value=HelloImplService.class)
+@WebServiceRef(name="service/helloport", wsdlLocation="http://HTTP_HOST:HTTP_PORT/HelloImplService/HelloImpl?WSDL", type=endpoint.HelloImpl.class, value=HelloImplService.class)
 public class Client {
 
         private static SimpleReporterAdapter stat =

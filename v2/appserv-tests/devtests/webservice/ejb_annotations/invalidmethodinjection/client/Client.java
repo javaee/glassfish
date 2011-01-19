@@ -12,25 +12,25 @@ public class Client {
         private static SimpleReporterAdapter stat =
                 new SimpleReporterAdapter("appserv-tests");
 
-        @WebServiceRef(wsdlLocation="http://localhost:8080/HelloImplService/HelloImpl?WSDL")
+        @WebServiceRef(wsdlLocation="http://HTTP_HOST:HTTP_PORT/HelloImplService/HelloImpl?WSDL")
 	static void setService(HelloImplService s) {
 	
 		System.out.println("Injection sucessful with "+s.getClass().toString());
 		service = s;
 	}
 
-	@WebServiceRef(wsdlLocation="http://localhost:8080/HelloImplService/HelloImpl?WSDL")
+	@WebServiceRef(wsdlLocation="http://HTTP_HOST:HTTP_PORT/HelloImplService/HelloImpl?WSDL")
 	static int setFoo(HelloImplService s) {
 		service1 = s;
 		return 0;
 	}
 
-	@WebServiceRef(wsdlLocation="http://localhost:8080/HelloImplService/HelloImpl?WSDL")
+	@WebServiceRef(wsdlLocation="http://HTTP_HOST:HTTP_PORT/HelloImplService/HelloImpl?WSDL")
 	static void myService(String foo, HelloImplService s) {
 		service2 = s;
 	}
 
-        @WebServiceRef(wsdlLocation="http://localhost:8080/HelloImplService/HelloImpl?WSDL")
+        @WebServiceRef(wsdlLocation="http://HTTP_HOST:HTTP_PORT/HelloImplService/HelloImpl?WSDL")
 	void setMyService(HelloImplService s) {
 	
 		service3 = s;
@@ -41,7 +41,7 @@ public class Client {
         static HelloImplService service2=null;
         static HelloImplService service3=null;
 
-        @WebServiceRef(wsdlLocation="http://localhost:8080/HelloImplService/HelloImpl?WSDL")
+        @WebServiceRef(wsdlLocation="http://HTTP_HOST:HTTP_PORT/HelloImplService/HelloImpl?WSDL")
         HelloImplService service4=null;
 
         static HelloImplService service;
