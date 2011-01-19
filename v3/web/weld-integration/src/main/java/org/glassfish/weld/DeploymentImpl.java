@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -286,7 +286,7 @@ public class DeploymentImpl implements Deployment {
         ListIterator<BeanDeploymentArchive> lIter = beanDeploymentArchives.listIterator(); 
         while (lIter.hasNext()) {
             BeanDeploymentArchive bda = lIter.next();
-            logger.log(FINE, "checking for " + beanClass + "in root BDA" + bda.getId());
+            logger.log(FINE, "checking for " + beanClass + " in root BDA" + bda.getId());
             if (((BeanDeploymentArchiveImpl)bda).getModuleBeanClasses().contains(beanClass.getName())) {
                 //don't stuff this Bean Class into the BDA's beanClasses, 
                 //as Weld automatically add theses classes to the BDA's bean Classes
@@ -305,7 +305,7 @@ public class DeploymentImpl implements Deployment {
             if (bda.getBeanDeploymentArchives().size() > 0) {
                 for(BeanDeploymentArchive subBda: bda.getBeanDeploymentArchives()){
                     Collection<String> s = ((BeanDeploymentArchiveImpl)subBda).getModuleBeanClasses();
-                    logger.log(FINE, "checking for " + beanClass + "in subBDA" + subBda.getId());
+                    logger.log(FINE, "checking for " + beanClass + " in subBDA" + subBda.getId());
                     boolean match = s.contains(beanClass.getName());
                     if (match) {
                         //don't stuff this Bean Class into the BDA's beanClasses, 
@@ -432,10 +432,14 @@ public class DeploymentImpl implements Deployment {
         }
         
         if (libJars != null) {
+            String libDir = holder.app.getLibraryDirectory();
             ListIterator<ReadableArchive> libJarIterator = libJars.listIterator();
             while (libJarIterator.hasNext()) {
                 ReadableArchive libJarArchive = (ReadableArchive)libJarIterator.next();
-                BeanDeploymentArchive bda = new BeanDeploymentArchiveImpl(libJarArchive, ejbs, context);
+                BeanDeploymentArchive bda = new BeanDeploymentArchiveImpl(
+                        libJarArchive, ejbs, context, 
+                        /* use lib/jarname as BDA ID */ libDir + SEPARATOR_CHAR 
+                        + libJarArchive.getName());
                 this.beanDeploymentArchives.add(bda);
                 if (libJarBDAs  == null) {
                     libJarBDAs = new ArrayList<BeanDeploymentArchive>();

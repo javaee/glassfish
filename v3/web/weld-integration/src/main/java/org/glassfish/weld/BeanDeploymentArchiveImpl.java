@@ -371,7 +371,7 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
                         BeanDeploymentArchiveImpl wlbda = new BeanDeploymentArchiveImpl(libJarArchive, 
                                 new HashSet<com.sun.enterprise.deployment.EjbDescriptor>(), 
                                 context, 
-                                WEB_INF_LIB + libJarArchive.getName() /* Use WEB-INF/lib/jarName as BDA Id*/);
+                                WEB_INF_LIB + SEPARATOR_CHAR + libJarArchive.getName() /* Use WEB-INF/lib/jarName as BDA Id*/);
                         this.beanDeploymentArchives.add(wlbda); //add to list of BDAs for this WAR
                         webLibBDAs.add(wlbda);
                     }
