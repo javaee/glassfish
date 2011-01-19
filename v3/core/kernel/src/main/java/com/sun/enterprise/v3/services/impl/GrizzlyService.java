@@ -69,6 +69,7 @@ import com.sun.grizzly.config.dom.NetworkListeners;
 import com.sun.grizzly.config.dom.Protocol;
 import com.sun.grizzly.tcp.Adapter;
 import com.sun.grizzly.util.http.mapper.Mapper;
+import com.sun.logging.LogDomains;
 import java.util.concurrent.LinkedBlockingQueue;
 import org.glassfish.api.FutureProvider;
 import org.glassfish.api.Startup;
@@ -104,13 +105,12 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
     Config config;
 
     @Inject
-    Logger logger;
-
-    @Inject
     Habitat habitat;
 
     @Inject
     ProbeProviderFactory probeProviderFactory;
+
+    final Logger logger = LogDomains.getLogger(GrizzlyService1.class, LogDomains.CORE_LOGGER);
 
     private final Collection<NetworkProxy> proxies = new LinkedBlockingQueue<NetworkProxy>();
     private final String JMS_DEFAULT_LISTENER_IP="0.0.0.0";
