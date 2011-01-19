@@ -43,7 +43,7 @@ package com.sun.jaspic.config.factory;
 public class AuthConfigFileFactory extends BaseAuthConfigFactory {
 
     // MUST "hide" regStore in derived class.
-    protected static RegStoreFileParser regStore = null;
+    static volatile RegStoreFileParser regStore = null;
 
     /**
      * to specialize the defaultEntries passed to the RegStoreFileParser
