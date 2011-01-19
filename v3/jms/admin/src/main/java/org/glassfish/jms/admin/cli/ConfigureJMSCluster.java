@@ -263,7 +263,6 @@ public class ConfigureJMSCluster implements AdminCommand {
         JmsAvailability jmsAvailability = config.getAvailabilityService().getJmsAvailability();
         JmsService jmsservice = config.getJmsService();
         final Boolean availabilityEnabled = new Boolean(ENHANCED.equalsIgnoreCase(clusterType));
-        final Boolean useMasterBroker = new Boolean(MASTER_BROKER.equalsIgnoreCase(configStoreType));
 
         try {
             ConfigSupport.apply(new SingleConfigCode<JmsAvailability>() {
