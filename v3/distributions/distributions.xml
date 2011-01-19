@@ -196,7 +196,7 @@
         <arg line="set-property title 'GlassFish 3'"/>
     </exec>
     <exec dir="${image.dir}" executable="pkg" failonerror="true">
-        <arg line="set-property image-tou-url 'https://glassfish-repo.java.net/terms.html'"/>
+        <arg line="set-property image-tou-url 'http://glassfish-repo.java.net/terms.html'"/>
     </exec>
 
     <exec dir="${image.dir}" executable="pkg" failonerror="true">
