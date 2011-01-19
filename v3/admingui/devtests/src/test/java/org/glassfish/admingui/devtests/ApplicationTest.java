@@ -80,7 +80,7 @@ public class ApplicationTest extends BaseSeleniumTestClass {
     //The following test will pass ONLY if there is no cluster or standalone instance.  This is for "PE" profile
     //TODO: We may need to DELETE all cluster and standalone instance in the beginning of this test.
 
-    @Test
+//    @Test
     public void testDeployWar() {
         final String applicationName = generateRandomString();
         clickAndWait("treeForm:tree:applications:applications_link", TRIGGER_APPLICATIONS);
