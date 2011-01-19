@@ -47,7 +47,7 @@
 
     <target name="assemble-client" depends="init-common">
       <mkdir dir="${build.classes.dir}/client"/>
-      <echo message="wsimporting http://localhost:8080/HelloImplService/HelloImpl?WSDL"/>
+      <echo message="wsimporting http://${http.host}:${http.port}/HelloImplService/HelloImpl?WSDL"/>
       <antcall target="wsimport">
         <param name="wsimport.args"
                value="-keep  -Xendorsed -d ${build.classes.dir}/client http://${http.host}:${http.port}/HelloImplService/HelloImpl?WSDL"/>
