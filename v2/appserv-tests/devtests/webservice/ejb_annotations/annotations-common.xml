@@ -19,6 +19,7 @@
     <fail message="Deployment failed" if="deploy_failed"/>
     <antcall target="run"/>
     <echo message="Removing jar bundle ${server}.jar from autodeploy directory"/>
+
     <antcall target="undeploy"/>
     <antcall target="report"/>
 </target>
@@ -127,6 +128,9 @@
     </condition>
     <antcall target="prepare-client"/>
     <antcall target="internal-run"/>
+<!--restore the tokens back in file--> 
+         <replace file="client/Client.java" token="${http.host}" value="HTTP_HOST"/>
+         <replace file="client/Client.java" token="${http.port}" value="HTTP_PORT"/>
 </target>
 
 <target name="wsdl-import">
@@ -151,6 +155,9 @@
 	<param name="server" value="${server}"/>
 	<param name="port" value="${port}"/>
     </antcall>
+
+      <replace file="client/Client.java" value="${http.host}" token="HTTP_HOST"/>
+      <replace file="client/Client.java" value="${http.port}" token="HTTP_PORT"/>
     <antcall target="compile-client"/>   
     <antcall target="unjar-client-utils"/>
 </target>
