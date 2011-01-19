@@ -48,6 +48,7 @@ public class RegistrationTest extends BaseSeleniumTestClass {
     @Test
     public void testRegistration() {
         open("http://localhost:4848/common/registration.jsf");
+        sleep(1000); // ugh
         isTextPresent("Oracle");
         submitForm("form1");
         isTextPresent("GlassFish");

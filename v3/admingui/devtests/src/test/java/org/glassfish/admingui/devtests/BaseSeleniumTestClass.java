@@ -64,7 +64,7 @@ public class BaseSeleniumTestClass {
     public static final String TRIGGER_COMMON_TASKS = "Other Tasks";
     public static final String TRIGGER_REGISTRATION_PAGE = "Receive patch information and bug updates, screencasts and tutorials, support and training offerings, and more";
     public static final String TRIGGER_ERROR_OCCURED = "An error has occurred";
-    public static boolean DEBUG = Boolean.parseBoolean(getParameter("debug", "false"));
+    public static final boolean DEBUG = Boolean.parseBoolean(getParameter("debug", "false"));
 
     @Rule
     public SpecificTestRule specificTestRule = new SpecificTestRule();
@@ -76,7 +76,6 @@ public class BaseSeleniumTestClass {
     private static Selenium selenium;
     private static WebDriver driver;
     private static String currentTestClass = "";
-    private static int currentScreenshotNumber = 1;
     private boolean processingLogin = false;
     private static final String AJAX_INDICATOR = "ajaxIndicator";
     
@@ -99,7 +98,7 @@ public class BaseSeleniumTestClass {
         put("i18njms", "org.glassfish.jms.admingui.Strings"); // JMS
         put("theme", "org.glassfish.admingui.community-theme.Strings");
 
-        // These conflict with core and should probably be changed in the pages
+        // TODO: These conflict with core and should probably be changed in the pages
         //put("i18n", "org.glassfish.common.admingui.Strings");
         //put("i18n", "org.glassfish.web.admingui.Strings");
         //put("i18nc", "org.glassfish.web.admingui.Strings");
@@ -111,9 +110,7 @@ public class BaseSeleniumTestClass {
         String browser = getParameter("browser", "firefox");
         String port = getParameter("admin.port", "4848");
         String baseUrl = "http://localhost:" + port;
-        DEBUG = new Boolean(getParameter("debug", "false"));
-        currentScreenshotNumber = 1;
-        
+
         if ("firefox".equals(browser)) {
             driver = new FirefoxDriver();
         } else if ("chrome".equals(browser)) {
@@ -177,7 +174,6 @@ public class BaseSeleniumTestClass {
     @Before
     public void reset() {
         currentTestClass = this.getClass().getName();
-        //clickAndWait("treeForm:tree:ct", TRIGGER_COMMON_TASKS);
         openAndWait("/", TRIGGER_COMMON_TASKS);
     }
     
