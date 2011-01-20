@@ -66,6 +66,9 @@
         <param name="wsimport.args"
           value="-b custom-client.xml -keep -d ${build.classes.dir}/webclient/WEB-INF/classes ${env.APS_HOME}/devtests/webservice/annotations/svchandler-4/SubtractNumbers.wsdl"/>
       </antcall>
+      <replace file="webclient/Client.java" value="${http.host}" token="HTTP_HOST"/>
+      <replace file="webclient/Client.java" value="${http.port}" token="HTTP_PORT"/>
+
       <javac srcdir="." destdir="${build.classes.dir}/webclient/WEB-INF/classes"
             includes="webclient/**">
 <classpath refid="classpath"/>
@@ -123,6 +126,10 @@
         </classpath>
         <arg value="http://${http.host}:${http.port}/wsclient/RequestProcessor"/>
       </java>
+<!--restore the tokens back in file-->
+         <replace file="webclient/Client.java" token="${http.host}" value="HTTP_HOST"/>
+         <replace file="webclient/Client.java" token="${http.port}" value="HTTP_PORT"/>
+
     </target>
 </project>
 
