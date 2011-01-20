@@ -46,7 +46,22 @@ import java.util.Set;
  * This class represents a list of URL patterns and HTTP
  * methods that describe a set of Web resources to be protected.
  *
+ * <p/> Usage example:
+ *
+ * <pre>
+ *      WebResourceCollection webResource = new WebResourceCollection();
+ *      webResource.setName("protected");
+ *      webResource.setUrlPatterns("/*");
+ *      Set<String> httpMethods = new HashSet<String>();
+ *      httpMethods.add("GET");
+ *      httpMethods.add("POST");
+ *      webResource.setHttpMethods(httpMethods);
+ * </pre>
+ *
+ * @see SecurityConfig
+ *
  * @author Rajiv Mordani
+ * @author Amy Roh
  */
 public class WebResourceCollection {
 

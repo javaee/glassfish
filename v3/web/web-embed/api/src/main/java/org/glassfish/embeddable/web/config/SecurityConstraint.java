@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,7 +43,25 @@ package org.glassfish.embeddable.web.config;
 import java.util.Set;
 
 /**
+ * Class used for configuring security constraints including
+ * Web Resource Collections (URL patterns, HTTP methods),
+ * Authorization Constraint (role names) and
+ * User Data Constraints (whether the web request needs to be received
+ * over a protected transport such as TLS).
+ *
+ * <p/> Usage example:
+ *
+ * <pre>
+ *      SecurityConstraint securityConstraint = new SecurityConstraint();
+ *      securityConstraint.setWebResourceCollection(webResources);
+ *      securityConstraint.setAuthConstraint("ADMINISTRATORS");
+ *      securityConstraint.setUserDataConstraint(TransportGuarantee.CONFIDENTIAL);
+ * </pre>
+ *
+ * @see WebResourceCollection
+ *
  * @author Rajiv Mordani
+ * @author Amy Roh
  */
 
 //TODO: Need to think about if we want security to be pluggable. Need to talk to Ron.

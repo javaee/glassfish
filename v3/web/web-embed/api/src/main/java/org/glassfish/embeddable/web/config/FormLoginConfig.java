@@ -49,6 +49,7 @@ package org.glassfish.embeddable.web.config;
  * @see AuthMethod
  *
  * @author Rajiv Mordani
+ * @author Amy Roh
  */
 public class FormLoginConfig {
 
