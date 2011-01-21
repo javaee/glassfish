@@ -179,6 +179,7 @@
   <!--   classpath           What class path should I use while compiling   -->
   <!--                       generated servlets?  [Created dynamically      -->
   <!--                       based on the current web application]          -->
+  <!--                       [Ignored in Glassfish]                         -->
   <!--                                                                      -->
   <!--   development         Is Jasper used in development mode? If true,   -->
   <!--                       the frequency at which JSPs are checked for    -->
@@ -284,6 +285,12 @@
   <!--   compilerTargetVM    Generates class files for specified VM version -->
   <!--                       (same as -target javac command-line switch)    -->
   <!--                                                                      -->
+  <!--   system-jar-includes Specify a list (of jars, or fragments of jar   -->
+  <!--                       paths) that is used to determine if a system   -->
+  <!--                       jar (obtained from the system classloader)     -->
+  <!--                       should be included in the javac classpath      -->
+  <!--                       [Include all system jars]                      -->
+  <!--                                                                      -->
   <!-- If you wish to use Jikes to compile JSP pages:                       -->
   <!-- * Set the "classpath" initialization parameter appropriately         -->
   <!--   for this web application.                                          -->
@@ -300,6 +307,23 @@
     <init-param>
       <param-name>httpMethods</param-name>
       <param-value>GET,POST,HEAD</param-value>
+    </init-param>
+    <init-param>
+      <param-name>system-jar-includes</param-name>
+      <param-value>
+        /lib/
+        \lib\
+        jstl-impl.jar
+        el-impl.jar
+        javax.servlet.jar
+        javax.servlet.jsp.jar
+        javax.servlet.jsp.jstl.jar
+        jsf-api.jar
+        jsp-impl.jar
+        jsf-impl.jar
+        jspcaching-connector.jar
+        web-glue.jar
+      </param-value>
     </init-param>
     <load-on-startup>3</load-on-startup>
   </servlet>
