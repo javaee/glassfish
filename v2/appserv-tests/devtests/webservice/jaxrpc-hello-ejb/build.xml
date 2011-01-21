@@ -88,6 +88,9 @@
            <param name="param1" value="-gen:client -d ${build.classes.dir}/webclient/WEB-INF/classes -keep -s ${build.classes.dir}/webclient/WEB-INF/classes -classpath ${build.classes.dir}/webclient/WEB-INF/classes ${config.wsdl.file}"/>
           </antcall>
 
+        <replace file="webclient/Client.java" value="${http.host}" token="HTTP_HOST"/>
+       <replace file="webclient/Client.java" value="${http.port}" token="HTTP_PORT"/>
+
           <javac srcdir="." destdir="${build.classes.dir}/webclient/WEB-INF/classes"
                 includes="webclient/**">
              <classpath refid="class.path"/>
@@ -157,6 +160,10 @@
            </classpath>
            <arg value="http://${http.host}:${http.port}/wsclient/RequestProcessor"/>
          </java>
+
+         <!--restore the tokens back in file-->
+         <replace file="webclient/Client.java" token="${http.host}" value="HTTP_HOST"/>
+         <replace file="webclient/Client.java" token="${http.port}" value="HTTP_PORT"/>
        </target>
     
 

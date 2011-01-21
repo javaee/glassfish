@@ -23,7 +23,7 @@ public class Client extends HttpServlet {
        public void doPost(HttpServletRequest req, HttpServletResponse resp)
               throws javax.servlet.ServletException {
             try {
-           String targetEndpointAddress = "http://localhost:8080/hello-jaxrpc-ejb/hello";//?wsdl
+           String targetEndpointAddress = "http://HTTP_HOST:HTTP_PORT/hello-jaxrpc-ejb/hello";//?wsdl
             InitialContext ic = new InitialContext();
 
             MyHelloService myHelloService =
