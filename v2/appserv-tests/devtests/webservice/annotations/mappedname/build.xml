@@ -84,6 +84,8 @@
       </java>
          <replace file="client/Client.java" token="${http.host}" value="HTTP_HOST"/>
          <replace file="client/Client.java" token="${http.port}" value="HTTP_PORT"/>
+         <replace file="webclient/Client.java" token="${http.host}" value="HTTP_HOST"/>
+         <replace file="webclient/Client.java" token="${http.port}" value="HTTP_PORT"/>
     </target>
 
 
