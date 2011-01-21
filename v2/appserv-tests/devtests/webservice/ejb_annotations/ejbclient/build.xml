@@ -58,6 +58,7 @@
         <echo message="Running appclient with ${client-pkg-name}.${client}"/>
         <unjar src="${env.APS_HOME}/lib/reporter.jar" dest="${env.APS_HOME}/build/module/classes"/>
         <exec executable="${env.S1AS_HOME}/bin/appclient" dir="${env.APS_HOME}/build/module/classes">
+            <arg value="-Dorg.omg.CORBA.ORBInitialPort=${orb.port}"/> 
             <arg value="${client-pkg-name}.${client}"/>    
         </exec>
     </target>
