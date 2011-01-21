@@ -197,17 +197,19 @@ public final class CSIV2TaggedComponentInfo
 	List<SocketInfo> socketInfos, EjbDescriptor desc)
     {
         org.omg.IOP.TaggedComponent tc = null;
-	try {
-            if (_logger.isLoggable(Level.FINE)) {
-                _logger.log(Level.FINE, "IIOP: Creating a Security Tagged Component");
+        if (desc != null) {
+            try {
+                if (_logger.isLoggable(Level.FINE)) {
+                    _logger.log(Level.FINE, "IIOP: Creating a Security Tagged Component");
+                }
+
+                // get the realm from the application object.
+                //  _realm_name = desc.getApplication().getRealm();
+                CompoundSecMech[] mechList = createCompoundSecMechs( socketInfos, desc ) ;
+                tc =  createCompoundSecMechListComponent(mechList);
+            } catch(Exception e) {
+                _logger.log(Level.SEVERE,"iiop.createcompund_exception",e);
             }
-	    
-            // get the realm from the application object.
-          //  _realm_name = desc.getApplication().getRealm();
-	    CompoundSecMech[] mechList = createCompoundSecMechs( socketInfos, desc ) ;
-	    tc =  createCompoundSecMechListComponent(mechList);
-        } catch(Exception e) {
-            _logger.log(Level.SEVERE,"iiop.createcompund_exception",e);
         }
 
         return tc;
@@ -277,6 +279,10 @@ public final class CSIV2TaggedComponentInfo
     private Set<EjbIORConfigurationDescriptor> getIORConfigurationDescriptors( 
 	EjbDescriptor desc ) {
 
+        if (desc == null) {
+            return null ;
+        }
+
 	Set iorDescSet = desc.getIORConfigurationDescriptors();
 	int size = iorDescSet.size();
 	if (size == 0) {
@@ -337,6 +343,10 @@ public final class CSIV2TaggedComponentInfo
 
         if(_logger.isLoggable(Level.FINE)){
             _logger.log(Level.FINE, "IIOP: Creating CompoundSecMech");
+        }
+
+        if (desc == null) {
+            return null ;
         }
 
 	Set iorDescSet = getIORConfigurationDescriptors( desc ) ;

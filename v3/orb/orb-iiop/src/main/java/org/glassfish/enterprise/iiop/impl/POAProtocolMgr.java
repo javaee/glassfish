@@ -43,10 +43,10 @@ package org.glassfish.enterprise.iiop.impl;
 import com.sun.corba.ee.spi.ior.IOR;
 import com.sun.corba.ee.spi.ior.ObjectKey;
 import com.sun.corba.ee.spi.ior.TaggedProfile;
+import com.sun.corba.ee.spi.oa.rfm.ReferenceFactory;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-import javax.rmi.PortableRemoteObject;
 
 import org.glassfish.enterprise.iiop.api.ProtocolManager;
 import org.glassfish.enterprise.iiop.api.RemoteReferenceFactory;
@@ -63,8 +63,6 @@ import javax.ejb.TransactionRolledbackLocalException;
 import javax.ejb.TransactionRequiredLocalException;
 
 import org.omg.PortableServer.POA;
-import org.omg.PortableServer.ImplicitActivationPolicyValue;
-import org.omg.PortableServer.LifespanPolicyValue;
 import org.omg.PortableServer.Servant;
 import org.omg.CosNaming.NamingContext;
 import org.omg.CosNaming.NamingContextHelper;
@@ -77,6 +75,8 @@ import com.sun.corba.ee.spi.presentation.rmi.StubAdapter;
 
 import com.sun.corba.ee.spi.orbutil.ORBConstants;
 import com.sun.logging.LogDomains;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.rmi.CORBA.Tie;
@@ -86,12 +86,16 @@ import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.annotations.Inject;
 import org.omg.CORBA.CompletionStatus;
 import org.omg.CORBA.INVALID_TRANSACTION;
+import org.omg.CORBA.LocalObject;
 import org.omg.CORBA.MARSHAL;
 import org.omg.CORBA.NO_PERMISSION;
 import org.omg.CORBA.OBJECT_NOT_EXIST;
 import org.omg.CORBA.Policy;
 import org.omg.CORBA.TRANSACTION_REQUIRED;
 import org.omg.CORBA.TRANSACTION_ROLLEDBACK;
+import org.omg.PortableServer.ForwardRequest;
+import org.omg.PortableServer.ServantLocator;
+import org.omg.PortableServer.ServantLocatorPackage.CookieHolder;
 
 /**
  * This class implements the ProtocolManager interface for the
@@ -113,6 +117,8 @@ public final class POAProtocolMgr extends org.omg.CORBA.LocalObject
 
     private ORB orb;
 
+    private ReferenceFactoryManager rfm = null ;
+
     private PresentationManager presentationMgr;
 
     @Inject
@@ -131,14 +137,73 @@ public final class POAProtocolMgr extends org.omg.CORBA.LocalObject
     // Called in all VMs, must be called only after InitialNaming is available
     @Override
     public void initializePOAs() throws Exception {
-	    // NOTE:  The RootPOA manager used to activated here.
-	    ReferenceFactoryManager rfm =
-	        (ReferenceFactoryManager)orb.resolve_initial_references(
-		    ORBConstants.REFERENCE_FACTORY_MANAGER ) ;
-	    rfm.activate() ;
-
+	    // NOTE:  The RootPOA manager used to be activated here.
+            getRFM() ;
 	    _logger.log(Level.FINE,
                 "POAProtocolMgr.initializePOAs: RFM resolved and activated");
+    }
+
+    private static class RemoteNamingServantLocator extends LocalObject
+        implements ServantLocator {
+
+        private final ORB orb ;
+        private final Servant servant ;
+
+        public RemoteNamingServantLocator( ORB orb, Remote impl ) {
+            this.orb = orb ;
+            Tie tie = ORB.getPresentationManager().getTie() ;
+            tie.setTarget( impl ) ;
+            servant = Servant.class.cast( tie ) ;
+        }
+
+        @Override
+	public synchronized Servant preinvoke( byte[] oid, POA adapter,
+	    String operation, CookieHolder the_cookie ) throws ForwardRequest {
+	    return servant ;
+	}
+
+        @Override
+	public void postinvoke( byte[] oid, POA adapter,
+	    String operation, Object the_cookie, Servant the_servant ) {
+	}
+    }
+
+    private synchronized ReferenceFactoryManager getRFM() {
+        if (rfm == null) {
+            try {
+                rfm = ReferenceFactoryManager.class.cast(
+                    orb.resolve_initial_references( "ReferenceFactoryManager" )) ;
+                    rfm.activate() ;
+            } catch (Exception exc) {
+                // do nothing
+            }
+        }
+
+        return rfm ;
+    }
+
+    private org.omg.CORBA.Object getRemoteNamingReference( Remote remoteNamingProvider ) {
+        final ServantLocator locator = new RemoteNamingServantLocator( orb, 
+            remoteNamingProvider ) ;
+
+        final PresentationManager pm = ORB.getPresentationManager() ;
+
+        String repositoryId ;
+        try {
+            repositoryId = pm.getRepositoryId( remoteNamingProvider ) ;
+        } catch (Exception exc) {
+            throw new RuntimeException( exc ) ;
+        }
+    
+        final List<Policy> policies = new ArrayList<Policy>() ;
+        final ReferenceFactory rf = getRFM().create( "RemoteSerialContextProvider",
+            repositoryId, policies, locator ) ;
+
+        // arbitrary
+        final byte[] oid = { 0, 3, 5, 7, 2, 37, 42 } ;
+
+        final org.omg.CORBA.Object ref = rf.createReference( oid ) ;
+        return ref ;
     }
 
     @Override
@@ -146,38 +211,16 @@ public final class POAProtocolMgr extends org.omg.CORBA.LocalObject
         throws Exception {
 
         try {
-            PortableRemoteObject.exportObject(remoteNamingProvider);
-
-            Tie servantsTie = javax.rmi.CORBA.Util.getTie(remoteNamingProvider);
-
-            // TODO -- check whether this was commented out in V2 also
-            //servantsTie.orb(ORBManager.getORB());
-            //org.omg.CORBA.Object provider = servantsTie.thisObject());
-
-            // Create a CORBA objref for SerialContextProviderImpl using a POA
-            POA rootPOA = (POA) orb.resolve_initial_references("RootPOA");
-
-            Policy[] policy = new Policy[2];
-            policy[0] = rootPOA.create_implicit_activation_policy(
-                        ImplicitActivationPolicyValue.IMPLICIT_ACTIVATION);
-            policy[1] = rootPOA.create_lifespan_policy(
-                LifespanPolicyValue.PERSISTENT);
-
-            POA poa = rootPOA.create_POA("SerialContextProviderPOA", null,
-                                        policy);
-            poa.the_POAManager().activate();
-            org.omg.CORBA.Object provider = poa.servant_to_reference(
-                                                    (Servant)servantsTie);
+            org.omg.CORBA.Object provider = getRemoteNamingReference( remoteNamingProvider ) ;
 
             // put object in NameService
             org.omg.CORBA.Object objRef = orb.resolve_initial_references("NameService");
             NamingContext ncRef = NamingContextHelper.narrow(objRef);
-            // TODO use constant for SerialContextProvider name
+            // XXX use constant for SerialContextProvider name
             NameComponent nc = new NameComponent("SerialContextProvider", "");
 
             NameComponent path[] = {nc};
             ncRef.rebind(path, provider);
-
         } catch (Exception ex) {
             _logger.log(Level.SEVERE,
                  "enterprise_naming.excep_in_insertserialcontextprovider",ex);
