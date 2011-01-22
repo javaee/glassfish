@@ -134,6 +134,9 @@ public class IdmService implements Init, PostConstruct/*, IdentityManagement*/ {
             this.masterPassword = p.getPasswordForAlias(FIXED_KEY).toCharArray();
 //            long t1 = System.currentTimeMillis();
 //            System.out.println("time spent in setFromMasterPasswordFile(): " + (t1-t0) + " ms");
+            if (masterPassword == null) {
+                return false;
+            }
             return true;
         } catch (Exception ex) {
             logger.fine("Error in master-password processing: " + ex.getMessage());
@@ -205,6 +208,9 @@ public class IdmService implements Init, PostConstruct/*, IdentityManagement*/ {
             }
             // We don't want reveal the master password in the logs.
             //logger.fine("******************* Password from stdin: " + new String(masterPassword));
+            if (masterPassword == null) {
+                return false;
+            }
             return true;
         } catch(Exception e) {
             logger.fine("Stdin isn't behaving, ignoring it ..." + e.getMessage());
