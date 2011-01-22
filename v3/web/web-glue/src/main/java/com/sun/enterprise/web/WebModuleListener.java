@@ -43,11 +43,9 @@ package com.sun.enterprise.web;
 import com.sun.appserv.web.cache.CacheManager;
 import com.sun.enterprise.container.common.spi.JCDIService;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
-import com.sun.enterprise.deployment.WebComponentDescriptor;
 import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 import com.sun.enterprise.deployment.runtime.web.WebProperty;
 import com.sun.enterprise.deployment.util.WebValidatorWithCL;
-import com.sun.enterprise.deployment.web.InitializationParameter;
 import com.sun.enterprise.util.net.JarURIPattern;
 import com.sun.enterprise.web.jsp.JspProbeEmitterImpl;
 import com.sun.enterprise.web.jsp.ResourceInjectorImpl;
@@ -67,11 +65,9 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 //import com.sun.enterprise.server.PersistenceUnitLoaderImpl;
 //import com.sun.enterprise.server.PersistenceUnitLoader;
@@ -295,7 +291,6 @@ final class WebModuleListener
             // Try "java.class.path" system property instead.
             sysClassPath = System.getProperty("java.class.path"); 
         }
-        sysClassPath = trimSysClassPath(sysClassPath);
         wrapper.addInitParameter("com.sun.appserv.jsp.classpath",
             sysClassPath);
         // END SJSAS 6311155
@@ -330,74 +325,6 @@ final class WebModuleListener
             invocationMgr.postInvoke(inv);
         }
 
-    }
-
-    private boolean includeInitialized;
-    private List<String> includeJars;
-
-    private void initIncludeJars() {
-        if (includeInitialized) {
-            return;
-        }
-
-        String includeJarsString = null;;
-        for (WebComponentDescriptor wcd: wbd.getWebComponentDescriptors()) {
-            if ("jsp".equals(wcd.getCanonicalName())) {
-                InitializationParameter initp =
-                    wcd.getInitializationParameterByName("system-jar-includes");
-                if (initp != null) {
-                    includeJarsString = initp.getValue();
-                    break;
-                }
-            }
-        }
-        includeInitialized = true;
-        if (includeJarsString == null) {
-            includeJars = null;
-            return;
-        }
-        includeJars = new ArrayList();
-        StringTokenizer tokenizer = new StringTokenizer(includeJarsString);
-        while (tokenizer.hasMoreElements()) {
-            includeJars.add(tokenizer.nextToken());
-        }
-    }
-
-    private boolean included(String path) {
-        for (String item: includeJars) {
-            if (path.contains(item)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /*
-     * Remove unnecessary system jars, to improve performance
-     */
-    private String trimSysClassPath(String sysClassPath) {
-
-        if (sysClassPath == null || sysClassPath.equals("")) {
-            return "";
-        }
-        initIncludeJars();
-        if (includeJars == null || includeJars.size() == 0) {
-            // revert to previous behavior, i.e. no trimming
-            return sysClassPath;
-        }
-        String sep = System.getProperty("path.separator");
-        StringBuilder ret = new StringBuilder();
-        StringTokenizer tokenizer = new StringTokenizer(sysClassPath, sep);
-        String mySep = "";
-        while (tokenizer.hasMoreElements()) {
-            String path = tokenizer.nextToken();
-            if (included(path)) {
-                ret.append(mySep);
-                ret.append(path);
-                mySep = sep;
-            }
-        }
-        return ret.toString();
     }
 
     /**

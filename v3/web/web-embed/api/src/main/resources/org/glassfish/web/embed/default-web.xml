@@ -179,7 +179,6 @@
   <!--   classpath           What class path should I use while compiling   -->
   <!--                       generated servlets?  [Created dynamically      -->
   <!--                       based on the current web application]          -->
-  <!--                       [Ignored in Glassfish]                         -->
   <!--                                                                      -->
   <!--   development         Is Jasper used in development mode? If true,   -->
   <!--                       the frequency at which JSPs are checked for    -->
@@ -285,12 +284,6 @@
   <!--   compilerTargetVM    Generates class files for specified VM version -->
   <!--                       (same as -target javac command-line switch)    -->
   <!--                                                                      -->
-  <!--   system-jar-includes Specify a list (of jars, or fragments of jar   -->
-  <!--                       paths) that is used to determine if a system   -->
-  <!--                       jar (obtained from the system classloader)     -->
-  <!--                       should be included in the javac classpath      -->
-  <!--                       [Include all system jars]                      -->
-  <!--                                                                      -->
   <!-- If you wish to use Jikes to compile JSP pages:                       -->
   <!-- * Set the "classpath" initialization parameter appropriately         -->
   <!--   for this web application.                                          -->
@@ -307,23 +300,6 @@
     <init-param>
       <param-name>httpMethods</param-name>
       <param-value>GET,POST,HEAD</param-value>
-    </init-param>
-    <init-param>
-      <param-name>system-jar-includes</param-name>
-      <param-value>
-        /lib/
-        \lib\
-        jstl-impl.jar
-        el-impl.jar
-        javax.servlet.jar
-        javax.servlet.jsp.jar
-        javax.servlet.jsp.jstl.jar
-        jsf-api.jar
-        jsp-impl.jar
-        jsf-impl.jar
-        jspcaching-connector.jar
-        web-glue.jar
-      </param-value>
     </init-param>
     <load-on-startup>3</load-on-startup>
   </servlet>
@@ -399,7 +375,7 @@
   <!--   debug                Debugging detail level for messages logged    -->
   <!--                        by this servlet.  [0]                         -->
   <!--                                                                      -->
-  <!--   executable           Name of the executable used to run the        -->
+  <!--   executable           Name of the exectuable used to run the        -->
   <!--                        script. [perl]                                -->
   <!--                                                                      -->
   <!--   parameterEncoding    Name of parameter encoding to be used with    -->
@@ -408,11 +384,6 @@
   <!--                                                                      -->
   <!--   passShellEnvironment Should the shell environment variables (if    -->
   <!--                        any) be passed to the CGI script? [false]     -->
-  <!--                                                                      -->
-  <!--   stderrTimeout        The time (in milliseconds) to wait for the    -->
-  <!--                        reading of stderr to complete before          -->
-  <!--                        terminating the CGI process. [2000]           -->
-
 
 <!--
   <servlet>
@@ -443,6 +414,10 @@
   <servlet-mapping>
     <servlet-name>jsp</servlet-name>
     <url-pattern>*.jsp</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>jsp</servlet-name>
     <url-pattern>*.jspx</url-pattern>
   </servlet-mapping>
 
