@@ -181,7 +181,9 @@ public class JavaEEExtender implements Extender {
             }
             try {
                 OSGiApplicationInfo deployedApp = deploymentTask.get();
-                if (deployedApp != null) {
+                // It is not sufficient to check the future only, as the DeployerAddedThread currently deploys
+                // without our knowledge, so we must also check isDeployed().
+                if (deployedApp != null || c.isDeployed(bundle)) {
                     undeploy(bundle); // undeploy synchronously to avoid any deadlock. See GF issue #
                 }
             } catch (InterruptedException e) {
