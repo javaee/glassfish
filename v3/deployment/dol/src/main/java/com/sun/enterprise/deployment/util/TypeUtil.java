@@ -44,6 +44,7 @@ import com.sun.enterprise.deployment.FieldDescriptor;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.*;
@@ -444,6 +445,30 @@ public class TypeUtil {
                 if (!gpm1[i].equals(gpm2[i])) {
                     if (gpm1[i] instanceof TypeVariable || gpm2[i] instanceof TypeVariable) {
                         continue;
+                    } else if(gpm1[i] instanceof ParameterizedType && gpm2[i] instanceof ParameterizedType) {
+
+                        //See issue 15595 (ClassFormatError: Duplicate method name thrown in deployment)
+                        //For ParameterizedType params, compare their ownerType and rawType.
+                        //For example, List<T> vs List<Object>, ownerTypes are both null,
+                        //rawTypes are both interface List, actualTypeArguments are T and
+                        //Object, respectively.  
+
+                        ParameterizedType p1 = (ParameterizedType) gpm1[i];
+                        ParameterizedType p2 = (ParameterizedType) gpm2[i];
+
+                        Type p1OwnerType = p1.getOwnerType();
+                        Type p1RawType = p1.getRawType();
+
+                        Type p2OwnerType = p2.getOwnerType();
+                        Type p2RawType = p2.getRawType();
+
+                        same = (p1OwnerType == null ? p2OwnerType == null
+                                : p1OwnerType.equals(p2OwnerType)) &&
+                                (p1RawType == null ? p2RawType == null
+                                : p1RawType.equals(p2RawType));
+                        if(!same) {
+                            break;
+                        }
                     } else {
                         same = false;
                         break;
