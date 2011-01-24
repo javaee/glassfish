@@ -50,7 +50,7 @@
             return showAlert('$resource{i18n.msg.JS.manageUser.passwordNotMatch}');
         }
         if ( (ps1==null || ps1=='') && (ps2==null || ps2=='')){
-            if ( getConfirm(this,'$resource{i18n.msg.JS.manageUser.setEmptyAdminPassword}') ){
+            if ( getConfirm(this,'$resource{i18n.msg.JS.manageUser.setEmptyPassword}') ){
                 return true;
             }else{
                 return false;

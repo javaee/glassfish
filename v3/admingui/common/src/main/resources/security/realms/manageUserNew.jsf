@@ -53,16 +53,15 @@
         urlencode(value="#{pageSession.Name}" encoding="UTF-8" result="#{pageSession.encodedName}");
         urlencode(value="#{pageSession.configName}" encoding="UTF-8" result="#{pageSession.encodedConfigName}");
         gf.restRequest(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/admin-service/jmx-connector/system.json", method="get", result="#{requestScope.result}");
-        setPageSessionAttribute(key="AuthRealmName" value="#{requestScope.result.entity['authRealmName']");
-        if ("#{pageSession.Name}=#{pageSession.authRealm}"){
-            setPageSessionAttribute(key="isAdminRealm", value="true")
-            setPageSessionAttribute(key="groupList", value="asadmin")
-            setPageSessionAttribute(key="emptyPswdMsg", value="$resource{i18n.msg.JS.manageUser.setEmptyAdminPassword}")
+        setPageSessionAttribute(key="AuthRealmName" value="#{requestScope.result.data.extraProperties.entity.authRealmName}");
+        setPageSessionAttribute(key="isAdminRealm", value="false")
+        if ("#{pageSession.Name}=#{pageSession.AuthRealmName}"){
+            if ("#{pageSession.configName}=server-config"){
+                setPageSessionAttribute(key="isAdminRealm", value="true")
+                setPageSessionAttribute(key="groupList", value="asadmin")
+            }
         }
-        if ("!(#{pageSession.Name}=#{pageSession.authRealm})"){
-            setPageSessionAttribute(key="isAdminRealm", value="false")
-            setPageSessionAttribute(key="emptyPswdMsg", value="$resource{i18n.msg.JS.manageUser.setEmptyPassword}")
-        }
+        setPageSessionAttribute(key="emptyPswdMsg", value="$resource{i18n.msg.JS.manageUser.setEmptyPassword}")
     />
      </event>
             <sun:form id="propertyForm">
