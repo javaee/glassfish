@@ -108,9 +108,19 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
                     createFromScratch();
                 }
                 normalizeThreadPools();
-                processHttpListeners();
-                promoteHttpServiceProperties(currentConfig.getHttpService());
-                promoteVirtualServerProperties(currentConfig.getHttpService());
+                if (currentConfig.getHttpService() != null) {
+                    processHttpListeners();
+                    promoteHttpServiceProperties(
+                        currentConfig.getHttpService());
+                    promoteVirtualServerProperties(
+                        currentConfig.getHttpService());
+                } else {
+                    // this only happens during some unit tests
+                    Logger.getAnonymousLogger().log(Level.WARNING,
+                        String.format(
+                            "config.getHttpService() null for config '%s'",
+                            currentConfig.getName()));
+                }
                 promoteSystemProperties();
                 addAsadminProtocol(currentConfig.getNetworkConfig());
             } catch (TransactionFailure tf) {
