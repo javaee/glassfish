@@ -105,6 +105,14 @@ public interface HttpResponse
 
 
     /**
+     * Special method for adding a session cookie as we should be overriding 
+     * any previous 
+     * @param cookie
+     */
+    public void addSessionCookieInternal(final Cookie cookie);
+
+
+    /**
      * Return the error message that was set with <code>sendError()</code>
      * for this Response.
      */

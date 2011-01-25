@@ -2778,7 +2778,7 @@ public class Request
             Cookie newCookie = new Cookie(
                     getContext().getSessionCookieName(), newSessionId);
             configureSessionCookie(newCookie);
-            ((HttpServletResponse) response).addCookie(newCookie);
+            ((HttpResponse)response).addSessionCookieInternal(newCookie);
         }
     }
 
@@ -2940,7 +2940,7 @@ public class Request
                     Cookie cookie = new Cookie(
                             getContext().getSessionCookieName(), id);
                     configureSessionCookie(cookie);
-                    ((HttpServletResponse) response).addCookie(cookie);
+                    ((HttpResponse)response).addSessionCookieInternal(cookie);
                 }
             }
         }

@@ -62,6 +62,7 @@ import com.sun.appserv.ProxyHandler;
 import com.sun.grizzly.util.buf.CharChunk;
 import com.sun.grizzly.util.buf.UEncoder;
 import com.sun.grizzly.util.http.FastHttpDateFormat;
+import com.sun.grizzly.util.http.MimeHeaders;
 import com.sun.grizzly.util.http.ServerCookie;
 import com.sun.grizzly.util.net.URL;
 import org.apache.catalina.Connector;
@@ -1066,6 +1067,36 @@ public class Response
         // END GlassFish 898
     }
 
+    /**
+     * Special method for adding a session cookie as we should be overriding 
+     * any previous 
+     * @param cookie
+     */
+    public void addSessionCookieInternal(final Cookie cookie) {
+        if (isCommitted())
+            return;
+
+        String name = cookie.getName();
+        final String headername = "Set-Cookie";
+        final String startsWith = name + "=";
+        final String cookieString = getCookieString(cookie);
+        boolean set = false;
+        MimeHeaders headers = coyoteResponse.getMimeHeaders();
+        int n = headers.size();
+        for (int i = 0; i < n; i++) {
+            if (headers.getName(i).toString().equals(headername)) {
+                if (headers.getValue(i).toString().startsWith(startsWith)) {
+                    headers.getValue(i).setString(cookieString);
+                    set = true;
+                }
+            }
+        }
+        if (!set) {
+            addHeader(headername, cookieString);
+        }
+
+
+    }
 
     /**
      * Add the specified date header to the specified value.

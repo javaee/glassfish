@@ -140,6 +140,7 @@ public class DummyResponse
     public String getHeader(String name) { return null; }
     public Collection<String> getHeaderNames() { return null; }
     public Collection<String> getHeaders(String name) { return null; }
+    public void addSessionCookieInternal(final Cookie cookie) {}
     public String getMessage() { return null; }
     public int getStatus() { return -1; }
     public void reset(int status, String message) {}
