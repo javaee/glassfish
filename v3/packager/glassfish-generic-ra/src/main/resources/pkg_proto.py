@@ -3,7 +3,7 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2008-2011 Oracle and/or its affiliates. All rights reserved.
 #
 # The contents of this file are subject to the terms of either the GNU
 # General Public License Version 2 only ("GPL") or the Common Development
@@ -45,7 +45,7 @@ import imp
 
 pkg = {
     "name"          : "glassfish-generic-ra",
-    "version"       : "2.0-0.0",
+    "version"       : "2.1-0.0",
     "attributes"    : {
                         "pkg.summary" : "Generic Resource Adapter for JMS",
                         "pkg.description" : "Generic  JMS RA is a Java EE Connector Architecture 5 compliant resource adapter that allows users to integrate with various JMS service providers. More details are available on Generic RA website - https://genericjmsra.dev.java.net",
