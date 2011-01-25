@@ -51,6 +51,15 @@
             if ("#{pageSession.valueMap['lazyConnectionAssociation']}") {
                 setValueExpression(expression="#{pageSession.valueMap['lazyConnectionEnlistment']}", value="true");
             }
+            
+            //Issue 15618 : To save lazyConnectionEnlistment before lazyConnectionAssociation.
+            createMap(result=>$attribute{lazyConnectionMap});
+            mapPut(map="#{lazyConnectionMap}", key="lazyConnectionEnlistment", value="#{pageSession.valueMap['lazyConnectionEnlistment']}");
+            gf.updateEntity(endpoint="#{pageSession.selfUrl}"
+                        attrs="#{lazyConnectionMap}"
+                        convertToFalse={"lazyConnectionEnlistment"});
+            gf.filterMap(map="#{pageSession.valueMap}" attrNames={"lazyConnectionEnlistment"} keep="#{false}" resultMap="#{pageSession.valueMap}");
+            
             gf.updateEntity(endpoint="#{pageSession.selfUrl}"  attrs="#{pageSession.valueMap}"
                 skipAttrs="#{pageSession.skipAttrsList}"
                 convertToFalse="#{pageSession.convertToFalseList}"
