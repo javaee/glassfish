@@ -62,6 +62,7 @@ public class PropertiesBagTest extends RestTestBase {
     protected static final String URL_DOMAIN_PROPERTIES = "/domain/property";
     protected static final String URL_JAVA_CONFIG_PROPERTIES = "/domain/configs/config/default-config/java-config/property";
     protected static final String URL_SERVER_PROPERTIES = "/domain/servers/server/server/property";
+    protected static final String URL_DERBYPOOL_PROPERTIES = "/domain/resources/jdbc-connection-pool/DerbyPool/property";
     private static final String REQUEST_FORMAT = MediaType.APPLICATION_JSON;
 
     @Test
@@ -81,6 +82,137 @@ public class PropertiesBagTest extends RestTestBase {
     public void serverProperties() {
         createAndDeleteProperties(URL_SERVER_PROPERTIES);
     }
+    
+    @Test
+    public void testOptimizedPropertyHandling() {
+        // First, test changing one property and adding a new
+        List<Map<String, String>> properties = new ArrayList<Map<String, String>>();
+        properties.add(createProperty("PortNumber","1527")); 
+        properties.add(createProperty("Password","APP"));
+        properties.add(createProperty("User","APP"));
+        properties.add(createProperty("serverName","localhost"));
+        properties.add(createProperty("DatabaseName","sun-appserv-samples"));
+        properties.add(createProperty("connectionAttributes",";create=false"));
+        properties.add(createProperty("foo","bar","test"));
+        createProperties(URL_DERBYPOOL_PROPERTIES, properties);
+        
+        List<Map<String, String>> newProperties = getProperties(get(URL_DERBYPOOL_PROPERTIES));
+        for (Map<String, String> property : newProperties) {
+            if (property.get("name").equals("connectionAttributes")) {
+                assertEquals(";create=false", property.get("value"));
+            } else if (property.get("name").equals("foo")) {
+                assertEquals("bar", property.get("value"));
+                assertEquals("test", property.get("description"));
+            }
+        }
+        
+        // Test updating the description and value
+        properties.clear();
+        properties.add(createProperty("foo","bar 2","test 2"));
+        createProperties(URL_DERBYPOOL_PROPERTIES, properties);
+        
+        newProperties = getProperties(get(URL_DERBYPOOL_PROPERTIES));
+        assertNotSame(1, newProperties);
+        for (Map<String, String> property : newProperties) {
+            if (property.get("name").equals("foo")) {
+                assertEquals("bar 2", property.get("value"));
+                assertEquals("test 2", property.get("description"));
+            }
+        }
+        
+        // Now test changing that property back and deleting the new one
+        properties.clear();
+        properties.add(createProperty("PortNumber","1527"));
+        properties.add(createProperty("Password","APP"));
+        properties.add(createProperty("User","APP"));
+        properties.add(createProperty("serverName","localhost"));
+        properties.add(createProperty("DatabaseName","sun-appserv-samples"));
+        properties.add(createProperty("connectionAttributes",";create=true"));
+        
+        createProperties(URL_DERBYPOOL_PROPERTIES, properties);
+        
+        newProperties = getProperties(get(URL_DERBYPOOL_PROPERTIES));
+        for (Map<String, String> property : newProperties) {
+            if (property.get("name").equals("connectionAttributes")) {
+                assertEquals(";create=true", property.get("value"));
+            } else if (property.get("name").equals("foo")) {
+                fail("The property was not deleted as expected.");
+            }
+        }
+    }
+    
+    // This operation is taking a REALLY long time from the console, probably due
+    // to improper properties handling when create the RA config.  However, when
+    // updating the config's properties, we need to verfiy that only the changed
+    // properties are updated, as the broker restarts after every property is
+    // saved. This test will create the jmsra config with a set of properties, 
+    // then update only one the object's properties, which should be a very quick,
+    // inexpensive operation.  
+    @Test
+    public void testJmsRaCreateAndUpdate() {
+        List<Map<String, String>> props = new ArrayList<Map<String, String>>(){{
+           add(createProperty("AddressListBehavior", "random"));
+           add(createProperty("AddressListIterations", "3"));
+           add(createProperty("AdminPassword", "admin"));
+           add(createProperty("AdminUserName", "admin"));
+           add(createProperty("BrokerInstanceName", "imqbroker"));
+           add(createProperty("BrokerPort", "7676"));
+           add(createProperty("BrokerStartTimeOut", "60000"));
+           add(createProperty("BrokerType", "DIRECT"));
+           add(createProperty("ConnectionUrl", "mq\\://localhost\\:7676/"));
+           add(createProperty("ReconnectAttempts", "3"));
+           add(createProperty("ReconnectEnabled", "true"));
+           add(createProperty("ReconnectInterval", "5000"));
+           add(createProperty("RmiRegistryPort", "8686"));
+           add(createProperty("doBind", "false"));
+           add(createProperty("startRMIRegistry", "false"));
+        }};
+        final String propertyList = buildPropertyList(props);
+        Map<String, String> attrs = new HashMap<String, String>() {{
+            put("objecttype","user");
+            put("id","jmsra");
+            put("threadPoolIds","thread-pool-1");
+            put("property", propertyList);
+        }};
+        
+        final String URL = "/domain/resources/resource-adapter-config";
+        delete(URL+"/jmsra");
+        ClientResponse response = post(URL, attrs);
+        assertTrue(isSuccess(response));
+        
+        // Change one property value (AddressListIterations) and update the object
+        props = new ArrayList<Map<String, String>>(){{
+           add(createProperty("AddressListBehavior", "random"));
+           add(createProperty("AddressListIterations", "4"));
+           add(createProperty("AdminPassword", "admin"));
+           add(createProperty("AdminUserName", "admin"));
+           add(createProperty("BrokerInstanceName", "imqbroker"));
+           add(createProperty("BrokerPort", "7676"));
+           add(createProperty("BrokerStartTimeOut", "60000"));
+           add(createProperty("BrokerType", "DIRECT"));
+           add(createProperty("ConnectionUrl", "mq\\://localhost\\:7676/"));
+           add(createProperty("ReconnectAttempts", "3"));
+           add(createProperty("ReconnectEnabled", "true"));
+           add(createProperty("ReconnectInterval", "5000"));
+           add(createProperty("RmiRegistryPort", "8686"));
+           add(createProperty("doBind", "false"));
+           add(createProperty("startRMIRegistry", "false"));
+        }};
+        createProperties(URL+"/jmsra/property", props);
+
+        delete(URL+"/jmsra");
+    }
+    
+    protected String buildPropertyList(List<Map<String, String>> props) {
+        StringBuilder sb = new StringBuilder();
+        String sep = "";
+        for (Map<String, String> prop : props) {
+            sb.append(sep).append(prop.get("name")).append("=").append(prop.get("value"));
+            sep = ":";
+        }
+        
+        return sb.toString();
+    }
 
     protected void createAndDeleteProperties(String endpoint) {
         ClientResponse response = get(endpoint);
@@ -90,16 +222,23 @@ public class PropertiesBagTest extends RestTestBase {
         List<Map<String, String>> properties = new ArrayList<Map<String, String>>();
 
         for(int i = 0, max = generateRandomNumber(16); i < max; i++) {
-            properties.add(new HashMap<String, String>() {{
-                put ("name", "property_" + generateRandomString());
-                put ("value", generateRandomString());
-                put ("description", generateRandomString());
-            }});
+            properties.add(createProperty("property_" + generateRandomString(), generateRandomString(), generateRandomString()));
         }
 
         createProperties(endpoint, properties);
         response = delete(endpoint);
         checkStatusForSuccess(response);
+    }
+    
+    protected Map<String, String> createProperty(final String name, final String value) {
+        return createProperty(name, value, "");
+    }
+    protected Map<String, String> createProperty(final String name, final String value, final String description) {
+        return new HashMap<String, String>() {{
+                put ("name", name);
+                put ("value", value);
+                put ("description", description);
+            }};
     }
 
     protected void createProperties(String endpoint, List<Map<String, String>> properties) {

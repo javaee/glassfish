@@ -45,10 +45,13 @@ import org.glassfish.admin.rest.provider.ProviderUtil;
 import javax.ws.rs.core.UriInfo;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import javax.ws.rs.core.PathSegment;
+import org.glassfish.admin.rest.utils.xml.RestActionReporter;
+import org.glassfish.api.ActionReport.MessagePart;
 import org.glassfish.api.admin.ParameterMap;
 import org.jvnet.hk2.component.Habitat;
 
@@ -280,16 +283,44 @@ public class Util {
             candidatePathSegment = pathSegments;
         }
 
-        StringBuilder setBasePath = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         for(PathSegment pathSegment :  candidatePathSegment) {
-            setBasePath.append(pathSegment.getPath());
-            setBasePath.append('.');
+            sb.append(pathSegment.getPath());
+            sb.append('.');
         }
+        String setBasePath = sb.toString();
         ParameterMap parameters = new ParameterMap();
+        Map<String, String> currentValues = getCurrentValues(setBasePath.toString(), habitat);
+        
         for (Map.Entry<String, String> entry : data.entrySet()) {
-            StringBuilder setExpression = new StringBuilder(setBasePath);
-            parameters.add("DEFAULT", setExpression.append(entry.getKey()).append('=').append(entry.getValue()).toString());
+            String currentValue = currentValues.get(setBasePath + entry.getKey());
+            if ((currentValue == null) || (!currentValue.equals(entry.getValue()))) {
+                parameters.add("DEFAULT", setBasePath + entry.getKey() + "=" + entry.getValue());
+            }
         }
-        return ResourceUtil.runCommand("set", parameters, habitat, ""); //TODO The last parameter is resultType and is not used. Refactor the called method to remove it
+        if (!parameters.entrySet().isEmpty()) {
+           return ResourceUtil.runCommand("set", parameters, habitat, ""); //TODO The last parameter is resultType and is not used. Refactor the called method to remove it
+        } else {
+            return new RestActionReporter(); // noop
+        }
+    }
+    
+    private static Map<String, String> getCurrentValues(String basePath, Habitat habitat) {
+        Map<String, String> values = new HashMap<String, String>();
+        final String path = (basePath.endsWith(".")) ? basePath.substring(0, basePath.length()-1) : basePath;
+        RestActionReporter gr = ResourceUtil.runCommand("get", new ParameterMap() {{ 
+            add ("DEFAULT", path); 
+        }}, habitat, "");
+        
+        MessagePart top = gr.getTopMessagePart();
+        for (MessagePart child : top.getChildren()) {
+            String message = child.getMessage();
+            if (message.contains("=")) {
+                String[] parts = message.split("=");
+                values.put(parts[0], (parts.length > 1) ? parts[1] : "");
+            }
+        }
+        
+        return values;
     }
 }

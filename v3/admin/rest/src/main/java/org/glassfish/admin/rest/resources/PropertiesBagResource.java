@@ -66,9 +66,9 @@ import org.glassfish.admin.rest.results.GetResultList;
 import org.glassfish.admin.rest.results.OptionsResult;
 import org.glassfish.admin.rest.utils.xml.RestActionReporter;
 import org.glassfish.api.ActionReport;
-import org.jvnet.hk2.config.ConfigBean;
 import org.jvnet.hk2.config.Dom;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.config.types.Property;
 import org.jvnet.hk2.config.TransactionFailure;
 
 /**
@@ -156,7 +156,9 @@ public class PropertiesBagResource {
     @Produces({"text/html;qs=2",MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response delete() {
         try {
-            deleteExistingProperties();
+            Map<String, Property> existing = getExistingProperties();
+            deleteMissingProperties(existing, null);
+            
             String successMessage = localStrings.getLocalString("rest.resource.delete.message",
                         "\"{0}\" deleted successfully.", new Object[]{uriInfo.getAbsolutePath()});
             return ResourceUtil.getResponse(200, successMessage, requestHeaders, uriInfo);
@@ -180,19 +182,38 @@ public class PropertiesBagResource {
         RestActionReporter ar = new RestActionReporter();
         ar.setActionDescription("Property");
         try {
-            deleteExistingProperties();
+            Map<String, Property> existing = getExistingProperties();
+            deleteMissingProperties(existing, properties);
             Map<String, String> data = new LinkedHashMap<String, String>();
+
             for (Map<String, String> property : properties) {
+                Property existingProp = existing.get(property.get("name"));
                 String escapedName = getEscapedPropertyName(property.get("name"));
-                data.put (escapedName, property.get("value"));
-                final String description = property.get("description");
-                //update the description only if not null
-                // and the prop name does not contain .
+                String value = property.get("value");
+                String description = property.get("description");
+                final String unescapedValue = value.replaceAll("\\\\", "");
+                
+                // the prop name can not contain .
                 // need to remove the . test when http://java.net/jira/browse/GLASSFISH-15418  is fixed
-                if ((description != null)&&(property.get("name").indexOf(".")==-1)) {
-                    data.put (escapedName + ".description", description);
+                boolean canSaveDesc = property.get("name").indexOf(".") == -1;
+                
+                if ((existingProp == null) || !unescapedValue.equals(existingProp.getValue())) {
+                    data.put(escapedName, property.get("value"));
+                    if (canSaveDesc) {
+                        data.put(escapedName + ".description", description);
+                    }
+                }
+
+                //update the description only if not null/blank
+                if ((description != null) && (existingProp != null)) {
+                     if (!"".equals(description) && (!description.equals(existingProp.getDescription()))) {
+                        if (canSaveDesc) {
+                            data.put(escapedName + ".description", description);
+                        }
+                    }
                 }
             }
+            
             if (!data.isEmpty()) {
                 Util.applyChanges(data, uriInfo, habitat);
             }
@@ -214,13 +235,32 @@ public class PropertiesBagResource {
         
         return new ActionReportResult("properties", ar, new OptionsResult(Util.getResourceName(uriInfo)));
     }
+        
+    protected Map<String, Property> getExistingProperties() {
+        Map<String, Property> properties = new HashMap<String, Property>();
+        for (Dom child : parent.nodeElements(tagName)) {
+            Property property = child.createProxy();
+            properties.put(property.getName(), property);
+        }
+        return properties;
+    }
 
-    protected void deleteExistingProperties() throws TransactionFailure {
+    protected void deleteMissingProperties(Map<String, Property> existing, List<Map<String, String>> properties) throws TransactionFailure {
+        Set<String> propNames = new HashSet<String>();
+        if (properties != null) {
+            for (Map<String, String> property : properties) {
+                propNames.add(property.get("name"));
+            }
+        }
+        
         HashMap<String, String> data = new HashMap<String, String>();
-        for (final Dom existingProp : parent.nodeElements(tagName)) {
-            data.clear();
-            String escapedName = getEscapedPropertyName(((ConfigBean) existingProp).attribute("name"));
-            data.put (escapedName, "");
+        for (final Property existingProp : existing.values()) {
+            if (!propNames.contains(existingProp.getName())) {
+                String escapedName = getEscapedPropertyName(existingProp.getName());
+                data.put (escapedName, "");
+            }
+        }
+        if (!data.isEmpty()) {
             Util.applyChanges(data, uriInfo, habitat);
         }
     }
