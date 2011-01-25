@@ -57,6 +57,7 @@ import com.sun.logging.LogDomains;
  * has a change.  You should call the GroupInfoService
  * <code>getClusterInstanceInfo</code> method to get
  * updated info.
+ * @author Ken Cavanaugh
  * @author Sheetal Vartak
  */
 public class GroupInfoServiceObserverImpl 
@@ -64,6 +65,17 @@ public class GroupInfoServiceObserverImpl
 
     protected static final Logger _logger = LogDomains.getLogger(
         GroupInfoServiceObserverImpl.class, LogDomains.JNDI_LOGGER);
+
+    private static void doLog( Level level, String fmt, Object... args )  {
+        if (_logger.isLoggable(level)) {
+            _logger.log( level, fmt, args ) ;
+        }
+    }
+
+    private static void fineLog( String fmt, Object... args ) {
+        doLog( Level.FINE, fmt, args ) ;
+    }
+
 
     private GroupInfoService gis;
     private RoundRobinPolicy rr ;
@@ -75,9 +87,23 @@ public class GroupInfoServiceObserverImpl
         this.rr = rr ;
     }
 
+    // This method is called for internally forced updates: 
+    // see SerialInitContextFactory.getInitialContext.
+    public void forceMembershipChange() {
+        fineLog( "GroupInfoServiceObserverImpl.forceMembershipChange called") ;
+        doMembershipChange() ;
+    }
+
     @Override
+    // This method is called when the client is informed about a cluster
+    // membership change through ClientGroupManager.receive_star.
     public void membershipChange() {
-	try {	 	    
+        fineLog( "GroupInfoServiceObserverImpl.membershipChange called") ;
+        doMembershipChange() ;
+    }
+
+    private void doMembershipChange() {
+	try {
 	    List<ClusterInstanceInfo> instanceInfoList =
                 gis.getClusterInstanceInfo((String[])null, rr.getHostPortList() );
 	    if (instanceInfoList != null && instanceInfoList.size() > 0) {
@@ -88,5 +114,4 @@ public class GroupInfoServiceObserverImpl
                 "groupinfoservice.membership.notification.problem", new Object[] {e});
 	}
     }
-
 }

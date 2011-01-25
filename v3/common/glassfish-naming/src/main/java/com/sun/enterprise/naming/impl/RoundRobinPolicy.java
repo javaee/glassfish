@@ -161,7 +161,7 @@ public class RoundRobinPolicy {
     // used in GroupInfoServiceObserverImpl
     synchronized final void setClusterInstanceInfo(
         List<ClusterInstanceInfo> list) {
-
+        fineLog( "setClusterInstanceInfo: list={0}", list ) ;
 	totalWeight = 0;
 
 	String policy = System.getProperty(
@@ -175,15 +175,13 @@ public class RoundRobinPolicy {
 	    warnLog("loadbalancing.policy.incorrect");
 	}
 
-	fineLog( "setClusterInstanceInfo: isWeighted = {0}", isWeighted );
-
         ArrayList<ClusterInstanceInfo> newList =
             new ArrayList<ClusterInstanceInfo>() ;
 
 	for (ClusterInstanceInfo clinfo : list) {
             final int newWeight = isWeighted ? clinfo.weight() : default_weight ;
-            fineLog( "setClusterInstanceInfo: instance {0} weight {1}",
-                clinfo.name(), clinfo.weight() ) ;
+            // fineLog( "setClusterInstanceInfo: instance {0} weight {1}",
+                // clinfo.name(), clinfo.weight() ) ;
 
             final List<SocketInfo> newEndpoints =
                 filterSocketInfos( clinfo.endpoints() ) ;
@@ -196,11 +194,12 @@ public class RoundRobinPolicy {
 
 	endpointsList = newList ;
 
-	fineLog( "setClusterInstanceInfo: totalWeight = {0}", totalWeight);
+	// fineLog( "setClusterInstanceInfo: totalWeight = {0}", totalWeight);
     }
     
     synchronized final void setClusterInstanceInfoFromString(
         List<String> list) {
+        fineLog( "setClusterInstanceInfoFromString: list={0}", list ) ;
 
         List<String> newList = null;
 	
@@ -337,20 +336,20 @@ public class RoundRobinPolicy {
 	//But our range intervals are from 1-upperLimit, 
 	//11-upperLimit and so
 	//on. Hence we dont want random # to be 0.
-        fineLog( "RoundRobinPolicy.getNextRotation -> sumOfAllWeights = {0}",
-            totalWeight);
+        // fineLog( "RoundRobinPolicy.getNextRotation -> sumOfAllWeights = {0}",
+            // totalWeight);
 	while( random == 0) {
 	    random = rand.nextInt(totalWeight);
 	    if ( random != 0) {
 		break;
 	    }
 	}
-        fineLog( "getNextRotation : random # = {0} sum of all weights = {1}",
-            new Object[]{random, totalWeight});
+        // fineLog( "getNextRotation : random # = {0} sum of all weights = {1}",
+            // new Object[]{random, totalWeight});
 	int i = 0;
 	for (ClusterInstanceInfo endpoint : endpointsList) {
 	    int upperLimit = lowerLimit + endpoint.weight();
-            fineLog( "upperLimit = {0}", upperLimit);
+            // fineLog( "upperLimit = {0}", upperLimit);
 	    if (random > lowerLimit && random <= upperLimit) {
 		List<ClusterInstanceInfo> instanceInfo = 
 		    new LinkedList<ClusterInstanceInfo>();
@@ -365,13 +364,13 @@ public class RoundRobinPolicy {
                 endpointsList = instanceInfo ;
 
 		//print the contents...
-		fineLog( "returning the following list...{0}",
+		fineLog( "getNextRotation: result={0}",
                     instanceInfo.toString());
 		
 		return convertIntoCorbaloc(instanceInfo);
 	    }
 	    lowerLimit = upperLimit;
-	    fineLog( "lowerLimit = {0}", lowerLimit);
+	    // fineLog( "lowerLimit = {0}", lowerLimit);
 	    i++;    
 	}
 	warnLog("Could not find an endpoint to send request to!");
