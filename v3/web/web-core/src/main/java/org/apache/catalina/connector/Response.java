@@ -1861,7 +1861,8 @@ public class Response
      * string JSESSIONID
      */
     public void removeSessionCookies() {
-        coyoteResponse.removeSessionCookies();        
+        String matchExpression = "^" + getContext().getSessionCookieName() + "=.*";
+        coyoteResponse.getMimeHeaders().removeHeader("Set-Cookie", matchExpression);
     }
     // END GlassFish 896
 
