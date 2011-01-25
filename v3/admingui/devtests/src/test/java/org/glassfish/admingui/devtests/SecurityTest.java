@@ -173,6 +173,9 @@ public class SecurityTest extends BaseSeleniumTestClass {
         final String providerName = "testJaccProvider" + generateRandomString();
         final String policyConfig = "com.example.Foo";
         final String policyProvider = "com.example.Foo";
+        final String propName = "propName";
+        final String propValue = "propValue";
+        final String propDescription = generateRandomString();
 
         createConfig("new-config");
         for (String configName : list) {
@@ -184,9 +187,9 @@ public class SecurityTest extends BaseSeleniumTestClass {
             setFieldValue("propertyForm:propertySheet:propertSectionTextField:policyProviderProp:PolicyProvider", policyProvider);
 
             int count = addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton");
-            setFieldValue("propertyForm:basicTable:rowGroup1:0:col2:col1St", "property");
-            setFieldValue("propertyForm:basicTable:rowGroup1:0:col3:col1St", "value");
-            setFieldValue("propertyForm:basicTable:rowGroup1:0:col4:col1St", "description");
+            setFieldValue("propertyForm:basicTable:rowGroup1:0:col2:col1St", propName);
+            setFieldValue("propertyForm:basicTable:rowGroup1:0:col3:col1St", propValue);
+            setFieldValue("propertyForm:basicTable:rowGroup1:0:col4:col1St", propDescription);
 
             clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_JACC_PROVIDERS);
             assertTrue(tableContainsRow("propertyForm:configs", "col1", providerName));
@@ -194,6 +197,9 @@ public class SecurityTest extends BaseSeleniumTestClass {
             clickAndWait(getLinkIdByLinkText("propertyForm:configs", providerName), TRIGGER_EDIT_JACC_PROVIDER);
             assertEquals(policyConfig, getFieldValue("propertyForm:propertySheet:propertSectionTextField:policyConfigProp:PolicyConfig"));
             assertEquals(policyProvider, getFieldValue("propertyForm:propertySheet:propertSectionTextField:policyProviderProp:PolicyProvider"));
+            assertEquals(propName, getFieldValue("propertyForm:basicTable:rowGroup1:0:col2:col1St"));
+            assertEquals(propValue, getFieldValue("propertyForm:basicTable:rowGroup1:0:col3:col1St"));
+            assertEquals(propDescription, getFieldValue("propertyForm:basicTable:rowGroup1:0:col4:col1St"));
 
             assertTableRowCount("propertyForm:basicTable", count);
             clickAndWait("propertyForm:propertyContentPage:topButtons:cancelButton", TRIGGER_JACC_PROVIDERS);

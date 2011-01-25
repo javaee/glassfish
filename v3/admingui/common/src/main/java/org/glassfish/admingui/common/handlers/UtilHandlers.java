@@ -83,6 +83,7 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import javax.faces.component.UIViewRoot;
+import org.glassfish.internal.embedded.ScatteredArchive.Builder.type;
 
 
 /**
@@ -992,7 +993,40 @@ public class UtilHandlers {
         int depth = ((Integer) handlerCtx.getInputValue("depth"));
         handlerCtx.setOutputValue("json", JSONUtil.javaToJSON(obj, depth));
     }
-
+    
+    @Handler(id="gf.createPropertyString",
+            input={ 
+                @HandlerInput(name="properties", type=List.class, required=true)
+            },
+            output={
+                @HandlerOutput(name="string", type=String.class)
+            }
+    )
+    public static void createPropertyString(HandlerContext handlerCtx) {
+        StringBuilder sb = new StringBuilder();
+        String sep = "";
+        List<Map<String, String>> properties = (List<Map<String, String>>)handlerCtx.getInputValue("properties");
+        for (Map<String, String> property : properties) {
+            sb.append(sep)
+                    .append(property.get("name"))
+                    .append("=")
+                    .append(escapePropertyValue(property.get("value")))
+                    ;
+            sep = ":";
+        }
+        
+        handlerCtx.setOutputValue("string", sb.toString());
+    }
+    
+    public static String escapePropertyValue(String value) {
+//        String[] chars = {"&","<",">","(",")","{","}",":","/","\\","\'","\""};
+        String[] chars = {":"};
+        for (String c : chars) {
+            value = value.replaceAll(c, "\\\\"+c);
+        }
+        
+        return value;
+    }
 
     private static final String PATH_SEPARATOR = "${path.separator}";
 }

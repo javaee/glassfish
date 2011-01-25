@@ -68,6 +68,7 @@
     setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
     setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
     setPageSessionAttribute(key="skipAttrsList", value={"resourceAdapterName"});
+    setPageSessionAttribute(key="showDescCol" value="false" );
     />
 </event>
 <sun:form id="propertyForm">

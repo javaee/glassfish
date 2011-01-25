@@ -41,6 +41,9 @@
 package org.glassfish.admingui.devtests;
 
 import org.junit.Test;
+import org.omg.CORBA.SetOverrideType;
+
+import static org.junit.Assert.*;
 
 public class ResourceAdapterConfigsTest extends BaseSeleniumTestClass {
     private static final String TRIGGER_RESOURCE_ADAPTER_CONFIGS = "i18njca.resourceAdapterConfig.pageTitleHelp";
@@ -49,10 +52,6 @@ public class ResourceAdapterConfigsTest extends BaseSeleniumTestClass {
 
     @Test
     public void testResourceAdapterConfigs() throws Exception {
-        // There are *serious* performance issues in the backend when setting the properties for the RA causing this
-        // page to be *REALLY* slow, which, in turn, causes the test to time out.  I'm going to make the executive
-        // decision to disable the test for now, until those issues can be worked out.  -- jdl 18-Jan-2011
-        /*
         clickAndWait("treeForm:tree:resources:resourceAdapterConfigs:resourceAdapterConfigs_link", TRIGGER_RESOURCE_ADAPTER_CONFIGS);
 
         if (tableContainsRow("propertyForm:poolTable", "col1", "jmsra")) {
@@ -60,17 +59,17 @@ public class ResourceAdapterConfigsTest extends BaseSeleniumTestClass {
 
         }
 
+        // Create new RA config
         clickAndWait("propertyForm:poolTable:topActionsGroup1:newButton", TRIGGER_NEW_RESOURCE_ADAPTER);
         selectDropdownOption("propertyForm:propertySheet:propertSectionTextField:threadPoolsIdProp:threadpoolsid", "thread-pool-1");
-        clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_RESOURCE_ADAPTER_CONFIGS);
+        clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_RESOURCE_ADAPTER_CONFIGS, TIMEOUT*10);
 
+        // Verify config was saved and update values
         assertTrue(isTextPresent("jmsra"));
         clickAndWait(getLinkIdByLinkText("propertyForm:poolTable", "jmsra"), TRIGGER_EDIT_RESOURCE_ADAPTER_CONFIG);
-
-        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
         clickAndWait("propertyForm:propertyContentPage:topButtons:cancelButton", TRIGGER_RESOURCE_ADAPTER_CONFIGS);
-
+        
+        // Remove config
         deleteRow("propertyForm:poolTable:topActionsGroup1:button1", "propertyForm:poolTable", "jmsra");
-        */
     }
 }

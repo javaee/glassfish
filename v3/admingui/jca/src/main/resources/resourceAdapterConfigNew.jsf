@@ -62,6 +62,7 @@
         setPageSessionAttribute(key="showCancelButton" value="#{true}" );
         setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
         setPageSessionAttribute(key="hasPropertyTable" value="#{true}" );
+        setPageSessionAttribute(key="showDescCol" value="false" );
 
         getRequestValue(key="name" value="#{pageSession.Name}");
         getRequestValue(key="nameText" value="#{pageSession.nameText}");

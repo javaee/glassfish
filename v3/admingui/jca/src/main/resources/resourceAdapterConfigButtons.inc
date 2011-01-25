@@ -73,21 +73,25 @@
                     if ("#{pageSession.myOption}=text") {
                         setValueExpression(expression="#{pageSession.valueMap['name']}", value="#{pageSession.nameText}");
                     }
+                    removeEmptyProps(props="#{pageSession.tableList}" modifiedProps="#{pageSession.tableList}");
+                    gf.createPropertyString(properties="#{pageSession.tableList}", string="#{requestScope.props}");
+                    mapPut(map="#{pageSession.valueMap}", key="property", value="#{requestScope.props}");
+
                     gf.createEntity(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}"
                         attrs="#{pageSession.valueMap}"
                         skipAttrs="#{pageSession.skipAttrsList}"
                         convertToFalse="#{pageSession.convertToFalseList}"
                         result => $attribute{objStr});
 
-                    removeEmptyProps(props="#{pageSession.tableList}" modifiedProps="#{pageSession.tableList}");
+
+                    /*
                     javaToJSON(obj="#{pageSession.tableList}" json="#{requestScope.tmpJSON}");
-                    //println("payload -------------------------------> #{requestScope.tmpJSON}");
                     urlencode(value="#{pageSession.valueMap['name']}" encoding="UTF-8" result="#{pageSession.encodeName}");
                     gf.restRequest(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}/#{pageSession.encodeName}/property.json"
                                    method="POST"
                                    data="#{requestScope.tmpJSON}"
                                    result="#{requestScope.restResponse}");
-                        
+                    */  
                     if (#{pageSession.showSuccessfulMsg}){
                         prepareSuccessfulMsg();
                         gf.redirect(page="#{pageSession.selfPage}&alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
