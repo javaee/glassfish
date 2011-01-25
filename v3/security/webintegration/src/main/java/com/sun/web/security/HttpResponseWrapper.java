@@ -81,6 +81,10 @@ class HttpResponseWrapper extends HttpServletResponseWrapper
     public Collection<String> getHeaders(String name) {
         return httpResponse.getHeaders(name);
     }
+
+    public void addSessionCookieInternal(final Cookie cookie) {
+        httpResponse.addSessionCookieInternal(cookie);
+    }
     
     public String getMessage() {
         return httpResponse.getMessage();
