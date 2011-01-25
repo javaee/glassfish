@@ -14,7 +14,7 @@ public class Client {
         private static SimpleReporterAdapter stat =
                 new SimpleReporterAdapter("appserv-tests");
 
-        @WebServiceRef(wsdlLocation="http://HTPP_HOST:HTTP_PORT/HelloImplService/HelloImpl?WSDL")
+        @WebServiceRef(wsdlLocation="http://HTTP_HOST:HTTP_PORT/HelloImplService/HelloImpl?WSDL")
         static HelloImplService service;
 
         public static void main(String[] args) {
