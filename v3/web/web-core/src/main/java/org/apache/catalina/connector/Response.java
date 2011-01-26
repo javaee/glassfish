@@ -1894,7 +1894,9 @@ public class Response
     public void removeSessionCookies() {
         String matchExpression = "^" + getContext().getSessionCookieName() + "=.*";
         coyoteResponse.getMimeHeaders().removeHeader("Set-Cookie", matchExpression);
-        coyoteResponse.getMimeHeaders().removeHeader("Set-Cookie", "^JSESSIONIDSSO=.*");
+        matchExpression = "^" +
+            org.apache.catalina.authenticator.Constants.SINGLE_SIGN_ON_COOKIE + "=.*";
+        coyoteResponse.getMimeHeaders().removeHeader("Set-Cookie", matchExpression);
     }
     // END GlassFish 896
 
