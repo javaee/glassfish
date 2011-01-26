@@ -47,6 +47,7 @@
 <project name="GlassFish Admin Console Dev Test Hudson Helper" default="test" basedir="."
          xmlns:artifact="antlib:org.apache.maven.artifact.ant">
 
+    <property file="test.properties"/>
     <property environment="env"/>
 
     <property name="install.dir" value="binaries"/>
