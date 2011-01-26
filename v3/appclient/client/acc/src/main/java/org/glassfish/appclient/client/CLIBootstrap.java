@@ -1046,7 +1046,6 @@ public class CLIBootstrap {
          * the = in -Dprop=value as an argument separator and breaks the
          * property assignment apart into two arguments.
          */
-        private final static String ACCJavaHome_ENV_VAR_NAME = "ACCJavaHome";
         private final static String ACCJava_ENV_VAR_NAME = "ACCJava";
 
         private final boolean useWindowsSyntax = File.separatorChar == '\\' &&
@@ -1054,24 +1053,14 @@ public class CLIBootstrap {
 
 
         protected String javaExe;
-        protected File javaHome;
+        protected File jreHome;
 
         private JavaInfo() {
             init();
         }
 
-        private String getDefaultedEnv(final String envVarName, final String defaultValue) {
-            String result = System.getenv(envVarName);
-            if (result == null) {
-                result = defaultValue;
-            }
-            return result;
-        }
-
         protected void init() {
-            final String javaHomeToUse = getDefaultedEnv(ACCJavaHome_ENV_VAR_NAME,
-                    System.getProperty("java.home"));
-            javaHome = new File(javaHomeToUse);
+            jreHome = new File(System.getProperty("java.home"));
             javaExe = javaExe();
         }
 
@@ -1080,7 +1069,7 @@ public class CLIBootstrap {
         }
 
         protected File javaBinDir() {
-            return new File(javaHome, "bin");
+            return new File(jreHome, "bin");
         }
 
         String javaExe() {
@@ -1096,7 +1085,7 @@ public class CLIBootstrap {
         }
 
         File lib() {
-            return new File(javaHome, "lib");
+            return new File(jreHome, "lib");
         }
 
         String pathSeparator() {
