@@ -1894,6 +1894,7 @@ public class Response
     public void removeSessionCookies() {
         String matchExpression = "^" + getContext().getSessionCookieName() + "=.*";
         coyoteResponse.getMimeHeaders().removeHeader("Set-Cookie", matchExpression);
+        coyoteResponse.getMimeHeaders().removeHeader("Set-Cookie", "^JSESSIONIDSSO=.*");
     }
     // END GlassFish 896
 
