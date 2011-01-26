@@ -80,12 +80,10 @@
         <!--
           modules to be included in this bundle
         -->
-<!--
         <dependency>
             <groupId>org.glassfish.grizzly</groupId>
             <artifactId>grizzly-comet</artifactId>
         </dependency>
--->
         <dependency>
             <groupId>org.glassfish.grizzly</groupId>
             <artifactId>grizzly-websockets</artifactId>

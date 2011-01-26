@@ -147,7 +147,7 @@
         <javadb.version>10.6.2.1</javadb.version>
         <jaxr.version>JAXR_RA_20091012</jaxr.version>
         <weld.version>1.1.0.CR4</weld.version>
-        <jersey.version>1.5</jersey.version>
+        <jersey.version>1.6-SNAPSHOT</jersey.version>
         <jbi.version>1.0</jbi.version>
         <wsdl4j.version>1.6.2</wsdl4j.version>
         <gmbal.version>3.1.0-b001</gmbal.version>
@@ -844,13 +844,11 @@
                 <version>${grizzly.version}</version>
             </dependency>-->
 
-<!--
             <dependency>
                 <groupId>org.glassfish.grizzly</groupId>
                 <artifactId>grizzly-comet</artifactId>
                 <version>${grizzly.version}</version>
             </dependency>
--->
 
             <dependency>
                 <groupId>org.glassfish.grizzly</groupId>

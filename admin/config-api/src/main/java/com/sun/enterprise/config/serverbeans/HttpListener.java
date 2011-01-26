@@ -424,7 +424,7 @@ public interface HttpListener extends ConfigBeanProxy, Injectable, PropertyBag {
             "make sure it is initialized by adding the load-on-startup element to web.xml"),
         
     @PropertyDesc(name="jkEnabled", defaultValue="false", dataType=Boolean.class,
-        description="Enablesd/disables mod_jk support."),
+        description="Enables/disables mod_jk support."),
         
     @PropertyDesc(name="compression", defaultValue="off", values={"off","on","force"},
         description="Specifies use of HTTP/1.1 GZIP compression to save server bandwidth. " +
