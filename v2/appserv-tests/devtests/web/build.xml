@@ -266,6 +266,7 @@
         <ant dir="servlet-3.0/sessionIdUrlRewriteSessionTrackingMode" target="all"/>
         <ant dir="servlet-3.0/sessionIdUrlRewriteSessionTrackingModeCustomCookieName" target="all"/>
         <ant dir="servlet-3.0/sessionIdUrlRewriteSessionTrackingModeDeclarative" target="all"/>
+        <ant dir="servlet-3.0/nonDuplicateSessionCookieWithCustomCookieName" target="all"/>
         <ant dir="servlet-3.0/webFilterAnnotation" target="all"/>
         <ant dir="servlet-3.0/webFragment" target="all"/>
         <ant dir="servlet-3.0/webFragmentWithEjbLite" target="all"/>
