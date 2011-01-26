@@ -71,10 +71,7 @@ public class SeleniumHelper {
 
     public Selenium getSeleniumInstance() {
         if (selenium == null) {
-            // We're using the debug sys prop rather than Level.FINE to make logging config easier
-            if (Boolean.parseBoolean(SeleniumHelper.getParameter("debug", "false"))) {
-                logger.log(Level.INFO, "Creating new selenium instance");
-            }
+            logger.log(Level.INFO, "Creating new selenium instance");
             String browser = getParameter("browser", "firefox");
 
             if ("firefox".equals(browser)) {
@@ -95,9 +92,7 @@ public class SeleniumHelper {
     
     public void releaseSeleniumInstance() {
         if (selenium != null) {
-            if (Boolean.parseBoolean(SeleniumHelper.getParameter("debug", "false"))) {
-                logger.log(Level.INFO, "Releasing selenium instance");
-            }
+            logger.log(Level.INFO, "Releasing selenium instance");
             selenium.stop();
             selenium = null;
         }
