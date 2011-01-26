@@ -46,7 +46,7 @@
     <parent>
         <groupId>com.sun.enterprise</groupId>
         <artifactId>hk2-parent</artifactId>
-        <version>1.0.75-SNAPSHOT</version>
+        <version>1.0.75</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>hk2-core</artifactId>
