@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -79,7 +79,7 @@
       <include name="external/javamail/**"/>
       <include name="external/jaxrpc-api/src/**"/>
       <include name="external/jaxb-api/**"/>
-      <include name="external/jaxr/**"/>
+      <include name="external/jaxr/java/**"/>
       <include name="external/jaxws-api/**"/>
       <include name="external/jsf/**"/>
       <include name="external/jsp/**"/>
@@ -158,7 +158,7 @@
       <antcall target="javamail.download" />
       <antcall target="jaxrpc.checkout" />
       <antcall target="jaxb-api.download" />
-      <antcall target="jaxr.checkout" />
+      <antcall target="jaxr.download" />
       <antcall target="jaxws-api.download" />
       <antcall target="jsf.download" />
       <antcall target="jsp.download" />
@@ -195,28 +195,23 @@
   </target>
 
   <target name="jaxr-api.checkout" description="Checkout JAXR-API and JAXR-RI"> 
-      <echo message="checkout jaxr-api and jaxr-ri from ${cvsroot}."/>
-      <exec executable="cvs" dir="${external.dir}" failonerror="true" >
-	  <arg line="-d" />
-          <arg line="${cvsroot}" />
-          <arg line="co" />
-	  <arg line="-d" />
-	  <arg line="jaxr-api" />
-	  <arg line="${jaxr-api.cvs.location}" />
-	</exec>
-      <exec executable="cvs" dir="${external.dir}" failonerror="true" >
-	  <arg line="-d" />
-          <arg line="${cvsroot}" />
-          <arg line="co" />
-	  <arg line="-d" />
-	  <arg line="jaxr-ri" />
-	  <arg line="${jaxr-ri.cvs.location}" />
-	</exec>
+      <echo message="checkout jaxr-api from ${jaxr-api.svn.location}."/>
+      <exec executable="svn" dir="${external.dir}" failonerror="true" >
+          <arg line="checkout" />
+          <arg line="${jaxr-api.svn.location}" />
+          <arg line="jaxr-api" />
+      </exec>
+      <echo message="checkout jaxr-ri from ${jaxr-ri.svn.location}."/>
+      <exec executable="svn" dir="${external.dir}" failonerror="true" >
+          <arg line="checkout" />
+          <arg line="${jaxr-ri.svn.location}" />
+          <arg line="jaxr-ri" />
+      </exec>
   </target>
 
-  <target name="javamail.download" description="Download JavaMail 1.4.3" depends="initialize.maven">
+  <target name="javamail.download" description="Download JavaMail 1.4.4" depends="initialize.maven">
       <artifact:dependencies sourcesFilesetId="sources.dependency.javamail">
-          <dependency groupId="javax.mail" artifactId="mail" version="1.4.3">
+          <dependency groupId="javax.mail" artifactId="mail" version="1.4.4">
               <exclusion groupId="javax.activation" artifactId="activation" />
           </dependency>
           <remoteRepository refid="nexus.repository" />
@@ -241,7 +236,7 @@ fileset refid of artifact:dependencies does not work in unjar
 
 
   <target name="jaxrpc.checkout" description="Checkout JAXRPC-API"> 
-      <echo message="checkout jaxrpc-api from ${cvsroot}."/>
+      <echo message="checkout jaxrpc-api from ${sfbay.cvsroot}."/>
       <exec executable="cvs" dir="${external.dir}"  >
 	  <arg line="-d" />
           <arg line="${sfbay.cvsroot}" />
@@ -254,12 +249,10 @@ fileset refid of artifact:dependencies does not work in unjar
 
   <target name="jaxb-api.download" description="Download JAXB-API" depends="initialize.maven">
       <artifact:dependencies sourcesFilesetId="sources.dependency.jaxb-api">
-<!-- using previous version 2.2.1 since the new version 2.2.2-promoted-b94 does not have the source artifact -->
+<!-- using previous version 2.2.1 since the new version 2.2.2-promoted-b94 does not have the source artifact
           <dependency groupId="javax.xml.bind" artifactId="jaxb-api" version="2.2.1" classifier="sources" />
-
-<!--
-          <dependency groupId="javax.xml.bind" artifactId="jaxb-api" version="2.2.2-promoted-b94" classifier="sources" />
 -->
+          <dependency groupId="javax.xml.bind" artifactId="jaxb-api" version="2.2.2" classifier="sources" />
           <remoteRepository refid="nexus.repository" />
           <localRepository path="${maven.repo.local}"/>
       </artifact:dependencies>
@@ -275,14 +268,17 @@ fileset refid of artifact:dependencies does not work in unjar
       </unjar>
   </target>
 
-  <target name="jaxr.checkout" description="Checkout JAXR" >
+  <target name="jaxr.download" description="Download JAXR" depends="initialize.maven">
+      <artifact:dependencies sourcesFilesetId="sources.dependency.webservices-extra-api">
+          <dependency groupId="org.glassfish.metro" artifactId="webservices-extra-api" version="2.1-b27" classifier="sources" />
+          <remoteRepository refid="nexus.repository" />
+          <localRepository path="${maven.repo.local}"/>
+      </artifact:dependencies>
       <mkdir dir="${external.dir}/jaxr" />
-      <get
-           src="${jaxr.url}"
-           dest="${external.dir}/jaxr/jaxr-1_0-fr-apisrc.jar"
-           verbose="true"
-           usetimestamp="true"
-           ignoreerrors="true" />
+      <copy todir="${external.dir}/jaxr" verbose="true">
+          <fileset refid="sources.dependency.webservices-extra-api" />
+          <mapper type="flatten" />
+      </copy>
       <unjar dest="${external.dir}/jaxr"  >
           <fileset dir="${external.dir}/jaxr">
               <include name="**/*.jar"/>
@@ -292,7 +288,7 @@ fileset refid of artifact:dependencies does not work in unjar
 
   <target name="jaxws-api.download" description="Download JAXWS-API" depends="initialize.maven">
       <artifact:dependencies sourcesFilesetId="sources.dependency.jaxws-api">
-          <dependency groupId="javax.xml.ws" artifactId="jaxws-api" version="2.2.1">
+          <dependency groupId="javax.xml.ws" artifactId="jaxws-api" version="2.2.3-promoted-b07">
               <exclusion groupId="javax.annotation" artifactId="jsr250-api" />
               <exclusion groupId="javax.activation" artifactId="activation" />
               <exclusion groupId="javax.xml.soap" artifactId="saaj-api" />
@@ -315,7 +311,7 @@ fileset refid of artifact:dependencies does not work in unjar
 
   <target name="jsf.download" description="Download JSF" depends="initialize.maven">
       <artifact:dependencies sourcesFilesetId="sources.dependency.jsf">
-          <dependency groupId="com.sun.faces" artifactId="jsf-api" version="2.1.0-b04"/>
+          <dependency groupId="com.sun.faces" artifactId="jsf-api" version="2.1.0-b10"/>
           <remoteRepository refid="nexus.repository" />
           <localRepository path="${maven.repo.local}"/>
       </artifact:dependencies>
@@ -333,8 +329,8 @@ fileset refid of artifact:dependencies does not work in unjar
 
   <target name="jsp.download" description="Download JSP" depends="initialize.maven">
       <artifact:dependencies sourcesFilesetId="sources.dependency.jsp">
-          <dependency groupId="javax.servlet.jsp" artifactId="jsp-api" version="2.2"/>
-          <dependency groupId="org.glassfish.web" artifactId="jsp-impl" version="2.2.2-b03"/>
+          <dependency groupId="javax.servlet.jsp" artifactId="jsp-api" version="2.2.1-b02"/>
+          <dependency groupId="org.glassfish.web" artifactId="jsp-impl" version="2.2.2-b06"/>
           <remoteRepository refid="nexus.repository" />
           <localRepository path="${maven.repo.local}"/>
       </artifact:dependencies>
@@ -407,8 +403,8 @@ fileset refid of artifact:dependencies does not work in unjar
 
   <target name="mq.download" description="Download MQ" depends="initialize.maven" >
       <artifact:dependencies filesetId="dependency.fileset" sourcesFilesetId="sources.dependency.mq" >
-          <dependency groupId="org.glassfish" artifactId="mq-distribution" version="4.5-017" classifier="sources" type="zip"/>
-          <dependency groupId="org.glassfish" artifactId="mq-distribution" version="4.5-017" type="zip"/>
+          <dependency groupId="org.glassfish" artifactId="mq-distribution" version="4.5-026" classifier="sources" type="zip"/>
+          <dependency groupId="org.glassfish" artifactId="mq-distribution" version="4.5-026" type="zip"/>
           <remoteRepository refid="nexus.repository" />
           <localRepository path="${maven.repo.local}"/>
       </artifact:dependencies>
@@ -431,7 +427,7 @@ fileset refid of artifact:dependencies does not work in unjar
 
   <target name="eclipse-persistence.download" description="Download Eclipse Persistence source" depends="initialize.maven" > 
       <artifact:dependencies sourcesFilesetId="sources.dependency.eclipse-persistence">
-          <dependency groupId="org.eclipse.persistence" artifactId="javax.persistence" version="2.0.2"/>
+          <dependency groupId="org.eclipse.persistence" artifactId="javax.persistence" version="2.0.3"/>
           <remoteRepository refid="nexus.repository" />
           <localRepository path="${maven.repo.local}"/>
       </artifact:dependencies>
@@ -484,9 +480,9 @@ fileset refid of artifact:dependencies does not work in unjar
       </unjar>
   </target>
 
-  <target name="bean-validator.download" description="Download BeanValidator" depends="initialize.maven" >
+  <target name="bean-validator.download" description="Download javax.validator" depends="initialize.maven" >
       <artifact:dependencies sourcesFilesetId="sources.dependency.bean-validator" >
-          <dependency groupId="org.glassfish" artifactId="bean-validator" version="3.0-JBoss-4.0.2_02" classifier="sources" />
+          <dependency groupId="javax/validation" artifactId="validation-api" version="1.0.0.GA" classifier="sources" />
           <remoteRepository refid="nexus.repository" />
           <localRepository path="${maven.repo.local}"/>
       </artifact:dependencies>
@@ -505,7 +501,7 @@ fileset refid of artifact:dependencies does not work in unjar
   <target name="weld-osgi-bundle.download" description="Download Weld OSGI Bundle" depends="initialize.maven" >
       <!-- temporary using the older version since new version does not have the source artifact -->
       <artifact:dependencies sourcesFilesetId="sources.dependency.weld-osgi-bundle" >
-          <dependency groupId="org.jboss.weld" artifactId="weld-osgi-bundle" version="1.1.0-01-glassfish" classifier="sources" >
+          <dependency groupId="org.jboss.weld" artifactId="weld-osgi-bundle" version="1.1.0.Final" classifier="sources" >
               <exclusion groupId="javax.annotation" artifactId="jsr250-api" />
           </dependency>
           <remoteRepository refid="nexus.repository" />
@@ -538,7 +534,8 @@ fileset refid of artifact:dependencies does not work in unjar
 	</exec>
   </target>
 
-  <!-- need to checkout org.osgi.core sources since there are some annotation tags from hk2   -->
+  <!-- need to checkout org.osgi.core sources since there are some
+  annotation tags from hk2 -->
   <!-- referencing classes in org.osgi.core.  Without this, the javadoc an ClassCastException --> 
   <!-- is thrown.  see:  http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6442982           -->
   <!-- the workaround is either adding the jar or sources in the classpath.                   -->
