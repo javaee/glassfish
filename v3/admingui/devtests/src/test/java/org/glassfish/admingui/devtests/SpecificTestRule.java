@@ -58,7 +58,7 @@ import org.junit.runners.model.Statement;
 public class SpecificTestRule implements MethodRule {
     protected static boolean debug;
     public SpecificTestRule() {
-        debug = Boolean.parseBoolean(BaseSeleniumTestClass.getParameter("debug", "false"));
+        debug = Boolean.parseBoolean(SeleniumHelper.getParameter("debug", "false"));
     }
 
     @Override

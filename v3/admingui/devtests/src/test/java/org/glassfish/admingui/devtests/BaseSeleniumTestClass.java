@@ -45,9 +45,6 @@ import com.thoughtworks.selenium.SeleniumException;
 import org.junit.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.ie.InternetExplorerDriver;
 
 import java.io.*;
 import java.math.BigInteger;
@@ -64,7 +61,7 @@ public class BaseSeleniumTestClass {
     public static final String TRIGGER_COMMON_TASKS = "Other Tasks";
     public static final String TRIGGER_REGISTRATION_PAGE = "Receive patch information and bug updates, screencasts and tutorials, support and training offerings, and more";
     public static final String TRIGGER_ERROR_OCCURED = "An error has occurred";
-    public static final boolean DEBUG = Boolean.parseBoolean(getParameter("debug", "false"));
+    public static final boolean DEBUG = Boolean.parseBoolean(SeleniumHelper.getParameter("debug", "false"));
 
     @Rule
     public SpecificTestRule specificTestRule = new SpecificTestRule();
@@ -78,8 +75,6 @@ public class BaseSeleniumTestClass {
     private static String currentTestClass = "";
     private boolean processingLogin = false;
     private static final String AJAX_INDICATOR = "ajaxIndicator";
-    
-    
     private static Map<String, String> bundles = new HashMap<String, String>() {{
         put("i18n", "org.glassfish.admingui.core.Strings"); // core
         put("i18nUC", "org.glassfish.updatecenter.admingui.Strings"); // update center
@@ -103,32 +98,18 @@ public class BaseSeleniumTestClass {
         //put("i18n", "org.glassfish.web.admingui.Strings");
         //put("i18nc", "org.glassfish.web.admingui.Strings");
     }};
+    private static SeleniumHelper helper = SeleniumHelper.getInstance();
+    
+    public BaseSeleniumTestClass() {
+        driver = helper.getDriver();
+        selenium = helper.getSeleniumInstance();
+    }
 
 
     @BeforeClass
     public static void setUp() throws Exception {
-        String browser = getParameter("browser", "firefox");
-        String port = getParameter("admin.port", "4848");
-        String baseUrl = "http://localhost:" + port;
-
-        if ("firefox".equals(browser)) {
-            driver = new FirefoxDriver();
-        } else if ("chrome".equals(browser)) {
-            driver = new ChromeDriver();
-        } else if ("ie".contains(browser)) {
-            driver = new InternetExplorerDriver();
-        }
-
-        if (selenium == null) {
-            selenium = new WebDriverBackedSelenium(driver, baseUrl);
-//                    DefaultSelenium("localhost", Integer.parseInt(seleniumPort), "*" + browser, baseUrl);
-//            selenium.start();
-            selenium.setTimeout("90000");
-            (new BaseSeleniumTestClass()).openAndWait("/", TRIGGER_COMMON_TASKS, 480); // Make sure the server has started and the user logged in
-        }
-
         if (!DEBUG) {
-            URL rotateLogUrl = new URL(baseUrl + "/management/domain/rotate-log");
+            URL rotateLogUrl = new URL(helper.getBaseUrl() + "/management/domain/rotate-log");
             URLConnection conn = rotateLogUrl.openConnection();
             conn.setDoOutput(true);
             OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
@@ -147,12 +128,10 @@ public class BaseSeleniumTestClass {
     @AfterClass
     public static void captureLog() {
         try {
-            selenium.stop();
-            selenium = null;
+            helper.releaseSeleniumInstance();
 
             if (!currentTestClass.isEmpty() && !DEBUG) {
-                URL url = new URL("http://localhost:" + getParameter("admin.port", "4848") + "/management/domain/view-log");
-    //            URLConnection urlC = url.openConnection();
+                URL url = new URL("http://localhost:" + SeleniumHelper.getParameter("admin.port", "4848") + "/management/domain/view-log");
                 InputStream is = url.openStream();
                 PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("target/surefire-reports/" + currentTestClass + "-server.log")));
                 BufferedReader in = new BufferedReader(new InputStreamReader(is));
@@ -173,8 +152,16 @@ public class BaseSeleniumTestClass {
 
     @Before
     public void reset() {
+        selenium = helper.getSeleniumInstance();
         currentTestClass = this.getClass().getName();
         openAndWait("/", TRIGGER_COMMON_TASKS);
+    }
+    
+    @After
+    public void afterTest() {
+        if (Boolean.parseBoolean(SeleniumHelper.getParameter("releaseAfter", "false"))) {
+            helper.releaseSeleniumInstance();
+        }
     }
     
     // *************************************************************************
@@ -889,12 +876,6 @@ public class BaseSeleniumTestClass {
         }
     }
 
-    protected static String getParameter(String paramName, String defaultValue) {
-        String value = System.getProperty(paramName);
-
-        return value != null ? value : defaultValue;
-    }
-    
     protected String resolveTriggerText(String original) {
         String triggerText = original;
         int index = original.indexOf(".");
@@ -1051,4 +1032,6 @@ public class BaseSeleniumTestClass {
         
         
     }
+    
+
 }

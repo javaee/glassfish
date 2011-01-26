@@ -47,19 +47,18 @@
 <project name="GlassFish Admin Console Dev Test Hudson Helper" default="test" basedir="."
          xmlns:artifact="antlib:org.apache.maven.artifact.ant">
 
-    <property name="BROWSER" value="firefox"/>
+    <property environment="env"/>
 
     <property name="install.dir" value="binaries"/>
     <property name="server.dir" value="${install.dir}/glassfish3"/>
     <property name="maven.dir" value="${install.dir}/${maven.version}"/>
-
-    <property environment="env"/>
-
     <property name="http.proxyHost" value=""/>
     <property name="http.proxyPort" value=""/>
 
+    <property name="BROWSER" value="firefox"/>
     <property name="GUI_ADMIN_PORT" value="4848"/>
     <property name="DOMAIN" value="domain1"/>
+    <property name="RELEASEAFTER" value="true"/>
 
     <property name="glassfish.dist.url"
               value="http://hudson.glassfish.org/job/gf-trunk-build-continuous/lastSuccessfulBuild/artifact/bundles/glassfish.zip"/>
@@ -106,6 +105,7 @@
                     <arg value="-Dhttp.proxyPort=${http.proxyPort}"/>
                     <arg value="-Dadmin.port=${GUI_ADMIN_PORT}"/>
                     <arg value="-Dbrowser=${BROWSER}"/>
+                    <arg value="-DreleaseAfter=${RELEASEAFTER}"/>
                     <arg value="test"/>
                 </artifact:mvn>
             </try>

@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admingui.devtests;
 
 import org.junit.Test;
@@ -47,7 +46,9 @@ import static org.junit.Assert.assertFalse;
 
 public class AdminObjectTest extends BaseSeleniumTestClass {
     private static final String TRIGGER_ADMIN_OBJECT_RESOURCES = "i18njca.adminObjectResources.pageTitleHelp";
+
     private static final String TRIGGER_NEW_ADMIN_OBJECT_RESOURCE = "i18njca.adminObject.NewPageTitleHelp";
+
     private static final String TRIGGER_EDIT_ADMIN_OBJECT_RESOURCE = "i18njca.adminObjectResource.editPageHelp";
 
     @Test
@@ -163,16 +164,16 @@ public class AdminObjectTest extends BaseSeleniumTestClass {
                 enableStatus);
 
         testManageTargets("treeForm:tree:resources:Connectors:adminObjectResources:adminObjectResources_link",
-                          "propertyForm:resourcesTable",
-                          "propertyForm:targetTable:topActionsGroup1:button2",
-                          "propertyForm:targetTable:topActionsGroup1:button3",
-                          "propertyForm:propertySheet:propertSectionTextField:statusProp2:enabledStr",
-                          "propertyForm:resEditTabs:general",
-                          "propertyForm:resEditTabs:targetTab",
-                          TRIGGER_ADMIN_OBJECT_RESOURCES,
-                          TRIGGER_EDIT_ADMIN_OBJECT_RESOURCE,
-                          resName,
-                          instanceName);
+                "propertyForm:resourcesTable",
+                "propertyForm:targetTable:topActionsGroup1:button2",
+                "propertyForm:targetTable:topActionsGroup1:button3",
+                "propertyForm:propertySheet:propertSectionTextField:statusProp2:enabledStr",
+                "propertyForm:resEditTabs:general",
+                "propertyForm:resEditTabs:targetTab",
+                TRIGGER_ADMIN_OBJECT_RESOURCES,
+                TRIGGER_EDIT_ADMIN_OBJECT_RESOURCE,
+                resName,
+                instanceName);
 
         // Delete admin object resource
         deleteRow("propertyForm:resourcesTable:topActionsGroup1:button1", "propertyForm:resourcesTable", resName);
@@ -181,4 +182,4 @@ public class AdminObjectTest extends BaseSeleniumTestClass {
         clickAndWait("treeForm:tree:standaloneTreeNode:standaloneTreeNode_link", instanceTest.TRIGGER_INSTANCES_PAGE);
         deleteRow("propertyForm:instancesTable:topActionsGroup1:button1", "propertyForm:instancesTable", instanceName);
     }
-                }
+}
