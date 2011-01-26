@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -85,6 +85,7 @@
                 <sun:title id="propertyContentPage" title="$resource{i18njms.jms.Title}" helpText="$resource{i18njms.jms.PageHelp}">
 #include "/common/shared/editPageButtons.inc"
                     <sun:button id="pingButton" text="$resource{i18njms.jms.Ping}"
+                        rendered="#{pageSession.configName != 'default-config'}"
                         onClick="return submitAndDisable(this, '$resource{i18n.button.Processing}');" >
                         <!command
                             prepareSuccessfulMsg();
