@@ -140,11 +140,8 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
         this.beanDeploymentArchives = new ArrayList<BeanDeploymentArchive>();
         this.context = ctx;
 
-        for(com.sun.enterprise.deployment.EjbDescriptor next : ejbs) {
-            EjbDescriptorImpl wbEjbDesc = new EjbDescriptorImpl(next);
-            ejbDescImpls.add(wbEjbDesc);
-        }
-        populate();
+        populate(ejbs);
+        populateEJBsForThisBDA(ejbs);
         try {
             this.archive.close();
         } catch (Exception e) {
@@ -154,6 +151,18 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
         //set to the current TCL
         this.moduleClassLoaderForBDA = Thread.currentThread().getContextClassLoader();
 
+    }
+
+    private void populateEJBsForThisBDA(
+            Collection<com.sun.enterprise.deployment.EjbDescriptor> ejbs) {
+        for(com.sun.enterprise.deployment.EjbDescriptor next : ejbs) {
+            for(Class c: this.moduleClasses) {
+                if (c.getName().equals(next.getEjbClassName())){
+                    EjbDescriptorImpl wbEjbDesc = new EjbDescriptorImpl(next);
+                    ejbDescImpls.add(wbEjbDesc);
+                }
+            }
+        }
     }
 
     //These are for empty BDAs that do not model Bean classes in the current 
@@ -167,12 +176,9 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
         this.ejbDescImpls = new HashSet<EjbDescriptor<?>>();
         this.beanDeploymentArchives = new ArrayList<BeanDeploymentArchive>();
         this.context = ctx;
-
-        for(com.sun.enterprise.deployment.EjbDescriptor next : ejbs) {
-            EjbDescriptorImpl wbEjbDesc = new EjbDescriptorImpl(next);
-            ejbDescImpls.add(wbEjbDesc);
-        }
         
+        populateEJBsForThisBDA(ejbs);
+
         //set to the current TCL
         this.moduleClassLoaderForBDA = Thread.currentThread().getContextClassLoader();
     }
@@ -272,7 +278,7 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
         String beanClassesString = ((getBeanClasses().size() > 0) ? getBeanClasses().toString() : ""); 
         String val = "|ID: " + getId() + ", bdaType= " + bdaType 
                         + ", accessibleBDAs #:" + getBeanDeploymentArchives().size() + ", " + formatAccessibleBDAs(this)
-                        +  ", Bean Classes #: " + getBeanClasses().size() + "," + beanClassesString + "\n";
+                        +  ", Bean Classes #: " + getBeanClasses().size() + "," + beanClassesString + ", ejbs=" + getEjbs() +"\n";
         
         Collection<BeanDeploymentArchive> bdas = getBeanDeploymentArchives();
         Iterator<BeanDeploymentArchive> iter = bdas.iterator();
@@ -285,7 +291,7 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
             String embedBDABeanClasses = ((bda.getBeanClasses().size() > 0) ? bda.getBeanClasses().toString() : "");
             val += "|---->ID: " + bda.getId() + ", bdaType= " + embedBDAType.toString() 
                     + ", accessibleBDAs #:" + bda.getBeanDeploymentArchives().size() + ", " + formatAccessibleBDAs(bda)  
-                    +  ", Bean Classes #: " + bda.getBeanClasses().size() + "," + embedBDABeanClasses + "\n";
+                    +  ", Bean Classes #: " + bda.getBeanClasses().size() + "," + embedBDABeanClasses + ", ejbs=" + bda.getEjbs() + "\n";
         }
         return val;
     }
@@ -305,7 +311,7 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
         return bdaType;
     }
 
-    private void populate() {
+    private void populate(Collection<com.sun.enterprise.deployment.EjbDescriptor> ejbs) {
         try {
             if (archive.exists(WEB_INF_BEANS_XML)) {
                 logger.log(FINE, "-processing " + archive.getURI() 
@@ -369,8 +375,7 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
                     while (libJarIterator.hasNext()) {
                         ReadableArchive libJarArchive = (ReadableArchive)libJarIterator.next();
                         BeanDeploymentArchiveImpl wlbda = new BeanDeploymentArchiveImpl(libJarArchive, 
-                                new HashSet<com.sun.enterprise.deployment.EjbDescriptor>(), 
-                                context, 
+                                ejbs, context, 
                                 WEB_INF_LIB + SEPARATOR_CHAR + libJarArchive.getName() /* Use WEB-INF/lib/jarName as BDA Id*/);
                         this.beanDeploymentArchives.add(wlbda); //add to list of BDAs for this WAR
                         webLibBDAs.add(wlbda);

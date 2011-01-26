@@ -110,6 +110,7 @@ public class BeanManagerNamingProxy implements NamedNamingObjectProxy {
                             BeanDeploymentArchive bda = weldDeployer.getBeanDeploymentArchiveForBundle(bundle);
                             if( bda != null ) {
                                 WeldBootstrap bootstrap = weldDeployer.getBootstrapForApp(bundle.getApplication());
+                                //System.out.println("BeanManagerNamingProxy:: getting BeanManagerImpl for" + bda);
                                 beanManager = bootstrap.getManager(bda);
                             }
                         }

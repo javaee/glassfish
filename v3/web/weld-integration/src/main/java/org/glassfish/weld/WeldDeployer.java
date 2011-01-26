@@ -379,7 +379,12 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
             InjectionManager injectionMgr = habitat.getByContract(InjectionManager.class);
             InjectionServices injectionServices = new InjectionServicesImpl(injectionMgr, bundle);
 
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE, "WeldDeployer:: Adding injectionServices " 
+                        + injectionServices + " for " + bda.getId());
+            }
             bda.getServices().add(InjectionServices.class, injectionServices);
+            
             bundleToBeanDeploymentArchive.put(bundle, bda);
         }
 

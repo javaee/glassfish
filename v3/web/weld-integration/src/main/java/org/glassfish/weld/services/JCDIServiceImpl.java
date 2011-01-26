@@ -40,6 +40,9 @@
 
 package org.glassfish.weld.services;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
@@ -55,7 +58,6 @@ import org.jboss.weld.bootstrap.spi.BeanDeploymentArchive;
 import org.jboss.weld.manager.api.WeldManager;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Habitat;
 
 import com.sun.enterprise.container.common.spi.JCDIService;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
@@ -71,13 +73,12 @@ public class JCDIServiceImpl implements JCDIService
     private WeldDeployer weldDeployer;
 
     @Inject
-    private Habitat h;
-
-    @Inject
     private ComponentEnvManager compEnvManager;
 
     @Inject
     private InvocationManager invocationManager;
+    
+    private Logger logger = Logger.getLogger(JCDIServiceImpl.class.getName());
 
 
     public boolean isCurrentModuleJCDIEnabled() {
@@ -132,7 +133,7 @@ public class JCDIServiceImpl implements JCDIService
                 ejb.getEjbBundleDescriptor().getModuleDescriptor().getDescriptor();
 
         // First get BeanDeploymentArchive for this ejb
-        BeanDeploymentArchive bda = weldDeployer.getBeanDeploymentArchiveForBundle(topLevelBundleDesc);
+        BeanDeploymentArchive bda = getBDAForBeanClass(topLevelBundleDesc, ejb.getEjbClassName());
      
         WeldBootstrap bootstrap = weldDeployer.getBootstrapForApp(ejb.getEjbBundleDescriptor().getApplication());
         WeldManager weldManager = bootstrap.getManager(bda);
@@ -148,28 +149,55 @@ public class JCDIServiceImpl implements JCDIService
         // Per instance required, create the creational context
         CreationalContext<?> cc = weldManager.createCreationalContext(bean);   
 	
-	Object beanInstance = instance;
+    	Object beanInstance = instance;
+    
+    	if( beanInstance == null ) {
+    	    // Create instance , perform constructor injection.
+    	    beanInstance = it.produce(cc);
+    	} 
 
-	if( beanInstance == null ) {
-	    // Create instance , perform constructor injection.
-	    beanInstance = it.produce(cc);
-	} 
-
-	// Injection is not performed yet. Separate injectEJBInstance() call is required.
-
+    	// Injection is not performed yet. Separate injectEJBInstance() call is required.
         return new JCDIInjectionContextImpl(it, cc, beanInstance);
 
     }
+    
+    private BeanDeploymentArchive getBDAForBeanClass(BundleDescriptor bundleDesc, String beanClassName){
+        if (logger.isLoggable(Level.FINE)) {
+            logger.log(Level.FINE,"getBDAForBeanClass -- search in " + bundleDesc.getModuleName() + " for " + beanClassName);
+        }
+        BeanDeploymentArchive topLevelBDA = weldDeployer.getBeanDeploymentArchiveForBundle(bundleDesc);
+        if (topLevelBDA.getBeanClasses().contains(beanClassName)){
+            if (logger.isLoggable(Level.FINE)) {
+                logger.log(Level.FINE, "JCDIServiceImpl.getBDAForBeanClass:: TopLevelBDA " 
+                        + topLevelBDA.getId() + " contains beanClassName:" + beanClassName);
+            }
+            return topLevelBDA;
+        }
+        
+        //for all sub-BDAs
+        for (BeanDeploymentArchive bda: topLevelBDA.getBeanDeploymentArchives()){
+            if (bda.getBeanClasses().contains(beanClassName)){
+                if (logger.isLoggable(Level.FINE)) {
+                    logger.log(Level.FINE, "JCDIServiceImpl.getBDAForBeanClass:: subBDA " 
+                            + bda.getId() + " contains beanClassName:" + beanClassName);
+                }
+                return bda;
+            }
+        }
+
+        //If not found in any BDA's subclasses, return topLevel BDA
+        return topLevelBDA;
+    }
+    
 
     public void injectEJBInstance(JCDIInjectionContext injectionCtx) {
-	
-	JCDIInjectionContextImpl injectionCtxImpl = 
-	    (JCDIInjectionContextImpl) injectionCtx;
-
-	// Perform injection and call initializers
-	injectionCtxImpl.it.inject(injectionCtxImpl.instance, injectionCtxImpl.cc);
-
-	// NOTE : PostConstruct is handled by ejb container
+    	JCDIInjectionContextImpl injectionCtxImpl = 
+    	    (JCDIInjectionContextImpl) injectionCtx;
+    
+    	// Perform injection and call initializers
+    	injectionCtxImpl.it.inject(injectionCtxImpl.instance, injectionCtxImpl.cc);
+    
+    	// NOTE : PostConstruct is handled by ejb container
     }
 
     public JCDIInjectionContext createManagedObject(Class managedClass, BundleDescriptor bundle) {
@@ -187,8 +215,8 @@ public class JCDIServiceImpl implements JCDIService
         BundleDescriptor topLevelBundleDesc = (BundleDescriptor) bundle.getModuleDescriptor().getDescriptor();
 
         // First get BeanDeploymentArchive for this ejb
-
         BeanDeploymentArchive bda = weldDeployer.getBeanDeploymentArchiveForBundle(topLevelBundleDesc);
+        //BeanDeploymentArchive bda = getBDAForBeanClass(topLevelBundleDesc, managedObject.getClass().getName());
         WeldBootstrap bootstrap = weldDeployer.getBootstrapForApp(bundle.getApplication());
         BeanManager beanManager = bootstrap.getManager(bda);
         AnnotatedType annotatedType = beanManager.createAnnotatedType(managedObject.getClass());
@@ -206,6 +234,7 @@ public class JCDIServiceImpl implements JCDIService
 
         // First get BeanDeploymentArchive for this ejb
         BeanDeploymentArchive bda = weldDeployer.getBeanDeploymentArchiveForBundle(topLevelBundleDesc);
+        //BeanDeploymentArchive bda = getBDAForBeanClass(topLevelBundleDesc, managedClass.getName());
 
         WeldBootstrap bootstrap = weldDeployer.getBootstrapForApp(bundle.getApplication());
 
@@ -258,10 +287,5 @@ public class JCDIServiceImpl implements JCDIService
             cc.release();
 
         }
-
     }
-
-
 }
-
-

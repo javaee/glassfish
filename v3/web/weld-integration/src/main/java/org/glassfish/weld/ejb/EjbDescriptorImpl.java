@@ -352,4 +352,9 @@ public class EjbDescriptorImpl<T> implements org.jboss.weld.ejb.spi.EjbDescripto
        
         return remoteBusIntfs;
     }
+    
+    @Override
+    public String toString(){
+        return ejbDesc.getEjbClassName();
+    }
 }
