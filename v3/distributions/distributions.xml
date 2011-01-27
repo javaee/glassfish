@@ -57,11 +57,16 @@
 <property name="image.cache" value="${image.dir}/.org.opensolaris,pkg/cfg_cache"/>
 <property name="dev.authority" value="dev.glassfish.org"/>
 <property name="contrib.authority" value="contrib.glassfish.org"/>
+<property name="stable.authority" value="stable.glassfish.org"/>
+
 <property name="repository.url" value="http://pkg.glassfish.org/v3"/>
 <property name="dev.repository.url" value="${repository.url}/dev/"/>
 <property name="contrib.repository.url" value="${repository.url}/contrib/"/>
-<property name="sun.contrib.authority" value="contrib.glassfish.sun.com"/>
-<property name="sun.repository.url" value="http://pkg.sun.com/glassfish/v3/dev/"/>
+<property name="stable.repository.url" value="${repository.url}/stable/"/>
+
+<property name="sun.contrib.authority" value="contrib.glassfish.oracle.com"/>
+<property name="javaeesdk.release.authority" value="release.javaeesdk.oracle.com"/>
+<property name="javaeesdk.release.repository.url" value="http://pkg.sun.com/javaeesdk/6/release/"/>
 <property name="sun.contrib.repository.url" value="http://pkg.sun.com/glassfish/v3/contrib/"/>
 
 <target name="init"> 
