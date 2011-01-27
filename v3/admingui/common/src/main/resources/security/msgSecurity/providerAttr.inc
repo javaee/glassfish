@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -55,9 +55,12 @@
         <sun:textField id="ProviderIdText" styleClass="required" text="#{pageSession.valueMap['Name']}" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.msgSecProvider.ProviderId']}" required="#{true}" />
     </sun:property>
 
+<!--  the defaultProvider attr is not in the <provider-config> element, the logic to display this checkbox is wrong.
+      refer to issue# GLASSFISH-15711   .  remove from prop sheet for now.
     <sun:property id="DefaultProviderProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.msgSecProvider.defaultProviderLabel}" >
         <sun:checkbox selected="#{pageSession.valueMap['defaultProvider']}" selectedValue="true" />
     </sun:property>
+-->
 
     <sun:property id="ProviderTypeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.msgSecProvider.providerTypeLabel}" helpText="$resource{i18nc.msgSecProvider.providerTypeHelp}">
         <sun:dropDown id="ProviderType" selected="#{pageSession.valueMap['ProviderType']}" labels={"client", "server", "client-server"}  required="#{true}" />

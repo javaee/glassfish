@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -89,10 +89,10 @@
                      <sun:staticText escape="true" id="AuthLayer" text="#{pageSession.Name}" />
                  </sun:property>
                  <sun:property id="DefaultProviderProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.msgSecurity.defaultProviderLabel}" helpText="$resource{i18nc.msgSecurity.defaultProviderHelp}">
-                     <sun:dropDown id="DefaultProvider" selected="#{pageSession.valueMap['DefaultProvider']}" labels="$pageSession{serverTypeProviderList}" />
+                     <sun:dropDown id="DefaultProvider" selected="#{pageSession.valueMap['defaultProvider']}" labels="$pageSession{serverTypeProviderList}" />
                  </sun:property>
                  <sun:property id="DefaultClProviderProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.msgSecurity.defaultClProviderLabel}" helpText="$resource{i18nc.msgSecurity.defaultClProviderHelp}">
-                     <sun:dropDown id="DefaultClProvider" selected="#{pageSession.valueMap['DefaultClientProvider']}" labels="$pageSession{clientTypeProviderList}" />
+                     <sun:dropDown id="DefaultClProvider" selected="#{pageSession.valueMap['defaultClientProvider']}" labels="$pageSession{clientTypeProviderList}" />
                  </sun:property>
              </sun:propertySheetSection>
          </sun:propertySheet>

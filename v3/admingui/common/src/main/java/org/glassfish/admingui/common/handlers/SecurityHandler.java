@@ -584,7 +584,7 @@ public class SecurityHandler {
         String trueStr = GuiUtil.getMessage("common.true");
         String falseStr = GuiUtil.getMessage("common.false");
         for(Map oneRow : providerList){
-            if ((defaultProvider != null && defaultProvider.length() > 0) || (defaultClientProvider != null && defaultClientProvider.length() > 0)){
+            if ( oneRow.get("name").equals(defaultProvider) || oneRow.get("name").equals(defaultClientProvider)){
                 oneRow.put("default", trueStr);
             }else{
                 oneRow.put("default", falseStr);
@@ -646,7 +646,7 @@ public class SecurityHandler {
     @Handler(id="saveMsgProviderInfo",
          input={
             @HandlerInput(name="attrMap", type=Map.class, required=true),
-            @HandlerInput(name="configName", type=Map.class, required=true),
+            @HandlerInput(name="configName", type=String.class, required=true),
             @HandlerInput(name="edit", type=String.class, required=true),
             @HandlerInput(name = "propList", type = List.class)             //propList used when edit is false.
      },
@@ -658,13 +658,13 @@ public class SecurityHandler {
         String edit = (String)handlerCtx.getInputValue("edit");
         String providerName = attrMap.get("Name");
         String msgSecurityName = attrMap.get("msgSecurityName");
-        String configName = attrMap.get("configName");
+        String configName = (String)handlerCtx.getInputValue("configName");
         List propList = (List) handlerCtx.getInputValue("propList");
 
         String endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + configName +
                                 "/security-service/message-security-config/" + msgSecurityName + "/provider-config";
         String providerEndpoint = endpoint + "/" + providerName;
-
+        try{
         if (edit.equals("true")){
             boolean providerExist = RestUtil.get(providerEndpoint).isSuccess();
             if (!providerExist){
@@ -674,7 +674,7 @@ public class SecurityHandler {
                 Map<String, Object> providerMap = (Map<String, Object>)RestUtil.getEntityAttrs(providerEndpoint, "entity");
                 providerMap.put("className", attrMap.get("ClassName"));
                 providerMap.put("providerType", attrMap.get("ProviderType"));
-                RestUtil.sendUpdateRequest(endpoint, providerMap, null, null, null);
+                RestUtil.restRequest(providerEndpoint, providerMap, "POST", null, false);
             }
         }else{
             endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + configName +
@@ -684,7 +684,8 @@ public class SecurityHandler {
             attrs.put("classname", attrMap.get("ClassName"));
             attrs.put("providertype", attrMap.get("ProviderType"));
             attrs.put("layer", attrMap.get("msgSecurityName"));
-            RestUtil.sendCreateRequest(endpoint, attrs, null, null, null);
+            attrs.put("target", configName);
+            RestUtil.restRequest(endpoint, attrs, "POST", null, false);
         }
 
         //if we pass in "", backend will throw bean violation, since it only accepts certain values.
@@ -699,13 +700,16 @@ public class SecurityHandler {
         reqPolicyMap.put("authSource", attrMap.get("Request-AuthSource"));
         reqPolicyMap.put("authRecipient", attrMap.get("Request-AuthRecipient"));
         String reqPolicyEP = providerEndpoint + "/request-policy";
-        RestUtil.sendUpdateRequest(reqPolicyEP, reqPolicyMap, null, null, null);
+        RestUtil.restRequest(reqPolicyEP, reqPolicyMap, "POST", null, false);
 
         Map respPolicyMap = new HashMap();
         respPolicyMap.put("authSource", attrMap.get("Response-AuthSource"));
         respPolicyMap.put("authRecipient", attrMap.get("Response-AuthRecipient"));
         String respPolicyEP = providerEndpoint + "/response-policy";
-        RestUtil.sendUpdateRequest(respPolicyEP, respPolicyMap, null, null, null);
+        RestUtil.restRequest(respPolicyEP, respPolicyMap, "POST", null, false);
+        }catch(Exception ex){
+            GuiUtil.handleException(handlerCtx, ex);
+        }
     }
 
 

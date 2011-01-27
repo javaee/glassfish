@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -74,24 +74,29 @@
             mapPut(map="#{pageSession.valueMap}"  key="Request-AuthRecipient" value="#{pageSession.requestPolicyMap['authRecipient']}");
         }
         setPageSessionAttribute(key="responsePolicyUrl", value="#{pageSession.selfUrl}/response-policy");
-        gf.checkIfEndPointExist(endpoint="#{pageSession.requestPolicyUrl}" exists="#{pageSession.exist}");
+        gf.checkIfEndPointExist(endpoint="#{pageSession.responsePolicyUrl}" exists="#{pageSession.exist}");
         if(#{exist}) {
-            gf.getEntityAttrs(endpoint="#{pageSession.requestPolicyUrl}.json", valueMap="#{pageSession.responsePolicyMap}");
+            gf.getEntityAttrs(endpoint="#{pageSession.responsePolicyUrl}.json", valueMap="#{pageSession.responsePolicyMap}");
             mapPut(map="#{pageSession.valueMap}"  key="Response-AuthSource" value="#{pageSession.responsePolicyMap['authSource']}");
             mapPut(map="#{pageSession.valueMap}"  key="Response-AuthRecipient" value="#{pageSession.responsePolicyMap['authRecipient']}");
         }
+
+      <!--  the defaultProvider attr is not in the <provider-config> element, the logic to display this checkbox is wrong.
+            refer to issue# GLASSFISH-15711 
         gf.getEntityAttrs(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/security-service/message-security-config/#{pageSession.msgSecurityName}.json",
                           valueMap="#{pageSession.msgSecurityMap}");
         mapPut(map="#{pageSession.valueMap}"  key="defaultProvider" value="false");
+        
         if ("#{pageSession.msgSecurityMap['defaultClientProvider']}=true || #{pageSession.msgSecurityMap['defaultProvider']}=true")
             mapPut(map="#{pageSession.valueMap}"  key="defaultProvider" value="true");
+       -->
+
         gf.restRequest(endpoint="#{pageSession.selfUrl}/property.json" method="GET" result="#{requestScope.propTable}");
         setPageSessionAttribute(key="tableList" value="#{requestScope.propTable.data.extraProperties.properties}");
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/common/security/msgSecurity/providerEdit.jsf?name=#{pageSession.encodedName}&msgSecurityName=#{pageSession.encodedMsgSecurityName}&configName=#{pageSession.encodedConfigName}");
-        setPageSessionAttribute(key="cPage" value="#{request.contextPath}/common/security/msgSecurity/providers.jsf?name=#{pageSession.msgSecurityName}&configName=#{configName}");
-        getRequestValue(key="cancelPage" 
-                value="#{pageSession.cancelPage}" 
-                default="#{request.contextPath}/common/security/msgSecurity/providers.jsf?name=#{pageSession.encodedMsgSecurityName}&configName=#{encodedConfigName}")
+        getRequestValue(key="cancelPage" value="#{requestScope.cPage}"
+                default="#{request.contextPath}/common/security/msgSecurity/providers.jsf?name=#{pageSession.encodedMsgSecurityName}")
+        setPageSessionAttribute(key="cancelPage" value="#{requestScope.cPage}&configName=#{pageSession.encodedConfigName}");
         setPageSessionAttribute(key="edit" value="#{true}" );
     />
     </event>
