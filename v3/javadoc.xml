@@ -209,9 +209,9 @@
       </exec>
   </target>
 
-  <target name="javamail.download" description="Download JavaMail 1.4.3" depends="initialize.maven">
+  <target name="javamail.download" description="Download JavaMail 1.4.4" depends="initialize.maven">
       <artifact:dependencies sourcesFilesetId="sources.dependency.javamail">
-          <dependency groupId="javax.mail" artifactId="mail" version="1.4.3">
+          <dependency groupId="com.sun.mail" artifactId="javax.mail" version="1.4.4">
               <exclusion groupId="javax.activation" artifactId="activation" />
           </dependency>
           <remoteRepository refid="nexus.repository" />
