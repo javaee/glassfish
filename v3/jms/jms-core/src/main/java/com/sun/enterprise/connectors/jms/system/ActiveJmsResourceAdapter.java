@@ -311,7 +311,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
                    raUtil.upgradeIfNecessary();
            }
            catch (Throwable t) {
-               t.printStackTrace();
+               //t.printStackTrace();
                    _logger.log(Level.FINE,"Cannot upgrade jmsra"+ t.getMessage());
            }
     }
