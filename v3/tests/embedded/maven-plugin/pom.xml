@@ -101,5 +101,31 @@
                 <module>jsftest</module>
             </modules>
         </profile>
+        <profile>
+            <id>run-with-shell-jar</id>
+            <activation>
+                <property>
+                    <name>build</name>
+                    <value>static-shell</value>
+                </property>
+            </activation>
+            <modules>
+                <module>static-shell-init</module>
+                <module>applicationDispatcher</module>
+                <module>dirListing</module>
+                <module>filterURIMapping</module>
+                <module>getRequestURI</module>
+                <module>index</module>
+                <module>jmxUndeployEvent</module>
+                <module>queryString</module>
+                <module>sessionDestroyed</module>
+                <module>standalonewar</module>
+                <module>websockets</module>
+                <module>webservice</module>
+                <module>secureWebApp</module>
+                <module>jsptest</module>
+                <module>jsftest</module>
+            </modules>
+        </profile>
     </profiles>
 </project>
