@@ -83,6 +83,21 @@
         setPageSessionAttribute(key="showCancelButton" value="#{true}" );
         setPageSessionAttribute(key="hasPropertySheet" value="#{true}" );
         setPageSessionAttribute(key="hasPropertyTable" value="#{false}" );
+
+
+        //If secure admin is enabled, we will not show the other tabs since GUI doesn't have support for handling low level grizzly config yet.
+        setPageSessionAttribute(key="showSSLTab" value="#{true}");
+        setPageSessionAttribute(key="showHttpTab" value="#{true}");
+        setPageSessionAttribute(key="showFileCacheTab" value="#{true}");
+        if (#{sessionScope.secureAdminEnabled}){
+            gf.getEntityAttrs(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/http-service/virtual-server/__asadmin" valueMap="#{requestScope.tvp}");
+            //TODO: do we need to handle the case where more than 1 listener is setup for __asadmin ??
+            if ("#{requestScope.tvp['networkListeners']}=#{pageSession.listenerName}") {
+                setPageSessionAttribute(key="showSSLTab" value="#{false}");
+                setPageSessionAttribute(key="showHttpTab" value="#{false}");
+                setPageSessionAttribute(key="showFileCacheTab" value="#{false}");
+            }
+        }
         />
     </event>
             <sun:form id="propertyForm">
@@ -92,7 +107,7 @@
                 <!-- Page Title -->
                 <sun:title id="propertyContentPage" title="$resource{i18n_web.grizzly.networkListenerEditPageTitle}" helpText="$resource{i18n_web.grizzly.networkListenerEditPageTitleHelp}">
 #include "/common/shared/editPageButtons.inc"
-                </sun:title>
+</sun:title>
 <sun:propertySheet id="propertySheet">
 #include "/common/shared/configNameSection.inc"
     <sun:propertySheetSection id="propertSectionTextField">
@@ -103,7 +118,8 @@
 
 
     <sun:property id="protocol"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.protocol}" >
-             <sun:staticText id="protocol" text="#{pageSession.valueMap['protocol']}" />
+             //<sun:staticText id="protocol" text="#{pageSession.valueMap['protocol']}" />
+             <sun:hyperlink id="protocol" text="#{pageSession.valueMap['protocol']}" url="#{request.contextPath}/web/grizzly/protocolEdit.jsf?name=#{pageSession.valueMap['protocol']}&configName=#{configName}" />
         </sun:property>
 
     <sun:property id="http-protocol"  rendered="#{pageSession.showHttp}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="HTTP Protocol: " >
@@ -138,14 +154,12 @@
 
 
         <sun:property id="port"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.port}" helpText="$resource{i18n_web.grizzly.networkListener.portHelp}">
-            <sun:textField id="port" columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.grizzly.networkListener.port']}" required="#{true}" styleClass="required port" text="#{pageSession.valueMap['port']}"  />
+            <sun:textField id="port" columns="$int{40}" maxLength="#{sessionScope.fieldLengths['maxLength.grizzly.networkListener.port']}" required="#{true}" styleClass="required port" text="#{pageSession.valueMap['port']}"  />
         </sun:property>
 
         <sun:property id="addr"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.address}" helpText="$resource{i18n_web.grizzly.networkListener.addressHelp}">
-            <sun:textField id="addr" columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.grizzly.networkListener.address']}" text="#{pageSession.valueMap['address']}"  />
+            <sun:textField id="addr" columns="$int{40}" maxLength="#{sessionScope.fieldLengths['maxLength.grizzly.networkListener.address']}" text="#{pageSession.valueMap['address']}"  />
         </sun:property>
-
-
 
         <sun:property id="transport"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.transport}" >
             <sun:hyperlink id="transport" text="#{pageSession.valueMap['transport']}" url="#{request.contextPath}/web/grizzly/transportEdit.jsf?name=#{pageSession.valueMap['transport']}" />

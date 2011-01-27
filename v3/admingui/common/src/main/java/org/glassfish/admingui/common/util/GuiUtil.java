@@ -184,7 +184,18 @@ public class GuiUtil {
         }else{
             sessionMap.put("debugInfo", GuiUtil.getMessage("inst.notEnabled"));
         }
-        
+
+        try{
+            Map secureAdminAttrs = RestUtil.getAttributesMap(sessionMap.get("REST_URL")+"/secure-admin");
+            if (Boolean.parseBoolean((String)secureAdminAttrs.get("enabled"))){
+                sessionMap.put("secureAdminEnabled", "true");
+            }else{
+                sessionMap.put("secureAdminEnabled", "false");
+            }
+        }catch(Exception ex){
+            sessionMap.put("secureAdminEnabled", "false");
+        }
+
         sessionMap.put("reqMsg", GuiUtil.getMessage("msg.JS.enterValue"));
         sessionMap.put("reqMsgSelect", GuiUtil.getMessage("msg.JS.selectValue"));
         sessionMap.put("reqInt", GuiUtil.getMessage("msg.JS.enterIntegerValue"));

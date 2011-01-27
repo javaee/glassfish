@@ -49,23 +49,24 @@
         gf.redirect(page="#{request.contextPath}/web/grizzly/networkListenerEdit.jsf?configName=#{configName}&name=#{pageSession.encodedListenerName}&cancelTo=#{pageSession.cancelTo}");
         />
     </sun:tab>
-    <sun:tab id="sslTab" immediate="$boolean{true}" text="$resource{i18n_web.grizzly.sslTab}" toolTip="$resource{i18n_web.grizzly.sslTab} Tab" >
+    <sun:tab id="sslTab" rendered="#{showSSLTab}" immediate="$boolean{true}" text="$resource{i18n_web.grizzly.sslTab}" toolTip="$resource{i18n_web.grizzly.sslTab} Tab" >
         <!command
         setSessionAttribute(key="listenerTabs" value="sslTab");
         gf.redirect(page="#{request.contextPath}/web/grizzly/listenerSSLEdit.jsf?configName=#{configName}&name=#{pageSession.encodedProtocolName}&listenerName=#{pageSession.encodedListenerName}&cancelTo=#{pageSession.cancelTo}");
         />
     </sun:tab>
-    <sun:tab id="httpTab" immediate="$boolean{true}" text="$resource{i18n_web.grizzly.httpTab}" toolTip="$resource{i18n_web.grizzly.httpTab} Tab" >
+    <sun:tab id="httpTab" rendered="#{showHttpTab}"  immediate="$boolean{true}" text="$resource{i18n_web.grizzly.httpTab}" toolTip="$resource{i18n_web.grizzly.httpTab} Tab" >
         <!command
-        setSessionAttribute(key="listenerTabs" value="httpTab");
-        gf.redirect(page="#{request.contextPath}/web/grizzly/listenerHttpEdit.jsf?configName=#{pageSession.configName}&name=#{pageSession.encodedProtocolName}&listenerName=#{pageSession.encodedListenerName}&cancelTo=#{pageSession.cancelTo}");
+            setSessionAttribute(key="listenerTabs" value="httpTab");
+            gf.redirect(page="#{request.contextPath}/web/grizzly/listenerHttpEdit.jsf?configName=#{pageSession.configName}&name=#{pageSession.encodedProtocolName}&listenerName=#{pageSession.encodedListenerName}&cancelTo=#{pageSession.cancelTo}");
         />
     </sun:tab>
-    <sun:tab id="fileCacheTab" immediate="$boolean{true}" text="$resource{i18n_web.grizzly.fileCacheTab}" toolTip="$resource{i18n_web.grizzly.fileCacheTab} Tab" >
+    <sun:tab id="fileCacheTab" rendered="#{showFileCacheTab}" immediate="$boolean{true}" text="$resource{i18n_web.grizzly.fileCacheTab}" toolTip="$resource{i18n_web.grizzly.fileCacheTab} Tab" >
         <!command
         setSessionAttribute(key="listenerTabs" value="fileCacheTab");
         gf.redirect(page="#{request.contextPath}/web/grizzly/listenerFileCache.jsf?configName=#{pageSession.configName}&name=#{pageSession.encodedProtocolName}&listenerName=#{pageSession.encodedListenerName}&cancelTo=#{pageSession.cancelTo}");
         />
+        
     </sun:tab>
 
 </sun:tabSet>
