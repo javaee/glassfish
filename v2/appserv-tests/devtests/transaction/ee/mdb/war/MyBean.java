@@ -24,8 +24,6 @@ public class MyBean {
 
     private static final String XA_RESOURCE = "jdbc/xa";
 
-    private Set<String> records = new HashSet<String>();
-
     @Resource(name="jms/MyQueueConnectionFactory", mappedName="jms/ejb_mdb_QCF")
     QueueConnectionFactory fInject;
 
@@ -33,26 +31,41 @@ public class MyBean {
     Queue qInject;
 
     public void record(String msg) throws Exception {
-         System.out.println("Adding msg: " + msg);
-         records.add(msg);
+        System.out.println("Adding msg: " + msg);
+
+        InitialContext initCtx = new InitialContext();
+        DataSource ds = (DataSource) initCtx.lookup(XA_RESOURCE);
+
+        String insertStatement = "insert into messages values ( ? )";
+        java.sql.Connection c = ds.getConnection();
+        PreparedStatement ps = c.prepareStatement(insertStatement);
+
+        ps.setString(1, msg);
+        ps.executeUpdate();
+        ps.close();
+        c.close();
     }
 
     public int verifyxa() throws Exception {
         InitialContext initCtx = new InitialContext();
         DataSource ds = (DataSource) initCtx.lookup(XA_RESOURCE);
 
-        return verify(ds) + records.size();
+        return verify(ds, "student", 2) + verify(ds, "messages", 1);
    }
 
-    public int verify(DataSource ds) throws Exception {
-        String selectStatement = "select * from student";
+    public int verify(DataSource ds, String table, int columns) throws Exception {
+        String selectStatement = "select * from " + table;
         java.sql.Connection c = ds.getConnection();
         PreparedStatement ps = c.prepareStatement(selectStatement);
         ResultSet rs = ps.executeQuery();
         int result = 0;
         while (rs.next()) {
             result++;
-            System.out.println("Found: " + rs.getString(1) + " : " + rs.getString(2));
+            StringBuffer buf = new StringBuffer();
+            for (int i = 1; i <= columns; i++) {
+                buf.append(": " + rs.getString(i));
+            }
+            System.out.println("Found: " + buf.toString());
         }
         rs.close();
         ps.close();

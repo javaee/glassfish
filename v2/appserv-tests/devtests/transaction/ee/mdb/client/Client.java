@@ -122,7 +122,7 @@ public class Client extends AdminBaseDevTest {
     public void verify(String appname, String port, String operation, String servlet) {
         stat.addDescription("transaction-ee-" + operation);
 
-        boolean res = execute(appname, port, servlet, "RESULT:3");
+        boolean res = execute(appname, port, servlet, "RESULT:6");
 
         stat.addStatus("transaction-ee-" + operation, ((res)? stat.PASS : stat.FAIL));
         stat.printSummary("transaction-ee-" + operation);
