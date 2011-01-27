@@ -23,6 +23,8 @@ package com.sun.s1asdev.appclient.appcpath.client;
 
 import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
 import com.sun.s1asdev.appclient.appcpath.lib.LibUtil;
+import java.net.URL;
+import javax.sound.midi.SysexMessage;
 
 /**
  *
@@ -43,6 +45,7 @@ public class TestAPPCPATH {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        System.err.println(TestAPPCPATH.class.getClassLoader().getClass().getName());
         int status = 1;
         try {
             stat.addDescription("Testing APPCPATH");
