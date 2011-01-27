@@ -953,9 +953,11 @@ public class CLIBootstrap {
         endorsedDirs.format(command);
 
         /*
-         * If the user did not specify a client then add the -usage option.
+         * If the user did not specify a client or usage or help then add the -usage option.
          */
-        if ( ! jvmMainSetting.isSet()) {
+        if ( ! jvmMainSetting.isSet() &&
+                ! isHelp() &&
+                ! isUsage()) {
             accUnvaluedOptions.processValue(new String[] {"-usage"}, 0);
         }
         accUnvaluedOptions.format(command);
@@ -967,6 +969,14 @@ public class CLIBootstrap {
         arguments.format(command);
 
         return command.toString();
+    }
+
+    private boolean isHelp() {
+        return accUnvaluedOptions.values.contains("-help");
+    }
+
+    private boolean isUsage() {
+        return accUnvaluedOptions.values.contains("-usage");
     }
 
     /**
