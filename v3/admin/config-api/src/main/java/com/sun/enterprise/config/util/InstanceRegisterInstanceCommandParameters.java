@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -64,6 +64,8 @@ public class InstanceRegisterInstanceCommandParameters extends RegisterInstanceC
     public String installdir = null;
     @Param(name = ParameterNames.PARAM_TYPE, optional = true, defaultValue = "CONFIG")
     public String type = "CONFIG";
+    @Param(name = ParameterNames.PARAM_SYSTEMPROPERTIES, optional = true, separator = ':')
+    public Properties systemProperties;
     /*@Param(name = ParameterNames.PARAM_SSHPORT, optional = true)
     public String sshPort = "-1";
     @Param(name = ParameterNames.PARAM_SSHHOST, optional = true)
@@ -91,6 +93,7 @@ public class InstanceRegisterInstanceCommandParameters extends RegisterInstanceC
         public static final String PARAM_NODEHOST = "nodehost";
         public static final String PARAM_INSTALLDIR = "installdir";
         public static final String PARAM_TYPE = "type";
+        public static final String PARAM_SYSTEMPROPERTIES = "systemproperties";
         /*public static final String PARAM_SSHPORT = "sshport";
         public static final String PARAM_SSHHOST = "sshhost";
         public static final String PARAM_SSHUSER = "sshuser";

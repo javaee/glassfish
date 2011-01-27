@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -58,8 +58,6 @@ public class RegisterInstanceCommandParameters implements CommandParameters {
     public String config;
     @Param(name = ParameterNames.PARAM_NODE, optional = true)
     public String node;
-    @Param(name = ParameterNames.PARAM_SYSTEMPROPERTIES, optional = true, separator = ':')
-    public Properties systemProperties;
     @Param(name = ParameterNames.PARAM_CLUSTER, optional = true)
     public String clusterName;
     @Param(name = ParameterNames.PARAM_LBENABLED, optional = true)
@@ -73,7 +71,6 @@ public class RegisterInstanceCommandParameters implements CommandParameters {
         public static final String PARAM_CLUSTER = "cluster";
         public static final String PARAM_CONFIG = "config";
         public static final String PARAM_CHECKPORTS = "checkports";
-        public static final String PARAM_SYSTEMPROPERTIES = "systemproperties";
     }
 
 
