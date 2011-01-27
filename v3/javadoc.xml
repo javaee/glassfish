@@ -140,11 +140,11 @@
 
   <target name="initialize.maven">
         <get
-           src="http://maven.glassfish.org/content/repositories/maven.central/org/apache/maven/maven-ant-tasks/2.0.9/maven-ant-tasks-2.0.9.jar"
-           dest="${basedir}/maven-ant-tasks-2.0.9.jar"
+           src="http://maven.glassfish.org/content/repositories/maven.central/org/apache/maven/maven-ant-tasks/2.1.1/maven-ant-tasks-2.1.1.jar"
+           dest="${basedir}/maven-ant-tasks-2.1.1.jar"
            verbose="true"
            usetimestamp="true"/>
-        <path id="maven-ant-tasks.classpath" path="${basedir}/maven-ant-tasks-2.0.9.jar" />
+        <path id="maven-ant-tasks.classpath" path="${basedir}/maven-ant-tasks-2.1.1.jar" />
         <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant"
                  classpathref="maven-ant-tasks.classpath" />
         <artifact:install-provider artifactId="wagon-svn" groupId="org.jvnet.wagon-svn" version="1.9">
