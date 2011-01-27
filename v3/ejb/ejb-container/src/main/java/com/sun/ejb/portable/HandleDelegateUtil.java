@@ -71,7 +71,23 @@ public class HandleDelegateUtil
     // contents of file referred to by jndi properties override
     private static Properties jndiProperties = null;
 
-    static HandleDelegate getHandleDelegate() 
+    private static volatile HandleDelegate _cachedHandleDelegate;
+
+    static HandleDelegate getHandleDelegate()
+        throws NamingException
+    {
+        if (_cachedHandleDelegate == null) {
+            synchronized (HandleDelegateUtil.class) {
+                if (_cachedHandleDelegate == null) {
+                    _cachedHandleDelegate = createHandleDelegate();
+                }
+            }
+        }
+
+        return _cachedHandleDelegate;
+    }
+
+    private static HandleDelegate createHandleDelegate()
         throws NamingException
     {
         HandleDelegate handleDelegate;
