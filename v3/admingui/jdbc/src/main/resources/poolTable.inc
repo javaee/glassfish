@@ -76,7 +76,7 @@
     </sun:tableColumn>
     
     <sun:tableColumn headerText="$resource{i18njdbc.resourcesTable.colClassname}" sort="datasourceClassname" rowHeader="$boolean{true}" id="col3">
-        <sun:staticText escape="true" id="datasourceClassname"  value="#{td.value.datasourceClassname}#{td.value.driverClassname}" />
+        <sun:staticText escape="true" id="datasourceClassname"  value="#{td.value.className}" />
     </sun:tableColumn>  
     
     <sun:tableColumn headerText="$resource{i18njdbc.resourcesTable.colDesc}" rowHeader="$boolean{true}" id="col4">

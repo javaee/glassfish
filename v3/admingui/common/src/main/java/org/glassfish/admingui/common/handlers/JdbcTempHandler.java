@@ -253,6 +253,41 @@ public class JdbcTempHandler {
 
     }
 
+    /**
+     *	<p> This handler adds the class name table column depends on the resource type.
+     */
+    @Handler(id = "gf.addClassNameColumn",
+    input = {
+        @HandlerInput(name = "poolsData", type = List.class)},
+    output = {
+        @HandlerOutput(name = "result", type = java.util.List.class)
+    })
+    public static void addClassNameColumn(HandlerContext handlerCtx) {
+        List<Map<String, String>> poolsData = (List<Map<String, String>>) handlerCtx.getInputValue("poolsData");
+        if (poolsData != null) {
+            for (Map<String, String> poolData : poolsData) {
+                String resType = poolData.get("resType");
+                String driverClassName = poolData.get("driverClassname");
+                String datasourceClassName = poolData.get("datasourceClassname");
+                if (!resType.isEmpty()) {
+                    if (resType.equals("java.sql.Driver")) {
+                        poolData.put("className", driverClassName);
+                    } else {
+                        poolData.put("className", datasourceClassName);
+                    }
+                } else {
+                    if (!datasourceClassName.isEmpty()) {
+                        poolData.put("className", datasourceClassName);
+                    }
+                    if (!driverClassName.isEmpty()) {
+                        poolData.put("className", driverClassName);
+                    }
+                }
+            }
+        }
+        handlerCtx.setOutputValue("result", poolsData);
+    }
+
     private static List getJdbcDriverClassNames(String dbVendor, String resType, boolean introspect) {
         String endpoint = (String) GuiUtil.getSessionValue("REST_URL");
         endpoint = endpoint + "/resources/get-jdbc-driver-class-names";

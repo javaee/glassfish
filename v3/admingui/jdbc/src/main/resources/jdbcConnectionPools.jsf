@@ -65,7 +65,7 @@
             setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/resources");
             setPageSessionAttribute(key="rest-api" value="true");
             gf.getChildList(parentEndpoint="#{pageSession.parentUrl}", childType="#{pageSession.childType}", result="#{requestScope.listOfRows}");
-
+            gf.addClassNameColumn(poolsData="#{requestScope.listOfRows}" result="#{requestScope.listOfRows}");
             setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18n.msg.JS.confirmDeletePools}");
             setPageSessionAttribute(key="tableTitle" value="$resource{i18njdbc.resourcesTable.Pools}");
             setPageSessionAttribute(key="resHeader" value="$resource{i18njdbc.resourcesTable.colResType}");
