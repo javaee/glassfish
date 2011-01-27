@@ -296,21 +296,23 @@ public class SecurityHandler {
         Map<String, Object> cMap = new HashMap();
         cMap.put("name", attrMap.get("Name"));
         cMap.put("classname", classname);
-        String propertyStr ="";
-        for(Map oneProp: propList){
-           propertyStr = propertyStr + oneProp.get("name") + "=";
-           propertyStr = propertyStr + oneProp.get("value") + ":";
+        StringBuilder sb = new StringBuilder();
+        for(Map oneProp: propList) {
+            sb.append(oneProp.get("name")).append("=");
+            String value = ((String) oneProp.get("value")).replaceAll("\\\\", "\\\\\\\\");
+            value = UtilHandlers.escapePropertyValue(value);
+            sb.append(value).append(":");
         }
         endpoint = endpoint + "/auth-realm";
         cMap.put("target", attrMap.get("target"));
-        cMap.put("property", propertyStr);
+        cMap.put("property", sb.toString());
         RestUtil.restRequest(endpoint, cMap, "post", handlerCtx, false);
       }catch(Exception ex){
           GuiUtil.handleException(handlerCtx, ex);
       }
     }
-    
-    
+
+
     static public void putOptional(Map<String,String> attrMap, List propList, String propName, String key)
     {
         Map oneProp = new HashMap();
