@@ -47,6 +47,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.glassfish.appclient.client.CLIBootstrap;
 
 /**
  * Self-contained scanner for an agent argument string.
@@ -131,7 +132,7 @@ public class AgentArguments {
              * Either the quoted string group or the unquoted string group
              * from the matcher will be valid.
              */
-            final String value = m.group(QUOTED) != null ? m.group(QUOTED) : m.group(UNQUOTED);
+            final String value = CLIBootstrap.decodeArg(m.group(QUOTED) != null ? m.group(QUOTED) : m.group(UNQUOTED));
             getOrCreateValuesForKeyword(keyword).add(value);
         }
     }

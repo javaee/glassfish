@@ -88,6 +88,7 @@ import org.glassfish.appclient.client.acc.UserError;
  */
 public class CLIBootstrap {
 
+    private final static String COMMA_IN_ARG_PLACEHOLDER = "+-+-+-+";
     private final static boolean isDebug = System.getenv("AS_DEBUG") != null;
     private final static String INPUT_ARGS = System.getenv("inputArgs");
 
@@ -173,6 +174,28 @@ public class CLIBootstrap {
         } catch (UserError ue) {
             ue.displayAndExit();
         }
+    }
+
+    /**
+     * Replaces commas in an argument value (which can confuse the ACC agent
+     * argument parsing because shells strip out double-quotes) with a special
+     * sequence.
+     *
+     * @param s string to encode
+     * @return encoded string
+     */
+    public static String encodeArg(final String s) {
+        return s.replace(",", COMMA_IN_ARG_PLACEHOLDER);
+    }
+
+    /**
+     * Replaces occurrences of comma encoding with commas.
+     *
+     * @param s possibly encoded string
+     * @return decoded string
+     */
+    public static String decodeArg(final String s) {
+        return s.replace(COMMA_IN_ARG_PLACEHOLDER, ",");
     }
 
     private static String[] convertInputArgsVariable(final String inputArgs) {
@@ -317,7 +340,7 @@ public class CLIBootstrap {
          * @param accArg
          */
         final void addACCArg(final String accArg) {
-            add("arg=" + accArg);
+            add("arg=" + encodeArg(accArg));
         }
 
         @Override
