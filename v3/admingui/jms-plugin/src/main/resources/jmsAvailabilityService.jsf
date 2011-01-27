@@ -88,6 +88,24 @@
                 <sun:property id="StorePoolNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.availability.storePoolName}" helpText="$resource{i18njms.availability.storePoolNameHelp}">
                     <sun:textField id="StorePoolName" columns="$int{15}" maxLength="#{sessionScope.fieldLengths['maxLength.availabilty.mqStorePoolName']}" text="#{pageSession.valueMap['mqStorePoolName']}" />
                 </sun:property>
+                <sun:property id="ConfigStoreTypeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.availability.configStoreType}" helpText="$resource{i18njms.availability.configStoreTypeHelp}">
+                    <sun:dropDown id="ConfigStoreType" selected="#{pageSession.valueMap['configStoreType']}" labels={"$resource{i18njms.availability.configStoreType.masterbroker}","$resource{i18njms.availability.configStoreType.shareddb}"} />
+                </sun:property>
+                <sun:property id="MessageStoreTypeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.availability.messageStoreType}" helpText="$resource{i18njms.availability.messageStoreTypeHelp}">
+                    <sun:dropDown id="MessageStoreType" selected="#{pageSession.valueMap['messageStoreType']}" labels={"$resource{i18njms.availability.messageStoreType.file}","$resource{i18njms.availability.messageStoreType.jdbc}"} />
+                </sun:property>
+                <sun:property id="DbVendorProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.availability.dbVendor}" helpText="$resource{i18njms.availability.dbVendorHelp}">
+                    <sun:textField id="DbVendor" columns="$int{15}" maxLength="#{sessionScope.fieldLengths['maxLength.availabilty.dbVendor']}" text="#{pageSession.valueMap['dbVendor']}" />
+                </sun:property>
+                <sun:property id="DbUserNameProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.availability.UserName}" helpText="$resource{i18njms.availability.dbUserNameHelp}">
+                    <sun:textField id="DbUserName" columns="$int{15}" maxLength="#{sessionScope.fieldLengths['maxLength.availabilty.dbUserName']}" text="#{pageSession.valueMap['dbUsername']}" />
+                </sun:property>
+                <sun:property id="DbPasswordProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.availability.dbPassword}" helpText="$resource{i18njms.availability.dbPasswordHelp}">
+                    <sun:textField id="DbPassword" columns="$int{15}" maxLength="#{sessionScope.fieldLengths['maxLength.availabilty.dbPassword']}" text="#{pageSession.valueMap['dbPassword']}" />
+                </sun:property>
+                <sun:property id="DbUrlProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18njms.availability.dbUrl}" helpText="$resource{i18njms.availability.dbUrlHelp}">
+                    <sun:textField id="DbUrl" columns="$int{15}" maxLength="#{sessionScope.fieldLengths['maxLength.availabilty.dbUrl']}" text="#{pageSession.valueMap['dbUrl']}" />
+                </sun:property>
                 "<br /><br />
             </sun:propertySheetSection>
         </sun:propertySheet>
