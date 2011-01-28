@@ -123,7 +123,7 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.sun.jersey.experimental</groupId>
+            <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-grizzly2</artifactId>
             <scope>provided</scope>
         </dependency>

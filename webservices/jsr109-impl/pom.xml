@@ -197,9 +197,5 @@
             <groupId>org.glassfish.grizzly</groupId>
             <artifactId>grizzly-http-servlet</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.glassfish.grizzly</groupId>
-            <artifactId>grizzly-utils</artifactId>
-        </dependency>
     </dependencies>
 </project>
