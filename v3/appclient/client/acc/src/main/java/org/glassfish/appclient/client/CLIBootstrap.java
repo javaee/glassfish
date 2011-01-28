@@ -1070,10 +1070,10 @@ public class CLIBootstrap {
     class JavaInfo {
 
         private final static String CYGWIN_PROP_NAME = "org.glassfish.isCygwin";
+        private final static String SHELL_PROP_NAME = "org.glassfish.appclient.shell";
 
         /*
-         * The appclient and appclient.bat scripts set ACCJava and might set
-         * ACCJavaHome (if the user has specified AS_JAVA or JAVA_HOME).
+         * The appclient and appclient.bat scripts set ACCJava.
          * Properties would be nicer instead of env vars, but the Windows
          * script handling of command line args in the for statement treats
          * the = in -Dprop=value as an argument separator and breaks the
@@ -1082,7 +1082,7 @@ public class CLIBootstrap {
         private final static String ACCJava_ENV_VAR_NAME = "ACCJava";
 
         private final boolean useWindowsSyntax = File.separatorChar == '\\' &&
-                ! Boolean.getBoolean(CYGWIN_PROP_NAME);
+                (System.getProperty(SHELL_PROP_NAME) == null);
 
 
         protected String javaExe;
