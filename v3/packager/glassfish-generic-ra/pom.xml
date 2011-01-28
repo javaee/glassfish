@@ -45,7 +45,7 @@
     <parent>
         <groupId>org.glassfish.packager</groupId>
         <artifactId>packages</artifactId>
-        <version>3.1-SNAPSHOT</version>
+        <version>3.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>glassfish-generic-ra</artifactId>
@@ -79,7 +79,7 @@
       	    <groupId>org.glassfish</groupId>
             <artifactId>genericra</artifactId>
             <classifier>sources</classifier>
-            <version>2.1-20100913</version>
+            <version>2.1-20110913</version>
             <type>zip</type>
        </dependency>
     </dependencies>

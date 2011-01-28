@@ -311,7 +311,7 @@ fileset refid of artifact:dependencies does not work in unjar
 
   <target name="jsf.download" description="Download JSF" depends="initialize.maven">
       <artifact:dependencies sourcesFilesetId="sources.dependency.jsf">
-          <dependency groupId="com.sun.faces" artifactId="jsf-api" version="2.1.0-b10"/>
+          <dependency groupId="com.sun.faces" artifactId="jsf-api" version="2.1.0-b11"/>
           <remoteRepository refid="nexus.repository" />
           <localRepository path="${maven.repo.local}"/>
       </artifact:dependencies>
@@ -618,7 +618,7 @@ fileset refid of artifact:dependencies does not work in unjar
              encoding="ISO-8859-1"
              windowtitle="${Title}"
              doctitle="&lt;h1&gt;${Name} &lt;br&gt;API Specification&lt;/h1&gt;&lt;p&gt;This document is the API specification for version 6 of the Java&lt;sup&gt;TM&lt;/sup&gt; Platform, Enterprise Edition."
-             bottom="&lt;font size=&quot;-1&quot;&gt;&lt;a href=&quot;http://java.sun.com/webapps/bugreport&quot;&gt;Submit a bug or feature&lt;/a&gt; &lt;p&gt; Copyright &amp;copy; 2009, 2010, Oracle Corporation and/or its affiliates. All Rights Reserved. Use is subject to &lt;a href=&quot;http://java.sun.com/javaee/downloads/licenses/java_ee-6_0-final-full-pub-license.txt&quot; target=&quot;_top&quot;&gt;license terms. &lt;/a&gt; &lt;p&gt; Generated on ${TODAY} &lt;/font&gt; "
+             bottom="&lt;font size=&quot;-1&quot;&gt;&lt;a href=&quot;http://java.sun.com/webapps/bugreport&quot;&gt;Submit a bug or feature&lt;/a&gt; &lt;p&gt; Copyright &amp;copy; 2009-2011, Oracle Corporation and/or its affiliates. All Rights Reserved. Use is subject to &lt;a href=&quot;http://java.sun.com/javaee/downloads/licenses/java_ee-6_0-final-full-pub-license.txt&quot; target=&quot;_top&quot;&gt;license terms. &lt;/a&gt; &lt;p&gt; Generated on ${TODAY} &lt;/font&gt; "
              Header="${DRAFT}" 
              Footer="${DRAFT}" >
     </javadoc>
@@ -639,7 +639,7 @@ fileset refid of artifact:dependencies does not work in unjar
              encoding="ISO-8859-1"
              windowtitle="${v3.Title}"
              doctitle="&lt;h1&gt;${v3.Name} &lt;/h1&gt;&lt;p&gt;This document is the API specification for GlassFish v3."
-             bottom="&lt;font size=&quot;-1&quot;&gt;&lt;a href=&quot;http://java.sun.com/webapps/bugreport&quot;&gt;Submit a bug or feature&lt;/a&gt; &lt;p&gt; Copyright &amp;copy; 2009, 2010, Oracle Corporation and/or its affiliates. All Rights Reserved. Use is subject to &lt;a href=&quot;http://java.sun.com/javaee/downloads/licenses/java_ee-6_0-final-full-pub-license.txt&quot; target=&quot;_top&quot;&gt;license terms. &lt;/a&gt; &lt;p&gt; Generated on ${TODAY} &lt;/font&gt; "
+             bottom="&lt;font size=&quot;-1&quot;&gt;&lt;a href=&quot;http://java.sun.com/webapps/bugreport&quot;&gt;Submit a bug or feature&lt;/a&gt; &lt;p&gt; Copyright &amp;copy; 2009-2011, Oracle Corporation and/or its affiliates. All Rights Reserved. Use is subject to &lt;a href=&quot;http://java.sun.com/javaee/downloads/licenses/java_ee-6_0-final-full-pub-license.txt&quot; target=&quot;_top&quot;&gt;license terms. &lt;/a&gt; &lt;p&gt; Generated on ${TODAY} &lt;/font&gt; "
              Header="${DRAFT}" 
              Footer="${DRAFT}" >
 

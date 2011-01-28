@@ -53,7 +53,7 @@
     <groupId>org.glassfish</groupId>
     <artifactId>glassfish-parent</artifactId>
     <packaging>pom</packaging>
-    <version>3.1-SNAPSHOT</version>
+    <version>3.2-SNAPSHOT</version>
     <name>GlassFish Parent Project</name>
     <scm>
         <connection>scm:svn:https://svn.java.net/svn/glassfish~svn/trunk/v3</connection>
