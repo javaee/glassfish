@@ -110,8 +110,7 @@ public class WebTest {
         while ((line = bis.readLine()) != null) {
             if (line.indexOf("HTTP/1.1 200 OK") != -1) {
                 responseOK = true;
-            } else if (line.indexOf("Content-Length:") != -1
-                    || line.indexOf("Content-length:") != -1) {
+            } else if (line.toLowerCase().indexOf("content-length:") != -1) {
                 System.out.println("Response Content-Length: " + line);
                 contentLenFound = true;
             }
