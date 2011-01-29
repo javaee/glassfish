@@ -99,7 +99,7 @@ public class BasicCDITest{
         webcontainer.addWebListener(listener);
 
         get("http://localhost:8080/cdi_basic/BasicCDITestServlet",
-                "TestBean injected");
+                "All CDI beans have been injected.");
 
         deployer.undeploy(appname);
 

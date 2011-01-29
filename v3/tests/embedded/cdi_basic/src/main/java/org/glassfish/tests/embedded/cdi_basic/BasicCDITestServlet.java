@@ -56,6 +56,7 @@ import java.io.PrintWriter;
 public class BasicCDITestServlet extends HttpServlet {
 
     @javax.inject.Inject TestBean tb;
+    @javax.inject.Inject TestRequestScopedBean trsb;
 
     @Override
     protected void doGet(HttpServletRequest httpServletRequest,
@@ -64,8 +65,12 @@ public class BasicCDITestServlet extends HttpServlet {
         out.println("Hi from BasicCDITestServlet");
 	if(tb == null) {
 	  out.println("TestBean not injected.");
+	} else if(trsb == null) {
+	  out.println("TestRequestScopeBean not injected.");
 	} else {
 	  out.println("TestBean injected. [" + tb + "]");
+	  out.println("TestRequestScopeBean injected. [ " + trsb + "]");
+	  out.println("All CDI beans have been injected.");
 	}
         out.flush();
         out.close();
