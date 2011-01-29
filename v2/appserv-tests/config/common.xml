@@ -46,6 +46,20 @@ Variables used:
     failonerror="true"/>
 </target>
 
+<target name="compile-common-with-endorsed-dir" depends="init-common">
+  <mkdir dir="${build.classes.dir}"/>
+  <echo message="common.xml: Compiling test source files" level="verbose"/>
+  <mkdir dir="${src}"/>
+  <javac srcdir="${src}"
+    destdir="${build.classes.dir}"
+    classpath="${s1astest.classpath}"
+    debug="on"
+    failonerror="true">
+    <compilerarg line="-endorseddirs ${env.S1AS_HOME}/modules/endorsed"/>
+   </javac>
+</target>
+
+
 <!-- ================================================================ -->
 <!-- This is the external target war-common to be called up build files
 usage:
