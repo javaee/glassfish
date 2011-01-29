@@ -35,9 +35,9 @@
     <target name="clean" depends="init-common">
       <antcall  target="clean-common"/>
     </target>
- 
+
     <target name="compile" depends="clean">
-      <antcall target="compile-common">
+      <antcall target="compile-common-with-endorsed-dir">
         <param name="src" value="ejb"/>
       </antcall>
       <antcall target="compile-common">
