@@ -169,6 +169,7 @@ public class SecurityHandler {
             //Custom realm class
             handlerCtx.setOutputValue("classnameOption", "input");
             attrMap.put("predefinedClassname", Boolean.FALSE);
+	    attrMap.put("classnameInput", classname);
             attrMap.put("classname", classname);
             List props = getChildrenMapForTableList(origProps, "property", null);
             handlerCtx.setOutputValue("properties", props);
