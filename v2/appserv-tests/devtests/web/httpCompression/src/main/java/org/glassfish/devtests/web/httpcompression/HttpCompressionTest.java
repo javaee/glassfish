@@ -113,7 +113,7 @@ public class HttpCompressionTest extends BaseDevTest {
         boolean found = false;
         try {
             while ((line = bis.readLine()) != null && !"".equals(line.trim())) {
-                found |= line.contains("Content-Encoding: " + compScheme);
+                found |= line.toLowerCase().contains("content-encoding: " + compScheme);
             }
         } finally {
             s.close();
