@@ -40,6 +40,7 @@
 
 package org.glassfish.admingui.devtests;
 
+import com.google.common.base.Function;
 import com.thoughtworks.selenium.Selenium;
 import com.thoughtworks.selenium.SeleniumException;
 import org.junit.*;
@@ -54,6 +55,7 @@ import java.security.SecureRandom;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class BaseSeleniumTestClass {
     public static final String CURRENT_WINDOW = "selenium.browserbot.getCurrentWindow()";
@@ -100,10 +102,12 @@ public class BaseSeleniumTestClass {
         //put("i18nc", "org.glassfish.web.admingui.Strings");
     }};
     private static SeleniumHelper helper = SeleniumHelper.getInstance();
+    private ElementFinder elementFinder;
     
     public BaseSeleniumTestClass() {
         driver = helper.getDriver();
         selenium = helper.getSeleniumInstance();
+        elementFinder = helper.getElementFinder();
     }
 
 
@@ -379,7 +383,7 @@ public class BaseSeleniumTestClass {
     }
 
     protected void clickAndWait(String id, String triggerText, int seconds) {
-        log ("Clicking on {0} and waiting for \"{1}\"", id, triggerText);
+        log ("Clicking on {0} \"{1}\"", id, triggerText);
         insureElementIsVisible(id);
         pressButton(id);
         waitForPageLoad(triggerText, seconds);
@@ -446,7 +450,9 @@ public class BaseSeleniumTestClass {
             }
 
             try {
-                RenderedWebElement ajaxPanel = (RenderedWebElement) driver.findElement(By.id(AJAX_INDICATOR));
+                RenderedWebElement ajaxPanel = (RenderedWebElement) 
+                        elementFinder.findElement(By.id(AJAX_INDICATOR), TIMEOUT);
+//                        driver.findElement(By.id(AJAX_INDICATOR));
                 if (!ajaxPanel.isDisplayed()) {
                     if (callback.executeTest()) {
                         break;
@@ -519,7 +525,8 @@ public class BaseSeleniumTestClass {
      * @return
      */
     protected String getLinkIdByLinkText(String baseId, String value) {
-        WebElement link = driver.findElement(By.linkText(value));
+        WebElement link = elementFinder.findElement(By.linkText(value), TIMEOUT);
+                //driver.findElement(By.linkText(value));
         return (link == null) ?  null : (String)link.getAttribute("id");
         /*
         String[] links = selenium.getAllLinks();
@@ -911,7 +918,8 @@ public class BaseSeleniumTestClass {
         }
         
         try {
-            RenderedWebElement element = (RenderedWebElement) driver.findElement(By.id(id));
+            RenderedWebElement element = (RenderedWebElement) elementFinder.findElement(By.id(id), TIMEOUT);
+                    //driver.findElement(By.id(id));
             if (element.isDisplayed()) {
                 return;
             }
@@ -920,7 +928,8 @@ public class BaseSeleniumTestClass {
         }
         
         final String parentId = id.substring(0, id.lastIndexOf(":"));
-        final RenderedWebElement parentElement = (RenderedWebElement)driver.findElement(By.id(parentId));
+        final RenderedWebElement parentElement = (RenderedWebElement) elementFinder.findElement(By.id(parentId), TIMEOUT);
+//                driver.findElement(By.id(parentId));
         if (!parentElement.isDisplayed()) {
             insureElementIsVisible(parentId);
             String grandParentId = parentId.substring(0, parentId.lastIndexOf(":"));
@@ -1022,7 +1031,10 @@ public class BaseSeleniumTestClass {
         public boolean executeTest() {
 //            String attr = selenium.getEval("this.browserbot.findElement('id=" + buttonId + "').disabled"); // "Classic" Selenium
             try {
-                String attr = driver.findElement(By.id(buttonId)).getAttribute("disabled"); // WebDriver-backed Selenium
+                String attr = 
+                        elementFinder.findElement(By.id(buttonId), TIMEOUT)
+//                        driver.findElement(By.id(buttonId))
+                        .getAttribute("disabled"); // WebDriver-backed Selenium
                 return (Boolean.parseBoolean(attr) == desiredState);
             } catch (Exception ex) {
                 return true;// ???
@@ -1031,6 +1043,4 @@ public class BaseSeleniumTestClass {
         
         
     }
-    
-
 }

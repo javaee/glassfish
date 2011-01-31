@@ -56,6 +56,7 @@ public class SeleniumHelper {
     private static SeleniumHelper instance;
     private Selenium selenium;
     private WebDriver driver;
+    private ElementFinder elementFinder;
     private static final Logger logger = Logger.getLogger(SeleniumHelper.class.getName());
 
     private SeleniumHelper() {
@@ -81,6 +82,7 @@ public class SeleniumHelper {
             } else if ("ie".contains(browser)) {
                 driver = new InternetExplorerDriver();
             }
+            elementFinder = new ElementFinder(driver);
 
             selenium = new WebDriverBackedSelenium(driver, getBaseUrl());
             selenium.setTimeout("90000");
@@ -106,6 +108,11 @@ public class SeleniumHelper {
         return driver;
     }
 
+    public ElementFinder getElementFinder() {
+        return elementFinder;
+    }
+
+    
     public static String getParameter(String paramName, String defaultValue) {
         String value = System.getProperty(paramName);
 
