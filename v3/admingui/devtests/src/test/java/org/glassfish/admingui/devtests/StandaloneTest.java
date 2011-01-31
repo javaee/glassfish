@@ -198,7 +198,15 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
         if (getTableRowCount(ID_INSTANCE_TABLE) == 0) {
             return;
         }
+        
+        this.selectAllTableRows(ID_INSTANCE_TABLE);
+        chooseOkOnNextConfirmation();
+        pressButton("propertyForm:instancesTable:topActionsGroup1:button3");
+        waitForButtonDisabled("propertyForm:instancesTable:topActionsGroup1:button3");
+        getConfirmation();
+        
 
+        /*
         // Stop all instances
         if (selectTableRowsByValue(ID_INSTANCE_TABLE, STATUS_RUNNING, "col0", "col6") > 0) {
             waitForButtonEnabled(ID_INSTANCE_TABLE_STOP_BUTTON);
@@ -209,6 +217,7 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
             }
             this.waitForButtonDisabled(ID_INSTANCE_TABLE_STOP_BUTTON);
         }
+         */
 
         // Delete all instances
         deleteAllTableRows(ID_INSTANCE_TABLE );  //"propertyForm:instancesTable");

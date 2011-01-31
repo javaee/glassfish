@@ -42,10 +42,10 @@ package org.glassfish.admingui.devtests;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class JavaMessageServiceTest extends BaseSeleniumTestClass {
+    public static final String DEFAULT_JMS_HOST = "default_JMS_host";
     private static final String TRIGGER_GENERAL_INFORMATION = "i18n.instance.GeneralTitle";
     private static final String TRIGGER_JMS_SERVICE = "i18njms.jms.PageHelp";
     private static final String TRIGGER_JMS_HOSTS = "i18njms.jmsHosts.ListPageHelp";
@@ -101,6 +101,46 @@ public class JavaMessageServiceTest extends BaseSeleniumTestClass {
         assertEquals(host, getFieldValue("propertyForm:propertySheet:propertSectionTextField:HostProp:Host"));
         clickAndWait("propertyForm:propertyContentPage:topButtons:cancelButton", TRIGGER_JMS_HOSTS);
         deleteRow("propertyForm:configs:topActionsGroup1:button1", "propertyForm:configs", hostText, "col0", "colName");
+    }
+    
+    @Test
+    public void testJmsHostInNonServerConfig() {
+        String hostText = "host"+generateRandomString();
+        String instanceName = "in" + generateRandomString();
+        final String LINK_HOSTS = "treeForm:tree:configurations:" + instanceName + "-config:jmsConfiguration:jmsHosts:jmsHosts_link";
+        
+        StandaloneTest sat = new StandaloneTest();
+        sat.createStandAloneInstance(instanceName);
+        sat.startInstance(instanceName);
+        
+        // Create new JMS Host for the standalone instance's config
+        clickAndWait(LINK_HOSTS, TRIGGER_JMS_HOSTS);
+        clickAndWait("propertyForm:configs:topActionsGroup1:newButton", TRIGGER_NEW_JMS_HOST);
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:JmsHostTextProp:JmsHostText", hostText);
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:HostProp:Host", "localhost");
+        clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_NEW_VALUES_SAVED);
+        
+        // Verify that the host is not visible to the DAS
+        reset();
+        clickAndWait("treeForm:tree:configurations:server-config:jmsConfiguration:jmsHosts:jmsHosts_link", TRIGGER_JMS_HOSTS);
+        assertFalse(isTextPresent(hostText));
+        
+        // Delete the default host for the SA instance
+        reset();
+        clickAndWait(LINK_HOSTS, TRIGGER_JMS_HOSTS);
+        deleteRow("propertyForm:configs:topActionsGroup1:button1", "propertyForm:configs", DEFAULT_JMS_HOST, "col0", "colName");
+        
+        // Verify that the DAS still has the default JMS Host
+        reset();
+        clickAndWait("treeForm:tree:configurations:server-config:jmsConfiguration:jmsHosts:jmsHosts_link", TRIGGER_JMS_HOSTS);
+        assertTrue(isTextPresent(DEFAULT_JMS_HOST));
+        
+        // Delete SA config's new host
+        reset();
+        clickAndWait(LINK_HOSTS, TRIGGER_JMS_HOSTS);
+        deleteRow("propertyForm:configs:topActionsGroup1:button1", "propertyForm:configs", hostText, "col0", "colName");
+        
+        sat.deleteAllStandaloneInstances();
     }
 
     @Test

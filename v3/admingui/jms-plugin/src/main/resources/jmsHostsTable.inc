@@ -65,8 +65,13 @@
             <!command 
                 getUIComponent(clientId="$pageSession{configsTableRowGroupId}", component=>$attribute{tableRowGroup});      
                 getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
-                //deleteConfig(ConfigName="#{configName}", Type="#{type}", selectedRows="${selectedRows}");
-                gf.deleteCascade(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}", selectedRows="${selectedRows}");
+
+                foreach (var="row" list="#{requestScope.selectedRows}") {
+                    urlencode(value="#{row['name']}" result="#{requestScope.encodedName}");
+                    gf.restRequest(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}/#{requestScope.encodedName}?target=#{pageSession.configName}", 
+                        method="delete", result="#{pageSession.result}");
+                }
+
                 setAttribute(key="selectedRows" value="${selectedRows}");
                 gf.redirect(page="#{listPageLink}?configName=#{configName}");
             />            

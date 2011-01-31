@@ -152,7 +152,7 @@
         <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-client</artifactId>
-            <version>1.5-ea08</version>
+            <version>1.5</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -164,12 +164,18 @@
             <groupId>org.seleniumhq.selenium</groupId> 
             <artifactId>selenium</artifactId> 
             <version>${selenium.version}</version> 
+            <exclusions>
+                <exclusion>
+                    <groupId>org.testng</groupId>
+                    <artifactId>testng</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency> 
     </dependencies>
     <build>
         <defaultGoal>install</defaultGoal>
         <pluginManagement>
-          <plugins>
+            <plugins>
             <!--
             <plugin>
               <groupId>org.codehaus.mojo</groupId>
@@ -177,7 +183,7 @@
               <version>1.1</version>
             </plugin>
             -->
-          </plugins>
+            </plugins>
         </pluginManagement>
         <plugins>
             <plugin>

@@ -57,6 +57,7 @@ import java.util.logging.Logger;
 
 public class BaseSeleniumTestClass {
     public static final String CURRENT_WINDOW = "selenium.browserbot.getCurrentWindow()";
+    public static final int TIMEOUT_CALLBACK_LOOP = 1000;
     public static final String TRIGGER_NEW_VALUES_SAVED = "New values successfully saved.";
     public static final String TRIGGER_COMMON_TASKS = "Other Tasks";
     public static final String TRIGGER_REGISTRATION_PAGE = "Receive patch information and bug updates, screencasts and tutorials, support and training offerings, and more";
@@ -301,7 +302,11 @@ public class BaseSeleniumTestClass {
     }
     
     protected String getConfirmation() {
-        return selenium.getConfirmation();
+        String confirmation = null;
+        if (isConfirmationPresent()) {
+            confirmation = selenium.getConfirmation();
+        }
+        return confirmation;
     }
     
     protected void waitForPopUp(String windowId, String timeout) {
@@ -374,7 +379,7 @@ public class BaseSeleniumTestClass {
     }
 
     protected void clickAndWait(String id, String triggerText, int seconds) {
-        log ("Clicking on {0} and waiting for \'{1}\'", id, triggerText);
+        log ("Clicking on {0} and waiting for \"{1}\"", id, triggerText);
         insureElementIsVisible(id);
         pressButton(id);
         waitForPageLoad(triggerText, seconds);
@@ -435,8 +440,8 @@ public class BaseSeleniumTestClass {
     }
     
     protected void waitForLoad(int timeoutInSeconds, WaitForLoadCallBack callback) {
-        for (int halfSeconds = 0;; halfSeconds++) {
-            if (halfSeconds >= (timeoutInSeconds*2)) {
+        for (int seconds = 0;; seconds++) {
+            if (seconds >= (timeoutInSeconds)) {
                 Assert.fail("The operation timed out waiting for the page to load.");
             }
 
@@ -450,7 +455,7 @@ public class BaseSeleniumTestClass {
             } catch (NoSuchElementException nse) {
             }
 
-            sleep(500);
+            sleep(TIMEOUT_CALLBACK_LOOP);
         }
     }
 
@@ -493,17 +498,13 @@ public class BaseSeleniumTestClass {
 
     protected void rowActionWithConfirm(String buttonId, String tableId, String triggerText, String selectColId, String valueColId) {
         // A defensive getConfirmation()
-        if (isConfirmationPresent()) {
-            getConfirmation();
-        }
+        getConfirmation();
         chooseOkOnNextConfirmation();
         selectTableRowByValue(tableId, triggerText, selectColId, valueColId);
         sleep(500); // argh!
         waitForButtonEnabled(buttonId);
         pressButton(buttonId);
-        if (isConfirmationPresent()) {
-            getConfirmation();
-        }
+        getConfirmation();
         sleep(500); // argh!
         waitForButtonDisabled(buttonId);
     }
@@ -603,9 +604,7 @@ public class BaseSeleniumTestClass {
         waitForButtonEnabled(deleteButtonId);
         chooseOkOnNextConfirmation();
         pressButton(deleteButtonId);
-        if (isConfirmationPresent()) {
-            getConfirmation();
-        }
+        getConfirmation();
         this.waitForButtonDisabled(deleteButtonId);
     }
     
@@ -754,7 +753,7 @@ public class BaseSeleniumTestClass {
             String tableTriggerText,
             String editTriggerText,
             String state) {
-        sleep(1000); // yuck
+        sleep(TIMEOUT_CALLBACK_LOOP); // yuck
         selectTableRowByValue(tableId, resourceName);
         waitForButtonEnabled(enableButtonId);
         pressButton(enableButtonId);
