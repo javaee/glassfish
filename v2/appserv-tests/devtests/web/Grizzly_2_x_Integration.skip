@@ -3,3 +3,4 @@ dosBrokenPost
 dosSlowClient
 httpListenerAdminReconfig
 portUnification
+wrongTransport
