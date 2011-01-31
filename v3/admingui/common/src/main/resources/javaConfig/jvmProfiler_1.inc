@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -52,24 +52,28 @@
     <!beforeCreate
         setSessionAttribute(key="javaConfigTab" value="profiler");
         getRequestValue(key="configName" value=>$page{configName}  default="server-config");
-
-        setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}");
+    
+        urlencode(value="#{pageSession.configName}" encoding="UTF-8" result="#{pageSession.encodedConfigName}");
+        setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.encodedConfigName}");
         setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/java-config");
         setPageSessionAttribute(key="rest-api" value="true");
-        gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}.json", valueMap="#{pageSession.valueMap}");
-
         setPageSessionAttribute(key="selfPage" value="#{request.contextPath}/javaConfig/serverInstProfiler.jsf");
         setPageSessionAttribute(key="childType" value="profiler");
         setPageSessionAttribute(key="confirmDeleteMsg" value="$resource{i18nc.msg.JS.confirmDeleteProfiler}");
         setPageSessionAttribute(key="profilerUrl", value="#{pageSession.parentUrl}/java-config/profiler");
         setPageSessionAttribute(key="createProfilerUrl", value="#{pageSession.parentUrl}/java-config/create-profiler");
-        setPageSessionAttribute(key="deleteProfilerUrl", value="#{pageSession.parentUrl}/java-config/profiler");
+        setPageSessionAttribute(key="deleteProfilerUrl", value="#{pageSession.parentUrl}/java-config/profiler/delete-profiler");
         gf.checkIfEndPointExist(endpoint="#{pageSession.profilerUrl}/jvm-options" exists="#{pageSession.edit}");
 
         if(#{edit}) {
             gf.getEntityAttrs(endpoint="#{pageSession.parentUrl}/java-config/profiler.json", valueMap="#{pageSession.valueMap}");
             getJvmOptionsValues(endpoint="#{pageSession.profilerUrl}/jvm-options.json"  result=>$attribute{tableList});
             gf.listCombine(list="#{null}" list2="$attribute{tableList}", result="#{pageSession.origList}");
+        }
+        //there is no way to get the default value of profiler when one doesn't exist.  just hard code 'enabled' to true
+        if ("#{edit}=false"){
+            createMap(result="#{pageSession.valueMap}");
+            mapPut(map="#{pageSession.valueMap}" key="enabled" value="true");
         }
         setPageSessionAttribute(key="onlyUseAttrs" value={"name", "target", "classpath", "enabled","nativeLibraryPath"})
         setPageSessionAttribute(key="convertToFalseList" value={"enabled"});

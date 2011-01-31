@@ -67,6 +67,13 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
     public static final String ID_INSTANCE_TABLE_STOP_BUTTON = "propertyForm:instancesTable:topActionsGroup1:button3";
     public static final String ID_INSTANCE_TABLE = "propertyForm:instancesTable";
     public static final String ID_INSTANCE_PROP_TAB = "propertyForm:standaloneInstanceTabs:standaloneProp";
+
+    public static final String ID_INSTANCE_NAME_TEXT = "propertyForm:propertySheet:propertSectionTextField:NameTextProp:NameText";
+    public static final String ID_INSTANCE_NODE_TEXT = "propertyForm:propertySheet:propertSectionTextField:node:node" ;
+    public static final String ID_INSTANCE_CONFIG_SELECT = "propertyForm:propertySheet:propertSectionTextField:configProp:Config" ;
+    public static final String ID_INSTANCE_CONFIG_OPTION = "propertyForm:propertySheet:propertSectionTextField:configOptionProp:optC";
+    public static final String ID_INSTANCE_NEW_PAGE_BUTTON = "propertyForm:propertyContentPage:topButtons:newButton" ;
+
     public static final String INSTANCE_PREFIX = "standAlone" ;
     public static final String NODE_NAME = "localhost-domain1" ;
     public static final String DEFAULT_WEIGHT = "100" ;
@@ -167,15 +174,17 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
 
         jdbcTest.deleteJDBCResource(jndiName, target, MonitoringTest.TARGET_STANDALONE_TYPE);
     }
-
+    
     public void createStandAloneInstance(String instanceName){
         gotoStandaloneInstancesPage();
         clickAndWait(ID_INSTANCE_TABLE_NEW_BUTTON, TRIGGER_NEW_PAGE );
-        setFieldValue("propertyForm:propertySheet:propertSectionTextField:NameTextProp:NameText", instanceName);
-        selectDropdownOption("propertyForm:propertySheet:propertSectionTextField:node:node", NODE_NAME);
-        selectDropdownOption("propertyForm:propertySheet:propertSectionTextField:configProp:Config", "default-config");
-        markCheckbox("propertyForm:propertySheet:propertSectionTextField:configOptionProp:optC");
-        clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_INSTANCES_PAGE);
+        setFieldValue(ID_INSTANCE_NAME_TEXT, instanceName);
+        selectDropdownOption(ID_INSTANCE_NODE_TEXT, NODE_NAME);
+        selectDropdownOption(ID_INSTANCE_CONFIG_SELECT, "default-config");
+        markCheckbox(ID_INSTANCE_CONFIG_OPTION);
+        clickAndWait(ID_INSTANCE_NEW_PAGE_BUTTON, TRIGGER_INSTANCES_PAGE);
+        String prefix = getTableRowByValue(ID_INSTANCE_TABLE, instanceName, "col1");
+        assertTrue(isTextPresent(instanceName));
     }
 
     public void deleteStandAloneInstance(String instanceName) {
@@ -208,6 +217,8 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
     public void startInstance(String instanceName) {
         rowActionWithConfirm(ID_INSTANCE_TABLE_START_BUTTON, ID_INSTANCE_TABLE, instanceName);
         waitForCondition("document.getElementById('" + ID_INSTANCE_TABLE_START_BUTTON + "').value != 'Processing...'", 300000);
+        String prefix = getTableRowByValue(ID_INSTANCE_TABLE, instanceName, "col1");
+        assertEquals(STATUS_RUNNING, getText(prefix + "col6"));
     }
 
     public void stopInstance(String instanceName) {
@@ -219,7 +230,7 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
         }
     }
 
-    public void gotoStandaloneInstancesPage() {
+    public  void gotoStandaloneInstancesPage() {
         reset();
         clickAndWait("treeForm:tree:standaloneTreeNode:standaloneTreeNode_link", TRIGGER_INSTANCES_PAGE);
     }
