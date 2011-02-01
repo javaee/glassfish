@@ -119,7 +119,7 @@
         <abbrev_product_name>glassfish</abbrev_product_name>
         <version_prefix></version_prefix>
         <major_version>3</major_version>
-        <minor_version>1</minor_version>
+        <minor_version>2</minor_version>
         <update_version></update_version>
         <version_suffix></version_suffix>
         <build.id>${user.name}-private</build.id><!-- on Hudson and RE, this gets replaced by real build ID -->
