@@ -62,6 +62,10 @@
         setPageSessionAttribute(key="childType" value="ssl")
         setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}/#{pageSession.childType}");
         setPageSessionAttribute(key="showCancelButton" value="#{true}" )
+        setPageSessionAttribute(key="createSslUrl", value="#{pageSession.parentUrl}/create-ssl");
+        createMap(result="#{pageSession.valueMap}");
+        mapPut(map="#{pageSession.valueMap}" key="target" value="#{pageSession.configName}");
+        mapPut(map="#{pageSession.valueMap}" key="certNickname" value="");
 #include "/common/shared/sslPrepare.inc"
       />
   </event>
