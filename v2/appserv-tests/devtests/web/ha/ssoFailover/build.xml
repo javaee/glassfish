@@ -214,8 +214,6 @@
         </antcall>
         -->
 
-        <antcall target="stop-cluster-common"/>
-
         <antcall target="delete-user-common">
             <param name="user" value="${user}"/>
             <param name="appserver.instance.name" value="${cluster.name}"/>
@@ -225,11 +223,13 @@
             <param name="instance.name" value="${instance1.name}"/>
         </antcall>
         <antcall target="delete-local-instance-common">
-            <param name="instance.name" value="${instancename2}"/>
+            <param name="instance.name" value="${instance2.name}"/>
         </antcall>
         <antcall target="delete-local-instance-common">
-            <param name="instance.name" value="${instancename3}"/>
+            <param name="instance.name" value="${instance3.name}"/>
         </antcall>
+
+        <antcall target="stop-cluster-common"/>
 
         <antcall target="delete-cluster-common"/>
     </target>

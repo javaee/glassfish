@@ -544,6 +544,10 @@
         <ant dir="wrongTransportTarget" target="all"/>
     </target>
 
+    <target name="ha" depends="init-report">
+        <ant dir="ha/ssoFailover" target="all"/>
+    </target>
+
     <target name="init-report" unless="report.inited">
         <property name="report.inited" value="true"/>
         <record name="web.output" action="start" />
@@ -562,7 +566,7 @@
         <echo message="#################################################"/>
     </target>
 
-    <target name="all" depends="init,init-report,comet,el,http-connector,jsp,security,servlet,taglib,web-container,weblogicDD,clustering,misc,finish-report"/>
+    <target name="all" depends="init,init-report,comet,el,http-connector,jsp,security,servlet,taglib,web-container,weblogicDD,clustering,ha,misc,finish-report"/>
     <target name="embedded-all" depends="embedded-setup,all"/>
 
     <target name="embedded-setup">
