@@ -30,4 +30,9 @@ public abstract class AbstractBaseEJB<T> {
 
     //use TypeVariable generics T as param
     abstract public void doSomething4(T t);
+
+    //superclass has param List<T>, and subclass has param List
+    abstract public void doSomething5(List<T> t);
+
+    abstract public void doSomething6(List<List<T>> t);
 } 

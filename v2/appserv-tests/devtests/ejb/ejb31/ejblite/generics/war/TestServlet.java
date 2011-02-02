@@ -19,6 +19,8 @@ public class TestServlet extends HttpServlet {
         testBean.doSomething2(null);
         testBean.doSomething3();
         testBean.doSomething4(null);
+        testBean.doSomething5(null);
+        testBean.doSomething6(null);
         out.println(testBean.hello());
         out.println("Successfully called methods on " + testBean); 
     }

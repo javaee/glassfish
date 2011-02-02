@@ -32,4 +32,14 @@ public class TestBean extends AbstractBaseEJB<Object> {
         return "hello from " + this;
     }
 
+    //superclass has param List<T>, and subclass has param List
+    @Override
+    public void doSomething5(List t) {
+        System.out.println("In doSomething5 of " + this);
+    }
+
+    @Override
+    public void doSomething6(List<List<Object>> t) {
+        System.out.println("In doSomething6 of " + this);
+    }
 }
