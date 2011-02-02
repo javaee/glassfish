@@ -45,12 +45,9 @@ import java.util.Map;
 import com.sun.ejte.ccl.reporter.*;
 import com.sun.appserv.test.BaseDevTest;
 
-/*
- * Unit test for SSO Failover
+/**
+ * Unit test for HA SSO Failover.
  *
- *   https://glassfish.dev.java.net/issues/show_bug.cgi?id=1933
- *   (Admin login screen gives "Error Accessing Page:"
- *    error after logging in)
  */
 public class WebTest extends BaseDevTest {
 
@@ -158,14 +155,15 @@ public class WebTest extends BaseDevTest {
             }
 
             String redirect = location.substring("Location:".length()).trim();
+            // follow the redirect
             int cA1 = go(port1, new URL(redirect).getPath(), "A");
             int cB1 = go(port1, contextRootPrefix + "-b/index.jsp", "B");
             
             // stop inst1
             asadmin("stop-local-instance", instancename1);
 
-            int cA2 = go(port2, contextRootPrefix + "-a/index.jsp", "A");
             int cB2 = go(port2, contextRootPrefix + "-b/index.jsp", "B");
+            int cA2 = go(port2, contextRootPrefix + "-a/index.jsp", "A");
 
             if ((cA2 - cA1 != 1) && (cB2 - cB1 != 1)) {
                 throw new Exception("count does not match: " + cA1 + ", " + cB1 + ", " + cA2 + ", " + cB2);
@@ -179,8 +177,8 @@ public class WebTest extends BaseDevTest {
     }
 
     /*
-     * Follow redirect to
-     * http://<host>:<port>/web-ha-sso-failover-<i>
+     * Access http://<host>:<port>/web-ha-sso-failover-<aName> .
+     * @return the associated count value
      */
     private int go(int port, String path, String aName)
             throws Exception {
