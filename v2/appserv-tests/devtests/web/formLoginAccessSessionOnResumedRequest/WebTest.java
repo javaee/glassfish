@@ -53,6 +53,8 @@ import com.sun.ejte.ccl.reporter.*;
  * This unit test has been reworked in light of the fix for CR 6633257:
  * It no longer expects that the login page be accessed through a redirect,
  * but accepts that it is accessed via a FORWARD dispatch.
+ *
+ * Also, add test for CR 7014698: Duplicate JSESSIONID cookie in form based login.
  */
 public class WebTest {
 
@@ -208,6 +210,7 @@ public class WebTest {
         BufferedReader br = null;
         String response = null;
         String cookie = null;
+        int cookieCount = 0;
 
         try {
             sock = new Socket(host, new Integer(port).intValue());
@@ -230,6 +233,7 @@ public class WebTest {
                     response = line;
                 } else if (line.startsWith("Set-Cookie")) {
                     cookie = line;
+                    cookieCount++;
                 }
             }
         } finally {
@@ -239,12 +243,15 @@ public class WebTest {
             close(br);
         }
 
-        // if jsessionId is reset in authentication
-        if (cookie != null) {
+        //jsessionId is reset in authentication
+        //add check for CR 7014698
+        if (cookieCount == 1) {
             String newJsessionId = getSessionIdFromCookie(cookie, JSESSIONID);
             if (newJsessionId != null) {
                 jsessionId = newJsessionId;
             }
+        } else {
+            throw new RuntimeException("JSESSIONID cookie count is incorrect: " + cookieCount);
         }
 
         if (!jsessionId.equals(response)) {
