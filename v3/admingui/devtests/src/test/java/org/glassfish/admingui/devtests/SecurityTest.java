@@ -216,7 +216,7 @@ public class SecurityTest extends BaseSeleniumTestClass {
         createConfig("new-config");
         for (String configName : list) {
             clickAndWait("treeForm:tree:configurations:" + configName + ":security:messageSecurity:messageSecurity_link", TRIGGER_MESSAGE_SECURITY_CONFIGURATIONS);
-            clickAndWait(getLinkIdByLinkText("propertyForm:configs", "SOAP"), TRIGGER_EDIT_MESSAGE_SECURITY_CONFIGURATION);
+            clickAndWait("treeForm:tree:configurations:" + configName + ":security:messageSecurity:SOAP:link", TRIGGER_EDIT_MESSAGE_SECURITY_CONFIGURATION);
             clickAndWait("propertyForm:msgSecurityTabs:providers", TRIGGER_PROVIDER_CONFIGURATION);
             clickAndWait("propertyForm:configs:topActionsGroup1:newButton", TRIGGER_NEW_PROVIDER_CONFIGURATION);
 
