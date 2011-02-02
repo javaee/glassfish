@@ -106,17 +106,14 @@
             <param name="appserver.instance.name" value="${cluster.name}"/>
         </antcall>
 
+        <antcall target="create-local-instance"/>
         <antcall target="create-local-instance">
-            <param name="instance.name" value="${instance1.name}"/>
-            <param name="instance.port" value="${instance1.port}"/>
+            <param name="instance.name" value="${instance.name.2}"/>
+            <param name="instance.http.port" value="${instance.http.port.2}"/>
         </antcall>
         <antcall target="create-local-instance">
-            <param name="instance.name" value="${instance2.name}"/>
-            <param name="instance.port" value="${instance2.port}"/>
-        </antcall>
-        <antcall target="create-local-instance">
-            <param name="instance.name" value="${instance3.name}"/>
-            <param name="instance.port" value="${instance3.port}"/>
+            <param name="instance.name" value="${instance.name.3}"/>
+            <param name="instance.http.port" value="${instance.http.port.3}"/>
         </antcall>
 
         <antcall target="start-cluster-common"/>
@@ -142,7 +139,7 @@
     <target name="create-local-instance">
         <antcall target="asadmin-common">
             <param name="admin.command" value="create-local-instance"/>
-            <param name="operand.props" value="--cluster ${cluster.name} --systemproperties HTTP_LISTENER_PORT=${instance.port} ${instance.name}"/>
+            <param name="operand.props" value="--cluster ${cluster.name} --systemproperties HTTP_LISTENER_PORT=${instance.http.port} ${instance.name}"/>
         </antcall>
     </target>
     
@@ -164,9 +161,9 @@
     <target name="run" depends="init-common">
         <java classname="WebTest">
           <arg value="${http.host}"/>
-          <arg value="${instance1.port}"/>
-          <arg value="${instance2.port}"/>
-          <arg value="${instance1.name}"/>
+          <arg value="${instance.http.port}"/>
+          <arg value="${instance.http.port.2}"/>
+          <arg value="${instance.name}"/>
           <arg value="${appname}"/>
           <arg value="${user}"/>
           <arg value="${password}"/>
@@ -219,14 +216,19 @@
             <param name="appserver.instance.name" value="${cluster.name}"/>
         </antcall>
 
-        <antcall target="delete-local-instance-common">
-            <param name="instance.name" value="${instance1.name}"/>
+        <antcall target="stop-local-instance-common"/>
+        <antcall target="delete-local-instance-common"/>
+        <antcall target="stop-local-instance-common">
+            <param name="instance.name" value="${instance.name.2}"/>
         </antcall>
         <antcall target="delete-local-instance-common">
-            <param name="instance.name" value="${instance2.name}"/>
+            <param name="instance.name" value="${instance.name.2}"/>
+        </antcall>
+        <antcall target="stop-local-instance-common">
+            <param name="instance.name" value="${instance.name.3}"/>
         </antcall>
         <antcall target="delete-local-instance-common">
-            <param name="instance.name" value="${instance3.name}"/>
+            <param name="instance.name" value="${instance.name.3}"/>
         </antcall>
 
         <antcall target="stop-cluster-common"/>

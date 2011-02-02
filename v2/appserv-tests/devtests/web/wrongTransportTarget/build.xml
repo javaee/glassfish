@@ -63,13 +63,14 @@
 
     <target name="run" depends="init-common">
         <java classname="wrongtransporttarget.WrongTransport" classpathref="reportbuilder.class.path">
+          <arg value="${cluster.name}"/>
           <arg value="${http.host}"/>
-          <arg value="${c1.http.port}"/>
-          <arg value="${truststore.db.file}"/>
+          <arg value="${instance.http.port}"/>
         </java>
         <java classname="wrongtransporttarget.WrongTransportSSL" classpathref="reportbuilder.class.path">
+          <arg value="${cluster.name}"/>
           <arg value="${http.host}"/>
-          <arg value="${c1.https.port}"/>
+          <arg value="${instance.https.port}"/>
           <arg value="${truststore.db.file}"/>
         </java>
     </target>

@@ -79,7 +79,11 @@
     <target name="all" depends="init-common,build,create-cluster,create-local-instance,restart,run,stop-local-instance,delete-local-instance,delete-cluster"/>
 
     <target name="run" depends="init-common">
-        <run-test classname="org.glassfish.devtests.web.asadmindeletestarget.WebTest" classpath="${test}"/>
+        <run-test classname="org.glassfish.devtests.web.asadmindeletestarget.WebTest" classpath="${test}">
+            <arguments>
+                <arg value="${cluster.name}"/>
+            </arguments>
+        </run-test>
     </target>
 
     <target name="restart" depends="init-common">

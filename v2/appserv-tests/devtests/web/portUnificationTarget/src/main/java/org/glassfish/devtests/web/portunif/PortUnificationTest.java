@@ -63,9 +63,14 @@ public class PortUnificationTest extends BaseDevTest {
     private String puName = "pu-protocol";
     private String httpName = "pu-http-protocol";
     private String dummyName = "pu-dummy-protocol";
+    private String clusterName = null;
 
     public static void main(String[] args) throws IOException {
-        new PortUnificationTest().run();
+        new PortUnificationTest(args[0]).run();
+    }
+
+    public PortUnificationTest(String clusterName) {
+        this.clusterName = clusterName;
     }
 
     @Override
@@ -80,29 +85,29 @@ public class PortUnificationTest extends BaseDevTest {
 
     public void run() throws IOException {
         try {
-            report("create-pu-protocol", asadmin("create-protocol", "--target", "c1",
+            report("create-pu-protocol", asadmin("create-protocol", "--target", clusterName,
                 puName));
             createHttpElements();
             //createDummyProtocolElements();
             report("set-listener", asadmin("set",
-                "configs.config.c1-config.network-config.network-listeners.network-listener.http-listener-1.protocol="
+                "configs.config." + clusterName + "-config.network-config.network-listeners.network-listener.http-listener-1.protocol="
                     + puName));
             //report("enable-listener", asadmin("set",
-            //    "configs.config.c1-config.network-config.network-listeners.network-listener.http-listener-1.enabled=true"));
+            //    "configs.config." + clusterName + "-config.network-config.network-listeners.network-listener.http-listener-1.enabled=true"));
             final String content = getContent(new URL("http://localhost:" + port).openConnection());
             report("http-read", content.contains("<h1>Your server is now running</h1>"));
             //report("dummy-read", "Dummy-Protocol-Response".equals(getDummyProtocolContent("localhost")));
 
-            AsadminReturn aReturn = asadminWithOutput("list-protocol-filters", "--target", "c1", httpName);
+            AsadminReturn aReturn = asadminWithOutput("list-protocol-filters", "--target", clusterName, httpName);
             report("list-protocol-filters", aReturn.out.contains("http-filter"));
 
-            aReturn = asadminWithOutput("list-protocol-finders", "--target", "c1", puName);
+            aReturn = asadminWithOutput("list-protocol-finders", "--target", clusterName, puName);
             report("list-protocol-finders", aReturn.out.contains("http-finder"));
 
             //report("disable-listener", asadmin("set",
-            //    "configs.config.c1-config.network-config.network-listeners.network-listener.http-listener-2.enabled=false"));
+            //    "configs.config." + clusterName + "-config.network-config.network-listeners.network-listener.http-listener-2.enabled=false"));
             report("reset-listener", asadmin("set",
-                "configs.config.c1-config.network-config.network-listeners.network-listener.http-listener-1.protocol=http-listener-1"));
+                "configs.config." + clusterName + "-config.network-config.network-listeners.network-listener.http-listener-1.protocol=http-listener-1"));
             deletePUElements();
         } finally {
             stat.printSummary();
@@ -157,36 +162,36 @@ public class PortUnificationTest extends BaseDevTest {
     }
 
     private void createDummyProtocolElements() {
-        report("create-dummy-protocol", asadmin("create-protocol", "--target", "c1",
+        report("create-dummy-protocol", asadmin("create-protocol", "--target", clusterName,
             dummyName));
         report("create-protocol-finder-dummy", asadmin("create-protocol-finder",
-            "--target", "c1",
+            "--target", clusterName,
             "--protocol", puName,
             "--targetprotocol", dummyName,
             "--classname", DummyProtocolFinder.class.getName(),
             "dummy-finder"));
         report("create-protocol-filter-dummy", asadmin("create-protocol-filter",
-            "--target", "c1",
+            "--target", clusterName,
             "--protocol", dummyName,
             "--classname", DummyProtocolFilter.class.getName(),
             "dummy-filter"));
     }
 
     private void createHttpElements() {
-        report("create-http-protocol", asadmin("create-protocol", "--target", "c1",
+        report("create-http-protocol", asadmin("create-protocol", "--target", clusterName,
             httpName));
         report("create-http", asadmin("create-http",
-            "--target", "c1",
+            "--target", clusterName,
             "--default-virtual-server", "server",
             httpName));
         report("create-protocol-finder-http", asadmin("create-protocol-finder",
-            "--target", "c1",
+            "--target", clusterName,
             "--protocol", puName,
             "--targetprotocol", httpName,
             "--classname", HttpProtocolFinder.class.getName(),
             "http-finder"));
         report("create-protocol-filter-http", asadmin("create-protocol-filter",
-            "--target", "c1",
+            "--target", clusterName,
             "--protocol", httpName,
             "--classname", DefaultProtocolFilter.class.getName(),
             "http-filter"));
@@ -194,28 +199,28 @@ public class PortUnificationTest extends BaseDevTest {
 
     private void deletePUElements() {
         report("delete-protocol-finder-http", asadmin("delete-protocol-finder",
-            "--target", "c1",
+            "--target", clusterName,
             "--protocol", puName,
             "http-finder"));
         report("delete-protocol-filter-http", asadmin("delete-protocol-filter",
-            "--target", "c1",
+            "--target", clusterName,
             "--protocol", httpName,
             "http-filter"));
-        report("delete-http-protocol", asadmin("delete-protocol", "--target", "c1",
+        report("delete-http-protocol", asadmin("delete-protocol", "--target", clusterName,
             httpName));
         /*report("delete-protocol-finder-dummy", asadmin("delete-protocol-finder",
-            "--target", "c1",
+            "--target", clusterName,
             "--protocol", puName,
             "dummy-finder"));
         report("delete-protocol-filter-dummy", asadmin("delete-protocol-filter",
-            "--target", "c1",
+            "--target", clusterName,
             "--protocol", dummyName,
             "dummy-filter"));
         report("delete-dummy-protocol", asadmin("delete-protocol",
-            "--target", "c1",
+            "--target", clusterName,
             dummyName));*/
         report("delete-pu-protocol", asadmin("delete-protocol",
-            "--target", "c1",
+            "--target", clusterName,
             puName));
     }
 

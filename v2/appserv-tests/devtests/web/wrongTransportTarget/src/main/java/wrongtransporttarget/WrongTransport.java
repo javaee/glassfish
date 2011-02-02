@@ -51,8 +51,10 @@ import com.sun.grizzly.config.HttpProtocolFinder;
 public class WrongTransport extends BaseDevTest {
     private static final String TEST_NAME = "wrongTransportTarget";
     private String secureURL;
+    private String clusterName;
 
-    public WrongTransport(final String host, final String port) {
+    public WrongTransport(final String clusterName, final String host, final String port) {
+        this.clusterName = clusterName;
         createPUElements();
         try {
             secureURL = "https://" + host + ":" + port + "/";
@@ -79,46 +81,46 @@ public class WrongTransport extends BaseDevTest {
     }
 
     public static void main(String args[]) throws Exception {
-        new WrongTransport(args[0], args[1]);
+        new WrongTransport(args[0], args[1], args[2]);
     }
 
     private void createPUElements() {
         // http-redirect
-        report("create-http-redirect-protocol", asadmin("create-protocol", "--target", "c1",
+        report("create-http-redirect-protocol", asadmin("create-protocol", "--target", clusterName,
             "http-redirect"));
         report("create-protocol-filter-redirect", asadmin("create-protocol-filter",
-            "--target", "c1",
+            "--target", clusterName,
             "--protocol", "http-redirect",
             "--classname", "com.sun.grizzly.config.HttpRedirectFilter",
             "redirect-filter"));
 
         //  pu-protocol
-        report("create-pu-protocol", asadmin("create-protocol", "--target", "c1",
+        report("create-pu-protocol", asadmin("create-protocol", "--target", clusterName,
             "pu-protocol"));
         report("create-protocol-finder-http-finder", asadmin("create-protocol-finder",
-            "--target", "c1",
+            "--target", clusterName,
             "--protocol", "pu-protocol",
             "--targetprotocol", "http-listener-2",
             "--classname", HttpProtocolFinder.class.getName(),
             "http-finder"));
         report("create-protocol-finder-http-redirect", asadmin("create-protocol-finder",
-            "--target", "c1",
+            "--target", clusterName,
             "--protocol", "pu-protocol",
             "--targetprotocol", "http-redirect",
             "--classname", HttpProtocolFinder.class.getName(),
             "http-redirect"));
         // reset listener
         report("set-http-listener-protocol", asadmin("set",
-            "configs.config.c1-config.network-config.network-listeners.network-listener.http-listener-1.protocol=pu-protocol"));
+            "configs.config." + clusterName + "-config.network-config.network-listeners.network-listener.http-listener-1.protocol=pu-protocol"));
     }
 
     private void deletePUElements() {
         // reset listener
         report("reset-http-listener-protocol", asadmin("set",
-            "configs.config.c1-config.network-config.network-listeners.network-listener.http-listener-1.protocol=http-listener-1"));
-        report("delete-pu-protocol", asadmin("delete-protocol", "--target", "c1",
+            "configs.config." + clusterName + "-config.network-config.network-listeners.network-listener.http-listener-1.protocol=http-listener-1"));
+        report("delete-pu-protocol", asadmin("delete-protocol", "--target", clusterName,
             "pu-protocol"));
-        report("delete-http-redirect", asadmin("delete-protocol", "--target", "c1",
+        report("delete-http-redirect", asadmin("delete-protocol", "--target", clusterName,
             "http-redirect"));
     }
     

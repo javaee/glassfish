@@ -145,6 +145,7 @@
 <macrodef name="run-test">
     <attribute name="classname"/>
     <attribute name="classpath"/>
+    <element name="arguments" optional="yes"/>
     <sequential>
         <java classname="@{classname}" classpath="@{classpath}" fork="true">
             <jvmarg value="-Das.props=${as.props}"/>
@@ -153,6 +154,7 @@
             <jvmarg value="-Dhttp.port=${http.port}"/>
             <jvmarg value="-Dhttps.port=${https.port}"/>
             <jvmarg value="-Dhttp.host=${http.host}"/>
+            <arguments/>
         </java>
     </sequential>
 </macrodef>

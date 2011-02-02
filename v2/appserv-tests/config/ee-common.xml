@@ -222,7 +222,7 @@
     <arg line="create-local-instance"/>
     <arg line="${as.props}"/>
     <arg line="--cluster ${cluster.name}"/>
-    <arg line="--systemproperties HTTP_LISTENER_PORT=${c1.http.port}:HTTP_SSL_LISTENER_PORT=${c1.https.port}:IIOP_LISTENER_PORT=${orb.listener1.port}:IIOP_SSL_LISTENER_PORT=${ssl.port}:IIOP_SSL_MUTUALAUTH_PORT=${ssl.mutualauth.port}:JMX_SYSTEM_CONNECTOR_PORT=${jmx.system.connector.port}"/>
+    <arg line="--systemproperties HTTP_LISTENER_PORT=${instance.http.port}:HTTP_SSL_LISTENER_PORT=${instance.https.port}:IIOP_LISTENER_PORT=${orb.listener1.port}:IIOP_SSL_LISTENER_PORT=${ssl.port}:IIOP_SSL_MUTUALAUTH_PORT=${ssl.mutualauth.port}:JMX_SYSTEM_CONNECTOR_PORT=${jmx.system.connector.port}"/>
     <arg line="${instance.name}"/>
   </exec>
 </target>
