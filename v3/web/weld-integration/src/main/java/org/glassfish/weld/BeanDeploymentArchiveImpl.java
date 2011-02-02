@@ -150,7 +150,6 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
         
         //set to the current TCL
         this.moduleClassLoaderForBDA = Thread.currentThread().getContextClassLoader();
-
     }
 
     private void populateEJBsForThisBDA(
@@ -434,6 +433,18 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
                 if (idx >= 0) {
                     this.beanDeploymentArchives.set(idx, firstBDA);
                 }
+            }
+        }
+
+        //Include WAR's BDA in list of accessible BDAs of WEB-INF/lib jar BDA.
+        for (int i = 0; i < webLibBDAs.size(); i++) {
+            BeanDeploymentArchiveImpl subBDA = webLibBDAs.get(i);
+            subBDA.getBeanDeploymentArchives().add(this);
+            logger.log(FINE, "BDAImpl::ensureWebLibJarVisibility - updating " 
+                    + subBDA.getId() + " to include " + this.getId() );
+            int idx = this.beanDeploymentArchives.indexOf(subBDA);
+            if (idx >= 0) {
+                this.beanDeploymentArchives.set(idx, subBDA);
             }
         }
     }

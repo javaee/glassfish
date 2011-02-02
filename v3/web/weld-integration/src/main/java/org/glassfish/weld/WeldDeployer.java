@@ -385,6 +385,17 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
             }
             bda.getServices().add(InjectionServices.class, injectionServices);
             
+            if (bda.getBeanDeploymentArchives().size() != 0) {
+                //Relevant in WAR BDA - WEB-INF/lib BDA scenarios
+                for(BeanDeploymentArchive subBda: bda.getBeanDeploymentArchives()){
+                    if(_logger.isLoggable(Level.FINE)) {
+                        _logger.log(Level.FINE, "WeldDeployer:: Adding injectionServices " 
+                                + injectionServices + " for " + subBda.getId());
+                    }
+                    subBda.getServices().add(InjectionServices.class, injectionServices);
+                }
+            }
+            
             bundleToBeanDeploymentArchive.put(bundle, bda);
         }
 
