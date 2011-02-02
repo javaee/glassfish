@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -445,27 +445,11 @@ public class TypeUtil {
                 if (!gpm1[i].equals(gpm2[i])) {
                     if (gpm1[i] instanceof TypeVariable || gpm2[i] instanceof TypeVariable) {
                         continue;
-                    } else if(gpm1[i] instanceof ParameterizedType && gpm2[i] instanceof ParameterizedType) {
+                    } else if(gpm1[i] instanceof ParameterizedType || gpm2[i] instanceof ParameterizedType) {
 
                         //See issue 15595 (ClassFormatError: Duplicate method name thrown in deployment)
-                        //For ParameterizedType params, compare their ownerType and rawType.
-                        //For example, List<T> vs List<Object>, ownerTypes are both null,
-                        //rawTypes are both interface List, actualTypeArguments are T and
-                        //Object, respectively.  
-
-                        ParameterizedType p1 = (ParameterizedType) gpm1[i];
-                        ParameterizedType p2 = (ParameterizedType) gpm2[i];
-
-                        Type p1OwnerType = p1.getOwnerType();
-                        Type p1RawType = p1.getRawType();
-
-                        Type p2OwnerType = p2.getOwnerType();
-                        Type p2RawType = p2.getRawType();
-
-                        same = (p1OwnerType == null ? p2OwnerType == null
-                                : p1OwnerType.equals(p2OwnerType)) &&
-                                (p1RawType == null ? p2RawType == null
-                                : p1RawType.equals(p2RawType));
+                        //For ParameterizedType params, compare their non-generics parameter types.
+                        same = m1.getParameterTypes()[i].equals(m2.getParameterTypes()[i]);
                         if(!same) {
                             break;
                         }
