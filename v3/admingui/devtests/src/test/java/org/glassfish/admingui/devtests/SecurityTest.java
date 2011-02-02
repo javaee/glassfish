@@ -103,15 +103,7 @@ public class SecurityTest extends BaseSeleniumTestClass {
 
         createConfig("new-config");
         for (String configName : list) {
-            clickAndWait("treeForm:tree:configurations:" + configName + ":security:realms:realms_link", TRIGGER_SECURITY_REALMS);
-            clickAndWait("propertyForm:realmsTable:topActionsGroup1:newButton", TRIGGER_NEW_REALM);
-            setFieldValue("form1:propertySheet:propertySectionTextField:NameTextProp:NameText", realmName);
-            selectDropdownOption("form1:propertySheet:propertySectionTextField:cp:Classname", "com.sun.enterprise.security.auth.realm.file.FileRealm");
-            setFieldValue("form1:fileSection:jaax:jaax", contextName);
-            setFieldValue("form1:fileSection:keyFile:keyFile", "${com.sun.aas.instanceRoot}/config/testfile");
-            clickAndWait("form1:propertyContentPage:topButtons:newButton", TRIGGER_SECURITY_REALMS);
-            assertTrue(isTextPresent(realmName));
-
+            createRealm(configName, realmName, contextName);
             deleteRow("propertyForm:realmsTable:topActionsGroup1:button1", "propertyForm:realmsTable", realmName);
         }
     }
@@ -123,17 +115,7 @@ public class SecurityTest extends BaseSeleniumTestClass {
 
         createConfig("new-config");
         for (String configName : list) {
-            clickAndWait("treeForm:tree:configurations:" + configName + ":security:realms:realms_link", TRIGGER_SECURITY_REALMS);
-            clickAndWait(getLinkIdByLinkText("propertyForm:realmsTable", "file"), TRIGGER_EDIT_REALM);
-
-            clickAndWait("form1:propertyContentPage:manageUsersButton", TRIGGER_FILE_USERS);
-            clickAndWait("propertyForm:users:topActionsGroup1:newButton", TRIGGER_NEW_FILE_REALM_USER);
-
-            setFieldValue("propertyForm:propertySheet:propertSectionTextField:userIdProp:UserId", userId);
-            setFieldValue("propertyForm:propertySheet:propertSectionTextField:newPasswordProp:NewPassword", password);
-            setFieldValue("propertyForm:propertySheet:propertSectionTextField:confirmPasswordProp:ConfirmPassword", password);
-            clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_FILE_USERS);
-            assertTrue(isTextPresent(userId));
+            addUserToRealm(configName, "file", userId, password);
 
             deleteRow("propertyForm:users:topActionsGroup1:button1", "propertyForm:users", userId);
         }
@@ -246,6 +228,33 @@ public class SecurityTest extends BaseSeleniumTestClass {
         setFieldValue("propertyForm:propertySheet:propertSectionTextField:confirmPasswordProp:ConfirmPassword", userPassword);
         clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
     }
+    
+    /*
+     * This test was add to test for regressions of GLASSFISH-14797
+     */
+    @Test
+    public void testAddUserToRealmInRunningStandaloneInstance() {
+        final String instanceName = "server" + generateRandomString();
+        final String configName = instanceName + "-config";
+        final String contextName = "Context" + generateRandomString();
+        final String realmName = "newRealm";
+        final String userName = "user" + generateRandomNumber();
+        final StandaloneTest sat = new StandaloneTest();
+        
+        try {
+            sat.createStandAloneInstance(instanceName);
+            sat.startInstance(instanceName);
+
+            createRealm(configName, realmName, contextName);
+            addUserToRealm(configName, realmName, userName, "password");
+            
+            // Delete the user for good measure
+            deleteUserFromRealm(configName, realmName, userName);
+        } finally {
+
+            sat.deleteStandAloneInstance(instanceName);
+        }
+    }
 
     public void createConfig(String configName) {
         clickAndWait("treeForm:tree:configurations:configurations_link", TRIGGER_CONFIGURATION);
@@ -255,5 +264,41 @@ public class SecurityTest extends BaseSeleniumTestClass {
             clickAndWait("propertyForm:propertyContentPage:topButtons:okButton", TRIGGER_CONFIGURATION);
             assertTrue(isTextPresent(configName));
         }
+    }
+    
+    public void createRealm(String configName, String realmName, String contextName) {
+            clickAndWait("treeForm:tree:configurations:" + configName + ":security:realms:realms_link", TRIGGER_SECURITY_REALMS);
+            clickAndWait("propertyForm:realmsTable:topActionsGroup1:newButton", TRIGGER_NEW_REALM);
+            setFieldValue("form1:propertySheet:propertySectionTextField:NameTextProp:NameText", realmName);
+            selectDropdownOption("form1:propertySheet:propertySectionTextField:cp:Classname", "com.sun.enterprise.security.auth.realm.file.FileRealm");
+            setFieldValue("form1:fileSection:jaax:jaax", contextName);
+            setFieldValue("form1:fileSection:keyFile:keyFile", "${com.sun.aas.instanceRoot}/config/testfile");
+            clickAndWait("form1:propertyContentPage:topButtons:newButton", TRIGGER_SECURITY_REALMS);
+            assertTrue(isTextPresent(realmName));
+    }
+    
+    public void addUserToRealm(String configName, String realmName, String userName, String password) {
+        reset();
+        clickAndWait("treeForm:tree:configurations:" + configName + ":security:realms:realms_link", TRIGGER_SECURITY_REALMS);
+        clickAndWait(getLinkIdByLinkText("propertyForm:realmsTable", realmName), TRIGGER_EDIT_REALM);
+
+        clickAndWait("form1:propertyContentPage:manageUsersButton", TRIGGER_FILE_USERS);
+        clickAndWait("propertyForm:users:topActionsGroup1:newButton", TRIGGER_NEW_FILE_REALM_USER);
+
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:userIdProp:UserId", userName);
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:newPasswordProp:NewPassword", password);
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:confirmPasswordProp:ConfirmPassword", password);
+        clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_FILE_USERS);
+        assertTrue(isTextPresent(userName));
+
+    }
+    
+    public void deleteUserFromRealm(String configName, String realmName, String userName) {
+        reset();
+        clickAndWait("treeForm:tree:configurations:" + configName + ":security:realms:realms_link", TRIGGER_SECURITY_REALMS);
+        clickAndWait(getLinkIdByLinkText("propertyForm:realmsTable", realmName), TRIGGER_EDIT_REALM);
+
+        clickAndWait("form1:propertyContentPage:manageUsersButton", TRIGGER_FILE_USERS);
+        deleteRow("propertyForm:users:topActionsGroup1:button1", "propertyForm:users", userName);
     }
 }

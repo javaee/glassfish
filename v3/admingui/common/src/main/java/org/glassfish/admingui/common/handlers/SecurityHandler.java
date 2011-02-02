@@ -370,7 +370,6 @@ public class SecurityHandler {
                 attrs.put("username", userid);
                 RestResponse response = RestUtil.delete(endpoint, attrs);
                 if (!response.isSuccess()) {
-                    GuiUtil.getLogger().severe("Remove user failed.  parent=" + endpoint + "; attrs =" + attrs);
                     GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.error.checkLog"));
                 }
                 createNew = Boolean.TRUE;
@@ -378,10 +377,11 @@ public class SecurityHandler {
             if ((createNew != null) && (createNew == Boolean.TRUE)) {
                 String endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + configName +
                                                                 "/security-service/auth-realm/" + realmName + "/create-user?target=" + configName;
+                final String USERPASSWORD = "AS_ADMIN_USERPASSWORD";
+
                 attrs = new HashMap<String, Object>();
-                attrs.put("username", userid);
-                attrs.put("authrealmname", realmName);
-                attrs.put("userpassword", password);
+                attrs.put("id", userid);
+                attrs.put(USERPASSWORD, password);
                 attrs.put("target", configName);
                 if (grouplist != null && grouplist.contains(","))
                     grouplist = grouplist.replace(',', ':');
@@ -391,7 +391,6 @@ public class SecurityHandler {
                 attrs.put("groups", grpList);
                 RestResponse response = RestUtil.post(endpoint, attrs);
                 if (!response.isSuccess()) {
-                    GuiUtil.getLogger().severe("Add user failed.  parent=" + endpoint + "; attrs =" + attrs);
                     GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.error.checkLog"));
                 }
             } 
