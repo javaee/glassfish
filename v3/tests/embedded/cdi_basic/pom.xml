@@ -46,7 +46,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.glassfish.tests.embedded.basic</groupId>
     <artifactId>cdi_basic</artifactId>
-    <version>3.1-SNAPSHOT</version>
+    <version>3.2-SNAPSHOT</version>
     <name>Basic CDI Test</name>
     <build>
         <finalName>cdi_basic</finalName>
@@ -115,4 +115,15 @@
             </dependencies>
         </profile>
     </profiles>
+    <repositories>
+        <repository>
+            <id>glassfish-repo-archive</id>
+            <name>Nexus repository collection for Glassfish</name>
+            <url>http://maven.glassfish.org/content/groups/glassfish</url>
+            <snapshots>
+                <updatePolicy>never</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>
+
 </project>
