@@ -36,6 +36,7 @@
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Enumeration;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebInitParam;
@@ -44,7 +45,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.inject.Inject;
+import javax.enterprise.inject.Any;
+import javax.enterprise.inject.Default;
 import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.util.AnnotationLiteral;
 import javax.naming.InitialContext;
 
 @WebServlet(name="mytest",
@@ -53,6 +57,8 @@ import javax.naming.InitialContext;
 public class TestServlet extends HttpServlet {
     @Inject TestBean tb;
     @Inject BeanManager bm;
+    @Inject TestBeanInWebInfLib tbiwil;
+
     BeanManager bm1;
     
     @Inject 
@@ -65,7 +71,13 @@ public class TestServlet extends HttpServlet {
         writer.write("Hello from Servlet 3.0. ");
         String msg = "n1=" + getInitParameter("n1") +
             ", n2=" + getInitParameter("n2");
+
         if (tb == null) msg += "Bean injection into Servlet failed";
+        if (tbiwil == null) msg += "Bean injection of a TestBean in WEB-INF/lib into Servlet failed";
+        System.out.println("Test Bean from WEB-INF/lib=" + tbiwil);
+
+        System.out.println("BeanManager is " + bm);
+        System.out.println("BeanManager via lookup is " + bm1);
         if (bm == null) msg += "BeanManager Injection via @Inject failed";
         try {
             bm1 = (BeanManager)((new InitialContext()).lookup("java:comp/BeanManager"));
@@ -74,9 +86,19 @@ public class TestServlet extends HttpServlet {
             msg += "BeanManager Injection via component environment lookup failed";
         }
         if (bm1 == null) msg += "BeanManager Injection via component environment lookup failed";
+
+        //Check if Beans in WAR(WEB-INF/classes) and WEB-INF/lib/*.jar are visible
+        //via BeanManager of WAR
+        Set warBeans = bm.getBeans(TestBean.class,new AnnotationLiteral<Any>() {});
+        if (warBeans.size() != 1) msg += "TestBean in WAR is not available via the WAR BeanManager";
         
-        System.out.println("BeanManager is " + bm);
-        System.out.println("BeanManager via lookup is " + bm1);
+        Set webinfLibBeans = bm.getBeans(TestBeanInWebInfLib.class,new AnnotationLiteral<Any>() {});
+        if (webinfLibBeans.size() != 1) msg += "TestBean in WEB-INF/lib is not available via the WAR BeanManager";
+        System.out.println("Test Bean from WEB-INF/lib via BeanManager:" + webinfLibBeans);
+        
+        //Test injection into WEB-INF/lib beans
+        msg += tbiwil.testInjection();
+        
         writer.write("initParams: " + msg + "\n");
     }
 }

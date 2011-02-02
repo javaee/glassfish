@@ -1,3 +1,10 @@
+package test.beans;
+
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
+import javax.persistence.EntityManager;
+
+import test.beans.artifacts.Preferred;
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
@@ -34,30 +41,29 @@
  * holder.
  */
 
-package test.beans.nonmock.nointerfacebeanview;
-
-import javax.ejb.EJB;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Named;
-
-import test.beans.artifacts.InjectViaAtEJB;
-import test.beans.artifacts.NoInterfaceBeanView;
-import test.ejb.nointerfacebeanview.TestNoInterfaceEJB;
-
 
 @RequestScoped
-@InjectViaAtEJB
-@NoInterfaceBeanView
+@Preferred
+public class TestBean implements TestBeanInterface{
+    public static boolean testBeanInvoked = false;
+    
+    @Inject //@TestDatabase 
+    EntityManager emf;
 
-public class TestEJBInjectionViaAtEJB extends TestBeanSuper{
-    @EJB TestNoInterfaceEJB tnie;
-
-    public TestEJBInjectionViaAtEJB() {
-        new Throwable().printStackTrace();
-    }
     @Override
-    TestNoInterfaceEJB getTestEJB() {
-        return tnie;
+    public void m1() {
+        testBeanInvoked = true;
+        System.out.println("TestBean::m1 called");
+    }
+
+    @Override
+    public void m2() {
+        System.out.println("TestBean::m2 called");
+    }
+
+    @Override
+    public String testDatasourceInjection() {
+        return (emf==null ? "typesafe injection into testbean failed" : "");
     }
 
 }

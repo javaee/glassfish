@@ -36,6 +36,7 @@
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Enumeration;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebInitParam;
@@ -44,7 +45,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.inject.Inject;
+import javax.enterprise.inject.Any;
+import javax.enterprise.inject.Default;
 import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.util.AnnotationLiteral;
 import javax.naming.InitialContext;
 
 @WebServlet(name="mytest",
@@ -53,6 +57,11 @@ import javax.naming.InitialContext;
 public class TestServlet extends HttpServlet {
     @Inject TestBean tb;
     @Inject BeanManager bm;
+
+    @Inject Foo f; //from WEB-INF/lib/alpha.jar
+    @Inject Bar b; //from WEB-INF/lib/bravo.jar
+
+
     BeanManager bm1;
     
     @Inject 
@@ -65,18 +74,42 @@ public class TestServlet extends HttpServlet {
         writer.write("Hello from Servlet 3.0. ");
         String msg = "n1=" + getInitParameter("n1") +
             ", n2=" + getInitParameter("n2");
+        
+        //Bean Injection
         if (tb == null) msg += "Bean injection into Servlet failed";
+
+        if (f == null) msg += "Bean injection of a TestBean(foo) in WEB-INF/lib/alpha.jar into Servlet failed";
+        System.out.println("Test Bean foo from WEB-INF/lib/alpha.jar=" + f);
+
+        if (b == null) msg += "Bean injection of a TestBean(bar) in WEB-INF/lib/bravo.jar into Servlet failed";
+        System.out.println("Test Bean foo from WEB-INF/lib/bravo.jar=" + b);
+
+        //BeanManager Injection
+        System.out.println("BeanManager is " + bm);
         if (bm == null) msg += "BeanManager Injection via @Inject failed";
+
         try {
             bm1 = (BeanManager)((new InitialContext()).lookup("java:comp/BeanManager"));
+            System.out.println("BeanManager via lookup is " + bm1);
         } catch (Exception ex) {
             ex.printStackTrace();
             msg += "BeanManager Injection via component environment lookup failed";
         }
         if (bm1 == null) msg += "BeanManager Injection via component environment lookup failed";
+
+        //Check if Beans in WAR(WEB-INF/classes) and WEB-INF/lib/*.jar are visible
+        //via BeanManager of WAR
+        Set warBeans = bm.getBeans(TestBean.class,new AnnotationLiteral<Any>() {});
+        if (warBeans.size() != 1) msg += "TestBean in WAR is not available via the WAR BeanManager";
         
-        System.out.println("BeanManager is " + bm);
-        System.out.println("BeanManager via lookup is " + bm1);
+        Set webinfLibBeans = bm.getBeans(Foo.class,new AnnotationLiteral<Any>() {});
+        if (webinfLibBeans.size() != 1) msg += "TestBean Foo in WEB-INF/lib/alpha.jar is not available via the WAR BeanManager";
+        System.out.println("Test Bean Foo from WEB-INF/lib/alpha.jar via BeanManager:" + webinfLibBeans);
+        
+        webinfLibBeans = bm.getBeans(Bar.class,new AnnotationLiteral<Any>() {});
+        if (webinfLibBeans.size() != 1) msg += "TestBean Bar in WEB-INF/lib/bravo.jar is not available via the WAR BeanManager";
+        System.out.println("Test Bean Bar from WEB-INF/lib/bravo.jar via BeanManager:" + webinfLibBeans);
+
         writer.write("initParams: " + msg + "\n");
     }
 }

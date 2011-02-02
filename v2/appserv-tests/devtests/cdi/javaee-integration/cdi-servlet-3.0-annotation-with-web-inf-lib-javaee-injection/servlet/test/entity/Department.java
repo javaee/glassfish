@@ -34,30 +34,69 @@
  * holder.
  */
 
-package test.beans.nonmock.nointerfacebeanview;
+package test.entity;
 
-import javax.ejb.EJB;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Named;
+import java.util.Set;
 
-import test.beans.artifacts.InjectViaAtEJB;
-import test.beans.artifacts.NoInterfaceBeanView;
-import test.ejb.nointerfacebeanview.TestNoInterfaceEJB;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
+@Entity
+@Table(name = "DEPARTMENT")
+public class Department implements java.io.Serializable {
 
-@RequestScoped
-@InjectViaAtEJB
-@NoInterfaceBeanView
+    // Instance variables
+    private int id;
+    private String name;
+    private Set<Employee> employees;
 
-public class TestEJBInjectionViaAtEJB extends TestBeanSuper{
-    @EJB TestNoInterfaceEJB tnie;
-
-    public TestEJBInjectionViaAtEJB() {
-        new Throwable().printStackTrace();
+    public Department() {
     }
-    @Override
-    TestNoInterfaceEJB getTestEJB() {
-        return tnie;
+
+    public Department(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    // ===========================================================
+    // getters and setters for the state fields
+
+    @Id
+    @Column(name = "ID")
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    @Column(name = "NAME")
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    // ===========================================================
+    // getters and setters for the association fields
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "department")
+    public Set<Employee> getEmployees() {
+        return employees;
+    }
+
+    public void setEmployees(Set<Employee> employees) {
+        this.employees = employees;
+    }
+
+    public String toString() {
+        return "Department id=" + getId() + ", Department Name=" + getName();
     }
 
 }

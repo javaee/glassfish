@@ -34,30 +34,17 @@
  * holder.
  */
 
-package test.beans.nonmock.nointerfacebeanview;
+package test.util;
 
-import javax.ejb.EJB;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Named;
+import javax.enterprise.inject.Produces;
+import javax.inject.Singleton;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
-import test.beans.artifacts.InjectViaAtEJB;
-import test.beans.artifacts.NoInterfaceBeanView;
-import test.ejb.nointerfacebeanview.TestNoInterfaceEJB;
-
-
-@RequestScoped
-@InjectViaAtEJB
-@NoInterfaceBeanView
-
-public class TestEJBInjectionViaAtEJB extends TestBeanSuper{
-    @EJB TestNoInterfaceEJB tnie;
-
-    public TestEJBInjectionViaAtEJB() {
-        new Throwable().printStackTrace();
-    }
-    @Override
-    TestNoInterfaceEJB getTestEJB() {
-        return tnie;
-    }
+@Singleton
+public class JPAResourceProducer {
+    @Produces @PersistenceContext(unitName="pu1")
+    //@TestDatabase 
+    EntityManager customerDatabasePersistenceUnit;
 
 }

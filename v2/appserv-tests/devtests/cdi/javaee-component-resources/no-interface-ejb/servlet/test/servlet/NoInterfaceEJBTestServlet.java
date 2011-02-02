@@ -56,25 +56,23 @@ import test.ejb.nointerfacebeanview.TestSuperClass;
 @WebServlet(name = "mytest", urlPatterns = { "/myurl" })
 public class NoInterfaceEJBTestServlet extends HttpServlet {
 
-    @Inject
-    @InjectViaAtInject
-    @NoInterfaceBeanView
-    TestBeanInterface testBeanInject;
+//    @Inject
+//    @InjectViaAtInject
+//    @NoInterfaceBeanView
+//    TestBeanInterface testBeanInject;
+
 
     @Inject
-    @InjectViaAtEJB
-    @NoInterfaceBeanView
-    TestBeanInterface testBeanEJB;
+    FooBean fb;
+//    @Inject
+//    @InjectViaAtInject
+//    @LocalEJB
+//    TestBeanInterface testLocalBeanInject;
 
-    @Inject
-    @InjectViaAtInject
-    @LocalEJB
-    TestBeanInterface testLocalBeanInject;
-
-    @Inject
-    @InjectViaAtEJB
-    @LocalEJB
-    TestBeanInterface testLocalBeanEJB;
+//    @Inject
+//    @InjectViaAtEJB
+//    @LocalEJB
+//    TestBeanInterface testLocalBeanEJB;
     
     @Inject
     TestInterface ti;
@@ -90,14 +88,14 @@ public class NoInterfaceEJBTestServlet extends HttpServlet {
         
         String msg = "";
         //test EJB injection via @EJB
-        String m = testBeanEJB.runTests();
+        String m = fb.getBean().runTests();
         if (!m.equals(""))
             msg += "Invocation on no-interface EJB -- obtained through @EJB -- failed. Failed tests" + m;
         
         //test EJB injection via @Inject
-        m = testBeanInject.runTests();
-        if (!m.equals(""))
-            msg += "Invocation on no-interface EJB -- obtained through @Inject -- failed. Failed tests" + m;
+//        m = testBeanInject.runTests();
+//        if (!m.equals(""))
+//            msg += "Invocation on no-interface EJB -- obtained through @Inject -- failed. Failed tests" + m;
 
         //test No-Interface EJB injection via @Inject of an interface the 
         //no-interface bean is implementing
@@ -110,14 +108,14 @@ public class NoInterfaceEJBTestServlet extends HttpServlet {
             msg += "Invocation on no-interface EJB -- obtained through @Inject -- (method defined in super class) failed";
         
         //test local EJB injection via @EJB
-        m = testLocalBeanEJB.runTests();
-        if (!m.equals(""))
-            msg += "Invocation on local EJB -- obtained through @EJB -- failed. Failed tests" + m;
+//        m = testLocalBeanEJB.runTests();
+//        if (!m.equals(""))
+//            msg += "Invocation on local EJB -- obtained through @EJB -- failed. Failed tests" + m;
         
         //test EJB injection via @Inject
-        m = testLocalBeanInject.runTests();
-        if (!m.equals(""))
-            msg += "Invocation on local EJB -- obtained through @Inject -- failed. Failed tests" + m;
+//        m = testLocalBeanInject.runTests();
+//        if (!m.equals(""))
+//            msg += "Invocation on local EJB -- obtained through @Inject -- failed. Failed tests" + m;
 
         writer.write(msg + "\n");
 

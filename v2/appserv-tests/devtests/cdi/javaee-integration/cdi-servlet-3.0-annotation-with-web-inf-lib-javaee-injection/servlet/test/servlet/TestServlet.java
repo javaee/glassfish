@@ -1,3 +1,4 @@
+package test.servlet;
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
@@ -33,56 +34,111 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package test.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Set;
 
 import javax.annotation.Resource;
+import javax.enterprise.inject.Any;
+import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Inject;
+import javax.naming.InitialContext;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebInitParam;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.UserTransaction;
 
+import test.beans.TestBean;
 import test.beans.TestBeanInterface;
 import test.beans.artifacts.Preferred;
 import test.util.JpaTest;
 
-@WebServlet(name = "mytest", urlPatterns = { "/myurl" })
-public class JPAResourceInjectionServlet extends HttpServlet {
+import test.beans.wbinflib.TestBeanInWebInfLib;
 
+@WebServlet(name="mytest",
+        urlPatterns={"/myurl"},
+        initParams={ @WebInitParam(name="n1", value="v1"), @WebInitParam(name="n2", value="v2") } )
+public class TestServlet extends HttpServlet {
+
+    /* Normal injection of Beans */
+    @Inject 
+    private transient org.slf4j.Logger log;
+    @Inject BeanManager bm_at_inj;
+
+    /*Injection of Java EE resources*/
     @PersistenceUnit(unitName = "pu1")
     private EntityManagerFactory emf_at_pu;
 
-    @Inject
-    //@TestDatabase
+    @Inject //@TestDatabase
     private EntityManager emf_at_inj;
 
     private @Resource
     UserTransaction utx;
     
-    @Inject
-    @Preferred
+    @Inject @Preferred
     TestBeanInterface tbi;
+    
+    /* Injection of Beans from WEB-INF/lib */
+    @Inject TestBeanInWebInfLib tbiwil;
+    
+    /* Test lookup of BeanManager*/
+    BeanManager bm_lookup;
 
-    protected void doGet(HttpServletRequest request,
-            HttpServletResponse response) throws ServletException,
-            IOException {
-        PrintWriter writer = response.getWriter();
-        writer.write("Hello from Servlet 3.0.");
+    
+    public void service(HttpServletRequest req, HttpServletResponse res)
+            throws IOException, ServletException {
+
+        PrintWriter writer = res.getWriter();
+        writer.write("Hello from Servlet 3.0. ");
+        String msg = "n1=" + getInitParameter("n1") +
+            ", n2=" + getInitParameter("n2");
+
+        if (tbi == null) msg += "Bean injection into Servlet failed";
+        if (tbiwil == null) msg += "Bean injection of a TestBean in WEB-INF/lib into Servlet failed";
+        System.out.println("Test Bean from WEB-INF/lib=" + tbiwil);
+
+        System.out.println("BeanManager is " + bm_at_inj);
+        System.out.println("BeanManager via lookup is " + bm_lookup);
+        if (bm_at_inj == null) msg += "BeanManager Injection via @Inject failed";
+        try {
+            bm_lookup = (BeanManager)((new InitialContext()).lookup("java:comp/BeanManager"));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            msg += "BeanManager Injection via component environment lookup failed";
+        }
+        if (bm_lookup == null) msg += "BeanManager Injection via component environment lookup failed";
+
+        //Check if Beans in WAR(WEB-INF/classes) and WEB-INF/lib/*.jar are visible
+        //via BeanManager of WAR
+        Set warBeans = bm_at_inj.getBeans(TestBean.class,new AnnotationLiteral<Any>() {});
+        if (warBeans.size() != 1) msg += "TestBean in WAR is not available via the WAR BeanManager";
+        
+        Set webinfLibBeans = bm_at_inj.getBeans(TestBeanInWebInfLib.class,new AnnotationLiteral<Any>() {});
+        if (webinfLibBeans.size() != 1) msg += "TestBean in WEB-INF/lib is not available via the WAR BeanManager";
+        System.out.println("Test Bean from WEB-INF/lib via BeanManager:" + webinfLibBeans);
+        
+        //Test injection into WEB-INF/lib beans
+        msg += tbiwil.testInjection();
+        
+        msg += testEMInjection(req);
+        
+        writer.write("initParams: " + msg + "\n");
+    }
+
+
+    private String testEMInjection(HttpServletRequest request) {
         String msg = "";
-        System.out.println("JPAResourceInjectionServlet::@PersistenceUnit " +
-        		"CDI EntityManagerFactory=" + emf_at_inj);
-
         EntityManager em = emf_at_inj;
         System.out.println("JPAResourceInjectionServlet::createEM" +
-        		"EntityManager=" + em);
+                "EntityManager=" + em);
         String testcase = request.getParameter("testcase");
         System.out.println("testcase=" + testcase);
 
@@ -105,8 +161,6 @@ public class JPAResourceInjectionServlet extends HttpServlet {
                 msg += (testcase + ":fail");
             }
         }
-
-        writer.write(msg + "\n");
-
+        return msg;
     }
 }
