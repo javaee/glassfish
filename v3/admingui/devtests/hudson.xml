@@ -60,13 +60,20 @@
     <property name="GUI_ADMIN_PORT" value="4848"/>
     <property name="DOMAIN" value="domain1"/>
     <property name="RELEASEAFTER" value="true"/>
+    <property name="SLOWDOWN" value="true"/>
 
+    <property name="ant.contrib.url"
+              value="http://mirrors.ibiblio.org/pub/mirrors/maven2/ant-contrib/ant-contrib/1.0b3/ant-contrib-1.0b3.jar"/>
+    <property name="maven.ant.tasks.url"
+              value="http://repo2.maven.org/maven2/org/apache/maven/maven-ant-tasks/2.1.1/maven-ant-tasks-2.1.1.jar"/>
     <property name="glassfish.dist.url"
               value="http://hudson.glassfish.org/job/gf-trunk-build-continuous/lastSuccessfulBuild/artifact/bundles/glassfish.zip"/>
 
     <target name="download">
+        <get src="${ant.contrib.url}" dest="ant-contrib.jar" skipexisting="true"/>
+        <get src="${maven.ant.tasks.url}" dest="maven-ant-tasks.jar" skipexisting="true"/>
         <get src="${glassfish.dist.url}" dest="glassfish.zip" usetimestamp="true"/>
-
+        
         <delete dir="${install.dir}"/>
         <mkdir dir="${install.dir}"/>
         <unzip src="glassfish.zip" dest="${install.dir}"/>
@@ -107,6 +114,7 @@
                     <arg value="-Dadmin.port=${GUI_ADMIN_PORT}"/>
                     <arg value="-Dbrowser=${BROWSER}"/>
                     <arg value="-DreleaseAfter=${RELEASEAFTER}"/>
+                    <arg value="-DslowDown=${SLOWDOWN}"/>
                     <arg value="test"/>
                 </artifact:mvn>
             </try>
@@ -115,12 +123,12 @@
             </finally>
         </trycatch>
         <fail message="The test run failed.  Please see the console output for details.">
-           <condition>
-             <not>
-                <equals arg1="${test.result}" arg2="0"/>
-             </not>
-           </condition>
-         </fail>
+            <condition>
+                <not>
+                    <equals arg1="${test.result}" arg2="0"/>
+                </not>
+            </condition>
+        </fail>
     </target>
 
     <target name="shutdown-server">

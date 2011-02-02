@@ -40,10 +40,15 @@
 package org.glassfish.admingui.devtests;
 
 import com.google.common.base.Function;
+import com.thoughtworks.selenium.Wait;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 
 /**
  *
@@ -61,11 +66,30 @@ public class ElementFinder {
         return wait.until(presenceOfElementLocated(locatorname));
     }
 
-    public static Function<WebDriver, WebElement> presenceOfElementLocated(final By locator) {
+    public WebElement findElement(By locator, int timeout, ExpectedCondition<Boolean> condition) {
+        WebDriverWait w = new WebDriverWait(driver, timeout);
+        w.until(condition);
+
+        return driver.findElement(locator);
+    }
+
+    private static Function<WebDriver, WebElement> presenceOfElementLocated(final By locator) {
         return new Function<WebDriver, WebElement>() {
             @Override
             public WebElement apply(WebDriver driver) {
-                return driver.findElement(locator);
+                WebElement element = null;
+                try {
+                    element = driver.findElement(locator); 
+                } catch (NoSuchElementException nse) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(ElementFinder.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    element = driver.findElement(locator); 
+                }
+
+                return element;
             }
         };
     }

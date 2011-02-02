@@ -40,12 +40,10 @@
 
 package org.glassfish.admingui.devtests;
 
-import com.google.common.base.Function;
 import com.thoughtworks.selenium.Selenium;
 import com.thoughtworks.selenium.SeleniumException;
 import org.junit.*;
 import org.openqa.selenium.*;
-import org.openqa.selenium.NoSuchElementException;
 
 import java.io.*;
 import java.math.BigInteger;
@@ -53,9 +51,10 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.security.SecureRandom;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 
 public class BaseSeleniumTestClass {
     public static final String CURRENT_WINDOW = "selenium.browserbot.getCurrentWindow()";
@@ -71,14 +70,14 @@ public class BaseSeleniumTestClass {
 
     protected static final int TIMEOUT = 90;
     protected static final int BUTTON_TIMEOUT = 750;
-    protected Logger logger = Logger.getLogger(BaseSeleniumTestClass.class.getName());
+    protected static final Logger logger = Logger.getLogger(BaseSeleniumTestClass.class.getName());
     
     private static Selenium selenium;
     private static WebDriver driver;
     private static String currentTestClass = "";
     private boolean processingLogin = false;
     private static final String AJAX_INDICATOR = "ajaxIndicator";
-    private static Map<String, String> bundles = new HashMap<String, String>() {{
+    private static final Map<String, String> bundles = new HashMap<String, String>() {{
         put("i18n", "org.glassfish.admingui.core.Strings"); // core
         put("i18nUC", "org.glassfish.updatecenter.admingui.Strings"); // update center
         put("i18n_corba", "org.glassfish.corba.admingui.Strings");
@@ -101,13 +100,17 @@ public class BaseSeleniumTestClass {
         //put("i18n", "org.glassfish.web.admingui.Strings");
         //put("i18nc", "org.glassfish.web.admingui.Strings");
     }};
-    private static SeleniumHelper helper = SeleniumHelper.getInstance();
+    private static final SeleniumHelper helper = SeleniumHelper.getInstance();
     private ElementFinder elementFinder;
     
     public BaseSeleniumTestClass() {
         driver = helper.getDriver();
         selenium = helper.getSeleniumInstance();
         elementFinder = helper.getElementFinder();
+
+        if (Boolean.parseBoolean(SeleniumHelper.getParameter("slowDown", "false"))) {
+            driver.manage().timeouts().implicitlyWait(500, TimeUnit.MILLISECONDS);
+        }
     }
 
 
@@ -449,17 +452,21 @@ public class BaseSeleniumTestClass {
                 Assert.fail("The operation timed out waiting for the page to load.");
             }
 
-            try {
-                RenderedWebElement ajaxPanel = (RenderedWebElement) 
-                        elementFinder.findElement(By.id(AJAX_INDICATOR), TIMEOUT);
-//                        driver.findElement(By.id(AJAX_INDICATOR));
-                if (!ajaxPanel.isDisplayed()) {
-                    if (callback.executeTest()) {
-                        break;
-                    }
+            RenderedWebElement ajaxPanel = (RenderedWebElement)
+                    elementFinder.findElement(By.id(AJAX_INDICATOR), TIMEOUT,
+                    new ExpectedCondition<Boolean>() {
+                @Override
+                public Boolean apply(WebDriver driver) {
+                    RenderedWebElement ajaxPanel = (RenderedWebElement) driver.findElement(By.id(AJAX_INDICATOR));
+                    return !ajaxPanel.isDisplayed();
                 }
-            } catch (NoSuchElementException nse) {
-            }
+
+            });
+//                if (!ajaxPanel.isDisplayed()) {
+                if (callback.executeTest()) {
+                    break;
+                }
+//                }
 
             sleep(TIMEOUT_CALLBACK_LOOP);
         }
