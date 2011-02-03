@@ -104,15 +104,34 @@ public class AvailabilityServiceTest extends BaseSeleniumTestClass {
 
     @Test
     public void testJMSAvailability() {
-        final String storePoolName = "test" + Integer.toString(generateRandomNumber(100));
-        if (!isTextPresent(TRIGGER_AVAILABILTY_SERVICE_NODE)) {
-            clickAndWait(ID_DEFAULT_CONFIG_TURNER, TRIGGER_AVAILABILTY_SERVICE_NODE);
-        }
-        clickAndWait(ID_AVAILABILITY_SERVICE_TREE_NODE, TRIGGER_AVAILABILTY_SERVICE_PAGE);
+        final String configName = "Config-" + generateRandomString();
+        MsgSecurityTest msgS = new MsgSecurityTest();
+        msgS.copyConfig("default-config", configName);
+
+//        if (!isTextPresent(TRIGGER_AVAILABILTY_SERVICE_NODE)) {
+//            clickAndWait(ID_DEFAULT_CONFIG_TURNER, TRIGGER_AVAILABILTY_SERVICE_NODE);
+//        }
+
+        clickAndWait(getAvailabilityLink(configName), TRIGGER_AVAILABILTY_SERVICE_PAGE);
         clickAndWait("propertyForm:availabilityTabs:jmsAvailabilityTab", TRIGGER_JMS_AVAILABILTY);
-        setFieldValue("propertyForm:propertySheet:propertSectionTextField:StorePoolNameProp:StorePoolName", storePoolName);
+        markCheckbox("propertyForm:propertySheet:propertSectionTextField:AvailabilityEnabledProp:avail");
+        selectDropdownOption("propertyForm:propertySheet:propertSectionTextField:ConfigStoreTypeProp:ConfigStoreType", "shareddb");
+        selectDropdownOption("propertyForm:propertySheet:propertSectionTextField:MessageStoreTypeProp:MessageStoreType", "file");
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:DbVendorProp:DbVendor", "Vendor");
+	setFieldValue("propertyForm:propertySheet:propertSectionTextField:DbUserNameProp:DbUserName", "USERNAME");
+	setFieldValue("propertyForm:propertySheet:propertSectionTextField:DbPasswordProp:DbPassword", "PSWD");
+	setFieldValue("propertyForm:propertySheet:propertSectionTextField:DbUrlProp:DbUrl", "URL");
         clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
-        assertEquals(storePoolName, getFieldValue("propertyForm:propertySheet:propertSectionTextField:StorePoolNameProp:StorePoolName"));
+
+        clickAndWait("propertyForm:availabilityTabs:availabilityTab", TRIGGER_AVAILABILTY_SERVICE_PAGE);
+        clickAndWait("propertyForm:availabilityTabs:jmsAvailabilityTab", TRIGGER_JMS_AVAILABILTY);
+
+        assertEquals(getSelectedValue("propertyForm:propertySheet:propertSectionTextField:ConfigStoreTypeProp:ConfigStoreType"), "shareddb");
+        assertEquals(getSelectedValue("propertyForm:propertySheet:propertSectionTextField:MessageStoreTypeProp:MessageStoreType"), "file");
+        assertEquals("Vendor", getFieldValue("propertyForm:propertySheet:propertSectionTextField:DbVendorProp:DbVendor"));
+	assertEquals("USERNAME", getFieldValue("propertyForm:propertySheet:propertSectionTextField:DbUserNameProp:DbUserName"));
+	assertEquals( "PSWD", getFieldValue("propertyForm:propertySheet:propertSectionTextField:DbPasswordProp:DbPassword"));
+	assertEquals( "URL", getFieldValue("propertyForm:propertySheet:propertSectionTextField:DbUrlProp:DbUrl"));
 
         int count = addTableRow("propertyForm:basicTable", "propertyForm:basicTable:topActionsGroup1:addSharedTableButton");
         setFieldValue("propertyForm:basicTable:rowGroup1:0:col2:col1St", generateRandomString());
@@ -120,5 +139,9 @@ public class AvailabilityServiceTest extends BaseSeleniumTestClass {
         setFieldValue("propertyForm:basicTable:rowGroup1:0:col4:col1St", "c");
         clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
         assertTableRowCount("propertyForm:basicTable", count);
+    }
+
+    private static String getAvailabilityLink(String configName){
+       return  "treeForm:tree:configurations:" + configName + ":availabilityService:availabilityService_link";
     }
 }
