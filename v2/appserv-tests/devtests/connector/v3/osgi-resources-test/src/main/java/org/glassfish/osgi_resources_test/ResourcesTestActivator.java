@@ -49,8 +49,6 @@ import java.sql.Connection;
 import java.sql.Statement;
 import java.util.logging.Logger;
 
-import org.osgi.service.jdbc.DataSourceFactory;
-
 public class ResourcesTestActivator implements BundleActivator {
 
     private static final Logger logger =
@@ -59,7 +57,6 @@ public class ResourcesTestActivator implements BundleActivator {
 
     private BundleContext bundleContext;
     ServiceReference ref;
-    DataSourceFactory factory;
     DataSource ds;
 
     public void start(BundleContext bundleContext) throws Exception {
@@ -127,6 +124,15 @@ public class ResourcesTestActivator implements BundleActivator {
         deleteJdbcResource("jdbc/test-resource");
         testJdbcResources("(jndi-name=jdbc/test-resource)", true, "-trial-4");
 
+        //test reconfiguration.
+        createJdbcResource("jdbc/test-resource");
+        setAttribute("server.resources.jdbc-connection-pool.DerbyPool.property.PortNumber=1444");
+        testJdbcResources("(jndi-name=jdbc/test-resource)", true, "-trial-5");
+        setAttribute("server.resources.jdbc-connection-pool.DerbyPool.property.PortNumber=1527");
+        testJdbcResources("(jndi-name=jdbc/test-resource)", false, "-trial-6");
+        deleteJdbcResource("jdbc/test-resource");
+        testJdbcResources("(jndi-name=jdbc/test-resource)", true, "-trial-7");
+
         testJdbcResources("(jndi-name=jdbc/test-resource-1)", true);
 
         createJmsResource("jms/osgi.ConnectionFactory", "javax.jms.QueueConnectionFactory");
@@ -152,6 +158,15 @@ public class ResourcesTestActivator implements BundleActivator {
         deleteJmsResource("jms/osgi.Admin.Object");
         //test it again to avoid stale service references (Refer issue : GLASSFISH-15790)
         testJmsResources("(jndi-name=jms/osgi.Admin.Object)", javax.jms.Queue.class, true, "-trial-4");
+    }
+
+    private void setAttribute(String nameValue){
+        Habitat habitat = Globals.getDefaultHabitat();
+        CommandRunner cr = habitat.getComponent(CommandRunner.class);
+        ActionReport ar = habitat.getComponent(ActionReport.class);
+        ParameterMap params = new ParameterMap();
+        params.add("DEFAULT", nameValue);
+        cr.getCommandInvocation("set", ar).parameters(params).execute();
     }
 
 

@@ -67,7 +67,7 @@
     </target>
 
     <target name="wait" >
-        <sleep seconds="10"/>
+        <sleep seconds="30"/>
     </target>
 
     <target name="check-results">
