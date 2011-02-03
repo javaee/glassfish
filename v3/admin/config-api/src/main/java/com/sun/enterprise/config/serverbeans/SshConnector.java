@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -86,7 +86,7 @@ public interface SshConnector extends ConfigBeanProxy, Injectable {
       * @return possible object is
       *         {@link String }
       */
-     @Attribute
+     @Attribute(defaultValue="22")
       String getSshPort();
 
      /**
@@ -95,10 +95,10 @@ public interface SshConnector extends ConfigBeanProxy, Injectable {
       * @param value allowed object is
       *              {@link String }
       */
-     @Param(name="sshport", optional=true)
+     @Param(name="sshport", optional=true, defaultValue="22")
       void setSshPort(String value) throws PropertyVetoException;
        /**
-      * Gets the value of the sshport property.
+      * Gets the value of the sshhost property.
       *
       * @return possible object is
       *         {@link String }
@@ -107,7 +107,7 @@ public interface SshConnector extends ConfigBeanProxy, Injectable {
       String getSshHost();
 
      /**
-      * Sets the value of the sshport property.
+      * Sets the value of the sshhost property.
       *
       * @param value allowed object is
       *              {@link String }

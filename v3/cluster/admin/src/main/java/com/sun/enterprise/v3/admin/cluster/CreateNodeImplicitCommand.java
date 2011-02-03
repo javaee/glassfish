@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,6 +42,7 @@ package com.sun.enterprise.v3.admin.cluster;
 
 import com.sun.enterprise.config.serverbeans.Node;
 import com.sun.enterprise.config.serverbeans.Nodes;
+import com.sun.enterprise.util.StringUtils;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
@@ -95,9 +96,11 @@ public class CreateNodeImplicitCommand implements AdminCommand {
         CommandInvocation ci = cr.getCommandInvocation("_create-node", report);
         ParameterMap map = new ParameterMap();
         map.add("DEFAULT", name);
-        map.add("nodedir", nodedir);
-        map.add("installdir", installdir);
-        map.add("nodehost", nodehost);
+        map.add(NodeUtils.PARAM_NODEDIR, nodedir);
+        map.add(NodeUtils.PARAM_INSTALLDIR, installdir);
+        map.add(NodeUtils.PARAM_NODEHOST, nodehost);
+        map.add(NodeUtils.PARAM_TYPE,"CONFIG");
+
         ci.parameters(map);
         ci.execute();
 
