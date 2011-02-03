@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -161,29 +161,32 @@ public class ConnectorObjectFactory implements ObjectFactory {
             }
 
             if (getRuntime().isServer() || getRuntime().isEmbedded()) {
-                Resources resources = getRuntime().getResources(poolInfo);
-                ResourcePool resourcePool = null;
-                if (resources != null) {
-                    resourcePool = (ResourcePool) resources.getResourceByName(ResourcePool.class, poolInfo.getName());
-                    if (resourcePool != null) {
-                        ResourceDeployer deployer = getRuntime().getResourceDeployer(resourcePool);
-                        if (deployer != null && deployer.supportsDynamicReconfiguration() &&
-                                ConnectorsUtil.isDynamicReconfigurationEnabled(resourcePool)) {
+                ConnectorRegistry registry = ConnectorRegistry.getInstance();
+                if (registry.isTransparentDynamicReconfigPool(poolInfo)) {
+                    Resources resources = getRuntime().getResources(poolInfo);
+                    ResourcePool resourcePool = null;
+                    if (resources != null) {
+                        resourcePool = (ResourcePool) resources.getResourceByName(ResourcePool.class, poolInfo.getName());
+                        if (resourcePool != null) {
+                            ResourceDeployer deployer = getRuntime().getResourceDeployer(resourcePool);
+                            if (deployer != null && deployer.supportsDynamicReconfiguration() &&
+                                    ConnectorsUtil.isDynamicReconfigurationEnabled(resourcePool)) {
 
-                            Object o = env.get(ConnectorConstants.DYNAMIC_RECONFIGURATION_PROXY_CALL);
-                            if (o == null || Boolean.valueOf(o.toString()).equals(false)) {
-                                //TODO use list ? (even in the ResourceDeployer API)
-                                Class[] classes = deployer.getProxyClassesForDynamicReconfiguration();
-                                Class[] proxyClasses = new Class[classes.length + 1];
-                                for (int i = 0; i < classes.length; i++) {
-                                    proxyClasses[i] = classes[i];
+                                Object o = env.get(ConnectorConstants.DYNAMIC_RECONFIGURATION_PROXY_CALL);
+                                if (o == null || Boolean.valueOf(o.toString()).equals(false)) {
+                                    //TODO use list ? (even in the ResourceDeployer API)
+                                    Class[] classes = deployer.getProxyClassesForDynamicReconfiguration();
+                                    Class[] proxyClasses = new Class[classes.length + 1];
+                                    for (int i = 0; i < classes.length; i++) {
+                                        proxyClasses[i] = classes[i];
+                                    }
+                                    proxyClasses[proxyClasses.length - 1] = DynamicallyReconfigurableResource.class;
+
+                                    cf = getProxyObject(cf, proxyClasses, resourceInfo);
+                                    Map<DynamicallyReconfigurableResource, Boolean> resourceFactories =
+                                            ConnectorRegistry.getInstance().getResourceFactories(resourceInfo);
+                                    resourceFactories.put((DynamicallyReconfigurableResource) Proxy.getInvocationHandler(cf), true);
                                 }
-                                proxyClasses[proxyClasses.length - 1] = DynamicallyReconfigurableResource.class;
-
-                                cf = getProxyObject(cf, proxyClasses, resourceInfo);
-                                Map<DynamicallyReconfigurableResource, Boolean> resourceFactories =
-                                        ConnectorRegistry.getInstance().getResourceFactories(resourceInfo);
-                                resourceFactories.put((DynamicallyReconfigurableResource) Proxy.getInvocationHandler(cf), true);
                             }
                         }
                     }

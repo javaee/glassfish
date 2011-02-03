@@ -88,6 +88,7 @@ public class ConnectorRegistry {
     protected final Map<String, Validator> beanValidators;
     protected final Map<ResourceInfo, Map<DynamicallyReconfigurableResource, Boolean>> resourceProxies;
     protected final Set<ResourceInfo> resourceInfos;
+    protected final Set<PoolInfo> transparentDynamicReconfigPools;
     protected final Map<String, Object> locks;
 
     /**
@@ -115,6 +116,7 @@ public class ConnectorRegistry {
         beanValidators = Collections.synchronizedMap(new HashMap<String, Validator>());
         resourceProxies = new HashMap<ResourceInfo, Map<DynamicallyReconfigurableResource, Boolean>>();
         resourceInfos = new HashSet<ResourceInfo>();
+        transparentDynamicReconfigPools = new HashSet<PoolInfo>();
         locks = new HashMap<String, Object>();
         if(_logger.isLoggable(Level.FINE)) {
             _logger.log(Level.FINE, "initialized the connector registry");
@@ -208,6 +210,46 @@ public class ConnectorRegistry {
         boolean isDeployed = false;
         if(resourceInfo != null){
             isDeployed = resourceInfos.contains(resourceInfo);
+        }
+        return isDeployed;
+    }
+
+    /**
+     * Add PoolInfo that has transparent-dynamic-reconfiguration enabled .
+     * @param poolInfo Pool being deployed.
+     */
+    public void addTransparentDynamicReconfigPool(PoolInfo poolInfo){
+        if(poolInfo != null){
+            synchronized (transparentDynamicReconfigPools){
+                transparentDynamicReconfigPools.add(poolInfo);
+            }
+        }
+    }
+
+    /**
+     * Remove ResourceInfo from registry. Called when resource is disabled/undeployed.
+     * @param poolInfo poolInfo
+     * @return boolean indicating whether the pool exists and removed.
+     */
+    public boolean removeTransparentDynamicReconfigPool(PoolInfo poolInfo){
+        boolean removed = false;
+        if(poolInfo != null){
+            synchronized (transparentDynamicReconfigPools){
+                removed = transparentDynamicReconfigPools.remove(poolInfo);
+            }
+        }
+        return removed;
+    }
+
+    /**
+     * indicates whether the pool has transparent-dynamic-reconfiguration property enabled
+     * @param poolInfo poolInfo
+     * @return boolean false if pool is not deployed
+     */
+    public boolean isTransparentDynamicReconfigPool(PoolInfo poolInfo){
+        boolean isDeployed = false;
+        if(poolInfo != null){
+            isDeployed = transparentDynamicReconfigPools.contains(poolInfo);
         }
         return isDeployed;
     }
