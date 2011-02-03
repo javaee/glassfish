@@ -52,6 +52,7 @@
     <modules>
     	<module>basic</module>
     	<module>cdi_basic</module>
+    	<module>cdi_ejb_jpa</module>
     	<module>ejb</module>
     	<module>scatteredarchive</module>
     	<module>maven-plugin</module>
