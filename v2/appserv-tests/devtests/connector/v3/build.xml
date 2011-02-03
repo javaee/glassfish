@@ -313,6 +313,9 @@
         <echo message="@@## glassfish-resources-xml tests ##@@"/>
         <antcall target="glassfish-resources-xml-tests"/>
 
+        <echo message="@@## osgi-resources-test ##@@"/>
+        <antcall dir="osgi-resources-test" target="all"/>
+
         <antcall target="report"/>
         <record name="connector.output" action="stop"/>
     </target>
