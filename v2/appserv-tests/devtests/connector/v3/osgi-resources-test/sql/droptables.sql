@@ -1,0 +1,1 @@
+drop table OSGI_RESOURCES_TEST_RESULTS;
