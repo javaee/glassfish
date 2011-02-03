@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,7 +40,6 @@
 
 package com.sun.web.security;
 
-import com.sun.enterprise.config.serverbeans.MessageSecurityConfig;
 import com.sun.enterprise.config.serverbeans.SecurityService;
 import com.sun.enterprise.security.auth.digest.impl.HttpAlgorithmParameterImpl;
 import com.sun.enterprise.security.web.integration.WebSecurityManager;
@@ -92,7 +91,6 @@ import com.sun.enterprise.deployment.RunAsIdentityDescriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.WebComponentDescriptor;
 //import com.sun.enterprise.deployment.interfaces.SecurityRoleMapper;
-import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 import com.sun.enterprise.deployment.web.LoginConfiguration;
 import com.sun.enterprise.security.SecurityContext;
 import com.sun.enterprise.security.SecurityUtil;
@@ -120,7 +118,7 @@ import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
 import static com.sun.enterprise.security.auth.digest.api.Constants.A1;
 import com.sun.enterprise.security.authorize.PolicyContextHandlerImpl;
-import java.io.File;
+import java.net.URLEncoder;
 import javax.security.jacc.PolicyContext;
 import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.component.PostConstruct;
@@ -938,7 +936,8 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
                 _logger.fine("[Web-Security]  SSL redirect is disabled");
             }
 
-            hresponse.sendError(HttpServletResponse.SC_FORBIDDEN, hrequest.getRequestURI());
+            hresponse.sendError(HttpServletResponse.SC_FORBIDDEN, 
+                    URLEncoder.encode(hrequest.getRequestURI(), "UTF-8"));
             return (false);
         }
 
@@ -963,7 +962,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
             return (false);
         } catch (MalformedURLException e) {
             hresponse.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    hrequest.getRequestURI());
+                    URLEncoder.encode(hrequest.getRequestURI(), "UTF-8"));
             return (false);
         }
     }
