@@ -44,6 +44,7 @@ import com.sun.jsftemplating.annotation.Handler;
 import com.sun.jsftemplating.annotation.HandlerInput; 
 import com.sun.jsftemplating.annotation.HandlerOutput;
 import com.sun.jsftemplating.layout.descriptors.handler.HandlerContext;  
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -656,57 +657,62 @@ public class SecurityHandler {
      public static void saveMsgProviderInfo(HandlerContext handlerCtx){
         Map<String,String> attrMap = (Map<String,String>) handlerCtx.getInputValue("attrMap");
         String edit = (String)handlerCtx.getInputValue("edit");
-        String providerName = attrMap.get("Name");
         String msgSecurityName = attrMap.get("msgSecurityName");
         String configName = (String)handlerCtx.getInputValue("configName");
         List propList = (List) handlerCtx.getInputValue("propList");
-
-        String endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + configName +
-                                "/security-service/message-security-config/" + msgSecurityName + "/provider-config";
-        String providerEndpoint = endpoint + "/" + providerName;
+        
         try{
-        if (edit.equals("true")){
-            boolean providerExist = RestUtil.get(providerEndpoint).isSuccess();
-            if (!providerExist){
-                GuiUtil.handleError(handlerCtx, GuiUtil.getMessage(COMMON_BUNDLE, "msg.error.noSuchProvider")); //normally won't happen.
-                return;
+            String providerName = URLEncoder.encode((String)attrMap.get("Name"), "UTF-8");
+            String providerEndpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + configName +
+                    "/security-service/message-security-config/" + msgSecurityName + "/provider-config/" + providerName;
+        
+            if (edit.equals("true")){
+                boolean providerExist = RestUtil.get(providerEndpoint).isSuccess();
+                if (!providerExist){
+                    GuiUtil.handleError(handlerCtx, GuiUtil.getMessage(COMMON_BUNDLE, "msg.error.noSuchProvider")); //normally won't happen.
+                    return;
+                }else{
+                    Map<String, Object> providerMap = (Map<String, Object>)RestUtil.getEntityAttrs(providerEndpoint, "entity");
+                    providerMap.put("className", attrMap.get("ClassName"));
+                    providerMap.put("providerType", attrMap.get("ProviderType"));
+                    RestUtil.restRequest(providerEndpoint, providerMap, "POST", null, false);
+
+                }
             }else{
-                Map<String, Object> providerMap = (Map<String, Object>)RestUtil.getEntityAttrs(providerEndpoint, "entity");
-                providerMap.put("className", attrMap.get("ClassName"));
-                providerMap.put("providerType", attrMap.get("ProviderType"));
-                RestUtil.restRequest(providerEndpoint, providerMap, "POST", null, false);
+                String endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + configName +
+                                    "/security-service/message-security-config";
+                Map attrs = new HashMap();
+                if (attrMap.get("defaultProvider") == null){
+                    attrMap.put("defaultProvider", "false");
+                }
+                attrs.put("isdefaultprovider", attrMap.get("defaultProvider"));
+                attrs.put("id", attrMap.get("Name"));
+                attrs.put("classname", attrMap.get("ClassName"));
+                attrs.put("providertype", attrMap.get("ProviderType"));
+                attrs.put("layer", attrMap.get("msgSecurityName"));
+                attrs.put("target", configName);
+                RestUtil.restRequest(endpoint, attrs, "POST", null, false);
             }
-        }else{
-            endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + configName +
-                                "/security-service/message-security-config";
-            Map attrs = new HashMap();
-            attrs.put("id", attrMap.get("Name"));
-            attrs.put("classname", attrMap.get("ClassName"));
-            attrs.put("providertype", attrMap.get("ProviderType"));
-            attrs.put("layer", attrMap.get("msgSecurityName"));
-            attrs.put("target", configName);
-            RestUtil.restRequest(endpoint, attrs, "POST", null, false);
-        }
 
-        //if we pass in "", backend will throw bean violation, since it only accepts certain values.
-        String[] attrList= new String[] {"Request-AuthSource","Request-AuthRecipient", "Response-AuthSource", "Response-AuthRecipient"};
-        for(int i=0; i< attrList.length; i++){
-            if ("".equals(attrMap.get(attrList[i]))){
-                attrMap.put( attrList[i], null);
+            //if we pass in "", backend will throw bean violation, since it only accepts certain values.
+            String[] attrList= new String[] {"Request-AuthSource","Request-AuthRecipient", "Response-AuthSource", "Response-AuthRecipient"};
+            for(int i=0; i< attrList.length; i++){
+                if ("".equals(attrMap.get(attrList[i]))){
+                    attrMap.put( attrList[i], null);
+                }
             }
-        }
 
-        Map reqPolicyMap = new HashMap();
-        reqPolicyMap.put("authSource", attrMap.get("Request-AuthSource"));
-        reqPolicyMap.put("authRecipient", attrMap.get("Request-AuthRecipient"));
-        String reqPolicyEP = providerEndpoint + "/request-policy";
-        RestUtil.restRequest(reqPolicyEP, reqPolicyMap, "POST", null, false);
+            Map reqPolicyMap = new HashMap();
+            reqPolicyMap.put("authSource", attrMap.get("Request-AuthSource"));
+            reqPolicyMap.put("authRecipient", attrMap.get("Request-AuthRecipient"));
+            String reqPolicyEP = providerEndpoint + "/request-policy";
+            RestUtil.restRequest(reqPolicyEP, reqPolicyMap, "POST", null, false);
 
-        Map respPolicyMap = new HashMap();
-        respPolicyMap.put("authSource", attrMap.get("Response-AuthSource"));
-        respPolicyMap.put("authRecipient", attrMap.get("Response-AuthRecipient"));
-        String respPolicyEP = providerEndpoint + "/response-policy";
-        RestUtil.restRequest(respPolicyEP, respPolicyMap, "POST", null, false);
+            Map respPolicyMap = new HashMap();
+            respPolicyMap.put("authSource", attrMap.get("Response-AuthSource"));
+            respPolicyMap.put("authRecipient", attrMap.get("Response-AuthRecipient"));
+            String respPolicyEP = providerEndpoint + "/response-policy";
+            RestUtil.restRequest(respPolicyEP, respPolicyMap, "POST", null, false);
         }catch(Exception ex){
             GuiUtil.handleException(handlerCtx, ex);
         }

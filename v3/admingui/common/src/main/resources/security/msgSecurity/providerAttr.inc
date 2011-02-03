@@ -53,14 +53,20 @@
     </sun:property>
     <sun:property id="ProviderIdTextProp"  rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.msgSecProvider.ProviderIdLabel}">
         <sun:textField id="ProviderIdText" styleClass="required" text="#{pageSession.valueMap['Name']}" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.msgSecProvider.ProviderId']}" required="#{true}" />
+        <sun:staticText text=""/>
     </sun:property>
 
-<!--  the defaultProvider attr is not in the <provider-config> element, the logic to display this checkbox is wrong.
-      refer to issue# GLASSFISH-15711   .  remove from prop sheet for now.
-    <sun:property id="DefaultProviderProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.msgSecProvider.defaultProviderLabel}" >
-        <sun:checkbox selected="#{pageSession.valueMap['defaultProvider']}" selectedValue="true" />
+    <sun:property >
+        <sun:staticText text=" " />
     </sun:property>
--->
+    <!--  the defaultProvider attr is not in the <provider-config> element, User should set default provider
+          in the msg security page itself during edit.
+          During creation, the create command takes this option, so we can pass that in.
+    -->
+    <sun:property id="DefaultProviderProp"  rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.msgSecProvider.defaultProviderLabel}"
+                   helpText="$resource{i18nc.msgSecProvider.defaultProviderLabeHelp}">
+        <sun:checkbox id="def" selected="#{pageSession.valueMap['defaultProvider']}" selectedValue="true" />
+    </sun:property>
 
     <sun:property id="ProviderTypeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.msgSecProvider.providerTypeLabel}" helpText="$resource{i18nc.msgSecProvider.providerTypeHelp}">
         <sun:dropDown id="ProviderType" selected="#{pageSession.valueMap['ProviderType']}" labels={"client", "server", "client-server"}  required="#{true}" />

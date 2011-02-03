@@ -81,15 +81,17 @@
             mapPut(map="#{pageSession.valueMap}"  key="Response-AuthRecipient" value="#{pageSession.responsePolicyMap['authRecipient']}");
         }
 
-      <!--  the defaultProvider attr is not in the <provider-config> element, the logic to display this checkbox is wrong.
-            refer to issue# GLASSFISH-15711 
         gf.getEntityAttrs(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/security-service/message-security-config/#{pageSession.msgSecurityName}.json",
                           valueMap="#{pageSession.msgSecurityMap}");
         mapPut(map="#{pageSession.valueMap}"  key="defaultProvider" value="false");
         
-        if ("#{pageSession.msgSecurityMap['defaultClientProvider']}=true || #{pageSession.msgSecurityMap['defaultProvider']}=true")
+        if ("#{pageSession.msgSecurityMap['defaultClientProvider']}=#{pageSession.Name}"){
             mapPut(map="#{pageSession.valueMap}"  key="defaultProvider" value="true");
-       -->
+        }
+
+        if ("#{pageSession.msgSecurityMap['defaultProvider']}=#{pageSession.Name}"){
+            mapPut(map="#{pageSession.valueMap}"  key="defaultProvider" value="true");
+        }
 
         gf.restRequest(endpoint="#{pageSession.selfUrl}/property.json" method="GET" result="#{requestScope.propTable}");
         setPageSessionAttribute(key="tableList" value="#{requestScope.propTable.data.extraProperties.properties}");
