@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -54,10 +54,8 @@ import org.xml.sax.InputSource;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.EntityResolver;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
+import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -1540,7 +1538,32 @@ public class ResourcesXMLParser implements EntityResolver
             if(_logger.isLoggable(Level.FINEST)){
                 _logger.finest("using DTD [ "+dtd+" ]");
             }
-            is = new InputSource(new java.io.FileInputStream(dtd));
+            File f = new File(dtd);
+            if (f.exists()) {
+                if(_logger.isLoggable(Level.FINEST)){
+                    _logger.finest("DTD ["+dtd+"] exists");
+                }
+                is = new InputSource(new java.io.FileInputStream(dtd));
+            } else {
+                if(_logger.isLoggable(Level.FINEST)){
+                    _logger.finest("No DTD ["+dtd+"] found, trying the enclosing jar (uber jar)");
+                }
+                //In case of embedded Uber jar, it is part of "/dtds" and all modules are in single jar.
+                //TODO refactor and move this logic to embedded module.
+                URL url = this.getClass().getResource("/dtds/" + dtdFileName);
+                InputStream stream = url != null ? url.openStream() : null;
+                if (stream != null) {
+                    if(_logger.isLoggable(Level.FINEST)){
+                        _logger.finest("DTD ["+dtdFileName+"] found in enclosing jar");
+                    }
+                    is = new InputSource(stream);
+                    is.setSystemId(url.toString());
+                }else{
+                    if(_logger.isLoggable(Level.FINEST)){
+                        _logger.finest("DTD ["+dtdFileName+" ] not found in installation, public URL might resolve it");
+                    }
+                }
+            }
         } catch(Exception e) {
             throw new SAXException("cannot resolve dtd", e);
         }
