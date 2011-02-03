@@ -33,72 +33,37 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.tests.embedded.cdi_ejb_jpa;
 
-import java.io.Serializable;
-import javax.persistence.Basic;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+//Simple TestBean to test CDI. 
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
-@Entity
-public class Person implements Serializable {
-    private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+//This bean implements Serializable as it needs to be placed into a Stateful Bean
+@Stateless
+public class TestBean {
+    @PersistenceContext()
+    private EntityManager em;
 
-    @Basic
-    private String name;
-
-    public Long getId() {
-        return id;
+    public void addPerson(String name) {
+        Person p = new Person();
+        p.setName(name);
+        em.persist(p);
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public Person getPerson(Long pid) {
+        return em.find(Person.class, pid);
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Person)) {
-            return false;
+    public void removePerson(Long pid) {
+        Person p = getPerson(pid);
+        if(p != null) {
+            em.remove(p);
         }
-        Person other = (Person) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
     }
 
-    @Override
-    public String toString() {
-        return "org.glassfish.tests.embedded.cdi_ejb_jpa.Person[id=" + id + "], [name=" +
-                getName() + "]";
+    public void removePerson(Person p) {
+        em.remove(p);
     }
-
-    /**
-     * @return the name
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * @param name the name to set
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
-
 }
