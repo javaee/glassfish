@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -80,6 +80,8 @@ public class ResourceProviderService implements ConfigListener {
     private BundleContext bundleContext;
     private ResourceHelper resourceHelper;
 
+    private Collection<ResourceManager> resourceManagers;
+
     private static final Logger logger = Logger.getLogger(
             ResourceProviderService.class.getPackage().getName());
 
@@ -89,7 +91,17 @@ public class ResourceProviderService implements ConfigListener {
         servers = habitat.getComponent(Servers.class);
         resources = habitat.getComponent(Domain.class).getResources();
         resourceHelper = new ResourceHelper(habitat);
+        resourceManagers = new ArrayList<ResourceManager>();
+        initializeResourceManagers();
         postConstruct();
+    }
+
+    private void initializeResourceManagers() {
+        Habitat habitat = getHabitat();
+        resourceManagers.add(new JDBCResourceManager(habitat));
+        if(runtimeSupportsJMS()){
+            registerJMSResources(resourceManagers, habitat);
+        }
     }
 
     private Habitat getHabitat() {
@@ -313,16 +325,7 @@ public class ResourceProviderService implements ConfigListener {
      * @return list of resource-managers
      */
     private Collection<ResourceManager> getAllResourceManagers() {
-        Collection<ResourceManager> resourceManagers;
         //resourceManagers = getHabitat().getAllByContract(ResourceManager.class);
-        //if (resourceManagers == null) {
-            Habitat habitat = getHabitat();
-            resourceManagers = new ArrayList<ResourceManager>();
-            resourceManagers.add(new JDBCResourceManager(habitat));
-            if(runtimeSupportsJMS()){
-                registerJMSResources(resourceManagers, habitat);
-            }
-        //}
         return resourceManagers;
     }
 
