@@ -27,6 +27,7 @@
 
     <target name="setup" >
         <antcall target="deploy-jdbc-common"/>
+        <sleep seconds="10"/>
         <antcall target="execute-sql-common">
             <param name="sql.file" value="sql/createtables.sql"/>
         </antcall>
