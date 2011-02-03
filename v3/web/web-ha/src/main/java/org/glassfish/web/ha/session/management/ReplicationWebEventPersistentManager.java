@@ -253,20 +253,6 @@ public class ReplicationWebEventPersistentManager extends ReplicationManagerBase
         return cookieInfo.getNewReplicaCookie();
     }
 
-    /**
-     * Gracefully terminate the active use of the public methods of this
-     * component.  This method should be the last one called on a given
-     * instance of this component.
-     * We use this here to insure that pool entries are cleaned up
-     *
-     * @exception IllegalStateException if this component has not been started
-     * @exception LifecycleException if this component detects a fatal error
-     *  that needs to be reported
-     */                               
-    public void stop() throws LifecycleException {
-        super.stop();
-    }
-
 
     @Override
     public <T extends Serializable> void  createBackingStore(String persistenceType, String storeName, Class<T> metadataClass, HashMap vendorMap) {
