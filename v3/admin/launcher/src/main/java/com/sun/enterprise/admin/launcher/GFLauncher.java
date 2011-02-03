@@ -52,7 +52,6 @@ import com.sun.enterprise.universal.process.ProcessStreamDrainer;
 import com.sun.enterprise.universal.xml.MiniXmlParserException;
 import com.sun.enterprise.util.OS;
 import com.sun.enterprise.util.io.FileUtils;
-import com.sun.enterprise.util.net.NetUtils;
 import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
 import com.sun.enterprise.universal.xml.MiniXmlParser;
 import static com.sun.enterprise.util.SystemPropertyConstants.*;
@@ -158,6 +157,7 @@ public abstract class GFLauncher {
         javaConfig = new JavaConfig(parser.getJavaConfig());
         setupProfilerAndJvmOptions(parser);
         setupUpgradeSecurity();
+        renameOsgiCache();
         setupMonitoring(parser);
         sysPropsFromXml = parser.getSystemProperties();
         asenvProps.put(INSTANCE_ROOT_PROPERTY, getInfo().getInstanceRootDir().getPath());
@@ -689,6 +689,29 @@ public abstract class GFLauncher {
                 Throwable cause = ioe.getCause() == null ? ioe : ioe.getCause();
                 throw new GFLauncherException(strings.get(
                     "copy_server_policy_error", cause.getMessage()));
+            }
+        }
+    }
+
+    /**
+     * Because of some issues in GlassFish OSGi launcher, a server updated from version 3.0.x to 3.1 won't start
+     * if a OSGi cache directory populated with 3.0.x modules is used. So, as a work around, we rename the cache
+     * directory when upgrade path is used. See GLASSFISH-15772 for more details.
+     *
+     * @throws GFLauncherException if it fails to rename the cache directory
+     */
+    private void renameOsgiCache() throws GFLauncherException {
+        if (info.isUpgrade()) {
+            File osgiCacheDir = new File(info.getDomainRootDir(),
+                "osgi-cache"); 
+            File backupOsgiCacheDir = new File(info.getDomainRootDir(),
+                "osgi-cache-" + System.currentTimeMillis());
+            if (osgiCacheDir.exists() && !backupOsgiCacheDir.exists()) {
+                if (!FileUtils.renameFile(osgiCacheDir, backupOsgiCacheDir)) {
+                    throw new GFLauncherException(strings.get("rename_osgi_cache_failed", osgiCacheDir, backupOsgiCacheDir));
+                } else {
+                    GFLauncherLogger.info("rename_osgi_cache_succeeded", osgiCacheDir, backupOsgiCacheDir);
+                }
             }
         }
     }
