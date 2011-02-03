@@ -67,7 +67,7 @@ public class SessionCookieConfigImpl implements SessionCookieConfig {
     /**
      * Constructor
      */
-    SessionCookieConfigImpl(StandardContext ctx) {
+    public SessionCookieConfigImpl(StandardContext ctx) {
         this.ctx = ctx;
     }
 

@@ -44,6 +44,7 @@ import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.types.EjbReference;
 import com.sun.enterprise.deployment.web.*;
 import com.sun.enterprise.web.deploy.*;
+import com.sun.enterprise.web.session.WebSessionCookieConfig;
 import com.sun.logging.LogDomains;
 import org.apache.catalina.Container;
 import org.apache.catalina.LifecycleException;
@@ -479,8 +480,8 @@ public class TomcatDeploymentConfig {
         com.sun.enterprise.web.session.SessionCookieConfig gfSessionCookieConfig =
                 webModule.getSessionCookieConfigFromSunWebXml();
         if (gfSessionCookieConfig != null) {
-            SessionCookieConfig sessionCookieConfig =
-                webModule.getSessionCookieConfig();
+            WebSessionCookieConfig sessionCookieConfig =
+                (WebSessionCookieConfig)webModule.getSessionCookieConfig();
 
             if (gfSessionCookieConfig.getName() != null &&
                     !gfSessionCookieConfig.getName().isEmpty()) {
@@ -503,11 +504,8 @@ public class TomcatDeploymentConfig {
                 sessionCookieConfig.setComment(gfSessionCookieConfig.getComment());
             }
 
-            // The "dynamic" secure attribute gfSessionCookieConfig will be processed later
-            if (!gfSessionCookieConfig.getSecure().equalsIgnoreCase(
-                    com.sun.enterprise.web.session.SessionCookieConfig.DYNAMIC_SECURE)) {
-
-                sessionCookieConfig.setSecure(Boolean.parseBoolean(gfSessionCookieConfig.getSecure()));
+            if (gfSessionCookieConfig.getSecure() != null) {
+                sessionCookieConfig.setSecure(gfSessionCookieConfig.getSecure());
             }
         }
 

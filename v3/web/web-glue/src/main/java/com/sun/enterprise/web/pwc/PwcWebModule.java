@@ -41,6 +41,7 @@
 package com.sun.enterprise.web.pwc;
 
 import com.sun.enterprise.web.session.SessionCookieConfig;
+import com.sun.enterprise.web.session.WebSessionCookieConfig;
 import org.apache.catalina.Globals;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.core.StandardContext;
@@ -113,6 +114,8 @@ public abstract class PwcWebModule extends StandardContext {
 
     protected String defaultCharset;
 
+    protected WebSessionCookieConfig webSessionCookieConfig = null;
+
 
     /**
      * Gets this web module's identifier.
@@ -131,6 +134,19 @@ public abstract class PwcWebModule extends StandardContext {
      */
     public void setID(String id) {
         _id = id;
+    }
+
+
+    /**
+     * Gets the session tracking cookie configuration of this
+     * <tt>ServletContext</tt>.
+     */
+    @Override
+    public synchronized javax.servlet.SessionCookieConfig getSessionCookieConfig() {
+        if (webSessionCookieConfig == null) {
+            webSessionCookieConfig = new WebSessionCookieConfig(this);
+        }
+        return webSessionCookieConfig;
     }
 
 
