@@ -344,7 +344,7 @@ public class SecurityHandler {
 	    @HandlerInput(name="UserId", type=String.class, required=true),
 	    @HandlerInput(name="GroupList", type=String.class, required=true),
 	    @HandlerInput(name="Password", type=String.class, required=true),
-	    @HandlerInput(name="CreateNew", type=Boolean.class)})
+	    @HandlerInput(name="CreateNew", type=String.class, required=true)})
     public static void saveUser(HandlerContext handlerCtx) {
         try {
             String realmName = (String) handlerCtx.getInputValue("Realm");
@@ -352,7 +352,7 @@ public class SecurityHandler {
             String grouplist = (String)handlerCtx.getInputValue("GroupList");
             String password = (String)handlerCtx.getInputValue("Password");
             String userid = (String)handlerCtx.getInputValue("UserId");
-            Boolean createNew = (Boolean)handlerCtx.getInputValue("CreateNew");
+            String createNew = (String)handlerCtx.getInputValue("CreateNew");
 
             if (password == null) {
                 password = "";
@@ -365,19 +365,13 @@ public class SecurityHandler {
             attrs.put("realmName", realmName);
             RestUtil.restRequest(tmpEP, attrs, "POST", handlerCtx, false);
             attrs = new HashMap<String, Object>();
-            if ((createNew == null)) {
-                String endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + configName +
-                                                            "/security-service/auth-realm/" + realmName + "/delete-user?target=" + configName;
-                attrs.put("username", userid);
-                RestResponse response = RestUtil.delete(endpoint, attrs);
-                if (!response.isSuccess()) {
-                    GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.error.checkLog"));
-                }
-                createNew = Boolean.TRUE;
+            String endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + configName + "/security-service/auth-realm/" + realmName ;
+            if (Boolean.valueOf(createNew)) {
+                endpoint = endpoint +  "/create-user?target=" + configName;
+            }else{
+                endpoint = endpoint + "/update-user?target=" + configName;
             }
-            if ((createNew != null) && (createNew == Boolean.TRUE)) {
-                String endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + configName +
-                                                                "/security-service/auth-realm/" + realmName + "/create-user?target=" + configName;
+
                 final String USERPASSWORD = "AS_ADMIN_USERPASSWORD";
 
                 attrs = new HashMap<String, Object>();
@@ -390,11 +384,7 @@ public class SecurityHandler {
                 if (grouplist != null && !grouplist.equals(""))
                     grpList.add(grouplist);
                 attrs.put("groups", grpList);
-                RestResponse response = RestUtil.post(endpoint, attrs);
-                if (!response.isSuccess()) {
-                    GuiUtil.handleError(handlerCtx, GuiUtil.getMessage("msg.error.checkLog"));
-                }
-            } 
+                RestUtil.restRequest(endpoint, attrs, "POST", null, true, true );
         } catch(Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);
         }
@@ -520,8 +510,16 @@ public class SecurityHandler {
                                                                 "/security-service/auth-realm/" + realmName + "/list-group-names?username=" + userName + "&target=" + configName;
             Map<String, Object> responseMap = RestUtil.restRequest(endpoint, null, "get", handlerCtx, false);
             HashMap children = (HashMap)((Map<String, Object>) responseMap.get("data")).get("extraProperties");
-            String name = (String)((List)children.get("groups")).get(0);
-            return name;
+            List<String> groupList= (List<String>)children.get("groups");
+            StringBuilder groups = new StringBuilder();
+            String sepHolder = "";
+            if (groupList != null){
+                for(String oneGroup : groupList){
+                    groups.append(sepHolder).append(oneGroup);
+                    sepHolder=":";
+                }
+            }
+            return groups.toString();
         }catch(Exception ex){
             GuiUtil.getLogger().info(GuiUtil.getCommonMessage("log.error.getGroupNames") + ex.getLocalizedMessage());
             if (GuiUtil.getLogger().isLoggable(Level.FINE)){

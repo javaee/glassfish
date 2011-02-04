@@ -81,7 +81,7 @@
                                     UserId="#{pageSession.userId}"
                                     GroupList="#{pageSession.groupList}"
                                     Password="#{password}"
-                                    CreateNew="#{true}"
+                                    CreateNew="true"
                                 );
                                 gf.redirect(page="#{request.contextPath}/common/security/realms/manageUsers.jsf?name=#{pageSession.encodedName}&configName=#{pageSession.encodedConfigName}")
                             />                        

@@ -83,6 +83,7 @@
                                     UserId="#{pageSession.User}"
                                     GroupList="#{pageSession.groupList}"
                                     Password="#{pageSession.password}"
+                                    CreateNew="false"
                                 );
                             />                        
                         </sun:button>

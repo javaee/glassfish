@@ -273,6 +273,9 @@ public class RestUtil {
                     Map dataMap = (Map)responseMap.get("data");
                     if (dataMap != null) {
                         message = getMessage(dataMap);
+                        if (message == null){
+                            message = "";
+                        }
                         List<Map> subReports = (List<Map>)dataMap.get("subReports");
                         if (subReports != null){
                             for( Map oneSubReport : subReports){
