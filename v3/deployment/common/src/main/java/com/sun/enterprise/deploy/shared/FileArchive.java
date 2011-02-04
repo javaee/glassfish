@@ -716,7 +716,7 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
          * format used for reading and writing the archive creation time in
          * the marker file
          */
-        private final static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+        private final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
         /*
          * Records when the archive was created by GlassFish, if applicable.
@@ -766,7 +766,7 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
             return timestampFile(archive).equals(f);
         }
 
-        private static long readTimeFromFile(final File stampFile) throws IOException {
+        private long readTimeFromFile(final File stampFile) throws IOException {
             LineNumberReader reader = null;
             try {
                 reader = new LineNumberReader(new FileReader(stampFile));
@@ -790,7 +790,7 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
             }
         }
         
-        private static void writeTimeToFile(final File stampFile, long stamp) throws FileNotFoundException {
+        private void writeTimeToFile(final File stampFile, long stamp) throws FileNotFoundException {
             final PrintWriter pw = new PrintWriter(stampFile);
             pw.println(dateFormat.format(new Date(stamp)));
             pw.close();
