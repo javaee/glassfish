@@ -228,6 +228,7 @@ public class LogViewHandlers {
                 notNullStringPut(attMap, "anySearch", anySearch);
                 notNullStringPut(attMap, "logLevel", logLevel);
                 notNullStringPut(attMap, "instanceName", instanceName);
+                notNullStringPut(attMap, "logFileRefresh", "true");
                 if (moduleList != null) {
                     attMap.put("listOfModules", moduleList);
                 }
