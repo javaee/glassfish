@@ -426,6 +426,8 @@ public class GuiUtil {
      * If type is not specified, it will be "information" by default.
      */
     public static void prepareAlert(String type, String summary, String detail) {
+
+        try {
         Map attrMap = FacesContext.getCurrentInstance().getExternalContext().getRequestMap();
         if (isEmpty(type)) {
             attrMap.put("alertType", "information");
@@ -438,11 +440,11 @@ public class GuiUtil {
         if (detail != null && detail.length() > 1000) {
             detail = detail.substring(0, 1000) + " .... " + GuiUtil.getMessage("msg.seeServerLog");
         }
-        try {
+        
             attrMap.put("alertDetail", isEmpty(detail) ? "" : URLEncoder.encode(detail, "UTF-8"));
             attrMap.put("alertSummary", isEmpty(summary) ? "" : URLEncoder.encode(summary, "UTF-8"));
-        } catch (UnsupportedEncodingException ex) {
-            //we'll never get here.
+        } catch (Exception ex) {
+            //we'll never get here. , well except for GLASSFISH-15831
             GuiUtil.getLogger().info(GuiUtil.getCommonMessage("log.error.prepareAlert") + ex.getLocalizedMessage());
             if (GuiUtil.getLogger().isLoggable(Level.FINE)){
                 ex.printStackTrace();
