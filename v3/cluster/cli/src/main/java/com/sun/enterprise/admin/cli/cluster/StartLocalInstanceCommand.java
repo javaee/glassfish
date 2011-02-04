@@ -74,9 +74,6 @@ public class StartLocalInstanceCommand extends SynchronizeInstanceCommand
     @Param(optional = true, defaultValue = "false")
     private boolean debug;
 
-    @Param(optional = true, defaultValue = "false")
-    private boolean upgrade;
-
     // handled by superclass
     //@Param(name = "instance_name", primary = true, optional = false)
     //private String instanceName0;
@@ -147,7 +144,7 @@ public class StartLocalInstanceCommand extends SynchronizeInstanceCommand
 
             launcher.launch();
 
-            if (verbose || upgrade) { // we can potentially loop forever here...
+            if (verbose) { // we can potentially loop forever here...
                 while (true) {
                     int returnValue = launcher.getExitValue();
 
@@ -197,10 +194,8 @@ public class StartLocalInstanceCommand extends SynchronizeInstanceCommand
             info = launcher.getInfo();
             info.setInstanceName(instanceName);
             info.setInstanceRootDir(instanceDir);
-            info.setVerbose(verbose || upgrade);
+            info.setVerbose(verbose);
             info.setDebug(debug);
-            info.setUpgrade(upgrade);
-
             info.setRespawnInfo(programOpts.getClassName(),
                             programOpts.getClassPath(),
                             respawnArgs());
