@@ -75,7 +75,6 @@ public class BasicCDITest{
 
         GlassFishProperties props = new GlassFishProperties();
         BootstrapProperties bootstrapProperties = new BootstrapProperties();
-        bootstrapProperties.setInstallRoot(System.getenv("S1AS_HOME"));
         props.setPort("http-listener", 8080);
         GlassFish glassfish = GlassFishRuntime.bootstrap(bootstrapProperties).newGlassFish(props);
         glassfish.start();
