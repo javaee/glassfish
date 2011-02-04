@@ -42,6 +42,7 @@ package org.glassfish.persistence.jpa;
 
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import com.sun.enterprise.deployment.*;
+import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.event.EventListener;
@@ -82,6 +83,9 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPApplicationConta
 
     @Inject
     private ServerEnvironmentImpl serverEnvironment;
+
+    @Inject
+    private volatile StartupContext sc = null;
 
     @Inject
     private Events events;
@@ -196,7 +200,13 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPApplicationConta
             @Override void visitPUD(PersistenceUnitDescriptor pud, DeploymentContext context) {
                 if(referencedPus.contains(pud)) {
                     boolean isDas = isDas();
-                    ProviderContainerContractInfo providerContainerContractInfo = serverEnvironment.isEmbedded() ?
+
+                    // While running in embedded mode, it is not possible to guarantee that entity classes are not loaded by the app classloader before transformers are installed
+                    // If that happens, weaving will not take place and EclipseLink will throw up. Provide users an option to disable weaving by passing the flag.
+                    // Note that we enable weaving if not explicitly disabled by user
+                    boolean weavingEnabled = Boolean.valueOf(sc.getArguments().getProperty("org.glassfish.persistence.embedded.weaving.enabled", "true"));
+
+                    ProviderContainerContractInfo providerContainerContractInfo = weavingEnabled ?
                             new EmbeddedProviderContainerContractInfo(context, connectorRuntime, isDas) :
                             new ServerProviderContainerContractInfo(context, connectorRuntime, isDas);
                     PersistenceUnitLoader puLoader = new PersistenceUnitLoader(pud, providerContainerContractInfo);
