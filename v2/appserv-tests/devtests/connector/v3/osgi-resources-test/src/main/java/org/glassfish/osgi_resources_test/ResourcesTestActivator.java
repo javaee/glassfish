@@ -45,6 +45,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
 import javax.sql.DataSource;
+import java.net.URLEncoder;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.util.logging.Logger;
@@ -299,7 +300,7 @@ public class ResourcesTestActivator implements BundleActivator {
         try {
             con = ds.getConnection();
             stmt = con.createStatement();
-            stmt.executeUpdate("insert into OSGI_RESOURCES_TEST_RESULTS values ('" + filter + "','" + result + "')");
+            stmt.executeUpdate("insert into OSGI_RESOURCES_TEST_RESULTS values ('" + URLEncoder.encode(filter,"UTF-8") + "','" + result + "')");
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
