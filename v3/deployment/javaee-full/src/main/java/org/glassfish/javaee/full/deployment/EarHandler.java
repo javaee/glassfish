@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -153,7 +153,11 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
 
         ReadableArchive source2 = null;
         try {
-            source2 = archiveFactory.openArchive(target.getURI());
+            /*
+             * We know that the expansion is into a directory, so we should know
+             * that target is a FileArchive which is also readable as-is.
+             */
+            source2 = (FileArchive) target;
 
             ApplicationHolder holder = 
                 getApplicationHolder(source2, context, false);

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -198,7 +198,8 @@ public class InputJarArchiveTest {
         return arch;
     }
 
-    private void retireArchive(final ReadableArchive arch) {
+    private void retireArchive(final ReadableArchive arch) throws IOException {
+        arch.close();
         final File tempJAR = new File(arch.getURI().getSchemeSpecificPart());
         tempJAR.delete();
     }

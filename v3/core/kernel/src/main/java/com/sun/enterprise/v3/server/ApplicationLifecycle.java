@@ -40,6 +40,7 @@
 
 package com.sun.enterprise.v3.server;
 
+import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.deployment.versioning.VersioningUtils;
 import org.glassfish.deployment.versioning.VersioningSyntaxException;
 import java.io.BufferedInputStream;
@@ -47,7 +48,6 @@ import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.util.Calendar;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -62,11 +62,11 @@ import com.sun.enterprise.config.serverbeans.*;
 import org.jvnet.hk2.config.types.Property;
 import org.glassfish.api.admin.config.ApplicationName;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
+import com.sun.enterprise.deploy.shared.FileArchive;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.common.util.admin.ParameterMapExtractor;
-import java.util.StringTokenizer;
 
 import com.sun.logging.LogDomains;
 import org.glassfish.api.*;
@@ -1604,7 +1604,8 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
             }
             try {
                 Long start = System.currentTimeMillis();
-                archiveHandler.expand(archive, archiveFactory.createArchive(expansionDir), initial);
+                final WritableArchive expandedArchive = archiveFactory.createArchive(expansionDir);
+                archiveHandler.expand(archive, expandedArchive, initial);
                 if (logger.isLoggable(Level.FINE)) {
                     logger.fine("Deployment expansion took " + (System.currentTimeMillis() - start));
                 }
@@ -1616,7 +1617,7 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
                     logger.log(Level.SEVERE, localStrings.getLocalString("deploy.errorclosingarchive","Error while closing deployable artifact {0}", archive.getURI().getSchemeSpecificPart()),e);
                     throw e;
                 }
-                archive = archiveFactory.openArchive(expansionDir);
+                archive = (FileArchive) expandedArchive;
                 initial.setSource(archive);
             } catch(IOException e) {
                 logger.log(Level.SEVERE, localStrings.getLocalString("deploy.errorexpandingjar","Error while expanding archive file"),e);
