@@ -207,8 +207,9 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPApplicationConta
                     boolean weavingEnabled = Boolean.valueOf(sc.getArguments().getProperty("org.glassfish.persistence.embedded.weaving.enabled", "true"));
 
                     ProviderContainerContractInfo providerContainerContractInfo = weavingEnabled ?
-                            new EmbeddedProviderContainerContractInfo(context, connectorRuntime, isDas) :
-                            new ServerProviderContainerContractInfo(context, connectorRuntime, isDas);
+                            new ServerProviderContainerContractInfo(context, connectorRuntime, isDas) :
+                            new EmbeddedProviderContainerContractInfo(context, connectorRuntime, isDas);
+
                     PersistenceUnitLoader puLoader = new PersistenceUnitLoader(pud, providerContainerContractInfo);
                     // Store the puLoader in context. It is retrieved to execute java2db and to
                     // store the loaded emfs in a JPAApplicationContainer object for cleanup
