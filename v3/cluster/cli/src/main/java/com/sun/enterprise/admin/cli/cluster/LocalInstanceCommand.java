@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -601,5 +601,18 @@ public abstract class LocalInstanceCommand extends LocalServerCommand {
 
         String installRootPath = getInstallRootPath();
         return installRootPath + "/" + "nodes";
+    }
+
+    @Override
+    protected File getMasterPasswordFile() {
+
+        if (nodeDirChild == null)
+            return null;
+
+        File mp = new File(new File(nodeDirChild,"agent"), "master-password");
+        if (!mp.canRead())
+            return null;
+
+        return mp;
     }
 }

@@ -506,7 +506,7 @@ public abstract class LocalServerCommand extends CLICommand {
         return mp;
     }
 
-    private File getMasterPasswordFile() {
+    protected File getMasterPasswordFile() {
 
         if (serverDirs == null)
             return null;
