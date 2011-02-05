@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -57,7 +57,7 @@ public class WebTest {
     private static final String TEST_NAME
         = "ssi-escape-character";
 
-    private static final String EXPECTED_CONTENT_TYPE = "Content-Type: text/html";
+    private static final String EXPECTED_CONTENT_TYPE = "content-type: text/html";
     private static final String EXPECTED = "Happy&quot;&quot;";
 
     private String host;
@@ -106,7 +106,7 @@ public class WebTest {
         while ((line = bis.readLine()) != null) {
             System.out.println(line);
             if (!hasExpectedContentType) {
-                if (line.startsWith(EXPECTED_CONTENT_TYPE)) {
+                if (line.toLowerCase().startsWith(EXPECTED_CONTENT_TYPE)) {
                     hasExpectedContentType = true;
                 }
             } else if (line.equals(EXPECTED)) {
