@@ -180,7 +180,8 @@ public abstract class GFLauncher {
         setCommandLine();
         logCommandLine();
         // if no <network-config> element, we need to upgrade this domain
-        needsUpgrade = !parser.hasNetworkConfig();
+        needsAutoUpgrade = !parser.hasNetworkConfig();
+        needsManualUpgrade = !parser.hasDefaultConfig();
         setupCalledByClients = true;
     }
 
@@ -266,12 +267,21 @@ public abstract class GFLauncher {
     }
 
     /**
-     * Does this domain need to be upgraded before it can be started?
+     * Does this domain need to be automatically upgraded before it can be started?
      *
      * @return true if the domain needs to be upgraded first
      */
-    public final boolean needsUpgrade() {
-        return needsUpgrade;
+    public final boolean needsAutoUpgrade() {
+        return needsAutoUpgrade;
+    }
+    
+    /**
+     * Does this domain need to be manually upgraded before it can be started?
+     *
+     * @return true if the domain needs to be upgraded first
+     */
+    public final boolean needsManualUpgrade() {
+        return needsManualUpgrade;
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -872,7 +882,8 @@ public abstract class GFLauncher {
     private Process process;
     private ProcessStreamDrainer psd;
     private boolean logFilenameWasFixed = false;
-    private boolean needsUpgrade = false;
+    private boolean needsAutoUpgrade = false;
+    private boolean needsManualUpgrade = false;
 
     ///////////////////////////////////////////////////////////////////////////
     private static class ProcessWhacker implements Runnable {

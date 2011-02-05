@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -113,7 +113,11 @@ public class StartDomainCommand extends LocalDomainCommand implements StartServe
             if (helper.prepareForLaunch() == false)
                 return ERROR;
 
-            doUpgrade(mpv);
+            if (!upgrade && launcher.needsManualUpgrade()) {
+                logger.info(strings.get("manualUpgradeNeeded"));
+                return ERROR;
+            }
+            doAutoUpgrade(mpv);
 
             // launch returns very quickly if verbose is not set
             // if verbose is set then it returns after the domain dies
@@ -233,8 +237,8 @@ public class StartDomainCommand extends LocalDomainCommand implements StartServe
      * specified, first start the domain to do the upgrade and
      * then start the domain again for real.
      */
-    private void doUpgrade(String mpv) throws GFLauncherException, MiniXmlParserException, CommandException {
-        if (upgrade || !launcher.needsUpgrade())
+    private void doAutoUpgrade(String mpv) throws GFLauncherException, MiniXmlParserException, CommandException {
+        if (upgrade || !launcher.needsAutoUpgrade())
             return;
 
         logger.info(strings.get("upgradeNeeded"));
