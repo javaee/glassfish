@@ -56,7 +56,7 @@ public class WebTest {
     private static final String TEST_NAME
         = "ssi-html-entity";
 
-    private static final String EXPECTED_CONTENT_TYPE = "Content-Type: text/html";
+    private static final String EXPECTED_CONTENT_TYPE = "content-type: text/html";
     private static final String EXPECTED1 = "<!-- testvalue \"x\" -->";
     private static final String EXPECTED2 = "&lt;!-- testvalue &quot;x&quot; --&gt;";
 
@@ -108,7 +108,7 @@ public class WebTest {
         while ((line = bis.readLine()) != null) {
             System.out.println(line);
             if (!hasExpectedContentType) {
-                if (line.startsWith(EXPECTED_CONTENT_TYPE)) {
+                if (line.toLowerCase().startsWith(EXPECTED_CONTENT_TYPE)) {
                     hasExpectedContentType = true;
                 }
             } else if (line.equals(expected)) {
