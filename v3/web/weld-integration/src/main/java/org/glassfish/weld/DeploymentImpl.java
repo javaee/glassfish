@@ -58,6 +58,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Logger;
 
 import javax.enterprise.inject.spi.Extension;
@@ -327,7 +328,7 @@ public class DeploymentImpl implements Deployment {
                 + beanClass + " not found in the BDAs of this deployment. " +
                 "Hence creating a new BDA");
         List<Class<?>> beanClasses = new ArrayList<Class<?>>();
-        List<URL> beanXMLUrls = new ArrayList<URL>();
+        Set<URL> beanXMLUrls = new CopyOnWriteArraySet<URL>();
         Set<EjbDescriptor> ejbs = new HashSet<EjbDescriptor>();
         beanClasses.add(beanClass);
         BeanDeploymentArchive newBda = 

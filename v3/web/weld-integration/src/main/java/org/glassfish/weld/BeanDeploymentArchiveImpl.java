@@ -67,6 +67,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Logger;
 
 import javax.enterprise.inject.spi.AnnotatedType;
@@ -95,7 +97,7 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
     private String id;
     private List<Class<?>> moduleClasses = null; //Classes in the module
     private List<Class<?>> beanClasses = null; //Classes identified as Beans through Weld SPI
-    private List<URL> wUrls = null;
+    private Set<URL> wUrls = null;
     private final Collection<EjbDescriptor<?>> ejbDescImpls;
     private List<BeanDeploymentArchive> beanDeploymentArchives;
 
@@ -127,7 +129,7 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
         Collection<com.sun.enterprise.deployment.EjbDescriptor> ejbs, DeploymentContext ctx, String bdaID) {
         this.beanClasses = new ArrayList<Class<?>>();
         this.moduleClasses = new ArrayList<Class<?>>();
-        this.wUrls = new ArrayList<URL>();
+        this.wUrls = new CopyOnWriteArraySet<URL>();
         this.archive = archive;
         if (bdaID == null) {
             this.id = archive.getName();
@@ -166,7 +168,7 @@ public class BeanDeploymentArchiveImpl implements BeanDeploymentArchive {
 
     //These are for empty BDAs that do not model Bean classes in the current 
     //deployment unit -- for example: BDAs for portable Extensions.
-    public BeanDeploymentArchiveImpl(String id, List<Class<?>> wClasses, List<URL> wUrls,
+    public BeanDeploymentArchiveImpl(String id, List<Class<?>> wClasses, Set<URL> wUrls,
         Collection<com.sun.enterprise.deployment.EjbDescriptor> ejbs, DeploymentContext ctx) {
         this.id = id;
         this.moduleClasses = wClasses;
