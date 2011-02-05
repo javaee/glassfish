@@ -49,6 +49,7 @@
     <artifactId>localejbs</artifactId>
     <packaging>war</packaging>
     <version>3.2-SNAPSHOT</version>
+    <name>Test local EJBs using maven-plugin</version>
 
     <build>
         <defaultGoal>install</defaultGoal>

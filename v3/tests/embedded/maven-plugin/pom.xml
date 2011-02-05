@@ -73,6 +73,7 @@
                 <module>secureWebApp</module>
                 <module>jsptest</module>
                 <module>jsftest</module>
+                <module>localejbs</module>
             </modules>
         </profile>
         <profile>
@@ -99,6 +100,7 @@
                 <module>secureWebApp</module>
                 <module>jsptest</module>
                 <module>jsftest</module>
+                <module>localejbs</module>
             </modules>
         </profile>
         <profile>
@@ -125,6 +127,7 @@
                 <module>secureWebApp</module>
                 <module>jsptest</module>
                 <module>jsftest</module>
+                <module>localejbs</module>
             </modules>
         </profile>
     </profiles>
