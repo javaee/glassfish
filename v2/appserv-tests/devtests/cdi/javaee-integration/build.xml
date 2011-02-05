@@ -108,6 +108,7 @@
             <ant dir="embedded-resource-adapter-as-bean-archive" target="${javaee-int-target}"/>
             <ant dir="cdi-servlet-3.0-annotation-with-web-inf-lib-javaee-injection" target="${javaee-int-target}"/>
             <ant dir="cdi-servlet-3.0-annotation-with-web-inf-lib-ordering" target="${javaee-int-target}"/>
+            <ant dir="cdi-servlet-3.0-annotation-with-web-inf-lib-extension-alternative" target="${javaee-int-target}"/>
 <!-- Test issue: GLASSFISH-15721
             <ant dir="cdi-servlet-3.0-annotation-with-web-inf-lib" target="${javaee-int-target}"/>
 -->
