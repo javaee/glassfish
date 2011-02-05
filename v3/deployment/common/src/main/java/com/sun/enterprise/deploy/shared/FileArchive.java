@@ -647,6 +647,8 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
 
         class Util {
 
+            private final static long TIME_ROUNDING_FACTOR = 2000;
+
             /**
              * Factory method for a TimestampManager set up for an existing
              * directory (that is, a FileArchive which is opened rather than
@@ -672,7 +674,11 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
                  * miliseconds.  So we need to round the current time down to the
                  * nearest second using it as the archive's creation time.
                  */
-                return new TimestampManagerImpl(archive, 1000 * (System.currentTimeMillis() / 1000));
+                return new TimestampManagerImpl(archive, roundTimeDown(System.currentTimeMillis()));
+            }
+
+            private static long roundTimeDown(final long time) {
+                return TIME_ROUNDING_FACTOR * (time / TIME_ROUNDING_FACTOR);
             }
         }
     }
