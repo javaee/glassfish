@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -68,11 +68,10 @@ public class StartMojo extends AbstractServerMojo {
 
     public void startGlassFish(String serverId, ClassLoader cl, Properties bootstrapProperties,
                                Properties glassfishProperties) throws Exception {
-            Class clazz = cl.loadClass(PluginUtil.class.getName());
-            Method m = clazz.getMethod("startGlassFish", new Class[]{String.class,
-                    Properties.class, Properties.class});
-            m.invoke(null, new Object[]{serverId, bootstrapProperties, glassfishProperties});
+        Class clazz = cl.loadClass(PluginUtil.class.getName());
+        Method m = clazz.getMethod("startGlassFish", new Class[]{String.class,
+                ClassLoader.class, Properties.class, Properties.class});
+        m.invoke(null, new Object[]{serverId, cl, bootstrapProperties, glassfishProperties});
     }
 
-    
 }

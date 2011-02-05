@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -65,9 +65,12 @@ public class PluginUtil {
     private final static Map<String, GlassFish> gfMap =
             new HashMap<String, GlassFish>();
 
-    public static GlassFish startGlassFish(String serverId, Properties bootstrapProperties,
+    public static GlassFish startGlassFish(String serverId,
+                                           ClassLoader bootstrapClassLoader,
+                                           Properties bootstrapProperties,
                                            Properties glassfishProperties) throws Exception {
-        GlassFish gf = getGlassFish(serverId, bootstrapProperties, glassfishProperties);
+        GlassFish gf = getGlassFish(serverId, bootstrapClassLoader,
+                bootstrapProperties, glassfishProperties);
         if (gf.getStatus() != GlassFish.Status.STARTED) {
             long startTime = System.currentTimeMillis();
             gf.start();
@@ -91,10 +94,11 @@ public class PluginUtil {
                 new Object[]{serverId, gf});
     }
 
-    public static void doDeploy(String serverId, Properties bootstrapProperties,
+    public static void doDeploy(String serverId, ClassLoader cl,
+                                Properties bootstrapProperties,
                                 Properties glassfishProperties,
                                 File archive, String[] deploymentParameters) throws Exception {
-        GlassFish gf = startGlassFish(serverId, bootstrapProperties, glassfishProperties);
+        GlassFish gf = startGlassFish(serverId, cl, bootstrapProperties, glassfishProperties);
         // Lookup the deployer.
         Deployer deployer = gf.getService(Deployer.class);
         logger.logp(Level.FINE, "PluginUtil", "doDeploy", "Deployer = {0}", deployer);
@@ -103,11 +107,13 @@ public class PluginUtil {
         logger.logp(Level.INFO, "PluginUtil", "doDeploy", "Deployed {0}", name);
     }
 
-    public static void doUndeploy(String serverId, Properties bootstrapProperties,
+    public static void doUndeploy(String serverId, ClassLoader bootstrapClassLoader,
+                                  Properties bootstrapProperties,
                                   Properties glassfishProperties,
                                   String appName, String[] deploymentParameters) {
         try {
-            GlassFish gf = startGlassFish(serverId, bootstrapProperties, glassfishProperties);
+            GlassFish gf = startGlassFish(serverId, bootstrapClassLoader,
+                    bootstrapProperties, glassfishProperties);
             // Lookup the deployer.
             Deployer deployer = gf.getService(Deployer.class);
             logger.logp(Level.INFO, "PluginUtil", "doUndeploy", "Deployer = {0}", deployer);
@@ -121,7 +127,8 @@ public class PluginUtil {
         }
     }
 
-    private static GlassFish getGlassFish(String serverId, Properties bootstrapProperties,
+    private static GlassFish getGlassFish(String serverId, ClassLoader bootstrapClassLoader,
+                                          Properties bootstrapProperties,
                                           Properties glassfishProperties)
             throws Exception {
         GlassFish gf = gfMap.get(serverId);
@@ -129,8 +136,7 @@ public class PluginUtil {
             long startTime = System.currentTimeMillis();
             logger.logp(Level.FINE, "PluginUtil", "getGlassFish", "Creating GlassFish ServerId = {0}", serverId);
             BootstrapProperties bootstrapOptions = new BootstrapProperties(bootstrapProperties);
-            gfr = gfr != null ? gfr : GlassFishRuntime.bootstrap(bootstrapOptions,
-                    PluginUtil.class.getClassLoader());
+            gfr = gfr != null ? gfr : GlassFishRuntime.bootstrap(bootstrapOptions, bootstrapClassLoader);
 /*
             GlassFishRuntime gfr = GlassFishRuntime.bootstrap(bootstrapOptions,
                     PluginUtil.class.getClassLoader());

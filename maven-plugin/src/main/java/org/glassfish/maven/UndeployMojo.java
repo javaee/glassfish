@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -54,7 +54,7 @@ public class UndeployMojo extends AbstractDeployMojo {
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
             doUndeploy(serverID, getClassLoader(), getBootStrapProperties(),
-                    getGlassFishProperties(), name, new String[0]);
+                    getGlassFishProperties(), name, getUndeploymentParameters());
         } catch (Exception e) {
             throw new MojoExecutionException(e.getMessage(), e);
         }

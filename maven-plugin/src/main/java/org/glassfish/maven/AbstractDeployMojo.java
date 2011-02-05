@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -46,9 +46,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -103,6 +101,16 @@ public abstract class AbstractDeployMojo extends AbstractServerMojo {
      */
     protected String app;
 
+    /**
+     * @parameter expression="${deploymentParams}"
+     */
+    protected String[] deploymentParams;
+
+    /**
+     * @parameter expression="${undeploymentParams}"
+     */
+    protected String[] undeploymentParams;
+
     public abstract void execute() throws MojoExecutionException, MojoFailureException;
 
     protected String[] getDeploymentParameters() {
@@ -114,49 +122,64 @@ public abstract class AbstractDeployMojo extends AbstractServerMojo {
         set(deployParams, "--dbvendorname", dbVendorName);
         set(deployParams, "--createtables", createTables);
         set(deployParams, "--libraries", libraries);
+        if (deploymentParams != null) {
+            for (String p : deploymentParams) {
+                deployParams.add(p);
+            }
+        }
         return deployParams.toArray(new String[0]);
+    }
+
+    protected String[] getUndeploymentParameters() {
+        List<String> undeployParams = new ArrayList();
+        if (undeploymentParams != null) {
+            for (String p : undeploymentParams) {
+                undeployParams.add(p);
+            }
+        }
+        return undeployParams.toArray(new String[0]);
     }
 
     /**
      * Add the paramName:paramValue key-value pair into params, if both
      * paramName and paramValue are non null.
      *
-     * @param params Map where the paramName:Value to be added
-     * @param paramName Name of the parameter
+     * @param params     Map where the paramName:Value to be added
+     * @param paramName  Name of the parameter
      * @param paramValue Value of the parameter.
      */
     void set(List<String> params, String paramName, Object paramValue) {
-        if(paramValue != null && paramName != null) {
+        if (paramValue != null && paramName != null) {
             params.add(paramName + "=" + paramValue.toString());
         }
     }
 
     protected String getApp() {
-        if(app != null) {
+        if (app != null) {
             return new File(app).isAbsolute() ? app : baseDirectory + File.separator + app;
         } else {
-             return   buildDirectory + File.separator + fileName + ".war";
+            return buildDirectory + File.separator + fileName + ".war";
         }
     }
 
     protected void doDeploy(String serverId, ClassLoader cl, Properties bootstrapProps,
                             Properties glassfishProperties,
-                         File archive, String[] deploymentParams) throws Exception {
+                            File archive, String[] deploymentParams) throws Exception {
         Class clazz = cl.loadClass(PluginUtil.class.getName());
-        Method m = clazz.getMethod("doDeploy", new Class[]{String.class, Properties.class,
-                Properties.class, File.class, String[].class});
-        m.invoke(null, new Object[]{serverId, bootstrapProps, glassfishProperties,
+        Method m = clazz.getMethod("doDeploy", new Class[]{String.class,
+                ClassLoader.class, Properties.class, Properties.class, File.class, String[].class});
+        m.invoke(null, new Object[]{serverId, cl, bootstrapProps, glassfishProperties,
                 archive, deploymentParams});
     }
 
     protected void doUndeploy(String serverId, ClassLoader cl, Properties bootstrapProps,
                               Properties glassfishProperties,
-                              String appName, String[] deploymentParams) throws Exception {
+                              String appName, String[] undeploymentParams) throws Exception {
         Class clazz = cl.loadClass(PluginUtil.class.getName());
-        Method m = clazz.getMethod("doUndeploy", new Class[]{String.class, Properties.class,
-                Properties.class, String.class, String[].class});
-        m.invoke(null, new Object[]{serverId, bootstrapProps, glassfishProperties,
-                appName, deploymentParams});
+        Method m = clazz.getMethod("doUndeploy", new Class[]{String.class,
+                ClassLoader.class, Properties.class, Properties.class, String.class, String[].class});
+        m.invoke(null, new Object[]{serverId, cl, bootstrapProps, glassfishProperties,
+                appName, undeploymentParams});
     }
-    
+
 }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -91,7 +91,7 @@ public abstract class AbstractServerMojo extends AbstractMojo {
 
     private static final String GF_API_GROUP_ID = "org.glassfish";
     private static final String GF_API_ARTIFACT_ID = "simple-glassfish-api";
-    private static final String DEFAULT_GF_VERSION = "3.1-b38";
+    private static final String DEFAULT_GF_VERSION = "3.1-b40";
     private static String gfVersion;
 
 //    private static final String UBER_JAR_URI = "org.glassfish.embedded.osgimain.jarURI";
@@ -130,7 +130,7 @@ public abstract class AbstractServerMojo extends AbstractMojo {
      * @parameter expression="${configFile}"
      */
     protected String configFile;
-    
+
     /**
      * @parameter expression="${configFileReadOnly}" default-value="true"
      */
@@ -221,8 +221,8 @@ public abstract class AbstractServerMojo extends AbstractMojo {
 //    protected GlassFish gf;
 
     // HashMap with Key=serverId, Value=Bootstrap ClassLoader
-    protected static HashMap<String, URLClassLoader> classLoaders = new HashMap();
-    private static URLClassLoader classLoader;
+    protected static HashMap<String, ClassLoader> classLoaders = new HashMap();
+    private static ClassLoader classLoader;
 
     /**
      * @component
@@ -231,7 +231,7 @@ public abstract class AbstractServerMojo extends AbstractMojo {
 
     public abstract void execute() throws MojoExecutionException, MojoFailureException;
 
-    protected URLClassLoader getClassLoader() throws MojoExecutionException {
+    protected ClassLoader getClassLoader() throws MojoExecutionException {
 /*
         URLClassLoader classLoader = classLoaders.get(serverID);
         if (classLoader != null) {
@@ -264,16 +264,20 @@ public abstract class AbstractServerMojo extends AbstractMojo {
     }
 
     protected void cleanupClassLoader(String serverId) {
-        URLClassLoader cl = classLoaders.remove(serverID);
+        ClassLoader cl = classLoaders.remove(serverID);
         if (cl != null) {
             System.out.println("Cleaned up ClassLoader for ServerID " + serverID);
         }
     }
 
-    private void printClassPaths(String msg, URLClassLoader classLoader) {
+    private void printClassPaths(String msg, ClassLoader classLoader) {
         System.out.println(msg);
-        for (URL u : classLoader.getURLs()) {
-            System.out.println("ClassPath Element : " + u);
+        ClassLoader cl = classLoader;
+        while (cl != null && cl instanceof URLClassLoader) {
+            for (URL u : ((URLClassLoader)cl).getURLs()) {
+                System.out.println("ClassPath Element : " + u);
+            }
+            cl = cl.getParent();
         }
     }
 
@@ -284,13 +288,11 @@ public abstract class AbstractServerMojo extends AbstractMojo {
                 && new File(installRoot, FELIX_JAR).exists() : false;
     }
 
-    private URLClassLoader getInstalledGFClassLoader() throws Exception {
+    private ClassLoader getInstalledGFClassLoader() throws Exception {
         File gfJar = new File(installRoot, SHELL_JAR);
         File felixJar = new File(installRoot, FELIX_JAR);
-        Artifact gfMvnPlugin = (Artifact) project.getPluginArtifactMap().get(thisArtifactId);
-        resolver.resolve(gfMvnPlugin, remoteRepositories, localRepository);
         URLClassLoader classLoader = new URLClassLoader(
-                new URL[]{gfJar.toURI().toURL(), felixJar.toURI().toURL(), gfMvnPlugin.getFile().toURI().toURL()});
+                new URL[]{gfJar.toURI().toURL(), felixJar.toURI().toURL()}, getClass().getClassLoader());
         return classLoader;
     }
 
@@ -309,62 +311,38 @@ public abstract class AbstractServerMojo extends AbstractMojo {
 
     // GlassFish should be of same version as simple-glassfish-api as defined in plugin's pom.
     private String getGlassfishVersion(Artifact gfMvnPlugin) throws Exception {
-        if(gfVersion != null) {
-            return  gfVersion;
+        if (gfVersion != null) {
+            return gfVersion;
         }
         ResolutionGroup resGroup = artifactMetadataSource.retrieve(
                 gfMvnPlugin, localRepository, remoteRepositories);
         MavenProject pomProject = projectBuilder.buildFromRepository(resGroup.getPomArtifact(),
                 remoteRepositories, localRepository);
         List<Dependency> dependencies = pomProject.getOriginalModel().getDependencies();
-        for(Dependency dependency : dependencies) {
-            if(GF_API_GROUP_ID.equals(dependency.getGroupId()) &&
+        for (Dependency dependency : dependencies) {
+            if (GF_API_GROUP_ID.equals(dependency.getGroupId()) &&
                     GF_API_ARTIFACT_ID.equals(dependency.getArtifactId())) {
                 gfVersion = dependency.getVersion();
             }
         }
-        gfVersion =  gfVersion != null ? gfVersion : DEFAULT_GF_VERSION;
+        gfVersion = gfVersion != null ? gfVersion : DEFAULT_GF_VERSION;
         return gfVersion;
     }
-    
-    private URLClassLoader getUberGFClassLoader() throws Exception {
+
+    private ClassLoader getUberGFClassLoader() throws Exception {
         // Use the version user has configured in the plugin.
-        Artifact gfMvnPlugin = (Artifact) project.getPluginArtifactMap().get(thisArtifactId);
         Artifact gfUber = getUberFromSpecifiedDependency();
-        String gfVersion = getGlassfishVersion(gfMvnPlugin);
-        if (gfUber == null) {
+        ClassLoader cl = getClass().getClassLoader();
+        if (gfUber == null) { // not specified as dependency, hence not there in the classloader cl.
+            Artifact gfMvnPlugin = (Artifact) project.getPluginArtifactMap().get(thisArtifactId);
+            String gfVersion = getGlassfishVersion(gfMvnPlugin); // get the same version of uber jar as that of simple-glassfish-api used while building this plugin.
             gfUber = factory.createArtifact(EMBEDDED_GROUP_ID, EMBEDDED_ALL,
                     gfVersion, "compile", "jar");
+            resolver.resolve(gfUber, remoteRepositories, localRepository);
+            cl = new URLClassLoader(
+                    new URL[]{gfUber.getFile().toURI().toURL()}, getClass().getClassLoader());
         }
-        resolver.resolve(gfUber, remoteRepositories, localRepository);
-        try {
-            resolver.resolve(gfMvnPlugin, remoteRepositories, localRepository);
-        } catch (ArtifactResolutionException e) {
-            e.printStackTrace();
-        } catch (ArtifactNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        URLClassLoader classLoader = new URLClassLoader(
-                new URL[]{gfUber.getFile().toURI().toURL(), gfMvnPlugin.getFile().toURI().toURL()});/* {
-            @Override
-            public Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
-                if ("org.glassfish.maven.Util".equals(name)) {
-                    InputStream is = getResourceAsStream(name.replace('.', '/')+".class");
-                    byte[] buf = new byte[8192];
-                    int count = 0;
-                    try {
-                        count=is.read(buf); // TODO :: read the entire class file.
-                    } catch (IOException e) {
-                        throw ClassNotFoundException(e.getMessage());
-                    }
-                    return defineClass(name, buf , 0, count);
-                } else {
-                    return super.loadClass(name, resolve);
-                }
-            }
-        };*/
-        return classLoader;
+        return cl;
     }
 
     protected Properties getGlassFishProperties() {
@@ -391,10 +369,10 @@ public abstract class AbstractServerMojo extends AbstractMojo {
             }
         }
 
-        if(!configFileReadOnly) {
+        if (!configFileReadOnly) {
             props.setProperty("org.glassfish.embeddable.configFileReadOnly", "false");
         }
-        
+
         if (port != -1 && configFile == null) {
             String httpListener = String.format(NETWORK_LISTENER_KEY, "http-listener");
             props.setProperty(httpListener + ".port", String.valueOf(port));
@@ -412,7 +390,7 @@ public abstract class AbstractServerMojo extends AbstractMojo {
             }
         }
 
-        if(!autoDelete) {
+        if (!autoDelete) {
             props.setProperty("org.glassfish.embeddable.autoDelete", "false");
         }
 
