@@ -256,6 +256,12 @@ public class DeployUtil {
         if (clusters.isEmpty() && standalone.isEmpty()){
             //just return Enabled or not.
             enabled = (String)RestUtil.getAttributesMap(prefix  +"/servers/server/server/"+ref+"/"+appName).get("enabled");
+            //for DAS only system, there should always be application-ref created for DAS. However, for the case where the application is
+            //deploye ONLY to a cluster/instance, and then that instance is deleted.  The system becomes 'DAS' only, but then the application-ref
+            //for DAS will not exist. For this case, we just look at the application itself
+            if (enabled == null){
+                enabled = (String)RestUtil.getAttributesMap(prefix +"/applications/application/" + appName).get("enabled");
+            }
             if (useImage){
                 return (Boolean.parseBoolean(enabled))? "/resource/images/enabled.png" : "/resource/images/disabled.png";
             }else{

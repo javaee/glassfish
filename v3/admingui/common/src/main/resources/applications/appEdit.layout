@@ -60,8 +60,14 @@
         setPageSessionAttribute(key="appRefUrl" value="#{sessionScope.REST_URL}/servers/server/server/application-ref/#{pageSession.encodedAppName}");
         gf.onlyDASExist(onlyDAS="#{pageSession.onlyDASExist}");
         gf.getEntityAttrs(endpoint="#{pageSession.selfUrl}", valueMap="#{pageSession.valueMap}");
-        gf.getTargetEnableInfo(appName="#{pageSession.appName}" status="#{pageSession.status}")
         if (#{pageSession.onlyDASExist}){
+
+            gf.checkIfEndPointExist(endpoint="#{pageSession.appRefUrl}" exists="#{requestScope.exist}");
+            if (! #{requestScope.exist}){
+                convertListToArray(list={"server"} array="#{requestScope.target}" );
+                gf.changeAppTargets(appName="#{pageSession.appName}" targets="#{requestScope.target}"  status="true");
+                setPageSessionAttribute(key="status" value="true");
+            }
             gf.getEntityAttrs(endpoint="#{pageSession.appRefUrl}" valueMap="#{pageSession.valueMap2}");
             mapPut(map="#{pageSession.valueMap2}"  key="enabled" value="#{pageSession.status}");
             setPageSessionAttribute(key="origState" value="#{pageSession.status}");
@@ -70,6 +76,7 @@
         }
 
         if (!#{pageSession.onlyDASExist}){
+            gf.getTargetEnableInfo(appName="#{pageSession.appName}" status="#{pageSession.status}")
             setPageSessionAttribute(key="finalShowVS" value="#{false}");
             setPageSessionAttribute(key="finalShowAvail" value="#{pageSession.showAvailability}");
         }
