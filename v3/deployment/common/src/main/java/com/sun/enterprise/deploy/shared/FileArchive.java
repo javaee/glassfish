@@ -754,11 +754,22 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
         
         @Override
         public boolean isEntryValid(final File f) {
-            return ( ! f.equals(timestampFile))
+            final boolean isFileAfterArchive = archiveCreation <= f.lastModified();
+            final boolean result = ( ! f.equals(timestampFile))
                     &&
                     ((archiveCreation == NON_GLASSFISH_ARCHIVE_LAST_MODIFIED) ||
-                     (archiveCreation <= f.lastModified())
+                     isFileAfterArchive
                     );
+            if ( ! isFileAfterArchive) {
+                logger.log(Level.WARNING,
+                        "enterprise.deployment.filePredatesArchive",
+                        new Object[]{
+                            f.getAbsolutePath(),
+                            dateFormat.format(new Date(f.lastModified())),
+                            archive.getAbsolutePath(),
+                            dateFormat.format(new Date(archiveCreation))});
+            }
+            return result;
         }
 
         @Override
@@ -773,6 +784,10 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
                 final String stampText = reader.readLine();
                 try {
                     final Date stamp = dateFormat.parse(stampText);
+                    logger.log(Level.FINE, "FileArchive.TimestampManagerImpl read timestamp {0} from archive {1}",
+                            new Object[]{
+                                dateFormat.format(stamp),
+                                archive.getAbsolutePath()});
                     return stamp.getTime();
                 } catch (ParseException ex) {
                     logger.log(Level.WARNING, stampFile.getAbsolutePath(), ex);
@@ -780,8 +795,12 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
                 }
                 
             } catch (FileNotFoundException ex) {
+                logger.log(Level.FINE, "Filearchive.TimestampManagerImpl did not find timestamp file in archive {0}; treating as not timestamped",
+                        archive.getAbsolutePath());
                 return NON_GLASSFISH_ARCHIVE_LAST_MODIFIED;
             } catch (IOException ex) {
+                logger.log(Level.FINE, "FileArchive.TimestampManagerImpl detected eror reading timestamp file for archive " + archive.getAbsolutePath(),
+                        ex);
                 return NON_GLASSFISH_ARCHIVE_LAST_MODIFIED;
             } finally {
                 if (reader != null) {
