@@ -41,6 +41,7 @@
 package com.sun.enterprise.deploy.shared;
 
 import com.sun.enterprise.deployment.deploy.shared.Util;
+import com.sun.enterprise.util.OS;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.logging.LogDomains;
 import java.text.DateFormat;
@@ -739,7 +740,7 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
         private TimestampManagerImpl(final File archive) throws IOException {
             this.archive = archive;
             timestampFile = timestampFile(archive);
-            archiveCreation = readTimeFromFile(timestampFile);
+            archiveCreation = OS.isWindows() ? readTimeFromFile(timestampFile) : NON_GLASSFISH_ARCHIVE_LAST_MODIFIED;
         }
         
         /**

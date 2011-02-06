@@ -40,15 +40,13 @@
 
 package com.sun.enterprise.deploy.shared;
 
+import com.sun.enterprise.util.OS;
 import java.util.Enumeration;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -202,6 +200,9 @@ public class FileArchiveTest {
     @Test
     public void testCreateWithOlderLeftoverEntryAndThenOpen() throws Exception {
         System.out.println("testCreateWithOlderLeftoverEntryAndThenOpen");
+        if (! OS.isWindows()) {
+            return;
+        }
         createWithOlderLeftoverEntry(usualEntryNames);
         final FileArchive openedArchive = new FileArchive();
         openedArchive.open(archiveDir.toURI());
