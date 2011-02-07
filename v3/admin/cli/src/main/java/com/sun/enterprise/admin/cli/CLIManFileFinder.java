@@ -215,9 +215,9 @@ public class CLIManFileFinder {
         if (language != null && language.length() > 0) {
             l.add("/" + language);
             if (country != null && country.length() > 0) {
-                l.add("/" + language + "/" + country);
+                l.add("/" + language + "_" + country);
                 if (variant != null && variant.length() > 0)
-                    l.add("/" + language + "/" + country + "/" + variant);
+                    l.add("/" + language + "_" + country + "_" + variant);
             }
         }
         Collections.reverse(l);
