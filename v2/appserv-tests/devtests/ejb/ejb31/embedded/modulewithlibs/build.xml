@@ -48,6 +48,11 @@
                   <include name="persistence.xml"/>
              </metainf> 
         </jar>
+        <jar jarfile="${assemble.dir}/${appname}-base.jar"
+             basedir="${build.classes.dir}"
+             update="true"
+             includes ="**/SimpleBase.class,**/SimpleInterface.class">
+        </jar>
     </target> 
     
     <target name="run" depends="init-common">
@@ -58,7 +63,7 @@
        <echo message="Running with ${embedded.classpath} in classpath"/>
        <java  fork="on" 
               failonerror="true"
-              classpath="${assemble.dir}/${appname}-ejb.jar:${assemble.dir}/${appname}-pu.jar:${embedded.classpath}:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
+              classpath="${assemble.dir}/${appname}-ejb.jar:${assemble.dir}/${appname}-pu.jar:${assemble.dir}/${appname}-base.jar:${embedded.classpath}:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
               classname="${se.client}">
            <arg line="${jndiroot}"/>
         </java>

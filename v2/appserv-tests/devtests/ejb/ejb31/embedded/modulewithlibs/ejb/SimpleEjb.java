@@ -13,13 +13,9 @@ import javax.persistence.Query;
  * @author Jerome Dochez
  */
 @Stateless
-public class SimpleEjb {
+public class SimpleEjb extends SimpleBase {
 
     @PersistenceContext(unitName="test") EntityManager em;
-
-    public String saySomething() {
-        return "boo";
-    }
 
     public String testJPA() {
         String result = null;
