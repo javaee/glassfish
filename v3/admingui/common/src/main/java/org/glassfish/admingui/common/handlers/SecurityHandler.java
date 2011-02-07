@@ -126,7 +126,7 @@ public class SecurityHandler {
             handlerCtx.setOutputValue("classnameOption", "predefine");
             attrMap.put("predefinedClassname", Boolean.TRUE);
             attrMap.put("classname", classname);
-            List props = getChildrenMapForTableList(origProps, "property", skipRealmPropsList);
+            List props = getChildrenMapForTableList(propList, "property", skipRealmPropsList);
             handlerCtx.setOutputValue("properties", props);
 
             if(classname.indexOf("FileRealm")!= -1){
@@ -172,7 +172,7 @@ public class SecurityHandler {
             attrMap.put("predefinedClassname", Boolean.FALSE);
 	    attrMap.put("classnameInput", classname);
             attrMap.put("classname", classname);
-            List props = getChildrenMapForTableList(origProps, "property", null);
+            List props = getChildrenMapForTableList(propList, "property", null);
             handlerCtx.setOutputValue("properties", props);
         }
 
@@ -180,24 +180,23 @@ public class SecurityHandler {
         handlerCtx.setOutputValue("realmClasses", realmClassList);
     }
 
-    public static List getChildrenMapForTableList(Map<String, Object> realmMap, String childType, List skipList){
+    public static List getChildrenMapForTableList(List<HashMap> propList, String childType, List skipList){
         boolean hasSkip = true;
         if (skipList == null ){
             hasSkip = false;
         }
         List result = new ArrayList();
-        if (realmMap != null) {
-            Set s = realmMap.entrySet();
-            Iterator it = s.iterator();
-            while(it.hasNext()) {
-                Map.Entry m =(Map.Entry)it.next();
+        if (propList != null) {
+            for(HashMap oneMap: propList){
                 HashMap oneRow = new HashMap();
-                if ( hasSkip && skipList.contains(m.getKey())){
+                String name = (String) oneMap.get("name");
+                if (hasSkip && skipList.contains(name)){
                     continue;
                 }
                 oneRow.put("selected", false);
-                oneRow.put("name", m.getKey());
-                oneRow.put("value", m.getValue());
+                oneRow.put("name", name);
+                oneRow.put("value", oneMap.get("value"));
+                oneRow.put("description", oneMap.get("description"));
                 result.add(oneRow);
             }
         }
@@ -233,7 +232,8 @@ public class SecurityHandler {
     })
     public static void saveRealm(HandlerContext handlerCtx) {
         String option = (String) handlerCtx.getInputValue("classnameOption");
-        List<Map<String,String>> propList = (List)handlerCtx.getInputValue("propList");
+        List<Map<String,String>> propListOrig = (List)handlerCtx.getInputValue("propList");
+        List<Map<String,String>> propList = new ArrayList(propListOrig);
         Map<String,String> attrMap = (Map)handlerCtx.getInputValue("attrMap");
 
         if (attrMap == null) {
@@ -300,6 +300,9 @@ public class SecurityHandler {
         cMap.put("classname", classname);
         StringBuilder sb = new StringBuilder();
         for(Map oneProp: propList) {
+            if (GuiUtil.isEmpty( (String)oneProp.get("name")) || GuiUtil.isEmpty((String)oneProp.get("value"))){
+                continue;
+            }
             sb.append(oneProp.get("name")).append("=");
             String value = ((String) oneProp.get("value")).replaceAll("\\\\", "\\\\\\\\");
             value = UtilHandlers.escapePropertyValue(value);
