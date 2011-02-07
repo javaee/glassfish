@@ -16,19 +16,14 @@ import javax.persistence.Query;
  * @author Jerome Dochez
  */
 @Stateless
-public class SimpleEjb {
+public class SimpleEjb extends SimpleBase {
 
     @PersistenceContext(unitName="test") EntityManager em;
 
     @EJB SingletonBean singleton;
 
-    @PermitAll
     public String saySomething() {
         return "SingletonBean " + singleton.foo();
-    }
-
-    public String bar() {
-        return "bar";
     }
 
     @PermitAll

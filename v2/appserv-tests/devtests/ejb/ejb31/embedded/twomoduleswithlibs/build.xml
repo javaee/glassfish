@@ -53,6 +53,11 @@
                   <include name="persistence.xml"/>
              </metainf> 
         </jar>
+        <jar jarfile="${assemble.dir}/${appname}-base.jar" 
+             basedir="${build.classes.dir}" 
+             update="true"
+             includes ="**/SimpleBase.class,**/SimpleInterface.class">
+        </jar>
         <jar jarfile="${assemble.dir}/${appname}-ejb2.jar" 
              basedir="${build.classes.dir}" 
              update="true"
@@ -69,6 +74,9 @@
         <mkdir dir="${assemble.dir}/${appname}-pu1"/>
         <unzip src="${assemble.dir}/${appname}-pu1.jar" dest="${assemble.dir}/${appname}-pu1"/>
 
+        <mkdir dir="${assemble.dir}/${appname}-base/classes"/>
+        <unzip src="${assemble.dir}/${appname}-base.jar" dest="${assemble.dir}/${appname}-base/classes"/>
+
         <mkdir dir="${assemble.dir}/${appname}-ejb2/classes"/>
         <unzip src="${assemble.dir}/${appname}-ejb2.jar" dest="${assemble.dir}/${appname}-ejb2/classes"/>
 
@@ -83,7 +91,7 @@
        <echo message="Running with ${embedded.classpath} in classpath"/>
        <java  fork="on" 
               failonerror="true"
-              classpath="${assemble.dir}/${appname}-ejb1.jar:${assemble.dir}/${appname}-ejb2.jar:${assemble.dir}/${appname}-pu1.jar:${embedded.classpath}:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
+              classpath="${assemble.dir}/${appname}-ejb1.jar:${assemble.dir}/${appname}-ejb2.jar:${assemble.dir}/${appname}-base.jar:${assemble.dir}/${appname}-pu1.jar:${embedded.classpath}:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
               classname="${se.client}">
 
 <!--
@@ -99,7 +107,7 @@
        <echo message="Running with ${embedded.classpath} in classpath"/>
        <java  fork="on" 
               failonerror="true"
-              classpath="${assemble.dir}/${appname}-ejb2/classes:${assemble.dir}/${appname}-ejb1/classes:${assemble.dir}/${appname}-pu1:${embedded.classpath}:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
+              classpath="${assemble.dir}/${appname}-ejb2/classes:${assemble.dir}/${appname}-ejb1/classes:${assemble.dir}/${appname}-base/classes:${assemble.dir}/${appname}-pu1:${embedded.classpath}:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
               classname="${se.client}">
            <arg line="${appname}"/>
         </java>
