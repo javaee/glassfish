@@ -582,7 +582,7 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
          */
         final long now = System.currentTimeMillis();
         newFile.setLastModified(now);
-        adjustInterveningDirsLastModified(newFile, now);
+        adjustInterveningDirsLastModified(newFile, timestampManager.archiveCreation());
         return os;   
     }
 
@@ -592,13 +592,13 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
      * top-level directory .
      *
      * @param newFile the newly-created file within the FileArchive
-     * @param now timestamp to be used for ancestor directories
+     * @param timestamp timestamp to be used for ancestor directories
      */
-    private void adjustInterveningDirsLastModified(final File newFile, final long now) {
+    private void adjustInterveningDirsLastModified(final File newFile, final long timestamp) {
         File parent = newFile.getParentFile();
         while ( ! parent.equals(archive)) {
             if ( ! dirsCreated.contains(parent)) {
-                parent.setLastModified(now);
+                parent.setLastModified(timestamp);
                 dirsCreated.add(parent);
             }
             parent = parent.getParentFile();
@@ -645,6 +645,12 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
          * @return true if the File is the hidden timestamp file; false otherwise
          */
         boolean isEntryTimestampFile(File f);
+
+        /**
+         * Returns the creation time of the archive
+         * @return
+         */
+        long archiveCreation();
 
         class Util {
 
@@ -815,7 +821,13 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
                 }
             }
         }
-        
+
+        @Override
+        public long archiveCreation() {
+            return archiveCreation;
+        }
+
+
         private void writeTimeToFile(final File stampFile, long stamp) throws FileNotFoundException {
             final PrintWriter pw = new PrintWriter(stampFile);
             pw.println(dateFormat.format(new Date(stamp)));
