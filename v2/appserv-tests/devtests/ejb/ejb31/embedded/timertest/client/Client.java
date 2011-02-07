@@ -78,7 +78,7 @@ public class Client {
             SimpleEjb ejb = (SimpleEjb) ic.lookup("java:global/" + module + "/SimpleEjb");
             System.err.println("Invoking EJB...");
             ejb.createTimer();
-            Thread.sleep(4000);
+            Thread.sleep(8000);
             boolean result = ejb.verifyTimer();
             System.err.println("EJB timer called: " + result);
             if (!result)
