@@ -120,6 +120,8 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
      */
     private TimestampManager timestampManager;
 
+    private boolean isNew;
+
     /*
      * records directories that have been created implicitly by putNextEntry
      * (and therefore their lastModified dates adjusted).  We only need to
@@ -142,6 +144,7 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
             throw new FileNotFoundException(uri.getSchemeSpecificPart());
         }
         timestampManager = TimestampManager.Util.getInstanceForExistingFile(archive);
+        isNew = false;
     }
 
     /**
@@ -176,6 +179,7 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
         archive = new File(uri);
         timestampManager = TimestampManager.Util.getInstanceForNewFile(archive);
         archive.mkdirs();
+        isNew = true;
     }
 
     /**
@@ -193,7 +197,11 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
      * close the abstract archive
      */
     public void close() throws IOException {
-        // nothing to do 
+        if (isNew) {
+            for (File f : dirsCreated) {
+                f.setLastModified(timestampManager.archiveCreation());
+            }
+        }
     }
            
     /**
