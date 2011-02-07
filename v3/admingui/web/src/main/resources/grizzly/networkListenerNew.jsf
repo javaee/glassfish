@@ -79,6 +79,11 @@
                 onClick="if (checkRequired()) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
                 <!command
                     setPageSessionAttribute(key="protocolUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/network-config/protocols/protocol");
+                    urlencode(value="#{pageSession.valueMap['name']}" result="#{requestScope.encodedListenerNameToCheck}");
+                    gf.checkIfEndPointExist(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/network-config/network-listeners/network-listener/#{requestScope.encodedListenerNameToCheck}", exists="#{requestScope.exist}");
+                    if (#{requestScope.exist}){
+                        gf.handleError(detail="$resource{i18n_web.grizzly.networkListener.alreadyExist, #{requestScope.encodedListenerNameToCheck}}");
+                    }
                     createMap(result="#{pageSession.protocolMap}");
                     if("#{pageSession.valueMap['securityEnabled']}=#{null}") {
                         mapPut(map="#{pageSession.valueMap}", key="securityEnabled", value="false");
@@ -91,6 +96,11 @@
                     }
                     mapPut(map="#{pageSession.protocolMap}", key="securityEnabled", value="#{pageSession.valueMap['securityEnabled']}");
                     if ("#{pageSession.valueMap['protocolChoice']}=create") {
+                        urlencode(value="#{pageSession.valueMap['newProtocolName']}" result="#{requestScope.encodedProtocolToCheck}");
+                        gf.checkIfEndPointExist(endpoint="#{pageSession.protocolUrl}/#{requestScope.encodedProtocolToCheck}", exists="#{requestScope.pExist}");
+                        if (#{requestScope.pExist}){
+                            gf.handleError(detail="$resource{i18n_web.grizzly.protocol.alreadyExist, #{requestScope.encodedProtocolToCheck}}");
+                        }
                         mapPut(map="#{pageSession.protocolMap}", key="name", value="#{pageSession.valueMap['newProtocolName']}");
                         mapPut(map="#{pageSession.protocolMap}", key="target", value="#{pageSession.valueMap['target']}");
                         setPageSessionAttribute(key="protocolName", value="#{pageSession.valueMap['newProtocolName']}");
