@@ -52,5 +52,6 @@
     <modules>
     	<module>basic</module>
         <module>ejb-api</module>
+        <module>remoteejb</module>
     </modules>
 </project>
