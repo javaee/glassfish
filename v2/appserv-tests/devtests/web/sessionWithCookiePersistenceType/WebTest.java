@@ -165,7 +165,7 @@ public class WebTest {
             bis = new BufferedReader(new InputStreamReader(is));
             while ((line = bis.readLine()) != null) {
                 System.out.println(line);
-                if (line.equals("HTTP/1.1 200 OK")) {
+                if (line.equals("HTTP/1.1 200 OK") || line.equals("HTTP/1.0 200 OK")) {
                     okStatus = true;
                     break;
                 }
