@@ -40,6 +40,7 @@
 
 package com.sun.enterprise.deploy.shared;
 
+import org.junit.Ignore;
 import com.sun.enterprise.util.OS;
 import java.util.Enumeration;
 import java.util.Arrays;
@@ -166,6 +167,7 @@ public class FileArchiveTest {
         createAndPopulateAndCheckArchive(usualEntryNames);
     }
 
+    @Ignore
     @Test
     public void testCreateWithOlderLeftoverEntry() throws Exception {
         System.out.println("testCreateWithOlderLeftoverEntry");

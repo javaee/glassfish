@@ -596,7 +596,7 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
 
     /**
      * Sets the lastModified for all directories from a new file's parent (the
-     * directory containing it) up to but not including the archive's
+     * directory containing it) up to the archive's
      * top-level directory .
      *
      * @param newFile the newly-created file within the FileArchive
@@ -672,7 +672,8 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
              * @return TimestampManager for the FileArchive to use
              */
             static TimestampManager getInstanceForExistingFile(final File archive) throws IOException {
-                return new TimestampManagerImpl(archive);
+//                return new TimestampManagerImpl(archive);
+                return new TimestampManagerImplNoop(archive);
             }
 
             /**
@@ -689,13 +690,40 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
                  * miliseconds.  So we need to round the current time down to the
                  * nearest second using it as the archive's creation time.
                  */
-                return new TimestampManagerImpl(archive, roundTimeDown(System.currentTimeMillis()));
+//                return new TimestampManagerImpl(archive, roundTimeDown(System.currentTimeMillis()));
+                return new TimestampManagerImplNoop(archive, roundTimeDown(System.currentTimeMillis()));
             }
 
             private static long roundTimeDown(final long time) {
                 return TIME_ROUNDING_FACTOR * (time / TIME_ROUNDING_FACTOR);
             }
         }
+    }
+
+    private static class TimestampManagerImplNoop implements TimestampManager {
+
+        private TimestampManagerImplNoop(final File archive) {
+
+        }
+
+        private TimestampManagerImplNoop(final File archive, final long timestamp) {
+            
+        }
+        @Override
+        public boolean isEntryValid(File f) {
+            return true;
+        }
+
+        @Override
+        public boolean isEntryTimestampFile(File f) {
+            return false;
+        }
+
+        @Override
+        public long archiveCreation() {
+            return 0L;
+        }
+
     }
 
     /**
