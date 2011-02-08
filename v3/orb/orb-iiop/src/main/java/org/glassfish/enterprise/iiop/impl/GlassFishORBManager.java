@@ -639,10 +639,6 @@ public final class GlassFishORBManager {
                 return DEFAULT_ORB_INIT_HOST;
             }
         } else {
-            // Set com.sun.CORBA.ORBServerHost only if it's not one of "0.0.0.0",
-            // "::" or "::ffff:0.0.0.0"
-            props.setProperty(ORBConstants.SERVER_HOST_PROPERTY,
-                orbInitialHost);
             return orbInitialHost;
         }
     }

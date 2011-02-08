@@ -459,44 +459,40 @@ public class SerialContext implements Context {
         // Before any lookup bind any NamedNamingObjectProxy
         // Skip if in plain Java SE client
         // TODO this should really be moved somewhere else
-
         NamedNamingObjectManager.checkAndLoadProxies(habitat);
-
-        /**
-         * In case a user is creating an IC with env passed in constructor; env
-         * specifies endpoints in some form in that case, the sticky IC should
-         * be stores as a thread local variable.
-         *
-         */
-        if (myEnv.get(SerialInitContextFactory.IIOP_URL_PROPERTY) != null) {
-            grabSticky() ;
-        }
 
         if (_logger.isLoggable(Level.FINE)) {
             _logger.log(Level.FINE, "SerialContext ==> lookup( {0})", name);
         }
 
-        if (name.isEmpty()) {
-            // Asking to look up this context itself. Create and return
-            // a new instance with its own independent environment.
-            return (new SerialContext(myName, myEnv, habitat));
-        }
+        /**
+         * In case a user is creating an IC with env passed in constructor; env
+         * specifies endpoints in some form in that case, the sticky IC should
+         * be stored as a thread local variable.
+         *
+         */
+        final boolean useSticky = myEnv.get(
+            SerialInitContextFactory.IIOP_URL_PROPERTY) != null ;
 
-        name = getRelativeName(name);
-
-        if (_logger.isLoggable(Level.FINE)) {
-            _logger.log(Level.FINE,
-                "SerialContext ==> lookup relative name : {0}", name);
-        }
-
-        if (name.isEmpty()) {
-            releaseSticky();
+        if (useSticky) {
+            grabSticky() ;
         }
 
         try {
-            if (isjavaURL(name)) {
-                releaseSticky();
+            if (name.isEmpty()) {
+                // Asking to look up this context itself. Create and return
+                // a new instance with its own independent environment.
+                return (new SerialContext(myName, myEnv, habitat));
+            }
 
+            name = getRelativeName(name);
+
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.log(Level.FINE,
+                    "SerialContext ==> lookup relative name : {0}", name);
+            }
+
+            if (isjavaURL(name)) {
                 //it is possible that the object bound in a java url ("java:") is
                 //reference object.
                 Object o = javaUrlContext.lookup(name);
@@ -508,16 +504,13 @@ public class SerialContext implements Context {
                 SerialContextProvider provider = getProvider() ;
                 Object obj = provider.lookup(name);
                 if (obj instanceof NamingObjectProxy) {
-                    releaseSticky();
                     return ((NamingObjectProxy) obj).create(this);
                 }
 
                 if (obj instanceof Context) {
-                    releaseSticky();
                     return new SerialContext(name, myEnv, habitat);
                 }
 
-                releaseSticky();
                 Object retObj = getObjectInstance(name, obj);
                 return retObj;
             }
@@ -550,6 +543,10 @@ public class SerialContext implements Context {
                     "Communication exception for " + this);
                 ce.initCause(ex);
                 throw ce;
+            }
+        } finally {
+            if (useSticky) {
+                releaseSticky();
             }
         }
     }
