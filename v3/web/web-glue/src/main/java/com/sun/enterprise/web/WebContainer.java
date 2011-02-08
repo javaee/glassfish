@@ -860,6 +860,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             _logger.log(Level.INFO, "webContainer.HTTP.listenerAndPort", new Object[]{listener.getName(), listener.getAddress(), listener.getPort()});
         }
 
+        connector.setDefaultHost(listener.findHttpProtocol().getHttp().getDefaultVirtualServer());
         connector.setName(listener.getName());
         connector.setInstanceName(instanceName);
         connector.configure(listener, isSecure, httpService);
