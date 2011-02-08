@@ -202,7 +202,7 @@ public class CoyoteAdapter extends HttpHandler {
         // requestStartEvent probe, so that the mapping data will be
         // available to any probe event listener via standard
         // ServletRequest APIs (such as getContextPath())
-        MappingData md = (MappingData)req.getNote(MAPPING_DATA);
+        MappingData md = req.getNote(MAPPING_DATA);
         v3Enabled = md != null;
         if (request == null) {
 
@@ -427,7 +427,7 @@ public class CoyoteAdapter extends HttpHandler {
 
         // URI decoding
         DataChunk decodedURI = req.getRequest().getRequestURIRef().getDecodedRequestURIBC();
-        if (compatWithTomcat || !v3Enabled) {           
+        if (compatWithTomcat || !v3Enabled) {
 //            decodedURI.duplicate(req.requestURI());
 //            try {
 //              req.getURLDecoder().convert(decodedURI, false);
@@ -519,9 +519,14 @@ public class CoyoteAdapter extends HttpHandler {
         Context ctx = (Context) context;
 
         // Parse session id
-        if (ctx != null && !uriParamsCC.isNull() || req.isRequestedSessionIdFromURL()) {
+        if (ctx != null) {
+            if (req.isRequestedSessionIdFromURL() &&
+                    Globals.SESSION_PARAMETER_NAME.equals(ctx.getSessionParameterName())) {
+                request.obtainSessionId();
+            } else if (!uriParamsCC.isNull()) {
 //            String sessionParam = ";" + ctx.getSessionParameterName() + "=";
-            request.parseSessionId(ctx.getSessionParameterName(), uriParamsCC);
+                request.parseSessionId(ctx.getSessionParameterName(), uriParamsCC);
+            }
         }
 
         // START GlassFish 1024

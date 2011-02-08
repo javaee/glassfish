@@ -3474,6 +3474,15 @@ public class Request
         return true;
     }
 
+    /**
+     * Take the session id from Grizzly Request
+     */
+    protected void obtainSessionId() {
+        setRequestedSessionURL(true);
+        setJrouteId(coyoteRequest.getJrouteId());
+        setRequestedSessionId(coyoteRequest.getRequestedSessionId());
+    }
+
     // START CR 6309511
     /**
      * Parse session id in URL.
