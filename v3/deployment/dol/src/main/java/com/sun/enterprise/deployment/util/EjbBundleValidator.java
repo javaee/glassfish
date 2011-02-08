@@ -221,6 +221,10 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
             ClassLoader cl = ejb.getEjbBundleDescriptor().getClassLoader();
             Class ejbClass = cl.loadClass(ejb.getEjbClassName());
 
+            if (Globals.getDefaultHabitat() == null) {
+                return;
+            }
+
             // Perform 2.x style TimedObject processing if the class 
             // hasn't already been identified as a timed object.  
             AnnotationTypesProvider provider = Globals.getDefaultHabitat().getComponent(AnnotationTypesProvider.class, "EJB");
