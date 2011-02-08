@@ -24,7 +24,7 @@
         <antcall target="timertest"/>
         <antcall target="modulewithlibs"/>
         <antcall target="modulewithappname"/>
-        <!-- <antcall target="twomoduleswithlibs"/> -->
+        <antcall target="twomoduleswithlibs"/> 
         <antcall target="ejbinwar"/>
         <antcall target="ejbandwar"/>
         <antcall target="skipjar"/>
