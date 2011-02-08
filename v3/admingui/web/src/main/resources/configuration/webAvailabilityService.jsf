@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -96,7 +96,7 @@
                     </sun:dropDown>
                 </sun:property>
                 <sun:property id="PersistenceFrequencyProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.availability.persistenceFreq}" helpText="$resource{i18n_web.availability.persistenceFreqHelp}">
-                    <sun:dropDown id="PersistenceFrequency" selected="#{pageSession.valueMap['persistenceFrequency']}" labels={"time-based", "web-method"} />
+                    <sun:dropDown id="PersistenceFrequency" selected="#{pageSession.valueMap['persistenceFrequency']}" labels={"web-method"} />
                 </sun:property>
                 <sun:property id="PersistenceScopeProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.availability.persistenceScope}" helpText="$resource{i18n_web.availability.persistenceScopeHelp}">
                     <sun:dropDown id="PersistenceScope" selected="#{pageSession.valueMap['persistenceScope']}" labels={"session", "modified-session", "modified-attribute"} />
