@@ -313,7 +313,7 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
             final long now = System.currentTimeMillis();
             subEntry.mkdirs();
             subEntry.setLastModified(now);
-            adjustInterveningDirsLastModified(subEntry, now);
+            adjustInterveningDirsLastModified(subEntry, timestampManager.archiveCreation());
         }
         return archiveFactory.createArchive(subEntry);
     }
