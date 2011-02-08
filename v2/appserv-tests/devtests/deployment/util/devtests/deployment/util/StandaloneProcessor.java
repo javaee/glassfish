@@ -193,7 +193,7 @@ public class StandaloneProcessor {
                         acbd.visit((AppClientVisitor)new ApplicationValidator());
                     }
                     // display the result ejb bundle...
-                    AnnotationUtils.getLogger().info("Resulting " + bundleDescriptor);
+                    // AnnotationUtils.getLogger().info("Resulting " + bundleDescriptor);
 
                 } catch(Exception e) {
                     e.printStackTrace();

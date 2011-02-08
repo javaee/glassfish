@@ -3,7 +3,7 @@ Results of deployment dev tests with v3
 
 1. Running with PE installation and EE installation on DAS
 
-PASS: 249 
+PASS: 251 
 FAIL: 0
 UNKNOWN: 0
 
@@ -255,13 +255,15 @@ UNKNOWN: 0
 [PASSED] simple-versioned-ear : xml.version(7) deploy-stream jsr88 - logID=7 - (server) - (sucess expected)
 [PASSED] simple-versioned-ear : xml.version(8) deploy-stream jsr88 - logID=8 - (server) - (sucess expected)
 [PASSED] AppClientAnnotationTest : testDescriptors,
+[PASSED] EjbAnnotationTest : testDescriptors,
+[PASSED] InheritanceAnnotationTest : testDescriptors,
 [PASSED] WebAnnotationTest : testDescriptors,
 ===========================================================
 
 2. Running with EE installation on Remote Instance 
    (DEPL_TARGET=SERVER)
 
-PASS: 179
+PASS: 181
 FAIL: 0
 UNKNOWN: 0
 
@@ -443,13 +445,15 @@ UNKNOWN: 0
 [PASSED] simple-versioned-ear : xml.version(7) deploy-stream jsr88 - logID=6 - (depltest-server) - (sucess expected)
 [PASSED] simple-versioned-ear : xml.version(8) deploy-stream jsr88 - logID=7 - (depltest-server) - (sucess expected)
 [PASSED] AppClientAnnotationTest : testDescriptors,
+[PASSED] EjbAnnotationTest : testDescriptors,
+[PASSED] InheritanceAnnotationTest : testDescriptors,
 [PASSED] WebAnnotationTest : testDescriptors,
 ===========================================================
 
 3. Running with EE installation on Remote Instance and Cluster
    (DEPL_TARGET=CLUSTER)
 
-PASS: 331
+PASS: 333
 FAIL: 0
 UNKNOWN: 0
 
@@ -783,4 +787,6 @@ UNKNOWN: 0
 [PASSED] simple-versioned-ear : xml.version(8) deploy-stream jsr88 - logID=13 - (depltest-cluster) - (sucess expected)
 [PASSED] simple-versioned-ear : xml.version(8) deploy-stream jsr88 - logID=14 - (depltest-server) - (sucess expected)
 [PASSED] AppClientAnnotationTest : testDescriptors,
+[PASSED] EjbAnnotationTest : testDescriptors,
+[PASSED] InheritanceAnnotationTest : testDescriptors,
 [PASSED] WebAnnotationTest : testDescriptors,
