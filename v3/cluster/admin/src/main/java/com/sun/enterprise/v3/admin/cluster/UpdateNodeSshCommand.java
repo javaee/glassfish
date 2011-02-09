@@ -126,6 +126,13 @@ public class UpdateNodeSshCommand implements AdminCommand  {
             report.setMessage(m);
             return;
         }
+        if (node.isDefaultLocalNode()) {
+            String m = Strings.get("update.node.config.defaultnode", name);
+            logger.warning(m);
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            report.setMessage(m);
+            return;
+        }
 
         // First create a map that holds the parameters and reflects what
         // the user passed on the command line.
