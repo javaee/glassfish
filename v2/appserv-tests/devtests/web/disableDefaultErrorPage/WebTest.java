@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -107,7 +107,7 @@ public class WebTest {
             String line = null;
             while ((line = bis.readLine()) != null) {
                 System.out.println(line);
-                if (line.startsWith("HTTP/1.1 500 ")) {
+                if (line.startsWith("HTTP/1.1 500 ") || line.startsWith("HTTP/1.0 500 ")) {
                     statusMatched = true;
                 } else if (line.indexOf("DOCTYPE html PUBLIC") > -1) {
                     throw new Exception("Default error page present when not expected");
