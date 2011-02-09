@@ -65,7 +65,7 @@
     <pathconvert refid="class.path" property="test"/>
 
     <target name="debug-windows" depends="instance, cluster"/>
-    <target name="cli" depends="zombie, ports, instance, cluster, configs, sync, domain, backup, tokens,validation,node, load-balancer, misc-commands, manual-sync, upgrade, cluster-upgrade"/>
+    <target name="cli" depends="monitoring, zombie, ports, instance, cluster, configs, sync, domain, backup, tokens,validation,node, load-balancer, misc-commands, manual-sync, upgrade, cluster-upgrade"/>
 
     <target name="cluster" depends="init">
         <java classname="admin.ClusterTest"  fork="true" classpath="${test}">
@@ -275,6 +275,12 @@
         <antcall target="custom-resource"/>
         <antcall target="jndi-resource"/>
         <antcall target="mail-resource"/>
+    </target>
+
+    <target name="monitoring" depends="init">
+        <java classname="admin.MonitoringTests"  fork="true" classpath="${test}">
+            <jvmarg value="${javaprops}"/>
+        </java>
     </target>
 
 
