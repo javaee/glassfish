@@ -659,6 +659,11 @@ public final class ConfigModel {
         @Override
         public Object get(Dom dom, Type returnType) {
             String id = dom.attribute(xmlName);
+            // since the id is supposed to be the element's key, if no key, no element.
+            if (id==null) {
+                return null;
+            }
+
             Class<?> type = Types.erasure(returnType);
             
             // let's look first the fast way.

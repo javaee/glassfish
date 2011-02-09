@@ -44,6 +44,7 @@ import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.ContractProvided;
 import org.jvnet.hk2.annotations.FactoryFor;
 import org.jvnet.hk2.annotations.InhabitantAnnotation;
+import org.jvnet.hk2.annotations.InhabitantMetadata;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.MultiMap;
 
@@ -137,9 +138,21 @@ public class InhabitantIntrospectionScanner implements Iterable<InhabitantParser
                 interfaces.add(val);
               }
             } else if (name.equals(FactoryFor.class.getName())) {
-              String val = scrub(am.getValues().get("value"));
-              if (null != val) {
-                annInterfaces.add(name + ":" + val);
+              Object dummy = am.getValues();
+              Object rawObj = am.getValues().get("value");
+              if (Collection.class.isInstance(rawObj)) {
+                Collection<?> coll = (Collection<?>) am.getValues().get("value");
+                for (Object obj : coll) {
+                  String val = scrub(obj);
+                  if (null != val) {
+                    annInterfaces.add(name + ":" + val);
+                  }
+                }
+              } else {
+                String val = scrub(rawObj);
+                if (null != val) {
+                  annInterfaces.add(name + ":" + val);
+                }
               }
             }
         }
@@ -179,6 +192,42 @@ public class InhabitantIntrospectionScanner implements Iterable<InhabitantParser
         } else if (!parent.getName().equals(Object.class.getName())) {
           findContracts(parent, interfaces, annotationTypeInterfaces);
         }
+    }
+
+    /**
+     * Retrieves the "extra" meta data from drilling into each annotation's methods.
+     * 
+     * @param dest
+     * @param ae
+     */
+    public static void populateExtraInhabitantMetaData(MultiMap<String, String> dest, AnnotatedElement ae) {
+      for (AnnotationModel model : ae.getAnnotations()) {
+        for (MethodModel mm : model.getType().getMethods()) {
+          populateExtraInhabitantMetaData(dest, model, mm);
+        }
+        
+        for (AnnotationModel subModel : model.getType().getAnnotations()) {
+          for (MethodModel mm : subModel.getType().getMethods()) {
+            populateExtraInhabitantMetaData(dest, subModel, mm);
+          }
+        }
+      }
+    }
+
+    private static void populateExtraInhabitantMetaData(MultiMap<String, String> dest, AnnotationModel model, MethodModel mm) {
+      if (null != mm) {
+        AnnotationModel ma = mm.getAnnotation(InhabitantMetadata.class.getCanonicalName());
+        if (null != ma) {
+          Object tag = ma.getValues().get("value");
+          Object val = model.getValues().get(mm.getName());
+          if (null != tag && null != val) {
+            String tagStr = tag.toString();
+            if (!dest.containsKey(tagStr)) {
+              dest.add(tagStr, val.toString());
+            }
+          }
+        }
+      }
     }
 
     /**
@@ -292,6 +341,10 @@ public class InhabitantIntrospectionScanner implements Iterable<InhabitantParser
                             }
                           }
                         }
+                        
+                        // append to this all metadata recovered from InhabitantMetadata annotation
+                        populateExtraInhabitantMetaData(mm, ae);
+                        
                         return mm;
                     }
                 };

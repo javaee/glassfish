@@ -40,11 +40,13 @@
 package test3;
 
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.config.ConfiguredBy;
 
 /**
  * @author Kohsuke Kawaguchi
  */
+@Service
 @ConfiguredBy(PointConfig.class)
 public class Point { // implements Configurable<PointConfig> {
     private PointConfig config;

@@ -39,30 +39,30 @@
  */
 package org.jvnet.hk2.component;
 
-import com.sun.hk2.component.CompanionSeed;
+import com.sun.hk2.component.*;
+
 import static com.sun.hk2.component.CompanionSeed.Registerer.createCompanion;
 
-import com.sun.hk2.component.ExistingSingletonInhabitant;
-import com.sun.hk2.component.FactoryCreator;
-import com.sun.hk2.component.InjectInjectionResolver;
-import com.sun.hk2.component.InjectionResolver;
-import com.sun.hk2.component.LeadInjectionResolver;
-
 import static com.sun.hk2.component.InhabitantsFile.CAGE_BUILDER_KEY;
-import com.sun.hk2.component.ScopeInstance;
+
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.ContractProvided;
 import org.jvnet.hk2.annotations.FactoryFor;
 import org.jvnet.hk2.component.HabitatListener.EventType;
 import org.jvnet.hk2.component.InhabitantTracker.Callback;
+import org.jvnet.hk2.component.concurrent.Hk2Executor;
+import org.jvnet.hk2.component.concurrent.SameThreadExecutor;
 import org.jvnet.hk2.component.internal.runlevel.DefaultRunLevelService;
 
 import java.lang.annotation.Annotation;
+import java.lang.annotation.AnnotationTypeMismatchException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.security.InvalidParameterException;
 import java.util.Map.Entry;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
@@ -75,12 +75,20 @@ import java.util.logging.Logger;
  * @author Jerome Dochez
  */
 @SuppressWarnings("unchecked")
-public class Habitat {
+public class Habitat implements Injector {
 
+    private static final Logger logger = Logger.getLogger(Habitat.class.getName());
+  
     /**
      * Name to use to programmatically store default instances of a particular service.
      */
     public final String DEFAULT_NAME = "_HABITAT_DEFAULT";
+
+    /**
+     * System property tag for concurrency controls (i.e., true for multi threaded injection, inhabitant activation, etc.)
+     */
+    public static final String HK2_CONCURRENCY_CONTROLS = "hk2.concurrency.controls";
+
     /**
      * Contract type FQCN to their corresponding inhabitants.
      *
@@ -97,28 +105,41 @@ public class Habitat {
     public final ScopeInstance singletonScope;
 
     // TODO: toggle to use concurrency controls as the default (or after habitat is initially built)
-    // TODO: Jerome to review performance costs
     static final boolean CONCURRENCY_CONTROLS_DEFAULT = 
-//      "true".equals(System.getProperty("hk2.concurrency.controls", "true"));
-      Boolean.getBoolean("hk2.concurrency.controls");
-    private final boolean concurrencyControls;
-    
-    // Listeners and trackers use this executor for notification of habitat
-    // changes. Many systems will require same-thread notifications.  This is
-    // why OSGi defaults to synchronous service tracker customizers, etc.
-    // We also, therefore, will default to a synchronous model.
-    static boolean ASYNC_EXECUTOR = 
-      Boolean.getBoolean("hk2.async.executor");
-    final ExecutorService exec;
-    
+      Boolean.valueOf(System.getProperty(HK2_CONCURRENCY_CONTROLS, "false"));
+    final boolean concurrencyControls;
+
+    static ExecutorService exec = new Hk2Executor(0, 24, new ThreadFactory() {
+      @Override
+      public Thread newThread(Runnable runnable) {
+        Thread t = new Thread(runnable);
+        t.setName("hk2-thread");
+        t.setDaemon(true);
+        t.setPriority(Thread.MAX_PRIORITY);
+        return t;
+      }
+    });
+
+    // see InjectInjectionResolver
+    // this manages whether PerLookup scoped inhabitants (and other applicable scopes) get released when their parents get released
+    public static final boolean MANAGED_INJECTION_POINTS_ENABLED = true;
+
+    private static final String NULL_STR_ARR[] = new String[] { null };
+
+    /**
+     * Here solely for performance optimization(s) - albeit slight
+     */
+    private static boolean contextualFactoriesPresentAnywhere;
+    private boolean contextualFactoriesPresentHere;
+
     private boolean initialized;
 
     
     public Habitat() {
-      this(null, null);
+      this(null);
     }
 
-    Habitat(ExecutorService exec, Boolean concurrency_controls) {
+    Habitat(Boolean concurrency_controls) {
         this.concurrencyControls = 
             (null == concurrency_controls) 
                 ? CONCURRENCY_CONTROLS_DEFAULT : concurrency_controls;
@@ -126,39 +147,50 @@ public class Habitat {
         this.byType = new MultiMap<String,Inhabitant>(this.concurrencyControls);
         this.singletonScope = new ScopeInstance("singleton", new HashMap());
 
-        if (null == exec) {
-          if (ASYNC_EXECUTOR) {
-            exec = Executors.newCachedThreadPool(new ThreadFactory() {
-              @Override
-              public Thread newThread(Runnable runnable) {
-                Thread t = Executors.defaultThreadFactory().newThread(runnable);
-                t.setDaemon(true);
-                return t;
-              }
-            });
-          } else {
-            exec = new SameThreadExecutor();
-          }
+        // add the set of ExecutorServices by name
+        if (concurrencyControls) {
+          logger.fine("concurrency controls enabled");
+          // TODO: remove me (eventually)
+//          System.out.println("CONCURRENCY CONTROLS ENABLED");
+          addIndex(new ExistingSingletonInhabitant<ExecutorService>(ExecutorService.class,
+              exec),
+              ExecutorService.class.getName(), Constants.EXECUTOR_INHABITANT_INJECTION_MANAGER);
+          addIndex(new ExistingSingletonInhabitant<ExecutorService>(ExecutorService.class,
+              exec),
+              ExecutorService.class.getName(), Constants.EXECUTOR_INHABITANT_ACTIVATOR);
         }
-        this.exec = exec;
+        addIndex(new ExistingSingletonInhabitant<ExecutorService>(ExecutorService.class,
+            SameThreadExecutor.instance),
+            ExecutorService.class.getName(), Constants.EXECUTOR_HABITAT_LISTENERS_AND_TRACKERS);
         
         // make the listeners available very early in lifecycle
         addHabitatListener(new SelfListener());
 
         // add the set of injection resolvers
+        InjectInjectionResolver injectresolver = new InjectInjectionResolver(this);
         add(new ExistingSingletonInhabitant<InjectionResolver>(InjectionResolver.class,
-                new InjectInjectionResolver(this)));
+                injectresolver));
+        addIndex(new ExistingSingletonInhabitant<InjectionResolver>(InjectionResolver.class,
+                injectresolver), InjectionResolver.class.getName(), null);
         add(new ExistingSingletonInhabitant<InjectionResolver>(InjectionResolver.class,
                 new LeadInjectionResolver(this)));
         
         // make the habitat itself available
-        add(new ExistingSingletonInhabitant<Habitat>(Habitat.class,this));
+        Inhabitant<Habitat> habitatInh = new ExistingSingletonInhabitant<Habitat>(Habitat.class,this);
+        add(habitatInh);
+        addIndex(habitatInh, Injector.class.getName(), null);
+
 
         add(new ExistingSingletonInhabitant<CompanionSeed.Registerer>(CompanionSeed.Registerer.class,
                 new CompanionSeed.Registerer(this)));
         add(new ExistingSingletonInhabitant<CageBuilder.Registerer>(CageBuilder.Registerer.class,
                 new CageBuilder.Registerer(this)));
 
+        InhabitantProviderInterceptor interceptor = new RunLevelInhabitantProvider(this);
+        addIndex(new ExistingSingletonInhabitant<InhabitantProviderInterceptor>(
+            InhabitantProviderInterceptor.class, interceptor), 
+            InhabitantProviderInterceptor.class.getName(), null);
+        
         // the default RunLevelService
         DefaultRunLevelService rls = new DefaultRunLevelService(this);
         ExistingSingletonInhabitant<RunLevelService> rlsI = 
@@ -464,8 +496,8 @@ public class Habitat {
      */
     public boolean removeIndex(String index, String name) {
         boolean removed = false;
-        if (byContract.containsKey(index)) {
-            List<NamedInhabitant> contracted = byContract._get(index);
+        final List<NamedInhabitant> contracted = byContract._get(index);
+        if (!contracted.isEmpty()) {
             Iterator<NamedInhabitant> iter = contracted.iterator();
             while (iter.hasNext()) {
                 NamedInhabitant i = iter.next();
@@ -536,7 +568,7 @@ public class Habitat {
     }
     
     protected Object service(Object serviceOrInhabitant) {
-      return (serviceOrInhabitant instanceof Inhabitant) 
+      return (serviceOrInhabitant instanceof Inhabitant && ((Inhabitant)serviceOrInhabitant).isInstantiated()) 
         ? ((Inhabitant)serviceOrInhabitant).get() : serviceOrInhabitant;
     }
     
@@ -566,14 +598,34 @@ public class Habitat {
     /**
      * FOR INTERNAL USE ONLY
      */
-    public void initialized() {
+    public synchronized void initialized() {
       if (initialized) throw new RuntimeException("already initialized");
       initialized = true;
+      
+      contextualFactoriesPresentHere = (null != getInhabitantByContract(ContextualFactory.class.getName()));
+      if (contextualFactoriesPresentHere) {
+        contextualFactoriesPresentAnywhere = true;
+      }
+      
       notify(null, EventType.HABITAT_INITIALIZED, null, null);
     }
     
     public boolean isInitialized() {
       return initialized;
+    }
+    
+    /**
+     * FOR INTERNAL USE
+     */
+    public static boolean isContextualFactoriesPresentAnywhere() {
+      return contextualFactoriesPresentAnywhere;
+    }
+    
+    /**
+     * FOR INTERNAL USE
+     */
+    public boolean isContextualFactoriesPresent() {
+      return contextualFactoriesPresentHere;
     }
     
     protected void notify(final Inhabitant<?> inhabitant,
@@ -627,7 +679,8 @@ public class Habitat {
               ListenersByTypeInhabitant.class.getName(),
               index);
       if (null != sameListeners && !sameListeners.listeners.isEmpty()) {
-        exec.execute(new Runnable() {
+        getComponent(ExecutorService.class, Constants.EXECUTOR_HABITAT_LISTENERS_AND_TRACKERS)
+            .execute(new Runnable() {
           public void run() {
             Iterator<HabitatListener> iter = sameListeners.listeners.iterator();
             while (iter.hasNext()) {
@@ -643,8 +696,7 @@ public class Habitat {
                 }
               } catch (Exception e){
                 // don't percolate the exception since it may negatively impact processing
-                Logger.getLogger(Habitat.class.getName()).
-                  log(Level.WARNING, "exception caught from listener: ", e);
+                logger.log(Level.WARNING, "exception caught from listener: ", e);
               }
             }
             
@@ -740,6 +792,17 @@ public class Habitat {
     }
 
     /**
+     * Gets all matching inhabitants given the type.
+     *
+     * @return
+     *      can be empty but never null.
+     */
+    public <T> Collection<Inhabitant> getAllInhabitantsByType(Class<T> implType) {
+      final List<Inhabitant> l = byType.get(implType.getName());
+      return l;
+    }
+
+    /**
      * Add an already instantiated component to this manager. The component has
      * been instantiated by external code, however dependency injection, PostConstruct
      * invocation and dependency extraction will be performed on this instance before
@@ -795,9 +858,9 @@ public class Habitat {
             try {
                 return contract.cast(i.get());
             } catch (ClassCastException e) {
-                Logger.getAnonymousLogger().severe("ClassCastException between contract " + contract + " and service " + i.get());
-                Logger.getAnonymousLogger().severe("Contract class loader " + contract.getClassLoader());
-                Logger.getAnonymousLogger().severe("Service class loader " + i.get().getClass().getClassLoader());
+                logger.severe("ClassCastException between contract " + contract + " and service " + i.get());
+                logger.severe("Contract class loader " + contract.getClassLoader());
+                logger.severe("Service class loader " + i.get().getClass().getClassLoader());
                 throw e;
             }
         else
@@ -824,6 +887,9 @@ public class Habitat {
      *      if no such component is found.
      */
     public <T> Inhabitant<T> getInhabitant(Class<T> contract, String name) throws ComponentException {
+        if (name!=null && name.length()==0) {
+          name=null;
+        }
         return getInhabitantByContract(contract.getName(), name);
     }
 
@@ -875,6 +941,57 @@ public class Habitat {
                 return l.size();
             }
         };
+    }
+
+    @Override
+    public <T> T injects(final T object) {
+        Creator<T> c = new ConstructorCreator<T>((Class<T>) object.getClass(), this, null) {
+            @Override
+            public T create(Inhabitant onBehalfOf) throws ComponentException {
+                    return object;
+                }
+        };
+        return c.get();
+    }
+
+    /**
+     * Creates a new value object which will be instantiated using the empty parameter
+     * constructor. All declared dependencies of this value object will be injected as
+     * well as normal component lifecycle.
+     *
+     * Instances created by this method will not be added to the habitat and will not be
+     * managed or lookup up by the habitat.
+     *
+     * @param type  requested value object type
+     * @param <T>  value object type
+     * @return  value object instantiated and injected.
+     */
+    public <T> T newValueObject(Class<T> type) {
+
+        Creator<T> c = new ConstructorCreator<T>(type, this, null) {
+            @Override
+            public T create(Inhabitant onBehalfOf) throws ComponentException {
+                try {
+                    return type.newInstance();
+                } catch (InstantiationException e) {
+                    throw new ComponentException("Failed to create "+type,e);
+                } catch (IllegalAccessException e) {
+                    try {
+                      Constructor<T> ctor = type.getDeclaredConstructor(null);
+                      ctor.setAccessible(true);
+                      return ctor.newInstance(null);
+                    } catch (Exception e1) {
+                      // ignore
+                    }
+                    throw new ComponentException("Failed to create "+type,e);
+                } catch (LinkageError e) {
+                    throw new ComponentException("Failed to create "+type,e);
+                } catch (RuntimeException e) {
+                    throw new ComponentException("Failed to create "+type,e);
+                }
+            }
+        };
+        return c.get();
     }
 
     /**
@@ -943,11 +1060,31 @@ public class Habitat {
     }
 
     public Inhabitant getInhabitantByContract(String fullyQualifiedName, String name) {
-        // TODO: faster implementation needed
-        for (NamedInhabitant i : byContract.get(fullyQualifiedName)) {
-            if(eq(i.name,name))
-                return i.inhabitant;
+        if (null == name || name.isEmpty() || !name.contains(",")) {
+            for (NamedInhabitant i : byContract.get(fullyQualifiedName)) {
+                if (eq(i.name, name))
+                    return i.inhabitant;
+            }
+        } else {
+            String names[];
+            if (null == name || name.equals("")) {
+              names = NULL_STR_ARR;
+            } else {
+              names = name.split(",");
+            }
+            
+            List<NamedInhabitant> list = byContract.get(fullyQualifiedName);
+            for (String sname : names) {
+                sname = (null == sname || sname.equals("*")) ? null : sname;
+                for (NamedInhabitant i : list) {
+                    String iname = i.name;
+                    if (eq(iname, sname)) {
+                        return i.inhabitant;
+                    }
+                }
+            }
         }
+        
         return null;
     }
 
@@ -962,6 +1099,9 @@ public class Habitat {
      *      Can be empty but never null.
      */
     public <T> Iterable<Inhabitant<? extends T>> getInhabitants(Class<T> contract, String name) throws ComponentException {
+        if (name!=null && name.length()==0) {
+          name=null;
+        }
         return _getInhabitants(contract,name);
     }
 
@@ -1120,6 +1260,7 @@ public class Habitat {
       }
     }
 
+    // TODO: this can now be performed more systematically by having an InhabitantProvider implementation
     private static final class SelfListener implements HabitatListener {
       public boolean inhabitantChanged(EventType eventType, Habitat habitat,
           Inhabitant<?> inhabitant) {
@@ -1132,10 +1273,19 @@ public class Habitat {
         // for each FactoryFor component, insert inhabitant for components created by the factory
         if (index.equals(FactoryFor.class.getName())) {
             FactoryFor ff = i.type().getAnnotation(FactoryFor.class);
-            Class<?> targetClass = ff.value();
-            FactoryCreator target = new FactoryCreator(targetClass, i, habitat, MultiMap.<String,String>emptyMap());
-            habitat.add(target);
-            habitat.addIndex(target, targetClass.getName(), null);
+
+            try {
+              Class<?> targetClasses[] = ff.value();
+              if (null != targetClasses && targetClasses.length > 0) {
+                for (Class<?> altClass : targetClasses) {
+                  FactoryCreator target = new FactoryCreator(altClass, i, habitat, MultiMap.<String,String>emptyMap());
+                  habitat.add(target);
+                  habitat.addIndex(target, altClass.getName(), null);
+                }
+              }
+            } catch (AnnotationTypeMismatchException e) {
+              logger.log(Level.WARNING, "annotation error", e);
+            }
         }
         
 //        System.out.println("Habitat Index Changed: " + eventType + "; " + i + "; index=" + index + "; name=" + name);

@@ -236,12 +236,17 @@ public class Hk2Runner extends Runner {
         return singleton.getHabitat();
     }
 
+    public static Habitat createHabitat() {
+      return singleton.createPopulatedHabitat();
+    }
+
     @SuppressWarnings("unchecked")
     private void creatorInit() {
         singleton = new Hk2TestServices(
                 null == options ? null : options.habitatFactory(),
                 null == options ? null : options.inhabitantsParserFactory(),
-                null == options ? true : options.enableDefaultRunLevelService());
+                null == options ? true : options.enableDefaultRunLevelService(),
+                null == options ? true : options.enableRunLevelConstraints());
 
         Habitat habitat = singleton.getHabitat();
         // so far we don't support extra meta-data on our tests.

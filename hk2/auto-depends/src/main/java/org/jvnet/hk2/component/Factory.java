@@ -52,8 +52,9 @@ import org.jvnet.hk2.annotations.Service;
  *
  * @author Kohsuke Kawaguchi
  * @see Service
+ * @see ContextualFactory
  */
-public interface Factory {
+public interface Factory<T> {
     /**
      * The system calls this method to obtain a reference
      * to the component.
@@ -68,5 +69,5 @@ public interface Factory {
      *      If the factory failed to get/create an instance
      *      and would like to propagate the error to the caller.
      */
-    Object getObject() throws ComponentException;
+    T getObject() throws ComponentException;
 }

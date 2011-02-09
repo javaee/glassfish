@@ -69,16 +69,16 @@ public class EventPublishingInhabitant<T> extends AbstractInhabitantImpl<T> {
   private volatile CopyOnWriteArraySet<InhabitantListener> listeners;
 
   
-  /* public */EventPublishingInhabitant() {
+  public EventPublishingInhabitant() {
     this.real = null;
   }
   
-  /* public */EventPublishingInhabitant(Inhabitant<?> delegate) {
+  public EventPublishingInhabitant(Inhabitant<?> delegate) {
     this(delegate, null);
   }
 
   @SuppressWarnings("unchecked")
-  /* public */EventPublishingInhabitant(Inhabitant<?> delegate, InhabitantListener listener) {
+  public EventPublishingInhabitant(Inhabitant<?> delegate, InhabitantListener listener) {
     this.real = (Inhabitant<T>) delegate;
     if (null != listener) {
       addInhabitantListener(listener);

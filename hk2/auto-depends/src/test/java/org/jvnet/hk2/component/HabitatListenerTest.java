@@ -43,7 +43,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -72,20 +71,10 @@ import junit.framework.TestCase;
 public class HabitatListenerTest extends TestCase {
 
   // concurrency controls disabled
-  TestHabitat h = new TestHabitat(new Executor() {
-    @Override
-    public void execute(Runnable runnable) {
-      runnable.run();
-    }
-  }, false);
+  TestHabitat h = new TestHabitat(false);
   
   // concurrency controls enabled
-  TestHabitat hc = new TestHabitat(new Executor() {
-    @Override
-    public void execute(Runnable runnable) {
-      runnable.run();
-    }
-  }, true);
+  TestHabitat hc = new TestHabitat(true);
 
   
   /**

@@ -82,4 +82,11 @@ public class Constants {
    */
   public static final String QUALIFIER = "qualifier"; 
 
+  
+  /**
+   * The executor service names used by Hk2
+   */
+  public static final String EXECUTOR_INHABITANT_INJECTION_MANAGER = "inhabitant-injection";
+  public static final String EXECUTOR_INHABITANT_ACTIVATOR = "inhabitation-activator";
+  public static final String EXECUTOR_HABITAT_LISTENERS_AND_TRACKERS = "habitat-listeners";
 }

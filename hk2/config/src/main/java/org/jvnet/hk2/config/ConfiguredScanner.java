@@ -47,6 +47,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.MultiMap;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Stack;
@@ -103,26 +104,41 @@ public class ConfiguredScanner implements IntrospectionScanner {
 
         while (!q.isEmpty()) {
             ExtensibleType<?> t = q.pop();
-            if (!visited.add(t)) continue;   // been here already
+            if (null == t || !visited.add(t)) continue;   // been here already
 
             if (t instanceof ClassModel) {
-                for (FieldModel f : ((ClassModel) t).getFields())
+                for (FieldModel f : ((ClassModel) t).getFields()) {
                     generate(f);
+                }
+            }
+            
+//            System.out.println("type:" + type + "; t=" + t);
+            
+            Collection<MethodModel> methods = t.getMethods();
+            if (null != methods) {
+//            System.out.println("type:" + type + "; methods=" + methods);
+              for (MethodModel m : methods) {
+                  generate(m, metadata);
+              }
+            }
+            
+            Collection<InterfaceModel> interfaces = t.getInterfaces();
+            if (null != interfaces) {
+//            System.out.println("type:" + type + "; ifaces=" + interfaces);
+              for (ExtensibleType<?> child : interfaces) {
+                  q.add(child);
+              }
             }
 
-            for (MethodModel m : t.getMethods())
-                generate(m, metadata);
-
-            for (ExtensibleType<?> child : t.getInterfaces())
-                q.add(child);
-
-            if (t.getParent()!=null)
+            if (t.getParent()!=null) {
                 q.add(t.getParent());
+            }
         }
     }
 
     private void generate(FieldModel f) {
-        throw new RuntimeException("Not implemented");
+      // TODO:
+//        throw new RuntimeException("Not implemented");
     }
 
     private void generate(MethodModel m, MultiMap<String, String> metadata) {

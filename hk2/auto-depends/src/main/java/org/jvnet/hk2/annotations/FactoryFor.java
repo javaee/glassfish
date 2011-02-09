@@ -42,17 +42,20 @@ package org.jvnet.hk2.annotations;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.lang.annotation.Documented;
+
+import org.jvnet.hk2.component.ContextualFactory;
+
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Indicates that the component serves as a factory for the specified type.
+ * Indicates that the component serves as a factory for the specified type(s).
  *
  * <p>
  * This annotation is useful to plug existing factory-created objects into HK2.
  * Normally goes with {@link Service} annotation, and this annotation must be placed
- * on a class that implements {@link org.jvnet.hk2.component.Factory}
- *
+ * on a class that implements {@link Factory} or {@link ContextualFactory}.
+ * 
  * @see Factory
  * @author Kohsuke Kawaguchi
  */
@@ -61,5 +64,5 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME) @Target(TYPE)
 public @interface FactoryFor {
     @Index
-    Class<?> value();
+    Class<?>[] value();
 }

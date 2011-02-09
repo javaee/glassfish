@@ -42,7 +42,6 @@ package org.jvnet.hk2.component;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -64,20 +63,10 @@ import junit.framework.TestCase;
 // TODO: Settle on concurrency controls enabled
 public class InhabitantTrackerTest extends TestCase {
   // concurrency controls disabled
-  TestHabitat h = new TestHabitat(new Executor() {
-    @Override
-    public void execute(Runnable runnable) {
-      runnable.run();
-    }
-  }, false);
+  TestHabitat h = new TestHabitat(false);
   
   // concurrency controls enabled
-  TestHabitat hc = new TestHabitat(new Executor() {
-    @Override
-    public void execute(Runnable runnable) {
-      runnable.run();
-    }
-  }, true);
+  TestHabitat hc = new TestHabitat(true);
   
   public void testInitializationAndDestruction() throws Exception {
     try {

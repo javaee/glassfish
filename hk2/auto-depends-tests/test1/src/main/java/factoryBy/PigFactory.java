@@ -39,17 +39,34 @@
  */
 package factoryBy;
 
+import java.security.AccessControlContext;
+
 import org.jvnet.hk2.annotations.FactoryFor;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Factory;
+import org.jvnet.hk2.component.ComponentException;
+import org.jvnet.hk2.component.ContextualFactory;
+import org.jvnet.hk2.component.InjectionPoint;
 
 /**
  * @author Kohsuke Kawaguchi
  */
 @Service
-@FactoryFor(Pig.class)
-public class PigFactory implements Factory {
+@FactoryFor(value={Pig.class, Piglet.class})
+public class PigFactory implements ContextualFactory<Object> {
     public Object getObject() {
+        // they are getting a Pig
+        System.out.println("\treturning a : " + Pig.class);
         return Pig.BABE;
+    }
+
+    @Override
+    public Object getObject(InjectionPoint injectionPoint, AccessControlContext acc) throws ComponentException {
+      System.out.println("wants a : " + injectionPoint.getType());
+      if (injectionPoint.getType() == Piglet.class) {
+        System.out.println("\treturning a : " + Piglet.class);
+        return Piglet.ROO;
+      }
+      
+      return getObject();
     }
 }

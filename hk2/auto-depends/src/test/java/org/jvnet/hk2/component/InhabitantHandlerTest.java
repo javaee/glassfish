@@ -39,8 +39,6 @@
  */
 package org.jvnet.hk2.component;
 
-import java.util.concurrent.Executor;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 
@@ -55,12 +53,7 @@ import org.jvnet.hk2.component.HabitatListener.EventType;
  */
 public class InhabitantHandlerTest extends TestCase {
 
-  TestHabitat h = new TestHabitat(new Executor() {
-    @Override
-    public void execute(Runnable runnable) {
-      runnable.run();
-    }
-  });
+  TestHabitat h = new TestHabitat();
   
   TestHabitatListener hl = new TestHabitatListener();
 

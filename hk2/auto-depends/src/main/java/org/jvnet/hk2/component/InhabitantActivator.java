@@ -39,6 +39,9 @@
  */
 package org.jvnet.hk2.component;
 
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.component.internal.runlevel.DefaultRunLevelService;
 
@@ -59,7 +62,8 @@ public interface InhabitantActivator {
   /**
    * Implementations are generally expected to call {@link Inhabitant#get()} at
    * some point.
-   * <p>
+   * 
+   * <p/>
    * The {@link DefaultRunLevelService} calls activate for all Inhabitants qualifying
    * in the activated RunLevel regardless of whether or not they need activation. 
    * 
@@ -70,12 +74,33 @@ public interface InhabitantActivator {
   /**
    * Implementations are generally expected to call {@link Inhabitant#release()} at
    * some point.
-   * <p>
+   * 
+   * <p/>
    * The {@link DefaultRunLevelService} calls deactivate for all Inhabitants qualifying
    * in the activated RunLevel regardless of whether or not they need releasing. 
    * 
    * @param inhabitant the inhabitant to release
    */
   void deactivate(Inhabitant<?> inhabitant);
+  
+  /**
+   * Called after all {@link #activate(Inhabitant)} and {@link #deactivate(Inhabitant)}
+   * calls are made to wait for completion of a progression to a particular run level.
+   * This is useful in the case where the implementation is asynchronous in nature.
+   * 
+   * <p/>
+   * Generally, there is one awaitCompletion() call per RunLevel being processed.
+   */
+  void awaitCompletion() throws InterruptedException;
+
+  /**
+   * Called after all {@link #activate(Inhabitant)} and {@link #deactivate(Inhabitant)}
+   * calls are made to wait for completion of a progression to a particular run level.
+   * This is useful in the case where the implementation is asynchronous in nature.
+   * 
+   * <p/>
+   * Generally, there is one awaitCompletion() call per RunLevel being processed.
+   */
+  void awaitCompletion(long timeout, TimeUnit unit) throws InterruptedException, TimeoutException;
 
 }

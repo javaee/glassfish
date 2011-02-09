@@ -336,7 +336,7 @@ public class InhabitantsGenerator extends Constants {
      * The idea is to put the inhabitant into the descriptors instead of the habitat here
      */
     @Override
-    protected void add(Inhabitant<?> i) {
+    public void add(Inhabitant<?> i) {
 //      System.out.println("add\t" + i + " " + i.metadata());
 
       // flush any previous inhabitant definition
@@ -349,7 +349,7 @@ public class InhabitantsGenerator extends Constants {
      * The idea is to merge the inhabitant index into the descriptors instead of the habitat here
      */
     @Override
-    protected void addIndex(Inhabitant<?> i, String typeName, String name) {
+    public void addIndex(Inhabitant<?> i, String typeName, String name) {
       // don't flush since we are building up the inhabitant descriptor definition
       
 //      System.out.println("addIndex\t" + i + "; " + typeName + "; " + name);

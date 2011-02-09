@@ -42,6 +42,8 @@ package org.jvnet.hk2.config;
 import org.jvnet.hk2.annotations.Contract;
 
 import static java.lang.annotation.ElementType.TYPE;
+
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Target;
@@ -54,6 +56,7 @@ import java.lang.annotation.Target;
 @Contract
 @Retention(RUNTIME)
 @Target(TYPE)
+@Inherited
 public @interface Configured {
     /**
      * XML element name that this configured object maps to.

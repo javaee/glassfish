@@ -42,12 +42,15 @@ package rls.test;
 import java.util.Collection;
 
 import static junit.framework.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.RunLevel;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
+import org.jvnet.hk2.component.internal.runlevel.DefaultRunLevelService;
 
 import rls.test.infra.MultiThreadedInhabitantActivator;
 import rls.test.infra.RandomInhabitantSorter;
@@ -93,7 +96,7 @@ public class RlsTest implements ModuleStartup {
 //    assertNull("can't support dependencies to a non RLS", other);
 
     try {
-      Thread.currentThread().sleep(250);
+      Thread.sleep(250);
     } catch (InterruptedException e) {
       fail(e.getMessage());
     }
@@ -110,6 +113,8 @@ public class RlsTest implements ModuleStartup {
     verifyServiceDerivedX();
     verifyServiceY();
     verifyServiceZ();
+    
+    verifyInhabitantMetaData();
   }
 
   @SuppressWarnings("static-access")
@@ -170,6 +175,23 @@ public class RlsTest implements ModuleStartup {
         assertFalse("should not be active: " + i, i.isInstantiated());
       }
     }
+  }
+
+  /**
+   * verifies that RunLevel metadata exists on the inhabitants (using habitat file approach)
+   */
+  private static void verifyInhabitantMetaData() {
+    Iterable<Inhabitant<?>> inhabs = h.getInhabitantsByAnnotation(RunLevel.class, null);
+    assertNotNull(inhabs);
+    int count = 0;
+    for (Inhabitant<?> i : inhabs) {
+      count++;
+      assertNotNull(i.metadata());
+      String val = i.metadata().getOne("runLevel");
+      assertNotNull(i.toString(), val);
+      assertTrue(i + " runLevel val=" + val, Integer.valueOf(val) >= DefaultRunLevelService.KERNEL_RUNLEVEL);
+    }
+    assertTrue(String.valueOf(count), count >= 5);
   }
 
 }

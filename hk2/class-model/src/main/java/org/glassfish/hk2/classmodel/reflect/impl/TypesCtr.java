@@ -43,6 +43,8 @@ import org.glassfish.hk2.classmodel.reflect.Type;
 import org.glassfish.hk2.classmodel.reflect.Types;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * contains all the parsed types references.
@@ -71,17 +73,23 @@ public class TypesCtr implements Types {
         }
     }
 
-    public synchronized <T extends Type> TypeProxy<Type> getHolder(String name, Class<T> type) {
-        Map<String, TypeProxy<Type>> typeStorage = storage.get(type);
+    public <T extends Type> TypeProxy<Type> getHolder(String name, Class<T> type) {
+        ConcurrentMap<String, TypeProxy<Type>> typeStorage = storage.get(type);
         if (typeStorage==null) {
-            typeStorage = new HashMap<String, TypeProxy<Type>>();
-            storage.put(type, typeStorage);
+            typeStorage = new ConcurrentHashMap<String, TypeProxy<Type>>();
+            ConcurrentMap<String, TypeProxy<Type>> old = storage.putIfAbsent(type, typeStorage);
+            if (old!=null) {
+                // some other thread got to set that type storage before us, let's use it
+                typeStorage=old;
+            }
         }
         TypeProxy<Type> typeProxy = typeStorage.get(name);
         if (typeProxy ==null) {
             typeProxy = new TypeProxy<Type>(null, name);
-            nonVisited.push(typeProxy);
-            typeStorage.put(name, typeProxy);
+            TypeProxy<Type> old = typeStorage.putIfAbsent(name, typeProxy);
+            if (old==null) {
+                nonVisited.push(typeProxy);
+            }
         }
         return typeProxy;
     }
@@ -118,7 +126,8 @@ public class TypesCtr implements Types {
     }
 
 
-    private final Map<Class, Map<String, TypeProxy<Type>>> storage=new HashMap<Class, Map<String, TypeProxy<Type>>>();
+    private final ConcurrentMap<Class, ConcurrentMap<String, TypeProxy<Type>>> storage=
+            new ConcurrentHashMap<Class, ConcurrentMap<String, TypeProxy<Type>>>();
     /**
      * Stack on type proxy as they have been instantiated in FILO order.
      */

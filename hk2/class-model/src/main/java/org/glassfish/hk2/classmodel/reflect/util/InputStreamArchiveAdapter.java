@@ -39,8 +39,6 @@
  */
 package org.glassfish.hk2.classmodel.reflect.util;
 
-import org.glassfish.hk2.classmodel.reflect.ArchiveAdapter;
-
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -55,18 +53,19 @@ import java.util.logging.Logger;
 
 /**
  * Archive adapter based on a single InputStream instance.
+ * 
  * @author Jerome Dochez
  */
 public class InputStreamArchiveAdapter extends AbstractAdapter {
     
     final private InputStream is;
     final private URI uri;
-    final private JarArchive parentArchive;
+//    final private JarArchive parentArchive;
 
     public InputStreamArchiveAdapter(JarArchive parent, URI uri, InputStream is) {
         this.uri = uri;
         this.is = is;
-        this.parentArchive = parent;
+//        this.parentArchive = parent;
     }
 
     @Override
@@ -81,59 +80,72 @@ public class InputStreamArchiveAdapter extends AbstractAdapter {
 
     @Override
     public void onSelectedEntries(Selector selector, EntryTask task, Logger logger) throws IOException {
-        JarInputStream jis = new JarInputStream(new BufferedInputStream(is));
         byte[] bytes = new byte[52000];
         JarEntry ja;
-        while ((ja=jis.getNextJarEntry())!=null) {
-            try {
-                Entry je = new Entry(ja.getName(), ja.getSize(), ja.isDirectory());
-                if (!selector.isSelected(je))
-                    continue;
-
+        JarInputStream jis = new JarInputStream(new BufferedInputStream(is));
+        
+        try {
+            while ((ja=jis.getNextJarEntry())!=null) {
                 try {
-                    if (ja.getSize()>bytes.length) {
-                        bytes = new byte[(int) ja.getSize()];
-                    }
-                    if (ja.getSize()!=0) {
-                        // beware, ja.getSize() can be equal to -1 if the size cannot be determined.
-
-                        int read = 0;
-                        int allRead=0;
-                        do {
-                            read = jis.read(bytes, allRead, bytes.length-allRead);
-                            allRead+=read;
-                            if (allRead==bytes.length) {
-                                // oh crap !
-                                bytes = Arrays.copyOf(bytes, bytes.length*2);
-                            }
-
-                        } while (read!=-1);
-
-                        if (ja.getSize()!=-1 && ja.getSize()!=(allRead+1)) {
-                            logger.severe("Incorrect file length while processing " + ja.getName() + " of size " + ja.getSize() + " got " + allRead);
-                        }
-
-                        // if the size was not known, let's reset it now.
-                        if (je.size==-1) {
-                            je = new Entry(ja.getName(), allRead+1, ja.isDirectory());
-                        }
-                    }
-                    ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+                    Entry je = new Entry(ja.getName(), ja.getSize(), ja.isDirectory());
+                    if (!selector.isSelected(je))
+                        continue;
+    
                     try {
-                        task.on(je, bais);
-                    } finally {
-                        bais.close();
+                        if (ja.getSize()>bytes.length) {
+                            bytes = new byte[(int) ja.getSize()];
+                        }
+                        if (ja.getSize()!=0) {
+                            // beware, ja.getSize() can be equal to -1 if the size cannot be determined.
+    
+                            int read = 0;
+                            int allRead=0;
+                            do {
+                                read = jis.read(bytes, allRead, bytes.length-allRead);
+                                allRead+=read;
+                                if (allRead==bytes.length) {
+                                    // oh crap !
+                                    bytes = Arrays.copyOf(bytes, bytes.length*2);
+                                }
+    
+                            } while (read!=-1);
+    
+                            if (ja.getSize()!=-1 && ja.getSize()!=(allRead+1)) {
+                                logger.severe("Incorrect file length while processing " + ja.getName() + " of size " + ja.getSize() + " got " + allRead);
+                            }
+    
+                            // if the size was not known, let's reset it now.
+                            if (je.size==-1) {
+                                je = new Entry(ja.getName(), allRead+1, ja.isDirectory());
+                            }
+                        }
+                        ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+                        try {
+                            task.on(je, bais);
+                        } finally {
+                            bais.close();
+                        }
+    
+                    } catch (Exception e) {
+                        logger.log(Level.SEVERE, "Exception while processing " + ja.getName()
+                                + " of size " + ja.getSize(), e);
                     }
-
-                } catch (Exception e) {
-                    logger.log(Level.SEVERE, "Exception while processing " + ja.getName()
-                            + " of size " + ja.getSize(), e);
+                } finally {
+                    // this is here to catch the spurious "java.io.EOFException:Unexpected end of ZLIB input stream"
+                    try {
+                      jis.closeEntry();
+                    } catch (Exception e) {
+                      logger.log(Level.FINE, "swallowing error", e);
+                    }
                 }
-            } finally {
-                jis.closeEntry();
             }
+        } finally {
+          try {
+            jis.close();
+          } catch (Exception e) {
+            logger.log(Level.FINE, "swallowing error", e);
+          }
         }
-        jis.close();
     }
 
     @Override

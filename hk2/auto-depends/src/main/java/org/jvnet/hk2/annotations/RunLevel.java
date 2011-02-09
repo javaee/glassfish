@@ -58,6 +58,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Contract
 public @interface RunLevel {
 
+    public static final String META_VAL_TAG = "runLevel";
+
     /**
      * Defines the environment in which this RunLevel applies.
      * <p>
@@ -77,5 +79,6 @@ public @interface RunLevel {
      *
      * @return the run level.
      */
+    @InhabitantMetadata(META_VAL_TAG)
     int value() default 0;
 }

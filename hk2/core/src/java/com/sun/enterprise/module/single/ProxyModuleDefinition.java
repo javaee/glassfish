@@ -56,144 +56,175 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Creates a ModuleDefinition backed up by a a single classloader
- *
+ * Creates a ModuleDefinition backed up by a a single classloader.
+ * 
+ * <p/>
+ * The implementation does not cache any data - everything is recalculated
+ * for each call.  Callers are therefore encouraged to either supply their
+ * own caching, or minimize the calls to methods of this class.
+ * 
  * @author Jerome Dochez
  */
 public class ProxyModuleDefinition implements ModuleDefinition {
 
-        private final ModuleMetadata metadata = new ModuleMetadata();
-        private final Manifest manifest;
+  // consider using SoftCache before bringing these back as members!
+//
+//  private static final List<URI> uris = new ArrayList<URI>();
+//
+//  static {
+//    // It is impossible to change java.class.path after the JVM starts --
+//    // so cache away a copy...
+//
+//    String cp = System.getProperty("java.class.path");
+//    if (ok(cp)) {
+//      String[] paths = cp.split(System.getProperty("path.separator"));
+//      if (ok(paths)) {
+//        for (int i = 0; i < paths.length; i++) {
+//          uris.add(new File(paths[i]).toURI());
+//        }
+//      }
+//    }
+//  }
+//
+// private final ModuleMetadata metadata = new ModuleMetadata();
+// private final Manifest manifest;
+  
+  private final ClassLoader classLoader;
+  private final List<ManifestProxy.SeparatorMappings> mappings;
 
-        public ProxyModuleDefinition(ClassLoader classLoader) throws IOException {
-            this(classLoader, null, Collections.singleton("default"));
-        }
+  public ProxyModuleDefinition(ClassLoader classLoader) throws IOException {
+    this(classLoader, null);
+  }
 
-        public ProxyModuleDefinition(ClassLoader classLoader, List<ManifestProxy.SeparatorMappings> mappings) throws IOException {
-            this(classLoader, mappings, Collections.singleton("default"));
-        }
+  public ProxyModuleDefinition(ClassLoader classLoader,
+      List<ManifestProxy.SeparatorMappings> mappings) throws IOException {
+    this.classLoader = classLoader;
+    this.mappings = mappings;
+  }
 
-        public ProxyModuleDefinition(ClassLoader classLoader, List<ManifestProxy.SeparatorMappings> mappings,
-                                     Collection<String> habitatNames) throws IOException {
-            manifest = new ManifestProxy(classLoader, mappings);
-            for (String habitatName : habitatNames) {
-                Enumeration<URL> inhabitants = classLoader.getResources(InhabitantsFile.PATH+'/'+habitatName);
-                Set<File> processedFiles = new HashSet<File>();
-                while (inhabitants.hasMoreElements()) {
-                    URL url = inhabitants.nextElement();
-                    if (url.getProtocol().equals("jar")) {
-                        int index = url.getPath().indexOf("!");
-                        if (index>0 && url.getPath().length()>5) {
-                            String path = url.getPath().substring(5, url.getPath().indexOf("!"));
-                            File f = new File(path);
-                            if (f.exists()) {
-                                f = f.getCanonicalFile();
-                                if (processedFiles.contains(f)) {
-                                    continue;
-                                }
-                                processedFiles.add(f);
-                            }   
-                        }
-                    }
-                    metadata.addHabitat(habitatName,
-                        new ByteArrayInhabitantsDescriptor(url, readFully(url))
-                    );
-                }
-            }
-            if (classLoader instanceof URLClassLoader) {
-                URLClassLoader urlCL = (URLClassLoader) classLoader;
-                for (URL url : urlCL.getURLs()) {
-                    try {
-                        uris.add(url.toURI());
-                    } catch (URISyntaxException e) {
-                        Logger.getAnonymousLogger().log(Level.SEVERE, e.getMessage(), e);
-                    }
-                }
-            }
-        }
-
-        private static byte[] readFully(URL url) throws IOException {
-            DataInputStream dis=null;
-            try {
-                URLConnection con = url.openConnection();
-                int len = con.getContentLength();
-                InputStream in = con.getInputStream();
-                dis = new DataInputStream(in);
-                byte[] bytes = new byte[len];
-                dis.readFully(bytes);
-                return bytes;
-            } catch (IOException e) {
-                IOException x = new IOException("Failed to read " + url);
-                x.initCause(e);
-                throw x;
-            } finally {
-                if (dis!=null)
-                    dis.close();
-            }
-        }
-
-        public String getName() {
-            return "Static Module";
-        }
-
-        public String[] getPublicInterfaces() {
-            return new String[0];
-        }
-
-        public ModuleDependency[] getDependencies() {
-            return EMPTY_MODULE_DEFINITIONS_ARRAY;
-        }
-
-        public URI[] getLocations() {
-            return uris.toArray(new URI[uris.size()]);
-        }
-
-        public String getVersion() {
-            return "1.0.0";
-        }
-
-        public String getImportPolicyClassName() {
-            return null;
-        }
-
-        public String getLifecyclePolicyClassName() {
-            return null;
-        }
-
-        public Manifest getManifest() {
-            return manifest;
-        }
-
-        public ModuleMetadata getMetadata() {
-            return metadata;
-        }
-
-        private static boolean ok(String s) {
-            return s != null && s.length() > 0;
-        }
-
-        private static boolean ok(String[] ss) {
-            return ss != null && ss.length > 0;
-        }
-        private static final ModuleDependency[] EMPTY_MODULE_DEFINITIONS_ARRAY = new ModuleDependency[0];
-        private static final List<URI> uris = new ArrayList<URI>();
-
-    static {
-        // It is impossible to change java.class.path after the JVM starts --
-        // so cache away a copy...
-
-        String cp = System.getProperty("java.class.path");
-        if(ok(cp)) {
-            String[] paths = cp.split(System.getProperty("path.separator"));
-
-            if(ok(paths)) {
-
-                for(int i = 0; i < paths.length; i++) {
-                    uris.add(new File(paths[i]).toURI());
-                }
-            }
-        }
+  private static byte[] readFully(URL url) throws IOException {
+    DataInputStream dis = null;
+    try {
+      URLConnection con = url.openConnection();
+      int len = con.getContentLength();
+      InputStream in = con.getInputStream();
+      dis = new DataInputStream(in);
+      byte[] bytes = new byte[len];
+      dis.readFully(bytes);
+      return bytes;
+    } catch (IOException e) {
+      IOException x = new IOException("Failed to read " + url);
+      x.initCause(e);
+      throw x;
+    } finally {
+      if (dis != null) {
+        dis.close();
+      }
     }
+  }
 
+  public String getName() {
+    return "Static Module";
+  }
 
+  public String[] getPublicInterfaces() {
+    return new String[0];
+  }
+
+  public ModuleDependency[] getDependencies() {
+    return new ModuleDependency[0];
+  }
+
+  public URI[] getLocations() {
+    List<URI> uris = new ArrayList<URI>();
+    if (classLoader instanceof URLClassLoader) {
+      URLClassLoader urlCL = (URLClassLoader) classLoader;
+      for (URL url : urlCL.getURLs()) {
+        try {
+          uris.add(url.toURI());
+        } catch (URISyntaxException e) {
+          Logger.getAnonymousLogger().log(Level.SEVERE, e.getMessage(), e);
+        }
+      }
+    } else {
+      String cp = System.getProperty("java.class.path");
+      if (ok(cp)) {
+        String[] paths = cp.split(System.getProperty("path.separator"));
+        if (ok(paths)) {
+          for (int i = 0; i < paths.length; i++) {
+            uris.add(new File(paths[i]).toURI());
+          }
+        }
+      }
     }
+    return uris.toArray(new URI[uris.size()]);
+  }
+
+  public String getVersion() {
+    return "1.0.0";
+  }
+
+  public String getImportPolicyClassName() {
+    return null;
+  }
+
+  public String getLifecyclePolicyClassName() {
+    return null;
+  }
+
+  public Manifest getManifest() {
+    return generate(new ModuleMetadata());
+  }
+
+  public ModuleMetadata getMetadata() {
+    ModuleMetadata metadata = new ModuleMetadata();
+    generate(metadata);
+    return metadata;
+  }
+
+  
+  protected Manifest generate(ModuleMetadata metadata) {
+    try {
+      Manifest manifest = new ManifestProxy(classLoader, mappings);
+      
+      Collection<String> habitatNames = Collections.singleton("default");
+      for (String habitatName : habitatNames) {
+        Enumeration<URL> inhabitants = classLoader
+            .getResources(InhabitantsFile.PATH + '/' + habitatName);
+        Set<File> processedFiles = new HashSet<File>();
+        while (inhabitants.hasMoreElements()) {
+          URL url = inhabitants.nextElement();
+          if (url.getProtocol().equals("jar")) {
+            int index = url.getPath().indexOf("!");
+            if (index > 0 && url.getPath().length() > 5) {
+              String path = url.getPath()
+                  .substring(5, url.getPath().indexOf("!"));
+              File f = new File(path);
+              if (f.exists()) {
+                f = f.getCanonicalFile();
+                if (processedFiles.contains(f)) {
+                  continue;
+                }
+                processedFiles.add(f);
+              }
+            }
+          }
+          metadata.addHabitat(habitatName, new ByteArrayInhabitantsDescriptor(
+              url, readFully(url)));
+        }
+      }
+      
+      return manifest;
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+  
+  private static boolean ok(String s) {
+    return s != null && s.length() > 0;
+  }
+
+  private static boolean ok(String[] ss) {
+    return ss != null && ss.length > 0;
+  }
+}

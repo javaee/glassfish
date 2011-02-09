@@ -41,8 +41,10 @@ package com.sun.hk2.component;
 
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
+import org.jvnet.hk2.component.InhabitantProviderInterceptor;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -62,7 +64,7 @@ import java.util.logging.Logger;
  * @author Kohsuke Kawaguchi
  * @author Jerome Dochez
  */
-public class InhabitantsParser {
+public class InhabitantsParser implements InhabitantStore {
   
     private final Logger logger = Logger.getLogger(InhabitantsParser.class.getCanonicalName());
   
@@ -128,6 +130,10 @@ public class InhabitantsParser {
         if (scanner==null)
             return;
         
+        Collection<InhabitantProviderInterceptor> interceptors = 
+            (null == habitat) ? Collections.EMPTY_LIST :
+              habitat.getAllByContract(InhabitantProviderInterceptor.class);
+        
         for( InhabitantParser inhabitantParser : scanner) {
             if (isFilteredInhabitant(inhabitantParser)) {
                 continue;    
@@ -147,7 +153,7 @@ public class InhabitantsParser {
                     try {
                       i = Inhabitants.create(target,habitat,inhabitantParser.getMetaData());
                     } catch (Exception e) {
-                      log(typeName, e);
+                      reportProblem(typeName, e);
                     }
                     if (null != i) {
                       add(i, inhabitantParser);
@@ -163,12 +169,14 @@ public class InhabitantsParser {
                 }
                 Inhabitant<?> i = null;
                 try {
-                  i = com.sun.hk2.component.Inhabitants.
-                    createInhabitant(habitat, classLoader, typeName,
-                        inhabitantParser.getMetaData(), null,
+                  i = Inhabitants.createInhabitant(habitat, interceptors.iterator(),
+                        classLoader, typeName,
+                        inhabitantParser.getMetaData(), 
+                        /*lead*/null,
+                        this,
                         Collections.unmodifiableSet(indicies));
                 } catch (Exception e) {
-                  log(typeName, e);
+                  reportProblem(typeName, e);
                 }
                 if (null != i) {
                   add(i, inhabitantParser);
@@ -177,8 +185,9 @@ public class InhabitantsParser {
         }
     }
 
-    private void log(String typeName, Exception e) {
-      logger.log(Level.FINE, "Warning: unable to create inhabitant for {0} - and therefore ignoring it; check classpath; re: {1}", 
+    private void reportProblem(String typeName, Exception e) {
+//      throw new ComponentException("unable to create inhabitant for: " + typeName, e);
+      logger.log(Level.WARNING, "Unable to create inhabitant for {0} - and therefore ignoring it; check classpath; re: {1}", 
           new Object[] {typeName, e.getMessage()});
       logger.log(Level.FINER, "", e);
     }
@@ -223,12 +232,37 @@ public class InhabitantsParser {
             }
         }
     }
+    
+    /**
+     * Returns the contract name given a raw index entry.
+     * 
+     * @param v
+     *    the raw index entry in the format of contract[:name]
+     * @param name 
+     *  a StringBuilder used to optionally store the service name
+     *  
+     * @return the contract name
+     */
+    public static String parseIndex(String v, StringBuilder name) {
+      int idx = v.indexOf(':');
+      if (-1 == idx) {
+        return v;
+      } else {
+          // v=contract:name
+          String contract = v.substring(0, idx);
+          if (null != name) {
+            name.append(v.substring(idx + 1));
+          }
+          return contract;
+      }
+    }
 
     /**
      * Adds the given inhabitant to the habitat
      * @param i
      */
-    protected void add(Inhabitant<?> i) {
+    @Override
+    public void add(Inhabitant<?> i) {
       logger.log(Level.FINE, "adding inhabitant: {0} to habitat {1}", 
           new Object[] {i, habitat});
       habitat.add(i);
@@ -237,10 +271,32 @@ public class InhabitantsParser {
     /**
      * Adds the given inhabitant index to the habitat
      */
-    protected void addIndex(Inhabitant<?> i, String typeName, String name) {
+    @Override
+    public void addIndex(Inhabitant<?> i, String typeName, String name) {
       logger.log(Level.FINE, "adding index for inhabitant: {0} with typeName {1} and name {2} to habitat {3}",
           new Object[] {i, typeName, name, habitat});
       habitat.addIndex(i, typeName, name);
+    }
+
+    @Override
+    public boolean remove(Inhabitant<?> i) {
+      logger.log(Level.FINE, "removing inhabitant: {0} from habitat {1}", 
+          new Object[] {i, habitat});
+      return habitat.remove(i);
+    }
+
+    @Override
+    public boolean removeIndex(String index, String name) {
+      logger.log(Level.FINE, "removing inhabitant index: {0},{1} from habitat {2}", 
+          new Object[] {index, name, habitat});
+      return habitat.removeIndex(index, name);
+    }
+
+    @Override
+    public boolean removeIndex(String index, Object serviceOrInhabitant) {
+      logger.log(Level.FINE, "removing inhabitant index: {0},{1} from habitat {2}", 
+          new Object[] {index, serviceOrInhabitant, habitat});
+      return habitat.removeIndex(index, serviceOrInhabitant);
     }
 
 }

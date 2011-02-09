@@ -561,7 +561,7 @@ public class InhabitantsGeneratorTest {
   static String expected(boolean worldViewClassPath, boolean fromClassModel, boolean sort) throws IOException {
     StringBuilder sb = new StringBuilder();
 
-    sb.append("class=com.sun.enterprise.tools.classmodel.test.RunLevelCloseableService,index=java.io.Closeable:closeable,index=org.jvnet.hk2.annotations.RunLevel\n");
+    sb.append("class=com.sun.enterprise.tools.classmodel.test.RunLevelCloseableService,index=java.io.Closeable:closeable,index=org.jvnet.hk2.annotations.RunLevel,runLevel=3\n");
     sb.append("class=com.sun.enterprise.tools.classmodel.test.AService,index=com.sun.enterprise.tools.classmodel.test.AContract:aservice,a=1,b=2\n");
     sb.append("class=com.sun.enterprise.tools.classmodel.test.FactoryForCService,index=org.jvnet.hk2.annotations.FactoryFor:com.sun.enterprise.tools.classmodel.test.CService\n");
     sb.append("class=com.sun.enterprise.tools.classmodel.test.CService\n");
@@ -573,8 +573,8 @@ public class InhabitantsGeneratorTest {
       // the true habitat
       sb.append("class=com.sun.enterprise.tools.classmodel.test.ServiceWithExternalContract,index=com.sun.enterprise.tools.classmodel.test.external.ExternalContract\n");
       sb.append("class=com.sun.enterprise.tools.classmodel.test.ServiceWithAbstractBaseHavingExternalContract,index=com.sun.enterprise.tools.classmodel.test.external.ExternalContract\n");
-      sb.append("class=com.sun.enterprise.tools.classmodel.test.RunLevelCloseableServiceWithExternalAnnotation,index=org.jvnet.hk2.annotations.RunLevel\n");
-      sb.append("class=com.sun.enterprise.tools.classmodel.test.JDBCService,index=com.sun.enterprise.tools.classmodel.test.external.ServerService:jdbc,index=org.jvnet.hk2.annotations.RunLevel\n");
+      sb.append("class=com.sun.enterprise.tools.classmodel.test.RunLevelCloseableServiceWithExternalAnnotation,index=org.jvnet.hk2.annotations.RunLevel,runLevel=3\n");
+      sb.append("class=com.sun.enterprise.tools.classmodel.test.JDBCService,index=com.sun.enterprise.tools.classmodel.test.external.ServerService:jdbc,index=org.jvnet.hk2.annotations.RunLevel,runLevel=2\n");
     } else {
       // without world-view, the external contracts in the
       // inhabitants-gen-ifaces jar are not considered
@@ -586,13 +586,13 @@ public class InhabitantsGeneratorTest {
 
     if (fromClassModel) {
       sb.append("class=com.sun.enterprise.tools.classmodel.test.local.LocalServiceInTestDir,index=java.io.Closeable\n");
-      sb.append("class=rls.test.model.ServiceOtherToY,index=org.jvnet.hk2.annotations.RunLevel\n");
-      sb.append("class=rls.test.model.ServiceDerivedX,index=rls.test.model.ContractX:derived,index=org.jvnet.hk2.annotations.RunLevel\n");
+      sb.append("class=rls.test.model.ServiceOtherToY,index=org.jvnet.hk2.annotations.RunLevel,runLevel=-1\n");
+      sb.append("class=rls.test.model.ServiceDerivedX,index=rls.test.model.ContractX:derived,index=org.jvnet.hk2.annotations.RunLevel,runLevel=-1\n");
       sb.append("class=rls.test.model.ServiceYSpecial,index=rls.test.model.ContractY\n");
       sb.append("class=rls.test.infra.MultiThreadedInhabitantActivator,index=org.jvnet.hk2.component.InhabitantActivator\n");
-      sb.append("class=rls.test.model.ServiceBaseX,index=rls.test.model.ContractX:base,index=org.jvnet.hk2.annotations.RunLevel\n");
-      sb.append("class=rls.test.model.ServiceY1,index=rls.test.model.ContractY,index=org.jvnet.hk2.annotations.RunLevel\n");
-      sb.append("class=rls.test.model.ServiceY2,index=rls.test.model.ContractY,index=org.jvnet.hk2.annotations.RunLevel\n");
+      sb.append("class=rls.test.model.ServiceBaseX,index=rls.test.model.ContractX:base,index=org.jvnet.hk2.annotations.RunLevel,runLevel=-1\n");
+      sb.append("class=rls.test.model.ServiceY1,index=rls.test.model.ContractY,index=org.jvnet.hk2.annotations.RunLevel,runLevel=-1\n");
+      sb.append("class=rls.test.model.ServiceY2,index=rls.test.model.ContractY,index=org.jvnet.hk2.annotations.RunLevel,runLevel=-1\n");
       sb.append("class=rls.test.model.ServiceZ\n");
       sb.append("class=rls.test.infra.RandomInhabitantSorter,index=org.jvnet.hk2.component.InhabitantSorter\n");
       if (worldViewClassPath) {

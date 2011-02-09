@@ -73,6 +73,11 @@ public @interface Hk2RunnerOptions {
   boolean enableDefaultRunLevelService() default true;
   
   /**
+   * Flag indicating whether the standard RunLevel constraints are enabled by default
+   */
+  boolean enableRunLevelConstraints() default true;
+  
+  /**
    * Alternative Habitat Factory from the default 
    */
   Class<? extends HabitatFactory> habitatFactory() default HabitatFactory.class; 

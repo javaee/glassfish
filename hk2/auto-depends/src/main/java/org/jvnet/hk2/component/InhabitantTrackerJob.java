@@ -69,7 +69,8 @@ import org.jvnet.hk2.component.InhabitantTracker.Callback;
   /*public*/ InhabitantTrackerJob(Habitat h, InhabitantTrackerContext itc) {
     this.h = h;
 //    if (REUSE_HABITAT_EXECUTOR) {
-      this.exec = h.exec;
+      this.exec = h.getComponent(ExecutorService.class,
+          Constants.EXECUTOR_HABITAT_LISTENERS_AND_TRACKERS);
 //    } else {
 //      if (null == trackerLevelExecutorService) {
 //        trackerLevelExecutorService = 

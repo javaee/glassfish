@@ -50,7 +50,7 @@ import java.lang.annotation.Documented;
  *
  * <p>
  * This annotation goes to one of the annotation elements of the annotation type
- * that's annotated with {@link Contract}.
+ * that's annotated with {@link Contract} - similar to the primary key value.
  *
  * @author Kohsuke Kawaguchi
  * @see Contract

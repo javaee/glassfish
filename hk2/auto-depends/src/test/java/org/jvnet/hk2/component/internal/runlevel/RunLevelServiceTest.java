@@ -48,6 +48,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -151,6 +152,24 @@ public class RunLevelServiceTest {
     Inhabitant<RunLevelServiceNegOne> i = h.getInhabitantByType(RunLevelServiceNegOne.class);
     assertNotNull(i);
     assertTrue(i.toString() + "expected to have been instantiated", i.isInstantiated());
+  }
+  
+  /**
+   * verifies that RunLevel metadata exists on the inhabitants (using classmodel introspection)
+   */
+  @Test
+  public void inhabitantMetaDataIncludesRunLevel() {
+    Iterable<Inhabitant<?>> inhabs = h.getInhabitantsByAnnotation(RunLevel.class, null);
+    assertNotNull(inhabs);
+    int count = 0;
+    for (Inhabitant<?> i : inhabs) {
+      count++;
+      assertNotNull(i.metadata());
+      String val = i.metadata().getOne("runLevel");
+      assertNotNull(i.toString(), val);
+      assertTrue(i + " runLevel val=" + val, Integer.valueOf(val) >= DefaultRunLevelService.KERNEL_RUNLEVEL);
+    }
+    assertTrue(String.valueOf(count), count >= 5);
   }
   
   @Test
@@ -1222,11 +1241,11 @@ public class RunLevelServiceTest {
     for (TestRunLevelListener.Call call : defRLlistener.calls) {
       if (call.type.equals("error")) {
         errCount++;
-        assertEquals(ComponentException.class, call.error.getClass());
+        assertTrue("exception: " + call.error, ComponentException.class.isInstance(call.error));
         Throwable t = call.error.getCause();
         assertNotNull(t);
         while (null != t) {
-          assertEquals(ComponentException.class, t.getClass());
+          assertTrue("exception: " + t, ComponentException.class.isInstance(t));
           t = t.getCause();
         }
       }
@@ -1402,23 +1421,30 @@ public class RunLevelServiceTest {
   }
   
 
-  @SuppressWarnings("unchecked")
   private static class TestInhabitantActivator implements InhabitantActivator {
     public int activateCount;
     public int releaseCount;
     
     @Override
-    public void activate(Inhabitant inhabitant) {
+    public void activate(Inhabitant<?> inhabitant) {
       activateCount++;
 //      System.out.println(inhabitant);
       inhabitant.get();
     }
     
     @Override
-    public void deactivate(Inhabitant inhabitant) {
+    public void deactivate(Inhabitant<?> inhabitant) {
       releaseCount++;
 //      System.out.println(inhabitant);
 //      inhabitant.release();
+    }
+
+    @Override
+    public void awaitCompletion() {
+    }
+
+    @Override
+    public void awaitCompletion(long timeount, TimeUnit unit) {
     }
   }
 

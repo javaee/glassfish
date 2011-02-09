@@ -41,8 +41,11 @@ package org.jvnet.hk2.component;
 
 import com.sun.hk2.component.ConstructorCreator;
 import com.sun.hk2.component.FactoryCreator;
+import com.sun.hk2.component.InjectableParametizedConstructorCreator;
 import org.jvnet.hk2.annotations.Factory;
 import org.jvnet.hk2.annotations.FactoryFor;
+
+import java.lang.reflect.Constructor;
 
 /**
  * {@link Creator} factory.
@@ -61,7 +64,10 @@ public class Creators {
         if (factory!=null) {
             return new FactoryCreator<T>(c,factory,habitat,metadata);
         }
-
+        Constructor[] ctors = c.getConstructors();
+        if ((ctors.length==1) && (ctors[0].getGenericParameterTypes().length>0)) {
+            return new InjectableParametizedConstructorCreator(c, habitat, metadata);
+        }
         return new ConstructorCreator<T>(c,habitat,metadata);
     }
 }
