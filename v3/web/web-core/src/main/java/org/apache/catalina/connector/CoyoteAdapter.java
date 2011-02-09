@@ -314,7 +314,7 @@ public class CoyoteAdapter
                     if (host == null) {
                         response.sendError(HttpServletResponse.SC_BAD_REQUEST);
                         response.setDetailMessage(sm.getString(
-                                "standardEngine.noHost",
+                                "coyoteAdapter.noHost",
                                 request.getRequest().getServerName()));
                         return;
                     }
