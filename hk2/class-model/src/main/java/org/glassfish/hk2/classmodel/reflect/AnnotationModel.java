@@ -67,4 +67,5 @@ public interface AnnotationModel {
      * @return collection of value elements of this annotation
      */
     Map<String, Object> getValues();
+
 }

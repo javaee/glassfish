@@ -47,7 +47,7 @@
     <artifactId>hk2-parent</artifactId>
     <packaging>pom</packaging>
 
-    <version>1.1.1-SNAPSHOT</version>
+    <version>1.6.1-SNAPSHOT</version>
     <name>Modules Subsystem</name>
     <description>Generic Modules subsystem</description>
 

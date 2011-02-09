@@ -39,6 +39,8 @@
  */
 package com.sun.hk2.component;
 
+import java.util.logging.Level;
+
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Creator;
 import org.jvnet.hk2.component.Creators;
@@ -119,6 +121,8 @@ public class LazyInhabitant<T> extends EventPublishingInhabitant<T> implements C
     
     @SuppressWarnings("unchecked")
     protected Class<T> loadClass() {
+        logger.log(Level.FINER, "loading class for: {0}", typeName);
+        
         final ClassLoader cl = getClassLoader();
         try {
             Class<T> c = (Class<T>) cl.loadClass(typeName);

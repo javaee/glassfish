@@ -47,9 +47,13 @@ import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.jvnet.hk2.component.concurrent.WorkManager;
 
 /**
  * InjectionManager is responsible for injecting resources into a component.
@@ -60,12 +64,6 @@ import java.util.logging.Logger;
 @SuppressWarnings("unchecked")
 public class InjectionManager {
 
-/**    private final Habitat habitat;
-    
-    public InjectionManager(Habitat habitat) {
-        this.habitat = habitat;
-    }
-**/
    /**
      * Initializes the component by performing injection.
      *
@@ -74,8 +72,8 @@ public class InjectionManager {
      * @throws ComponentException
      *      if injection failed for some reason.
      */
-    public void inject(Object component,InjectionResolver... targets) {
-        inject(component, null, component.getClass(), targets);
+    public void inject(Object component, InjectionResolver... targets) {
+        syncDoInject(component, null, component.getClass(), targets);
     }
   
    /**
@@ -88,9 +86,58 @@ public class InjectionManager {
      *      if injection failed for some reason.
      */    
     public void inject(Object component, Inhabitant<?> onBehalfOf, InjectionResolver... targets) {
-        inject(component, onBehalfOf, component.getClass(), targets);
+        syncDoInject(component, onBehalfOf, component.getClass(), targets);
     }
 
+    /**
+     * Initializes the component by performing injection.
+     *
+     * @param component component instance to inject
+     * @param onBehalfOf the inhabitant to do injection on behalf of
+     * @param es the ExecutorService to use in order to handle the work load
+     * @param targets the injection resolvers to resolve all injection points
+     * @throws ComponentException
+     *      if injection failed for some reason.
+     */    
+    public void inject(Object component, Inhabitant<?> onBehalfOf, ExecutorService es, InjectionResolver... targets) {
+      try {
+        if (null == es) {
+          syncDoInject(component, onBehalfOf, component.getClass(), targets);
+        } else {
+          asyncDoInject(new InjectContext(component, onBehalfOf, component.getClass(), es, targets));
+        }
+      } catch (Exception e) {
+        // we do this to bolster debugging
+        if (ComponentException.class.isInstance(e)) {
+          // it's presumed that there will be sufficient causes already present for these types of exceptions, no need to do more
+          throw ComponentException.class.cast(e);
+        }
+
+        throw new ComponentException("injection failed on " + component + "; onBehalfOf: " + onBehalfOf, e);
+      }
+    }
+    
+    protected static class InjectContext {
+      public final Object component;
+      public final Inhabitant<?> onBehalfOf;
+      public final Class<?> type;
+      public final ExecutorService es;
+      public final InjectionResolver[] targets;
+
+      public InjectContext(final Object component,
+          final Inhabitant<?> onBehalfOf,
+          final Class type,
+          final ExecutorService es,
+          final InjectionResolver[] targets) {
+        assert(null != component);
+        this.component = component;
+        this.onBehalfOf = onBehalfOf;
+        this.type = type;
+        this.es = es;
+        this.targets = targets;
+      }
+    }
+    
     /**
       * Initializes the component by performing injection.
       *
@@ -100,11 +147,10 @@ public class InjectionManager {
       * @throws ComponentException
       *      if injection failed for some reason.
       */
-    public void inject(Object component,
+     public void inject(Object component,
                 Class type,
                 InjectionResolver... targets) {
-
-        inject(component, null, type, targets);
+        syncDoInject(component, null, type, targets);
     }
 
     /**
@@ -117,17 +163,15 @@ public class InjectionManager {
       * @throws ComponentException
       *      if injection failed for some reason.
       */
-    public void inject(Object component,
+    protected void syncDoInject(Object component,
                 Inhabitant<?> onBehalfOf,
                 Class type,
                 InjectionResolver... targets) {
+        assert component!=null;
+
         try {
-            assert component!=null;
-
-            // TODO: faster implementation needed.
-
             Class currentClass = type;
-            while (currentClass!=null && !currentClass.equals(Object.class)) {
+            while (currentClass!=null && Object.class != currentClass) {
                 // get the list of the instances variable
                 for (Field field : currentClass.getDeclaredFields()) {
 
@@ -142,17 +186,10 @@ public class InjectionManager {
                             if (value != null) {
                                 field.setAccessible(true);
                                 field.set(component, value);
-                                Injectable injectable;
-                                try {
-                                    injectable = Injectable.class.cast(value);
-                                    if (injectable!=null) {
-                                        injectable.injectedInto(component);
-                                    }
-                                } catch (Exception e) {
-                                }
+                                handleInjectable(component, value);
                             } else {
                                 if (!target.isOptional(field, inject)) {
-                                    throw new UnsatisfiedDependencyException(field);
+                                    throw new UnsatisfiedDependencyException(field, inject);
                                 }
                             }
                         } catch (ComponentException e) {
@@ -171,7 +208,6 @@ public class InjectionManager {
                         if (inject == null)     continue;
 
                         Method setter = target.getSetterMethod(method, inject);
-
                         if (setter.getReturnType() != void.class) {
                             if (Collection.class.isAssignableFrom(setter.getReturnType())) {
                                 injectCollection(component, setter, 
@@ -191,16 +227,10 @@ public class InjectionManager {
                                   if (value != null) {
                                       setter.setAccessible(true);
                                       setter.invoke(component, value);
-                                      try {
-                                          Injectable injectable = Injectable.class.cast(value);
-                                          if (injectable!=null) {
-                                              injectable.injectedInto(component);
-                                          }
-                                      } catch (Exception e) {
-                                      }
+                                      handleInjectable(component, value);
                                   } else {
                                       if (!target.isOptional(method, inject)) {
-                                          throw new UnsatisfiedDependencyException(method);
+                                          throw new UnsatisfiedDependencyException(method, inject);
                                       }
                                   }
                                 } else {
@@ -216,20 +246,14 @@ public class InjectionManager {
                                       params[i] = value;
                                     } else {
                                       if (!target.isOptional(method, inject)) {
-                                        throw new UnsatisfiedDependencyException(method);
+                                        throw new UnsatisfiedDependencyException(method, inject);
                                       }
                                     }
                                 }
                                   
                                 setter.invoke(component, params);
                                 for (Object value : params) {
-                                  try {
-                                    Injectable injectable = Injectable.class.cast(value);
-                                    if (injectable!=null) {
-                                      injectable.injectedInto(component);
-                                    }
-                                  } catch (Exception e) {
-                                  }
+                                  handleInjectable(component, value);
                                 }
                               }
                             } catch (ComponentException e) {
@@ -244,6 +268,7 @@ public class InjectionManager {
                         }
                     }
                 }
+                
                 currentClass = currentClass.getSuperclass();
             }
         } catch (LinkageError e) {
@@ -255,10 +280,249 @@ public class InjectionManager {
             x.initCause(e);
             throw x;
         }
-
     }
 
-    protected void error_injectionException(InjectionResolver target, Annotation inject, AnnotatedElement injectionPoint, Exception e) {
+    /**
+     * Prototype for the multi-threaded version of inject().
+     * 
+     * @param component
+     * @param onBehalfOf
+     * @param type
+     * @param es
+     * @param targets
+     */
+    protected void asyncDoInject(InjectContext ic) {
+      ArrayList<Runnable> tasks = new ArrayList<Runnable>();
+      Class<?> classType = ic.type;
+      while (null != classType && Object.class != classType) {
+        tasks.add(0, new InjectClass(classType, ic));
+        classType = classType.getSuperclass();
+      }
+      
+      WorkManager wm = new WorkManager(ic.es, tasks.size());
+      wm.executeAll(tasks);
+      
+      try {
+        wm.awaitCompletion();
+      } catch (WorkManager.ExecutionException e) {
+        LinkageError cause = e.getCause(LinkageError.class);
+        if (null != cause) {
+          // reflection could trigger additional classloading and resolution, so it
+          // can cause linkage error.
+          // report more information to assist diagnosis.
+          // can't trust component.toString() as the object could be in an
+          // inconsistent state.
+          LinkageError x = new LinkageError("injection failed on " + ic.type + 
+              " from " + ic.type.getClassLoader());
+          x.initCause(e);
+          throw x;
+        }
+        
+        throw e;
+      }
+    }
+
+    
+    protected class InjectClass implements Runnable {
+      private final Class<?> classType;
+      private final InjectContext ic;
+
+      public InjectClass(final Class type,
+          final InjectContext ic) {
+        this.classType = type;
+        this.ic = ic;
+      }
+
+      @Override
+      public void run() {
+        WorkManager wm = new WorkManager(ic.es, 2);
+        wm.execute(new InjectMethods(this));
+        wm.execute(new InjectFields(this));
+        wm.awaitCompletion();
+      }
+
+    }
+    
+
+    protected class InjectFields implements Runnable {
+      private final InjectClass iClass;
+      
+      public InjectFields(InjectClass iClass) {
+        this.iClass = iClass;
+      }
+
+      @Override
+      public void run() {
+        ArrayList<Runnable> tasks = new ArrayList<Runnable>();
+        for (Field field : iClass.classType.getDeclaredFields()) {
+          for (InjectionResolver target : iClass.ic.targets) {
+            Annotation inject = field.getAnnotation(target.type);
+            if (inject != null) {
+              tasks.add(new InjectField(iClass, field, inject, target));
+            }
+          }
+        }
+
+        WorkManager wm = new WorkManager(iClass.ic.es, tasks.size());
+        wm.executeAll(tasks);
+        wm.awaitCompletion();
+      }
+    }
+
+    
+    protected class InjectMethods implements Runnable {
+      private final InjectClass iClass;
+      
+      public InjectMethods(InjectClass iClass) {
+        this.iClass = iClass;
+      }
+
+      @Override
+      public void run() {
+        ArrayList<Runnable> tasks = new ArrayList<Runnable>();
+        for (Method method : iClass.classType.getDeclaredMethods()) {
+          for (InjectionResolver target : iClass.ic.targets) {
+            Annotation inject = method.getAnnotation(target.type);
+            if (inject != null) {
+              tasks.add(new InjectMethod(iClass, method, inject, target));
+            }
+          }
+        }
+
+        WorkManager wm = new WorkManager(iClass.ic.es, tasks.size());
+        wm.executeAll(tasks);
+        wm.awaitCompletion();
+      }
+    }
+    
+    
+    protected class InjectField implements Runnable {
+      private final InjectContext ic;
+      private final Field field;
+      private final Annotation inject;
+      private final InjectionResolver target;
+      
+      public InjectField(InjectClass iClass, Field field, Annotation inject, InjectionResolver target) {
+        this.ic = iClass.ic;
+        this.field = field;
+        this.inject = inject;
+        this.target = target;
+      }
+
+      @Override
+      public void run() {
+        Type genericType = field.getGenericType();
+        Class fieldType = field.getType();
+        try {
+          Object value = target.getValue(ic.component, ic.onBehalfOf, field, genericType, fieldType);
+          if (value != null) {
+            field.setAccessible(true);
+            field.set(ic.component, value);
+            handleInjectable(ic.component, value);
+          } else {
+            if (!target.isOptional(field, inject)) {
+              throw new UnsatisfiedDependencyException(field, inject);
+            }
+          }
+        } catch (ComponentException e) {
+          error_injectionException(target, inject, field, e);
+        } catch (IllegalAccessException e) {
+          error_injectionException(target, inject, field, e);
+        } catch (RuntimeException e) {
+          error_injectionException(target, inject, field, e);
+        }
+      }
+    }
+    
+    protected class InjectMethod implements Runnable {
+      private final InjectContext ic;
+      private final Method method;
+      private final Annotation inject;
+      private final InjectionResolver target;
+      
+      public InjectMethod(InjectClass iClass, Method method, Annotation inject, InjectionResolver target) {
+        this.ic = iClass.ic;
+        this.method = method;
+        this.inject = inject;
+        this.target = target;
+      }
+
+      @Override
+      public void run() {
+        Method setter = target.getSetterMethod(method, inject);
+        if (void.class != setter.getReturnType()) {
+          if (Collection.class.isAssignableFrom(setter.getReturnType())) {
+            injectCollection(ic.component, setter, 
+                target.getValue(ic.component, ic.onBehalfOf, method, null, setter.getReturnType()));
+          } else {
+            error_InjectMethodIsNotVoid(method);
+          }
+        }
+
+        Class<?>[] paramTypes = setter.getParameterTypes();
+        if (allowInjection(method, paramTypes)) {
+          try {
+            if (1 == paramTypes.length) {
+              Object value = target.getValue(ic.component, ic.onBehalfOf, method, null, paramTypes[0]);
+              if (value != null) {
+                setter.setAccessible(true);
+                setter.invoke(ic.component, value);
+                handleInjectable(ic.component, value);
+              } else {
+                if (!target.isOptional(method, inject)) {
+                  throw new UnsatisfiedDependencyException(method, inject);
+                }
+              }
+            } else {
+              // multi params
+              setter.setAccessible(true);
+
+              Type gparamType[] = setter.getGenericParameterTypes();
+              Object params[] = new Object[paramTypes.length];
+              for (int i = 0; i < paramTypes.length; i++) {
+                Object value = target.getValue(ic.component, ic.onBehalfOf,
+                    method, gparamType[i], paramTypes[i]);
+                if (value != null) {
+                  params[i] = value;
+                } else {
+                  if (!target.isOptional(method, inject)) {
+                    throw new UnsatisfiedDependencyException(method, inject);
+                  }
+                }
+              }
+
+              setter.invoke(ic.component, params);
+              for (Object value : params) {
+                handleInjectable(ic.component, value);
+              }
+            }
+          } catch (ComponentException e) {
+            error_injectionException(target, inject, setter, e);
+          } catch (IllegalAccessException e) {
+            error_injectionException(target, inject, setter, e);
+          } catch (InvocationTargetException e) {
+            error_injectionException(target, inject, setter, e);
+          } catch (RuntimeException e) {
+            error_injectionException(target, inject, setter, e);
+          }
+        }
+      }
+    }
+
+    
+    protected void handleInjectable(final Object component, final Object value) {
+      try {
+        Injectable injectable = Injectable.class.cast(value);
+        if (injectable != null) {
+          injectable.injectedInto(component);
+        }
+      } catch (Exception e) {
+        Logger.getAnonymousLogger().log(Level.FINER, "swallowing error", e);
+      }
+    }
+    
+    
+    protected void error_injectionException(InjectionResolver target, Annotation inject, AnnotatedElement injectionPoint, Throwable e) {
       Logger.getAnonymousLogger().log(Level.FINE, "injection failure", e);
       
       if (UnsatisfiedDependencyException.class.isInstance(e)) {
@@ -270,11 +534,15 @@ public class InjectionManager {
         if (target.isOptional(injectionPoint, inject)) {
           return;
         } else {
-          throw new UnsatisfiedDependencyException(injectionPoint, e);
+          throw new UnsatisfiedDependencyException(injectionPoint, inject, e);
         }
       }
+    
+      if (null != e.getCause() && InvocationTargetException.class.isInstance(e)) {
+        e = e.getCause();
+      }
       
-      throw new ComponentException(UnsatisfiedDependencyException.injection_failed_msg(injectionPoint, e), e);
+      throw new ComponentException(UnsatisfiedDependencyException.injection_failed_msg(injectionPoint, inject, e), e);
     }
 
     protected boolean allowInjection(Method method, Class<?>[] paramTypes) {
@@ -322,111 +590,6 @@ public class InjectionManager {
         }
         target.addAll(c);
     }
+
     
-    /**
-     * Initializes the component by performing injection.
-     *
-     * @param component component instance to inject
-     * @throws ComponentException
-     *      if injection failed for some reason.
-     */
-/*     public void inject(Object component, Class<T extends Annotation> type) throws ComponentException {
-        try {
-            assert component!=null;
-
-            // TODO: faster implementation needed.
-
-            Class currentClass = component.getClass();
-            while (!currentClass.equals(Object.class)) {
-                // get the list of the instances variable
-                for (Field field : currentClass.getDeclaredFields()) {
-
-                    T inject = field.getAnnotation(type);
-                    if (inject == null)     continue;
-
-                    Class fieldType = field.getType();
-                    try {
-                        Object value = getValue(component, field, fieldType);
-                        if (value != null) {
-                            field.setAccessible(true);
-                            field.set(component, value);
-                            Injectable injectable;
-                            try {
-                                injectable = Injectable.class.cast(value);
-                                if (injectable!=null) {
-                                    injectable.injectedInto(component);
-                                }
-                            } catch (Exception e) {
-                            }
-
-                        } else {
-                            if(!isOptional(inject)) {
-                                Logger.getAnonymousLogger().info("Cannot inject " + field + " in component" + component);   
-                                throw new UnsatisfiedDepedencyException(field);
-                            }
-                        }
-                    } catch (ComponentException e) {
-                        if (!isOptional(inject)) {
-                            throw new UnsatisfiedDepedencyException(field,e);
-                        }
-                    } catch (IllegalAccessException e) {
-                        throw new ComponentException("Injection failed on " + field.toGenericString(), e);
-                    } catch (RuntimeException e) {
-                        throw new ComponentException("Injection failed on " + field.toGenericString(), e);                        
-                    }
-                }
-                for (Method method : currentClass.getDeclaredMethods()) {
-                    T inject = method.getAnnotation(type);
-                    if (inject == null)     continue;
-
-                    if (method.getReturnType() != void.class) {
-                        throw new ComponentException("Injection failed on %s : setter method is not declared with a void return type",method.toGenericString());
-                    }
-
-                    Class<?>[] paramTypes = method.getParameterTypes();
-
-                    if (paramTypes.length > 1) {
-                        throw new ComponentException("injection failed on %s : setter method takes more than 1 parameter",method.toGenericString());
-                    }
-                    if (paramTypes.length == 0) {
-                        throw new ComponentException("injection failed on %s : setter method does not take a parameter",method.toGenericString());
-                    }
-
-                    try {
-                        Object value = getValue(component, method, paramTypes[0]);
-                        if (value != null) {
-                            method.setAccessible(true);
-                            method.invoke(component, value);
-                            try {
-                                Injectable injectable = Injectable.class.cast(value);
-                                if (injectable!=null) {
-                                    injectable.injectedInto(component);
-                                }
-                            } catch (Exception e) {
-                            }
-                        } else {
-                            if (!isOptional(inject))
-                                throw new UnsatisfiedDepedencyException(method);
-                        }
-                    } catch (IllegalAccessException e) {
-                        throw new ComponentException("Injection failed on " + method.toGenericString(), e);
-                    } catch (InvocationTargetException e) {
-                        throw new ComponentException("Injection failed on " + method.toGenericString(), e);
-                    } catch (RuntimeException e) {
-                        throw new ComponentException("Injection failed on " + method.toGenericString(), e);
-                    }
-                }
-                currentClass = currentClass.getSuperclass();
-            }
-        } catch (LinkageError e) {
-            // reflection could trigger additional classloading and resolution, so it can cause linkage error.
-            // report more information to assist diagnosis.
-            // can't trust component.toString() as the object could be in an inconsistent state.
-            Class<?> cls = component.getClass();
-            LinkageError x = new LinkageError("Failed to inject " + cls +" from "+cls.getClassLoader());
-            x.initCause(e);
-            throw x;
-        }
-    }
-    */
 }

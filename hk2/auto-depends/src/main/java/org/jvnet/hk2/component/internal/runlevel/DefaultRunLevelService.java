@@ -50,6 +50,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -64,6 +65,7 @@ import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.InhabitantActivator;
 import org.jvnet.hk2.component.InhabitantListener;
 import org.jvnet.hk2.component.InhabitantSorter;
+import org.jvnet.hk2.component.MultiThreadedInhabitantActivator;
 import org.jvnet.hk2.component.RunLevelListener;
 import org.jvnet.hk2.component.RunLevelService;
 import org.jvnet.hk2.component.RunLevelState;
@@ -401,12 +403,24 @@ public class DefaultRunLevelService implements RunLevelService<Void>, Enableable
    * should be processed by this RunLevelService instance.
    * 
    * @param i the inhabitant
-   * @param rl the inhabitan'ts runLevel
    * @param activeRunLevel the current runLevel
    * 
    * @return
    */
-  protected boolean accept(Inhabitant<?> i, RunLevel rl, int activeRunLevel) {
+  protected boolean accept(AbstractInhabitantImpl<?> i, int activeRunLevel) {
+    if (i.isInstantiated()) {
+      return false;
+    }
+    
+    Integer runlevel = getRunLevel(i);
+    if (null != runlevel) {
+      if (Integer.valueOf(runlevel) != activeRunLevel) {
+        return false;
+      }
+    }
+
+    // avoid loading of the class until we have to ... at this point we have to
+    RunLevel rl = i.getAnnotation(RunLevel.class);
     return (rl.value() == activeRunLevel && rl.environment() == targetEnv);
   }
   
@@ -545,8 +559,7 @@ public class DefaultRunLevelService implements RunLevelService<Void>, Enableable
     }
 
     AbstractInhabitantImpl<?> ai = AbstractInhabitantImpl.class.cast(inhabitant);
-    RunLevel rl = ai.getAnnotation(RunLevel.class);
-    Integer activeRunLevel = (null == rl) ? null : rl.value();
+    Integer activeRunLevel = getRunLevel(ai);
     
     if (null != activeRunLevel) {
       // forward to the active recorder?
@@ -568,6 +581,29 @@ public class DefaultRunLevelService implements RunLevelService<Void>, Enableable
     
     // we always want to maintain our subscription
     return true;
+  }
+
+  /**
+   * Attempts to obtain the RunLevel value from the metadata() instead of from the annotation
+   * which requires a class load.  If it can't get it from the metadata() it will default to
+   * load the class to obtain the RunLevel value.
+   *  
+   * @param i the inhabitant to get the runLevel for
+   * 
+   * @return
+   */
+  protected Integer getRunLevel(AbstractInhabitantImpl<?> i) {
+    Integer activeRunLevel;
+    
+    String runlevel = i.metadata().getOne(RunLevel.META_VAL_TAG);
+    if (null != runlevel && runlevel.length() > 0) {
+      activeRunLevel = Integer.valueOf(runlevel);
+    } else {
+      RunLevel rl = i.getAnnotation(RunLevel.class);
+      activeRunLevel = (null == rl) ? null : rl.value();
+    }
+
+    return activeRunLevel;
   }
 
   /**
@@ -648,19 +684,31 @@ public class DefaultRunLevelService implements RunLevelService<Void>, Enableable
   /**
    * Called when we are responsible for handling the {@link InhabitantActivator} work.
    */
-  @SuppressWarnings("unchecked")
   @Override
-  public void activate(Inhabitant inhabitant) {
+  public void activate(Inhabitant<?> inhabitant) {
     inhabitant.get();
   }
 
   /**
    * Called when we are responsible for handling the {@link InhabitantActivator} work.
    */
-  @SuppressWarnings("unchecked")
   @Override
-  public void deactivate(Inhabitant inhabitant) {
+  public void deactivate(Inhabitant<?> inhabitant) {
     inhabitant.release();
+  }
+  
+  /**
+   * No-op, since we are not a {@link MultiThreadedInhabitantActivator}
+   */
+  @Override
+  public void awaitCompletion() {
+  }
+  
+  /**
+   * No-op, since we are not a {@link MultiThreadedInhabitantActivator}
+   */
+  @Override
+  public void awaitCompletion(long timeout, TimeUnit unit) {
   }
   
   /**
@@ -831,9 +879,8 @@ public class DefaultRunLevelService implements RunLevelService<Void>, Enableable
         habitat.getAllInhabitantsByContract(RunLevel.class.getName());
       for (Inhabitant<?> i : runLevelInhabitants) {
         AbstractInhabitantImpl<?> ai = AbstractInhabitantImpl.class.cast(i);
-        RunLevel rl = ai.getAnnotation(RunLevel.class);
     
-        if (accept(ai, rl, activeRunLevel)) {
+        if (accept(ai, activeRunLevel)) {
           RunLevelInhabitant<?,?> rli = RunLevelInhabitant.class.cast(ai);
           checkBinding(rli);
           activations.add(rli);
@@ -863,6 +910,12 @@ public class DefaultRunLevelService implements RunLevelService<Void>, Enableable
           } catch (Exception e) {
             checkInterrupt(e, rli, null);
           }
+        }
+
+        try {
+          ia.awaitCompletion();
+        } catch (Exception e) {
+          checkInterrupt(e, null, null);
         }
       }
     }
@@ -905,6 +958,12 @@ public class DefaultRunLevelService implements RunLevelService<Void>, Enableable
             } catch (Exception e) {
               checkInterrupt(e, i, null);
             }
+          }
+
+          try {
+            ia.awaitCompletion();
+          } catch (Exception e) {
+            checkInterrupt(e, null, null);
           }
         }
       }

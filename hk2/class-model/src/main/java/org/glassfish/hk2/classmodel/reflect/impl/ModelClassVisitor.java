@@ -147,10 +147,8 @@ public class ModelClassVisitor implements ClassVisitor {
 
     @Override
     public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
-        
         desc = unwrap(desc);
-
-
+        
         final AnnotationTypeImpl at = (AnnotationTypeImpl) typeBuilder.getType(Opcodes.ACC_ANNOTATION, desc, null);
         final AnnotationModelImpl am = new AnnotationModelImpl(type, at);
 
@@ -253,11 +251,11 @@ public class ModelClassVisitor implements ClassVisitor {
 
         @Override
         public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
-
             if (context.method==null) {
                 // probably an annotation method, ignore
                 return null;
             }
+          
             AnnotationTypeImpl annotationType = (AnnotationTypeImpl) typeBuilder.getType(Opcodes.ACC_ANNOTATION, unwrap(desc), null);
             AnnotationModelImpl annotationModel = new AnnotationModelImpl(context.method, annotationType);
 
@@ -267,12 +265,13 @@ public class ModelClassVisitor implements ClassVisitor {
             // forward index
             context.method.addAnnotation(annotationModel);
             context.annotation = annotationModel;
+            
             return annotationVisitor;
         }
 
         @Override
         public void visitEnd() {
-            context.method=null;
+//            context.method=null;
         }
     }
 

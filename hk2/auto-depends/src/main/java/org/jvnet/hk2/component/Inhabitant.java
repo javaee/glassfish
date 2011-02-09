@@ -238,4 +238,46 @@ public interface Inhabitant<T> extends Holder<T> {
      * This method is only meant to be invoked by {@link Habitat}.
      */
     void setCompanions(Collection<Inhabitant> companions);
+
+    /**
+     * Gets or creates an inhabitant instance that is functionally equivalent to the
+     * original with possible exception for scoping and lifecycle behavior.
+     *
+     * <p/>
+     * Hk2's injection machinery requests a scopedClone for each inhabitant it
+     * obtains out of the habitat for purposes of injection for each injection point
+     * of a component undergoing injection.  If and when that component is released,
+     * each scoped-clone inhabitant will also have release called on it.
+     *
+     * <p/>
+     * For example, a PerLookup scoped inhabitant in the habitat will return a new
+     * service instance for each and every call to get().  A scoped clone might create a
+     * 1-to-1 relationship from the scoped-cloned inhabitant to the service it produces
+     * allowing for the possibility of release() on the inhabitant / service.  More
+     * sophisticated implementation may also exist that uses reference counting, soft or
+     * weak references, etc.
+     *
+     * <p/>
+     * Scoped clones of inhabitants that are themselves scoped clones will drive off of
+     * the original underlying inhabitant, and not the scoped clone itself.
+     *
+     * @return an inhabitant instance that is appropriate for the scoping rules of that inhabitant;
+     *          always non-null but may return the 'this' pointer as the default implementation.
+     */
+    Inhabitant<T> scopedClone();
+
+    /**
+     * Puts an inhabitant under management of this inhabitant instance.
+     *
+     * <p/>
+     * FOR INTERNAL USE ONLY
+     *
+     * <p/>
+     * Management implies the lifecycle of this inhabitant is reflected into the collection
+     * of managed inhabitants associated with this instance (i.e., release cascades).
+     *
+     * @param managedInhabitant the inhabitant to associate lifecycle with
+     */
+    void manage(Inhabitant<?> managedInhabitant);
+
 }

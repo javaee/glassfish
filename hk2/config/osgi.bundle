@@ -38,4 +38,8 @@
 # holder.
 #
 
--exportcontents: org.jvnet.hk2.config; version=${project.osgi.version}
+-exportcontents: \
+	org.jvnet.hk2.config; version=${project.osgi.version} \
+	org.jvnet.hk2.config.provider; version=${project.osgi.version} \
+	org.jvnet.hk2.config.provider.annotations; version=${project.osgi.version}
+	

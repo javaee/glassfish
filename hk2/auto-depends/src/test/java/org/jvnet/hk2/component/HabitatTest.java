@@ -43,8 +43,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.Executor;
-
 
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 
@@ -61,20 +59,10 @@ import junit.framework.TestCase;
 public class HabitatTest extends TestCase {
 
   // concurrency controls disabled
-  TestHabitat h = new TestHabitat(new Executor() {
-    @Override
-    public void execute(Runnable runnable) {
-      runnable.run();
-    }
-  }, false);
+  TestHabitat h = new TestHabitat(false);
   
   // concurrency controls enabled
-  TestHabitat hc = new TestHabitat(new Executor() {
-    @Override
-    public void execute(Runnable runnable) {
-      runnable.run();
-    }
-  }, true);
+  TestHabitat hc = new TestHabitat(true);
   
   public void testGetAllByType() {
     runTestGetAllByType(h);

@@ -49,7 +49,7 @@ import org.jvnet.hk2.component.MultiMap;
 public interface InhabitantParser {
 
     Iterable<String> getIndexes();
-
+    
     String getImplName();
 
     void setImplName(String name);

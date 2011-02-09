@@ -50,10 +50,10 @@ import org.jvnet.hk2.component.internal.runlevel.DefaultRunLevelService;
  * has been scheduled.
  * 
  * @author Jeff Trent
- * 
- * @since 3.1
  */
 public class RunLevelInhabitant<T, V> extends EventPublishingInhabitant<T> {
+  private static boolean enabled = true;
+  
   /**
    * Serves as the gating runLevel state.
    */
@@ -78,6 +78,13 @@ public class RunLevelInhabitant<T, V> extends EventPublishingInhabitant<T> {
     this.state = state;
   }
 
+  /**
+   * FOR INTERNAL USE ONLY
+   */
+  public static void enable(boolean enable) {
+    enabled = enable;
+  }
+  
   @Override
   public Class<T> type() {
     boolean wasInstantiated = isInstantiated();
@@ -105,6 +112,10 @@ public class RunLevelInhabitant<T, V> extends EventPublishingInhabitant<T> {
    * @throws ComponentException if not in an appropriate state
    */
   protected void verifyState() throws ComponentException {
+    if (!enabled) {
+      return;
+    }
+    
     if (!isInstantiated()) {
       Integer planned = state.getPlannedRunLevel();
       planned = (null == planned) ? DefaultRunLevelService.KERNEL_RUNLEVEL : planned;

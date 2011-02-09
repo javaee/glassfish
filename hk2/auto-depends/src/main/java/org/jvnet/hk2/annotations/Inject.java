@@ -39,7 +39,9 @@
  */
 package org.jvnet.hk2.annotations;
 
+
 import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
@@ -64,7 +66,7 @@ import java.lang.annotation.Target;
  * @author Jerome Dochez
  */
 @Retention(RUNTIME)
-@Target({METHOD,FIELD})
+@Target({METHOD,FIELD, PARAMETER})
 public @interface Inject {
     /**
      * Returns the name.

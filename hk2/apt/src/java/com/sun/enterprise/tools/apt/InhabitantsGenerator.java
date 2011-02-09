@@ -379,19 +379,22 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
             for(AnnotationMirror am : d.getAnnotationMirrors()) {
                 AnnotationTypeDeclaration atd = am.getAnnotationType().getDeclaration();
                 Contract c = atd.getAnnotation(Contract.class);
-                if(c!=null) {
+                if (c!=null) {
                     // this is a contract annotation
                     enforceContractLevelScope(atd,d);
-                    addIndex(atd.getQualifiedName(), getIndexValue(am));
+                    name = getIndexValue(am);
+                    addIndex(atd.getQualifiedName(), name);
                 }
 
                 // check for meta-annotations
                 for(AnnotationMirror mam : atd.getAnnotationMirrors()) {
                     AnnotationTypeDeclaration matd = mam.getAnnotationType().getDeclaration();
                     Contract mc = matd.getAnnotation(Contract.class);
-                    if(mc!=null)
+                    if (mc!=null) {
                         // meta-contract annotation
-                        addIndex(matd.getQualifiedName(), getIndexValue(mam));
+                        name = getIndexValue(mam);
+                        addIndex(matd.getQualifiedName(), name);
+                    }
                 }
             }
 
@@ -476,10 +479,28 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
             for(AnnotationTypeElementDeclaration e : decl.getMethods()) {
                 if(e.getAnnotation(Index.class)!=null) {
                     AnnotationValue v = a.getElementValues().get(e);
-                    if(v!=null) // explicitly given
+                    if (null != v) {
+                      if (Collection.class.isInstance(v.getValue())) {
+                        StringBuilder values = new StringBuilder();
+                        for (Object val : (Collection<?>)v.getValue()) {
+                          if (null != val) {
+                            if (values.length() > 0) {
+                              values.append("|");
+                            }
+                            if (AnnotationValue.class.isInstance(val)) {
+                              values.append(AnnotationValue.class.cast(val).getValue());
+                            } else {
+                              values.append(val);
+                            }
+                          }
+                        }
+                        return values.toString();
+                      } else {
                         return v.getValue().toString();
-                    else // defaulted
-                        return e.getDefaultValue().getValue().toString();
+                      }
+                    } else { // defaulted
+                      return e.getDefaultValue().getValue().toString();
+                    }
                 }
             }
             return null;

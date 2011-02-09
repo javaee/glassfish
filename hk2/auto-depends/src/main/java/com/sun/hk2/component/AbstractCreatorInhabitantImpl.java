@@ -39,13 +39,11 @@
  */
 package com.sun.hk2.component;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.jvnet.hk2.component.Creator;
 import org.jvnet.hk2.component.MultiMap;
-import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.component.Inhabitant;
+
+import java.util.logging.Logger;
 
 /**
  * Partial implementation of {@link Inhabitant} that delegates to {@link Creator}
@@ -77,10 +75,4 @@ abstract class AbstractCreatorInhabitantImpl<T> extends AbstractInhabitantImpl<T
         return creator.metadata();
     }
 
-    protected final void dispose(T object) {
-        if (object instanceof PreDestroy) {
-            logger.log(Level.FINER, "calling PreDestroy on {0}", object);
-            ((PreDestroy)object).preDestroy();
-        }
-    }
 }

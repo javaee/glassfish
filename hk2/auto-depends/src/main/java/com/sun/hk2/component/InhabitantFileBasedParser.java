@@ -112,7 +112,15 @@ public class InhabitantFileBasedParser implements InhabitantParser {
                     // v=contract:name
                     String contract = v.substring(0, idx);
                     String name = v.substring(idx + 1);
-                    metadata.add(contract,name);
+                    
+                    if (null == name || name.indexOf('|') <= 0) {
+                      metadata.add(contract,name);
+                    } else {
+                      String [] split = name.split("\\|");
+                      for (String s : split) {
+                        metadata.add(contract, s);
+                      }
+                    }
                 }
             }
             metadata.add(kvpp.getKey(),kvpp.getValue());

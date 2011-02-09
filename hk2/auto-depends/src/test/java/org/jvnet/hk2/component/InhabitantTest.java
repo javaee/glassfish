@@ -44,13 +44,16 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
+import org.jvnet.hk2.test.contracts.Simple;
 import org.jvnet.hk2.test.impl.OneSimple;
 
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import com.sun.hk2.component.LazyInhabitant;
 
 import com.sun.hk2.component.Holder;
+import org.jvnet.hk2.test.impl.TwoSimple;
 
 /**
  * General Inhabitant-type testing.
@@ -119,6 +122,13 @@ public class InhabitantTest {
         OneSimple.class.getName(),
         new MultiMap<String, String>());
     list.add(li);
+
+
+    Inhabitant li2 = new LazyInhabitant(h, cl,
+        TwoSimple.class.getName(),
+        new MultiMap<String, String>());
+    h.add(li2);
+    h.addIndex(li2, Simple.class.getName(), "two");
 
     return list;
   }

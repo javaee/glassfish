@@ -193,12 +193,10 @@ public class ParsingContext {
 
 
     Map<URI, TypeBuilder> builders = new HashMap<URI, TypeBuilder>();
-//    TypeBuilder builder;
 
     public synchronized TypeBuilder getTypeBuilder(URI definingURI) {
         TypeBuilder builder = builders.get(definingURI);
         if (builder==null) {
-//            builder = new TypesImpl(types, null);
             builder = new TypesImpl(types, definingURI);
             builders.put(definingURI, builder);
         }

@@ -47,6 +47,7 @@ import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.jvnet.hk2.annotations.Inject;
@@ -58,9 +59,9 @@ import org.jvnet.hk2.test.contracts.DummyContract;
 import org.jvnet.hk2.test.contracts.ErrorThrowingContract;
 import org.jvnet.hk2.test.contracts.Simple;
 import org.jvnet.hk2.test.contracts.SimpleGetter;
-import org.jvnet.hk2.test.impl.PerLookupService;
-import org.jvnet.hk2.test.impl.RandomService;
-import org.jvnet.hk2.test.impl.RandomSimpleService;
+import org.jvnet.hk2.test.contracts.TestingInfoService;
+import org.jvnet.hk2.test.contracts.TestingInfoService2;
+import org.jvnet.hk2.test.impl.*;
 
 import com.sun.hk2.component.Holder;
 import com.sun.hk2.component.LazyInhabitant;
@@ -75,7 +76,8 @@ public class ExtendedInjectTest {
 
   @Inject
   Habitat h;
-  
+
+  // injection by type - #1a
   @Inject
   PerLookupService perLookupService;
 
@@ -111,7 +113,43 @@ public class ExtendedInjectTest {
 
   // These are NOT annotated at field level, but is at method level
   Simple setterOneSimple;
+
   Simple setterOtherSimple;
+
+  // search order based
+  @Inject(name = "three,one,two", optional=true)
+  Simple simpleThreeOneTwo;
+
+  @Inject(name = "three,two,one,*", optional=true)
+  Simple simpleThreeTwoOneAny;
+  
+  @Inject(name = "three,four", optional=true)
+  Simple simpleThreeFour;
+  
+  @Inject(name="one,*", optional=true)
+  RandomService oneAny;
+  
+  // by factory based
+  @Inject
+  TestingInfoService tisByFactory;
+
+  @Inject
+  TestingInfoService tisByFactory2;
+
+  @Inject
+  TestingInfoService2 tis2ByFactory;
+
+  @Inject
+  TestingInfoService2 tis2ByFactory2;
+  
+  @Inject
+  Holder<TestingInfoService> holderTisByFactory;
+
+  @Inject
+  Holder<TestingInfoService2> holderTis2ByFactory;
+  
+  @Inject
+  RandomService[] arrayInjection;
   
   @Inject(name = "one")
   void setOneSimple(Simple simple) {
@@ -124,6 +162,30 @@ public class ExtendedInjectTest {
   private void setOtherSimple(Simple simple) {
     assertNull(setterOtherSimple);
     setterOtherSimple = simple;
+  }
+
+  @BeforeClass
+  public static void reset() {
+    PerLookupService.constructs = 0;
+    PerLookupService.destroys = 0;
+
+    PerLookupServiceNested1.constructs = 0;
+    PerLookupServiceNested1.destroys = 0;
+
+    PerLookupServiceNested2.constructs = 0;
+    PerLookupServiceNested2.destroys = 0;
+
+    PerLookupServiceNested3.constructs = 0;
+    PerLookupServiceNested3.destroys = 0;
+
+    OneSimple.constructs = 0;
+    OneSimple.destroys = 0;
+
+    TwoSimple.constructs = 0;
+    TwoSimple.destroys = 0;
+
+    RandomSimpleService.constructs = 0;
+    RandomSimpleService.destroys = 0;
   }
 
   @Test
@@ -153,11 +215,12 @@ public class ExtendedInjectTest {
   @Test
   public void simpleOptionalServiceHavingADependent() {
     assertNotNull(simpleOptionalServiceWithADependency);
-    assertEquals(RandomSimpleService.class, simpleOptionalServiceWithADependency.getClass());
+    assertEquals(RandomSimpleService.class,
+        simpleOptionalServiceWithADependency.getClass());
     assertNotNull(simpleOptionalServiceWithADependency.getSimple());
     assertEquals("one", simpleOptionalServiceWithADependency.getSimple().get());
   }
-  
+
   @Test
   public void byContract_neverSatisfied() {
     assertNull(neverService);
@@ -170,7 +233,7 @@ public class ExtendedInjectTest {
     assertNotNull(singletonServiceHolder.get());
     assertSame(singletonService, singletonServiceHolder.get());
   }
-  
+
   @Test
   public void setterMethod() {
     assertNotNull(setterOneSimple);
@@ -180,19 +243,45 @@ public class ExtendedInjectTest {
     assertEquals(setterOtherSimple.get(), "other");
   }
 
+  @Test
+  public void byFactory() {
+    assertNotNull(tisByFactory);
+    assertEquals(ServiceByFactory.TIS.class, tisByFactory.getClass());
+
+    assertNotNull(tisByFactory2);
+    assertNotSame(tisByFactory, tisByFactory2);
+  }
+
+  @Test
+  public void byContextualFactory() {
+    assertNotNull(tis2ByFactory);
+    assertEquals(ServiceByContextualFactory.TIS.class, tis2ByFactory.getClass());
+    assertEquals(1, tis2ByFactory.getPostContructCount());
+    assertNotNull(tis2ByFactory.getInjectionPoint());
+    assertNotNull(tis2ByFactory.getAccessControlContext());
+    assertNotNull(tis2ByFactory.getInjectionPoint().getComponent());
+    assertNotNull(tis2ByFactory.getInjectionPoint().getInhabitant());
+    assertNotNull(tis2ByFactory.getInjectionPoint().getAnnotatedElement());
+    assertNotNull(tis2ByFactory.getInjectionPoint().getInject());
+    assertNotNull(tis2ByFactory.getInjectionPoint().getType());
+
+    assertNotNull(tis2ByFactory2);
+    assertNotSame(tis2ByFactory, tis2ByFactory2);
+  }
+
   /**
-   * Verifies the affect of exceptions during the injection phase.  The
+   * Verifies the affect of exceptions during the injection phase. The
    * expectation is that inhabitant should NOT be activated in such
    * circumstances.
    */
   @Test
   public void errorThrowingSetterMethod() {
-    Collection<Inhabitant<?>> iColl = 
-        h.getAllInhabitantsByContract(ErrorThrowingContract.class.getName());
+    Collection<Inhabitant<?>> iColl = h
+        .getAllInhabitantsByContract(ErrorThrowingContract.class.getName());
     assertNotNull(iColl);
     assertEquals(1, iColl.size());
     Inhabitant<?> i = iColl.iterator().next();
-    
+
     LogHandler handler = new LogHandler();
     Logger logger = Logger.getLogger(LazyInhabitant.class.getName());
     logger.addHandler(handler);
@@ -201,70 +290,82 @@ public class ExtendedInjectTest {
       fail("Exception expected but instead got: " + obj);
     } catch (ComponentException e) {
       // expected
-//      e.printStackTrace();
+      // e.printStackTrace();
     } finally {
       logger.removeHandler(handler);
     }
-    assertFalse("shouldn't be instantiated - it's in a bad state", i.isInstantiated());
+    assertFalse("shouldn't be instantiated - it's in a bad state", i
+        .isInstantiated());
 
     // TODO: do logging (in the dynamic work)
-//    assertEquals("log records: " + handler.publishedRecords, 1, handler.publishedRecords.size());
-//    LogRecord lr = handler.publishedRecords.get(0);
-//    assertEquals("log record: " + lr, Level.WARNING, lr.getLevel());
-//    assertTrue("log record: " + lr, lr.getMessage().contains("Failed to activate inhabitant"));
-//    assertNotNull("log record: " + lr, lr.getThrown());
+    // assertEquals("log records: " + handler.publishedRecords, 1,
+    // handler.publishedRecords.size());
+    // LogRecord lr = handler.publishedRecords.get(0);
+    // assertEquals("log record: " + lr, Level.WARNING, lr.getLevel());
+    // assertTrue("log record: " + lr,
+    // lr.getMessage().contains("Failed to activate inhabitant"));
+    // assertNotNull("log record: " + lr, lr.getThrown());
   }
 
   /**
-   * Verifies the affect of exceptions during the injection phase.  The
-   * expectation is that the dependent inhabitant should NOT be 
-   * wired / activated in such circumstances.
+   * Verifies the affect of exceptions during the injection phase. The
+   * expectation is that the dependent inhabitant should NOT be wired /
+   * activated in such circumstances.
    */
   @Test
   public void errorThrowingInDI() {
-    Inhabitant<?> iets = 
-      h.getInhabitant(ErrorThrowingContract.class, null);
+    Inhabitant<?> iets = h.getInhabitant(ErrorThrowingContract.class, null);
     assertNotNull(iets);
     assertFalse(iets.isInstantiated());
-    
-    Inhabitant<?> ietds = 
-      h.getInhabitant(Simple.class, "ErrorThrowingDependentService");
+
+    Inhabitant<?> ietds = h.getInhabitant(Simple.class,
+        "ErrorThrowingDependentService");
     assertNotNull(ietds);
     assertNotSame(iets, ietds);
     assertFalse(ietds.isInstantiated());
-  
+
     LogHandler handler = new LogHandler();
     Logger logger = Logger.getLogger(LazyInhabitant.class.getName());
     logger.addHandler(handler);
-    
+
     try {
-      Simple simple = h.getComponent(Simple.class, "ErrorThrowingDependentService");
+      Simple simple = h.getComponent(Simple.class,
+          "ErrorThrowingDependentService");
       fail("Expected unsatisfied dependencies exception but got: " + simple);
     } catch (Exception e) {
-      // expected
-      assertEquals("exception type", ComponentException.class, e.getClass());
-      assertEquals("message", "injection failed on org.jvnet.hk2.test.impl.ErrorThrowingDependentService.errorThrowing with interface org.jvnet.hk2.test.contracts.ErrorThrowingContract", e.getLocalizedMessage());
+      // e.printStackTrace();
+      assertTrue("exception type: " + e, ComponentException.class.isInstance(e));
+      assertEquals(
+          "message",
+          "injection failed on org.jvnet.hk2.test.impl.ErrorThrowingDependentService.errorThrowing with interface org.jvnet.hk2.test.contracts.ErrorThrowingContract",
+          e.getLocalizedMessage());
       Throwable e2 = e.getCause();
-      assertEquals("exception 2 type", ComponentException.class, e2.getClass());
-      assertEquals("message 2", "injection failed on void org.jvnet.hk2.test.impl.ErrorThrowingService.fakeRandomContractThrowingUp(org.jvnet.hk2.test.runlevel.RandomContract)", e2.getLocalizedMessage());
+      assertTrue("exception 2 type: " + e, ComponentException.class
+              .isInstance(e2));
+      assertEquals(
+          "message 2",
+          "injection failed on void org.jvnet.hk2.test.impl.ErrorThrowingService.fakeRandomContractThrowingUp(org.jvnet.hk2.test.runlevel.RandomContract)",
+          e2.getLocalizedMessage());
     }
-    
+
     assertFalse(iets.isInstantiated());
     assertFalse(ietds.isInstantiated());
 
     // TODO: do logging (in the dynamic work)
-//    assertEquals("log records: " + handler.publishedRecords, 2, handler.publishedRecords.size());
-//    for (LogRecord lr : handler.publishedRecords) {
-//      assertEquals("log record: " + lr, Level.WARNING, lr.getLevel());
-//      assertTrue("log record: " + lr, lr.getMessage().contains("Failed to activate inhabitant"));
-//      assertNotNull("log record: " + lr, lr.getThrown());
-//    }
+    // assertEquals("log records: " + handler.publishedRecords, 2,
+    // handler.publishedRecords.size());
+    // for (LogRecord lr : handler.publishedRecords) {
+    // assertEquals("log record: " + lr, Level.WARNING, lr.getLevel());
+    // assertTrue("log record: " + lr,
+    // lr.getMessage().contains("Failed to activate inhabitant"));
+    // assertNotNull("log record: " + lr, lr.getThrown());
+    // }
   }
   
   
   static class LogHandler extends Handler {
     final ArrayList<LogRecord> publishedRecords = new ArrayList<LogRecord>();
-    
+
     @Override
     public void close() throws SecurityException {
     }

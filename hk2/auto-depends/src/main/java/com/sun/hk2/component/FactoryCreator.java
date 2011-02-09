@@ -39,13 +39,16 @@
  */
 package com.sun.hk2.component;
 
+import java.security.AccessControlContext;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.jvnet.hk2.component.ComponentException;
+import org.jvnet.hk2.component.ContextualFactory;
 import org.jvnet.hk2.component.Factory;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
+import org.jvnet.hk2.component.InjectionPoint;
 import org.jvnet.hk2.component.MultiMap;
 
 /**
@@ -72,9 +75,28 @@ public class FactoryCreator<T> extends AbstractCreatorImpl<T> {
 
     public T create(Inhabitant onBehalfOf) throws ComponentException {
         logger.log(Level.FINER, "factory {0} invoked", factory);
-        T t = type.cast(factory.get().getObject());
-        logger.log(Level.FINER, "factory created object {0}", t);
-        inject(habitat,t,onBehalfOf);
+        Factory f = factory.get();
+        T t;
+        
+        AccessControlContext acc = Hk2ThreadContext.getCallerACC();
+        InjectionPoint ip = Hk2ThreadContext.getCallerIP();
+        // these are not [currently] available for Holder based injection
+//      assert(null != acc);
+//      assert(null != ip);
+        if (ContextualFactory.class.isInstance(f) && (null != ip || null != acc)) {
+          t = type.cast(ContextualFactory.class.cast(f).getObject(ip, acc));
+        } else {
+          t = type.cast(f.getObject());
+        }
+        // potential security issue here if logged
+//        logger.log(Level.FINER, "factory created object {0}", t);
+        
+        if (null == t) {
+          // don't inject if its null!
+          return null;
+        }
+        
+        inject(habitat, t, onBehalfOf);
         return t;
     }
 }

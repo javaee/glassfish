@@ -41,7 +41,7 @@ package org.jvnet.hk2.test.impl;
 
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.PerLookup;
+import org.jvnet.hk2.component.*;
 import org.jvnet.hk2.test.contracts.Simple;
 
 /**
@@ -51,7 +51,33 @@ import org.jvnet.hk2.test.contracts.Simple;
  */
 @Service(name="two")
 @Scoped(PerLookup.class)
-public class TwoSimple implements Simple {
+public class TwoSimple implements Simple, PostConstruct, PreDestroy, InhabitantRequested {
+  public static int constructs;
+  public static int destroys;
+
+  public Inhabitant<?> self;
+
+  @Override
+  public void postConstruct() {
+    constructs++;
+    if (null == self) {
+      throw new IllegalStateException();
+    }
+  }
+
+  @Override
+  public void preDestroy() {
+    destroys++;
+    if (null == self) {
+      throw new IllegalStateException();
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public void setInhabitant(Inhabitant inhabitant) {
+    self = inhabitant;
+  }
 
   @Override
   public String get() {

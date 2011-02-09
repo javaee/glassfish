@@ -56,6 +56,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.jvnet.hk2.component.MultiMap;
@@ -70,6 +71,8 @@ import org.jvnet.hk2.component.MultiMap;
  */
 @SuppressWarnings("serial")
 public class InhabitantsDescriptor extends HashMap<String, String> {
+  private final Logger logger = Logger.getLogger(InhabitantsDescriptor.class.getCanonicalName());
+  
   private boolean dirty = false;
   private boolean dateEnabled = true;
   private boolean commentEnabled = true;
@@ -126,6 +129,7 @@ public class InhabitantsDescriptor extends HashMap<String, String> {
   @Override
   public String put(String key, String value) {
     dirty = true;
+    logger.log(Level.FINE, "adding kv={0},{1}", new Object[] {key, value});
     return super.put(key, value);
   }
 
@@ -175,6 +179,7 @@ public class InhabitantsDescriptor extends HashMap<String, String> {
   @Override
   public String remove(Object key) {
     dirty = true;
+    logger.log(Level.FINE, "removing k={0}", key);
     return super.remove(key);
   }
 
@@ -196,7 +201,7 @@ public class InhabitantsDescriptor extends HashMap<String, String> {
       write(out);
     } catch (IOException e) {
       if (null == messager) {
-        Logger.getAnonymousLogger().warning("Failed to write inhabitants file " + habitatName);
+        logger.warning("Failed to write inhabitants file " + habitatName);
       } else {
         messager.printError("Failed to write inhabitants file " + habitatName, e);
       }

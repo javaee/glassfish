@@ -49,5 +49,7 @@ import org.jvnet.hk2.component.Singleton;
 @Service
 @Scoped(Singleton.class)
 public class HeavyBean {
+  
+  private HeavyBean() {}
     
 }

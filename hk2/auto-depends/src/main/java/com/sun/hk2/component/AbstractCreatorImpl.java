@@ -40,6 +40,7 @@
 package com.sun.hk2.component;
 
 import java.util.Collection;
+import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -119,11 +120,9 @@ public abstract class AbstractCreatorImpl<T> extends AbstractInhabitantImpl<T> i
         logger.log(Level.FINER, "injection starting on {0}", t);
 
         InjectionManager injectionMgr = createInjectionManager();
-        
-        Collection<InjectionResolver> targets = habitat.getAllByType(InjectionResolver.class);
-//        Collection<InjectionResolver> otherTargets = habitat.getAllByContract(InjectionResolver.class);
-        assert(!targets.isEmpty());
-        injectionMgr.inject(t, onBehalfOf, targets.toArray(new InjectionResolver[targets.size()]));
+        InjectionResolver[] targets = getInjectionResolvers(habitat);
+        ExecutorService es = getExecutorService(habitat, onBehalfOf);
+        injectionMgr.inject(t, onBehalfOf, es, targets);
 
         // postContruct call if any
         if (t instanceof PostConstruct) {
@@ -136,6 +135,18 @@ public abstract class AbstractCreatorImpl<T> extends AbstractInhabitantImpl<T> i
 
     protected InjectionManager createInjectionManager() {
       return new InjectionManager();
+    }
+    
+    protected InjectionResolver[] getInjectionResolvers(Habitat h) {
+      Collection<InjectionResolver> targets = habitat.getAllByType(InjectionResolver.class);
+      assert(!targets.isEmpty());
+      return targets.toArray(new InjectionResolver[targets.size()]);    
+    }
+
+    // TODO: toggle this to turn multi-threaded injection on or off
+    protected ExecutorService getExecutorService(Habitat h, Inhabitant<?> onBehalfOf) {
+      return h.getComponent(ExecutorService.class, Constants.EXECUTOR_INHABITANT_INJECTION_MANAGER);
+//      return null;
     }
     
 }

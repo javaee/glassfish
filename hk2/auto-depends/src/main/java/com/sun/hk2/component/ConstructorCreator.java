@@ -44,6 +44,7 @@ import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.MultiMap;
 
+import java.lang.reflect.Constructor;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
@@ -53,11 +54,9 @@ import java.security.PrivilegedAction;
  */
 @SuppressWarnings("unchecked")
 public class ConstructorCreator<T> extends AbstractCreatorImpl<T> {
-//    private final ScopeInstance singletonScope;
 
     public ConstructorCreator(Class<T> type, Habitat habitat, MultiMap<String,String> metadata) {
         super(type, habitat, metadata);
-//        singletonScope = habitat.singletonScope;
     }
 
     public T create(Inhabitant onBehalfOf) throws ComponentException {
@@ -66,6 +65,13 @@ public class ConstructorCreator<T> extends AbstractCreatorImpl<T> {
         } catch (InstantiationException e) {
             throw new ComponentException("Failed to create "+type,e);
         } catch (IllegalAccessException e) {
+            try {
+              Constructor<T> ctor = type.getDeclaredConstructor(null);
+              ctor.setAccessible(true);
+              return ctor.newInstance(null);
+            } catch (Exception e1) {
+              // ignore
+            }
             throw new ComponentException("Failed to create "+type,e);
         } catch (LinkageError e) {
             throw new ComponentException("Failed to create "+type,e);
@@ -76,44 +82,42 @@ public class ConstructorCreator<T> extends AbstractCreatorImpl<T> {
 
     public void initialize(final T t, final Inhabitant onBehalfOf) throws ComponentException {
         super.initialize(t, onBehalfOf);
-        
-//        Scoped scoped = t.getClass().getAnnotation(Scoped.class);
-//        ScopeInstance si = (scoped == null ? singletonScope : getScope(scoped));
-        if (System.getSecurityManager() != null) {
-          AccessController.doPrivileged(new PrivilegedAction() {
-              // privileged required for running with SecurityManager ON
-              public java.lang.Object run() {
-                  inject(habitat, t, onBehalfOf);
-                  return null;
+
+        if (habitat.isContextualFactoriesPresent()) {
+          Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+              if (System.getSecurityManager() != null) {
+                AccessController.doPrivileged(new PrivilegedAction() {
+                    // privileged required for running with SecurityManager ON
+                    public java.lang.Object run() {
+                        inject(habitat, t, onBehalfOf);
+                        return null;
+                    }
+                });
+              } else {
+                inject(habitat, t, onBehalfOf);
               }
-          });
+            }
+          };
+          
+          Hk2ThreadContext.captureACCandRun(runnable);
+          
         } else {
-          inject(habitat, t, onBehalfOf);
+
+          if (System.getSecurityManager() != null) {
+            AccessController.doPrivileged(new PrivilegedAction() {
+                // privileged required for running with SecurityManager ON
+                public java.lang.Object run() {
+                    inject(habitat, t, onBehalfOf);
+                    return null;
+                }
+            });
+          } else {
+            inject(habitat, t, onBehalfOf);
+          }
+          
         }
     }
 
-//    /**
-//     * Determines the {@link ScopeInstance} that stores the component.
-//     *
-//     * @return
-//     *      null for prototype scope. (Note that in {@link Scope#current()}
-//     *      null return value is an error.)
-//     */
-//    private ScopeInstance getScope(Scoped svc) throws ComponentException {
-//        Class<? extends Scope> s = svc.value();
-//        // for performance reason and to avoid infinite recursion,
-//        // recognize these two fundamental built-in scopes and process them differently.
-//        if(s==Singleton.class)
-//            return singletonScope;
-//        if(s==PerLookup.class)
-//            return null;
-//
-//        // for all the other scopes, including user-defined ones.
-//        Scope scope = habitat.getByType(s);
-//        ScopeInstance si = scope.current();
-//        if(si==null) // scope is an extension point, so beware for broken implementations
-//            throw new ComponentException(scope+" returned null from the current() method");
-//        return si;
-//    }
-    
 }

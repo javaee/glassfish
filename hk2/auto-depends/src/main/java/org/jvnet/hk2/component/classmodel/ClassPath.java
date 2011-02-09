@@ -60,11 +60,11 @@ import org.jvnet.hk2.component.Habitat;
  * 
  * @author Jerome Dochez
  * @author Jeff Trent
- * 
- * @since 3.1
  */
 public abstract class ClassPath {
 
+  private static Logger logger = Logger.getLogger(ClassPath.class.getName());
+  
   // classpath is the one that was passed in originally
   public final LinkedHashSet<String> classPathEntries = new LinkedHashSet<String>();
   
@@ -92,8 +92,7 @@ public abstract class ClassPath {
   }
   
   protected ClassPath(boolean allowTestClassPath) {
-    String classPath = (allowTestClassPath) ? 
-        System .getProperty("surefire.test.class.path") : null;
+    String classPath = (allowTestClassPath) ?  System.getProperty("surefire.test.class.path") : null;
     if (null == classPath) {
       classPath = System.getProperty("java.class.path");
     }
@@ -119,6 +118,7 @@ public abstract class ClassPath {
       for (String filename : filenames) {
         if (!filename.equals("")) {
           final File classpathEntry = new File(filename);
+          logger.log(Level.FINE, "adding cpEntry={0}", classpathEntry);
           classPathEntries.add(classpathEntry.getAbsolutePath());
           addTransitiveJars(expandedClassPathEntries, classpathEntry);
         }
@@ -163,7 +163,6 @@ public abstract class ClassPath {
   public Set<File> getFileEntries() {
     LinkedHashSet<File> fileEntries = new LinkedHashSet<File>();
     
-    Logger logger = Logger.getAnonymousLogger();
     for (String fileName : expandedClassPathEntries) {
       File file = new File(fileName);
       if (!file.exists()) {
@@ -182,7 +181,6 @@ public abstract class ClassPath {
   public URL[] getRawURLs() throws IOException {
     ArrayList<URL> urls = new ArrayList<URL>(classPathEntries.size());
 
-    Logger logger = Logger.getAnonymousLogger();
     for (String fileName : classPathEntries) {
       File file = new File(fileName);
       if (file.exists()) {
@@ -223,18 +221,19 @@ public abstract class ClassPath {
 
           // manifest may contain additional classpath
           if (mf != null) {
-            String additionalClasspath = mf.getMainAttributes().getValue(
-                Attributes.Name.CLASS_PATH);
+            String additionalClasspath = mf.getMainAttributes().getValue(Attributes.Name.CLASS_PATH);
 
             if (additionalClasspath != null) {
               for (String classpathEntry : additionalClasspath.split(" ")) {
                 if (!classpathEntry.equals("")) {
-                  File mfClasspathFile = new File(classpathFile.getParent(),
-                      classpathEntry.trim());
+                  File mfClasspathFile = new File(classpathFile.getParent(), classpathEntry.trim());
 
                   if (mfClasspathFile.exists()
                       && !cpSet.contains(mfClasspathFile.getAbsolutePath())) {
+                    logger.log(Level.FINE, "adding transitive cpEntry={0}", mfClasspathFile);
                     addTransitiveJars(cpSet, mfClasspathFile);
+                  } else {
+                    logger.log(Level.FINE, "skipping cpEntry={0}", mfClasspathFile);
                   }
                 }
               }
@@ -242,8 +241,10 @@ public abstract class ClassPath {
           }
         }
       } catch (Exception ex) {
-        Logger.getAnonymousLogger().log(Level.FINE, "an error occurred", ex);
+        logger.log(Level.FINE, "an error occurred", ex);
       }
+    } else {
+      logger.log(Level.FINE, "cpEntry={0} does not exist", classpathFile);
     }
   }
 

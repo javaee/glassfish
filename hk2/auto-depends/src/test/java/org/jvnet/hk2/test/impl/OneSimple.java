@@ -39,9 +39,12 @@
  */
 package org.jvnet.hk2.test.impl;
 
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.InhabitantRequested;
+import org.jvnet.hk2.component.PostConstruct;
+import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.test.contracts.Simple;
 
 /**
@@ -52,16 +55,45 @@ import org.jvnet.hk2.test.contracts.Simple;
  * To change this template use File | Settings | File Templates.
  */
 @Service(name="one")
-public class OneSimple implements Simple, InhabitantRequested {
-    public Inhabitant<?> self;
-    
-    public String get() {
-        return "one";
-    }
+public class OneSimple implements Simple, PostConstruct, PreDestroy, InhabitantRequested {
+  public static int constructs;
+  public static int destroys;
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public void setInhabitant(Inhabitant inhabitant) {
-      this.self = inhabitant;
+  public Inhabitant<?> self;
+
+  public Simple twoSimple;
+
+  @Inject(name="two")
+  public void setTwoSimple(Simple simple) {
+    twoSimple = simple;
+  }
+
+  @Override
+  public void postConstruct() {
+    constructs++;
+    if (null == self) {
+      throw new IllegalStateException();
     }
+    if (null == twoSimple) {
+      throw new IllegalStateException();
+    }
+  }
+
+  @Override
+  public void preDestroy() {
+    destroys++;
+    if (null == self) {
+      throw new IllegalStateException();
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public void setInhabitant(Inhabitant inhabitant) {
+    self = inhabitant;
+  }
+
+  public String get() {
+    return "one";
+  }
 }

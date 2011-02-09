@@ -40,6 +40,7 @@
 package org.jvnet.hk2.junit;
 
 import com.sun.hk2.component.*;
+
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Enableable;
 import org.jvnet.hk2.component.Habitat;
@@ -78,12 +79,13 @@ public class Hk2TestServices {
     private final boolean defaultRLSEnabled;
     
     public Hk2TestServices() {
-        this(null, null, true);
+        this(null, null, true, true);
     }
 
     protected Hk2TestServices(Class<? extends HabitatFactory> habitatFactoryClass,
         Class<? extends InhabitantsParserFactory> ipFactoryClass,
-        boolean defaultRLSEnabled) {
+        boolean defaultRLSEnabled,
+        boolean rlsConstraintsEnabled) {
       if (null == habitatFactoryClass || habitatFactoryClass.isInterface()) {
           this.habitatFactory = null;
       } else {
@@ -105,6 +107,7 @@ public class Hk2TestServices {
       }
       
       this.defaultRLSEnabled = defaultRLSEnabled;
+      RunLevelInhabitant.enable(rlsConstraintsEnabled);
       
       logger.log(Level.FINER, "Singleton created");
 
@@ -176,6 +179,15 @@ public class Hk2TestServices {
         return new Habitat(); 
     }
 
+    // does not create / spawn RunLevelService
+    public Habitat createPopulatedHabitat() throws ComponentException {
+      Habitat habitat = createHabitat();
+      InhabitantsParser ip = createInhabitantsParser(habitat);
+      populateHabitat(habitat, ip);
+      habitat.initialized();
+      return habitat;
+    }
+    
     public InhabitantsParser createInhabitantsParser(Habitat h) throws ComponentException {
       if (null != ipFactory) {
         return ipFactory.createInhabitantsParser(h);

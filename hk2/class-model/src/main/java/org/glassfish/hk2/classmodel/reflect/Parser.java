@@ -55,9 +55,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -396,13 +394,16 @@ public class Parser implements Closeable {
     }
 
     private ExecutorService createExecutorService() {
+        // TODO: may have to dumb this down since there appears to be issues in ZipFile processing when there is contention on the same file or directory
         Runtime runtime = Runtime.getRuntime();
         int nbOfProcessors = runtime.availableProcessors();
-        return Executors.newFixedThreadPool(nbOfProcessors+1, new ThreadFactory() {
+//        int nbOfProcessors = 1;
+        
+        return Executors.newFixedThreadPool(nbOfProcessors, new ThreadFactory() {
             @Override
             public Thread newThread(Runnable r) {
                 Thread t = new Thread(r);
-                t.setName("Hk2-jar-scanner");
+                t.setName("Hk2-jar-scanner-" + t.getId());
                 t.setDaemon(true);
                 return t;
             }

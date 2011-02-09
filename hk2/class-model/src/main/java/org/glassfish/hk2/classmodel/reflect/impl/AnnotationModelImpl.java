@@ -43,6 +43,8 @@ import org.glassfish.hk2.classmodel.reflect.AnnotatedElement;
 import org.glassfish.hk2.classmodel.reflect.AnnotationModel;
 import org.glassfish.hk2.classmodel.reflect.AnnotationType;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -66,7 +68,24 @@ public class AnnotationModelImpl implements AnnotationModel {
       return "AnnotationModel:" + type + "-" + element;
     }
 
+    @SuppressWarnings("unchecked")
     public void addValue(String name, Object value) {
+        if (null == name) {
+          // check for arrayed value(s)
+          name = "value";
+          Object prevVal = values.get(name);
+          if (null != prevVal) {
+            if (Collection.class.isInstance(prevVal)) {
+              ((Collection<Object>)prevVal).add(value);
+              return;
+            } else {
+              Collection<Object> coll = new ArrayList<Object>();
+              coll.add(prevVal);
+              coll.add(value);
+              value = coll;
+            }
+          }
+        }
         values.put(name, value);
     }
 

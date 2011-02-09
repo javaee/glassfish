@@ -41,6 +41,8 @@ package com.sun.hk2.component;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.Set;
 
 import org.jvnet.hk2.annotations.RunLevel;
@@ -48,15 +50,13 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
-import org.jvnet.hk2.component.InhabitantListener;
+import org.jvnet.hk2.component.InhabitantProviderInterceptor;
 import org.jvnet.hk2.component.MultiMap;
 import org.jvnet.hk2.component.PerLookup;
-import org.jvnet.hk2.component.RunLevelService;
 import org.jvnet.hk2.component.Scope;
 import org.jvnet.hk2.component.Singleton;
 import org.jvnet.hk2.component.Creator;
 import org.jvnet.hk2.component.Creators;
-import org.jvnet.hk2.component.internal.runlevel.RunLevelServices;
 
 /**
  * Factory for Inhabitants.
@@ -66,11 +66,11 @@ import org.jvnet.hk2.component.internal.runlevel.RunLevelServices;
  * @since 3.1
  */
 // TODO: Make all Inhabitant types package private (especially ctors)
-// TODO: should probably use iface for InhabitantFactory instead of hardcoding them.
 public class Inhabitants {
 
-  private static final RunLevelServices runLevelServices = new RunLevelServices(); 
-  
+  /**
+   * @deprecated
+   */
   @SuppressWarnings("unchecked")
   public static Inhabitant<?> createInhabitant(Habitat habitat,
       Holder<ClassLoader> classLoader,
@@ -78,46 +78,31 @@ public class Inhabitants {
       MultiMap<String, String> metadata,
       Inhabitant<?> lead,
       Set<String> indicies) {
+    Iterator<InhabitantProviderInterceptor> interceptors = 
+      (null == habitat) ? Collections.EMPTY_LIST.iterator() :
+        habitat.getAllByContract(InhabitantProviderInterceptor.class).iterator();
+    return createInhabitant(habitat, interceptors,
+        classLoader, typeName, metadata, lead, null, indicies);
+  }
+  
+  @SuppressWarnings("unchecked")
+  public static Inhabitant<?> createInhabitant(Habitat habitat,
+      Iterator<InhabitantProviderInterceptor> interceptors,
+      Holder<ClassLoader> classLoader,
+      String typeName,
+      MultiMap<String, String> metadata,
+      Inhabitant<?> lead,
+      InhabitantStore store,
+      Set<String> indicies) {
     AbstractInhabitantImpl<?> i = new LazyInhabitant(habitat, classLoader, typeName, metadata, lead);
-    if (contains(indicies, RunLevel.class.getName())) {
-      // this is a RunLevel service, we need to load type in order to get
-      // more type information about it, namely it's environment and actual RunLevel id
-      RunLevel rl = i.getAnnotation(RunLevel.class);
-      assert(null != rl) : typeName + " is a problem; " + i + " has no RunLevel annotation";
-      assert(!i.isInstantiated()) : "inhabitant should not be active: " + i;
-
-      // get the appropriate RLS for this RunLevel
-      RunLevelService<?> rls = runLevelServices.get(habitat, rl);
-      InhabitantListener listener = InhabitantListener.class.isInstance(rls) ?
-          InhabitantListener.class.cast(rls) : null;
-
-      // wrap the inhabitant with a RunLevelInhabitant
-      int runLevel = rl.value();
-      
-      // construct the runLevel inhabitant
-      i = new RunLevelInhabitant(i, runLevel, rls.getState(), listener);
+    InhabitantProviderInterceptor interceptor = 
+        (null != interceptors && interceptors.hasNext()) ? interceptors.next() : null;
+    if (null != interceptor) {
+      i = interceptor.visit(i, typeName, indicies, interceptors, store);
     }
-    
     return i;
   }
   
-  private static boolean contains(Set<String> indicies, String name) {
-    if (null != indicies) {
-      if (indicies.contains(name)) {
-        return true;
-      }
-      
-      // it could be a named inhabitant, in which case we need to iterate
-      name += ":";
-      for (String index : indicies) {
-        if (index.startsWith(name)) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
   /**
    * Creates a singleton wrapper around existing object.
    */

@@ -69,7 +69,7 @@ public class MetaTest extends Test {
         for (Animal a : animals) {
             // better start with caged...
             System.out.println("Expecting caged animal, got " + a.getName());
-            assertTrue(a.getName().startsWith("Caged")); 
+            assertTrue(a.getName(), a.getName().startsWith("Caged")); 
         }
     }
 }

@@ -39,7 +39,6 @@
  */
 package org.jvnet.hk2.test.contracts;
 
-import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.component.PreDestroy;
 
 /**
@@ -47,7 +46,7 @@ import org.jvnet.hk2.component.PreDestroy;
  * 
  * @author Jeff Trent
  */
-@Contract
+//@Contract // commenting it out requires the use of either @ContractProvided or Factory based creation
 public interface TestingInfoService extends PreDestroy {
   
   public boolean isPreDestroyed();

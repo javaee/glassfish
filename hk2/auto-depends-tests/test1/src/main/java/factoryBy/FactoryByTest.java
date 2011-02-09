@@ -51,8 +51,14 @@ public class FactoryByTest extends Test {
     @Inject
     Pig pig;
 
+    @Inject
+    Piglet piglet;
+    
     public void run() {
         System.out.println("I'm "+pig);
         assertSame(Pig.BABE,pig);
+
+        System.out.println("I'm " + piglet);
+        assertSame(Piglet.ROO, piglet);
     }
 }
