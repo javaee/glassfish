@@ -302,7 +302,7 @@ public class ConfigInjectorGenerator extends SimpleDeclarationVisitor implements
         }
 
         /**
-         * Generates a single injection method, which injects
+         * Generates a single injection method, which inject
          * value(s) of a particular element/attribute name.
          */
         private abstract class MethodGenerator {

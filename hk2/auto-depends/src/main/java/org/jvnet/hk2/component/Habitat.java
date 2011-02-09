@@ -944,7 +944,7 @@ public class Habitat implements Injector {
     }
 
     @Override
-    public <T> T injects(final T object) {
+    public <T> T inject(final T object) {
         Creator<T> c = new ConstructorCreator<T>((Class<T>) object.getClass(), this, null) {
             @Override
             public T create(Inhabitant onBehalfOf) throws ComponentException {

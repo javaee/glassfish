@@ -54,5 +54,5 @@ public interface Injector {
      * @param <T>  type of the instance
      * @return  the injected instance
      */
-    <T> T injects(T target);
+    <T> T inject(T target);
 }

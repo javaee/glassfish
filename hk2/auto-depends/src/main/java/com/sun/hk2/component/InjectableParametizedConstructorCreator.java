@@ -57,7 +57,7 @@ public class InjectableParametizedConstructorCreator<T> extends ConstructorCreat
     @Override
     public T create(Inhabitant onBehalfOf) throws ComponentException {
         // find appropriate constructor.
-        Constructor[] ctors = type.getConstructors();
+        Constructor[] ctors = type.getDeclaredConstructors();
         if (ctors.length!=1) {
             // more than one constructor, we expect a null parameter ctor and fall back
             // into parent.
