@@ -51,9 +51,9 @@ import java.util.Set;
 public class SslConfig {
 
     private String keyStore;
-    private File trustStore;
+    private String trustStore;
     private String keyPassword;
-    private long timeoutMilliSeconds;
+    private int timeoutMilliSeconds;
     private Set<SslType> algorithms;
 
     /**
@@ -77,7 +77,7 @@ public class SslConfig {
      *
      * @param trustStore The location of the truststore file
      */
-    public void setTrustStore(File trustStore) {
+    public void setTrustStore(String trustStore) {
         this.trustStore = trustStore;
     }
 
@@ -91,11 +91,11 @@ public class SslConfig {
     }
 
     /**
-     * Sets the timeout
+     * Sets the timeout within which there must be activity from the client
      *
      * @param timeoutMilliSeconds The timeout in milliseconds
      */
-    public void setHandshakeTimeout(long timeoutMilliSeconds) {
+    public void setHandshakeTimeout(int timeoutMilliSeconds) {
         this.timeoutMilliSeconds = timeoutMilliSeconds;
     }
 
@@ -122,7 +122,7 @@ public class SslConfig {
      *
      * @return the location of the truststore file
      */
-    public File getTrustStore() {
+    public String getTrustStore() {
         return this.trustStore;
     }
 
@@ -136,11 +136,11 @@ public class SslConfig {
     }
 
     /**
-     * Gets the timeout
+     * Gets the timeout within which there must be activity from the client
      *
-     * @return the timeout
+     * @return the timeout in milliseconds
      */
-    public long getHandshakeTimeout() {
+    public int getHandshakeTimeout() {
         return this.timeoutMilliSeconds;
     }
 

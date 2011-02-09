@@ -65,15 +65,7 @@ public class HttpsListener extends WebListenerBase  {
      * Sets the SSL configuration for this web listener
      */
     public void setSslConfig(SslConfig sslConfig) {
-
         this.sslConfig = sslConfig;
-        /* TODO
-        setKeystoreFile(sslConfig.getKeyStore());
-        setKeystorePass(sslConfig.getKeyPassword());
-        sslConfig.getTrustStore();
-        sslConfig.getHandshakeTimeout();
-        sslConfig.getAlgorithms();
-        */
     }
 
     /**
