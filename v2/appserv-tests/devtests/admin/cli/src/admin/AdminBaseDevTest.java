@@ -142,10 +142,8 @@ public abstract class AdminBaseDevTest extends BaseDevTest {
         AsadminReturn ret = asadminWithOutput("list-clusters");
         String s = (ret.out == null) ? "" : ret.out.trim();
 
-        System.out.println("WARNING!!!!  Work-around for ISSUE 12320 !!!!!!!!");
-
-        // hack -- if there are no clusters than there is no output
-        return s.toLowerCase().endsWith("list-clusters");
+        s = s.toLowerCase();
+        return s.endsWith("list-clusters") || s.indexOf("nothing to list") >= 0;
     }
 
     final boolean verifyNoInstances() {
@@ -210,6 +208,11 @@ public abstract class AdminBaseDevTest extends BaseDevTest {
         String s = "" + System.currentTimeMillis();
         s = s.substring(4, 10);
         return "in_" + s;
+    }
+    String generateClusterName() {
+        String s = "" + System.currentTimeMillis();
+        s = s.substring(4, 10);
+        return "cl_" + s;
     }
 
     String get(String what) {

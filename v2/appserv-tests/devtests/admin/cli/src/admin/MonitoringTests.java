@@ -48,12 +48,12 @@ public class MonitoringTests extends AdminBaseDevTest {
         // Also let's not forget disabling monitoring
 
         try {
-            enableMonitoring(configName, true);
-            runTestsThatNeedARunningDomain();
+            enableMonitoringUsingSet(configName, true);
+            createCluster();
         }
         finally {
             try {
-                enableMonitoring(configName, false);
+                enableMonitoringUsingSet(configName, false);
                 stopDomain();
             }
             catch (Exception e) {
@@ -63,22 +63,14 @@ public class MonitoringTests extends AdminBaseDevTest {
         }
     }
 
-    private void runTestsThatNeedARunningDomain() {
-        runGetTests();
-    }
-
-    private void runGetTests() {
-        //throw new UnsupportedOperationException("Not yet implemented");
-    }
-
     /**
      *
      * @param on if true it means turn on all levels to HIGH
      * if false it means set all to LOW
      * Also verify that they are currently set to the opposite
      */
-    private void enableMonitoring(String configName, boolean high) {
-        final String metName = "enableMonitoring";
+    private void enableMonitoringUsingSet(String configName, boolean high) {
+        final String metName = "enableMonitoringWithSet";
 
         String prepend = MON_LEVEL_PREPEND + configName + MON_LEVEL_APPEND;
         String desiredValue = "=";
@@ -132,4 +124,9 @@ public class MonitoringTests extends AdminBaseDevTest {
     };
     private final static String HIGH = "HIGH";
     private final static String OFF = "OFF";
+
+    private void createCluster() {
+        report("verify-no-clusters", verifyNoClusters());
+        report("verify-no-instances", verifyNoInstances());
+    }
 }
