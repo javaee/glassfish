@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -133,6 +133,7 @@ public class WebTest {
             throw new Exception("Session cookie does not have any JVMROUTE");
         }
 
+	String clientCookie = sessionCookieHeader.replace("Path", "$Path").replace("HttpOnly", "$HttpOnly");
         /*
          * Resume session
          */        
@@ -142,7 +143,7 @@ public class WebTest {
             " HTTP/1.0\n";
         System.out.println("\nConnecting to: " + getRequestLine); 
         os.write(getRequestLine.getBytes());
-        os.write(("Cookie: " + sessionCookieHeader + "\n").getBytes());
+        os.write(("Cookie: " + clientCookie + "\n").getBytes());
         os.write("\n".getBytes());
         
         sessionCookieHeader = null;
@@ -155,7 +156,7 @@ public class WebTest {
             bis = new BufferedReader(new InputStreamReader(is));
             while ((line = bis.readLine()) != null) {
                 System.out.println(line);
-                if (line.equals("HTTP/1.1 200 OK")) {
+                if (line.equals("HTTP/1.1 200 OK") || line.equals("HTTP/1.0 200 OK")) {
                     okStatus = true;
                 } else if (line.startsWith("Set-Cookie:") &&
                         line.indexOf("JSESSIONID") != -1) {
