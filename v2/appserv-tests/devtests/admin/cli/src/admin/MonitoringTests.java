@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package admin;
 
 import admin.AdminBaseDevTest;
@@ -32,9 +31,27 @@ public class MonitoringTests extends AdminBaseDevTest {
         return "Monitoring DevTests";
     }
 
-    public void runTests(){
+    public void runTests() {
         startDomain();
-        stopDomain();
-        stat.printSummary();
+
+        // if we started it -- make very sure that we at least attempt 
+        // to stop it in all cases!
+
+        try {
+            runTestsThatNeedARunningDomain();
+        }
+        finally {
+            try {
+                stopDomain();
+            }
+            catch (Exception e) {
+                report("BigProblemInMonitoringTests", false);
+                System.out.println("" + e);
+            }
+            stat.printSummary();
+        }
+    }
+
+    private void runTestsThatNeedARunningDomain() {
     }
 }
