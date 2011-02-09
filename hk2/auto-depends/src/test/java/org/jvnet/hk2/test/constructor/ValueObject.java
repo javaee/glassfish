@@ -61,6 +61,6 @@ public class ValueObject {
     }
 
     public static ValueObject from(Injector injector, String one, String two) {
-        return injector.injects(new ValueObject(one, two));
+        return injector.inject(new ValueObject(one, two));
     }
 }

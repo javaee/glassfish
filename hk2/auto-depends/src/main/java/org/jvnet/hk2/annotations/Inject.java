@@ -49,7 +49,7 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation to define a required resource for a component. 
- * The HK2 runtime injects all instance variables annotated with 
+ * The HK2 runtime inject all instance variables annotated with
  * @Inject as well as setter methods.
  <p>
  * Examples:<br>
