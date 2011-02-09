@@ -128,6 +128,11 @@ public abstract class AdminBaseDevTest extends BaseDevTest {
                 asadmin("start-domain"));
     }
 
+    protected void startDomainDebug() {
+        report(getTestName() + "-start-def-domain" + startstops++,
+                asadmin("start-domain", "--debug"));
+    }
+
     protected void stopDomain(String domainname) {
         report(getTestName() + "-stop-domain" + startstops++,
                 asadmin("stop-domain", domainname));
