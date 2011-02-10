@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -69,6 +69,7 @@ import org.jvnet.hk2.config.types.Property;
  * @author ludovic champenosi
  */
 public class SecurityUtil {
+    private static final String DAS_CONFIG = "server-config";
     private static String ADMIN_REALM = "admin-realm";
     private static String FILE_REALM_CLASSNAME = "com.sun.enterprise.security.auth.realm.file.FileRealm";
 
@@ -292,23 +293,17 @@ public class SecurityUtil {
     }
 
     public String getAnonymousUser(Habitat habitat) {
-        List<Config> configs = domain.getConfigs().getConfig();
         String user = null;
-
         // find the ADMIN_REALM
         AuthRealm adminFileAuthRealm = null;
-        for (Config config : configs) {
-            if (config.getSecurityService() == null) {
-                continue;
-            }
 
-            for (AuthRealm auth : config.getSecurityService().getAuthRealm()) {
-                if (auth.getName().equals(ADMIN_REALM)) {
-                    adminFileAuthRealm = auth;
-                    break;
-                }
+        for (AuthRealm auth : domain.getConfigNamed(DAS_CONFIG).getSecurityService().getAuthRealm()) {
+            if (auth.getName().equals(ADMIN_REALM)) {
+                adminFileAuthRealm = auth;
+                break;
             }
         }
+
         if (adminFileAuthRealm == null) {
             // There must always be an admin realm
             throw new IllegalStateException("Cannot find admin realm");
