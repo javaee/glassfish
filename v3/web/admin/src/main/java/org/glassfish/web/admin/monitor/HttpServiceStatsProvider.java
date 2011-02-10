@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,9 +43,11 @@ package org.glassfish.web.admin.monitor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.external.statistics.CountStatistic;
+import org.glassfish.external.statistics.StringStatistic;
 import org.glassfish.external.statistics.annotations.Reset;
 import org.glassfish.external.statistics.impl.CountStatisticImpl;
 import org.glassfish.external.statistics.impl.StatisticImpl;
+import org.glassfish.external.statistics.impl.StringStatisticImpl;
 import org.glassfish.external.statistics.impl.TimeStatisticImpl;
 import org.glassfish.external.probe.provider.annotations.*;
 import org.glassfish.gmbal.Description;
@@ -58,6 +60,7 @@ import org.jvnet.hk2.component.PostConstruct;
  * Provides the monitoring data at the Web container level
  *
  * @author Prashanth Abbagani
+ * @author Amy Roh
  */
 @AMXMetadata(type="request-mon", group="monitoring")
 @ManagedObject
@@ -67,16 +70,6 @@ public class HttpServiceStatsProvider implements PostConstruct {
     private static final Logger logger = Logger.getLogger(
         HttpServiceStatsProvider.class.getName());
 
-    //Provides the longest response time for a request - not a cumulative value, 
-    //but the largest response time from among the response times.
-    //private Counter maxTime = CounterFactory.createCount();
-    //Provides cumulative value of the times taken to process each request. 
-    //The processing time is the average of request processing times over the request count.
-    //private Counter processingTime = CounterFactory.createCount();
-    //Provides cumulative number of the requests processed so far.
-    //private Counter requestCount = CounterFactory.createCount();
-    //Provides the cumulative value of the error count. The error count represents 
-    //the number of cases where the response code was greater than or equal to 400.
     private static final String ERROR_COUNT_DESCRIPTION =
             "Cumulative value of the error count, with error count representing the number of cases where the response code was greater than or equal to 400";
     private static final String MAX_TIME_DESCRIPTION =
@@ -85,6 +78,24 @@ public class HttpServiceStatsProvider implements PostConstruct {
             "Average request processing time";
     private static final String REQUEST_COUNT_DESCRIPTION =
             "Cumulative number of requests processed so far";
+    private static final String COUNT_BYTES_RECEIVED_DESCRIPTION =
+            "The number of bytes received";
+    private static final String COUNT_BYTES_TRANSMITTED_DESCRIPTION =
+            "The number of bytes transmitted";
+    private static final String COUNT_OPEN_CONNECTIONS_DESCRIPTION =
+            "The number of open connections";
+    private static final String COUNT_REQUESTS_DESCRIPTION =
+            "The number of requests received";
+    private static final String MAX_BYTE_TRANSMISSION_RATE_DESCRIPTION =
+            "The maximum rate at which data was transmitted over some server-defined interval";
+    private static final String MAX_OPEN_CONNECTIONS_DESCRIPTION =
+            "The maximum number of open connections";
+    private static final String METHOD_DESCRIPTION =
+            "The method of the last request serviced";
+    private static final String RATE_BYTES_TRANSMITTED_DESCRIPTION =
+            "The rate (in bytes per second) at which data was transmitted over some server-defined interval";
+    private static final String URI_DESCRIPTION =
+            "The URI of the last request serviced";
     private static final String COUNT_200_DESCRIPTION =
             "Number of responses with a status code equal to 200";
     private static final String COUNT_2xx_DESCRIPTION =
@@ -118,8 +129,25 @@ public class HttpServiceStatsProvider implements PostConstruct {
             StatisticImpl.UNIT_MILLISECOND, MAX_TIME_DESCRIPTION);
     private CountStatisticImpl processingTime = new CountStatisticImpl("ProcessingTime",
             StatisticImpl.UNIT_MILLISECOND, PROCESSING_TIME_DESCRIPTION);
-    private CountStatisticImpl requestCount = new CountStatisticImpl("RequestCount",
-            StatisticImpl.UNIT_COUNT, REQUEST_COUNT_DESCRIPTION);
+    private CountStatisticImpl countBytesReceived = new CountStatisticImpl("CountBytesReceived",
+            StatisticImpl.UNIT_COUNT, COUNT_BYTES_RECEIVED_DESCRIPTION);
+    private CountStatisticImpl countBytesTransmitted = new CountStatisticImpl("CountBytesTransmitted",
+            StatisticImpl.UNIT_COUNT, COUNT_BYTES_TRANSMITTED_DESCRIPTION);
+    private CountStatisticImpl countOpenConnections = new CountStatisticImpl("CountOpenConnections",
+            StatisticImpl.UNIT_COUNT, COUNT_OPEN_CONNECTIONS_DESCRIPTION);
+    private CountStatisticImpl countRequests = new CountStatisticImpl("CountRequests",
+            StatisticImpl.UNIT_COUNT, COUNT_REQUESTS_DESCRIPTION);
+    private CountStatisticImpl maxByteTransmissionRate = new CountStatisticImpl("MaxByteTransmissionRate",
+            StatisticImpl.UNIT_COUNT, MAX_BYTE_TRANSMISSION_RATE_DESCRIPTION);
+    private CountStatisticImpl maxOpenConnections = new CountStatisticImpl("MaxOpenConnections",
+            StatisticImpl.UNIT_COUNT, MAX_OPEN_CONNECTIONS_DESCRIPTION);
+    private StringStatisticImpl method = new StringStatisticImpl("Method",
+            "String", METHOD_DESCRIPTION);
+    private CountStatisticImpl rateBytesTransmitted = new CountStatisticImpl("RateBytesTransmitted",
+            StatisticImpl.UNIT_COUNT, RATE_BYTES_TRANSMITTED_DESCRIPTION);
+    private StringStatisticImpl uri = new StringStatisticImpl("Uri",
+            "String", URI_DESCRIPTION);
+
     private CountStatisticImpl count200 = new CountStatisticImpl("Count200",
             StatisticImpl.UNIT_COUNT, COUNT_200_DESCRIPTION);
     private CountStatisticImpl count2xx = new CountStatisticImpl("Count2xx",
@@ -151,6 +179,7 @@ public class HttpServiceStatsProvider implements PostConstruct {
             "", "", "", System.currentTimeMillis(), -1L);
 
     private String virtualServerName = null;
+    private String [] networkListeners = null;
 
     private ThreadLocal<TimeStatData> individualData = new ThreadLocal<TimeStatData> (){
 
@@ -168,10 +197,10 @@ public class HttpServiceStatsProvider implements PostConstruct {
 
     };
 
-    public HttpServiceStatsProvider(String vsName) {
+    public HttpServiceStatsProvider(String vsName, String listeners) {
         this.virtualServerName = vsName;
+        this.networkListeners = listeners == null ? new String[0] : listeners.split(",");
     }
-
 
     public void postConstruct() {
     }
@@ -183,18 +212,65 @@ public class HttpServiceStatsProvider implements PostConstruct {
         return maxTime;
     }
 
-    @ManagedAttribute(id="requestcount")
-    @Description(REQUEST_COUNT_DESCRIPTION)
-    public CountStatistic getCount() {
-        requestCount.setCount(requestProcessTime.getCount());
-        return requestCount;
-    }
-
     @ManagedAttribute(id="processingtime")
     @Description(PROCESSING_TIME_DESCRIPTION)
     public CountStatistic getTime() {
         processingTime.setCount(this.getProcessTime());
         return processingTime;
+    }
+
+    @ManagedAttribute(id="countbytesreceived")
+    @Description(COUNT_BYTES_RECEIVED_DESCRIPTION)
+    public CountStatistic getCountBytesReceived() {
+        return countBytesReceived;
+    }
+
+    @ManagedAttribute(id="countbytestransmitted")
+    @Description(COUNT_BYTES_TRANSMITTED_DESCRIPTION)
+    public CountStatistic getCountBytesTransmitted() {
+        return countBytesTransmitted;
+    }
+
+    @ManagedAttribute(id="countopenconnections")
+    @Description(COUNT_OPEN_CONNECTIONS_DESCRIPTION)
+    public CountStatistic getCountOpenConnections() {
+        return countOpenConnections;
+    }
+
+    @ManagedAttribute(id="countrequests")
+    @Description(COUNT_REQUESTS_DESCRIPTION)
+    public CountStatistic getCountRequests() {
+        return countRequests;
+    }
+
+    @ManagedAttribute(id="maxbytetransmissionrate")
+    @Description(MAX_BYTE_TRANSMISSION_RATE_DESCRIPTION)
+    public CountStatistic getMaxByteTransmissionRate() {
+        return maxByteTransmissionRate;
+    }
+
+    @ManagedAttribute(id="maxopenconnections")
+    @Description(MAX_OPEN_CONNECTIONS_DESCRIPTION)
+    public CountStatistic getMaxOpenConnections() {
+        return maxOpenConnections;
+    }
+
+    @ManagedAttribute(id="method")
+    @Description(METHOD_DESCRIPTION)
+    public StringStatistic getMethod() {
+        return method;
+    }
+
+    @ManagedAttribute(id="ratebytestransmitted")
+    @Description(RATE_BYTES_TRANSMITTED_DESCRIPTION)
+    public CountStatistic getRateBytesTransmitted() {
+        return rateBytesTransmitted;
+    }
+
+    @ManagedAttribute(id="uri")
+    @Description(URI_DESCRIPTION)
+    public StringStatistic getUri() {
+        return uri;
     }
 
     @ManagedAttribute(id="errorcount")
@@ -283,6 +359,7 @@ public class HttpServiceStatsProvider implements PostConstruct {
 
     @ProbeListener("glassfish:web:http-service:requestStartEvent")
     public void requestStartEvent(
+            @ProbeParam("appName") String appName,
             @ProbeParam("hostName") String hostName,
             @ProbeParam("serverName") String serverName,
             @ProbeParam("serverPort") int serverPort,
@@ -290,16 +367,18 @@ public class HttpServiceStatsProvider implements PostConstruct {
             @ProbeParam("servletPath") String servletPath) {
         if ((hostName != null) && (hostName.equals(virtualServerName))) {
             individualData.get().setEntryTime(System.currentTimeMillis());
+            countRequests.increment();
             if (logger.isLoggable(Level.FINEST)) {
                 logger.finest(
                     "[TM]requestStartEvent received - virtual-server = " +
-                    serverName + " : port = " + serverPort);
+                    hostName + " : port = " + serverPort);
             }
         }
     }
 
     @ProbeListener("glassfish:web:http-service:requestEndEvent")
     public void requestEndEvent(
+            @ProbeParam("appName") String appName,
             @ProbeParam("hostName") String hostName,
             @ProbeParam("serverName") String serverName,
             @ProbeParam("serverPort") int serverPort,
@@ -314,12 +393,45 @@ public class HttpServiceStatsProvider implements PostConstruct {
             if (logger.isLoggable(Level.FINEST)) {
                 logger.finest(
                     "[TM]requestEndEvent received - virtual-server = " +
-                    serverName + ": application = " +
+                    hostName + ": application = " +
                     contextPath + " : servlet = " +
                     servletPath + " :Response code = " +
                     statusCode + " :Response time = " +
                     tsd.getTotalTime());
             }
+        }
+    }
+
+    // ---------------- Connection related listeners -----------
+    @ProbeListener("glassfish:kernel:connection-queue:connectionAcceptedEvent")
+    public void connectionAcceptedEvent(
+            @ProbeParam("listenerName") String listenerName,
+            @ProbeParam("connection") int connectionId,
+            @ProbeParam("address") String address) {
+        for (String listener : networkListeners) {
+            if (listener.equals(listenerName)) {
+                individualData.get().setEntryTime(System.currentTimeMillis());
+                countOpenConnections.increment();
+            }
+        }
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest(
+                "[TM]connectionAcceptedEvent received - virtual-server = " + listenerName);
+        }
+    }
+
+    @ProbeListener("glassfish:kernel:connection-queue:connectionClosedEvent")
+    public void connectionClosedEvent(
+            @ProbeParam("listenerName") String listenerName,
+            @ProbeParam("connection") int connectionId) {
+        for (String listener : networkListeners) {
+            if (listener.equals(listenerName)) {
+                countOpenConnections.decrement();
+            }
+        }
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest(
+                "[TM]connectionClosedEvent received - virtual-server = " + listenerName);
         }
     }
 
@@ -403,6 +515,14 @@ public class HttpServiceStatsProvider implements PostConstruct {
         this.errorCount.reset();
         this.maxTime.reset();
         this.processingTime.reset();
-        this.requestCount.reset();
+        this.countBytesReceived.reset();
+        this.countBytesTransmitted.reset();
+        this.countOpenConnections.reset();
+        this.countRequests.reset();
+        this.maxByteTransmissionRate.reset();
+        this.maxOpenConnections.reset();
+        this.method.reset();
+        this.rateBytesTransmitted.reset();
+        this.uri.reset();
     }
 }
