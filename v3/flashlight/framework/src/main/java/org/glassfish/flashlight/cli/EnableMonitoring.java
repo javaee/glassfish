@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -47,7 +47,6 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
-import org.glassfish.api.ActionReport.ExitCode;
 import org.glassfish.config.support.*;
 import org.glassfish.internal.api.*;
 import org.jvnet.hk2.annotations.Service;
@@ -56,7 +55,6 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PerLookup;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.tools.attach.VirtualMachine;
-import org.glassfish.server.ServerEnvironmentImpl;
 import java.io.File;
 import static com.sun.enterprise.util.SystemPropertyConstants.INSTALL_ROOT_PROPERTY;
 import com.sun.enterprise.config.serverbeans.MonitoringService;
@@ -64,8 +62,10 @@ import com.sun.enterprise.universal.process.ProcessUtils;
 import org.glassfish.flashlight.impl.client.FlashlightProbeClientMediator;
 
 /**
- * @author Sreenivas Munnangi
+ * @author Sreenivas Munnangi (3.0)
+ * @author Byron Nevins (3.1+)
  */
+
 @Service(name="enable-monitoring")
 @Scoped(PerLookup.class)
 @I18n("enable.monitoring")
@@ -74,11 +74,11 @@ import org.glassfish.flashlight.impl.client.FlashlightProbeClientMediator;
 
 public class EnableMonitoring implements AdminCommand {
 
-    @Inject
-    MonitoringService ms;
+    // do NOT inject this.
+    private MonitoringService ms;
 
     @Inject
-    Target targetService;
+    private Target targetService;
 
     @Param(name="target", optional=true, defaultValue = SystemPropertyConstants.DAS_SERVER_NAME)
     String target;
@@ -104,6 +104,17 @@ public class EnableMonitoring implements AdminCommand {
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
 
+        try {
+            ms = targetService.getConfig(target).getMonitoringService();
+        }
+        catch(Exception e) {
+            report.setMessage(localStrings.getLocalString("target.service.exception",
+                "Encountered exception trying to locate the MonitoringService element "
+                + "in the target ({0}) configuration: {1}", target, e.getMessage()));
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
+        }
+        
         // attach agent using given options
         // TODO: allow for user defined port
         if (!FlashlightProbeClientMediator.isAgentAttached()) {
@@ -151,7 +162,7 @@ public class EnableMonitoring implements AdminCommand {
 
         // mbean-enabled
         if (mbean != null) {
-            MonitoringConfig.setMBeanEnabled(ms, mbean.toString(), report);
+            MonitoringConfig .setMBeanEnabled(ms, mbean.toString(), report);
         }
 
         // dtrace-enabled
