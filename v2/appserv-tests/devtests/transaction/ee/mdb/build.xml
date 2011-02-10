@@ -52,8 +52,26 @@
     &reporting;
 
     <target name="all" depends="clean-results,all-embedded,all-local,dev-report"/>
-    <target name="all-local" depends="build,setup-local,deploy,run,undeploy,unsetup"/>
-    <target name="all-embedded" depends="build,setup-embedded,deploy,run,undeploy,unsetup"/>
+
+    <target name="all-embedded" depends="init-common">
+      <antcall target="build"/>
+      <antcall target="setup-embedded"/>
+      <antcall target="all-common"/>
+    </target>
+
+    <target name="all-local" depends="init-common">
+      <antcall target="build"/>
+      <antcall target="setup-local"/>
+      <antcall target="all-common"/>
+    </target>
+
+    <target name="all-common" depends="init-common">
+      <antcall target="deploy"/>
+      <antcall target="run"/>
+      <antcall target="undeploy"/>
+      <antcall target="reset-tables"/>
+      <antcall target="unsetup"/>
+    </target>
 
     <target name="setup-local" depends="init-common">
       <antcall target="setup-common"/>
