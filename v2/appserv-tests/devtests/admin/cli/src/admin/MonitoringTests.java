@@ -63,6 +63,7 @@ public class MonitoringTests extends AdminBaseDevTest {
         enableMonitoringTest(configName);
         enableMonitoringTest(CLUSTER_NAME);
         enableMonitoringTest(STAND_ALONE_INSTANCE_NAME);
+        report("leave-monitoring-enabled-for-other-devtests", asadmin("enable-monitoring"));
         deleteClusterAndInstances();
         stopDomain();
     }
@@ -285,7 +286,7 @@ public class MonitoringTests extends AdminBaseDevTest {
         "http-service",
         "connector-connection-pool",
         "connector-service",
-        // "deployment", -- this one is not in ContainerMonitoring
+        "deployment",
         "ejb-container",
         "jdbc-connection-pool",
         "jersey",
