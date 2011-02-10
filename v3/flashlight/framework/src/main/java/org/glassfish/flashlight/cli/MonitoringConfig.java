@@ -166,6 +166,8 @@ public class MonitoringConfig {
                         param.setJpa(level);
                     } else if (moduleName.equals(ContainerMonitoring.JERSEY)) {
                         param.setJersey(level);
+                    } else if (moduleName.equals(ContainerMonitoring.DEPLOYMENT)) {
+                        param.setDeployment(level);
                     } else {
                         valueUpdated.set(false);
                     }

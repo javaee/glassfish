@@ -54,6 +54,7 @@ import org.glassfish.api.admin.config.Named;
  * configuration through the ContainerMonitoring interface.
  *
  * @author Nandini Ektare
+ * @author Byron Nevins (3.1+)
  */
 @Configured
 public interface ContainerMonitoring extends ConfigBeanProxy, Named {
@@ -64,6 +65,7 @@ public interface ContainerMonitoring extends ConfigBeanProxy, Named {
 
     public static final String CONNECTOR_CONNECTION_POOL = "connector-connection-pool";
     public static final String CONNECTOR_SERVICE = "connector-service";
+    public static final String DEPLOYMENT = "deployment";
     public static final String EJB_CONTAINER = "ejb-container";
     public static final String HTTP_SERVICE = "http-service";
     public static final String JDBC_CONNECTION_POOL = "jdbc-connection-pool";
