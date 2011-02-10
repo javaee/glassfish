@@ -72,14 +72,16 @@ public class MultiThreadedInhabitantActivator implements InhabitantActivator {
 
   @Override
   public void deactivate(final Inhabitant<?> inhabitant) {
-    if (inhabitant.isInstantiated()) {
-      wm.execute(new Runnable() {
-        @Override
-        public void run() {
-          inhabitant.release();
-        }
-      });
-    }
+//    if (inhabitant.isInstantiated()) {
+//      wm.execute(new Runnable() {
+//        @Override
+//        public void run() {
+//          inhabitant.release();
+//        }
+//      });
+//    }
+    // deactivation should not happen in parallel!
+    inhabitant.release();
   }
 
   @Override

@@ -120,7 +120,7 @@ public class InhabitantsParser implements InhabitantStore {
     }
 
     /**
-     * Parses the inhabitants file (which is represented by {@link InhabitantsScanner}.
+     * Parses the inhabitants file (which is represented by {@link InhabitantsScanner}).
      *
      * <p>
      * All the earlier drop/replace commands will be honored during this process.
@@ -134,12 +134,13 @@ public class InhabitantsParser implements InhabitantStore {
             (null == habitat) ? Collections.EMPTY_LIST :
               habitat.getAllByContract(InhabitantProviderInterceptor.class);
         
-        for( InhabitantParser inhabitantParser : scanner) {
+        for (InhabitantParser inhabitantParser : scanner) {
             if (isFilteredInhabitant(inhabitantParser)) {
                 continue;    
             }
 
             String typeName = inhabitantParser.getImplName();
+//            System.out.println(inhabitantParser.getContainerId() + " --- " + typeName);
             if (isFilteredInhabitant(typeName)) {
                 continue;
             }

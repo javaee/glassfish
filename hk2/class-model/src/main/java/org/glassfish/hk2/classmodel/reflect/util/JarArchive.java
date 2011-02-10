@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -109,7 +109,7 @@ public class JarArchive extends AbstractAdapter {
                          try {
                              subArchive.close();
                          } catch (IOException e) {
-                             logger.log(Level.SEVERE, "Cannot claose sub archive" + subArchive.getURI());
+                             logger.log(Level.SEVERE, "Cannot close sub archive {0}", subArchive.getURI());
                          }
                      }
                  });
