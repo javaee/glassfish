@@ -60,7 +60,9 @@ public class MonitoringTests extends AdminBaseDevTest {
         enableMonitoringUsingSet(STAND_ALONE_INSTANCE_NAME, true);
         enableMonitoringUsingSet(STAND_ALONE_INSTANCE_NAME, false);
 
-        enableMonitoringTest();
+        enableMonitoringTest(configName);
+        enableMonitoringTest(CLUSTER_NAME);
+        enableMonitoringTest(STAND_ALONE_INSTANCE_NAME);
         deleteClusterAndInstances();
         stopDomain();
     }
@@ -77,7 +79,7 @@ public class MonitoringTests extends AdminBaseDevTest {
         desiredValue += high ? HIGH : OFF;
         String metFullName = metName + "-set-" + desiredValue + "-";
 
-        for (String monItem : MON_LEVEL_ITEMS) {
+        for (String monItem : MON_CATEGORIES) {
             String fullitemname = createFullLevelName(configName, monItem);
             String reportname = metFullName + monItem;
             report(reportname, asadmin("set", (fullitemname + desiredValue)));
@@ -94,7 +96,7 @@ public class MonitoringTests extends AdminBaseDevTest {
         String desiredValue = high ? HIGH : OFF;
         String metName = parentMethod + "-verify-" + desiredValue + "-";
 
-        for (String monItem : MON_LEVEL_ITEMS) {
+        for (String monItem : MON_CATEGORIES) {
             String reportName = metName + monItem + "-";
             verifyMonitoringOneCategory(reportName, configName, monItem, desiredValue);
         }
@@ -154,8 +156,61 @@ public class MonitoringTests extends AdminBaseDevTest {
         }
     }
 
-    private void enableMonitoringTest() {
-        report("enable-monitoring-qqqqqq", doesGetMatch(createFullLevelName(CLUSTER_NAME, "deployment"), "OFF"));
+    private void enableMonitoringTest(String configName) {
+        // there are thousands (millions?) of permutations.  I selected a few to
+        // exercise enable-monitoring
+        // format --  category[=OFF|LOW|HIGH]:*
+        // if there is no = then it will be set to high
+        // only call this at the very end -- it will turn everything off
+
+        final String em = "enable-monitoring";
+        String s1 = MON_CATEGORIES[0] + ":" + MON_CATEGORIES[1] + "=LOW:" + MON_CATEGORIES[2] + "=OFF";
+        String s2 = MON_CATEGORIES[3] + ":" + MON_CATEGORIES[4] + "=LOW:" + MON_CATEGORIES[5] + "=LOW";
+        String s3 = MON_CATEGORIES[6] + "=HIGH:" + MON_CATEGORIES[7] + "=OFF:" + MON_CATEGORIES[8] + "=OFF";
+        String s4 = MON_CATEGORIES[9] + "=LOW";
+        String s5 = MON_CATEGORIES[10];
+
+        String r1 = "enable-monitoring-sub-1-";
+        String r2 = "enable-monitoring-sub-2-";
+        String r3 = "enable-monitoring-sub-3-";
+        String r4 = "enable-monitoring-sub-4-";
+        String r5 = "enable-monitoring-sub-5-";
+
+        report(r1, asadmin(em, "--target", configName, "--modules", s1));
+        report(r2, asadmin(em, "--target", configName, "--modules", s2));
+        report(r3, asadmin(em, "--target", configName, "--modules", s3));
+        report(r4, asadmin(em, "--target", configName, "--modules", s4));
+        report(r5, asadmin(em, "--target", configName, "--modules", s5));
+
+        verifyMonitoringOneCategory(r1 + "-1-", configName, MON_CATEGORIES[0], "HIGH");
+        verifyMonitoringOneCategory(r1 + "-2-", configName, MON_CATEGORIES[1], "LOW");
+        verifyMonitoringOneCategory(r1 + "-3-", configName, MON_CATEGORIES[2], "OFF");
+
+        verifyMonitoringOneCategory(r2 + "-1-", configName, MON_CATEGORIES[3], "HIGH");
+        verifyMonitoringOneCategory(r2 + "-2-", configName, MON_CATEGORIES[4], "LOW");
+        verifyMonitoringOneCategory(r2 + "-3-", configName, MON_CATEGORIES[5], "LOW");
+
+        verifyMonitoringOneCategory(r3 + "-1-", configName, MON_CATEGORIES[6], "HIGH");
+        verifyMonitoringOneCategory(r3 + "-2-", configName, MON_CATEGORIES[7], "OFF");
+        verifyMonitoringOneCategory(r3 + "-3-", configName, MON_CATEGORIES[8], "OFF");
+
+        verifyMonitoringOneCategory(r4, configName, MON_CATEGORIES[9], "LOW");
+        verifyMonitoringOneCategory(r5, configName, MON_CATEGORIES[10], "HIGH");
+
+        StringBuilder sb = new StringBuilder();
+        boolean firstCat = true;
+
+        for(String cat : MON_CATEGORIES) {
+            if(firstCat)
+                firstCat = false;
+            else
+                sb.append(':');
+
+            sb.append(cat).append("=OFF");
+        }
+        // ALL categories off
+        report("enable-monitoring-turn-off-all-", asadmin(em, "--target", configName, "--modules", sb.toString()));
+        verifyMonitoringAllCategories("enable-monitoring-turn-off-all-verify-", false, configName);
     }
 
     private String createFullLevelName(String server, String what) {
@@ -184,7 +239,7 @@ public class MonitoringTests extends AdminBaseDevTest {
     private void megaTestMainFlags(String configName) {
         megaTestDtraceFlag(configName);
         megaTestMbeanFlag(configName);
-        //megaTestMonFlag(configName);
+        megaTestMonFlag(configName);
     }
 
     private void megaTestDtraceFlag(String configName) {
@@ -207,6 +262,16 @@ public class MonitoringTests extends AdminBaseDevTest {
         report(reportName + "-verify-enabled-", doesGetMatch(getMbeanEnabledName(configName), "true"));
     }
 
+    private void megaTestMonFlag(String configName) {
+        // verify on, disable it, verify, enable, verify
+        String reportName = "mon-enabled-test-";
+        report(reportName + "-verify-enabled-", doesGetMatch(getMonEnabledName(configName), "true"));
+        report(reportName + "disable-", asadmin("disable-monitoring", "--target", configName));
+        report(reportName + "-verify-disabled-", doesGetMatch(getMonEnabledName(configName), "false"));
+        report(reportName + "enable-", asadmin("enable-monitoring", "--target", configName));
+        report(reportName + "-verify-enabled-", doesGetMatch(getMonEnabledName(configName), "true"));
+    }
+
     private static final String CLUSTER_NAME = "moncluster";
     private static final String CLUSTERED_INSTANCE_NAME1 = "moninstance1";
     private static final String CLUSTERED_INSTANCE_NAME2 = "moninstance2";
@@ -216,11 +281,11 @@ public class MonitoringTests extends AdminBaseDevTest {
     private static final String DTRACE_APPEND = ".monitoring-service.dtrace-enabled";
     private static final String MBEAN_APPEND = ".monitoring-service.mbean-enabled";
     private static final String MON_APPEND = ".monitoring-service.monitoring-enabled";
-    private static final String MON_LEVEL_ITEMS[] = new String[]{
+    private static final String MON_CATEGORIES[] = new String[]{
         "http-service",
         "connector-connection-pool",
         "connector-service",
-        "deployment",
+        // "deployment", -- this one is not in ContainerMonitoring
         "ejb-container",
         "jdbc-connection-pool",
         "jersey",
