@@ -953,7 +953,7 @@ public class DefaultRunLevelService implements RunLevelService<Void>, Enableable
             
             try{
               ia.deactivate(i);
-//              assert(!i.isInstantiated());
+//              assert(!i.isInstantiated());  <- this might happen asynchronously
               checkInterrupt(null, i, null);
             } catch (Exception e) {
               checkInterrupt(e, i, null);

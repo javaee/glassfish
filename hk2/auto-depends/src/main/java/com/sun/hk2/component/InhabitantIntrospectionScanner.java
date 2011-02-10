@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -138,7 +138,6 @@ public class InhabitantIntrospectionScanner implements Iterable<InhabitantParser
                 interfaces.add(val);
               }
             } else if (name.equals(FactoryFor.class.getName())) {
-              Object dummy = am.getValues();
               Object rawObj = am.getValues().get("value");
               if (Collection.class.isInstance(rawObj)) {
                 Collection<?> coll = (Collection<?>) am.getValues().get("value");
@@ -249,6 +248,7 @@ public class InhabitantIntrospectionScanner implements Iterable<InhabitantParser
         }
     }
 
+    @Override
     public Iterator<InhabitantParser> iterator() {
         return new Iterator<InhabitantParser>() {
             public boolean hasNext() {

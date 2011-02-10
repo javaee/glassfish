@@ -42,7 +42,6 @@ package com.sun.enterprise.module.common_impl;
 import com.sun.enterprise.module.InhabitantsDescriptor;
 import com.sun.hk2.component.InhabitantParser;
 import com.sun.hk2.component.InhabitantsScanner;
-import com.sun.hk2.component.KeyValuePairParser;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

@@ -43,6 +43,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.jvnet.hk2.annotations.RunLevel;
 import org.jvnet.hk2.component.ComponentException;
@@ -66,6 +68,8 @@ import com.sun.hk2.component.AbstractInhabitantImpl;
  */
 /*public*/ class Recorder implements InhabitantListener {
 
+  private final Logger logger = Logger.getLogger(Recorder.class.getName()); 
+  
   private final int runLevel;
   private final Stack<Inhabitant<?>> activations;
   private final Class<?> targetEnv;
@@ -90,19 +94,25 @@ import com.sun.hk2.component.AbstractInhabitantImpl;
   }
 
   List<Inhabitant<?>> getActivations() {
-    return Collections.unmodifiableList(activations);
+    synchronized (activations) {
+      return Collections.unmodifiableList(activations);
+    }
   }
   
   void push(Inhabitant<?> inhabitant) {
+    logger.log(Level.FINE, "pushing {0}", inhabitant);
     synchronized (activations) {
       activations.add(inhabitant);
     }
   }
 
   Inhabitant<?> pop() {
+    Inhabitant<?> inhabitant;
     synchronized (activations) {
-      return activations.isEmpty() ? null : activations.pop();
+      inhabitant = activations.isEmpty() ? null : activations.pop();
     }
+    logger.log(Level.FINE, "popping {0}", inhabitant);
+    return inhabitant;
   }
   
   @Override
