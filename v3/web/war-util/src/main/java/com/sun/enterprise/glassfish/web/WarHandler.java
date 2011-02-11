@@ -152,13 +152,19 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
             
         } catch(MalformedURLException malex) {
             logger.log(Level.SEVERE, malex.getMessage());
-            logger.log(Level.FINE, malex.getMessage(), malex);            
+            if (logger.isLoggable(Level.FINE)) {
+                logger.log(Level.FINE, malex.getMessage(), malex);            
+            }
         } catch(XMLStreamException xse) {
             logger.log(Level.SEVERE, xse.getMessage());
-            logger.log(Level.FINE, xse.getMessage(), xse);
+            if (logger.isLoggable(Level.FINE)) {
+                logger.log(Level.FINE, xse.getMessage(), xse);
+            }
         } catch(FileNotFoundException fnfe) {
             logger.log(Level.SEVERE, fnfe.getMessage());
-            logger.log(Level.FINE, fnfe.getMessage(), fnfe);
+            if (logger.isLoggable(Level.FINE)) {
+                logger.log(Level.FINE, fnfe.getMessage(), fnfe);
+            }
         }
 
         cloader.start();

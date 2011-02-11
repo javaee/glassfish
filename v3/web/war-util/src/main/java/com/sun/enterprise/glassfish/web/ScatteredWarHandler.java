@@ -103,10 +103,14 @@ public class ScatteredWarHandler  extends WarHandler implements ArchiveHandler {
             }
         } catch(XMLStreamException xse) {
             logger.log(Level.SEVERE, xse.getMessage());
-            logger.log(Level.FINE, xse.getMessage(), xse);
+            if (logger.isLoggable(Level.FINE)) {
+                logger.log(Level.FINE, xse.getMessage(), xse);
+            }
         } catch(FileNotFoundException fnfe) {
             logger.log(Level.SEVERE, fnfe.getMessage());
-            logger.log(Level.FINE, fnfe.getMessage(), fnfe);
+            if (logger.isLoggable(Level.FINE)) {
+                logger.log(Level.FINE, fnfe.getMessage(), fnfe);
+            }
         }
         try {
             cloader.start();
