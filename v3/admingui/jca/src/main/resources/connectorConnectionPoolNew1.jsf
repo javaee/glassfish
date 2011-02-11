@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -118,9 +118,12 @@
                                 filterOutRarExtension(inList="#{requestScope.tmpList}" convertedList="#{requestScope.rarList}")
 
                                 //Add SystemConnectors
-                                gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/get-system-rars-allowing-pool-creation"
+                                setAttribute(key="modList" value={});
+                                if ("#{sessionScope._jms_exist}"){
+                                    gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/get-system-rars-allowing-pool-creation"
                                                method="GET", result="#{requestScope.result}");
-                                setAttribute(key="modList" value="#{requestScope.result.data.extraProperties.rarList}");
+                                    setAttribute(key="modList" value="#{requestScope.result.data.extraProperties.rarList}");
+                                }
                                 gf.listCombine(list="#{requestScope.modList}" list2="#{requestScope.rarList}");
                                 addEmptyFirstElement(in="$attribute{modList}"  out="#{pageSession.modules}")
                                 gf.getConnectorConnectionPoolWizard(

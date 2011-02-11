@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -69,8 +69,14 @@
                 <!beforeCreate
                      setPageSessionAttribute(key="snifferType" value="connector");
                      gfr.getApplicationsBySnifferType();
-                     setPageSessionAttribute(key="connectorList" value="#{pageSession.snifferTypeApplicationsList}");
-                     listAdd(list="#{pageSession.connectorList}" value="jmsra")
+                     setAttribute(key="connectorList" value="#{pageSession.snifferTypeApplicationsList}");
+                     if ("#{sessionScope._jms_exist}"){
+                        listAdd(list="#{requestScope.connectorList}" value="jmsra")
+                        setPageSessionAttribute(key="connectorList" value="#{requestScope.connectorList}")
+                    }
+                    if ("!(#{sessionScope._jms_exist})"){
+                        addEmptyFirstElement(in="#{requestScope.connectorList}"  out="#{pageSession.connectorList}")
+                    }
                 />
                 <!afterCreate
                       getClientId(component="$this{component}" clientId=>$page{resAdaptorPropId});

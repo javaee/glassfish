@@ -80,7 +80,9 @@
             setPageSessionAttribute(key="nameDropDown" value="#{pageSession.Name}");
         }
         if ("!#{pageSession.Name}&(#{pageSession.myOption}=dropdown)") {
-            mapPut(map="#{pageSession.attrsMap}" key="rarName" value="jmsra");
+        if (#{sessionScope._jms_exist}){
+                mapPut(map="#{pageSession.attrsMap}" key="rarName" value="jmsra");
+            }
         }
         if (#{pageSession.myOption}=dropdown) {
             setPageSessionAttribute(key="nameDropDown" value="#{pageSession.attrsMap['rarName']}");
