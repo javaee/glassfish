@@ -158,7 +158,7 @@
 
     <sun:tableColumn headerText="$resource{i18n_web.grizzly.protocol.listenerNameCol}" sort="name"  rowHeader="$boolean{true}" id="colnet">
         <foreach key="listenerName" list="#{td.value.listenerList}" >
-            <sun:hyperlink  text="#{listenerName}" url="#{request.contextPath}/web/grizzly/networkListenerEdit.jsf?name=#{listenerName}&cancelTo=protocols.jsf" />"<br>
+            <sun:hyperlink  text="#{listenerName}" url="#{request.contextPath}/web/grizzly/networkListenerEdit.jsf?name=#{listenerName}&cancelTo=protocols.jsf&configName=#{configName}" />"<br>
        </foreach>
     </sun:tableColumn>
 

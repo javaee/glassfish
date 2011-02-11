@@ -162,7 +162,7 @@
         </sun:property>
 
         <sun:property id="transport"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.transport}" >
-            <sun:hyperlink id="transport" text="#{pageSession.valueMap['transport']}" url="#{request.contextPath}/web/grizzly/transportEdit.jsf?name=#{pageSession.valueMap['transport']}" />
+            <sun:hyperlink id="transport" text="#{pageSession.valueMap['transport']}" url="#{request.contextPath}/web/grizzly/transportEdit.jsf?name=#{pageSession.valueMap['transport']}&configName=#{configName}" />
         </sun:property>
 
         <sun:property id="threadpool"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18n_web.grizzly.networkListener.threadPool}" helpText="$resource{i18n_web.grizzly.networkListener.threadPoolHelp}">
