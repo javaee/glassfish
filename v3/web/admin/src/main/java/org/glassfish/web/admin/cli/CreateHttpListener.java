@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -173,11 +173,14 @@ public class CreateHttpListener implements AdminCommand {
                     deleteTransport(context);
                 }
             } catch (Exception e1) {
-                logger.log(Level.INFO, e.getMessage(), e);
-                e.printStackTrace();
+                if (logger.isLoggable(Level.INFO)) {
+                    logger.log(Level.INFO, e.getMessage(), e);
+                }
                 throw new RuntimeException(e.getMessage());
             }
-            logger.log(Level.INFO, e.getMessage(), e);
+            if (logger.isLoggable(Level.INFO)) {
+                logger.log(Level.INFO, e.getMessage(), e);
+            }
             report.setMessage(localStrings.getLocalString("create.http.listener.fail",
                 "Creation of: " + listenerId + "failed because of: " + e.getMessage(), listenerId, e.getMessage()));
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
