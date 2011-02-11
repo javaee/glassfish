@@ -87,28 +87,30 @@ public class ServiceInitializerHandler extends TCPSelectorHandler {
         }
         SelectableChannel channel = acceptWithoutRegistration(key);
         if(targetInitializer == null) {
-            synchronized(LOCK_OBJ) {
-                if(targetInitializer == null) {
-                    for(LazyServiceInitializer initializer : initializerImplList) {
+            synchronized (LOCK_OBJ) {
+                LazyServiceInitializer localInitializer = targetInitializer;
+                if (localInitializer == null) {
+                    for (LazyServiceInitializer initializer : initializerImplList) {
                         String listenerName = selectorThread.getGrizzlyListener().getListener().getName();
-                        if(listenerName.equalsIgnoreCase(initializer.getServiceName())) {
-                            targetInitializer = initializer;
+                        if (listenerName.equalsIgnoreCase(initializer.getServiceName())) {
+                            localInitializer = initializer;
                             break;
                         }
                     }
-                }
-                if(targetInitializer == null) {
-                    logger.severe("NO Lazy Initialiser implementation was found for port = " +
-                            selectorThread.getGrizzlyListener().getListener().getPort());
+                    if (localInitializer == null) {
+                        logger.severe("NO Lazy Initialiser implementation was found for port = "
+                                + selectorThread.getGrizzlyListener().getListener().getPort());
                     return false;
                 }
-                if(!targetInitializer.initializeService()) {
-                    targetInitializer = null;
-                    logger.severe("Lazy Service initialization failed for port = " +
-                            selectorThread.getGrizzlyListener().getListener().getPort());
+                    if (!localInitializer.initializeService()) {
+                        logger.severe("Lazy Service initialization failed for port = "
+                                + selectorThread.getGrizzlyListener().getListener().getPort());
                     return false;
                 }
+
+                    targetInitializer = localInitializer;
             }
+        }
         }
         if (channel != null) {
             targetInitializer.handleRequest(channel);
