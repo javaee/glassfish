@@ -199,6 +199,7 @@ public class FileArchiveTest {
         return createAndPopulateArchive(entryNames);
     }
 
+    @Ignore
     @Test
     public void testCreateWithOlderLeftoverEntryAndThenOpen() throws Exception {
         System.out.println("testCreateWithOlderLeftoverEntryAndThenOpen");
