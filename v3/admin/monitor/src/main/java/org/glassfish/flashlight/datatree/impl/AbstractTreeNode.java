@@ -40,6 +40,7 @@
 
 package org.glassfish.flashlight.datatree.impl;
 
+import static com.sun.enterprise.util.StringUtils.ok;
 import com.sun.enterprise.util.ObjectAnalyzer;
 import static com.sun.enterprise.util.SystemPropertyConstants.MONDOT;
 import static com.sun.enterprise.util.SystemPropertyConstants.SLASH;
@@ -60,6 +61,8 @@ import java.util.regex.Pattern;
 public abstract class AbstractTreeNode implements TreeNode, Comparable {
 
     protected Map<String, TreeNode> children =
+            new ConcurrentHashMap<String, TreeNode>();
+    private static Map<String, TreeNode> normalizedChildren =
             new ConcurrentHashMap<String, TreeNode>();
     protected String name;    // The node object itself
     protected String category;
@@ -120,6 +123,7 @@ public abstract class AbstractTreeNode implements TreeNode, Comparable {
             return null;
         }
         newChild.setParent(this);
+        normalizedChildren.put(decodeNameToDots(newChild.getCompletePathName()), newChild);
         return children.put(newChild.getName(), newChild);
     }
 
@@ -185,6 +189,15 @@ public abstract class AbstractTreeNode implements TreeNode, Comparable {
         if (child != null) {
             children.remove(child);
         }
+
+        // too fragile to hunt for the matching key...
+        Iterator<TreeNode> it = normalizedChildren.values().iterator();
+        while(it.hasNext()) {
+            if(it.next() == oldChild) {
+                it.remove();
+                break;
+            }
+        }
     }
 
     @Override
@@ -226,6 +239,10 @@ public abstract class AbstractTreeNode implements TreeNode, Comparable {
         Pattern pattern = Pattern.compile(AbstractTreeNode.REGEX);
         String[] tokens = pattern.split(completeName);
         TreeNode n = findNodeInTree(tokens);
+
+        if(n == null)
+            n = findNodeInTreeNormalized(completeName);
+
         return n;
     }
 
@@ -310,8 +327,19 @@ public abstract class AbstractTreeNode implements TreeNode, Comparable {
         // the right stuff.
         // This is a ARCHITECTURE flaw.  This hack can be replaced with an
         // ARCHITECTURAL fix later if desired.
-        pattern = pattern.replace("/", SLASH);
+        
+        List<TreeNode> list = getNodesInternal(pattern, ignoreDisabled, gfv2Compatible);
+        
+        if(list == null || list.size() <= 0)
+            list = getNodesInternal(pattern.replace("/", SLASH), ignoreDisabled, gfv2Compatible);
 
+        if(list == null || list.size() <= 0)
+            list = getNodesInternal(decodeNameToDots(pattern), ignoreDisabled, gfv2Compatible);
+
+        return list;
+    }
+
+    private List<TreeNode> getNodesInternal(String pattern, boolean ignoreDisabled, boolean gfv2Compatible) {
         List<TreeNode> regexMatchedTree = new ArrayList<TreeNode>();
 
 
@@ -428,4 +456,61 @@ public abstract class AbstractTreeNode implements TreeNode, Comparable {
     private static String decodeName(String s) {
         return s.replace(SLASH, "/").replace(MONDOT, "\\.");
     }
+
+    private static String decodeNameToDots(String s) {
+        return s
+                .replace(SLASH, ".")
+                .replace(MONDOT, ".")
+                .replace("\\/", ".")
+                .replace("\\.", ".")
+                .replace('/', '.');
+    }
+
+    private TreeNode findNodeInTreeNormalized(String desiredName) {
+        // this is ONLY called when there is no match using the tools prior to 2/10/11
+        // so the performance hit should be reasonable
+
+        if(!ok(desiredName))
+            return null;
+
+        desiredName = decodeNameToDots(desiredName);
+        TreeNode node = normalizedChildren.get(desiredName);
+
+        // one more try.  GUI sometimes chops off the starting "server".
+        if (node == null && !desiredName.startsWith("server.")) {
+            node = normalizedChildren.get("server." + desiredName);
+
+            // one final try.  The string might be "instance1.blah" -- we must change that
+            // to "instance1.server.blah"
+            if (node == null && (desiredName = insertServerString(desiredName)) != null)
+                node = normalizedChildren.get(desiredName);
+        }
+
+        return node;
+    }
+
+    private static String insertServerString(String desiredName) {
+        try {
+            String[] bits = desiredName.split("\\.");
+
+            if (bits != null && bits.length >= 2) {
+                
+                if(bits[1].equals("server"))
+                    return desiredName;
+
+                StringBuilder sb = new StringBuilder(bits[0]);
+                sb.append(".server");
+
+                for (int i = 1; i < bits.length; i++) {
+                    sb.append('.').append(bits[i]);
+                }
+                return sb.toString();
+            }
+        }
+        catch (Exception e) {
+            // fall through
+        }
+        return null;
+    }
 }
+
