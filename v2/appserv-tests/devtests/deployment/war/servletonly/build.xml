@@ -10,6 +10,8 @@
 
     <property name="contextRoot" value="war"/>
     <property name="testName" value="servletonly"/>
+    <property name="initial.changeable.value" value="first"/>
+    <property name="second.changeable.value" value="second"/>
 
     <target name="prepare" depends="init">
         <property name="portable.war" value="${build}/${testName}-portable.war"/>
@@ -25,6 +27,17 @@
                failonerror="true">
             <classpath refid="gfv3.classpath" />
         </javac>
+    </target>
+
+    <target name="generate-changeable-class" depends="prepare">
+        <echo file="${basedir}/ChangeableClass.java">
+package servletonly;
+public class ChangeableClass {
+    public static String changeableValue() {
+        return "${expectedChangeableValue}";
+    }
+}
+        </echo>
     </target>
 
     <target name="assemble" depends="compile">
@@ -124,20 +137,25 @@
     <target name="run" depends="run.positive"/>
 
     <target name="run.positive" depends="setHttpPort">
+        <property name="extra.args" value=""/>
         <antcall target="common.run.positive">
             <param name="link" value="${contextRoot}/${testName}"/>
             <param name="log.id" value="${log.id}"/>
+            <param name="extra.args" value="${extra.args}"/>
         </antcall>
     </target>
 
     <target name="run.negative" depends="setHttpPort">
+        <property name="extra.args" value=""/>
         <antcall target="common.run.negative">
             <param name="link" value="${contextRoot}/${testName}"/>
             <param name="log.id" value="${log.id}"/>
+            <param name="extra.args" value="${extra.args}"/>
         </antcall>
     </target>
 
     <target name="runclient" depends="init">
+        <property name="extra.args" value=""/>
         <echo message="TestClient ${arg.list}"/>
         <javaWithResult
             fork="true"
@@ -165,12 +183,18 @@
     </target>
 
     <target name="private-all">
+        <antcall target="generate-changeable-class">
+            <param name="expectedChangeableValue" value="${initial.changeable.value}"/>
+        </antcall>
         <antcall target="assemble"/>
         <antcall target="deploy.asadmin"/>
         <antcall target="run.positive">
-            <param name="log.id" value="1"/>
+            <param name="log.id" value="1.1"/>
             <param name="desc" value="war/servletonly Test asadmin deploy"/>
+            <param name="extra.args" value="${initial.changeable.value}"/>
         </antcall>
+
+        <antcall target="test-reload"/>
 
         <antcall target="redeploy.asadmin"/>
         <antcall target="run.positive">
@@ -294,6 +318,34 @@
         </antcall>
 
         <antcall target="undeploy.jsr88"/>
+    </target>
+
+    <target name="test-reload" depends="test-reload-PE"/>
+
+    <!-- test .reload feature -->
+
+    <target name="test-reload-PE" if="PE">
+        <antcall target="generate-changeable-class">
+            <param name="expectedChangeableValue" value="${second.changeable.value}"/>
+        </antcall>
+
+        <antcall target="compile"/>
+
+        <copy file="${build}/servletonly/ChangeableClass.class"
+            overwrite="true"
+            todir="${s1as.home}/domains/domain1/applications/${testName}/WEB-INF/classes/servletonly"/>
+
+        <touch file="${s1as.home}/domains/domain1/applications/${testName}/.reload"/>
+
+        <!-- Give the server time to see the .reload file and to redeploy the app. -->
+        <sleep seconds="5"/>
+
+        <antcall target="run.positive">
+            <param name="log.id" value="1.2"/>
+            <param name="desc" value="war/servletonly Test .reload"/>
+            <param name="extra.args" value="${second.changeable.value}"/>
+        </antcall>
+
     </target>
 
     <target name="clobber" depends="clean">

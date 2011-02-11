@@ -14,6 +14,10 @@ import java.net.URL;
 
 public class TestClient {
 
+    /* to test .reload look for a changed value from one run to the next */
+    private String changeableValue = null;
+    private String expectedChangeableValue = null;
+
     public static void main (String[] args) {
         TestClient client = new TestClient();
         client.doTest(args);
@@ -22,11 +26,14 @@ public class TestClient {
     public void doTest(String[] args) {
 
         String url = args[0];
+        if (args.length > 2) {
+            expectedChangeableValue = args[2];
+        }
         boolean testPositive = (Boolean.valueOf(args[1])).booleanValue();
         try {
             log("Test: devtests/deployment/war/servletonly");
             int code = invokeServlet(url);
-            report(code, testPositive);
+            report(code, testPositive, expectedChangeableValue, changeableValue);
         } catch (IOException ex) {
             if (testPositive) {
                 ex.printStackTrace();
@@ -51,18 +58,33 @@ public class TestClient {
         String line = null;
         while ((line = input.readLine()) != null) {
             log(line);
+            if (line.startsWith("changeableValue=")) {
+                changeableValue = line.substring("changeableValue=".length());
+            }
         }
         return code;
     }
 
-    private void report(int code, boolean testPositive) {
+    private void report(int code, boolean testPositive, String expectedChangeableValue, String changeableValue) {
         if (testPositive) { //expect return code 200
             if(code != 200) {
                 log("Incorrect return code: " + code);
                 fail();
             } else {
                 log("Correct return code: " + code);
-                pass();
+                if (expectedChangeableValue != null && expectedChangeableValue.length() > 0 &&
+                        ! expectedChangeableValue.equals("${extra.args}")) {
+                    if (expectedChangeableValue.equals(changeableValue)) {
+                        log("Correct changeable value: " + changeableValue);
+                        pass();
+                    } else {
+                        log("Incorrect changeable value: expected " + expectedChangeableValue + " but found " + changeableValue);
+                        fail();
+                    }
+                } else {
+                    // No expected changeable value to check.
+                    pass();
+                }
             }
         } else {
             if(code != 200) { //expect return code !200

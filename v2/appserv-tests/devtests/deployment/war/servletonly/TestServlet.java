@@ -35,6 +35,13 @@ public class TestServlet extends HttpServlet
             Integer value = (Integer) ic.lookup("java:comp/env/value");
             log("[" + name + "] = [" + value + "]");
 
+            /*
+             * The following line will compile correctly only when the ant
+             * devtest is running.  The ChangeableClass class is generated
+             * by the ant task (two different ways at two different points
+             * in the processing).  
+             */
+            final String changeableValue = ChangeableClass.changeableValue();
             PrintWriter out = response.getWriter();
             response.setContentType("text/html");
             out.println("<html>");
@@ -46,6 +53,8 @@ public class TestServlet extends HttpServlet
             out.println("So what is your lucky number?");
             out.println("</p>");
             out.println("Mine is [" + value + "]");
+            out.println("<p>");
+            out.println("changeableValue=" + changeableValue);
             out.println("</body>");
             out.println("</html>");
             out.flush();
