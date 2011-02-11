@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -901,15 +901,19 @@ public class FileDirContext extends BaseDirContext {
             } catch (IOException e) {
             }
             if (canPath == null) {
-                logger.log(Level.FINE, sm.getString("fileResources.nullCanonicalPath",
-                        canPath));
+                if (logger.isLoggable(Level.FINE)) {
+                    logger.log(Level.FINE, sm.getString("fileResources.nullCanonicalPath",
+                            canPath));
+                }
                 return null;
             }
 
             // Check to see if going outside of the web application root
             if ((!allowLinking) && (!canPath.startsWith(absoluteBase))) {
-                logger.log(Level.FINE, sm.getString("fileResources.notAllowed",
-                        allowLinking,canPath,absoluteBase));
+                if (logger.isLoggable(Level.FINE)) {
+                    logger.log(Level.FINE, sm.getString("fileResources.notAllowed",
+                            allowLinking,canPath,absoluteBase));
+                }
                 return null;
             }
 
@@ -930,8 +934,10 @@ public class FileDirContext extends BaseDirContext {
                     && (absoluteBase.length() < canPath.length())) {
                     absPath = absPath.substring(absoluteBase.length() + 1);
                     if ((canPath == null) || (absPath == null)) {
-                        logger.log(Level.FINE, sm.getString("fileResources.nullAbsPath",
-                                canPath,absPath));
+                        if (logger.isLoggable(Level.FINE)) {
+                            logger.log(Level.FINE, sm.getString("fileResources.nullAbsPath",
+                                    canPath,absPath));
+                        }
                         return null;
                     }
                     if (absPath.equals(""))
@@ -946,8 +952,10 @@ public class FileDirContext extends BaseDirContext {
                     // START S1AS 6200277
                         if (canPath.equalsIgnoreCase(absPath)
                                 || !allowLinking) {
-                            logger.log(Level.FINE, sm.getString("fileResources.canPathEqualsAbsPath",
-                                canPath,absPath,allowLinking));
+                            if (logger.isLoggable(Level.FINE)) {
+                                logger.log(Level.FINE, sm.getString("fileResources.canPathEqualsAbsPath",
+                                    canPath,absPath,allowLinking));
+                            }
                             return null;
                         }
                     // END S1AS 6200277
@@ -956,8 +964,10 @@ public class FileDirContext extends BaseDirContext {
             }
 
         } else {
-            logger.log(Level.FINE, sm.getString("fileResources.notExist",
-                    file.getAbsolutePath()));
+            if (logger.isLoggable(Level.FINE)) {
+                logger.log(Level.FINE, sm.getString("fileResources.notExist",
+                        file.getAbsolutePath()));
+            }
             return null;
         }
         // START S1AS8PE 4965170
