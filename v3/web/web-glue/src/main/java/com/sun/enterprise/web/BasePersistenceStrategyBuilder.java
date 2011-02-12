@@ -312,8 +312,10 @@ public abstract class BasePersistenceStrategyBuilder
                     } else if (name.equalsIgnoreCase("persistenceFrequency")) {
                         _persistenceFrequency = value;
                     } else {
-                        Object[] params = { name };
-                        _logger.log(Level.INFO, "webcontainer.notYet", params);
+                        if (_logger.isLoggable(Level.INFO)) {
+                            Object[] params = { name };
+                            _logger.log(Level.INFO, "webcontainer.notYet", params);
+                        }
                     }
                 }
             }
@@ -336,8 +338,10 @@ public abstract class BasePersistenceStrategyBuilder
                     } else if (name.equalsIgnoreCase("cookieName")) {
                         persistentCookieName = value;                     
                     } else {
-                        Object[] params = { name };
-                        _logger.log(Level.INFO, "webcontainer.notYet", params);
+                        if (_logger.isLoggable(Level.INFO)) {
+                            Object[] params = { name };
+                            _logger.log(Level.INFO, "webcontainer.notYet", params);
+                        }
                     }
                 }
             }

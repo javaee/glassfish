@@ -1866,8 +1866,10 @@ public class WebModule extends PwcWebModule implements Context {
                 } else if("enableURLRewriting".equalsIgnoreCase(name)) {
                     setEnableURLRewriting(ConfigBeansUtilities.toBoolean(value));
                 } else {
-                    Object[] params = {name};
-                    logger.log(Level.INFO, "webcontainer.notYet", params);
+                    if (logger.isLoggable(Level.INFO)) {
+                        Object[] params = {name};
+                        logger.log(Level.INFO, "webcontainer.notYet", params);
+                    }
                 }
             }
         }

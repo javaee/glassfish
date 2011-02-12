@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -119,11 +119,6 @@ public class CacheTag extends BodyTagSupport
         CacheTag.class, LogDomains.WEB_LOGGER);
 
     /**
-     * This indicates whether debug logging is on or not
-     */
-    private static final boolean _debugLog = _logger.isLoggable(Level.FINE);
-
-    /**
      * The resource bundle containing the localized message strings.
      */
     private static final ResourceBundle _rb = _logger.getResourceBundle();
@@ -157,7 +152,7 @@ public class CacheTag extends BodyTagSupport
         // key is specified, a position specific key suffix is used
         _key = CacheUtil.generateKey(_keyExpr, pageContext);
 
-        if (_debugLog)
+        if (_logger.isLoggable(Level.FINE))
             _logger.fine("CacheTag["+ _key +"]: Timeout = "+ _timeout);
 
         // if useCachedResponse is false, we do not check for any

@@ -132,8 +132,6 @@ public class VirtualServer extends StandardHost
         vsPipeline = new VirtualServerPipeline(this);
         accessLogValve = new PEAccessLogValve();
         accessLogValve.setContainer(this);
-
-        _debug = _logger.isLoggable(Level.FINE);
     }
 
     // ----------------------------------------------------- Instance Variables
@@ -165,16 +163,6 @@ public class VirtualServer extends StandardHost
      * The logger to use for logging this virtual server
      */
     protected volatile Logger _logger = DEFAULT_LOGGER;
-
-    /**
-     * Indicates whether the logger level is set to any one of
-     * FINE/FINER/FINEST.
-     *
-     * This flag is used to avoid incurring a perf penalty by making
-     * logging calls for debug messages when the logger level is
-     * INFO or higher.
-     */
-    protected boolean _debug = false;
 
     /**
      * The descriptive information about this implementation.
@@ -656,14 +644,12 @@ public class VirtualServer extends StandardHost
      */
     protected String getDefaultWebModuleID() {
         String wmID = vsBean.getDefaultWebModule();
-        if (wmID != null && wmID.equals("")) {
+        if ("".equals(wmID)) {
             wmID = null;
         }
-        if (wmID != null && _debug) {
+        if (wmID != null && _logger.isLoggable(Level.FINE)) {
             Object[] params = { wmID, _id };
-            if (_logger.isLoggable(Level.FINE)) {
-                _logger.log(Level.FINE, "vs.defaultWebModule", params);
-            }
+            _logger.log(Level.FINE, "vs.defaultWebModule", params);
         }
 
         return wmID;

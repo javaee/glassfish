@@ -1600,9 +1600,11 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         String vsIDs = wmInfo.getVirtualServers();
         List<String> vsList = StringUtils.parseStringList(vsIDs, " ,");
         if (vsList == null || vsList.isEmpty()) {
-            _logger.log(Level.INFO,
-                    "webcontainer.webModuleNotLoadedNoVirtualServers",
-                    wmInfo.getName());
+            if (_logger.isLoggable(Level.INFO)) {
+                _logger.log(Level.INFO,
+                        "webcontainer.webModuleNotLoadedNoVirtualServers",
+                        wmInfo.getName());
+            }
             return results;
         }
 
