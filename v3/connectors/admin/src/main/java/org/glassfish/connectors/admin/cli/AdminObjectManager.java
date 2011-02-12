@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -47,6 +47,7 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.enterprise.config.serverbeans.*;
 import org.glassfish.admin.cli.resources.BindableResourcesHelper;
 import org.glassfish.admin.cli.resources.ResourceManager;
@@ -304,7 +305,7 @@ public class AdminObjectManager implements ResourceManager {
         } else {
             // To check for embedded connector module
             // System RA, so don't validate
-            if (!raName.equals(DEFAULT_JMS_ADAPTER) && !raName.equals(JAXR_RA_NAME)) {
+            if (!ConnectorsUtil.getNonJdbcSystemRars().contains(raName)){
                 // Check if the raName contains double underscore or hash.
                 // If that is the case then this is the case of an embedded rar,
                 // hence look for the application which embeds this rar,

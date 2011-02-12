@@ -76,6 +76,8 @@ public class ConnectorsUtil {
 
     private static Logger _logger= LogDomains.getLogger(ConnectorsUtil.class, LogDomains.RSR_LOGGER);
 
+    private static Collection<String> validSystemRARs ;
+    private static Collection<String> validNonJdbcSystemRARs ;
     /**
      * determine whether the RAR in question is a System RAR
      * @param raName RarName
@@ -84,7 +86,7 @@ public class ConnectorsUtil {
     public static boolean belongsToSystemRA(String raName) {
         boolean result = false;
 
-        for (String systemRarName : ConnectorConstants.systemRarNames) {
+        for (String systemRarName : ConnectorsUtil.getSystemRARs()) {
             if (systemRarName.equals(raName)) {
                 result = true;
                 break;
@@ -765,6 +767,49 @@ public class ConnectorsUtil {
 
     public static boolean isStandAloneRA(String moduleName){
         return ConfigBeansUtilities.getModule(moduleName)!= null;
+    }
+
+    public static Collection<String> getSystemRARs(){
+        if(validSystemRARs == null){
+            HashSet<String> systemRARs = new HashSet<String>();
+            for(String rarName : ConnectorConstants.systemRarNames){
+                if(systemRarExists(getSystemModuleLocation(rarName))){
+                    systemRARs.add(rarName);
+                }
+            }
+            validSystemRARs = Collections.unmodifiableCollection(systemRARs);
+            if(_logger.isLoggable(Level.FINEST)){
+                _logger.log(Level.FINEST, "valid system RARs for this runtime are : " + validSystemRARs);
+            }
+        }
+        return validSystemRARs;
+    }
+
+    public static Collection<String> getNonJdbcSystemRars(){
+        if(validNonJdbcSystemRARs == null){
+            Collection<String> systemRars = getSystemRARs();
+            validNonJdbcSystemRARs = new HashSet<String>();
+            for(String rarName : systemRars){
+                if(!ConnectorConstants.jdbcSystemRarNames.contains(rarName)){
+                    validNonJdbcSystemRARs.add(rarName);
+                }
+            }
+        }
+        return validNonJdbcSystemRARs;
+    }
+
+    public static boolean systemRarExists(String location){
+        boolean result = false;
+        try{
+            File file = new File(location);
+            result = file.exists();
+        }catch(Exception e){
+            if(_logger.isLoggable(Level.FINEST)){
+                _logger.log(Level.FINEST, "Exception occurred while checking System RAR location " +
+                        ": [" + location + "]", e);
+            }
+        }
+        return result;
     }
 
     /**
