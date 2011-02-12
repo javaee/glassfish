@@ -39,6 +39,7 @@
 <!ENTITY commonBuild SYSTEM "./../../../../config/common.xml">
 <!ENTITY commonRun SYSTEM "./../../../../config/run.xml">
 <!ENTITY reporting SYSTEM "./../../../../config/report.xml">
+<!ENTITY eeCommon SYSTEM "file:./../ee.xml">
 <!ENTITY testproperties SYSTEM "file:./build.properties">
 ]>
 
@@ -48,6 +49,7 @@
     &commonSetup;
     &commonBuild;
     &commonRun;
+    &eeCommon;
     &testproperties;
     &reporting;
 
@@ -55,7 +57,6 @@
     <property name="db.root" value="${env.S1AS_HOME}/../javadb"/>
     <property name="db.classpath" value="${db.root}/lib/derby.jar:${db.root}/lib/derbyclient.jar:${db.root}/lib/derbynet.jar"/>
     <property name="db.host" value="localhost"/>
-    <property name="db.port" value="1527"/>
 
     <property name="derby-type" value="default"/>
 
@@ -70,11 +71,16 @@
     </condition>
 
     <target name="all" depends="build,setup,run,unsetup,dev-report"/>
+    <target name="test" depends="build,setup-test,run,unsetup-test"/>
 
     <target name="setup" depends="init-common">
       <antcall target="clean-results"/>
       <antcall target="start-database"/>
-      <ant target="startDomain"/>
+      <ant target="start-domain"/>
+      <ant target="setup-test"/>
+    </target>
+
+    <target name="setup-test" depends="init-common">
       <antcall target="setup-database"/>
       <antcall target="setup-cluster"/>
     </target>
@@ -109,20 +115,9 @@
           <param name="operand.props"
               value="${resources.dottedname.prefix}.jdbc-connection-pool.${pool.name}.property.dataBaseName=${db_name}"/>
        </antcall>
-       <antcall target="asadmin-common">
-          <param name="admin.command" value="set"/>
-          <param name="operand.props"
-              value="${resources.dottedname.prefix}.jdbc-connection-pool.${pool.name}.connection-validation-method=table"/>
-       </antcall>
-       <antcall target="asadmin-common">
-          <param name="admin.command" value="set"/>
-          <param name="operand.props"
-              value="${resources.dottedname.prefix}.jdbc-connection-pool.${pool.name}.validation-table-name=sys.systables"/>
-       </antcall>
-       <antcall target="asadmin-common">
-          <param name="admin.command" value="set"/>
-          <param name="operand.props"
-              value="${resources.dottedname.prefix}.jdbc-connection-pool.${pool.name}.is-connection-validation-required=true"/>
+       <antcall target="setup-pool-common">
+          <param name="pool.name" value="${pool.name}"/>
+          <param name="resource.name" value="${resource.name}"/>
        </antcall>
       <antcall target="execute-sql-common">
         <param name="sql.file" value="sql/create.sql"/>
@@ -141,11 +136,15 @@
         </java>
     </target>
 
-    <target name="unsetup" depends="init-common">
+    <target name="unsetup-test" depends="init-common">
         <antcall target="unsetup-cluster"/>
         <antcall target="unsetup-database"/>
+    </target>
+
+    <target name="unsetup" depends="init-common">
+        <antcall target="unsetup-test"/>
         <antcall target="stop-database"/>
-        <ant target="stopDomain"/>
+        <ant target="stop-domain"/>
     </target>
 
     <target name="unsetup-database" depends="init-common">
@@ -237,10 +236,6 @@
     </target>
 
     <target name="run-rollback" depends="init-common">
-        <antcall target="execute-ejb-sql-common">
-          <param name="sql.file" value="sql/delete.sql"/>
-        </antcall>
-
         <parallel>
            <antcall target="insert-data">
                <param name="port" value="28080"/>
@@ -278,7 +273,8 @@
         <echo message="Restarting db"/>
         <antcall target="stop-database"/>
         <antcall target="start-database"/>
-        <sleep seconds="15"/>
+        <sleep seconds="35"/>
+
         <echo message="Verifying results"/>
         <java  fork="on"
               failonerror="true"
@@ -336,7 +332,7 @@
         <sleep seconds="15"/>
         <antcall target="start-database"/>
 
-        <sleep seconds="15"/>
+        <sleep seconds="35"/>
         <antcall target="recover-transactions">
            <param name="log-dir" value=""/>
        </antcall>
@@ -408,15 +404,6 @@
       <antcall  target="clean-common"/>
     </target>
 
-    <target name="clean-results" depends="init-common">
-        <delete>
-           <fileset dir="${env.APS_HOME}" includes="test_results*"/>
-        </delete>
-        <delete>
-           <fileset dir="." includes="*.output"/>
-        </delete>
-    </target>
-
     <target name="usage">
         <echo message="Running with ${derby.class} Derby ntwk.derby is set to .${ntwk.derby}"/>
         <antcall target="usage-common"/>
@@ -451,22 +438,5 @@
           <arg line="-h ${db.host} -p ${db.port} shutdown"/>
         </java>
     </target>
-
-    <target name="start-derby" depends="init-common" unless="ntwk.derby">
-        <echo message="Starting database"/>
-        <echo message="${ASADMIN}"/>
-        <!-- spawn is added to prevent a hang on Windows -->
-        <exec spawn="true" executable="${ASADMIN}" failonerror="false">
-          <arg line="start-database"/>
-        </exec>
-    </target>
-
-    <target name="stop-derby" depends="init-common" unless="ntwk.derby">
-        <echo message="Stopping database"/>
-        <exec executable="${ASADMIN}" failonerror="false">
-          <arg line="stop-database"/>
-        </exec>
-    </target>
-
 
 </project>

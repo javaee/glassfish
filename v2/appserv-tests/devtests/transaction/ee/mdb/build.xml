@@ -39,6 +39,7 @@
 <!ENTITY commonBuild SYSTEM "./../../../../config/common.xml">
 <!ENTITY commonRun SYSTEM "./../../../../config/run.xml">
 <!ENTITY reporting SYSTEM "./../../../../config/report.xml">
+<!ENTITY eeCommon SYSTEM "file:./../ee.xml">
 <!ENTITY testproperties SYSTEM "file:./build.properties">
 ]>
 
@@ -48,79 +49,80 @@
     &commonSetup;
     &commonBuild;
     &commonRun;
+    &eeCommon;
     &testproperties;
     &reporting;
 
     <target name="all" depends="clean-results,all-embedded,all-local,dev-report"/>
+    <target name="test" depends="build,test-embedded,test-local"/>
 
     <target name="all-embedded" depends="init-common">
       <antcall target="build"/>
+      <antcall target="setup"/>
       <antcall target="setup-embedded"/>
-      <antcall target="all-common"/>
+      <antcall target="common"/>
+      <antcall target="unsetup"/>
     </target>
 
     <target name="all-local" depends="init-common">
       <antcall target="build"/>
+      <antcall target="setup"/>
       <antcall target="setup-local"/>
-      <antcall target="all-common"/>
+      <antcall target="common"/>
+      <antcall target="unsetup"/>
     </target>
 
-    <target name="all-common" depends="init-common">
+    <target name="test-embedded" depends="init-common">
+      <antcall target="setup-test"/>
+      <antcall target="setup-embedded"/>
+      <antcall target="common"/>
+      <antcall target="unsetup-test"/>
+    </target>
+
+    <target name="test-local" depends="init-common">
+      <antcall target="setup-test"/>
+      <antcall target="setup-local"/>
+      <antcall target="common"/>
+      <antcall target="unsetup-test"/>
+    </target>
+
+    <target name="common" depends="init-common">
       <antcall target="deploy"/>
       <antcall target="run"/>
       <antcall target="undeploy"/>
       <antcall target="reset-tables"/>
-      <antcall target="unsetup"/>
     </target>
 
     <target name="setup-local" depends="init-common">
-      <antcall target="setup-common"/>
       <antcall target="setup-cluster">
          <param name="type" value="LOCAL"/>
       </antcall>
     </target>
 
     <target name="setup-embedded" depends="init-common">
-      <antcall target="setup-common"/>
       <antcall target="setup-cluster">
          <param name="type" value="EMBEDDED"/>
       </antcall>
     </target>
 
-    <target name="setup-common" depends="init-common">
-      <antcall target="start-database"/>
-      <ant target="startDomain"/>
+    <target name="setup" depends="init-common">
+      <antcall target="start-derby"/>
+      <ant target="start-domain"/>
+      <antcall target="setup-database"/>
+    </target>
+
+    <target name="setup-test" depends="init-common">
       <antcall target="setup-database"/>
     </target>
 
     <target name="setup-database" depends="init-common">
-      <antcall target="deploy-jdbc-common">
-            <param name="jdbc.conpool.name" value="jdbc-xa-pool"/>
-            <param name="db.class" value="org.apache.derby.jdbc.ClientXADataSource"/>
-            <param name="jdbc.resource.type" value="javax.sql.XADataSource"/>
-            <param name="jdbc.resource.name" value="jdbc/xa"/>
+      <antcall target="setup-xa-database-common">
+            <param name="pool.name" value="jdbc-xa-pool"/>
+            <param name="resource.name" value="jdbc/xa"/>
         </antcall>
-       <antcall target="asadmin-common">
-          <param name="admin.command" value="set"/>
-          <param name="operand.props"
-              value="${resources.dottedname.prefix}.jdbc-connection-pool.jdbc-xa-pool.property.connectionAttributes=;create=true"/>
-       </antcall>
-       <antcall target="asadmin-common">
-          <param name="admin.command" value="set"/>
-          <param name="operand.props"
-              value="${resources.dottedname.prefix}.jdbc-connection-pool.jdbc-xa-pool.validation-table-name=sys.systables"/>
-       </antcall>
-       <antcall target="asadmin-common">
-          <param name="admin.command" value="set"/>
-          <param name="operand.props"
-              value="${resources.dottedname.prefix}.jdbc-connection-pool.jdbc-xa-pool.connection-validation-method=table"/>
-       </antcall>
-       <antcall target="asadmin-common">
-          <param name="admin.command" value="set"/>
-          <param name="operand.props"
-              value="${resources.dottedname.prefix}.jdbc-connection-pool.jdbc-xa-pool.is-connection-validation-required=true"/>
-       </antcall>
-
+      <antcall target="execute-ejb-sql-common">
+        <param name="sql.file" value="sql/create.sql"/>
+      </antcall>
       <antcall target="execute-sql-common">
         <param name="sql.file" value="sql/create.sql"/>
         <param name="db.url" value="jdbc:derby://localhost:1527/${db.name};create=true;"/>
@@ -152,11 +154,15 @@
         </java>
     </target>
 
-    <target name="unsetup" depends="init-common">
+    <target name="unsetup-test" depends="init-common">
         <antcall target="unsetup-cluster"/>
         <antcall target="unsetup-database"/>
-        <antcall target="stop-database"/>
-        <ant target="stopDomain"/>
+    </target>
+
+    <target name="unsetup" depends="init-common">
+        <antcall target="unsetup-test"/>
+        <antcall target="stop-derby"/>
+        <ant target="stop-domain"/>
     </target>
 
     <target name="unsetup-database" depends="init-common">
@@ -202,22 +208,6 @@
            <arg line="undeploy"/>
            <arg line="${appname}-web"/>
         </java>
-    </target>
-
-    <target name="start-database" depends="init-common">
-        <echo message="Starting database"/>
-        <echo message="${ASADMIN}"/>
-        <!-- spawn is added to prevent a hang on Windows -->
-        <exec spawn="true" executable="${ASADMIN}" failonerror="false">
-          <arg line="start-database"/>
-        </exec>
-    </target>
-
-    <target name="stop-database" depends="init-common">
-        <echo message="Stopping database"/>
-        <exec executable="${ASADMIN}" failonerror="false">
-          <arg line="stop-database"/>
-        </exec>
     </target>
 
     <target name="build" depends="compile-war">
@@ -317,15 +307,6 @@
 
     <target name="clean" depends="init-common">
       <antcall  target="clean-common"/>
-    </target>
-
-    <target name="clean-results" depends="init-common">
-        <delete>
-           <fileset dir="${env.APS_HOME}" includes="test_results*"/>
-        </delete>
-        <delete>
-           <fileset dir="." includes="*.output"/>
-        </delete>
     </target>
 
     <target name="usage">
