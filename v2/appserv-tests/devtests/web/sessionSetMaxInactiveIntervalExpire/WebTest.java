@@ -108,11 +108,14 @@ public class WebTest {
 
         Thread.sleep(5 * 1000);
 
+	// translate server -> client cookie
+	String clientCookie = cookie.replace("Path", "$Path").replace("HttpOnly", "$HttpOnly");
+ 
         sock = new Socket(host, new Integer(port).intValue());
         OutputStream os = sock.getOutputStream();
         os.write(("GET " + contextRoot + "/CheckSession"
             + " HTTP/1.0\n").getBytes());
-        os.write(("Cookie: " + cookie + "\n").getBytes());
+        os.write(("Cookie: " + clientCookie + "\n").getBytes());
         os.write("\n".getBytes());
 
         InputStream is = null;
