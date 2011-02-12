@@ -123,7 +123,7 @@ public class ServiceInitializerListener extends org.glassfish.grizzly.config.Gen
     @Override
     protected void configureThreadPool(final Habitat habitat,
             final ThreadPool threadPool) {
-        transport.setThreadPool(GrizzlyExecutorService.createInstance(
+        transport.setWorkerThreadPool(GrizzlyExecutorService.createInstance(
                 ThreadPoolConfig.defaultConfig()));
     }
 
