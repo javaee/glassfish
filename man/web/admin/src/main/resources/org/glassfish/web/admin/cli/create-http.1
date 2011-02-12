@@ -32,8 +32,9 @@ OPTIONS
 
      --request-timeout-seconds
 
-         The time in seconds at which the request times out.  The
-         default is 30.
+         The time in seconds at which the request times  out.  If
+         you  do not set this option, the request times out in 30
+         seconds.
 
      --timeout-seconds
          The maximum time in seconds for which a keep alive  con-
@@ -47,9 +48,9 @@ OPTIONS
          lined  until the connection is closed by the server. Set
          this property to 1 to disable  HTTP/1.0  keep-alive,  as
          well  as HTTP/1.1 keep-alive and pipelining. The default
-         is 250.
+         is 256.
 
-Java EE 6           Last change: 08 Oct 2010                    1
+Java EE 6           Last change: 11 Feb 2011                    1
 
 asadmin Utility Subcommands                        create-http(1)
 
@@ -96,7 +97,7 @@ OPERANDS
          The name of the protocol to which  this  HTTP  parameter
          set applies.
 
-Java EE 6           Last change: 08 Oct 2010                    2
+Java EE 6           Last change: 11 Feb 2011                    2
 
 asadmin Utility Subcommands                        create-http(1)
 
@@ -120,5 +121,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 08 Oct 2010                    3
+Java EE 6           Last change: 11 Feb 2011                    3
 

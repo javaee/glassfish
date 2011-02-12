@@ -13,9 +13,13 @@ SYNOPSIS
 DESCRIPTION
      The  change-master-broker  subcommand  changes  the   master
      broker  in  a Message Queue cluster that is the JMS provider
-     for a GlassFish Server cluster.
+     for a GlassFish  Server  cluster.  By  default,  the  master
+     broker is the one associated with the first instance config-
+     ured in the GlassFish Server cluster.
 
-     This subcommand is supported in remote mode only.
+     This subcommand is supported in  remote  mode  only.  Remote
+     asadmin  subcommands require a running domain administration
+     server (DAS).
 
 OPTIONS
      --help
@@ -40,16 +44,17 @@ EXAMPLES
        Command change-master-broker executed successfully.
 
 EXIT STATUS
+
+Java EE 6           Last change: 11 Feb 2011                    1
+
+asadmin Utility Subcommands               change-master-broker(1)
+
      0            subcommand executed successfully
 
      1            error in executing the subcommand
 
-Java EE 6           Last change: 24 Nov 2010                    1
-
-asadmin Utility Subcommands               change-master-broker(1)
-
 SEE ALSO
      asadmin(1M)
 
-Java EE 6           Last change: 24 Nov 2010                    2
+Java EE 6           Last change: 11 Feb 2011                    2
 

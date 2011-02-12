@@ -21,10 +21,6 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --target
-         This option is valid only in domains that are configured
-         to  support  clusters,  such as domains that are created
-         with the cluster profile or the enterprise profile.
-
          This option specifies the target from which you want  to
          remove the connector resource. Valid targets are:
 
@@ -47,22 +43,22 @@ OPTIONS
          domain
              Deletes the connector resource from the domain.
 
-Java EE 6           Last change: 14 Sep 2010                    1
-
-asadmin Utility Subcommands          delete-connector-resource(1)
-
          cluster_name
 
              Deletes the connector  resource  from  every  server
              instance in the cluster.
 
+Java EE 6           Last change: 11 Feb 2011                    1
+
+asadmin Utility Subcommands          delete-connector-resource(1)
+
          instance_name
+
              Deletes the  connector  resource  from  a  specified
              server instance.
 
 OPERANDS
      jndi_name
-
          The JNDI name of this connector resource.
 
 EXAMPLES
@@ -85,5 +81,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 14 Sep 2010                    2
+Java EE 6           Last change: 11 Feb 2011                    2
 

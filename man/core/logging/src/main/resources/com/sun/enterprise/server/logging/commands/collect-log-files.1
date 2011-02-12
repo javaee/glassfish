@@ -3,18 +3,19 @@ asadmin Utility Subcommands                  collect-log-files(1)
 
 NAME
      collect-log-files - collects all  available  log  files  and
-     creates a ZIP archive in the specified output directory
+     compiles them into a ZIP archive
 
 SYNOPSIS
      collect-log-files [--help] [--target target]
-     --outputfilepath pathname
+     [--retrieve [false|true] [retrievefilepath]]
 
 DESCRIPTION
      The collect-log-files subcommand collects all available  log
-     files  for a specified GlassFish Server instance or cluster,
-     and compiles the logs into a single ZIP  archive.  This  ZIP
-     archive  is  created  in the directory specified with the --
-     outputfilepath option.
+     files  for  a specified GlassFish Server server, cluster, or
+     server instance and compiles the log files into a single ZIP
+     archive.
+
+     This subcommand is supported in remote mode only.
 
 OPTIONS
      --help
@@ -22,44 +23,106 @@ OPTIONS
 
          Displays the help text for the subcommand.
 
+     --retrieve
+         Enables you to specify a directory path other  than  the
+         default  in  which  to  create  the ZIP archive. If this
+         option is omitted, the ZIP archive  is  created  in  the
+         default directory.
+
+         By default, log file ZIP archives  are  created  in  the
+         as-install/domains/domain1/collected-logs directory. The
+         ZIP file names are constructed from the specified target
+         and timestamp, as follows:
+
+           log_yyyy-mm-dd_hh-min-sec.zip
+
+         This option takes the false (default) or true  retrieve-
+         filepath  operands,  described  in  the Operands section
+         below. To create the ZIP archive in  a  directory  other
+         than the default, the true operand must be used.
+
      --target
-         The server instance or cluster for which log levels will
-         be listed. Valid values are:
 
-             o    cluster_name- The name of a target cluster.
+         The server, cluster, or server instance  for  which  log
+         files  will be collected. If this option is omitted, the
+         default server is used.
 
-             o    instance_name- The  name  of  a  target  server
-                  instance.
-
-     --outputfilepath
-
-         The name of the directory in which the ZIP archive  will
-         be saved. This option is required.
-
-         The ZIP file name is constructed from the specified tar-
-         get and timestamp, as follows:
-
-           target_yyyy-mm-dd_hh-min-sec.zip
-
-EXAMPLES
-     Example 1 Collecting Log Files into a ZIP  Archive  for  All
-     Logs in a Cluster
-
-Java EE 6           Last change: 11 Nov 2010                    1
+Java EE 6           Last change: 12 Feb 2011                    1
 
 asadmin Utility Subcommands                  collect-log-files(1)
 
+OPERANDS
+     false
+
+         Used with the --retrieve option, specifies that the  log
+         file  ZIP  archive will be created in the default direc-
+         tory. If omitted,  the  --retrieve  option  defaults  to
+         false.
+
+     true
+         Used with the --retrieve option, specifies that the  log
+         file ZIP archive will be created in the directory speci-
+         fied by retrievefilepath. If  retrievefilepath is  omit-
+         ted,  the  log  file  ZIP archive will be created in the
+         default directory.
+
+     retrievefilepath
+
+         Used with --retrieve true, the name of the directory  in
+         which  the ZIP archive will be saved. If this operand is
+         omitted, the log file ZIP archive will be created in the
+         default  directory. This operand has no effect when used
+         with --retrieve false.
+
+     target
+         Valid values are:
+
+             o    server_name - Default target is server.  If  no
+                  target  is  specified  then  the  log  file ZIP
+                  archive is created for the server.
+
+             o    cluster_name - The name of a target cluster.
+
+             o    instance_name - The name  of  a  target  server
+                  instance.
+
+EXAMPLES
+     Example 1 Collecting Log Files for the Default Server
+
      This example generates a ZIP archive from the log files  for
-     a  cluster named c1. The ZIP archive is saved in a directory
-     named /space/output. In this example, the  cluster  c1  con-
-     tains three server instances, named in1, in2, and in3.
+     the default server.
 
-       asadmin> collect-log-files --target c1 --outputfilepath /space/output
+       asadmin> collect-log-files
+       Created Zip file under /space/gfv3/v3setup/glassfish3/glassfish/domains/domain1/collected-logs/log_2010-12-15_15-46-23.zip.
+       Command collect-log-files executed successfully.
 
-       Log files are downloaded for in1.
-       Log files are downloaded for in2.
-       Log files are downloaded for in3.
+Java EE 6           Last change: 12 Feb 2011                    2
 
+asadmin Utility Subcommands                  collect-log-files(1)
+
+     Example 2 Collecting Log Files for a Cluster
+
+     This example generates a ZIP archive from the log files  for
+     a  cluster  named cluster1 and the two server instances run-
+     ning in the cluster.
+
+       asadmin> collect-log-files --target cluster1
+       Log files are downloaded for instance1.
+       Log files are downloaded for instance2.
+       Created Zip file under /space/gfv3/v3setup/glassfish3/glassfish/domains/domain1/collected-logs/log_2010-12-15_15-54-06.zip.
+       Command collect-log-files executed successfully.
+
+     Example 3 Collecting Log Files in a Directory Other Than the
+     Default for a Cluster
+
+     This example generates a ZIP archive from the log files  for
+     a  cluster  named cluster1 and its two server instances, and
+     saves the archive in a directory named /space/output.
+
+       asadmin> collect-log-files --target cluster1 --retrieve true /space/output
+       Log files are downloaded for instance1.
+       Log files are downloaded for instance2.
+       Created Zip file under /space/output/log_2010-12-15_15-55-54.zip.
        Command collect-log-files executed successfully.
 
 EXIT STATUS
@@ -69,12 +132,13 @@ EXIT STATUS
                                  mand
 
 SEE ALSO
-     list-log-levels(1), rotate-log(1), set-log-levels(1)
+     list-log-attributes(1),  list-log-levels(1),  rotate-log(1),
+     set-log-attributes(1),  set-log-levels(1)
 
      asadmin(1M)
 
      Chapter 7, Administering  the  Logging  Service,  in  Oracle
      GlassFish Server 3.1 Administration Guide
 
-Java EE 6           Last change: 11 Nov 2010                    2
+Java EE 6           Last change: 12 Feb 2011                    3
 

@@ -28,11 +28,11 @@ DESCRIPTION
      defined in the  glassfish-resources.xml  for  the  GlassFish
      domain.
 
-         o    To reference  the  jndi-name  for  an  application-
+         o    To  reference  the  jndi-name  for  an  application
               scoped  resource,  perform  the  lookup  using  the
               java:app prefix.
 
-         o    To reference  the  jndi-name  for  a  module-scoped
+         o    To reference the  jndi-name  for  a  module  scoped
               resource,  perform the lookup using the java:module
               prefix.
 
@@ -49,28 +49,23 @@ OPTIONS
 
          Displays the help text for the subcommand.
 
-Java EE 6           Last change: 15 Sep 2010                    1
+Java EE 6           Last change: 10 Feb 2011                    1
 
 asadmin Utility Subcommands;              ping-connection-pool(1)
 
      --appname
 
-         An application-scoped resource.
+         Name of the application in which the application  scoped
+         resource is defined.
 
      --modulename
-         A module-scoped resource.
+         Name of the module in which the module  scoped  resource
+         is defined.
 
 OPERANDS
      pool_name
 
-         The name of the pool to test.
-
-     application
-         JNDI name for an application-scoped resource.
-
-     module
-
-         JNDI name for a module-scoped resource.
+         Name of the connection pool to be reinitialized.
 
 EXAMPLES
      Example 1 Contacting a Connection Pool
@@ -93,11 +88,7 @@ SEE ALSO
      create-jdbc-connection-pool(1),      delete-jdbc-connection-
      pool(1), list-jdbc-connection-pools(1)
 
-Java EE 6           Last change: 15 Sep 2010                    2
-
-asadmin Utility Subcommands;              ping-connection-pool(1)
-
      asadmin(1M)
 
-Java EE 6           Last change: 15 Sep 2010                    3
+Java EE 6           Last change: 10 Feb 2011                    2
 

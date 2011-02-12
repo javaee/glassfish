@@ -20,35 +20,39 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --target
-         This is the name of the  target  for  which  the  admin-
-         istered  objects are to be listed. The valid targets for
-         this command are instance, cluster, domain, and  server.
-         Server is the default option. Valid values are:
+         The name  of  the  target  for  which  the  administered
+         objects are to be listed.
+
+OPERANDS
+     target
+
+         The valid targets  for  this  subcommand  are  instance,
+         cluster,  domain,  and  server.  Server  is  the default
+         option. Valid values are:
 
          server
-
              Lists the administered objects on the default server
              instance. This is the default value.
 
          configuration_name
+
              Lists the administered objects in the specified con-
              figuration.
 
          cluster_name
-
              Lists  the  administered  objects  on   all   server
              instances in the specified cluster.
 
          instance_name
+
              Lists the administered objects on a specified server
              instance.
 
-EXAMPLES
-
-Java EE 6           Last change: 15 Sep 2010                    1
+Java EE 6           Last change: 11 Feb 2011                    1
 
 asadmin Utility Subcommands                 list-admin-objects(1)
 
+EXAMPLES
      Example 1 Listing Administered Objects
 
      This example lists all the administered objects.
@@ -69,5 +73,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 15 Sep 2010                    2
+Java EE 6           Last change: 11 Feb 2011                    2
 

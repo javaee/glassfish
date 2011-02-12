@@ -11,8 +11,11 @@ SYNOPSIS
 
 DESCRIPTION
      The list-jmsdest subcommand lists the Java  Message  Service
-     (JMS) physical destinations. This subcommand is supported in
-     remote mode only.
+     (JMS) physical destinations.
+
+     This subcommand is supported in  remote  mode  only.  Remote
+     asadmin  subcommands require a running domain administration
+     server (DAS).
 
 OPTIONS
      --help
@@ -21,7 +24,6 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --desttype
-     -T
          The type of JMS destination to be listed.  Valid  values
          are topic and queue.
 
@@ -44,14 +46,14 @@ OPERANDS
              Lists the physical  destinations  for  every  server
              instance in the specified cluster.
 
+Java EE 6           Last change: 11 Feb 2011                    1
+
+asadmin Utility Subcommands                       list-jmsdest(1)
+
          instance-name
 
              Lists the physical destinations  for  the  specified
              server instance.
-
-Java EE 6           Last change: 22 Oct 2010                    1
-
-asadmin Utility Subcommands                       list-jmsdest(1)
 
 EXAMPLES
      Example 1 Listing all physical destinations
@@ -83,5 +85,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 22 Oct 2010                    2
+Java EE 6           Last change: 11 Feb 2011                    2
 

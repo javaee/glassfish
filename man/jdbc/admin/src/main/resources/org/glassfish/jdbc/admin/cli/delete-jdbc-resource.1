@@ -22,10 +22,6 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --target
-         This option is valid only in domains that are configured
-         to  support  clusters,  such as domains that are created
-         with the cluster profile or the enterprise profile.
-
          This option helps specify the target from which you  are
          removing the JDBC resource. Valid targets are:
 
@@ -46,13 +42,14 @@ OPTIONS
              Removes  the  resource  from  a   particular   sever
              instance.
 
-Java EE 6           Last change: 17 Sep 2010                    1
-
-asadmin Utility Subcommands               delete-jdbc-resource(1)
-
      Note -
 
        Resources are always created for a domain as a  whole  but
+
+Java EE 6           Last change: 11 Feb 2011                    1
+
+asadmin Utility Subcommands               delete-jdbc-resource(1)
+
        are only active for targets for which a <resource-ref> has
        been created using the --target option when  the  resource
        was  created.  This  means  that  deleting a resource only
@@ -86,5 +83,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 17 Sep 2010                    2
+Java EE 6           Last change: 11 Feb 2011                    2
 

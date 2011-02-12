@@ -29,97 +29,28 @@ DESCRIPTION
 
      This subcommand is supported in remote mode only.
 
-  Application Scoped Resources
-     The  create-connector-work-security-map  subcommand  can  be
-     scoped  such  that the security map is available only to the
-     application for which it is defined. Security maps that  are
-     scoped  in  this  way  cannot be referred to or looked up by
-     other applications. If an application tries  to  look  up  a
-     scoped  resource  that  does  not  belong to the application
-     (defined in  another  application)  or  module  (defined  in
-     another module), a naming exception is thrown.
-
-     To scope a security map to a  specific  application,  define
-     the  resource  in  a glassfish-resources.xml file in the RAR
-     archive  for  the  corresponding   connector   module.   The
-     glassfish-resources.xml should be a valid XML file that con-
-     forms to the glassfish-resources.dtd.
-
-     The scoping can be  applied  at  the  application  level  or
-     module level.
-
-Java EE 6           Last change: 09 Sep 2010                    1
-
-asadmin Utility Subcommands
-                            create-connector-work-security-map(1)
-
-         o    To scope a resource at the application level, place
-              the glassfish-resources.xml containing the resource
-              definition in the top-level META-INF  directory  of
-              the  RAR archive (META-INF/glassfish-resources.xml)
-              . The resource can be  referenced  through  lookups
-              with  the  java:app  prefix.  The  resource will be
-              available only to the application (and its modules)
-              for which it is defined.
-
-         o    To scope a resource at the module level, place  the
-              glassfish-resources.xml   containing  the  resource
-              definition in the RAR bundled at the module  level.
-              The resource can be referenced through lookups with
-              the java:module prefix. The resource will be avail-
-              able only to the module for which it is defined.
-
-     The jndi-name for  application-scoped-resources  or  module-
-     scoped-resources    are    specified    using   the   format
-     java:app/jdbc/myDataSource                                or
-     java:module/jdbc/myModuleLevelDataSource.  This naming scope
-     is   defined   in    the    Java    EE    6    Specification
-     (http://download.oracle.com/javaee/6/api/).
-
-     Note -
-
-       Note the following restrictions:
-
-           o    If the prefix java:app/ or  java:module/  is  not
-                specified  in  the resource name, the prefix will
-                be  applied  appropriately   and   persisted   in
-                domain.xml.
-
-           o    The  java:global  prefix  is  not  supported   in
-                GlassFish Server 3.1.
-
-           o    The work-security-map configuration can  only  be
-                defined  in  the  glassfish-resources.xml  for  a
-                corresponding connector module (standalone  RAR).
-                In   the  case  of  an  EAR  archive,  the  work-
-                security-map configuration can only be defined in
-                a  glassfish-resources.xml  in a RAR that is bun-
-                dled in the EAR. It is not permissible to  define
-                the resource in a RAR that is not part of the EAR
-                with which the resource will be used.
-
 OPTIONS
      --help
      -?
 
          Displays the help text for the subcommand.
 
-Java EE 6           Last change: 09 Sep 2010                    2
-
-asadmin Utility Subcommands
-                            create-connector-work-security-map(1)
-
      --description
-
          Text providing descriptive details about  the  connector
          work security map.
 
      --groupsmap
+
          Specifies a map of the backend EIS  user  group  to  the
          GlassFish  Server user group. Use a comma-separated list
          to specify more than one  mapping.  Use  either  the  --
          principalsmap  option or the --groupsmap option, but not
          both.
+
+Java EE 6           Last change: 10 Feb 2011                    1
+
+asadmin Utility Subcommands
+                            create-connector-work-security-map(1)
 
      --principalsmap
 
@@ -151,11 +82,6 @@ EXAMPLES
        workSecurityMap1
        Command create-connector-work-security-map executed successfully.
 
-Java EE 6           Last change: 09 Sep 2010                    3
-
-asadmin Utility Subcommands
-                            create-connector-work-security-map(1)
-
      Example 2 Creating a Connector Work Security Map (Group)
 
      This example creates connector work security map workSecuri-
@@ -166,6 +92,11 @@ asadmin Utility Subcommands
        --groupsmap eis-group-1=server-group-1,eis-group-2=server-group-2,
        eis-group-3=server-group-1 workSecurityMap2
        Command create-connector-work-security-map executed successfully.
+
+Java EE 6           Last change: 10 Feb 2011                    2
+
+asadmin Utility Subcommands
+                            create-connector-work-security-map(1)
 
 EXIT STATUS
      0                           subcommand executed successfully
@@ -179,10 +110,10 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 09 Sep 2010                    4
+Java EE 6           Last change: 10 Feb 2011                    3
 
 asadmin Utility Subcommands
                             create-connector-work-security-map(1)
 
-Java EE 6           Last change: 09 Sep 2010                    5
+Java EE 6           Last change: 10 Feb 2011                    4
 

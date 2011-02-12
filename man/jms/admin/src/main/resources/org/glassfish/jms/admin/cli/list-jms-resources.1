@@ -12,8 +12,11 @@ SYNOPSIS
 DESCRIPTION
      The list-jms-resources subcommand lists  the  existing  Java
      Message  Service (JMS) resources (destination and connection
-     factory resources). This subcommand is supported  in  remote
-     mode only.
+     factory resources).
+
+     This subcommand is supported in  remote  mode  only.  Remote
+     asadmin  subcommands require a running domain administration
+     server (DAS).
 
 OPTIONS
      --help
@@ -37,22 +40,21 @@ OPERANDS
              Lists the resources for the default server instance.
              This is the default value.
 
-         configuration-name
+         domain
 
-             Lists the resources in the specified configuration.
+             Lists the resources for the domain.
 
          cluster-name
              Lists the resources for every server instance in the
              specified cluster.
 
-         instance-name
-
-             Lists  the  resources  for  the   specified   server
-
-Java EE 6           Last change: 16 Sep 2009                    1
+Java EE 6           Last change: 11 Feb 2011                    1
 
 asadmin Utility Subcommands                 list-jms-resources(1)
 
+         instance-name
+
+             Lists  the  resources  for  the   specified   server
              instance.
 
 EXAMPLES
@@ -88,5 +90,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 16 Sep 2009                    2
+Java EE 6           Last change: 11 Feb 2011                    2
 

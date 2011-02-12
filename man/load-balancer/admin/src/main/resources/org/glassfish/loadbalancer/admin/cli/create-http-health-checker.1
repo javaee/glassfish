@@ -16,10 +16,6 @@ DESCRIPTION
      health checker is unique for the combination of  target  and
      load balancer configuration.
 
-     This subcommand only works with  the  native  load  balancer
-     provided  with  the  Communications Server. It does not work
-     with other load balancers.
-
      Note -
 
        This subcommand is only  applicable  to  Oracle  GlassFish
@@ -49,14 +45,15 @@ OPTIONS
          checker has not received a response  in  this  interval,
          the instance is considered unhealthy.
 
-Java EE 6           Last change: 25 Aug 2010                    1
-
-asadmin Utility Subcommands         create-http-health-checker(1)
-
      --config
 
          The load balancer configuration for which you create the
          health-checker.  If  you do not specify a configuration,
+
+Java EE 6           Last change: 11 Feb 2011                    1
+
+asadmin Utility Subcommands         create-http-health-checker(1)
+
          the subcommand creates a health checker for  every  load
          balancer configuration associated with the target. If no
          configuration  references  the  target,  the  subcommand
@@ -64,6 +61,7 @@ asadmin Utility Subcommands         create-http-health-checker(1)
 
 OPERANDS
      target
+
          Specifies  the  target  to  which  the  health   checker
          applies.
 
@@ -96,5 +94,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 25 Aug 2010                    2
+Java EE 6           Last change: 11 Feb 2011                    2
 

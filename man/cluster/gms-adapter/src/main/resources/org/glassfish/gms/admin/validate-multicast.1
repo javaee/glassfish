@@ -8,7 +8,7 @@ NAME
 SYNOPSIS
      validate-multicast [--help] [--multicastport multicastport]
      [--multicastaddress multicastaddress]
-     [--bindinterface bindinterface]
+     [--bindaddress bindaddress]
      [--sendperiod sendperiod]
      [--timeout timeout]
      [--timetolive timetolive]
@@ -20,6 +20,27 @@ DESCRIPTION
      subcommand at the same time on each of the hosts to be vali-
      dated. This subcommand is available in local mode.
 
+     Note -
+
+       Do not run the validate-multicast subcommand using the DAS
+       and  cluster's multicast address and port values while the
+       DAS and cluster are running. Doing so results in an error.
+
+       The validate-multicast subcommand must be run at the  same
+       time on two or more machines to validate whether multicast
+       messages are being received between the machines.
+
+     As long as all machines see each other, multicast  is  vali-
+     dated  to  be  working  properly across the machines. If the
+     machines are not seeing each other,  set  the  --bindaddress
+     option  explicitly  to  ensure  that  all machines are using
+     interface on  same  subnet,  or  increase  the  --timetolive
+     option  from  the  default  of  4.  If these changes fail to
+     resolve the multicast issues, ask the network  administrator
+     to  verify  that  the network is configured so the multicast
+     messages can be seen between all the machines  used  to  run
+     the cluster.
+
 OPTIONS
      --help
      -?
@@ -29,6 +50,11 @@ OPTIONS
      --multicastport
          The port for the multicast socket  on  which  the  Group
          Management  Service  (GMS)  listens  for  group  events.
+
+Java EE 6           Last change: 10 Feb 2011                    1
+
+asadmin Utility Subcommands                 validate-multicast(1)
+
          Specify a standard UDP port number in  the  range  2048-
          32000. The default is 2048.
 
@@ -41,7 +67,7 @@ OPTIONS
          reserved  and  should  not  be  used.  The  default   is
          228.9.3.1.
 
-     --bindinterface
+     --bindaddress
          The local interface to receive multicast datagram  pack-
          ets  for  the  GMS.  The default is to use all available
          binding interfaces.
@@ -49,11 +75,6 @@ OPTIONS
          On a multi-home machine (possessing two or more  network
          interfaces),  this  attribute  enables  you  to indicate
          which network interface is used for the GMS. This  value
-
-Java EE 6           Last change: 18 Nov 2010                    1
-
-asadmin Utility Subcommands                 validate-multicast(1)
-
          must be a local network interface IP address.
 
      --sendperiod
@@ -80,29 +101,44 @@ asadmin Utility Subcommands                 validate-multicast(1)
          If used without a value or set to true,  provides  addi-
          tional debugging information. The default is false.
 
-EXAMPLES
-     Example 1 Validating multicast transport
-
-       asadmin> validate-multicast --timeout 3
-       Timeout set to 3 seconds
-       Will use port 2,048
-       Will use address 228.9.3.1
-       Will use bind interface null
-       Will use wait period 2,000 (in milliseconds)
-
-       Listening for data...
-       Sending message with content "hostname.local" every 2,000 milliseconds
-       Received data from hostname.local (loopback)
-       Exiting after 3 seconds. To change this timeout, use the --timeout command line option.
-       Received no data (ignoring loopback messages)
-       Command validate-multicast executed successfully
-
-EXIT STATUS
-
-Java EE 6           Last change: 18 Nov 2010                    2
+Java EE 6           Last change: 10 Feb 2011                    2
 
 asadmin Utility Subcommands                 validate-multicast(1)
 
+EXAMPLES
+     Example 1 Validating multicast transport
+
+     Run from host machine1:
+
+       asadmin> validate-multicast
+       Will use port 2,048
+       Will use address 228.9.3.1
+       Will use bind address null
+       Will use wait period 2,000 (in milliseconds)
+
+       Listening for data...
+       Sending message with content "machine1" every 2,000 milliseconds
+       Received data from machine1 (loopback)
+       Received data from machine2
+       Exiting after 20 seconds. To change this timeout, use the --timeout command line option.
+       Command validate-multicast executed successfully
+
+     Run from host machine2:
+
+       asadmin> validate-multicast
+       Will use port 2,048
+       Will use address 228.9.3.1
+       Will use bind address null
+       Will use wait period 2,000 (in milliseconds)
+
+       Listening for data...
+       Sending message with content "machine2" every 2,000 milliseconds
+       Received data from machine2 (loopback)
+       Received data from machine1
+       Exiting after 20 seconds. To change this timeout, use the --timeout command line option.
+       Command validate-multicast executed successfully
+
+EXIT STATUS
      0                   command executed successfully
 
      1                   error in executing the command
@@ -110,7 +146,11 @@ asadmin Utility Subcommands                 validate-multicast(1)
 SEE ALSO
      get-health(1)
 
+Java EE 6           Last change: 10 Feb 2011                    3
+
+asadmin Utility Subcommands                 validate-multicast(1)
+
      asadmin(1M)
 
-Java EE 6           Last change: 18 Nov 2010                    3
+Java EE 6           Last change: 10 Feb 2011                    4
 

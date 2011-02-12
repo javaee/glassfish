@@ -8,7 +8,7 @@ NAME
 
 SYNOPSIS
      create-system-properties [--help]
-     [--target target-name]
+     [--target target]
      [name=value)[:name=value]*]
 
 DESCRIPTION
@@ -37,23 +37,48 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --target
-         This option specifies the target on which you are creat-
-         ing  the  system  properties. The valid targets for this
-         subcommand are instance, cluster, configuration, domain,
-         and server. Server is the default option.
+         The target on which you are creating the system  proper-
+         ties.
 
 OPERANDS
-     name=value
+     target
 
+         The valid targets  for  this  subcommand  are  instance,
+         cluster,  configuration,  domain,  and server. Server is
+         the default option. Valid values are:
+
+Java EE 6           Last change: 11 Feb 2011                    1
+
+asadmin Utility Subcommands           create-system-properties(1)
+
+         server
+
+             Creates  the  properties  on  the   default   server
+             instance. This is the default value.
+
+         domain
+             Creates the properties for all server  instances  in
+             the default domain.
+
+         configuration_name
+
+             Creates the properties in the  specified  configura-
+             tion.
+
+         cluster_name
+             Creates the properties on all  server  instances  in
+             the specified cluster.
+
+         instance_name
+
+             Creates  the  properties  on  a   specified   server
+             instance.
+
+     name=value
          The name value pairs of the system properties to add  to
          the specified target. Multiple system properties must be
          separated by a : (colon). If a : (colon) appears in  the
          name  or  value of a system property, it must be escaped
-
-Java EE 6           Last change: 22 Dec 2010                    1
-
-asadmin Utility Subcommands           create-system-properties(1)
-
          with a  (blackslash). If any system properties were pre-
          viously defined, they are updated with the new values.
 
@@ -61,10 +86,14 @@ EXAMPLES
      Example 1 Creating System Properties
 
      This example creates a system property  associated  with  an
-     HTTP listener.
+     HTTP listener on a server instance named myserver.
 
-       asadmin> create-system-properties myserver http-listener-port=1088
+       asadmin> create-system-properties --target myserver http-listener-port=1088
        Command create-system-properties executed successfully.
+
+Java EE 6           Last change: 11 Feb 2011                    2
+
+asadmin Utility Subcommands           create-system-properties(1)
 
 EXIT STATUS
      0                           subcommand executed successfully
@@ -77,5 +106,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 22 Dec 2010                    2
+Java EE 6           Last change: 11 Feb 2011                    3
 

@@ -2,17 +2,17 @@
 asadmin Utility Subcommands                list-http-listeners(1)
 
 NAME
-     list-http-listeners  -  lists  the  existing  HTTP   network
-     listeners
+     list-http-listeners - lists the existing network listeners
 
 SYNOPSIS
      list-http-listeners [--help]
      [target]
 
 DESCRIPTION
-     The list-http-listeners subcommand lists the  existing  HTTP
-     network  listeners.  This  subcommand is supported in remote
-     mode only.
+     The list-http-listeners subcommand lists the  existing  net-
+     work listeners.
+
+     This subcommand is supported in remote mode only.
 
 OPTIONS
      --help
@@ -22,36 +22,37 @@ OPTIONS
 
 OPERANDS
      target
-         Restricts the listing to HTTP listeners for a  specified
-         target. Valid values are as follows:
+         Restricts the listing to network listeners for a  speci-
+         fied target. Valid values are as follows:
 
          server
 
-             Lists the HTTP  listeners  for  the  default  server
+             Lists the netowork listeners for the default  server
              instance. This is the default value.
 
          configuration-name
-             Lists the HTTP listeners for  the  specified  confi-
+             Lists the network listeners for the specified confi-
              guration.
 
          cluster-name
 
-             Lists the HTTP listeners for all server instances in
-             the specified cluster.
+             Lists the network listeners for all server instances
+             in the specified cluster.
 
          instance-name
-             Lists the HTTP listeners for  the  specified  server
+             Lists the network listeners for the specified server
              instance.
 
 EXAMPLES
-     Example 1 Listing HTTP Listeners
 
-Java EE 6           Last change: 08 Oct 2010                    1
+Java EE 6           Last change: 11 Feb 2011                    1
 
 asadmin Utility Subcommands                list-http-listeners(1)
 
-     The following command lists all the HTTP  network  listeners
-     for the server instance:
+     Example 1 Listing Network Listeners
+
+     The following command lists all the  network  listeners  for
+     the server instance:
 
        asadmin> list-http-listeners
        http-listener-1
@@ -69,5 +70,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 08 Oct 2010                    2
+Java EE 6           Last change: 11 Feb 2011                    2
 

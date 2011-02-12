@@ -49,7 +49,7 @@ OPTIONS
              HTTP/IIOP  listener or iiop-service for which SSL is
              to be configured.
 
-Java EE 6           Last change: 22 Dec 2010                    1
+Java EE 6           Last change: 11 Feb 2011                    1
 
 asadmin Utility Subcommands                         create-ssl(1)
 
@@ -71,11 +71,15 @@ asadmin Utility Subcommands                         create-ssl(1)
          The type of service or listener for  which  the  SSL  is
          created. The type can be:
 
+             o    network-listener
+
              o    http-listener
 
              o    iiop-listener
 
              o    iiop-service
+
+             o    jmx-connector
          When the type  is  iiop-service,  the  ssl-client-config
          along  with  the  embedded  ssl  element  is  created in
          domain.xml.
@@ -94,16 +98,16 @@ asadmin Utility Subcommands                         create-ssl(1)
          In  the  event  SSL3  encryption  fails, the server then
          tries SSL2 encryption.
 
+Java EE 6           Last change: 11 Feb 2011                    2
+
+asadmin Utility Subcommands                         create-ssl(1)
+
      --ssl2ciphers
+
          A comma-separated list of the SSL2 ciphers to  be  used.
          Ciphers  not  explicitly listed will be disabled for the
          target, even if those ciphers are available in the  par-
          ticular  cipher  suite  you are using. If this option is
-
-Java EE 6           Last change: 22 Dec 2010                    2
-
-asadmin Utility Subcommands                         create-ssl(1)
-
          not used,  all  supported  ciphers  are  assumed  to  be
          enabled. Allowed values are:
 
@@ -122,7 +126,6 @@ asadmin Utility Subcommands                         create-ssl(1)
              o    desede3
 
      --ssl3enabled
-
          Set this property to false to disable SSL3. The  default
          value  is  true. If both SSL2 and SSL3 are enabled for a
          virtual server, the server tries SSL3 encryption  first.
@@ -130,12 +133,12 @@ asadmin Utility Subcommands                         create-ssl(1)
          tries SSL2 encryption.
 
      --tlsenabled
+
          Set this property to false to disable TLS.  The  default
          value  is  true It is good practice to enable TLS, which
          is a more secure version of SSL.
 
      --ssl3tlsciphers
-
          A comma-separated list of the SSL3 and/or TLS ciphers to
          be  used. Ciphers not explicitly listed will be disabled
          for the target, even if those ciphers are  available  in
@@ -149,15 +152,15 @@ asadmin Utility Subcommands                         create-ssl(1)
 
              o    SSL_RSA_WITH_DES_CBC_SHA
 
+Java EE 6           Last change: 11 Feb 2011                    3
+
+asadmin Utility Subcommands                         create-ssl(1)
+
              o    SSL_RSA_EXPORT_WITH_RC4_40_MD5
 
              o    SSL_RSA_WITH_NULL_MD5
 
              o    SSL_RSA_WITH_RC4_128_SHA
-
-Java EE 6           Last change: 22 Dec 2010                    3
-
-asadmin Utility Subcommands                         create-ssl(1)
 
              o    SSL_RSA_WITH_NULL_SHA
 
@@ -197,14 +200,14 @@ EXIT STATUS
      1                           error in executing  the  subcom-
                                  mand
 
-SEE ALSO
-     delete-ssl(1)
-
-Java EE 6           Last change: 22 Dec 2010                    4
+Java EE 6           Last change: 11 Feb 2011                    4
 
 asadmin Utility Subcommands                         create-ssl(1)
 
+SEE ALSO
+     delete-ssl(1)
+
      asadmin(1M)
 
-Java EE 6           Last change: 22 Dec 2010                    5
+Java EE 6           Last change: 11 Feb 2011                    5
 

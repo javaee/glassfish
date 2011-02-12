@@ -46,7 +46,7 @@ OPTIONS
              A system resource for all server instances  and  the
              domain administration server (DAS).
 
-Java EE 6            Last change: 9 Sep 2010                    1
+Java EE 6           Last change: 10 Feb 2011                    1
 
 asadmin Utility Subcommands          create-connector-resource(1)
 
@@ -73,14 +73,6 @@ asadmin Utility Subcommands          create-connector-resource(1)
          This option specifies the ending location of the connec-
          tor resources. Valid targets are:
 
-         Note -
-
-           The resource is always created for  the  domain  as  a
-           whole, but the <resource-ref> element for the resource
-           is only created for the specified --target. This means
-           that  although  the  resource is defined at the domain
-           level, it is only active at the specified --target.
-
          server
 
              Creates the connector resource in the default server
@@ -94,17 +86,27 @@ asadmin Utility Subcommands          create-connector-resource(1)
              Creates  the  connector  resource  in  every  server
              instance in the cluster.
 
-Java EE 6            Last change: 9 Sep 2010                    2
-
-asadmin Utility Subcommands          create-connector-resource(1)
-
          instance_name
-
              Creates the  connector  resource  in  the  specified
              server instance.
 
+         Note -
+
+Java EE 6           Last change: 10 Feb 2011                    2
+
+asadmin Utility Subcommands          create-connector-resource(1)
+
+           The resource is always created for  the  domain  as  a
+           whole,  but  the resource-ref for the resource is only
+           created for the specified --target.  This  means  that
+           although  the resource is defined at the domain level,
+           it is only available at the  specified  target  level.
+           Use the create-resource-ref subcommand to refer to the
+           resource in multiple targets if needed.
+
 OPERANDS
      jndi_name
+
          The JNDI name of this connector resource.
 
 EXAMPLES
@@ -124,9 +126,10 @@ EXIT STATUS
                                  mand
 
 SEE ALSO
-     delete-connector-resource(1), list-connector-resources(1)
+     delete-connector-resource(1),   list-connector-resources(1),
+     create-resource-ref(1)
 
      asadmin(1M)
 
-Java EE 6            Last change: 9 Sep 2010                    3
+Java EE 6           Last change: 10 Feb 2011                    3
 

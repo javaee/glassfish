@@ -32,6 +32,30 @@ OPTIONS
 
          Displays the help text for the subcommand.
 
+     --target
+         The server, cluster, or server instance for  which  logs
+         will  be  rotated.  If  this option is omitted, logs are
+         rotated for the default server.
+
+OPERANDS
+     target
+
+         Valid values are:
+
+             o    server_name - Default target is server.  If  no
+                  target  is  specified then logs are rotated for
+                  the server.
+
+             o    cluster_name - The name of a target cluster.
+
+             o    instance_name - The name  of  a  target  server
+
+Java EE 6           Last change: 12 Feb 2011                    1
+
+asadmin Utility Subcommands                         rotate-log(1)
+
+                  instance.
+
 EXAMPLES
      Example 1 Rotating the Server Log
 
@@ -43,20 +67,17 @@ EXAMPLES
 EXIT STATUS
      0                           subcommand executed successfully
 
-Java EE 6           Last change: 01 Nov 2010                    1
-
-asadmin Utility Subcommands                         rotate-log(1)
-
      1                           error in executing  the  subcom-
                                  mand
 
 SEE ALSO
-     collect-log-files(1), list-log-levels(1), set-log-levels(1)
+     collect-log-files(1),   list-log-attributes(1),    list-log-
+     levels(1),  set-log-attributes(1),  set-log-levels(1)
 
      asadmin(1M)
 
      Chapter 7, Administering  the  Logging  Service,  in  Oracle
      GlassFish Server 3.1 Administration Guide
 
-Java EE 6           Last change: 01 Nov 2010                    2
+Java EE 6           Last change: 12 Feb 2011                    2
 

@@ -16,27 +16,6 @@ DESCRIPTION
 
      This subcommand is supported in remote mode only.
 
-  Application Scoped Resources
-     The list-connector-work-security-maps subcommand can  target
-     security  maps  that are scoped to a specific application or
-     module, as defined in the  glassfish-resources.xml  for  the
-     GlassFish domain.
-
-         o    To reference  the  jndi-name  for  an  application-
-              scoped  resource,  perform  the  lookup  using  the
-              java:app prefix.
-
-         o    To reference  the  jndi-name  for  a  module-scoped
-              resource,  perform the lookup using the java:module
-              prefix.
-
-     The jndi-name for  application-scoped-resources  or  module-
-     scoped-resources    are    specified    using   the   format
-     java:app/jdbc/myDataSource                                or
-     java:module/jdbc/myModuleLevelDataSource.  This naming scope
-     is   defined   in    the    Java    EE    6    Specification
-     (http://download.oracle.com/javaee/6/api/).
-
 OPTIONS
      --help
      -?
@@ -47,10 +26,6 @@ OPTIONS
          Specifies the name of the security map contained  within
          the resource adapter from which the identity and princi-
          pals should be listed.
-
-Java EE 6           Last change: 15 Sep 2010                    1
-
-asadmin Utility Subcommands  list-connector-work-security-maps(1)
 
 OPERANDS
      resource_adapter_name
@@ -71,6 +46,10 @@ EXAMPLES
        workSecurityMap2: EIS principal=eis-principal-1, mapped principal=server-principal-1
        Command list-connector-work-security-maps executed successfully.
 
+Java EE 6           Last change: 10 Feb 2011                    1
+
+asadmin Utility Subcommands  list-connector-work-security-maps(1)
+
 EXIT STATUS
      0                           subcommand executed successfully
 
@@ -83,5 +62,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 15 Sep 2010                    2
+Java EE 6           Last change: 10 Feb 2011                    2
 

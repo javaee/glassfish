@@ -6,7 +6,7 @@ NAME
      adapter configuration
 
 SYNOPSIS
-     delete-resource-adapter-config [--help] raname [--target target]
+     delete-resource-adapter-config [--help] raname
 
 DESCRIPTION
      The delete-resource-adapter-config  subcommand  deletes  the
@@ -21,34 +21,9 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --target
-         This option is valid only in domains that are configured
-         to support clusters.
-
-         Valid targets are described below.
-
-         server
-
-             Deletes  the  resource  from  the   default   server
-             instance. This is the default value
-
-         domain
-             Deletes the resource from the domain
-
-         cluster_name
-
-             Deletes the resource for every  server  instance  in
-             the cluster
-
-         instance_name
-             Deletes  the  resource  from  the  specified  server
-             instance
+         This option is deprecated.
 
 OPERANDS
-
-Java EE 6           Last change: 14 Sep 2010                    1
-
-asadmin Utility Subcommands     delete-resource-adapter-config(1)
-
      raname
 
          Specifies the connector module name.
@@ -67,11 +42,15 @@ EXIT STATUS
      1                           error in executing  the  subcom-
                                  mand
 
+Java EE 6           Last change: 11 Feb 2011                    1
+
+asadmin Utility Subcommands     delete-resource-adapter-config(1)
+
 SEE ALSO
      create-resource-adapter-config(1),    list-resource-adapter-
      configs(1)
 
      asadmin(1M)
 
-Java EE 6           Last change: 14 Sep 2010                    2
+Java EE 6           Last change: 11 Feb 2011                    2
 

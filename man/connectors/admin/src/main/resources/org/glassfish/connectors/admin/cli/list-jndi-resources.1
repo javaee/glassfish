@@ -20,35 +20,38 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --target
-         This is the name  of  the  target  for  which  the  JNDI
-         resources  are  to be listed. The valid targets for this
-         command  are  instance,  cluster,  domain,  and  server.
-         Server is the default option. Valid values are:
+         The name of the target for which the JNDI resources  are
+         to be listed.
+
+OPERANDS
+     target
+
+         The valid targets  for  this  subcommand  are  instance,
+         cluster,  domain,  and  server.  Server  is  the default
+         option. Valid values are:
 
          server
-
              Lists the  JNDI  resources  on  the  default  server
              instance. This is the default value.
 
-         configuration_name
-             Lists the JNDI resources in the specified configura-
-             tion.
+         domain
+
+             Lists the JNDI resources for the domain.
 
          cluster_name
-
              Lists the JNDI resources on all server instances  in
              the specified cluster.
 
          instance_name
+
              Lists the  JNDI  resources  on  a  specified  server
              instance.
 
-EXAMPLES
-
-Java EE 6           Last change: 27 Oct 2009                    1
+Java EE 6           Last change: 11 Feb 2010                    1
 
 asadmin Utility Subcommands                list-jndi-resources(1)
 
+EXAMPLES
      Example 1 Listing JNDI Resources
 
      This example lists the JNDI in the default domain.
@@ -70,5 +73,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 27 Oct 2009                    2
+Java EE 6           Last change: 11 Feb 2010                    2
 

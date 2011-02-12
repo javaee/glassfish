@@ -14,8 +14,7 @@ DESCRIPTION
      for  one  or  more  loggers.  The  attributes  you  can  set
      correspond to the  attributes  that  are  available  in  the
      logging.properties  file  for  the  domain. Depending on the
-     attributes you set, a server  restart  may  or  may  not  be
-     necessary.
+     attributes you set, a server restart may be necessary.
 
      This subcommand is supported in remote mode only.
 
@@ -25,104 +24,109 @@ OPTIONS
 
          Displays the help text for the subcommand.
 
-     target
+     --target
          The server domain, instance, or cluster for which logger
-         attributes  will  be  listed. If this option is omitted,
-         attributes are listed  for  the  default  domain.  Valid
-         values are:
-
-             o    domain_name - The name of a target domain.
-
-             o    cluster_name- The name of a target cluster.
-
-             o    instance_name- The  name  of  a  target  server
-                  instance.
+         attributes  will  be  set.  If  this  option is omitted,
+         attributes are set for the default server.
 
 OPERANDS
-     attribute-name
+     target
 
+         Valid values are:
+
+             o    server_name - Default target is server.  If  no
+                  target is specified then log attributes are set
+                  for the server.
+
+             o    cluster_name - The name of a target cluster.
+
+             o    instance_name - The name  of  a  target  server
+                  instance.
+
+     attribute-name
          The fully scoped name  of  the  logging  attribute.  The
          list-log-attributes  subcommand  can be used to list the
          names of all currently defined attributes.
 
+Java EE 6           Last change: 12 Feb 2011                    1
+
+asadmin Utility Subcommands                 set-log-attributes(1)
+
      attribute-value
+
          The value to apply to the specified attribute.
 
-Java EE 6           Last change: 03 Dec 2010                    1
+         The attribute values that can be specified  include  the
+         following.  Refer  to  the  online  help  and Chapter 7,
+         Administering the Logging Service, in  Oracle  GlassFish
+         Server  3.1  Administration  Guide for complete explana-
+         tions of each of these values.
+
+         com.sun.enterprise.server.logging.GFFileHandler.alarms
+             Default is false.
+
+         com.sun.enterprise.server.logging.GFFileHandler.file
+
+             Default                                           is
+             ${com.sun.aas.instanceRoot}/logs/server.log.
+
+         com.sun.enterprise.server.logging.GFFileHandler.flushFrequency
+             Default is 1.
+
+         com.sun.enterprise.server.logging.GFFileHandler.formatter
+
+             Default                                           is
+             com.sun.enterprise.server.logging.UniformLogFormatter.
+
+         com.sun.enterprise.server.logging.GFFileHandler.logtoConsole
+             Default is false.
+
+         com.sun.enterprise.server.logging.GFFileHandler.maxHistoryFiles
+
+             Default is 0.
+
+         com.sun.enterprise.server.logging.GFFileHandler.retainErrorsStasticsForHours
+             Default is 0.
+
+         com.sun.enterprise.server.logging.GFFileHandler.rotationLimitInBytes
+
+             Default is 2000000.
+
+         com.sun.enterprise.server.logging.GFFileHandler.rotationTimelimitInMinutes
+             Default is 0.
+
+Java EE 6           Last change: 12 Feb 2011                    2
 
 asadmin Utility Subcommands                 set-log-attributes(1)
 
-     The attribute values that can be specified include the  fol-
-     lowing.  Refer to the online help and Chapter 7, Administer-
-     ing the Logging Service,  in  Oracle  GlassFish  Server  3.1
-     Administration  Guide  for  complete explanations of each of
-     these values.
+         com.sun.enterprise.server.logging.SyslogHandler.useSystemLogging
 
-     com.sun.enterprise.server.logging.GFFileHandler.alarms
+             Default is false.
 
-         Default is false.
+         handlers
+             Default is java.util.logging.ConsoleHandler.
 
-     com.sun.enterprise.server.logging.GFFileHandler.file
-         Default is ${com.sun.aas.instanceRoot}/logs/server.log.
+         java.util.logging.ConsoleHandler.formatter
 
-     com.sun.enterprise.server.logging.GFFileHandler.flushFrequency
+             Default                                           is
+             com.sun.enterprise.server.logging.UniformLogFormatter.
 
-         Default is 1.
+         java.util.logging.FileHandler.count
+             Default is 1.
 
-     com.sun.enterprise.server.logging.GFFileHandler.formatter
-         Default                                               is
-         com.sun.enterprise.server.logging.UniformLogFormatter.
+         java.util.logging.FileHandler.formatter
 
-     com.sun.enterprise.server.logging.GFFileHandler.logtoConsole
+             Default is java.util.logging.XMLFormatter.
 
-         Default is false.
+         java.util.logging.FileHandler.limit
+             Default is 50000.
 
-     com.sun.enterprise.server.logging.GFFileHandler.maxHistoryFiles
-         Default is 0.
+         java.util.logging.FileHandler.pattern
 
-     com.sun.enterprise.server.logging.GFFileHandler.retainErrorsStasticsForHours
+             Default is %h/java%u.log.
 
-         Default is 0.
-
-     com.sun.enterprise.server.logging.GFFileHandler.rotationLimitInBytes
-         Default is 2000000.
-
-     com.sun.enterprise.server.logging.GFFileHandler.rotationTimelimitInMinutes
-
-         Default is 0.
-
-     com.sun.enterprise.server.logging.SyslogHandler.useSystemLogging
-         Default is false.
-
-Java EE 6           Last change: 03 Dec 2010                    2
-
-asadmin Utility Subcommands                 set-log-attributes(1)
-
-     handlers
-
-         Default is java.util.logging.ConsoleHandler.
-
-     java.util.logging.ConsoleHandler.formatter
-         Default                                               is
-         com.sun.enterprise.server.logging.UniformLogFormatter.
-
-     java.util.logging.FileHandler.count
-
-         Default is 1.
-
-     java.util.logging.FileHandler.formatter
-         Default is java.util.logging.XMLFormatter.
-
-     java.util.logging.FileHandler.limit
-
-         Default is 50000.
-
-     java.util.logging.FileHandler.pattern
-         Default is %h/java%u.log.
-
-     log4j.logger.org.hibernate.validator.util.Version
-
-         Default is warn.
+         log4j.logger.org.hibernate.validator.util.Version
+             Default is warn.
 
 EXAMPLES
      Example 1 Setting a the Maximum  of  Log  History  Files  to
@@ -137,24 +141,24 @@ EXAMPLES
        These logging attributes are set for server.
        Command set-log-attributes executed successfully.
 
-EXIT STATUS
-
-Java EE 6           Last change: 03 Dec 2010                    3
+Java EE 6           Last change: 12 Feb 2011                    3
 
 asadmin Utility Subcommands                 set-log-attributes(1)
 
+EXIT STATUS
      0                           subcommand executed successfully
 
      1                           error in executing  the  subcom-
                                  mand
 
 SEE ALSO
-     collect-log-files(1), list-log-attributes(1), rotate-log(1)
+     collect-log-files(1),   list-log-attributes(1),    list-log-
+     levels(1),  rotate-log(1), set-log-levels(1)
 
      asadmin(1M)
 
      Chapter 7, Administering  the  Logging  Service,  in  Oracle
      GlassFish Server 3.1 Administration Guide
 
-Java EE 6           Last change: 03 Dec 2010                    4
+Java EE 6           Last change: 12 Feb 2011                    4
 

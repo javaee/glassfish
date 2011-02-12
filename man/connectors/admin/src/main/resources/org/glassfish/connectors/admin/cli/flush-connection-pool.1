@@ -26,11 +26,11 @@ DESCRIPTION
      defined in the  glassfish-resources.xml  for  the  GlassFish
      domain.
 
-         o    To reference  the  jndi-name  for  an  application-
+         o    To  reference  the  jndi-name  for  an  application
               scoped  resource,  perform  the  lookup  using  the
               java:app prefix.
 
-         o    To reference  the  jndi-name  for  a  module-scoped
+         o    To reference the  jndi-name  for  a  module  scoped
               resource,  perform the lookup using the java:module
               prefix.
 
@@ -48,26 +48,22 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --appname
-         An application-scoped resource.
+         Name of the application in which the application  scoped
 
-Java EE 6           Last change: 14 Sep 2010                    1
+Java EE 6           Last change: 10 Feb 2011                    1
 
 asadmin Utility Subcommands              flush-connection-pool(1)
 
+         resource is defined.
+
      --modulename
 
-         A module-scoped resource.
+         Name of the module in which the module  scoped  resource
+         is defined.
 
 OPERANDS
      pool_name
          Name of the connection pool to be reinitialized.
-
-     application
-
-         JNDI name for an application-scoped resource.
-
-     module
-         JNDI name for a module-scoped resource.
 
 EXAMPLES
      This example reinitializes the JDBC  connection  pool  named
@@ -88,5 +84,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 14 Sep 2010                    2
+Java EE 6           Last change: 10 Feb 2011                    2
 

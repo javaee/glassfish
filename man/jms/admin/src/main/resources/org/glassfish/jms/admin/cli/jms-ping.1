@@ -18,7 +18,9 @@ DESCRIPTION
      within the JMS service. It displays an error message when it
      is unable to ping a built-in JMS service.
 
-     This subcommand is supported in remote mode only.
+     This subcommand is supported in  remote  mode  only.  Remote
+     asadmin  subcommands require a running domain administration
+     server (DAS).
 
 OPTIONS
      --help
@@ -43,22 +45,26 @@ OPTIONS
 
              Pings the JMS service for the specified cluster.
 
+Java EE 6           Last change: 11 Feb 2011                    1
+
+asadmin Utility Subcommands                           jms-ping(1)
+
          instance-name
+
              Pings the  JMS  service  for  the  specified  server
              instance.
 
-Java EE 6           Last change: 22 Oct 2010                    1
-
-asadmin Utility Subcommands                           jms-ping(1)
+         -
 
 EXAMPLES
      Example 1 Verifying that the JMS service is running
 
      The following subcommand checks to see if the JMS service is
-     running on the server instance server1.
+     running on the default server.
 
-       asadmin> jms-ping --target server1
+       asadmin> jms-ping
        JMS-ping command executed successfully
+       Connector resoure test_jms_adapter created.
        Command jms-ping executed successfully.
 
 EXIT STATUS
@@ -71,5 +77,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 22 Oct 2010                    2
+Java EE 6           Last change: 11 Feb 2011                    2
 

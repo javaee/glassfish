@@ -14,7 +14,6 @@ SYNOPSIS
      [--dbuser database-user]
      [--dburl database-url]
      [--property property-list]
-     [--force={false|true}]
      cluster-name
 
 DESCRIPTION
@@ -27,7 +26,9 @@ DESCRIPTION
      Service (JMS), in Oracle GlassFish Server 3.1 Administration
      Guide.
 
-     This subcommand is supported in remote mode only.
+     This subcommand is supported in  remote  mode  only.  Remote
+     asadmin  subcommands require a running domain administration
+     server (DAS).
 
 OPTIONS
      --help
@@ -46,10 +47,10 @@ OPTIONS
 
          The default value is conventional.
 
-         If enhanced is specified, the configstorestype and  mes-
+         If enhanced is specified, the configstoretype  and  mes-
          sagestoretype options are ignored.
 
-Java EE 6           Last change: 24 Nov 2010                    1
+Java EE 6           Last change: 11 Feb 2011                    1
 
 asadmin Utility Subcommands              configure-jms-cluster(1)
 
@@ -103,7 +104,7 @@ asadmin Utility Subcommands              configure-jms-cluster(1)
      --property
          A list of additional database-vendor-specific properties
 
-Java EE 6           Last change: 24 Nov 2010                    2
+Java EE 6           Last change: 11 Feb 2011                    2
 
 asadmin Utility Subcommands              configure-jms-cluster(1)
 
@@ -127,5 +128,5 @@ EXIT STATUS
 SEE ALSO
      asadmin(1M)
 
-Java EE 6           Last change: 24 Nov 2010                    3
+Java EE 6           Last change: 11 Feb 2011                    3
 

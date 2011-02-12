@@ -22,7 +22,9 @@ DESCRIPTION
      create a physical destination with non-default property set-
      tings.
 
-     This subcommand is supported in remote mode only.
+     This subcommand is supported in  remote  mode  only.  Remote
+     asadmin  subcommands require a running domain administration
+     server (DAS).
 
 OPTIONS
      --help
@@ -31,7 +33,6 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --desttype
-     -T
          The type of the JMS destination. Valid values are  topic
          and queue.
 
@@ -48,12 +49,11 @@ OPTIONS
              For  the  dead  message  queue, the default value is
              1000.
 
-             If   the   limitBehavior   property   is   set    to
-
-Java EE 6           Last change: 22 Oct 2010                    1
+Java EE 6           Last change: 11 Feb 2011                    1
 
 asadmin Utility Subcommands                     create-jmsdest(1)
 
+             If   the   limitBehavior   property   is   set    to
              FLOW_CONTROL,  it is possible for the specified mes-
              sage limit to be exceeded because the broker  cannot
              react  quickly  enough  to stop the flow of incoming
@@ -98,21 +98,20 @@ asadmin Utility Subcommands                     create-jmsdest(1)
                  client  with an exception only if the message is
                  persistent. This is the default value.
 
-             FLOW_CONTROL
-
-                 Slow the rate at which  message  producers  send
-
-Java EE 6           Last change: 22 Oct 2010                    2
+Java EE 6           Last change: 11 Feb 2011                    2
 
 asadmin Utility Subcommands                     create-jmsdest(1)
 
+             FLOW_CONTROL
+
+                 Slow the rate at which  message  producers  send
                  messages.
 
              REMOVE_OLDEST
-
                  Throw out the oldest messages.
 
              REMOVE_LOW_PRIORITY
+
                  Throw out the lowest-priority messages according
                  to  age,  with  no notification to the producing
                  client.
@@ -125,7 +124,6 @@ asadmin Utility Subcommands                     create-jmsdest(1)
              set to FLOW_CONTROL.
 
          maxNumProducers
-
              The maximum number of message producers for the des-
              tination. When this limit is reached, no new produc-
              ers can be created. A value of -1 denotes an  unlim-
@@ -134,6 +132,7 @@ asadmin Utility Subcommands                     create-jmsdest(1)
              queue.
 
          consumerFlowLimit
+
              The maximum number of messages that can be delivered
              to  a  consumer  in  a  single  batch. A value of -1
              denotes an unlimited number of messages. The default
@@ -146,12 +145,11 @@ asadmin Utility Subcommands                     create-jmsdest(1)
              before load balancing begins.
 
          useDMQ
-
              If set to true, dead messages go to the dead message
              queue. If set to false, dead messages are discarded.
              The default value is true.
 
-Java EE 6           Last change: 22 Oct 2010                    3
+Java EE 6           Last change: 11 Feb 2011                    3
 
 asadmin Utility Subcommands                     create-jmsdest(1)
 
@@ -207,7 +205,7 @@ asadmin Utility Subcommands                     create-jmsdest(1)
          using the JMS Service (JMS Broker), which is part of the
          configuration. A JMS Broker is configured in the  config
 
-Java EE 6           Last change: 22 Oct 2010                    4
+Java EE 6           Last change: 11 Feb 2011                    4
 
 asadmin Utility Subcommands                     create-jmsdest(1)
 
@@ -252,7 +250,7 @@ EXIT STATUS
 
      1            error in executing the subcommand
 
-Java EE 6           Last change: 22 Oct 2010                    5
+Java EE 6           Last change: 11 Feb 2011                    5
 
 asadmin Utility Subcommands                     create-jmsdest(1)
 
@@ -262,5 +260,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 22 Oct 2010                    6
+Java EE 6           Last change: 11 Feb 2011                    6
 

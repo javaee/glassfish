@@ -24,76 +24,6 @@ DESCRIPTION
 
      This subcommand is supported in remote mode only.
 
-  Application Scoped Resources
-     The create-resource-adapter-config subcommand can be  scoped
-     such  that  the  resource configuration is available only to
-     the application for which it is defined. Configurations that
-     are scoped in this way cannot be referred to or looked up by
-     other applications. If an application tries  to  look  up  a
-     scoped  resource  that  does  not  belong to the application
-     (defined in  another  application)  or  module  (defined  in
-     another module), a naming exception is thrown.
-
-     To scope a resource to a specific  application,  define  the
-     resource  in  a  glassfish-resources.xml  file  in  the  RAR
-     archive  for  the  corresponding   connector   module.   The
-     glassfish-resources.xml should be a valid XML file that con-
-     forms to the glassfish-resources.dtd.
-
-     The scoping can be  applied  at  the  application  level  or
-     module level.
-
-         o    To scope a resource at the application level, place
-              the glassfish-resources.xml containing the resource
-              definition in the top-level META-INF  directory  of
-              the  RAR archive (META-INF/glassfish-resources.xml)
-              . The resource can be  referenced  through  lookups
-              with  the  java:app  prefix.  The  resource will be
-
-Java EE 6           Last change: 10 Sep 2010                    1
-
-asadmin Utility Subcommands     create-resource-adapter-config(1)
-
-              available only to the application (and its modules)
-              for which it is defined.
-
-         o    To scope a resource at the module level, place  the
-              glassfish-resources.xml   containing  the  resource
-              definition in the RAR bundled at the module  level.
-              The resource can be referenced through lookups with
-              the java:module prefix. The resource will be avail-
-              able only to the module for which it is defined.
-
-     The jndi-name for  application-scoped-resources  or  module-
-     scoped-resources    are    specified    using   the   format
-     java:app/jdbc/myDataSource                                or
-     java:module/jdbc/myModuleLevelDataSource.  This naming scope
-     is   defined   in    the    Java    EE    6    Specification
-     (http://download.oracle.com/javaee/6/api/).
-
-     Note -
-
-       Note the following restrictions:
-
-           o    If the prefix java:app/ or  java:module/  is  not
-                specified  in  the resource name, the prefix will
-                be  applied  appropriately   and   persisted   in
-                domain.xml.
-
-           o    The  java:global  prefix  is  not  supported   in
-                GlassFish Server 3.1.
-
-           o    The create-resource-adapter-config  configuration
-                can   only   be   defined   in   the   glassfish-
-                resources.xml  for  a   corresponding   connector
-                module  (standalone  RAR).  In the case of an EAR
-                archive, the create-resource-adapter-config  con-
-                figuration  can  only  be defined in a glassfish-
-                resources.xml in a RAR that  is  bundled  in  the
-                EAR. It is not permissible to define the resource
-                in a RAR that is not part of the EAR  with  which
-                the resource will be used.
-
 OPTIONS
      --help
      -?
@@ -102,10 +32,6 @@ OPTIONS
 
      --target
          This option has been deprecated.
-
-Java EE 6           Last change: 10 Sep 2010                    2
-
-asadmin Utility Subcommands     create-resource-adapter-config(1)
 
      --threadpoolid
 
@@ -122,10 +48,16 @@ asadmin Utility Subcommands     create-resource-adapter-config(1)
          keyword-value pairs are separated by a  colon  (:).  The
          properties  are the names of setter methods of the class
          that is referenced by the resourceadapter-class  element
+
+Java EE 6           Last change: 10 Feb 2011                    1
+
+asadmin Utility Subcommands     create-resource-adapter-config(1)
+
          in the ra.xml file.
 
 OPERANDS
      raname
+
          Indicates the connector module name. It is the value  of
          the resource-adapter-name in the domain.xml file.
 
@@ -149,11 +81,7 @@ SEE ALSO
      create-threadpool(1),     delete-resource-adapter-config(1),
      list-resource-adapter-configs(1)
 
-Java EE 6           Last change: 10 Sep 2010                    3
-
-asadmin Utility Subcommands     create-resource-adapter-config(1)
-
      asadmin(1M)
 
-Java EE 6           Last change: 10 Sep 2010                    4
+Java EE 6           Last change: 10 Feb 2011                    2
 

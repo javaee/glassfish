@@ -23,12 +23,21 @@ OPTIONS
          Displays the help text for the subcommand.
 
      --target
-         The server instance or cluster for which log levels will
-         be listed. Valid values are:
+         The server, cluster or server  instance  for  which  log
+         levels will be listed.
 
-             o    cluster_name- The name of a target cluster.
+OPERANDS
+     target
 
-             o    instance_name- The  name  of  a  target  server
+         Valid values are:
+
+             o    server_name - Default target is server.  If  no
+                  target  is specified then log levels are listed
+                  for the server.
+
+             o    cluster_name - The name of a target cluster.
+
+             o    instance_name - The name  of  a  target  server
                   instance.
 
 EXAMPLES
@@ -38,65 +47,75 @@ EXAMPLES
      their log levels are set.
 
        asadmin> list-log-levels
-       javax.enterprise.system.container.cmp: INFO
-       javax.enterprise.system.tools.admin: INFO
-       java.util.logging.ConsoleHandler: FINEST
-       javax.enterprise.system.container.web: INFO
-       javax.enterprise.system.util: INFO
-       javax.enterprise.resource.webcontainer.jsf.timing: INFO
-       javax: INFO
-       javax.enterprise.resource.corba: INFO
-       javax.enterprise.system.core.naming: INFO
 
-Java EE 6           Last change: 01 Nov 2010                    1
+Java EE 6           Last change: 12 Feb 2011                    1
 
 asadmin Utility Subcommands                    list-log-levels(1)
 
-       javax.enterprise.system.core.selfmanagement: INFO
-       javax.enterprise.system.container.ejb: INFO
-       javax.enterprise.resource.webcontainer.jsf.config: INFO
-       javax.enterprise.resource.javamail: INFO
-       org.apache.catalina: INFO
-       javax.enterprise.system.core.config: INFO
-       javax.enterprise.system.webservices.rpc: INFO
-       javax.enterprise.system.webservices.registry: INFO
-       javax.enterprise.system.tools.deployment: INFO
-       javax.enterprise.resource.jms: INFO
-       javax.enterprise.system: INFO
-       javax.enterprise.system.webservices.saaj: INFO
-       org.apache.jasper: INFO
-       javax.enterprise.resource.webcontainer.jsf.lifecycle: INFO
-       javax.enterprise.resource.jta: INFO
-       javax.enterprise.resource.jdo: INFO
-       javax.enterprise.resource.resourceadapter: INFO
-       javax.enterprise.system.core.transaction: INFO
-       javax.enterprise.resource.webcontainer.jsf.resource: INFO
-       javax.enterprise.system.core.security: INFO
-       javax.enterprise.resource.webcontainer.jsf.application: INFO
-       javax.enterprise.system.core.classloading: INFO
-       org.apache.coyote: INFO
-       javax.enterprise.resource.webcontainer.jsf.managedbean: INFO
-       javax.enterprise.system.container.ejb.mdb: INFO
-       javax.enterprise.resource.webcontainer.jsf.context: INFO
-       javax.enterprise.resource.webcontainer.jsf.renderkit: INFO
-       javax.enterprise.resource.webcontainer.jsf.facelets: INFO
-       javax.enterprise.resource.webcontainer.jsf.taglib: INFO
-
-       Command list-logger-levels executed successfully.
+       java.util.logging.ConsoleHandler        <FINEST>
+       javax.enterprise.resource.corba <INFO>
+       javax.enterprise.resource.javamail      <INFO>
+       javax.enterprise.resource.jdo   <INFO>
+       javax.enterprise.resource.jms   <INFO>
+       javax.enterprise.resource.jta   <INFO>
+       javax.enterprise.resource.resourceadapter       <INFO>
+       javax.enterprise.resource.sqltrace      <FINE>
+       javax.enterprise.resource.webcontainer.jsf.application  <INFO>
+       javax.enterprise.resource.webcontainer.jsf.config       <INFO>
+       javax.enterprise.resource.webcontainer.jsf.context      <INFO>
+       javax.enterprise.resource.webcontainer.jsf.facelets     <INFO>
+       javax.enterprise.resource.webcontainer.jsf.lifecycle    <INFO>
+       javax.enterprise.resource.webcontainer.jsf.managedbean  <INFO>
+       javax.enterprise.resource.webcontainer.jsf.renderkit    <INFO>
+       javax.enterprise.resource.webcontainer.jsf.resource     <INFO>
+       javax.enterprise.resource.webcontainer.jsf.taglib       <INFO>
+       javax.enterprise.resource.webcontainer.jsf.timing       <INFO>
+       javax.enterprise.system.container.cmp   <INFO>
+       javax.enterprise.system.container.ejb   <INFO>
+       javax.enterprise.system.container.ejb.mdb       <INFO>
+       javax.enterprise.system.container.web   <INFO>
+       javax.enterprise.system.core.classloading       <INFO>
+       javax.enterprise.system.core.config     <INFO>
+       javax.enterprise.system.core    <INFO>
+       javax.enterprise.system.core.naming     <INFO>
+       javax.enterprise.system.core.security   <INFO>
+       javax.enterprise.system.core.selfmanagement     <INFO>
+       javax.enterprise.system.core.transaction        <INFO>
+       javax.enterprise.system <INFO>
+       javax.enterprise.system.tools.admin     <INFO>
+       javax.enterprise.system.tools.backup    <INFO>
+       javax.enterprise.system.tools.deployment        <INFO>
+       javax.enterprise.system.util    <INFO>
+       javax.enterprise.system.webservices.registry    <INFO>
+       javax.enterprise.system.webservices.rpc <INFO>
+       javax.enterprise.system.webservices.saaj        <INFO>
+       javax   <INFO>
+       javax.org.glassfish.persistence <INFO>
+       org.apache.catalina     <INFO>
+       org.apache.coyote       <INFO>
+       org.apache.jasper       <INFO>
+       org.glassfish.admingui  <INFO>
+       org.jvnet.hk2.osgiadapter       <INFO>
+       Command list-log-levels executed successfully.
 
 EXIT STATUS
      0                           subcommand executed successfully
+
+Java EE 6           Last change: 12 Feb 2011                    2
+
+asadmin Utility Subcommands                    list-log-levels(1)
 
      1                           error in executing  the  subcom-
                                  mand
 
 SEE ALSO
-     collect-log-files(1), rotate-log(1), set-log-levels(1)
+     collect-log-files(1),    list-log-attributes(1),     rotate-
+     log(1),  set-log-attributes(1),  set-log-levels(1)
 
      asadmin(1M)
 
      Chapter 7, Administering  the  Logging  Service,  in  Oracle
      GlassFish Server 3.1 Administration Guide
 
-Java EE 6           Last change: 01 Nov 2010                    2
+Java EE 6           Last change: 12 Feb 2011                    3
 

@@ -5,7 +5,7 @@ NAME
      create-custom-resource - creates a custom resource
 
 SYNOPSIS
-     create-custom-resource [--help] --restype type --factoryclassname classname
+     create-custom-resource [--help] --restype type --factoryclass classname
      [--enabled={true|false}] [--description text]
      [--property (name=value)[:name=value]*] jndi-name
      [--target target]
@@ -28,14 +28,6 @@ OPTIONS
          The target on which the custom resource you are creating
          will be available. Valid values are:
 
-         Note -
-
-           The resource is always created for  the  domain  as  a
-           whole, but the <resource-ref> element for the resource
-           is only created for the specified --target. This means
-           that  although  the  resource is defined at the domain
-           level, it is only active at the specified --target.
-
          server           The resource will be available  on  the
                           default server instance and all domains
                           hosted on the  instance.  This  is  the
@@ -47,12 +39,23 @@ OPTIONS
          cluster_name     The resource will be available on every
                           server instance in the cluster.
 
-Java EE 6           Last change: 10 Sep 2010                    1
+         instance_name    The resource will be available  on  the
+                          specified server instance only.
+
+         Note -
+
+           The resource is always created for  the  domain  as  a
+           whole,  but  the resource-ref for the resource is only
+
+Java EE 6           Last change: 11 Feb 2011                    1
 
 asadmin Utility Subcommands             create-custom-resource(1)
 
-         instance_name    The resource will be available  on  the
-                          specified server instance only.
+           created for the specified --target.  This  means  that
+           although  the resource is defined at the domain level,
+           it is only available at the  specified  target  level.
+           Use the create-resource-ref subcommand to refer to the
+           resource in multiple targets if needed.
 
      --restype
 
@@ -91,11 +94,12 @@ EXAMPLES
 
        asadmin> create-custom-resource --restype topic
        --factoryclass com.imq.topic mycustomresource
-       Command create-custom-resource executed successfully.
 
-Java EE 6           Last change: 10 Sep 2010                    2
+Java EE 6           Last change: 11 Feb 2011                    2
 
 asadmin Utility Subcommands             create-custom-resource(1)
+
+       Command create-custom-resource executed successfully.
 
 EXIT STATUS
      0                           subcommand executed successfully
@@ -104,9 +108,10 @@ EXIT STATUS
                                  mand
 
 SEE ALSO
-     delete-custom-resource(1), list-custom-resources(1)
+     delete-custom-resource(1),         list-custom-resources(1),
+     create-resource-ref(1)
 
      asadmin(1M)
 
-Java EE 6           Last change: 10 Sep 2010                    3
+Java EE 6           Last change: 11 Feb 2011                    3
 

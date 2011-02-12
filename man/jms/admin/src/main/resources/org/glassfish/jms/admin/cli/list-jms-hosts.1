@@ -10,8 +10,11 @@ SYNOPSIS
 
 DESCRIPTION
      The list-jms-hosts subcommand lists the existing  Java  Mes-
-     sage  Service  (JMS) hosts for the JMS service. This subcom-
-     mand is supported in remote mode only.
+     sage Service (JMS) hosts for the JMS service.
+
+     This subcommand is supported in  remote  mode  only.  Remote
+     asadmin  subcommands require a running domain administration
+     server (DAS).
 
 OPTIONS
      --help
@@ -41,14 +44,15 @@ OPTIONS
              instance.
 
 EXAMPLES
-     Example 1 Listing all JMS hosts
-
-     The following subcommand lists the JMS  hosts  for  the  JMS
-     service.
 
 Java EE 6           Last change: 22 Oct 2010                    1
 
 asadmin Utility Subcommands                     list-jms-hosts(1)
+
+     Example 1 Listing all JMS hosts
+
+     The following subcommand lists the JMS  hosts  for  the  JMS
+     service.
 
        asadmin> list-jms-hosts
        default_JMS_host

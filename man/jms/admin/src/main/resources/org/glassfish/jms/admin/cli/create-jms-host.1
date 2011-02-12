@@ -6,20 +6,38 @@ NAME
 
 SYNOPSIS
      create-jms-host [--help]
+     --mqhost mq-host --mqport mq-port
+     --mquser mq-user --mqpassword mq-password
      [--target target]
-     [--mqhost mq-host] [--mqport mq-port]
-     [--mquser mq-user] [--mqpassword mq-password]
      jms_host_name
 
 DESCRIPTION
      Creates a JavaTM Message Service (JMS) host within  the  JMS
-     service. This subcommand is supported in remote mode only.
+     service.
+
+     This subcommand is supported in  remote  mode  only.  Remote
+     asadmin  subcommands require a running domain administration
+     server (DAS).
 
 OPTIONS
      --help
      -?
 
          Displays the help text for the subcommand.
+
+     --mqhost
+         The host name for the JMS service.
+
+     --mqport
+
+         The port number used by the JMS service.
+
+     --mquser
+         The user name for the JMS service.
+
+     --mqpassword
+
+         The password for the JMS service.
 
      --target
          Creates the JMS host  only  for  the  specified  target.
@@ -30,40 +48,22 @@ OPTIONS
              Creates  the  JMS  host  for  the   default   server
              instance. This is the default value.
 
+Java EE 6           Last change: 11 Feb 2011                    1
+
+asadmin Utility Subcommands                    create-jms-host(1)
+
          configuration-name
+
              Creates the JMS host in the specified configuration.
 
          cluster-name
-
              Creates the JMS host for every  server  instance  in
              the specified cluster.
 
          instance-name
+
              Creates  the  JMS  host  for  the  specified  server
              instance.
-
-     --mqhost
-
-         The host name for the JMS service. The default value  is
-         localhost.
-
-Java EE 6           Last change: 22 Oct 2010                    1
-
-asadmin Utility Subcommands                    create-jms-host(1)
-
-     --mqport
-
-         The port number used by the  JMS  service.  The  default
-         value is 7676.
-
-     --mquser
-         The user name for the JMS service. The default value  is
-         admin.
-
-     --mqpassword
-
-         The password for the JMS service. The default  value  is
-         admin.
 
 OPERANDS
      jms_host_name
@@ -75,7 +75,9 @@ EXAMPLES
      The following command creates a JMS host named MyNewHost  on
      the system pigeon.
 
-       asadmin> create-jms-host --mqhost pigeon --mqport 7677 MyNewHost
+       asadmin> create-jms-host --mqhost pigeon.example.com --mqport 7677
+       --mquser admin --mqpassword admin MyNewHost
+       Jms Host MyNewHost created.
        Command create-jms-host executed successfully.
 
 EXIT STATUS
@@ -88,5 +90,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 22 Oct 2010                    2
+Java EE 6           Last change: 11 Feb 2011                    2
 

@@ -9,8 +9,7 @@ SYNOPSIS
      start-local-instance [--help]
      [--nodedir node-dir] [--node node]
      [--debug={false|true}] [--sync={normal|full|none}]
-     [--upgrade={false|true}] [--verbose={false|true}]
-     [instance-name]
+     [--verbose={false|true}] [instance-name]
 
 DESCRIPTION
      The  start-local-instance  subcommand  starts  a   GlassFish
@@ -32,7 +31,9 @@ DESCRIPTION
      tories exist, the node must be specified as an option of the
      subcommand.
 
-     This command is supported in remote mode only.
+     This subcommand is supported in local mode. However, to syn-
+     chronize  the instance with the DAS, this subcommand must be
+     run in remote mode.
 
 OPTIONS
      --help
@@ -46,7 +47,7 @@ OPTIONS
          instance's  node   directory.   The   default   is   as-
          install/nodes.
 
-Java EE 6           Last change: 15 Dec 2010                    1
+Java EE 6           Last change: 11 Feb 2011                    1
 
 asadmin Utility Subcommands               start-local-instance(1)
 
@@ -98,7 +99,7 @@ asadmin Utility Subcommands               start-local-instance(1)
                       subdirectory causes the DAS to  synchronize
                       all files under that subdirectory.
 
-Java EE 6           Last change: 15 Dec 2010                    2
+Java EE 6           Last change: 11 Feb 2011                    2
 
 asadmin Utility Subcommands               start-local-instance(1)
 
@@ -122,37 +123,22 @@ asadmin Utility Subcommands               start-local-instance(1)
              the instance while the DAS updates all files in  the
              instance's directories.
 
-     --upgrade
-         Specifies whether the configuration of the  instance  is
-         upgraded  to the current release.  Normally, if the sub-
-         command detects that the configuration is from an  older
-         release   of  GlassFish  Server,  the  configuration  is
-         upgraded automatically before being started. You  should
-         not need to use this option explicitly.
+             Caution -
 
-         Possible values are as follows:
+               If the DAS is not running or is  unreachable  from
+               the host where you are running this subcommand, do
+               not set the --sync option to full.  To  perform  a
+               full  synchronization,  the subcommand removes the
+               instance's cache. If the DAS cannot  be  contacted
+               to replace the cache, the subcommand fails and the
+               instance cannot be restarted until  it  is  resyn-
+               chronized with the DAS.
 
-         true
-
-             When the instance is started, the  configuration  is
-             modified  to  be  compatible  with  this  release of
-             GlassFish Server, and the GlassFish  Server  process
-             stops.
-
-         false
-             The configuration of the  instance  is  not  updated
-             (default).
-
-      --verbose
+     --verbose
      -v
-
          Specifies  whether  detailed   information   about   the
          instance  is  displayed  in the console window where the
          subcommand is run.
-
-Java EE 6           Last change: 15 Dec 2010                    3
-
-asadmin Utility Subcommands               start-local-instance(1)
 
          Possible values are as follows:
 
@@ -167,22 +153,27 @@ asadmin Utility Subcommands               start-local-instance(1)
              window.
 
              You can kill the GlassFish Server process by  typing
+
+Java EE 6           Last change: 11 Feb 2011                    3
+
+asadmin Utility Subcommands               start-local-instance(1)
+
              CTRL-C in the console window.
 
              You can kill the GlassFish Server process and obtain
              a  thread  dump  for the server by typing one of the
              following key combinations in the console window:
-                                     TM
-                 o    CTRL-\  on UNIX   systems
+
+                 o    CTRL-\  on UNIXTM systems
 
                  o    CTRL-Break on Windows systems
 
-          false
+         false
+
              Detailed information is not displayed (default).
 
 OPERANDS
      instance-name
-
          The name of the instance to start.
 
 EXAMPLES
@@ -199,10 +190,6 @@ EXAMPLES
        Admin Port: 24849
        Command start-local-instance executed successfully.
 
-Java EE 6           Last change: 15 Dec 2010                    4
-
-asadmin Utility Subcommands               start-local-instance(1)
-
 EXIT STATUS
      0                           command executed successfully
 
@@ -213,6 +200,11 @@ SEE ALSO
      instance(1),  delete-local-instance(1), restart-instance(1),
      restart-local-instance(1),      start-domain(1),      start-
      instance(1),  stop-domain(1),  stop-instance(1), stop-local-
+
+Java EE 6           Last change: 11 Feb 2011                    4
+
+asadmin Utility Subcommands               start-local-instance(1)
+
      instance(1)
 
      asadmin(1M)
@@ -220,5 +212,5 @@ SEE ALSO
      Java     Platform     Debugger      Architecture      (JPDA)
      (http://java.sun.com/javase/technologies/core/toolsapis/jpda/)
 
-Java EE 6           Last change: 15 Dec 2010                    5
+Java EE 6           Last change: 11 Feb 2011                    5
 

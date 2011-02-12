@@ -6,8 +6,8 @@ NAME
 
 SYNOPSIS
      flush-jmsdest [--help]
-     [--target target]
      --desttype {topic|queue}
+     [--target target]
      destname
 
 DESCRIPTION
@@ -15,49 +15,52 @@ DESCRIPTION
      sical destination in the server's Java Message Service (JMS)
      configuration.
 
+     This subcommand is supported in  remote  mode  only.  Remote
+     asadmin  subcommands require a running domain administration
+     server (DAS).
+
 OPTIONS
      --help
      -?
 
          Displays the help text for the subcommand.
 
+     --desttype
+         This option indicates the type of  physical  destination
+         from  which  you  want  to purge messages. The supported
+         destination types are topic and queue.
+
      --target
+
          Purges messages from the physical destination  only  for
          the specified target. Valid values are as follows:
 
          server
-
              Purges messages from the  physical  destination  for
              the  default  server  instance.  This is the default
              value.
 
          configuration-name
+
              Purges messages from the physical destination in the
              specified configuration.
 
          cluster-name
-
              Purges messages from the  physical  destination  for
-             every server instance in the specified cluster.
 
-         instance-name
-             Purges messages from the  physical  destination  for
-             the specified server instance.
-
-     --desttype
-     -T
-
-Java EE 6           Last change: 22 Oct 2010                    1
+Java EE 6           Last change: 11 Feb 2011                    1
 
 asadmin Utility Subcommands                      flush-jmsdest(1)
 
-         This option indicates the type of  physical  destination
-         from  which  you  want  to purge messages. The supported
-         destination types are topic and queue.
+             every server instance in the specified cluster.
+
+         instance-name
+
+             Purges messages from the  physical  destination  for
+             the specified server instance.
 
 OPERANDS
      dest_name
-
          The unique identifier  of  the  JMS  destination  to  be
          purged.
 
@@ -80,5 +83,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 22 Oct 2010                    2
+Java EE 6           Last change: 11 Feb 2011                    2
 

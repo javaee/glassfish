@@ -40,16 +40,16 @@ OPTIONS
 
      --buffersizebytes
 
+         The size, in bytes, of the buffer  to  be  provided  for
+         input  streams  created  by  the  network  listener that
+         references this transport. The default value is 8192.
+
+     --bytebuffertype
          The type of the buffer to be provided for input  streams
          created  by  a network-listener. Allowed values are HEAP
          and DIRECT. The default value is HEAP.
 
-     --bytebuffertype
-         The size, in bytes, of the buffer  to  be  provided  for
-         input  streams  created  by  the  network  listener that
-         references this transport. The default value is 4096.
-
-Java EE 6           Last change: 08 Oct 2010                    1
+Java EE 6           Last change: 11 Feb 2011                    1
 
 asadmin Utility Subcommands                   create-transport(1)
 
@@ -99,11 +99,12 @@ asadmin Utility Subcommands                   create-transport(1)
 
          The number of milliseconds a NIO Selector blocks waiting
 
-Java EE 6           Last change: 08 Oct 2010                    2
+Java EE 6           Last change: 11 Feb 2011                    2
 
 asadmin Utility Subcommands                   create-transport(1)
 
-         for events (user requests).
+         for  events  (user  requests). The default value is 1000
+         milliseconds.
 
      --tcpnodelay
 
@@ -146,7 +147,7 @@ EXAMPLES
        asadmin> create-transport --acceptorthreads 100 http1-trans
        Command create-transport executed successfully.
 
-Java EE 6           Last change: 08 Oct 2010                    3
+Java EE 6           Last change: 11 Feb 2011                    3
 
 asadmin Utility Subcommands                   create-transport(1)
 
@@ -161,5 +162,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 08 Oct 2010                    4
+Java EE 6           Last change: 11 Feb 2011                    4
 

@@ -3,7 +3,7 @@ asadmin Utility Subcommands                 update-node-config(1)
 
 NAME
      update-node-config - updates the  configuration  data  of  a
-     node that is not enabled for remote communication
+     node
 
 SYNOPSIS
      update-node-config [--help]
@@ -13,14 +13,12 @@ SYNOPSIS
 
 DESCRIPTION
      The update-node-config subcommand updates the  configuration
-     data of a node that is not enabled for remote communication.
+     data of a node.
 
-     This subcommand can update only a node that is  not  enabled
-     for remote communication. A node that is enabled for commun-
-     ication over SSH must be updated by using  the  update-node-
-     ssh(1)  subcommand.  To  determine whether a node is enabled
-     for communication over SSH, use  the  list-nodes(1)  subcom-
-     mand.
+     This subcommand can update any node, regardless  of  whether
+     the node is enabled for remote communication. If a node that
+     is enabled for remote communication is updated, the node  is
+     not enabled for remote communication after the update.
 
      Options of this subcommand specify the  new  values  of  the
      node's  configuration data. The default for these options is
@@ -48,7 +46,7 @@ OPTIONS
          directory  of the GlassFish Server software on the host,
          for example, /export/glassfish3/.
 
-Java EE 6           Last change: 12 Dec 2010                    1
+Java EE 6           Last change: 11 Feb 2011                    1
 
 asadmin Utility Subcommands                 update-node-config(1)
 
@@ -87,5 +85,5 @@ SEE ALSO
 
      asadmin(1M)
 
-Java EE 6           Last change: 12 Dec 2010                    2
+Java EE 6           Last change: 11 Feb 2011                    2
 

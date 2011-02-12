@@ -32,14 +32,6 @@ OPTIONS
          Specifies the target  on  which  you  are  creating  the
          administered object. Valid values are as follows:
 
-         Note -
-
-           The resource is always created for  the  domain  as  a
-           whole, but the <resource-ref> element for the resource
-           is only created for the specified --target. This means
-           that  although  the  resource is defined at the domain
-           level, it is only active at the specified --target.
-
          server
 
              Creates the  administered  object  for  the  default
@@ -49,57 +41,68 @@ OPTIONS
              Creates the administered object for the named confi-
              guration.
 
-Java EE 6            Last change: 9 Sep 2010                    1
-
-asadmin Utility Subcommands                create-admin-object(1)
-
          cluster_name
 
              Creates the administered  object  for  every  server
              instance in the cluster.
 
+Java EE 6           Last change: 10 Feb 2011                    1
+
+asadmin Utility Subcommands                create-admin-object(1)
+
          instance_name
+
              Creates the administered  object  for  a  particular
              server instance.
 
-     --restype
+         Note -
 
+           The resource is always created for  the  domain  as  a
+           whole,  but  the resource-ref for the resource is only
+           created for the specified --target.  This  means  that
+           although  the resource is defined at the domain level,
+           it is only available at the  specified  target  level.
+           Use the create-resource-ref subcommand to refer to the
+           resource in multiple targets if needed.
+
+     --restype
          Specifies the interface definition for the  administered
          object.  The  resource type must be an interface defini-
          tion that  is  specified  in  the  ra.xml  file  of  the
          resource adapter.
 
      --classname
+
          Specifies the class name  of  the  administered  object.
          Required  if  multiple administered objects use the same
          interface definition.
 
       --raname
-
          Specifies the name of the  resource  adapter  associated
          with this administered object.
 
      --enabled
+
          Specifies if this object is enabled. Default is true.
 
      --description
-
          Text string describing the administered object.
 
      --property
+
          Description of the name/values pairs for configuring the
          resource.  Dependent  on  the  resource adapter. For JMS
          properties, see create-jms-resource(1) for JMS  destina-
          tion resources.
 
+Java EE 6           Last change: 10 Feb 2011                    2
+
+asadmin Utility Subcommands                create-admin-object(1)
+
 OPERANDS
      jndi_name
 
          JNDI name of the administered object to be created.
-
-Java EE 6            Last change: 9 Sep 2010                    2
-
-asadmin Utility Subcommands                create-admin-object(1)
 
 EXAMPLES
      Example 1 Creating an Administered Object
@@ -120,9 +123,10 @@ EXIT STATUS
                                  mand
 
 SEE ALSO
-     delete-admin-object(1), list-admin-objects(1)
+     delete-admin-object(1),    list-admin-objects(1),    create-
+     resource-ref(1)
 
      asadmin(1M)
 
-Java EE 6            Last change: 9 Sep 2010                    3
+Java EE 6           Last change: 10 Feb 2011                    3
 
