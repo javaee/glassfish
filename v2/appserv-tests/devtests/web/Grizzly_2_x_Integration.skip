@@ -7,3 +7,4 @@ portUnificationTarget
 wrongTransport
 wrongTransportTarget
 configUpgrades
+ha/ssoFailover
