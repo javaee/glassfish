@@ -113,8 +113,7 @@ public class CreateProtocolFinder implements AdminCommand {
             validate(target, "create.http.fail.protocolnotfound",
                 "The specified protocol {0} is not yet configured", targetName);
             final Class<?> finderClass = Thread.currentThread().getContextClassLoader().loadClass(classname);
-//            if(!org.glassfish.grizzly.portunif.ProtocolFinder.class.isAssignableFrom(finderClass)) {
-            if (true) {
+            if(!org.glassfish.grizzly.portunif.ProtocolFinder.class.isAssignableFrom(finderClass)) {
                 report.setMessage(localStrings.getLocalString("create.portunif.fail.notfinder",
                     "{0} create failed.  Given class is not a ProtocolFinder: {1}", name, classname));
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
