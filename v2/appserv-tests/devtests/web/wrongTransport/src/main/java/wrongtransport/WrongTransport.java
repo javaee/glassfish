@@ -46,8 +46,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import com.sun.appserv.test.BaseDevTest;
-import org.glassfish.grizzly.config.portunif.HttpProtocolFinder;
-import org.glassfish.grizzly.config.portunif.HttpRedirectFilter;
+import com.sun.grizzly.config.HttpProtocolFinder;
 
 public class WrongTransport extends BaseDevTest {
     private static final String TEST_NAME = "wrongTransport";
@@ -89,7 +88,7 @@ public class WrongTransport extends BaseDevTest {
             "http-redirect"));
         report("create-protocol-filter-redirect", asadmin("create-protocol-filter",
             "--protocol", "http-redirect",
-            "--classname", HttpRedirectFilter.class.getName(),
+            "--classname", "com.sun.grizzly.config.HttpRedirectFilter",
             "redirect-filter"));
 
         //  pu-protocol
