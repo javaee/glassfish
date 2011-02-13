@@ -107,8 +107,8 @@ public class CoyoteAdapter extends HttpHandler {
             System.getProperty("java.specification.version") + ")";
 
 
-    protected boolean v3Enabled =
-        Boolean.valueOf(System.getProperty("v3.grizzly.useMapper", "true"));
+//    protected boolean v3Enabled =
+//        Boolean.valueOf(System.getProperty("v3.grizzly.useMapper", "true"));
     
     
 //    public static final int ADAPTER_NOTES = 1;
@@ -203,7 +203,7 @@ public class CoyoteAdapter extends HttpHandler {
         // available to any probe event listener via standard
         // ServletRequest APIs (such as getContextPath())
         MappingData md = req.getNote(MAPPING_DATA);
-        v3Enabled = md != null;
+        final boolean v3Enabled = md != null;
         if (request == null) {
 
             // Create objects
@@ -226,16 +226,14 @@ public class CoyoteAdapter extends HttpHandler {
         }
 
         if (v3Enabled && !compatWithTomcat) {
-            if (md != null) {
-                request.setMappingData(md);
-                request.updatePaths(md);
-            }
+            request.setMappingData(md);
+            request.updatePaths(md);
         }
 
         req.addAfterServiceListener(catalinaAfterServiceListener);
         
         try {
-            doService(req, request, res, response);
+            doService(req, request, res, response, v3Enabled);
 
             // Request may want to initialize async processing
             request.onAfterService();
@@ -252,10 +250,11 @@ public class CoyoteAdapter extends HttpHandler {
     }
 
 
-    private void doService(org.glassfish.grizzly.http.server.Request req,
-                           Request request,
-                           org.glassfish.grizzly.http.server.Response res,
-                           Response response)
+    private void doService(final org.glassfish.grizzly.http.server.Request req,
+                           final Request request,
+                           final org.glassfish.grizzly.http.server.Response res,
+                           final Response response,
+                           final boolean v3Enabled)
             throws Exception {
         
         // START SJSAS 6331392
@@ -278,7 +277,7 @@ public class CoyoteAdapter extends HttpHandler {
 
         // Parse and set Catalina and configuration specific 
         // request parameters
-        if ( postParseRequest(req, request, res, response) ) {
+        if ( postParseRequest(req, request, res, response, v3Enabled) ) {
 
             // START S1AS 6188932
             boolean authPassthroughEnabled = 
@@ -401,10 +400,11 @@ public class CoyoteAdapter extends HttpHandler {
     /**
      * Parse additional request parameters.
      */
-    protected boolean postParseRequest(org.glassfish.grizzly.http.server.Request req,
-                                       Request request,
-                                       org.glassfish.grizzly.http.server.Response res,
-                                       Response response)
+    protected boolean postParseRequest(final org.glassfish.grizzly.http.server.Request req,
+                                       final Request request,
+                                       final org.glassfish.grizzly.http.server.Response res,
+                                       final Response response,
+                                       final boolean v3Enabled)
         throws Exception {
         // XXX the processor may have set a correct scheme and port prior to this point, 
         // in ajp13 protocols dont make sense to get the port from the connector...
@@ -489,12 +489,13 @@ public class CoyoteAdapter extends HttpHandler {
          */
         final CharChunk uriParamsCC = request.getURIParams();
         final CharChunk uriCC = decodedURI.getCharChunk();
-        int semicolon = uriCC.indexOf(';');
+        final int semicolon = uriCC.indexOf(';');
         if (semicolon > 0) {
-            uriParamsCC.setChars(uriCC.getBuffer(), semicolon,
-                uriCC.getEnd() - semicolon);
+            final int absSemicolon = uriCC.getStart() + semicolon;
+            uriParamsCC.setChars(uriCC.getBuffer(), absSemicolon,
+                uriCC.getEnd() - absSemicolon);
             decodedURI.setChars(uriCC.getBuffer(), uriCC.getStart(),
-                semicolon - uriCC.getStart());
+                absSemicolon - uriCC.getStart());
         }
  
         if (compatWithTomcat || !v3Enabled) {

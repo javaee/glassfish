@@ -3676,7 +3676,8 @@ public class Request
 
         int semicolon, semicolon2;
 
-        final DataChunk uriBC = coyoteRequest.getRequest().getRequestURIRef().getRequestURIBC();
+        final DataChunk uriBC =
+                coyoteRequest.getRequest().getRequestURIRef().getRequestURIBC();
         
 //        start = uriBC.getStart();
 //        end = uriBC.getEnd();
@@ -3685,7 +3686,14 @@ public class Request
         if (semicolon > 0) {
 //            sessionIdStart = semicolon;
             semicolon2 = uriBC.indexOf(';', semicolon + parameter.length());
-            final int end = semicolon2 >= 0 ? semicolon2 : uriBC.getEnd();
+
+            final int end;
+            if (semicolon2 >= 0) {
+                end = semicolon2;
+                uriBC.notifyDirectUpdate();
+            } else {
+                end = uriBC.getLength();
+            }
             
             uriBC.delete(semicolon, end);
 //            uriBC.setEnd(start + semicolon);
