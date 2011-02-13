@@ -56,7 +56,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 
 import com.sun.appserv.test.BaseDevTest;
-import com.sun.grizzly.config.HttpProtocolFinder;
+import org.glassfish.grizzly.config.portunif.HttpProtocolFinder;
 
 public class HttpRedirectElement extends BaseDevTest {
     private String targetUrl;
