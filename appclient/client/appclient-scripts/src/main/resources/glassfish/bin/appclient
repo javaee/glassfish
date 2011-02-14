@@ -57,18 +57,13 @@ chooseJava() {
     if [ "${AS_JAVA}" != "" ]; then
         javaSearchType=AS_JAVA
         javaSearchTarget="$AS_JAVA"
-        ACCJavaHome="$AS_JAVA"
-        export ACCJavaHome
         JAVA="${AS_JAVA}/bin/java"
     elif [ "${JAVA_HOME}" != "" ]; then
         javaSearchType=JAVA_HOME
         javaSearchTarget="$JAVA_HOME"
-        ACCJavaHome="$JAVA_HOME"
-        export ACCJavaHome
         JAVA="${JAVA_HOME}/bin/java"
     else
         # Look in the PATH.
-        JAVA=java
         seekJavaOnPath
         javaSearchType=PATH
         javaSearchTarget=$PATH
@@ -90,17 +85,7 @@ export ACCJava
 }
 
 seekJavaOnPath() {
-    JAVA=""
-    for osPathElt in `echo $PATH | tr ':' ' ' `
-    do
-        javaExe=${osPathElt}/java
-        if [ -x $javaExe ]; then
-            JAVA=$javaExe
-            javaSearchType=PATH
-            javaSearchTarget=$PATH
-            break
-        fi
-    done
+        JAVA=`which java`
 }
 
 
@@ -114,4 +99,4 @@ esac
 
 chooseJava
 
-eval `"${ACCJava}" $cygwinProp -classpath "${_AS_INSTALL}/lib/gf-client.jar" org.glassfish.appclient.client.CLIBootstrap "$@"`
+eval `"${ACCJava}" -Dorg.glassfish.appclient.shell $cygwinProp -classpath "${_AS_INSTALL}/lib/gf-client.jar" org.glassfish.appclient.client.CLIBootstrap "$@"`

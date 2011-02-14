@@ -88,6 +88,7 @@ import org.glassfish.appclient.client.acc.UserError;
  */
 public class CLIBootstrap {
 
+    private final static String COMMA_IN_ARG_PLACEHOLDER = "+-+-+-+";
     private final static boolean isDebug = System.getenv("AS_DEBUG") != null;
     private final static String INPUT_ARGS = System.getenv("inputArgs");
 
@@ -173,6 +174,28 @@ public class CLIBootstrap {
         } catch (UserError ue) {
             ue.displayAndExit();
         }
+    }
+
+    /**
+     * Replaces commas in an argument value (which can confuse the ACC agent
+     * argument parsing because shells strip out double-quotes) with a special
+     * sequence.
+     *
+     * @param s string to encode
+     * @return encoded string
+     */
+    public static String encodeArg(final String s) {
+        return s.replace(",", COMMA_IN_ARG_PLACEHOLDER);
+    }
+
+    /**
+     * Replaces occurrences of comma encoding with commas.
+     *
+     * @param s possibly encoded string
+     * @return decoded string
+     */
+    public static String decodeArg(final String s) {
+        return s.replace(COMMA_IN_ARG_PLACEHOLDER, ",");
     }
 
     private static String[] convertInputArgsVariable(final String inputArgs) {
@@ -317,7 +340,7 @@ public class CLIBootstrap {
          * @param accArg
          */
         final void addACCArg(final String accArg) {
-            add("arg=" + accArg);
+            add("arg=" + encodeArg(accArg));
         }
 
         @Override
@@ -930,9 +953,11 @@ public class CLIBootstrap {
         endorsedDirs.format(command);
 
         /*
-         * If the user did not specify a client then add the -usage option.
+         * If the user did not specify a client or usage or help then add the -usage option.
          */
-        if ( ! jvmMainSetting.isSet()) {
+        if ( ! jvmMainSetting.isSet() &&
+                ! isHelp() &&
+                ! isUsage()) {
             accUnvaluedOptions.processValue(new String[] {"-usage"}, 0);
         }
         accUnvaluedOptions.format(command);
@@ -944,6 +969,14 @@ public class CLIBootstrap {
         arguments.format(command);
 
         return command.toString();
+    }
+
+    private boolean isHelp() {
+        return accUnvaluedOptions.values.contains("-help");
+    }
+
+    private boolean isUsage() {
+        return accUnvaluedOptions.values.contains("-usage");
     }
 
     /**
@@ -1037,41 +1070,30 @@ public class CLIBootstrap {
     class JavaInfo {
 
         private final static String CYGWIN_PROP_NAME = "org.glassfish.isCygwin";
+        private final static String SHELL_PROP_NAME = "org.glassfish.appclient.shell";
 
         /*
-         * The appclient and appclient.bat scripts set ACCJava and might set
-         * ACCJavaHome (if the user has specified AS_JAVA or JAVA_HOME).
+         * The appclient and appclient.bat scripts set ACCJava.
          * Properties would be nicer instead of env vars, but the Windows
          * script handling of command line args in the for statement treats
          * the = in -Dprop=value as an argument separator and breaks the
          * property assignment apart into two arguments.
          */
-        private final static String ACCJavaHome_ENV_VAR_NAME = "ACCJavaHome";
         private final static String ACCJava_ENV_VAR_NAME = "ACCJava";
 
         private final boolean useWindowsSyntax = File.separatorChar == '\\' &&
-                ! Boolean.getBoolean(CYGWIN_PROP_NAME);
+                (System.getProperty(SHELL_PROP_NAME) == null);
 
 
         protected String javaExe;
-        protected File javaHome;
+        protected File jreHome;
 
         private JavaInfo() {
             init();
         }
 
-        private String getDefaultedEnv(final String envVarName, final String defaultValue) {
-            String result = System.getenv(envVarName);
-            if (result == null) {
-                result = defaultValue;
-            }
-            return result;
-        }
-
         protected void init() {
-            final String javaHomeToUse = getDefaultedEnv(ACCJavaHome_ENV_VAR_NAME,
-                    System.getProperty("java.home"));
-            javaHome = new File(javaHomeToUse);
+            jreHome = new File(System.getProperty("java.home"));
             javaExe = javaExe();
         }
 
@@ -1080,7 +1102,7 @@ public class CLIBootstrap {
         }
 
         protected File javaBinDir() {
-            return new File(javaHome, "bin");
+            return new File(jreHome, "bin");
         }
 
         String javaExe() {
@@ -1096,7 +1118,7 @@ public class CLIBootstrap {
         }
 
         File lib() {
-            return new File(javaHome, "lib");
+            return new File(jreHome, "lib");
         }
 
         String pathSeparator() {

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -47,6 +47,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.glassfish.appclient.client.CLIBootstrap;
 
 /**
  * Self-contained scanner for an agent argument string.
@@ -131,7 +132,7 @@ public class AgentArguments {
              * Either the quoted string group or the unquoted string group
              * from the matcher will be valid.
              */
-            final String value = m.group(QUOTED) != null ? m.group(QUOTED) : m.group(UNQUOTED);
+            final String value = CLIBootstrap.decodeArg(m.group(QUOTED) != null ? m.group(QUOTED) : m.group(UNQUOTED));
             getOrCreateValuesForKeyword(keyword).add(value);
         }
     }
