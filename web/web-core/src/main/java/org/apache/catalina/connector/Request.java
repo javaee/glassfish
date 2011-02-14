@@ -3118,7 +3118,9 @@ public class Request
                 cookie.setVersion(1);
                 cookie.setComment(sessionCookieConfig.getComment());
             }
-            cookie.setSecure(sessionCookieConfig.isSecure());
+            if (!cookie.getSecure()) {
+                cookie.setSecure(sessionCookieConfig.isSecure());
+            }
             cookie.setHttpOnly(sessionCookieConfig.isHttpOnly());
             cookie.setMaxAge(sessionCookieConfig.getMaxAge());
         }
