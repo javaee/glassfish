@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -198,7 +198,9 @@ public class JAASRealm
         String name=container.getName();
         if( appName==null  ) {
             appName=name;
-            log.info("Setting JAAS app name " + appName);
+            if (log.isLoggable(Level.INFO)) {
+                log.info("Setting JAAS app name " + appName);
+            }
         }
     }
 
@@ -301,10 +303,12 @@ public class JAASRealm
                 (appName, new JAASCallbackHandler(this, username,
                                                   credentials));
         } catch (Throwable e) {
-            log.fine("Error initializing JAAS: " +  e.toString());
+            if (log.isLoggable(Level.FINE)) {
+                log.fine("Error initializing JAAS: " +  e.toString());
 
-            log.log(Level.FINE,
-                    sm.getString("jaasRealm.loginException", username), e);
+                log.log(Level.FINE,
+                        sm.getString("jaasRealm.loginException", username), e);
+            }
             return (null);
         } finally {
             Thread.currentThread().setContextClassLoader(ocl);
@@ -350,7 +354,9 @@ public class JAASRealm
         // Return the appropriate Principal for this authenticated Subject
         Principal principal = createPrincipal(username, subject);
         if (principal == null) {
-            log.fine(sm.getString("jaasRealm.authenticateFailure", username));
+            if (log.isLoggable(Level.FINE)) {
+                log.fine(sm.getString("jaasRealm.authenticateFailure", username));
+            }
             return (null);
         }
         if (log.isLoggable(Level.FINE)) {

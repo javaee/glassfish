@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -1230,7 +1230,9 @@ public class Connector
         if (logger != null) {
             logger.log(localName + " " + message);
         } else {
-            log.info(localName + " " + message);
+            if (log.isLoggable(Level.INFO)) {
+                log.info(localName + " " + message);
+            }
         }
     }
 
@@ -1300,7 +1302,9 @@ public class Connector
         throws LifecycleException
     {
         if (initialized) {
-            log.info(sm.getString("coyoteConnector.alreadyInitialized"));
+            if (log.isLoggable(Level.INFO)) {
+                log.info(sm.getString("coyoteConnector.alreadyInitialized"));
+            }
             return;
         }
 
@@ -1490,7 +1494,9 @@ public class Connector
 
         // Validate and update our current state
         if (started) {
-            log.info(sm.getString("coyoteConnector.alreadyStarted"));
+            if (log.isLoggable(Level.INFO)) {
+                log.info(sm.getString("coyoteConnector.alreadyStarted"));
+            }
             return;
         }
         lifecycle.fireLifecycleEvent(START_EVENT, null);
@@ -1509,8 +1515,10 @@ public class Connector
                         ex);
             }
         } else {
-            log.info(sm.getString
-                     ("coyoteConnector.cannotRegisterProtocol"));
+            if (log.isLoggable(Level.INFO)) {
+                log.info(sm.getString
+                         ("coyoteConnector.cannotRegisterProtocol"));
+            }
         }
 
         try {
@@ -1571,7 +1579,9 @@ public class Connector
                 Registry.getRegistry(null, null).unregisterComponent(
                     createObjectName(this.domain, "ProtocolHandler"));
             } catch (MalformedObjectNameException e) {
-                log.log(Level.INFO, "Error unregistering mapper ", e);
+                if (log.isLoggable(Level.INFO)) {
+                    log.log(Level.INFO, "Error unregistering mapper ", e);
+                }
             }
         } 
         // END PWC 6393300

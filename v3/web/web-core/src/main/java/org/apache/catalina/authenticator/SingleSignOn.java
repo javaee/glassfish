@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -71,6 +71,7 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 
 
 /**
@@ -498,7 +499,9 @@ public class SingleSignOn
         if (logger != null) {
             logger.log(this.toString() + ": " + message);
         } else {
-            log.info(this.toString() + ": " + message);
+            if (log.isLoggable(Level.INFO)) {
+                log.info(this.toString() + ": " + message);
+            }
         }
     }
 
@@ -515,7 +518,7 @@ public class SingleSignOn
             logger.log(this.toString() + ": " + message, t,
                 Logger.WARNING);
         } else {
-            log.log(java.util.logging.Level.WARNING,
+            log.log(Level.WARNING,
                 this.toString() + ": " + message, t);
         }
     }

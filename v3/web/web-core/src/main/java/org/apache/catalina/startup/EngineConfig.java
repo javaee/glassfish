@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -62,6 +62,8 @@ package org.apache.catalina.startup;
 import org.apache.catalina.*;
 import org.apache.catalina.core.StandardEngine;
 import org.apache.catalina.util.StringManager;
+
+import java.util.logging.Level;
 
 
 /**
@@ -170,7 +172,9 @@ public final class EngineConfig
         if (logger != null) {
             logger.log("EngineConfig: " + message);
         } else {
-            log.info("EngineConfig: " + message);
+            if (log.isLoggable(Level.INFO)) {
+                log.info("EngineConfig: " + message);
+            }
         }
     }
 
@@ -189,7 +193,7 @@ public final class EngineConfig
         if (logger != null) {
             logger.log("EngineConfig: " + message, t, Logger.WARNING);
         } else {
-            log.log(java.util.logging.Level.WARNING,
+            log.log(Level.WARNING,
                 "EngineConfig: " + message, t);
         }
     }

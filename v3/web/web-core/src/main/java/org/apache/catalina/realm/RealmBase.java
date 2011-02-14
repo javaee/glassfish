@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -999,7 +999,9 @@ public abstract class RealmBase
                     if (log.isLoggable(Level.FINE)) log.fine("No roles ");
                     return (false); // No listed roles means no access at all
                 } else {
-                    log.fine("Passing all access");
+                    if (log.isLoggable(Level.FINE)) {
+                        log.fine("Passing all access");
+                    }
                     return (true);
                 }
             } else if (principal == null) {
@@ -1159,7 +1161,9 @@ public abstract class RealmBase
 
         GenericPrincipal gp = (GenericPrincipal) principal;
         if (!(gp.getRealm() == this)) {
-            log.fine("Different realm " + this + " " + gp.getRealm());//    return (false);
+            if (log.isLoggable(Level.FINE)) {
+                log.fine("Different realm " + this + " " + gp.getRealm());//    return (false);
+            }
         }
         boolean result = gp.hasRole(role);
         if (log.isLoggable(Level.FINE)) {
@@ -1369,7 +1373,9 @@ public abstract class RealmBase
 
         // Validate and update our current component state
         if (started) {
-            log.info(sm.getString("realmBase.alreadyStarted"));
+            if (log.isLoggable(Level.INFO)) {
+                log.info(sm.getString("realmBase.alreadyStarted"));
+            }
             return;
         }
         if( !initialized ) {
@@ -1405,7 +1411,9 @@ public abstract class RealmBase
 
         // Validate and update our current component state
         if (!started) {
-            log.info(sm.getString("realmBase.notStarted"));
+            if (log.isLoggable(Level.INFO)) {
+                log.info(sm.getString("realmBase.notStarted"));
+            }
             return;
         }
         lifecycle.fireLifecycleEvent(STOP_EVENT, null);
@@ -1424,7 +1432,9 @@ public abstract class RealmBase
         if ( oname!=null ) {   
             try {
                 Registry.getRegistry(null, null).unregisterComponent(oname);
-                log.fine( "unregistering realm " + oname );   
+                if (log.isLoggable(Level.FINE)) {
+                    log.fine( "unregistering realm " + oname );   
+                }
             } catch( Exception ex ) {   
                 log.log(Level.SEVERE, "Can't unregister realm " + oname, ex);
             }      
@@ -1574,7 +1584,9 @@ public abstract class RealmBase
         if (logger != null) {
             logger.log(getName()+"[" + name + "]: " + message);
         } else {
-            log.info(getName()+"[" + name + "]: " + message);
+            if (log.isLoggable(Level.INFO)) {
+                log.info(getName()+"[" + name + "]: " + message);
+            }
         }
     }
 
@@ -1701,11 +1713,15 @@ public abstract class RealmBase
                             host + path);
                 }
                 if( mserver.isRegistered(parent ))  {
-                    log.fine("Register with " + parent);
+                    if (log.isLoggable(Level.FINE)) {
+                        log.fine("Register with " + parent);
+                    }
                     mserver.setAttribute(parent, new Attribute("realm", this));
                 }
             } catch (Exception e) {
-                log.info("Parent not available yet: " + parent);  
+                if (log.isLoggable(Level.INFO)) {
+                    log.info("Parent not available yet: " + parent);  
+                }
             }
         }
         
@@ -1715,7 +1731,9 @@ public abstract class RealmBase
                 ContainerBase cb=(ContainerBase)container;
                 oname=new ObjectName(cb.getDomain()+":type=Realm" + cb.getContainerSuffix());
                 Registry.getRegistry(null, null).registerComponent(this, oname, null );
-                log.fine("Register Realm "+oname);
+                if (log.isLoggable(Level.FINE)) {
+                    log.fine("Register Realm "+oname);
+                }
             } catch (Throwable e) {
                 log.log(Level.SEVERE,  "Can't register " + oname, e);
             }

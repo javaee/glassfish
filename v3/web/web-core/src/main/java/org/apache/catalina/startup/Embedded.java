@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -997,7 +997,9 @@ public class Embedded  extends StandardService implements Lifecycle {
         if (!useNaming) {
             // START SJSAS 5031700
             //log.info( "Catalina naming disabled");
-            log.fine("Catalina naming disabled");
+            if (log.isLoggable(Level.FINE)) {
+                log.fine("Catalina naming disabled");
+            }
             // END SJSAS 5031700
             System.setProperty("catalina.useNaming", "false");
         } else {
@@ -1018,7 +1020,9 @@ public class Embedded  extends StandardService implements Lifecycle {
                     (javax.naming.Context.INITIAL_CONTEXT_FACTORY,
                      "org.apache.naming.java.javaURLContextFactory");
             } else {
-                log.fine( "INITIAL_CONTEXT_FACTORY alread set " + value );
+                if (log.isLoggable(Level.FINE)) {
+                    log.fine( "INITIAL_CONTEXT_FACTORY alread set " + value );
+                }
             }
         }
     }

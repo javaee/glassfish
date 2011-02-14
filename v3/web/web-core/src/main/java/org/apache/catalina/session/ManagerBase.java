@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -601,8 +601,10 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
                     }
                     long t2=System.currentTimeMillis();
                     if( (t2-t1) > 100 )
-                        log.fine(sm.getString("managerBase.seeding",
-                                              randomClass) + " " + (t2-t1));
+                        if (log.isLoggable(Level.FINE)) {
+                            log.fine(sm.getString("managerBase.seeding",
+                                                  randomClass) + " " + (t2-t1));
+                        }
                 }
             }
         }
@@ -1226,7 +1228,9 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
     public String getSessionAttribute( String sessionId, String key ) {
         Session s = sessions.get(sessionId);
         if( s==null ) {
-            log.info("Session not found " + sessionId);
+            if (log.isLoggable(Level.INFO)) {
+                log.info("Session not found " + sessionId);
+            }
             return null;
         }
         Object o=s.getSession().getAttribute(key);
@@ -1238,7 +1242,9 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
     public void expireSession( String sessionId ) {
         Session s=sessions.get(sessionId);
         if( s==null ) {
-            log.info("Session not found " + sessionId);
+            if (log.isLoggable(Level.INFO)) {
+                log.info("Session not found " + sessionId);
+            }
             return;
         }
         s.expire();
@@ -1248,7 +1254,9 @@ public abstract class ManagerBase implements Manager, MBeanRegistration {
     public String getLastAccessedTimeMillis( String sessionId ) {
         Session s=sessions.get(sessionId);
         if( s==null ) {
-            log.info("Session not found " + sessionId);
+            if (log.isLoggable(Level.INFO)) {
+                log.info("Session not found " + sessionId);
+            }
             return "";
         }
         return new Date(s.getLastAccessedTime()).toString();

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -229,8 +229,10 @@ public class StandardHostDeployer implements Deployer {
                 (sm.getString("standardHost.warRequired"));
 
         // Calculate the document base for the new web application
-        log.info(sm.getString("standardHost.installing",
-                              contextPath, war.toString()));
+        if (log.isLoggable(Level.INFO)) {
+            log.info(sm.getString("standardHost.installing",
+                                  contextPath, war.toString()));
+        }
         String url = war.toString();
         String docBase = null;
         boolean isWAR = false;
@@ -365,8 +367,10 @@ public class StandardHostDeployer implements Deployer {
                 (sm.getString("standardHost.warRequired"));
 
         // Calculate the document base for the new web application
-        log.info(sm.getString("standardHost.installing",
-                              contextPath, war.toString()));
+        if (log.isLoggable(Level.INFO)) {
+            log.info(sm.getString("standardHost.installing",
+                                  contextPath, war.toString()));
+        }
         String url = war.toString();
         String docBase = null;
         boolean isWAR = false;
@@ -460,14 +464,18 @@ public class StandardHostDeployer implements Deployer {
             throw new IllegalArgumentException
                 (sm.getString("standardHost.configNotAllowed"));
 
-        log.info(sm.getString("standardHost.installingXML", config));
+        if (log.isLoggable(Level.INFO)) {
+            log.info(sm.getString("standardHost.installingXML", config));
+        }
 
         // Calculate the document base for the new web application (if needed)
         String docBase = null; // Optional override for value in config file
         boolean isWAR = false;
         if (war != null) {
             String url = war.toString();
-            log.info(sm.getString("standardHost.installingWAR", url));
+            if (log.isLoggable(Level.INFO)) {
+                log.info(sm.getString("standardHost.installingWAR", url));
+            }
             // Calculate the WAR file absolute pathname
             if (url.startsWith("jar:")) {
                 url = url.substring(4, url.length() - 2);
@@ -587,7 +595,9 @@ public class StandardHostDeployer implements Deployer {
                 (sm.getString("standardHost.pathMissing", contextPath));
 
         // Remove this web application
-        log.info(sm.getString("standardHost.removing", contextPath));
+        if (log.isLoggable(Level.INFO)) {
+            log.info(sm.getString("standardHost.removing", contextPath));
+        }
         try {
             host.removeChild(context);
             host.fireContainerEvent(REMOVE_EVENT, context);
@@ -748,7 +758,9 @@ public class StandardHostDeployer implements Deployer {
         if (context == null)
             throw new IllegalArgumentException
                 (sm.getString("standardHost.pathMissing", contextPath));
-        log.info(sm.getString("standardHost.start", contextPath));
+        if (log.isLoggable(Level.INFO)) {
+            log.info(sm.getString("standardHost.start", contextPath));
+        }
         try {
             ((Lifecycle) context).start();
         } catch (LifecycleException e) {
@@ -786,7 +798,9 @@ public class StandardHostDeployer implements Deployer {
         if (context == null)
             throw new IllegalArgumentException
                 (sm.getString("standardHost.pathMissing", contextPath));
-        log.info(sm.getString("standardHost.stop", contextPath));
+        if (log.isLoggable(Level.INFO)) {
+            log.info(sm.getString("standardHost.stop", contextPath));
+        }
         try {
             ((Lifecycle) context).stop();
         } catch (LifecycleException e) {

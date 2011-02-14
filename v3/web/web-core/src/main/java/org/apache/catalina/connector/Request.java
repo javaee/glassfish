@@ -4076,7 +4076,9 @@ public class Request
         if (logger != null) {
             logger.log(localName + " " + message);
         } else {
-            log.info(localName + " " + message);
+            if (log.isLoggable(Level.INFO)) {
+                log.info(localName + " " + message);
+            }
         }
     }
 

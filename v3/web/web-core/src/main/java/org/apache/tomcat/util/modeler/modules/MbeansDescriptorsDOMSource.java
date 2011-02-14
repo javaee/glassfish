@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -326,8 +326,10 @@ public class MbeansDescriptorsDOMSource extends ModelerSource
 
             }
 
-            long t2=System.currentTimeMillis();
-            log.log(Level.FINE, "Reading descriptors ( dom ) " + (t2-t1));
+            if (log.isLoggable(Level.FINE)) {
+                long t2=System.currentTimeMillis();
+                log.log(Level.FINE, "Reading descriptors ( dom ) " + (t2-t1));
+            }
         } catch( Exception ex ) {
             log.log(Level.SEVERE, "Error reading descriptors ", ex);
         }

@@ -4105,7 +4105,9 @@ public class StandardContext
         //      if (!reloadable)
         //          throw new IllegalStateException
         //              (sm.getString("standardContext.notReloadable"));
-        log.info(sm.getString("standardContext.reloadingStarted"));
+        if (log.isLoggable(Level.INFO)) {
+            log.info(sm.getString("standardContext.reloadingStarted"));
+        }
 
         // Stop accepting requests temporarily
         setPaused(true);
@@ -6342,10 +6344,12 @@ public class StandardContext
                 ((StandardWrapper)wrapper).registerJMX(this);
             }
         } catch(Exception ex) {
-            log.log(Level.INFO,
-                    "Error updating ctx with jmx " + this + " " +
-                    oname + " " + ex.toString(),
-                    ex );
+            if (log.isLoggable(Level.INFO)) {
+                log.log(Level.INFO,
+                        "Error updating ctx with jmx " + this + " " +
+                        oname + " " + ex.toString(),
+                        ex );
+            }
         }
     }
 
@@ -6358,10 +6362,12 @@ public class StandardContext
                 controller = oname;
             }
         } catch(Exception ex) {
-            log.log(Level.INFO,
-                    "Error registering ctx with jmx " + this + " " +
-                    oname + " " + ex.toString(),
-                    ex );
+            if (log.isLoggable(Level.INFO)) {
+                log.log(Level.INFO,
+                        "Error registering ctx with jmx " + this + " " +
+                        oname + " " + ex.toString(),
+                        ex );
+            }
         }
     }
 
