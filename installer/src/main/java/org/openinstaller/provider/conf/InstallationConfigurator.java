@@ -117,7 +117,7 @@ public final class InstallationConfigurator implements Configurator, Notificatio
         ResultReport.ResultStatus status =
                 configSuccessful ? ResultReport.ResultStatus.SUCCESS
                 : ResultReport.ResultStatus.FAIL;
-        return new ResultReport(status, "http://docs.sun.com/doc/820-7690 ", "http://docs.sun.com/doc/820-7690", null, productError);
+        return new ResultReport(status, "http://www.oracle.com/pls/topic/lookup?ctx=821-2427&id=sjsaseeig ", "http://www.oracle.com/pls/topic/lookup?ctx=821-2427&id=sjsaseeig", null, productError);
     }
 
     /* Mandatory implementation of OI method?!?, not sure why? */
@@ -154,7 +154,7 @@ public final class InstallationConfigurator implements Configurator, Notificatio
             LOGGER.log(Level.FINEST, e.getMessage());
         }
 
-        return new ResultReport(ResultReport.ResultStatus.SUCCESS, "http://docs.sun.com/doc/820-7690", "http://docs.sun.com/doc/820-7690", null, productError);
+        return new ResultReport(ResultReport.ResultStatus.SUCCESS, "http://www.oracle.com/pls/topic/lookup?ctx=821-2427&id=sjsaseeig", "http://www.oracle.com/pls/topic/lookup?ctx=821-2427&id=sjsaseeig", null, productError);
     }
 
     /* Mandatory implementation of OI method?!?, not sure why? */
