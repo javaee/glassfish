@@ -135,6 +135,7 @@ import org.apache.catalina.util.ParameterMap;
 import org.apache.catalina.util.RequestUtil;
 import org.apache.catalina.util.StringManager;
 import org.apache.catalina.util.StringParser;
+import org.glassfish.grizzly.Buffer;
 import org.glassfish.grizzly.CompletionHandler;
 import org.glassfish.grizzly.EmptyCompletionHandler;
 import org.glassfish.grizzly.http.server.Response.SuspendedContextImpl;
@@ -1303,6 +1304,7 @@ public class Request
 */
         if (!parameterEncodingSet) {
             getCharacterEncoding();
+            parameterEncodingSet = true;
         }
 
         return coyoteRequest.getParameter(name);
@@ -3325,15 +3327,11 @@ public class Request
     protected int readPostBody(byte body[], int len)
             throws IOException {
 
-        int offset = 0;
-        do {
-            int inputLen = getStream().read(body, offset, len - offset);
-            if (inputLen <= 0) {
-                return offset;
-            }
-            offset += inputLen;
-        } while (len - offset > 0);
-        return len;
+        Buffer b = coyoteRequest.getPostBody(len).duplicate();
+        final int length = b.limit() - b.position();
+        b.get(body, b.position(), length);
+        return length;
+
     }
 
     /**
