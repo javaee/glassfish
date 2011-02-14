@@ -4029,34 +4029,33 @@ public class Request
             asyncContextFinal = new AsyncContextImpl(this, servletRequest,
                     (Response) getResponse(), servletResponse,
                     isOriginalRequestAndResponse);
+            asyncContext = asyncContextFinal;
+
+            final CompletionHandler<org.glassfish.grizzly.http.server.Response> requestCompletionHandler =
+                    new EmptyCompletionHandler<org.glassfish.grizzly.http.server.Response>() {
+
+                        @Override
+                        public void completed(org.glassfish.grizzly.http.server.Response response) {
+                            asyncContextFinal.notifyAsyncListeners(
+                                    AsyncContextImpl.AsyncEventType.COMPLETE,
+                                    null);
+                        }
+                    };
+
+            final TimeoutHandler timeoutHandler = new TimeoutHandler() {
+
+                @Override
+                public boolean onTimeout(final org.glassfish.grizzly.http.server.Response response) {
+                    return processTimeout();
+                }
+            };
+
+            coyoteRequest.getResponse().suspend(-1, TimeUnit.MILLISECONDS,
+                    requestCompletionHandler, timeoutHandler);
+            asyncStartedThread = Thread.currentThread();
         }
 
-        asyncContext = asyncContextFinal;
-
-        final CompletionHandler<org.glassfish.grizzly.http.server.Response> requestCompletionHandler =
-                new EmptyCompletionHandler<org.glassfish.grizzly.http.server.Response>() {
-
-                    @Override
-                    public void completed(org.glassfish.grizzly.http.server.Response response) {
-                        asyncContextFinal.notifyAsyncListeners(
-                                AsyncContextImpl.AsyncEventType.COMPLETE,
-                                null);
-                    }
-                };
-
-        final TimeoutHandler timeoutHandler = new TimeoutHandler() {
-
-            @Override
-            public boolean onTimeout(final org.glassfish.grizzly.http.server.Response response) {
-                return processTimeout();
-            }
-        };
-
-        coyoteRequest.getResponse().suspend(-1, TimeUnit.MILLISECONDS,
-                requestCompletionHandler, timeoutHandler);
-
         asyncStarted.set(true);
-        asyncStartedThread = Thread.currentThread();
 
         return asyncContext;
     }
