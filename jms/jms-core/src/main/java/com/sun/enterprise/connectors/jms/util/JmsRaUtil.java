@@ -467,7 +467,7 @@ public class JmsRaUtil {
     public static String getUnAliasedPwd(String alias){
         try{
             String unalisedPwd = RelativePathResolver.getRealPasswordFromAlias(alias);
-            if (unalisedPwd != null && "".equals(unalisedPwd));
+            if (unalisedPwd != null && "".equals(unalisedPwd))
                return unalisedPwd;
 
         }catch(Exception e){

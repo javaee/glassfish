@@ -332,9 +332,15 @@ public class IiopFolbGmsClient implements CallBack {
     }
 
     private ClusterInstanceInfo getClusterInstanceInfo( Server server,
-        Config config ) {
-        if ((server == null) || !server.isRunning()) {
+        Config config, boolean assumeInstanceIsRunning ) {
+        if (server == null) {
             return null ;
+        }
+
+        if (!assumeInstanceIsRunning) {
+            if (!server.isRunning()) {
+                return null ;
+            }
         }
 
         fineLog( "getClusterInstanceInfo: server {0}, config {1}",
@@ -402,8 +408,8 @@ public class IiopFolbGmsClient implements CallBack {
         return config ;
     }
 
-    // For addMember
-    private ClusterInstanceInfo getClusterInstanceInfo( String instanceName ) {
+    // For addMember.
+    private ClusterInstanceInfo getClusterInstanceInfo( String instanceName) {
         fineLog( "getClusterInstanceInfo: instanceName {0}", instanceName ) ;
 
         final Servers servers = habitat.getComponent( Servers.class ) ;
@@ -415,7 +421,10 @@ public class IiopFolbGmsClient implements CallBack {
         final Config config = getConfigForServer( server ) ;
         fineLog( "getClusterInstanceInfo: servers {0}", servers ) ;
 
-        ClusterInstanceInfo result = getClusterInstanceInfo( server, config ) ;
+        // assumeInstanceIsRunning is set to true since this is
+        // coming from addMember, because shoal just told us that the instance is up.
+        ClusterInstanceInfo result = getClusterInstanceInfo( server, config,
+            true ) ;
         fineLog( "getClusterInstanceInfo: result {0}", result ) ;
 
         return result ;
@@ -432,7 +441,8 @@ public class IiopFolbGmsClient implements CallBack {
             new HashMap<String,ClusterInstanceInfo>() ;
 
         for (Server server : myCluster.getInstances()) {
-            ClusterInstanceInfo cii = getClusterInstanceInfo( server, myConfig ) ;
+            ClusterInstanceInfo cii = getClusterInstanceInfo( server, myConfig,
+                false) ;
             if (cii != null) {
                 result.put( server.getName(), cii ) ;
             }

@@ -305,13 +305,13 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
                    // Upgrade jms resource adapter, if necessary before starting
                    // the RA.
            try {
-		       
-    		       JMSConfigListener jmsConfigListener=habitat.getComponent(JMSConfigListener.class); 
-		       jmsConfigListener.setActiveResourceAdapter(this);
-                       JmsRaUtil raUtil = new JmsRaUtil();
-                       raUtil.upgradeIfNecessary();
+    		       JMSConfigListener jmsConfigListener=habitat.getComponent(JMSConfigListener.class);
+                   jmsConfigListener.setActiveResourceAdapter(this);
+                   JmsRaUtil raUtil = new JmsRaUtil();
+                   raUtil.upgradeIfNecessary();
            }
            catch (Throwable t) {
+               //t.printStackTrace();
                    _logger.log(Level.FINE,"Cannot upgrade jmsra"+ t.getMessage());
            }
     }

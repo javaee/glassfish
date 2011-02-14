@@ -97,11 +97,14 @@ public class JmsProviderLifecycle implements  PostStartup, PostConstruct{
                    e.printStackTrace();
                }
        }
-
+        configureConfigListener();
        //createMonitoringConfig();
 
     }
-
+    private void configureConfigListener(){
+        //do a lookup of the config listener to get it started
+        JMSConfigListener jmsConfigListener=habitat.getComponent(JMSConfigListener.class);
+    }
     public void initializeBroker () throws ConnectorRuntimeException
     {
             String module = ConnectorConstants.DEFAULT_JMS_ADAPTER;

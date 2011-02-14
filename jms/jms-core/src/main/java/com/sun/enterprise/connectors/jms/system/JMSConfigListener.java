@@ -64,8 +64,6 @@ import com.sun.enterprise.connectors.jms.util.JmsRaUtil;
 public class JMSConfigListener implements ConfigListener{
     // Injecting @Configured type triggers the corresponding change
     // events to be sent to this instance
-    @Inject
-    private JmsHost jmshost;
 
     @Inject 
 	private JmsService jmsservice;
@@ -90,19 +88,17 @@ public class JMSConfigListener implements ConfigListener{
 
         /** Implementation of org.jvnet.hk2.config.ConfigListener */
     public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
-
-        // Events that we can't process now because they require server restart.
-        //List<UnprocessedChangeEvent> unprocessedEvents = new ArrayList<UnprocessedChangeEvent>();
+        //Events that we can't process now because they require server restart.
+        List<UnprocessedChangeEvent> unprocessedEvents = new ArrayList<UnprocessedChangeEvent>();
         _logger.log(Level.FINE, "In JMSConfigListener - received config event");
         Domain domain = Globals.get(Domain.class);
         String jmsProviderPort = null;
         ServerContext serverContext = Globals.get(ServerContext.class);
         Server thisServer = domain.getServerNamed(serverContext.getInstanceName());
-
-        if(thisServer.isDas() || thisServer.getCluster() == null)
+        //if(thisServer.isDas() || thisServer.getCluster() == null)
         {
-            _logger.log(Level.FINE,"JMSConfigListerner server is either das or a stand-alone instance - hence ignoring");
-            return null;
+          //  _logger.log(Level.FINE,"JMSConfigListerner server is either das or a stand-alone instance - hence ignoring");
+            //return null;
         }
         for (int i=0; i< events.length; i++) {
         //for (PropertyChangeEvent event : events) {
@@ -111,6 +107,10 @@ public class JMSConfigListener implements ConfigListener{
             Object oldValue = event.getOldValue();
             Object newValue = event.getNewValue();
 
+         if(event.getSource().toString().indexOf("config.serverbeans.JmsHost") != -1)   {
+             UnprocessedChangeEvent uchangeEvent = new UnprocessedChangeEvent(event, "restart required");
+             unprocessedEvents.add(uchangeEvent);
+         }
         _logger.log(Level.FINE, "In JMSConfigListener " + eventName + oldValue + newValue);
 
         if (oldValue != null && oldValue.equals(newValue)) {
@@ -175,7 +175,7 @@ public class JMSConfigListener implements ConfigListener{
             }
 
          }
-            return null;
+            return unprocessedEvents.size() > 0 ? new UnprocessedChangeEvents(unprocessedEvents) : null;
         }
     private String getBrokerList(){
         MQAddressList addressList = new MQAddressList();
