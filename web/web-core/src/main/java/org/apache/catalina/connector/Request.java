@@ -572,7 +572,7 @@ public class Request
         userPrincipal = null;
         subject = null;
         sessionParsed = false;
-//        requestParametersParsed = false;
+        parameterEncodingSet = false;
         cookiesParsed = false;
         locales.clear();
         localesParsed = false;
@@ -1351,6 +1351,7 @@ public class Request
 */
         if (!parameterEncodingSet) {
             getCharacterEncoding();
+            parameterEncodingSet = true;
         }
 
         return new Enumerator(coyoteRequest.getParameterNames());
@@ -1371,6 +1372,7 @@ public class Request
 */
         if (!parameterEncodingSet) {
             getCharacterEncoding();
+            parameterEncodingSet = true;
         }
 
         return coyoteRequest.getParameterValues(name);
