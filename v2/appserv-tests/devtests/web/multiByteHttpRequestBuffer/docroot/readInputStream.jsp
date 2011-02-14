@@ -69,6 +69,11 @@ readLine.jsp is called.
             if(contentType != null){
                 int delim = contentType.indexOf("boundary=");
                 boundary = contentType.substring(delim+9).trim();
+                int semi = boundary.indexOf(';');
+                if (semi != -1) {
+                    boundary = boundary.substring(0, semi);
+                }
+
             }
             expected = "--"+boundary+"\r\nContent-Disposition: form-data; name=\""+formName+"\"\r\n\r\n"+expected+"\r\n--"+boundary+"--\r\n";
             
