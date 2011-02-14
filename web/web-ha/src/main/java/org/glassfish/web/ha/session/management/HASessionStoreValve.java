@@ -115,9 +115,11 @@ public class HASessionStoreValve extends ValveBase {
                         }
                     }
                     String replica = manager.getReplicaFromPredictor(sessionId, oldJreplicaValue);
-                    Session sess = request.getSessionInternal(false);
-                    if (sess != null) {
-                        sess.setNote(Globals.JREPLICA_SESSION_NOTE, replica);
+                    if (replica != null) {
+                        Session sess = request.getSessionInternal(false);
+                        if (sess != null) {
+                            sess.setNote(Globals.JREPLICA_SESSION_NOTE, replica);
+                        }
                     }
                 }
             }

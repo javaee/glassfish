@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -214,10 +214,12 @@ public class SessionManagerConfigurationHelper {
                     !wmName.equals(Constants.DEFAULT_WEB_MODULE_NAME) &&
                     !this.isSystemApp(wmName)) { 
                 //log error
-                Object[] params = { getApplicationId(_ctx), persistence.getType(), frequency, scope };
-                _logger.log(Level.INFO,
-                            "webcontainer.invalidSessionManagerConfig2",
-                            params); 
+                if (_logger.isLoggable(Level.INFO)) {
+                    Object[] params = { getApplicationId(_ctx), persistence.getType(), frequency, scope };
+                    _logger.log(Level.INFO,
+                                "webcontainer.invalidSessionManagerConfig2",
+                                params); 
+                }
             }    
             // Set back to memory option
             persistence = PersistenceType.MEMORY;

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -69,9 +69,6 @@ public class DefaultCacheHelper implements CacheHelper {
     // PWC_LOGGER
     private static final Logger _logger = LogDomains.getLogger(
         DefaultCacheHelper.class, LogDomains.WEB_LOGGER);
-
-    private static final boolean _isTraceEnabled =
-        _logger.isLoggable(Level.FINE);
 
     /**
      * The resource bundle containing the localized message strings.
@@ -156,7 +153,7 @@ public class DefaultCacheHelper implements CacheHelper {
 
             // all defined key field must be present
             if (value == null) {
-                if (_isTraceEnabled) {
+                if (_logger.isLoggable(Level.FINE)) {
                     _logger.fine("DefaultCacheHelper: cannot find all the required key fields in the request " + request.getServletPath());
                 }
                 return null;

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -60,9 +60,6 @@ public class ConstraintField extends Field {
 
     private static final Logger _logger = LogDomains.getLogger(
         ConstraintField.class, LogDomains.WEB_LOGGER);
-
-    private static final boolean _isTraceEnabled =
-        _logger.isLoggable(Level.FINE);
 
     // whether to cache if there was a match
     boolean cacheOnMatch = true;
@@ -148,9 +145,10 @@ public class ConstraintField extends Field {
                                     HttpServletRequest request) {
 
         Object value = getValue(context, request);
+        boolean isFine = _logger.isLoggable(Level.FINE);
         if (value == null) {
             // the field is not present in the request
-            if (_isTraceEnabled) {
+            if (isFine) {
                 _logger.fine(
                     "The constraint field " + name
                     + " is not found in the scope " + SCOPE_NAMES[scope]
@@ -160,7 +158,7 @@ public class ConstraintField extends Field {
             return cacheOnMatchFailure;
         } else if (constraints.length == 0) {
             // the field is present but has no value constraints
-            if (_isTraceEnabled) {
+            if (isFine) {
                 _logger.fine(
                     "The constraint field " + name + " value = "
                     + value.toString() + " is found in scope "
@@ -176,20 +174,20 @@ public class ConstraintField extends Field {
 
             // one of the values matched
             if (c.matches(value)) {
-                if (_isTraceEnabled) {
+                if (isFine) {
                     _logger.fine(
                         "The constraint field " + name + " value = "
                         + value.toString() + " is found in scope "
                         + SCOPE_NAMES[scope] + "; and matches with a value "
                         + c.toString() + "; returning cache-on-match: "
                         + cacheOnMatch);
-            }
+                }
                 return cacheOnMatch;
             }
         }
 
         // none of the values matched; should we cache?
-        if (_isTraceEnabled) {
+        if (isFine) {
             _logger.fine(
                 "The constraint field " + name + " value = "
                 + value.toString() + " is found in scope " + SCOPE_NAMES[scope]

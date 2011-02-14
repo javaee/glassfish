@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -47,7 +47,7 @@ import static org.glassfish.weld.WeldUtils.META_INF_SERVICES_EXTENSION;
 import static org.glassfish.weld.WeldUtils.SEPARATOR_CHAR;
 
 import java.io.IOException;
-import java.net.URL;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -58,6 +58,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Logger;
 
 import javax.enterprise.inject.spi.Extension;
@@ -286,7 +287,7 @@ public class DeploymentImpl implements Deployment {
         ListIterator<BeanDeploymentArchive> lIter = beanDeploymentArchives.listIterator(); 
         while (lIter.hasNext()) {
             BeanDeploymentArchive bda = lIter.next();
-            logger.log(FINE, "checking for " + beanClass + "in root BDA" + bda.getId());
+            logger.log(FINE, "checking for " + beanClass + " in root BDA" + bda.getId());
             if (((BeanDeploymentArchiveImpl)bda).getModuleBeanClasses().contains(beanClass.getName())) {
                 //don't stuff this Bean Class into the BDA's beanClasses, 
                 //as Weld automatically add theses classes to the BDA's bean Classes
@@ -305,7 +306,7 @@ public class DeploymentImpl implements Deployment {
             if (bda.getBeanDeploymentArchives().size() > 0) {
                 for(BeanDeploymentArchive subBda: bda.getBeanDeploymentArchives()){
                     Collection<String> s = ((BeanDeploymentArchiveImpl)subBda).getModuleBeanClasses();
-                    logger.log(FINE, "checking for " + beanClass + "in subBDA" + subBda.getId());
+                    logger.log(FINE, "checking for " + beanClass + " in subBDA" + subBda.getId());
                     boolean match = s.contains(beanClass.getName());
                     if (match) {
                         //don't stuff this Bean Class into the BDA's beanClasses, 
@@ -327,12 +328,12 @@ public class DeploymentImpl implements Deployment {
                 + beanClass + " not found in the BDAs of this deployment. " +
                 "Hence creating a new BDA");
         List<Class<?>> beanClasses = new ArrayList<Class<?>>();
-        List<URL> beanXMLUrls = new ArrayList<URL>();
+        Set<URI> beanXMLUris = new CopyOnWriteArraySet<URI>();
         Set<EjbDescriptor> ejbs = new HashSet<EjbDescriptor>();
         beanClasses.add(beanClass);
         BeanDeploymentArchive newBda = 
             new BeanDeploymentArchiveImpl(beanClass.getName(), 
-                    beanClasses, beanXMLUrls, ejbs, context);
+                    beanClasses, beanXMLUris, ejbs, context);
         logger.log(FINE, "DeploymentImpl(as part of loadBDA):: new BDA " 
                 + newBda + "created. Now adding this new BDA to " +
                 "all root BDAs of this deployment");
@@ -432,10 +433,14 @@ public class DeploymentImpl implements Deployment {
         }
         
         if (libJars != null) {
+            String libDir = holder.app.getLibraryDirectory();
             ListIterator<ReadableArchive> libJarIterator = libJars.listIterator();
             while (libJarIterator.hasNext()) {
                 ReadableArchive libJarArchive = (ReadableArchive)libJarIterator.next();
-                BeanDeploymentArchive bda = new BeanDeploymentArchiveImpl(libJarArchive, ejbs, context);
+                BeanDeploymentArchive bda = new BeanDeploymentArchiveImpl(
+                        libJarArchive, ejbs, context, 
+                        /* use lib/jarname as BDA ID */ libDir + SEPARATOR_CHAR 
+                        + libJarArchive.getName());
                 this.beanDeploymentArchives.add(bda);
                 if (libJarBDAs  == null) {
                     libJarBDAs = new ArrayList<BeanDeploymentArchive>();

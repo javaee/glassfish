@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -59,6 +59,12 @@ public class VirtualServerInfoStatsProvider {
     private static final String HOSTS_DESCRIPTION =
         "The host (alias) names of the virtual server";
 
+    private static final String ID_DESCRIPTION =
+        "The id of the virtual server";
+
+    private static final String MODE_DESCRIPTION =
+        "The mode of the virtual server";
+
     private VirtualServer host;
 
     private StringStatisticImpl state = new StringStatisticImpl(
@@ -66,6 +72,12 @@ public class VirtualServerInfoStatsProvider {
 
     private StringStatisticImpl hosts = new StringStatisticImpl(
         "Hosts", "String", HOSTS_DESCRIPTION);
+
+    private StringStatisticImpl id = new StringStatisticImpl(
+        "Id", "String", ID_DESCRIPTION);
+
+    private StringStatisticImpl mode = new StringStatisticImpl(
+        "Mode", "String", MODE_DESCRIPTION);
     
     public VirtualServerInfoStatsProvider(VirtualServer host) {
         this.host = host;
@@ -83,5 +95,19 @@ public class VirtualServerInfoStatsProvider {
     public StringStatistic getHosts() {
         hosts.setCurrent(host.getHosts());
         return hosts;
-    }    
+    }  
+
+    @ManagedAttribute(id="id")
+    @Description(ID_DESCRIPTION)
+    public StringStatistic getId() {
+        id.setCurrent(host.getId());
+        return id;
+    }
+
+    @ManagedAttribute(id="mode")
+    @Description(MODE_DESCRIPTION)
+    public StringStatistic getMode() {
+        mode.setCurrent(host.getState().equals("on") ? "active" : "unknown");
+        return mode;
+    }
 }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -74,9 +74,6 @@ public class CachingFilter implements Filter, CacheManagerListener {
     private static final Logger _logger = LogDomains.getLogger(
         CachingFilter.class, LogDomains.WEB_LOGGER);
 
-    private static final boolean _isTraceEnabled = _logger.isLoggable(
-        Level.FINE);
-
     /** 
      * Called by the web container to indicate to a filter that it is being 
      * placed into service. The servlet container calls the init method exactly
@@ -104,7 +101,7 @@ public class CachingFilter implements Filter, CacheManagerListener {
             isEnabled = true;
         }
 
-        if (_isTraceEnabled) {
+        if (_logger.isLoggable(Level.FINE)) {
             _logger.fine("CachingFilter " + filterName + " ready; isEnabled = " + isEnabled + " manager = " + manager);
         }
     }
@@ -144,13 +141,14 @@ public class CachingFilter implements Filter, CacheManagerListener {
         request.setAttribute(CacheHelper.ATTR_CACHE_MAPPED_URL_PATTERN, 
                                         urlPattern);
 
+        boolean isFine = _logger.isLoggable(Level.FINE);
         if (isEnabled && helper.isCacheable((HttpServletRequest)request) &&
                 (key = helper.getCacheKey(request)) != null) {
 
             // have the key index for reuse
             int index = cache.getIndex(key);
 
-            if (_isTraceEnabled) {
+            if (isFine) {
                 _logger.fine("CachingFilter " + request.getServletPath() + 
                                 " request is cacheable; key " + key + " index = " + index);
             }
@@ -179,7 +177,7 @@ public class CachingFilter implements Filter, CacheManagerListener {
                     }
                 } while (waitForRefresh);
             } else {
-                if (_isTraceEnabled) {
+                if (isFine) {
                     _logger.fine("CachingFilter " + request.getServletPath() + 
                                 " request needs a refresh; key " + key);
                 }
@@ -187,7 +185,7 @@ public class CachingFilter implements Filter, CacheManagerListener {
 
             // do we have a valid response?
             if (entryReady) {
-                if (_isTraceEnabled) {
+                if (isFine) {
                     _logger.fine("CachingFilter " + request.getServletPath() + 
                                 " serving response from the cache " + key);
                 }
@@ -270,7 +268,7 @@ public class CachingFilter implements Filter, CacheManagerListener {
              *      oldEntry.clear();
              */
         } else {
-            if (_isTraceEnabled) {
+            if (isFine) {
                 _logger.fine("CachingFilter " + request.getServletPath() + 
                              " pass thru; isEnabled = " + isEnabled);
             }
@@ -357,7 +355,7 @@ public class CachingFilter implements Filter, CacheManagerListener {
      * cache manager listener method
      */
     public void cacheManagerEnabled() {
-        if (_isTraceEnabled)
+        if (_logger.isLoggable(Level.FINE))
             _logger.fine("CachingFilter " + filterName +
                 " received cacheManager enabled event.");
 
@@ -368,7 +366,7 @@ public class CachingFilter implements Filter, CacheManagerListener {
      * cache manager listener method
      */
     public void cacheManagerDisabled() {
-        if (_isTraceEnabled)
+        if (_logger.isLoggable(Level.FINE))
             _logger.fine("CachingFilter " + filterName +
                 " received cacheManager disabled event.");
 

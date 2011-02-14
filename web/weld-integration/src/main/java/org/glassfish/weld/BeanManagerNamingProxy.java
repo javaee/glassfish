@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -110,6 +110,7 @@ public class BeanManagerNamingProxy implements NamedNamingObjectProxy {
                             BeanDeploymentArchive bda = weldDeployer.getBeanDeploymentArchiveForBundle(bundle);
                             if( bda != null ) {
                                 WeldBootstrap bootstrap = weldDeployer.getBootstrapForApp(bundle.getApplication());
+                                //System.out.println("BeanManagerNamingProxy:: getting BeanManagerImpl for" + bda);
                                 beanManager = bootstrap.getManager(bda);
                             }
                         }

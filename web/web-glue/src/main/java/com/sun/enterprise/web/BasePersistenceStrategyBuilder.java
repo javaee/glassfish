@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -235,8 +235,10 @@ public abstract class BasePersistenceStrategyBuilder
                 if (reapIntervalInSecondsString != null) {
                     try {
                         storeReapInterval = Integer.parseInt(reapIntervalInSecondsString);
-                        _logger.finest("storeReapInterval set = " +
-                                       storeReapInterval);
+                        if (_logger.isLoggable(Level.FINEST)) {
+                            _logger.finest("storeReapInterval set = " +
+                                           storeReapInterval);
+                        }
                     } catch (NumberFormatException e) {
                         // XXX need error message
                     }
@@ -245,7 +247,9 @@ public abstract class BasePersistenceStrategyBuilder
                 String directoryString = storeBean.getDirectory();
                 if (directoryString != null) {
                     directory = directoryString;
-                    _logger.finest("directory set = " + directoryString);
+                    if (_logger.isLoggable(Level.FINEST)) {
+                        _logger.finest("directory set = " + directoryString);
+                    }
                 }                                                     
             }                     
         }
@@ -258,8 +262,10 @@ public abstract class BasePersistenceStrategyBuilder
             if (timeoutSecondsString != null) {
                 try {
                     sessionMaxInactiveInterval = Integer.parseInt(timeoutSecondsString);
-                    _logger.finest("sessionMaxInactiveInterval set = " +
-                                   sessionMaxInactiveInterval);
+                    if (_logger.isLoggable(Level.FINEST)) {
+                        _logger.finest("sessionMaxInactiveInterval set = " +
+                                       sessionMaxInactiveInterval);
+                    }
                 } catch (NumberFormatException e) {
                     // XXX need error message
                 }                        
@@ -306,8 +312,10 @@ public abstract class BasePersistenceStrategyBuilder
                     } else if (name.equalsIgnoreCase("persistenceFrequency")) {
                         _persistenceFrequency = value;
                     } else {
-                        Object[] params = { name };
-                        _logger.log(Level.INFO, "webcontainer.notYet", params);
+                        if (_logger.isLoggable(Level.INFO)) {
+                            Object[] params = { name };
+                            _logger.log(Level.INFO, "webcontainer.notYet", params);
+                        }
                     }
                 }
             }
@@ -330,8 +338,10 @@ public abstract class BasePersistenceStrategyBuilder
                     } else if (name.equalsIgnoreCase("cookieName")) {
                         persistentCookieName = value;                     
                     } else {
-                        Object[] params = { name };
-                        _logger.log(Level.INFO, "webcontainer.notYet", params);
+                        if (_logger.isLoggable(Level.INFO)) {
+                            Object[] params = { name };
+                            _logger.log(Level.INFO, "webcontainer.notYet", params);
+                        }
                     }
                 }
             }

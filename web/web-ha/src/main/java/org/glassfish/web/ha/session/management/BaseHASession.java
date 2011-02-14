@@ -88,7 +88,9 @@ public abstract class BaseHASession extends StandardSession
         // Set the jreplica value for the first request here when the session is created - after that it is done in the valve
         ReplicationManagerBase manager = (ReplicationManagerBase)(getManager());
         String jReplicaValue = manager.getReplicaFromPredictor(id, null);
-        setNote(Globals.JREPLICA_SESSION_NOTE, jReplicaValue);
+        if (jReplicaValue != null) {
+            setNote(Globals.JREPLICA_SESSION_NOTE, jReplicaValue);
+        }
 
     } 
 

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -152,13 +152,19 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
             
         } catch(MalformedURLException malex) {
             logger.log(Level.SEVERE, malex.getMessage());
-            logger.log(Level.FINE, malex.getMessage(), malex);            
+            if (logger.isLoggable(Level.FINE)) {
+                logger.log(Level.FINE, malex.getMessage(), malex);            
+            }
         } catch(XMLStreamException xse) {
             logger.log(Level.SEVERE, xse.getMessage());
-            logger.log(Level.FINE, xse.getMessage(), xse);
+            if (logger.isLoggable(Level.FINE)) {
+                logger.log(Level.FINE, xse.getMessage(), xse);
+            }
         } catch(FileNotFoundException fnfe) {
             logger.log(Level.SEVERE, fnfe.getMessage());
-            logger.log(Level.FINE, fnfe.getMessage(), fnfe);
+            if (logger.isLoggable(Level.FINE)) {
+                logger.log(Level.FINE, fnfe.getMessage(), fnfe);
+            }
         }
 
         cloader.start();

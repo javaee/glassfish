@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,9 +43,13 @@ package org.glassfish.embeddable.web;
 import org.glassfish.embeddable.web.config.SslConfig;
 
 /**
+ * HTTPS Listener which listens on a protocol that is secured.
+ * SSL configuration element will be used to initialize security settings.
+ *
  * @author Rajiv Mordani
  * @author Amy Roh
- * TODO
+ *
+ * @see SslConfig
  */
 public class HttpsListener extends WebListenerBase  {
 
@@ -61,15 +65,7 @@ public class HttpsListener extends WebListenerBase  {
      * Sets the SSL configuration for this web listener
      */
     public void setSslConfig(SslConfig sslConfig) {
-
         this.sslConfig = sslConfig;
-        /* TODO
-        setKeystoreFile(sslConfig.getKeyStore());
-        setKeystorePass(sslConfig.getKeyPassword());
-        sslConfig.getTrustStore();
-        sslConfig.getHandshakeTimeout();
-        sslConfig.getAlgorithms();
-        */
     }
 
     /**

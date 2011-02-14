@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -45,9 +45,22 @@ package org.glassfish.embeddable.web.config;
  * authentication method, form login configuration, if authentication method
  * is form based authentication, the realm name and the realm type.
  *
+ * <p/> Usage example:
+ *
+ * <pre>
+ *      FormLoginConfig form = new FormLoginConfig("login.html", "error.html");
+ *
+ *      LoginConfig loginConfig = new LoginConfig();
+ *      loginConfig.setAuthMethod(AuthMethod.FORM);
+ *      loginConfig.setRealmName("userauth");
+ *      loginConfig.setRealmType(RealmType.BASIC);
+ *      loginConfig.setFormLoginConfig(form);
+ * </pre>
+ *
  * @see SecurityConfig
  *
  * @author Rajiv Mordani
+ * @author Amy Roh
  */
 public class LoginConfig {
 

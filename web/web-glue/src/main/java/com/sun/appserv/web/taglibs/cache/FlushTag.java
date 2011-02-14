@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -77,11 +77,6 @@ public class FlushTag extends TagSupport {
         LogDomains.WEB_LOGGER);
 
     /**
-     * This indicates whether debug logging is on or not
-     */
-    private static final boolean _debugLog = _logger.isLoggable(Level.FINE);
-
-    /**
      * The resource bundle containing the localized message strings.
      */
     private static final ResourceBundle _rb = _logger.getResourceBundle();
@@ -110,13 +105,13 @@ public class FlushTag extends TagSupport {
             // remove the entry for the key
             cache.remove(key);
 
-            if (_debugLog)
+            if (_logger.isLoggable(Level.FINE))
                 _logger.fine("FlushTag: clear ["+ key +"]");
         } else {
             // clear the entire cache
             cache.clear();
 
-            if (_debugLog)
+            if (_logger.isLoggable(Level.FINE))
                 _logger.fine("FlushTag: clear cache");
         }
 

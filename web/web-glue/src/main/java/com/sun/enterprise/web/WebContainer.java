@@ -861,6 +861,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             _logger.log(Level.INFO, "webContainer.HTTP.listenerAndPort", new Object[]{listener.getName(), listener.getAddress(), listener.getPort()});
         }
 
+        connector.setDefaultHost(listener.findHttpProtocol().getHttp().getDefaultVirtualServer());
         connector.setName(listener.getName());
         connector.setInstanceName(instanceName);
         connector.configure(listener, isSecure, httpService);
@@ -1600,9 +1601,11 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         String vsIDs = wmInfo.getVirtualServers();
         List<String> vsList = StringUtils.parseStringList(vsIDs, " ,");
         if (vsList == null || vsList.isEmpty()) {
-            _logger.log(Level.INFO,
-                    "webcontainer.webModuleNotLoadedNoVirtualServers",
-                    wmInfo.getName());
+            if (_logger.isLoggable(Level.INFO)) {
+                _logger.log(Level.INFO,
+                        "webcontainer.webModuleNotLoadedNoVirtualServers",
+                        wmInfo.getName());
+            }
             return results;
         }
 

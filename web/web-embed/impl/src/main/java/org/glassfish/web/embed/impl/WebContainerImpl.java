@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -48,7 +48,9 @@ import java.util.logging.*;
 
 import com.sun.enterprise.web.EmbeddedWebContainer;
 import com.sun.enterprise.web.WebModule;
+import com.sun.enterprise.web.connector.coyote.PECoyoteConnector;
 import com.sun.enterprise.config.serverbeans.HttpService;
+import org.glassfish.grizzly.config.dom.Ssl;
 import org.glassfish.grizzly.config.dom.FileCache;
 import org.glassfish.grizzly.config.dom.Http;
 import org.glassfish.grizzly.config.dom.NetworkConfig;
@@ -61,6 +63,8 @@ import org.glassfish.grizzly.config.dom.Transport;
 import org.glassfish.grizzly.config.dom.Transports;
 
 import org.glassfish.api.container.Sniffer;
+import org.glassfish.embeddable.web.config.SslConfig;
+import org.glassfish.embeddable.web.config.SslType;
 import org.glassfish.internal.embedded.Port;
 import org.glassfish.internal.embedded.Ports;
 import org.glassfish.embeddable.Deployer;
@@ -69,6 +73,7 @@ import org.glassfish.embeddable.web.ConfigException;
 import org.glassfish.embeddable.web.Context;
 import org.glassfish.embeddable.web.WebContainer;
 import org.glassfish.embeddable.web.HttpListener;
+import org.glassfish.embeddable.web.HttpsListener;
 import org.glassfish.embeddable.web.VirtualServer;
 import org.glassfish.embeddable.web.WebListener;
 import org.glassfish.embeddable.web.config.WebContainerConfig;
@@ -194,8 +199,9 @@ public class WebContainerImpl implements WebContainer {
         String protocol = Port.HTTP_PROTOCOL;
         final int portNumber = port.getPortNumber();
         final String defaultVS = vsId;
+        final WebListener listener = webListener;
 
-        if (webListener==null) {
+        if (webListener == null) {
             listenerName = getListenerName();
             webListener = new HttpListener();
             webListener.setId(listenerName);
@@ -227,6 +233,7 @@ public class WebContainerImpl implements WebContainer {
                     return protocol;
                 }
             }, networkConfig.getProtocols());
+
             ConfigSupport.apply(new ConfigCode() {
                 public Object run(ConfigBeanProxy... params) throws TransactionFailure {
                     NetworkListeners nls = (NetworkListeners) params[0];
@@ -251,6 +258,19 @@ public class WebContainerImpl implements WebContainer {
                     return listener;
                 }
             }, networkConfig.getNetworkListeners(), networkConfig.getTransports());
+            
+            if (webListener.getProtocol().equals("https")) {
+                NetworkListener networkListener = networkConfig.getNetworkListener(listenerName);
+                Protocol httpProtocol = networkListener.findHttpProtocol();
+                ConfigSupport.apply(new SingleConfigCode<Protocol>() {
+                    public Object run(Protocol param) throws TransactionFailure {
+                        Ssl newSsl = param.createChild(Ssl.class);
+                        populateSslElement(newSsl, listener);
+                        param.setSsl(newSsl);
+                        return newSsl;
+                    }
+                }, httpProtocol);
+            }
 
             com.sun.enterprise.config.serverbeans.VirtualServer vs =
                     httpService.getVirtualServerByName(config.getVirtualServerId());
@@ -265,6 +285,71 @@ public class WebContainerImpl implements WebContainer {
         } catch (Exception e) {
             removeListener(listenerName);
             e.printStackTrace();
+        }
+
+    }
+
+    private void populateSslElement(Ssl newSsl, WebListener webListener) {
+
+        if (webListener instanceof HttpsListener) {
+
+            HttpsListener listener = (HttpsListener) webListener;
+            newSsl.setCertNickname("s1as");
+            SslConfig sslConfig = listener.getSslConfig();
+            if (sslConfig == null) {
+                return;
+            }
+
+            if (sslConfig.getKeyStore() != null) {
+                newSsl.setKeyStore(sslConfig.getKeyStore());
+            }
+            if (sslConfig.getKeyPassword() != null) {
+                newSsl.setKeyStorePassword(sslConfig.getKeyPassword());
+            }
+            if (sslConfig.getTrustStore() != null) {
+                newSsl.setTrustStore(sslConfig.getTrustStore());
+            }
+
+            if (sslConfig.getAlgorithms() != null) {
+                for (SslType sslType : sslConfig.getAlgorithms()) {
+                    if (sslType.equals(SslType.SSLv2)) {
+                        newSsl.setSsl2Enabled("true");
+                    }
+                    if (sslType.equals(SslType.SSLv3)) {
+                        newSsl.setSsl3Enabled("true");
+                    }
+                    if (sslType.equals(SslType.TLS)) {
+                        newSsl.setSsl3TlsCiphers("true");
+                    }
+                }
+            }   
+            if (sslConfig.getHandshakeTimeout() > 0) {
+                newSsl.setSSLInactivityTimeout(sslConfig.getHandshakeTimeout());
+            }
+                /*PECoyoteConnector connector =
+                        (PECoyoteConnector) embedded.findConnector(listenerName);
+                if (sslConfig.getKeyStore() != null) {
+                    connector.setKeystoreFile(sslConfig.getKeyStore());
+                if (sslConfig.getKeyPassword() != null) {
+                    connector.setKeystorePass(sslConfig.getKeyPassword());
+                }
+                if (sslConfig.getTrustStore() != null) {
+                    connector.setTruststore(sslConfig.getTrustStore());
+                }
+                // ssl protocol variants
+                Set<SslType> algorithms = sslConfig.getAlgorithms();
+                StringBuilder sslProtocolsBuf = new StringBuilder();
+                for (SslType sslType : algorithms) {
+                    sslProtocolsBuf.append(sslType);
+                }
+                if (sslProtocolsBuf.length() == 0) {
+                    log.warning("All SSL protocol variants disabled for network-listener " +
+                            listenerName + " ,using SSL implementation specific defaults");
+                } else {
+                    connector.setSslProtocols(sslProtocolsBuf.toString());
+                } */
+        } else {
+            log.severe("HttpsListener required for https protocol");
         }
 
     }
@@ -873,6 +958,7 @@ public class WebContainerImpl implements WebContainer {
         return vs;
 
     }
+
 
     /**
      * Creates a <tt>VirtualServer</tt> with the given id and docroot, and

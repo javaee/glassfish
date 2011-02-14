@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,16 +38,53 @@
  * holder.
  */
 
-package org.glassfish.web.ha.session.management;
+package com.sun.enterprise.web.session;
 
-import org.apache.catalina.session.PersistentManagerBase;
+import org.apache.catalina.core.SessionCookieConfigImpl;
+import org.apache.catalina.core.StandardContext;
 
 /**
- * @author Rajiv Mordani
+ * This class extends SessionCookieConfigImpl to handle additional
+ * secure cookie functionality from glassfish-web.xml
+ *
+ * @author  Shing Wai Chan
  */
-public class ReplicationPersistentManager extends PersistentManagerBase {
-    public ReplicationPersistentManager() {
-        super();
+public final class WebSessionCookieConfig extends SessionCookieConfigImpl {
+
+    // the following enum match cookieSecure property value in glassfish-web.xml
+    public enum CookieSecureType {
+        TRUE, FALSE, DYNAMIC
+    };
+
+    // default web.xml(secure=false) = glassfish-web.xml(cookieSecure=dynamic)
+    private CookieSecureType secureCookieType = CookieSecureType.DYNAMIC;
+
+    public WebSessionCookieConfig(StandardContext context) {
+        super(context);
     }
-    
+
+    @Override
+    public void setSecure(boolean secure) {
+        super.setSecure(secure);
+
+        secureCookieType = ((secure)? CookieSecureType.TRUE : CookieSecureType.DYNAMIC);
+    }
+
+    public void setSecure(String secure) {
+        boolean isTrue = Boolean.parseBoolean(secure);
+
+        super.setSecure(isTrue);
+
+        if (isTrue) {
+            secureCookieType = CookieSecureType.TRUE;
+        } else if ("false".equalsIgnoreCase(secure)) {
+            secureCookieType = CookieSecureType.FALSE;
+        } else {
+            secureCookieType = CookieSecureType.DYNAMIC;
+        }
+    }
+
+    public CookieSecureType getSecure() {
+        return secureCookieType;
+    }
 }

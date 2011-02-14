@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -132,8 +132,6 @@ public class VirtualServer extends StandardHost
         vsPipeline = new VirtualServerPipeline(this);
         accessLogValve = new PEAccessLogValve();
         accessLogValve.setContainer(this);
-
-        _debug = _logger.isLoggable(Level.FINE);
     }
 
     // ----------------------------------------------------- Instance Variables
@@ -165,16 +163,6 @@ public class VirtualServer extends StandardHost
      * The logger to use for logging this virtual server
      */
     protected volatile Logger _logger = DEFAULT_LOGGER;
-
-    /**
-     * Indicates whether the logger level is set to any one of
-     * FINE/FINER/FINEST.
-     *
-     * This flag is used to avoid incurring a perf penalty by making
-     * logging calls for debug messages when the logger level is
-     * INFO or higher.
-     */
-    protected boolean _debug = false;
 
     /**
      * The descriptive information about this implementation.
@@ -656,10 +644,10 @@ public class VirtualServer extends StandardHost
      */
     protected String getDefaultWebModuleID() {
         String wmID = vsBean.getDefaultWebModule();
-        if (wmID != null && wmID.equals("")) {
+        if ("".equals(wmID)) {
             wmID = null;
         }
-        if (wmID != null && _debug) {
+        if (wmID != null && _logger.isLoggable(Level.FINE)) {
             Object[] params = { wmID, _id };
             _logger.log(Level.FINE, "vs.defaultWebModule", params);
         }
@@ -1541,12 +1529,16 @@ public class VirtualServer extends StandardHost
         }
 
         if (allow != null) {
-            _logger.fine("Allowing access to " + getID()+ " from " + allow);
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.fine("Allowing access to " + getID()+ " from " + allow);
+            }
             remoteAddrValve.setAllow(allow);
         }
 
         if (deny != null) {
-            _logger.fine("Denying access to " + getID()+ " from " + deny);
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.fine("Denying access to " + getID()+ " from " + deny);
+            }
             remoteAddrValve.setDeny(deny);
         }
 
@@ -1593,11 +1585,15 @@ public class VirtualServer extends StandardHost
             remoteHostValve = new RemoteHostValve();
         }
         if (allow != null) {
-            _logger.fine("Allowing access to " + getID() + " from " + allow);
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.fine("Allowing access to " + getID() + " from " + allow);
+            }
             remoteHostValve.setAllow(allow);
         }
         if (deny != null) {
-            _logger.fine("Denying access to " + getID() + " from " + deny);
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.fine("Denying access to " + getID() + " from " + deny);
+            }
             remoteHostValve.setDeny(deny);
         }
         if (remoteHostValve != null) {

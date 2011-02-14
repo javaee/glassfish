@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,57 +44,64 @@ import java.io.File;
 import java.util.Set;
 
 /**
+ * Class used to configure SSL processing parameters
+ * 
  * @author Rajiv Mordani
  */
 public class SslConfig {
 
     private String keyStore;
-    private File trustStore;
+    private String trustStore;
     private String keyPassword;
-    private long timeoutMilliSeconds;
+    private int timeoutMilliSeconds;
     private Set<SslType> algorithms;
 
     /**
-     *
+     * Create an instance of <tt>SslConfig</tt>.
      */
     public SslConfig() {
         
     }
 
     /**
+     * Sets the location of the keystore file
      *
-     * @param keyStore
+     * @param keyStore The location of the keystore file
      */
     public void setKeyStore(String keyStore) {
         this.keyStore = keyStore;
     }
 
     /**
+     * Sets the location of the truststore file
      *
-     * @param trustStore
+     * @param trustStore The location of the truststore file
      */
-    public void setTrustStore(File trustStore) {
+    public void setTrustStore(String trustStore) {
         this.trustStore = trustStore;
     }
 
     /**
+     * Sets the password of the keystore file
      *
-     * @param keyPassword
+     * @param keyPassword The password of the keystore file
      */
     public void setKeyPassword(String keyPassword) {
         this.keyPassword = keyPassword;
     }
 
     /**
+     * Sets the timeout within which there must be activity from the client
      *
-     * @param timeoutMilliSeconds
+     * @param timeoutMilliSeconds The timeout in milliseconds
      */
-    public void setHandshakeTimeout(long timeoutMilliSeconds) {
+    public void setHandshakeTimeout(int timeoutMilliSeconds) {
         this.timeoutMilliSeconds = timeoutMilliSeconds;
     }
 
     /**
-     *
+     * Sets the algorithm
+     * 
      * @param algorithms
      */
     public void setAlgorithms(Set<SslType> algorithms) {
@@ -102,40 +109,45 @@ public class SslConfig {
     }
 
     /**
+     * Gets the location of the keystore file
      *
-     * @return
+     * @return the location of the keystore file
      */
     public String getKeyStore() {
         return this.keyStore;
     }
 
     /**
+     * Gets the truststore file location
      *
-     * @return
+     * @return the location of the truststore file
      */
-    public File getTrustStore() {
+    public String getTrustStore() {
         return this.trustStore;
     }
 
     /**
+     * Gets the password of the keystore file
      *
-     * @return
+     * @return the password of the keystore file
      */
     public String getKeyPassword() {
         return this.keyPassword;
     }
 
     /**
+     * Gets the timeout within which there must be activity from the client
      *
-     * @return
+     * @return the timeout in milliseconds
      */
-    public long getHandshakeTimeout() {
+    public int getHandshakeTimeout() {
         return this.timeoutMilliSeconds;
     }
 
     /**
+     * Gets the algorithm
      *
-     * @return
+     * @return the algorithm
      */
     public Set<SslType> getAlgorithms() {
         return this.algorithms;

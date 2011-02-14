@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,7 +41,8 @@
 package com.sun.enterprise.web.pwc.connector.coyote;
 
 import com.sun.enterprise.web.pwc.PwcWebModule;
-import com.sun.enterprise.web.session.SessionCookieConfig;
+import com.sun.enterprise.web.session.WebSessionCookieConfig;
+import com.sun.enterprise.web.session.WebSessionCookieConfig.CookieSecureType;
 import com.sun.logging.LogDomains;
 import org.apache.catalina.Context;
 import org.apache.catalina.Globals;
@@ -142,11 +143,14 @@ public class PwcCoyoteRequest extends Request {
 
         super.configureSessionCookie(cookie);
 
-        // glassfish-web.xml should override the web.xml
         PwcWebModule wm = (PwcWebModule) getContext();
-        SessionCookieConfig cookieConfig = wm.getSessionCookieConfigFromSunWebXml();
-        if (cookieConfig != null &&
-                cookieConfig.getSecure().equalsIgnoreCase(SessionCookieConfig.DYNAMIC_SECURE)) {
+        WebSessionCookieConfig cookieConfig = (WebSessionCookieConfig)wm.getSessionCookieConfig();
+        CookieSecureType type = cookieConfig.getSecure();
+        if (CookieSecureType.TRUE == type) {
+            cookie.setSecure(true);
+        } else if (CookieSecureType.FALSE == type) {
+            cookie.setSecure(false);
+        } else {
             cookie.setSecure(isSecure());
         }
     }

@@ -58,6 +58,7 @@
 
 package org.apache.catalina.connector;
 
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -68,7 +69,6 @@ import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
@@ -95,6 +95,7 @@ import org.glassfish.grizzly.http.util.CharChunk;
 import org.glassfish.grizzly.http.util.CookieSerializerUtils;
 import org.glassfish.grizzly.http.util.CookieUtils;
 import org.glassfish.grizzly.http.util.FastHttpDateFormat;
+import org.glassfish.grizzly.http.util.MimeHeaders;
 import org.glassfish.grizzly.http.util.UEncoder;
 // START S1AS 6170450
 
@@ -1083,6 +1084,36 @@ public class Response
         // END GlassFish 898
     }
 
+    /**
+     * Special method for adding a session cookie as we should be overriding 
+     * any previous 
+     * @param cookie
+     */
+    public void addSessionCookieInternal(final Cookie cookie) {
+        if (isCommitted())
+            return;
+
+        String name = cookie.getName();
+        final String headername = "Set-Cookie";
+        final String startsWith = name + "=";
+        final String cookieString = getCookieString(cookie);
+        boolean set = false;
+        MimeHeaders headers = coyoteResponse.getResponse().getHeaders();
+        int n = headers.size();
+        for (int i = 0; i < n; i++) {
+            if (headers.getName(i).toString().equals(headername)) {
+                if (headers.getValue(i).toString().startsWith(startsWith)) {
+                    headers.getValue(i).setString(cookieString);
+                    set = true;
+                }
+            }
+        }
+        if (!set) {
+            addHeader(headername, cookieString);
+        }
+
+
+    }
 
     /**
      * Add the specified date header to the specified value.
@@ -1881,7 +1912,11 @@ public class Response
      * string JSESSIONID
      */
     public void removeSessionCookies() {
-        coyoteResponse.removeSessionCookies();        
+        String matchExpression = "^" + getContext().getSessionCookieName() + "=.*";
+        coyoteResponse.getResponse().getHeaders().removeHeader("Set-Cookie", matchExpression);
+        matchExpression = "^" +
+            org.apache.catalina.authenticator.Constants.SINGLE_SIGN_ON_COOKIE + "=.*";
+        coyoteResponse.getResponse().getHeaders().removeHeader("Set-Cookie", matchExpression);
     }
     // END GlassFish 896
 

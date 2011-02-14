@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -103,10 +103,14 @@ public class ScatteredWarHandler  extends WarHandler implements ArchiveHandler {
             }
         } catch(XMLStreamException xse) {
             logger.log(Level.SEVERE, xse.getMessage());
-            logger.log(Level.FINE, xse.getMessage(), xse);
+            if (logger.isLoggable(Level.FINE)) {
+                logger.log(Level.FINE, xse.getMessage(), xse);
+            }
         } catch(FileNotFoundException fnfe) {
             logger.log(Level.SEVERE, fnfe.getMessage());
-            logger.log(Level.FINE, fnfe.getMessage(), fnfe);
+            if (logger.isLoggable(Level.FINE)) {
+                logger.log(Level.FINE, fnfe.getMessage(), fnfe);
+            }
         }
         try {
             cloader.start();

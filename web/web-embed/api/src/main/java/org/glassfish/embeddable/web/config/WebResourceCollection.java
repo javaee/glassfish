@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -45,7 +45,23 @@ import java.util.Set;
 /**
  * This class represents a list of URL patterns and HTTP
  * methods that describe a set of Web resources to be protected.
+ *
+ * <p/> Usage example:
+ *
+ * <pre>
+ *      WebResourceCollection webResource = new WebResourceCollection();
+ *      webResource.setName("protected");
+ *      webResource.setUrlPatterns("/*");
+ *      Set<String> httpMethods = new HashSet<String>();
+ *      httpMethods.add("GET");
+ *      httpMethods.add("POST");
+ *      webResource.setHttpMethods(httpMethods);
+ * </pre>
+ *
+ * @see SecurityConfig
+ *
  * @author Rajiv Mordani
+ * @author Amy Roh
  */
 public class WebResourceCollection {
 
@@ -73,50 +89,57 @@ public class WebResourceCollection {
     }
 
     /**
-     * The set of url patterns that correspond to this
+     * Sets the url patterns that correspond to this
      * web resource
      * 
-     * @param urlPatterns
+     * @param urlPatterns the url patterns 
      */
     public void setUrlPatterns(Set<String> urlPatterns) {
         this.urlPatterns = urlPatterns;          
     }
 
     /**
+     * Gets the url patterns that correspond to this
+     * web resource
      *
-     * @return
+     * @return the url patterns
      */
     public Set<String> getUrlPatterns() {
         return this.urlPatterns;
     }
 
     /**
+     * Sets the HTTP methods that should be protected
      *
-     * @param httpMethods
+     * @param httpMethods the HTTP methods
      */
     public void setHttpMethods(Set<String> httpMethods) {
         this.httpMethods = httpMethods;
     }
 
     /**
+     * Gets the HTTP methods that should be protected
      *
-     * @return
+     * @return the HTTP methods
      */
     public Set<String> getHttpMethods() {
         return this.httpMethods;
     }
 
     /**
+     * Sets the HTTP methods to be omitted from protection
      *
-     * @param httpMethodOmissions
+     * @param httpMethodOmissions the HTTP methods to be 
+     * omitted from protection
      */
     public void setHttpMethodOmissions(Set<String> httpMethodOmissions) {
         this.httpMethodOmissions = httpMethodOmissions;
     }
 
     /**
+     * Gets the HTTP methods to be omitted from protection
      *
-     * @return
+     * @return the HTTP methods to be omitted from protection
      */
     public Set<String> getHttpMethodOmissions() {
         return this.httpMethodOmissions;
