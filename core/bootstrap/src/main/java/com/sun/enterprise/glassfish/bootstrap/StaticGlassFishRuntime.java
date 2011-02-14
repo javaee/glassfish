@@ -112,7 +112,10 @@ public class StaticGlassFishRuntime extends GlassFishRuntime {
                     } finally {
                         if ("true".equalsIgnoreCase(gfProps.getProperties().
                                 getProperty(autoDelete)) && gfProps.getInstanceRoot() != null) {
-                            Util.deleteRecursive(new File(gfProps.getInstanceRoot()));
+                            File instanceRoot = new File(gfProps.getInstanceRoot());
+                            if (instanceRoot.exists()) { // might have been deleted already.
+                                Util.deleteRecursive(instanceRoot);
+                            }
                         }
                     }
                 }

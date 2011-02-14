@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -74,9 +74,6 @@ public class StartLocalInstanceCommand extends SynchronizeInstanceCommand
     @Param(optional = true, defaultValue = "false")
     private boolean debug;
 
-    @Param(optional = true, defaultValue = "false")
-    private boolean upgrade;
-
     // handled by superclass
     //@Param(name = "instance_name", primary = true, optional = false)
     //private String instanceName0;
@@ -147,7 +144,7 @@ public class StartLocalInstanceCommand extends SynchronizeInstanceCommand
 
             launcher.launch();
 
-            if (verbose || upgrade) { // we can potentially loop forever here...
+            if (verbose) { // we can potentially loop forever here...
                 while (true) {
                     int returnValue = launcher.getExitValue();
 
@@ -197,10 +194,8 @@ public class StartLocalInstanceCommand extends SynchronizeInstanceCommand
             info = launcher.getInfo();
             info.setInstanceName(instanceName);
             info.setInstanceRootDir(instanceDir);
-            info.setVerbose(verbose || upgrade);
+            info.setVerbose(verbose);
             info.setDebug(debug);
-            info.setUpgrade(upgrade);
-
             info.setRespawnInfo(programOpts.getClassName(),
                             programOpts.getClassPath(),
                             respawnArgs());

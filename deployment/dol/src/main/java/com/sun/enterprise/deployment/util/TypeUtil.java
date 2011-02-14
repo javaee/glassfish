@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,6 +44,7 @@ import com.sun.enterprise.deployment.FieldDescriptor;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.*;
@@ -444,6 +445,14 @@ public class TypeUtil {
                 if (!gpm1[i].equals(gpm2[i])) {
                     if (gpm1[i] instanceof TypeVariable || gpm2[i] instanceof TypeVariable) {
                         continue;
+                    } else if(gpm1[i] instanceof ParameterizedType || gpm2[i] instanceof ParameterizedType) {
+
+                        //See issue 15595 (ClassFormatError: Duplicate method name thrown in deployment)
+                        //For ParameterizedType params, compare their non-generics parameter types.
+                        same = m1.getParameterTypes()[i].equals(m2.getParameterTypes()[i]);
+                        if(!same) {
+                            break;
+                        }
                     } else {
                         same = false;
                         break;

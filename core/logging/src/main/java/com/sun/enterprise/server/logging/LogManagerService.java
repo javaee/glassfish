@@ -107,7 +107,11 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy, org.g
     Logger logger = LogDomains.getLogger(LogManagerService.class, LogDomains.CORE_LOGGER);
 
     PrintStream oStdOutBackup = System.out;
-    PrintStream oStdErrBackup = System.err;    
+    PrintStream oStdErrBackup = System.err;
+
+    String serverLogFileDetail = "";
+
+        private final String SERVER_LOG_FILE_PROPERTY = "com.sun.enterprise.server.logging.GFFileHandler.file"; 
 
     /*
         Returns properties based on the DAS/Cluster/Instance
@@ -229,6 +233,9 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy, org.g
                 handler.setFormatter(formatter);
             }
 
+            //setting initial server log file name which is used later to initiate PropertyChangeEvent for file name change
+            serverLogFileDetail = props.get(SERVER_LOG_FILE_PROPERTY);
+
         } catch (java.io.IOException ex) {
             logger.log(Level.SEVERE, "logging.read.error", ex);
 
@@ -336,10 +343,10 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy, org.g
                                         }
                                     }
 
-                                } else if (a.endsWith(".file")) {
+                                } else if (a.equals(SERVER_LOG_FILE_PROPERTY)) {
                                     //check if file name was changed and send notification
-                                    if (!props.get(a).contains("${com.sun.aas.instanceRoot}/logs/server.log")) {
-                                        PropertyChangeEvent pce = new PropertyChangeEvent(this, a, "${com.sun.aas.instanceRoot}/logs/server.log", props.get(a));
+                                    if (!props.get(a).equals(serverLogFileDetail)) {
+                                        PropertyChangeEvent pce = new PropertyChangeEvent(this, a, serverLogFileDetail, props.get(a));
                                         UnprocessedChangeEvents ucel = new UnprocessedChangeEvents(new UnprocessedChangeEvent(pce, "server log filename changed."));
                                         List<UnprocessedChangeEvents> b = new ArrayList();
                                         b.add(ucel);

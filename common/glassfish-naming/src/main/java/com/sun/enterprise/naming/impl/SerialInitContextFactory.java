@@ -220,7 +220,7 @@ public class SerialInitContextFactory implements InitialContextFactory {
             sb.append( str.trim() ) ;
 	}
 
-	fineLog( "corbaloc url ==> {0}", sb.toString() );
+	// fineLog( "corbaloc url ==> {0}", sb.toString() );
 
 	return sb.toString() ;
     }
@@ -257,6 +257,9 @@ public class SerialInitContextFactory implements InitialContextFactory {
     public Context getInitialContext(Hashtable env) throws NamingException {
         final Hashtable myEnv = env == null ? new Hashtable() : env ;
 
+        boolean membershipChangeForced = false ;
+
+        fineLog( "getInitialContext: env={0}", env ) ;
         useLB = propertyIsSet(myEnv, IIOP_ENDPOINTS_PROPERTY)
             || propertyIsSet(myEnv, LOAD_BALANCING_PROPERTY) ;
 
@@ -281,7 +284,7 @@ public class SerialInitContextFactory implements InitialContextFactory {
 
                     gis.addObserver(giso);
 
-                    fineLog( "getGIS: rrPolicy = {0}", rrPolicy );
+                    // fineLog( "getInitialContext: rrPolicy = {0}", rrPolicy );
 
                     // this should force the initialization of the resources providers
                     if (habitat!=null) {
@@ -293,9 +296,13 @@ public class SerialInitContextFactory implements InitialContextFactory {
 
                     // Get the actual content, not just the configured
                     // endpoints.
-                    giso.membershipChange();
+                    giso.forceMembershipChange();
+                    membershipChangeForced = true ;
 
                     initialized = true ;
+
+                    fineLog( "getInitialContext(initial): rrPolicy = {0}",
+                        rrPolicy );
                 }
             }
         }
@@ -318,7 +325,9 @@ public class SerialInitContextFactory implements InitialContextFactory {
                     synchronized( SerialInitContextFactory.class ) {
                         final List<String> list = getEndpointList( myEnv ) ;
                         rrPolicy.setClusterInstanceInfoFromString(list);
-                        giso.membershipChange() ;
+                        if (!membershipChangeForced) {
+                            giso.forceMembershipChange() ;
+                        }
                     }
                 }
 

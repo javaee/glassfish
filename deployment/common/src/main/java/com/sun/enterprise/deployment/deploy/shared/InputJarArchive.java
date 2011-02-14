@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2006-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -89,7 +89,11 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
     private InputJarArchive parentArchive=null;
 
     private StringManager localStrings = StringManager.getManager(getClass());
-    
+
+    // track entry enumerations to close them if needed when the archive is closed
+    private final WeakHashMap<EntryEnumeration,Object> entryEnumerations =
+            new WeakHashMap<EntryEnumeration,Object>();
+
     /**
      * Get the size of the archive
      * @return tje the size of this archive or -1 on error
@@ -113,7 +117,11 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
     /** 
      * close the abstract archive
      */
-    public void close() throws IOException {
+    public synchronized void close() throws IOException {
+        for (EntryEnumeration e : entryEnumerations.keySet()) {
+            e.closeNoRemove();
+        }
+        entryEnumerations.clear();
         if (jarFile!=null) {
             jarFile.close();
             jarFile=null;
@@ -122,6 +130,11 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
             jarIS.close();
             jarIS=null;
         }
+    }
+
+    private synchronized EntryEnumeration recordEntryEnumeration(final EntryEnumeration e) {
+        entryEnumerations.put(e, null);
+        return e;
     }
 
     /**
@@ -213,7 +226,7 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
                 uriToReadForEntries = new URI("file", getURI().getSchemeSpecificPart(), null);
             }
 
-            return createEntryEnumeration(uriToReadForEntries, topLevelDirectoriesOnly);
+            return recordEntryEnumeration(createEntryEnumeration(uriToReadForEntries, topLevelDirectoriesOnly));
         } catch (IOException ioe) {
             throw new RuntimeException(ioe);
         } catch (URISyntaxException use) {
@@ -479,13 +492,21 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
      * available in the archive.  This avoids collecting all
      * the entry names first and then returning an enumeration of the collection;
      * that can be very costly for large JARs.
+     * <p>
+     * But, the trade-off is that we need to be careful because we leave a stream
+     * opened to the JAR.  So, even though the finalizer is not guaranteed to be
+     * invoked, we still provide one to close up the stream.  This should help
+     * reduce the chance for locked JARs on Windows due to open streams.
      */
     private abstract class EntryEnumeration implements Enumeration<String> {
 
-        /** look-ahead of one entry */
+        /* look-ahead of one entry */
         private JarEntry nextMatchingEntry;
 
-        private final JarInputStream jis;
+        /* stream used to read JarEntry objects from the JAR */
+        private JarInputStream jis;
+
+        /* indicates if we have exhausted the input stream from the JAR */
         private boolean reachedEndOfStream = false;
 
     private EntryEnumeration(final URI archiveURI) throws MalformedURLException, IOException {
@@ -533,8 +554,7 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
             try {
                 final JarEntry result = jis.getNextJarEntry();
                 if (result == null) {
-                    jis.close();
-                    reachedEndOfStream = true;
+                    close();
                 }
                 return result;
             } catch (IOException ioe) {
@@ -542,11 +562,28 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
             }
         }
 
+        private void closeNoRemove() {
+            reachedEndOfStream = true;
+            if (jis != null) {
+                try {
+                    jis.close();
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+                jis = null;
+            }
+        }
+
+        void close() {
+            closeNoRemove();
+            entryEnumerations.remove(this);
+        }
+
         @Override
         protected void finalize() throws Throwable {
             super.finalize();
             if ( ! reachedEndOfStream) {
-                jis.close();
+                close();
             }
         }
     }
@@ -706,3 +743,4 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
         }
     }
 }
+

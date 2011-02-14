@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -120,6 +120,8 @@ public abstract class AdminAdapter extends StaticHttpHandler implements Adapter,
     private static final String[] authRelatedHeaderNames = {
         SecureAdmin.Util.ADMIN_INDICATOR_HEADER_NAME,
         SecureAdmin.Util.ADMIN_ONE_TIME_AUTH_TOKEN_HEADER_NAME};
+
+    private static final String DAS_LOOK_FOR_CERT_PROPERTY_NAME = "org.glassfish.admin.DASCheckAdminCert";
 
     @Inject
     ModulesRegistry modulesRegistry;
@@ -272,7 +274,17 @@ public abstract class AdminAdapter extends StaticHttpHandler implements Adapter,
         String password = up.length > 1 ? up[1] : "";
         AdminAccessController authenticator = habitat.getByContract(AdminAccessController.class);
         if (authenticator != null) {
-            final Principal sslPrincipal = req.getUserPrincipal();
+            /*
+             * If an admin request includes a large payload and secure admin is
+             * enabled and the request does NOT include a client cert, then
+             * the getUsePrincipal invocation can cause problems.  So normally
+             * the DAS will not look for a client cert. To override this, the user can
+             * set org.glassfish.admin.DASCheckAdminCert=true but s/he should realize
+             * that this can cause problems with large uploads if secure admin
+             * is enabled and no client cert is present.
+             */
+            final Principal sslPrincipal = ! env.isDas() ||
+                    Boolean.getBoolean(DAS_LOOK_FOR_CERT_PROPERTY_NAME) ? req.getUserPrincipal() : null;
             return authenticator.loginAsAdmin(user, password, as.getAuthRealmName(),
                     req.getRemoteHost(), authRelatedHeaders(req), sslPrincipal);
         }

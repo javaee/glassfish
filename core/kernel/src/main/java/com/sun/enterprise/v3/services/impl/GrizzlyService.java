@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -65,6 +65,8 @@ import com.sun.enterprise.config.serverbeans.VirtualServer;
 import com.sun.enterprise.util.Result;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.v3.services.impl.monitor.GrizzlyMonitoring;
+import com.sun.logging.LogDomains;
+import java.util.concurrent.LinkedBlockingQueue;
 import org.glassfish.api.FutureProvider;
 import org.glassfish.api.Startup;
 import org.glassfish.api.admin.ServerEnvironment;
@@ -108,13 +110,12 @@ public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct
     Config config;
 
     @Inject
-    Logger logger;
-
-    @Inject
     Habitat habitat;
 
     @Inject
     ProbeProviderFactory probeProviderFactory;
+
+    final Logger logger = LogDomains.getLogger(GrizzlyService.class, LogDomains.CORE_LOGGER);
 
     private final Collection<NetworkProxy> proxies = new LinkedBlockingQueue<NetworkProxy>();
     private final String JMS_DEFAULT_LISTENER_IP="0.0.0.0";

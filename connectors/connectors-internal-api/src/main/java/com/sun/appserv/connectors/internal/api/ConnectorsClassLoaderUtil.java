@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -196,7 +196,7 @@ public class ConnectorsClassLoaderUtil {
             }
 
             List<ConnectorClassFinder> classLoaders = new ArrayList<ConnectorClassFinder>();
-            for (String rarName : ConnectorConstants.systemRarNames) {
+            for (String rarName : ConnectorsUtil.getSystemRARs()) {
 
                 String location = ConnectorsUtil.getSystemModuleLocation(rarName);
 
@@ -205,12 +205,7 @@ public class ConnectorsClassLoaderUtil {
                 if (processEnv.getProcessType().isEmbedded()) {
                     libraries = new ArrayList<URI>();
                 } else {
-                    //needed as some system-rars (JAXR-RA) is not available in web-profile
-                    if(systemRarExists(location)){
-                        libraries = ConnectorsUtil.getInstalledLibrariesFromManifest(location, env);
-                    }else{
-                        libraries = new ArrayList<URI>(); 
-                    }
+                    libraries = ConnectorsUtil.getInstalledLibrariesFromManifest(location, env);
                 }
 
                 ConnectorClassFinder ccf = createRARClassLoader(location, null, rarName, libraries);
@@ -222,19 +217,6 @@ public class ConnectorsClassLoaderUtil {
         return classLoaders;
     }
 
-    private boolean systemRarExists(String location){
-        boolean result = false;
-        try{
-            File file = new File(location);
-            result = file.exists();
-        }catch(Exception e){
-            if(_logger.isLoggable(Level.FINEST)){
-                _logger.log(Level.FINEST, "Exception occurred while checking System RAR location " +
-                        ": [" + location + "]", e);
-            }
-        }
-        return result;
-    }
 
     public ConnectorClassFinder getSystemRARClassLoader(String rarName) throws ConnectorRuntimeException {
         if (ConnectorsUtil.belongsToSystemRA(rarName)) {

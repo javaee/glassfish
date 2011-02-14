@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,48 +40,66 @@
 
 package org.glassfish.flashlight.cli;
 
-import com.sun.enterprise.config.serverbeans.ModuleMonitoringLevels;
+import com.sun.enterprise.util.SystemPropertyConstants;
+import org.glassfish.api.admin.*;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
+import org.glassfish.config.support.*;
+import org.glassfish.internal.api.Target;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import java.beans.PropertyVetoException;
-import org.jvnet.hk2.config.TransactionFailure;
-import org.jvnet.hk2.config.SingleConfigCode;
-import org.jvnet.hk2.config.ConfigSupport;
 import com.sun.enterprise.config.serverbeans.MonitoringService;
-import java.util.HashMap;
-import java.util.Map;
 import org.glassfish.api.monitoring.ContainerMonitoring;
-import org.jvnet.hk2.config.ConfigBean;
-import org.jvnet.hk2.config.Dom;
 import org.jvnet.hk2.component.PerLookup;
 
 /**
- * @author Sreenivas Munnangi
+ * @author Sreenivas Munnangi (3.0)
+ * @author Byron Nevins (3.1+)
  */
 @Service(name="disable-monitoring")
 @Scoped(PerLookup.class)
 @I18n("disable.monitoring")
+@ExecuteOn({RuntimeType.DAS, RuntimeType.INSTANCE})
+@TargetType({CommandTarget.DAS,CommandTarget.STANDALONE_INSTANCE,CommandTarget.CLUSTER,CommandTarget.CONFIG})
 public class DisableMonitoring implements AdminCommand {
+
+    // do NOT inject this.  We may need it for a different config tha ours.
+    private MonitoringService ms;
+
+    @Inject
+    private Target targetService;
+
+    @Param(name="target", optional=true, defaultValue = SystemPropertyConstants.DAS_SERVER_NAME)
+    String target;
 
     // list of modules separated by comma
     @Param(optional=true)
     private String modules;
 
-    @Inject
-    private MonitoringService ms;
-
     final private LocalStringManagerImpl localStrings = 
         new LocalStringManagerImpl(DisableMonitoring.class);
 
     public void execute(AdminCommandContext context) {
+
         ActionReport report = context.getActionReport();
+
+        try {
+            // BN: Famous Last Words:  This can't fail!!!  I'm handling anyways...
+            ms = targetService.getConfig(target).getMonitoringService();
+        }
+        catch(Exception e) {
+            report.setMessage(localStrings.getLocalString("target.service.exception",
+                "Encountered exception trying to locate the MonitoringService element "
+                + "in the target ({0}) configuration: {1}", target, e.getMessage()));
+            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+            return;
+        }
+
         try {
             if ((modules == null) || (modules.length() < 1)) {
                 // check if it is already false

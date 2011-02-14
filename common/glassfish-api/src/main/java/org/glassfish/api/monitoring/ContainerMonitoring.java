@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -54,6 +54,7 @@ import org.glassfish.api.admin.config.Named;
  * configuration through the ContainerMonitoring interface.
  *
  * @author Nandini Ektare
+ * @author Byron Nevins (3.1+)
  */
 @Configured
 public interface ContainerMonitoring extends ConfigBeanProxy, Named {
@@ -64,6 +65,7 @@ public interface ContainerMonitoring extends ConfigBeanProxy, Named {
 
     public static final String CONNECTOR_CONNECTION_POOL = "connector-connection-pool";
     public static final String CONNECTOR_SERVICE = "connector-service";
+    public static final String DEPLOYMENT = "deployment";
     public static final String EJB_CONTAINER = "ejb-container";
     public static final String HTTP_SERVICE = "http-service";
     public static final String JDBC_CONNECTION_POOL = "jdbc-connection-pool";

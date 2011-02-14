@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -749,11 +749,12 @@ public final class  GlassfishNamingManagerImpl
 
     }
 
-    private Object lookup(String componentId, String name, Context ctx) throws NamingException {
+    private Object lookup(String componentId, String name,
+        Context ctx) throws NamingException {
 
         ComponentIdInfo info = componentIdInfo.get(componentId);
         String logicalJndiName = name;
-        boolean replaceName =  (info != null) && (info.treatComponentAsModule)
+        boolean replaceName = (info != null) && (info.treatComponentAsModule)
                 && name.startsWith("java:comp");
         if( replaceName ) {
             logicalJndiName = logicalCompJndiNameToModule(name);
@@ -770,16 +771,25 @@ public final class  GlassfishNamingManagerImpl
             NamingObjectProxy namingProxy = (NamingObjectProxy) obj;
             obj = namingProxy.create(ctx);
         } else if( obj instanceof Context ) {
-            // Need to preserve the original prefix so that further operations on the
-            // context maintain the correct external view. In the case of a replaced java:comp,
-            // create a new equivalent javaURLContext and return that.
+            // Need to preserve the original prefix so that further operations 
+            // on the context maintain the correct external view. In the case
+            // of a replaced java:comp, create a new equivalent javaURLContext
+            // and return that.
             if( replaceName ) {
                 obj = new JavaURLContext(name, null);
+            }
+
+            if (obj instanceof JavaURLContext) {
+                if (ctx instanceof SerialContext) {
+                    obj = new JavaURLContext( (JavaURLContext)obj,
+                        (SerialContext)ctx ) ;
+                } else {
+                    obj = new JavaURLContext( (JavaURLContext)obj, null ) ;
+                }
             }
         }
 
         return obj;
-
     }
 
 

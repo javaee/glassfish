@@ -155,115 +155,117 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
      * @throws ConnectorRuntimeException if creation fails.
      */
 
-    public synchronized void createActiveResourceAdapter(ConnectorDescriptor connectorDescriptor,
-                                                         String moduleName, String moduleDir, ClassLoader loader)
+    public void createActiveResourceAdapter(ConnectorDescriptor connectorDescriptor,
+                                            String moduleName, String moduleDir, ClassLoader loader)
             throws ConnectorRuntimeException {
 
-        if (_logger.isLoggable(Level.FINE)) {
-            _logger.fine("ResourceAdapterAdminServiceImpl :: createActiveRA "
-                    + moduleName + " at " + moduleDir);
-        }
-
-        ActiveResourceAdapter activeResourceAdapter = _registry.getActiveResourceAdapter(moduleName);
-        if (activeResourceAdapter != null) {
-            if(_logger.isLoggable(Level.FINE)) {
-                _logger.log(Level.FINE, "rardeployment.resourceadapter.already.started", moduleName);
+        synchronized (_registry.getLockObject(moduleName)) {
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.fine("ResourceAdapterAdminServiceImpl :: createActiveRA "
+                        + moduleName + " at " + moduleDir);
             }
-            return;
-        }
+
+            ActiveResourceAdapter activeResourceAdapter = _registry.getActiveResourceAdapter(moduleName);
+            if (activeResourceAdapter != null) {
+                if(_logger.isLoggable(Level.FINE)) {
+                    _logger.log(Level.FINE, "rardeployment.resourceadapter.already.started", moduleName);
+                }
+                return;
+            }
 
 
-        //TODO V3 works fine ?
-        if (loader == null) {
+            //TODO V3 works fine ?
+            if (loader == null) {
+                try {
+                    loader = connectorDescriptor.getClassLoader();
+                } catch (Exception ex) {
+                    if(_logger.isLoggable(Level.FINE)) {
+                        _logger.log(Level.FINE, "No classloader available with connector descriptor");
+                    }
+                    loader = null;
+                }
+            }
+            ConnectorRuntime connectorRuntime = ConnectorRuntime.getRuntime();
+            ModuleDescriptor moduleDescriptor = null;
+            Application application = null;
+            if(_logger.isLoggable(Level.FINE)) {
+                _logger.fine("ResourceAdapterAdminServiceImpl :: createActiveRA "
+                    + moduleName + " at " + moduleDir + " loader :: " + loader);
+            }
+            //class-loader can not be null for standalone rar as deployer should have provided one.
+            //class-laoder can (may) be null for system-rars as they are not actually deployed.
+            //TODO V3 don't check for system-ra if the resource-adapters are not loaded before recovery
+            // (standalone + embedded)
+            if (loader == null && ConnectorsUtil.belongsToSystemRA(moduleName)) {
+                if (connectorRuntime.isServer()) {
+                    loader = connectorRuntime.getSystemRARClassLoader(moduleName);
+                }
+            } else {
+                connectorDescriptor.setClassLoader(null);
+                moduleDescriptor = connectorDescriptor.getModuleDescriptor();
+                application = connectorDescriptor.getApplication();
+                connectorDescriptor.setModuleDescriptor(null);
+                connectorDescriptor.setApplication(null);
+            }
             try {
-                loader = connectorDescriptor.getClassLoader();
-            } catch (Exception ex) {
+
+                activeResourceAdapter =
+                        connectorRuntime.getActiveRAFactory().
+                                createActiveResourceAdapter(connectorDescriptor, moduleName, loader);
                 if(_logger.isLoggable(Level.FINE)) {
-                    _logger.log(Level.FINE, "No classloader available with connector descriptor");
+                    _logger.fine("ResourceAdapterAdminServiceImpl :: createActiveRA " +
+                        moduleName + " at " + moduleDir +
+                        " adding to registry " + activeResourceAdapter);
                 }
-                loader = null;
-            }
-        }
-        ConnectorRuntime connectorRuntime = ConnectorRuntime.getRuntime();
-        ModuleDescriptor moduleDescriptor = null;
-        Application application = null;
-        if(_logger.isLoggable(Level.FINE)) {
-            _logger.fine("ResourceAdapterAdminServiceImpl :: createActiveRA "
-                + moduleName + " at " + moduleDir + " loader :: " + loader);
-        }
-        //class-loader can not be null for standalone rar as deployer should have provided one.
-        //class-laoder can (may) be null for system-rars as they are not actually deployed.
-        //TODO V3 don't check for system-ra if the resource-adapters are not loaded before recovery
-        // (standalone + embedded) 
-        if (loader == null && ConnectorsUtil.belongsToSystemRA(moduleName)) {
-            if (connectorRuntime.isServer()) {
-                loader = connectorRuntime.getSystemRARClassLoader(moduleName); 
-            }
-        } else {
-            connectorDescriptor.setClassLoader(null);
-            moduleDescriptor = connectorDescriptor.getModuleDescriptor();
-            application = connectorDescriptor.getApplication();
-            connectorDescriptor.setModuleDescriptor(null);
-            connectorDescriptor.setApplication(null);
-        }
-        try {
-
-            activeResourceAdapter =
-                    connectorRuntime.getActiveRAFactory().
-                            createActiveResourceAdapter(connectorDescriptor, moduleName, loader);
-            if(_logger.isLoggable(Level.FINE)) {
-                _logger.fine("ResourceAdapterAdminServiceImpl :: createActiveRA " +
-                    moduleName + " at " + moduleDir +
-                    " adding to registry " + activeResourceAdapter);
-            }
-            _registry.addActiveResourceAdapter(moduleName, activeResourceAdapter);
-            if(_logger.isLoggable(Level.FINE)) {
-                _logger.fine("ResourceAdapterAdminServiceImpl:: createActiveRA " +
-                    moduleName + " at " + moduleDir
-                    + " env =server ? " + (connectorRuntime.isServer()));
-            }
-
-            if (connectorRuntime.isServer()) {
-                //Update RAConfig in Connector Descriptor and bind in JNDI
-                //so that ACC clients could use RAConfig
-                updateRAConfigInDescriptor(connectorDescriptor, moduleName);
-                String descriptorJNDIName = ConnectorAdminServiceUtils.getReservePrefixedJNDINameForDescriptor(moduleName);
+                _registry.addActiveResourceAdapter(moduleName, activeResourceAdapter);
                 if(_logger.isLoggable(Level.FINE)) {
-                    _logger.fine("ResourceAdapterAdminServiceImpl :: createActiveRA "
-                        + moduleName + " at " + moduleDir
-                        + " publishing descriptor " + descriptorJNDIName);
+                    _logger.fine("ResourceAdapterAdminServiceImpl:: createActiveRA " +
+                        moduleName + " at " + moduleDir
+                        + " env =server ? " + (connectorRuntime.isServer()));
                 }
-                _runtime.getNamingManager().publishObject(descriptorJNDIName, connectorDescriptor, true);
 
-                activeResourceAdapter.setup();
+                if (connectorRuntime.isServer()) {
+                    //Update RAConfig in Connector Descriptor and bind in JNDI
+                    //so that ACC clients could use RAConfig
+                    updateRAConfigInDescriptor(connectorDescriptor, moduleName);
+                    String descriptorJNDIName = ConnectorAdminServiceUtils.getReservePrefixedJNDINameForDescriptor(moduleName);
+                    if(_logger.isLoggable(Level.FINE)) {
+                        _logger.fine("ResourceAdapterAdminServiceImpl :: createActiveRA "
+                            + moduleName + " at " + moduleDir
+                            + " publishing descriptor " + descriptorJNDIName);
+                    }
+                    _runtime.getNamingManager().publishObject(descriptorJNDIName, connectorDescriptor, true);
 
-                String securityWarningMessage=
-                    connectorRuntime.getSecurityPermissionSpec(moduleName);
-                // To i18N.
-                if (securityWarningMessage != null) {
-                    _logger.log(Level.WARNING, securityWarningMessage);
+                    activeResourceAdapter.setup();
+
+                    String securityWarningMessage=
+                        connectorRuntime.getSecurityPermissionSpec(moduleName);
+                    // To i18N.
+                    if (securityWarningMessage != null) {
+                        _logger.log(Level.WARNING, securityWarningMessage);
+                    }
                 }
-            }
 
-        } catch (NullPointerException npEx) {
-            ConnectorRuntimeException cre =
-                    new ConnectorRuntimeException("Error in creating active RAR");
-            cre.initCause(npEx);
-            _logger.log( Level.SEVERE, "rardeployment.nullPointerException", moduleName);
-            _logger.log(Level.SEVERE, "", cre);
-            throw cre;
-        } catch (NamingException ne) {
-            ConnectorRuntimeException cre =
-                    new ConnectorRuntimeException("Error in creating active RAR");
-            cre.initCause(ne);
-            _logger.log(Level.SEVERE, "rardeployment.jndi_publish_failure");
-            _logger.log(Level.SEVERE, "", cre);
-            throw cre;
-        } finally {
-            if (moduleDescriptor != null) {
-                connectorDescriptor.setModuleDescriptor(moduleDescriptor);
-                connectorDescriptor.setApplication(application);
-                connectorDescriptor.setClassLoader(loader);
+            } catch (NullPointerException npEx) {
+                ConnectorRuntimeException cre =
+                        new ConnectorRuntimeException("Error in creating active RAR");
+                cre.initCause(npEx);
+                _logger.log( Level.SEVERE, "rardeployment.nullPointerException", moduleName);
+                _logger.log(Level.SEVERE, "", cre);
+                throw cre;
+            } catch (NamingException ne) {
+                ConnectorRuntimeException cre =
+                        new ConnectorRuntimeException("Error in creating active RAR");
+                cre.initCause(ne);
+                _logger.log(Level.SEVERE, "rardeployment.jndi_publish_failure");
+                _logger.log(Level.SEVERE, "", cre);
+                throw cre;
+            } finally {
+                if (moduleDescriptor != null) {
+                    connectorDescriptor.setModuleDescriptor(moduleDescriptor);
+                    connectorDescriptor.setApplication(application);
+                    connectorDescriptor.setClassLoader(loader);
+                }
             }
         }
     }
@@ -317,32 +319,34 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
      * @param moduleName Name of the module
      * @throws ConnectorRuntimeException if creation fails.
      */
-    public synchronized void createActiveResourceAdapter(String moduleDir, String moduleName, ClassLoader loader)
+    public void createActiveResourceAdapter(String moduleDir, String moduleName, ClassLoader loader)
             throws ConnectorRuntimeException {
 
-        ActiveResourceAdapter activeResourceAdapter =
-                _registry.getActiveResourceAdapter(moduleName);
-        if (activeResourceAdapter != null) {
-            if(_logger.isLoggable(Level.FINE)) {
-                _logger.log(Level.FINE, "rardeployment.resourceadapter.already.started", moduleName);
+        synchronized (_registry.getLockObject(moduleName)){
+            ActiveResourceAdapter activeResourceAdapter =
+                    _registry.getActiveResourceAdapter(moduleName);
+            if (activeResourceAdapter != null) {
+                if(_logger.isLoggable(Level.FINE)) {
+                    _logger.log(Level.FINE, "rardeployment.resourceadapter.already.started", moduleName);
+                }
+                return;
             }
-            return;
+
+            if (ConnectorsUtil.belongsToSystemRA(moduleName)) {
+                moduleDir = ConnectorsUtil.getSystemModuleLocation(moduleName);
+            }
+
+            ConnectorDescriptor connectorDescriptor = ConnectorDDTransformUtils.getConnectorDescriptor(moduleDir, moduleName);
+
+            if (connectorDescriptor == null) {
+                ConnectorRuntimeException cre = new ConnectorRuntimeException("Failed to obtain the connectorDescriptor");
+                _logger.log(Level.SEVERE, "rardeployment.connector_descriptor_notfound", moduleName);
+                _logger.log(Level.SEVERE, "", cre);
+                throw cre;
+            }
+
+            createActiveResourceAdapter(connectorDescriptor, moduleName, moduleDir, loader);
         }
-
-        if (ConnectorsUtil.belongsToSystemRA(moduleName)) {
-            moduleDir = ConnectorsUtil.getSystemModuleLocation(moduleName);
-        }
-
-        ConnectorDescriptor connectorDescriptor = ConnectorDDTransformUtils.getConnectorDescriptor(moduleDir, moduleName);
-
-        if (connectorDescriptor == null) {
-            ConnectorRuntimeException cre = new ConnectorRuntimeException("Failed to obtain the connectorDescriptor");
-            _logger.log(Level.SEVERE, "rardeployment.connector_descriptor_notfound", moduleName);
-            _logger.log(Level.SEVERE, "", cre);
-            throw cre;
-        }
-
-        createActiveResourceAdapter(connectorDescriptor, moduleName, moduleDir, loader);
     }
 
 
@@ -397,6 +401,7 @@ public class ResourceAdapterAdminServiceImpl extends ConnectorService {
                 }
             }
 */
+            _registry.removeLockObject(moduleName);
             return _registry.removeActiveResourceAdapter(moduleName);
         }
         return true;

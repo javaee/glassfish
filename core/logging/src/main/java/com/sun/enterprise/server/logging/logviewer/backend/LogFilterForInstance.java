@@ -107,6 +107,8 @@ public class LogFilterForInstance {
         }
         out.flush();
 
+        sftpClient.close();
+        
         return instanceLogFile;
 
     }

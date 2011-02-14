@@ -91,32 +91,35 @@ public class ServiceInitializerFilter extends BaseFilter {
     public NextAction handleAccept(final FilterChainContext ctx) throws IOException {
         final NIOConnection nioConnection = (NIOConnection) ctx.getConnection();
         final SelectableChannel channel = nioConnection.getChannel();
-        if(targetInitializer == null) {
-            synchronized(LOCK_OBJ) {
-                if(targetInitializer == null) {
-                    for(final LazyServiceInitializer initializer : initializerImplList) {
+        if (targetInitializer == null) {
+            synchronized (LOCK_OBJ) {
+                if (targetInitializer == null) {
+                    LazyServiceInitializer targetInitializerLocal = null;
+                    for (final LazyServiceInitializer initializer : initializerImplList) {
                         String listenerName = listener.getName();
-                        if(listenerName.equalsIgnoreCase(initializer.getServiceName())) {
-                            targetInitializer = initializer;
+                        if (listenerName.equalsIgnoreCase(initializer.getServiceName())) {
+                            targetInitializerLocal = initializer;
                             break;
                         }
                     }
-                }
-                if(targetInitializer == null) {
-                    logger.log(Level.SEVERE, "NO Lazy Initialiser implementation was found for port = {0}",
-                            listener.getPort());
-                    nioConnection.close();
 
-                    return ctx.getStopAction();
-                }
-                if(!targetInitializer.initializeService()) {
-                    targetInitializer = null;
-                    logger.log(Level.SEVERE, "Lazy Service initialization failed for port = {0}",
-                            listener.getPort());
+                    if (targetInitializerLocal == null) {
+                        logger.log(Level.SEVERE, "NO Lazy Initialiser implementation was found for port = {0}",
+                                listener.getPort());
+                        nioConnection.close();
 
-                    nioConnection.close();
+                        return ctx.getStopAction();
+                    }
+                    if (!targetInitializerLocal.initializeService()) {
+                        logger.log(Level.SEVERE, "Lazy Service initialization failed for port = {0}",
+                                listener.getPort());
 
-                    return ctx.getStopAction();
+                        nioConnection.close();
+
+                        return ctx.getStopAction();
+                    }
+                    
+                    targetInitializer = targetInitializerLocal;
                 }
             }
         }

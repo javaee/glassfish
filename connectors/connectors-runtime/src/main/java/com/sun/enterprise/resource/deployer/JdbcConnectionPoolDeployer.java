@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -160,11 +160,22 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
         JdbcConnectionPool adminPool = (JdbcConnectionPool) resource;
         try {
             ConnectorConnectionPool connConnPool = createConnectorConnectionPool(adminPool, poolInfo);
+            registerTransparentDynamicReconfigPool(poolInfo, adminPool);
             //now do internal book keeping
             runtime.createConnectorConnectionPool(connConnPool);
         } catch (Exception e) {
             Object params[] = new Object[]{poolInfo, e};
             _logger.log(Level.WARNING, "error.creating.jdbc.pool", params);
+        }
+    }
+
+    //performance issue related fix : IT 15784
+    private void registerTransparentDynamicReconfigPool(PoolInfo poolInfo, JdbcConnectionPool resourcePool) {
+        ConnectorRegistry registry = ConnectorRegistry.getInstance();
+        if(ConnectorsUtil.isDynamicReconfigurationEnabled(resourcePool)){
+            registry.addTransparentDynamicReconfigPool(poolInfo);
+        }else{
+            registry.removeTransparentDynamicReconfigPool(poolInfo);
         }
     }
 
@@ -225,6 +236,8 @@ public class JdbcConnectionPoolDeployer implements ResourceDeployer {
 
     private synchronized void actualUndeployResource(PoolInfo poolInfo) throws Exception {
         runtime.deleteConnectorConnectionPool(poolInfo);
+        //performance issue related fix : IT 15784
+        ConnectorRegistry.getInstance().removeTransparentDynamicReconfigPool(poolInfo);
         if (_logger.isLoggable(Level.FINEST)) {
             _logger.finest("Pool Undeployed");
         }

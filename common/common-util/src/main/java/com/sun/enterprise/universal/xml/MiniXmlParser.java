@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -200,6 +200,10 @@ public class MiniXmlParser {
     public boolean hasNetworkConfig() {
         return sawNetworkConfig;
     }
+    
+    public boolean hasDefaultConfig() {
+        return sawDefaultConfig;
+    }
 
     /////////////////////  all private below  /////////////////////////
     private void read() throws XMLStreamException, EndDocumentException, FileNotFoundException {
@@ -296,14 +300,15 @@ public class MiniXmlParser {
             }
             parseDomainName(); // maybe it is the domain name?
         }
-        while (true) {
-            skipTo("config");
+        while (skipToButNotPast("configs", "config")) {
             // get the attributes for this <config>
             Map<String, String> map = parseAttributes();
             String thisName = map.get("name");
+            if ("default-config".equals(thisName)) sawDefaultConfig = true;
             if (configRef.equals(thisName)) {
                 parseConfig();
-                return;
+            } else {
+                skipTree("config");
             }
         }
     }
@@ -847,4 +852,5 @@ public class MiniXmlParser {
     private List<Map<String, String>> listenerAttributes = new ArrayList<Map<String, String>>();
     private List<Map<String, String>> protocolAttributes = new ArrayList<Map<String, String>>();
     private boolean sawNetworkConfig;
+    private boolean sawDefaultConfig;
 }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -68,14 +68,18 @@ public final class InstanceInfo {
 
     public InstanceInfo(Habitat habitat, Server svr, int port0, String host0, String cluster0,
             Logger logger0, int timeout0, ActionReport report, InstanceStateService stateService) {
-        if (svr == null || host0 == null)
+        if (svr == null )
+//            if (svr == null || host0 == null)
             throw new NullPointerException("null arguments");
 
         this.habitat = habitat;
         this.svr = svr;
         name = svr.getName();
         port = port0;
-        host = host0;
+        if (host0 == null)
+            host="not yet assigned";
+        else
+            host = host0;
         logger = logger0;
         timeoutInMsec = timeout0;
         this.report = report;

@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -53,15 +53,20 @@
 <!-- property name="repo.url" value="http://localhost:10000"/ -->
 <property name="repo.host" value="http://pkg.glassfish.org"/>
 <property name="title" value="GlassFish 3"/>
-<property name="description" value="GlassFish 3 is the first Java EE 6 compatible application server, has a modular, lightweight, extensible architecture built on OSGi, and improves developer productivity by retaining HTTP session state on application redeployment."/>
+<property name="description" value="GlassFish Server is a modular, lightweight, and extensible Java EE 6 application server built on OSGi. Key features include fast startup time, improved developer productivity, hybrid OSGi/Java EE applications, high availability clustering, centralized administration, and overall ease-of-use."/>
 <property name="image.cache" value="${image.dir}/.org.opensolaris,pkg/cfg_cache"/>
 <property name="dev.authority" value="dev.glassfish.org"/>
 <property name="contrib.authority" value="contrib.glassfish.org"/>
+<property name="stable.authority" value="stable.glassfish.org"/>
+
 <property name="repository.url" value="http://pkg.glassfish.org/v3"/>
 <property name="dev.repository.url" value="${repository.url}/dev/"/>
 <property name="contrib.repository.url" value="${repository.url}/contrib/"/>
-<property name="sun.contrib.authority" value="contrib.glassfish.sun.com"/>
-<property name="sun.repository.url" value="http://pkg.sun.com/glassfish/v3/dev/"/>
+<property name="stable.repository.url" value="${repository.url}/stable/"/>
+
+<property name="sun.contrib.authority" value="contrib.glassfish.oracle.com"/>
+<property name="javaeesdk.release.authority" value="release.javaeesdk.oracle.com"/>
+<property name="javaeesdk.release.repository.url" value="http://pkg.sun.com/javaeesdk/6/release/"/>
 <property name="sun.contrib.repository.url" value="http://pkg.sun.com/glassfish/v3/contrib/"/>
 
 <target name="init"> 
@@ -196,11 +201,11 @@
         <arg line="set-property title 'GlassFish 3'"/>
     </exec>
     <exec dir="${image.dir}" executable="pkg" failonerror="true">
-        <arg line="set-property image-tou-url 'https://glassfish-repo.dev.java.net/terms.html'"/>
+        <arg line="set-property image-tou-url 'http://glassfish-repo.java.net/terms.html'"/>
     </exec>
 
     <exec dir="${image.dir}" executable="pkg" failonerror="true">
-        <arg line="set-property description 'GlassFish 3 is the first Java EE 6 compatible application server, has a modular, lightweight, extensible architecture built on OSGi, and improves developer productivity by retaining HTTP session state on application redeployment.'"/>
+        <arg line="set-property description 'GlassFish Server is a modular, lightweight, and extensible Java EE 6 application server built on OSGi. Key features include fast startup time, improved developer productivity, hybrid OSGi/Java EE applications, high availability clustering, centralized administration, and overall ease-of-use.'"/>
     </exec>
    
 </target>

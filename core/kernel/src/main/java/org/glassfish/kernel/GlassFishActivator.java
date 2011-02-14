@@ -206,15 +206,24 @@ public class GlassFishActivator implements BundleActivator, EventListener {
         // for more details. It is just simpler to do than registering a UpgradeService to do the needful.
         final String gosh_args = "gosh.args";
         if (bundleContext.getProperty(gosh_args) == null) {
-            final String gosh_args_value = "--noshutdown -c noop=true";
+            final String gosh_args_value = "--nointeractive";
             System.setProperty(gosh_args, gosh_args_value);
         }
-        startBundle("org.apache.felix.shell");
-        startBundle("org.apache.felix.gogo.runtime");
-        startBundle("org.apache.felix.gogo.shell");
-        startBundle("org.apache.felix.gogo.command");
-        startBundle("org.apache.felix.shell.remote");
-        startBundle("org.apache.felix.fileinstall");
+        String additionalOSGiBundlesToStart = bundleContext.getProperty("org.glassfish.additionalOSGiBundlesToStart");
+        if (additionalOSGiBundlesToStart == null) {
+            // a 3.0.x domain won't have the necessary property set, so for seamless upgrade,
+            // we need to set this property. It is just simpler to do than registering a UpgradeService to do the needful.
+            additionalOSGiBundlesToStart =
+                    "org.apache.felix.shell, " +
+                    "org.apache.felix.gogo.runtime, " +
+                    "org.apache.felix.gogo.shell, " +
+                    "org.apache.felix.gogo.command, " +
+                    "org.apache.felix.shell.remote, " +
+                    "org.apache.felix.fileinstall";
+        }
+        for (String bsn : additionalOSGiBundlesToStart.split(",")) {
+            startBundle(bsn.trim());
+        }
     }
 
     /**

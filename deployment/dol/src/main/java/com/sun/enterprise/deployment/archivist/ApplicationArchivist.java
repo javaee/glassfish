@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -421,6 +421,10 @@ public class ApplicationArchivist extends Archivist<Application>
                         md.setModuleType(XModuleType.EJB);
                         app.addModule(md);
                     }
+                    /*
+                     * The subarchive was opened by the anno detector.  Close it.
+                     */
+                    unknowns.get(i).close();
                 } catch (IOException ex) {
                     logger.log(Level.WARNING, ex.getMessage());
                 }
@@ -944,10 +948,8 @@ public class ApplicationArchivist extends Archivist<Application>
         // We are supporting directory names with both "_suffix" and ".suffix".
         File file = new File(abstractArchive.getURI());
         if (file.isDirectory()) {
-            File[] files = file.listFiles();
-            for (File content : files) {
-                if (content.isDirectory() && 
-                    resemblesTopLevelSubmodule(content.getPath())) {
+            for (String dirName : abstractArchive.getDirectories()) {
+                if (resemblesTopLevelSubmodule(dirName)) {
                     return true;
                 }
             }

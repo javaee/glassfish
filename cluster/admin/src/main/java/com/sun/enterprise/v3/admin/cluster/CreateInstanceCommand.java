@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -175,22 +175,9 @@ public class CreateInstanceCommand implements AdminCommand {
         installDir = theNode.getInstallDir();
 
         if (!StringUtils.ok(nodeHost)) {
-            String msg = Strings.get("create.instance.missing.info",
-                    theNode.getName(),"nodehost", "create-instance", "update-node-config",
-                    "create-local-instance");
-            logger.warning(msg);
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setMessage(msg);
-            return;
         }
         if (!StringUtils.ok(installDir)) {
-            String msg = Strings.get("create.instance.missing.info",
-                    theNode.getName(),"installdir", "create-instance", "update-node-config",
-                    "create-local-instance");
-            logger.warning(msg);
-            report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-            report.setMessage(msg);
-            return;
+
         }
 
         // First, update domain.xml by calling _register-instance

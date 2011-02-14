@@ -54,8 +54,11 @@ import java.net.UnknownHostException;
 import com.sun.jndi.cosnaming.IiopUrl;
 import com.sun.corba.ee.spi.folb.ClusterInstanceInfo;
 import com.sun.corba.ee.spi.folb.SocketInfo;
+import com.sun.enterprise.config.serverbeans.Cluster;
 import java.net.Inet4Address;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import org.glassfish.internal.api.ORBLocator;
 
 /**
@@ -157,33 +160,29 @@ public class RoundRobinPolicy {
         return result ;
     }
 
-    //will be called after dynamic reconfig
-    // used in GroupInfoServiceObserverImpl
-    synchronized final void setClusterInstanceInfo(
-        List<ClusterInstanceInfo> list) {
-
-	totalWeight = 0;
-
+    private boolean isWeighted() {
 	String policy = System.getProperty(
             SerialInitContextFactory.LOAD_BALANCING_PROPERTY,
             SerialInitContextFactory.IC_BASED );
-	boolean isWeighted = false ;
+	if (!policy.equals(SerialInitContextFactory.IC_BASED)) {
+	    warnLog("loadbalancing.polibeforecy.incorrect");
+        }
 
-	if (policy.equals(SerialInitContextFactory.IC_BASED_WEIGHTED)) {
-	    isWeighted = true;
-	} else if (!policy.equals(SerialInitContextFactory.IC_BASED)) {
-	    warnLog("loadbalancing.policy.incorrect");
-	}
+	final boolean isw = policy.equals(
+            SerialInitContextFactory.IC_BASED_WEIGHTED);
+        return isw ;
+    }
 
-	fineLog( "setClusterInstanceInfo: isWeighted = {0}", isWeighted );
+    private List<ClusterInstanceInfo> filterClusterInfo(
+        List<ClusterInstanceInfo> info ) {
 
+        boolean isw = isWeighted() ;
         ArrayList<ClusterInstanceInfo> newList =
             new ArrayList<ClusterInstanceInfo>() ;
+        totalWeight = 0 ;
 
-	for (ClusterInstanceInfo clinfo : list) {
-            final int newWeight = isWeighted ? clinfo.weight() : default_weight ;
-            fineLog( "setClusterInstanceInfo: instance {0} weight {1}",
-                clinfo.name(), clinfo.weight() ) ;
+	for (ClusterInstanceInfo clinfo : info) {
+            final int newWeight = isw ? clinfo.weight() : default_weight ;
 
             final List<SocketInfo> newEndpoints =
                 filterSocketInfos( clinfo.endpoints() ) ;
@@ -192,33 +191,78 @@ public class RoundRobinPolicy {
             newList.add( newClinfo ) ;
 
 	    totalWeight += newWeight ;
-	}
+        }
 
-	endpointsList = newList ;
-
-	fineLog( "setClusterInstanceInfo: totalWeight = {0}", totalWeight);
+        return newList ;
     }
-    
+
+    private boolean containsMatchingAddress( List<ClusterInstanceInfo> list,
+        String host, int port ) {
+
+        for (ClusterInstanceInfo info : list) {
+             for (SocketInfo si : info.endpoints()) {
+                 if (si.type().equals( CLEAR_TEXT )) {
+                     if (si.host().equals( host) && si.port() == port) {
+                         return true ;
+                     }
+                 }
+            }
+        }
+
+        return false ;
+    }
+
+    // Add those elements of the second list that do not contain a clear
+    // text address that appears in the first list.
+    private List<ClusterInstanceInfo> merge( List<ClusterInstanceInfo> first,
+        List<ClusterInstanceInfo> second ) {
+
+        List<ClusterInstanceInfo> result = new ArrayList<ClusterInstanceInfo>() ;
+        result.addAll( first ) ;
+        for (ClusterInstanceInfo info : second) {
+            for (SocketInfo si : info.endpoints()) {
+                if (!containsMatchingAddress(first, si.host(), si.port() )) {
+                    result.add( info ) ;
+                }
+            }
+        }
+        return result ;
+    }
+
+    private List<ClusterInstanceInfo> fromHostPortStrings( List<String> list ) {
+        List<ClusterInstanceInfo> result =
+            new LinkedList <ClusterInstanceInfo> ();
+
+        for( String elem : list) {
+            ClusterInstanceInfo info = makeClusterInstanceInfo( elem,
+                default_weight ) ;
+            result.add( info );
+        }
+
+        return result ;
+    }
+
+
+    //will be called after dynamic reconfig
+    // used in GroupInfoServiceObserverImpl
+    synchronized final void setClusterInstanceInfo(
+        List<ClusterInstanceInfo> list) {
+        fineLog( "setClusterInstanceInfo: list={0}", list ) ;
+
+        List<ClusterInstanceInfo> filtered = filterClusterInfo(list) ;
+        List<ClusterInstanceInfo> resolved = fromHostPortStrings( resolvedEndpoints ) ;
+
+        endpointsList = merge( filtered, resolved ) ;
+    }
+
+    // Note: regard any addresses supplied here as a permanent part of the
+    // cluster.
     synchronized final void setClusterInstanceInfoFromString(
         List<String> list) {
+        fineLog( "setClusterInstanceInfoFromString: list={0}", list ) ;
 
-        List<String> newList = null;
-	
-	//if no endpoints are specified as a system property,
-        //then look for JNDI provider url
-        //we are not looking for the host:port sys property
-        //because ORBManager assumes default values of localhost 
-	//and 3700
-        //localhost is an issue since it gives back both IPv4 and
-	// IPv6 addresses
-        //3700 is a problem since it is specifically used as a DAS port. 
-        //If resources are deployed to a cluster, they are not available
-	// to DAS. 
-        //So if the DAS host:port is used, 
-        //then it will definitely result in a NameNotFoundException
-	if (!list.isEmpty()) {
-	    newList = getAddressPortList(list);
-	} else {
+        List<String> newList = list;
+	if (newList.isEmpty()) {
 	    newList = getEndpointForProviderURL(
                 System.getProperty(ORBLocator.JNDI_PROVIDER_URL_PROPERTY));
 	}
@@ -227,20 +271,9 @@ public class RoundRobinPolicy {
 	if (!newList.isEmpty()) {
 	    List<String> newList2 = randomize(newList);
             resolvedEndpoints = new ArrayList<String>( newList2 ) ;
-	    List<ClusterInstanceInfo> targetServerList = 
-		new LinkedList <ClusterInstanceInfo> ();
-
-            for(String elem : newList2) {
-		if (notDuplicate(elem)) {
-		    targetServerList.add( makeClusterInstanceInfo( elem,
-                        default_weight));
-                }
-            }
-
-	    if (!targetServerList.isEmpty()) {
-		targetServerList.addAll(endpointsList);
-		setClusterInstanceInfo(targetServerList); 
-	    }
+	    endpointsList = fromHostPortStrings(newList2) ;
+            // Put in a default for total weight; any update will correct this.
+            totalWeight = 10*endpointsList.size() ;
 	} else {
 	    fineLog( "no.endpoints" );
 	}
@@ -267,24 +300,6 @@ public class RoundRobinPolicy {
 	return instanceInfo;
     }
 
-    /**
-    * find whether the string argument is already 
-    * present in the endpointsList vector
-    */
-    private synchronized boolean notDuplicate(String str) {
-	String[] host_port = str.split(":");
-	for (ClusterInstanceInfo cinfo : endpointsList) {
-            for (SocketInfo sinfo : cinfo.endpoints()) {
-                if (sinfo.host().equals( host_port[0] ) ||
-                    sinfo.port() == Integer.parseInt( host_port[1] )) {
-                    return false ;
-                }
-            }
-	}
-
-	return true;
-    }
-    
     /*
      * This method checks for other ways of specifying endpoints
      * namely JNDI provider url 
@@ -337,20 +352,20 @@ public class RoundRobinPolicy {
 	//But our range intervals are from 1-upperLimit, 
 	//11-upperLimit and so
 	//on. Hence we dont want random # to be 0.
-        fineLog( "RoundRobinPolicy.getNextRotation -> sumOfAllWeights = {0}",
-            totalWeight);
+        // fineLog( "RoundRobinPolicy.getNextRotation -> sumOfAllWeights = {0}",
+            // totalWeight);
 	while( random == 0) {
 	    random = rand.nextInt(totalWeight);
 	    if ( random != 0) {
 		break;
 	    }
 	}
-        fineLog( "getNextRotation : random # = {0} sum of all weights = {1}",
-            new Object[]{random, totalWeight});
+        // fineLog( "getNextRotation : random # = {0} sum of all weights = {1}",
+            // new Object[]{random, totalWeight});
 	int i = 0;
 	for (ClusterInstanceInfo endpoint : endpointsList) {
 	    int upperLimit = lowerLimit + endpoint.weight();
-            fineLog( "upperLimit = {0}", upperLimit);
+            // fineLog( "upperLimit = {0}", upperLimit);
 	    if (random > lowerLimit && random <= upperLimit) {
 		List<ClusterInstanceInfo> instanceInfo = 
 		    new LinkedList<ClusterInstanceInfo>();
@@ -365,13 +380,13 @@ public class RoundRobinPolicy {
                 endpointsList = instanceInfo ;
 
 		//print the contents...
-		fineLog( "returning the following list...{0}",
+		fineLog( "getNextRotation: result={0}",
                     instanceInfo.toString());
 		
 		return convertIntoCorbaloc(instanceInfo);
 	    }
 	    lowerLimit = upperLimit;
-	    fineLog( "lowerLimit = {0}", lowerLimit);
+	    // fineLog( "lowerLimit = {0}", lowerLimit);
 	    i++;    
 	}
 	warnLog("Could not find an endpoint to send request to!");

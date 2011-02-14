@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -88,6 +88,8 @@ public class ConnectorRegistry {
     protected final Map<String, Validator> beanValidators;
     protected final Map<ResourceInfo, Map<DynamicallyReconfigurableResource, Boolean>> resourceProxies;
     protected final Set<ResourceInfo> resourceInfos;
+    protected final Set<PoolInfo> transparentDynamicReconfigPools;
+    protected final Map<String, Object> locks;
 
     /**
      * Return the ConnectorRegistry instance
@@ -114,6 +116,8 @@ public class ConnectorRegistry {
         beanValidators = Collections.synchronizedMap(new HashMap<String, Validator>());
         resourceProxies = new HashMap<ResourceInfo, Map<DynamicallyReconfigurableResource, Boolean>>();
         resourceInfos = new HashSet<ResourceInfo>();
+        transparentDynamicReconfigPools = new HashSet<PoolInfo>();
+        locks = new HashMap<String, Object>();
         if(_logger.isLoggable(Level.FINE)) {
             _logger.log(Level.FINE, "initialized the connector registry");
         }
@@ -211,6 +215,46 @@ public class ConnectorRegistry {
     }
 
     /**
+     * Add PoolInfo that has transparent-dynamic-reconfiguration enabled .
+     * @param poolInfo Pool being deployed.
+     */
+    public void addTransparentDynamicReconfigPool(PoolInfo poolInfo){
+        if(poolInfo != null){
+            synchronized (transparentDynamicReconfigPools){
+                transparentDynamicReconfigPools.add(poolInfo);
+            }
+        }
+    }
+
+    /**
+     * Remove ResourceInfo from registry. Called when resource is disabled/undeployed.
+     * @param poolInfo poolInfo
+     * @return boolean indicating whether the pool exists and removed.
+     */
+    public boolean removeTransparentDynamicReconfigPool(PoolInfo poolInfo){
+        boolean removed = false;
+        if(poolInfo != null){
+            synchronized (transparentDynamicReconfigPools){
+                removed = transparentDynamicReconfigPools.remove(poolInfo);
+            }
+        }
+        return removed;
+    }
+
+    /**
+     * indicates whether the pool has transparent-dynamic-reconfiguration property enabled
+     * @param poolInfo poolInfo
+     * @return boolean false if pool is not deployed
+     */
+    public boolean isTransparentDynamicReconfigPool(PoolInfo poolInfo){
+        boolean isDeployed = false;
+        if(poolInfo != null){
+            isDeployed = transparentDynamicReconfigPools.contains(poolInfo);
+        }
+        return isDeployed;
+    }
+
+    /**
      * Removes the object implementing ActiveResourceAdapter
      * interface from the registry.
      * This method is called whenever an active connector module
@@ -263,6 +307,46 @@ public class ConnectorRegistry {
                             rarModuleName);
             }
             return null;
+        }
+    }
+
+    /**
+     * lock object that will be used by ResourceAdapterAdminService
+     * to avoid multiple calls to create ActiveRA for same resource-adapter
+     * @param rarName resource-adapter name
+     * @return lock object for the resource-adapter
+     */
+    public Object getLockObject(String rarName) {
+        if (rarName == null) {
+            return null;
+        }
+        Object lock;
+        synchronized (locks) {
+            lock = locks.get(rarName);
+            if (lock == null) {
+                lock = new Object();
+                locks.put(rarName, lock);
+                if (_logger.isLoggable(Level.FINE)) {
+                    _logger.fine("added lock-object [ " + lock + " ] for rar : " + rarName);
+                }
+            }
+        }
+        return lock;
+    }
+
+    /**
+     * removes the lock-object used for creating the ActiveRA for a particular RAR
+     * @param rarName resource-adapter
+     */
+    public void removeLockObject(String rarName) {
+        if (rarName == null) {
+            return;
+        }
+        synchronized (locks) {
+            Object lock = locks.remove(rarName);
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.fine("removed lock-object [ " + lock + " ] for rar : " + rarName);
+            }
         }
     }
 

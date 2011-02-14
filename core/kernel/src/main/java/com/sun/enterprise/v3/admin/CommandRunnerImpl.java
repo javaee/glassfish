@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -65,6 +65,7 @@ import org.glassfish.api.admin.*;
 import org.glassfish.common.util.admin.CommandModelImpl;
 import org.glassfish.common.util.admin.MapInjectionResolver;
 import org.glassfish.common.util.admin.UnacceptableValueException;
+import org.glassfish.common.util.admin.ManPageFinder;
 import org.glassfish.config.support.CommandTarget;
 import org.glassfish.config.support.GenericCrudCommand;
 import org.glassfish.config.support.TargetType;
@@ -614,19 +615,19 @@ public class CommandRunnerImpl implements CommandRunner {
 	    return "STRING";
     }
 
+    // XXX - "logger" should be static and this should be removed
+    private static final Logger manpagelogger =
+        LogDomains.getLogger(CommandRunnerImpl.class, LogDomains.ADMIN_LOGGER);
     /**
      * Return an InputStream for the man page for the named command.
      */
-    public static InputStream getManPage(String commandName, CommandModel model) {
+    public static BufferedReader getManPage(String commandName,
+                                                CommandModel model) {
         Class clazz = model.getCommandClass();
         if (clazz == null)
             return null;
-        Package pkg = clazz.getPackage();
-        String manPage = pkg.getName().replace('.', '/');
-        manPage += "/" + commandName + ".1";
-        ClassLoader loader = clazz.getClassLoader();
-        InputStream in = loader.getResourceAsStream(manPage);
-        return in;
+        return ManPageFinder.getCommandManPage(commandName, clazz.getName(),
+                    Locale.getDefault(), clazz.getClassLoader(), manpagelogger);
     }
 
     private void addParamUsage(
@@ -738,25 +739,11 @@ public class CommandRunnerImpl implements CommandRunner {
         return false;
     }
 
-    private static String encodeManPage(InputStream in) {
-        if (in == null)
-            return null;
-        BufferedReader r = null;
-        try {
-            // man pages are always utf-8
-            r = new BufferedReader(new InputStreamReader(in, "utf-8"));
-        } catch (UnsupportedEncodingException ex) {
-            // should never happen
-            r = new BufferedReader(new InputStreamReader(in));
-        }
-        return encodeManPage(r);
-    }
-
     private static String encodeManPage(BufferedReader br) {
-        try {
-            if (br == null)
-                return null;
+        if (br == null)
+            return null;
 
+        try {
             String line;
             StringBuilder sb = new StringBuilder();
 
@@ -853,7 +840,7 @@ public class CommandRunnerImpl implements CommandRunner {
             }
 
             if (isSet(parameters, "help") || isSet(parameters, "Xhelp")) {
-                InputStream in = getManPage(model.getCommandName(), model);
+                BufferedReader in = getManPage(model.getCommandName(), model);
                 String manPage = encodeManPage(in);
 
                 if (manPage != null && isSet(parameters, "help")) {
@@ -1127,7 +1114,7 @@ public class CommandRunnerImpl implements CommandRunner {
             }
 
         } catch (Exception ex) {
-            logger.severe(ex.getMessage());
+            logger.log(Level.SEVERE, "", ex);
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 report.setMessage(ex.getMessage());
                 report.setFailureCause(ex);

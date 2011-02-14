@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -142,7 +142,7 @@ public class PayloadImpl implements Payload {
                     );
 
             if (file.isDirectory() && isRecursive) {
-                String relativeURIPath = fileURI.getPath();
+                String relativeURIPath = fileURI.getRawPath();
                 if (relativeURIPath.endsWith("/")) {
                     relativeURIPath = relativeURIPath.substring(0, relativeURIPath.length() - 1);
                 }
@@ -158,7 +158,7 @@ public class PayloadImpl implements Payload {
             } else {
                 parts.add(Part.newInstance(
                         contentType,
-                        fileURI.getPath(),
+                        fileURI.getRawPath(),
                         enhancedProps,
                         (file.isDirectory()) ? null : file));
             }
@@ -186,7 +186,7 @@ public class PayloadImpl implements Payload {
              */
             parts.add(Part.newInstance(
                     "application/octet-stream", /* not much effect */
-                    fileURI.getPath(),
+                    fileURI.getRawPath(),
                     enhancedProps,
                     (String) null));
 
@@ -241,7 +241,7 @@ public class PayloadImpl implements Payload {
                     final URI fileURI = targetBaseDirRelURI.resolve(actualBaseDirAbsURI.relativize(f.toURI()));
                     parts.add(Part.newInstance(
                             contentType,
-                            fileURI.getPath(),
+                            fileURI.getRawPath(),
                             enhancedProps,
                             f));
                 }
@@ -255,7 +255,7 @@ public class PayloadImpl implements Payload {
                 final String dataRequestName,
                 final Properties enhancedProps,
                 final File dirFile) throws FileNotFoundException, IOException {
-            final String dirFileURIPath = dirFileURI.getPath();
+            final String dirFileURIPath = dirFileURI.getRawPath();
             parts.add(Part.newInstance(
                 "application/octet-stream", /* for the directory itself */
                 dirFileURIPath + (dirFileURIPath.endsWith("/") ? "" : "/"),
@@ -301,7 +301,7 @@ public class PayloadImpl implements Payload {
             enhancedProps.setProperty("data-request-is-recursive", Boolean.toString(isRecursive));
             parts.add(Part.newInstance(
                     "application/octet-stream", /* not much effect */
-                    fileURI.getPath(),
+                    fileURI.getRawPath(),
                     enhancedProps,
                     (String) null));
         }

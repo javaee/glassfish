@@ -86,7 +86,6 @@ public class GetCommand extends V2DottedNameSupport implements AdminCommand {
     private String pattern;
     @Inject(optional = true)
     private MonitoringRuntimeDataRegistry mrdr;
-    private final String DOTTED_NAME = ".dotted-name";
     final private static LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(GetCommand.class);
 

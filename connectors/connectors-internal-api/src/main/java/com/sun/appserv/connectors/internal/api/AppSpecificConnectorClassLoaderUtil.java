@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -111,39 +111,50 @@ public class AppSpecificConnectorClassLoaderUtil {
 
         Collection<BundleDescriptor> bundleDescriptors = app.getBundleDescriptors();
 
+        //TODO Similar reference checking mechanism is used in DataSourceDefinitionDeployer. Merge them ?
         //bundle descriptors
         for (BundleDescriptor bundleDesc : bundleDescriptors) {
-
             String moduleName = getModuleName(bundleDesc, app);
-
-            if (bundleDesc instanceof JndiNameEnvironment) {
-                processDescriptorForRAReferences(app, moduleName, bundleDesc);
+            processDescriptorForRAReferences(app, bundleDesc, moduleName);
+            Collection<RootDeploymentDescriptor> dds = bundleDesc.getExtensionsDescriptors();
+            if(dds != null){
+                for(RootDeploymentDescriptor dd : dds){
+                    processDescriptorForRAReferences(app, dd, moduleName);
+                }
             }
-            // ejb descriptors
-            if (bundleDesc instanceof EjbBundleDescriptor) {
-                EjbBundleDescriptor ejbDesc = (EjbBundleDescriptor) bundleDesc;
-                Set<EjbDescriptor> ejbDescriptors = ejbDesc.getEjbs();
-                for (EjbDescriptor ejbDescriptor : ejbDescriptors) {
-                    processDescriptorForRAReferences(app, moduleName, ejbDescriptor);
+        }
+    }
 
-                    if (ejbDescriptor instanceof EjbMessageBeanDescriptor) {
-                        EjbMessageBeanDescriptor messageBeanDesc = (EjbMessageBeanDescriptor) ejbDescriptor;
-                        String raMid = messageBeanDesc.getResourceAdapterMid();
-                        //there seem to be applications that do not specify ra-mid
-                        if (raMid != null) {
-                            app.addResourceAdapter(raMid);
-                        }
+    private void processDescriptorForRAReferences(Application app, Descriptor descriptor, String moduleName) {
+        if (descriptor instanceof JndiNameEnvironment) {
+            processDescriptorForRAReferences(app, moduleName, descriptor);
+        }
+        // ejb descriptors
+        if (descriptor instanceof EjbBundleDescriptor) {
+            EjbBundleDescriptor ejbDesc = (EjbBundleDescriptor) descriptor;
+            Set<EjbDescriptor> ejbDescriptors = ejbDesc.getEjbs();
+            for (EjbDescriptor ejbDescriptor : ejbDescriptors) {
+                processDescriptorForRAReferences(app, moduleName, ejbDescriptor);
+
+                if (ejbDescriptor instanceof EjbMessageBeanDescriptor) {
+                    EjbMessageBeanDescriptor messageBeanDesc = (EjbMessageBeanDescriptor) ejbDescriptor;
+                    String raMid = messageBeanDesc.getResourceAdapterMid();
+                    //there seem to be applications that do not specify ra-mid
+                    if (raMid != null) {
+                        app.addResourceAdapter(raMid);
                     }
                 }
-                //ejb interceptors
-                Set<EjbInterceptor> ejbInterceptors = ejbDesc.getInterceptors();
-                for (EjbInterceptor ejbInterceptor : ejbInterceptors) {
-                    processDescriptorForRAReferences(app, moduleName, ejbInterceptor);
-                }
-
             }
+            //ejb interceptors
+            Set<EjbInterceptor> ejbInterceptors = ejbDesc.getInterceptors();
+            for (EjbInterceptor ejbInterceptor : ejbInterceptors) {
+                processDescriptorForRAReferences(app, moduleName, ejbInterceptor);
+            }
+
+        }
+        if(descriptor instanceof BundleDescriptor){
             // managed bean descriptors
-            Set<ManagedBeanDescriptor> managedBeanDescriptors = bundleDesc.getManagedBeans();
+            Set<ManagedBeanDescriptor> managedBeanDescriptors = ((BundleDescriptor)descriptor).getManagedBeans();
             for (ManagedBeanDescriptor mbd : managedBeanDescriptors) {
                 processDescriptorForRAReferences(app, moduleName, mbd);
             }

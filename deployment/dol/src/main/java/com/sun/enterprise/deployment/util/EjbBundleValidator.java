@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -220,6 +220,10 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
 
             ClassLoader cl = ejb.getEjbBundleDescriptor().getClassLoader();
             Class ejbClass = cl.loadClass(ejb.getEjbClassName());
+
+            if (Globals.getDefaultHabitat() == null) {
+                return;
+            }
 
             // Perform 2.x style TimedObject processing if the class 
             // hasn't already been identified as a timed object.  
