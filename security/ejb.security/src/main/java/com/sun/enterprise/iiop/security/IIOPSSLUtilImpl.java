@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -146,31 +146,33 @@ public class IIOPSSLUtilImpl implements IIOPSSLUtil {
           return selector.getSSLSocketInfo(ior);
      }
      
-     public TaggedComponent createSSLTaggedComponent(IORInfo iorInfo, Object sInfos) {
-         List<com.sun.corba.ee.spi.folb.SocketInfo> socketInfos = (List<com.sun.corba.ee.spi.folb.SocketInfo>)sInfos;
-         orbHelper = Lookups.getGlassFishORBHelper(habitat);
-         TaggedComponent result = null;
-          org.omg.CORBA.ORB orb = orbHelper.getORB();
-            int sslMutualAuthPort = -1;
-            try {
-                sslMutualAuthPort = 
-		    ((com.sun.corba.ee.spi.legacy.interceptor.IORInfoExt)iorInfo).  
-			getServerPort("SSL_MUTUALAUTH");
-            } catch (com.sun.corba.ee.spi.legacy.interceptor.UnknownType ute) {
-                _logger.log(Level.FINE,".isnert: UnknownType exception", ute);
-            }
+    public TaggedComponent createSSLTaggedComponent(IORInfo iorInfo, Object sInfos) {
+        List<com.sun.corba.ee.spi.folb.SocketInfo> socketInfos =
+             (List<com.sun.corba.ee.spi.folb.SocketInfo>)sInfos;
+        orbHelper = Lookups.getGlassFishORBHelper(habitat);
+        TaggedComponent result = null;
+        org.omg.CORBA.ORB orb = orbHelper.getORB();
+        int sslMutualAuthPort = -1;
+        try {
+            sslMutualAuthPort = 
+	       ((com.sun.corba.ee.spi.legacy.interceptor.IORInfoExt)iorInfo).
+                getServerPort("SSL_MUTUALAUTH");
+        } catch (com.sun.corba.ee.spi.legacy.interceptor.UnknownType ute) {
+            _logger.log(Level.FINE,".isnert: UnknownType exception", ute);
+        }
 
-            if(_logger.isLoggable(Level.FINE)) {
-                _logger.log(Level.FINE, 
-                            ".insert: sslMutualAuthPort: " 
-                            + sslMutualAuthPort);
-            }
+        if(_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE, ".insert: sslMutualAuthPort: "
+            + sslMutualAuthPort);
+        }
 
-            CSIV2TaggedComponentInfo ctc = new CSIV2TaggedComponentInfo( orb,
-	    sslMutualAuthPort, habitat );
-	    EjbDescriptor desc = ctc.getEjbDescriptor(iorInfo) ;
-            result = ctc.createSecurityTaggedComponent(socketInfos,desc);  
-            return result;
+        CSIV2TaggedComponentInfo ctc = new CSIV2TaggedComponentInfo( orb,
+        sslMutualAuthPort, habitat );
+        EjbDescriptor desc = ctc.getEjbDescriptor(iorInfo) ;
+        if (desc != null) {
+            result = ctc.createSecurityTaggedComponent(socketInfos,desc);
+        }
+        return result;
      }
 
 }

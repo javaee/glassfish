@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2004-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2004-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -53,75 +53,16 @@ grant codeBase "file:${com.sun.aas.installRoot}/osgi/felix/bin/-" {
     permission java.security.AllPermission;
 };
 
-// jdmk classes get all permissions by default
-//grant codeBase "file:${com.sun.aas.jdmkHome}/lib/-" {
-//    permission java.security.AllPermission;
-//};
-
-// mfwk_instrum_tk.jar  get all permissions by default
-//grant codeBase "file:${com.sun.aas.mfwkHome}/lib/mfwk_instrum_tk.jar" {
-//    permission java.security.AllPermission;
-//};
-
-// lockhart classes get all permissions by default
-//grant codeBase "file:${com.sun.aas.webconsoleLib}/cc.jar" {
-//        permission java.security.AllPermission;
-//};
-
-// jato classes get all permissions by default
-//grant codeBase "file:${com.sun.aas.jatoRoot}/jato.jar" {
-//        permission java.security.AllPermission;
-//};
-
-// JBI get all permissions by default
-//grant codeBase "file:${com.sun.aas.installRoot}/jbi/-" {
-//    permission java.security.AllPermission;
-//};
-
-// JBI instances get all permissions by default
-//grant codeBase "file:${com.sun.aas.instanceRoot}/jbi/-" {
-//    permission java.security.AllPermission;
-//};
-
-// Composite applications get all permissions by default
-//grant codeBase "file:${com.sun.aas.instanceRoot}/applications/composite-applications/-" {
-//    permission java.security.AllPermission;
-//};
-
 // iMQ classes get all permissions by default
 grant codeBase "file:${com.sun.aas.imqLib}/-" {
     permission java.security.AllPermission;
 };
-
-// ANT classes get all permissions by default
-//grant codeBase "file:${com.sun.aas.antLib}/-" {
-//    permission java.security.AllPermission;
-//};
 
 // Derby driver classes get all permissions by default
 grant codeBase "file:${com.sun.aas.derbyRoot}/lib/-" {
     permission java.security.AllPermission;
 }; 
 
-// Pointbase embedded server classes get all permissions by default
-//grant codeBase "file:${com.sun.aas.pointbaseRoot}/lib/-" {
-//    permission java.security.AllPermission;
-//};
-
-// Web Services classes get all permissions by default
-//grant codeBase "file:${com.sun.aas.webServicesLib}/-" {
-//    permission java.security.AllPermission;
-//};
-
-// permissions for avkit classes
-//grant codeBase "file:${j2ee.appverification.home}/lib/-" {
-//    permission java.security.AllPermission;
-//};
-
-// permissions for HADB jar file(s)
-//grant codeBase "file:${com.sun.aas.hadbRoot}/lib/-" {
-//    permission java.security.AllPermission;
-//};
 
 // permission for JDK's tools.jar to enable webservice annotation processing
 // at runtime by wsgen tool: 

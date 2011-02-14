@@ -125,14 +125,14 @@ class OSGiServiceFactory {
             debug("service obtained from tracker" + service);
             if (service == null) {
                 throw new ServiceUnavailableException(
-                        "Service" + (((Class)serviceType).getName()) + "Unavailable", 
+                        "Service " + (((Class)serviceType).getName()) + " Unavailable", 
                         ServiceException.SUBCLASSED, null);
             } 
             return service;
         } catch (InterruptedException e) {
             e.printStackTrace();
             throw new ServiceUnavailableException("" +
-            		"Service" + (((Class)serviceType).getName()) + "Unavailable", 
+            		"Service " + (((Class)serviceType).getName()) + " Unavailable", 
             		ServiceException.SUBCLASSED, e);
         } finally {
 			if (st != null) st.close();
@@ -283,8 +283,8 @@ class OSGiServiceFactory {
 
         private void throwServiceUnavailable() {
             Type serviceType = svcInjectionPoint.getType();
-            throw new ServiceUnavailableException("Service"
-                    + (((Class) serviceType).getName()) + "Unavailable",
+            throw new ServiceUnavailableException("Service "
+                    + (((Class) serviceType).getName()) + " Unavailable",
                     ServiceException.SUBCLASSED, null);
         }
 

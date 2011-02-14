@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -51,10 +51,6 @@ import java.lang.annotation.Target;
 
 import javax.inject.Qualifier;
 
-@Qualifier
-@Target({ TYPE, METHOD, PARAMETER, FIELD })
-@Retention(RetentionPolicy.RUNTIME)
-
 /**
  * A CDI (JSR-299) Qualifier that indicates a reference to a
  * Service in the OSGi service registry that needs to be injected 
@@ -71,6 +67,10 @@ import javax.inject.Qualifier;
  * 
  * @author Sivakumar Thyagarajan
  */ 
+@Qualifier
+@Target({ TYPE, METHOD, PARAMETER, FIELD })
+@Retention(RetentionPolicy.RUNTIME)
+
 public @interface OSGiService {
     /**
      * Determines if the OSGi service that is to be injected refers to a 

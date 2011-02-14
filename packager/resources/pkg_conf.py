@@ -61,16 +61,16 @@
 # example, grizzly version would look like 1.8.2-0,0. 
 
 glassfish_version="3.1,0-${build.id}"
-felix_version="3.0.7,0-0"
+felix_version="3.0.8,0-0"
 javadb_version="10.5.3.0,0-0"
-corba_version="3.1.0,0-23"
-jsf_version="2.1.0,0-10"
+corba_version="3.2.0,0-2"
+jsf_version="2.1.0,0-11"
 grizzly_version="2.0.0-SNAPSHOT,0-0"
-metro_version="2.1,0-25"
+metro_version="2.1,0-30"
 javahelp_version="2.0.2,0-1"
-shoal_version="1.5.26,0-0"
+shoal_version="1.5.29,0-0"
 
 #description
 glassfish_description="GlassFish Application Server"
-glassfish_description_long="GlassFish is an application server created using modular, lightweight, extensible architecture built on OSGi.  It is the first implementation of Java EE 6 standard and is a great developer platform, starts fast, is easy to use and has extensions to support dynamic languages like jRuby. "
+glassfish_description_long="GlassFish Server is a modular, lightweight, and extensible Java EE 6 application server built on OSGi. Key features include fast startup time, improved developer productivity, hybrid OSGi/Java EE applications, high availability clustering, centralized administration, and overall ease-of-use. "
 glassfish_info_classification="Application Servers"

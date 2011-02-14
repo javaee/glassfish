@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -134,54 +134,19 @@ public abstract class BaseAuthConfigFactory extends AuthConfigFactory {
     public AuthConfigProvider
             getConfigProvider(String layer, String appContext,
 	    RegistrationListener listener) {
-	AuthConfigProvider provider = null;
-        String regisID = getRegistrationID(layer, appContext);
-        String matchedID = null;
+        AuthConfigProvider provider = null;
         if (listener == null) {
             rLock.lock();
+            try {
+                provider = getConfigProviderUnderLock(layer,appContext,null);
+            } finally {
+                rLock.unlock();
+            }
         } else {
             wLock.lock();
-        }
-        try {
-            boolean providerFound = false;
-            if (id2ProviderMap.containsKey(regisID)) {
-                provider = id2ProviderMap.get(regisID);
-                providerFound = true;
-            }
-            if (!providerFound) {
-                matchedID = getRegistrationID(null, appContext);
-                if (id2ProviderMap.containsKey(matchedID)) {
-                    provider = id2ProviderMap.get(matchedID);
-                    providerFound = true;
-                }
-            }
-            if (!providerFound) {
-                matchedID = getRegistrationID(layer, null);
-                if (id2ProviderMap.containsKey(matchedID)) {
-                    provider = id2ProviderMap.get(matchedID);
-                    providerFound = true;
-                }
-            }
-            if (!providerFound) {
-                matchedID = getRegistrationID(null, null);
-                if (id2ProviderMap.containsKey(matchedID)) {
-                    provider = id2ProviderMap.get(matchedID);
-                }
-            }
-            if (listener != null) {
-                List<RegistrationListener> listeners = id2RegisListenersMap.get(regisID);
-                if (listeners == null) {
-                    listeners = new ArrayList<RegistrationListener>();
-                    id2RegisListenersMap.put(regisID, listeners);
-                }
-                if (!listeners.contains(listener)) {
-                    listeners.add(listener);
-                }
-            }
-        } finally {
-            if (listener == null) {
-                rLock.unlock();
-            } else {
+            try {
+                provider = getConfigProviderUnderLock(layer,appContext,listener);
+            } finally {
                 wLock.unlock();
             }
         }
@@ -419,6 +384,52 @@ public abstract class BaseAuthConfigFactory extends AuthConfigFactory {
             notifyListeners(preExistingListenersMap);
         }
     }
+
+    private AuthConfigProvider
+	getConfigProviderUnderLock(String layer, String appContext, 
+            RegistrationListener listener) {
+	AuthConfigProvider provider = null;
+        String regisID = getRegistrationID(layer, appContext);
+        String matchedID = null;
+        boolean providerFound = false;
+        if (id2ProviderMap.containsKey(regisID)) {
+            provider = id2ProviderMap.get(regisID);
+            providerFound = true;
+        }
+        if (!providerFound) {
+            matchedID = getRegistrationID(null, appContext);
+            if (id2ProviderMap.containsKey(matchedID)) {
+                provider = id2ProviderMap.get(matchedID);
+                providerFound = true;
+            }
+        }
+        if (!providerFound) {
+            matchedID = getRegistrationID(layer, null);
+            if (id2ProviderMap.containsKey(matchedID)) {
+                provider = id2ProviderMap.get(matchedID);
+                providerFound = true;
+            }
+        }
+        if (!providerFound) {
+            matchedID = getRegistrationID(null, null);
+            if (id2ProviderMap.containsKey(matchedID)) {
+                provider = id2ProviderMap.get(matchedID);
+            }
+        }
+        if (listener != null) {
+            List<RegistrationListener> listeners = id2RegisListenersMap.get(regisID);
+            if (listeners == null) {
+                listeners = new ArrayList<RegistrationListener>();
+                id2RegisListenersMap.put(regisID, listeners);
+            }
+            if (!listeners.contains(listener)) {
+                listeners.add(listener);
+            }
+        }
+
+        return provider;
+    }
+
 
     private static String getRegistrationID(String layer, String appContext) {
         String regisID = null;

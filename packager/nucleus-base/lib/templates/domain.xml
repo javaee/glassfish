@@ -190,6 +190,8 @@
         <jvm-options>-Djdbc.drivers=org.apache.derby.jdbc.ClientDriver</jvm-options>
 		<jvm-options>-DANTLR_USE_DIRECT_CLASS_LOADING=true</jvm-options>
         <jvm-options>-Dcom.sun.enterprise.config.config_environment_factory_class=com.sun.enterprise.config.serverbeans.AppserverConfigEnvironmentFactory</jvm-options>
+        <!-- Configure post startup bundle list here. This is a comma separated list of bundle sybolic names. -->
+        <jvm-options>-Dorg.glassfish.additionalOSGiBundlesToStart=org.apache.felix.shell,org.apache.felix.gogo.runtime,org.apache.felix.gogo.shell,org.apache.felix.gogo.command,org.apache.felix.shell.remote,org.apache.felix.fileinstall</jvm-options>
         <!-- Configuration of various third-party OSGi bundles like
              Felix Remote Shell, FileInstall, etc. -->
         <!-- Port on which remote shell listens for connections.-->
@@ -199,7 +201,7 @@
         <!-- From which hosts users can connect -->
         <jvm-options>-Dosgi.shell.telnet.ip=127.0.0.1</jvm-options>
         <!-- Gogo shell configuration -->
-        <jvm-options>-Dgosh.args=--noshutdown -c noop=true</jvm-options>
+        <jvm-options>-Dgosh.args=--nointeractive</jvm-options>
         <!-- Directory being watched by fileinstall. -->
         <jvm-options>-Dfelix.fileinstall.dir=${com.sun.aas.installRoot}/modules/autostart/</jvm-options>
         <!-- Time period fileinstaller thread in ms. -->
@@ -366,6 +368,9 @@
              <jvm-options>-Dcom.sun.enterprise.config.config_environment_factory_class=com.sun.enterprise.config.serverbeans.AppserverConfigEnvironmentFactory</jvm-options>
              <jvm-options>-XX:NewRatio=2</jvm-options>
              <jvm-options>-Xmx512m</jvm-options>
+             <!-- Configure post startup bundle list here. This is a comma separated list of bundle sybolic names.
+                  The remote shell bundle has been disabled for cluster and remote instances. -->
+             <jvm-options>-Dorg.glassfish.additionalOSGiBundlesToStart=org.apache.felix.shell,org.apache.felix.gogo.runtime,org.apache.felix.gogo.shell,org.apache.felix.gogo.command,org.apache.felix.fileinstall</jvm-options>
              <!-- Port on which remote shell listens for connections.-->
              <jvm-options>-Dosgi.shell.telnet.port=${OSGI_SHELL_TELNET_PORT}</jvm-options>
              <!-- How many concurrent users can connect to this remote shell -->

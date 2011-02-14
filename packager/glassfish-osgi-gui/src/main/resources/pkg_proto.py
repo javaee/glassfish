@@ -3,7 +3,7 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
 #
 # The contents of this file are subject to the terms of either the GNU
 # General Public License Version 2 only ("GPL") or the Common Development
@@ -49,7 +49,7 @@ pkg = {
     "version"       : conf.glassfish_version,
     "attributes"    : {
                         "pkg.summary" : "GlassFish OSGi Admin Console",
-                        "pkg.description" : "GlassFish OSGi Admin Console installs bundles required to run web based administration console for OSGi runtime. "+conf.glassfish_description_long,
+                        "pkg.description" : "GlassFish OSGi Admin Console provides bundles required to run a web based administration console for the OSGi runtime. "+conf.glassfish_description_long,
                         "info.classification" : conf.glassfish_info_classification,
                       },
     "depends"       : { 

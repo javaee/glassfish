@@ -42,10 +42,12 @@ package org.glassfish.osgicdi.impl;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -197,12 +199,22 @@ public class OSGiServiceExtension implements Extension{
      */
     private void addBean(AfterBeanDiscovery abd, final Type type, 
             final Set<InjectionPoint> injectionPoints) {
+        List<OSGiService> registeredBeans = new ArrayList<OSGiService>();
         for (Iterator<InjectionPoint> iterator = injectionPoints.iterator(); iterator
                 .hasNext();) {
             final InjectionPoint svcInjectionPoint = iterator.next();
-            System.out.println(" --- Adding an OSGi service BEAN " 
-                    + type + " for " + svcInjectionPoint);
-            abd.addBean(new OSGiServiceBean(svcInjectionPoint));
+            if (!registeredBeans.contains(svcInjectionPoint.getAnnotated().getAnnotation(OSGiService.class))) {
+                debug(" --- Adding an OSGi service BEAN " 
+                        + type + " for " + svcInjectionPoint);
+                abd.addBean(new OSGiServiceBean(svcInjectionPoint));
+                registeredBeans.add(svcInjectionPoint.getAnnotated().getAnnotation(OSGiService.class));
+            } else {
+                debug(" --- NOT Adding an OSGi service BEAN " 
+                        + type + " for " + svcInjectionPoint 
+                        + "as there has already been one registered for" 
+                        + svcInjectionPoint.getAnnotated().getAnnotation(OSGiService.class));
+                
+            }
         }
     }
     

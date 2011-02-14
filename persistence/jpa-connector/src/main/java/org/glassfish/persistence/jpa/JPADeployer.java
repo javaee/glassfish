@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,6 +42,7 @@ package org.glassfish.persistence.jpa;
 
 import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
 import com.sun.enterprise.deployment.*;
+import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.event.EventListener;
@@ -82,6 +83,9 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPApplicationConta
 
     @Inject
     private ServerEnvironmentImpl serverEnvironment;
+
+    @Inject
+    private volatile StartupContext sc = null;
 
     @Inject
     private Events events;
@@ -196,9 +200,16 @@ public class JPADeployer extends SimpleDeployer<JPAContainer, JPApplicationConta
             @Override void visitPUD(PersistenceUnitDescriptor pud, DeploymentContext context) {
                 if(referencedPus.contains(pud)) {
                     boolean isDas = isDas();
-                    ProviderContainerContractInfo providerContainerContractInfo = serverEnvironment.isEmbedded() ?
-                            new EmbeddedProviderContainerContractInfo(context, connectorRuntime, isDas) :
-                            new ServerProviderContainerContractInfo(context, connectorRuntime, isDas);
+
+                    // While running in embedded mode, it is not possible to guarantee that entity classes are not loaded by the app classloader before transformers are installed
+                    // If that happens, weaving will not take place and EclipseLink will throw up. Provide users an option to disable weaving by passing the flag.
+                    // Note that we enable weaving if not explicitly disabled by user
+                    boolean weavingEnabled = Boolean.valueOf(sc.getArguments().getProperty("org.glassfish.persistence.embedded.weaving.enabled", "true"));
+
+                    ProviderContainerContractInfo providerContainerContractInfo = weavingEnabled ?
+                            new ServerProviderContainerContractInfo(context, connectorRuntime, isDas) :
+                            new EmbeddedProviderContainerContractInfo(context, connectorRuntime, isDas);
+
                     PersistenceUnitLoader puLoader = new PersistenceUnitLoader(pud, providerContainerContractInfo);
                     // Store the puLoader in context. It is retrieved to execute java2db and to
                     // store the loaded emfs in a JPAApplicationContainer object for cleanup
