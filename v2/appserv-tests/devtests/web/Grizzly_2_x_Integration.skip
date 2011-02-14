@@ -1,6 +1,4 @@
 cometEcho  #  until we can integrate the grizzly 2.0 changes to the glassfish trunk
-dosBrokenPost
-dosSlowClient
 httpListenerAdminReconfig
 portUnification
 portUnificationTarget
@@ -8,4 +6,4 @@ wrongTransport
 wrongTransportTarget
 configUpgrades
 ha/ssoFailover
-gen-doc-schema  #until the HA stuff is upgraded
+asadminDeletesTarget
