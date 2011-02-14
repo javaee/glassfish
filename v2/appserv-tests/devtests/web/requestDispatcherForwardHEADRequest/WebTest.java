@@ -58,7 +58,7 @@ public class WebTest {
         = "request-dispatcher-forward-head-request";
 
     private static final String EXPECTED_CONTENT_LENGTH_HEADER
-        = "Content-Length: 11";
+        = "content-length: 11";
 
     private String host;
     private String port;
@@ -113,7 +113,7 @@ public class WebTest {
                 if (firstLine == null) {
                     firstLine = line;
                 }
-                if (EXPECTED_CONTENT_LENGTH_HEADER.equals(line)) {
+                if (EXPECTED_CONTENT_LENGTH_HEADER.equals(line.toLowerCase().trim())) {
                     break;
                 }
             }
