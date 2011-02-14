@@ -44,10 +44,6 @@ import com.thoughtworks.selenium.Selenium;
 import com.thoughtworks.selenium.SeleniumException;
 import org.junit.*;
 import org.openqa.selenium.*;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.ie.InternetExplorerDriver;
 
 import java.io.*;
 import java.math.BigInteger;
@@ -55,33 +51,33 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.security.SecureRandom;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 
 public class BaseSeleniumTestClass {
     public static final String CURRENT_WINDOW = "selenium.browserbot.getCurrentWindow()";
+    public static final int TIMEOUT_CALLBACK_LOOP = 1000;
     public static final String TRIGGER_NEW_VALUES_SAVED = "New values successfully saved.";
     public static final String TRIGGER_COMMON_TASKS = "Other Tasks";
     public static final String TRIGGER_REGISTRATION_PAGE = "Receive patch information and bug updates, screencasts and tutorials, support and training offerings, and more";
     public static final String TRIGGER_ERROR_OCCURED = "An error has occurred";
-    public static boolean DEBUG = Boolean.parseBoolean(getParameter("debug", "false"));
+    public static final boolean DEBUG = Boolean.parseBoolean(SeleniumHelper.getParameter("debug", "false"));
 
     @Rule
     public SpecificTestRule specificTestRule = new SpecificTestRule();
 
     protected static final int TIMEOUT = 90;
     protected static final int BUTTON_TIMEOUT = 750;
-    protected Logger logger = Logger.getLogger(BaseSeleniumTestClass.class.getName());
+    protected static final Logger logger = Logger.getLogger(BaseSeleniumTestClass.class.getName());
     
     private static Selenium selenium;
     private static WebDriver driver;
     private static String currentTestClass = "";
-    private static int currentScreenshotNumber = 1;
     private boolean processingLogin = false;
     private static final String AJAX_INDICATOR = "ajaxIndicator";
-    
-    
-    private static Map<String, String> bundles = new HashMap<String, String>() {{
+    private static final Map<String, String> bundles = new HashMap<String, String>() {{
         put("i18n", "org.glassfish.admingui.core.Strings"); // core
         put("i18nUC", "org.glassfish.updatecenter.admingui.Strings"); // update center
         put("i18n_corba", "org.glassfish.corba.admingui.Strings");
@@ -99,39 +95,29 @@ public class BaseSeleniumTestClass {
         put("i18njms", "org.glassfish.jms.admingui.Strings"); // JMS
         put("theme", "org.glassfish.admingui.community-theme.Strings");
 
-        // These conflict with core and should probably be changed in the pages
+        // TODO: These conflict with core and should probably be changed in the pages
         //put("i18n", "org.glassfish.common.admingui.Strings");
         //put("i18n", "org.glassfish.web.admingui.Strings");
         //put("i18nc", "org.glassfish.web.admingui.Strings");
     }};
+    private static final SeleniumHelper helper = SeleniumHelper.getInstance();
+    private ElementFinder elementFinder;
     
-    
+    public BaseSeleniumTestClass() {
+        driver = helper.getDriver();
+        selenium = helper.getSeleniumInstance();
+        elementFinder = helper.getElementFinder();
+
+        if (Boolean.parseBoolean(SeleniumHelper.getParameter("slowDown", "false"))) {
+            driver.manage().timeouts().implicitlyWait(500, TimeUnit.MILLISECONDS);
+        }
+    }
+
+
     @BeforeClass
     public static void setUp() throws Exception {
-        String browser = getParameter("browser", "firefox");
-        String port = getParameter("admin.port", "4848");
-        String baseUrl = "http://localhost:" + port;
-        DEBUG = new Boolean(getParameter("debug", "false"));
-        currentScreenshotNumber = 1;
-        
-        if ("firefox".equals(browser)) {
-            driver = new FirefoxDriver();
-        } else if ("chrome".equals(browser)) {
-            driver = new ChromeDriver();
-        } else if ("ie".contains(browser)) {
-            driver = new InternetExplorerDriver();
-        }
-
-        if (selenium == null) {
-            selenium = new WebDriverBackedSelenium(driver, baseUrl);
-//                    DefaultSelenium("localhost", Integer.parseInt(seleniumPort), "*" + browser, baseUrl);
-//            selenium.start();
-            selenium.setTimeout("90000");
-            (new BaseSeleniumTestClass()).openAndWait("/", TRIGGER_COMMON_TASKS, 480); // Make sure the server has started and the user logged in
-        }
-
         if (!DEBUG) {
-            URL rotateLogUrl = new URL(baseUrl + "/management/domain/rotate-log");
+            URL rotateLogUrl = new URL(helper.getBaseUrl() + "/management/domain/rotate-log");
             URLConnection conn = rotateLogUrl.openConnection();
             conn.setDoOutput(true);
             OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
@@ -150,12 +136,10 @@ public class BaseSeleniumTestClass {
     @AfterClass
     public static void captureLog() {
         try {
-            selenium.stop();
-            selenium = null;
+            helper.releaseSeleniumInstance();
 
             if (!currentTestClass.isEmpty() && !DEBUG) {
-                URL url = new URL("http://localhost:" + getParameter("admin.port", "4848") + "/management/domain/view-log");
-    //            URLConnection urlC = url.openConnection();
+                URL url = new URL("http://localhost:" + SeleniumHelper.getParameter("admin.port", "4848") + "/management/domain/view-log");
                 InputStream is = url.openStream();
                 PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("target/surefire-reports/" + currentTestClass + "-server.log")));
                 BufferedReader in = new BufferedReader(new InputStreamReader(is));
@@ -176,8 +160,16 @@ public class BaseSeleniumTestClass {
 
     @Before
     public void reset() {
+        selenium = helper.getSeleniumInstance();
         currentTestClass = this.getClass().getName();
-        clickAndWait("treeForm:tree:ct", TRIGGER_COMMON_TASKS);
+        openAndWait("/", TRIGGER_COMMON_TASKS);
+    }
+    
+    @After
+    public void afterTest() {
+        if (Boolean.parseBoolean(SeleniumHelper.getParameter("releaseAfter", "false"))) {
+            helper.releaseSeleniumInstance();
+        }
     }
     
     // *************************************************************************
@@ -261,7 +253,7 @@ public class BaseSeleniumTestClass {
             label = resolveTriggerText(label);
             selenium.select(id, "label="+label);
         } catch (SeleniumException se) {
-            logger.info("An invalid option was requested.  Here are the valid options:");
+            logger.log(Level.INFO, "An invalid option was requested.  Here are the valid options:");
             for (String option : selenium.getSelectOptions(id)) {
                 logger.log(Level.INFO, "\t{0}", option);
             }
@@ -317,7 +309,11 @@ public class BaseSeleniumTestClass {
     }
     
     protected String getConfirmation() {
-        return selenium.getConfirmation();
+        String confirmation = null;
+        if (isConfirmationPresent()) {
+            confirmation = selenium.getConfirmation();
+        }
+        return confirmation;
     }
     
     protected void waitForPopUp(String windowId, String timeout) {
@@ -390,7 +386,7 @@ public class BaseSeleniumTestClass {
     }
 
     protected void clickAndWait(String id, String triggerText, int seconds) {
-        log ("Clicking on {0} and waiting for \'{1}\'", id, triggerText);
+        log ("Clicking on {0} \"{1}\"", id, triggerText);
         insureElementIsVisible(id);
         pressButton(id);
         waitForPageLoad(triggerText, seconds);
@@ -451,22 +447,28 @@ public class BaseSeleniumTestClass {
     }
     
     protected void waitForLoad(int timeoutInSeconds, WaitForLoadCallBack callback) {
-        for (int halfSeconds = 0;; halfSeconds++) {
-            if (halfSeconds >= (timeoutInSeconds*2)) {
+        for (int seconds = 0;; seconds++) {
+            if (seconds >= (timeoutInSeconds)) {
                 Assert.fail("The operation timed out waiting for the page to load.");
             }
 
-            try {
-                RenderedWebElement ajaxPanel = (RenderedWebElement) driver.findElement(By.id(AJAX_INDICATOR));
-                if (!ajaxPanel.isDisplayed()) {
-                    if (callback.executeTest()) {
-                        break;
-                    }
+            RenderedWebElement ajaxPanel = (RenderedWebElement)
+                    elementFinder.findElement(By.id(AJAX_INDICATOR), TIMEOUT,
+                    new ExpectedCondition<Boolean>() {
+                @Override
+                public Boolean apply(WebDriver driver) {
+                    RenderedWebElement ajaxPanel = (RenderedWebElement) driver.findElement(By.id(AJAX_INDICATOR));
+                    return !ajaxPanel.isDisplayed();
                 }
-            } catch (NoSuchElementException nse) {
-            }
 
-            sleep(500);
+            });
+//                if (!ajaxPanel.isDisplayed()) {
+                if (callback.executeTest()) {
+                    break;
+                }
+//                }
+
+            sleep(TIMEOUT_CALLBACK_LOOP);
         }
     }
 
@@ -509,17 +511,13 @@ public class BaseSeleniumTestClass {
 
     protected void rowActionWithConfirm(String buttonId, String tableId, String triggerText, String selectColId, String valueColId) {
         // A defensive getConfirmation()
-        if (isConfirmationPresent()) {
-            getConfirmation();
-        }
+        getConfirmation();
         chooseOkOnNextConfirmation();
         selectTableRowByValue(tableId, triggerText, selectColId, valueColId);
         sleep(500); // argh!
         waitForButtonEnabled(buttonId);
         pressButton(buttonId);
-        if (isConfirmationPresent()) {
-            getConfirmation();
-        }
+        getConfirmation();
         sleep(500); // argh!
         waitForButtonDisabled(buttonId);
     }
@@ -534,7 +532,8 @@ public class BaseSeleniumTestClass {
      * @return
      */
     protected String getLinkIdByLinkText(String baseId, String value) {
-        WebElement link = driver.findElement(By.linkText(value));
+        WebElement link = elementFinder.findElement(By.linkText(value), TIMEOUT);
+                //driver.findElement(By.linkText(value));
         return (link == null) ?  null : (String)link.getAttribute("id");
         /*
         String[] links = selenium.getAllLinks();
@@ -596,12 +595,20 @@ public class BaseSeleniumTestClass {
     
     private void selectTableRow(String rowId, String colId) {
         boolean rowHighlighted = false;
-        
-        while (!rowHighlighted) {
+
+        int iterations = 0;
+        this.log("Clicking on {0} in row {1} and making it sure it is highlighted", colId, rowId);
+        while (!rowHighlighted && (iterations <= 50)) {
             selenium.click(rowId + ":" + colId + ":select");
             markCheckbox(rowId + ":" + colId + ":select");
+            sleep(500);
             String rowClass = selenium.getAttribute("identifier="+rowId+"@class");
             rowHighlighted = ((rowClass != null) && (rowClass.contains("TblSelRow_sun4")));
+            iterations++;
+        }
+
+        if (iterations >= 50) {
+            throw new RuntimeException("Timed out wait for row in " + rowId + " to be selected.");
         }
     }
 
@@ -611,9 +618,7 @@ public class BaseSeleniumTestClass {
         waitForButtonEnabled(deleteButtonId);
         chooseOkOnNextConfirmation();
         pressButton(deleteButtonId);
-        if (isConfirmationPresent()) {
-            getConfirmation();
-        }
+        getConfirmation();
         this.waitForButtonDisabled(deleteButtonId);
     }
     
@@ -762,6 +767,7 @@ public class BaseSeleniumTestClass {
             String tableTriggerText,
             String editTriggerText,
             String state) {
+        sleep(TIMEOUT_CALLBACK_LOOP); // yuck
         selectTableRowByValue(tableId, resourceName);
         waitForButtonEnabled(enableButtonId);
         pressButton(enableButtonId);
@@ -883,12 +889,6 @@ public class BaseSeleniumTestClass {
         }
     }
 
-    protected static String getParameter(String paramName, String defaultValue) {
-        String value = System.getProperty(paramName);
-
-        return value != null ? value : defaultValue;
-    }
-    
     protected String resolveTriggerText(String original) {
         String triggerText = original;
         int index = original.indexOf(".");
@@ -925,7 +925,8 @@ public class BaseSeleniumTestClass {
         }
         
         try {
-            RenderedWebElement element = (RenderedWebElement) driver.findElement(By.id(id));
+            RenderedWebElement element = (RenderedWebElement) elementFinder.findElement(By.id(id), TIMEOUT);
+                    //driver.findElement(By.id(id));
             if (element.isDisplayed()) {
                 return;
             }
@@ -934,7 +935,8 @@ public class BaseSeleniumTestClass {
         }
         
         final String parentId = id.substring(0, id.lastIndexOf(":"));
-        final RenderedWebElement parentElement = (RenderedWebElement)driver.findElement(By.id(parentId));
+        final RenderedWebElement parentElement = (RenderedWebElement) elementFinder.findElement(By.id(parentId), TIMEOUT);
+//                driver.findElement(By.id(parentId));
         if (!parentElement.isDisplayed()) {
             insureElementIsVisible(parentId);
             String grandParentId = parentId.substring(0, parentId.lastIndexOf(":"));
@@ -1036,7 +1038,10 @@ public class BaseSeleniumTestClass {
         public boolean executeTest() {
 //            String attr = selenium.getEval("this.browserbot.findElement('id=" + buttonId + "').disabled"); // "Classic" Selenium
             try {
-                String attr = driver.findElement(By.id(buttonId)).getAttribute("disabled"); // WebDriver-backed Selenium
+                String attr = 
+                        elementFinder.findElement(By.id(buttonId), TIMEOUT)
+//                        driver.findElement(By.id(buttonId))
+                        .getAttribute("disabled"); // WebDriver-backed Selenium
                 return (Boolean.parseBoolean(attr) == desiredState);
             } catch (Exception ex) {
                 return true;// ???

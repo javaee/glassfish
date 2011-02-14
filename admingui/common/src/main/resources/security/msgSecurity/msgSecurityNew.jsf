@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -64,7 +64,7 @@
 #include "/common/shared/alertMsg.inc"
 
         <!-- Page Title -->
-        <sun:title id="propertyContentPage" title="$resource{i18nc.headings.NewMsgSecurity}" helpText="$resource{i18nc.msgSecurity.NewMsgSecurityInfo}}">
+        <sun:title id="propertyContentPage" title="$resource{i18nc.headings.NewMsgSecurity}" helpText="$resource{i18nc.msgSecurity.NewMsgSecurityInfo}">
 <!facet pageButtonsTop>
         <sun:panelGroup id="topButtons">
             <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
@@ -83,8 +83,9 @@
                     mapPut(map="#{pageSession.securityConfigMap}" key="providername" value="#{pageSession.valueMap['Name']}");
                     mapPut(map="#{pageSession.securityConfigMap}" key="providertype" value="#{pageSession.valueMap['ProviderType']}");
                     mapPut(map="#{pageSession.securityConfigMap}" key="classname" value="#{pageSession.valueMap['ClassName']}");
-                    gf.createEntity(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/security-service/message-security-config" attrs="#{pageSession.securityConfigMap}");
-                    setPageSessionAttribute(key="selfUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/security-service/message-security-config/#{pageSession.securityConfigMap['layer']}/provider-config/#{pageSession.securityConfigMap['providername']}");
+                    mapPut(map="#{pageSession.securityConfigMap}" key="target" value="#{pageSession.configName}");
+                    gf.restRequest(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/security-service/message-security-config" attrs="#{pageSession.securityConfigMap}");
+                    setPageSessionAttribute(key="selfUrl", value="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/security-service/message-security-config/#{pageSession.valueMap['AuthLayer']}/provider-config/#{pageSession.valueMap['Name']}");
                     javaToJSON(obj="#{pageSession.tableList}" json="#{requestScope.tmpJSON}");
 		    gf.restRequest(endpoint="#{pageSession.selfUrl}/property.json" method="POST" data="#{requestScope.tmpJSON}" result="#{requestScope.restResponse}");
                     gf.redirect(page="#{pageSession.parentPage}?configName=#{configName}")

@@ -299,6 +299,7 @@ public class NodeTest extends BaseSeleniumTestClass {
         assertEquals("new-NodeDirectoryCC", getFieldValue(ID_NODEDIRECTORY_FIELD));
         assertEquals("/new-ProductRoot", getFieldValue(ID_CONFIG_INSTALLDIR_FIELD));
 
+        reset();
         clickAndWait(ID_NODE_TREE_LINK, TRIGGER_NODES_PAGE);
         deleteRow(ID_DELETE_NODE_BUTTON, "propertyForm:nodesTable", nodeName);
     }
@@ -318,9 +319,11 @@ public class NodeTest extends BaseSeleniumTestClass {
         assertTrue(isTextPresent("An error has occurred"));
 
         //cleanup
+        reset();
         clickAndWait(ID_STANDALONE_TREE_LINK, TRIGGER_INSTANCES_PAGE);
         deleteRow("propertyForm:instancesTable:topActionsGroup1:button1", "propertyForm:instancesTable", instanceName);
 
+        reset();
         clickAndWait(ID_NODE_TREE_LINK, TRIGGER_NODES_PAGE);
         deleteRow(ID_DELETE_NODE_BUTTON, "propertyForm:nodesTable", nodeName);
     }

@@ -273,6 +273,9 @@ public class RestUtil {
                     Map dataMap = (Map)responseMap.get("data");
                     if (dataMap != null) {
                         message = getMessage(dataMap);
+                        if (message == null){
+                            message = "";
+                        }
                         List<Map> subReports = (List<Map>)dataMap.get("subReports");
                         if (subReports != null){
                             for( Map oneSubReport : subReports){
@@ -315,8 +318,13 @@ public class RestUtil {
                                 //If handlerCtx is not passed in, it means the caller (java handler) wants to handle this exception itself.
                                 throw new RuntimeException(message);
                             }
+                        } else { // Issue Number :13312 handling the case when throwException is false.
+                            if (!quiet) {
+                                GuiUtil.getLogger().severe(GuiUtil.getCommonMessage("LOG_REQUEST_RESULT", new Object[]{exitCode, endpoint, attrs}));
+                                GuiUtil.getLogger().finest("response.getResponseBody(): " + response.getResponseBody());
+                            }
+                            return responseMap;
                         }
-                        break;
                     }
                     case WARNING: {
                         GuiUtil.prepareAlert("warning", GuiUtil.getCommonMessage("msg.command.warning"), message);

@@ -67,6 +67,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.glassfish.admingui.common.util.RestResponse;
 import org.jvnet.hk2.component.Habitat;
 import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.enterprise.config.serverbeans.SecureAdmin;
 import com.sun.enterprise.security.SecurityServicesUtil;
 import org.glassfish.admingui.common.util.RestUtil;
 
@@ -107,7 +108,7 @@ public class AdminConsoleAuthModule implements ServerAuthModule {
      *	    information needed to continue is present.</p>
      */
     public void initialize(MessagePolicy requestPolicy, MessagePolicy responsePolicy, CallbackHandler handler, Map options) throws AuthException {
-	this.handler = handler;
+        this.handler = handler;
 	if (options != null) {
 	    // Save the REST URL we need to authenticate the user.
 	    this.restURL = (String) options.get("restAuthURL");
@@ -128,13 +129,19 @@ public class AdminConsoleAuthModule implements ServerAuthModule {
 		    + "must be supplied as a property in the provider-config "
 		    + "in the domain.xml file!");
 	    }
+            Habitat habitat = SecurityServicesUtil.getInstance().getHabitat();
             if (restURL.contains(TOKEN_ADMIN_LISTENER_PORT)) {
-                Habitat habitat = SecurityServicesUtil.getInstance().getHabitat();
                 Domain domain = habitat.getComponent(Domain.class);
                 String port = domain.getServerNamed("server").getConfig().getNetworkConfig().getNetworkListener("admin-listener").getPort();
                 restURL = restURL.replace(TOKEN_ADMIN_LISTENER_PORT, port);
             }
-	}
+
+            //If secure admin is enabled, we need to ensure using https
+            SecureAdmin secureAdmin = habitat.getComponent(SecureAdmin.class);
+            if (restURL.startsWith("http:") && (SecureAdmin.Util.isEnabled(secureAdmin))) {
+                    restURL = restURL.replace("http:", "https:");
+            }
+        }
     }
 
     /**

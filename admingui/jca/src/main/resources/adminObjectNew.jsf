@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -81,6 +81,7 @@
             currentMap="#{pageSession.valueMap}"
             valueMap=>$pageSession{valueMap});
         //To get the resource types
+      if ("#{pageSession.valueMap.resAdapter}"){
         createMap(result="#{pageSession.attrsMap}");
         mapPut(map="#{pageSession.attrsMap}" key="rarName" value="#{pageSession.valueMap.resAdapter}");
         gf.restRequest(endpoint="#{sessionScope.REST_URL}/resources/get-admin-object-interface-names"
@@ -90,6 +91,10 @@
         setAttribute(key="resourceTypes" value="#{requestScope.result.data.extraProperties.adminObjectInterfaceNames}");
         setAttribute(key="zero" value="$int{0}");
         setAttribute(key="size" value="#{requestScope.resourceTypes.size()}");
+
+        if ("!#{requestScope.resourceTypes}"){
+            setAttribute(key="size" value="$int{0}");
+        }
         if (#{requestScope.size} > #{requestScope.zero}) {
             if("!(#{pageSession.valueMap['resType']})") {
                 mapPut(map="#{pageSession.valueMap}" key="resType" value="#{requestScope.resourceTypes[0]}");
@@ -122,8 +127,8 @@
                     map="#{requestScope.oneRowMap}");
                 listAdd(list="#{pageSession.tableList}" value="#{requestScope.oneRowMap}");
             }
+          }
         }
-        
     />
     </event>
             <sun:form id="form">

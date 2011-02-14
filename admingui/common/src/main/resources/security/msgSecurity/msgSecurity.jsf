@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -109,12 +109,12 @@
 
     <sun:tableColumn headerText="$resource{i18nc.msgSecurity.colDefaultProv}" sort="defaultProvider" rowHeader="$boolean{true}" id="col2">
         <sun:hyperlink id="defaultprov" text="#{td.value.defaultProvider}"
-            url="#{request.contextPath}/common/security/msgSecurity/providerEdit.jsf?name=#{td.value.defaultProvider}&msgSecurityName=#{td.value.name}&configName=#{configName}" />
+            url="#{request.contextPath}/common/security/msgSecurity/providerEdit.jsf?name=#{td.value.defaultProvider}&msgSecurityName=#{td.value.name}&configName=#{configName}&cancelPage=#{request.contextPath}/common/security/msgSecurity/msgSecurity.jsf?" />
     </sun:tableColumn>
 
     <sun:tableColumn headerText="$resource{i18nc.msgSecurity.colDefaultClientProv}" sort="defaultClientProvider" rowHeader="$boolean{true}" id="col3">
         <sun:hyperlink id="defaultclientprov" text="#{td.value.defaultClientProvider}"
-            url="#{request.contextPath}/common/security/msgSecurity/providerEdit.jsf?name=#{td.value.defaultClientProvider}&msgSecurityName=#{td.value.name}&configName=#{configName}&cancelPage=#{request.contextPath}/common/security/msgSecurity/msgSecurity.jsf" />
+            url="#{request.contextPath}/common/security/msgSecurity/providerEdit.jsf?name=#{td.value.defaultClientProvider}&msgSecurityName=#{td.value.name}&configName=#{configName}&cancelPage=#{request.contextPath}/common/security/msgSecurity/msgSecurity.jsf?" />
 
     </sun:tableColumn>
 

@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -47,7 +47,11 @@
         <sun:button id="newButton" rendered="#{!edit}" text="$resource{i18n.button.OK}"
                 onClick="if (guiValidate('#{reqMsg}','#{reqInt}','#{reqPort}')) {submitAndDisable(this, '$resource{i18n.button.Processing}');}; return false;" >
             <!command
-
+                urlencode(value="#{pageSession.valueMap['Name']}" result="#{requestScope.encodedProtocolToCheck}");
+                gf.checkIfEndPointExist(endpoint="#{pageSession.selfUrl}/#{requestScope.encodedProtocolToCheck}", exists="#{requestScope.pExist}");
+                if (#{requestScope.pExist}){
+                    gf.handleError(detail="$resource{i18n_web.grizzly.protocol.alreadyExist, #{requestScope.encodedProtocolToCheck}}");
+                }
                 gf.createEntity(endpoint="#{pageSession.selfUrl}"
                         attrs="#{pageSession.valueMap}"
                         convertToFalse={"securityEnabled"},

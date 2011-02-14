@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -114,7 +114,7 @@
         <sun:tableColumn headerText="$resource{i18n.common.PropertyValue}" sort="value" rowHeader="$boolean{false}" id="col3">
             <sun:textField columns="$int{40}" maxLength="#{sessionScope.fieldLengths['maxLength.common.PropertyValue']}" id="col1St" value="#{td.value.value}" />
         </sun:tableColumn>
-        <sun:tableColumn headerText="$resource{i18n.common.description}" sort="value" rowHeader="$boolean{false}" id="col4">
+        <sun:tableColumn headerText="$resource{i18n.common.description}" sort="value" rowHeader="$boolean{false}" id="col4" rendered="#{pageSession.showDescCol != 'false'}">
             <sun:textField columns="$int{20}" maxLength="#{sessionScope.fieldLengths['maxLength.common.description']}"  id="col1St" value="#{td.value.description}" />
         </sun:tableColumn>
         "<br/>

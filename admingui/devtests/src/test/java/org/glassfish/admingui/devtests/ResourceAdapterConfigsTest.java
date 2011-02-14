@@ -41,8 +41,9 @@
 package org.glassfish.admingui.devtests;
 
 import org.junit.Test;
+import org.omg.CORBA.SetOverrideType;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class ResourceAdapterConfigsTest extends BaseSeleniumTestClass {
     private static final String TRIGGER_RESOURCE_ADAPTER_CONFIGS = "i18njca.resourceAdapterConfig.pageTitleHelp";
@@ -58,16 +59,17 @@ public class ResourceAdapterConfigsTest extends BaseSeleniumTestClass {
 
         }
 
+        // Create new RA config
         clickAndWait("propertyForm:poolTable:topActionsGroup1:newButton", TRIGGER_NEW_RESOURCE_ADAPTER);
         selectDropdownOption("propertyForm:propertySheet:propertSectionTextField:threadPoolsIdProp:threadpoolsid", "thread-pool-1");
-        clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_RESOURCE_ADAPTER_CONFIGS);
+        clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_RESOURCE_ADAPTER_CONFIGS, TIMEOUT*10);
 
+        // Verify config was saved and update values
         assertTrue(isTextPresent("jmsra"));
         clickAndWait(getLinkIdByLinkText("propertyForm:poolTable", "jmsra"), TRIGGER_EDIT_RESOURCE_ADAPTER_CONFIG);
-
-        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
         clickAndWait("propertyForm:propertyContentPage:topButtons:cancelButton", TRIGGER_RESOURCE_ADAPTER_CONFIGS);
-
+        
+        // Remove config
         deleteRow("propertyForm:poolTable:topActionsGroup1:button1", "propertyForm:poolTable", "jmsra");
     }
 }

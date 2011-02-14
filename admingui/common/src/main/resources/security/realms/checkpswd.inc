@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -50,7 +50,7 @@
             return showAlert('$resource{i18n.msg.JS.manageUser.passwordNotMatch}');
         }
         if ( (ps1==null || ps1=='') && (ps2==null || ps2=='')){
-            if ( getConfirm(this,'$resource{i18n.msg.JS.manageUser.setEmptyAdminPassword}') ){
+            if ( getConfirm(this,'$resource{i18n.msg.JS.manageUser.setEmptyPassword}') ){
                 return true;
             }else{
                 return false;

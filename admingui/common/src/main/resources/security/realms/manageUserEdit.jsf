@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -56,15 +56,12 @@
         urlencode(value="#{pageSession.User}" encoding="UTF-8" result="#{pageSession.encodedUser}");
         getUserInfo(Realm="#{pageSession.Name}" configName="#{pageSession.configName}" User="#{pageSession.User}", GroupList="#{pageSession.groupList}");
         gf.restRequest(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/admin-service/jmx-connector/system.json", method="get", result="#{requestScope.result}");
-        setPageSessionAttribute(key="AuthRealmName" value="#{requestScope.result.entity['authRealmName']");
-        if ("#{pageSession.Name}}=#{pageSession.authRealm}"){
-            setPageSessionAttribute(key="isAdminRealm", value="true")
-            setPageSessionAttribute(key="groupList", value="asadmin")
-            setPageSessionAttribute(key="emptyPswdMsg", value="$resource{i18n.msg.JS.manageUser.setEmptyAdminPassword}")
-        }
-        if ("!(#{pageSession.name}=#{pageSession.authRealm})"){
-            setPageSessionAttribute(key="isAdminRealm", value="false")
-            setPageSessionAttribute(key="emptyPswdMsg", value="$resource{i18n.msg.JS.manageUser.setEmptyPassword}")
+        setPageSessionAttribute(key="AuthRealmName" value="#{requestScope.result.data.extraProperties.entity.authRealmName}");
+        setPageSessionAttribute(key="isAdminRealm", value="false")
+        if ("#{pageSession.Name}=#{pageSession.AuthRealmName}"){
+            if ("#{pageSession.configName}=server-config"){
+                setPageSessionAttribute(key="isAdminRealm", value="true")
+            }
         }
         />
         </event>
@@ -86,6 +83,7 @@
                                     UserId="#{pageSession.User}"
                                     GroupList="#{pageSession.groupList}"
                                     Password="#{pageSession.password}"
+                                    CreateNew="false"
                                 );
                             />                        
                         </sun:button>
@@ -107,7 +105,11 @@
                             </sun:property>
                             <sun:property id="userIdProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.manageUsers.UserID}">
                                 <sun:staticText id="UserId" text="#{pageSession.User}"/>
-                            </sun:property>                       
+                            </sun:property>
+
+                            <sun:property id="groupListProp2"  rendered="#{pageSession.isAdminRealm}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.manageUsers.GroupList}" >
+                                <sun:staticText id="GroupList2" text="#{pageSession.groupList}" rendered="#{pageSession.isAdminRealm}"/>
+                            </sun:property>
 
                             <sun:property id="groupListProp" rendered="#{!isAdminRealm}"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.manageUsers.GroupList}" helpText="$resource{i18nc.manageUsers.GroupListHelp}">
                                 <sun:textField id="GroupList" text="#{pageSession.groupList}" rendered="#{!isAdminRealm}" columns="$int{55}" maxLength="#{sessionScope.fieldLengths['maxLength.manageUsers.GroupList']}"/>

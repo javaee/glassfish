@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -184,7 +184,18 @@ public class GuiUtil {
         }else{
             sessionMap.put("debugInfo", GuiUtil.getMessage("inst.notEnabled"));
         }
-        
+
+        try{
+            Map secureAdminAttrs = RestUtil.getAttributesMap(sessionMap.get("REST_URL")+"/secure-admin");
+            if (Boolean.parseBoolean((String)secureAdminAttrs.get("enabled"))){
+                sessionMap.put("secureAdminEnabled", "true");
+            }else{
+                sessionMap.put("secureAdminEnabled", "false");
+            }
+        }catch(Exception ex){
+            sessionMap.put("secureAdminEnabled", "false");
+        }
+
         sessionMap.put("reqMsg", GuiUtil.getMessage("msg.JS.enterValue"));
         sessionMap.put("reqMsgSelect", GuiUtil.getMessage("msg.JS.selectValue"));
         sessionMap.put("reqInt", GuiUtil.getMessage("msg.JS.enterIntegerValue"));
@@ -415,6 +426,8 @@ public class GuiUtil {
      * If type is not specified, it will be "information" by default.
      */
     public static void prepareAlert(String type, String summary, String detail) {
+
+        try {
         Map attrMap = FacesContext.getCurrentInstance().getExternalContext().getRequestMap();
         if (isEmpty(type)) {
             attrMap.put("alertType", "information");
@@ -427,11 +440,11 @@ public class GuiUtil {
         if (detail != null && detail.length() > 1000) {
             detail = detail.substring(0, 1000) + " .... " + GuiUtil.getMessage("msg.seeServerLog");
         }
-        try {
+        
             attrMap.put("alertDetail", isEmpty(detail) ? "" : URLEncoder.encode(detail, "UTF-8"));
             attrMap.put("alertSummary", isEmpty(summary) ? "" : URLEncoder.encode(summary, "UTF-8"));
-        } catch (UnsupportedEncodingException ex) {
-            //we'll never get here.
+        } catch (Exception ex) {
+            //we'll never get here. , well except for GLASSFISH-15831
             GuiUtil.getLogger().info(GuiUtil.getCommonMessage("log.error.prepareAlert") + ex.getLocalizedMessage());
             if (GuiUtil.getLogger().isLoggable(Level.FINE)){
                 ex.printStackTrace();

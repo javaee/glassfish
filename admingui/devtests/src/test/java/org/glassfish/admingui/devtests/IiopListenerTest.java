@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -50,12 +50,14 @@ public class IiopListenerTest extends BaseSeleniumTestClass {
     private static final String TRIGGER_NEW_IIOP_LISTENER = "i18n_corba.iiopListener.newPageTitle";
     private static final String TRIGGER_EDIT_IIOP_LISTENER = "i18n_corba.iiopListener.editPageTitle";
     private static final String TRIGGER_ORB = "i18n_corba.orb.OrbInfo";
+    private static final String TRIGGER_EDIT_IIOP_SSL = "i18n_corba.sslPageTitleHelp";
 
     @Test
     public void testAddIiopListener() {
         final String iiopName = "testIiopListener" + generateRandomString();
         final String networkAddress = "0.0.0.0";
-        final String listenerPort = "1234";
+        final String listenerPort = Integer.toString(generateRandomNumber(32768));;
+        final String certName = "s1as";
 
         clickAndWait("treeForm:tree:configurations:server-config:orb:iiopListeners:iiopListeners_link", TRIGGER_IIOP_LISTENERS);
         clickAndWait("propertyForm:configs:topActionsGroup1:newButton", TRIGGER_NEW_IIOP_LISTENER);
@@ -75,6 +77,12 @@ public class IiopListenerTest extends BaseSeleniumTestClass {
         assertEquals(listenerPort, getFieldValue("propertyForm:propertySheet:generalSettingsSetion:ListenerPortProp:ListenerPort"));
 
         assertTableRowCount("propertyForm:basicTable", count);
+
+        // access the SSL Page
+        clickAndWait("propertyForm:iiopTab:sslEdit", TRIGGER_EDIT_IIOP_SSL);
+        setFieldValue("propertyForm:propertySheet:propertySheetSection:CertNicknameProp:CertNickname", certName);
+        clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_NEW_VALUES_SAVED);
+        assertEquals(certName, getFieldValue("propertyForm:propertySheet:propertySheetSection:CertNicknameProp:CertNickname"));
 
         clickAndWait("propertyForm:propertyContentPage:topButtons:cancelButton", TRIGGER_IIOP_LISTENERS);
 

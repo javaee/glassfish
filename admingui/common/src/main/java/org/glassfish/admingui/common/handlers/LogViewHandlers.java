@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -228,6 +228,7 @@ public class LogViewHandlers {
                 notNullStringPut(attMap, "anySearch", anySearch);
                 notNullStringPut(attMap, "logLevel", logLevel);
                 notNullStringPut(attMap, "instanceName", instanceName);
+                notNullStringPut(attMap, "logFileRefresh", "true");
                 if (moduleList != null) {
                     attMap.put("listOfModules", moduleList);
                 }

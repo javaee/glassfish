@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -2106,6 +2106,18 @@ admingui.ajax = {
 			*/
                 }
             };
+            //IE caches GUI page and many pages are not loaded correctly.  So we force the reload
+            //in IE.  Refer to GLASSFISH-15628
+            if (navigator != null) {
+                var ua = navigator.userAgent;
+                if (ua.indexOf("MSIE") > -1) {
+                    if (url.indexOf("?") > -1) {
+                        url = url + "&cachebuster=" + new Date().getTime();
+                    } else {
+                        url = url + "?cachebuster=" + new Date().getTime();
+                    }
+		}
+	    }
             req.open("GET", url, true);
             req.send("");
         }

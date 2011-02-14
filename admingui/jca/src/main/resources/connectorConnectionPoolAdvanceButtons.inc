@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -51,6 +51,15 @@
             if ("#{pageSession.valueMap['lazyConnectionAssociation']}") {
                 setValueExpression(expression="#{pageSession.valueMap['lazyConnectionEnlistment']}", value="true");
             }
+            
+            //Issue 15618 : To save lazyConnectionEnlistment before lazyConnectionAssociation.
+            createMap(result=>$attribute{lazyConnectionMap});
+            mapPut(map="#{lazyConnectionMap}", key="lazyConnectionEnlistment", value="#{pageSession.valueMap['lazyConnectionEnlistment']}");
+            gf.updateEntity(endpoint="#{pageSession.selfUrl}"
+                        attrs="#{lazyConnectionMap}"
+                        convertToFalse={"lazyConnectionEnlistment"});
+            gf.filterMap(map="#{pageSession.valueMap}" attrNames={"lazyConnectionEnlistment"} keep="#{false}" resultMap="#{pageSession.valueMap}");
+            
             gf.updateEntity(endpoint="#{pageSession.selfUrl}"  attrs="#{pageSession.valueMap}"
                 skipAttrs="#{pageSession.skipAttrsList}"
                 convertToFalse="#{pageSession.convertToFalseList}"

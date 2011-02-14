@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -93,7 +93,7 @@
                  <sun:radioButton id="optB"  name="commitOptGrp" label="$resource{i18n_ejbLite.ejbSettings.optB}" selected="#{pageSession.valueMap['commitOption']}" selectedValue="B"
                             onClick="document.getElementById('form1:option').value='B';"
                   />
-                 <sun:helpInline id="optBHelpText" style="padding: 4pt" style="font-size: 8pt" text="AAAAA$resource{i18n_ejbLite.ejbSettings.optBHelp}"/>
+                 <sun:helpInline id="optBHelpText" style="padding: 4pt" style="font-size: 8pt" text="$resource{i18n_ejbLite.ejbSettings.optBHelp}"/>
                  "<br />
                  <sun:radioButton id="optC"  name="commitOptGrp" label="$resource{i18n_ejbLite.ejbSettings.optC}" selected="#{pageSession.valueMap['commitOption']}" selectedValue="C"
                                   onClick="document.getElementById('form1:option').value='C';"
