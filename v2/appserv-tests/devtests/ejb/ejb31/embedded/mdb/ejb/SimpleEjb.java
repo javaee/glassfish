@@ -1,0 +1,41 @@
+package org.glassfish.tests.ejb.mdb;
+
+import javax.ejb.Stateless;
+import javax.jms.*;
+import javax.annotation.Resource;
+
+
+/**
+ * @author Marina Vatkina
+ */
+@Stateless
+public class SimpleEjb {
+
+
+    @Resource(name="jms/MyQueueConnectionFactory", mappedName="jms/ejb_mdb_QCF")
+    QueueConnectionFactory fInject;
+
+    @Resource(mappedName="jms/ejb_mdb_Queue")
+    Queue qInject;
+
+    public String saySomething() throws Exception {
+        send();
+        return "hello";
+    }
+
+
+    private void send() throws Exception {
+        QueueConnection qConn = fInject.createQueueConnection();
+        QueueSession qSession = qConn.createQueueSession(false, Session.AUTO_ACKNOWLEDGE);
+        QueueSender qSender = qSession.createSender(qInject);
+        TextMessage tMessage = null;
+
+        tMessage = qSession.createTextMessage("MY-MESSAGE");
+        qSender.send(tMessage);
+
+        qSession.close();
+        qConn.close();
+        System.err.println("Sent successfully");
+    }
+
+}
