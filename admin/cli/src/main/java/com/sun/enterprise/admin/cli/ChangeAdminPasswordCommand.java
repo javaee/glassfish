@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -70,9 +70,6 @@ public class ChangeAdminPasswordCommand extends CLICommand {
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(ChangeAdminPasswordCommand.class);
 
-    @Inject
-    private Habitat habitat;
-
     /**
      * Require the user to actually type the passwords.
      */
@@ -129,7 +126,7 @@ public class ChangeAdminPasswordCommand extends CLICommand {
      */
     @Override
     protected int executeCommand() throws CommandException {
-        RemoteAdminCommand rac = new ServerRemoteAdminCommand(habitat, name,
+        RemoteAdminCommand rac = new RemoteAdminCommand(name,
             programOpts.getHost(), programOpts.getPort(),
             programOpts.isSecure(), programOpts.getUser(),
             programOpts.getPassword(), logger);

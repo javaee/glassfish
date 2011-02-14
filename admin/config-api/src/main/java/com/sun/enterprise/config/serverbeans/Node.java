@@ -152,7 +152,7 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
     @Param(name="installdir", optional=true)
     void setInstallDir(String value) throws PropertyVetoException;
 
-    @Attribute
+    @Attribute()
     String getType();
 
     /**
@@ -162,7 +162,7 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
      *              {@link String }
      * @throws PropertyVetoException if a listener vetoes the change
      */
-    @Param(name="type", defaultValue="CONFIG")
+    @Param(name="type")
     void setType(String value) throws PropertyVetoException;
 
     @Element
@@ -315,11 +315,11 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
         @Param(name="installdir", optional=true)
         String installdir=null;
 
-        @Param(name="type", optional=true, defaultValue="CONFIG")
-        String type="CONFIG";
+        @Param(name="type")
+        String type=null;
 
         @Param(name="sshport",optional=true)
-        String sshPort="-1";
+        String sshPort=null;
 
         @Param(name="sshnodehost",optional=true)
         String sshHost=null;
@@ -374,28 +374,30 @@ public interface Node extends ConfigBeanProxy, Injectable, Named, ReferenceConta
 
             //only create-node-ssh and update-node-ssh should be changing the type to SSH
             instance.setType(type);
-            
+
+            if (type.equals("CONFIG"))
+                return;
             SshConnector sshC = instance.createChild(SshConnector.class);
-            if (StringUtils.ok(sshPort) && ! sshPort.equals("-1") )
+
+            SshAuth sshA = sshC.createChild(SshAuth.class);
+            if (StringUtils.ok(sshuser))
+                sshA.setUserName(sshuser);
+            if (StringUtils.ok(sshkeyfile))
+                sshA.setKeyfile(sshkeyfile);
+            if (StringUtils.ok(sshpassword))
+                sshA.setPassword(sshpassword);
+            if (StringUtils.ok(sshkeypassphrase))
+                sshA.setKeyPassphrase(sshkeypassphrase);
+            sshC.setSshAuth(sshA);
+
+            if (StringUtils.ok(sshPort)  )
                 sshC.setSshPort(sshPort);
 
             if (StringUtils.ok(sshHost))
                 sshC.setSshHost(sshHost);
 
-            if (sshuser != null || sshkeyfile != null || sshpassword != null ||
-                sshkeypassphrase != null) {
-                SshAuth sshA = sshC.createChild(SshAuth.class);
-                if (StringUtils.ok(sshuser))
-                    sshA.setUserName(sshuser);
-                if (StringUtils.ok(sshkeyfile))
-                    sshA.setKeyfile(sshkeyfile);
-                if (StringUtils.ok(sshpassword))
-                    sshA.setPassword(sshpassword);
-                if (StringUtils.ok(sshkeypassphrase))
-                    sshA.setKeyPassphrase(sshkeypassphrase);
-                sshC.setSshAuth(sshA);
-            }
             instance.setSshConnector(sshC);
+            
         }
     }
 

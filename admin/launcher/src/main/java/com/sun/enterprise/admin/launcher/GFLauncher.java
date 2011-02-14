@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -52,7 +52,6 @@ import com.sun.enterprise.universal.process.ProcessStreamDrainer;
 import com.sun.enterprise.universal.xml.MiniXmlParserException;
 import com.sun.enterprise.util.OS;
 import com.sun.enterprise.util.io.FileUtils;
-import com.sun.enterprise.util.net.NetUtils;
 import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
 import com.sun.enterprise.universal.xml.MiniXmlParser;
 import static com.sun.enterprise.util.SystemPropertyConstants.*;
@@ -158,6 +157,7 @@ public abstract class GFLauncher {
         javaConfig = new JavaConfig(parser.getJavaConfig());
         setupProfilerAndJvmOptions(parser);
         setupUpgradeSecurity();
+        renameOsgiCache();
         setupMonitoring(parser);
         sysPropsFromXml = parser.getSystemProperties();
         asenvProps.put(INSTANCE_ROOT_PROPERTY, getInfo().getInstanceRootDir().getPath());
@@ -180,7 +180,8 @@ public abstract class GFLauncher {
         setCommandLine();
         logCommandLine();
         // if no <network-config> element, we need to upgrade this domain
-        needsUpgrade = !parser.hasNetworkConfig();
+        needsAutoUpgrade = !parser.hasNetworkConfig();
+        needsManualUpgrade = !parser.hasDefaultConfig();
         setupCalledByClients = true;
     }
 
@@ -266,12 +267,21 @@ public abstract class GFLauncher {
     }
 
     /**
-     * Does this domain need to be upgraded before it can be started?
+     * Does this domain need to be automatically upgraded before it can be started?
      *
      * @return true if the domain needs to be upgraded first
      */
-    public final boolean needsUpgrade() {
-        return needsUpgrade;
+    public final boolean needsAutoUpgrade() {
+        return needsAutoUpgrade;
+    }
+    
+    /**
+     * Does this domain need to be manually upgraded before it can be started?
+     *
+     * @return true if the domain needs to be upgraded first
+     */
+    public final boolean needsManualUpgrade() {
+        return needsManualUpgrade;
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -693,6 +703,29 @@ public abstract class GFLauncher {
         }
     }
 
+    /**
+     * Because of some issues in GlassFish OSGi launcher, a server updated from version 3.0.x to 3.1 won't start
+     * if a OSGi cache directory populated with 3.0.x modules is used. So, as a work around, we rename the cache
+     * directory when upgrade path is used. See GLASSFISH-15772 for more details.
+     *
+     * @throws GFLauncherException if it fails to rename the cache directory
+     */
+    private void renameOsgiCache() throws GFLauncherException {
+        if (info.isUpgrade()) {
+            File osgiCacheDir = new File(info.getDomainRootDir(),
+                "osgi-cache"); 
+            File backupOsgiCacheDir = new File(info.getDomainRootDir(),
+                "osgi-cache-" + System.currentTimeMillis());
+            if (osgiCacheDir.exists() && !backupOsgiCacheDir.exists()) {
+                if (!FileUtils.renameFile(osgiCacheDir, backupOsgiCacheDir)) {
+                    throw new GFLauncherException(strings.get("rename_osgi_cache_failed", osgiCacheDir, backupOsgiCacheDir));
+                } else {
+                    GFLauncherLogger.info("rename_osgi_cache_succeeded", osgiCacheDir, backupOsgiCacheDir);
+                }
+            }
+        }
+    }
+
     private void setupMonitoring(MiniXmlParser parser) throws GFLauncherException {
         // As usual we have to be very careful.
 
@@ -849,7 +882,8 @@ public abstract class GFLauncher {
     private Process process;
     private ProcessStreamDrainer psd;
     private boolean logFilenameWasFixed = false;
-    private boolean needsUpgrade = false;
+    private boolean needsAutoUpgrade = false;
+    private boolean needsManualUpgrade = false;
 
     ///////////////////////////////////////////////////////////////////////////
     private static class ProcessWhacker implements Runnable {

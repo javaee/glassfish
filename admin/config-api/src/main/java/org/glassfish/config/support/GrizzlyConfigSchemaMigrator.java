@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -87,7 +87,7 @@ import org.jvnet.hk2.config.TransactionFailure;
 import org.jvnet.hk2.config.types.Property;
 
 @SuppressWarnings({"deprecation"})
-@Service
+@Service(name="grizzlyconfigupgrade")
 public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostConstruct {
     private final static String SSL_CONFIGURATION_WANTAUTH = "org.glassfish.grizzly.ssl.auth";
     private final static String SSL_CONFIGURATION_SSLIMPL = "org.glassfish.grizzly.ssl.sslImplementation";
@@ -109,9 +109,19 @@ public class GrizzlyConfigSchemaMigrator implements ConfigurationUpgrade, PostCo
                     createFromScratch();
                 }
                 normalizeThreadPools();
-                processHttpListeners();
-                promoteHttpServiceProperties(currentConfig.getHttpService());
-                promoteVirtualServerProperties(currentConfig.getHttpService());
+                if (currentConfig.getHttpService() != null) {
+                    processHttpListeners();
+                    promoteHttpServiceProperties(
+                        currentConfig.getHttpService());
+                    promoteVirtualServerProperties(
+                        currentConfig.getHttpService());
+                } else {
+                    // this only happens during some unit tests
+                    Logger.getAnonymousLogger().log(Level.WARNING,
+                        String.format(
+                            "config.getHttpService() null for config '%s'",
+                            currentConfig.getName()));
+                }
                 promoteSystemProperties();
                 addAsadminProtocol(currentConfig.getNetworkConfig());
             } catch (TransactionFailure tf) {

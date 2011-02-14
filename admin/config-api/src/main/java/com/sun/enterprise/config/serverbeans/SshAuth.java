@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -88,7 +88,7 @@ public interface SshAuth  extends ConfigBeanProxy, Injectable {
      *
      * @return a named host name
      */
-    @Attribute
+    @Attribute(defaultValue="${user.name}")
     String getUserName();
 
     /**
@@ -98,7 +98,7 @@ public interface SshAuth  extends ConfigBeanProxy, Injectable {
      *              {@link String }
      * @throws PropertyVetoException if a listener vetoes the change
      */
-    @Param(name="sshuser", optional=true)
+    @Param(name="sshuser", optional=true,defaultValue="${user.name}")
     void setUserName(String value) throws PropertyVetoException;
 
     /**

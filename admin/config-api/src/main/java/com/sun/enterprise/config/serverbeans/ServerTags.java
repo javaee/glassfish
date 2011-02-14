@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2006-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -788,4 +788,7 @@ public class ServerTags  {
     public static final String IPS_ROOT				= "ipsRoot";
     public static final String ADMIN_CONSOLE_VERSION		= "adminConsoleVersion";
     public static final String ADMIN_LISTENER_ID = "admin-listener";
+    public final static String SEC_ADMIN_LISTENER_PROTOCOL_NAME = "sec-admin-listener";
+    public final static String REDIRECT_PROTOCOL_NAME = "admin-http-redirect";
+    public final static String PORT_UNIF_PROTOCOL_NAME = "pu-protocol";
 }

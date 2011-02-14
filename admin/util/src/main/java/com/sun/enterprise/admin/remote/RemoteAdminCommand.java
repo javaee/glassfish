@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -665,7 +665,18 @@ public class RemoteAdminCommand {
                     logger.log(Level.FINER, "Following redirection to " + redirection);
                     url = followRedirection(url, redirection);
                     shouldTryCommandAgain = true;
+                    /*
+                     * Record that, during the retry of this request, we should
+                     * use https.
+                     */
                     shouldUseSecure = url.isSecure();
+
+                    /*
+                     * Record that, if this is a metadata request, the real
+                     * request should use https also.
+                     */
+                    secure = true;
+                    
                     /*
                      * If we have been redirected to https then we can send
                      * the credentials - if we have them - on the next 
