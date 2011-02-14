@@ -118,6 +118,7 @@ public class PwcCoyoteRequest extends Request {
      * sun-web.xml.
      */
     public String getCharacterEncoding() {
+        parameterEncodingSet = true;
         String enc = super.getCharacterEncoding();
         if (enc != null) {
             return enc;

@@ -301,10 +301,8 @@ public class Request
      * Session parsed flag.
      */
     protected boolean sessionParsed = false;
-    /**
-     * Request parameters parsed flag.
-     */
-//    protected boolean requestParametersParsed = false;
+
+    protected boolean parameterEncodingSet = false;
     /**
      * Cookies parsed flag.
      */
@@ -1303,6 +1301,9 @@ public class Request
             parseRequestParameters();
         }
 */
+        if (!parameterEncodingSet) {
+            getCharacterEncoding();
+        }
 
         return coyoteRequest.getParameter(name);
     }
@@ -1346,6 +1347,10 @@ public class Request
             parseRequestParameters();
         }
 */
+        if (!parameterEncodingSet) {
+            getCharacterEncoding();
+        }
+
         return new Enumerator(coyoteRequest.getParameterNames());
     }
 
@@ -1362,6 +1367,10 @@ public class Request
             parseRequestParameters();
         }
 */
+        if (!parameterEncodingSet) {
+            getCharacterEncoding();
+        }
+
         return coyoteRequest.getParameterValues(name);
     }
 
