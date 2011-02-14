@@ -168,7 +168,9 @@ public class ContainerMapper extends StaticHttpHandler {
                 }
             }
 
-            final DataChunk decodedURI = request.getRequest().getRequestURIRef().getDecodedRequestURIBC();
+            final DataChunk decodedURI = request.getRequest()
+                    .getRequestURIRef().getDecodedRequestURIBC(isAllowEncodedSlash());
+
             mappingData = request.getNote(MAPPING_DATA);
             if (mappingData == null) {
                 mappingData = new MappingData();
