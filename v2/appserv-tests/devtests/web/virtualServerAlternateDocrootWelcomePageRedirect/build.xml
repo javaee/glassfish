@@ -55,7 +55,7 @@
     &testproperties;
     &run;
 
-    <target name="all" depends="build,deploy,setup,run,restore"/>
+    <target name="all" depends="build,deploy,setup,run,restore,undeploy"/>
 
     <target name="clean" depends="init-common">
       <antcall target="clean-common"/>
@@ -112,6 +112,10 @@
            <pathelement location="."/>
          </classpath>
         </java>
+    </target>
+
+    <target name="undeploy" depends="init-common">
+        <antcall target="undeploy-war-common"/>
     </target>
 
     <target name="restore" depends="setup">
