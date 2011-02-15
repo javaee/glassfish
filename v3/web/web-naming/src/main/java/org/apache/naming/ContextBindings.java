@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -82,31 +82,36 @@ public class ContextBindings {
     /**
      * Bindings name - naming context. Keyed by name.
      */
-    private static Hashtable contextNameBindings = new Hashtable();
+    private static Hashtable<Object, Context> contextNameBindings =
+        new Hashtable<Object, Context>();
 
 
     /**
      * Bindings thread - naming context. Keyed by thread id.
      */
-    private static Hashtable threadBindings = new Hashtable();
+    private static Hashtable<Thread, Context> threadBindings =
+        new Hashtable<Thread, Context>();
 
 
     /**
      * Bindings thread - name. Keyed by thread id.
      */
-    private static Hashtable threadNameBindings = new Hashtable();
+    private static Hashtable<Thread, Object> threadNameBindings =
+        new Hashtable<Thread, Object>();
 
 
     /**
      * Bindings class loader - naming context. Keyed by CL id.
      */
-    private static Hashtable clBindings = new Hashtable();
+    private static Hashtable<ClassLoader, Context> clBindings =
+        new Hashtable<ClassLoader, Context>();
 
 
     /**
      * Bindings class loader - name. Keyed by CL id.
      */
-    private static Hashtable clNameBindings = new Hashtable();
+    private static Hashtable<ClassLoader, Object> clNameBindings =
+        new Hashtable<ClassLoader, Object>();
 
 
     /**
@@ -172,7 +177,7 @@ public class ContextBindings {
      * @param name Name of the context
      */
     static Context getContext(Object name) {
-        return (Context) contextNameBindings.get(name);
+        return contextNameBindings.get(name);
     }
 
 
@@ -196,7 +201,7 @@ public class ContextBindings {
     public static void bindThread(Object name, Object token) 
         throws NamingException {
         if (ContextAccessController.checkSecurityToken(name, token)) {
-            Context context = (Context) contextNameBindings.get(name);
+            Context context = contextNameBindings.get(name);
             if (context == null)
                 throw new NamingException
                     (sm.getString("contextBindings.unknownContext", name));
@@ -235,8 +240,7 @@ public class ContextBindings {
      */
     public static Context getThread()
         throws NamingException {
-        Context context = 
-            (Context) threadBindings.get(Thread.currentThread());
+        Context context = threadBindings.get(Thread.currentThread());
         if (context == null)
             throw new NamingException
                 (sm.getString("contextBindings.noContextBoundToThread"));
@@ -299,7 +303,7 @@ public class ContextBindings {
                                        ClassLoader classLoader) 
         throws NamingException {
         if (ContextAccessController.checkSecurityToken(name, token)) {
-            Context context = (Context) contextNameBindings.get(name);
+            Context context = contextNameBindings.get(name);
             if (context == null)
                 throw new NamingException
                     (sm.getString("contextBindings.unknownContext", name));
@@ -358,7 +362,7 @@ public class ContextBindings {
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         Context context = null;
         do {
-            context = (Context) clBindings.get(cl);
+            context = clBindings.get(cl);
             if (context != null) {
                 return context;
             }

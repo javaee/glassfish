@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -119,11 +119,11 @@ public class javaURLContextFactory
      * Crete a new Context's instance.
      */
     public Object getObjectInstance(Object obj, Name name, Context nameCtx,
-                                    Hashtable environment)
+                                    Hashtable<?,?> environment)
         throws NamingException {
         if ((ContextBindings.isThreadBound()) || 
             (ContextBindings.isClassLoaderBound())) {
-            return new SelectorContext(environment);
+            return new SelectorContext(castEnvironment(environment));
         } else {
             return null;
         }
@@ -133,20 +133,24 @@ public class javaURLContextFactory
     /**
      * Get a new (writable) initial context.
      */
-    public Context getInitialContext(Hashtable environment)
+    public Context getInitialContext(Hashtable<?,?> environment)
         throws NamingException {
         if (ContextBindings.isThreadBound() || 
             (ContextBindings.isClassLoaderBound())) {
             // Redirect the request to the bound initial context
-            return new SelectorContext(environment, true);
+            return new SelectorContext(castEnvironment(environment), true);
         } else {
             // If the thread is not bound, return a shared writable context
             if (initialContext == null)
-                initialContext = new NamingContext(environment, MAIN);
+                initialContext = new NamingContext(castEnvironment(environment), MAIN);
             return initialContext;
         }
     }
 
 
+    @SuppressWarnings("unchecked")
+    private Hashtable<String, Object> castEnvironment(Hashtable<?,?> env) {
+        return (Hashtable<String, Object>)env;
+    }
 }
 

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -58,11 +58,12 @@
 
 package org.apache.naming.resources;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Hashtable;
-import java.util.Vector;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.List;
 import java.util.logging.*;
 import java.io.File;
 import java.io.InputStream;
@@ -71,9 +72,10 @@ import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipException;
-import javax.naming.Context;
+
+import javax.naming.Binding;
 import javax.naming.Name;
-import javax.naming.NameParser;
+import javax.naming.NameClassPair;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.CompositeName;
@@ -85,6 +87,8 @@ import javax.naming.directory.Attributes;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.ModificationItem;
 import javax.naming.directory.SearchControls;
+import javax.naming.directory.SearchResult;
+
 import org.apache.naming.StringManager;
 import org.apache.naming.NameParserImpl;
 import org.apache.naming.NamingEntry;
@@ -117,7 +121,7 @@ public class WARDirContext extends BaseDirContext {
     /**
      * Builds a WAR directory context using the given environment.
      */
-    public WARDirContext(Hashtable env) {
+    public WARDirContext(Hashtable<String, Object> env) {
         super(env);
     }
 
@@ -304,7 +308,7 @@ public class WARDirContext extends BaseDirContext {
      * this context. Each element of the enumeration is of type NameClassPair.
      * @exception NamingException if a naming exception is encountered
      */
-    public NamingEnumeration list(String name)
+    public NamingEnumeration<NameClassPair> list(String name)
         throws NamingException {
         return list(new CompositeName(name));
     }
@@ -323,15 +327,15 @@ public class WARDirContext extends BaseDirContext {
      * this context. Each element of the enumeration is of type NameClassPair.
      * @exception NamingException if a naming exception is encountered
      */
-    public NamingEnumeration list(Name name)
+    public NamingEnumeration<NameClassPair> list(Name name)
         throws NamingException {
         if (name.isEmpty())
-            return new NamingContextEnumeration(list(entries));
+            return new NamingContextEnumeration(list(entries).iterator());
         Entry entry = treeLookup(name);
         if (entry == null)
             throw new NamingException
                 (sm.getString("resources.notFound", name));
-        return new NamingContextEnumeration(list(entry));
+        return new NamingContextEnumeration(list(entry).iterator());
     }
 
 
@@ -348,7 +352,7 @@ public class WARDirContext extends BaseDirContext {
      * Each element of the enumeration is of type Binding.
      * @exception NamingException if a naming exception is encountered
      */
-    public NamingEnumeration listBindings(String name)
+    public NamingEnumeration<Binding> listBindings(String name)
         throws NamingException {
         return listBindings(new CompositeName(name));
     }
@@ -367,15 +371,15 @@ public class WARDirContext extends BaseDirContext {
      * Each element of the enumeration is of type Binding.
      * @exception NamingException if a naming exception is encountered
      */
-    public NamingEnumeration listBindings(Name name)
+    public NamingEnumeration<Binding> listBindings(Name name)
         throws NamingException {
         if (name.isEmpty())
-            return new NamingContextBindingsEnumeration(list(entries));
+            return new NamingContextBindingsEnumeration(list(entries).iterator(), this);
         Entry entry = treeLookup(name);
         if (entry == null)
             throw new NamingException
                 (sm.getString("resources.notFound", name));
-        return new NamingContextBindingsEnumeration(list(entry));
+        return new NamingContextBindingsEnumeration(list(entry).iterator(), this);
     }
 
 
@@ -667,8 +671,8 @@ public class WARDirContext extends BaseDirContext {
      * context named by name.
      * @exception NamingException if a naming exception is encountered
      */
-    public NamingEnumeration search(String name, Attributes matchingAttributes,
-                                    String[] attributesToReturn)
+    public NamingEnumeration<SearchResult> search(String name,
+            Attributes matchingAttributes, String[] attributesToReturn)
         throws NamingException {
         throw new OperationNotSupportedException();
     }
@@ -689,8 +693,8 @@ public class WARDirContext extends BaseDirContext {
      * context named by name.
      * @exception NamingException if a naming exception is encountered
      */
-    public NamingEnumeration search(String name, Attributes matchingAttributes)
-        throws NamingException {
+    public NamingEnumeration<SearchResult> search(String name,
+            Attributes matchingAttributes) throws NamingException {
         throw new OperationNotSupportedException();
     }
 
@@ -714,7 +718,7 @@ public class WARDirContext extends BaseDirContext {
      * contain invalid settings
      * @exception NamingException if a naming exception is encountered
      */
-    public NamingEnumeration search(String name, String filter, 
+    public NamingEnumeration<SearchResult> search(String name, String filter, 
                                     SearchControls cons)
         throws NamingException {
         throw new OperationNotSupportedException();
@@ -745,7 +749,7 @@ public class WARDirContext extends BaseDirContext {
      * represents an invalid search filter
      * @exception NamingException if a naming exception is encountered
      */
-    public NamingEnumeration search(String name, String filterExpr, 
+    public NamingEnumeration<SearchResult> search(String name, String filterExpr, 
                                     Object[] filterArgs, SearchControls cons)
         throws NamingException {
         throw new OperationNotSupportedException();
@@ -776,12 +780,12 @@ public class WARDirContext extends BaseDirContext {
 
         try {
 
-            Enumeration entryList = base.entries();
+            Enumeration<? extends ZipEntry> entryList = base.entries();
             entries = new Entry("/", new ZipEntry("/"));
             
             while (entryList.hasMoreElements()) {
                 
-                ZipEntry entry = (ZipEntry) entryList.nextElement();
+                ZipEntry entry = entryList.nextElement();
                 String name = normalize(entry);
                 int pos = name.lastIndexOf('/');
                 // Check that parent entries exist and, if not, create them.
@@ -846,9 +850,9 @@ public class WARDirContext extends BaseDirContext {
     /**
      * List children as objects.
      */
-    protected Vector list(Entry entry) {
+    protected ArrayList<NamingEntry> list(Entry entry) {
         
-        Vector entries = new Vector();
+        ArrayList<NamingEntry> entries = new ArrayList<NamingEntry>();
         Entry[] children = entry.getChildren();
         Arrays.sort(children);
         NamingEntry namingEntry = null;
@@ -863,7 +867,7 @@ public class WARDirContext extends BaseDirContext {
             }
             namingEntry = new NamingEntry
                 (children[i].getName(), object, NamingEntry.ENTRY);
-            entries.addElement(namingEntry);
+            entries.add(namingEntry);
         }
         
         return entries;
@@ -877,7 +881,7 @@ public class WARDirContext extends BaseDirContext {
     /**
      * Entries structure.
      */
-    protected class Entry implements Comparable {
+    protected class Entry implements Comparable<Object> {
 
 
         // -------------------------------------------------------- Constructor

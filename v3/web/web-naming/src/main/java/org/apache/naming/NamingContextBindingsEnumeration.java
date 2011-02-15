@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -58,12 +58,13 @@
 
 package org.apache.naming;
 
-import java.util.Hashtable;
-import java.util.Vector;
-import java.util.Enumeration;
+import java.util.Iterator;
+
+import javax.naming.Binding;
+import javax.naming.CompositeName;
+import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.naming.NamingEnumeration;
-import javax.naming.Binding;
 
 /**
  * Naming enumeration implementation.
@@ -73,19 +74,16 @@ import javax.naming.Binding;
  */
 
 public class NamingContextBindingsEnumeration 
-    implements NamingEnumeration {
+    implements NamingEnumeration<Binding> {
 
 
     // ----------------------------------------------------------- Constructors
 
 
-    public NamingContextBindingsEnumeration(Vector entries) {
-        enumeration = entries.elements();
-    }
-
-
-    public NamingContextBindingsEnumeration(Enumeration enumeration) {
-        this.enumeration = enumeration;
+    public NamingContextBindingsEnumeration(Iterator<NamingEntry> entries,
+            Context ctx) {
+        iterator = entries;
+        this.ctx = ctx;
     }
 
 
@@ -95,7 +93,13 @@ public class NamingContextBindingsEnumeration
     /**
      * Underlying enumeration.
      */
-    protected Enumeration enumeration;
+    protected Iterator<NamingEntry> iterator;
+
+
+    /**
+     * The context for which this enumeration is being generated.
+     */
+    private Context ctx;
 
 
     // --------------------------------------------------------- Public Methods
@@ -104,9 +108,9 @@ public class NamingContextBindingsEnumeration
     /**
      * Retrieves the next element in the enumeration.
      */
-    public Object next()
+    public Binding next()
         throws NamingException {
-        return nextElement();
+        return nextElementInternal();
     }
 
 
@@ -115,7 +119,7 @@ public class NamingContextBindingsEnumeration
      */
     public boolean hasMore()
         throws NamingException {
-        return enumeration.hasMoreElements();
+        return iterator.hasNext();
     }
 
 
@@ -128,16 +132,39 @@ public class NamingContextBindingsEnumeration
 
 
     public boolean hasMoreElements() {
-        return enumeration.hasMoreElements();
+        return iterator.hasNext();
     }
 
 
-    public Object nextElement() {
-        NamingEntry entry = (NamingEntry) enumeration.nextElement();
-        return new Binding(entry.name, entry.value.getClass().getName(), 
-                           entry.value, true);
+    public Binding nextElement() {
+        try {
+            return nextElementInternal();
+        } catch (NamingException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
     }
-
-
+    
+    private Binding nextElementInternal() throws NamingException {
+        NamingEntry entry = iterator.next();
+        Object value;
+        
+        // If the entry is a reference, resolve it
+        if (entry.type == NamingEntry.REFERENCE
+                || entry.type == NamingEntry.LINK_REF) {
+            try {
+                value = ctx.lookup(new CompositeName(entry.name));
+            } catch (NamingException e) {
+                throw e;
+            } catch (Exception e) {
+                NamingException ne = new NamingException(e.getMessage());
+                ne.initCause(e);
+                throw ne;
+            }
+        } else {
+            value = entry.value;
+        }
+        
+        return new Binding(entry.name, value.getClass().getName(), value, true);
+    }
 }
 

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -149,7 +149,7 @@ public class BeanFactory
      * @param obj The reference object describing the Bean
      */
     public Object getObjectInstance(Object obj, Name name, Context nameCtx,
-                                    Hashtable environment)
+                                    Hashtable<?,?> environment)
         throws NamingException {
 
         if (obj instanceof ResourceRef) {
@@ -158,7 +158,7 @@ public class BeanFactory
                 
                 Reference ref = (Reference) obj;
                 String beanClassName = ref.getClassName();
-                Class beanClass = null;
+                Class<?> beanClass = null;
                 ClassLoader tcl = 
                     Thread.currentThread().getContextClassLoader();
                 if (tcl != null) {
@@ -186,10 +186,10 @@ public class BeanFactory
                 
                 Object bean = beanClass.newInstance();
                 
-                Enumeration e = ref.getAll();
+                Enumeration<RefAddr> e = ref.getAll();
                 while (e.hasMoreElements()) {
                     
-                    RefAddr ra = (RefAddr) e.nextElement();
+                    RefAddr ra = e.nextElement();
                     String propName = ra.getType();
                     
                     if (propName.equals(Constants.FACTORY) ||
@@ -206,7 +206,7 @@ public class BeanFactory
 
                         if (pda[i].getName().equals(propName)) {
 
-                            Class propType = pda[i].getPropertyType();
+                            Class<?> propType = pda[i].getPropertyType();
 
                             if (propType.equals(String.class)) {
                                 valueArray[0] = value;

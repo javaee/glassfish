@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -61,10 +61,12 @@ package org.apache.naming;
 import java.util.Hashtable;
 import java.util.Enumeration;
 import java.util.logging.*;
+import javax.naming.Binding;
 import javax.naming.Context;
 import javax.naming.Name;
 import javax.naming.LinkRef;
 import javax.naming.CompositeName;
+import javax.naming.NameClassPair;
 import javax.naming.NameParser;
 import javax.naming.Referenceable;
 import javax.naming.Reference;
@@ -103,17 +105,17 @@ public class NamingContext implements Context {
     /**
      * Builds a naming context using the given environment.
      */
-    public NamingContext(Hashtable env, String name) 
+    public NamingContext(Hashtable<String, Object> env, String name) 
         throws NamingException {
-        this.bindings = new Hashtable();
-        this.env = new Hashtable();
+        this.bindings = new Hashtable<String, NamingEntry>();
+        this.env = new Hashtable<String, Object>();
         // FIXME ? Could be put in the environment ?
         this.name = name;
         // Populating the environment hashtable
         if (env != null ) {
-            Enumeration envEntries = env.keys();
+            Enumeration<String> envEntries = env.keys();
             while (envEntries.hasMoreElements()) {
-                String entryName = (String) envEntries.nextElement();
+                String entryName = envEntries.nextElement();
                 addToEnvironment(entryName, env.get(entryName));
             }
         }
@@ -123,7 +125,8 @@ public class NamingContext implements Context {
     /**
      * Builds a naming context using the given environment.
      */
-    public NamingContext(Hashtable env, String name, Hashtable bindings) 
+    public NamingContext(Hashtable<String, Object> env, String name,
+            Hashtable<String, NamingEntry> bindings) 
         throws NamingException {
         this(env, name);
         this.bindings = bindings;
@@ -136,7 +139,7 @@ public class NamingContext implements Context {
     /**
      * Environment.
      */
-    protected Hashtable env;
+    protected Hashtable<String, Object> env;
 
 
     /**
@@ -148,7 +151,7 @@ public class NamingContext implements Context {
     /**
      * Bindings in this Context.
      */
-    protected Hashtable bindings;
+    protected Hashtable<String, NamingEntry> bindings;
 
 
     /**
@@ -286,7 +289,7 @@ public class NamingContext implements Context {
             throw new NamingException
                 (sm.getString("namingContext.invalidName"));
         
-        NamingEntry entry = (NamingEntry) bindings.get(name.get(0));
+        NamingEntry entry = bindings.get(name.get(0));
         
         if (entry == null) {
             throw new NameNotFoundException
@@ -368,16 +371,16 @@ public class NamingContext implements Context {
      * this context. Each element of the enumeration is of type NameClassPair.
      * @exception NamingException if a naming exception is encountered
      */
-    public NamingEnumeration list(Name name)
+    public NamingEnumeration<NameClassPair> list(Name name)
         throws NamingException {
         // Removing empty parts
         while ((!name.isEmpty()) && (name.get(0).length() == 0))
             name = name.getSuffix(1);
         if (name.isEmpty()) {
-            return new NamingContextEnumeration(bindings.elements());
+            return new NamingContextEnumeration(bindings.values().iterator());
         }
         
-        NamingEntry entry = (NamingEntry) bindings.get(name.get(0));
+        NamingEntry entry = bindings.get(name.get(0));
         
         if (entry == null) {
             throw new NameNotFoundException
@@ -401,7 +404,7 @@ public class NamingContext implements Context {
      * this context. Each element of the enumeration is of type NameClassPair.
      * @exception NamingException if a naming exception is encountered
      */
-    public NamingEnumeration list(String name)
+    public NamingEnumeration<NameClassPair> list(String name)
         throws NamingException {
         return list(new CompositeName(name));
     }
@@ -420,16 +423,16 @@ public class NamingContext implements Context {
      * Each element of the enumeration is of type Binding.
      * @exception NamingException if a naming exception is encountered
      */
-    public NamingEnumeration listBindings(Name name)
+    public NamingEnumeration<Binding> listBindings(Name name)
         throws NamingException {
         // Removing empty parts
         while ((!name.isEmpty()) && (name.get(0).length() == 0))
             name = name.getSuffix(1);
         if (name.isEmpty()) {
-            return new NamingContextBindingsEnumeration(bindings.elements());
+            return new NamingContextBindingsEnumeration(bindings.values().iterator(), this);
         }
         
-        NamingEntry entry = (NamingEntry) bindings.get(name.get(0));
+        NamingEntry entry = bindings.get(name.get(0));
         
         if (entry == null) {
             throw new NameNotFoundException
@@ -453,7 +456,7 @@ public class NamingContext implements Context {
      * Each element of the enumeration is of type Binding.
      * @exception NamingException if a naming exception is encountered
      */
-    public NamingEnumeration listBindings(String name)
+    public NamingEnumeration<Binding> listBindings(String name)
         throws NamingException {
         return listBindings(new CompositeName(name));
     }
@@ -495,7 +498,7 @@ public class NamingContext implements Context {
             throw new NamingException
                 (sm.getString("namingContext.invalidName"));
         
-        NamingEntry entry = (NamingEntry) bindings.get(name.get(0));
+        NamingEntry entry = bindings.get(name.get(0));
         
         if (entry == null) {
             throw new NameNotFoundException
@@ -733,7 +736,7 @@ public class NamingContext implements Context {
      * @return the environment of this context; never null
      * @exception NamingException if a naming exception is encountered
      */
-    public Hashtable getEnvironment()
+    public Hashtable<?,?> getEnvironment()
         throws NamingException {
         return env;
     }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -99,7 +99,7 @@ public class TransactionFactory
      * @param obj The reference object describing the DataSource
      */
     public Object getObjectInstance(Object obj, Name name, Context nameCtx,
-                                    Hashtable environment)
+                                    Hashtable<?,?> environment)
         throws Exception {
         
         if (obj instanceof TransactionRef) {
@@ -113,7 +113,7 @@ public class TransactionFactory
                 // Loading factory
                 ClassLoader tcl = 
                     Thread.currentThread().getContextClassLoader();
-                Class factoryClass = null;
+                Class<?> factoryClass = null;
                 if (tcl != null) {
                     try {
                         factoryClass = tcl.loadClass(factoryClassName);
