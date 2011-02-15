@@ -164,7 +164,7 @@ public class ServletContainerInitializerUtil {
             if(interestList == null) {
                 interestList = new HashMap<Class<?>, List<Class<? extends ServletContainerInitializer>>>();
             }
-            Class sciClass = sc.getClass();
+            Class<? extends ServletContainerInitializer> sciClass = sc.getClass();
             HandlesTypes ann = (HandlesTypes) sciClass.getAnnotation(HandlesTypes.class);
             if(ann == null) {
                 // This initializer does not contain @HandlesTypes
@@ -234,7 +234,7 @@ public class ServletContainerInitializerUtil {
             initializerList = new HashMap<Class<? extends ServletContainerInitializer>, Set<Class<?>>>();
             List<Class<? extends ServletContainerInitializer>> initializersWithoutHandleTypes =
                     interestList.get(ServletContainerInitializerUtil.class);
-            for(Class c : initializersWithoutHandleTypes) {
+            for(Class<? extends ServletContainerInitializer> c : initializersWithoutHandleTypes) {
                 initializerList.put(c, null);
             }
         }
