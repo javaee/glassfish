@@ -15,6 +15,8 @@
       <arg line="start-database"/>
       <arg line="--dbhome"/>
       <arg line="${env.S1AS_HOME}/databases"/>
+      <arg line="--dbport"/>
+      <arg line="${db.port}"/>
     </exec>
 </target>
 
@@ -22,6 +24,8 @@
     <echo message="Stopping database"/>
     <exec executable="${ASADMIN}" failonerror="false">
       <arg line="stop-database"/>
+      <arg line="--dbport"/>
+      <arg line="${db.port}"/>
     </exec>
 </target>
 
