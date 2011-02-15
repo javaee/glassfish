@@ -78,7 +78,7 @@
       </antcall>
       <antcall target="execute-sql-common">
         <param name="sql.file" value="sql/create.sql"/>
-        <param name="db.url" value="jdbc:derby://localhost:1527/${db.name};create=true;"/>
+        <param name="db.url" value="jdbc:derby://localhost:${db.port}/${db.name};create=true;"/>
       </antcall>
     </target>
 
@@ -112,7 +112,7 @@
 
         <antcall target="execute-sql-common">
            <param name="sql.file" value="sql/drop.sql"/>
-           <param name="db.url" value="jdbc:derby://localhost:1527/${db.name};create=true;"/>
+           <param name="db.url" value="jdbc:derby://localhost:${db.port}/${db.name};create=true;"/>
          </antcall>
 
         <antcall target="delete-jdbc-resource-common">
@@ -274,7 +274,7 @@
         </antcall>
         <antcall target="execute-sql-common">
           <param name="sql.file" value="sql/delete.sql"/>
-          <param name="db.url" value="jdbc:derby://localhost:1527/${db.name};create=true;"/>
+          <param name="db.url" value="jdbc:derby://localhost:${db.port}/${db.name};create=true;"/>
         </antcall>
     </target>
 
