@@ -57,7 +57,7 @@
     <developers>
          <developer>           
             <name>Sheetal Vartak</name>
-            <organization>Sun Microsystems, Inc.</organization>
+            <organization>Oracle, Inc.</organization>
             <roles>                
                 <role>developer</role>
             </roles>
@@ -65,7 +65,7 @@
         <developer>
             <id>shannon</id>
             <name>Bill Shannon</name>
-            <organization>Sun Microsystems, Inc.</organization>
+            <organization>Oracle, Inc.</organization>
             <roles>
                 <role>developer</role>
             </roles>

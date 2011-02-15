@@ -99,7 +99,7 @@
         <developer>
             <id>kohsuke</id>
             <name>Kohsuke Kawaguchi</name>
-            <organization>Sun Microsystems, Inc.</organization>
+            <organization>Oracle, Inc.</organization>
         </developer>
     </developers>
     <dependencies>

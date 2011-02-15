@@ -60,7 +60,7 @@
             <id>ludo</id>
             <name>Ludovic Champenois</name>
             <url>http://weblogs.java.net/blog/ludo/</url>
-            <organization>Sun Microsystems, Inc.</organization>
+            <organization>Oracle, Inc.</organization>
             <roles>
                 <role>lead</role>
                 <role>developer</role>
@@ -70,7 +70,7 @@
             <id>rajeshwar</id>
             <name>Rajeshwar Patil</name>
             <url>http://blogs.sun.com/aquatic/</url>
-            <organization>Sun Microsystems, Inc.</organization>
+            <organization>Oracle, Inc.</organization>
             <roles>
                 <role>lead</role>
                 <role>developer</role>

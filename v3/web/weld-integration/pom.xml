@@ -58,12 +58,12 @@
         <developer>
             <id>mm110999</id>
             <name>Roger Kitain</name>
-            <organization>Sun Microsystems, Inc.</organization>
+            <organization>Oracle, Inc.</organization>
         </developer>
          <developer>
             <id>sivakumart</id>
             <name>Sivakumar Thyagarajan</name>
-            <organization>Sun Microsystems, Inc.</organization>
+            <organization>Oracle, Inc.</organization>
         </developer>
     </developers>
     <build>
