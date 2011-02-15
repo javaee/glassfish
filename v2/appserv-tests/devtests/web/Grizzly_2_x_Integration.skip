@@ -7,3 +7,4 @@ wrongTransportTarget
 configUpgrades
 ha/ssoFailover
 asadminDeletesTarget
+gen-doc-schema  #until the HA stuff is upgraded
