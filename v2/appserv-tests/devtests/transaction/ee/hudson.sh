@@ -1,4 +1,6 @@
 java -version
+ant -version
+echo `which ant`
 
 rm -rf glassfish-v3-image
 mkdir glassfish-v3-image
