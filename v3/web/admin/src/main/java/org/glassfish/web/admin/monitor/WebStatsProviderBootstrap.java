@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -78,9 +78,9 @@ public class WebStatsProviderBootstrap implements PostConstruct {
     private static Domain domain;
 
     // Map of apps and its StatsProvider list
-    private ConcurrentMap<String, ConcurrentMap<String, Queue>> vsNameToStatsProviderMap =
-            new ConcurrentHashMap<String, ConcurrentMap<String, Queue>>();
-    private Queue webContainerStatsProviderQueue = new ConcurrentLinkedQueue();
+    private ConcurrentMap<String, ConcurrentMap<String, Queue<Object>>> vsNameToStatsProviderMap =
+            new ConcurrentHashMap<String, ConcurrentMap<String, Queue<Object>>>();
+    private Queue<Object> webContainerStatsProviderQueue = new ConcurrentLinkedQueue<Object>();
     private AtomicBoolean isWebStatsProvidersRegistered = new AtomicBoolean(false);
 
     public WebStatsProviderBootstrap() {
@@ -124,11 +124,11 @@ public class WebStatsProviderBootstrap implements PostConstruct {
 
         //create stats providers for each virtual server 'vsName'
         String node = getNodeString(monitoringName, vsName);
-        ConcurrentMap<String, Queue> statsProviderMap = vsNameToStatsProviderMap.get(vsName);
-        Queue statspList = null;
+        ConcurrentMap<String, Queue<Object>> statsProviderMap = vsNameToStatsProviderMap.get(vsName);
+        Queue<Object> statspList = null;
         if (statsProviderMap == null) {
-            statsProviderMap = new ConcurrentHashMap<String, Queue>();
-            ConcurrentMap<String, Queue> anotherMap =
+            statsProviderMap = new ConcurrentHashMap<String, Queue<Object>>();
+            ConcurrentMap<String, Queue<Object>> anotherMap =
                     vsNameToStatsProviderMap.putIfAbsent(vsName, statsProviderMap);
             if (anotherMap != null) {
                 statsProviderMap = anotherMap;
@@ -137,8 +137,8 @@ public class WebStatsProviderBootstrap implements PostConstruct {
             statspList = statsProviderMap.get(monitoringName);
         }
         if (statspList == null) {
-            statspList = new ConcurrentLinkedQueue();
-            Queue anotherQueue = statsProviderMap.putIfAbsent(monitoringName, statspList);
+            statspList = new ConcurrentLinkedQueue<Object>();
+            Queue<Object> anotherQueue = statsProviderMap.putIfAbsent(monitoringName, statspList);
             if (anotherQueue != null) {
                 statspList = anotherQueue;
             }
@@ -185,9 +185,9 @@ public class WebStatsProviderBootstrap implements PostConstruct {
     public void unregisterApplicationStatsProviders(String monitoringName,
             String vsName) {
 
-        Map<String, Queue> statsProviderMap = vsNameToStatsProviderMap.get(vsName); 
+        Map<String, Queue<Object>> statsProviderMap = vsNameToStatsProviderMap.get(vsName); 
         // remove stats providers for a given monitoringName and vs
-        Queue statsProviders = statsProviderMap.remove(monitoringName);
+        Queue<Object> statsProviders = statsProviderMap.remove(monitoringName);
         for (Object statsProvider : statsProviders) {
             StatsProviderManager.unregister(statsProvider);
         }
