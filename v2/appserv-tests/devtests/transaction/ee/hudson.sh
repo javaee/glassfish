@@ -74,16 +74,4 @@ antStatus=$?
 
 ant dev-report
 
-if [ $antStatus -ne 0 ]
-then
-    exit $antStatus
-fi
-egrep '\[FAILED|UNKNOWN\]' log.txt >> /dev/null
-#no match -> 1 for the status value
-if [ $? -eq 1 ]
-then
-  exit 0
-else
-  exit 1
-fi
-
+exit $antStatus
