@@ -69,3 +69,6 @@ pushd $APS_HOME/devtests/transaction/ee
 
 ant all |tee log.txt
 ant dev-report
+cat $S1AS_HOME/databases/derby.log
+find $S1AS_HOME -name derby.log
+find $APS_HOME/devtests/transaction/ee -name derby.log
