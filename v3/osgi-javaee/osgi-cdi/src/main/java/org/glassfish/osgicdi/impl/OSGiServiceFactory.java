@@ -51,6 +51,9 @@ import org.glassfish.osgicdi.OSGiService;
 import org.glassfish.osgicdi.ServiceUnavailableException;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleReference;
+import org.osgi.framework.Constants;
+import org.osgi.framework.Filter;
+import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
@@ -116,7 +119,14 @@ class OSGiServiceFactory {
                                             + " using bundle-context:" + bc);
         ServiceTracker st = null;
         try {
-            st = new ServiceTracker(bc, ((Class)(serviceType)).getName(), null);
+            Class svcTypeClazz = (Class) serviceType;
+            if (os.serviceCriteria().trim().equals("")) {
+                st = new ServiceTracker(bc, svcTypeClazz.getName(), null);
+            } else {
+                Filter f = bc.createFilter(getFilter(svcTypeClazz, os));
+                st = new ServiceTracker(bc, f, null);
+            }
+            
             st.open();
             
             Object service = ((os.waitTimeout() == -1) 
@@ -129,6 +139,10 @@ class OSGiServiceFactory {
                         ServiceException.SUBCLASSED, null);
             } 
             return service;
+        } catch (InvalidSyntaxException ise) {
+            ise.printStackTrace();
+            throw new ServiceUnavailableException("Invalid Filter specification", 
+                    ServiceException.FACTORY_EXCEPTION, ise);
         } catch (InterruptedException e) {
             e.printStackTrace();
             throw new ServiceUnavailableException("" +
@@ -137,6 +151,13 @@ class OSGiServiceFactory {
         } finally {
 			if (st != null) st.close();
         }
+    }
+
+    private static String getFilter(Class serviceType, OSGiService os) {
+        String objectClassClause = "(" + Constants.OBJECTCLASS + "=" + serviceType.getName() + ")"; 
+        String filter = "(&" +  objectClassClause +  os.serviceCriteria() + ")";
+        debug("filter = " + filter);
+        return filter;
     }
 
     /**
@@ -224,7 +245,13 @@ class OSGiServiceFactory {
                                                 + " using bundle-context:" + this.bundleContext);
             ServiceTracker st = null;
             try {
-                st = new ServiceTracker(this.bundleContext, ((Class)(serviceType)).getName(), null);
+                Class svcTypeClazz = (Class) serviceType;
+                if (os.serviceCriteria().trim().equals("")) {
+                    st = new ServiceTracker(this.bundleContext, svcTypeClazz.getName(), null);
+                } else {
+                    Filter f = this.bundleContext.createFilter(getFilter(svcTypeClazz, os));
+                    st = new ServiceTracker(this.bundleContext, f, null);
+                }
                 st.open();
 
                 //If wait timeout is specified wait for the specified timeout
@@ -239,6 +266,10 @@ class OSGiServiceFactory {
                     throwServiceUnavailable();
                 } 
                 debug("ServiceReference obtained from tracker:" + this.svcReference);
+            } catch (InvalidSyntaxException ise) {
+                ise.printStackTrace();
+                throw new ServiceUnavailableException("Invalid Filter specification", 
+                        ServiceException.FACTORY_EXCEPTION, ise);
             } catch (InterruptedException e) {
                 //Another thread interupted our wait for a service
                 e.printStackTrace();
