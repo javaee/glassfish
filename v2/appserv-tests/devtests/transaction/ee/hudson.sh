@@ -68,7 +68,20 @@ cat derby.properties
 pushd $APS_HOME/devtests/transaction/ee
 
 ant all |tee log.txt
+antStatus=$?
+
 ant dev-report
-cat $S1AS_HOME/databases/derby.log
-find $S1AS_HOME -name derby.log
-find $APS_HOME/devtests/transaction/ee -name derby.log
+
+if [ $antStatus -ne 0 ]
+then
+    exit $antStatus
+fi
+egrep '\[FAILED|UNKNOWN\]' log.txt >> /dev/null
+#no match -> 1 for the status value
+if [ $? -eq 1 ]
+then
+  exit 0
+else
+  exit 1
+fi
+
