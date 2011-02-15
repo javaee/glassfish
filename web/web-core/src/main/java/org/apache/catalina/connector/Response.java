@@ -1913,10 +1913,10 @@ public class Response
      */
     public void removeSessionCookies() {
         String matchExpression = "^" + getContext().getSessionCookieName() + "=.*";
-        coyoteResponse.getResponse().getHeaders().removeHeader("Set-Cookie", matchExpression);
+        coyoteResponse.getResponse().getHeaders().removeHeaderMatches("Set-Cookie", matchExpression);
         matchExpression = "^" +
             org.apache.catalina.authenticator.Constants.SINGLE_SIGN_ON_COOKIE + "=.*";
-        coyoteResponse.getResponse().getHeaders().removeHeader("Set-Cookie", matchExpression);
+        coyoteResponse.getResponse().getHeaders().removeHeaderMatches("Set-Cookie", matchExpression);
     }
     // END GlassFish 896
 
