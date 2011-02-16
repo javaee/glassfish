@@ -1035,8 +1035,8 @@ public class Response
         /* GlassFish 898
         final StringBuilder sb = new StringBuilder();
         if (SecurityUtil.isPackageProtectionEnabled()) {
-            AccessController.doPrivileged(new PrivilegedAction() {
-                public Object run(){
+            AccessController.doPrivileged(new PrivilegedAction<Void>() {
+                public Void run(){
                     ServerCookie.appendCookieValue
                         (sb, cookie.getVersion(), cookie.getName(), 
                          cookie.getValue(), cookie.getPath(), 
@@ -1598,10 +1598,11 @@ public class Response
         }
 
         if (SecurityUtil.isPackageProtectionEnabled()) {
-            return ((Boolean)
-                AccessController.doPrivileged(new PrivilegedAction() {
+            return (
+                AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
 
-                public Object run(){
+                @Override
+                public Boolean run(){
                     return Boolean.valueOf(doIsEncodeable(hreq, session, location));
                 }
             })).booleanValue();
@@ -1722,9 +1723,9 @@ public class Response
                     
                      if (SecurityUtil.isPackageProtectionEnabled() ){
                         try{
-                            encodedURI = (String)AccessController.doPrivileged( 
-                                new PrivilegedExceptionAction(){                                
-                                    public Object run() throws IOException{
+                            encodedURI = AccessController.doPrivileged( 
+                                new PrivilegedExceptionAction<String>(){                                
+                                    public String run() throws IOException{
                                         return urlEncoder.encodeURL(frelativePath);
                                     }
                            });   
@@ -1861,9 +1862,9 @@ public class Response
         final StringBuffer sb = new StringBuffer();
 
         if (SecurityUtil.isPackageProtectionEnabled()) {
-            cookieValue = (String) AccessController.doPrivileged(
-                new PrivilegedAction() {
-                    public Object run(){
+            cookieValue = AccessController.doPrivileged(
+                new PrivilegedAction<String>() {
+                    public String run(){
                         ServerCookie.appendCookieValue
                             (sb, cookie.getVersion(), cookie.getName(), 
                              cookie.getValue(), cookie.getPath(), 

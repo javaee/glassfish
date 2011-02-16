@@ -92,25 +92,25 @@ public class RequestFacade
     // ----------------------------------------------------------- DoPrivileged
     
     private final class GetAttributePrivilegedAction
-            implements PrivilegedAction {
+            implements PrivilegedAction<Enumeration<String>> {
         
-        public Object run() {
+        public Enumeration<String> run() {
             return request.getAttributeNames();
         }            
     }
      
     
     private final class GetParameterMapPrivilegedAction
-            implements PrivilegedAction {
+            implements PrivilegedAction<Map<String, String[]>> {
         
-        public Object run() {
+        public Map<String, String[]> run() {
             return request.getParameterMap();
         }        
     }    
     
     
     private final class GetRequestDispatcherPrivilegedAction
-            implements PrivilegedAction {
+            implements PrivilegedAction<RequestDispatcher> {
 
         private String path;
 
@@ -118,14 +118,14 @@ public class RequestFacade
             this.path = path;
         }
         
-        public Object run() {   
+        public RequestDispatcher run() {   
             return request.getRequestDispatcher(path);
         }           
     }    
     
     
     private final class GetParameterPrivilegedAction
-            implements PrivilegedAction {
+            implements PrivilegedAction<String> {
 
         public String name;
 
@@ -133,23 +133,23 @@ public class RequestFacade
             this.name = name;
         }
 
-        public Object run() {       
+        public String run() {       
             return request.getParameter(name);
         }           
     }    
     
      
     private final class GetParameterNamesPrivilegedAction
-            implements PrivilegedAction {
+            implements PrivilegedAction<Enumeration<String>> {
         
-        public Object run() {          
+        public Enumeration<String> run() {          
             return request.getParameterNames();
         }           
     } 
     
     
     private final class GetParameterValuePrivilegedAction
-            implements PrivilegedAction {
+            implements PrivilegedAction<String[]> {
 
         public String name;
 
@@ -157,25 +157,25 @@ public class RequestFacade
             this.name = name;
         }
 
-        public Object run() {       
+        public String[] run() {       
             return request.getParameterValues(name);
         }           
     }    
   
     
     private final class GetCookiesPrivilegedAction
-            implements PrivilegedAction {
+            implements PrivilegedAction<Cookie[]> {
         
-        public Object run() {       
+        public Cookie[] run() {       
             return request.getCookies();
         }           
     }      
     
     
     private final class GetCharacterEncodingPrivilegedAction
-            implements PrivilegedAction {
+            implements PrivilegedAction<String> {
         
-        public Object run() {       
+        public String run() {       
             return request.getCharacterEncoding();
         }           
     }   
@@ -197,33 +197,33 @@ public class RequestFacade
         
     
     private final class GetHeaderNamesPrivilegedAction
-            implements PrivilegedAction {
+            implements PrivilegedAction<Enumeration<String>> {
 
-        public Object run() {       
+        public Enumeration<String> run() {       
             return request.getHeaderNames();
         }           
     }  
             
     
     private final class GetLocalePrivilegedAction
-            implements PrivilegedAction {
+            implements PrivilegedAction<Locale> {
 
-        public Object run() {       
+        public Locale run() {       
             return request.getLocale();
         }           
     }    
             
     
     private final class GetLocalesPrivilegedAction
-            implements PrivilegedAction {
+            implements PrivilegedAction<Enumeration<Locale>> {
 
-        public Object run() {       
+        public Enumeration<Locale> run() {       
             return request.getLocales();
         }           
     }    
     
     private final class GetSessionPrivilegedAction
-            implements PrivilegedAction {
+            implements PrivilegedAction<HttpSession> {
 
         private boolean create;
         
@@ -231,7 +231,7 @@ public class RequestFacade
             this.create = create;
         }
                 
-        public Object run() {  
+        public HttpSession run() {  
             return request.getSession(create);
         }           
     }
@@ -339,7 +339,7 @@ public class RequestFacade
         }
 
         if (SecurityUtil.isPackageProtectionEnabled()){
-            return (Enumeration)AccessController.doPrivileged(
+            return AccessController.doPrivileged(
                 new GetAttributePrivilegedAction());        
         } else {
             return request.getAttributeNames();
@@ -355,7 +355,7 @@ public class RequestFacade
         }
 
         if (SecurityUtil.isPackageProtectionEnabled()){
-            return (String)AccessController.doPrivileged(
+            return AccessController.doPrivileged(
                 new GetCharacterEncodingPrivilegedAction());
         } else {
             return request.getCharacterEncoding();
@@ -416,7 +416,7 @@ public class RequestFacade
         }
 
         if (SecurityUtil.isPackageProtectionEnabled()){
-            return (String)AccessController.doPrivileged(
+            return AccessController.doPrivileged(
                 new GetParameterPrivilegedAction(name));
         } else {
             return request.getParameter(name);
@@ -424,7 +424,7 @@ public class RequestFacade
     }
 
 
-    public Enumeration getParameterNames() {
+    public Enumeration<String> getParameterNames() {
 
         if (request == null) {
             throw new IllegalStateException(
@@ -432,7 +432,7 @@ public class RequestFacade
         }
 
         if (SecurityUtil.isPackageProtectionEnabled()){
-            return (Enumeration)AccessController.doPrivileged(
+            return AccessController.doPrivileged(
                 new GetParameterNamesPrivilegedAction());
         } else {
             return request.getParameterNames();
@@ -454,7 +454,7 @@ public class RequestFacade
          * in place, so that performance won't suffer in the non-secure case
          */
         if (SecurityUtil.isPackageProtectionEnabled()){
-            ret = (String[]) AccessController.doPrivileged(
+            ret = AccessController.doPrivileged(
                 new GetParameterValuePrivilegedAction(name));
             if (ret != null) {
                 ret = (String[]) ret.clone();
@@ -475,7 +475,7 @@ public class RequestFacade
         }
 
         if (SecurityUtil.isPackageProtectionEnabled()){
-            return (Map<String, String[]>)AccessController.doPrivileged(
+            return AccessController.doPrivileged(
                 new GetParameterMapPrivilegedAction());        
         } else {
             return request.getParameterMap();
@@ -590,7 +590,7 @@ public class RequestFacade
         }
 
         if (SecurityUtil.isPackageProtectionEnabled()){
-            return (Locale)AccessController.doPrivileged(
+            return AccessController.doPrivileged(
                 new GetLocalePrivilegedAction());
         } else {
             return request.getLocale();
@@ -606,7 +606,7 @@ public class RequestFacade
         }
 
         if (SecurityUtil.isPackageProtectionEnabled()){
-            return (Enumeration)AccessController.doPrivileged(
+            return AccessController.doPrivileged(
                 new GetLocalesPrivilegedAction());
         } else {
             return request.getLocales();
@@ -633,7 +633,7 @@ public class RequestFacade
         }
 
         if (SecurityUtil.isPackageProtectionEnabled()){
-            return (RequestDispatcher)AccessController.doPrivileged(
+            return AccessController.doPrivileged(
                 new GetRequestDispatcherPrivilegedAction(path));
         } else {
             return request.getRequestDispatcher(path);
@@ -677,7 +677,7 @@ public class RequestFacade
          * in place, so that performance won't suffer in the non-secure case
          */
         if (SecurityUtil.isPackageProtectionEnabled()){
-            ret = (Cookie[])AccessController.doPrivileged(
+            ret = AccessController.doPrivileged(
                 new GetCookiesPrivilegedAction());
             if (ret != null) {
                 ret = (Cookie[]) ret.clone();
@@ -736,7 +736,7 @@ public class RequestFacade
         }
 
         if (SecurityUtil.isPackageProtectionEnabled()){
-            return (Enumeration<String>)AccessController.doPrivileged(
+            return AccessController.doPrivileged(
                 new GetHeaderNamesPrivilegedAction());
         } else {
             return request.getHeaderNames();
@@ -914,7 +914,7 @@ public class RequestFacade
         }
 
         if (SecurityUtil.isPackageProtectionEnabled()){
-            return (HttpSession)AccessController.
+            return AccessController.
                 doPrivileged(new GetSessionPrivilegedAction(create));
         } else {
             return request.getSession(create);

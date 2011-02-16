@@ -113,7 +113,7 @@ public class Connector
     /**
      * Holder for our configured properties.
      */
-    private HashMap properties = new HashMap();
+    private HashMap<String, String> properties = new HashMap<String, String>();
 
     /**
      * The <code>Service</code> we are associated with (if any).
@@ -398,14 +398,14 @@ public class Connector
     /**
      * Return a configured property.
      */
-    public Object getProperty(String name) {
+    public String getProperty(String name) {
         return properties.get(name);
     }
 
     /**
      * Set a configured property.
      */
-    public void setProperty(String name, Object value) {
+    public void setProperty(String name, String value) {
         properties.put(name, value);
     }
 
@@ -430,7 +430,6 @@ public class Connector
      */
     public void setService(Service service) {
         this.service = service;
-        setProperty("service", service);
     }
 
     /**
@@ -1286,7 +1285,7 @@ public class Connector
             throws MalformedObjectNameException {
         String encodedAddr = null;
         if (getAddress() != null) {
-            encodedAddr = URLEncoder.encode(getProperty("address").toString());
+            encodedAddr = URLEncoder.encode(getProperty("address"));
         }
         String addSuffix = (getAddress() == null) ? "" : ",address="
                 + encodedAddr;
@@ -1343,9 +1342,9 @@ public class Connector
         //START SJSAS 6363251
         if ( adapter == null){
             try {
-                Class clazz = Class.forName(defaultClassName);
+                Class<?> clazz = Class.forName(defaultClassName);
                 Constructor constructor = 
-                        clazz.getConstructor(new Class[]{Connector.class});
+                        clazz.getConstructor(new Class<?>[]{Connector.class});
                 adapter = 
                         (Adapter)constructor.newInstance(new Object[]{this});
             } catch (Exception e) {
@@ -1359,7 +1358,7 @@ public class Connector
         // Instantiate protocol handler
         if ( protocolHandler == null ) {
             try {
-                Class clazz = Class.forName(protocolHandlerClassName);
+                Class<?> clazz = Class.forName(protocolHandlerClassName);
 
                 // use no-arg constructor for JkCoyoteHandler
                 if (protocolHandlerClassName.equals("org.apache.jk.server.JkCoyoteHandler")) {
@@ -1375,7 +1374,7 @@ public class Connector
                 // START SJSAS 6439313
                 } else {
                     Constructor constructor = 
-                            clazz.getConstructor(new Class[]{Boolean.TYPE,
+                            clazz.getConstructor(new Class<?>[]{Boolean.TYPE,
                                                              Boolean.TYPE,
                                                              String.class});
 
@@ -1440,10 +1439,10 @@ public class Connector
          * explicitly configured.  Default values are the responsibility of
          * the protocolHandler.
          */
-        Iterator keys = properties.keySet().iterator();
+        Iterator<String> keys = properties.keySet().iterator();
         while( keys.hasNext() ) {
-            String name = (String)keys.next();
-            String value = properties.get(name).toString();
+            String name = keys.next();
+            String value = properties.get(name);
 	    String trnName = translateAttributeName(name);
             IntrospectionUtils.setProperty(protocolHandler, trnName, value);
         }
@@ -1602,7 +1601,7 @@ public class Connector
     public boolean getClientAuth() {
         boolean ret = false;
 
-        String prop = (String) getProperty("clientauth");
+        String prop = getProperty("clientauth");
         if (prop != null) {
             ret = Boolean.valueOf(prop).booleanValue();
         } else {	
@@ -1624,7 +1623,7 @@ public class Connector
     }
 
     public String getKeystoreFile() {
-        String ret = (String) getProperty("keystore");
+        String ret = getProperty("keystore");
         if (ret == null) {
             ServerSocketFactory factory = this.getFactory();
             if (factory instanceof CoyoteServerSocketFactory) {
@@ -1647,7 +1646,7 @@ public class Connector
      * Return keystorePass
      */
     public String getKeystorePass() {
-        String ret = (String) getProperty("keypass");
+        String ret = getProperty("keypass");
         if (ret == null) {
             ServerSocketFactory factory = getFactory();
             if (factory instanceof CoyoteServerSocketFactory ) {
@@ -1677,7 +1676,7 @@ public class Connector
      * enabled
      */
     public String getCiphers() {
-        String ret = (String) getProperty("ciphers");
+        String ret = getProperty("ciphers");
         if (ret == null) {
             ServerSocketFactory factory = getFactory();
             if (factory instanceof CoyoteServerSocketFactory) {
@@ -1713,7 +1712,7 @@ public class Connector
     }
 
     public String getSslSessionTimeout() {
-        return (String) getProperty("sslSessionTimeout");
+        return getProperty("sslSessionTimeout");
     }
 
     /**
@@ -1725,7 +1724,7 @@ public class Connector
     }
 
     public String getSsl3SessionTimeout() {
-        return (String) getProperty("ssl3SessionTimeout");
+        return getProperty("ssl3SessionTimeout");
     }
 
     /**
@@ -1736,7 +1735,7 @@ public class Connector
     }
 
     public String getSslSessionCacheSize() {
-        return (String) getProperty("sslSessionCacheSize");
+        return getProperty("sslSessionCacheSize");
     }
 
     /**
@@ -1746,7 +1745,7 @@ public class Connector
      * @return The alias name of the keypair and supporting certificate chain
      */
     public String getKeyAlias() {
-        String ret = (String) getProperty("keyAlias");
+        String ret = getProperty("keyAlias");
         if (ret == null) {
             ServerSocketFactory factory = getFactory();
             if (factory instanceof CoyoteServerSocketFactory) {
@@ -1778,7 +1777,7 @@ public class Connector
      * @return SSL protocol variant
      */
     public String getSslProtocol() {
-        String ret = (String) getProperty("sslProtocol");
+        String ret = getProperty("sslProtocol");
         if (ret == null) {
             ServerSocketFactory factory = getFactory();
             if (factory instanceof CoyoteServerSocketFactory) {
@@ -1808,7 +1807,7 @@ public class Connector
      * @return Comma-separated list of SSL protocol variants
      */
     public String getSslProtocols() {
-        String ret = (String) getProperty("sslProtocols");
+        String ret = getProperty("sslProtocols");
         if (ret == null) {
             ServerSocketFactory factory = getFactory();
             if (factory instanceof CoyoteServerSocketFactory) {

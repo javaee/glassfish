@@ -196,10 +196,10 @@ public class MapperListener
             // Query hosts
             String onStr = domain + ":type=Host,*";
             ObjectName objectName = new ObjectName(onStr);
-            Set set = mBeanServer.queryMBeans(objectName, null);
-            Iterator iterator = set.iterator();
+            Set<ObjectInstance> set = mBeanServer.queryMBeans(objectName, null);
+            Iterator<ObjectInstance> iterator = set.iterator();
             while (iterator.hasNext()) {
-                ObjectInstance oi = (ObjectInstance) iterator.next();
+                ObjectInstance oi = iterator.next();
                 registerHost(oi.getObjectName());
             }
 
@@ -209,7 +209,7 @@ public class MapperListener
             set = mBeanServer.queryMBeans(objectName, null);
             iterator = set.iterator();
             while (iterator.hasNext()) {
-                ObjectInstance oi = (ObjectInstance) iterator.next();
+                ObjectInstance oi = iterator.next();
                 registerContext(oi.getObjectName());
             }
 
@@ -219,7 +219,7 @@ public class MapperListener
             set = mBeanServer.queryMBeans(objectName, null);
             iterator = set.iterator();
             while (iterator.hasNext()) {
-                ObjectInstance oi = (ObjectInstance) iterator.next();
+                ObjectInstance oi = iterator.next();
                 registerWrapper(oi.getObjectName());
             }
 

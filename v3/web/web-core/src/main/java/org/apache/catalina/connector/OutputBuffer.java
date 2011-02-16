@@ -161,7 +161,8 @@ public class OutputBuffer extends Writer
     /**
      * List of encoders.
      */
-    protected HashMap encoders = new HashMap();
+    protected HashMap<String, C2BConverter> encoders =
+        new HashMap<String, C2BConverter>();
 
 
     /**
@@ -565,14 +566,14 @@ public class OutputBuffer extends Writer
         gotEnc = true;
         if (enc == null)
             enc = DEFAULT_ENCODING;
-        conv = (C2BConverter) encoders.get(enc);
+        conv = encoders.get(enc);
         if (conv == null) {
             if (Globals.IS_SECURITY_ENABLED){
                 try{
-                    conv = (C2BConverter)AccessController.doPrivileged(
-                            new PrivilegedExceptionAction(){
+                    conv = AccessController.doPrivileged(
+                            new PrivilegedExceptionAction<C2BConverter>(){
 
-                                public Object run() throws IOException{
+                                public C2BConverter run() throws IOException{
                                     return C2BConverter.getInstance(bb, enc);
                                 }
 
