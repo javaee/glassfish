@@ -79,4 +79,10 @@ public class Constants {
    */
   public static final String PARAM_INHABITANTS_SORTED = "inhabitants.sorted";
   
+  /**
+   * This is the optionally provided Advisor for pruning and/or caching the {@link #PARAM_INHABITANTS_CLASSPATH}.
+   * <p>
+   * Passed as a system property.
+   */
+  public static final String PARAM_INHABITANTS_CLASSPATH_ADVISOR = "inhabitants.classpath.advisor";
 }

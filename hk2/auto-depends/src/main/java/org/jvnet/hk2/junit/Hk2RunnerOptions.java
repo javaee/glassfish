@@ -42,6 +42,7 @@ package org.jvnet.hk2.junit;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
+import java.io.FileFilter;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
@@ -87,4 +88,14 @@ public @interface Hk2RunnerOptions {
    */
   Class<? extends InhabitantsParserFactory> inhabitantsParserFactory() default InhabitantsParserFactory.class; 
 
+  /**
+   * A filter that can be used to optimally select the set of jars (and directories) that contributes to habitat
+   * production, filtering out the irrelevant ones.  Mostly intended as a performance optimization when used.
+   * 
+   * <p>
+   * Note that while the declaration is generic enough to support any {@link FileFilter}, the implementation
+   * also supports the use of full {@link ClassPathAdvisor} interface.
+   */
+  Class<? extends FileFilter> classpathFilter() default FileFilter.class;
+  
 }

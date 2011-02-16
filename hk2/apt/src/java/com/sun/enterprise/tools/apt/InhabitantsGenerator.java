@@ -55,6 +55,7 @@ import com.sun.mirror.util.DeclarationVisitor;
 import com.sun.mirror.util.DeclarationVisitors;
 import com.sun.mirror.util.SimpleDeclarationVisitor;
 import org.jvnet.hk2.annotations.*;
+import org.jvnet.hk2.component.MultiMap;
 
 import java.util.*;
 import java.lang.annotation.Annotation;
@@ -108,7 +109,7 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
          * Contract indices found in various methods of this class
          * gets accumulated here.
          */
-        private final List<String> indices = new ArrayList<String>();
+        private final LinkedHashSet<String> indices = new LinkedHashSet<String>();
 
         /**
          * {@link InterfaceType}s whose contracts are already checked.
@@ -190,8 +191,7 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
         }
 
         public void processGenericImpl(String service, InhabitantsDescriptor descriptor, TypeDeclaration d, AnnotationMirror a) {
-
-                String name = getIndexValue(a);
+                List<String> names = getIndexValues(a);
                 String contract=null;
                 ContractProvided cp = a.getAnnotationType().getDeclaration().getAnnotation(ContractProvided.class);
                 if (cp!=null) {
@@ -203,10 +203,16 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
                 }
 
                 String qualifiedName = d.getQualifiedName();
-
-                StringBuilder buf = new StringBuilder();
+                
+                 StringBuilder buf = new StringBuilder();
                  buf.append(InhabitantsFile.CLASS_KEY).append('=').append(service);
-                 buf.append(",").append(INDEX_KEY).append("=").append(contract).append(":").append(name);
+                 if (null == names) {
+                   buf.append(",").append(INDEX_KEY).append("=").append(contract);
+                 } else {
+                   for (String name : names) {
+                     buf.append(",").append(INDEX_KEY).append("=").append(contract).append(":").append(name);
+                   }
+                 }
                  buf.append(",").append(TARGET_TYPE).append("=").append(qualifiedName);
                  for (AnnotationTypeElementDeclaration ated : a.getAnnotationType().getDeclaration().getMethods()) {
                      for (AnnotationMirror am : ated.getAnnotationMirrors()) {
@@ -220,7 +226,7 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
                      }
                  }
 
-                 descriptor.put(contract+":"+name, buf.toString());
+                 descriptor.put(contract+":"+names, buf.toString());
 
 /*                // we should support gettting the @ContractProvided from the ServiceProvider
                 for (AnnotationMirror am : a.getAnnotationType().getDeclaration().getAnnotationMirrors()) {
@@ -312,9 +318,9 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
             }
             */
             if (service!=null) {
-                String name = getIndexValue(a);
+                List<String> names = getIndexValues(a);
 
-               String contract=null;
+                String contract=null;
                 ContractProvided cp = a.getAnnotationType().getDeclaration().getAnnotation(ContractProvided.class);
                 if (cp!=null) {
                     try {
@@ -335,7 +341,13 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
 
                 StringBuilder buf = new StringBuilder();
                 buf.append(InhabitantsFile.CLASS_KEY).append('=').append(service);
-                buf.append(",").append(INDEX_KEY).append("=").append(contract).append(":").append(name);
+                if (null == names) {
+                  buf.append(",").append(INDEX_KEY).append("=").append(contract);
+                } else {
+                  for (String name : names) {
+                    buf.append(",").append(INDEX_KEY).append("=").append(contract).append(":").append(name);
+                  }
+                }
                 buf.append(",").append(TARGET_TYPE).append("=").append(d.getDeclaringType().getQualifiedName());
                 buf.append(",").append("method-name").append('=').append(d.getSimpleName());
                 for (AnnotationTypeElementDeclaration ated : a.getAnnotationType().getDeclaration().getMethods()) {
@@ -350,7 +362,7 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
                     }
                 }
 
-                descriptor.put(contract+":"+name, buf.toString());
+                descriptor.put(contract+":"+names, buf.toString());
             } else {
                 descriptor.put(d.getDeclaringType().getQualifiedName(),
                         getInhabitantDeclaration(a, (ClassDeclaration) d.getDeclaringType()));
@@ -369,10 +381,16 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
             checkedInterfaces.clear();
 
             // check for Contract supertypes.
-            String name = getIndexValue(a);
+            List<String> names = getIndexValues(a);
             for (TypeDeclaration t : ContractFinder.find(d)) {
                 enforceContractLevelScope(t,d);
-                addIndex(t.getQualifiedName(),name);
+                if (null != names) {
+                  for (String name : names) {
+                    addIndex(t.getQualifiedName(), name);
+                  }
+                } else {
+                  addIndex(t.getQualifiedName(), null);
+                }
             }
 
             // check for contract annotations
@@ -382,8 +400,14 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
                 if (c!=null) {
                     // this is a contract annotation
                     enforceContractLevelScope(atd,d);
-                    name = getIndexValue(am);
-                    addIndex(atd.getQualifiedName(), name);
+                    names = getIndexValues(am);
+                    if (null != names) {
+                      for (String name : names) {
+                        addIndex(atd.getQualifiedName(), name);
+                      }
+                    } else {
+                      addIndex(atd.getQualifiedName(), null);
+                    }
                 }
 
                 // check for meta-annotations
@@ -392,8 +416,14 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
                     Contract mc = matd.getAnnotation(Contract.class);
                     if (mc!=null) {
                         // meta-contract annotation
-                        name = getIndexValue(mam);
-                        addIndex(matd.getQualifiedName(), name);
+                        names = getIndexValues(mam);
+                        if (null != names) {
+                          for (String name : names) {
+                            addIndex(matd.getQualifiedName(), name);
+                          }
+                        } else {
+                          addIndex(matd.getQualifiedName(), null);
+                        }
                     }
                 }
             }
@@ -419,8 +449,9 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
 
             // TODO: should be deprecated and replaced with InhabitantMetadata
             String metadata = getStringValue(a,"metadata");
-            if(metadata!=null && metadata.length()>0)
+            if (metadata!=null && metadata.length()>0) {
                 buf.append(',').append(metadata);
+            }
 
             return buf.toString();
         }
@@ -433,10 +464,11 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
          * Notably, separator for nested classes is '$', not '.'
          */
         private String getClassName(TypeDeclaration d) {
-            if(d.getDeclaringType()!=null)
+            if (d.getDeclaringType()!=null) {
                 return getClassName(d.getDeclaringType())+'$'+d.getSimpleName();
-            else
+            } else {
                 return d.getQualifiedName();
+            }
         }        
 
         private void addMetadata(StringBuilder buf, String key, String value) {
@@ -464,46 +496,57 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
         }
 
         /**
-         * Locates all {@link InhabitantMetadata} and add to the metadata.
+         * Locates all {@link InhabitantMetadata} to add to the metadata.
          */
         private void findInhabitantMetadata(ClassDeclaration d, StringBuilder buf) {
-            for (Map.Entry<String, String> e : inhabitantMetadataProcessor.process(d).entrySet())
-                buf.append(',').append(e.getKey()).append('=').append(e.getValue());
+          MultiMap<String, String> md = inhabitantMetadataProcessor.process(d);
+          for (Map.Entry<String, List<String>> e : md.entrySet()) {
+            HashSet<String> processed = new HashSet<String>();
+            for (String val : e.getValue()) {
+              if (processed.add(val)) {
+                processed.add(val);
+                buf.append(',').append(e.getKey()).append('=').append(val);
+              }
+            }
+          }
         }
 
         /**
          * Finds the value of the annotation element annotated with {@link Index}.
          */
-        private String getIndexValue(AnnotationMirror a) {
+        private List<String> getIndexValues(AnnotationMirror a) {
+            ArrayList<String> result = new ArrayList<String>();
+            
             AnnotationTypeDeclaration decl = a.getAnnotationType().getDeclaration();
-            for(AnnotationTypeElementDeclaration e : decl.getMethods()) {
-                if(e.getAnnotation(Index.class)!=null) {
+            for (AnnotationTypeElementDeclaration e : decl.getMethods()) {
+                if (e.getAnnotation(Index.class)!=null) {
                     AnnotationValue v = a.getElementValues().get(e);
                     if (null != v) {
                       if (Collection.class.isInstance(v.getValue())) {
-                        StringBuilder values = new StringBuilder();
                         for (Object val : (Collection<?>)v.getValue()) {
                           if (null != val) {
-                            if (values.length() > 0) {
-                              values.append("|");
-                            }
                             if (AnnotationValue.class.isInstance(val)) {
-                              values.append(AnnotationValue.class.cast(val).getValue());
+                              Object av = AnnotationValue.class.cast(val).getValue();
+                              if (ClassType.class.isInstance(av)) {
+                                result.add(getClassName(ClassType.class.cast(av).getDeclaration()));
+                              } else {
+                                result.add(av.toString());
+                              }
                             } else {
-                              values.append(val);
+                              result.add(val.toString());
                             }
                           }
                         }
-                        return values.toString();
                       } else {
-                        return v.getValue().toString();
+                        result.add(v.getValue().toString());
                       }
                     } else { // defaulted
-                      return e.getDefaultValue().getValue().toString();
+                      result.add(e.getDefaultValue().getValue().toString());
                     }
                 }
             }
-            return null;
+            
+            return result.isEmpty() ? null : result;
         }
 
         /**
@@ -512,24 +555,25 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
          */
         private String getStringValue(AnnotationMirror a, String name) {
             AnnotationTypeDeclaration decl = a.getAnnotationType().getDeclaration();
-            for(AnnotationTypeElementDeclaration e : decl.getMethods()) {
-                if(e.getSimpleName().equals(name)) {
+            for (AnnotationTypeElementDeclaration e : decl.getMethods()) {
+                if (e.getSimpleName().equals(name)) {
                     AnnotationValue v = a.getElementValues().get(e);
-                    if(v!=null) // explicitly given
+                    if (v!=null) { // explicitly given
                         return v.getValue().toString();
-                    else // defaulted
+                    } else { // defaulted
                         return e.getDefaultValue().getValue().toString();
+                    }
                 }
             }
             return null;
         }
 
-
         private void addIndex(String primary, String secondary) {
-            if(secondary==null || secondary.length()==0)
+            if (secondary==null || secondary.length()==0) {
                 indices.add(primary);    // unnamed
-            else
+            } else {
                 indices.add(primary+':'+secondary); // named
+            }
         }
 
         /**
@@ -543,7 +587,9 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
         private void enforceContractLevelScope(TypeDeclaration ctrct, ClassDeclaration impl) {
             // if @Scoped is on the contract, that means we are forcing a certain scope type.
             Scoped s = ctrct.getAnnotation(Scoped.class);
-            if(s==null)     return;
+            if (s==null) {
+                return;
+            }
 
             try {
                 s.value();

@@ -73,7 +73,7 @@ import com.sun.hk2.component.InhabitantsParser;
 public class ConfigTransactionCoordinator 
     implements ConfigTransactionFactory, PreDestroy {
 
-  private Logger logger = Logger.getLogger(ConfigTransactionCoordinator.class.getCanonicalName());
+  private Logger logger = Logger.getLogger(ConfigTransactionCoordinator.class.getName());
   
   @Inject
   private Habitat habitat;
@@ -131,8 +131,8 @@ public class ConfigTransactionCoordinator
     }
     
     while (Object.class != clazz) {
-      String canonicalName = clazz.getCanonicalName();
-      if (null != canonicalName && null != clazz.getAnnotation(Configured.class)) {
+      String name = clazz.getName();
+      if (null != name && null != clazz.getAnnotation(Configured.class)) {
         configured.add(clazz);
       }
       clazz = clazz.getSuperclass();
@@ -164,7 +164,7 @@ public class ConfigTransactionCoordinator
     if (null != beanContracts && !beanContracts.isEmpty()) {
       Inhabitant<?> configBeanInhabitant = new ExistingSingletonInhabitant<Object>(bean);
       for (Class<?> beanContract : beanContracts) {
-        habitat.addIndex(configBeanInhabitant, beanContract.getCanonicalName(), name);
+        habitat.addIndex(configBeanInhabitant, beanContract.getName(), name);
       }
     }
 
@@ -243,7 +243,7 @@ public class ConfigTransactionCoordinator
     // remove the bean itself from the habitat
     if (null != beanContracts) {
       for (Class<?> beanContract : beanContracts) {
-        boolean removed = habitat.removeIndex(beanContract.getCanonicalName(), bean);
+        boolean removed = habitat.removeIndex(beanContract.getName(), bean);
         assert(removed);
         
         // TODO: should we release it too?

@@ -135,7 +135,7 @@ public class Jsr330ProcessorImpl implements Jsr330Processor, PostConstruct {
     if (null != qualifiers) {
       for (Class<? extends Annotation> ann : qualifiers) {
         if (null != ann) {
-          indicies.add(ann.getCanonicalName());
+          indicies.add(ann.getName());
         }
       }
     }

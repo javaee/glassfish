@@ -80,7 +80,7 @@ public abstract class ClassPath {
    * @return the ClassPathHelper
    */
   public static ClassPath create(Habitat h, boolean allowTestClassPath) {
-    return new ClassPath(allowTestClassPath) {};
+    return new ClassPath(allowTestClassPath/*, null*/) {};
   }
   
   public static ClassPath create(Habitat h, String classPath) {

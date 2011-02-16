@@ -39,19 +39,30 @@
  */
 package org.glassfish.hk2.classmodel.reflect.util;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 
 /**
  * Interface to load .class files as resources for processing by the parser.
+ * 
  * @author Jerome Dochez
  */
 public interface ResourceLocator {
 
+    /**
+     * Opens and input stream for the resources identified by the parameter name.
+     * @param name the resource identification
+     * @return an input stream, or null if the name does not exist
+     * @throws IOException on i/o error
+     */
+    InputStream openResourceStream(String name) throws IOException;
 
     /**
-     * Returns a URL for the resources identified by the parameter name.
-     * @param name the resource identification
-     * @return URL if the resource was located, null otherwise.
+     * Retrieves the URL given a resource name
+     * @param name
+     * @return the resource URL, or null if not found
      */
     URL getResource(String name);
+
 }

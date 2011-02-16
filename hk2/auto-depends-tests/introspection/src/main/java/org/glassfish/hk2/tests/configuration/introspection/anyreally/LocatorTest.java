@@ -39,14 +39,14 @@
  */
 package org.glassfish.hk2.tests.configuration.introspection.anyreally;
 
-
 import org.glassfish.hk2.classmodel.reflect.*;
 import org.glassfish.hk2.classmodel.reflect.util.ResourceLocator;
 import org.junit.Assert; 
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
-import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -72,6 +72,11 @@ public class LocatorTest {
             @Override
             public URL getResource(String name) {
                 return getClass().getClassLoader().getResource(name);
+            }
+
+            @Override
+            public InputStream openResourceStream(String name) throws IOException {
+              return getClass().getClassLoader().getResourceAsStream(name);
             }
         });
         ParsingContext pc = builder.build();

@@ -280,6 +280,7 @@
         <module>osgi-main</module>
         <module>config-types</module>
         <module>consolidatedbundle-maven-plugin</module>
+        <module>hk2-jsr330</module>
   </modules>
 
     <dependencies>

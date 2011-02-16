@@ -68,6 +68,15 @@ public class MethodTest {
                 if ("setFoo".equals(mm.getName())) {
                     if (mm.getDeclaringType().getName().equals(SimpleAnnotatedMethod.class.getName())) {
                         // success
+                      
+                        Assert.assertEquals(mm.getAnnotations().toString(), 1, mm.getAnnotations().size());
+                        AnnotationModel ann = (AnnotationModel) mm.getAnnotations().iterator().next();
+                        Assert.assertEquals("values", 3, ann.getValues().size());
+                        Assert.assertEquals("aLong value", 10, ann.getValues().get("aLong"));
+                        Assert.assertEquals("aClass value", "java.lang.Void", ann.getValues().get("aClass"));
+//                        Assert.assertEquals("aClassArr value", "java.lang.Void", ann.getValues().get("aClassArr"));
+                        Assert.assertEquals("default values", 3, ann.getType().getDefaultValues().size());
+                        Assert.assertEquals("java.lang.Void", ann.getType().getDefaultValues().get("environment"));
                         return;
                     }
                 }

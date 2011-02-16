@@ -78,8 +78,7 @@ public abstract class InhabitantsFeed {
      * @return the InhabitantsHabitatFeed
      */
     public static InhabitantsFeed create(Habitat h, InhabitantsParser ip) {
-        return new InhabitantsFeed(ip) {
-        };
+        return new InhabitantsFeed(ip) {};
     }
 
     protected InhabitantsFeed(InhabitantsParser ip) {

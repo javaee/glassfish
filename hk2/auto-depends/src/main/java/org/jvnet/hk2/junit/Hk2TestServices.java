@@ -49,6 +49,7 @@ import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.InhabitantsParserFactory;
 import org.jvnet.hk2.component.RunLevelService;
 import org.jvnet.hk2.component.classmodel.ClassPath;
+import org.jvnet.hk2.component.classmodel.FileCachingClassPathAdvisor;
 import org.jvnet.hk2.component.classmodel.InhabitantsFeed;
 import org.jvnet.hk2.component.classmodel.InhabitantsParsingContextGenerator;
 
@@ -67,25 +68,29 @@ import java.util.logging.Logger;
 public class Hk2TestServices {
 
     private final Logger logger = Logger.getLogger(Hk2TestServices.class.getName());
-
+    
     private static final boolean USE_CACHE = true;
     private static final SoftCache<ClassPath, InhabitantsParsingContextGenerator> ipcgCache = 
       (USE_CACHE) ? new SoftCache<ClassPath, InhabitantsParsingContextGenerator>() : null;
-    
+
+    private final boolean extendedFileCaching = Boolean.getBoolean("hk2testservices.file.caching");
+      
     private Habitat habitat;
     
     private final HabitatFactory habitatFactory;
     private final InhabitantsParserFactory ipFactory;
     private final boolean defaultRLSEnabled;
+    private FileFilter classpathFilter;
     
     public Hk2TestServices() {
-        this(null, null, true, true);
+        this(null, null, true, true, null);
     }
 
     protected Hk2TestServices(Class<? extends HabitatFactory> habitatFactoryClass,
         Class<? extends InhabitantsParserFactory> ipFactoryClass,
         boolean defaultRLSEnabled,
-        boolean rlsConstraintsEnabled) {
+        boolean rlsConstraintsEnabled,
+        Class<? extends FileFilter> classpathFilter) {
       if (null == habitatFactoryClass || habitatFactoryClass.isInterface()) {
           this.habitatFactory = null;
       } else {
@@ -106,6 +111,19 @@ public class Hk2TestServices {
           }
       }
       
+      if (null == classpathFilter || classpathFilter.isInterface()) {
+        this.classpathFilter = null;
+      } else {
+        try {
+            this.classpathFilter = classpathFilter.newInstance();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+      }
+      if (null == classpathFilter && extendedFileCaching) {
+        this.classpathFilter = new FileCachingClassPathAdvisor();
+      }
+      
       this.defaultRLSEnabled = defaultRLSEnabled;
       RunLevelInhabitant.enable(rlsConstraintsEnabled);
       
@@ -123,16 +141,17 @@ public class Hk2TestServices {
       Callable<InhabitantsParsingContextGenerator> populator = new Callable<InhabitantsParsingContextGenerator>() {
           @Override
           public InhabitantsParsingContextGenerator call() throws Exception {
-            InhabitantsParsingContextGenerator ipcgen = InhabitantsParsingContextGenerator.create(habitat);
+            InhabitantsParsingContextGenerator ipcgen = 
+                InhabitantsParsingContextGenerator.create(habitat, null, /*classpath*/null, classpathFilter);
             Set<String> cpSet = classpath.getEntries();
             for (String fileName : cpSet) {
                 File f = new File(fileName);
                 if (f.exists()) {
-                  try {
-                    ipcgen.parse(f);
-                  } catch (IOException e) {
-                    e.printStackTrace();
-                  }
+                    try {
+                      ipcgen.parse(f);
+                    } catch (IOException e) {
+                      e.printStackTrace();
+                    }
                 }
             }
             return ipcgen;

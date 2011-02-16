@@ -56,6 +56,8 @@ import java.util.logging.Logger;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.classmodel.ClassPath;
+import org.jvnet.hk2.component.classmodel.ClassPathAdvisor;
+import org.jvnet.hk2.component.classmodel.FileCachingClassPathAdvisor;
 import org.jvnet.hk2.component.classmodel.InhabitantsFeed;
 import org.jvnet.hk2.component.classmodel.InhabitantsParsingContextGenerator;
 
@@ -113,15 +115,18 @@ public class InhabitantsGenerator extends Constants {
     
     inhabitantsClassPath = filterIgnores(inhabitantsClassPath);
     
+    // have caching on all of the time
+    ClassPathAdvisor advisor = new FileCachingClassPathAdvisor();
+    
     logger.log(Level.FINE, "working classpath: {0}", inhabitantsClassPath);
     this.ipcGen = InhabitantsParsingContextGenerator.
-          create(null, createExecutorService(), inhabitantsClassPath);
+          create(null, createExecutorService(), inhabitantsClassPath, advisor);
     
     if (null != descriptor) {
       this.descriptor = descriptor;
     } else {
       this.descriptor = new InhabitantsDescriptor();
-      this.descriptor.setComment("by " + getClass().getCanonicalName());
+      this.descriptor.setComment("by " + getClass().getName());
     }
   
     try {
@@ -145,9 +150,10 @@ public class InhabitantsGenerator extends Constants {
     Set<File> entries = new LinkedHashSet<File>(inhabitantsClassPath.getFileEntries());
     for (File file : entries) {
       if (!IGNORE.contains(file.getName())) {
+        logger.log(Level.FINE, "accepting {0}", file);
         newFiles.add(file);
       } else {
-        logger.log(Level.FINE, "ignoring {0}", file);
+        logger.log(Level.FINE, "filtering {0}", file);
       }
     }
     
@@ -313,6 +319,7 @@ public class InhabitantsGenerator extends Constants {
      */
     public void flush() {
       if (null != pendingInhabitant) {
+        logger.log(Level.INFO, "adding inhabitant {0} with contracts {1}", new Object[] {pendingInhabitant, pendingUnamedContracts});
         descriptor.putAll(pendingInhabitant.typeName(), null, pendingUnamedContracts, null, pendingInhabitant.metadata());
         pendingUnamedContracts = null;
         pendingInhabitant = null;
@@ -325,9 +332,10 @@ public class InhabitantsGenerator extends Constants {
     @Override
     protected boolean isFilteredInhabitant(String typeName) {
       if (null == codeSourceFilter || codeSourceFilter.matches(typeName)) {
+        logger.log(Level.FINE, "accepting {0}", typeName);
         return false; // true==(ignore it); false==(include it)
       } else {
-        Logger.getAnonymousLogger().log(Level.FINE, "filtering out {0}", typeName);
+        logger.log(Level.FINE, "filtering {0}", typeName);
         return true;
       }
     }

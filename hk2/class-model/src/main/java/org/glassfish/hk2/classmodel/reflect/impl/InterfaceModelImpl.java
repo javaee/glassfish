@@ -41,7 +41,6 @@ package org.glassfish.hk2.classmodel.reflect.impl;
 
 import org.glassfish.hk2.classmodel.reflect.*;
 
-import java.net.URI;
 import java.util.*;
 
 /**

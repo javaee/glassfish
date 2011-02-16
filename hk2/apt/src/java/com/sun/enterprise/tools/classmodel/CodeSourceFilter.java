@@ -57,9 +57,12 @@ import org.jvnet.hk2.component.classmodel.ClassPath;
  */
 public class CodeSourceFilter {
 
+  private final Logger logger = Logger.getLogger(CodeSourceFilter.class.getName());
+  
   private final ClassPath filter;
 
-  private final HashSet<String> classes = new HashSet<String>();
+  // classes to code source
+  private final HashMap<String, File> classes = new HashMap<String, File>();
 
   public CodeSourceFilter(ClassPath filter) {
     this.filter = filter;
@@ -81,31 +84,38 @@ public class CodeSourceFilter {
    * @return true if the given className is present in the ClassPath
    */
   public boolean matches(String className) {
-    return classes.contains(className);
+    return classes.containsKey(className);
   }
 
+  /**
+   * @return the code source of the given className is present in the ClassPath, or null if not found
+   */
+  public File codeSourceOf(String className) {
+    return classes.get(className);
+  }
+  
   private void initialize() throws IOException {
     for (File file : filter.getFileEntries()) {
       if (file.exists()) {
         if (file.isFile()) {
-          index(new JarFile(file));
+          indexJar(new JarFile(file), file);
         } else if (file.isDirectory()) {
-          index("", file);
+          indexDir("", file);
         }
       }
     }
   }
 
-  private void index(JarFile jarFile) throws IOException {
+  private void indexJar(JarFile jarFile, File file) throws IOException {
     JarEntry entry;
     for (Enumeration<JarEntry> en = jarFile.entries(); en.hasMoreElements(); ) {
       entry = (JarEntry) en.nextElement();
-      index(entry.getName().replace("/", "."));
+      index(entry.getName().replace("/", "."), file);
     }
     jarFile.close();
   }
 
-  private void index(String baseName, File directory) {
+  private void indexDir(String baseName, File directory) {
     File files[] = directory.listFiles();
     if (null == files) {
       return;
@@ -117,19 +127,26 @@ public class CodeSourceFilter {
       }
       
       if (file.isDirectory()) {
-        index((new StringBuilder()).append(baseName).append(
+        indexDir((new StringBuilder()).append(baseName).append(
             baseName.isEmpty() ? "" : ".").append(file.getName()).toString(),
             file);
       } else {
         index((new StringBuilder()).append(baseName).append(
-            baseName.isEmpty() ? "" : ".").append(file.getName()).toString());
+            baseName.isEmpty() ? "" : ".").append(file.getName()).toString(),
+            directory);
       }
     }
   }
 
-  private void index(String name) {
+  private void index(String name, File codeSource) {
     if (name.endsWith(".class") && !isnum(name.charAt(0))) {
-      classes.add(name.substring(0, name.length() - 6));
+      name = name.substring(0, name.length() - 6);
+      File oldFile = classes.put(name, codeSource);
+      if (null != oldFile) {
+        // first in the classpath always wins
+        classes.put(name, oldFile);
+        logger.log(Level.WARNING, "duplicate class: {0} in {1} and {2}", new Object[] {name, oldFile, codeSource});
+      }
     }
   }
 

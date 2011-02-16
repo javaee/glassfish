@@ -85,7 +85,7 @@ public class UnsatisfiedDependencyException extends ComponentException {
       String msg;
       if (Field.class.isInstance(t)) {
         Field target = Field.class.cast(t);
-        msg = "injection failed on " + target.getDeclaringClass().getCanonicalName() + "." + 
+        msg = "injection failed on " + target.getDeclaringClass().getName() + "." + 
             target.getName() + " with " + target.getGenericType() + (null == name ? "" : " and name '" + name + "'");
       } else {
         msg = "injection failed on " + t + (null == name ? "" : " with name '" + name + "'");

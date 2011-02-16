@@ -66,7 +66,7 @@ import java.util.logging.Logger;
  */
 public class InhabitantsParser implements InhabitantStore {
   
-    private final Logger logger = Logger.getLogger(InhabitantsParser.class.getCanonicalName());
+    private final Logger logger = Logger.getLogger(InhabitantsParser.class.getName());
   
     public final Habitat habitat;
 

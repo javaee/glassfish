@@ -69,9 +69,10 @@ public class TypeImpl extends AnnotatedElementImpl implements Type {
     }
 
     void addDefiningURI(URI uri) {
-        definingURIs.add(uri);
         try {
-            definingURIs.add(new File(uri).getCanonicalFile().toURI());
+            File file = new File(uri);
+//            assert(file.exists()) : file + " does not exist";
+            definingURIs.add(file.getCanonicalFile().toURI());
         } catch (IOException e) {
             // ignore, this is a safeguard for confused user's code that do not
             // deal well with file path.

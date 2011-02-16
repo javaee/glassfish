@@ -39,8 +39,13 @@
  */
 package org.jvnet.hk2.junit;
 
+import java.io.File;
+import java.io.FileFilter;
+import java.util.HashSet;
+
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.HabitatFactory;
@@ -52,10 +57,16 @@ import org.jvnet.hk2.component.TestHabitat;
  * @author Jeff Trent
  */
 @RunWith(Hk2Runner.class)
-@Hk2RunnerOptions(habitatFactory=TestHabitatFactory.class, enableDefaultRunLevelService=false)
+@Hk2RunnerOptions(habitatFactory=TestHabitatFactory.class, 
+    enableDefaultRunLevelService=false,
+    classpathFilter=ClasspathFilter.class)
 public abstract class Hk2RunnerTestBase {
 
+  @Inject Habitat hParent;
+  
 }
+
+
 
 @Ignore
 class TestHabitatFactory implements HabitatFactory {
@@ -63,6 +74,19 @@ class TestHabitatFactory implements HabitatFactory {
   public Habitat newHabitat() throws ComponentException {
     return new TestHabitat();
   }
-
 }
 
+
+class ClasspathFilter implements FileFilter {
+  public static HashSet<File> calls = new HashSet<File>();
+  
+  public ClasspathFilter() {
+    calls.add(null);
+  }
+  
+  @Override
+  public boolean accept(File f) {
+    calls.add(f);
+    return true;
+  }
+}

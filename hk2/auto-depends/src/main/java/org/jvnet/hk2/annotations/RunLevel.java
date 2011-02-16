@@ -51,6 +51,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * Defines the notion of a run level a la Unix.
  *
  * @author Jerome Dochez
+ * @author Jeff Trent
  */
 @Retention(RUNTIME)
 @Target({TYPE, ANNOTATION_TYPE})
@@ -58,6 +59,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Contract
 public @interface RunLevel {
 
+    public static final String META_ENV_TAG = "env";
     public static final String META_VAL_TAG = "runLevel";
 
     /**
@@ -71,8 +73,8 @@ public @interface RunLevel {
      *
      * @return the environment type this annotation value applies in.
      */
+    @InhabitantMetadata(META_ENV_TAG)
     Class<?> environment() default Void.class;
-
 
     /**
      * defines the run level, must be greater than 0
