@@ -89,7 +89,7 @@ public class ResourceParams implements Serializable {
         this.name = name;
     }
 
-    private Hashtable resourceParams = new Hashtable();
+    private Hashtable<String, String> resourceParams = new Hashtable<String, String>();
 
     public void addParameter(String name, String value) {
         resourceParams.put(name, value);

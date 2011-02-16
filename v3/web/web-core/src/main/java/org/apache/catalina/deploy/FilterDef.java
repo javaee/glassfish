@@ -311,7 +311,7 @@ public class FilterDef implements Serializable {
         }
 
         synchronized (parameters) {
-            Set conflicts = null;
+            Set<String> conflicts = null;
             for (Map.Entry<String, String> e : initParameters.entrySet()) {
                 if (e.getKey() == null || e.getValue() == null) {
                     throw new IllegalArgumentException(
@@ -333,7 +333,7 @@ public class FilterDef implements Serializable {
                 setInitParameter(e.getKey(), e.getValue(), true);
             }
    
-            return Collections.EMPTY_SET;
+            return Collections.emptySet();
         }
     }
 
@@ -354,7 +354,7 @@ public class FilterDef implements Serializable {
 
     public Enumeration<String> getInitParameterNames() {
         synchronized (parameters) {
-            return new Enumerator(parameters.keySet());
+            return new Enumerator<String>(parameters.keySet());
         }
     }
 
