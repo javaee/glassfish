@@ -122,7 +122,8 @@ public class ResourceBase implements Serializable {
     /**
      * Holder for our configured properties.
      */
-    private HashMap properties = new HashMap();
+    private HashMap<String, Object> properties =
+        new HashMap<String, Object>();
 
     /**
      * Return a configured property.
@@ -148,7 +149,7 @@ public class ResourceBase implements Serializable {
     /**
      * List properties.
      */
-    public Iterator listProperties() {
+    public Iterator<String> listProperties() {
         return properties.keySet().iterator();
     }
     
