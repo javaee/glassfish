@@ -6,5 +6,5 @@ wrongTransport
 wrongTransportTarget
 configUpgrades
 ha/ssoFailover
+networkListenerTarget
 asadminDeletesTarget
-gen-doc-schema  #until the HA stuff is upgraded
