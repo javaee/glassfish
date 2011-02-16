@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -200,7 +200,7 @@ public class DummyRequest implements HttpRequest, HttpServletRequest {
     }
     public void finishRequest() throws IOException {}
     public Object getNote(String name) { return null; }
-    public Iterator getNoteNames() { return null; }
+    public Iterator<String> getNoteNames() { return null; }
     public void removeNote(String name) {}
     public void setContentType(String type) {}
     public void setNote(String name, Object value) {}

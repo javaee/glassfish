@@ -234,9 +234,9 @@ final class StandardContextValve
         try {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
         } catch (IllegalStateException e) {
-            ;
+            // Ignore
         } catch (IOException e) {
-            ;
+            // Ignore
         }
 
     }
@@ -316,7 +316,7 @@ final class StandardContextValve
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
-                ;
+                // Ignore
             }
         }
 

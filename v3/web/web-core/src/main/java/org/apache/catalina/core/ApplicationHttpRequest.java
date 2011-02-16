@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -475,7 +475,7 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
         synchronized (parameters) {
             Object value = parameters.get(name);
             if (value == null)
-                return ((String[]) null);
+                return null;
             else if (value instanceof String[])
                 return ((String[]) value);
             else if (value instanceof String) {
@@ -921,12 +921,12 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
      */
     protected String[] mergeValues(Object values1, Object values2) {
 
-        ArrayList results = new ArrayList();
+        ArrayList<String> results = new ArrayList<String>();
 
         if (values1 == null)
             ;
         else if (values1 instanceof String)
-            results.add(values1);
+            results.add((String)values1);
         else if (values1 instanceof String[]) {
             String values[] = (String[]) values1;
             for (int i = 0; i < values.length; i++)
@@ -937,7 +937,7 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
         if (values2 == null)
             ;
         else if (values2 instanceof String)
-            results.add(values2);
+            results.add((String)values2);
         else if (values2 instanceof String[]) {
             String values[] = (String[]) values2;
             for (int i = 0; i < values.length; i++)
@@ -946,7 +946,7 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
             results.add(values2.toString());
 
         String values[] = new String[results.size()];
-        return ((String[]) results.toArray(values));
+        return results.toArray(values);
 
     }
 
@@ -973,7 +973,7 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
             RequestUtil.parseParameters
                 (queryParameters, queryParamString, encoding);
         } catch (Exception e) {
-            ;
+            // Ignore
         }
         synchronized (parameters) {
             // Merge any query parameters whose names are present in the
@@ -1006,7 +1006,7 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
      * Utility class used to expose the special attributes as being available
      * as request attributes.
      */
-    protected class AttributeNamesEnumerator implements Enumeration {
+    protected class AttributeNamesEnumerator implements Enumeration<String> {
 
         protected Enumeration<String> parentEnumeration = null;
         protected String next = null;
@@ -1025,7 +1025,7 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
                     || ((next = findNext()) != null);
         }
 
-        public Object nextElement() {
+        public String nextElement() {
 
             if (specialNames != null && specialNames.hasNext()) {
                 return specialNames.next();

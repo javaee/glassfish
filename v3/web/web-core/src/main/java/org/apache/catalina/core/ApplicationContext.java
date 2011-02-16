@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -137,10 +137,16 @@ public class ApplicationContext implements ServletContext {
     private StandardContext context = null;
 
     /**
-     * Empty collection to serve as the basis for empty enumerations.
+     * Empty String collection to serve as the basis for empty enumerations.
      * <strong>DO NOT ADD ANY ELEMENTS TO THIS COLLECTION!</strong>
      */
-    private static final ArrayList empty = new ArrayList();
+    private static final List<String> emptyString = Collections.emptyList();
+
+    /**
+     * Empty Servlet collection to serve as the basis for empty enumerations.
+     * <strong>DO NOT ADD ANY ELEMENTS TO THIS COLLECTION!</strong>
+     */
+    private static final List<Servlet> emptyServlet = Collections.emptyList();
 
     /**
      * The facade around this object.
@@ -150,7 +156,7 @@ public class ApplicationContext implements ServletContext {
     /**
      * The merged context initialization parameters for this Context.
      */
-    private HashMap parameters = null;
+    private Map<String, String> parameters = null;
 
     /**
      * The string manager for this package.
@@ -195,7 +201,7 @@ public class ApplicationContext implements ServletContext {
      * associated with this context.
      */
     public Enumeration<String> getAttributeNames() {
-        return new Enumerator(attributes.keySet(), true);
+        return new Enumerator<String>(attributes.keySet(), true);
     }
 
     /**
@@ -244,7 +250,7 @@ public class ApplicationContext implements ServletContext {
     public String getInitParameter(final String name) {
         mergeParameters();
         synchronized (parameters) {
-            return ((String) parameters.get(name));
+            return parameters.get(name);
         }
     }
 
@@ -255,7 +261,7 @@ public class ApplicationContext implements ServletContext {
     public Enumeration<String> getInitParameterNames() {
         mergeParameters();
         synchronized (parameters) {
-           return (new Enumerator(parameters.keySet()));
+           return (new Enumerator<String>(parameters.keySet()));
         }
     }
 
@@ -429,14 +435,14 @@ public class ApplicationContext implements ServletContext {
      * @deprecated As of Java Servlet API 2.1, with no direct replacement.
      */
     public Enumeration<String> getServletNames() {
-        return (new Enumerator(empty));
+        return (new Enumerator<String>(emptyString));
     }
 
     /**
      * @deprecated As of Java Servlet API 2.1, with no direct replacement.
      */
     public Enumeration<Servlet> getServlets() {
-        return (new Enumerator(empty));
+        return (new Enumerator<Servlet>(emptyServlet));
     }
 
     /**
@@ -966,9 +972,9 @@ public class ApplicationContext implements ServletContext {
     void clearAttributes() {
 
         // Create list of attributes to be removed
-        ArrayList list = new ArrayList();
+        ArrayList<String> list = new ArrayList<String>();
         synchronized (attributes) {
-            Iterator iter = attributes.keySet().iterator();
+            Iterator<String> iter = attributes.keySet().iterator();
             while (iter.hasNext()) {
                 list.add(iter.next());
             }
@@ -976,9 +982,9 @@ public class ApplicationContext implements ServletContext {
 
         // Remove application originated attributes
         // (read only attributes will be left in place)
-        Iterator keys = list.iterator();
+        Iterator<String> keys = list.iterator();
         while (keys.hasNext()) {
-            String key = (String) keys.next();
+            String key = keys.next();
             removeAttribute(key);
         }        
     }
@@ -1017,7 +1023,7 @@ public class ApplicationContext implements ServletContext {
         if (parameters != null) {
             return;
         }
-        HashMap results = new HashMap();
+        Map<String, String> results = new ConcurrentHashMap<String, String>();
         for (String name : context.findParameters()) {
             results.put(name, context.findParameter(name));
         }

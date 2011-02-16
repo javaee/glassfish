@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -158,7 +158,7 @@ public abstract class ContainerBase
      * Tomcat.
      */
     protected class PrivilegedAddChild
-        implements PrivilegedAction {
+        implements PrivilegedAction<Void> {
 
         private Container child;
 
@@ -166,7 +166,7 @@ public abstract class ContainerBase
             this.child = child;
         }
 
-        public Object run() {
+        public Void run() {
             addChildInternal(child);
             return null;
         }
@@ -857,7 +857,7 @@ public abstract class ContainerBase
             oldResources = this.resources;
             if (oldResources == resources)
                 return;
-            Hashtable env = new Hashtable();
+            Hashtable<String, String> env = new Hashtable<String, String>();
             if (getParent() != null)
                 env.put(ProxyDirContext.HOST, getParent().getName());
             env.put(ProxyDirContext.CONTEXT, getName());
@@ -894,7 +894,7 @@ public abstract class ContainerBase
      */
     public void addChild(Container child) {
         if (Globals.IS_SECURITY_ENABLED) {
-            PrivilegedAction dp =
+            PrivilegedAction<Void> dp =
                 new PrivilegedAddChild(child);
             AccessController.doPrivileged(dp);
         } else {
@@ -1660,7 +1660,7 @@ public abstract class ContainerBase
 
     public ObjectName[] getChildren() {
         ObjectName result[]=new ObjectName[children.size()];
-        Iterator it=children.values().iterator();
+        Iterator<Container> it=children.values().iterator();
         int i=0;
         while( it.hasNext() ) {
             Object next=it.next();
@@ -1745,7 +1745,7 @@ public abstract class ContainerBase
         try {
             thread.join();
         } catch (InterruptedException e) {
-            ;
+            // Ignore
         }
 
         thread = null;
@@ -1767,7 +1767,7 @@ public abstract class ContainerBase
                 try {
                     Thread.sleep(backgroundProcessorDelay * 1000L);
                 } catch (InterruptedException e) {
-                    ;
+                    // Ignore
                 }
                 if (!threadDone) {
                     Container parent = (Container) getMappingObject();

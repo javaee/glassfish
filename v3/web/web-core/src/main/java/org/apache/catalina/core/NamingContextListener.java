@@ -242,7 +242,7 @@ public class NamingContextListener
             if (initialized)
                 return;
 
-            Hashtable contextEnv = new Hashtable();
+            Hashtable<String, Object> contextEnv = new Hashtable<String, Object>();
             try {
                 namingContext = new NamingContext(contextEnv, getName());
             } catch (NamingException e) {
@@ -1038,11 +1038,11 @@ public class NamingContextListener
                 resourceParameters);
         if (resourceParameters == null)
             return;
-        Hashtable params = resourceParameters.getParameters();
-        Enumeration enumeration = params.keys();
+        Hashtable<String, String> params = resourceParameters.getParameters();
+        Enumeration<String> enumeration = params.keys();
         while (enumeration.hasMoreElements()) {
-            String paramName = (String) enumeration.nextElement();
-            String paramValue = (String) params.get(paramName);
+            String paramName = enumeration.nextElement();
+            String paramValue = params.get(paramName);
             StringRefAddr refAddr = new StringRefAddr(paramName, paramValue);
             ref.add(refAddr);
         }
