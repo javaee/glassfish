@@ -339,7 +339,7 @@ public class PECoyoteConnector extends Connector {
      */
     public void setQueueSizeInBytes(int queueSizeInBytes){
         this.queueSizeInBytes = queueSizeInBytes;
-        setProperty("queueSizeInBytes", queueSizeInBytes);
+        setProperty("queueSizeInBytes", String.valueOf(queueSizeInBytes));
     }
 
 
@@ -356,7 +356,7 @@ public class PECoyoteConnector extends Connector {
      */
     public void setSocketServerBacklog(int ssBackLog){
         this.ssBackLog = ssBackLog;
-        setProperty("socketServerBacklog", ssBackLog);
+        setProperty("socketServerBacklog", String.valueOf(ssBackLog));
     }
 
 
@@ -723,7 +723,7 @@ public class PECoyoteConnector extends Connector {
      * @return The truststore location
      */
     public String getTruststore() {
-        return (String) getProperty("truststore");
+        return getProperty("truststore");
     }
 
 
@@ -743,7 +743,7 @@ public class PECoyoteConnector extends Connector {
      * @return The truststore type
      */
     public String getTruststoreType() {
-        return (String) getProperty("truststoreType");
+        return getProperty("truststoreType");
     }
 
 
@@ -763,7 +763,7 @@ public class PECoyoteConnector extends Connector {
      * @return The keystore type
      */
     public String getKeystoreType() {
-        return (String) getProperty("keystoreType");
+        return getProperty("keystoreType");
     }
 
 
@@ -1112,8 +1112,10 @@ public class PECoyoteConnector extends Connector {
         if (http.getRestrictedUserAgents() != null) {
             setProperty("restrictedUserAgents", http.getRestrictedUserAgents());
         }
-        setProperty("cometSupport",ConfigBeansUtilities.toBoolean(http.getCometSupportEnabled()));
-        setProperty("rcmSupport",ConfigBeansUtilities.toBoolean(http.getRcmSupportEnabled()));
+        setProperty("cometSupport",
+                Boolean.valueOf(ConfigBeansUtilities.toBoolean(http.getCometSupportEnabled())).toString());
+        setProperty("rcmSupport",
+                Boolean.valueOf(ConfigBeansUtilities.toBoolean(http.getRcmSupportEnabled())).toString());
         setConnectionUploadTimeout(Integer.parseInt(http.getConnectionUploadTimeoutMillis()));
         setDisableUploadTimeout(!ConfigBeansUtilities.toBoolean(http.getUploadTimeoutEnabled()));
         setURIEncoding(http.getUriEncoding());
