@@ -34,9 +34,9 @@
         <ant dir="anyone" target="all"/>
         <ant dir="ejb-oneway-ssl" target="all"/>
         <ant dir="ejb-mutual-ssl" target="all"/>
-	<ant dir="web-mutual-ssl" target="all"/>
+<!--	<ant dir="web-mutual-ssl" target="all"/>
         <ant dir="cplogin" target="all"/>
-	<ant dir="plogin" target="all"/>
+	<ant dir="plogin" target="all"/>-->
         <ant dir="jsp2sful" target="all"/>
         <ant dir="httpMethod" target="all"/>
         <ant dir="defaultp2r" target="all"/>
@@ -51,7 +51,7 @@
 	<ant dir="simpleMultiRoleMapping" target="all"/>
 	<ant dir="multiRoleMapping" target="all"/>
 	<ant dir="jdbcrealm" target="all"/>
-	<ant dir="pamrealm" target="all"/>
+<!--	<ant dir="pamrealm" target="all"/>-->
 	<ant dir="cert-realm-custom-loginmodule" target="all"/>
         
         <ant dir="ldap/simpleweb" target="all" />

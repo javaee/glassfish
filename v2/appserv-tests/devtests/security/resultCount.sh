@@ -1,15 +1,16 @@
 #!/bin/sh
 
-FILES="$APS_HOME/test_resultsValid.xml $APS_HOME/security-gtest-results.xml"
+FILES="$APS_HOME/test_resultsValid.xml"
+# $APS_HOME/security-gtest-results.xml"
 
-TOTAL=744
+TOTAL=683
 PASSED=0
 FAILED=0
 for i in $FILES
 do
 	echo "input file=$i"
-	P=`grep "pass" $i | grep "status value" | wc -l`
-	F=`grep "fail" $i | grep "status value" | wc -l`
+	P=`grep "pass" $i |  wc -l`
+	F=`grep "fail" $i |  wc -l`
 	PASSED=`expr $PASSED + $P`
 	FAILED=`expr $FAILED + $F`
 done
