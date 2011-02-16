@@ -76,8 +76,14 @@ public class ConnectorsUtil {
 
     private static Logger _logger= LogDomains.getLogger(ConnectorsUtil.class, LogDomains.RSR_LOGGER);
 
-    private static Collection<String> validSystemRARs ;
-    private static Collection<String> validNonJdbcSystemRARs ;
+    private static Collection<String> validSystemRARs = new HashSet<String>();
+    private static Collection<String> validNonJdbcSystemRARs = new HashSet<String>();
+
+    static{
+        initializeSystemRars();
+        initializeNonJdbcSystemRars();
+    }
+
     /**
      * determine whether the RAR in question is a System RAR
      * @param raName RarName
@@ -769,33 +775,32 @@ public class ConnectorsUtil {
         return ConfigBeansUtilities.getModule(moduleName)!= null;
     }
 
-    public static Collection<String> getSystemRARs(){
-        if(validSystemRARs == null){
-            HashSet<String> systemRARs = new HashSet<String>();
-            for(String rarName : ConnectorConstants.systemRarNames){
-                if(systemRarExists(getSystemModuleLocation(rarName))){
-                    systemRARs.add(rarName);
-                }
-            }
-            validSystemRARs = Collections.unmodifiableCollection(systemRARs);
-            if(_logger.isLoggable(Level.FINEST)){
-                _logger.log(Level.FINEST, "valid system RARs for this runtime are : " + validSystemRARs);
-            }
-        }
+    public static Collection<String> getSystemRARs() {
         return validSystemRARs;
     }
 
-    public static Collection<String> getNonJdbcSystemRars(){
-        if(validNonJdbcSystemRARs == null){
-            Collection<String> systemRars = getSystemRARs();
-            validNonJdbcSystemRARs = new HashSet<String>();
-            for(String rarName : systemRars){
-                if(!ConnectorConstants.jdbcSystemRarNames.contains(rarName)){
-                    validNonJdbcSystemRARs.add(rarName);
-                }
+    private static void initializeSystemRars() {
+        for (String rarName : ConnectorConstants.systemRarNames) {
+            if (systemRarExists(getSystemModuleLocation(rarName))) {
+                validSystemRARs.add(rarName);
             }
         }
+        if (_logger.isLoggable(Level.FINEST)) {
+            _logger.log(Level.FINEST, "valid system RARs for this runtime are : " + validSystemRARs);
+        }
+    }
+
+    public static Collection<String> getNonJdbcSystemRars() {
         return validNonJdbcSystemRARs;
+    }
+
+    private static void initializeNonJdbcSystemRars() {
+        Collection<String> systemRars = getSystemRARs();
+        for (String rarName : systemRars) {
+            if (!ConnectorConstants.jdbcSystemRarNames.contains(rarName)) {
+                validNonJdbcSystemRARs.add(rarName);
+            }
+        }
     }
 
     public static boolean systemRarExists(String location){
