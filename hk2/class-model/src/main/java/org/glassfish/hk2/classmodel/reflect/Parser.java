@@ -52,7 +52,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -111,15 +110,15 @@ public class Parser implements Closeable {
             if (f!=null) {
                 try {
                     Result result = f.get(timeOut, unit);
-                     context.logger.log(Level.FINE, "future finished at " + System.currentTimeMillis() + " for " + result.name);
-                    if (context.logger.isLoggable(Level.FINER)) {
-                        context.logger.log(Level.FINER, "result " + result);
-                        if (result!=null && result.fault!=null) {
-                            context.logger.log(Level.FINER, "result fault" + result);
-                        }
+                    if (context.logger.isLoggable(Level.FINE)) {
+                        context.logger.log(Level.FINE, "future finished at " + System.currentTimeMillis() + " for " + result.name);
+                    }
+                    context.logger.log(Level.FINER, "result {0}", result);
+                    if (result!=null && result.fault!=null) {
+                       context.logger.log(Level.WARNING, "result fault {0}", result);
                     }
                     if (result!=null && result.fault!=null) {
-                        exceptions.add(result.fault);
+                       exceptions.add(result.fault);
                     }
                 } catch (TimeoutException e) {
                     exceptions.add(e);
@@ -135,6 +134,8 @@ public class Parser implements Closeable {
             // now we need to visit all the types that got referenced but not visited
             final ResourceLocator locator = context.getLocator();
             if (locator!=null) {
+                context.logger.info("visiting unvisited references");
+              
                 context.types.onNotVisitedEntries(new TypesCtr.ProxyTask() {
                     @Override
                     public void on(TypeProxy<?> proxy) {
@@ -142,24 +143,19 @@ public class Parser implements Closeable {
                         String name = proxy.getName();
                         // make this name a resource name...
                         String resourceName = name.replaceAll("\\.", "/") + ".class";
-                        URL url = locator.getResource(resourceName);
-                        if (url == null) return;
 
-                        // copy URL into bytes
                         InputStream is = null;
-                        int size = 0;
                         try {
-
-                            URLConnection connection = url.openConnection();
-                            size = connection.getContentLength();
-                            is = connection.getInputStream();
+                            is = locator.openResourceStream(resourceName);
+                            if (null == is) {
+                              return;
+                            }
 
                             // now visit...
-                            if (logger.isLoggable(Level.FINE)) {
-                                logger.fine("Going to visit " + resourceName + " from " + url + " of size " + size);
-                            }
+                            logger.log(Level.FINE, "Going to visit {0}", resourceName);
                             ClassReader cr = new ClassReader(is);
                             try {
+                                URL url = locator.getResource(resourceName);
                                 File file = getFilePath(url.getPath(), resourceName);
                                 URI definingURI = getDefiningURI(file);
                                 if (logger.isLoggable(Level.FINE)) {
@@ -167,8 +163,7 @@ public class Parser implements Closeable {
                                 }
                                 cr.accept(context.getClassVisitor(definingURI, resourceName), ClassReader.SKIP_DEBUG);
                             } catch (Throwable e) {
-                                logger.log(Level.SEVERE, "Exception while visiting " + name
-                                        + " of size " + size, e);
+                                logger.log(Level.SEVERE, "Exception while visiting {0}", name);
                             }
 
 
@@ -193,14 +188,20 @@ public class Parser implements Closeable {
     }
 
     private static URI getDefiningURI(File file) {
-        return file.toURI();
-//        return null;
+      try {
+        return file.getCanonicalFile().toURI();
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
     }
     
     private static File getFilePath(String path, String resourceName) {
       path = path.substring(0, path.length() - resourceName.length());
       if (path.endsWith("!/")) {
         path = path.substring(0, path.length()-2);
+      }
+      if (path.startsWith("file:/")) {
+        path = path.substring(6, path.length());
       }
       File file = new File(path);
       return file;
@@ -336,10 +337,10 @@ public class Parser implements Closeable {
             logger.fine("Parsing " + adapter.getURI() + " on thread " + Thread.currentThread().getName());
         }
         if (context.archiveSelector == null || context.archiveSelector.selects(adapter)) {
-            if (logger.isLoggable(Level.FINE)) {
-                logger.log(Level.FINE, "Parsing file " + adapter.getURI().getPath());
-            }
             final URI uri = adapter.getURI();
+            if (logger.isLoggable(Level.FINE)) {
+                logger.log(Level.FINE, "Parsing file {0}", uri.getPath());
+            }
 
             adapter.onSelectedEntries(
                     new ArchiveAdapter.Selector() {
@@ -375,8 +376,9 @@ public class Parser implements Closeable {
         if (logger.isLoggable(Level.FINE)) {
             logger.log(Level.FINE, "before running doneHook" + adapter.getURI().getPath());
         }
-        if (doneHook != null)
+        if (doneHook != null) {
             doneHook.run();
+        }
         if (logger.isLoggable(Level.FINE)) {
             logger.log(Level.FINE, "after running doneHook " + adapter.getURI().getPath());
         }
@@ -395,9 +397,10 @@ public class Parser implements Closeable {
 
     private ExecutorService createExecutorService() {
         // TODO: may have to dumb this down since there appears to be issues in ZipFile processing when there is contention on the same file or directory
-        Runtime runtime = Runtime.getRuntime();
-        int nbOfProcessors = runtime.availableProcessors();
-//        int nbOfProcessors = 1;
+        // FIXME: anything other than 1 is not stable since the class-model framework is not thread safe (visitors are shared)
+//        Runtime runtime = Runtime.getRuntime();
+//        int nbOfProcessors = runtime.availableProcessors();
+        int nbOfProcessors = 1;
         
         return Executors.newFixedThreadPool(nbOfProcessors, new ThreadFactory() {
             @Override

@@ -41,15 +41,15 @@ package org.glassfish.hk2.classmodel.reflect.impl;
 
 import org.glassfish.hk2.classmodel.reflect.*;
 
-import java.net.URI;
 import java.util.*;
 
 /**
- * Implementation of an annoation model
+ * Implementation of an annotation model
  */
 public class AnnotationTypeImpl extends InterfaceModelImpl implements AnnotationType {
 
     private final Set<AnnotatedElement> references = Collections.synchronizedSet(new HashSet<AnnotatedElement>());
+    private final Map<String, Object> defValues = new HashMap<String, Object>();
 
     public AnnotationTypeImpl(String name, TypeProxy<Type> sink) {
         super(name, sink, null);
@@ -59,6 +59,19 @@ public class AnnotationTypeImpl extends InterfaceModelImpl implements Annotation
         return Collections.unmodifiableSet(references);
     }
 
+    public void addDefaultValue(String name, Object value) {
+      if (org.objectweb.asm.Type.class.isInstance(value)) {
+        defValues.put(name, org.objectweb.asm.Type.class.cast(value).getClassName());
+      } else {
+        defValues.put(name, value);
+      }
+    }
+    
+    @Override
+    public Map<String, Object> getDefaultValues() {
+      return Collections.unmodifiableMap(defValues);
+    }
+    
     Set<AnnotatedElement> getAnnotatedElements() {
         return references;
     }

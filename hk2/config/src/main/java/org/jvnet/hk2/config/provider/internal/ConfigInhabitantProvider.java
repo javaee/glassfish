@@ -104,7 +104,7 @@ public class ConfigInhabitantProvider extends AbstractInhabitantProvider {
       } else {
         // add it ourself, ensuring that only the ConfiguredBy index is used.
         store.add(i);
-        store.addIndex(i, ConfiguredBy.class.getCanonicalName(), null);
+        store.addIndex(i, ConfiguredBy.class.getName(), null);
         i = null;
       }
     }

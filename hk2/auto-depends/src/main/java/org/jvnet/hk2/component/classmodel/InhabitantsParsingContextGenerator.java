@@ -41,7 +41,10 @@ package org.jvnet.hk2.component.classmodel;
 
 import java.io.Closeable;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Arrays;
@@ -49,13 +52,18 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.glassfish.hk2.classmodel.reflect.AnnotatedElement;
+import org.glassfish.hk2.classmodel.reflect.AnnotationType;
 import org.glassfish.hk2.classmodel.reflect.Parser;
 import org.glassfish.hk2.classmodel.reflect.ParsingContext;
+import org.glassfish.hk2.classmodel.reflect.Type;
+import org.glassfish.hk2.classmodel.reflect.Types;
 import org.glassfish.hk2.classmodel.reflect.util.ParsingConfig;
 import org.glassfish.hk2.classmodel.reflect.util.ResourceLocator;
 import org.jvnet.hk2.annotations.Contract;
@@ -83,49 +91,47 @@ import com.sun.hk2.component.InhabitantsScanner;
  */
 public abstract class InhabitantsParsingContextGenerator implements Closeable {
 
-    private static final Logger logger = Logger
-            .getLogger(InhabitantsParsingContextGenerator.class.getName());
+    private static final Logger logger = 
+      Logger.getLogger(InhabitantsParsingContextGenerator.class.getName());
 
-    private final Parser parser;
+    private Parser parser;
     private final ParsingContext context;
 
     private final LinkedHashMap<String, InhabitantsScanner> metaInfScanners = 
             new LinkedHashMap<String, InhabitantsScanner>();
 
-    /**
-     * Factory for the {@link InhabitantsParsingContextGenerator}
-     *
-     * @param h habitat not currently used; reserved for future use
-     * @return an empty context InhabitantsGenerator
-     */
-    public static InhabitantsParsingContextGenerator create(Habitat h) {
-        return new InhabitantsParsingContextGenerator(null, null) {};
-    }
+    private FileFilter inhabitantsClassPathFilter; // might also be a full ClassPathAdvisor!
+    
+    private final LinkedHashSet<URI> parsed = new LinkedHashSet<URI>();
+    
 
     /**
      * Factory for the {@link InhabitantsParsingContextGenerator}
      *
      * @param h habitat not currently used; reserved for future use
      * @param es the executor to use for any async processing (e.g., parsing)
-     * @param inhabitantsClassPath the fully qualified classpath in order to resolve class-model
+     * @param inhabitantsClassPath the fully qualified classpath in order to resolve the class-model
+     * @param inhabitantsClassPathFilter the filter used for pruning the classpath (may also be a {@link ClassPathAdvisor})
      * 
      * @return an empty context InhabitantsGenerator
      */
     public static InhabitantsParsingContextGenerator create(Habitat h, 
             ExecutorService es,
-            ClassPath inhabitantsClassPath) {
-        return new InhabitantsParsingContextGenerator(es, inhabitantsClassPath) {};
+            ClassPath inhabitantsClassPath,
+            FileFilter inhabitantsClassPathFilter) {
+        return new InhabitantsParsingContextGenerator(es, inhabitantsClassPath, inhabitantsClassPathFilter) {};
     }
     
-    protected InhabitantsParsingContextGenerator(ExecutorService es,
-            final ClassPath inhabitantsClassPath) {
+    protected InhabitantsParsingContextGenerator(final ExecutorService es,
+            final ClassPath inhabitantsClassPath,
+            final FileFilter inhabitantsClassPathFilter) {
         // setup the parser
         ParsingContext.Builder builder = new ParsingContext.Builder();
         final Set<String> annotations = new HashSet<String>();
-        annotations.add(Contract.class.getCanonicalName());
-        annotations.add(Service.class.getCanonicalName());
-        annotations.add(InhabitantMetadata.class.getCanonicalName());
-        annotations.add(RunLevel.class.getCanonicalName());
+        annotations.add(Contract.class.getName());
+        annotations.add(Service.class.getName());
+        annotations.add(InhabitantMetadata.class.getName());
+        annotations.add(RunLevel.class.getName());
         annotations.add("org.jvnet.hk2.config.Configured");
 
         builder.config(new ParsingConfig() {
@@ -138,19 +144,45 @@ public abstract class InhabitantsParsingContextGenerator implements Closeable {
             public Set<String> getTypesOfInterest() {
                 return annotations;
             }
-
         });
 
         // optionally provide an executor
         builder.executorService(es);
         
-        // optionally provide an inhabitants locator
-        if (null != inhabitantsClassPath) {
-          builder.locator(new Locator(inhabitantsClassPath));
+        // Important Note:
+        // we are careful not to create a locator if we don't have to because it will
+        // mean additional burden on the parser since it will need to locate and resolve
+        // all of the dangling types.  If we are being called in unit-test mode then
+        // the chances for this is very unlikely because we have (or should have) a
+        // "full" testing classpath.
+        
+        Locator locator = null;
+        if (null == inhabitantsClassPathFilter) {
+          this.inhabitantsClassPathFilter = null;
+          locator = (null == inhabitantsClassPath) ? null : new Locator(inhabitantsClassPath);
+        } else {
+          this.inhabitantsClassPathFilter = inhabitantsClassPathFilter;
+          if (ClassPathAdvisor.class.isInstance(this.inhabitantsClassPathFilter)) {
+            ClassPathAdvisor advisor = ClassPathAdvisor.class.cast(this.inhabitantsClassPathFilter);
+            advisor.starting(inhabitantsClassPath);
+          }
+
+          if (null != inhabitantsClassPath) {
+            LinkedHashSet<File> accepted = new LinkedHashSet<File>();
+            for (File f : inhabitantsClassPath.getFileEntries()) {
+              if (inhabitantsClassPathFilter.accept(f)) {
+                accepted.add(f);
+              }
+            }
+            
+            locator = new Locator(ClassPath.create(null, accepted));
+          }
         }
         
-        context = builder.build();
-        parser = new Parser(context);
+        builder.locator(locator);
+        
+        this.context = builder.build();
+        this.parser = new Parser(context);
     }
 
     /**
@@ -173,15 +205,71 @@ public abstract class InhabitantsParsingContextGenerator implements Closeable {
      * @return the parsing context given the code sources provided
      */
     public ParsingContext getContext() {
-        try {
+        if (null != parser) {
+          try {
             parser.awaitTermination();
-        } catch (InterruptedException e) {
+          } catch (InterruptedException e) {
             close();
             throw new RuntimeException(e);
+          }
         }
+        
+        if (ClassPathAdvisor.class.isInstance(this.inhabitantsClassPathFilter)) {
+          ClassPathAdvisor advisor = ClassPathAdvisor.class.cast(this.inhabitantsClassPathFilter);
+          advisor.finishing(getSignificantURIReferences(), getInsignificantURIReferences());
+          
+          // we don't want to be notified again
+          this.inhabitantsClassPathFilter = null;
+        }
+        
         return context;
     }
+    
+    /**
+     * Given the set of annotations that comprise Hk2, as well as the provided classpath / files to
+     * introspect, return the set of URIs that actually reference something of "significant value"
+     * pertaining to habitat creation.
+     */
+    private Set<URI> getSignificantURIReferences() {
+      LinkedHashSet<URI> result = new LinkedHashSet<URI>();
 
+      Types types = context.getTypes();
+      for (String annotation : context.getConfig().getTypesOfInterest()) {
+        AnnotationType atype = (AnnotationType) types.getBy(annotation);
+        if (null != atype) {
+          Collection<AnnotatedElement> coll = atype.allAnnotatedTypes();
+          for (AnnotatedElement ae : coll) {
+            Type type = types.getBy(ae.getName());
+            if (null != type) {
+              for (URI uri : type.getDefiningURIs()) {
+                try {
+                  result.add(new File(uri).getCanonicalFile().toURI());
+                } catch (IOException e) {
+                  throw new RuntimeException(e);
+                }
+              }
+            }
+          }
+        }
+      }
+      
+      return Collections.unmodifiableSet(result);
+    }
+
+    /**
+     * Given the set of annotations that comprise Hk2, as well as the provided classpath / files to
+     * introspect, return the set of URIs that did not provide any "significant value"
+     * pertaining to habitat creation.
+     */
+    private Set<URI> getInsignificantURIReferences() {
+      LinkedHashSet<URI> result = new LinkedHashSet<URI>();
+
+      result.addAll(parsed);
+      result.removeAll(getSignificantURIReferences());
+      
+      return Collections.unmodifiableSet(result);
+    }
+    
     /**
      * @return the collection of {@link InhabitantsScanner}s being maintained
      */
@@ -200,11 +288,20 @@ public abstract class InhabitantsParsingContextGenerator implements Closeable {
     /**
      * Eventually we can perform optimizations here instead of a pass-thru to parseAlways.
      */
-    public void parse(final File f) throws IOException {
+    public void parse(File f) throws IOException {
+      if (null == parser) {
+        throw new IllegalStateException("parser closed");
+      }
+      
+      f = f.getCanonicalFile();
+      if (null == inhabitantsClassPathFilter || inhabitantsClassPathFilter.accept(f)) {
         parseAlways(parser, f);
+      }
     }
 
     protected void parseAlways(Parser parser, final File f) throws IOException {
+      logger.log(Level.FINE, "introspecting {0}", f);
+      parsed.add(f.toURI());
       try {
         parser.parse(f, new Runnable() {
             public void run() {
@@ -212,7 +309,7 @@ public abstract class InhabitantsParsingContextGenerator implements Closeable {
             }
         });
       } catch (IOException e) {
-        logger.log(Level.FINE, "problem during parsing - closing prematurely", e);
+        logger.log(Level.WARNING, "problem during parsing - closing prematurely", e);
         close();
       }
     }
@@ -221,6 +318,7 @@ public abstract class InhabitantsParsingContextGenerator implements Closeable {
     public void close() {
       if (null != parser) {
         parser.close();
+        parser = null;
       }
     }
 
@@ -232,11 +330,32 @@ public abstract class InhabitantsParsingContextGenerator implements Closeable {
         try {
           resourceLoader = new URLClassLoader(inhabitantsClassPath.getRawURLs(), null);
           
-          if (logger.isLoggable(Level.FINE)) {
+          if (logger.isLoggable(Level.FINER)) {
             logger.log(Level.FINER, "resourceLoader is {0}", Arrays.asList(inhabitantsClassPath.getRawURLs()).toString());
           }
         } catch (IOException e) {
           throw new RuntimeException(e);
+        }
+      }
+
+      @Override
+      public InputStream openResourceStream(String name) {
+        if (name.startsWith("java/")) {
+          logger.log(Level.FINE, "skipping {0}", name);
+          return null;  // wasteful to parse these
+        }
+        if (name.indexOf(".")==-1) {
+          return null; // intrinsic types.
+        }
+
+        logger.log(Level.FINE, "loading resource {0}", name);
+        
+        try {
+          InputStream resource = resourceLoader.getResourceAsStream(name);
+          logger.log(Level.FINE, "resource {0} resolved to {1}", new Object[] {name, resource});
+          return resource;
+        } catch (Exception e) {
+          throw new RuntimeException("failed while getting resource: " + name);
         }
       }
 
@@ -246,11 +365,11 @@ public abstract class InhabitantsParsingContextGenerator implements Closeable {
           logger.log(Level.FINE, "skipping {0}", name);
           return null;  // wasteful to parse these
         }
+        if (name.indexOf(".")==-1) {
+          return null; // intrinsic types.
+        }
         
-        URL resource = resourceLoader.getResource(name);
-        logger.log(Level.FINE, "resource {0} resolved to {1}", new Object[] {name, resource});
-        
-        return resource;
+        return resourceLoader.getResource(name);
       }
     }
 

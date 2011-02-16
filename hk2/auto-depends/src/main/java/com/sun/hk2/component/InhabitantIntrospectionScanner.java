@@ -53,6 +53,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -215,17 +216,30 @@ public class InhabitantIntrospectionScanner implements Iterable<InhabitantParser
 
     private static void populateExtraInhabitantMetaData(MultiMap<String, String> dest, AnnotationModel model, MethodModel mm) {
       if (null != mm) {
-        AnnotationModel ma = mm.getAnnotation(InhabitantMetadata.class.getCanonicalName());
+        AnnotationModel ma = mm.getAnnotation(InhabitantMetadata.class.getName());
         if (null != ma) {
           Object tag = ma.getValues().get("value");
           Object val = model.getValues().get(mm.getName());
-          if (null != tag && null != val) {
+          if (null != tag) {
             String tagStr = tag.toString();
-            if (!dest.containsKey(tagStr)) {
-              dest.add(tagStr, val.toString());
+            if (null != val) {
+              add(dest, tagStr, val.toString());
+            } else {
+              tag = mm.getName();
+              val = ((AnnotationType)mm.getDeclaringType()).getDefaultValues().get(tag);
+              if (null != val) {
+                add(dest, tagStr, val.toString());
+              }
             }
           }
         }
+      }
+    }
+
+    private static void add(MultiMap<String, String> dest, String key, String val) {
+      List<String> vals = dest.get(key);
+      if (null == vals || !vals.contains(val)) {
+        dest.add(key, val);
       }
     }
 
@@ -237,8 +251,9 @@ public class InhabitantIntrospectionScanner implements Iterable<InhabitantParser
      * @param interfaces list of interfaces im is extending
      */
     private void getAllContractInterfaces(InterfaceModel im, Collection<String> interfaces) {
-        
-        if (im==null) return;
+        if (im==null) {
+          return;
+        }
         
         if (isContract(im)) {
             interfaces.add(im.getName());

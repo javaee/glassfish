@@ -40,6 +40,7 @@
 package rls.test;
 
 import java.util.Collection;
+import java.util.HashSet;
 
 import static junit.framework.Assert.*;
 import static org.junit.Assert.assertNotNull;
@@ -105,8 +106,9 @@ public class RlsTest implements ModuleStartup {
     assertEquals("ContractX service count: " + coll, 2, coll.size());
     mustBeActive(coll, true);
 
-    coll = h.getAllInhabitantsByContract(RunLevel.class.getName());
+    coll = new HashSet<Inhabitant<?>>(h.getAllInhabitantsByContract(RunLevel.class.getName()));
     assertEquals("ContractX service count: " + coll, 5, coll.size());
+    
     mustBeActive(coll, true);
 
     verifyServiceBaseX();

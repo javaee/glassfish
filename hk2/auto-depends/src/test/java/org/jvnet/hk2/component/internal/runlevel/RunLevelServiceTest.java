@@ -65,7 +65,6 @@ import org.jvnet.hk2.component.InhabitantSorter;
 import org.jvnet.hk2.component.RunLevelListener;
 import org.jvnet.hk2.component.RunLevelService;
 import org.jvnet.hk2.component.RunLevelState;
-import org.jvnet.hk2.component.UnsatisfiedDependencyException;
 import org.jvnet.hk2.component.internal.runlevel.DefaultRunLevelService;
 import org.jvnet.hk2.component.internal.runlevel.Recorder;
 import org.jvnet.hk2.junit.Hk2Runner;
@@ -725,7 +724,7 @@ public class RunLevelServiceTest {
     assertEquals(1, defRLS.getCurrentRunLevel());
     assertEquals(null, defRLS.getPlannedRunLevel());
     
-    Collection<Inhabitant<?>> coll = h.getInhabitantsByContract(RunLevelContract.class.getCanonicalName());
+    Collection<Inhabitant<?>> coll = h.getInhabitantsByContract(RunLevelContract.class.getName());
     assertTrue(coll.size() >= 3);
     boolean gotOne = false;
     for (Inhabitant<?> i : coll) {
@@ -786,7 +785,7 @@ public class RunLevelServiceTest {
     assertEquals(null, defRLS.getPlannedRunLevel());
     assertTrue("hanging service not reached", InterruptRunLevelManagedService2b.i > 0);
     
-    Collection<Inhabitant<?>> coll = h.getInhabitantsByContract(RunLevelContract.class.getCanonicalName());
+    Collection<Inhabitant<?>> coll = h.getInhabitantsByContract(RunLevelContract.class.getName());
     assertTrue(coll.size() >= 3);
     boolean gotOne = false;
     boolean gotTwo = false;
@@ -862,7 +861,7 @@ public class RunLevelServiceTest {
     assertEquals(null, defRLS.getPlannedRunLevel());
     assertTrue("hanging service not reached", InterruptRunLevelManagedService2b.i > 0);
     
-    Collection<Inhabitant<?>> coll = h.getInhabitantsByContract(RunLevelContract.class.getCanonicalName());
+    Collection<Inhabitant<?>> coll = h.getInhabitantsByContract(RunLevelContract.class.getName());
     assertTrue(coll.size() >= 3);
     boolean gotOne = false;
     boolean gotTwo = false;
@@ -939,7 +938,7 @@ public class RunLevelServiceTest {
     assertEquals(null, defRLS.getPlannedRunLevel());
     assertTrue("hanging service not reached", InterruptRunLevelManagedService2b.i > 0);
     
-    Collection<Inhabitant<?>> coll = h.getInhabitantsByContract(RunLevelContract.class.getCanonicalName());
+    Collection<Inhabitant<?>> coll = h.getInhabitantsByContract(RunLevelContract.class.getName());
     assertTrue(coll.size() >= 3);
     boolean gotOne = false;
     boolean gotTwo = false;
@@ -1093,7 +1092,7 @@ public class RunLevelServiceTest {
       assertEquals(null, defRLS.getPlannedRunLevel());
       assertTrue("hanging service not reached", InterruptRunLevelManagedService2b.i > 0);
       
-      Collection<Inhabitant<?>> coll = h.getInhabitantsByContract(RunLevelContract.class.getCanonicalName());
+      Collection<Inhabitant<?>> coll = h.getInhabitantsByContract(RunLevelContract.class.getName());
       assertTrue(coll.size() >= 3);
       boolean gotOne = false;
       boolean gotTwo = false;

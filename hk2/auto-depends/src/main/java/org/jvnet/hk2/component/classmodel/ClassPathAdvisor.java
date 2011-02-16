@@ -37,29 +37,53 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.tools.classmodel;
+package org.jvnet.hk2.component.classmodel;
 
-import static org.junit.Assert.*;
+import java.io.FileFilter;
+import java.net.URI;
+import java.util.Set;
 
-import org.junit.Test;
-import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.classmodel.ClassPath;
+import org.jvnet.hk2.junit.Hk2RunnerOptions;
 
 /**
- * Tests for CodeSourceFilter
- *
+ * Assists in the creation of the habitat via class-model introspection.  Implementations of
+ * this contract can fulfill two separate but related actions.
+ * 
+ * <p>
+ * 1. It can prune the classpath used to construct the habitat based on some filter criteria.
+ * 
+ * <p>
+ * 2. It can be provided feedback by the introspection machinery regarding the URIs in the
+ * classpath that were significant during creation of the habitat that can be used by the
+ * implementation to fine-tune future runs.
+ * 
+ * <p>
+ * Both activities above are important for building a caching scheme for example, to
+ * make class-model introspection more performant over repeated runs.
+ * 
+ * <p>
+ * See {@link Hk2RunnerOptions#classpathFilter()} for usage.
+ * 
  * @author Jeff Trent
- *
  */
-public class CodeSourceFilterTest {
+public interface ClassPathAdvisor extends FileFilter {
+
+  /**
+   * Called at the start of class-model habitat creation
+   * 
+   * @param inhabitantsClassPath the full classpath for locating class artifacts
+   */
+  void starting(ClassPath inhabitantsClassPath);
   
-  @Test
-  public void sanityTest() {
-    CodeSourceFilter filter = new CodeSourceFilter(ClassPath.create(null, true));
-    assertTrue(Habitat.class.getName(), filter.matches(Habitat.class.getName()));
-    assertFalse(filter.matches("bogus"));
-    assertFalse(filter.matches(null));
-    assertTrue(filter.matches(getClass().getName()));
-  }
+  /**
+   * Called at the completion of class-model habitat creation
+   * 
+   * @param significant
+   *  the set of code sources that were significant in that they contributed to logical habitat creation
+   * @param insignificant
+   *  the set of code sources that were not significant in creation of the logical habitat
+   */
+  void finishing(Set<URI> significant, Set<URI> insignificant);
   
 }

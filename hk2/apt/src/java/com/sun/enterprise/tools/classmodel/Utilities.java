@@ -105,13 +105,17 @@ public class Utilities {
       }
     }
     
-    // extra
+    // metadata
     vals = new ArrayList<String>(mm.keySet());
     Collections.sort(vals);
     for (String key : vals) {
-      sb.append(",").append(key).append("=").append(mm.getOne(key));
+      List<String> subVals = new ArrayList<String>(mm.get(key));
+      Collections.sort(subVals);
+      for (String val : subVals) {
+        sb.append(",").append(key).append("=").append(val);
+      }
     }
-    
+
     return sb.toString();
   }
 

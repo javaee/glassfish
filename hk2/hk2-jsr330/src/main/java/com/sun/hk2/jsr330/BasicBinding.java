@@ -139,14 +139,18 @@ public class BasicBinding implements Jsr330BindingExt, Cloneable {
   }
   
   public BasicBinding setServiceClassName(String service) {
-    if (null == service || service.isEmpty()) throw new IllegalStateException();
+    if (null == service || service.isEmpty()) {
+      throw new IllegalStateException();
+    }
     this.service = service;
     return this;
   }
 
   public BasicBinding setServiceClass(Class<?> service) {
-    if (null == service) throw new IllegalStateException();
-    this.service = service.getCanonicalName();
+    if (null == service) {
+      throw new IllegalStateException();
+    }
+    this.service = service.getName();
     return this;
   }
   
@@ -156,7 +160,9 @@ public class BasicBinding implements Jsr330BindingExt, Cloneable {
   }
   
   public synchronized BasicBinding addContractClassName(String contract) {
-    if (null == contract || contract.isEmpty()) throw new IllegalStateException();
+    if (null == contract || contract.isEmpty()) {
+      throw new IllegalStateException();
+    }
     if (null == contracts) {
       contracts = new ArrayList<String>();
     }
@@ -165,8 +171,10 @@ public class BasicBinding implements Jsr330BindingExt, Cloneable {
   }
 
   public BasicBinding addContractClass(Class<?> contract) {
-    if (null == contract) throw new IllegalStateException();
-    return addContractClassName(contract.getCanonicalName());
+    if (null == contract) {
+      throw new IllegalStateException();
+    }
+    return addContractClassName(contract.getName());
   }
   
   @Override
@@ -175,7 +183,9 @@ public class BasicBinding implements Jsr330BindingExt, Cloneable {
   }
 
   public synchronized BasicBinding addName(Named named) {
-    if (null == named) throw new IllegalStateException();
+    if (null == named) {
+      throw new IllegalStateException();
+    }
     if (null == names) {
       names = new ArrayList<Named>();
     }
@@ -184,7 +194,9 @@ public class BasicBinding implements Jsr330BindingExt, Cloneable {
   }
   
   public synchronized BasicBinding addName(final String name) {
-    if (null == name) throw new IllegalStateException();
+    if (null == name) {
+      throw new IllegalStateException();
+    }
     if (null == names) {
       names = new ArrayList<Named>();
     }
@@ -217,7 +229,7 @@ public class BasicBinding implements Jsr330BindingExt, Cloneable {
   public BasicBinding addQualifier(Class<? extends Annotation> qc) {
     Qualifier q = qc.getAnnotation(Qualifier.class);
     if (null == q) {
-      throw new IllegalArgumentException(qc.getCanonicalName());
+      throw new IllegalArgumentException(qc.getName());
     }
     
     if (null == qualifiers) {

@@ -172,7 +172,7 @@ public class ParsingContext {
     final ResourceLocator locator;
 
     private ParsingContext(Builder builder) {
-        Runtime runtime = Runtime.getRuntime();
+//        Runtime runtime = Runtime.getRuntime();
         this.executorService = builder.executorService;
         this.archiveSelector = builder.archiveSelector;
         this.logger = builder.logger;

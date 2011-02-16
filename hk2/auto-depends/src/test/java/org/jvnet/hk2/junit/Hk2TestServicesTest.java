@@ -74,7 +74,7 @@ public class Hk2TestServicesTest {
   static class TestHk2TestServices extends Hk2TestServices {
     public TestHk2TestServices(Class<? extends HabitatFactory> habitatFactoryClass,
         Class<? extends InhabitantsParserFactory> ipFactoryClass) {
-      super(habitatFactoryClass, ipFactoryClass, true, true);
+      super(habitatFactoryClass, ipFactoryClass, true, true, null);
     }
     
     @Override

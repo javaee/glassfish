@@ -49,6 +49,7 @@ import org.junit.Test;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.*;
@@ -91,6 +92,12 @@ public class LocatorTest {
                 if (name.indexOf(".")==-1) return null; // intrinsic types.
                 if (name.startsWith("java/")) return null; // no jdk class parsing.
                 return cl.getResource(name);
+            }
+
+            @Override
+            public InputStream openResourceStream(String name)
+                throws IOException {
+              return cl.getResourceAsStream(name);
             }
         });
         ParsingContext context = builder.build();

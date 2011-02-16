@@ -57,4 +57,11 @@ public interface AnnotationType extends InterfaceModel {
      */
     Collection<AnnotatedElement> allAnnotatedTypes();
     
+    /**
+     * Returns an unmodifiable collection of annotation default values.
+     *
+     * @return collection of default value elements of this annotation
+     */
+    Map<String, Object> getDefaultValues();
+
 }

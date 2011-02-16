@@ -219,7 +219,7 @@ public class DomDocument<T extends Dom> {
         Collection<DataType> dtfh = habitat.getAllByContract(DataType.class);
         synchronized(validators) {
             for (DataType dt : dtfh) {
-                validators.put(dt.getClass().getCanonicalName(), dt);
+                validators.put(dt.getClass().getName(), dt);
             }
             return (validators.get(dataType));
         }

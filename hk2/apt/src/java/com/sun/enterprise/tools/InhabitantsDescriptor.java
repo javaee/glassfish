@@ -51,7 +51,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -71,7 +73,7 @@ import org.jvnet.hk2.component.MultiMap;
  */
 @SuppressWarnings("serial")
 public class InhabitantsDescriptor extends HashMap<String, String> {
-  private final Logger logger = Logger.getLogger(InhabitantsDescriptor.class.getCanonicalName());
+  private final Logger logger = Logger.getLogger(InhabitantsDescriptor.class.getName());
   
   private boolean dirty = false;
   private boolean dateEnabled = true;
@@ -166,7 +168,8 @@ public class InhabitantsDescriptor extends HashMap<String, String> {
       MultiMap<String, String> meta = (MultiMap<String, String>)metaObj;
       for (Map.Entry<String, List<String>> entry : meta.entrySet()) {
         String key = entry.getKey();
-        List<String> vals = entry.getValue();
+        List<String> vals = new ArrayList<String>(entry.getValue());
+        Collections.sort(vals);
         for (String val : vals) {
           buf.append(",").append(key).append("=").append(val);
         }

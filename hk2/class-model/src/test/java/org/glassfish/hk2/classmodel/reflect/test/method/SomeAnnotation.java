@@ -51,4 +51,10 @@ import static java.lang.annotation.ElementType.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({METHOD, FIELD, PARAMETER, TYPE})
 public @interface SomeAnnotation {
+  String value() default "default";
+  Class<?>[] aClassArr();
+  Class<?> aClass();
+  long aLong();
+  int runLevel() default -1;
+  Class<?> environment() default Void.class;
 }

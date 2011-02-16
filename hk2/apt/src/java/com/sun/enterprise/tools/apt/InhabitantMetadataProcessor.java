@@ -47,8 +47,10 @@ import com.sun.mirror.type.AnnotationType;
 import com.sun.mirror.type.DeclaredType;
 import com.sun.mirror.type.TypeMirror;
 import org.jvnet.hk2.annotations.InhabitantMetadata;
+import org.jvnet.hk2.component.MultiMap;
 
 import java.lang.annotation.Annotation;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -57,7 +59,7 @@ import java.util.Map;
  *
  * @author Kohsuke Kawaguchi
  */
-public class InhabitantMetadataProcessor extends TypeHierarchyVisitor<Map<String,String>> {
+public class InhabitantMetadataProcessor extends TypeHierarchyVisitor<MultiMap<String,String>> {
 
     private final Map<AnnotationType,Model> models = new HashMap<AnnotationType, Model>();
 
@@ -85,13 +87,25 @@ public class InhabitantMetadataProcessor extends TypeHierarchyVisitor<Map<String
          * Based on the model, parse the annotation mirror and updates the metadata bag by adding
          * discovered values.
          */
-        public void parse(AnnotationMirror a, Map<String,String> metadataBag) {
+        public void parse(AnnotationMirror a, MultiMap<String,String> metadataBag) {
             assert a.getAnnotationType().equals(type);
 
             for (Map.Entry<AnnotationTypeElementDeclaration, String> e : metadataProperties.entrySet()) {
-                AnnotationValue value = a.getElementValues().get(e.getKey());
-                if(value!=null)
-                    metadataBag.put(e.getValue(),toString(value));
+                Map<AnnotationTypeElementDeclaration, AnnotationValue> vals = a.getElementValues();
+                AnnotationValue value = vals.get(e.getKey());
+                if (value!=null) {
+                    metadataBag.add(e.getValue(), toString(value));
+                } else {
+                    Collection<AnnotationTypeElementDeclaration> methods = 
+                      a.getAnnotationType().getDeclaration().getMethods();
+                    for (AnnotationTypeElementDeclaration decl : methods) {
+                        if (e.getKey().equals(decl)) {
+                            value = decl.getDefaultValue();
+                            metadataBag.add(e.getValue(), toString(value));
+                            break;
+                        }
+                    }
+                }
             }
         }
 
@@ -122,19 +136,19 @@ public class InhabitantMetadataProcessor extends TypeHierarchyVisitor<Map<String
         }
     }
 
-    public Map<String,String> process(TypeDeclaration d) {
+    public MultiMap<String,String> process(TypeDeclaration d) {
         visited.clear();
-        Map<String,String> r = new HashMap<String, String>();
+        MultiMap<String,String> r = new MultiMap<String, String>();
         check(d,r);
         return r;
     }
 
-    protected void check(TypeDeclaration d, Map<String,String> result) {
+    protected void check(TypeDeclaration d, MultiMap<String,String> result) {
         checkAnnotations(d, result);
         super.check(d,result);
     }
 
-    private void checkAnnotations(TypeDeclaration d, Map<String, String> result) {
+    private void checkAnnotations(TypeDeclaration d, MultiMap<String, String> result) {
         for (AnnotationMirror a : d.getAnnotationMirrors()) {
             getModel(a.getAnnotationType()).parse(a,result);
             // check meta-annotations

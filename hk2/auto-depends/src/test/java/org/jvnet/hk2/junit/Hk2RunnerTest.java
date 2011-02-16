@@ -62,9 +62,14 @@ public class Hk2RunnerTest extends Hk2RunnerTestBase {
   @Test
   public void testAll() {
     assertEquals("expected Hk2RunnerBase annotations to be honored", TestHabitat.class, h.getClass());
+    assertSame(h, hParent);
     assertTrue(rls instanceof Enableable);
     assertFalse("rls enabled but should be disabled", ((Enableable)rls).isEnabled());
   }
   
+  @Test
+  public void testClasspathFilter() {
+    assertFalse(ClasspathFilter.calls.isEmpty());
+  }
   
 }

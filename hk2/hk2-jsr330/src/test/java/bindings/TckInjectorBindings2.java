@@ -76,7 +76,7 @@ public class TckInjectorBindings2 implements Jsr330Bindings {
 
   public static Jsr330Binding fuelTank() {
     // use the name instead
-    return new BasicBinding(FuelTank.class.getCanonicalName());
+    return new BasicBinding(FuelTank.class.getName());
   }
 
 }

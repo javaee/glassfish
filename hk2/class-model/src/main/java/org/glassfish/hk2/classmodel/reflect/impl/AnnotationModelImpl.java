@@ -76,17 +76,24 @@ public class AnnotationModelImpl implements AnnotationModel {
           Object prevVal = values.get(name);
           if (null != prevVal) {
             if (Collection.class.isInstance(prevVal)) {
-              ((Collection<Object>)prevVal).add(value);
+              ((Collection<Object>)prevVal).add(unwrap(value));
               return;
             } else {
               Collection<Object> coll = new ArrayList<Object>();
               coll.add(prevVal);
-              coll.add(value);
+              coll.add(unwrap(value));
               value = coll;
             }
           }
         }
-        values.put(name, value);
+        values.put(name, unwrap(value));
+    }
+    
+    private Object unwrap(Object value) {
+      if (org.objectweb.asm.Type.class.isInstance(value)) {
+        return org.objectweb.asm.Type.class.cast(value).getClassName();
+      }
+      return value;
     }
 
     @Override
@@ -103,4 +110,5 @@ public class AnnotationModelImpl implements AnnotationModel {
     public AnnotatedElement getElement() {
         return element;
     }
+
 }

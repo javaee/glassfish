@@ -223,7 +223,7 @@ public class Jsr330InjectionResolver extends
   protected static <V> V getServiceInjectValue(Habitat habitat,
       Class<V> type,
       Annotation[] annotations) throws ComponentException {
-    Collection<Inhabitant<?>> candidates = habitat.getAllInhabitantsByContract(type.getCanonicalName());
+    Collection<Inhabitant<?>> candidates = habitat.getAllInhabitantsByContract(type.getName());
     for (Inhabitant<?> candidate : candidates) {
       if (matched(annotations, candidate.metadata())) {
         return (V) candidate.get();
@@ -236,7 +236,7 @@ public class Jsr330InjectionResolver extends
       MultiMap<String, String> candidateMd) {
     for (Annotation ann : annotations) {
       if (null != ann) {
-        String name = ann.annotationType().getCanonicalName();
+        String name = ann.annotationType().getName();
         if (!candidateMd.contains(Constants.QUALIFIER, name)) {
           return false;
         }

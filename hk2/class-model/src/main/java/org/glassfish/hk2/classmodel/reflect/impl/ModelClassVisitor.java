@@ -71,6 +71,8 @@ public class ModelClassVisitor implements ClassVisitor {
     private final ModelFieldVisitor fieldVisitor = new ModelFieldVisitor(visitingContext);
     private final ModelMethodVisitor methodVisitor = new ModelMethodVisitor(visitingContext);
     private final ModelAnnotationVisitor annotationVisitor = new ModelAnnotationVisitor(visitingContext);
+    private final ModelDefaultAnnotationVisitor defaultAnnotationVisitor = new ModelDefaultAnnotationVisitor(visitingContext);
+
 
     public ModelClassVisitor(ParsingContext ctx, URI definingURI, String entryName) {
         this.ctx = ctx;
@@ -81,7 +83,6 @@ public class ModelClassVisitor implements ClassVisitor {
 
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {        
-
         String parentName = (superName!=null?org.objectweb.asm.Type.getObjectType(superName).getClassName():null);
         TypeProxy parent = (parentName!=null?typeBuilder.getHolder(parentName, typeBuilder.getType(access)):null);
         if (parent!=null && !parentName.equals(Object.class.getName())) {
@@ -99,7 +100,6 @@ public class ModelClassVisitor implements ClassVisitor {
                 String newPath=(index>0?definingURI.getPath() + entryName.substring(0, index):definingURI.getPath());
                 classDefURI = new URI(definingURI.getScheme(), newPath, definingURI.getFragment());
             }
-
         } catch (URISyntaxException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
@@ -107,11 +107,15 @@ public class ModelClassVisitor implements ClassVisitor {
         if (logger.isLoggable(Level.FINER)) {
           logger.log(Level.FINER, "visiting {0} with classDefURI={1}", new Object[] {entryName, classDefURI});
         }
-            
+
+//        if (!new File(classDefURI).exists()) {
+//          throw new IllegalStateException(entryName + ": " + classDefURI.toString());
+//        }
+        
         type = ctx.getTypeBuilder(classDefURI).getType(access, className, parent);
         type.getProxy().visited();
         type.addDefiningURI(classDefURI);
-        deepVisit =ctx.getConfig().getAnnotationsOfInterest().isEmpty();
+        deepVisit = ctx.getConfig().getAnnotationsOfInterest().isEmpty();
 
         // reverse index
         if (parent!=null) {
@@ -257,15 +261,15 @@ public class ModelClassVisitor implements ClassVisitor {
             }
           
             AnnotationTypeImpl annotationType = (AnnotationTypeImpl) typeBuilder.getType(Opcodes.ACC_ANNOTATION, unwrap(desc), null);
-            AnnotationModelImpl annotationModel = new AnnotationModelImpl(context.method, annotationType);
+            AnnotationModelImpl am = new AnnotationModelImpl(context.method, annotationType);
 
             // reverse index.
             annotationType.getAnnotatedElements().add(context.method);
 
             // forward index
-            context.method.addAnnotation(annotationModel);
-            context.annotation = annotationModel;
-            
+            context.method.addAnnotation(am);
+            context.annotation = am;
+
             return annotationVisitor;
         }
 
@@ -273,8 +277,29 @@ public class ModelClassVisitor implements ClassVisitor {
         public void visitEnd() {
 //            context.method=null;
         }
+
+        @Override
+        public AnnotationVisitor visitAnnotationDefault() {
+          return defaultAnnotationVisitor;
+        }
+    }
+    
+    
+    private class ModelDefaultAnnotationVisitor extends EmptyVisitor implements AnnotationVisitor {
+
+      private final VisitingContext context;
+      
+      public ModelDefaultAnnotationVisitor(VisitingContext visitingContext) {
+        this.context = visitingContext;
+      }
+
+      public void visit(java.lang.String desc, java.lang.Object value) {
+        AnnotationTypeImpl am = (AnnotationTypeImpl) context.method.owner;
+        am.addDefaultValue(context.method.name, value);
+      }
     }
 
+    
     private class ModelFieldVisitor extends EmptyVisitor implements FieldVisitor {
 
         private final VisitingContext context;
@@ -320,7 +345,8 @@ public class ModelClassVisitor implements ClassVisitor {
 
         @Override
         public void visitEnd() {
-            context.annotation=null;
+//            context.annotation=null;
         }
     }
+    
 }

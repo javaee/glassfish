@@ -59,10 +59,10 @@ public class InhabitantsSorterTest {
   private static final Logger logger = Logger.getAnonymousLogger();
 
   /**
-   * Verifies sorting behavior
+   * Verifies sorting behavior and streaming to file
    */
   @Test
-  public void testSorting() throws Exception {
+  public void testSortingAndIO() throws Exception {
     // setup test
     File testDir = new File(new File("."), "target/test-classes");
     File inputFile = new File(testDir, "META-INF/inhabitants/default");
@@ -84,13 +84,24 @@ public class InhabitantsSorterTest {
       String output = Utilities.sortInhabitantsDescriptor(InhabitantsGeneratorTest.toString(fis), false);
       fis.close();
       
-      logger.log(Level.INFO, "original/expected=\n{0}and processed=\n{1}\n", new Object[] {original, output});
+      logger.log(Level.FINE, "original/expected=\n{0}and processed=\n{1}\n", new Object[] {original, output});
       
       assertEquals(original, output);
     } finally {
       System.clearProperty(InhabitantsGenerator.PARAM_INHABITANT_SOURCE_FILE);
       System.clearProperty(InhabitantsGenerator.PARAM_INHABITANT_TARGET_FILE);
     }
+  }
+  
+  /**
+   * Verifies raw sorting behavior
+   */
+  @Test
+  public void testSorting() throws Exception {
+    String original = "class=rls.test.model.ServiceWithTwoRunLevelAssignments,index=org.jvnet.hk2.annotations.RunLevel,runLevel=2,runLevel=55,env=java.lang.Void";
+    String sorted = Utilities.sortInhabitantsDescriptor(original, true);
+    String expected = "class=rls.test.model.ServiceWithTwoRunLevelAssignments,index=org.jvnet.hk2.annotations.RunLevel,env=java.lang.Void,runLevel=2,runLevel=55\n";
+    assertEquals(expected, sorted);
   }
   
   /**

@@ -44,7 +44,7 @@ package org.glassfish.hk2.classmodel.reflect.test.method;
  */
 public class SimpleAnnotatedMethod {
 
-    @SomeAnnotation
+    @SomeAnnotation(aLong=10, aClass=Void.class, aClassArr={Integer.class, String.class})
     public void setFoo(String foo) {
         
     }
