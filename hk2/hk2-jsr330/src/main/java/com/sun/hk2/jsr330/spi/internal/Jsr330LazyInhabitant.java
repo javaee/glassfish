@@ -39,10 +39,10 @@
  */
 package com.sun.hk2.jsr330.spi.internal;
 
+import org.jvnet.hk2.component.Creator;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.MultiMap;
 import org.jvnet.hk2.component.Scope;
-import org.jvnet.hk2.component.Womb;
 
 import com.sun.hk2.component.Holder;
 import com.sun.hk2.component.LazyInhabitant;
@@ -66,7 +66,7 @@ public class Jsr330LazyInhabitant<T> extends LazyInhabitant<T> {
   }
 
   @Override
-  protected Womb<T> createWomb(Class<T> c) {
+  protected Creator<T> createCreator(Class<T> c) {
     return new Jsr330ConstructorWomb<T>(c, habitat, metadata());
   }
     
