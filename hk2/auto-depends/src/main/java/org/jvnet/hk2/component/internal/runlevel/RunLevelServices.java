@@ -43,7 +43,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.jvnet.hk2.annotations.RunLevel;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.HabitatListener;
@@ -57,46 +56,43 @@ import org.jvnet.hk2.component.RunLevelService;
  * for internal use only.
  * 
  * @author Jeff Trent
- * 
- * @since 3.1
  */
 public class RunLevelServices {
 
-  private Map<Habitat, Map<Class<?>, RunLevelServiceStub>> map =
-    new HashMap<Habitat, Map<Class<?>, RunLevelServiceStub>>();
+  private Map<Habitat, Map<String, RunLevelServiceStub>> map =
+    new HashMap<Habitat, Map<String, RunLevelServiceStub>>();
 
   
   /**
-   * Find the RunLevelService appropriate for the specified RunLevel.
+   * Find the RunLevelService appropriate for the specified RunLevel
    */
-  public synchronized RunLevelService<?> get(Habitat habitat, RunLevel rl) {
-    assert(null != rl);
+  public synchronized RunLevelService<?> get(Habitat habitat, int rl, Class<?> env) {
+    return get(habitat, rl, env.getName());
+  }
+  
+  public synchronized RunLevelService<?> get(Habitat habitat, int rl, String env) {
+    assert(null != env);
 
     // if any inhabitants are already being managed, use same RLS stub.
     // we especially want to do this because we don't want to activate
     // the RunLevelservice before all of the inhabitants are present.
-    RunLevelService<?> rls = getFromMap(habitat, rl.environment());
+    RunLevelService<?> rls = getFromMap(habitat, env);
     
     // next, check to see if we have it from the habitat
     if (null == rls) {
-      rls = getFromHabitat(habitat, rl.environment());
+      rls = getFromHabitat(habitat, env);
     }
 
     // create the stub if we didn't find it anywhere
     if (null == rls) {
-      rls = create(habitat, rl);
+      rls = create(habitat, rl, env);
     }
     
     return rls;
   }
 
-
   @SuppressWarnings("unchecked")
-  static RunLevelService<?> getFromHabitat(Habitat habitat, Class<?> environment) {
-
-    // TODO: If environment was on annotation of the RunLevelService impl instead of
-    //      a method of the instance, we wouldn't have to activate the RunLevelService(s)
-
+  static RunLevelService<?> getFromHabitat(Habitat habitat, String env) {
     if (null == habitat) {
       return null;
     }
@@ -105,7 +101,7 @@ public class RunLevelServices {
     RunLevelService<?> theOne = null;
     for (RunLevelService<?> hrls : coll) {
       if (null != hrls.getState() && 
-          hrls.getState().getEnvironment() == environment) {
+          hrls.getState().getEnvironment().equals(env)) {
         if (null != theOne) {
           throw new ComponentException("constraint violation - competing RunLevelServices: " +
               theOne + " and " + hrls);
@@ -118,8 +114,8 @@ public class RunLevelServices {
   }
 
 
-  private RunLevelService<?> getFromMap(Habitat habitat, Class<?> env) {
-    Map<Class<?>, RunLevelServiceStub> envMap;
+  private RunLevelService<?> getFromMap(Habitat habitat, String env) {
+    Map<String, RunLevelServiceStub> envMap;
     synchronized (map) {
       envMap = map.get(habitat);
       if (null == envMap) {
@@ -136,24 +132,24 @@ public class RunLevelServices {
   }
   
   
-  private RunLevelService<?> create(Habitat habitat, RunLevel rl) {
-    initialize(habitat, rl);
+  private RunLevelService<?> create(Habitat habitat, int rl, String env) {
+    initialize(habitat, rl, env);
     
-    Map<Class<?>, RunLevelServiceStub> envMap;
+    Map<String, RunLevelServiceStub> envMap;
     synchronized (map) {
       envMap = map.get(habitat);
       if (null == envMap) {
-        envMap = new HashMap<Class<?>, RunLevelServiceStub>();
+        envMap = new HashMap<String, RunLevelServiceStub>();
         map.put(habitat, envMap);
       }
     }
     
     RunLevelServiceStub rls;
     synchronized (envMap) {
-      rls = envMap.get(rl.environment());
+      rls = envMap.get(env);
       if (null == rls) {
-        rls = new RunLevelServiceStub(habitat, rl.environment());
-        envMap.put(rl.environment(), rls);
+        rls = new RunLevelServiceStub(habitat, env);
+        envMap.put(env, rls);
       }
     }
     
@@ -161,21 +157,21 @@ public class RunLevelServices {
   }
 
 
-  private void initialize(Habitat habitat, RunLevel rl) {
+  private void initialize(Habitat habitat, int rl, String env) {
     if (null == habitat) {
       return;
     }
     
     if (habitat.isInitialized()) {
-      throw new ComponentException("no RunLevelService found appropriate for RunLevel: " + rl);
+      throw new ComponentException(
+          "no RunLevelService found appropriate for RunLevel: (" + rl + "," + env + ")");
     }
     
     habitat.addHabitatListener(new HabitatListener() {
       @Override
-      public boolean inhabitantChanged(EventType eventType, Habitat habitat,
-          Inhabitant<?> inhabitant) {
+      public boolean inhabitantChanged(EventType eventType, Habitat habitat, Inhabitant<?> inhabitant) {
         if (EventType.HABITAT_INITIALIZED == eventType) {
-          Map<Class<?>, RunLevelServiceStub> rlss;
+          Map<String, RunLevelServiceStub> rlss;
           synchronized (map) {
             rlss = map.remove(habitat);
           }

@@ -63,8 +63,6 @@ import com.sun.hk2.component.AbstractInhabitantImpl;
  * A single Recorder instance is responsible for a single RunLevel.
  * 
  * @author Jeff Trent
- * 
- * @since 3.1
  */
 /*public*/ class Recorder implements InhabitantListener {
 
@@ -72,17 +70,17 @@ import com.sun.hk2.component.AbstractInhabitantImpl;
   
   private final int runLevel;
   private final Stack<Inhabitant<?>> activations;
-  private final Class<?> targetEnv;
+  private final String targetEnv;
   
-  Recorder(int runLevel, Class<?> targetEnv) {
+  Recorder(int runLevel, String targetEnv) {
     this(new ArrayList<Inhabitant<?>>(), runLevel, targetEnv);
   }
   
   Recorder(List<Inhabitant<?>> list, int runLevel) {
-    this(new ArrayList<Inhabitant<?>>(), runLevel, Void.class);
+    this(new ArrayList<Inhabitant<?>>(), runLevel, Void.class.getName());
   }
   
-  Recorder(List<Inhabitant<?>> list, int runLevel, Class<?> targetEnv) {
+  Recorder(List<Inhabitant<?>> list, int runLevel, String targetEnv) {
     this.activations = new Stack<Inhabitant<?>>();
     this.activations.addAll(list);
     this.runLevel = runLevel;
@@ -130,7 +128,7 @@ import com.sun.hk2.component.AbstractInhabitantImpl;
       RunLevel rl = ((AbstractInhabitantImpl<?>)inhabitant).getAnnotation(RunLevel.class);
       // actually, it should really never be null (in real life we could consider tossing an exception)
       if (null != rl) {
-        if (targetEnv == rl.environment()) {
+        if (targetEnv.equals(rl.environment().getName())) {
           push(inhabitant);
           
           // verify it is not to a bad dependency

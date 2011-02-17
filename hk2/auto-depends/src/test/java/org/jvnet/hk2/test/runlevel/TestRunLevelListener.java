@@ -145,7 +145,7 @@ public class TestRunLevelListener implements RunLevelListener {
     public final String type;
     public final Integer current;
     public final Integer planned;
-    public final Class<?> env;
+    public final String env;
     public final Integer previousProceedTo;
     public final ServiceContext context;
     public final Throwable error;

@@ -80,8 +80,8 @@ public class SomeOtherRunLevelService extends TestInhabitantListener
   }
 
   @Override
-  public Class<Object> getEnvironment() {
-    return Object.class;
+  public String getEnvironment() {
+    return Object.class.getName();
   }
 
   @Override

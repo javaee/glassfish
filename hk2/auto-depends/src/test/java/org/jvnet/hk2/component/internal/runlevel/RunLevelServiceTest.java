@@ -134,7 +134,7 @@ public class RunLevelServiceTest {
     assertNotNull(rls.getState());
     assertEquals(-1, rls.getState().getCurrentRunLevel());
     assertEquals(null, rls.getState().getPlannedRunLevel());
-    assertEquals(Void.class, rls.getState().getEnvironment());
+    assertEquals(Void.class.getName(), rls.getState().getEnvironment());
     
     RunLevelService rls2 = h.getComponent(RunLevelService.class, "default");
     assertSame(rls, rls2);

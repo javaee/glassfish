@@ -159,7 +159,7 @@ public class RecorderTest {
   public void anotherEnvironment() {
     List<Inhabitant<?>> list = new ArrayList<Inhabitant<?>>();
     Recorder recorder = new Recorder(list, 10);
-    RunLevelState rlState = new TestRunLevelState(10, 10, Integer.class);
+    RunLevelState rlState = new TestRunLevelState(10, 10, Integer.class.getName());
 
     Holder.Impl cl = new Holder.Impl(getClass().getClassLoader());
 

@@ -226,8 +226,6 @@ import com.sun.hk2.component.RunLevelInhabitant;
  * @see RunLevelService
  * 
  * @author Jeff Trent
- * 
- * @since 3.1
  */
 public class DefaultRunLevelService implements RunLevelService<Void>, Enableable,
     RunLevelState<Void>, InhabitantListener, HabitatListener, InhabitantSorter, InhabitantActivator {
@@ -347,7 +345,6 @@ public class DefaultRunLevelService implements RunLevelService<Void>, Enableable
   @SuppressWarnings("unused")
   private void setDelegate(RunLevelState<Void> stateProvider) {
     assert (this != stateProvider);
-    assert (getEnvironment() == stateProvider.getEnvironment());
     this.delegate = stateProvider;
   }
   
@@ -360,10 +357,9 @@ public class DefaultRunLevelService implements RunLevelService<Void>, Enableable
     return (null == delegate) ? this : delegate;
   }
 
-  @SuppressWarnings("unchecked")
   @Override
-  public Class getEnvironment() {
-    return (null == delegate) ? targetEnv : delegate.getEnvironment();
+  public String getEnvironment() {
+    return (null == delegate) ? targetEnv.getName() : delegate.getEnvironment();
   }
 
   @Override

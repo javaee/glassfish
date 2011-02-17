@@ -84,8 +84,8 @@ public class ANonDefaultRunLevelService implements RunLevelService, RunLevelStat
   }
 
   @Override
-  public Class getEnvironment() {
-    return Object.class;
+  public String getEnvironment() {
+    return Object.class.getName();
   }
 
   @Override
