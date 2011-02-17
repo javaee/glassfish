@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -54,6 +54,7 @@ import org.glassfish.api.admin.*;
 import org.glassfish.api.admin.CommandModel.ParamModel;
 import org.glassfish.common.util.admin.CommandModelImpl;
 import org.glassfish.common.util.admin.MapInjectionResolver;
+import org.glassfish.common.util.admin.ManPageFinder;
 
 import com.sun.enterprise.admin.util.CommandModelData.ParamModelData;
 import com.sun.enterprise.admin.cli.remote.RemoteCommand;
@@ -280,11 +281,24 @@ public abstract class CLICommand implements PostConstruct {
     }
 
     /**
-     * Return a Reader for the man page for this command,
+     * Return a BufferedReader for the man page for this command,
      * or null if not found.
      */
-    public Reader getManPage() {
-        return CLIManFileFinder.getCommandManFile(this);
+    public BufferedReader getManPage() {
+        String commandName = getName();
+        if (commandName.length() == 0)
+            throw new IllegalArgumentException("Command name cannot be empty");
+
+        // special case "help" --> "asadmin"
+        if (commandName.equals("help"))
+            commandName = "asadmin";
+
+        return ManPageFinder.getCommandManPage(
+                                commandName,
+                                getClass().getName(),
+                                Locale.getDefault(),
+                                getClass().getClassLoader(),
+                                logger);
     }
 
     /**
@@ -705,17 +719,21 @@ public abstract class CLICommand implements PostConstruct {
      */
     protected boolean checkHelp() throws CommandException {
         if (programOpts.isHelp()) {
-            Reader r = getManPage();
-            if (r == null)
+            BufferedReader br = getManPage();
+            if (br == null)
                 throw new CommandException(strings.get("ManpageMissing", name));
-            BufferedReader br = new BufferedReader(r);
             String line;
             try {
-            while ((line = br.readLine()) != null)
-                System.out.println(line);
+                while ((line = br.readLine()) != null)
+                    System.out.println(line);
             } catch (IOException ioex) {
                 throw new CommandException(
                             strings.get("ManpageMissing", name), ioex);
+            } finally {
+                try {
+                    br.close();
+                } catch (IOException ex) {
+                }
             }
             return true;
         } else

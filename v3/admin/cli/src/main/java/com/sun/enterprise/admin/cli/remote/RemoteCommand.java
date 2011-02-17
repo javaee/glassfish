@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -52,6 +52,7 @@ import com.sun.enterprise.module.single.StaticModulesRegistry;
 
 import org.glassfish.api.admin.*;
 import org.glassfish.api.admin.CommandModel.ParamModel;
+import org.glassfish.common.util.admin.ManPageFinder;
 
 import com.sun.appserv.management.client.prefs.LoginInfo;
 import com.sun.appserv.management.client.prefs.LoginInfoStore;
@@ -441,14 +442,14 @@ public class RemoteCommand extends CLICommand {
      * available, e.g., because the server is down, try to find
      * it locally by looking in the modules directory.
      */
-    public Reader getManPage() {
+    public BufferedReader getManPage() {
         try {
             initializeRemoteAdminCommand();
             rac.setCommandModel(helpModel());
             ParameterMap params = new ParameterMap();
             params.set("help", "true");
             String manpage = rac.executeCommand(params);
-            return new StringReader(manpage);
+            return new BufferedReader(new StringReader(manpage));
         } catch (CommandException cex) {
             // ignore
         }
@@ -457,7 +458,7 @@ public class RemoteCommand extends CLICommand {
          * Can't find the man page remotely, try to find it locally.
          * XXX - maybe should only do this on connection failure
          */
-        Reader r = getLocalManPage();
+        BufferedReader r = getLocalManPage();
         return r != null ? r : super.getManPage();
     }
 
@@ -473,13 +474,13 @@ public class RemoteCommand extends CLICommand {
     /**
      * Try to find a local version of the man page for this command.
      */
-    private Reader getLocalManPage() {
+    private BufferedReader getLocalManPage() {
         logger.fine(strings.get("NoRemoteManPage"));
         String cmdClass = getCommandClass(getName());
         ClassLoader mcl = getModuleClassLoader();
         if (cmdClass != null && mcl != null) {
-            return CLIManFileFinder.getCommandManFile(getName(), cmdClass,
-                                                Locale.getDefault(), mcl);
+            return ManPageFinder.getCommandManPage(getName(), cmdClass,
+                                            Locale.getDefault(), mcl, logger);
         }
         return null;
     }
