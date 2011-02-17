@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -53,8 +53,9 @@ import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.regex.Pattern;import javax.management.ObjectName;
-;
+import java.util.regex.Pattern;
+
+import javax.management.ObjectName;
 import javax.management.Descriptor;
 import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanConstructorInfo;
@@ -65,10 +66,10 @@ import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanServerInvocationHandler;
-
 import javax.management.openmbean.CompositeDataSupport;
 import javax.management.openmbean.OpenType;
 import javax.management.remote.JMXServiceURL;
+
 import org.glassfish.external.arc.Stability;
 import org.glassfish.external.arc.Taxonomy;
 import org.glassfish.admin.amx.base.DomainRoot;
