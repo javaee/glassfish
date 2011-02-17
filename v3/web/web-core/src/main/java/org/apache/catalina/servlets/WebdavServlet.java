@@ -673,7 +673,7 @@ public class WebdavServlet
                     if (lockPath.endsWith("/"))
                         lockPath =
                             lockPath.substring(0, lockPath.length() - 1);
-                    Vector currentLockNullResources =
+                    Vector<String> currentLockNullResources =
                         lockNullResources.get(lockPath);
                     if (currentLockNullResources != null) {
                         Enumeration<String> lockNullResourcesList =

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -265,14 +265,14 @@ public class StandardClassLoader
      * A list of read File and Jndi Permission's required if this loader
      * is for a web application context.
      */
-    private ArrayList permissionList = new ArrayList();
+    private ArrayList<Permission> permissionList = new ArrayList();
 
 
     /**
      * The PermissionCollection for each CodeSource for a web
      * application context.
      */
-    private HashMap loaderPC = new HashMap();
+    private HashMap<String, PermissionCollection> loaderPC = new HashMap();
 
 
     /**
@@ -560,7 +560,7 @@ public class StandardClassLoader
      *
      * @exception IOException if an input/output error occurs
      */
-    public Enumeration findResources(String name) throws IOException {
+    public Enumeration<URL> findResources(String name) throws IOException {
 
         if (debug >= 3)
             log("    findResources(" + name + ")");
@@ -889,12 +889,12 @@ public class StandardClassLoader
         }
         String codeUrl = codeSource.getLocation().toString();
         PermissionCollection pc;
-        if ((pc = (PermissionCollection)loaderPC.get(codeUrl)) == null) {
+        if ((pc = loaderPC.get(codeUrl)) == null) {
             pc = super.getPermissions(codeSource);
             if (pc != null) {
-                Iterator perms = permissionList.iterator();
+                Iterator<Permission> perms = permissionList.iterator();
                 while (perms.hasNext()) {
-                    Permission p = (Permission)perms.next();
+                    Permission p = perms.next();
                     pc.add(p);
                 }
                 loaderPC.put(codeUrl,pc);

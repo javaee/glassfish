@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -110,7 +110,8 @@ public class StandardDefaultContext
     /**
      * Contexts we are currently associated with.
      */
-    private Hashtable contexts = new Hashtable();
+    private Hashtable<StandardContext, StandardContext> contexts =
+        new Hashtable<StandardContext, StandardContext>();
 
 
     /**
@@ -171,7 +172,7 @@ public class StandardDefaultContext
      * The context initialization parameters for this web application,
      * keyed by name.
      */
-    private HashMap parameters = new HashMap();
+    private HashMap<String, String> parameters = new HashMap<String, String>();
 
 
     /**
@@ -223,7 +224,7 @@ public class StandardDefaultContext
     /**
      * The Context LifecycleListener's
      */
-    protected Vector lifecycle = new Vector();
+    protected Vector<LifecycleListener> lifecycle = new Vector<LifecycleListener>();
 
 
     /**
@@ -887,7 +888,7 @@ public class StandardDefaultContext
     public String findParameter(String name) {
 
         synchronized (parameters) {
-            return ((String) parameters.get(name));
+            return parameters.get(name);
         }
 
     }
@@ -902,7 +903,7 @@ public class StandardDefaultContext
 
         synchronized (parameters) {
             String results[] = new String[parameters.size()];
-            return ((String[]) parameters.keySet().toArray(results));
+            return parameters.keySet().toArray(results);
         }
 
     }
@@ -1297,21 +1298,22 @@ public class StandardDefaultContext
     public void installDefaultContext(Context context) {
   
         if (context instanceof StandardContext) {
-            ((StandardContext)context).setUseNaming(isUseNaming());
-            ((StandardContext)context).setCachingAllowed(isCachingAllowed());
-            ((StandardContext)context).setCacheTTL(getCacheTTL());
-            ((StandardContext)context).setCacheMaxSize(getCacheMaxSize());
-            ((StandardContext)context).setAllowLinking(isAllowLinking());
-            ((StandardContext)context).setCaseSensitive(isCaseSensitive());
-            ((StandardContext)context).setManagerChecksFrequency
+            StandardContext stContext = (StandardContext)context;
+            stContext.setUseNaming(isUseNaming());
+            stContext.setCachingAllowed(isCachingAllowed());
+            stContext.setCacheTTL(getCacheTTL());
+            stContext.setCacheMaxSize(getCacheMaxSize());
+            stContext.setAllowLinking(isAllowLinking());
+            stContext.setCaseSensitive(isCaseSensitive());
+            stContext.setManagerChecksFrequency
                 (getManagerChecksFrequency());
-            if (!contexts.containsKey(context)) {
-                ((StandardContext) context).addLifecycleListener(this);
+            if (!contexts.containsKey(stContext)) {
+                stContext.addLifecycleListener(this);
             }
-            Enumeration lifecycleListeners = lifecycle.elements();
+            Enumeration<LifecycleListener> lifecycleListeners = lifecycle.elements();
             while (lifecycleListeners.hasMoreElements()) {
-                ((StandardContext)context).addLifecycleListener(
-                    (LifecycleListener)lifecycleListeners.nextElement());
+                stContext.addLifecycleListener(
+                    lifecycleListeners.nextElement());
               }
         }
 

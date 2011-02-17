@@ -232,7 +232,7 @@ public final class RequestUtil {
         if ((header == null) || (header.length() < 1))
             return (new Cookie[0]);
 
-        ArrayList cookies = new ArrayList();
+        ArrayList<Cookie> cookies = new ArrayList<Cookie>();
         while (header.length() > 0) {
             int semicolon = header.indexOf(';');
             if (semicolon < 0)
@@ -252,11 +252,11 @@ public final class RequestUtil {
                     cookies.add(new Cookie(name, value));
                 }
             } catch (Throwable e) {
-                ;
+                // Ignore
             }
         }
 
-        return ((Cookie[]) cookies.toArray(new Cookie[cookies.size()]));
+        return cookies.toArray(new Cookie[cookies.size()]);
 
     }
 
@@ -419,9 +419,9 @@ public final class RequestUtil {
      * Put name and value pair in map.  When name already exist, add value
      * to array of values.
      */
-    private static void putMapEntry( Map map, String name, String value) {
+    private static void putMapEntry( Map<String, String[]> map, String name, String value) {
         String[] newValues = null;
-        String[] oldValues = (String[]) map.get(name);
+        String[] oldValues = map.get(name);
         if (oldValues == null) {
             newValues = new String[1];
             newValues[0] = value;
@@ -453,7 +453,7 @@ public final class RequestUtil {
      *
      * @exception UnsupportedEncodingException if the data is malformed
      */
-    public static void parseParameters(Map map, byte[] data, String encoding)
+    public static void parseParameters(Map<String, String[]> map, byte[] data, String encoding)
         throws UnsupportedEncodingException {
 
         if (data != null && data.length > 0) {
@@ -551,7 +551,7 @@ public final class RequestUtil {
      * @return The resulting string representation, to be used as the value
      * of a JSESSIONIDVERSION cookie or jsessionidversion URI parameter
      */
-    public static String createSessionVersionString(HashMap sessionVersions) {
+    public static String createSessionVersionString(HashMap<String, String> sessionVersions) {
         if (sessionVersions == null) {
             return null;
         }
