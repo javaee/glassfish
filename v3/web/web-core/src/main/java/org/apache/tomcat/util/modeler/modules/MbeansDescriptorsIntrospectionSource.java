@@ -239,7 +239,8 @@ public class MbeansDescriptorsIntrospectionSource extends ModelerSource
      * @param invokeAttMap The invokable attributes map
      */
     private void initMethods(Class<?> realClass,
-                             Method methods[],                         Hashtable<String,Method> attMap,
+                             Method methods[],
+                             Hashtable<String,Method> attMap,
                              Hashtable<String,Method> getAttMap,
                              Hashtable<String,Method> setAttMap,
                              Hashtable<String,Method> invokeAttMap)
@@ -333,13 +334,13 @@ public class MbeansDescriptorsIntrospectionSource extends ModelerSource
 
         Method methods[]=null;
 
-        Hashtable<String,Method> attMap=new Hashtable();
+        Hashtable<String,Method> attMap=new Hashtable<String, Method>();
         // key: attribute val: getter method
-        Hashtable<String,Method> getAttMap=new Hashtable();
+        Hashtable<String,Method> getAttMap=new Hashtable<String, Method>();
         // key: attribute val: setter method
-        Hashtable<String,Method> setAttMap=new Hashtable();
+        Hashtable<String,Method> setAttMap=new Hashtable<String, Method>();
         // key: operation val: invoke method
-        Hashtable<String,Method> invokeAttMap=new Hashtable();
+        Hashtable<String,Method> invokeAttMap=new Hashtable<String, Method>();
 
         methods = realClass.getMethods();
 

@@ -167,7 +167,7 @@ public class StandardContext
         namingResources.setContainer(this);
         broadcaster = new NotificationBroadcasterSupport();
         if (Globals.IS_SECURITY_ENABLED) {
-            mySecurityManager = (MySecurityManager)AccessController.doPrivileged(
+            mySecurityManager = AccessController.doPrivileged(
                     new PrivilegedCreateSecurityManager());
         }
         
@@ -2355,7 +2355,7 @@ public class StandardContext
      * the given name.
      */
     public Collection<String> getServletNameFilterMappings(String filterName) {
-        HashSet<String> mappings = new HashSet();
+        HashSet<String> mappings = new HashSet<String>();
         synchronized (filterMaps) {
             for (FilterMap fm : filterMaps) {
                 if (filterName.equals(fm.getFilterName()) &&
@@ -2372,7 +2372,7 @@ public class StandardContext
      * name.
      */
     public Collection<String> getUrlPatternFilterMappings(String filterName) {
-        HashSet<String> mappings = new HashSet();
+        HashSet<String> mappings = new HashSet<String>();
         synchronized (filterMaps) {
             for (FilterMap fm : filterMaps) {
                 if (filterName.equals(fm.getFilterName()) &&
@@ -3122,7 +3122,7 @@ public class StandardContext
                 for (String urlPattern : urlPatterns) {
                     addServletMapping(urlPattern, name, false);
                 }
-                return Collections.EMPTY_SET;
+                return Collections.emptySet();
             } else {
                 return conflicts;   
             }
@@ -4737,6 +4737,7 @@ public class StandardContext
      * @throws Exception if the specified classname fails to be loaded or
      * instantiated
      */
+    @SuppressWarnings("unchecked")
     protected EventListener loadListener(ClassLoader loader,
                                          String listenerClassName)
             throws Exception {
@@ -4886,7 +4887,7 @@ public class StandardContext
             return;
         }
 
-        Hashtable env = new Hashtable();
+        Hashtable<String, String> env = new Hashtable<String, String>();
         if (getParent() != null) {
             env.put(ProxyDirContext.HOST, getParent().getName());
         }
@@ -7450,8 +7451,10 @@ public class StandardContext
         }
     }
 
-    private static class PrivilegedCreateSecurityManager implements PrivilegedAction {
-        public Object run() {
+    private static class PrivilegedCreateSecurityManager
+            implements PrivilegedAction<MySecurityManager> {
+
+        public MySecurityManager run() {
             return new MySecurityManager();
         }
     }

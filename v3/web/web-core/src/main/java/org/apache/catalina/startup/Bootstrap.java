@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -150,9 +150,9 @@ public final class Bootstrap {
         if ((value == null) || (value.equals("")))
             return parent;
 
-        ArrayList unpackedList = new ArrayList();
-        ArrayList packedList = new ArrayList();
-        ArrayList urlList = new ArrayList();
+        ArrayList<File> unpackedList = new ArrayList<File>();
+        ArrayList<File> packedList = new ArrayList<File>();
+        ArrayList<URL> urlList = new ArrayList<URL>();
 
         StringTokenizer tokenizer = new StringTokenizer(value, ",");
         while (tokenizer.hasMoreElements()) {
@@ -185,9 +185,9 @@ public final class Bootstrap {
             }
         }
 
-        File[] unpacked = (File[]) unpackedList.toArray(new File[0]);
-        File[] packed = (File[]) packedList.toArray(new File[0]);
-        URL[] urls = (URL[]) urlList.toArray(new URL[0]);
+        File[] unpacked = unpackedList.toArray(new File[0]);
+        File[] packed = packedList.toArray(new File[0]);
+        URL[] urls = urlList.toArray(new URL[0]);
 
         return ClassLoaderFactory.createClassLoader
             (unpacked, packed, urls, parent);

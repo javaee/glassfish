@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -325,13 +325,20 @@ public class DefaultServlet
         }
 
         try {
-            alternateDocBases = (ArrayList<AlternateDocBase>)
-                getServletContext().getAttribute(
-                    Globals.ALTERNATE_RESOURCES_ATTR);
+            alternateDocBases = getAlternateDocBases();
         } catch(ClassCastException e) {
             // Failed : Not the right type
         }
 
+    }
+
+
+    @SuppressWarnings("unchecked")
+    private ArrayList<AlternateDocBase> getAlternateDocBases() {
+
+        return (ArrayList<AlternateDocBase>)
+                getServletContext().getAttribute(
+                Globals.ALTERNATE_RESOURCES_ATTR);
     }
     
     
@@ -761,7 +768,8 @@ public class DefaultServlet
                                     base = base.substring(0, index);
                                 }
                                 fileDirContext.setDocBase(base);
-                                proxyDirContext = new ProxyDirContext(new Hashtable(), fileDirContext);
+                                proxyDirContext = new ProxyDirContext(
+                                        new Hashtable<String, String>(), fileDirContext);
 
                                 cacheEntry.context = proxyDirContext;
                             } else {
@@ -1310,14 +1318,14 @@ public class DefaultServlet
             if (sortedBy.equals(SortedBy.LAST_MODIFIED)) {
                 ArrayList<NameClassPair> list = 
                     Collections.list(enumeration);
-                Comparator c = new LastModifiedComparator(
+                Comparator<NameClassPair> c = new LastModifiedComparator(
                     proxyDirContext, cacheEntry.name);
                 Collections.sort(list, c);
                 enumeration = Collections.enumeration(list);
             } else if (sortedBy.equals(SortedBy.SIZE)) {
                 ArrayList<NameClassPair> list = 
                     Collections.list(enumeration);
-                Comparator c = new SizeComparator(
+                Comparator<NameClassPair> c = new SizeComparator(
                     proxyDirContext, cacheEntry.name);
                 Collections.sort(list, c);
                 enumeration = Collections.enumeration(list);
@@ -1509,14 +1517,14 @@ public class DefaultServlet
             if (sortedBy.equals(SortedBy.LAST_MODIFIED)) {
                 ArrayList<NameClassPair> list = 
                     Collections.list(enumeration);
-                Comparator c = new LastModifiedComparator(
+                Comparator<NameClassPair> c = new LastModifiedComparator(
                     proxyDirContext, cacheEntry.name);
                 Collections.sort(list, c);
                 enumeration = Collections.enumeration(list);
             } else if (sortedBy.equals(SortedBy.SIZE)) {
                 ArrayList<NameClassPair> list = 
                     Collections.list(enumeration);
-                Comparator c = new SizeComparator(
+                Comparator<NameClassPair> c = new SizeComparator(
                     proxyDirContext, cacheEntry.name);
                 Collections.sort(list, c);
                 enumeration = Collections.enumeration(list);

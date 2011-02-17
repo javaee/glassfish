@@ -959,7 +959,7 @@ public class StandardWrapper
         }
 
         synchronized (parameters) {
-            Set conflicts = null;
+            Set<String> conflicts = null;
             for (Map.Entry<String, String> e : initParameters.entrySet()) {
                 if (e.getKey() == null || e.getValue() == null) {
                     throw new IllegalArgumentException(
@@ -981,7 +981,7 @@ public class StandardWrapper
                 setInitParameter(e.getKey(), e.getValue(), true);
             }
    
-            return Collections.EMPTY_SET;
+            return Collections.emptySet();
         }
     }
 
@@ -1370,9 +1370,9 @@ public class StandardWrapper
                 final ClassLoader fclassLoader = classLoader;
                 final String factualClass = actualClass;
                 try{
-                    clazz = (Class)AccessController.doPrivileged(
-                        new PrivilegedExceptionAction(){
-                            public Object run() throws Exception{
+                    clazz = AccessController.doPrivileged(
+                        new PrivilegedExceptionAction<Class>(){
+                            public Class run() throws Exception{
                                 if (fclassLoader != null) {
                                     return fclassLoader.loadClass(factualClass);
                                 } else {
@@ -1845,7 +1845,7 @@ public class StandardWrapper
      */
     public Enumeration<String> getInitParameterNames() {
         synchronized (parameters) {
-            return (new Enumerator(parameters.keySet()));
+            return (new Enumerator<String>(parameters.keySet()));
         }
     }
 

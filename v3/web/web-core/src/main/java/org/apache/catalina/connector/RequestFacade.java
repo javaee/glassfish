@@ -331,7 +331,7 @@ public class RequestFacade
     }
 
 
-    public Enumeration getAttributeNames() {
+    public Enumeration<String> getAttributeNames() {
 
         if (request == null) {
             throw new IllegalStateException(
