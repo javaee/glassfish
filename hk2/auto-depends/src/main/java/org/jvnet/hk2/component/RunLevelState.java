@@ -43,19 +43,16 @@ package org.jvnet.hk2.component;
  * Holds the state(s) for a particular RunLevelService.
  * 
  * @author Jeff Trent
- * 
- * @since 3.1
- *
  */
 public interface RunLevelState<T> {
 
   /**
    * The environment value for this state.
    * 
-   * @return the class type used to uniquely identify the environment in
-   * context, or null representing the default environment.
+   * @return 
+   *  the class type name used to uniquely identify the environment in context.
    */
-  Class<T> getEnvironment();
+  String getEnvironment();
 
   /**
    * The current run level state.  This represents the last run level

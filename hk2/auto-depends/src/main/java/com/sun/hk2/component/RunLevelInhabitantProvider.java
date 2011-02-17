@@ -46,6 +46,7 @@ import org.jvnet.hk2.annotations.RunLevel;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.InhabitantListener;
 import org.jvnet.hk2.component.InhabitantProviderInterceptor;
+import org.jvnet.hk2.component.MultiMap;
 import org.jvnet.hk2.component.RunLevelService;
 import org.jvnet.hk2.component.internal.runlevel.RunLevelServices;
 
@@ -73,22 +74,28 @@ public class RunLevelInhabitantProvider extends AbstractInhabitantProvider {
         Iterator<InhabitantProviderInterceptor> remainingInterceptors,
         InhabitantStore store) {
     if (contains(indicies, RunLevel.class.getName())) {
-      // TODO: need to fix this so that we don't load classes!
-      // this is a RunLevel service, we need to load type in order to get
-      // more type information about it, namely it's environment and actual RunLevel id
-      RunLevel rl = i.getAnnotation(RunLevel.class);
-      assert(null != rl) : typeName + " is a problem; " + i + " has no RunLevel annotation";
-      assert(!i.isInstantiated()) : "inhabitant should not be active: " + i;
+      assert(!i.isInstantiated()) : "inhabitant should not be active yet: " + i;
+      
+      // we need to avoid loading the class to avoid unnecessary classloading!
+//      RunLevel rl = i.getAnnotation(RunLevel.class);
+//      assert(null != rl) : typeName + " is a problem; " + i + " has no RunLevel annotation";
+      MultiMap<String, String> md = i.metadata();
 
+      String runLevelStr = md.getOne(RunLevel.META_VAL_TAG);
+      assert(null != runLevelStr) : "expected a " + RunLevel.META_VAL_TAG + " value on " + i;
+      
+      String envStr = i.metadata().getOne(RunLevel.META_ENV_TAG);
+      assert(null != envStr) : "expected a " + RunLevel.META_ENV_TAG + " value on " + i;
+
+//    int runLevel = rl.value();
+      int runLevel = Integer.valueOf(runLevelStr);
+      
       // get the appropriate RLS for this RunLevel
-      RunLevelService<?> rls = runLevelServices.get(habitat, rl);
+      RunLevelService<?> rls = runLevelServices.get(habitat, runLevel, envStr);
       InhabitantListener listener = InhabitantListener.class.isInstance(rls) ?
           InhabitantListener.class.cast(rls) : null;
 
       // wrap the inhabitant with a RunLevelInhabitant
-      int runLevel = rl.value();
-      
-      // construct the runLevel inhabitant
       i = new RunLevelInhabitant(i, runLevel, rls.getState(), listener);
     }
     
