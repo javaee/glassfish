@@ -50,7 +50,7 @@
     </parent>
 
     <artifactId>hk2-jsr330</artifactId>
-    <name>JSR-330 Support in Hk2</name>
+    <name>JSR-330 support in Hk2</name>
     <packaging>hk2-jar</packaging>
     <description>${project.name}</description>
 
@@ -72,19 +72,19 @@
             <artifactId>hk2-core</artifactId>
             <version>${project.version}</version>
     </dependency>
-   	<dependency>
+    <dependency>
        	    <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.3.1</version>
             <optional>true</optional>
             <scope>provided</scope>
     </dependency>
-   	<dependency>
+    <dependency>
        	    <groupId>javax.inject</groupId>
             <artifactId>javax.inject</artifactId>
             <version>1</version>
     </dependency>
-   	<dependency>
+    <dependency>
        	    <groupId>javax.inject</groupId>
             <artifactId>javax.inject-tck</artifactId>
             <version>1</version>
