@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -121,8 +121,8 @@ public class ProgramOptions {
         addMetaOption(opts, ECHO, 'e', Boolean.class, false, "false");
         addMetaOption(opts, INTERACTIVE, 'I', Boolean.class, false, "false");
         addMetaOption(opts, HELP, '?', Boolean.class, false, "false");
-        addMetaOption(opts, AUXINPUT, 'X', String.class, false, null);
-        addMetaOption(opts, AUTHTOKEN, 'A', String.class, false, null);
+        addMetaOption(opts, AUXINPUT, '\0', String.class, false, null);
+        addMetaOption(opts, AUTHTOKEN, '\0', String.class, false, null);
         programOptions = Collections.unmodifiableSet(opts);
     }
 
