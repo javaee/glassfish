@@ -323,11 +323,7 @@ public class RestrictedContentAdapter extends HttpHandler {
 
     protected void finishResponse(final Response gResp, final int status) {
         gResp.setStatus(status);
-        try {
-            gResp.finish();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        gResp.finish();
     }
 
     protected void respondNotFound(final Response gResp) {
