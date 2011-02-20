@@ -43,7 +43,7 @@
 <sun:property  rendered="#{pageSession.gmsShowIt}">
     <sun:hyperlink  rendered="#{pageSession.gmsShowIt}"
         toolTip="$resource{i18ncs.tree.gms.tooltip}"
-        url="/cluster/configuration/gms.jsf?configName=${configName}"
+        url="/cluster/configuration/gms.jsf?configName=#{pageSession.configName}"
         >
         
         <sun:image url="/resource/cluster/images/management_services.gif" />
