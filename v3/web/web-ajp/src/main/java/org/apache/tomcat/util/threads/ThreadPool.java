@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -136,9 +136,11 @@ public class ThreadPool  {
     /** The threads that are part of the pool.
      * Key is Thread, value is the ControlRunnable
      */
-    protected Hashtable threads=new Hashtable();
+    protected Hashtable<Thread, ControlRunnable> threads =
+            new Hashtable<Thread, ControlRunnable>();
 
-    protected Vector listeners=new Vector();
+    protected Vector<ThreadPoolListener> listeners =
+            new Vector<ThreadPoolListener>();
 
     /** Name of the threadpool
      */

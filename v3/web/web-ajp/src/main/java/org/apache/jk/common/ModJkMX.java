@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -108,7 +108,7 @@ public class ModJkMX extends JkHandler
     String pass;
     Registry reg;
 
-    HashMap mbeans=new HashMap();
+    HashMap<String,MBeanProxy> mbeans = new HashMap<String,MBeanProxy>();
     long lastRefresh=0;
     long updateInterval=5000; // 5 sec - it's min time between updates
 
@@ -297,9 +297,9 @@ public class ModJkMX extends JkHandler
             if( is==null ) return;
             String name=null;
             String type=null;
-            ArrayList getters=new ArrayList();
-            ArrayList setters=new ArrayList();
-            ArrayList methods=new ArrayList();
+            ArrayList<String> getters=new ArrayList<String>();
+            ArrayList<String> setters=new ArrayList<String>();
+            ArrayList<String> methods=new ArrayList<String>();
             while(true) {
                 String line=is.readLine();
                 if( log.isLoggable(Level.FINEST))
@@ -363,7 +363,7 @@ public class ModJkMX extends JkHandler
         String jkName;
         List getAttNames;
         List setAttNames;
-        HashMap atts=new HashMap();
+        HashMap<String,String> atts = new HashMap<String,String>();
         ModJkMX jkmx;
 
         public MBeanProxy(ModJkMX jkmx) throws Exception {

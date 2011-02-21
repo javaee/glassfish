@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -118,7 +118,8 @@ public class TomcatStarter implements Runnable {
     public void run() {
         System.err.println("Starting " + c.getName());
         try {
-            Class argClass=args.getClass();
+            Class<?> argClass=args.getClass();
+            @SuppressWarnings("unchecked")
             Method m=c.getMethod( "main", new Class[] {argClass} );
             m.invoke( c, new Object[] { args } );
             System.out.println("TomcatStarter: Done");
