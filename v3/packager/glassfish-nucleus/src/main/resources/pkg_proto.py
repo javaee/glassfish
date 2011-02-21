@@ -67,7 +67,6 @@ pkg = {
                       },
     "files"         : { "glassfish/config/asenv.conf" : { "preserve" : "renamenew"},
                         "glassfish/config/asenv.bat" : { "preserve" : "renamenew"},
-                        "glassfish/config/asadminenv.conf" : { "preserve" : "renamenew"},
                         "glassfish/config/glassfish.container" : { "preserve" : "renamenew"},
                         "glassfish/osgi/equinox/configuration/config.ini" : { "preserve" : "renamenew"},
                       },
