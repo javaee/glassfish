@@ -217,7 +217,7 @@
     <target name="verify" depends="init-common">
         <echo message="Verifying results"/>
         <!-- Let GMS do the work -->
-        <sleep seconds="105"/>
+        <sleep seconds="135"/>
 
         <java  fork="on"
               failonerror="true"

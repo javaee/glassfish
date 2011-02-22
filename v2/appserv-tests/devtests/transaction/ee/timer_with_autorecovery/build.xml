@@ -191,7 +191,7 @@
         </parallel>
 
         <!-- Let GMS do the work -->
-        <sleep seconds="85"/>
+        <sleep seconds="135"/>
 
         <echo message="Verifying results"/>
         <java  fork="on"
