@@ -305,8 +305,9 @@ public class WebModuleContextConfig extends ContextConfig {
         }
 
         // Has an authenticator been configured already?
-        if (context instanceof Authenticator)
+        if (context instanceof Authenticator) {
             return;
+        }
         if (context instanceof ContainerBase) {
             Pipeline pipeline = ((ContainerBase) context).getPipeline();
             if (pipeline != null) {

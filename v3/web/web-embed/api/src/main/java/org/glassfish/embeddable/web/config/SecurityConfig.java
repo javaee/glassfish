@@ -106,4 +106,15 @@ public class SecurityConfig {
     public LoginConfig getLoginConfig() {
         return this.lc;
     }
+
+    /**
+     * Returns a formatted string of the state.
+     */
+    public String toString() {
+        StringBuffer toStringBuffer = new StringBuffer();
+        toStringBuffer.append("SecurityConfig: ");
+        toStringBuffer.append(" securityConstraints: ").append(securityConstraints);
+        toStringBuffer.append(" loginConfig: ").append(lc);
+        return toStringBuffer.toString();
+    }
 }

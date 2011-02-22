@@ -85,4 +85,16 @@ public class FormLoginConfig {
     public String getFormErrorPage() {
         return this.errorPage;
     }
+
+    /**
+     * Returns a formatted string of the state.
+     */
+    public String toString() {
+        StringBuffer toStringBuffer = new StringBuffer();
+        toStringBuffer.append("FormLoginConfig: ");
+        toStringBuffer.append(" loginPage: ").append(loginPage);
+        toStringBuffer.append(" errorPage: ").append(errorPage);
+        return toStringBuffer.toString();
+    }
+
 }

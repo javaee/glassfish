@@ -65,16 +65,9 @@ package org.glassfish.embeddable.web.config;
 public class LoginConfig {
 
     private AuthMethod authMethod;
-    private FormLoginConfig flc;
+    private FormLoginConfig formLoginConfig;
     String realmName;
     RealmType realmType;
-
-    /**
-     * Create an instance of <tt>LoginConfig</tt>.
-     */
-    public LoginConfig() {
-
-    }
 
     /**
      * Set the authentication scheme to be used for a given
@@ -92,7 +85,7 @@ public class LoginConfig {
      * @return the authmethod for the context
      */
     public AuthMethod getAuthMethod() {
-        return this.authMethod;        
+        return authMethod;
     }
 
     /**
@@ -110,7 +103,7 @@ public class LoginConfig {
      * @return the realm name for the context
      */
     public String getRealmName() {
-        return this.realmName;
+        return realmName;
     }
 
     /**
@@ -134,7 +127,7 @@ public class LoginConfig {
      * @return the realm type for the context
      */
     public RealmType getRealmType() {
-        return this.realmType;
+        return realmType;
     }
 
     /**
@@ -146,7 +139,7 @@ public class LoginConfig {
      * @param flc form login configuration
      */
     public void setFormLoginConfig(FormLoginConfig flc) {
-        this.flc = flc;        
+        formLoginConfig = flc;
     }
 
     /**
@@ -158,6 +151,20 @@ public class LoginConfig {
      * @return form login configuration
      */
     public FormLoginConfig getFormLoginConfig() {
-        return this.flc;        
+        return formLoginConfig;
     }
+
+    /**
+     * Returns a formatted string of the state.
+     */
+    public String toString() {
+        StringBuffer toStringBuffer = new StringBuffer();
+        toStringBuffer.append("LoginConfig: ");
+        toStringBuffer.append(" authMethod: ").append(authMethod);
+        toStringBuffer.append(" formLoginConfig: ").append(formLoginConfig);
+        toStringBuffer.append(" realmName ").append(realmName);
+        toStringBuffer.append(" realmType ").append(realmType);
+        return toStringBuffer.toString();
+    }
+
 }

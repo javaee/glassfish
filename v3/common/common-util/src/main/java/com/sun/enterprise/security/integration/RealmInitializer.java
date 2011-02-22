@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -47,9 +47,14 @@ import java.security.Principal;
  *  see com.sun.enterprise.web.WebContainer  and com.sun.web.security.RealmAdapter
  */
 public interface RealmInitializer  {
- public void initializeRealm(Object bundledescriptor, boolean isSystemApp,String realmName);
- //TODO: FIXME, dilution paramater type from Container to Object
- public void setVirtualServer(Object container);
- 
-  public void logout();
+
+    public void initializeRealm(Object bundledescriptor, boolean isSystemApp,String realmName);
+
+    //TODO: FIXME, dilution paramater type from Container to Object
+    public void setVirtualServer(Object container);
+
+    public void logout();
+
+    public void updateWebSecurityManager();
+
 }
