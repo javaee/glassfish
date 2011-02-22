@@ -144,7 +144,7 @@ public class WebArchivist extends Archivist<WebBundleDescriptor> {
      * standard deployment descriptor
      */
     @Override
-    public DeploymentDescriptorFile getStandardDDFile() {
+    public DeploymentDescriptorFile<WebBundleDescriptor> getStandardDDFile() {
         return standardDD;
     }
 
