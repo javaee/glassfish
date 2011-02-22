@@ -66,7 +66,9 @@ class SlowClient extends Thread {
     public void run() {
         try {
             while (true) {
-                s.getOutputStream().write(0);
+                final OutputStream out = s.getOutputStream();
+                out.write(0);
+                out.flush();
                 try {
                     System.out.println(getName() + " waiting");
                     Thread.sleep(10000);
@@ -75,7 +77,7 @@ class SlowClient extends Thread {
                 }
             }
         } catch(IOException e) {
-            test.count++;
+            test.count.incrementAndGet();
         }
     }
 }

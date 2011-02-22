@@ -39,11 +39,12 @@
  */
 
 import com.sun.appserv.test.util.results.SimpleReporterAdapter;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class WebTest extends Thread{
 	private static String TEST_NAME = "dos-slow-client";
 
-	public static int count;
+	public static final AtomicInteger count = new AtomicInteger();
 
 	static SimpleReporterAdapter stat = new SimpleReporterAdapter("appserv-tests", TEST_NAME);
 
@@ -58,12 +59,12 @@ public class WebTest extends Thread{
 		int port = Integer.parseInt(args[1]);
 		int num = Integer.parseInt(args[2]);
 
-		for (int i=0; i < num; i++){
-			new SlowClient(host,port,new WebTest()); 
+		for (int i=0; i < num; i++) {
+			new SlowClient(host, port, new WebTest());
 		}
 		Thread.sleep(30000);
 
-		stat.addStatus(TEST_NAME, count == num ? stat.PASS : stat.FAIL);
+		stat.addStatus(TEST_NAME, count.get() == num ? stat.PASS : stat.FAIL);
 		stat.printSummary(TEST_NAME);
 	}
 
