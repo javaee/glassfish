@@ -578,7 +578,7 @@ public class WebModule extends PwcWebModule implements Context {
              * by JSF's FacesInitializer. See also IT 10223
              */
             ArrayList<ServletContextListener> listeners =
-                (ArrayList<ServletContextListener>) contextListeners.clone();
+                new ArrayList<ServletContextListener>(contextListeners);
             String listenerClassName = null;
             for (ServletContextListener listener : listeners) {
                 if (listener instanceof
@@ -2414,14 +2414,13 @@ class DynamicWebServletRegistrationImpl
             wbd.addWebComponentDescriptor(wcd);
             String servletClassName = wrapper.getServletClassName();
             if (servletClassName != null) {
-                Class clazz = wrapper.getServletClass();
+                Class<? extends Servlet> clazz = wrapper.getServletClass();
                 if (clazz == null) {
                     if (wrapper.getServlet() != null) {
                         clazz = wrapper.getServlet().getClass();
                     } else {                  
                         try {
-                            clazz = ctx.getLoader().getClassLoader().loadClass(
-                                servletClassName);
+                            clazz = loadServletClass(servletClassName);
                         } catch(Exception ex) {
                             throw new IllegalArgumentException(ex);
                         }
@@ -2482,9 +2481,7 @@ class DynamicWebServletRegistrationImpl
     protected void setServletClassName(String className) {
         super.setServletClassName(className);
         try {
-            Class <? extends Servlet> clazz =
-                    (Class <? extends Servlet>)
-                    ctx.getLoader().getClassLoader().loadClass(className);
+            Class <? extends Servlet> clazz = loadServletClass(className);
             super.setServletClass(clazz);
             processServletAnnotations(clazz, wbd, wcd, wrapper);
         } catch(Exception ex) {
@@ -2564,5 +2561,10 @@ class DynamicWebServletRegistrationImpl
         }
     }
 
-
+    @SuppressWarnings("unchecked")
+    private Class<? extends Servlet> loadServletClass(String className)
+            throws ClassNotFoundException {
+        return (Class <? extends Servlet>)
+                ctx.getLoader().getClassLoader().loadClass(className);
+    }
 }
