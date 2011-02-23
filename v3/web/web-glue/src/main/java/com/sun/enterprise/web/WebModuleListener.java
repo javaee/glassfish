@@ -107,7 +107,7 @@ final class WebModuleListener
     /**
      * Constructor.
      *
-     * @param serverContext
+     * @param webContainer
      * @param explodedLocation The location where this web module is exploded
      * @param wbd descriptor for this module.
      */
