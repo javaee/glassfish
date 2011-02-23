@@ -402,26 +402,26 @@ public abstract class BasePersistenceStrategyBuilder
     }
     
     private String getFileMainPart(String fileString) {
-        ArrayList results = new ArrayList();
+        ArrayList<String> results = new ArrayList<String>();
         StringTokenizer st = new StringTokenizer(fileString, ".");
         while (st.hasMoreTokens()) {
             results.add(st.nextToken());
         }
         if (results.size() > 0) {
-            return stripNonAlphaNumericsExceptUnderscore((String)results.get(0));
+            return stripNonAlphaNumericsExceptUnderscore(results.get(0));
         } else {
             return null;
         }
     }
     
     private String getFileSuffixPart(String fileString) {
-        ArrayList results = new ArrayList();
+        ArrayList<String> results = new ArrayList<String>();
         StringTokenizer st = new StringTokenizer(fileString, ".");
         while (st.hasMoreTokens()) {
             results.add(st.nextToken());
         }
         if (results.size() > 1) {
-            return stripNonAlphaNumericsExceptUnderscore((String)results.get(1));
+            return stripNonAlphaNumericsExceptUnderscore(results.get(1));
         } else {
             return null;
         }
