@@ -1632,12 +1632,12 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     try {
                         ctx = loadWebModule(vs, wmInfo, j2eeApplication,
                                 deploymentProperties);
-                        results.add(new Result(ctx));
+                        results.add(new Result<WebModule>(ctx));
                     } catch (Throwable t) {
                         if (ctx != null) {
                             ctx.setAvailable(false);
                         }
-                        results.add(new Result(t));
+                        results.add(new Result<WebModule>(t));
                     }
                 }
             }
@@ -2401,8 +2401,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             return;
         }
 
-        for (Iterator itr = mimeMap.getExtensions(); itr.hasNext();) {
-            String extension = (String) itr.next();
+        for (Iterator<String> itr = mimeMap.getExtensions(); itr.hasNext();) {
+            String extension = itr.next();
             if (ctx.findMimeMapping(extension) == null) {
                 ctx.addMimeMapping(extension, mimeMap.getType(extension));
             }
