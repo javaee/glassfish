@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -69,15 +69,17 @@ public class CachingResponseWrapper extends HttpServletResponseWrapper {
      * ArrayLists containing the associated values that have been set.
      *
      */
-    HashMap headers = new HashMap();
+    HashMap<String, ArrayList<String>> headers =
+        new HashMap<String, ArrayList<String>>();
     /**
      * cache all the set/addDateHeader calls
      */
-    HashMap dateHeaders = new HashMap();
+    HashMap<String, ArrayList<Long>> dateHeaders =
+        new HashMap<String, ArrayList<Long>>();
     /**
      * The set of Cookies associated with this Response.
      */
-    ArrayList cookies = new ArrayList();
+    ArrayList<Cookie> cookies = new ArrayList<Cookie>();
 
     int contentLength = HttpCacheEntry.VALUE_NOT_SET;
     String contentType;
@@ -214,7 +216,7 @@ public class CachingResponseWrapper extends HttpServletResponseWrapper {
     public void setHeader(String name, String value) {
         super.setHeader(name, value);
 
-        ArrayList values = new ArrayList();
+        ArrayList<String> values = new ArrayList<String>();
         values.add(value);
 
         synchronized (headers) {
@@ -241,9 +243,9 @@ public class CachingResponseWrapper extends HttpServletResponseWrapper {
     public void addHeader(String name, String value) {
         super.addHeader(name, value);
 
-        ArrayList values = (ArrayList) headers.get(name);
+        ArrayList<String> values = headers.get(name);
         if (values == null) {
-            values = new ArrayList();
+            values = new ArrayList<String>();
 
             synchronized (headers) {
                 headers.put(name, values);
@@ -272,7 +274,7 @@ public class CachingResponseWrapper extends HttpServletResponseWrapper {
     public void setDateHeader(String name, long value) {
         super.setDateHeader(name, value);
 
-        ArrayList values = new ArrayList();
+        ArrayList<Long> values = new ArrayList<Long>();
         values.add(Long.valueOf(value));
 
         synchronized (dateHeaders) {
@@ -289,9 +291,9 @@ public class CachingResponseWrapper extends HttpServletResponseWrapper {
     public void addDateHeader(String name, long value) {
         super.addDateHeader(name, value);
 
-        ArrayList values = (ArrayList) dateHeaders.get(name);
+        ArrayList<Long> values = dateHeaders.get(name);
         if (values == null) {
-            values = new ArrayList();
+            values = new ArrayList<Long>();
 
             synchronized (dateHeaders) {
                 dateHeaders.put(name, values);
@@ -355,7 +357,12 @@ public class CachingResponseWrapper extends HttpServletResponseWrapper {
      * return the Expires: date header value
      */
     public Long getExpiresDateHeader() {
-        return (Long)dateHeaders.get("Expires");
+        Long expire = null;
+        ArrayList<Long> expireList = dateHeaders.get("Expires");
+        if (expireList != null && expireList.size() > 0) {
+            expire = expireList.get(0);
+        }
+        return expire;
     }
 
     /**

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,6 +43,7 @@ package com.sun.appserv.web.cache.filter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
+import javax.servlet.http.Cookie;
 
 /** HttpCacheEntry 
  *  Each entry holds cached (HTTP) response:
@@ -59,9 +60,9 @@ public class HttpCacheEntry {
     int statusCode;
     String statusMessage;
 
-    HashMap responseHeaders;
-    HashMap dateHeaders;
-    ArrayList cookies;
+    HashMap<String, ArrayList<String>> responseHeaders;
+    HashMap<String, ArrayList<Long>> dateHeaders;
+    ArrayList<Cookie> cookies;
     String contentType;
     Locale locale;
 

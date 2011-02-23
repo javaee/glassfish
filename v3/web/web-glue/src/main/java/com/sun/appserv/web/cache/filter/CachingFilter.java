@@ -308,19 +308,19 @@ public class CachingFilter implements Filter, CacheManagerListener {
         }
 
         // date headers
-        for (Iterator iter = entry.dateHeaders.keySet().iterator(); 
+        for (Iterator<String> iter = entry.dateHeaders.keySet().iterator(); 
                                                     iter.hasNext(); ) {
-            String name = (String)iter.next();
-            ArrayList values = (ArrayList)entry.dateHeaders.get(name);
+            String name = iter.next();
+            ArrayList<Long> values = entry.dateHeaders.get(name);
 
             for (int i = 0; i < values.size(); i++) {
-                response.addDateHeader(name, ((Long)values.get(i)).longValue());
+                response.addDateHeader(name, (values.get(i)).longValue());
             }
         }
 
         // cookies
         for (int i = 0; i < entry.cookies.size(); i++) {
-            response.addCookie((Cookie)entry.cookies.get(i));
+            response.addCookie(entry.cookies.get(i));
         }
 
         // content type, length and locale

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -140,7 +140,7 @@ public final class CacheModule {
         // configure the default cache-helper 
         DefaultHelper defHelperConfig = cacheConfig.getDefaultHelper();
 
-        HashMap map = new HashMap();
+        HashMap<String, String> map = new HashMap<String, String>();
         if (defHelperConfig != null) {
             props = defHelperConfig.getWebProperty();
             for (int i = 0; i < props.length; i++) {
@@ -158,7 +158,7 @@ public final class CacheModule {
 
             String helperName = helperConfig.getAttributeValue(
                 CacheHelper.NAME); 
-            HashMap helperProps = new HashMap();
+            HashMap<String, String> helperProps = new HashMap<String, String>();
             props = helperConfig.getWebProperty();
             for (int j = 0; j < props.length; j++) {
                 name = props[i].getAttributeValue(WebProperty.NAME);
