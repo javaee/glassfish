@@ -2,7 +2,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
- Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
+ Copyright 1997-2011 Sun Microsystems, Inc. All rights reserved.
 
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -65,7 +65,10 @@
     <pathconvert refid="class.path" property="test"/>
 
     <target name="debug-windows" depends="instance, cluster"/>
-    <target name="cli" depends="monitoring, zombie, ports, instance, cluster, configs, sync, domain, backup, tokens,validation,node, load-balancer, misc-commands, manual-sync, upgrade, cluster-upgrade"/>
+    <target name="cli" depends="monitoring, zombie, ports, instance, cluster,
+                        configs, sync, domain, backup, tokens, validation, node,
+                        load-balancer, misc-commands, manual-sync, upgrade,
+                        cluster-upgrade, restart-domain"/>
 
     <target name="cluster" depends="init">
         <java classname="admin.ClusterTest"  fork="true" classpath="${test}">
@@ -250,7 +253,8 @@
                <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9010"/>
            </java>
     </target>
-<target name="upgrade" depends="init">
+
+    <target name="upgrade" depends="init">
         <java classname="admin.UpgradeTest"  fork="true" classpath="${test}">
             <jvmarg value="${javaprops}"/>
         </java>
@@ -266,6 +270,12 @@
         <java classname="admin.ZombieTests"  fork="true" classpath="${test}">
             <jvmarg value="${javaprops}"/>
         </java>
+    </target>
+
+    <target name="restart-domain" depends="init">
+           <java classname="admin.RestartDomainTest"  fork="true" classpath="${test}">
+               <jvmarg value="${javaprops}"/>
+           </java>
     </target>
 
     <target name="all-resources">
