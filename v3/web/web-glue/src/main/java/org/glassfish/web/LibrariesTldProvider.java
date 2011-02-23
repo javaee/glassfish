@@ -83,7 +83,7 @@ public class LibrariesTldProvider implements TldProvider, PostConstruct {
      * Gets a mapping from JAR files to their TLD resources.
      */
     public Map<URI, List<String>> getTldMap() {
-        return (Map<URI, List<String>>)((HashMap)tldMap).clone();
+        return cloneTldMap();
     }
 
     /**
@@ -92,7 +92,12 @@ public class LibrariesTldProvider implements TldProvider, PostConstruct {
      */
     public Map<URI, List<String>> getTldListenerMap() {
         // return the whole map as the content for tld files is not known
-        return (Map<URI, List<String>>)((HashMap)tldMap).clone();
+        return cloneTldMap();
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<URI, List<String>> cloneTldMap() {
+        return (Map<URI, List<String>>)((HashMap<URI, List<String>>)tldMap).clone();
     }
  
     public void postConstruct() {
@@ -111,7 +116,7 @@ public class LibrariesTldProvider implements TldProvider, PostConstruct {
 
             Pattern pattern = Pattern.compile("META-INF/.*\\.tld");
             for (URI uri : uris) {
-                List entries =  JarURIPattern.getJarEntries(uri, pattern);
+                List<String> entries =  JarURIPattern.getJarEntries(uri, pattern);
                 if (entries != null && entries.size() > 0) {
                     tldMap.put(uri, entries);
                 }
