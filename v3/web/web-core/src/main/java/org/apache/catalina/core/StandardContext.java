@@ -6989,7 +6989,9 @@ public class StandardContext
                 StringBuilder sb = null;
                 for (File child : children) {
                     sb = new StringBuilder(path);
-                    sb.append("/");
+                    if (!path.endsWith("/")) {
+                        sb.append("/");
+                    }
                     sb.append(child.getName());
                     if (child.isDirectory()) {
                         sb.append("/");
