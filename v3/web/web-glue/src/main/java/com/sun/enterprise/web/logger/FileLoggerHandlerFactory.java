@@ -72,7 +72,7 @@ public class FileLoggerHandlerFactory implements PostConstruct {
             if (logFormatter != null) {
                 handler.setFormatter(logFormatter);
             }
-            handler = map.putIfAbsent(logFile, handler);
+            map.putIfAbsent(logFile, handler);
         }
 
         return handler;
