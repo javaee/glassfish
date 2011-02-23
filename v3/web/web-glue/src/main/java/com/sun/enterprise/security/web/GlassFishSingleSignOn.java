@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -492,7 +492,7 @@ public class GlassFishSingleSignOn
                         + cache.size());
         }
         //S1AS8 6155481 END 
-        ArrayList removals = new ArrayList(cache.size()/2);
+        ArrayList<String> removals = new ArrayList<String>(cache.size()/2);
         
         // build list of removal targets
 
@@ -504,9 +504,9 @@ public class GlassFishSingleSignOn
         try {
             synchronized (cache) {
 
-                Iterator it = cache.keySet().iterator();
+                Iterator<String> it = cache.keySet().iterator();
                 while (it.hasNext()) {
-                    String key = (String) it.next();
+                    String key = it.next();
                     SingleSignOnEntry sso = (SingleSignOnEntry) cache.get(key);
                     if (sso.isEmpty() && sso.getLastAccessTime() < tooOld) {
                         removals.add(key);
@@ -528,7 +528,7 @@ public class GlassFishSingleSignOn
                     logger.fine("SSO expiration removing entry: "
                                 + removals.get(i));
                 }
-                deregister((String)removals.get(i));
+                deregister(removals.get(i));
             }
             //S1AS8 6155481 END
         } catch (Throwable e) { // don't let thread die

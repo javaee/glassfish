@@ -176,7 +176,7 @@ final class WebModuleListener
         if (appLibUris != null && appLibUris.size() > 0) {
             Pattern pattern = Pattern.compile("META-INF/.*\\.tld");
             for (URI uri : appLibUris) {
-                List entries =  JarURIPattern.getJarEntries(uri, pattern);
+                List<String> entries =  JarURIPattern.getJarEntries(uri, pattern);
                 if (entries != null && entries.size() > 0) {
                     appLibTldMap.put(uri, entries);
                 }
@@ -356,7 +356,7 @@ final class WebModuleListener
             includeJars = null;
             return;
         }
-        includeJars = new ArrayList();
+        includeJars = new ArrayList<String>();
         StringTokenizer tokenizer = new StringTokenizer(includeJarsString);
         while (tokenizer.hasMoreElements()) {
             includeJars.add(tokenizer.nextToken());

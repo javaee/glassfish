@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -56,7 +56,7 @@ public class MimeMap implements Serializable {
     private static final String MIME_EXTS = "exts=";
 
     private String id;
-    private HashMap mimeMappings;
+    private HashMap<String, String> mimeMappings;
 
     /**
      * Constructor.
@@ -150,8 +150,8 @@ public class MimeMap implements Serializable {
      * @return Iterator over the mime extensions that were parsed, or null if
      * the mime file was empty
      */
-    Iterator getExtensions() {
-        Iterator ret = null;
+    Iterator<String> getExtensions() {
+        Iterator<String> ret = null;
         if (mimeMappings != null) {
             ret = mimeMappings.keySet().iterator();
         }
@@ -169,7 +169,7 @@ public class MimeMap implements Serializable {
     String getType(String extension) {
         String ret = null;
         if (mimeMappings != null) {
-            ret = (String) mimeMappings.get(extension);
+            ret = mimeMappings.get(extension);
         }
         return ret;
     }
@@ -191,7 +191,7 @@ public class MimeMap implements Serializable {
         }
 
         if (mimeMappings == null) {
-            mimeMappings = new HashMap();
+            mimeMappings = new HashMap<String, String>();
 	}
 
         exts = exts.substring(index + MIME_EXTS.length());
