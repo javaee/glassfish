@@ -43,6 +43,7 @@ package com.sun.enterprise.v3.admin.adapter;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.v3.admin.AdminConsoleConfigUpgrade;
 import com.sun.appserv.server.util.Version;
+import com.sun.grizzly.config.dom.NetworkListener;
 import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
 import com.sun.grizzly.tcp.http11.GrizzlyOutputBuffer;
 import com.sun.grizzly.tcp.http11.GrizzlyRequest;
@@ -157,7 +158,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     
     AdminEndpointDecider epd;
 
-    private Logger logger = LogDomains.getLogger(AdminConsoleAdapter.class, LogDomains.CORE_LOGGER);
+    private static final Logger logger = LogDomains.getLogger(AdminConsoleAdapter.class, LogDomains.CORE_LOGGER);
     private String statusHtml;
     private String initHtml;
 
@@ -263,7 +264,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
         // see usage in status.html
         
 
-       String serverVersion = version.getFullVersion();
+        String serverVersion = Version.getFullVersion();
         
         if ("/testifbackendisready.html".equals(req.getRequestURI())) {
 
@@ -369,7 +370,9 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
             public void run() {
                 InputStream is = null;
                 try {
-                    URL url = new URL("http://localhost:" + req.getLocalPort() + "/management/domain");
+                    NetworkListener nl = domain.getServerNamed("server").getConfig().getNetworkConfig()
+                            .getNetworkListener("admin-listener");
+                    URL url = new URL("http://" + nl.getAddress() + ":" + nl.getPort() + "/management/domain");
                     URLConnection conn = url.openConnection();
                     is = conn.getInputStream();
                     isRestStarted = true;
@@ -403,7 +406,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
             return "image/jpeg";
         } else {
             if (logger.isLoggable(Level.FINE)) {
-                logger.fine("Unhandled content-type: " + resource);
+                logger.log(Level.FINE, "Unhandled content-type: {0}", resource);
             }
             return null;
         }
@@ -546,7 +549,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
         }
 
         if (logger.isLoggable(Level.FINE)){
-            logger.log(Level.FINE, "Admin Console download location: " + warFile.getAbsolutePath());
+            logger.log(Level.FINE, "Admin Console download location: {0}", warFile.getAbsolutePath());
         }
 
         initState();
@@ -595,13 +598,13 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
      */
     private void logRequest(GrizzlyRequest req) {
         if (logger.isLoggable(Level.FINE)) {
-            logger.fine("AdminConsoleAdapter's STATE IS: " + getStateMsg());
-            logger.log(Level.FINE, "Current Thread: " + Thread.currentThread().getName());
+            logger.log(Level.FINE, "AdminConsoleAdapter''s STATE IS: {0}", getStateMsg());
+            logger.log(Level.FINE, "Current Thread: {0}", Thread.currentThread().getName());
             Enumeration names = req.getParameterNames();
             while (names.hasMoreElements()) {
                 String name = (String) names.nextElement();
                 String values = Arrays.toString(req.getParameterValues(name));
-                logger.fine("Parameter name: " + name + " values: " + values);
+                logger.log(Level.FINE, "Parameter name: {0} values: {1}", new Object[]{name, values});
             }
         }
     }
@@ -783,7 +786,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
         int start = 0, end = 0;
         String key = null;
         String newString = null;
-        StringBuffer buf = new StringBuffer("");
+        StringBuilder buf = new StringBuilder("");
         Enumeration<String> keys = bundle.getKeys();
 
         while (start != -1) {
@@ -805,7 +808,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
                                 bundle.getString(text.substring(start, end)));
                     } catch (MissingResourceException ex) {
                         // Unable to find the resource, so we don't do anything
-                        buf.append("%%%" + text.substring(start, end) + "%%%");
+                        buf.append("%%%").append(text.substring(start, end)).append("%%%");
                     }
 
                     // Move past the %%%
@@ -836,6 +839,7 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     private void writeAdminServiceProp(final String propName, final String propValue){
         try{
             ConfigSupport.apply(new SingleConfigCode<AdminService>() {
+                @Override
                 public Object run(AdminService adminService) throws PropertyVetoException, TransactionFailure {
                     Property newProp = adminService.createChild(Property.class);
                     adminService.getProperty().add(newProp);
@@ -918,9 +922,9 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
     }
 
     private String getAllowedHttpMethodsAsString() {
-        StringBuffer sb = new StringBuffer(allowedHttpMethods[0].method());
+        StringBuilder sb = new StringBuilder(allowedHttpMethods[0].method());
         for (int i = 1; i < allowedHttpMethods.length; i++) {
-            sb.append(", " + allowedHttpMethods[i].method());
+            sb.append(", ").append(allowedHttpMethods[i].method());
         }
         return sb.toString();
     }
