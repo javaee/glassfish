@@ -448,6 +448,7 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
                 // before sending the event
                 context.setPhase(DeploymentContextImpl.Phase.PREPARED);
                 Thread.currentThread().setContextClassLoader(context.getClassLoader());
+                appInfo.setAppClassLoader(context.getClassLoader());
                 installTransformers(context);
                 events.send(new Event<DeploymentContext>(Deployment.APPLICATION_PREPARED, context), false);
 

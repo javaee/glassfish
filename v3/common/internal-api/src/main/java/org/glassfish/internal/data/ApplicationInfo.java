@@ -137,6 +137,14 @@ public class ApplicationInfo extends ModuleInfo {
     }
 
     /**
+     * Sets the application classloader for this application
+     * @param cLoader application classloader
+     */
+    public void setAppClassLoader(ClassLoader cLoader) {
+        appClassLoader = cLoader;
+    }
+
+    /**
      * Returns whether this application is a JavaEE application
      * @return the isJavaEEApp flag
      */
@@ -399,6 +407,19 @@ public class ApplicationInfo extends ModuleInfo {
 
     public void clean(ExtendedDeploymentContext context) throws Exception {
         Logger logger = context.getLogger();
+
+        // clean the app level classloader if it's not already
+        // cleaned
+        if (appClassLoader != null) {
+            try {
+                PreDestroy.class.cast(appClassLoader).preDestroy();
+            } catch (Exception e) {
+                // ignore, the class loader does not need to be
+                // explicitely stopped or already stopped
+            }
+            appClassLoader = null;
+        }
+
         super.clean(context);
         for (ModuleInfo info : modules) {
             info.clean(getSubContext(info,context));
