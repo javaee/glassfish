@@ -96,7 +96,7 @@ public class GlassFishMainActivator implements BundleActivator {
         }
         properties.setProperty(Constants.INSTALL_ROOT_PROP_NAME,
                 installRoot);
-        String instanceRoot = properties.getProperty(Constants.INSTANCE_ROOT_PROP_NAME);
+        String instanceRoot = context.getProperty(Constants.INSTANCE_ROOT_PROP_NAME);
         if (instanceRoot == null) {
             instanceRoot = new File(installRoot, "domains/domain1/").getAbsolutePath();
         }
