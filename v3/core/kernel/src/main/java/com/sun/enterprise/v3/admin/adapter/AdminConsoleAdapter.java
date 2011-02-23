@@ -372,7 +372,10 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
                 try {
                     NetworkListener nl = domain.getServerNamed("server").getConfig().getNetworkConfig()
                             .getNetworkListener("admin-listener");
-                    URL url = new URL("http://" + nl.getAddress() + ":" + nl.getPort() + "/management/domain");
+                    SecureAdmin secureAdmin = habitat.getComponent(SecureAdmin.class);
+                    
+                    URL url = new URL((SecureAdmin.Util.isEnabled(secureAdmin) ? "https://" : "http://") + 
+                            nl.getAddress() + ":" + nl.getPort() + "/management/domain");
                     URLConnection conn = url.openConnection();
                     is = conn.getInputStream();
                     isRestStarted = true;
