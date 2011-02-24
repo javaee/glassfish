@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -374,8 +374,11 @@ public final class AdminConsoleAdapter extends GrizzlyAdapter implements Adapter
                             .getNetworkListener("admin-listener");
                     SecureAdmin secureAdmin = habitat.getComponent(SecureAdmin.class);
                     
-                    URL url = new URL((SecureAdmin.Util.isEnabled(secureAdmin) ? "https://" : "http://") + 
-                            nl.getAddress() + ":" + nl.getPort() + "/management/domain");
+                    URL url = new URL(
+                            (SecureAdmin.Util.isEnabled(secureAdmin) ? "https" : "http"),
+                            nl.getAddress(), 
+                            Integer.parseInt(nl.getPort()),
+                            "/management/domain");
                     URLConnection conn = url.openConnection();
                     is = conn.getInputStream();
                     isRestStarted = true;
