@@ -224,19 +224,19 @@ public class BaseModelMBean implements ModelMBean, MBeanRegistration {
 
     /** Attribute values. XXX That can be stored in the value Field
      */
-    protected HashMap attributes=new HashMap();
+    protected HashMap<String, Object> attributes=new HashMap<String, Object>();
 
     // --------------------------------------------------- DynamicMBean Methods
     static final Object[] NO_ARGS_PARAM=new Object[0];
     static final Class[] NO_ARGS_PARAM_SIG=new Class[0];
     // key: attribute val: getter method
-    private Hashtable getAttMap=new Hashtable();
+    private Hashtable<String, Method> getAttMap=new Hashtable<String, Method>();
 
     // key: attribute val: setter method
-    private Hashtable setAttMap=new Hashtable();
+    private Hashtable<String, Method> setAttMap=new Hashtable<String, Method>();
 
     // key: operation val: invoke method
-    private Hashtable invokeAttMap=new Hashtable();
+    private Hashtable<String, Method> invokeAttMap=new Hashtable<String, Method>();
 
     /**
      * Obtain and return the value of a specific attribute of this MBean.
@@ -265,7 +265,7 @@ public class BaseModelMBean implements ModelMBean, MBeanRegistration {
         }
         
         // Extract the method from cache
-        Method m=(Method)getAttMap.get( name );
+        Method m=getAttMap.get( name );
 
         if( m==null ) {
             // Look up the actual operation to be used
@@ -410,7 +410,7 @@ public class BaseModelMBean implements ModelMBean, MBeanRegistration {
 
         if (log.isLoggable(Level.FINE))
             log.fine("Invoke " + name);
-        Method method=(Method)invokeAttMap.get(name);
+        Method method=invokeAttMap.get(name);
         if( method==null ) {
             if (params == null)
                 params = new Object[0];
@@ -595,7 +595,7 @@ public class BaseModelMBean implements ModelMBean, MBeanRegistration {
         }
 
         // Extract the method from cache
-        Method m=(Method)setAttMap.get( name );
+        Method m=setAttMap.get( name );
 
         if( m==null ) {
             // Look up the actual operation to be used

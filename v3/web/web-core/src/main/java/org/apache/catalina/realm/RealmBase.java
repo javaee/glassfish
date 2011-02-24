@@ -540,7 +540,7 @@ public abstract class RealmBase
     public SecurityConstraint[] findSecurityConstraints(
             String uri, String method, Context context) {
 
-        ArrayList results = null;
+        ArrayList<SecurityConstraint> results = null;
 
         // Are there any defined security constraints?
         if (!context.hasConstraints()) {
@@ -622,7 +622,7 @@ public abstract class RealmBase
                         found = true;
                         if(collection[j].findMethod(method)) {
                             if(results == null) {
-                                results = new ArrayList();
+                                results = new ArrayList<SecurityConstraint>();
                             }
                             results.add(constraint);
                         }
@@ -725,7 +725,7 @@ public abstract class RealmBase
                     }
                     if (collection[j].findMethod(method)) {
                         if (results == null) {
-                            results = new ArrayList();
+                            results = new ArrayList<SecurityConstraint>();
                         }
                         results.add(constraint);
                     }
@@ -816,7 +816,7 @@ public abstract class RealmBase
                 found = true;
                 if (collection[pos].findMethod(method)) {
                     if(results == null) {
-                        results = new ArrayList();
+                        results = new ArrayList<SecurityConstraint>();
                     }
                     results.add(constraint);
                 }
@@ -892,7 +892,7 @@ public abstract class RealmBase
                 }
                 if (matched) {
                     if (results == null) {
-                        results = new ArrayList();
+                        results = new ArrayList<SecurityConstraint>();
                     }                    
                     results.add(constraint);
                 }
@@ -911,7 +911,7 @@ public abstract class RealmBase
     /**
      * Convert an ArrayList to a SecurityContraint [].
      */
-    private SecurityConstraint [] resultsToArray(ArrayList results) {
+    private SecurityConstraint [] resultsToArray(ArrayList<SecurityConstraint> results) {
         if(results == null) {
             return null;
         }

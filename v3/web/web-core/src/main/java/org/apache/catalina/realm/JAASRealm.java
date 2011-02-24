@@ -159,7 +159,7 @@ public class JAASRealm
     /**
      * The list of role class names, split out for easy processing.
      */
-    protected ArrayList roleClasses = new ArrayList();
+    protected ArrayList<String> roleClasses = new ArrayList<String>();
 
 
     /**
@@ -172,7 +172,7 @@ public class JAASRealm
     /**
      * The set of user class names, split out for easy processing.
      */
-    protected ArrayList userClasses = new ArrayList();
+    protected ArrayList<String> userClasses = new ArrayList<String>();
 
 
     // ------------------------------------------------------------- Properties
@@ -417,7 +417,7 @@ public class JAASRealm
     protected Principal createPrincipal(String username, Subject subject) {
         // Prepare to scan the Principals for this Subject
         char[] password = null; // Will not be carried forward
-        ArrayList roles = new ArrayList();
+        ArrayList<String> roles = new ArrayList<String>();
 
         // Scan the Principals for this Subject
         Iterator principals = subject.getPrincipals().iterator();

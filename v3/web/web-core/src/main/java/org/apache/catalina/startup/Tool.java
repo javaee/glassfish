@@ -206,8 +206,8 @@ public final class Tool {
                 log.fine("Constructing class loader");
                 ClassLoaderFactory.setDebug(1);
             }
-            ArrayList packed = new ArrayList();
-            ArrayList unpacked = new ArrayList();
+            ArrayList<File> packed = new ArrayList<File>();
+            ArrayList<File> unpacked = new ArrayList<File>();
             unpacked.add(new File(catalinaHome, "classes"));
             packed.add(new File(catalinaHome, "lib"));
             if (common) {
@@ -230,8 +230,8 @@ public final class Tool {
             }
             classLoader =
                 ClassLoaderFactory.createClassLoader
-                ((File[]) unpacked.toArray(new File[0]),
-                 (File[]) packed.toArray(new File[0]),
+                (unpacked.toArray(new File[unpacked.size()]),
+                 packed.toArray(new File[packed.size()]),
                  null);
         } catch (Throwable t) {
             log.log(Level.SEVERE, "Class loader creation threw exception", t);
@@ -240,7 +240,7 @@ public final class Tool {
         Thread.currentThread().setContextClassLoader(classLoader);
 
         // Load our application class
-        Class clazz = null;
+        Class<?> clazz = null;
         String className = args[index++];
         try {
             if (log.isLoggable(Level.FINE))

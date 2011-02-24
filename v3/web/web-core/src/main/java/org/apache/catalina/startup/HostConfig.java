@@ -178,7 +178,7 @@ public class HostConfig
     /**
      * Last modified dates of the source WAR files, keyed by WAR name.
      */
-    private HashMap warLastModified = new HashMap();
+    private HashMap<String, Long> warLastModified = new HashMap<String, Long>();
 
 
     /**
@@ -889,7 +889,7 @@ public class HostConfig
             for (int i = 0; i < files.length; i++) {
                 if (files[i].endsWith(".war")) {
                     File dir = new File(appBase, files[i]);
-                    Long lastModified = (Long) warLastModified.get(files[i]);
+                    Long lastModified = warLastModified.get(files[i]);
                     long dirLastModified = dir.lastModified();
                     if (lastModified == null) {
                         warLastModified.put

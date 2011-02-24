@@ -113,7 +113,7 @@ public class ContextConfig
      */
     //START SJSAS 6202703
     //private Map customAuthenticators;
-    protected Map customAuthenticators;
+    protected Map<String, Authenticator> customAuthenticators;
     //END SJSAS 6202703
 
 
@@ -309,7 +309,7 @@ public class ContextConfig
      * @param customAuthenticators Custom mappings of login methods to
      * authenticators
      */
-    public void setCustomAuthenticators(Map customAuthenticators) {
+    public void setCustomAuthenticators(Map<String, Authenticator> customAuthenticators) {
         this.customAuthenticators = customAuthenticators;
     }
 
@@ -541,7 +541,7 @@ public class ContextConfig
             String loginMethod = loginConfig.getAuthMethod();
             if (loginMethod != null
                     && customAuthenticators.containsKey(loginMethod)) {
-                authenticator = (GlassFishValve) customAuthenticators.get(loginMethod);
+                authenticator = getGlassFishValveAuthenticator(loginMethod);
                 if (authenticator == null) {
                     throw new LifecycleException(
                         sm.getString("contextConfig.authenticatorMissing",
@@ -598,6 +598,11 @@ public class ContextConfig
                 }
             }
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private GlassFishValve getGlassFishValveAuthenticator(String loginMethod) {
+        return (GlassFishValve) customAuthenticators.get(loginMethod);
     }
 
     /**

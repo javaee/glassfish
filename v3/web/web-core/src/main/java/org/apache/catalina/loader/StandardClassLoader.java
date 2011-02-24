@@ -265,14 +265,15 @@ public class StandardClassLoader
      * A list of read File and Jndi Permission's required if this loader
      * is for a web application context.
      */
-    private ArrayList<Permission> permissionList = new ArrayList();
+    private ArrayList<Permission> permissionList = new ArrayList<Permission>();
 
 
     /**
      * The PermissionCollection for each CodeSource for a web
      * application context.
      */
-    private HashMap<String, PermissionCollection> loaderPC = new HashMap();
+    private HashMap<String, PermissionCollection> loaderPC =
+        new HashMap<String, PermissionCollection>();
 
 
     /**
