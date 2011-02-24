@@ -566,7 +566,8 @@ public abstract class BundleDescriptor extends RootDeploymentDescriptor implemen
         if (application != null) {
             return application.getClassLoader();
         }
-        throw new RuntimeException("No class loader associated with this module " + getName());
+
+        return classLoader;
     }
 
     /**

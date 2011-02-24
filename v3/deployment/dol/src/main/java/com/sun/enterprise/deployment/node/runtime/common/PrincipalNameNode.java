@@ -42,6 +42,7 @@ package com.sun.enterprise.deployment.node.runtime.common;
 
 import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.node.runtime.RuntimeDescriptorNode;
+import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import com.sun.enterprise.deployment.runtime.common.PrincipalNameDescriptor;
 import com.sun.enterprise.deployment.xml.RuntimeTagNames;
 import org.w3c.dom.Element;
@@ -65,6 +66,10 @@ public class PrincipalNameNode  extends RuntimeDescriptorNode {
                 (PrincipalNameDescriptor) getDescriptor();
         if (RuntimeTagNames.PRINCIPAL_NAME.equals(element.getQName())) {
             principal.setName(value);
+            Object rootDesc = getParentNode().getParentNode().getDescriptor();
+            if (rootDesc instanceof RootDeploymentDescriptor) {
+                principal.setClassLoader(((RootDeploymentDescriptor)rootDesc).getClassLoader());
+            }
         } else super.setElementValue(element, value);
     }
 

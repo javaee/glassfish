@@ -1700,9 +1700,6 @@ public class Application extends BundleDescriptor
      * @return the class loader associated with this application
      */
     public ClassLoader getClassLoader() {
-        if (classLoader == null) {
-            throw new RuntimeException("No class loader associated with application " + getName());
-        }
         return classLoader;
     }
 

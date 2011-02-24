@@ -637,6 +637,9 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
                     ddFile.setErrorReportingString(archive.getURI().getSchemeSpecificPart());
                 }
                 T result = ddFile.read(is);
+                if (result instanceof RootDeploymentDescriptor) {
+                    ((RootDeploymentDescriptor)result).setClassLoader(classLoader);
+                }
                 return result;
             } else {
                 /*
