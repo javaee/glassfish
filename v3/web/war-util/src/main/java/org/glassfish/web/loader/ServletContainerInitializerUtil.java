@@ -81,7 +81,7 @@ public class ServletContainerInitializerUtil {
      * @return Iterable over all ServletContainerInitializers that were found
      */
     public static Iterable<ServletContainerInitializer> getServletContainerInitializers(
-            Map<String, String> webFragmentMap, List<String> absoluteOrderingList,
+            Map<String, String> webFragmentMap, List<Object> absoluteOrderingList,
             boolean hasOthers, ClassLoader cl) {
         /*
          * If there is an absoluteOrderingList specified, then make sure that
@@ -348,11 +348,11 @@ public class ServletContainerInitializerUtil {
      */
     private static boolean isFragmentMissingFromAbsoluteOrdering(
            String jarName, Map<String, String> webFragmentMap,
-           List<String> absoluteOrderingList) {
-       return (webFragmentMap != null &&
-           absoluteOrderingList != null &&
-           !absoluteOrderingList.contains(
-               webFragmentMap.get(jarName)));
+           List<Object> absoluteOrderingList) {
+        return (webFragmentMap != null &&
+            absoluteOrderingList != null &&
+            !absoluteOrderingList.contains(
+                webFragmentMap.get(jarName)));
    }
 
     /**

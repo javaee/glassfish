@@ -712,10 +712,6 @@ public class StandardContext
     private ConcurrentHashMap<String, FilterRegistrationImpl> filterRegisMap =
         new ConcurrentHashMap<String, FilterRegistrationImpl>();
 
-    private Map<String, String> jarName2WebFragNameMap;
-
-    private List absoluteOrderingList;
-
     /**
      * The list of ordered libs, which is used as the value of the
      * ServletContext attribute with name javax.servlet.context.orderedLibs
@@ -3451,28 +3447,6 @@ public class StandardContext
      */
     public Map<String, ? extends ServletRegistration> getServletRegistrations() {
         return Collections.unmodifiableMap(servletRegisMap);
-    }
-
-    public void setJarNameToWebFragmentNameMap(
-                    Map<String, String> jarName2WebFragNameMap) {
-        this.jarName2WebFragNameMap = jarName2WebFragNameMap;
-    }
-
-    public void setAbsoluteOrdering(List absoluteOrderingList) {
-        this.absoluteOrderingList = absoluteOrderingList;
-    }
-
-    /**
-     * @return true if this Context declares an absolute ordering of its
-     * web fragments (without the use of any <others/> element), and the
-     * web fragment JAR file with the given name is excluded from it;
-     * false otherwise
-     */
-    public boolean isFragmentMissingFromAbsoluteOrdering(String jarName) {
-        return (jarName2WebFragNameMap != null &&
-            absoluteOrderingList != null &&
-            !absoluteOrderingList.contains(
-                jarName2WebFragNameMap.get(jarName)));
     }
 
     /**

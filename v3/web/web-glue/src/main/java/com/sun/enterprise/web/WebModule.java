@@ -485,7 +485,7 @@ public class WebModule extends PwcWebModule implements Context {
     @Override
     public synchronized void start() throws LifecycleException {
         // Get interestList of ServletContainerInitializers present, if any.
-        List<String> orderingList = null;
+        List<Object> orderingList = null;
         boolean hasOthers = false;
         Map<String, String> webFragmentMap = Collections.emptyMap();
         if (webBundleDescriptor != null) {
