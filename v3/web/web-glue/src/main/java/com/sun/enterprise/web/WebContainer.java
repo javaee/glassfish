@@ -3368,7 +3368,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      *
      * @Dependent scope. All other scopes are invalid and must be rejected.
      */
-    private void validateJSR299Scope(Class clazz) {
+    private void validateJSR299Scope(Class<?> clazz) {
         if (clazz.isAnnotationPresent(RequestScoped.class) ||
                 clazz.isAnnotationPresent(ApplicationScoped.class) ||
                 clazz.isAnnotationPresent(SessionScoped.class) ||
