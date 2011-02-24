@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admingui.common.handlers;
 
 import java.io.UnsupportedEncodingException;
@@ -68,8 +67,6 @@ import org.glassfish.admingui.common.util.RestUtil;
  * @author Ana
  */
 public class MonitoringHandlers {
-    
-
     @Handler(id = "getMonitorLevels",
     input = {
         @HandlerInput(name = "endpoint", type = String.class, required = true)},
@@ -81,7 +78,7 @@ public class MonitoringHandlers {
         List result = new ArrayList();
         try {
             String monitoringServiceEndPoint = endpoint + "/monitoring-service";
-            Map<String,Object> attrs = RestUtil.getEntityAttrs(monitoringServiceEndPoint+"/container-monitoring", "entitiy");
+            Map<String, Object> attrs = RestUtil.getEntityAttrs(monitoringServiceEndPoint + "/container-monitoring", "entitiy");
 
             if (attrs != null) {
                 for (String prop : attrs.keySet()) {
@@ -129,23 +126,22 @@ public class MonitoringHandlers {
         } catch (Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);
         }
-        handlerCtx.setOutputValue( "monitorCompList", result);
+        handlerCtx.setOutputValue("monitorCompList", result);
     }
 
     /*
      * This handler returns a list of statistical data for an endpoint.
      * Useful for populating table
      */
-    @Handler(id="getStats",
-    input={
-        @HandlerInput(name="endpoint",   type=String.class, required=true),
-        @HandlerInput(name="statType",   type=String.class),
-        @HandlerInput(name="type",   type=String.class)},
-    output={
-        @HandlerOutput(name="result",        type=List.class),
-        @HandlerOutput(name="hasStats",        type=Boolean.class)})
-
-        public static void getStats(HandlerContext handlerCtx) {
+    @Handler(id = "getStats",
+    input = {
+        @HandlerInput(name = "endpoint", type = String.class, required = true),
+        @HandlerInput(name = "statType", type = String.class),
+        @HandlerInput(name = "type", type = String.class)},
+    output = {
+        @HandlerOutput(name = "result", type = List.class),
+        @HandlerOutput(name = "hasStats", type = Boolean.class)})
+    public static void getStats(HandlerContext handlerCtx) {
         String endpoint = (String) handlerCtx.getInputValue("endpoint");
         String statType = (String) handlerCtx.getInputValue("statType");
         String type = (String) handlerCtx.getInputValue("type");
@@ -326,8 +322,8 @@ public class MonitoringHandlers {
         } catch (Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);
         }
-    }     
- 
+    }
+
     @Handler(id = "updateMonitorLevels",
     input = {
         @HandlerInput(name = "allRows", type = List.class, required = true),
@@ -336,7 +332,7 @@ public class MonitoringHandlers {
     public static void updateMonitorLevels(HandlerContext handlerCtx) {
         String endpoint = (String) handlerCtx.getInputValue("endpoint");
         String containerEndpoint = (String) handlerCtx.getInputValue("containerEndpoint");
-        List<Map<String,String>> allRows = (List<Map<String,String>>) handlerCtx.getInputValue("allRows");
+        List<Map<String, String>> allRows = (List<Map<String, String>>) handlerCtx.getInputValue("allRows");
         String objectNameStr = null;
         for (Map<String, String> oneRow : allRows) {
             String name = oneRow.get("monCompName");
@@ -359,13 +355,13 @@ public class MonitoringHandlers {
                     String cName = (String) cni.next();
                     if (name.equals(cDispName)) {
                         value = "Level";
-                        objectNameStr = containerEndpoint+"/"+cName;
+                        objectNameStr = containerEndpoint + "/" + cName;
                     }
                 }
             }
-            Map<String,Object> attrMap = new HashMap<String,Object>();
+            Map<String, Object> attrMap = new HashMap<String, Object>();
             attrMap.put((value == null) ? name : value, oneRow.get("level"));
-            String entityUrl = (objectNameStr == null) ? containerEndpoint+"/"+name : objectNameStr ;
+            String entityUrl = (objectNameStr == null) ? containerEndpoint + "/" + name : objectNameStr;
             RestResponse response = RestUtil.sendUpdateRequest(entityUrl, attrMap, null, null, null);
             if (!response.isSuccess()) {
                 GuiUtil.getLogger().severe("Update monitor level failed.  parent=" + endpoint + "; attrsMap =" + attrMap);
@@ -373,64 +369,64 @@ public class MonitoringHandlers {
                 return;
             }
         }
-     }
+    }
 
     /**
      *	<p> Add list to new list
      */
     @Handler(id = "addToMonitorList",
-        input = {
-            @HandlerInput(name = "oldList", type = List.class),
-            @HandlerInput(name = "newList", type = List.class)},
-        output = {
-            @HandlerOutput(name = "result", type = List.class)
-            })
+    input = {
+        @HandlerInput(name = "oldList", type = List.class),
+        @HandlerInput(name = "newList", type = List.class)},
+    output = {
+        @HandlerOutput(name = "result", type = List.class)
+    })
     public static void addToMonitorList(HandlerContext handlerCtx) {
-       List<String> oldList = (List) handlerCtx.getInputValue("oldList");
-       List<String> newList = (List) handlerCtx.getInputValue("newList");
-        if (newList == null){
+        List<String> oldList = (List) handlerCtx.getInputValue("oldList");
+        List<String> newList = (List) handlerCtx.getInputValue("newList");
+        if (newList == null) {
             newList = new ArrayList();
         }
         if (oldList != null) {
-                for (String sk : oldList) {
-                    newList.add(sk);
-                }
+            for (String sk : oldList) {
+                newList.add(sk);
             }
+        }
         handlerCtx.setOutputValue("result", newList);
     }
-    
+
     @Handler(id = "getValidMonitorLevels",
     output = {
         @HandlerOutput(name = "monitorLevelList", type = List.class)
     })
     public static void getValidMonitorLevels(HandlerContext handlerCtx) {
-        handlerCtx.setOutputValue("monitorLevelList",  levels);
-     }
-    
+        handlerCtx.setOutputValue("monitorLevelList", levels);
+    }
+
     @Handler(id = "getFirstValueFromList",
-    input={
-        @HandlerInput(name="values",   type=List.class, required=true)},
+    input = {
+        @HandlerInput(name = "values", type = List.class, required = true)},
     output = {
         @HandlerOutput(name = "firstValue", type = String.class)
     })
     public static void getFirstValueFromList(HandlerContext handlerCtx) {
         List values = (List) handlerCtx.getInputValue("values");
         String firstval = "";
-        if ((values != null) && (values.size()!=0)){
-            firstval = (String)values.get(0);
+        if ((values != null) && (values.size() != 0)) {
+            firstval = (String) values.get(0);
 
         }
-        handlerCtx.setOutputValue("firstValue",  firstval);
-     }
+        handlerCtx.setOutputValue("firstValue", firstval);
+    }
 
     @Handler(id = "getAppName",
-      input={
-        @HandlerInput(name="endpoint",   type=String.class, required=true),
-        @HandlerInput(name="name",   type=String.class, required=true)},
-       output = {
+    input = {
+        @HandlerInput(name = "endpoint", type = String.class, required = true),
+        @HandlerInput(name = "name", type = String.class, required = true)},
+    output = {
         @HandlerOutput(name = "appName", type = String.class),
         @HandlerOutput(name = "appFullName", type = String.class)
-       })
+    })
     public static void getAppName(HandlerContext handlerCtx) {
         String endpoint = (String) handlerCtx.getInputValue("endpoint");
         String name = (String) handlerCtx.getInputValue("name");
@@ -454,24 +450,24 @@ public class MonitoringHandlers {
         } catch (Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);
         }
-        
-        handlerCtx.setOutputValue("appName",  appName);
-        handlerCtx.setOutputValue("appFullName",  fullName);
+
+        handlerCtx.setOutputValue("appName", appName);
+        handlerCtx.setOutputValue("appFullName", fullName);
     }
-    
+
     @Handler(id = "getWebStatsUrl",
-      input={
-        @HandlerInput(name="app",   type=String.class, required=true),
-        @HandlerInput(name="compVal",   type=String.class, required=true),
-        @HandlerInput(name="vsList",   type=List.class, required=true),
-        @HandlerInput(name="monitorURL",   type=String.class, required=true),
-        @HandlerInput(name="moduleProps",   type=Map.class, required=true)},
-       output = {
+    input = {
+        @HandlerInput(name = "app", type = String.class, required = true),
+        @HandlerInput(name = "compVal", type = String.class, required = true),
+        @HandlerInput(name = "vsList", type = List.class, required = true),
+        @HandlerInput(name = "monitorURL", type = String.class, required = true),
+        @HandlerInput(name = "moduleProps", type = Map.class, required = true)},
+    output = {
         @HandlerOutput(name = "webServletUrl", type = String.class),
         @HandlerOutput(name = "webServletType", type = String.class),
         @HandlerOutput(name = "webUrl", type = String.class),
         @HandlerOutput(name = "webType", type = String.class)
-       })
+    })
     public static void getWebStatsUrl(HandlerContext handlerCtx) {
         String app = (String) handlerCtx.getInputValue("app");
         String monitorURL = (String) handlerCtx.getInputValue("monitorURL");
@@ -483,7 +479,7 @@ public class MonitoringHandlers {
         String statType = "EMPTY";
         String webType = "EMPTY";
         String monitorEndpoint = monitorURL + "/applications/" + app;
-        
+
         try {
             for (String vs : vsList) {
                 if (doesMonitoringDataExist(monitorEndpoint + "/" + URLEncoder.encode(vs, "UTF-8"))) {
@@ -506,8 +502,8 @@ public class MonitoringHandlers {
                 }
             }
         } catch (UnsupportedEncodingException ex) {
-            GuiUtil.getLogger().info(GuiUtil.getCommonMessage("log.error.getWebStatsUrl" )+ ex.getLocalizedMessage());
-            if (GuiUtil.getLogger().isLoggable(Level.FINE)){
+            GuiUtil.getLogger().info(GuiUtil.getCommonMessage("log.error.getWebStatsUrl") + ex.getLocalizedMessage());
+            if (GuiUtil.getLogger().isLoggable(Level.FINE)) {
                 ex.printStackTrace();
             }
         }
@@ -518,15 +514,15 @@ public class MonitoringHandlers {
     }
 
     @Handler(id = "getStatsUrl",
-      input={
-        @HandlerInput(name="app",   type=String.class, required=true),
-        @HandlerInput(name="moduleProps",   type=Map.class, required=true),
-        @HandlerInput(name="monitorURL",   type=String.class, required=true),
-        @HandlerInput(name="compVal",   type=String.class, required=true)},
-       output = {
+    input = {
+        @HandlerInput(name = "app", type = String.class, required = true),
+        @HandlerInput(name = "moduleProps", type = Map.class, required = true),
+        @HandlerInput(name = "monitorURL", type = String.class, required = true),
+        @HandlerInput(name = "compVal", type = String.class, required = true)},
+    output = {
         @HandlerOutput(name = "statUrl", type = String.class),
         @HandlerOutput(name = "statType", type = String.class)
-       })
+    })
     public static void getStatsUrl(HandlerContext handlerCtx) {
         String app = (String) handlerCtx.getInputValue("app");
         String comp = (String) handlerCtx.getInputValue("compVal");
@@ -540,13 +536,13 @@ public class MonitoringHandlers {
             try {
                 statUrl = monitorURL + "/applications/" + app;
                 for (String str : compStrs) {
-                    statUrl = statUrl  + "/" + URLEncoder.encode(str, "UTF-8");
-                }                
+                    statUrl = statUrl + "/" + URLEncoder.encode(str, "UTF-8");
+                }
             } catch (UnsupportedEncodingException ex) {
-                GuiUtil.getLogger().info(GuiUtil.getCommonMessage("log.error.getStatsUrl") + ex.getLocalizedMessage());
-            if (GuiUtil.getLogger().isLoggable(Level.FINE)){
-                ex.printStackTrace();
-            }
+                GuiUtil.getLogger().log(Level.INFO, "{0}{1}", new Object[]{GuiUtil.getCommonMessage("log.error.getStatsUrl"), ex.getLocalizedMessage()});
+                if (GuiUtil.getLogger().isLoggable(Level.FINE)) {
+                    ex.printStackTrace();
+                }
             }
 
             if (RestUtil.doesProxyExist(statUrl)) {
@@ -566,13 +562,14 @@ public class MonitoringHandlers {
      * Filed an issue :12687.
      * Once this issue is resolved, we can remove this handler.
      */
+
     @Handler(id = "filterWebStats",
-      input={
-        @HandlerInput(name="webStats",   type=List.class, required=true),
-        @HandlerInput(name="statType",   type=String.class, required=true)},
-       output = {
+    input = {
+        @HandlerInput(name = "webStats", type = List.class, required = true),
+        @HandlerInput(name = "statType", type = String.class, required = true)},
+    output = {
         @HandlerOutput(name = "stats", type = List.class)
-       })
+    })
     public static void filterWebStats(HandlerContext handlerCtx) {
         List<Map> webStats = (List<Map>) handlerCtx.getInputValue("webStats");
         String statType = (String) handlerCtx.getInputValue("statType");
@@ -591,19 +588,19 @@ public class MonitoringHandlers {
 
         handlerCtx.setOutputValue("stats", stats);
     }
-    
+
     /*
      * Returns true if the given pool name is the child of an entity
      * (jdbc connection pools or connector connection pools).
      * This is used in monitoringResourceStats.jsf.
      */
     @Handler(id = "isPool",
-      input={
-        @HandlerInput(name="poolName",   type=String.class, required=true),
-        @HandlerInput(name="endpoint",   type=String.class, required=true)},
-       output = {
+    input = {
+        @HandlerInput(name = "poolName", type = String.class, required = true),
+        @HandlerInput(name = "endpoint", type = String.class, required = true)},
+    output = {
         @HandlerOutput(name = "result", type = Boolean.class)
-       })
+    })
     public static void isPool(HandlerContext handlerCtx) {
         String poolName = (String) handlerCtx.getInputValue("poolName");
         String endpoint = (String) handlerCtx.getInputValue("endpoint");
@@ -616,26 +613,26 @@ public class MonitoringHandlers {
         } catch (Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);
         }
-        
+
         handlerCtx.setOutputValue("result", result);
 
     }
-    
+
     /*
      * Returns the jdbc connection pools, connector connection pools,
      * first jdbc element and first connector element for the given set of
      * pool names  and resources endpoint. 
      */
     @Handler(id = "gf.getMonitoringPools",
-      input={
-        @HandlerInput(name="poolNames",   type=List.class, required=true),
-        @HandlerInput(name="endpoint",   type=String.class, required=true)},
-       output = {
+    input = {
+        @HandlerInput(name = "poolNames", type = List.class, required = true),
+        @HandlerInput(name = "endpoint", type = String.class, required = true)},
+    output = {
         @HandlerOutput(name = "jdbcList", type = List.class),
         @HandlerOutput(name = "firstJdbc", type = String.class),
         @HandlerOutput(name = "connectorList", type = List.class),
         @HandlerOutput(name = "firstConnector", type = String.class)
-       })
+    })
     public static void getMonitoringPools(HandlerContext handlerCtx) {
         List<String> poolNames = (List<String>) handlerCtx.getInputValue("poolNames");
         String endpoint = (String) handlerCtx.getInputValue("endpoint");
@@ -665,11 +662,11 @@ public class MonitoringHandlers {
     }
 
     @Handler(id = "gf.getInstanceMonitorURL",
-      input={
-        @HandlerInput(name="instanceName",   type=String.class, defaultValue="server")},
-       output = {
+    input = {
+        @HandlerInput(name = "instanceName", type = String.class, defaultValue = "server")},
+    output = {
         @HandlerOutput(name = "monitorURL", type = String.class)
-       })
+    })
     public static void getInstanceMonitorURL(HandlerContext handlerCtx) {
         String instanceName = (String) handlerCtx.getInputValue("instanceName");
         String monitorURL = (String) GuiUtil.getSessionValue("MONITOR_URL") + "/" + instanceName;
@@ -722,7 +719,7 @@ public class MonitoringHandlers {
         }
         return modifiedName;
     }
-   
+
     private static String formatActiveIdsForDisplay(String str) {
         String values = " ";
         String[] strArray = str.split("%%%EOL%%%");
@@ -801,33 +798,49 @@ public class MonitoringHandlers {
         }
         return monitorInfoMap;
     }
-      
-    final private static List<String> levels= new ArrayList();
-    static{
+    final private static List<String> levels = new ArrayList();
+
+    static {
         levels.add("OFF");
         levels.add("LOW");
         levels.add("HIGH");
     }
     //monitoring component names
     public static final String JVM = GuiUtil.getMessage("monitoring.Jvm");
+
     public static final String WEB_CONTAINER = GuiUtil.getMessage("monitoring.Web");
+
     public static final String HTTP_SERVICE = GuiUtil.getMessage("monitoring.Http");
+
     public static final String THREAD_POOL = GuiUtil.getMessage("monitoring.ThreadPool");
+
     public static final String JDBC_CONNECTION_POOL = GuiUtil.getMessage("monitoring.Jdbc");
+
     public static final String CONNECTOR_CONNECTION_POOL = GuiUtil.getMessage("monitoring.Connector");
+
     public static final String EJB_CONTAINER = GuiUtil.getMessage("monitoring.Ejb");
+
     public static final String TRANSACTION_SERVICE = GuiUtil.getMessage("monitoring.TransactionService");
+
     public static final String ORB = GuiUtil.getMessage("monitoring.Orb");
+
     public static final String CONNECTOR_SERVICE = GuiUtil.getMessage("monitoring.ConnectorService");
+
     public static final String JMS_SERVICE = GuiUtil.getMessage("monitoring.JmsService");
+
     public static final String WEB_SERVICES_CONTAINER = GuiUtil.getMessage("monitoring.WebServices");
+
     public static final String JPA = GuiUtil.getMessage("monitoring.Jpa");
+
     public static final String SECURITY = GuiUtil.getMessage("monitoring.Security");
+
     public static final String JERSEY = GuiUtil.getMessage("monitoring.Jersey");
+
     public static final String DEPLOYMENT = GuiUtil.getMessage("monitoring.Deployment");
 
-    final private static List monDisplayList= new ArrayList();
-    static{
+    final private static List monDisplayList = new ArrayList();
+
+    static {
         monDisplayList.add(JVM);
         monDisplayList.add(WEB_CONTAINER);
         monDisplayList.add(HTTP_SERVICE);
@@ -845,9 +858,9 @@ public class MonitoringHandlers {
         monDisplayList.add(JERSEY);
         monDisplayList.add(DEPLOYMENT);
     }
-    
     final private static List monNamesList = new ArrayList();
-    static{
+
+    static {
         monNamesList.add("jvm");
         monNamesList.add("webContainer");
         monNamesList.add("httpService");
@@ -865,7 +878,8 @@ public class MonitoringHandlers {
         monNamesList.add("jersey");
         monNamesList.add("deployment");
     }
+    final private static List containerDispList = new ArrayList();
 
-    final private static List containerDispList= new ArrayList();    
-    final private static List containerNameList= new ArrayList();    
+    final private static List containerNameList = new ArrayList();
+
 }
