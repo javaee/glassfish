@@ -48,7 +48,7 @@ public class Client {
 
 	    try {
 		System.out.println("Waiting for passivation...");
-		Thread.sleep(10000);
+		Thread.sleep(20000);
 	    } catch(Exception e) {
 		e.printStackTrace();
 	    }
