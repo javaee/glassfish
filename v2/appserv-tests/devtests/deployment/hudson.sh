@@ -31,6 +31,7 @@ cd "$APS_HOME"
 #
 # Get rid of any previously-running GlassFish instance
 #
+echo "Cleaning any left-over ASMain Java processes"
 for pid in `jps -l | grep "com.sun.enterprise.glassfish.bootstrap.ASMain" | cut -d " "  -f 1 ` ; do echo "PID is $pid"; done
 #
 cd "$APS_HOME/devtests/deployment"
