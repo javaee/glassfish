@@ -28,6 +28,11 @@ export S1AS_HOME="$ROOT/glassfish3/glassfish"
 export APS_HOME="$ROOT/appserv-tests"
 cd "$APS_HOME"
 (jps |grep Main |cut -f1 -d" " | xargs kill -9  > /dev/null 2>&1) || true
+#
+# Get rid of any previously-running GlassFish instance
+#
+for pid in `jps -l | grep "com.sun.enterprise.glassfish.bootstrap.ASMain" | cut -d " "  -f 1 ` ; do echo "PID is $pid"; done
+#
 cd "$APS_HOME/devtests/deployment"
 
 antTarget="all-ee"
@@ -46,10 +51,6 @@ if [ -z "$DEPL_TARGET" ]
 then
     $S1AS_HOME/bin/asadmin stop-domain
 fi
-#
-# Get rid of any previously-running GlassFish instance
-#
-for pid in `jps -l | grep "com.sun.enterprise.glassfish.bootstrap.ASMain" | cut -d " "  -f 1 ` ; do echo "PID is $pid"; done
 #
 echo DEPL_TARGET is $DEPL_TARGET
 if [ $antStatus -ne 0 ]
