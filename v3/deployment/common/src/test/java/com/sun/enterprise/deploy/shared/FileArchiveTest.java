@@ -40,6 +40,11 @@
 
 package com.sun.enterprise.deploy.shared;
 
+import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 import org.junit.Ignore;
 import com.sun.enterprise.util.OS;
 import java.util.Enumeration;
@@ -228,5 +233,77 @@ public class FileArchiveTest {
             f.mkdirs();
             f.createNewFile();
         }
+    }
+
+    @Test
+    public void testInaccessibleDirectoryInFileArchive() throws Exception {
+        final String EXPECTED_LOG_KEY = "enterprise.deployment.nullFileList";
+        System.out.println("testInaccessibleDirectoryInFileArchive");
+
+        final List<LogRecord> logRecords = new ArrayList<LogRecord>();
+
+        final Logger myLogger = new MyLogger(
+                new MyLogger.LogMonitor() {
+
+            @Override
+            public void log(LogRecord record) {
+                logRecords.add(record);
+            }
+
+        });
+
+        final FileArchive archive = createAndPopulateArchive(usualEntryNames);
+
+        /*
+         * Now make the lower-level directory impossible to execute - therefore
+         * the attempt to list the files should fail.
+         */
+        final File lower = new File(archiveDir, "lower");
+        lower.setExecutable(false, false);
+        lower.setReadable(false, false);
+
+        /*
+         * Try to list the files.  This should fail with our logger getting
+         * one record.
+         */
+        final Vector<String> fileList = new Vector<String>();
+        archive.getListOfFiles(lower, fileList, null /* embeddedArchives */, myLogger);
+
+        assertTrue("FileArchive did not log expected message (re: being unable to list files); expected " +
+                        EXPECTED_LOG_KEY,
+                (! logRecords.isEmpty()) && (logRecords.get(0).getMessage().equals(EXPECTED_LOG_KEY)));
+        /*
+         * Change the protection back.
+         */
+        lower.setExecutable(true, false);
+        lower.setReadable(true, false);
+        logRecords.clear();
+
+        archive.getListOfFiles(lower, fileList, null, myLogger);
+        assertTrue("FileArchive was incorrectly unable to list files; error key in log record:" +
+                (logRecords.isEmpty() ? "" : logRecords.get(0).getMessage()),
+                logRecords.isEmpty());
+        
+    }
+
+    private static class MyLogger extends Logger {
+
+        private interface LogMonitor {
+            void log(LogRecord record);
+        }
+
+        private final LogMonitor logMonitor;
+
+        private MyLogger(final LogMonitor logMonitor) {
+            super("TestLogger", null);
+            this.logMonitor = logMonitor;
+        }
+
+        @Override
+        public void log(LogRecord record) {
+            logMonitor.log(record);
+        }
+
+
     }
 }
