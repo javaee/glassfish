@@ -278,8 +278,8 @@ public final class RequestUtil {
      *
      * @exception IllegalArgumentException if the data is malformed
      */
-    public static void parseParameters(Map map, String data, String encoding)
-        throws UnsupportedEncodingException {
+    public static void parseParameters(Map<String, String[]> map, String data,
+            String encoding) throws UnsupportedEncodingException {
 
         if ((data != null) && (data.length() > 0)) {
 

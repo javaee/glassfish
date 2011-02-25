@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -82,8 +82,8 @@ public class ManifestResource {
     public static final int WAR = 2;
     public static final int APPLICATION = 3;
     
-    private HashMap availableExtensions = null;
-    private ArrayList requiredExtensions = null;
+    private HashMap<String, Extension> availableExtensions = null;
+    private ArrayList<Extension> requiredExtensions = null;
     
     private String resourceName = null;
     private int resourceType = -1;
@@ -109,7 +109,7 @@ public class ManifestResource {
      *
      * @return Map of available extensions
      */
-    public HashMap getAvailableExtensions() {
+    public HashMap<String, Extension> getAvailableExtensions() {
         return availableExtensions;
     }
     
@@ -118,7 +118,7 @@ public class ManifestResource {
      *
      * @return List of required extensions
      */
-    public ArrayList getRequiredExtensions() {
+    public ArrayList<Extension> getRequiredExtensions() {
         return requiredExtensions;   
     }
     
@@ -175,9 +175,9 @@ public class ManifestResource {
         if (requiredExtensions == null) {
             return true;
         }
-        Iterator it = requiredExtensions.iterator();
+        Iterator<Extension> it = requiredExtensions.iterator();
         while (it.hasNext()) {
-            Extension ext = (Extension)it.next();
+            Extension ext = it.next();
             if (!ext.isFulfilled()) return false;            
         }
         return true;
@@ -221,14 +221,14 @@ public class ManifestResource {
      * @return List of required extensions, or null if the application
      * does not require any extensions
      */
-    private ArrayList getRequiredExtensions(Manifest manifest) {
+    private ArrayList<Extension> getRequiredExtensions(Manifest manifest) {
 
         Attributes attributes = manifest.getMainAttributes();
         String names = attributes.getValue("Extension-List");
         if (names == null)
             return null;
 
-        ArrayList extensionList = new ArrayList();
+        ArrayList<Extension> extensionList = new ArrayList<Extension>();
         names += " ";
 
         while (true) {
@@ -268,14 +268,14 @@ public class ManifestResource {
      * @return Map of available extensions, or null if the web application
      * does not bundle any extensions
      */
-    private HashMap getAvailableExtensions(Manifest manifest) {
+    private HashMap<String, Extension> getAvailableExtensions(Manifest manifest) {
 
         Attributes attributes = manifest.getMainAttributes();
         String name = attributes.getValue("Extension-Name");
         if (name == null)
             return null;
 
-        HashMap extensionMap = new HashMap();
+        HashMap<String, Extension> extensionMap = new HashMap<String, Extension>();
 
         Extension extension = new Extension();
         extension.setExtensionName(name);

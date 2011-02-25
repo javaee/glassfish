@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -96,7 +96,7 @@ public class ManagedBean implements java.io.Serializable
     protected String group = null;
     protected String name = null;
 
-    protected List fields = new ArrayList();
+    protected List<FieldInfo> fields = new ArrayList<FieldInfo>();
     protected NotificationInfo notifications[] = new NotificationInfo[0];
     protected OperationInfo operations[] = new OperationInfo[0];
     protected String type = null;
@@ -178,7 +178,7 @@ public class ManagedBean implements java.io.Serializable
      * the name/value pairs that should be
      * added to the Descriptor created from this metadata.</p>
      */
-    public List getFields() {
+    public List<FieldInfo> getFields() {
         return (this.fields);
     }
 
@@ -498,9 +498,9 @@ public class ManagedBean implements java.io.Serializable
              attributes, constructors, operations, notifications);
         try {
             Descriptor descriptor = info.getMBeanDescriptor();
-            Iterator fields = getFields().iterator();
+            Iterator<FieldInfo> fields = getFields().iterator();
             while (fields.hasNext()) {
-                FieldInfo field = (FieldInfo) fields.next();
+                FieldInfo field = fields.next();
                 descriptor.setField(field.getName(), field.getValue());
             }
             info.setMBeanDescriptor(descriptor);

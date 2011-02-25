@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -97,7 +97,7 @@ public class ByteArrayOutputStream extends OutputStream {
     private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
 
     /** The list of buffers, which grows and never reduces. */
-    private List buffers = new ArrayList();
+    private List<byte[]> buffers = new ArrayList<byte[]>();
     /** The index of the current buffer. */
     private int currentBufferIndex;
     /** The total count of bytes in all the filled buffers. */
@@ -138,7 +138,7 @@ public class ByteArrayOutputStream extends OutputStream {
      * @return the buffer
      */
     private byte[] getBuffer(int index) {
-        return (byte[]) buffers.get(index);
+        return buffers.get(index);
     }
 
     /**

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -95,7 +95,7 @@ public class SessionTracker implements SessionListener {
      * The size of this list will be greater than one only in cross
      * context request dispatch scenarios
      */
-    private ArrayList contextNames = new ArrayList(2);
+    private ArrayList<String> contextNames = new ArrayList<String>(2);
 
     /**
      * Processes the given session event, by unregistering this SessionTracker
