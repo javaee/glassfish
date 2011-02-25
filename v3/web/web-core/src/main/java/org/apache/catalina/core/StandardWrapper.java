@@ -1364,7 +1364,7 @@ public class StandardWrapper
         }
 
         // Load the specified servlet class from the appropriate class loader
-        Class<?> clazz = null;
+        Class clazz = null;
         try {
             if (SecurityUtil.isPackageProtectionEnabled()){
                 final ClassLoader fclassLoader = classLoader;
