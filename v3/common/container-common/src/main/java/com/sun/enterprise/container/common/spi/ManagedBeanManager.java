@@ -60,13 +60,13 @@ public interface ManagedBeanManager {
 
     public Object getManagedBean(String globalJndiName) throws Exception;
 
-    public Object createManagedBean(Class managedBean) throws Exception;
+    public <T> T createManagedBean(Class<T> managedBean) throws Exception;
 
-    public Object createManagedBean(Class managedBean, boolean invokePostConstruct) throws Exception;
+    public <T> T createManagedBean(Class<T> managedBean, boolean invokePostConstruct) throws Exception;
 
-    public Object createManagedBean(ManagedBeanDescriptor managedBeanDesc, Class managedBeanClass) throws Exception;
+    public <T> T createManagedBean(ManagedBeanDescriptor managedBeanDesc, Class<T> managedBeanClass) throws Exception;
 
-    public Object createManagedBean(ManagedBeanDescriptor managedBeanDesc, Class managedBeanClass,
+    public <T> T createManagedBean(ManagedBeanDescriptor managedBeanDesc, Class<T> managedBeanClass,
         boolean invokePostConstruct) throws Exception;
 
     public boolean isManagedBean(Object object);

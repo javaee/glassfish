@@ -699,7 +699,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         WebComponentInvocation inv = new WebComponentInvocation(module);
         try {
             invocationMgr.preInvoke(inv);
-            return (T) injectionMgr.createManagedObject(clazz);
+            return injectionMgr.createManagedObject(clazz);
         } finally {
             invocationMgr.postInvoke(inv);
         }
@@ -715,7 +715,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         WebComponentInvocation inv = new WebComponentInvocation(module);
         try {
             invocationMgr.preInvoke(inv);
-            return (T) injectionMgr.createManagedObject(clazz);
+            return injectionMgr.createManagedObject(clazz);
         } finally {
             invocationMgr.postInvoke(inv);
         }
@@ -731,7 +731,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         WebComponentInvocation inv = new WebComponentInvocation(module);
         try {
             invocationMgr.preInvoke(inv);
-            return (T) injectionMgr.createManagedObject(clazz);
+            return injectionMgr.createManagedObject(clazz);
         } finally {
             invocationMgr.postInvoke(inv);
         }
@@ -746,7 +746,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         WebComponentInvocation inv = new WebComponentInvocation(module);
         try {
             invocationMgr.preInvoke(inv);
-            return (T) injectionMgr.createManagedObject(clazz);
+            return injectionMgr.createManagedObject(clazz);
         } finally {
             invocationMgr.postInvoke(inv);
         }

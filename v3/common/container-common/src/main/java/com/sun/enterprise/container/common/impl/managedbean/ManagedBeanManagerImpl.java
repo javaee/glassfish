@@ -48,20 +48,12 @@ import java.util.List;
 import java.util.Collections;
 import java.util.HashMap;
 import java.lang.reflect.Method;
-import java.lang.reflect.Member;
 import java.lang.reflect.Field;
 import java.lang.reflect.Proxy;
-import java.lang.annotation.Annotation;
-
 import javax.naming.InitialContext;
 
-
 import org.glassfish.api.invocation.InvocationManager;
-import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.naming.GlassfishNamingManager;
-
-
-import com.sun.enterprise.deployment.util.ModuleDescriptor;
 
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
@@ -411,7 +403,7 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostStartup, 
         return eligible;
     }
 
-    public Object createManagedBean(Class managedBeanClass) throws Exception {
+    public <T> T createManagedBean(Class<T> managedBeanClass) throws Exception {
 
         JCDIService jcdiService = habitat.getByContract(JCDIService.class);
 
@@ -428,7 +420,7 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostStartup, 
         return createManagedBean(managedBeanDesc, managedBeanClass);
     }
 
-    public Object createManagedBean(Class managedBeanClass, boolean invokePostConstruct) throws Exception {
+    public <T> T createManagedBean(Class<T> managedBeanClass, boolean invokePostConstruct) throws Exception {
 
         JCDIService jcdiService = habitat.getByContract(JCDIService.class);
 
@@ -452,7 +444,7 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostStartup, 
      * @return
      * @throws Exception
      */
-    public Object createManagedBean(ManagedBeanDescriptor desc, Class managedBeanClass) throws Exception {
+    public <T> T createManagedBean(ManagedBeanDescriptor desc, Class<T> managedBeanClass) throws Exception {
 
         JCDIService jcdiService = habitat.getByContract(JCDIService.class);
 
@@ -469,7 +461,7 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostStartup, 
                 ("Class " + managedBeanClass + " is not a valid EE ManagedBean class");
         }
 
-        Object callerObject = null;
+        T callerObject = null;
         
         if( (jcdiService != null) && jcdiService.isJCDIEnabled(bundleDescriptor)) {
 
@@ -477,7 +469,7 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostStartup, 
 
             JCDIService.JCDIInjectionContext jcdiContext =
                 jcdiService.createManagedObject(managedBeanClass, bundleDescriptor);
-            callerObject = jcdiContext.getInstance();
+            callerObject = (T) jcdiContext.getInstance();
 
             // Need to keep track of context in order to destroy properly
             Map<Object, JCDIService.JCDIInjectionContext> bundleNonManagedObjs =
@@ -497,7 +489,7 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostStartup, 
                     interceptorBuilder.createInvoker(managedBean);
 
             // This is the object passed back to the caller.
-            callerObject = interceptorInvoker.getProxy();
+            callerObject = (T) interceptorInvoker.getProxy();
 
             Object[] interceptorInstances = interceptorInvoker.getInterceptorInstances();
 
@@ -526,7 +518,7 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostStartup, 
      * @return
      * @throws Exception
      */
-    public Object createManagedBean(ManagedBeanDescriptor desc, Class managedBeanClass,
+    public <T> T createManagedBean(ManagedBeanDescriptor desc, Class<T> managedBeanClass,
         boolean invokePostConstruct) throws Exception {
 
         JCDIService jcdiService = habitat.getByContract(JCDIService.class);
@@ -544,7 +536,7 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostStartup, 
                 ("Class " + managedBeanClass + " is not a valid EE ManagedBean class");
         }
 
-        Object callerObject = null;
+        T callerObject = null;
 
         if( (jcdiService != null) && jcdiService.isJCDIEnabled(bundleDescriptor)) {
 
@@ -552,7 +544,7 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostStartup, 
 
             JCDIService.JCDIInjectionContext jcdiContext =
                 jcdiService.createManagedObject(managedBeanClass, bundleDescriptor, invokePostConstruct);
-            callerObject = jcdiContext.getInstance();
+            callerObject = (T) jcdiContext.getInstance();
             // Need to keep track of context in order to destroy properly
             Map<Object, JCDIService.JCDIInjectionContext> bundleNonManagedObjs =
                 jcdiManagedBeanInstanceMap.get(bundleDescriptor);
@@ -565,13 +557,13 @@ public class ManagedBeanManagerImpl implements ManagedBeanManager, PostStartup, 
                 desc.getInterceptorBuilder();
 
             // This is the managed bean class instance
-            Object managedBean = managedBeanClass.newInstance();
+            T managedBean = managedBeanClass.newInstance();
 
             InterceptorInvoker interceptorInvoker =
                     interceptorBuilder.createInvoker(managedBean);
 
             // This is the object passed back to the caller.
-            callerObject = interceptorInvoker.getProxy();
+            callerObject = (T) interceptorInvoker.getProxy();
 
             Object[] interceptorInstances = interceptorInvoker.getInterceptorInstances();
 

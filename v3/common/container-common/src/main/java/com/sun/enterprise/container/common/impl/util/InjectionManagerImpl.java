@@ -272,14 +272,14 @@ public class InjectionManagerImpl implements InjectionManager, PostConstruct {
      * @return managed object
      * @throws InjectionException
      */
-    public Object createManagedObject(Class clazz)
+    public <T> T createManagedObject(Class<T> clazz)
         throws InjectionException {
 
-        Object managedObject = null;
+        T managedObject = null;
 
         try {
 
-            ManagedBean managedBeanAnn = (ManagedBean) clazz.getAnnotation(ManagedBean.class);
+            ManagedBean managedBeanAnn = clazz.getAnnotation(ManagedBean.class);
 
             ManagedBeanManager managedBeanMgr = habitat.getByContract(ManagedBeanManager.class);
 
@@ -303,7 +303,7 @@ public class InjectionManagerImpl implements InjectionManager, PostConstruct {
 
                     // Not in a 299-enabled module and not annoated with @ManagedBean, so
                     // just instantiate using new and perform injection
-                    Constructor noArgCtor = clazz.getConstructor();
+                    Constructor<T> noArgCtor = clazz.getConstructor();
 
                     managedObject = noArgCtor.newInstance();
 
@@ -338,14 +338,14 @@ public class InjectionManagerImpl implements InjectionManager, PostConstruct {
      * @return managed object
      * @throws InjectionException
      */
-    public Object createManagedObject(Class clazz, boolean invokePostConstruct)
+    public <T> T createManagedObject(Class<T> clazz, boolean invokePostConstruct)
         throws InjectionException {
 
-        Object managedObject = null;
+        T managedObject = null;
 
         try {
 
-            ManagedBean managedBeanAnn = (ManagedBean) clazz.getAnnotation(ManagedBean.class);
+            ManagedBean managedBeanAnn = clazz.getAnnotation(ManagedBean.class);
 
             ManagedBeanManager managedBeanMgr = habitat.getByContract(ManagedBeanManager.class);
 
@@ -368,7 +368,7 @@ public class InjectionManagerImpl implements InjectionManager, PostConstruct {
                 } else {
                     // Not in a 299-enabled module and not annoated with @ManagedBean, so
                     // just instantiate using new and perform injection
-                    Constructor noArgCtor = clazz.getConstructor();
+                    Constructor<T> noArgCtor = clazz.getConstructor();
 
                     managedObject = noArgCtor.newInstance();
 
