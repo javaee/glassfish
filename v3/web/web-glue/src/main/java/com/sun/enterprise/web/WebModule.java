@@ -2237,11 +2237,12 @@ public class WebModule extends PwcWebModule implements Context {
         if (pipeline != null) {
             GlassFishValve basic = pipeline.getBasic();
             if ((basic != null) && (basic instanceof Authenticator)) {
-                GlassFishValve valves[] = pipeline.getValves();
-                for (int i = 0; i < valves.length; i++) {
-                    if (valves[i] instanceof Authenticator) {
-                        removeValve(valves[i]);
-                    }
+                removeValve(basic);
+            }
+            GlassFishValve valves[] = pipeline.getValves();
+            for (int i = 0; i < valves.length; i++) {
+                if (valves[i] instanceof Authenticator) {
+                    removeValve(valves[i]);
                 }
             }
         }
