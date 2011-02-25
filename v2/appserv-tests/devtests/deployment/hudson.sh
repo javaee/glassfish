@@ -46,6 +46,11 @@ if [ -z "$DEPL_TARGET" ]
 then
     $S1AS_HOME/bin/asadmin stop-domain
 fi
+#
+# Get rid of any previously-running GlassFish instance
+#
+for pid in `jps -l | grep "com.sun.enterprise.glassfish.bootstrap.ASMain" | cut -d " "  -f 1 ` ; do echo "PID is $pid"; done
+#
 echo DEPL_TARGET is $DEPL_TARGET
 if [ $antStatus -ne 0 ]
 then
