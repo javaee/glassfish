@@ -46,7 +46,7 @@
     <parent>
         <groupId>org.glassfish.packager</groupId>
         <artifactId>packages</artifactId>
-        <version>3.1-SNAPSHOT</version>
+        <version>3.1-dochez-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>glassfish-javahelp</artifactId>

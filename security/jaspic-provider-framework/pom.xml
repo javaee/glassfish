@@ -46,7 +46,7 @@
      <parent>
         <artifactId>securitymodule</artifactId>
         <groupId>org.glassfish.security</groupId>
-        <version>3.1-SNAPSHOT</version>
+        <version>3.1-dochez-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <groupId>org.glassfish.security</groupId>

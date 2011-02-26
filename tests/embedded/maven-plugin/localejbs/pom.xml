@@ -48,7 +48,7 @@
     <groupId>org.glassfish.tests.embedded.maven-plugin</groupId>
     <artifactId>localejbs</artifactId>
     <packaging>war</packaging>
-    <version>3.1-SNAPSHOT</version>
+    <version>3.1-dochez-SNAPSHOT</version>
 
     <build>
         <defaultGoal>install</defaultGoal>

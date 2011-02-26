@@ -154,9 +154,13 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
         }
 
         if (targetMethod.getParameterTypes().length==0) {
-            // return type matters.
-            targetType = Types.erasure(Types.getTypeArgument(
+            if (targetMethod.getGenericReturnType() instanceof ParameterizedType) {
+                targetType = Types.erasure(Types.getTypeArgument(
                             targetMethod.getGenericReturnType(),0));
+            } else {
+                targetType =(Class<ConfigBeanProxy>) targetMethod.getReturnType();
+            }
+
         } else {
             targetType = (Class<ConfigBeanProxy>) targetMethod.getParameterTypes()[0];
         }
