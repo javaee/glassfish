@@ -235,6 +235,7 @@ public class FileArchiveTest {
         }
     }
 
+    @Ignore
     @Test
     public void testInaccessibleDirectoryInFileArchive() throws Exception {
         final String EXPECTED_LOG_KEY = "enterprise.deployment.nullFileList";
