@@ -56,6 +56,7 @@ fi
 echo DEPL_TARGET is $DEPL_TARGET
 if [ $antStatus -ne 0 ]
 then
+    ps -ef 
     exit $antStatus
 fi
 egrep '\[FAILED|UNKNOWN\]' client.log >> /dev/null
