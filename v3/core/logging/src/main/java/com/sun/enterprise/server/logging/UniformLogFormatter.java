@@ -127,8 +127,7 @@ public class UniformLogFormatter extends Formatter {
     private String recordDateFormat;
 
     private static final String RECORD_BEGIN_MARKER = "[#|";
-    private static final String RECORD_END_MARKER = "|#]" + LINE_SEPARATOR +
-            LINE_SEPARATOR;
+    private static final String RECORD_END_MARKER = "|#]" + LINE_SEPARATOR;
     private static final char FIELD_SEPARATOR = '|';
     public static final char NVPAIR_SEPARATOR = ';';
     public static final char NV_SEPARATOR = '=';
