@@ -49,6 +49,9 @@ public class LoggingCommandTest extends AdminBaseDevTest {
 
     private static final String SET_LOG_LEVEL = "set-log-levels";
     private static final String SET_LOG_ATTRIBUTE = "set-log-attributes";
+	private static final String LIST_LOG_ATTRIBUTE = "list-log-attributes";
+	private static final String LIST_LOG_LEVEL = "list-log-levels";
+	private static final String COLLECT_LOG_FILES = "collect-log-files";
     
 	private static final String TARGET_OPTION = "--target";
 	private static final String PACKAGE_NAME ="logging.command.test=INFO";
@@ -93,7 +96,8 @@ public class LoggingCommandTest extends AdminBaseDevTest {
 
     public void runTests() {
         startDomain();
-        asadmin("create-cluster", CLUSTER_NAME);
+        
+		asadmin("create-cluster", CLUSTER_NAME);
 
         asadmin("create-local-instance", "--cluster", CLUSTER_NAME,
                 /*"--node", "localhost",*/ "--systemproperties",
@@ -127,6 +131,26 @@ public class LoggingCommandTest extends AdminBaseDevTest {
         testSetLogAttributeInClusterConfig();
         testSetLogAttributeInStandaloneInstanceConfig();
 
+		testListLogAttributeInServer();
+		testListLogAttributeInServer();
+        testListLogAttributeInCluster();
+        testListLogAttributeInStandaloneInstance();
+        testListLogAttributeInServerConfig();
+        testListLogAttributeInClusterConfig();
+        testListLogAttributeInStandaloneInstanceConfig();
+
+		testListLogLevleInServer();
+		testListLogLevleInServer();
+        testListLogLevleInCluster();
+        testListLogLevleInStandaloneInstance();
+        testListLogLevleInServerConfig();
+        testListLogLevleInClusterConfig();
+        testListLogLevleInStandaloneInstanceConfig();
+
+		testCollectLogFilesInServer();
+		testCollectLogFilesInCluster();	
+		testCollectLogFilesStandaloneInstance();
+
         cleanup();
         stopDomain();
         stat.printSummary();
@@ -136,54 +160,42 @@ public class LoggingCommandTest extends AdminBaseDevTest {
         String testName = "testSetLogLevelInCluster";
         AsadminReturn result = asadminWithOutput(SET_LOG_LEVEL,TARGET_OPTION, CLUSTER_NAME, PACKAGE_NAME);
         reportResultStatus(testName, result);
-        //reportExpectedResult(testName, result, "Command create-resource-ref executed successfully.");
         reportExpectedResult(testName, result, INSTANCE2_NAME, INSTANCE1_NAME);
-        reportUnexpectedResult(testName, result, STANDALONE_INSTANCE_NAME);
     }
 
     private void testSetLogLevelInStandaloneInstance(){
         String testName = "testSetLogLevelInStandaloneInstance";
         AsadminReturn result = asadminWithOutput(SET_LOG_LEVEL,TARGET_OPTION, STANDALONE_INSTANCE_NAME, PACKAGE_NAME);
         reportResultStatus(testName, result);
-        //reportExpectedResult(testName, result, "Command create-resource-ref executed successfully.");
         reportExpectedResult(testName, result, STANDALONE_INSTANCE_NAME );
-        reportUnexpectedResult(testName, result, INSTANCE2_NAME, INSTANCE1_NAME,CLUSTER_NAME);
     }
 
     private void testSetLogLevelInServer(){
         String testName = "testSetLogLevelInServer";
         AsadminReturn result = asadminWithOutput(SET_LOG_LEVEL,TARGET_OPTION, SERVER, PACKAGE_NAME);
         reportResultStatus(testName, result);
-        //reportExpectedResult(testName, result, "Command create-resource-ref executed successfully.");
         reportExpectedResult(testName, result, SERVER );
-        reportUnexpectedResult(testName, result, STANDALONE_INSTANCE_NAME, INSTANCE2_NAME, INSTANCE1_NAME,CLUSTER_NAME);
     }
 
 	 private void testSetLogLevelInClusterConfig() {
         String testName = "testSetLogLevelInClusterConfig";
         AsadminReturn result = asadminWithOutput(SET_LOG_LEVEL,TARGET_OPTION, CLUSTER_NAME+"-config", PACKAGE_NAME);
         reportResultStatus(testName, result);
-        //reportExpectedResult(testName, result, "Command create-resource-ref executed successfully.");
         reportExpectedResult(testName, result, INSTANCE2_NAME, INSTANCE1_NAME);
-        reportUnexpectedResult(testName, result, STANDALONE_INSTANCE_NAME);
     }
 
     private void testSetLogLevelInStandaloneInstanceConfig(){
         String testName = "testSetLogLevelInStandaloneInstanceConfig";
         AsadminReturn result = asadminWithOutput(SET_LOG_LEVEL,TARGET_OPTION, STANDALONE_INSTANCE_NAME+"-config", PACKAGE_NAME);
         reportResultStatus(testName, result);
-        //reportExpectedResult(testName, result, "Command create-resource-ref executed successfully.");
         reportExpectedResult(testName, result, STANDALONE_INSTANCE_NAME );
-        reportUnexpectedResult(testName, result, INSTANCE2_NAME, INSTANCE1_NAME,CLUSTER_NAME);
     }
 
     private void testSetLogLevelInServerConfig(){
         String testName = "testSetLogLevelInServerConfig";
         AsadminReturn result = asadminWithOutput(SET_LOG_LEVEL,TARGET_OPTION, SERVER+"-config", PACKAGE_NAME);
         reportResultStatus(testName, result);
-        //reportExpectedResult(testName, result, "Command create-resource-ref executed successfully.");
         reportExpectedResult(testName, result, SERVER );
-        reportUnexpectedResult(testName, result, STANDALONE_INSTANCE_NAME, INSTANCE2_NAME, INSTANCE1_NAME,CLUSTER_NAME);
     }
 
 
@@ -191,74 +203,138 @@ public class LoggingCommandTest extends AdminBaseDevTest {
         String testName = "testSetLogAttributeInCluster";
         AsadminReturn result = asadminWithOutput(SET_LOG_ATTRIBUTE,TARGET_OPTION, CLUSTER_NAME, ATTRIBUTE_NAME);
         reportResultStatus(testName, result);
-        //reportExpectedResult(testName, result, "Command create-resource-ref executed successfully.");
-        reportExpectedResult1(testName, result, INSTANCE2_NAME, INSTANCE1_NAME);
-        reportUnexpectedResult(testName, result, STANDALONE_INSTANCE_NAME);
+        reportExpectedResult(testName, result, INSTANCE2_NAME, INSTANCE1_NAME);
     }
 
     private void testSetLogAttributeInStandaloneInstance(){
         String testName = "testSetLogAttributeInStandaloneInstance";
         AsadminReturn result = asadminWithOutput(SET_LOG_ATTRIBUTE,TARGET_OPTION, STANDALONE_INSTANCE_NAME, ATTRIBUTE_NAME);
         reportResultStatus(testName, result);
-        //reportExpectedResult(testName, result, "Command create-resource-ref executed successfully.");
-        reportExpectedResult1(testName, result, STANDALONE_INSTANCE_NAME );
-        reportUnexpectedResult(testName, result, INSTANCE2_NAME, INSTANCE1_NAME,CLUSTER_NAME);
+        reportExpectedResult(testName, result, STANDALONE_INSTANCE_NAME );
     }
 
     private void testSetLogAttributeInServer(){
         String testName = "testSetLogAttributeInServer";
         AsadminReturn result = asadminWithOutput(SET_LOG_ATTRIBUTE,TARGET_OPTION, SERVER, ATTRIBUTE_NAME);
         reportResultStatus(testName, result);
-        //reportExpectedResult(testName, result, "Command create-resource-ref executed successfully.");
-        reportExpectedResult1(testName, result, SERVER );
-        reportUnexpectedResult(testName, result, STANDALONE_INSTANCE_NAME, INSTANCE2_NAME, INSTANCE1_NAME,CLUSTER_NAME);
+        reportExpectedResult(testName, result, SERVER );
     }
 
 	 private void testSetLogAttributeInClusterConfig() {
         String testName = "testSetLogAttributeInClusterConfig";
         AsadminReturn result = asadminWithOutput(SET_LOG_ATTRIBUTE,TARGET_OPTION, CLUSTER_NAME+"-config", ATTRIBUTE_NAME);
         reportResultStatus(testName, result);
-        //reportExpectedResult(testName, result, "Command create-resource-ref executed successfully.");
-        reportExpectedResult1(testName, result, INSTANCE2_NAME, INSTANCE1_NAME);
-        reportUnexpectedResult(testName, result, STANDALONE_INSTANCE_NAME);
+        reportExpectedResult(testName, result, INSTANCE2_NAME, INSTANCE1_NAME);
     }
 
     private void testSetLogAttributeInStandaloneInstanceConfig(){
         String testName = "testSetLogAttributeInStandaloneInstanceConfig";
         AsadminReturn result = asadminWithOutput(SET_LOG_ATTRIBUTE,TARGET_OPTION, STANDALONE_INSTANCE_NAME+"-config", ATTRIBUTE_NAME);
         reportResultStatus(testName, result);
-        //reportExpectedResult(testName, result, "Command create-resource-ref executed successfully.");
-        reportExpectedResult1(testName, result, STANDALONE_INSTANCE_NAME );
-        reportUnexpectedResult(testName, result, INSTANCE2_NAME, INSTANCE1_NAME,CLUSTER_NAME);
+        reportExpectedResult(testName, result, STANDALONE_INSTANCE_NAME );
     }
 
     private void testSetLogAttributeInServerConfig(){
         String testName = "testSetLogAttributeInServerConfig";
         AsadminReturn result = asadminWithOutput(SET_LOG_ATTRIBUTE,TARGET_OPTION, SERVER+"-config", ATTRIBUTE_NAME);
         reportResultStatus(testName, result);
-        //reportExpectedResult(testName, result, "Command create-resource-ref executed successfully.");
-        reportExpectedResult1(testName, result, SERVER );
-        reportUnexpectedResult(testName, result, STANDALONE_INSTANCE_NAME, INSTANCE2_NAME, INSTANCE1_NAME,CLUSTER_NAME);
+        reportExpectedResult(testName, result, SERVER );
     }
 
+	private void testListLogAttributeInServer(){
+        String testName = "testListLogAttributeInServer";
+        AsadminReturn result = asadminWithOutput(LIST_LOG_ATTRIBUTE, SERVER);
+		reportExpectedResult(testName, result, "log4j.logger.org.hibernate.validator.util.Version");        
+    }
 
-    
+	private void testListLogAttributeInCluster(){
+        String testName = "testListLogAttributeInCluster";
+        AsadminReturn result = asadminWithOutput(LIST_LOG_ATTRIBUTE, CLUSTER_NAME);
+		reportExpectedResult(testName, result, "log4j.logger.org.hibernate.validator.util.Version");        
+    }
 
-    private void reportFailureResultStatus(String testName, AsadminReturn result) {
-        report(testName, !result.returnValue);
-        report(testName, !result.err.isEmpty());
+	private void testListLogAttributeInStandaloneInstance(){
+        String testName = "testListLogAttributeInStandaloneInstance";
+        AsadminReturn result = asadminWithOutput(LIST_LOG_ATTRIBUTE, STANDALONE_INSTANCE_NAME);
+		reportExpectedResult(testName, result, "log4j.logger.org.hibernate.validator.util.Version");        
+    }
+
+	private void testListLogAttributeInServerConfig(){
+        String testName = "testListLogAttributeInServerConfig";
+        AsadminReturn result = asadminWithOutput(LIST_LOG_ATTRIBUTE, SERVER+"-config");
+		reportExpectedResult(testName, result, "log4j.logger.org.hibernate.validator.util.Version");        
+    }
+
+	private void testListLogAttributeInClusterConfig(){
+        String testName = "testListLogAttributeInClusterConfig";
+        AsadminReturn result = asadminWithOutput(LIST_LOG_ATTRIBUTE, CLUSTER_NAME+"-config");
+		reportExpectedResult(testName, result, "log4j.logger.org.hibernate.validator.util.Version");        
+    }
+
+	private void testListLogAttributeInStandaloneInstanceConfig(){
+        String testName = "testListLogAttributeInStandaloneInstanceConfig";
+        AsadminReturn result = asadminWithOutput(LIST_LOG_ATTRIBUTE, STANDALONE_INSTANCE_NAME+"-config");
+		reportExpectedResult(testName, result, "log4j.logger.org.hibernate.validator.util.Version");        
+    }
+
+	private void testListLogLevleInServer(){
+        String testName = "testListLogLevleInServer";
+        AsadminReturn result = asadminWithOutput(LIST_LOG_LEVEL, SERVER);
+		reportExpectedResult(testName, result, "javax.enterprise.system.ssl.security");        
+    }
+
+	private void testListLogLevleInCluster(){
+        String testName = "testListLogLevleInCluster";
+        AsadminReturn result = asadminWithOutput(LIST_LOG_LEVEL, CLUSTER_NAME);
+		reportExpectedResult(testName, result, "javax.enterprise.system.ssl.security");        
+    }
+
+	private void testListLogLevleInStandaloneInstance(){
+        String testName = "testListLogLevleInStandaloneInstance";
+        AsadminReturn result = asadminWithOutput(LIST_LOG_LEVEL, STANDALONE_INSTANCE_NAME);
+		reportExpectedResult(testName, result, "javax.enterprise.system.ssl.security");        
+    }
+
+	private void testListLogLevleInServerConfig(){
+        String testName = "testListLogLevleInServerConfig";
+        AsadminReturn result = asadminWithOutput(LIST_LOG_LEVEL, SERVER+"-config");
+		reportExpectedResult(testName, result, "javax.enterprise.system.ssl.security");        
+    }
+
+	private void testListLogLevleInClusterConfig(){
+        String testName = "testListLogLevleInClusterConfig";
+        AsadminReturn result = asadminWithOutput(LIST_LOG_LEVEL, CLUSTER_NAME+"-config");
+		reportExpectedResult(testName, result, "javax.enterprise.system.ssl.security");        
+    }
+
+	private void testListLogLevleInStandaloneInstanceConfig(){
+        String testName = "testListLogLevleInStandaloneInstanceConfig";
+        AsadminReturn result = asadminWithOutput(LIST_LOG_LEVEL, STANDALONE_INSTANCE_NAME+"-config");
+		reportExpectedResult(testName, result, "javax.enterprise.system.ssl.security");        
+    }
+
+	private void testCollectLogFilesInServer(){
+        String testName = "testCollectLogFilesInServer";
+        AsadminReturn result = asadminWithOutput(COLLECT_LOG_FILES,TARGET_OPTION, SERVER);
+		reportExpectedResult(testName, result, "Created Zip file under");        
+    }
+
+	private void testCollectLogFilesInCluster(){
+        String testName = "testCollectLogFilesInCluster";
+        AsadminReturn result = asadminWithOutput(COLLECT_LOG_FILES,TARGET_OPTION, CLUSTER_NAME);
+		reportExpectedResult(testName, result, "Created Zip file under");        
+    }
+
+	private void testCollectLogFilesStandaloneInstance(){
+        String testName = "testCollectLogFilesStandaloneInstance";
+        AsadminReturn result = asadminWithOutput(COLLECT_LOG_FILES,TARGET_OPTION, STANDALONE_INSTANCE_NAME);
+		reportExpectedResult(testName, result, "Created Zip file under");        
     }
 
 
     private void reportResultStatus(String testName, AsadminReturn result) {
         report(testName, result.returnValue);
         report(testName, result.err.isEmpty());
-    }
-
-    private void reportExpectedFailureResult(String testName, AsadminReturn result, String... expected) {
-        for (String token : expected) {
-            report(testName, result.err.contains(token));
-        }
     }
 
     private void reportExpectedResult(String testName, AsadminReturn result, String... expected) {
@@ -270,18 +346,5 @@ public class LoggingCommandTest extends AdminBaseDevTest {
         }
     }
 
-	private void reportExpectedResult1(String testName, AsadminReturn result, String... expected) {
-        if (expected.length == 0) {
-            expected = EXPECTED_TOKENS1;
-        }
-        for (String token : expected) {
-            report(testName, result.out.contains(token));
-        }
-    }
-
-    private void reportUnexpectedResult(String testName, AsadminReturn result, String... unexpected) {
-        for (String token : unexpected) {
-            report(testName, !result.out.contains(token));
-        }
-    }
+	
 }
