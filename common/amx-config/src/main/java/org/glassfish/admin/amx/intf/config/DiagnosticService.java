@@ -42,6 +42,7 @@ package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.base.Singleton;
 
+@Deprecated
 public interface DiagnosticService
         extends Singleton, ConfigElement, PropertiesAccess {
 

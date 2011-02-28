@@ -40,47 +40,30 @@
 
 package org.glassfish.admin.amx.core.proxy;
 
+import org.glassfish.admin.amx.annotation.ChildGetter;
 import org.glassfish.admin.amx.base.DomainRoot;
-
+import org.glassfish.admin.amx.base.Tools;
 import org.glassfish.admin.amx.core.AMXProxy;
 import org.glassfish.admin.amx.core.Extra;
+import org.glassfish.admin.amx.core.PathnameParser;
 import org.glassfish.admin.amx.core.Util;
-import static org.glassfish.external.amx.AMX.*;
-
-import org.glassfish.admin.amx.core.proxy.ProxyFactory;
-
+import org.glassfish.admin.amx.util.*;
 import org.glassfish.admin.amx.util.jmx.JMXUtil;
 import org.glassfish.admin.amx.util.jmx.MBeanProxyHandler;
-import org.glassfish.admin.amx.util.ClassUtil;
-import org.glassfish.admin.amx.util.SetUtil;
-import org.glassfish.admin.amx.util.ExceptionUtil;
-import org.glassfish.admin.amx.util.StringUtil;
+import org.glassfish.external.arc.Stability;
+import org.glassfish.external.arc.Taxonomy;
 
 import javax.management.*;
 import java.io.IOException;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Proxy;
-import java.lang.reflect.Type;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.List;
-import java.util.ArrayList;
-import java.lang.reflect.Array;
-import org.glassfish.external.arc.Stability;
-import org.glassfish.external.arc.Taxonomy;
-import org.glassfish.admin.amx.annotation.ChildGetter;
-import org.glassfish.admin.amx.base.Tools;
-import org.glassfish.admin.amx.core.PathnameParser;
-import org.glassfish.admin.amx.util.TypeCast;
+import java.lang.reflect.*;
+import java.util.*;
+
+import static org.glassfish.external.amx.AMX.*;
 
 /**
-Extends MBeanProxyHandler by also supporting the functionality required of an AMX.
+@deprecated Extends MBeanProxyHandler by also supporting the functionality required of an AMX.
  */
+@Deprecated
 @Taxonomy(stability = Stability.PRIVATE)
 public final class AMXProxyHandler extends MBeanProxyHandler
         implements AMXProxy, Extra

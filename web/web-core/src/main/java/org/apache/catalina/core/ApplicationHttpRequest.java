@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -103,7 +103,7 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
     /**
      * The set of attribute names that are special for request dispatchers
      */
-    private static final HashSet<String> specials = new HashSet(15);
+    private static final HashSet<String> specials = new HashSet<String>(15);
 
     static {
         specials.add(RequestDispatcher.INCLUDE_REQUEST_URI);
@@ -151,8 +151,7 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
                 context.getManager().isSessionVersioningSupported();
             if (isSessionVersioningSupported) {
                 HashMap<String, String> sessionVersions =
-                    (HashMap<String, String>) getAttribute(
-                        Globals.SESSION_VERSIONS_REQUEST_ATTRIBUTE);
+                    getSessionVersions();
                 if (sessionVersions != null) {
                     requestedSessionVersion = sessionVersions.get(
                         context.getPath());
@@ -234,7 +233,7 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
     /**
      * Special attributes.
      */
-    private HashMap specialAttributes = null;
+    private HashMap<String, Object> specialAttributes = null;
 
     private String requestedSessionVersion = null;
 
@@ -475,7 +474,7 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
         synchronized (parameters) {
             Object value = parameters.get(name);
             if (value == null)
-                return ((String[]) null);
+                return null;
             else if (value instanceof String[])
                 return ((String[]) value);
             else if (value instanceof String) {
@@ -870,7 +869,7 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
                                String servletPath,
                                String pathInfo,
                                String queryString) {
-        specialAttributes = new HashMap(5);
+        specialAttributes = new HashMap<String, Object>(5);
 
         switch (dispatcherType) {
         case INCLUDE:
@@ -921,12 +920,12 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
      */
     protected String[] mergeValues(Object values1, Object values2) {
 
-        ArrayList results = new ArrayList();
+        ArrayList<String> results = new ArrayList<String>();
 
         if (values1 == null)
             ;
         else if (values1 instanceof String)
-            results.add(values1);
+            results.add((String)values1);
         else if (values1 instanceof String[]) {
             String values[] = (String[]) values1;
             for (int i = 0; i < values.length; i++)
@@ -937,7 +936,7 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
         if (values2 == null)
             ;
         else if (values2 instanceof String)
-            results.add(values2);
+            results.add((String)values2);
         else if (values2 instanceof String[]) {
             String values[] = (String[]) values2;
             for (int i = 0; i < values.length; i++)
@@ -946,7 +945,7 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
             results.add(values2.toString());
 
         String values[] = new String[results.size()];
-        return ((String[]) results.toArray(values));
+        return results.toArray(values);
 
     }
 
@@ -973,7 +972,7 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
             RequestUtil.parseParameters
                 (queryParameters, queryParamString, encoding);
         } catch (Exception e) {
-            ;
+            // Ignore
         }
         synchronized (parameters) {
             // Merge any query parameters whose names are present in the
@@ -1000,13 +999,20 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
     }
 
 
+    @SuppressWarnings("unchecked")
+    private HashMap<String, String> getSessionVersions() {
+        return (HashMap<String, String>) getAttribute(
+                Globals.SESSION_VERSIONS_REQUEST_ATTRIBUTE);
+    }
+
+
     // ----------------------------------- AttributeNamesEnumerator Inner Class
 
     /**
      * Utility class used to expose the special attributes as being available
      * as request attributes.
      */
-    protected class AttributeNamesEnumerator implements Enumeration {
+    protected class AttributeNamesEnumerator implements Enumeration<String> {
 
         protected Enumeration<String> parentEnumeration = null;
         protected String next = null;
@@ -1025,7 +1031,7 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
                     || ((next = findNext()) != null);
         }
 
-        public Object nextElement() {
+        public String nextElement() {
 
             if (specialNames != null && specialNames.hasNext()) {
                 return specialNames.next();
@@ -1066,8 +1072,7 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
         }
 
         String versionString = Long.toString(ss.incrementVersion());
-        HashMap<String, String> sessionVersions = (HashMap<String, String>)
-            getAttribute(Globals.SESSION_VERSIONS_REQUEST_ATTRIBUTE);
+        HashMap<String, String> sessionVersions = getSessionVersions();
         if (sessionVersions == null) {
             sessionVersions = new HashMap<String, String>();
             setAttribute(Globals.SESSION_VERSIONS_REQUEST_ATTRIBUTE,

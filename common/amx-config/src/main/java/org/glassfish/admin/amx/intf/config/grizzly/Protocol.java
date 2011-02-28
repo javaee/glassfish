@@ -48,6 +48,7 @@ import java.util.List;
 /**
  * Note: attribute getters/setters are not included in this interface; use generic approach.
  */
+@Deprecated
 public interface Protocol extends NamedConfigElement, PropertiesAccess {
     public Http getHttp();
 

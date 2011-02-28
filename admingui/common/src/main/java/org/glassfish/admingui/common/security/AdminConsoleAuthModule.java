@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.admingui.common.security;
 
 import com.sun.jersey.api.client.Client;
@@ -69,6 +68,7 @@ import org.jvnet.hk2.component.Habitat;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.SecureAdmin;
 import com.sun.enterprise.security.SecurityServicesUtil;
+import org.glassfish.grizzly.config.dom.NetworkListener;
 import org.glassfish.admingui.common.util.RestUtil;
 
 /**
@@ -78,13 +78,21 @@ import org.glassfish.admingui.common.util.RestUtil;
  */
 public class AdminConsoleAuthModule implements ServerAuthModule {
     public static final String TOKEN_ADMIN_LISTENER_PORT = "${ADMIN_LISTENER_PORT}";
+
     private CallbackHandler handler = null;
+
     private String restURL = null;
+
     private String loginPage = null;
+
     private String loginErrorPage = null;
-    private static final Class [] SUPPORTED_MESSAGE_TYPES = new Class[] { HttpServletRequest.class, HttpServletResponse.class };
+
+    private static final Class[] SUPPORTED_MESSAGE_TYPES = new Class[]{HttpServletRequest.class, HttpServletResponse.class};
+
     private static final String SAVED_SUBJECT = "Saved_Subject";
+
     private static final String USER_NAME = "userName";
+
     private static final String RESPONSE_TYPE = "application/json";
 
     /**
@@ -101,45 +109,50 @@ public class AdminConsoleAuthModule implements ServerAuthModule {
      *	The Session key for the REST authentication token.
      */
     public static final String REST_TOKEN = "__rTkn__";
-    
 
     /**
      *	<p> This method configures this AuthModule and makes sure all the
      *	    information needed to continue is present.</p>
      */
+    @Override
     public void initialize(MessagePolicy requestPolicy, MessagePolicy responsePolicy, CallbackHandler handler, Map options) throws AuthException {
         this.handler = handler;
-	if (options != null) {
-	    // Save the REST URL we need to authenticate the user.
-	    this.restURL = (String) options.get("restAuthURL");
-	    if (restURL == null) {
-		throw new AuthException("'restAuthURL' "
-		    + "must be supplied as a property in the provider-config "
-		    + "in the domain.xml file!");
-	    }
-	    this.loginPage = (String) options.get("loginPage"); 
-	    if (loginPage == null) {
-		throw new AuthException("'loginPage' "
-		    + "must be supplied as a property in the provider-config "
-		    + "in the domain.xml file!");
-	    }
-	    this.loginErrorPage = (String) options.get("loginErrorPage"); 
-	    if (loginErrorPage == null) {
-		throw new AuthException("'loginErrorPage' "
-		    + "must be supplied as a property in the provider-config "
-		    + "in the domain.xml file!");
-	    }
+        if (options != null) {
+            // Save the REST URL we need to authenticate the user.
+            this.restURL = (String) options.get("restAuthURL");
+            if (restURL == null) {
+                throw new AuthException("'restAuthURL' "
+                        + "must be supplied as a property in the provider-config "
+                        + "in the domain.xml file!");
+            }
+            this.loginPage = (String) options.get("loginPage");
+            if (loginPage == null) {
+                throw new AuthException("'loginPage' "
+                        + "must be supplied as a property in the provider-config "
+                        + "in the domain.xml file!");
+            }
+            this.loginErrorPage = (String) options.get("loginErrorPage");
+            if (loginErrorPage == null) {
+                throw new AuthException("'loginErrorPage' "
+                        + "must be supplied as a property in the provider-config "
+                        + "in the domain.xml file!");
+            }
             Habitat habitat = SecurityServicesUtil.getInstance().getHabitat();
+            Domain domain = habitat.getByType(Domain.class);
+            NetworkListener adminListener = domain.getServerNamed("server").getConfig().getNetworkConfig().getNetworkListener("admin-listener");
+
             if (restURL.contains(TOKEN_ADMIN_LISTENER_PORT)) {
-                Domain domain = habitat.getComponent(Domain.class);
-                String port = domain.getServerNamed("server").getConfig().getNetworkConfig().getNetworkListener("admin-listener").getPort();
-                restURL = restURL.replace(TOKEN_ADMIN_LISTENER_PORT, port);
+                restURL = restURL.replace(TOKEN_ADMIN_LISTENER_PORT, adminListener.getPort());
+            }
+            
+            if (!"localhost".equals(adminListener.getAddress())) {
+                restURL = restURL.replace("localhost", adminListener.getAddress());
             }
 
             //If secure admin is enabled, we need to ensure using https
             SecureAdmin secureAdmin = habitat.getComponent(SecureAdmin.class);
             if (restURL.startsWith("http:") && (SecureAdmin.Util.isEnabled(secureAdmin))) {
-                    restURL = restURL.replace("http:", "https:");
+                restURL = restURL.replace("http:", "https:");
             }
         }
     }
@@ -148,67 +161,67 @@ public class AdminConsoleAuthModule implements ServerAuthModule {
      *
      */
     public Class[] getSupportedMessageTypes() {
-	return SUPPORTED_MESSAGE_TYPES;
+        return SUPPORTED_MESSAGE_TYPES;
     }
 
     /**
      *	<p> This is where the validation happens...</p>
      */
     public AuthStatus validateRequest(MessageInfo messageInfo, Subject clientSubject, Subject serviceSubject) throws AuthException {
-	// Make sure we need to check...
-	HttpServletRequest request =
-	    (HttpServletRequest) messageInfo.getRequestMessage();
-	HttpServletResponse response =
-	    (HttpServletResponse) messageInfo.getResponseMessage();
-	if (!isMandatory(messageInfo) &&
-		!request.getRequestURI().endsWith("/j_security_check")) {
-	    return AuthStatus.SUCCESS;
-	}
+        // Make sure we need to check...
+        HttpServletRequest request =
+                (HttpServletRequest) messageInfo.getRequestMessage();
+        HttpServletResponse response =
+                (HttpServletResponse) messageInfo.getResponseMessage();
+        if (!isMandatory(messageInfo)
+                && !request.getRequestURI().endsWith("/j_security_check")) {
+            return AuthStatus.SUCCESS;
+        }
 
-	// See if we've already checked...
-	HttpSession session = request.getSession(true);
-	if (session != null) {
-	    Subject savedClientSubject = (Subject) session.getValue(SAVED_SUBJECT);
-	    if (savedClientSubject != null) {
-		// Copy all principals...
-		clientSubject.getPrincipals().addAll(
-			savedClientSubject.getPrincipals());
-		clientSubject.getPublicCredentials().addAll(savedClientSubject.getPublicCredentials());
-		clientSubject.getPrivateCredentials().addAll(savedClientSubject.getPrivateCredentials());
-		return AuthStatus.SUCCESS;
-	    }
-	}
+        // See if we've already checked...
+        HttpSession session = request.getSession(true);
+        if (session != null) {
+            Subject savedClientSubject = (Subject) session.getValue(SAVED_SUBJECT);
+            if (savedClientSubject != null) {
+                // Copy all principals...
+                clientSubject.getPrincipals().addAll(
+                        savedClientSubject.getPrincipals());
+                clientSubject.getPublicCredentials().addAll(savedClientSubject.getPublicCredentials());
+                clientSubject.getPrivateCredentials().addAll(savedClientSubject.getPrivateCredentials());
+                return AuthStatus.SUCCESS;
+            }
+        }
 
-	// See if we've already calculated the serverName / serverPort
-	if (session.getValue(REST_SERVER_NAME) == null) {
-	    // Save this for use later...
-	    URL url = null;
-	    try {
-		url = new URL(restURL);
-	    } catch (MalformedURLException ex) {
-		throw new IllegalArgumentException(
-			"Unable to parse REST URL: (" + restURL + ")", ex);
-	    }
-	    session.putValue(REST_SERVER_NAME, url.getHost());
-	    session.putValue(REST_SERVER_PORT, url.getPort());
-	}
+        // See if we've already calculated the serverName / serverPort
+        if (session.getValue(REST_SERVER_NAME) == null) {
+            // Save this for use later...
+            URL url = null;
+            try {
+                url = new URL(restURL);
+            } catch (MalformedURLException ex) {
+                throw new IllegalArgumentException(
+                        "Unable to parse REST URL: (" + restURL + ")", ex);
+            }
+            session.putValue(REST_SERVER_NAME, url.getHost());
+            session.putValue(REST_SERVER_PORT, url.getPort());
+        }
 
-	// See if the username / password has been passed in...
-	String username = request.getParameter("j_username");
-	String password = request.getParameter("j_password");
-	if ((username == null) || (password == null) || !request.getMethod().equalsIgnoreCase("post")) {
-	    // Not passed in, show the login page...
-	    RequestDispatcher rd = request.getRequestDispatcher(loginPage);
-	    try {
-                 RestUtil.initialize(null);
-		 rd.forward(request, response);
-	    } catch (Exception ex) {
-		AuthException ae = new AuthException();
-		ae.initCause(ex);
-		throw ae;
-	    }
-	    return AuthStatus.SEND_CONTINUE;
-	}
+        // See if the username / password has been passed in...
+        String username = request.getParameter("j_username");
+        String password = request.getParameter("j_password");
+        if ((username == null) || (password == null) || !request.getMethod().equalsIgnoreCase("post")) {
+            // Not passed in, show the login page...
+            RequestDispatcher rd = request.getRequestDispatcher(loginPage);
+            try {
+                RestUtil.initialize(null);
+                rd.forward(request, response);
+            } catch (Exception ex) {
+                AuthException ae = new AuthException();
+                ae.initCause(ex);
+                throw ae;
+            }
+            return AuthStatus.SEND_CONTINUE;
+        }
 
 // Don't use the PasswordValidationCallback... use REST authorization instead.
 //	char[] pwd = new char[password.length()];
@@ -216,27 +229,27 @@ public class AdminConsoleAuthModule implements ServerAuthModule {
 //	PasswordValidationCallback pwdCallback =
 //	    new PasswordValidationCallback(clientSubject, username, pwd);
 
-	// Make REST Request
+        // Make REST Request
 
         Client client2 = Client.create();
         RestUtil.initialize(client2);
-	WebResource webResource = client2.resource(restURL);
-	webResource.addFilter(new HTTPBasicAuthFilter(username, password));
-	ClientResponse resp = webResource.accept(RESPONSE_TYPE).post(ClientResponse.class);
-	RestResponse restResp = RestResponse.getRestResponse(resp);
+        WebResource webResource = client2.resource(restURL);
+        webResource.addFilter(new HTTPBasicAuthFilter(username, password));
+        ClientResponse resp = webResource.accept(RESPONSE_TYPE).post(ClientResponse.class);
+        RestResponse restResp = RestResponse.getRestResponse(resp);
 
-	// Check to see if successful..
-	if (restResp.isSuccess()) {
-	    // Username and Password sent in... validate them!
-	    CallerPrincipalCallback cpCallback =
-		new CallerPrincipalCallback(clientSubject, username);
-	    try {
-		handler.handle(new Callback[] { /*pwdCallback,*/ cpCallback });
-	    } catch (Exception ex) {
-		AuthException ae = new AuthException();
-		ae.initCause(ex);
-		throw ae;
-	    }
+        // Check to see if successful..
+        if (restResp.isSuccess()) {
+            // Username and Password sent in... validate them!
+            CallerPrincipalCallback cpCallback =
+                    new CallerPrincipalCallback(clientSubject, username);
+            try {
+                handler.handle(new Callback[]{ /*pwdCallback,*/cpCallback});
+            } catch (Exception ex) {
+                AuthException ae = new AuthException();
+                ae.initCause(ex);
+                throw ae;
+            }
 
             // recreate the session
             Map<String, Object> map = new HashMap<String, Object>();
@@ -251,72 +264,72 @@ public class AdminConsoleAuthModule implements ServerAuthModule {
                 session.setAttribute(key, map.get(key));
             }
 
-	    if (session != null) {
-		// Get the "extraProperties" section of the response...
-		Object obj = restResp.getResponse().get("data");
-		Map extraProperties = null;
-		if ((obj != null) && (obj instanceof Map)) {
-		    obj = ((Map) obj).get("extraProperties");
-		    if ((obj != null) && (obj instanceof Map)) {
-			extraProperties = (Map) obj;
-		    }
-		}
+            if (session != null) {
+                // Get the "extraProperties" section of the response...
+                Object obj = restResp.getResponse().get("data");
+                Map extraProperties = null;
+                if ((obj != null) && (obj instanceof Map)) {
+                    obj = ((Map) obj).get("extraProperties");
+                    if ((obj != null) && (obj instanceof Map)) {
+                        extraProperties = (Map) obj;
+                    }
+                }
 
-		// Save the Rest Token...
-		if (extraProperties != null) {
-		    session.putValue(REST_TOKEN, extraProperties.get("token"));
-		}
+                // Save the Rest Token...
+                if (extraProperties != null) {
+                    session.putValue(REST_TOKEN, extraProperties.get("token"));
+                }
 
-		// Save the Subject...
-		session.putValue(SAVED_SUBJECT, clientSubject);
+                // Save the Subject...
+                session.putValue(SAVED_SUBJECT, clientSubject);
 
-		// Save the userName
-		session.putValue(USER_NAME, username);
-	    }
+                // Save the userName
+                session.putValue(USER_NAME, username);
+            }
 
-	    try {
-		// Redirect...
-		response.sendRedirect(response.encodeRedirectURL("/index.jsf"));
-	    } catch (Exception ex) {
-		AuthException ae = new AuthException();
-		ae.initCause(ex);
-		throw ae;
-	    }
+            try {
+                // Redirect...
+                response.sendRedirect(response.encodeRedirectURL("/index.jsf"));
+            } catch (Exception ex) {
+                AuthException ae = new AuthException();
+                ae.initCause(ex);
+                throw ae;
+            }
 
-	    // Continue...
-	    return AuthStatus.SEND_CONTINUE;
-	} else {
-	    RequestDispatcher rd = request.getRequestDispatcher(this.loginErrorPage);
-	    try {
-		rd.forward(request, response);
-	    } catch (Exception ex) {
-		AuthException ae = new AuthException();
-		ae.initCause(ex);
-		throw ae;
-	    }
-	    return AuthStatus.SEND_FAILURE;
-	}
+            // Continue...
+            return AuthStatus.SEND_CONTINUE;
+        } else {
+            RequestDispatcher rd = request.getRequestDispatcher(this.loginErrorPage);
+            try {
+                rd.forward(request, response);
+            } catch (Exception ex) {
+                AuthException ae = new AuthException();
+                ae.initCause(ex);
+                throw ae;
+            }
+            return AuthStatus.SEND_FAILURE;
+        }
     }
 
     /**
      *
      */
     public AuthStatus secureResponse(MessageInfo messageInfo, Subject serviceSubject) throws AuthException {
-	return AuthStatus.SUCCESS;
+        return AuthStatus.SUCCESS;
     }
 
     /**
      *
      */
     public void cleanSubject(MessageInfo messageInfo, Subject subject) throws AuthException {
-	// FIXME: Cleanup...
+        // FIXME: Cleanup...
     }
 
     /**
      *
      */
     private boolean isMandatory(MessageInfo messageInfo) {
-	return Boolean.valueOf((String)messageInfo.getMap().get(
-	    "javax.security.auth.message.MessagePolicy.isMandatory"));
+        return Boolean.valueOf((String) messageInfo.getMap().get(
+                "javax.security.auth.message.MessagePolicy.isMandatory"));
     }
 }

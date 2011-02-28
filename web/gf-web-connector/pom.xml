@@ -59,7 +59,7 @@
             <id>jluehe</id>
             <name>Jan Luehe</name>
             <url>http://blogs.sun.com/jluehe</url>
-            <organization>Sun Microsystems, Inc.</organization>
+            <organization>Oracle, Inc.</organization>
             <roles>
                 <role>lead</role>
                 <role>developer</role>
@@ -69,7 +69,7 @@
             <id>jfarcand</id>
             <name>Jean Francois Arcand</name>
             <url>http://weblogs.java.net/blog/jfarcand/</url>
-            <organization>Sun Microsystems, Inc.</organization>
+            <organization>Oracle, Inc.</organization>
             <roles>
                 <role>developer</role>
             </roles>
@@ -78,7 +78,7 @@
             <id>swchan2</id>
             <name>Shing Wai Chan</name>
             <url>http://blogs.sun.com/swchan</url>
-            <organization>Sun Microsystems, Inc.</organization>
+            <organization>Oracle, Inc.</organization>
             <roles>
                 <role>developer</role>
             </roles>
@@ -87,7 +87,7 @@
             <id>dochez</id>
             <name>Jerome Dochez</name>
             <url>http://blogs.sun.com/dochez</url>
-            <organization>Sun Microsystems, Inc.</organization>
+            <organization>Oracle, Inc.</organization>
             <roles>
                 <role>developer</role>
             </roles>
@@ -96,7 +96,7 @@
             <id>amyroh</id>
             <name>Amy Roh</name>
             <url>http://weblogs.java.net/blog/amyroh</url>
-            <organization>Sun Microsystems, Inc.</organization>
+            <organization>Oracle, Inc.</organization>
             <roles>
                 <role>developer</role>
             </roles>

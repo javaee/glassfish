@@ -44,6 +44,7 @@ import org.glassfish.admin.amx.base.Singleton;
 
 import java.util.Map;
 
+@Deprecated
 public interface ThreadPools
         extends Singleton, ConfigCollectionElement, ConfigElement {
     public Map<String, ThreadPool> getThreadPool();

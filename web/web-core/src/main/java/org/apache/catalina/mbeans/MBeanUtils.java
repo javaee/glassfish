@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -763,9 +763,9 @@ public class MBeanUtils {
 
     }
 
-    static Hashtable seq=new Hashtable();
+    static Hashtable<String, int[]> seq=new Hashtable<String, int[]>();
     static int getSeq( String key ) {
-        int i[]=(int [])seq.get( key );
+        int i[]=seq.get( key );
         if (i == null ) {
             i=new int[1];
             i[0]=0;

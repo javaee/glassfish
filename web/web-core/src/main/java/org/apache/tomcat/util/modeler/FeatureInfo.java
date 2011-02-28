@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -79,7 +79,7 @@ import java.util.List;
 public class FeatureInfo implements Serializable {
     static final long serialVersionUID = -911529176124712296L;
     protected String description = null;
-    protected List fields = new ArrayList();
+    protected List<FieldInfo> fields = new ArrayList<FieldInfo>();
     protected String name = null;
 
     // ------------------------------------------------------------- Properties
@@ -100,7 +100,7 @@ public class FeatureInfo implements Serializable {
     /**
      * The field information for this feature.
      */
-    public List getFields() {
+    public List<FieldInfo> getFields() {
         return (fields);
     }
 
@@ -143,9 +143,9 @@ public class FeatureInfo implements Serializable {
      */
     protected void addFields(Descriptor descriptor) {
 
-        Iterator items = getFields().iterator();
+        Iterator<FieldInfo> items = getFields().iterator();
         while (items.hasNext()) {
-            FieldInfo item = (FieldInfo) items.next();
+            FieldInfo item = items.next();
             descriptor.setField(item.getName(), item.getValue());
         }
 

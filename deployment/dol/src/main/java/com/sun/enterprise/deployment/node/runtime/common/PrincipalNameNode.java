@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,6 +42,7 @@ package com.sun.enterprise.deployment.node.runtime.common;
 
 import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.node.runtime.RuntimeDescriptorNode;
+import com.sun.enterprise.deployment.RootDeploymentDescriptor;
 import com.sun.enterprise.deployment.runtime.common.PrincipalNameDescriptor;
 import com.sun.enterprise.deployment.xml.RuntimeTagNames;
 import org.w3c.dom.Element;
@@ -65,6 +66,10 @@ public class PrincipalNameNode  extends RuntimeDescriptorNode {
                 (PrincipalNameDescriptor) getDescriptor();
         if (RuntimeTagNames.PRINCIPAL_NAME.equals(element.getQName())) {
             principal.setName(value);
+            Object rootDesc = getParentNode().getParentNode().getDescriptor();
+            if (rootDesc instanceof RootDeploymentDescriptor) {
+                principal.setClassLoader(((RootDeploymentDescriptor)rootDesc).getClassLoader());
+            }
         } else super.setElementValue(element, value);
     }
 

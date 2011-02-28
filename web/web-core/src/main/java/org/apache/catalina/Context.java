@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -1354,14 +1354,6 @@ public interface Context extends Container {
      * @return the Authenticator of this Context
      */
     Authenticator getAuthenticator();
-
-    /**
-     * @return true if this Context declares an absolute ordering of its
-     * web fragments (without the use of any <others/> element), and the
-     * web fragment JAR file with the given name is excluded from it;
-     * false otherwise
-     */
-    public boolean isFragmentMissingFromAbsoluteOrdering(String jarName);
 
     /**
      * Notifies all ServletRequestListener instances configured for this Context

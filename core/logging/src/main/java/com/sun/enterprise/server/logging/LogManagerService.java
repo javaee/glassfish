@@ -66,6 +66,7 @@ import java.beans.PropertyChangeEvent;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.logging.*;
@@ -111,7 +112,17 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy, org.g
 
     String serverLogFileDetail = "";
 
-        private final String SERVER_LOG_FILE_PROPERTY = "com.sun.enterprise.server.logging.GFFileHandler.file"; 
+    private final String SERVER_LOG_FILE_PROPERTY = "com.sun.enterprise.server.logging.GFFileHandler.file";
+
+    private String RECORD_BEGIN_MARKER = "[#|";
+    private String RECORD_END_MARKER = "|#]";
+    private String RECORD_FIELD_SEPARATOR = "|";
+    private String RECORD_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+
+    String recordBeginMarker;
+    String recordEndMarker;
+    String recordFieldSeparator;
+    String recordDateFormat;
 
     /*
         Returns properties based on the DAS/Cluster/Instance
@@ -228,6 +239,46 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy, org.g
             formatterClassname = props.get("java.util.logging.ConsoleHandler.formatter");
             Class formatterClass = LogManagerService.class.getClassLoader().loadClass(formatterClassname);
             UniformLogFormatter formatter = (UniformLogFormatter) formatterClass.newInstance();
+            if (formatterClass.getName().equals("com.sun.enterprise.server.logging.UniformLogFormatter")) {
+                String cname = "com.sun.enterprise.server.logging.GFFileHandler";
+                recordBeginMarker = props.get(cname + ".logFormatBeginMarker");
+                if (recordBeginMarker == null && ("").equals(recordBeginMarker)) {
+                    logger.log(Level.WARNING,
+                            "Record begin marker is not a proper value so Using default.");
+                    recordBeginMarker = RECORD_BEGIN_MARKER;
+                }
+
+                recordEndMarker = props.get(cname + ".logFormatEndMarker");
+                if (recordEndMarker == null && ("").equals(recordEndMarker)) {
+                    logger.log(Level.WARNING,
+                            "Record end marker is not a proper value so Using default.");
+                    recordEndMarker = RECORD_END_MARKER;
+                }
+
+                recordFieldSeparator = props.get(cname + ".logFormatFieldSeparator");
+                if (recordFieldSeparator.length() > 1) {
+                    logger.log(Level.WARNING,
+                            "Log Format filed separator is not a character so Using default.");
+                    recordFieldSeparator = RECORD_FIELD_SEPARATOR;
+                }
+
+                recordDateFormat = props.get(cname + ".logFormatDateFormat");
+                SimpleDateFormat sdf = new SimpleDateFormat(recordDateFormat);
+                try {
+                    sdf.format(new Date());
+                } catch (Exception e) {
+                    logger.log(Level.WARNING,
+                            "Date Format specified is wrong so Using default.");
+                    recordDateFormat = RECORD_DATE_FORMAT;
+                }
+
+                formatter.setRecordBeginMarker(recordBeginMarker);
+                formatter.setRecordEndMarker(recordEndMarker);
+                formatter.setRecordDateFormat(recordDateFormat);
+                formatter.setRecordFieldSeparator(recordFieldSeparator);
+
+            }
+
             for (Handler handler : logMgr.getLogger("").getHandlers()) {
                 // only get the ConsoleHandler
                 handler.setFormatter(formatter);
@@ -357,7 +408,7 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy, org.g
                             }
 
                             logger.log(Level.INFO, "logging.update.levels");
-                        } catch (IOException e) {
+                        } catch (Exception e) {
                             logger.log(Level.SEVERE, "logging.read.error", e);
                         }
                     }

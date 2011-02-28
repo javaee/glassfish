@@ -88,7 +88,7 @@ public final class InstanceResolverImpl<T> extends InstanceResolver<T> {
         //Injection and instantiation is now done lazily
 
        try {
-            instance = (T)injManager.createManagedObject(classtobeResolved);
+            instance = injManager.createManagedObject(classtobeResolved);
         } catch (InjectionException e) {
             throw new WebServiceException(e);
         }

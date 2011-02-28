@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -56,6 +56,7 @@ public class PrincipalNameDescriptor extends Descriptor {
                 "org.glassfish.security.common.PrincipalImpl";
     private String principalName = null;
     private String className = null;
+    private ClassLoader cLoader = null;
 
     public PrincipalNameDescriptor() {}
 
@@ -78,10 +79,16 @@ public class PrincipalNameDescriptor extends Descriptor {
         className = name;
     }
 
+    public void setClassLoader(ClassLoader c) {
+        cLoader = c;
+    }
+
     public Principal getPrincipal() {
         try {
-            Class clazz = Class.forName(getClassName(), true, 
-                Thread.currentThread().getContextClassLoader());
+            if (cLoader == null) {
+                cLoader = Thread.currentThread().getContextClassLoader();
+            }
+            Class clazz = Class.forName(getClassName(), true, cLoader);
             Constructor constructor = 
                             clazz.getConstructor(new Class[]{String.class});
             Object o = constructor.newInstance(new Object[]{principalName});

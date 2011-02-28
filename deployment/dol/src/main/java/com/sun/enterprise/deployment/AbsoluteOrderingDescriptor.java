@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -58,9 +58,9 @@ public class AbsoluteOrderingDescriptor extends Descriptor {
     private static final LocalStringManagerImpl localStrings =
             new LocalStringManagerImpl(AbsoluteOrderingDescriptor.class);
 
-    private List absOrder = new ArrayList();
+    private List<Object> absOrder = new ArrayList<Object>();
 
-    private boolean hasOthers;
+    private boolean hasOthers = false;
 
     public void addName(String name) {
         if (absOrder.add(name) == false) {
@@ -76,13 +76,13 @@ public class AbsoluteOrderingDescriptor extends Descriptor {
             throw new IllegalStateException(localStrings.getLocalString(
                     "enterprise.deployment.exceptionalreadydefinedinabsoluteordering",
                     "[{0}] is already defined in the absolute-ordering.",
-                    new Object[] { "others" }));
+                    new Object[] { "<others/>" }));
         }
 
         hasOthers = true;
     }
 
-    public List getOrdering() {
+    public List<Object> getOrdering() {
         return Collections.unmodifiableList(absOrder);
     }
 
@@ -131,21 +131,5 @@ public class AbsoluteOrderingDescriptor extends Descriptor {
             }
         }
         return wfList;
-    }
-
-    private WebFragmentDescriptor getWebFragmentDescriptor(
-            List<WebFragmentDescriptor> wfs, String name) {
-
-        WebFragmentDescriptor webFragment = null;
-        if (name != null) {
-            for (WebFragmentDescriptor wf : wfs) {
-                String wfName = wf.getName();
-                if (name.equals(wfName)) {
-                    webFragment = wf;
-                    break;
-                }
-            }
-        }
-        return webFragment;
     }
 }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -75,6 +75,7 @@ import javax.naming.directory.Attributes;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.ModificationItem;
 import javax.naming.directory.SearchControls;
+import javax.naming.directory.SearchResult;
 
 import org.apache.naming.StringManager;
 
@@ -101,8 +102,8 @@ public class ProxyDirContext implements DirContext {
     /**
      * Builds a proxy directory context using the given environment.
      */
-    public ProxyDirContext(Hashtable env, DirContext dirContext)
-            throws Exception {
+    public ProxyDirContext(Hashtable<String, String> env,
+            DirContext dirContext) throws Exception {
 
         this.env = env;
         this.dirContext = dirContext;
@@ -118,8 +119,8 @@ public class ProxyDirContext implements DirContext {
                 cacheObjectMaxSize = baseDirContext.getCacheMaxSize() / 20;
             }
         }
-        hostName = (String) env.get(HOST);
-        contextName = (String) env.get(CONTEXT);
+        hostName = env.get(HOST);
+        contextName = env.get(CONTEXT);
     }
 
 
@@ -158,7 +159,7 @@ public class ProxyDirContext implements DirContext {
     /**
      * Environment.
      */
-    protected Hashtable env;
+    protected Hashtable<String, String> env;
 
 
     /**
@@ -782,7 +783,7 @@ public class ProxyDirContext implements DirContext {
      * @return the environment of this context; never null
      * @exception NamingException if a naming exception is encountered
      */
-    public Hashtable getEnvironment()
+    public Hashtable<?,?> getEnvironment()
         throws NamingException {
         return dirContext.getEnvironment();
     }
@@ -1215,8 +1216,8 @@ public class ProxyDirContext implements DirContext {
      * context named by name.
      * @exception NamingException if a naming exception is encountered
      */
-    public NamingEnumeration search(Name name, Attributes matchingAttributes,
-                                    String[] attributesToReturn)
+    public NamingEnumeration<SearchResult> search(Name name,
+            Attributes matchingAttributes, String[] attributesToReturn)
         throws NamingException {
         return dirContext.search(parseName(name), matchingAttributes, 
                                  attributesToReturn);
@@ -1239,8 +1240,8 @@ public class ProxyDirContext implements DirContext {
      * context named by name.
      * @exception NamingException if a naming exception is encountered
      */
-    public NamingEnumeration search(String name, Attributes matchingAttributes,
-                                    String[] attributesToReturn)
+    public NamingEnumeration<SearchResult> search(String name,
+            Attributes matchingAttributes, String[] attributesToReturn)
         throws NamingException {
         return dirContext.search(parseName(name), matchingAttributes, 
                                  attributesToReturn);
@@ -1262,8 +1263,8 @@ public class ProxyDirContext implements DirContext {
      * context named by name.
      * @exception NamingException if a naming exception is encountered
      */
-    public NamingEnumeration search(Name name, Attributes matchingAttributes)
-        throws NamingException {
+    public NamingEnumeration<SearchResult> search(Name name,
+            Attributes matchingAttributes) throws NamingException {
         return dirContext.search(parseName(name), matchingAttributes);
     }
 
@@ -1281,7 +1282,7 @@ public class ProxyDirContext implements DirContext {
      * context named by name.
      * @exception NamingException if a naming exception is encountered
      */
-    public NamingEnumeration search(String name, Attributes matchingAttributes)
+    public NamingEnumeration<SearchResult> search(String name, Attributes matchingAttributes)
         throws NamingException {
         return dirContext.search(parseName(name), matchingAttributes);
     }
@@ -1306,7 +1307,7 @@ public class ProxyDirContext implements DirContext {
      * contain invalid settings
      * @exception NamingException if a naming exception is encountered
      */
-    public NamingEnumeration search(Name name, String filter, 
+    public NamingEnumeration<SearchResult> search(Name name, String filter, 
                                     SearchControls cons)
         throws NamingException {
         return dirContext.search(parseName(name), filter, cons);
@@ -1332,7 +1333,7 @@ public class ProxyDirContext implements DirContext {
      * contain invalid settings
      * @exception NamingException if a naming exception is encountered
      */
-    public NamingEnumeration search(String name, String filter, 
+    public NamingEnumeration<SearchResult> search(String name, String filter, 
                                     SearchControls cons)
         throws NamingException {
         return dirContext.search(parseName(name), filter, cons);
@@ -1363,7 +1364,7 @@ public class ProxyDirContext implements DirContext {
      * represents an invalid search filter
      * @exception NamingException if a naming exception is encountered
      */
-    public NamingEnumeration search(Name name, String filterExpr,
+    public NamingEnumeration<SearchResult> search(Name name, String filterExpr,
                                     Object[] filterArgs, SearchControls cons)
         throws NamingException {
         return dirContext.search(parseName(name), filterExpr, filterArgs, 
@@ -1395,7 +1396,7 @@ public class ProxyDirContext implements DirContext {
      * represents an invalid search filter
      * @exception NamingException if a naming exception is encountered
      */
-    public NamingEnumeration search(String name, String filterExpr,
+    public NamingEnumeration<SearchResult> search(String name, String filterExpr,
                                     Object[] filterArgs, SearchControls cons)
         throws NamingException {
         return dirContext.search(parseName(name), filterExpr, filterArgs, 
@@ -1616,13 +1617,13 @@ public class ProxyDirContext implements DirContext {
                 }
                 entry.resource.setContent(b);
             } catch (IOException e) {
-                ; // Ignore
+                // Ignore
             } finally {
                 try {
                     if (is != null)
                         is.close();
                 } catch (IOException e) {
-                    ; // Ignore
+                    // Ignore
                 }
             }
         }

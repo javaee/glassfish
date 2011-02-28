@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -217,7 +217,7 @@ public class StandardWrapper
     /**
      * Mappings associated with the wrapper.
      */
-    private ArrayList mappings = new ArrayList();
+    private ArrayList<String> mappings = new ArrayList<String>();
 
 
     /**
@@ -232,7 +232,7 @@ public class StandardWrapper
      * used in the servlet.  The corresponding value is the role name of
      * the web application itself.
      */
-    private HashMap references = new HashMap();
+    private HashMap<String, String> references = new HashMap<String, String>();
 
 
     /**
@@ -286,7 +286,7 @@ public class StandardWrapper
     /**
      * Stack containing the STM instances.
      */
-    private Stack instancePool = null;
+    private Stack<Servlet> instancePool = null;
 
 
     /**
@@ -320,14 +320,14 @@ public class StandardWrapper
      * Static class array used when the SecurityManager is turned on and 
      * <code>Servlet.init</code> is invoked.
      */
-    private static Class[] classType = new Class[]{ServletConfig.class};
+    private static Class<?>[] classType = new Class[]{ServletConfig.class};
     
     
     /**
      * Static class array used when the SecurityManager is turned on and 
      * <code>Servlet.service</code>  is invoked.
      */                                                 
-    private static Class[] classTypeUsedInService = new Class[]{
+    private static Class<?>[] classTypeUsedInService = new Class[]{
                                                          ServletRequest.class,
                                                          ServletResponse.class};
 
@@ -983,7 +983,7 @@ public class StandardWrapper
         }
 
         synchronized (parameters) {
-            Set conflicts = null;
+            Set<String> conflicts = null;
             for (Map.Entry<String, String> e : initParameters.entrySet()) {
                 if (e.getKey() == null || e.getValue() == null) {
                     throw new IllegalArgumentException(
@@ -1005,7 +1005,7 @@ public class StandardWrapper
                 setInitParameter(e.getKey(), e.getValue(), true);
             }
    
-            return Collections.EMPTY_SET;
+            return Collections.emptySet();
         }
     }
 
@@ -1136,7 +1136,7 @@ public class StandardWrapper
                     try {
                         instancePool.wait();
                     } catch (InterruptedException e) {
-                        ;
+                        // Ignore
                     }
                 }
             }
@@ -1144,7 +1144,7 @@ public class StandardWrapper
                 log.finest("Returning allocated STM instance");
             }
             countAllocated++;
-            return (Servlet) instancePool.pop();
+            return instancePool.pop();
         }
     }
 
@@ -1183,7 +1183,7 @@ public class StandardWrapper
      */
     public String findInitParameter(String name) {
         synchronized (parameters) {
-            return ((String) parameters.get(name));
+            return parameters.get(name);
         }
     }
 
@@ -1195,7 +1195,7 @@ public class StandardWrapper
     public String[] findInitParameters() {
         synchronized (parameters) {
             String results[] = new String[parameters.size()];
-            return ((String[]) parameters.keySet().toArray(results));
+            return parameters.keySet().toArray(results);
         }
     }
 
@@ -1205,7 +1205,7 @@ public class StandardWrapper
      */
     public String[] findMappings() {
         synchronized (mappings) {
-            return (String[]) mappings.toArray(new String[mappings.size()]);
+            return mappings.toArray(new String[mappings.size()]);
         }
     }
 
@@ -1218,7 +1218,7 @@ public class StandardWrapper
      */
     public String findSecurityReference(String name) {
         synchronized (references) {
-            return ((String) references.get(name));
+            return references.get(name);
         }
     }
 
@@ -1230,7 +1230,7 @@ public class StandardWrapper
     public String[] findSecurityReferences() {
         synchronized (references) {
             String results[] = new String[references.size()];
-            return ((String[]) references.keySet().toArray(results));
+            return references.keySet().toArray(results);
         }
     }
 
@@ -1321,7 +1321,7 @@ public class StandardWrapper
         singleThreadModel = servlet instanceof SingleThreadModel;
         if (singleThreadModel) {
             if (instancePool == null)
-                instancePool = new Stack();
+                instancePool = new Stack<Servlet>();
         }
 
         if (notifyContainerListeners) {
@@ -1394,9 +1394,9 @@ public class StandardWrapper
                 final ClassLoader fclassLoader = classLoader;
                 final String factualClass = actualClass;
                 try{
-                    clazz = (Class)AccessController.doPrivileged(
-                        new PrivilegedExceptionAction(){
-                            public Object run() throws Exception{
+                    clazz = AccessController.doPrivileged(
+                        new PrivilegedExceptionAction<Class>(){
+                            public Class run() throws Exception{
                                 if (fclassLoader != null) {
                                     return fclassLoader.loadClass(factualClass);
                                 } else {
@@ -1743,14 +1743,16 @@ public class StandardWrapper
             int nRetries = 0;
             while ((nRetries < 21) && (countAllocated > 0)) {
                 if ((nRetries % 10) == 0) {
-                    log.fine(sm.getString("standardWrapper.waiting",
-                                          countAllocated,
-                                          instance.getClass().getName()));
+                    if (log.isLoggable(Level.FINE)) {
+                        log.fine(sm.getString("standardWrapper.waiting",
+                                              countAllocated,
+                                              instance.getClass().getName()));
+                    }
                 }
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
-                    ;
+                    // Ignore
                 }
                 nRetries++;
             }
@@ -1805,10 +1807,10 @@ public class StandardWrapper
                     if ( SecurityUtil.executeUnderSubjectDoAs() ){
                     // END OF SJS WS 7.0 6236329
                         SecurityUtil.doAsPrivilege("destroy",
-                                                   ((Servlet) instancePool.pop()));
+                                                   instancePool.pop());
                         SecurityUtil.remove(instance);                           
                     } else {
-                        ((Servlet) instancePool.pop()).destroy();
+                        instancePool.pop().destroy();
                     }
                 }
             } catch (Throwable t) {
@@ -1867,7 +1869,7 @@ public class StandardWrapper
      */
     public Enumeration<String> getInitParameterNames() {
         synchronized (parameters) {
-            return (new Enumerator(parameters.keySet()));
+            return (new Enumerator<String>(parameters.keySet()));
         }
     }
 
@@ -1918,7 +1920,7 @@ public class StandardWrapper
      */
     protected void addDefaultMapper(String mapperClass) {
 
-        ;       // No need for a default Mapper on a Wrapper
+        // No need for a default Mapper on a Wrapper
 
     }
 
@@ -1936,7 +1938,7 @@ public class StandardWrapper
             return (true);
         }
         try {
-            Class clazz =
+            Class<?> clazz =
                 this.getClass().getClassLoader().loadClass(classname);
             return (ContainerServlet.class.isAssignableFrom(clazz));
         } catch (Throwable t) {
@@ -1984,7 +1986,7 @@ public class StandardWrapper
     }
 
 
-    private Method[] getAllDeclaredMethods(Class c) {
+    private Method[] getAllDeclaredMethods(Class<?> c) {
 
         if (c.equals(javax.servlet.http.HttpServlet.class)) {
             return null;

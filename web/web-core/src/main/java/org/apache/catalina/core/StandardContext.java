@@ -167,7 +167,7 @@ public class StandardContext
         namingResources.setContainer(this);
         broadcaster = new NotificationBroadcasterSupport();
         if (Globals.IS_SECURITY_ENABLED) {
-            mySecurityManager = (MySecurityManager)AccessController.doPrivileged(
+            mySecurityManager = AccessController.doPrivileged(
                     new PrivilegedCreateSecurityManager());
         }
 
@@ -711,10 +711,6 @@ public class StandardContext
 
     private ConcurrentHashMap<String, FilterRegistrationImpl> filterRegisMap =
         new ConcurrentHashMap<String, FilterRegistrationImpl>();
-
-    private Map<String, String> jarName2WebFragNameMap;
-
-    private List absoluteOrderingList;
 
     /**
      * The list of ordered libs, which is used as the value of the
@@ -2355,7 +2351,7 @@ public class StandardContext
      * the given name.
      */
     public Collection<String> getServletNameFilterMappings(String filterName) {
-        HashSet<String> mappings = new HashSet();
+        HashSet<String> mappings = new HashSet<String>();
         synchronized (filterMaps) {
             for (FilterMap fm : filterMaps) {
                 if (filterName.equals(fm.getFilterName()) &&
@@ -2372,7 +2368,7 @@ public class StandardContext
      * name.
      */
     public Collection<String> getUrlPatternFilterMappings(String filterName) {
-        HashSet<String> mappings = new HashSet();
+        HashSet<String> mappings = new HashSet<String>();
         synchronized (filterMaps) {
             for (FilterMap fm : filterMaps) {
                 if (filterName.equals(fm.getFilterName()) &&
@@ -3122,7 +3118,7 @@ public class StandardContext
                 for (String urlPattern : urlPatterns) {
                     addServletMapping(urlPattern, name, false);
                 }
-                return Collections.EMPTY_SET;
+                return Collections.emptySet();
             } else {
                 return conflicts;
             }
@@ -3451,28 +3447,6 @@ public class StandardContext
      */
     public Map<String, ? extends ServletRegistration> getServletRegistrations() {
         return Collections.unmodifiableMap(servletRegisMap);
-    }
-
-    public void setJarNameToWebFragmentNameMap(
-                    Map<String, String> jarName2WebFragNameMap) {
-        this.jarName2WebFragNameMap = jarName2WebFragNameMap;
-    }
-
-    public void setAbsoluteOrdering(List absoluteOrderingList) {
-        this.absoluteOrderingList = absoluteOrderingList;
-    }
-
-    /**
-     * @return true if this Context declares an absolute ordering of its
-     * web fragments (without the use of any <others/> element), and the
-     * web fragment JAR file with the given name is excluded from it;
-     * false otherwise
-     */
-    public boolean isFragmentMissingFromAbsoluteOrdering(String jarName) {
-        return (jarName2WebFragNameMap != null &&
-            absoluteOrderingList != null &&
-            !absoluteOrderingList.contains(
-                jarName2WebFragNameMap.get(jarName)));
     }
 
     /**
@@ -4105,7 +4079,9 @@ public class StandardContext
         //      if (!reloadable)
         //          throw new IllegalStateException
         //              (sm.getString("standardContext.notReloadable"));
-        log.info(sm.getString("standardContext.reloadingStarted"));
+        if (log.isLoggable(Level.INFO)) {
+            log.info(sm.getString("standardContext.reloadingStarted"));
+        }
 
         // Stop accepting requests temporarily
         setPaused(true);
@@ -4735,6 +4711,7 @@ public class StandardContext
      * @throws Exception if the specified classname fails to be loaded or
      * instantiated
      */
+    @SuppressWarnings("unchecked")
     protected EventListener loadListener(ClassLoader loader,
                                          String listenerClassName)
             throws Exception {
@@ -4884,7 +4861,7 @@ public class StandardContext
             return;
         }
 
-        Hashtable env = new Hashtable();
+        Hashtable<String, String> env = new Hashtable<String, String>();
         if (getParent() != null) {
             env.put(ProxyDirContext.HOST, getParent().getName());
         }
@@ -6342,10 +6319,12 @@ public class StandardContext
                 ((StandardWrapper)wrapper).registerJMX(this);
             }
         } catch(Exception ex) {
-            log.log(Level.INFO,
-                    "Error updating ctx with jmx " + this + " " +
-                    oname + " " + ex.toString(),
-                    ex );
+            if (log.isLoggable(Level.INFO)) {
+                log.log(Level.INFO,
+                        "Error updating ctx with jmx " + this + " " +
+                        oname + " " + ex.toString(),
+                        ex );
+            }
         }
     }
 
@@ -6358,10 +6337,12 @@ public class StandardContext
                 controller = oname;
             }
         } catch(Exception ex) {
-            log.log(Level.INFO,
-                    "Error registering ctx with jmx " + this + " " +
-                    oname + " " + ex.toString(),
-                    ex );
+            if (log.isLoggable(Level.INFO)) {
+                log.log(Level.INFO,
+                        "Error registering ctx with jmx " + this + " " +
+                        oname + " " + ex.toString(),
+                        ex );
+            }
         }
     }
 
@@ -6982,7 +6963,9 @@ public class StandardContext
                 StringBuilder sb = null;
                 for (File child : children) {
                     sb = new StringBuilder(path);
-                    sb.append("/");
+                    if (!path.endsWith("/")) {
+                        sb.append("/");
+                    }
                     sb.append(child.getName());
                     if (child.isDirectory()) {
                         sb.append("/");
@@ -7444,8 +7427,10 @@ public class StandardContext
         }
     }
 
-    private static class PrivilegedCreateSecurityManager implements PrivilegedAction {
-        public Object run() {
+    private static class PrivilegedCreateSecurityManager
+            implements PrivilegedAction<MySecurityManager> {
+
+        public MySecurityManager run() {
             return new MySecurityManager();
         }
     }

@@ -72,13 +72,6 @@ public class SecurityConstraint {
     private TransportGuarantee tg;
 
     /**
-     * Create an instance of SecurityConstraint
-     */
-    public SecurityConstraint() {
-        
-    }
-
-    /**
      * Sets the web resource collection associated with this
      * security constrint
      *
@@ -148,5 +141,19 @@ public class SecurityConstraint {
      */
     public TransportGuarantee getDataConstraint() {
         return this.tg;
+    }
+
+    /**
+     * Returns a formatted string of the state.
+     */
+    public String toString() {
+        StringBuffer toStringBuffer = new StringBuffer();
+	    toStringBuffer.append("SecurityConstraint: ");
+	    toStringBuffer.append(" webResourceCollections: ").append(webResourceCollection);
+        for (String roleName : roleNames) {
+	        toStringBuffer.append(" authorizationConstraint ").append(roleName);
+        }
+	    toStringBuffer.append(" userDataConstraint ").append(tg);
+        return toStringBuffer.toString();
     }
 }

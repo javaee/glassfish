@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -302,8 +302,10 @@ public class MbeansSource extends ModelerSource implements MbeansSourceMBean
 
             }
 
-            long t2=System.currentTimeMillis();
-            log.log(Level.INFO, "Reading mbeans  " + (t2-t1));
+            if (log.isLoggable(Level.INFO)) {
+                long t2=System.currentTimeMillis();
+                log.log(Level.INFO, "Reading mbeans  " + (t2-t1));
+            }
             loading=false;
         } catch( Exception ex ) {
             log.log(Level.SEVERE, "Error reading mbeans ", ex);
@@ -318,7 +320,9 @@ public class MbeansSource extends ModelerSource implements MbeansSourceMBean
         //log.log(Level.INFO, "XXX UpdateField " + oname + " " + name + " " + value);
         Node n = object2Node.get( oname );
         if( n == null ) {
-            log.log(Level.INFO, "Node not found " + oname );
+            if (log.isLoggable(Level.INFO)) {
+                log.log(Level.INFO, "Node not found " + oname );
+            }
             return;
         }
         Node attNode=DomUtil.findChildWithAtt(n, "attribute", "name", name);
@@ -379,7 +383,9 @@ public class MbeansSource extends ModelerSource implements MbeansSourceMBean
                 type=registry.getType(  oname, attName );
 
             if( type==null ) {
-                log.log(Level.INFO, "Can't find attribute " + objectName + " " + attName );
+                if (log.isLoggable(Level.INFO)) {
+                    log.log(Level.INFO, "Can't find attribute " + objectName + " " + attName );
+                }
 
             } else {
                 Object valueO=registry.convertValue( type, value);

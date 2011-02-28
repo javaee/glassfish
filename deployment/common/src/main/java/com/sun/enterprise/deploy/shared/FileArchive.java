@@ -504,13 +504,29 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
      * utility method for getting contents of directory and 
      * sub directories
      */
-    private void getListOfFiles(File directory, Vector<String> files, List embeddedArchives) {
-        // important: listFiles() returns null sometimes.  E.g. if directory is 
-        // not a directory -- then null is returned and this method will throw an NPE
 
+    private void getListOfFiles(File directory, Vector<String> files, List embeddedArchives) {
+        getListOfFiles(directory, files, embeddedArchives, logger);
+    }
+
+    /**
+     * Adds the files in the specified directory to the collection of files
+     * already assembled.  Excludes the contents of embedded archives in the current archive which
+     * appear in the file tree anchored at the given directory.
+     * @param directory the directory to scan for files
+     * @param files collection of files already assembled to which this directory's files are to be added
+     * @param embeddedArchives collection of embedded archives in the current archive
+     * @param logger logger to which to report inability to get the list of files from the directory
+     */
+    void getListOfFiles(File directory, Vector<String> files, List embeddedArchives, final Logger logger) {
         if(directory == null || !directory.isDirectory())
             return;
-        
+        final File[] fileList = directory.listFiles();
+        if (fileList == null) {
+            logger.log(Level.WARNING, "enterprise.deployment.nullFileList",
+                    directory.getAbsolutePath());
+            return;
+        }
         for (File aList : directory.listFiles()) {
             String fileName = aList.getAbsolutePath().substring(archive.getAbsolutePath().length() + 1);
             fileName = fileName.replace(File.separatorChar, '/');
@@ -522,15 +538,15 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
                 files.add(fileName); // Add entry corresponding to the directory also to the list
                 if (embeddedArchives != null) {
                     if (!embeddedArchives.contains(fileName)) {
-                        getListOfFiles(aList, files, null);
+                        getListOfFiles(aList, files, null, logger);
                     }
                 } else {
-                    getListOfFiles(aList, files, null);
+                    getListOfFiles(aList, files, null, logger);
                 }
             }
         }
     }          
-    
+
     /** @return true if this archive abstraction supports overwriting of elements
      *
      */
@@ -707,7 +723,7 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
         }
 
         private TimestampManagerImplNoop(final File archive, final long timestamp) {
-            
+
         }
         @Override
         public boolean isEntryValid(File f) {
@@ -749,7 +765,7 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
     private static class TimestampManagerImpl implements TimestampManager {
             
         /*
-         * Hidden file path used for recording when GlassFish created the 
+         * Hidden file path used for recording when GlassFish created the
          * FileArchive.
          */
         private final static String STAMP_FILE_PATH = ".glassfishArchive";
@@ -795,12 +811,12 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
             writeTimeToFile(timestampFile, stamp);
         }
         
-        
+
         private static File timestampFile(final File archive) {
             return new File(archive, STAMP_FILE_PATH);
         }
 
-        
+
         @Override
         public boolean isEntryValid(final File f) {
             final boolean isFileAfterArchive = archiveCreation <= f.lastModified();

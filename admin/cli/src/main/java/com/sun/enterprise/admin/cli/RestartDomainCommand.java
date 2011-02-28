@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -112,8 +112,10 @@ public class RestartDomainCommand extends StopDomainCommand {
      * If the server isn't running, try to start it.
      */
     @Override
-    protected int dasNotRunning()
-            throws CommandException, CommandValidationException {
+    protected int dasNotRunning(boolean local) throws CommandException {
+        if (!local)
+            throw new CommandException(
+                Strings.get("restart.dasNotRunningNoRestart"));
         logger.warning(strings.get("restart.dasNotRunning"));
         CLICommand cmd = habitat.getComponent(CLICommand.class, "start-domain");
         // XXX - assume start-domain accepts all the same options

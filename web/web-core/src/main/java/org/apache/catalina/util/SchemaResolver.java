@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -88,7 +88,7 @@ public class SchemaResolver implements EntityResolver {
      * The URLs of dtds and schemas that have been registered, keyed by the
      * public identifier that corresponds.
      */
-    protected HashMap entityValidator = new HashMap();
+    protected HashMap<String, String> entityValidator = new HashMap<String, String>();
 
 
     /**
@@ -160,14 +160,14 @@ public class SchemaResolver implements EntityResolver {
         // Has this system identifier been registered?
         String entityURL = null;
         if (publicId != null) {
-            entityURL = (String) entityValidator.get(publicId);
+            entityURL = entityValidator.get(publicId);
         }
 
         // Redirect the schema location to a local destination
         String key = null;
         if (entityURL == null && systemId != null) {
             key = systemId.substring(systemId.lastIndexOf('/')+1);
-            entityURL = (String)entityValidator.get(key);
+            entityURL = entityValidator.get(key);
         }
 
 /* PWC 6457880

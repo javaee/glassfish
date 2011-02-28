@@ -90,7 +90,7 @@
         <developer>
             <id>psterk</id>
             <name>Paul Sterk</name>
-            <organization>Sun Microsystems, Inc.</organization>
+            <organization>Oracle, Inc.</organization>
         </developer>
     </developers>
     <dependencies>

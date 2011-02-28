@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -96,7 +96,8 @@ public class ResourceCache {
     /**
      * Not found cache.
      */
-    protected HashMap notFoundCache = new HashMap();
+    protected HashMap<String, CacheEntry> notFoundCache =
+        new HashMap<String, CacheEntry>();
 
 
     /**
@@ -338,7 +339,7 @@ public class ResourceCache {
         }
         if (cacheEntry == null) {
             try {
-                cacheEntry = (CacheEntry) notFoundCache.get(name);
+                cacheEntry = notFoundCache.get(name);
             } catch (Exception e) {
                 // Ignore: the reliability of this lookup is not critical
             }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -122,7 +122,8 @@ public class ResourceBase implements Serializable {
     /**
      * Holder for our configured properties.
      */
-    private HashMap properties = new HashMap();
+    private HashMap<String, Object> properties =
+        new HashMap<String, Object>();
 
     /**
      * Return a configured property.
@@ -148,7 +149,7 @@ public class ResourceBase implements Serializable {
     /**
      * List properties.
      */
-    public Iterator listProperties() {
+    public Iterator<String> listProperties() {
         return properties.keySet().iterator();
     }
     

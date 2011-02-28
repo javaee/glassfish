@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -70,14 +70,14 @@ import javax.naming.NamingEnumeration;
  * @version $Revision: 1.1.2.1 $ $Date: 2007/08/17 15:46:28 $
  */
 
-public class RecyclableNamingEnumeration 
-    implements NamingEnumeration {
+public class RecyclableNamingEnumeration<E> 
+    implements NamingEnumeration<E> {
 
 
     // ----------------------------------------------------------- Constructors
 
 
-    public RecyclableNamingEnumeration(Vector entries) {
+    public RecyclableNamingEnumeration(Vector<E> entries) {
         this.entries = entries;
         recycle();
     }
@@ -89,13 +89,13 @@ public class RecyclableNamingEnumeration
     /**
      * Entries.
      */
-    protected Vector entries;
+    protected Vector<E> entries;
 
 
     /**
      * Underlying enumeration.
      */
-    protected Enumeration enumeration;
+    protected Enumeration<E> enumeration;
 
 
     // --------------------------------------------------------- Public Methods
@@ -104,7 +104,7 @@ public class RecyclableNamingEnumeration
     /**
      * Retrieves the next element in the enumeration.
      */
-    public Object next()
+    public E next()
         throws NamingException {
         return nextElement();
     }
@@ -132,7 +132,7 @@ public class RecyclableNamingEnumeration
     }
 
 
-    public Object nextElement() {
+    public E nextElement() {
         return enumeration.nextElement();
     }
 

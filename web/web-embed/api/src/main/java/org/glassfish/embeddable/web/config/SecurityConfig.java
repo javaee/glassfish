@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -105,5 +105,16 @@ public class SecurityConfig {
      */
     public LoginConfig getLoginConfig() {
         return this.lc;
+    }
+
+    /**
+     * Returns a formatted string of the state.
+     */
+    public String toString() {
+        StringBuffer toStringBuffer = new StringBuffer();
+        toStringBuffer.append("SecurityConfig: ");
+        toStringBuffer.append(" securityConstraints: ").append(securityConstraints);
+        toStringBuffer.append(" loginConfig: ").append(lc);
+        return toStringBuffer.toString();
     }
 }

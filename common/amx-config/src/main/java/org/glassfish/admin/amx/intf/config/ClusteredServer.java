@@ -41,8 +41,9 @@
 package org.glassfish.admin.amx.intf.config;
 
 /**
- * Configuration for the &lt;server&gt; element that belongs to
+ * @deprecated Configuration for the &lt;server&gt; element that belongs to
  * a cluster.
  */
+@Deprecated
 public interface ClusteredServer extends Server {
 }

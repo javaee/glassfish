@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -78,6 +78,7 @@ public class DeployerImpl implements Deployer {
     @Inject
     Habitat habitat;
 
+    @Override
     public String deploy(URI archive, String... params) throws GlassFishException {
         File file;
         try {
@@ -88,6 +89,7 @@ public class DeployerImpl implements Deployer {
         return deploy(file, params);
     }
 
+    @Override
     public String deploy(File file, String... params) throws GlassFishException {
         String[] newParams = new String[params.length + 1];
         System.arraycopy(params, 0, newParams, 0, params.length);
@@ -104,6 +106,7 @@ public class DeployerImpl implements Deployer {
         }
     }
 
+    @Override
     public String deploy(InputStream is, String... params) throws GlassFishException {
         try {
             return deploy(createFile(is), params);
@@ -112,6 +115,7 @@ public class DeployerImpl implements Deployer {
         }
     }
 
+    @Override
     public void undeploy(String appName, String... params) throws GlassFishException {
         String[] newParams = new String[params.length + 1];
         System.arraycopy(params, 0, newParams, 0, params.length);
@@ -127,12 +131,13 @@ public class DeployerImpl implements Deployer {
         }
     }
 
+    @Override
     public Collection<String> getDeployedApplications() throws GlassFishException {
         try {
             CommandExecutorImpl executer = habitat.getComponent(CommandExecutorImpl.class);
             ActionReport report = executer.executeCommand("list-components");
             Properties props = report.getTopMessagePart().getProps();
-            return new ArrayList(props.keySet());
+            return new ArrayList<String>(props.stringPropertyNames());
         } catch (Exception e) {
             throw new GlassFishException(e);
         }

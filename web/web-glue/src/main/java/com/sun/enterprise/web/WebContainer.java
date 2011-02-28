@@ -700,7 +700,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         WebComponentInvocation inv = new WebComponentInvocation(module);
         try {
             invocationMgr.preInvoke(inv);
-            return (T) injectionMgr.createManagedObject(clazz);
+            return injectionMgr.createManagedObject(clazz);
         } finally {
             invocationMgr.postInvoke(inv);
         }
@@ -716,7 +716,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         WebComponentInvocation inv = new WebComponentInvocation(module);
         try {
             invocationMgr.preInvoke(inv);
-            return (T) injectionMgr.createManagedObject(clazz);
+            return injectionMgr.createManagedObject(clazz);
         } finally {
             invocationMgr.postInvoke(inv);
         }
@@ -732,7 +732,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         WebComponentInvocation inv = new WebComponentInvocation(module);
         try {
             invocationMgr.preInvoke(inv);
-            return (T) injectionMgr.createManagedObject(clazz);
+            return injectionMgr.createManagedObject(clazz);
         } finally {
             invocationMgr.postInvoke(inv);
         }
@@ -747,7 +747,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         WebComponentInvocation inv = new WebComponentInvocation(module);
         try {
             invocationMgr.preInvoke(inv);
-            return (T) injectionMgr.createManagedObject(clazz);
+            return injectionMgr.createManagedObject(clazz);
         } finally {
             invocationMgr.postInvoke(inv);
         }
@@ -1633,12 +1633,12 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     try {
                         ctx = loadWebModule(vs, wmInfo, j2eeApplication,
                                 deploymentProperties);
-                        results.add(new Result(ctx));
+                        results.add(new Result<WebModule>(ctx));
                     } catch (Throwable t) {
                         if (ctx != null) {
                             ctx.setAvailable(false);
                         }
-                        results.add(new Result(t));
+                        results.add(new Result<WebModule>(t));
                     }
                 }
             }
@@ -2402,8 +2402,8 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             return;
         }
 
-        for (Iterator itr = mimeMap.getExtensions(); itr.hasNext();) {
-            String extension = (String) itr.next();
+        for (Iterator<String> itr = mimeMap.getExtensions(); itr.hasNext();) {
+            String extension = itr.next();
             if (ctx.findMimeMapping(extension) == null) {
                 ctx.addMimeMapping(extension, mimeMap.getType(extension));
             }
@@ -3369,7 +3369,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      *
      * @Dependent scope. All other scopes are invalid and must be rejected.
      */
-    private void validateJSR299Scope(Class clazz) {
+    private void validateJSR299Scope(Class<?> clazz) {
         if (clazz.isAnnotationPresent(RequestScoped.class) ||
                 clazz.isAnnotationPresent(ApplicationScoped.class) ||
                 clazz.isAnnotationPresent(SessionScoped.class) ||

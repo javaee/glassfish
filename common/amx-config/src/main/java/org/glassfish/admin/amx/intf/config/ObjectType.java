@@ -41,10 +41,11 @@
 package org.glassfish.admin.amx.intf.config;
 
 /**
- * Factors out the meaning of the "ObjectType" Attribute.
+ * @deprecated Factors out the meaning of the "ObjectType" Attribute.
  * <p/>
  * See {@link ObjectTypeValues}
  */
+@Deprecated
 public interface ObjectType {
 
     /**

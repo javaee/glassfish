@@ -41,7 +41,8 @@
 package org.glassfish.admin.amx.intf.config;
 
 /**
- * Configuration for the &lt;property> element.
+ * @deprecated Configuration for the &lt;property> element.
  */
+@Deprecated
 public interface Property extends AnyProperty {
 }

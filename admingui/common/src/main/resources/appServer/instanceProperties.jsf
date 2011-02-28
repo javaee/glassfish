@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -54,8 +54,7 @@
             urlencode(value="#{pageSession.instanceName}" encoding="UTF-8" result="#{pageSession.encodedInstanceName}");
             setSessionAttribute(key="serverInstTabs" value="instanceProps");
             setPageSessionAttribute(key="listLink" value="#{request.contextPath}/common/appServer/instanceProperties.jsf?instanceName=${instanceName}");
-
-
+            setPageSessionAttribute(key="parentPage", value="#{request.contextPath}/common/appServer/serverInstGeneralPe.jsf?instanceName=#{pageSession.encodedInstanceName}");
             setPageSessionAttribute(key="selfPage", value="#{request.contextPath}/common/appServer/instanceProperties.jsf?instanceName=#{pageSession.encodedInstanceName}");
             setPageSessionAttribute(key="parentUrl", value="#{sessionScope.REST_URL}/servers/server/#{pageSession.encodedInstanceName}");
             setPageSessionAttribute(key="selfUrl", value="#{pageSession.parentUrl}");

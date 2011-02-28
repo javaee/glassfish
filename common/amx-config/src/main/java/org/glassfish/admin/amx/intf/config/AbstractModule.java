@@ -43,8 +43,9 @@ package org.glassfish.admin.amx.intf.config;
 import org.glassfish.admin.amx.core.AMXProxy;
 
 /**
- * Functionality that all modules share.
+ * @deprecated Functionality that all modules share.
  */
+@Deprecated
 public interface AbstractModule
         extends AMXProxy, Enabled, Description, ObjectType, NamedConfigElement,
         ApplicationRefReferent, PropertiesAccess {

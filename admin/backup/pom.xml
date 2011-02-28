@@ -75,7 +75,7 @@
 			<id>bnevins</id>
 			<name>Byron Nevins</name>
 			<url>http://blogs.sun.com/foo</url>
-			<organization>Sun Microsystems, Inc.</organization>
+			<organization>Oracle, Inc.</organization>
 			<roles>
 				<role>lead</role>
 				<role>developer</role>
@@ -84,7 +84,7 @@
 		<developer>
 			<id>yaminikb</id>
 			<name>Yamini K B</name>
-			<organization>Sun Microsystems, Inc.</organization>
+			<organization>Oracle, Inc.</organization>
 			<roles>
 				<role>developer</role>
 			</roles>

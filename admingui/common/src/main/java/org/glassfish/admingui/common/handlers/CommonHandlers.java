@@ -167,8 +167,10 @@ public class CommonHandlers {
         
         //Ensure this method is called once per session
         Object initialized = sessionMap.get("_INFO_SESSION_INITIALIZED");
-        if (initialized != null) 
+        if (initialized != null) {
             return;
+        }
+        
         // Initialize Product Specific Attributes
         sessionMap.put("productImageURL", GuiUtil.getMessage("productImage.URL"));
         sessionMap.put("productImageWidth", Integer.parseInt(GuiUtil.getMessage("productImage.width")));

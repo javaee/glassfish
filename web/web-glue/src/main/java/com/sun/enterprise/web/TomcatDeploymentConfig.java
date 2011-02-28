@@ -524,14 +524,6 @@ public class TomcatDeploymentConfig {
             }
         }
 
-        if (wmd.getAbsoluteOrderingDescriptor() != null &&
-                !wmd.getAbsoluteOrderingDescriptor().hasOthers()) {
-            webModule.setJarNameToWebFragmentNameMap(
-                wmd.getJarNameToWebFragmentNameMap());
-            webModule.setAbsoluteOrdering(
-                wmd.getAbsoluteOrderingDescriptor().getOrdering());
-        }
-
         webModule.setOrderedLibs(wmd.getOrderedLibs());
 
         String[] majorMinorVersions = wmd.getSpecVersion().split("\\.");

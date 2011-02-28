@@ -41,8 +41,9 @@
 package org.glassfish.admin.amx.intf.config;
 
 /**
- * Configuration for a &lt;thread-pool&gt; element.
+ * @deprecated Configuration for a &lt;thread-pool&gt; element.
  */
+@Deprecated
 public interface ThreadPool extends NamedConfigElement, PropertiesAccess {
     public String getThreadPoolId();
 

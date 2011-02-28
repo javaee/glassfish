@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -314,7 +314,7 @@ final class CreateLoaderRule extends Rule {
             if (value != null)
                 className = value;
         }
-        Class clazz = Class.forName(className);
+        Class<?> clazz = Class.forName(className);
         Class types[] = { ClassLoader.class };
         Object args[] = { parentClassLoader };
         Constructor constructor = clazz.getDeclaredConstructor(types);

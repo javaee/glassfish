@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -206,8 +206,8 @@ public final class Tool {
                 log.fine("Constructing class loader");
                 ClassLoaderFactory.setDebug(1);
             }
-            ArrayList packed = new ArrayList();
-            ArrayList unpacked = new ArrayList();
+            ArrayList<File> packed = new ArrayList<File>();
+            ArrayList<File> unpacked = new ArrayList<File>();
             unpacked.add(new File(catalinaHome, "classes"));
             packed.add(new File(catalinaHome, "lib"));
             if (common) {
@@ -230,8 +230,8 @@ public final class Tool {
             }
             classLoader =
                 ClassLoaderFactory.createClassLoader
-                ((File[]) unpacked.toArray(new File[0]),
-                 (File[]) packed.toArray(new File[0]),
+                (unpacked.toArray(new File[unpacked.size()]),
+                 packed.toArray(new File[packed.size()]),
                  null);
         } catch (Throwable t) {
             log.log(Level.SEVERE, "Class loader creation threw exception", t);
@@ -240,7 +240,7 @@ public final class Tool {
         Thread.currentThread().setContextClassLoader(classLoader);
 
         // Load our application class
-        Class clazz = null;
+        Class<?> clazz = null;
         String className = args[index++];
         try {
             if (log.isLoggable(Level.FINE))
@@ -288,7 +288,9 @@ public final class Tool {
      */
     private static void usage() {
 
-        log.info("Usage:  java org.apache.catalina.startup.Tool [<options>] <class> [<arguments>]");
+        if (log.isLoggable(Level.INFO)) {
+            log.info("Usage:  java org.apache.catalina.startup.Tool [<options>] <class> [<arguments>]");
+        }
 
     }
 

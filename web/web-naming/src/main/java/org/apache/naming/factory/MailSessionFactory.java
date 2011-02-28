@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -128,7 +128,7 @@ public class MailSessionFactory implements ObjectFactory {
      * @exception Exception if an error occurs during object creation
      */
     public Object getObjectInstance(Object refObj, Name name, Context context,
-				    Hashtable env) throws Exception 
+				    Hashtable<?,?> env) throws Exception 
     {
 
         // Return null if we cannot create an object of the requested type
@@ -139,19 +139,19 @@ public class MailSessionFactory implements ObjectFactory {
         // Create a new Session inside a doPrivileged block, so that JavaMail
         // can read its default properties without throwing Security
         // exceptions
-        return AccessController.doPrivileged( new PrivilegedAction() {
-		public Object run() {
+        return AccessController.doPrivileged( new PrivilegedAction<Session>() {
+		public Session run() {
 
                     // Create the JavaMail properties we will use
                     Properties props = new Properties();
                     props.put("mail.transport.protocol", "smtp");
                     props.put("mail.smtp.host", "localhost");
-                    Enumeration attrs = ref.getAll();
+                    Enumeration<RefAddr> attrs = ref.getAll();
                     while (attrs.hasMoreElements()) {
-                        RefAddr attr = (RefAddr) attrs.nextElement();
+                        RefAddr attr = attrs.nextElement();
                         if ("factory".equals(attr.getType()))
                             continue;
-                        props.put(attr.getType(), (String) attr.getContent());
+                        props.put(attr.getType(), attr.getContent());
                     }
 
                     // Create and return the new Session object

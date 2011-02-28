@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -106,7 +106,7 @@ public class GenericPrincipal implements Principal {
      * @param roles List of roles (must be Strings) possessed by this user
      */
     public GenericPrincipal(Realm realm, String name, char[] password,
-                            List roles) {
+                            List<String> roles) {
 
         super();
         this.realm = realm;
@@ -114,21 +114,21 @@ public class GenericPrincipal implements Principal {
         this.password = ((password != null)? ((char[])password.clone()) : null);
         if (roles != null) {
             this.roles = new String[roles.size()];
-            this.roles = (String[]) roles.toArray(this.roles);
+            this.roles = roles.toArray(this.roles);
             if (this.roles.length > 0)
                 Arrays.sort(this.roles);
         }
     }
 
     public GenericPrincipal(String name, char[] password,
-                            List roles) {
+                            List<String> roles) {
 
         super();
         this.name = name;
         this.password = ((password != null)? ((char[])password.clone()) : null);
         if (roles != null) {
             this.roles = new String[roles.size()];
-            this.roles = (String[]) roles.toArray(this.roles);
+            this.roles = roles.toArray(this.roles);
             if (this.roles.length > 0)
                 Arrays.sort(this.roles);
         }

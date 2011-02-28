@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -254,7 +254,7 @@ public class WebappLoader
      * they belong to a protected namespace (i.e., a namespace that may never
      * be overridden by a webapp)  
      */
-    private ArrayList overridablePackages;
+    private ArrayList<String> overridablePackages;
     // END PE 4985680
 
 
@@ -633,7 +633,9 @@ public class WebappLoader
         started = true;
 
         if (container.getResources() == null) {
-            log.info("No resources for " + container);
+            if (log.isLoggable(Level.INFO)) {
+                log.info("No resources for " + container);
+            }
             return;
         }
         // Register a stream handler factory for the JNDI protocol
@@ -679,7 +681,7 @@ public class WebappLoader
             if (overridablePackages != null){
                 for (int i = 0; i < overridablePackages.size(); i++) {
                     classLoader.addOverridablePackage(
-                                            (String)overridablePackages.get(i));
+                                            overridablePackages.get(i));
                 }
                 overridablePackages = null;
             }
@@ -833,7 +835,9 @@ public class WebappLoader
             logger.log("WebappLoader[" + containerName + "]: " +
                 message);
         } else {
-            log.info("WebappLoader[" + containerName + "]: " + message);
+            if (log.isLoggable(Level.INFO)) {
+                log.info("WebappLoader[" + containerName + "]: " + message);
+            }
         }
     }
 
@@ -968,7 +972,9 @@ public class WebappLoader
         File workDir =
             (File) servletContext.getAttribute(ServletContext.TEMPDIR);
         if (workDir == null) {
-            log.info("No work dir for " + servletContext);
+            if (log.isLoggable(Level.INFO)) {
+                log.info("No work dir for " + servletContext);
+            }
         }
 
         if (log.isLoggable(Level.FINEST) && workDir != null) 
@@ -1306,7 +1312,7 @@ public class WebappLoader
      */
     public void addOverridablePackage(String packageName){
        if ( overridablePackages == null){
-           overridablePackages = new ArrayList();
+           overridablePackages = new ArrayList<String>();
        }
         
        overridablePackages.add( packageName ); 

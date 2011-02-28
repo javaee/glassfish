@@ -241,7 +241,7 @@ public interface InjectionManager {
      * @return managed object
      * @throws InjectionException
      */
-    public Object createManagedObject(Class clazz)
+    public <T> T createManagedObject(Class<T> clazz)
         throws InjectionException;
 
     /**
@@ -262,7 +262,7 @@ public interface InjectionManager {
      * @return managed object
      * @throws InjectionException
      */
-    public Object createManagedObject(Class clazz, boolean invokePostConstruct)
+    public <T> T createManagedObject(Class<T> clazz, boolean invokePostConstruct)
         throws InjectionException;
 
     /**

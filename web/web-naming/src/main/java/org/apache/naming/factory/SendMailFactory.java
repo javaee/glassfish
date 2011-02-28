@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -121,7 +121,7 @@ public class SendMailFactory implements ObjectFactory
 	"javax.mail.internet.MimePartDataSource";
 
     public Object getObjectInstance(Object RefObj, Name Nm, Context Ctx,
-				    Hashtable Env) throws Exception 
+				    Hashtable<?,?> Env) throws Exception 
     {
 	final Reference Ref = (Reference)RefObj;
 
@@ -129,23 +129,24 @@ public class SendMailFactory implements ObjectFactory
 	// so that javamail can read its default properties without
 	// throwing Security Exceptions
 	if (Ref.getClassName().equals(DataSourceClassName)) {
-	    return AccessController.doPrivileged( new PrivilegedAction()
+	    return AccessController.doPrivileged(
+                new PrivilegedAction<MimePartDataSource>()
 	    {
-		public Object run() {
+		public MimePartDataSource run() {
         	    // set up the smtp session that will send the message
 	            Properties props = new Properties();
 		    // enumeration of all refaddr
-		    Enumeration list = Ref.getAll();
+		    Enumeration<RefAddr> list = Ref.getAll();
 		    // current refaddr to be set
 		    RefAddr refaddr;
 	            // set transport to smtp
 	            props.put("mail.transport.protocol", "smtp");
 
 		    while (list.hasMoreElements()) {
-			refaddr = (RefAddr)list.nextElement();
+			refaddr = list.nextElement();
 
 			// set property
-			props.put(refaddr.getType(), (String)refaddr.getContent());
+			props.put(refaddr.getType(), refaddr.getContent());
 		    }
 		    try {
                         MimeMessage message = new MimeMessage(

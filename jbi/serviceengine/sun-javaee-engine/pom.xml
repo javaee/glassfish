@@ -62,7 +62,7 @@
             <id>bhavanishankar</id>
             <name>Bhavanishankar</name>
             <url>http://weblogs.java.net/blog/bhavanishankar</url>
-            <organization>Sun Microsystems, Inc.</organization>
+            <organization>Oracle, Inc.</organization>
             <roles>
                 <role>developer</role>
                 <role>lead</role>
@@ -72,7 +72,7 @@
             <id>mohit2602</id>
             <name>Mohit Gupta</name>
             <url>http://blogs.sun.com/mohitg</url>
-            <organization>Sun Microsystems, Inc.</organization>
+            <organization>Oracle, Inc.</organization>
             <roles>
                 <role>developer</role>
             </roles>
@@ -81,7 +81,7 @@
             <id>binod</id>
             <name>Binod PG</name>
             <url>http://weblogs.java.net/blog/binod/</url>
-            <organization>Sun Microsystems, Inc.</organization>
+            <organization>Oracle, Inc.</organization>
             <roles>
                 <role>developer</role>
             </roles>

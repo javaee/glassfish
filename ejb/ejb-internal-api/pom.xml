@@ -59,7 +59,7 @@
         <developer>
             <id>ksak</id>
             <name>Ken Saks</name>
-            <organization>Sun Microsystems, Inc.</organization>
+            <organization>Oracle, Inc.</organization>
             <roles>
                 <role>lead</role>
                 <role>developer</role>
@@ -68,7 +68,7 @@
         <developer>
             <id>mvatkina</id>
             <name>Marina Vatkina</name>
-            <organization>Sun Microsystems, Inc.</organization>
+            <organization>Oracle, Inc.</organization>
             <roles>
                 <role>developer</role>
             </roles>

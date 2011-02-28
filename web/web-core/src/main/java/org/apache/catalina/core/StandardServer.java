@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -458,7 +458,7 @@ public final class StandardServer
                 try {
                     ((Lifecycle) service).start();
                 } catch (LifecycleException e) {
-                    ;
+                    // Ignore
                 }
             }
 
@@ -534,7 +534,7 @@ public final class StandardServer
             try {
                 socket.close();
             } catch (IOException e) {
-                ;
+                // Ignore
             }
 
             // Match against our command string
@@ -551,7 +551,7 @@ public final class StandardServer
         try {
             serverSocket.close();
         } catch (IOException e) {
-            ;
+            // Ignore
         }
 
     }
@@ -623,7 +623,7 @@ public final class StandardServer
                 try {
                     ((Lifecycle) services[j]).stop();
                 } catch (LifecycleException e) {
-                    ;
+                    // Ignore
                 }
             }
             int k = 0;
@@ -744,7 +744,9 @@ public final class StandardServer
 
         // Validate and update our current component state
         if (started) {
-            log.fine(sm.getString("standardServer.start.started"));
+            if (log.isLoggable(Level.FINE)) {
+                log.fine(sm.getString("standardServer.start.started"));
+            }
             return;
         }
 

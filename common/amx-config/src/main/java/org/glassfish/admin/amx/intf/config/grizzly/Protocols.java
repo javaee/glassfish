@@ -48,6 +48,7 @@ import java.util.Map;
 /**
  * Note: attribute getters/setters are not included in this interface; use generic approach.
  */
+@Deprecated
 public interface Protocols extends Singleton, PropertiesAccess {
     public Map<String, Protocol> getProtocol();
 }

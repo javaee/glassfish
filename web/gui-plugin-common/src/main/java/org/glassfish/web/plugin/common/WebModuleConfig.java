@@ -154,7 +154,7 @@ public interface WebModuleConfig extends ConfigBeanProxy, ApplicationConfig, Inj
             if (nameOrNull != null) {
                 final EnvEntry entry = getEnvEntry(instance, nameOrNull);
                 if (entry == null) {
-                    result = Collections.EMPTY_LIST;
+                    result = Collections.emptyList();
                 } else {
                     result = new ArrayList<EnvEntry>();
                     result.add(entry);
@@ -171,7 +171,7 @@ public interface WebModuleConfig extends ConfigBeanProxy, ApplicationConfig, Inj
             if (nameOrNull != null) {
                 final ContextParam param = getContextParam(instance, nameOrNull);
                 if (param == null) {
-                    result = Collections.EMPTY_LIST;
+                    result = Collections.emptyList();
                 } else {
                     result = new ArrayList<ContextParam>();
                     result.add(param);

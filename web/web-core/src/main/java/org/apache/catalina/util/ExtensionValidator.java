@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -105,8 +105,9 @@ public final class ExtensionValidator {
     private static StringManager sm =
         StringManager.getManager("org.apache.catalina.util");
     
-    private static volatile HashMap containerAvailableExtensions = null;
-    private static ArrayList containerManifestResources = new ArrayList();
+    private static volatile HashMap<String, Extension> containerAvailableExtensions = null;
+    private static ArrayList<ManifestResource> containerManifestResources =
+        new ArrayList<ManifestResource>();
     private static ResourceBundle messages = null;
 
 
@@ -202,7 +203,8 @@ public final class ExtensionValidator {
                     throws IOException {
 
         String appName = context.getPath();
-        ArrayList appManifestResources = new ArrayList();
+        ArrayList<ManifestResource> appManifestResources =
+            new ArrayList<ManifestResource>();
         ManifestResource appManifestResource = null;
         // If the application context is null it does not exist and 
         // therefore is not valid
@@ -297,14 +299,14 @@ public final class ExtensionValidator {
      * @return true if manifest resource file requirements are met
      */
     private static boolean validateManifestResources(String appName, 
-                                                     ArrayList resources) {
+                                                     ArrayList<ManifestResource> resources) {
         boolean passes = true;
         int failureCount = 0;        
         HashMap availableExtensions = null;
 
-        Iterator it = resources.iterator();
+        Iterator<ManifestResource> it = resources.iterator();
         while (it.hasNext()) {
-            ManifestResource mre = (ManifestResource)it.next();
+            ManifestResource mre = it.next();
             ArrayList requiredList = mre.getRequiredExtensions();
             if (requiredList == null) {
                 continue;
@@ -338,17 +340,19 @@ public final class ExtensionValidator {
                 // check the container level list for the extension
                 } else if (containerAvailableExtensions != null
                         && containerAvailableExtensions.containsKey(extId)) {
-                   Extension targetExt = (Extension)
+                   Extension targetExt = 
                        containerAvailableExtensions.get(extId);
                    if (targetExt.isCompatibleWith(requiredExt)) {
                        requiredExt.setFulfilled(true);
                    }
                 } else {
                     // Failure
-                    log.info(sm.getString(
-                        "extensionValidator.extension-not-found-error",
-                        appName, mre.getResourceName(),
-                        requiredExt.getExtensionName()));
+                    if (log.isLoggable(Level.INFO)) {
+                        log.info(sm.getString(
+                            "extensionValidator.extension-not-found-error",
+                            appName, mre.getResourceName(),
+                            requiredExt.getExtensionName()));
+                    }
                     passes = false;
                     failureCount++;
                 }
@@ -356,9 +360,11 @@ public final class ExtensionValidator {
         }
 
         if (!passes) {
-            log.info(sm.getString(
-                     "extensionValidator.extension-validation-error", appName,
-                     failureCount + ""));
+            if (log.isLoggable(Level.INFO)) {
+                log.info(sm.getString(
+                         "extensionValidator.extension-validation-error", appName,
+                         failureCount + ""));
+            }
         }
 
         return passes;
@@ -381,20 +387,21 @@ public final class ExtensionValidator {
     *
     * @return HashMap Map of available extensions
     */
-    private static HashMap buildAvailableExtensionsMap(ArrayList resources) {
+    private static HashMap<String, Extension> buildAvailableExtensionsMap(
+            ArrayList<ManifestResource> resources) {
 
-        HashMap availableMap = null;
+        HashMap<String, Extension> availableMap = null;
 
-        Iterator it = resources.iterator();
+        Iterator<ManifestResource> it = resources.iterator();
         while (it.hasNext()) {
-            ManifestResource mre = (ManifestResource)it.next();
+            ManifestResource mre = it.next();
             HashMap map = mre.getAvailableExtensions();
             if (map != null) {
                 Iterator values = map.values().iterator();
                 while (values.hasNext()) {
                     Extension ext = (Extension) values.next();
                     if (availableMap == null) {
-                        availableMap = new HashMap();
+                        availableMap = new HashMap<String, Extension>();
                         availableMap.put(ext.getUniqueId(), ext);
                     } else if (!availableMap.containsKey(ext.getUniqueId())) {
                         availableMap.put(ext.getUniqueId(), ext);

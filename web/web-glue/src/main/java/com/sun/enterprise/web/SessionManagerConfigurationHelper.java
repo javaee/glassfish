@@ -69,7 +69,7 @@ public class SessionManagerConfigurationHelper {
     protected String _persistenceFrequency = null;
     protected String _persistenceScope = null;
     private boolean _initialized = false;
-    private ArrayList _systemApps = new ArrayList();
+    private ArrayList<String> _systemApps = new ArrayList<String>();
     protected ServerConfigLookup serverConfigLookup;
 
     /** Creates a new instance of SessionManagerConfigurationHelper */

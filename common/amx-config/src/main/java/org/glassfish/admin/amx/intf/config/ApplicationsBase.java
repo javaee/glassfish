@@ -43,11 +43,12 @@ package org.glassfish.admin.amx.intf.config;
 import org.glassfish.admin.amx.base.Singleton;
 
 /**
- * Configuration for the &lt;applications&gt; element; it is an internal "node" which
+ * @deprecated Configuration for the &lt;applications&gt; element; it is an internal "node" which
  * groups all resources under itself.
  *
  * @since Glassfish V3
  */
+@Deprecated
 public interface ApplicationsBase
         extends ConfigElement, ConfigCollectionElement, Singleton {
 

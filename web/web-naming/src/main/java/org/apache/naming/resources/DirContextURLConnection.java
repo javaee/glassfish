@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -69,6 +69,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 import javax.naming.NamingException;
@@ -273,7 +274,7 @@ public class DirContextURLConnection
     /**
      * Returns an unmodifiable Map of the header fields.
      */
-    public Map getHeaderFields() {
+    public Map<String, List<String>> getHeaderFields() {
 
         if (!connected) {
             // Try to connect (silently)
@@ -284,17 +285,19 @@ public class DirContextURLConnection
         }
 
         if (attributes == null)
-            return (Collections.EMPTY_MAP);
+            return (Collections.emptyMap());
 
-        HashMap headerFields = new HashMap(attributes.size());
-        NamingEnumeration attributeEnum = attributes.getIDs();
+        HashMap<String, List<String>> headerFields =
+            new HashMap<String, List<String>>(attributes.size());
+        NamingEnumeration<String> attributeEnum = attributes.getIDs();
         try {
             while (attributeEnum.hasMore()) {
-                String attributeID = (String)attributeEnum.next();
+                String attributeID = attributeEnum.next();
                 Attribute attribute = attributes.get(attributeID);
                 if (attribute == null) continue;
-                ArrayList attributeValueList = new ArrayList(attribute.size());
-                NamingEnumeration attributeValues = attribute.getAll();
+                ArrayList<String> attributeValueList =
+                    new ArrayList<String>(attribute.size());
+                NamingEnumeration<?> attributeValues = attribute.getAll();
                 while (attributeValues.hasMore()) {
                     attributeValueList.add(attributeValues.next().toString());
                 }
@@ -326,10 +329,10 @@ public class DirContextURLConnection
         if (attributes == null)
             return (null);
 
-        NamingEnumeration attributeEnum = attributes.getIDs();
+        NamingEnumeration<String> attributeEnum = attributes.getIDs();
         try {
             while (attributeEnum.hasMore()) {
-                String attributeID = (String)attributeEnum.next();
+                String attributeID = attributeEnum.next();
                 if (attributeID.equalsIgnoreCase(name)) {
                     Attribute attribute = attributes.get(attributeID);
                     if (attribute == null) return null;
@@ -424,7 +427,7 @@ public class DirContextURLConnection
      * List children of this collection. The names given are relative to this
      * URI's path. The full uri of the children is then : path + "/" + name.
      */
-    public Enumeration list()
+    public Enumeration<String> list()
         throws IOException {
         
         if (!connected) {
@@ -435,13 +438,14 @@ public class DirContextURLConnection
             throw new FileNotFoundException();
         }
         
-        Vector result = new Vector();
+        Vector<String> result = new Vector<String>();
         
         if (collection != null) {
             try {
-                NamingEnumeration enumeration = context.list(getURL().getFile());
+                NamingEnumeration<NameClassPair> enumeration =
+                    context.list(getURL().getFile());
                 while (enumeration.hasMoreElements()) {
-                    NameClassPair ncp = (NameClassPair) enumeration.nextElement();
+                    NameClassPair ncp = enumeration.nextElement();
                     result.addElement(ncp.getName());
                 }
             } catch (NamingException e) {

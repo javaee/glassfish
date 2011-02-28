@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2006-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -134,6 +134,14 @@ public class ApplicationInfo extends ModuleInfo {
      */
     public void setLibraries(String libraries) {
         this.libraries = libraries;
+    }
+
+    /**
+     * Sets the application classloader for this application
+     * @param cLoader application classloader
+     */
+    public void setAppClassLoader(ClassLoader cLoader) {
+        appClassLoader = cLoader;
     }
 
     /**
@@ -399,6 +407,19 @@ public class ApplicationInfo extends ModuleInfo {
 
     public void clean(ExtendedDeploymentContext context) throws Exception {
         Logger logger = context.getLogger();
+
+        // clean the app level classloader if it's not already
+        // cleaned
+        if (appClassLoader != null) {
+            try {
+                PreDestroy.class.cast(appClassLoader).preDestroy();
+            } catch (Exception e) {
+                // ignore, the class loader does not need to be
+                // explicitely stopped or already stopped
+            }
+            appClassLoader = null;
+        }
+
         super.clean(context);
         for (ModuleInfo info : modules) {
             info.clean(getSubContext(info,context));

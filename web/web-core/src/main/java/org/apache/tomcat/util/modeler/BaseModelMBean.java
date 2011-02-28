@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -224,19 +224,19 @@ public class BaseModelMBean implements ModelMBean, MBeanRegistration {
 
     /** Attribute values. XXX That can be stored in the value Field
      */
-    protected HashMap attributes=new HashMap();
+    protected HashMap<String, Object> attributes=new HashMap<String, Object>();
 
     // --------------------------------------------------- DynamicMBean Methods
     static final Object[] NO_ARGS_PARAM=new Object[0];
     static final Class[] NO_ARGS_PARAM_SIG=new Class[0];
     // key: attribute val: getter method
-    private Hashtable getAttMap=new Hashtable();
+    private Hashtable<String, Method> getAttMap=new Hashtable<String, Method>();
 
     // key: attribute val: setter method
-    private Hashtable setAttMap=new Hashtable();
+    private Hashtable<String, Method> setAttMap=new Hashtable<String, Method>();
 
     // key: operation val: invoke method
-    private Hashtable invokeAttMap=new Hashtable();
+    private Hashtable<String, Method> invokeAttMap=new Hashtable<String, Method>();
 
     /**
      * Obtain and return the value of a specific attribute of this MBean.
@@ -265,7 +265,7 @@ public class BaseModelMBean implements ModelMBean, MBeanRegistration {
         }
         
         // Extract the method from cache
-        Method m=(Method)getAttMap.get( name );
+        Method m=getAttMap.get( name );
 
         if( m==null ) {
             // Look up the actual operation to be used
@@ -410,7 +410,7 @@ public class BaseModelMBean implements ModelMBean, MBeanRegistration {
 
         if (log.isLoggable(Level.FINE))
             log.fine("Invoke " + name);
-        Method method=(Method)invokeAttMap.get(name);
+        Method method=invokeAttMap.get(name);
         if( method==null ) {
             if (params == null)
                 params = new Object[0];
@@ -595,7 +595,7 @@ public class BaseModelMBean implements ModelMBean, MBeanRegistration {
         }
 
         // Extract the method from cache
-        Method m=(Method)setAttMap.get( name );
+        Method m=setAttMap.get( name );
 
         if( m==null ) {
             // Look up the actual operation to be used
@@ -1248,10 +1248,10 @@ public class BaseModelMBean implements ModelMBean, MBeanRegistration {
      */
     protected void initModelInfo( String type ) {
         try {
-            if (log.isLoggable(Level.FINE))
+            if (log.isLoggable(Level.FINE)) {
                 log.fine("setModeledType " + type);
-            
-            log.fine( "Set model Info " + type);
+                log.fine("Set model Info " + type);
+            }
             if(type==null) {
                 return;
             }
@@ -1261,7 +1261,9 @@ public class BaseModelMBean implements ModelMBean, MBeanRegistration {
             try {
                 c=Class.forName( type);
             } catch( Throwable t ) {
-                log.fine( "Error creating class " + t);
+                if (log.isLoggable(Level.FINE)) {
+                    log.fine( "Error creating class " + t);
+                }
             }
 
             // The class c doesn't need to exist

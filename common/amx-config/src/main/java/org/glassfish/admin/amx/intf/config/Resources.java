@@ -46,6 +46,7 @@ import org.glassfish.admin.amx.core.AMXMBeanMetadata;
 import java.util.Collection;
 
 @AMXMBeanMetadata
+@Deprecated
 public interface Resources
         extends Singleton, ConfigCollectionElement, ConfigElement {
 

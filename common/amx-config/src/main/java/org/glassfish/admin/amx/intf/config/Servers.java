@@ -44,6 +44,7 @@ import org.glassfish.admin.amx.base.Singleton;
 
 import java.util.Map;
 
+@Deprecated
 public interface Servers
         extends Singleton, ConfigCollectionElement, ConfigElement {
     public Map<String, Server> getServer();

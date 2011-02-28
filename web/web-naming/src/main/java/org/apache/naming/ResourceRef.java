@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -59,7 +59,7 @@
 package org.apache.naming;
 
 import java.util.Enumeration;
-import java.util.Hashtable;
+
 import javax.naming.RefAddr;
 import javax.naming.Reference;
 import javax.naming.Context;
@@ -187,9 +187,9 @@ public class ResourceRef
         sb.append(getFactoryClassLocation());
         sb.append(",factoryClassName=");
         sb.append(getFactoryClassName());
-        Enumeration refAddrs = getAll();
+        Enumeration<RefAddr> refAddrs = getAll();
         while (refAddrs.hasMoreElements()) {
-            RefAddr refAddr = (RefAddr) refAddrs.nextElement();
+            RefAddr refAddr = refAddrs.nextElement();
             sb.append(",{type=");
             sb.append(refAddr.getType());
             sb.append(",content=");

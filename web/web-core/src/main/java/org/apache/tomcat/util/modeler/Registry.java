@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -344,7 +344,9 @@ public class Registry implements RegistryMBean, MBeanRegistration  {
         try {
             unregisterComponent(new ObjectName(oname));
         } catch (MalformedObjectNameException e) {
-            log.info("Error creating object name " + e );
+            if (log.isLoggable(Level.INFO)) {
+                log.info("Error creating object name " + e );
+            }
         }
     }    
     
@@ -379,7 +381,9 @@ public class Registry implements RegistryMBean, MBeanRegistration  {
 
             } catch( Exception t ) {
                 if( failFirst ) throw t;
-                log.log(Level.INFO, "Error initializing " + current + " " + t.toString());
+                if (log.isLoggable(Level.INFO)) {
+                    log.log(Level.INFO, "Error initializing " + current + " " + t.toString());
+                }
             }
         }
     }
@@ -830,7 +834,9 @@ public class Registry implements RegistryMBean, MBeanRegistration  {
             return;
         }
 
-        log.fine( "Found " + dURL);
+        if (log.isLoggable(Level.FINE)) {
+            log.fine( "Found " + dURL);
+        }
         searchedPaths.put( packageName,  dURL );
         try {
             if( descriptors.endsWith(".xml" ))

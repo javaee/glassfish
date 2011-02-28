@@ -149,7 +149,7 @@ public class WebApplication implements ApplicationContainer<WebBundleDescriptor>
             }
 
             container.unloadWebModule(getDescriptor().getContextRoot(), null,
-                                      null, props);
+                                      wmInfo.getVirtualServers(), props);
 
             if (keepSessions) {
                 Properties actionReportProps = deployContext.getActionReport().getExtraProperties();

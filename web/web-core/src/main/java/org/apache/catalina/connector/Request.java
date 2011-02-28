@@ -259,7 +259,7 @@ public class Request
     /**
      * The preferred Locales associated with this Request.
      */
-    protected ArrayList locales = new ArrayList();
+    protected ArrayList<Locale> locales = new ArrayList<Locale>();
     /**
      * Internal notes associated with this request by Catalina components
      * and event listeners.
@@ -324,7 +324,7 @@ public class Request
     /**
      * Hash map used in the getParametersMap method.
      */
-    protected ParameterMap parameterMap = new ParameterMap();
+    protected ParameterMap<String, String[]> parameterMap = new ParameterMap<String, String[]>();
     /**
      * The currently active session for this request.
      */
@@ -979,8 +979,7 @@ public class Request
      * Return an Iterator containing the String names of all notes bindings
      * that exist for this request.
      */
-    @Override
-    public Iterator getNoteNames() {
+    public Iterator<String> getNoteNames() {
         return notes.keySet().iterator();
     }
 
@@ -1190,11 +1189,11 @@ public class Request
      * empty <code>Enumeration</code> if there are none.
      */
     @Override
-    public Enumeration getAttributeNames() {
+    public Enumeration<String> getAttributeNames() {
         if (isSecure()) {
             populateSSLAttributes();
         }
-        return new Enumerator(attributes.keySet(), true);
+        return new Enumerator<String>(attributes.keySet(), true);
     }
 
     /**
@@ -1259,7 +1258,7 @@ public class Request
 //        }
 //
 //        if (locales.size() > 0) {
-//            return (Locale) locales.get(0);
+//            return locales.get(0);
 //        } else {
 //            return defaultLocale;
 //        }
@@ -1274,17 +1273,17 @@ public class Request
      */
     @Override
     public Enumeration<Locale> getLocales() {
-        return new Enumerator(coyoteRequest.getLocales());
+        return new Enumerator<Locale>(coyoteRequest.getLocales());
 //        if (!localesParsed) {
 //            parseLocales();
 //        }
 //
 //        if (locales.size() > 0) {
-//            return new Enumerator(locales);
+//            return (new Enumerator<Locale>(locales));
 //        }
-//        ArrayList results = new ArrayList();
+//        ArrayList<Locale> results = new ArrayList<Locale>();
 //        results.add(defaultLocale);
-//        return new Enumerator(results);
+//        return (new Enumerator<Locale>(results));
     }
 
     /**
@@ -1326,9 +1325,9 @@ public class Request
             return parameterMap;
         }
 
-        Enumeration e = getParameterNames();
+        Enumeration<String> e = getParameterNames();
         while (e.hasMoreElements()) {
-            String name = e.nextElement().toString();
+            String name = e.nextElement();
             String[] values = getParameterValues(name);
             parameterMap.put(name, values);
         }
@@ -1354,7 +1353,7 @@ public class Request
             parameterEncodingSet = true;
         }
 
-        return new Enumerator(coyoteRequest.getParameterNames());
+        return new Enumerator<String>(coyoteRequest.getParameterNames());
     }
 
     /**
@@ -1849,10 +1848,10 @@ public class Request
         final String finalEnc = enc;
         if (Globals.IS_SECURITY_ENABLED) {
             try {
-                AccessController.doPrivileged(new PrivilegedExceptionAction() {
+                AccessController.doPrivileged(new PrivilegedExceptionAction<String>() {
 
                     @Override
-                    public Object run() throws UnsupportedEncodingException {
+                    public String run() throws UnsupportedEncodingException {
                         return new String(finalBuffer, finalEnc);
                     }
                 });
@@ -1946,9 +1945,9 @@ public class Request
                 }
                 try {
                     if (Globals.IS_SECURITY_ENABLED) {
-                        Boolean ret = (Boolean) AccessController.doPrivileged(new PrivilegedAction() {
+                        Boolean ret = AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
                             @Override
-                            public Object run() {
+                            public Boolean run() {
                                 try {
                                     return new Boolean(realm.invokeAuthenticateDelegate(req, (HttpResponse) getResponse(), context, (AuthenticatorBase) authBase, true));
                                 } catch (IOException ex) {
@@ -2006,9 +2005,9 @@ public class Request
             }
             Principal webPrincipal = null;
             if (Globals.IS_SECURITY_ENABLED) {
-                webPrincipal = (Principal) AccessController.doPrivileged(new PrivilegedAction() {
+                webPrincipal = AccessController.doPrivileged(new PrivilegedAction<Principal>() {
                     @Override
-                    public Object run() {
+                    public Principal run() {
                         return realm.authenticate(username, password);
                     }
                 });
@@ -2465,7 +2464,7 @@ public class Request
      */
     @Override
     public Enumeration<String> getHeaders(String name) {
-        return new Enumerator(coyoteRequest.getHeaders(name).iterator());
+        return new Enumerator<String>(coyoteRequest.getHeaders(name).iterator());
     }
 
     /**
@@ -2473,7 +2472,7 @@ public class Request
      */
     @Override
     public Enumeration<String> getHeaderNames() {
-        return new Enumerator(coyoteRequest.getHeaderNames().iterator());
+        return new Enumerator<String>(coyoteRequest.getHeaderNames().iterator());
     }
 
     /**
@@ -3354,11 +3353,11 @@ public class Request
      */
 //    protected void parseLocalesHeader(String value) {
 //
-//        // Store the accumulated languages that have been requested in
+        // Store the accumulated languages that have been requested in
 //        // a local collection, sorted by the quality value (so we can
 //        // add Locales in descending order).  The values will be ArrayLists
 //        // containing the corresponding Locales to be added
-//        TreeMap locales = new TreeMap();
+//        TreeMap<Double, ArrayList<Locale>> locales = new TreeMap<Double, ArrayList<Locale>>();
 //
 //        // Preprocess the value to remove all whitespace
 //        int white = value.indexOf(' ');
@@ -3370,7 +3369,7 @@ public class Request
 //            int len = value.length();
 //            for (int i = 0; i < len; i++) {
 //                char ch = value.charAt(i);
-//                if (ch != ' ' && ch != '\t') {
+//                if ((ch != ' ') && (ch != '\t')) {
 //                    sb.append(ch);
 //                }
 //            }
@@ -3396,7 +3395,12 @@ public class Request
 //            int semi = entry.indexOf(";q=");
 //            if (semi >= 0) {
 //                try {
-//                    quality = Double.parseDouble(entry.substring(semi + 3));
+//                    String strQuality = entry.substring(semi + 3);
+//                    if (strQuality.length() <= 5) {
+//                        quality = Double.parseDouble(strQuality);
+//                    } else {
+//                        quality = 0.0;
+//                    }
 //                } catch (NumberFormatException e) {
 //                    quality = 0.0;
 //                }
@@ -3439,9 +3443,9 @@ public class Request
 //            // Add a new Locale to the list of Locales for this quality level
 //            Locale locale = new Locale(language, country, variant);
 //            Double key = new Double(-quality);  // Reverse the order
-//            ArrayList values = (ArrayList) locales.get(key);
+//            ArrayList<Locale> values = locales.get(key);
 //            if (values == null) {
-//                values = new ArrayList();
+//                values = new ArrayList<Locale>();
 //                locales.put(key, values);
 //            }
 //            values.add(locale);
@@ -3450,13 +3454,13 @@ public class Request
 //
 //        // Process the quality values in highest->lowest order (due to
 //        // negating the Double value when creating the key)
-//        Iterator keys = locales.keySet().iterator();
+//        Iterator<Double> keys = locales.keySet().iterator();
 //        while (keys.hasNext()) {
-//            Double key = (Double) keys.next();
-//            ArrayList list = (ArrayList) locales.get(key);
-//            Iterator values = list.iterator();
+//            Double key = keys.next();
+//            ArrayList<Locale> list = locales.get(key);
+//            Iterator<Locale> values = list.iterator();
 //            while (values.hasNext()) {
-//                Locale locale = (Locale) values.next();
+//                Locale locale = values.next();
 //                addLocale(locale);
 //            }
 //        }
@@ -4252,7 +4256,9 @@ public class Request
         if (logger != null) {
             logger.log(localName + " " + message);
         } else {
-            log.info(localName + " " + message);
+            if (log.isLoggable(Level.INFO)) {
+                log.info(localName + " " + message);
+            }
         }
     }
 

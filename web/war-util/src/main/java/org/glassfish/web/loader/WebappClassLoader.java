@@ -1324,7 +1324,7 @@ public class WebappClassLoader
             enums[1] = parentResources;
         }
 
-        return new Enumeration() {
+        return new Enumeration<URL>() {
 
             int index = 0;
 
@@ -2588,6 +2588,7 @@ public class WebappClassLoader
             Field fld = fieldlist[i];
             if (fld.getName().equals("properties")) {
                 purgeELBeanClasses(fld);
+                break;
             }
         }
     }
@@ -2603,8 +2604,8 @@ public class WebappClassLoader
 
 	SecurityManager sm = System.getSecurityManager();
 	if (sm != null) {
-            AccessController.doPrivileged(new PrivilegedAction() {
-                    public Object run() {
+            AccessController.doPrivileged(new PrivilegedAction<Void>() {
+                    public Void run() {
                         fld.setAccessible(true);
                         return null;
                     }
@@ -2613,9 +2614,9 @@ public class WebappClassLoader
             fld.setAccessible(true);
         }
 
-        Map m = null;
+        Map<Class, ?> m = null;
         try {
-            m = (Map) fld.get(null);
+            m = getBeanELResolverProperties(fld);
         } catch (IllegalAccessException iae) {
             logger.log(Level.WARNING, "webappClassLoader.unablePurgeBeanClasses", iae);
             return;
@@ -2632,6 +2633,11 @@ public class WebappClassLoader
                 iter.remove();
             }
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Map<Class, ?> getBeanELResolverProperties(Field fld) throws IllegalAccessException {
+        return (Map<Class, ?>)fld.get(null);
     }
     // END GlassFish Issue 587
 
@@ -2696,9 +2702,9 @@ public class WebappClassLoader
 
 	SecurityManager sm = System.getSecurityManager();
 	if (sm != null) {
-            version = (String) AccessController.doPrivileged(
-                new PrivilegedAction() {
-                    public Object run() {
+            version = AccessController.doPrivileged(
+                new PrivilegedAction<String>() {
+                    public String run() {
                         return System.getProperty("java.version");
                     }
             });

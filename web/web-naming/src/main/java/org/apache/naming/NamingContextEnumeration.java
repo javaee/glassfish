@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -58,9 +58,8 @@
 
 package org.apache.naming;
 
-import java.util.Hashtable;
-import java.util.Vector;
-import java.util.Enumeration;
+import java.util.Iterator;
+
 import javax.naming.NamingException;
 import javax.naming.NamingEnumeration;
 import javax.naming.NameClassPair;
@@ -73,19 +72,14 @@ import javax.naming.NameClassPair;
  */
 
 public class NamingContextEnumeration 
-    implements NamingEnumeration {
+    implements NamingEnumeration<NameClassPair> {
 
 
     // ----------------------------------------------------------- Constructors
 
 
-    public NamingContextEnumeration(Vector entries) {
-        enumeration = entries.elements();
-    }
-
-
-    public NamingContextEnumeration(Enumeration enumeration) {
-        this.enumeration = enumeration;
+    public NamingContextEnumeration(Iterator<NamingEntry> entries) {
+        iterator = entries;
     }
 
 
@@ -95,7 +89,7 @@ public class NamingContextEnumeration
     /**
      * Underlying enumeration.
      */
-    protected Enumeration enumeration;
+    protected Iterator<NamingEntry> iterator;
 
 
     // --------------------------------------------------------- Public Methods
@@ -104,7 +98,7 @@ public class NamingContextEnumeration
     /**
      * Retrieves the next element in the enumeration.
      */
-    public Object next()
+    public NameClassPair next()
         throws NamingException {
         return nextElement();
     }
@@ -115,7 +109,7 @@ public class NamingContextEnumeration
      */
     public boolean hasMore()
         throws NamingException {
-        return enumeration.hasMoreElements();
+        return iterator.hasNext();
     }
 
 
@@ -128,12 +122,12 @@ public class NamingContextEnumeration
 
 
     public boolean hasMoreElements() {
-        return enumeration.hasMoreElements();
+        return iterator.hasNext();
     }
 
 
-    public Object nextElement() {
-        NamingEntry entry = (NamingEntry) enumeration.nextElement();
+    public NameClassPair nextElement() {
+        NamingEntry entry = iterator.next();
         return new NameClassPair(entry.name, entry.value.getClass().getName());
     }
 

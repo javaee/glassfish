@@ -41,8 +41,9 @@
 package org.glassfish.admin.amx.intf.config;
 
 /**
- * Configuration for the &lt;server&gt; element.
+ * @deprecated Configuration for the &lt;server&gt; element.
  */
+@Deprecated
 public interface StandaloneServer
         extends Server {
 }

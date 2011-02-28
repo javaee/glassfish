@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -61,7 +61,7 @@ public interface CacheHelper {
      *  @param context the web application context this helper belongs to
      *  @exception Exception if a startup error occurs
      */
-    public void init(ServletContext context, Map props) throws Exception;
+    public void init(ServletContext context, Map<String, String> props) throws Exception;
 
     /** getCacheKey: generate the key to be used to cache this request 
      *  @param request incoming <code>HttpServletRequest</code> object

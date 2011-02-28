@@ -45,6 +45,7 @@ import org.glassfish.admin.amx.intf.config.grizzly.NetworkListener;
 
 import java.util.Map;
 
+@Deprecated
 public interface Config
         extends NamedConfigElement, PropertiesAccess, SystemPropertiesAccess {
 

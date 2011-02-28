@@ -332,6 +332,24 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
         return webSecurityManager;
     }
 
+    public void updateWebSecurityManager() {
+        if (webSecurityManager == null) {
+            webSecurityManager = getWebSecurityManager(true);
+        }
+        if (webSecurityManager != null) {
+            try {
+                webSecurityManager.release();
+                webSecurityManager.destroy();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            webSecurityManager = webSecurityManagerFactory.createManager(webDesc, true, serverContext);
+            if (_logger.isLoggable(Level.FINE)) {
+                _logger.fine("WebSecurityManager for "+CONTEXT_ID+" has been update");
+            }
+        }
+    }
+
     /**
      * Check if the given principal has the provided role. Returns
      * true if the principal has the specified role, false otherwise.
@@ -735,7 +753,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
      *
      * @param request Request we are processing
      * @param response Response we are creating
-     * @param constraint Security constraint we are enforcing
+     * @param constraints Security constraint we are enforcing
      *
      * @exception IOException if an input/output error occurs
      */
@@ -799,7 +817,6 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
         }
 
         HttpServletRequest hrequest = (HttpServletRequest) request;
-
         if (hrequest.getServletPath() == null) {
             request.setServletPath(getResourceName(hrequest.getRequestURI(),
                     hrequest.getContextPath()));
@@ -808,8 +825,8 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
         if (_logger.isLoggable(Level.FINE)) {
             _logger.fine("[Web-Security] [ hasResourcePermission ] Principal: " + hrequest.getUserPrincipal() + " ContextPath: " + hrequest.getContextPath());
         }
-
         WebSecurityManager secMgr = getWebSecurityManager(true);
+
         if (secMgr == null) {
             return false;
         }

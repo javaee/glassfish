@@ -45,8 +45,9 @@ import org.glassfish.admin.amx.config.AMXConfigProxy;
 import java.util.Map;
 
 /**
- * All MBeans that have system SystemProperties must extend this interface.
+ * @deprecated All MBeans that have system SystemProperties must extend this interface.
  */
+@Deprecated
 public interface SystemPropertiesAccess extends AMXConfigProxy {
     /**
      * Return all SystemProperty MBeans, keyed by property name.

@@ -58,7 +58,7 @@
         <developer>
             <id>janey</id>
             <name>Jane Young</name>
-            <organization>Sun Microsystems, Inc.</organization>
+            <organization>Oracle, Inc.</organization>
             <roles>
                 <role>lead</role>
                 <role>developer</role>
@@ -67,7 +67,7 @@
         <developer>
             <id>bnevins</id>
             <name>Byron Nevins</name>
-            <organization>Sun Microsystems, Inc.</organization>
+            <organization>Oracle, Inc.</organization>
             <roles>
                 <role>developer</role>
             </roles>
@@ -75,7 +75,7 @@
         <developer>
             <id>pa100654</id>
             <name>Prashant Abbagani</name>
-            <organization>Sun Microsystems, Inc.</organization>
+            <organization>Oracle, Inc.</organization>
             <roles>
                 <role>developer</role>
             </roles>
@@ -83,7 +83,7 @@
         <developer>
             <id>km</id>
             <name>Kedar Mhaswade</name>
-            <organization>Sun Microsystems, Inc.</organization>
+            <organization>Oracle, Inc.</organization>
             <roles>
                 <role>developer</role>
             </roles>
@@ -91,7 +91,7 @@
         <developer>
             <id>jc129909</id>
             <name>Jennifer Chou</name>
-            <organization>Sun Microsystems, Inc.</organization>
+            <organization>Oracle, Inc.</organization>
             <roles>
                 <role>developer</role>
             </roles>
@@ -99,7 +99,7 @@
         <developer>
             <id>sirajg</id>
             <name>Siraj Ghaffar</name>
-            <organization>Sun Microsystems, Inc.</organization>
+            <organization>Oracle, Inc.</organization>
             <roles>
                 <role>developer</role>
             </roles>
@@ -107,7 +107,7 @@
         <developer>
             <id>yaminikb</id>
             <name>Yamini K B</name>
-            <organization>Sun Microsystems, Inc.</organization>
+            <organization>Oracle, Inc.</organization>
             <roles>
                 <role>developer</role>
             </roles>

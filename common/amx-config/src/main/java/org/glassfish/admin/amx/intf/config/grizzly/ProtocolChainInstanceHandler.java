@@ -45,6 +45,7 @@ import org.glassfish.admin.amx.intf.config.NamedConfigElement;
 /**
  * Note: attribute getters/setters are not included in this interface; use generic approach.
  */
+@Deprecated
 public interface ProtocolChainInstanceHandler extends NamedConfigElement {
     public ProtocolChain getProtocolChain();
 }

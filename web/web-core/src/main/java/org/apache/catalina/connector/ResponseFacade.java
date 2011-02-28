@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -88,7 +88,7 @@ public class ResponseFacade
     // ----------------------------------------------------------- DoPrivileged
     
     private final class SetContentTypePrivilegedAction
-            implements PrivilegedAction {
+            implements PrivilegedAction<Void> {
 
         private String contentType;
 
@@ -96,7 +96,7 @@ public class ResponseFacade
             this.contentType = contentType;
         }
         
-        public Object run() {
+        public Void run() {
             response.setContentType(contentType);
             return null;
         }            
@@ -306,9 +306,10 @@ public class ResponseFacade
         
         if (SecurityUtil.isPackageProtectionEnabled()){
             try{
-                AccessController.doPrivileged(new PrivilegedExceptionAction(){
+                AccessController.doPrivileged(
+                        new PrivilegedExceptionAction<Void>(){
 
-                    public Object run() throws IOException{
+                    public Void run() throws IOException{
                         response.setAppCommitted(true);
 
                         response.flushBuffer();

@@ -50,6 +50,7 @@ import java.util.Set;
 
 import static org.glassfish.external.amx.AMX.*;
 
+@Deprecated
 public interface ModuleMonitoringLevels
         extends Singleton, ConfigElement, PropertiesAccess {
     /**

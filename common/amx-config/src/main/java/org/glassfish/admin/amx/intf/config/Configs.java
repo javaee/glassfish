@@ -46,6 +46,7 @@ import org.glassfish.admin.amx.core.AMXMBeanMetadata;
 import java.util.Map;
 
 @AMXMBeanMetadata
+@Deprecated
 public interface Configs
         extends Singleton, ConfigCollectionElement, ConfigElement {
     public Map<String, Config> getConfig();

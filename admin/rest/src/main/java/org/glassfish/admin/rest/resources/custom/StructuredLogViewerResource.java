@@ -92,8 +92,7 @@ public class StructuredLogViewerResource {
             @QueryParam("logLevel") @DefaultValue("INFO") String logLevel,
             @QueryParam("anySearch") @DefaultValue("") String anySearch,
             @QueryParam("listOfModules") List<String> listOfModules, //default value is empty for List
-            @QueryParam("instanceName") @DefaultValue("") String instanceName,
-            @QueryParam("logFileRefresh") @DefaultValue("false") boolean logFileRefresh) throws IOException {
+            @QueryParam("instanceName") @DefaultValue("") String instanceName) throws IOException {
 
         return getWithType(
                 logFileName,
@@ -102,7 +101,7 @@ public class StructuredLogViewerResource {
                 maximumNumberOfResults,
                 fromTime,
                 toTime,
-                logLevel, onlyLevel, anySearch, listOfModules, instanceName, "json", logFileRefresh);
+                logLevel, onlyLevel, anySearch, listOfModules, instanceName, "json");
 
     }
 
@@ -119,8 +118,7 @@ public class StructuredLogViewerResource {
             @QueryParam("logLevel") @DefaultValue("INFO") String logLevel,
             @QueryParam("anySearch") @DefaultValue("") String anySearch,
             @QueryParam("listOfModules") List<String> listOfModules, //default value is empty for List,
-            @QueryParam("instanceName") @DefaultValue("") String instanceName,
-            @QueryParam("logFileRefresh") @DefaultValue("false") boolean logFileRefresh) throws IOException {
+            @QueryParam("instanceName") @DefaultValue("") String instanceName) throws IOException {
 
         return getWithType(
                 logFileName,
@@ -129,7 +127,7 @@ public class StructuredLogViewerResource {
                 maximumNumberOfResults,
                 fromTime,
                 toTime,
-                logLevel, onlyLevel, anySearch, listOfModules, instanceName, "xml", logFileRefresh);
+                logLevel, onlyLevel, anySearch, listOfModules, instanceName, "xml");
 
     }
 
@@ -142,8 +140,7 @@ public class StructuredLogViewerResource {
             long toTime,
             String logLevel, boolean onlyLevel, String anySearch, List<String> listOfModules,
             String instanceName,
-            String type,
-            boolean logFileRefresh) throws IOException {
+            String type) throws IOException {
 
         if (habitat.getComponent(LogManager.class) == null) {
             //the logger service is not install, so we cannot rely on it.
@@ -174,7 +171,7 @@ public class StructuredLogViewerResource {
                     maximumNumberOfResults,
                     fromTime == -1 ? null : new Date(fromTime),
                     toTime == -1 ? null : new Date(toTime),
-                    logLevel, onlyLevel, listOfModules, nameValueMap, anySearch, instanceName, logFileRefresh);
+                    logLevel, onlyLevel, listOfModules, nameValueMap, anySearch, instanceName);
             return convertQueryResult(result, type);
         }
 

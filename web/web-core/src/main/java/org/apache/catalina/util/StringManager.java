@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -383,7 +383,8 @@ public class StringManager {
     // STATIC SUPPORT METHODS
     // --------------------------------------------------------------
 
-    private static Hashtable managers = new Hashtable();
+    private static Hashtable<String, StringManager> managers =
+            new Hashtable<String, StringManager>();
 
     /**
      * Get the StringManager for a particular package. If a manager for
@@ -394,7 +395,7 @@ public class StringManager {
      */
 
     public synchronized static StringManager getManager(String packageName) {
-        StringManager mgr = (StringManager)managers.get(packageName);
+        StringManager mgr = managers.get(packageName);
 
         if (mgr == null) {
             mgr = new StringManager(packageName);

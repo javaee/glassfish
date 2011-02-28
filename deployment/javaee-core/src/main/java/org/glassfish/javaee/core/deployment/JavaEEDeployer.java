@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -198,12 +198,11 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
         try {
             prepareScratchDirs(dc);
 
-            if (! dc.getCommandParameters(OpsParams.class).origin.isArtifactsPresent()) {
-             // only generate artifacts when there is no artifacts present
 
              //In jaxrpc it was required to run
              //Wscompile to generate the artifacts for clients too.
              //service-ref element can be in client in web.xml,  application-client.xml, sun-ejb-jar.xml
+             //Fix for issue 16015 
             BundleDescriptor bundleDesc = dc.getModuleMetaData(BundleDescriptor.class);
             if (bundleDesc.hasWebServiceClients())     {
                 JAXRPCCodeGenFacade jaxrpcCodeGenFacade = habitat.getByContract(JAXRPCCodeGenFacade.class);
@@ -211,7 +210,10 @@ public abstract class   JavaEEDeployer<T extends Container, U extends Applicatio
                     jaxrpcCodeGenFacade.run(habitat,dc,getModuleClassPath(dc), true) ;
                 }
             }
-            generateArtifacts(dc);
+            if (! dc.getCommandParameters(OpsParams.class).origin.isArtifactsPresent()) {
+                         // only generate artifacts when there is no artifacts present
+
+                generateArtifacts(dc);
             }
             return true;
         } catch (Exception ex) {

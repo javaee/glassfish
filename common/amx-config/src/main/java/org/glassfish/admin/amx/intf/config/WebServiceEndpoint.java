@@ -43,6 +43,7 @@ package org.glassfish.admin.amx.intf.config;
 import java.util.List;
 import java.util.Map;
 
+@Deprecated
 public interface WebServiceEndpoint
         extends NamedConfigElement {
 

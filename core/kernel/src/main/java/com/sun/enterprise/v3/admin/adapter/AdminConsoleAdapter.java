@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,14 +40,10 @@
 
 package com.sun.enterprise.v3.admin.adapter;
 
-
-import com.sun.enterprise.config.serverbeans.AdminService;
-import com.sun.enterprise.config.serverbeans.Application;
-import com.sun.enterprise.config.serverbeans.Config;
-import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.ServerTags;
+import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.v3.admin.AdminConsoleConfigUpgrade;
 import com.sun.appserv.server.util.Version;
+import org.glassfish.grizzly.config.dom.NetworkListener;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.container.Adapter;
@@ -80,6 +76,7 @@ import java.net.InetAddress;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
@@ -162,7 +159,7 @@ public final class AdminConsoleAdapter extends HttpHandler implements Adapter, P
     
     AdminEndpointDecider epd;
 
-    private Logger logger = LogDomains.getLogger(AdminConsoleAdapter.class, LogDomains.CORE_LOGGER);
+    private static final Logger logger = LogDomains.getLogger(AdminConsoleAdapter.class, LogDomains.CORE_LOGGER);
     private String statusHtml;
     private String initHtml;
 
@@ -260,7 +257,7 @@ public final class AdminConsoleAdapter extends HttpHandler implements Adapter, P
         // see usage in status.html
         
 
-       String serverVersion = version.getFullVersion();
+        String serverVersion = Version.getFullVersion();
         
         if ("/testifbackendisready.html".equals(req.getRequestURI())) {
 
@@ -366,7 +363,15 @@ public final class AdminConsoleAdapter extends HttpHandler implements Adapter, P
             public void run() {
                 InputStream is = null;
                 try {
-                    URL url = new URL("http://localhost:" + req.getLocalPort() + "/management/domain");
+                    NetworkListener nl = domain.getServerNamed("server").getConfig().getNetworkConfig()
+                            .getNetworkListener("admin-listener");
+                    SecureAdmin secureAdmin = habitat.getComponent(SecureAdmin.class);
+                    
+                    URL url = new URL(
+                            (SecureAdmin.Util.isEnabled(secureAdmin) ? "https" : "http"),
+                            nl.getAddress(), 
+                            Integer.parseInt(nl.getPort()),
+                            "/management/domain");
                     URLConnection conn = url.openConnection();
                     is = conn.getInputStream();
                     isRestStarted = true;
@@ -400,7 +405,7 @@ public final class AdminConsoleAdapter extends HttpHandler implements Adapter, P
             return "image/jpeg";
         } else {
             if (logger.isLoggable(Level.FINE)) {
-                logger.fine("Unhandled content-type: " + resource);
+                logger.log(Level.FINE, "Unhandled content-type: {0}", resource);
             }
             return null;
         }
@@ -543,7 +548,7 @@ public final class AdminConsoleAdapter extends HttpHandler implements Adapter, P
         }
 
         if (logger.isLoggable(Level.FINE)){
-            logger.log(Level.FINE, "Admin Console download location: " + warFile.getAbsolutePath());
+            logger.log(Level.FINE, "Admin Console download location: {0}", warFile.getAbsolutePath());
         }
 
         initState();
@@ -592,11 +597,11 @@ public final class AdminConsoleAdapter extends HttpHandler implements Adapter, P
      */
     private void logRequest(Request req) {
         if (logger.isLoggable(Level.FINE)) {
-            logger.fine("AdminConsoleAdapter's STATE IS: " + getStateMsg());
-            logger.log(Level.FINE, "Current Thread: " + Thread.currentThread().getName());
+            logger.log(Level.FINE, "AdminConsoleAdapter''s STATE IS: {0}", getStateMsg());
+            logger.log(Level.FINE, "Current Thread: {0}", Thread.currentThread().getName());
             for (final String name : req.getParameterNames()) {
                 final String values = Arrays.toString(req.getParameterValues(name));
-                logger.fine("Parameter name: " + name + " values: " + values);
+                logger.log(Level.FINE, "Parameter name: {0} values: {1}", new Object[]{name, values});
             }
         }
     }
@@ -777,6 +782,7 @@ public final class AdminConsoleAdapter extends HttpHandler implements Adapter, P
         int start = 0, end = 0;
         String newString = null;
         StringBuilder buf = new StringBuilder("");
+        Enumeration<String> keys = bundle.getKeys();
 
         while (start != -1) {
             // Find start of token
@@ -797,7 +803,7 @@ public final class AdminConsoleAdapter extends HttpHandler implements Adapter, P
                                 bundle.getString(text.substring(start, end)));
                     } catch (MissingResourceException ex) {
                         // Unable to find the resource, so we don't do anything
-                        buf.append("%%%" + text.substring(start, end) + "%%%");
+                        buf.append("%%%").append(text.substring(start, end)).append("%%%");
                     }
 
                     // Move past the %%%
@@ -828,6 +834,7 @@ public final class AdminConsoleAdapter extends HttpHandler implements Adapter, P
     private void writeAdminServiceProp(final String propName, final String propValue){
         try{
             ConfigSupport.apply(new SingleConfigCode<AdminService>() {
+                @Override
                 public Object run(AdminService adminService) throws PropertyVetoException, TransactionFailure {
                     Property newProp = adminService.createChild(Property.class);
                     adminService.getProperty().add(newProp);
@@ -910,7 +917,7 @@ public final class AdminConsoleAdapter extends HttpHandler implements Adapter, P
     }
 
     private String getAllowedHttpMethodsAsString() {
-        StringBuffer sb = new StringBuffer(allowedHttpMethods[0].getMethodString());
+        StringBuilder sb = new StringBuilder(allowedHttpMethods[0].getMethodString());
         for (int i = 1; i < allowedHttpMethods.length; i++) {
             sb.append(", ").append(allowedHttpMethods[i].getMethodString());
         }

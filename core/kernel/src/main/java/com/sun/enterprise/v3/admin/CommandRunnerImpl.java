@@ -95,8 +95,8 @@ import com.sun.logging.LogDomains;
 @Service
 public class CommandRunnerImpl implements CommandRunner {
 
-    private final Logger logger = LogDomains.getLogger(CommandRunnerImpl.class,
-                                        LogDomains.ADMIN_LOGGER);
+    private static final Logger logger =
+        LogDomains.getLogger(CommandRunnerImpl.class, LogDomains.ADMIN_LOGGER);
     private final InjectionManager injectionMgr = new InjectionManager();
 
     @Inject
@@ -615,9 +615,6 @@ public class CommandRunnerImpl implements CommandRunner {
 	    return "STRING";
     }
 
-    // XXX - "logger" should be static and this should be removed
-    private static final Logger manpagelogger =
-        LogDomains.getLogger(CommandRunnerImpl.class, LogDomains.ADMIN_LOGGER);
     /**
      * Return an InputStream for the man page for the named command.
      */
@@ -627,7 +624,7 @@ public class CommandRunnerImpl implements CommandRunner {
         if (clazz == null)
             return null;
         return ManPageFinder.getCommandManPage(commandName, clazz.getName(),
-                    Locale.getDefault(), clazz.getClassLoader(), manpagelogger);
+                    Locale.getDefault(), clazz.getClassLoader(), logger);
     }
 
     private void addParamUsage(

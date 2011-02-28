@@ -45,6 +45,7 @@ import org.glassfish.admin.amx.base.Singleton;
 import java.util.List;
 import java.util.Map;
 
+@Deprecated
 public interface HttpService
         extends Singleton, ConfigElement, PropertiesAccess {
 

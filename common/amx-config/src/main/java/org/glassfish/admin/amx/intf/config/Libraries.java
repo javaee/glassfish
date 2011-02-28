@@ -41,8 +41,9 @@
 package org.glassfish.admin.amx.intf.config;
 
 /**
- * Mixin interface for access to library path.
+ * @deprecated Mixing interface for access to library path.
  */
+@Deprecated
 public interface Libraries {
 
     /**

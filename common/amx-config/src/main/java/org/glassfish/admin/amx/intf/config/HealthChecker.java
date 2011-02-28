@@ -42,6 +42,7 @@ package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 
+@Deprecated
 public interface HealthChecker
         extends AMXConfigProxy {
 

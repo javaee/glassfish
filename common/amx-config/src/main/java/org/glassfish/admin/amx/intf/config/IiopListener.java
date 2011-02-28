@@ -42,7 +42,7 @@ package org.glassfish.admin.amx.intf.config;
 
 import org.glassfish.admin.amx.intf.config.grizzly.Ssl;
 
-
+@Deprecated
 public interface IiopListener
         extends Enabled, NamedConfigElement, PropertiesAccess, SslContainer {
 

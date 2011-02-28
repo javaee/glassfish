@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -139,10 +139,10 @@ public class CoyoteInputStream
             
             try{
                 Integer result = 
-                    (Integer)AccessController.doPrivileged(
-                        new PrivilegedExceptionAction(){
+                    AccessController.doPrivileged(
+                        new PrivilegedExceptionAction<Integer>(){
 
-                            public Object run() throws IOException{
+                            public Integer run() throws IOException{
                                 Integer integer = Integer.valueOf(ib.readByte());
                                 return integer;
                             }
@@ -172,10 +172,10 @@ public class CoyoteInputStream
         if (SecurityUtil.isPackageProtectionEnabled()){
             try{
                 Integer result = 
-                    (Integer)AccessController.doPrivileged(
-                        new PrivilegedExceptionAction(){
+                    AccessController.doPrivileged(
+                        new PrivilegedExceptionAction<Integer>(){
 
-                            public Object run() throws IOException{
+                            public Integer run() throws IOException{
                                 Integer integer = Integer.valueOf(ib.available());
                                 return integer;
                             }
@@ -205,10 +205,10 @@ public class CoyoteInputStream
         if (SecurityUtil.isPackageProtectionEnabled()){
             try{
                 Integer result = 
-                    (Integer)AccessController.doPrivileged(
-                        new PrivilegedExceptionAction(){
+                    AccessController.doPrivileged(
+                        new PrivilegedExceptionAction<Integer>(){
 
-                            public Object run() throws IOException{
+                            public Integer run() throws IOException{
                                 Integer integer = 
                                     Integer.valueOf(ib.read(b, 0, b.length));
                                 return integer;
@@ -242,10 +242,10 @@ public class CoyoteInputStream
         if (SecurityUtil.isPackageProtectionEnabled()){
             try{
                 Integer result = 
-                    (Integer)AccessController.doPrivileged(
-                        new PrivilegedExceptionAction(){
+                    AccessController.doPrivileged(
+                        new PrivilegedExceptionAction<Integer>(){
 
-                            public Object run() throws IOException{
+                            public Integer run() throws IOException{
                                 Integer integer = 
                                     Integer.valueOf(ib.read(b, off, len));
                                 return integer;
@@ -293,9 +293,9 @@ public class CoyoteInputStream
         if (SecurityUtil.isPackageProtectionEnabled()){
             try{
                 AccessController.doPrivileged(
-                    new PrivilegedExceptionAction(){
+                    new PrivilegedExceptionAction<Void>(){
 
-                        public Object run() throws IOException{
+                        public Void run() throws IOException{
                             ib.close();
                             return null;
                         }

@@ -59,6 +59,7 @@ import org.jvnet.hk2.component.Singleton;
 
 import java.io.*;
 import java.text.FieldPosition;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -140,6 +141,7 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
     // error state.
     private static final int MAX_RECENT_ERRORS = 4;
 
+    boolean dayBasedFileRotation = false;
 
     public void postConstruct() {
 
@@ -175,17 +177,31 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
         lr.setThreadID((int) Thread.currentThread().getId());
         this.publish(lr);
 
-        Long rotationTimeLimitValue = 0L;
-        try {
-            rotationTimeLimitValue = Long.parseLong(manager.getProperty(cname + ".rotationTimelimitInMinutes"));
-        } catch (NumberFormatException e) {
-            lr = new LogRecord(Level.SEVERE,
-                    "Cannot read rotationTimelimitInMinutes property from logging config file");
-            lr.setThreadID((int) Thread.currentThread().getId());
-            this.publish(lr);
-        }
+        String rotationOnDateChange = manager.getProperty(cname + ".rotationOnDateChange");
+        if (rotationOnDateChange != null && !("").equals(rotationOnDateChange.trim()) && Boolean.parseBoolean(rotationOnDateChange)) {
 
-        if (rotationTimeLimitValue != 0) {
+            dayBasedFileRotation = true;
+            
+            Long rotationTimeLimitValue = 0L;
+
+            int MILLIS_IN_DAY = 1000 * 60 * 60 * 24;
+            Date date = new Date();
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yy");
+
+            long systime = System.currentTimeMillis();
+            String nextDate = dateFormat.format(date.getTime() + MILLIS_IN_DAY);
+            Date nextDay = null;
+            try {
+                nextDay = dateFormat.parse(nextDate);
+            } catch (ParseException e) {
+                lr = new LogRecord(Level.WARNING,
+                        "Cannot parse the date.");
+                lr.setThreadID((int) Thread.currentThread().getId());
+                this.publish(lr);
+            }
+            long nextsystime = nextDay.getTime();
+
+            rotationTimeLimitValue = nextsystime - systime;
 
             Task rotationTask = new Task() {
                 public Object run() {
@@ -194,34 +210,63 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
                 }
             };
 
-            // If there is a value specified for the rotation based on
-            // time we set that first, if not then we will fall back to
-            // size based rotation
-
             LogRotationTimer.getInstance().startTimer(
                     new LogRotationTimerTask(rotationTask,
-                            rotationTimeLimitValue));
+                            rotationTimeLimitValue/60000));
             // Disable the Size Based Rotation if the Time Based
             // Rotation is set.
             setLimitForRotation(0);
-        } else {
-            Integer rotationLimitAttrValue = 0;
 
+        } else {
+
+            Long rotationTimeLimitValue = 0L;
             try {
-                rotationLimitAttrValue = Integer.parseInt(manager.getProperty(cname + ".rotationLimitInBytes"));
+                rotationTimeLimitValue = Long.parseLong(manager.getProperty(cname + ".rotationTimelimitInMinutes"));
             } catch (NumberFormatException e) {
-                lr = new LogRecord(Level.WARNING,
-                        "Cannot read rotationLimitInBytes property from logging config file. Using default.");
+                lr = new LogRecord(Level.SEVERE,
+                        "Cannot read rotationTimelimitInMinutes property from logging config file");
                 lr.setThreadID((int) Thread.currentThread().getId());
                 this.publish(lr);
             }
-            // We set the LogRotation limit here. The rotation limit is the
-            // Threshold for the number of bytes in the log file after which
-            // it will be rotated.
-            setLimitForRotation(rotationLimitAttrValue);
+
+            if (rotationTimeLimitValue != 0) {
+
+                Task rotationTask = new Task() {
+                    public Object run() {
+                        rotate();
+                        return null;
+                    }
+                };
+
+                // If there is a value specified for the rotation based on
+                // time we set that first, if not then we will fall back to
+                // size based rotation
+
+                LogRotationTimer.getInstance().startTimer(
+                        new LogRotationTimerTask(rotationTask,
+                                rotationTimeLimitValue));
+                // Disable the Size Based Rotation if the Time Based
+                // Rotation is set.
+                setLimitForRotation(0);
+            } else {
+                Integer rotationLimitAttrValue = 0;
+
+                try {
+                    rotationLimitAttrValue = Integer.parseInt(manager.getProperty(cname + ".rotationLimitInBytes"));
+                } catch (NumberFormatException e) {
+                    lr = new LogRecord(Level.WARNING,
+                            "Cannot read rotationLimitInBytes property from logging config file. Using default.");
+                    lr.setThreadID((int) Thread.currentThread().getId());
+                    this.publish(lr);
+                }
+                // We set the LogRotation limit here. The rotation limit is the
+                // Threshold for the number of bytes in the log file after which
+                // it will be rotated.
+                setLimitForRotation(rotationLimitAttrValue);
+            }
         }
 
-        setLevel(Level.ALL);
+        //setLevel(Level.ALL);
         String ff = manager.getProperty(cname + ".flushFrequency");
         if (ff != null)
             try {
@@ -276,6 +321,7 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
         }
         if (maxHistoryFiles < 0)
             maxHistoryFiles = 10;
+
     }
 
     public void preDestroy() {
@@ -488,7 +534,11 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
                             // This will ensure that the log rotation timer
                             // will be restarted if there is a value set
                             // for time based log rotation
-                            LogRotationTimer.getInstance().restartTimer();
+                            if(dayBasedFileRotation) {
+                                LogRotationTimer.getInstance().restartTimerForDayBasedRotation();                                
+                            } else {
+                                LogRotationTimer.getInstance().restartTimer();
+                            }
 
                             cleanUpHistoryLogFiles();
                         } catch (IOException ix) {

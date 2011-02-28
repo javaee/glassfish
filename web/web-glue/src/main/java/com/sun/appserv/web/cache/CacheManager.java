@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -87,19 +87,24 @@ public class CacheManager {
     Cache defaultCache;
 
     // cache mappings indexed by the filter name
-    HashMap cacheMappings = new HashMap();
+    HashMap<String, CacheMapping> cacheMappings =
+        new HashMap<String, CacheMapping>();
 
     // default-helper, its properties
-    Map defaultHelperProps;
+    Map<String, String> defaultHelperProps;
     DefaultCacheHelper defaultHelper;
 
     // cache helpers indexed by their name and filter name
-    HashMap helperDefs = new HashMap();
-    HashMap cacheHelpers = new HashMap();
-    HashMap cacheHelpersByFilterName = new HashMap();
+    HashMap<String, HashMap<String, String>> helperDefs =
+        new HashMap<String, HashMap<String, String>>();
+    HashMap<String, CacheHelper> cacheHelpers =
+        new HashMap<String, CacheHelper>();
+    HashMap<String, CacheHelper> cacheHelpersByFilterName =
+        new HashMap<String, CacheHelper>();
 
     // CacheManagerListener classes
-    ArrayList listeners = new ArrayList();
+    ArrayList<CacheManagerListener> listeners =
+        new ArrayList<CacheManagerListener>();
 
     /**
      * default constructor
@@ -158,7 +163,7 @@ public class CacheManager {
      * @param name CacheHelper name
      * @param helperDef CacheHelper definition
      */
-    public void addCacheHelperDef(String name, HashMap helperDef) {
+    public void addCacheHelperDef(String name, HashMap<String, String> helperDef) {
         helperDefs.put(name, helperDef);
     }
 
@@ -166,7 +171,7 @@ public class CacheManager {
      * set the default-helper's properties
      * @param map a HashMap of properties
      */
-    public void setDefaultHelperProps(Map map) {
+    public void setDefaultHelperProps(Map<String, String> map) {
         this.defaultHelperProps = map;
     }
 
@@ -221,13 +226,13 @@ public class CacheManager {
         defaultHelper.init(context, defaultHelperProps);
 
         // initialize the custom cache-helpers
-        Iterator helperNames = helperDefs.keySet().iterator();
+        Iterator<String> helperNames = helperDefs.keySet().iterator();
         while(helperNames.hasNext()) {
-            String name = (String) helperNames.next();
-            HashMap map = (HashMap)helperDefs.get(name);
+            String name = helperNames.next();
+            HashMap<String, String> map = helperDefs.get(name);
 
             try {
-                String className = (String)map.get("class-name");
+                String className = map.get("class-name");
                 CacheHelper helper = loadCacheHelper(className);
                 helper.init(context, map);
                 cacheHelpers.put(name, helper);
@@ -242,17 +247,17 @@ public class CacheManager {
         }
 
         // cache-mappings are ordered by the associated filter name
-        Iterator filterNames = cacheMappings.keySet().iterator();
+        Iterator<String> filterNames = cacheMappings.keySet().iterator();
         while(filterNames.hasNext()) {
-            String name = (String) filterNames.next();
-            CacheMapping mapping = (CacheMapping)cacheMappings.get(name);
+            String name = filterNames.next();
+            CacheMapping mapping = cacheMappings.get(name);
 
             String helperNameRef = mapping.getHelperNameRef();
             CacheHelper helper;
             if (helperNameRef == null || helperNameRef.equals("default")) {
                 helper = defaultHelper;
             } else {
-                helper = (CacheHelper) cacheHelpers.get(helperNameRef);
+                helper = cacheHelpers.get(helperNameRef);
             }
             cacheHelpersByFilterName.put(name, helper);
         }
@@ -325,7 +330,7 @@ public class CacheManager {
      * @return CacheMapping 
      */
     public CacheMapping getCacheMapping(String name) {
-        return (CacheMapping)cacheMappings.get(name);
+        return cacheMappings.get(name);
     }
 
     /**
@@ -334,7 +339,7 @@ public class CacheManager {
      * @return CacheHelper implementation
      */
     public CacheHelper getCacheHelper(String name) {
-        return (CacheHelper)cacheHelpers.get(name);
+        return cacheHelpers.get(name);
     }
 
     /**
@@ -343,7 +348,7 @@ public class CacheManager {
      * @return CacheHelper implementation
      */
     public CacheHelper getCacheHelperByFilterName(String filterName) {
-        return (CacheHelper)cacheHelpersByFilterName.get(filterName);
+        return cacheHelpersByFilterName.get(filterName);
     }
 
     /**
@@ -371,8 +376,7 @@ public class CacheManager {
      */
     public void enable() {
         for (int i = 0; i < listeners.size(); i++) {
-            CacheManagerListener listener = (CacheManagerListener) 
-                                        listeners.get(i);
+            CacheManagerListener listener = listeners.get(i);
             listener.cacheManagerEnabled();
         }
     }
@@ -382,8 +386,7 @@ public class CacheManager {
      */
     public void disable() {
         for (int i = 0; i < listeners.size(); i++) {
-            CacheManagerListener listener = (CacheManagerListener) 
-                                    listeners.get(i);
+            CacheManagerListener listener = listeners.get(i);
             listener.cacheManagerDisabled();
         }
     }
@@ -403,9 +406,9 @@ public class CacheManager {
         }
 
         // destroy the cache-helpers
-        Enumeration helpers = Collections.enumeration(cacheHelpers.values());
+        Enumeration<CacheHelper> helpers = Collections.enumeration(cacheHelpers.values());
         while(helpers.hasMoreElements()) {
-            CacheHelper cacheHelper = (CacheHelper)helpers.nextElement();
+            CacheHelper cacheHelper = helpers.nextElement();
             try {
                 cacheHelper.destroy();
             } catch (Exception e) {

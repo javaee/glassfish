@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -103,7 +103,7 @@ public class StopDomainCommand extends LocalDomainCommand {
             // if the local password isn't available, the domain isn't running
             // (localPassword is set by initDomain)
             if (getServerDirs().getLocalPassword() == null)
-                return dasNotRunning();
+                return dasNotRunning(local);
 
             programOpts.setHostAndPort(getAdminAddress());
             logger.finer("Stopping local domain on port "
@@ -118,14 +118,14 @@ public class StopDomainCommand extends LocalDomainCommand {
 
             // in the local case, make sure we're talking to the correct DAS
             if (!isThisDAS(getDomainRootDir()))
-                return dasNotRunning();
+                return dasNotRunning(local);
 
             logger.finer("It's the correct DAS");
         }
         else { // remote
             // Verify that the DAS is running and reachable
             if (!DASUtils.pingDASQuietly(programOpts, env))
-                return dasNotRunning();
+                return dasNotRunning(local);
 
             logger.finer("DAS is running");
             programOpts.setInteractive(false);
@@ -146,7 +146,7 @@ public class StopDomainCommand extends LocalDomainCommand {
      * Print message and return exit code when
      * we detect that the DAS is not running.
      */
-    protected int dasNotRunning() throws CommandException {
+    protected int dasNotRunning(boolean local) throws CommandException {
         if (kill) {
             if (local)
                 return kill();

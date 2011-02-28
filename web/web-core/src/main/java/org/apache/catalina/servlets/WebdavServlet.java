@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -574,8 +574,8 @@ public class WebdavServlet
             int slash = path.lastIndexOf('/');
             if (slash != -1) {
                 String parentPath = path.substring(0, slash);
-                Vector currentLockNullResources =
-                    (Vector) lockNullResources.get(parentPath);
+                Vector<String> currentLockNullResources =
+                    lockNullResources.get(parentPath);
                 if (currentLockNullResources != null) {
                     Enumeration<String> lockNullResourcesList =
                         currentLockNullResources.elements();
@@ -672,8 +672,8 @@ public class WebdavServlet
                     if (lockPath.endsWith("/"))
                         lockPath =
                             lockPath.substring(0, lockPath.length() - 1);
-                    Vector currentLockNullResources =
-                        (Vector) lockNullResources.get(lockPath);
+                    Vector<String> currentLockNullResources =
+                        lockNullResources.get(lockPath);
                     if (currentLockNullResources != null) {
                         Enumeration<String> lockNullResourcesList =
                             currentLockNullResources.elements();
@@ -2332,7 +2332,7 @@ public class WebdavServlet
     private void parseLockNullProperties(HttpServletRequest req,
                                          XMLWriter generatedXML,
                                          String path, int type,
-                                         Vector propertiesVector) {
+                                         Vector<String> propertiesVector) {
 
         // Exclude any resource in the /WEB-INF and /META-INF subdirectories
         // (the "toUpperCase()" avoids problems on Windows systems)

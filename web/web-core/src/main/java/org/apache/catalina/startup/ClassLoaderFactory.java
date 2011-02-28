@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -182,7 +182,7 @@ public final class ClassLoaderFactory {
             log.fine("Creating new class loader");
 
         // Construct the "class path" for this class loader
-        ArrayList list = new ArrayList();
+        ArrayList<String> list = new ArrayList<String>();
 
         // Add unpacked directories
         if (unpacked != null) {
@@ -230,7 +230,7 @@ public final class ClassLoaderFactory {
         }
 
         // Construct the class loader itself
-        String array[] = (String[]) list.toArray(new String[list.size()]);
+        String array[] = list.toArray(new String[list.size()]);
         StandardClassLoader classLoader = null;
         if (parent == null)
             classLoader = new StandardClassLoader(array);

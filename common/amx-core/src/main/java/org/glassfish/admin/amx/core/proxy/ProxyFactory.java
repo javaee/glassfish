@@ -41,50 +41,36 @@
 package org.glassfish.admin.amx.core.proxy;
 
 import org.glassfish.admin.amx.base.DomainRoot;
+import org.glassfish.admin.amx.config.AMXConfigProxy;
 import org.glassfish.admin.amx.core.AMXProxy;
-
+import org.glassfish.admin.amx.core.Util;
 import org.glassfish.admin.amx.util.AMXDebugHelper;
-import org.glassfish.admin.amx.util.jmx.JMXUtil;
 import org.glassfish.admin.amx.util.ExceptionUtil;
 import org.glassfish.admin.amx.util.StringUtil;
-
-import javax.management.MBeanServer;
-import javax.management.MBeanServerConnection;
-import javax.management.MBeanServerNotification;
-import javax.management.Notification;
-import javax.management.NotificationListener;
-import javax.management.ObjectName;
-import javax.management.MBeanInfo;
-import javax.management.InstanceNotFoundException;
-import javax.management.relation.MBeanServerNotificationFilter;
-import javax.management.remote.JMXConnectionNotification;
-import javax.management.remote.JMXConnector;
-import java.io.IOException;
-import java.lang.reflect.Proxy;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ConcurrentHashMap;
-import javax.management.Descriptor;
+import org.glassfish.admin.amx.util.jmx.JMXUtil;
+import org.glassfish.external.amx.AMXGlassfish;
 import org.glassfish.external.arc.Stability;
 import org.glassfish.external.arc.Taxonomy;
-import org.glassfish.admin.amx.config.AMXConfigProxy;
-import org.glassfish.admin.amx.core.Util;
-import static org.glassfish.external.amx.AMX.*;
-import org.glassfish.external.amx.AMXGlassfish;
+
+import javax.management.*;
+import javax.management.relation.MBeanServerNotificationFilter;
+import javax.management.remote.JMXConnectionNotification;
+import java.io.IOException;
+import java.lang.reflect.Proxy;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+
+import static org.glassfish.external.amx.AMX.DESC_STD_IMMUTABLE_INFO;
+import static org.glassfish.external.amx.AMX.NAME_KEY;
 
 //import org.glassfish.api.amx.AMXUtil;
 
 
 /**
-	Factory for {@link AMXProxy} proxies.
+	@deprecated Factory for {@link AMXProxy} proxies.
  */
+@Deprecated
 @Taxonomy(stability = Stability.UNCOMMITTED)
 public final class ProxyFactory implements NotificationListener
 {

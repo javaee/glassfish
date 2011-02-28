@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -77,13 +77,15 @@ public class ContextAccessController {
     /**
      * Catalina context names on which writing is not allowed.
      */
-    private static Hashtable readOnlyContexts = new Hashtable();
+    private static Hashtable<Object, Object> readOnlyContexts =
+        new Hashtable<Object, Object>();
 
 
     /**
      * Security tokens repository.
      */
-    private static Hashtable securityTokens = new Hashtable();
+    private static Hashtable<Object, Object> securityTokens =
+        new Hashtable<Object, Object>();
 
 
     // --------------------------------------------------------- Public Methods

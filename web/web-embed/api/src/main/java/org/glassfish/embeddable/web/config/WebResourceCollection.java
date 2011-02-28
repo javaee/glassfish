@@ -85,7 +85,7 @@ public class WebResourceCollection {
      * @return the name of this collection
      */
     public String getName() {
-        return this.name;
+        return name;
     }
 
     /**
@@ -105,7 +105,7 @@ public class WebResourceCollection {
      * @return the url patterns
      */
     public Set<String> getUrlPatterns() {
-        return this.urlPatterns;
+        return urlPatterns;
     }
 
     /**
@@ -123,7 +123,7 @@ public class WebResourceCollection {
      * @return the HTTP methods
      */
     public Set<String> getHttpMethods() {
-        return this.httpMethods;
+        return httpMethods;
     }
 
     /**
@@ -142,6 +142,19 @@ public class WebResourceCollection {
      * @return the HTTP methods to be omitted from protection
      */
     public Set<String> getHttpMethodOmissions() {
-        return this.httpMethodOmissions;
+        return httpMethodOmissions;
+    }
+
+    /**
+     * Returns a formatted string of the state.
+     */
+    public String toString() {
+        StringBuffer toStringBuffer = new StringBuffer();
+        toStringBuffer.append("WebResourceCollection: ");
+        toStringBuffer.append(" name: ").append(name);
+        toStringBuffer.append(" urlPatterns: ").append(urlPatterns);
+        toStringBuffer.append(" httpMethods ").append(httpMethods);
+        toStringBuffer.append(" httpMethodOmissions ").append(httpMethodOmissions);
+        return toStringBuffer.toString();
     }
 }

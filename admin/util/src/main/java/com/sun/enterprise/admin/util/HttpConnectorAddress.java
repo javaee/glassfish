@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,20 +40,18 @@
 
 package com.sun.enterprise.admin.util;
 
-import com.sun.enterprise.security.ssl.SSLUtils;
-import com.sun.enterprise.security.store.AsadminSecurityUtil;
 import java.io.IOException;
 import java.net.URL;
 import java.net.MalformedURLException;
 import java.net.URLConnection;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.security.KeyManagementException;
-
 import com.sun.enterprise.universal.GFBase64Encoder;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
 
-import javax.net.ssl.*;
-import org.jvnet.hk2.component.Habitat;
 
 public final class HttpConnectorAddress {
     static final String HTTP_CONNECTOR = "http";
@@ -206,7 +204,7 @@ public final class HttpConnectorAddress {
     }
 
     public String getPath() {
-        return path;
+        return path == null ? "/" : path;
     }
 
     public void setPath(String path) {
@@ -222,7 +220,7 @@ public final class HttpConnectorAddress {
     }
 
     /**
-     * Set the security attibute
+     * Set the security attribute
      */
     public void setSecure(boolean secure) {
         this.secure = secure;
@@ -230,59 +228,38 @@ public final class HttpConnectorAddress {
   
 
     /**
-     * Indicate if the reciever represents a secure address
+     * Indicate if the receiver represents a secure address
      */
     public boolean isSecure() {
         return secure;
     }
 
     public URL toURL(String path) throws MalformedURLException{
-        return new URL(this.asURLSpec(path));
+        return new URL(getConnectorType(), getHost(), getPort(), 
+                path == null ? "" : path);
     }
 
     public SSLSocketFactory getSSLSocketFactory() {
         return sslSocketFactory;
     }
   
-    private final String getUser() {
+    private String getUser() {
         return authInfo != null ? authInfo.getUser() : "";
     }
 
-    private final String getPassword() {
+    private String getPassword() {
         return authInfo != null ? authInfo.getPassword() : "";
     }
 
-    /**
-     * Return a string which can be used as the specification to
-     * form an URL.
-     * @return a string which can be used as the specification to
-     * form an URL. This string is in the form of
-     * <code>&gt;protocol>://&gt;host>:&gtport>/</code> with the
-     * appropriate substitutions
-     */
-    private final String asURLSpec(String path) {
-        return this.getConnectorType()
-        +"://"+this.getAuthority()
-        +(path != null? path : "");
-    }
-
-    /**
-     * Return the authority portion of the URL spec
-     */
-    private final String getAuthority() {
-        return this.getHost() + ":" + this.getPort();
-    }
-
-
-    private final URLConnection openConnection(URL url) throws IOException    {
+    private URLConnection openConnection(URL url) throws IOException    {
         return this.setOptions(this.makeConnection(url));
     }
 
-    private final URLConnection makeConnection(URL url) throws IOException {
+    private URLConnection makeConnection(URL url) throws IOException {
         return ( url.openConnection() );
     }
 
-    private final URLConnection setOptions(URLConnection uc) {
+    private URLConnection setOptions(URLConnection uc) {
         uc.setDoOutput(true);
         uc.setUseCaches(false);
         uc.setRequestProperty("Content-type", "application/octet-stream");
@@ -290,7 +267,7 @@ public final class HttpConnectorAddress {
         return this.setAuthentication(uc);
     }
 
-    private final URLConnection setAuthentication(URLConnection uc) {
+    private URLConnection setAuthentication(URLConnection uc) {
         if (authInfo != null) {
             uc.setRequestProperty(AUTHORIZATION_KEY, this.getBasicAuthString());
         }
@@ -318,7 +295,7 @@ public final class HttpConnectorAddress {
         return ( AUTHORIZATION_TYPE + enc );
     }
   
-    private final String getBase64Encoded(String clearString) {
+    private String getBase64Encoded(String clearString) {
         return new GFBase64Encoder().encode(clearString.getBytes());
     }
 
@@ -330,6 +307,7 @@ public final class HttpConnectorAddress {
             this.host = host;
         }
 
+        @Override
         public boolean verify(String s, SSLSession sslSession) {
             return host.equals(s);
         }

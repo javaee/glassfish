@@ -99,9 +99,9 @@ public class DefaultCacheHelper implements CacheHelper {
      * @param context the web application context this helper belongs to
      * @param props helper properties
      */
-    public void init(ServletContext context, Map props) {
+    public void init(ServletContext context, Map<String, String> props) {
         this.context = context;
-        attrKeyGenerator = (String)props.get(PROP_KEY_GENERATOR_ATTR_NAME);
+        attrKeyGenerator = props.get(PROP_KEY_GENERATOR_ATTR_NAME);
     }
 
     /**

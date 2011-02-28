@@ -58,11 +58,12 @@
 
 package org.apache.naming.resources;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Hashtable;
-import java.util.Vector;
 import java.util.Date;
+import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.logging.Logger;
@@ -74,13 +75,12 @@ import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
 import java.io.OutputStream;
 import java.io.IOException;
-import javax.naming.Context;
-import javax.naming.Name;
-import javax.naming.NameParser;
+
+import javax.naming.Binding;
+import javax.naming.NameClassPair;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.CompositeName;
-import javax.naming.NameParser;
 import javax.naming.OperationNotSupportedException;
 import javax.naming.NameAlreadyBoundException;
 import javax.naming.directory.DirContext;
@@ -88,8 +88,9 @@ import javax.naming.directory.Attributes;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.ModificationItem;
 import javax.naming.directory.SearchControls;
+import javax.naming.directory.SearchResult;
+
 import org.apache.naming.StringManager;
-import org.apache.naming.NameParserImpl;
 import org.apache.naming.NamingEntry;
 import org.apache.naming.NamingContextBindingsEnumeration;
 import org.apache.naming.NamingContextEnumeration;
@@ -130,7 +131,7 @@ public class FileDirContext extends BaseDirContext {
     /**
      * Builds a file directory context using the given environment.
      */
-    public FileDirContext(Hashtable env) {
+    public FileDirContext(Hashtable<String, Object> env) {
         super(env);
     }
 
@@ -148,11 +149,16 @@ public class FileDirContext extends BaseDirContext {
      * File cache.
      */
     // map x --> File(x)
-    protected Map docBaseFileCache = Collections.synchronizedMap(new WeakHashMap());
+    protected Map<String, File> docBaseFileCache =
+        Collections.synchronizedMap(new WeakHashMap<String, File>());
+
     // map x --> File(base, x) 
-    protected Map fileCache = Collections.synchronizedMap(new WeakHashMap());
+    protected Map<String, File> fileCache =
+        Collections.synchronizedMap(new WeakHashMap<String, File>());
+
     // map file.getPath() + '/' + x --> File(file, x)
-    protected Map listFileCache = Collections.synchronizedMap(new WeakHashMap());
+    protected Map<String, File> listFileCache =
+        Collections.synchronizedMap(new WeakHashMap<String, File>());
     // END S1AS8PE 4965170
 
     /**
@@ -194,7 +200,7 @@ public class FileDirContext extends BaseDirContext {
             (sm.getString("resources.null"));
 
         // START S1AS8PE 4965170
-        base = (File)docBaseFileCache.get(docBase);
+        base = docBaseFileCache.get(docBase);
         if (base == null){
             // Calculate a File object referencing this document base directory
             base = new File(docBase);
@@ -356,7 +362,7 @@ public class FileDirContext extends BaseDirContext {
                 (sm.getString("resources.notFound", oldName));
 
         // START S1AS8PE 4965170
-        File newFile = (File)fileCache.get(newName);
+        File newFile = fileCache.get(newName);
         if (newFile == null) {
             newFile = new File(base, newName);
         }
@@ -380,7 +386,7 @@ public class FileDirContext extends BaseDirContext {
      * this context. Each element of the enumeration is of type NameClassPair.
      * @exception NamingException if a naming exception is encountered
      */
-    public NamingEnumeration list(String name)
+    public NamingEnumeration<NameClassPair> list(String name)
         throws NamingException {
         
         File file = file(name);
@@ -389,9 +395,7 @@ public class FileDirContext extends BaseDirContext {
             throw new NamingException
                 (sm.getString("resources.notFound", name));
 
-        Vector entries = list(file);
-
-        return new NamingContextEnumeration(entries);
+        return new NamingContextEnumeration(list(file).iterator());
 
     }
 
@@ -409,7 +413,7 @@ public class FileDirContext extends BaseDirContext {
      * Each element of the enumeration is of type Binding.
      * @exception NamingException if a naming exception is encountered
      */
-    public NamingEnumeration listBindings(String name)
+    public NamingEnumeration<Binding> listBindings(String name)
         throws NamingException {
 
         File file = file(name);
@@ -418,9 +422,8 @@ public class FileDirContext extends BaseDirContext {
             throw new NamingException
                 (sm.getString("resources.notFound", name));
 
-        Vector entries = list(file);
-
-        return new NamingContextBindingsEnumeration(entries);
+        return new NamingContextBindingsEnumeration(list(file).iterator(),
+                this);
 
     }
 
@@ -762,8 +765,8 @@ public class FileDirContext extends BaseDirContext {
      * context named by name.
      * @exception NamingException if a naming exception is encountered
      */
-    public NamingEnumeration search(String name, Attributes matchingAttributes,
-                                    String[] attributesToReturn)
+    public NamingEnumeration<SearchResult> search(String name,
+            Attributes matchingAttributes, String[] attributesToReturn)
         throws NamingException {
         return null;
     }
@@ -784,8 +787,8 @@ public class FileDirContext extends BaseDirContext {
      * context named by name.
      * @exception NamingException if a naming exception is encountered
      */
-    public NamingEnumeration search(String name, Attributes matchingAttributes)
-        throws NamingException {
+    public NamingEnumeration<SearchResult> search(String name,
+           Attributes matchingAttributes) throws NamingException {
         return null;
     }
 
@@ -809,7 +812,7 @@ public class FileDirContext extends BaseDirContext {
      * contain invalid settings
      * @exception NamingException if a naming exception is encountered
      */
-    public NamingEnumeration search(String name, String filter, 
+    public NamingEnumeration<SearchResult> search(String name, String filter, 
                                     SearchControls cons)
         throws NamingException {
         return null;
@@ -840,7 +843,7 @@ public class FileDirContext extends BaseDirContext {
      * represents an invalid search filter
      * @exception NamingException if a naming exception is encountered
      */
-    public NamingEnumeration search(String name, String filterExpr, 
+    public NamingEnumeration<SearchResult> search(String name, String filterExpr, 
                                     Object[] filterArgs, SearchControls cons)
         throws NamingException {
         return null;
@@ -877,9 +880,11 @@ public class FileDirContext extends BaseDirContext {
     /*
      * Check that the file is valid for this context
      */
-    private File file(File baseFile, String name, String keyName, Map fCache) {
+    private File file(File baseFile, String name, String keyName,
+            Map<String, File> fCache) {
+
         // START S1AS8PE 4965170
-        File file = (File)fCache.get(keyName);
+        File file = fCache.get(keyName);
         if (file == null){
             file = new File(baseFile, name);
         }
@@ -982,11 +987,11 @@ public class FileDirContext extends BaseDirContext {
      * List the resources which are members of a collection.
      * 
      * @param file Collection
-     * @return Vector containg NamingEntry objects
+     * @return ArrayList containg NamingEntry objects
      */
-    protected Vector list(File file) {
+    protected ArrayList<NamingEntry> list(File file) {
 
-        Vector entries = new Vector();
+        ArrayList<NamingEntry> entries = new ArrayList<NamingEntry>();
         if (!file.isDirectory())
             return entries;
         String[] names = file.list();
@@ -1020,7 +1025,7 @@ public class FileDirContext extends BaseDirContext {
                 object = new FileResource(currentFile);
             }
             entry = new NamingEntry(names[i], object, NamingEntry.ENTRY);
-            entries.addElement(entry);
+            entries.add(entry);
 
         }
 

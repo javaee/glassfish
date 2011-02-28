@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -93,7 +93,7 @@ public final class NonLoginAuthenticator
      */
     private final GenericPrincipal NONLOGIN_PRINCIPAL =
         new GenericPrincipal(NONLOGIN_PRINCIPAL_NAME, (char[]) null, 
-                            (java.util.List) null);
+                            (java.util.List<String>) null);
     //END SJSAS 6202703
     
     /**

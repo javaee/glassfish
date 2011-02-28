@@ -54,9 +54,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Server-side helper methods for config MBeans.
+ * @deprecated Server-side helper methods for config MBeans.
  */
 @AMXMBeanMetadata(leaf = true, singleton = true)
+@Deprecated
 public interface ConfigTools extends AMXProxy, Singleton {
     /**
      * Create Property sub-elements on the specified MBean, transactionally (all or none).

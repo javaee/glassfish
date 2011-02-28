@@ -46,13 +46,16 @@ import com.sun.enterprise.container.common.spi.util.JavaEEIOUtils;
 import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.annotation.handlers.ServletSecurityHandler;
 import com.sun.enterprise.deployment.runtime.web.*;
+import com.sun.enterprise.deployment.web.LoginConfiguration;
 import com.sun.enterprise.deployment.web.SecurityConstraint;
 import com.sun.enterprise.deployment.web.ServletFilterMapping;
+import com.sun.enterprise.deployment.web.UserDataConstraint;
 import com.sun.enterprise.deployment.web.WebResourceCollection;
 import com.sun.enterprise.security.integration.RealmInitializer;
 import com.sun.enterprise.universal.GFBase64Decoder;
 import com.sun.enterprise.universal.GFBase64Encoder;
 import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.web.deploy.LoginConfigDecorator;
 import com.sun.enterprise.web.pwc.PwcWebModule;
 import com.sun.enterprise.web.session.PersistenceType;
 import com.sun.enterprise.web.session.SessionCookieConfig;
@@ -69,7 +72,12 @@ import org.apache.jasper.servlet.JspServlet;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.DeploymentContext;
 import org.glassfish.embeddable.web.Context;
+import org.glassfish.embeddable.web.config.AuthMethod;
+import org.glassfish.embeddable.web.config.FormLoginConfig;
+import org.glassfish.embeddable.web.config.LoginConfig;
+import org.glassfish.embeddable.web.config.RealmType;
 import org.glassfish.embeddable.web.config.SecurityConfig;
+import org.glassfish.embeddable.web.config.TransportGuarantee;
 import org.glassfish.hk2.classmodel.reflect.Types;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.embeddable.GlassFishException;
@@ -477,7 +485,7 @@ public class WebModule extends PwcWebModule implements Context {
     @Override
     public synchronized void start() throws LifecycleException {
         // Get interestList of ServletContainerInitializers present, if any.
-        List<String> orderingList = null;
+        List<Object> orderingList = null;
         boolean hasOthers = false;
         Map<String, String> webFragmentMap = Collections.emptyMap();
         if (webBundleDescriptor != null) {
@@ -570,7 +578,7 @@ public class WebModule extends PwcWebModule implements Context {
              * by JSF's FacesInitializer. See also IT 10223
              */
             ArrayList<ServletContextListener> listeners =
-                (ArrayList<ServletContextListener>) contextListeners.clone();
+                new ArrayList<ServletContextListener>(contextListeners);
             String listenerClassName = null;
             for (ServletContextListener listener : listeners) {
                 if (listener instanceof
@@ -2157,8 +2165,107 @@ public class WebModule extends PwcWebModule implements Context {
      * Set the security related configuration for this context
      */
     public void setSecurityConfig(SecurityConfig config) {
+
         this.config = config;
-        // TODO security settings
+        if (config == null) {
+            return;
+        }
+
+        LoginConfig lc = config.getLoginConfig();
+        if (lc != null) {
+            LoginConfiguration loginConf = new LoginConfigurationImpl();
+            loginConf.setAuthenticationMethod(lc.getAuthMethod().name());
+            loginConf.setRealmName(lc.getRealmName());
+
+            FormLoginConfig form = lc.getFormLoginConfig();
+            if (form != null) {
+                loginConf.setFormErrorPage(form.getFormErrorPage());
+                loginConf.setFormLoginPage(form.getFormLoginPage());
+            }
+
+            LoginConfigDecorator decorator = new LoginConfigDecorator(loginConf);
+            setLoginConfig(decorator);
+            getWebBundleDescriptor().setLoginConfiguration(loginConf);
+        }
+
+        Set<org.glassfish.embeddable.web.config.SecurityConstraint> securityConstraints =
+                config.getSecurityConstraints();
+        for (org.glassfish.embeddable.web.config.SecurityConstraint sc : securityConstraints) {
+
+            SecurityConstraint securityConstraint = new SecurityConstraintImpl();
+
+            Set<org.glassfish.embeddable.web.config.WebResourceCollection> wrcs =
+                        sc.getWebResourceCollection();
+            for (org.glassfish.embeddable.web.config.WebResourceCollection wrc : wrcs) {
+
+                WebResourceCollectionImpl webResourceColl = new WebResourceCollectionImpl();
+                webResourceColl.setDisplayName(wrc.getName());
+                for (String urlPattern : wrc.getUrlPatterns()) {
+                    webResourceColl.addUrlPattern(urlPattern);
+                }
+                securityConstraint.addWebResourceCollection(webResourceColl);
+
+                AuthorizationConstraintImpl ac = null;
+                if (sc.getAuthConstraint() != null && sc.getAuthConstraint().length > 0) {
+                    ac = new AuthorizationConstraintImpl();
+                    for (String roleName : sc.getAuthConstraint()) {
+                        Role role = new Role(roleName);
+                        getWebBundleDescriptor().addRole(role);
+                        ac.addSecurityRole(roleName);
+                    }
+                } else { // DENY
+                    ac = new AuthorizationConstraintImpl();
+                }
+                securityConstraint.setAuthorizationConstraint(ac);
+
+                UserDataConstraint udc = new UserDataConstraintImpl();
+                udc.setTransportGuarantee(
+                        ((sc.getDataConstraint() == TransportGuarantee.CONFIDENTIAL) ?
+                                UserDataConstraint.CONFIDENTIAL_TRANSPORT :
+                                UserDataConstraint.NONE_TRANSPORT));
+                securityConstraint.setUserDataConstraint(udc);
+
+                for (String httpMethod : wrc.getHttpMethods()) {
+                    webResourceColl.addHttpMethod(httpMethod);
+                }
+
+                getWebBundleDescriptor().addSecurityConstraint(securityConstraint);
+                TomcatDeploymentConfig.configureSecurityConstraint(this, getWebBundleDescriptor());
+            }
+        }
+
+        if (pipeline != null) {
+            GlassFishValve basic = pipeline.getBasic();
+            if ((basic != null) && (basic instanceof Authenticator)) {
+                removeValve(basic);
+            }
+            GlassFishValve valves[] = pipeline.getValves();
+            for (int i = 0; i < valves.length; i++) {
+                if (valves[i] instanceof Authenticator) {
+                    removeValve(valves[i]);
+                }
+            }
+        }
+
+        if (realm != null && realm instanceof RealmInitializer) {
+            ((RealmInitializer) realm).initializeRealm(
+                    this.getWebBundleDescriptor(),
+                    false,
+                    ((VirtualServer)parent).getAuthRealmName());
+            ((RealmInitializer)realm).setVirtualServer(getParent());
+            ((RealmInitializer)realm).updateWebSecurityManager();
+            setRealm(realm);
+        }
+
+        try {
+            // todo try to avoid this
+            // restart this context for security constraints
+            stop();
+            start();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
     }
 
     /**
@@ -2308,14 +2415,13 @@ class DynamicWebServletRegistrationImpl
             wbd.addWebComponentDescriptor(wcd);
             String servletClassName = wrapper.getServletClassName();
             if (servletClassName != null) {
-                Class clazz = wrapper.getServletClass();
+                Class<? extends Servlet> clazz = wrapper.getServletClass();
                 if (clazz == null) {
                     if (wrapper.getServlet() != null) {
                         clazz = wrapper.getServlet().getClass();
                     } else {                  
                         try {
-                            clazz = ctx.getLoader().getClassLoader().loadClass(
-                                servletClassName);
+                            clazz = loadServletClass(servletClassName);
                         } catch(Exception ex) {
                             throw new IllegalArgumentException(ex);
                         }
@@ -2376,9 +2482,7 @@ class DynamicWebServletRegistrationImpl
     protected void setServletClassName(String className) {
         super.setServletClassName(className);
         try {
-            Class <? extends Servlet> clazz =
-                    (Class <? extends Servlet>)
-                    ctx.getLoader().getClassLoader().loadClass(className);
+            Class <? extends Servlet> clazz = loadServletClass(className);
             super.setServletClass(clazz);
             processServletAnnotations(clazz, wbd, wcd, wrapper);
         } catch(Exception ex) {
@@ -2458,5 +2562,10 @@ class DynamicWebServletRegistrationImpl
         }
     }
 
-
+    @SuppressWarnings("unchecked")
+    private Class<? extends Servlet> loadServletClass(String className)
+            throws ClassNotFoundException {
+        return (Class <? extends Servlet>)
+                ctx.getLoader().getClassLoader().loadClass(className);
+    }
 }

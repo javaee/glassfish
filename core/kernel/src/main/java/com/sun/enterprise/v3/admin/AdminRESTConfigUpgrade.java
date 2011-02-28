@@ -39,8 +39,9 @@
  */
 package com.sun.enterprise.v3.admin;
 
-import com.sun.enterprise.config.serverbeans.*;
-import com.sun.enterprise.util.EarlyLogger;
+import com.sun.enterprise.config.serverbeans.Config;
+import com.sun.enterprise.config.serverbeans.Configs;
+import com.sun.enterprise.module.bootstrap.EarlyLogHandler;
 import org.glassfish.grizzly.config.dom.Http;
 import org.glassfish.grizzly.config.dom.Protocol;
 import org.glassfish.grizzly.config.dom.Protocols;
@@ -54,6 +55,7 @@ import org.jvnet.hk2.config.TransactionFailure;
 
 import java.beans.PropertyVetoException;
 import java.util.logging.Level;
+import java.util.logging.LogRecord;
 
 /**
  * Adds the needed http.setEncodedSlashEnabled  to domain.xml
@@ -79,9 +81,11 @@ public class AdminRESTConfigUpgrade
             // we only want to handle configs that have an admin listener
             try {
                 if (config.getAdminListener() == null) {
-                    EarlyLogger.add(Level.FINE, String.format(
+                    LogRecord lr = new LogRecord(Level.FINE, String.format(
                             "Skipping config %s. No admin listener.",
                             config.getName()));
+                    lr.setLoggerName(getClass().getName());
+                    EarlyLogHandler.earlyMessages.add(lr);
                     continue;
                 }
             } catch (IllegalStateException ise) {
@@ -92,9 +96,11 @@ public class AdminRESTConfigUpgrade
                  * <server-config>, but we'll proceed if any
                  * config has an admin listener.
                  */
-                EarlyLogger.add(Level.FINE, String.format(
+                LogRecord lr = new LogRecord(Level.FINE, String.format(
                         "Skipping config %s. getAdminListener threw: %s",
                         config.getName(), ise.getLocalizedMessage()));
+                lr.setLoggerName(getClass().getName());
+                EarlyLogHandler.earlyMessages.add(lr);                
                 continue;
             }
             Protocols ps = config.getNetworkConfig().getProtocols();
@@ -106,8 +112,10 @@ public class AdminRESTConfigUpgrade
                         try {
                             ConfigSupport.apply(new HttpConfigCode(), h);
                         } catch (TransactionFailure tf) {
-                            EarlyLogger.add(Level.SEVERE,
+                            LogRecord lr = new LogRecord(Level.SEVERE,
                                     "Could not upgrade http element for admin console: "+ tf);
+                            lr.setLoggerName(getClass().getName());
+                            EarlyLogHandler.earlyMessages.add(lr);
                         }
                     }
                 }
