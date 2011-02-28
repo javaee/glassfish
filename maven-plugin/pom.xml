@@ -94,7 +94,7 @@
      <dependency>
       <groupId>org.glassfish</groupId>
       <artifactId>simple-glassfish-api</artifactId>
-      <version>3.1-b41</version>
+      <version>3.1</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>
