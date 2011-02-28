@@ -41,6 +41,7 @@
 package org.glassfish.gms;
 
 import com.sun.enterprise.config.serverbeans.*;
+import com.sun.enterprise.module.bootstrap.EarlyLogHandler;
 import com.sun.enterprise.util.EarlyLogger;
 import org.glassfish.api.admin.config.ConfigurationUpgrade;
 import org.jvnet.hk2.annotations.Inject;
@@ -55,6 +56,7 @@ import org.jvnet.hk2.config.types.Property;
 import java.beans.PropertyVetoException;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.LogRecord;
 
 /**
  * Startup service to upgrade cluster/gms elements in domain.xml
@@ -79,8 +81,10 @@ public class GMSConfigUpgrade implements ConfigurationUpgrade, PostConstruct {
             // this will upgrade all the group-management-service elements in domain.xml
             upgradeGroupManagementServiceElements();
         } catch (Exception e) {
-            EarlyLogger.add(Level.SEVERE,
+            LogRecord lr = new LogRecord(Level.SEVERE,
                 "Failure while upgrading cluster data from V2 to V3: " + e);
+            lr.setLoggerName(getClass().getName());
+            EarlyLogHandler.earlyMessages.add(lr);
             throw new RuntimeException(e);
         }
     }
@@ -96,7 +100,9 @@ public class GMSConfigUpgrade implements ConfigurationUpgrade, PostConstruct {
         throws TransactionFailure {
         List<Config> lconfigs = configs.getConfig();
         for (Config c : lconfigs) {
-            EarlyLogger.add(Level.FINE, "Upgrade config " + c.getName());
+            LogRecord lr = new LogRecord(Level.FINE, "Upgrade config " + c.getName());
+            lr.setLoggerName(getClass().getName());
+            EarlyLogHandler.earlyMessages.add(lr);
             ConfigSupport.apply(new GroupManagementServiceConfigCode(), c);
         }
     }

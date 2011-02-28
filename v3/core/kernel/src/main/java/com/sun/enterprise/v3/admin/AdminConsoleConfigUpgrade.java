@@ -41,7 +41,7 @@
 package com.sun.enterprise.v3.admin;
 
 import com.sun.enterprise.config.serverbeans.*;
-import com.sun.enterprise.util.EarlyLogger;
+import com.sun.enterprise.module.bootstrap.EarlyLogHandler;
 import com.sun.grizzly.config.dom.NetworkListener;
 import org.glassfish.api.admin.config.ConfigurationUpgrade;
 import org.jvnet.hk2.annotations.Inject;
@@ -55,6 +55,7 @@ import org.jvnet.hk2.config.types.Property;
 import java.beans.PropertyVetoException;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.LogRecord;
 
 
 /**
@@ -98,9 +99,11 @@ public class AdminConsoleConfigUpgrade
                 try {
                     ConfigSupport.apply(new AdminConsoleConfigCode(), s);
                 } catch (TransactionFailure tf) {
-                    EarlyLogger.add(Level.SEVERE,
+                    LogRecord lr = new LogRecord(Level.SEVERE,
                         "Could not upgrade security service for admin console: " +
                         tf);
+                    lr.setLoggerName(getClass().getName());
+                    EarlyLogHandler.earlyMessages.add(lr);
                 }
             }
         }
@@ -154,9 +157,11 @@ public class AdminConsoleConfigUpgrade
             if (nl != null) {
                 adminPort = nl.getPort();
             } else {
-                EarlyLogger.add(Level.WARNING, String.format(
+                LogRecord lr = new LogRecord(Level.WARNING, String.format(
                     "Couldn't get admin port from config '%s'. Using default %s",
                     parent.getName(), DEFAULT_ADMIN_PORT));
+                lr.setLoggerName(getClass().getName());
+                EarlyLogHandler.earlyMessages.add(lr);                
             }
 
             // add properties
