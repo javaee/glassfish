@@ -47,6 +47,7 @@ import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.trilead.ssh2.SCPClient;
 import com.trilead.ssh2.SFTPv3DirectoryEntry;
+import com.trilead.ssh2.SFTPv3FileAttributes;
 import org.glassfish.cluster.ssh.launcher.SSHLauncher;
 import org.glassfish.cluster.ssh.sftp.SFTPClient;
 import org.jvnet.hk2.component.Habitat;
@@ -86,29 +87,40 @@ public class LogFilterForInstance {
 
         File logFileDirectoryOnServer = new File(domainRoot + File.separator + "logs"
                 + File.separator + instanceName);
-        if (logFileDirectoryOnServer.exists())
-            logFileDirectoryOnServer.delete();
+        if (!logFileDirectoryOnServer.exists())
+            logFileDirectoryOnServer.mkdirs();
 
-        logFileDirectoryOnServer.mkdirs();
-
+        long instanceLogFileSize = 0;
         instanceLogFile = new File(logFileDirectoryOnServer.getAbsolutePath() + File.separator + logFileName);
+        if(instanceLogFile.exists())
+            instanceLogFileSize = instanceLogFile.length();
 
-        InputStream inputStream = sftpClient.read(node.getInstallDir() +
+        SFTPv3FileAttributes sftPv3FileAttributes = sftpClient._stat(node.getInstallDir() +
                 File.separator + "glassfish" + File.separator + "nodes" +
                 File.separator + sNode + File.separator + instanceName +
                 File.separator + "logs" + File.separator + logFileName);
 
-        BufferedInputStream in = new BufferedInputStream(inputStream);
-        FileOutputStream file = new FileOutputStream(instanceLogFile);
-        BufferedOutputStream out = new BufferedOutputStream(file);
-        int i;
-        while ((i = in.read()) != -1) {
-            out.write(i);
+        long fileSizeOnNode = sftPv3FileAttributes.size;
+
+        if (instanceLogFileSize != fileSizeOnNode) {
+
+            InputStream inputStream = sftpClient.read(node.getInstallDir() +
+                    File.separator + "glassfish" + File.separator + "nodes" +
+                    File.separator + sNode + File.separator + instanceName +
+                    File.separator + "logs" + File.separator + logFileName);
+
+            BufferedInputStream in = new BufferedInputStream(inputStream);
+            FileOutputStream file = new FileOutputStream(instanceLogFile);
+            BufferedOutputStream out = new BufferedOutputStream(file);
+            int i;
+            while ((i = in.read()) != -1) {
+                out.write(i);
+            }
+            out.flush();
         }
-        out.flush();
 
         sftpClient.close();
-        
+
         return instanceLogFile;
 
     }

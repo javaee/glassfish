@@ -121,6 +121,11 @@ public class UniformLogFormatter extends Formatter {
             (String) java.security.AccessController.doPrivileged(
                     new sun.security.action.GetPropertyAction("line.separator"));
 
+    private String recordBeginMarker;
+    private String recordEndMarker;
+    private String recordFieldSeparator;
+    private String recordDateFormat;
+
     private static final String RECORD_BEGIN_MARKER = "[#|";
     private static final String RECORD_END_MARKER = "|#]" + LINE_SEPARATOR +
             LINE_SEPARATOR;
@@ -130,9 +135,6 @@ public class UniformLogFormatter extends Formatter {
 
     private static final String RFC_3339_DATE_FORMAT =
             "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
-
-    private static final SimpleDateFormat dateFormatter =
-            new SimpleDateFormat(RFC_3339_DATE_FORMAT);
 
     public UniformLogFormatter() {
         super();
@@ -205,13 +207,34 @@ public class UniformLogFormatter extends Formatter {
                 }
                 if (obj instanceof Map) {
                     for (Map.Entry<Object, Object> entry : ((Map<Object, Object>) obj).entrySet()) {
-                        buf.append(entry.getKey().toString()).append(NV_SEPARATOR).
-                                append(entry.getValue().toString()).
-                                append(NVPAIR_SEPARATOR);
+                        // there are implementations that allow <null> keys...
+                        if (entry.getKey() != null) {
+                            buf.append(entry.getKey().toString());
+                        } else {
+                            buf.append("null");
+                        }
+
+                        buf.append(NV_SEPARATOR);
+
+                        // also handle <null> values...
+                        if (entry.getValue() != null) {
+                            buf.append(entry.getValue().toString());
+                        } else {
+                            buf.append("null");
+                        }
+                        buf.append(NVPAIR_SEPARATOR);
+
                     }
                 } else if (obj instanceof java.util.Collection) {
                     for (Object entry : ((Collection) obj)) {
-                        buf.append(entry.toString()).append(NVPAIR_SEPARATOR);
+                        // handle null values (remember the specs)...
+                        if (entry != null) {
+                            buf.append(entry.toString());
+                        } else {
+                            buf.append("null");
+                        }
+                        buf.append(NVPAIR_SEPARATOR);
+
                     }
 //                } else {
 //                    buf.append(obj.toString()).append(NVPAIR_SEPARATOR);
@@ -232,18 +255,20 @@ public class UniformLogFormatter extends Formatter {
 
         try {
 
-            StringBuilder recordBuffer = new StringBuilder(RECORD_BEGIN_MARKER);
+            SimpleDateFormat dateFormatter = new SimpleDateFormat(getRecordDateFormat() != null ? getRecordDateFormat() : RFC_3339_DATE_FORMAT);
+
+            StringBuilder recordBuffer = new StringBuilder(getRecordBeginMarker() != null ? getRecordBeginMarker() : RECORD_BEGIN_MARKER);
             // The following operations are to format the date and time in a
             // human readable  format.
             // _REVISIT_: Use HiResolution timer to analyze the number of
             // Microseconds spent on formatting date object
             date.setTime(record.getMillis());
             recordBuffer.append(dateFormatter.format(date));
-            recordBuffer.append(FIELD_SEPARATOR);
+            recordBuffer.append(getRecordFieldSeparator() != null ? getRecordFieldSeparator() : FIELD_SEPARATOR);
 
-            recordBuffer.append(record.getLevel()).append(FIELD_SEPARATOR);
-            recordBuffer.append(getProductId()).append(FIELD_SEPARATOR);
-            recordBuffer.append(record.getLoggerName()).append(FIELD_SEPARATOR);
+            recordBuffer.append(record.getLevel()).append(getRecordFieldSeparator() != null ? getRecordFieldSeparator() : FIELD_SEPARATOR);
+            recordBuffer.append(getProductId()).append(getRecordFieldSeparator() != null ? getRecordFieldSeparator() : FIELD_SEPARATOR);
+            recordBuffer.append(record.getLoggerName()).append(getRecordFieldSeparator() != null ? getRecordFieldSeparator() : FIELD_SEPARATOR);
 
             recordBuffer.append("_ThreadID").append(NV_SEPARATOR);
             //record.setThreadID((int) Thread.currentThread().getId());
@@ -277,13 +302,13 @@ public class UniformLogFormatter extends Formatter {
                 _delegate.format(recordBuffer, level);
             }
 
-            recordBuffer.append(FIELD_SEPARATOR);
+            recordBuffer.append(getRecordFieldSeparator() != null ? getRecordFieldSeparator() : FIELD_SEPARATOR);
 
             String logMessage = record.getMessage();
             if (logMessage == null) {
                 logMessage = "The log message is null.";
             }
-            if (logMessage.indexOf("{0}") >= 0 && record.getParameters()!=null) {
+            if (logMessage.indexOf("{0}") >= 0 && record.getParameters() != null) {
                 // If we find {0} or {1} etc., in the message, then it's most
                 // likely finer level messages for Method Entry, Exit etc.,
                 logMessage = java.text.MessageFormat.format(
@@ -312,7 +337,7 @@ public class UniformLogFormatter extends Formatter {
                 recordBuffer.append(sw.toString());
             }
 
-            recordBuffer.append(RECORD_END_MARKER);
+            recordBuffer.append((getRecordEndMarker() != null ? getRecordEndMarker() : RECORD_END_MARKER) + LINE_SEPARATOR + LINE_SEPARATOR);
             return recordBuffer.toString();
 
         } catch (Exception ex) {
@@ -335,10 +360,42 @@ public class UniformLogFormatter extends Formatter {
                 * Note that logManager.getLogger(loggerName) untrusted code may create loggers with
                 * any arbitrary names this method should not be relied on so added code for checking null.
                 */
-        if (rb == null && logManager.getLogger(loggerName)!=null) {
+        if (rb == null && logManager.getLogger(loggerName) != null) {
             rb = logManager.getLogger(loggerName).getResourceBundle();
             loggerResourceBundleTable.put(loggerName, rb);
         }
         return rb;
+    }
+
+    public String getRecordBeginMarker() {
+        return recordBeginMarker;
+    }
+
+    public void setRecordBeginMarker(String recordBeginMarker) {
+        this.recordBeginMarker = recordBeginMarker;
+    }
+
+    public String getRecordEndMarker() {
+        return recordEndMarker;
+    }
+
+    public void setRecordEndMarker(String recordEndMarker) {
+        this.recordEndMarker = recordEndMarker;
+    }
+
+    public String getRecordFieldSeparator() {
+        return recordFieldSeparator;
+    }
+
+    public void setRecordFieldSeparator(String recordFieldSeparator) {
+        this.recordFieldSeparator = recordFieldSeparator;
+    }
+
+    public String getRecordDateFormat() {
+        return recordDateFormat;
+    }
+
+    public void setRecordDateFormat(String recordDateFormat) {
+        this.recordDateFormat = recordDateFormat;
     }
 }
