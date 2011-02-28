@@ -51,6 +51,8 @@ import org.glassfish.grizzly.filterchain.FilterChainContext;
 import org.glassfish.grizzly.filterchain.NextAction;
 import org.glassfish.grizzly.nio.NIOConnection;
 import org.glassfish.grizzly.nio.NIOTransport;
+import org.glassfish.grizzly.nio.SelectorHandler;
+import org.glassfish.grizzly.nio.SelectorRunner;
 import org.glassfish.internal.grizzly.LazyServiceInitializer;
 import org.jvnet.hk2.component.Habitat;
 
@@ -123,12 +125,21 @@ public class ServiceInitializerFilter extends BaseFilter {
                 }
             }
         }
-        if (channel != null) {
-            targetInitializer.handleRequest(channel);
-        }
 
-        nioConnection.detachSelectorRunner();
-//        nioConnection.
-        return ctx.getSuspendAction();
+        final NextAction nextAction = ctx.getSuspendAction();
+        ctx.completeAndRecycle();
+
+        // Deregister channel
+        final SelectorRunner runner = nioConnection.getSelectorRunner();
+        final SelectorHandler selectorHandler =
+                ((NIOTransport) nioConnection.getTransport()).getSelectorHandler();
+
+        selectorHandler.deregisterChannel(runner, channel);
+
+        // Underlying service rely the channel is blocking
+        channel.configureBlocking(true);
+        targetInitializer.handleRequest(channel);
+
+        return nextAction;
     }
 }
