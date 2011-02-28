@@ -157,6 +157,7 @@ public class V2ToV3ConfigUpgrade implements ConfigurationUpgrade, PostConstruct 
         "-XX:+UnlockDiagnosticVMOptions",
         "-XX:+LogVMOutput",
         "-XX:LogFile=${com.sun.aas.instanceRoot}/logs/jvm.log",
+        "-Djava.awt.headless=true",
         "-DANTLR_USE_DIRECT_CLASS_LOADING=true",
         "-Dosgi.shell.telnet.maxconn=1",
         "-Dosgi.shell.telnet.ip=127.0.0.1",
