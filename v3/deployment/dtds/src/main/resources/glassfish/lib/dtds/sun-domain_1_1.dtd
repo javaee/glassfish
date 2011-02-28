@@ -2,7 +2,7 @@
 <!--
   XML DTD for Sun Java System Application Server Configuration.
 
-  Copyright (c) 2002 by Sun Microsystems, Inc. All Rights Reserved.
+  Copyright (c) 2011 by Sun Microsystems, Inc. All Rights Reserved.
 -->
 <!-- ENTITIES -->
 <!-- boolean
@@ -928,7 +928,7 @@
   attributes
     iponly                                                                     
         if the IP address of the user agent should be specified or a  
-        DNL lookup should be done                                     
+        DNS lookup should be done                                     
     log-directory                                                              
         location of the access logs specified as a directory.This     
         defaults to the domain.log-root, which by default is          
