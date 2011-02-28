@@ -288,6 +288,20 @@ public final class ConfigModel {
         return findIgnoreCase(name);
     }
 
+    public String trimPrefix(String name) {
+
+        // first, trim off the prefix
+        for (String p : Dom.PROPERTY_PREFIX) {
+            if(name.startsWith(p)) {
+                name = name.substring(p.length());
+                break;
+            }
+        }
+        // lowecase first letter.
+        return name.toLowerCase().charAt(0) + name.substring(1);
+
+    }
+
     public String camelCaseToXML(String camelCase) {
         
         // tokenize by finding 'x|X' and 'X|Xx' then insert '-'.
