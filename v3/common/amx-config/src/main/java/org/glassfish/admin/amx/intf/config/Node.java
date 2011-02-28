@@ -40,6 +40,7 @@
 
 package org.glassfish.admin.amx.intf.config;
 
+@Deprecated
 public interface Node extends NamedConfigElement, PropertiesAccess, SystemPropertiesAccess {
 
 

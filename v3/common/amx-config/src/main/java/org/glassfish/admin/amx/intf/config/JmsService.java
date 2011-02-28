@@ -44,6 +44,7 @@ import org.glassfish.admin.amx.base.Singleton;
 
 import java.util.Map;
 
+@Deprecated
 public interface JmsService
         extends Singleton, ConfigElement, PropertiesAccess {
 

@@ -47,6 +47,7 @@ import java.util.Map;
 /**
  * Note: attribute getters/setters are not included in this interface; use generic approach.
  */
+@Deprecated
 public interface PortUnification extends NamedConfigElement {
     public Map<String, ProtocolFinder> getProtocolFinder();
 }

@@ -40,9 +40,7 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-/**
- * @since AppServer 9.0
- */
+@Deprecated
 public interface JavaWebStart {
     /**
      * Indicates whether Java Web Start access is

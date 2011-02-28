@@ -41,8 +41,9 @@
 package org.glassfish.admin.amx.intf.config;
 
 /**
- * Configuration for the &lt;jndi-resource&gt; element.
+ * @deprecated Configuration for the &lt;jndi-resource&gt; element.
  */
+@Deprecated
 public interface JndiResource extends Resource {
     String getJndiLookupName();
 

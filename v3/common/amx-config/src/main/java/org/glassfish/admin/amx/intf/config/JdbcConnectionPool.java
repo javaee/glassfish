@@ -42,7 +42,7 @@ package org.glassfish.admin.amx.intf.config;
 
 
 /**
- * Configuration for the &lt;jdbc-connection-pool&gt; element.
+ * @deprecated Configuration for the &lt;jdbc-connection-pool&gt; element.
  * <p/>
  * NOTE: some getters/setters use java.lang.String. This is a problem; these
  * methods cannot use the AppServer template facility, whereby an Attribute value can be of
@@ -54,6 +54,7 @@ package org.glassfish.admin.amx.intf.config;
  * The 'port' attribute above is set to the value "${HTTP_LISTENER_PORT}", which is a system
  * property.  Obviously no method that uses 'String' could get or set a String.
  */
+@Deprecated
 public interface JdbcConnectionPool
         extends Description, NamedConfigElement, PropertiesAccess, ResourceRefReferent {
     /**

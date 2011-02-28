@@ -47,6 +47,7 @@ import java.util.List;
 import java.util.Map;
 
 @AMXMBeanMetadata
+@Deprecated
 public interface Domain
         extends Singleton, ConfigElement, PropertiesAccess, SystemPropertiesAccess {
 

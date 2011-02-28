@@ -47,6 +47,7 @@ import org.glassfish.admin.amx.intf.config.PropertiesAccess;
 /**
  * Note: attribute getters/setters are not included in this interface; use generic approach.
  */
+@Deprecated
 public interface Ssl extends Singleton, ConfigElement, PropertiesAccess {
     public String getCertNickname();
 

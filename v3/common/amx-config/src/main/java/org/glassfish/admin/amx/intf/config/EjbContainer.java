@@ -43,6 +43,7 @@ package org.glassfish.admin.amx.intf.config;
 import org.glassfish.admin.amx.base.Singleton;
 import org.glassfish.admin.amx.config.AMXConfigProxy;
 
+@Deprecated
 public interface EjbContainer
         extends Singleton, AMXConfigProxy, PropertiesAccess {
 

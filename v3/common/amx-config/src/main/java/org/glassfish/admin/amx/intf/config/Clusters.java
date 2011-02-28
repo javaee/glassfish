@@ -42,6 +42,7 @@ package org.glassfish.admin.amx.intf.config;
 
 import java.util.Map;
 
+@Deprecated
 public interface Clusters
         extends ConfigCollectionElement, ConfigElement {
     public Map<String, Cluster> getCluster();

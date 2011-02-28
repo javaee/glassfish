@@ -41,8 +41,9 @@
 package org.glassfish.admin.amx.intf.config;
 
 /**
- * Factors out the meaning of the "Enabled" Attribute.
+ * @deprecated Factors out the meaning of the "Enabled" Attribute.
  */
+@Deprecated
 public interface Enabled {
 
     /**

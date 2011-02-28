@@ -41,10 +41,11 @@
 package org.glassfish.admin.amx.intf.config;
 
 /**
- * Configuration for the &lt;resource-adapter-config&gt; element.
+ * @deprecated Configuration for the &lt;resource-adapter-config&gt; element.
  *
  * @see ResourceAdapterConfigKeys
  */
+@Deprecated
 public interface ResourceAdapter extends NamedConfigElement, PropertiesAccess, ObjectType {
     /**
      * Key for use with {@link ResourcesConfig#createResourceAdapterConfig}.

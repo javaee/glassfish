@@ -43,6 +43,7 @@ package org.glassfish.admin.amx.intf.config;
 import java.io.File;
 import java.util.Map;
 
+@Deprecated
 public interface Application
         extends AbstractModule, Libraries {
 

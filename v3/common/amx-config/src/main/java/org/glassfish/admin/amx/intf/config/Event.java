@@ -40,7 +40,7 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-
+@Deprecated
 public interface Event
         extends ConfigElement, Description, PropertiesAccess {
 

@@ -41,7 +41,7 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-
+@Deprecated
 public interface FailureDetection extends NamedConfigElement, PropertiesAccess, SystemPropertiesAccess {
 
 

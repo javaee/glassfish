@@ -45,6 +45,7 @@ import org.glassfish.admin.amx.config.AMXConfigProxy;
 
 import java.util.Map;
 
+@Deprecated
 public interface AdminService
         extends Singleton, AMXConfigProxy, PropertiesAccess {
     public Map<String, JmxConnector> getJmxConnector();

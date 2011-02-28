@@ -43,6 +43,7 @@ package org.glassfish.admin.amx.intf.config;
 import org.glassfish.admin.amx.core.AMXMBeanMetadata;
 
 @AMXMBeanMetadata
+@Deprecated
 public interface LoadBalancer
         extends NamedConfigElement {
 

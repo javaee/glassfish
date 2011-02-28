@@ -44,6 +44,7 @@ import org.glassfish.admin.amx.base.Singleton;
 
 import java.util.List;
 
+@Deprecated
 public interface JavaConfig
         extends Singleton, AnonymousElementList, ConfigElement, PropertiesAccess {
 

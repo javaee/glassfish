@@ -42,6 +42,7 @@ package org.glassfish.admin.amx.intf.config;
 
 import java.util.List;
 
+@Deprecated
 public interface JvmOptionBag {
 
 

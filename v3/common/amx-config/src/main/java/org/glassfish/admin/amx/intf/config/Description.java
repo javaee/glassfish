@@ -41,9 +41,10 @@
 package org.glassfish.admin.amx.intf.config;
 
 /**
- * Everything having a settable description should extend this
+ * @deprecated Everything having a settable description should extend this
  * interface.
  */
+@Deprecated
 public interface Description {
     public String getDescription();
 

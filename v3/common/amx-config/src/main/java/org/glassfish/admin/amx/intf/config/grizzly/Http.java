@@ -47,6 +47,7 @@ import org.glassfish.admin.amx.intf.config.PropertiesAccess;
 /**
  * Note: attribute getters/setters are not included in this interface; use generic approach.
  */
+@Deprecated
 public interface Http extends ConfigElement, Singleton, PropertiesAccess {
     public FileCache getFileCache();
 

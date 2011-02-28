@@ -41,7 +41,7 @@
 package org.glassfish.admin.amx.intf.config;
 
 /**
- * Mixin interface indicating that there is at least one anonymous non-singleton
+ * @deprecated Mixin interface indicating that there is at least one anonymous non-singleton
  * leaf element present eg a &lt;jvm-options>.  Supports any number of such elements.
  * <p/>
  * Examples:<br>
@@ -51,6 +51,7 @@ package org.glassfish.admin.amx.intf.config;
  * setJVMOptions( new String[] { COLLECTION_OP_REMOVE, "-client", "-Xmx" }   // removes these
  * </pre>
  */
+@Deprecated
 public interface AnonymousElementList {
 
     /**

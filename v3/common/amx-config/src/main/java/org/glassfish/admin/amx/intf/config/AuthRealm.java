@@ -40,7 +40,7 @@
 
 package org.glassfish.admin.amx.intf.config;
 
-
+@Deprecated
 public interface AuthRealm
         extends NamedConfigElement, PropertiesAccess {
     /**

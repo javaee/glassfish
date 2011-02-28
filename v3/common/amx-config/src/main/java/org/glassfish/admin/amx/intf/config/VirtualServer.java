@@ -45,6 +45,7 @@ import org.glassfish.admin.amx.intf.config.grizzly.NetworkListener;
 
 import java.util.List;
 
+@Deprecated
 public interface VirtualServer
         extends NamedConfigElement, PropertiesAccess {
 

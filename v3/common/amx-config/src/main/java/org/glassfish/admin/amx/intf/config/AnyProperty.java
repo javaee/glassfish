@@ -41,8 +41,9 @@
 package org.glassfish.admin.amx.intf.config;
 
 /**
- * Facts out commonality between PropertyConfig and SystemPropertyConfig.
+ * @deprecated Facts out commonality between PropertyConfig and SystemPropertyConfig.
  */
+@Deprecated
 public interface AnyProperty extends NamedConfigElement, Description {
 
     /**

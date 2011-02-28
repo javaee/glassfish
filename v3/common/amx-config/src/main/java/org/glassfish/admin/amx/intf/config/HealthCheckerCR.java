@@ -41,8 +41,9 @@
 package org.glassfish.admin.amx.intf.config;
 
 /**
- * Supports creation and removal of health checker configurations.
+ * @deprecated Supports creation and removal of health checker configurations.
  */
+@Deprecated
 public interface HealthCheckerCR {
 
 //     /**
