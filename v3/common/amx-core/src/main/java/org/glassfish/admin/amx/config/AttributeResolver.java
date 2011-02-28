@@ -40,22 +40,24 @@
 
 package org.glassfish.admin.amx.config;
 
-import javax.management.AttributeList;
-import javax.management.MBeanOperationInfo;
-import org.glassfish.admin.amx.annotation.ManagedOperation;
 import org.glassfish.admin.amx.annotation.Description;
+import org.glassfish.admin.amx.annotation.ManagedOperation;
 import org.glassfish.admin.amx.annotation.Param;
 import org.glassfish.external.arc.Stability;
 import org.glassfish.external.arc.Taxonomy;
 
+import javax.management.AttributeList;
+import javax.management.MBeanOperationInfo;
+
 /**
-Interface implemented by MBeans which can resolve a variable to a value.
+@deprecated  Interface implemented by MBeans which can resolve a variable to a value.
 Variable attributes are strings  of the form ${...} and
 are returned as the values of certain Attributes.  This interface is intended for use
 only with config MBeans.
 <p>
  */
 @Taxonomy(stability = Stability.UNCOMMITTED)
+@Deprecated
 public interface AttributeResolver
 {
     /**

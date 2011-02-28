@@ -40,18 +40,19 @@
 
 package org.glassfish.admin.amx.core;
 
-import javax.management.MBeanServerConnection;
-
+import org.glassfish.admin.amx.core.proxy.ProxyFactory;
 import org.glassfish.external.arc.Stability;
 import org.glassfish.external.arc.Taxonomy;
-import org.glassfish.admin.amx.core.proxy.ProxyFactory;
+
+import javax.management.MBeanServerConnection;
 
 
 /**
-	Extra information available about each {@link AMXProxy}.  Most
+	@deprecated Extra information available about each {@link AMXProxy}.  Most
 	of these fields are for advanced use and/or direct use of JMX.
  */
 @Taxonomy(stability = Stability.UNCOMMITTED)
+@Deprecated
 public interface Extra extends StdAttributesAccess, MetaGetters, AMXProxy
 {
 	/**

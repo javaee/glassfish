@@ -40,18 +40,19 @@
 
 package org.glassfish.admin.amx.core;
 
-import javax.management.ObjectName;
- 
 import org.glassfish.admin.amx.annotation.Description;
 import org.glassfish.admin.amx.annotation.ManagedAttribute;
 import org.glassfish.external.arc.Stability;
 import org.glassfish.external.arc.Taxonomy;
 
+import javax.management.ObjectName;
+
 /**
-    MBean implementations can 'implements AMX_SPI', though it is only behavior
+    @deprecated MBean implementations can 'implements AMX_SPI', though it is only behavior
     via MBeanInfo and attributes that is actually required.
  */
 @Taxonomy(stability = Stability.COMMITTED)
+@Deprecated
 public interface AMX_SPI {
     /** the unencoded name, which could differ from the value of the 'name' property in the ObjectName */
     @ManagedAttribute

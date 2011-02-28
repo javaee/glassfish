@@ -40,16 +40,16 @@
 
 package org.glassfish.admin.amx.core;
 
-import java.util.Set;
-import java.util.Map;
-
-import javax.management.ObjectName;
+import org.glassfish.admin.amx.core.proxy.AMXProxyHandler;
 import org.glassfish.external.arc.Stability;
 import org.glassfish.external.arc.Taxonomy;
-import org.glassfish.admin.amx.core.proxy.AMXProxyHandler;
+
+import javax.management.ObjectName;
+import java.util.Map;
+import java.util.Set;
 
 /**
-An AMXProxy offers generic access to any AMX-compliant MBean, including the ability to navigate
+@deprecated An AMXProxy offers generic access to any AMX-compliant MBean, including the ability to navigate
 upwards to the Parent MBean, find all children or those of a particular type or name, to get
 all metadata, atttributes, or to invoke any method.
 <p>
@@ -119,6 +119,7 @@ operation by name.
 @see org.glassfish.admin.amx.config.AMXConfigProxy
  */
 @Taxonomy(stability = Stability.UNCOMMITTED)
+@Deprecated
 public interface AMXProxy extends AMX_SPI
 {
     /** MBean MUST return an ObjectName.  May be null for DomainRoot only. */

@@ -40,22 +40,18 @@
 
 package org.glassfish.admin.amx.core;
 
-import javax.management.Attribute;
-import javax.management.AttributeList;
-import javax.management.AttributeNotFoundException;
-import javax.management.InstanceNotFoundException;
-import javax.management.InvalidAttributeValueException;
-import javax.management.MBeanException;
-import javax.management.ReflectionException;
-import java.io.IOException;
 import org.glassfish.external.arc.Stability;
 import org.glassfish.external.arc.Taxonomy;
 
+import javax.management.*;
+import java.io.IOException;
+
 /**
-	Direct access to JMX attributes and methods,
+	@deprecated Direct access to JMX attributes and methods,
     These are "straight JMX" with no intervening processing whatsoever.
  */
 @Taxonomy(stability = Stability.UNCOMMITTED)
+@Deprecated
 public interface StdAttributesAccess
 {
     /** Direct access to the MBeanServer, calls conn.getAttribute(objectName, name) */

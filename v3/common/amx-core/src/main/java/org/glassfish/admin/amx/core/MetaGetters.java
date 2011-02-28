@@ -40,20 +40,22 @@
 
 package org.glassfish.admin.amx.core;
 
+import org.glassfish.external.arc.Stability;
+import org.glassfish.external.arc.Taxonomy;
+
 import javax.management.Descriptor;
 import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanInfo;
 import javax.management.MBeanOperationInfo;
-import org.glassfish.external.arc.Stability;
-import org.glassfish.external.arc.Taxonomy;
 
 
 /**
-	Convenience getters for Descriptor values and other metadata from the MBeanInfo.
+	@deprecated Convenience getters for Descriptor values and other metadata from the MBeanInfo.
     These operations do not make a trip to the server.
     See {@link AMXProxy#extra}.
  */
 @Taxonomy(stability = Stability.UNCOMMITTED)
+@Deprecated
 public interface MetaGetters
 {
     public MBeanInfo mbeanInfo();

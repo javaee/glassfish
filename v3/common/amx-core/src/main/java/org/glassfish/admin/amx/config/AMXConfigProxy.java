@@ -40,22 +40,21 @@
 
 package org.glassfish.admin.amx.config;
 
-import org.glassfish.admin.amx.config.AttributeResolver;
-import org.glassfish.admin.amx.core.AMXProxy;
-import javax.management.ObjectName;
-import javax.management.AttributeList;
-
-import java.util.Map;
-import javax.management.MBeanOperationInfo;
 import org.glassfish.admin.amx.annotation.Description;
 import org.glassfish.admin.amx.annotation.ManagedOperation;
 import org.glassfish.admin.amx.annotation.Param;
+import org.glassfish.admin.amx.core.AMXProxy;
+import org.glassfish.admin.amx.core.StdAttributesAccess;
 import org.glassfish.external.arc.Stability;
 import org.glassfish.external.arc.Taxonomy;
-import org.glassfish.admin.amx.core.StdAttributesAccess;
+
+import javax.management.AttributeList;
+import javax.management.MBeanOperationInfo;
+import javax.management.ObjectName;
+import java.util.Map;
 
 /**
-Extending this proxy interface implies that the class is part of the MBean API for configuration,
+@deprecated  Extending this proxy interface implies that the class is part of the MBean API for configuration,
 that the interface is a dynamic proxy to a config MBean.
 <p>
 Note that considerable metadata is available for config MBeans, via MBeanInfo.getDescriptor().
@@ -63,6 +62,7 @@ Note that considerable metadata is available for config MBeans, via MBeanInfo.ge
 @see AMXConfigConstants
  */
 @Taxonomy(stability = Stability.UNCOMMITTED)
+@Deprecated
 public interface AMXConfigProxy extends AMXProxy, AttributeResolver
 {
     /**
