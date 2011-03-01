@@ -165,8 +165,16 @@ public class SystemPropertyListener implements ConfigListener, PostConstruct {
         }, logger);
     }
 
+    /* 
+     * Notification events can come out of order, i.e., a create-system-properties
+     * on an existing property sends an ADD or the new one, a CHANGE, followed by 
+     * a REMOVE of the old one. So we need to check if the property is still
+     * there.
+     */
     private NotProcessed removeFromServer(SystemProperty sp) {
-        SystemProperty sysProp = getClusterSystemProperty(sp.getName());
+        SystemProperty sysProp = getServerSystemProperty(sp.getName());
+        if (sysProp == null)
+            sysProp = getClusterSystemProperty(sp.getName());
         if (sysProp == null)
             sysProp = getConfigSystemProperty(sp.getName());
         if (sysProp == null)
@@ -241,68 +249,50 @@ public class SystemPropertyListener implements ConfigListener, PostConstruct {
 
     private boolean configHas(SystemProperty sp) {
         Config c = domain.getConfigNamed(server.getConfigRef());
-        List<SystemProperty> ssps = c.getSystemProperty();
-        return hasSystemProperty(ssps, sp);
+        return c != null ? hasSystemProperty(c.getSystemProperty(), sp) : false;
     }
 
     private boolean clusterHas(SystemProperty sp) {
         Cluster c = domain.getClusterForInstance(server.getName());
-        if (c != null) {
-            List<SystemProperty> ssps = c.getSystemProperty();
-            return hasSystemProperty(ssps, sp);
-        } else {
-            return false;
-        }
+        return c != null ? hasSystemProperty(c.getSystemProperty(), sp) : false;
+    }
+    
+    private SystemProperty getServerSystemProperty(String spName) {
+        return getSystemProperty(server.getSystemProperty(), spName);
     }
 
     private SystemProperty getClusterSystemProperty(String spName) {
         Cluster c = domain.getClusterForInstance(server.getName());
-        if (c != null) {
-            List<SystemProperty> ssps = c.getSystemProperty();
-            if (ssps != null) {
-                for (SystemProperty sp : ssps) {
-                    if (sp.getName().equals(spName))
-                        return sp;
-                }
-            }
-        }
-        return null;
+        return c != null ? getSystemProperty(c.getSystemProperty(), spName) : null;
     }
 
     private SystemProperty getConfigSystemProperty(String spName) {
         Config c = domain.getConfigNamed(server.getConfigRef());
-        if (c != null) {
-            List<SystemProperty> ssps = c.getSystemProperty();
-            if (ssps != null) {
-                for (SystemProperty sp : ssps) {
-                    if (sp.getName().equals(spName))
-                        return sp;
-                }
-            }
-        }
-        return null;
+        return c != null ? getSystemProperty(c.getSystemProperty(), spName) : null;
     }
 
     private SystemProperty getDomainSystemProperty(String spName) {
-        List<SystemProperty> ssps = domain.getSystemProperty();
-        if (ssps != null) {
+        return getSystemProperty(domain.getSystemProperty(), spName);
+    }
+
+    private boolean hasSystemProperty(List<SystemProperty> ssps, SystemProperty sp) {
+        return getSystemProperty(ssps, sp.getName()) != null;
+    }
+    
+    /*
+     * Return the SystemProperty from the list of system properties with the
+     * given name. If the property is not there, or the list is null, return 
+     * null.
+     */
+    private SystemProperty getSystemProperty(List<SystemProperty> ssps, String spName) {
+         if (ssps != null) {
             for (SystemProperty sp : ssps) {
                 if (sp.getName().equals(spName)) {
                     return sp;
                 }
             }
         }
-        return null;
-    }
-
-    private boolean hasSystemProperty(List<SystemProperty> ssps, SystemProperty sp) {
-        if (ssps != null) {
-            for (SystemProperty candidate : ssps) {
-                if (candidate.getName().equals(sp.getName()))
-                    return true;
-            }
-        }
-        return false;
+        return null;       
     }
 }
 
