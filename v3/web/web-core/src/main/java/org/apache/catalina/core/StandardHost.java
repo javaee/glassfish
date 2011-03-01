@@ -1242,7 +1242,7 @@ public class StandardHost
             log.info( "Create Host deployer for direct deployment ( non-jmx ) ");
         }
         try {
-            Class c=Class.forName( STANDARD_HOST_DEPLOYER );
+            Class<?> c=Class.forName( STANDARD_HOST_DEPLOYER );
             deployer=(Deployer)c.newInstance();
             Method m=c.getMethod("setHost", new Class[] {Host.class} );
             m.invoke( deployer,  new Object[] { this } );

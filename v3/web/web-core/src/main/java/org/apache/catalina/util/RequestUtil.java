@@ -551,7 +551,7 @@ public final class RequestUtil {
      * @return The resulting string representation, to be used as the value
      * of a JSESSIONIDVERSION cookie or jsessionidversion URI parameter
      */
-    public static String createSessionVersionString(HashMap<String, String> sessionVersions) {
+    public static String createSessionVersionString(Map<String, String> sessionVersions) {
         if (sessionVersions == null) {
             return null;
         }

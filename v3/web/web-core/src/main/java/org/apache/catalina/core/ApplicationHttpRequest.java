@@ -150,7 +150,7 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
             isSessionVersioningSupported =
                 context.getManager().isSessionVersioningSupported();
             if (isSessionVersioningSupported) {
-                HashMap<String, String> sessionVersions =
+                Map<String, String> sessionVersions =
                     getSessionVersions();
                 if (sessionVersions != null) {
                     requestedSessionVersion = sessionVersions.get(
@@ -1000,8 +1000,8 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
 
 
     @SuppressWarnings("unchecked")
-    private HashMap<String, String> getSessionVersions() {
-        return (HashMap<String, String>) getAttribute(
+    private Map<String, String> getSessionVersions() {
+        return (Map<String, String>) getAttribute(
                 Globals.SESSION_VERSIONS_REQUEST_ATTRIBUTE);
     }
 
@@ -1072,7 +1072,7 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
         }
 
         String versionString = Long.toString(ss.incrementVersion());
-        HashMap<String, String> sessionVersions = getSessionVersions();
+        Map<String, String> sessionVersions = getSessionVersions();
         if (sessionVersions == null) {
             sessionVersions = new HashMap<String, String>();
             setAttribute(Globals.SESSION_VERSIONS_REQUEST_ATTRIBUTE,

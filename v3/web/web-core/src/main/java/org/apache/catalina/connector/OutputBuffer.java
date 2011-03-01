@@ -74,6 +74,7 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -687,8 +688,8 @@ public class OutputBuffer extends Writer
      */
     private void addSessionVersionCookie(Request request,
                                          StandardContext context) {
-        HashMap<String, String> sessionVersions = (HashMap<String, String>)
-            request.getAttribute(Globals.SESSION_VERSIONS_REQUEST_ATTRIBUTE);
+        Map<String, String> sessionVersions =
+            request.getSessionVersionsRequestAttribute();
         if (sessionVersions != null) {
             Cookie cookie = new Cookie(
                 Globals.SESSION_VERSION_COOKIE_NAME,
