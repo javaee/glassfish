@@ -5,6 +5,7 @@
 package admin;
 
 import admin.AdminBaseDevTest;
+import java.io.*;
 
 /**
  * Created on February 8, 2011
@@ -28,6 +29,10 @@ public class MonitoringTests extends AdminBaseDevTest {
         mt.stat.printSummary();
     }
 
+    public MonitoringTests() {
+        earFile = new File("apps/webapp2.ear");
+    }
+
     @Override
     protected String getTestDescription() {
         return "DevTests for Monitoring - Brought to you by\n"
@@ -48,6 +53,7 @@ public class MonitoringTests extends AdminBaseDevTest {
         megaTestMainFlags(configName);
         // enable all the levels and verify on DAS
         enableMonitoringUsingSet(configName, true);
+        test15397();
         enableMonitoringUsingSet(configName, false);
         // enable all the levels and verify on the cluster
         verifyMainFlags(CLUSTER_NAME);
@@ -201,8 +207,8 @@ public class MonitoringTests extends AdminBaseDevTest {
         StringBuilder sb = new StringBuilder();
         boolean firstCat = true;
 
-        for(String cat : MON_CATEGORIES) {
-            if(firstCat)
+        for (String cat : MON_CATEGORIES) {
+            if (firstCat)
                 firstCat = false;
             else
                 sb.append(':');
@@ -221,9 +227,11 @@ public class MonitoringTests extends AdminBaseDevTest {
     private String getDtraceEnabledName(String server) {
         return MON_LEVEL_PREPEND + server + "-config" + DTRACE_APPEND;
     }
+
     private String getMbeanEnabledName(String server) {
         return MON_LEVEL_PREPEND + server + "-config" + MBEAN_APPEND;
     }
+
     private String getMonEnabledName(String server) {
         return MON_LEVEL_PREPEND + server + "-config" + MON_APPEND;
     }
@@ -273,6 +281,30 @@ public class MonitoringTests extends AdminBaseDevTest {
         report(reportName + "-verify-enabled-", doesGetMatch(getMonEnabledName(configName), "true"));
     }
 
+    private void test15397() {
+        String prepend = "15397-";
+        report(prepend + "Ear File exists", earFile.isFile() && earFile.canRead());
+        report(prepend + "deploy-earfile-with-dot", asadmin("deploy", earFile.getAbsolutePath()));
+        report(prepend + "verify-deploy", asadminWithOutput("list-components").outAndErr.indexOf("webapp2") >= 0);
+        report(prepend + "check-getm-1",
+                checkForString(asadminWithOutput("get", "-m", "server.applications.webapp2.*"),
+                MAGIC_NAME_IN_APP));
+        report(prepend + "check-getm-2",
+                checkForString(asadminWithOutput("get", "-m", "server.applications.webapp2.webapp2webmod1\\.war*"),
+                MAGIC_NAME_IN_APP));
+        report(prepend + "check-getm-3",
+                checkForString(asadminWithOutput("get", "-m", "server.applications.webapp2.webapp2webmod1.war*"),
+                MAGIC_NAME_IN_APP));
+    }
+
+    private boolean checkForString(AsadminReturn r, String s) {
+        if(r.outAndErr == null)
+            return false;
+
+        System.out.println("QQQQQQ    " + r.outAndErr);
+        return r.outAndErr.indexOf(s) >= 0;
+    }
+
     private static final String CLUSTER_NAME = "moncluster";
     private static final String CLUSTERED_INSTANCE_NAME1 = "moninstance1";
     private static final String CLUSTERED_INSTANCE_NAME2 = "moninstance2";
@@ -282,6 +314,7 @@ public class MonitoringTests extends AdminBaseDevTest {
     private static final String DTRACE_APPEND = ".monitoring-service.dtrace-enabled";
     private static final String MBEAN_APPEND = ".monitoring-service.mbean-enabled";
     private static final String MON_APPEND = ".monitoring-service.monitoring-enabled";
+    private static final String MAGIC_NAME_IN_APP = "webapp2webmod1_Servlet2";
     private static final String MON_CATEGORIES[] = new String[]{
         "http-service",
         "connector-connection-pool",
@@ -302,4 +335,5 @@ public class MonitoringTests extends AdminBaseDevTest {
     };
     private final static String HIGH = "HIGH";
     private final static String OFF = "OFF";
+    private final File earFile;
 }
