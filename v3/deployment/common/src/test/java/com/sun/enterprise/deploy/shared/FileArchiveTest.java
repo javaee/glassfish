@@ -235,12 +235,19 @@ public class FileArchiveTest {
         }
     }
 
-    @Ignore
     @Test
     public void testInaccessibleDirectoryInFileArchive() throws Exception {
+        /*
+         * FileArchive will log a warning if it cannot list the files in the
+         * directory. Here's the message key it will use.
+         */
         final String EXPECTED_LOG_KEY = "enterprise.deployment.nullFileList";
         System.out.println("testInaccessibleDirectoryInFileArchive");
 
+        /*
+         * The test passes its own logger to the FileArchive method so we can
+         * see if FileArchive logged the warning.
+         */
         final List<LogRecord> logRecords = new ArrayList<LogRecord>();
 
         final Logger myLogger = new MyLogger(
@@ -261,7 +268,16 @@ public class FileArchiveTest {
          */
         final File lower = new File(archiveDir, "lower");
         lower.setExecutable(false, false);
-        lower.setReadable(false, false);
+        final boolean canRead = lower.setReadable(false, false);
+        if ( ! canRead) {
+            /*
+             * If we cannot change the permissions then the test will fail.
+             * We'd like to dynamically ignore this test but that's very involved
+             * and requirea a custom test runner and notifier.  So we just
+             * say the test passes.
+             */
+            return;
+        }
 
         /*
          * Try to list the files.  This should fail with our logger getting
