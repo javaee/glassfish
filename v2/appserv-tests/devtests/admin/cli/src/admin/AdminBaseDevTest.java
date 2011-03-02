@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2009-2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2009-2011 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -143,7 +143,7 @@ public abstract class AdminBaseDevTest extends BaseDevTest {
                 asadmin("stop-domain"));
     }
 
-    final boolean verifyNoClusters() {
+    protected final boolean verifyNoClusters() {
         AsadminReturn ret = asadminWithOutput("list-clusters");
         String s = (ret.out == null) ? "" : ret.out.trim();
 
@@ -151,7 +151,7 @@ public abstract class AdminBaseDevTest extends BaseDevTest {
         return s.endsWith("list-clusters") || s.indexOf("nothing to list") >= 0;
     }
 
-    final boolean verifyNoInstances() {
+    protected final boolean verifyNoInstances() {
         AsadminReturn ret = asadminWithOutput("list-instances");
         String s = (ret.out == null) ? "" : ret.out.trim();
         return s.toLowerCase().indexOf("nothing to list") >= 0;
@@ -160,7 +160,7 @@ public abstract class AdminBaseDevTest extends BaseDevTest {
     /*
      * Returns true if String b contains String a.
      */
-    static boolean matchString(String a, String b) {
+    protected static boolean matchString(String a, String b) {
         return b.indexOf(a) != -1;
     }
 
@@ -242,7 +242,7 @@ public abstract class AdminBaseDevTest extends BaseDevTest {
         return ret.outAndErr.substring(index + what.length() + 1).trim();
     }
 
-    final boolean doesGetMatch(String what, String match) {
+    protected final boolean doesGetMatch(String what, String match) {
         String ret = get(what);
 
         if (!ok(match) && !ok(ret))

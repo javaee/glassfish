@@ -1,8 +1,40 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ *
+ * Copyright 2009-2011 Sun Microsystems, Inc. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of either the GNU
+ * General Public License Version 2 only ("GPL") or the Common Development
+ * and Distribution License("CDDL") (collectively, the "License").  You
+ * may not use this file except in compliance with the License. You can obtain
+ * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ * language governing permissions and limitations under the License.
+ *
+ * When distributing the software, include this License Header Notice in each
+ * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ * Sun designates this particular file as subject to the "Classpath" exception
+ * as provided by Sun in the GPL Version 2 section of the License file that
+ * accompanied this code.  If applicable, add the following below the License
+ * Header, with the fields enclosed by brackets [] replaced by your own
+ * identifying information: "Portions Copyrighted [year]
+ * [name of copyright owner]"
+ *
+ * Contributor(s):
+ *
+ * If you wish your version of this file to be governed by only the CDDL or
+ * only the GPL Version 2, indicate your decision by adding "[Contributor]
+ * elects to include this software in this distribution under the [CDDL or GPL
+ * Version 2] license."  If you don't indicate a single choice of license, a
+ * recipient has the option to distribute your version of this file under
+ * either the CDDL, the GPL Version 2 or to extend the choice of license to
+ * its licensees as provided above.  However, if you add GPL Version 2 code
+ * and therefore, elected the GPL Version 2 license, then the option applies
+ * only if the new code is made subject to such option by the copyright
+ * holder.
  */
-package admin;
+
+package admin.monitoring;
 
 import admin.AdminBaseDevTest;
 import java.io.*;
@@ -12,7 +44,6 @@ import java.io.*;
  * @author Byron Nevins
  */
 public class MonitoringTests extends AdminBaseDevTest {
-
     /**
      * @param args the command line arguments
      */
@@ -31,6 +62,17 @@ public class MonitoringTests extends AdminBaseDevTest {
 
     public MonitoringTests() {
         earFile = new File("apps/webapp2.ear");
+    }
+
+    @Override
+    public void report(String s, boolean b) {
+        
+        // Get a little feedback so you know it's alive!
+        if (!isVerbose())
+            System.out.printf(".");
+            //System.out.printf("%s: %s\n", (b ? "true " : "false"), s);
+
+        super.report(s, b);
     }
 
     @Override
@@ -295,16 +337,15 @@ public class MonitoringTests extends AdminBaseDevTest {
         report(prepend + "check-getm-3",
                 checkForString(asadminWithOutput("get", "-m", "server.applications.webapp2.webapp2webmod1.war*"),
                 MAGIC_NAME_IN_APP));
+        report(prepend + "undeploy-earfile-with-dot", asadmin("undeploy", "webapp2"));
     }
 
     private boolean checkForString(AsadminReturn r, String s) {
-        if(r.outAndErr == null)
+        if (r.outAndErr == null)
             return false;
 
-        System.out.println("QQQQQQ    " + r.outAndErr);
         return r.outAndErr.indexOf(s) >= 0;
     }
-
     private static final String CLUSTER_NAME = "moncluster";
     private static final String CLUSTERED_INSTANCE_NAME1 = "moninstance1";
     private static final String CLUSTERED_INSTANCE_NAME2 = "moninstance2";

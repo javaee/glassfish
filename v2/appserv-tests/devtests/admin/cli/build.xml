@@ -42,8 +42,6 @@
 ]>
 
 <project name="admin" default="all" basedir=".">
-
-
     &commonSetup;
     &commonBuild;
     &reporting;
@@ -288,7 +286,7 @@
     </target>
 
     <target name="monitoring" depends="init">
-        <java classname="admin.MonitoringTests"  fork="true" classpath="${test}">
+        <java classname="admin.monitoring.MonitoringTests"  fork="true" classpath="${test}">
             <jvmarg value="${javaprops}"/>
         </java>
     </target>
