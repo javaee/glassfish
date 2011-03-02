@@ -127,6 +127,7 @@ public class RegisterHandlers {
     /* generate the default registration html page, if necessary */
     
     private static File getDefaultRegistrationPage() {
+        Logger logger = GuiUtil.getLogger();
         File f = new File(RegistrationUtil.getRegistrationHome(), "registration.html");
         if (f.exists())
             return f;
@@ -137,7 +138,6 @@ public class RegisterHandlers {
                 rs.generateRegistrationPage(regPage);
             }
         } catch (Exception ex) {
-            Logger logger = GuiUtil.getLogger();
             logger.fine(ex.getMessage());
         }
         return f;
@@ -149,8 +149,8 @@ public class RegisterHandlers {
         @HandlerOutput(name="isEnabled", type=Boolean.class)
         })
     public static void isRegistrationEnabled(HandlerContext handlerCtx) {
-        File f = getDefaultRegistrationPage();
-        if (f.exists())
+        File f = RegistrationUtil.getRegistrationHome();
+        if (f.exists() && f.canWrite())
             handlerCtx.setOutputValue("isEnabled", Boolean.TRUE);
         else
             handlerCtx.setOutputValue("isEnabled", Boolean.FALSE);
