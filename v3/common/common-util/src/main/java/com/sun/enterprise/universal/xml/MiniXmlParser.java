@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.universal.xml;
 
 import com.sun.common.util.logging.LoggingConfigImpl;
@@ -73,7 +72,6 @@ import java.util.logging.Logger;
  * @author bnevins
  */
 public class MiniXmlParser {
-
     public MiniXmlParser(File domainXml) throws MiniXmlParserException {
         this(domainXml, "server");  // default for a domain
     }
@@ -200,7 +198,7 @@ public class MiniXmlParser {
     public boolean hasNetworkConfig() {
         return sawNetworkConfig;
     }
-    
+
     public boolean hasDefaultConfig() {
         return sawDefaultConfig;
     }
@@ -228,7 +226,7 @@ public class MiniXmlParser {
     private void createParser() throws FileNotFoundException, XMLStreamException {
         reader = new InputStreamReader(new FileInputStream(domainXml));
         parser = getXmlInputFactory().createXMLStreamReader(
-            domainXml.toURI().toString(), reader);
+                domainXml.toURI().toString(), reader);
     }
 
     // In JDK 1.6, StAX is part of JRE, so we use no argument variant of
@@ -238,19 +236,17 @@ public class MiniXmlParser {
     // Thread's context class loader to locate the factory. See:
     // https://glassfish.dev.java.net/issues/show_bug.cgi?id=6428
     // 
-    
     private XMLInputFactory getXmlInputFactory() {
-        Class   clazz = XMLInputFactory.class;
+        Class clazz = XMLInputFactory.class;
         ClassLoader cl = clazz.getClassLoader();
 
         // jdk6+
-        if(cl == null)
+        if (cl == null)
             return XMLInputFactory.newInstance();
 
         // jdk5
         return XMLInputFactory.newInstance(clazz.getName(), cl);
-     }
-
+    }
 
     private void getConfigRefName() throws XMLStreamException, EndDocumentException {
         if (configRef != null) {
@@ -304,10 +300,12 @@ public class MiniXmlParser {
             // get the attributes for this <config>
             Map<String, String> map = parseAttributes();
             String thisName = map.get("name");
-            if ("default-config".equals(thisName)) sawDefaultConfig = true;
+            if ("default-config".equals(thisName))
+                sawDefaultConfig = true;
             if (configRef.equals(thisName)) {
                 parseConfig();
-            } else {
+            }
+            else {
                 skipTree("config");
             }
         }
@@ -354,7 +352,7 @@ public class MiniXmlParser {
     }
 
     private void parseNetworkConfig()
-                        throws XMLStreamException, EndDocumentException {
+            throws XMLStreamException, EndDocumentException {
         // cursor --> <network-config>
         while (true) {
             int event = next();
@@ -368,9 +366,11 @@ public class MiniXmlParser {
                 String name = parser.getLocalName();
                 if ("protocols".equals(name)) {
                     parseProtocols();
-                } else if ("network-listeners".equals(name)) {
+                }
+                else if ("network-listeners".equals(name)) {
                     parseListeners();
-                } else
+                }
+                else
                     skipTree(name);
             }
         }
@@ -757,18 +757,18 @@ public class MiniXmlParser {
                                     addr = "localhost";
                                 if (StringUtils.isToken(addr))
                                     addr = sysProps.get(
-                                                StringUtils.stripToken(addr));
+                                            StringUtils.stripToken(addr));
                                 boolean secure = false;
                                 String protocol = atts.get("protocol");
                                 atts = getProtocolByName(protocol);
                                 if (atts != null) {
                                     String sec = atts.get("security-enabled");
-                                    secure = sec != null &&
-                                                sec.equalsIgnoreCase("true");
+                                    secure = sec != null
+                                            && sec.equalsIgnoreCase("true");
                                 }
                                 if (GFLauncherUtils.ok(addr))
                                     adminAddresses.add(
-                                        new HostAndPort(addr, port, secure));
+                                            new HostAndPort(addr, port, secure));
                             }
                             break;
                         }
@@ -824,7 +824,6 @@ public class MiniXmlParser {
 
     // this is so we can return from arbitrarily nested calls
     private static class EndDocumentException extends Exception {
-
         EndDocumentException() {
         }
     }
