@@ -858,7 +858,6 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
     }        
 
     public void accept(ResourceReferenceDescriptor resRef) {
-        resRef.checkType();
         computeRuntimeDefault(resRef);
     }
 
