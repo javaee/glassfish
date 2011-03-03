@@ -94,12 +94,14 @@
 	result="#{requestScope.queryResult}");
     setPageSessionAttribute(key="logFiles" value="#{requestScope.queryResult.data['InstanceLogFileNames']}");
     if(!$attribute{logFile}) {
-	setPageSessionAttribute(key="logFile" value="#{pageSession.logFiles[0]}");
+	setAttribute(key="logFile" value="#{pageSession.logFiles[0]}");
     }
-    urlencode(value="#{pageSession.logFile}" encoding="UTF-8" result="#{pageSession.encodedLogFile}");
+
+    urlencode(value="#{logFile}" encoding="UTF-8" result="#{pageSession.encodedLogFile}");
 
     /** FIXME **/
-//println("LF: #{logFile}");
+    //println("LF: #{logFile}");
+    //println("LFP : #{pageSession.encodedLogFile}");
 
     gf.getLogQueryAttributes(
 	InstanceName="#{instanceName}",
