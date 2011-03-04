@@ -149,8 +149,9 @@ public class RegisterHandlers {
         @HandlerOutput(name="isEnabled", type=Boolean.class)
         })
     public static void isRegistrationEnabled(HandlerContext handlerCtx) {
-        File f = RegistrationUtil.getRegistrationHome();
-        if (f.exists() && f.canWrite())
+        File dir = RegistrationUtil.getRegistrationHome();
+        File regFile = new File(dir, "registration.html");
+        if (dir.exists() && (dir.canWrite() || regFile.exists()))
             handlerCtx.setOutputValue("isEnabled", Boolean.TRUE);
         else
             handlerCtx.setOutputValue("isEnabled", Boolean.FALSE);

@@ -52,7 +52,7 @@ package com.sun.enterprise.registration.impl.environment;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-
+import com.sun.enterprise.universal.process.ProcessStreamDrainer;
 /**
  * SystemEnvironment class collects the environment data with the
  * best effort from the underlying platform.
@@ -338,65 +338,34 @@ public class SystemEnvironment {
     }
 
     protected String getCommandOutput(String... command) {
-        StringBuilder sb = new StringBuilder();
-        BufferedReader br = null;
+
         Process p = null;
+        ProcessStreamDrainer psd = null;
         try {
             ProcessBuilder pb = new ProcessBuilder(command);
             p = pb.start();
-            p.waitFor();
-
-            if (p.exitValue() == 0) {
-                br = new BufferedReader(new InputStreamReader(p.getInputStream()));
-                String line = null;
-                while ((line = br.readLine()) != null) {
-                    line = line.trim();
-                    if (line.length() > 0) {
-                        if (sb.length() > 0) {
-                            sb.append("\n");
-                        }
-                        sb.append(line);
-                    }
-                }
-            }
-            return sb.toString();
-        } catch (InterruptedException ie) {
-            // in case the command hangs
-            if (p != null) {
-                p.destroy();
-            }
-            return "";
+            psd = ProcessStreamDrainer.save("RegEnvCommandProcess", p);
+            return psd.getOutString();
         } catch (Exception e) {
-            // ignore exception
+        // ignore exception
             return "";
         } finally {
             if (p != null) {
-                try {
-                    p.getErrorStream().close();
-                } catch (IOException e) {
-                    // ignore
-                }
-                try {
-                    p.getInputStream().close();
-                } catch (IOException e) {
-                    // ignore
-                }
-                try {
-                    p.getOutputStream().close();
-                } catch (IOException e) {
-                    // ignore
-                }
-                p = null;
+            try {
+                p.getErrorStream().close();
+            } catch (IOException e) {
+            // ignore
             }
-            if (br != null) {
-                try {
-                    br.close();
-                } catch (IOException e) {
-                    // ignore
-                } 
+            try {
+                p.getInputStream().close();
+            } catch (IOException e) {
+                        // ignore
+            }
+                p = null;
             }
         }
     }
+
 
     protected String getFileContent(String filename) {
         File f = new File(filename);
