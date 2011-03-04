@@ -43,11 +43,18 @@ package org.glassfish.weld.services;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.ConversationScoped;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.SessionScoped;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionTarget;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.servlet.ServletContext;
 
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
@@ -115,6 +122,24 @@ public class JCDIServiceImpl implements JCDIService
 
         return weldDeployer.is299Enabled(topLevelBundleDesc);
 
+    }
+
+    public boolean isCDIScoped(Class<?> clazz) {
+        return (clazz.isAnnotationPresent(RequestScoped.class) ||
+                clazz.isAnnotationPresent(ApplicationScoped.class) ||
+                clazz.isAnnotationPresent(SessionScoped.class) ||
+                clazz.isAnnotationPresent(ConversationScoped.class));
+    }
+
+    public void setELResolver(ServletContext servletContext) throws NamingException {
+        InitialContext context = new InitialContext();
+        BeanManager beanManager = (BeanManager)
+            context.lookup("java:comp/BeanManager");
+        if (beanManager != null) {
+            servletContext.setAttribute(
+                "org.glassfish.jsp.beanManagerELResolver",
+                beanManager.getELResolver());
+        }
     }
 
     public JCDIInjectionContext createJCDIInjectionContext(EjbDescriptor ejb, Object instance) {

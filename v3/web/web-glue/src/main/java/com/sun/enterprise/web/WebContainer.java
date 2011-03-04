@@ -45,6 +45,7 @@ import com.sun.common.util.logging.LoggingConfigImpl;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.SessionProperties;
+import com.sun.enterprise.container.common.spi.JCDIService;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.container.common.spi.util.InjectionManager;
 import com.sun.enterprise.container.common.spi.util.JavaEEIOUtils;
@@ -110,10 +111,6 @@ import org.jvnet.hk2.config.ObservableBean;
 import org.jvnet.hk2.config.types.Property;
 import org.xml.sax.EntityResolver;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.ConversationScoped;
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.context.SessionScoped;
 import javax.imageio.ImageIO;
 import javax.servlet.Filter;
 import javax.servlet.Servlet;
@@ -216,6 +213,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
     @Inject
     private JavaEEIOUtils javaEEIOUtils;
+
+    @Inject(optional = true)
+    private JCDIService jcdiService;
 
     private HashMap<String, WebConnector> connectorMap = new HashMap<String, WebConnector>();
 
@@ -3369,11 +3369,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
      * @Dependent scope. All other scopes are invalid and must be rejected.
      */
     private void validateJSR299Scope(Class<?> clazz) {
-        if (clazz.isAnnotationPresent(RequestScoped.class) ||
-                clazz.isAnnotationPresent(ApplicationScoped.class) ||
-                clazz.isAnnotationPresent(SessionScoped.class) ||
-                clazz.isAnnotationPresent(ConversationScoped.class)) {
-
+        if (jcdiService != null && jcdiService.isCDIScoped(clazz)) {
             String msg = rb.getString("webcontainer.invalidAnnotationScope");
             msg = MessageFormat.format(msg, clazz.getName());
             throw new IllegalArgumentException(msg);
