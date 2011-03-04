@@ -61,6 +61,9 @@ import java.util.logging.Logger;
 
 /**
  * Services available to junit tests running with the {@link Hk2Runner} runner.
+ * 
+ * <p>
+ * Caller's can optionally use a caching scheme using the system property -Dhk2testservices.file.caching=true .
  *
  * @author Jerome Dochez
  * @uathor Jeff Trent
