@@ -40,15 +40,12 @@
 
 package org.glassfish.deployment.admin;
 
+import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.io.FileUtils;
 import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
-import com.sun.enterprise.config.serverbeans.Application;
-import com.sun.enterprise.config.serverbeans.Applications;
-import com.sun.enterprise.config.serverbeans.ApplicationRef;
-import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.admin.util.ClusterOperationUtil;
 import org.glassfish.deployment.common.DeploymentUtils;
@@ -147,6 +144,14 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
          * user passed the path to the original directory.
          */
         name = (new File(name)).getName();
+
+
+        // I should really look if the associated cluster is virtual
+        Cluster cluster = domain.getClusterNamed(name);
+        if (cluster!=null) {
+            target = name;
+        }
+
 
         // retrieve matched version(s) if exist
         List<String> matchedVersions = null;
