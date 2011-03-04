@@ -41,13 +41,22 @@
 package com.sun.enterprise.v3.admin.cluster;
 
 import com.sun.enterprise.config.serverbeans.SecureAdmin;
+import com.sun.enterprise.security.ssl.SSLUtils;
+import java.io.IOException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RuntimeType;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
 
 /**
@@ -102,6 +111,11 @@ public class EnableSecureAdminCommand extends SecureAdminCommand {
     @Param(optional = true)
     public String instancealias;
 
+    @Inject
+    private SSLUtils sslUtils;
+
+    private KeyStore keystore = null;
+
     @Override
     Iterator<Work<TopLevelContext>> secureAdminSteps() {
         return stepsIterator(secureAdminSteps);
@@ -149,22 +163,52 @@ public class EnableSecureAdminCommand extends SecureAdminCommand {
     
     @Override
     protected boolean updateSecureAdminSettings(
-            final SecureAdmin secureAdmin_w) {
+            final SecureAdmin secureAdmin_w,
+            final ActionReport actionReport) {
         /*
          * Apply the values for the aliases, if the user provided them on the
          * command invocation.
          */
-        if (adminalias != null) {
-            secureAdmin_w.setDasAlias(adminalias);
+        try {
+            final List<String> badAliases = new ArrayList<String>();
+            if (adminalias != null) {
+                if ( ! validateAlias(adminalias)) {
+                    badAliases.add(adminalias);
+                } else {
+                    secureAdmin_w.setDasAlias(adminalias);
+                }
+            }
+            if (instancealias != null) {
+                if ( ! validateAlias(instancealias)) {
+                    badAliases.add(instancealias);
+                } else {
+                    secureAdmin_w.setInstanceAlias(instancealias);
+                }
+            }
+            if (badAliases.size() > 0) {
+                actionReport.failure(logger, Strings.get("enable.secure.admin.badAlias",
+                        badAliases.size(), badAliases.toString()));
+                return false;
+            }
+            return true;
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
         }
-        if (instancealias != null) {
-            secureAdmin_w.setInstanceAlias(instancealias);
-        }
-        return true;
     }
 
     @Override
     protected String transactionErrorMessageKey() {
         return "enable.secure.admin.errenable";
+    }
+
+    private synchronized KeyStore keyStore() throws IOException {
+        if (keystore == null) {
+            keystore = sslUtils.getKeyStore();
+        }
+        return keystore;
+    }
+
+    private boolean validateAlias(final String alias) throws IOException, KeyStoreException  {
+        return keyStore().containsAlias(alias);
     }
 }

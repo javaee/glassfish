@@ -47,13 +47,11 @@ import com.sun.enterprise.config.serverbeans.MessageSecurityConfig;
 import com.sun.enterprise.config.serverbeans.ProviderConfig;
 import com.sun.enterprise.config.serverbeans.SecureAdmin;
 import com.sun.enterprise.config.serverbeans.SecurityService;
-import com.sun.enterprise.v3.admin.InserverCommandRunnerHelper;
 import com.sun.grizzly.config.dom.FileCache;
 import com.sun.grizzly.config.dom.Http;
 import com.sun.grizzly.config.dom.HttpRedirect;
 import com.sun.grizzly.config.dom.NetworkConfig;
 import com.sun.grizzly.config.dom.NetworkListener;
-import com.sun.grizzly.config.dom.NetworkListeners;
 import com.sun.grizzly.config.dom.PortUnification;
 import com.sun.grizzly.config.dom.Protocol;
 import com.sun.grizzly.config.dom.ProtocolFinder;
@@ -67,7 +65,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.api.ActionReport;
-import org.glassfish.api.ActionReport.MessagePart;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.jvnet.hk2.annotations.Inject;
@@ -106,15 +103,12 @@ public abstract class SecureAdminCommand implements AdminCommand {
     private final static String REDIRECT_PROTOCOL_NAME = "admin-http-redirect";
     public final static String ADMIN_LISTENER_NAME = "admin-listener";
 
-    private static final Logger logger = LogDomains.getLogger(SupplementalCommandExecutorImpl.class,
+    static final Logger logger = LogDomains.getLogger(SupplementalCommandExecutorImpl.class,
                                         LogDomains.ADMIN_LOGGER);
 
 
     @Inject
     protected Domain domain;
-
-    @Inject
-    private InserverCommandRunnerHelper inserverCommandRunnerHelper;
 
     /**
      * Applies changes other than whether secure admin is enabled or disabled
@@ -128,7 +122,8 @@ public abstract class SecureAdminCommand implements AdminCommand {
      * @return
      */
     boolean updateSecureAdminSettings(
-            final SecureAdmin secureAdmin_w) {
+            final SecureAdmin secureAdmin_w,
+            final ActionReport actionReport) throws TransactionFailure {
         /*
          * Default implementation - currently used by DisableSecureAdminCommand
          * and overridden by EnableSecureAdminCommand.
@@ -137,7 +132,7 @@ public abstract class SecureAdminCommand implements AdminCommand {
     }
 
     interface Context {
-        
+        AdminCommandContext adminCommandContext();
     }
 
     /**
@@ -185,21 +180,41 @@ public abstract class SecureAdminCommand implements AdminCommand {
 //        SecureAdminWork<T> disableWork();
 //    }
 
+    static class AbstractContext implements Context {
+
+        private final AdminCommandContext adminCommandContext;
+        
+        AbstractContext(final AdminCommandContext adminCommandContext) {
+            this.adminCommandContext = adminCommandContext;
+        }
+        
+        @Override
+        public AdminCommandContext adminCommandContext() {
+            return adminCommandContext;
+        }
+    }
+
     /**
      * Keeps track of whether we've found writable versions of various 
      * ConfigBeans.
      */
-    static class TopLevelContext implements Context {
+    static class TopLevelContext extends AbstractContext {
 
         private final Transaction t;
         private final Domain d;
 
         private SecureAdmin secureAdmin_w = null;
 
-        private TopLevelContext(final Transaction t, final Domain d) {
+        private TopLevelContext(
+                final AdminCommandContext adminCommandContext,
+                final Transaction t,
+                final Domain d) {
+            super(adminCommandContext);
             this.t = t;
             this.d = d;
         }
+
+
         /*
          * Gets the SecureAdmin object in writeable form, from the specified
          * domain if the SecureAdmin object already exists or by creating a new
@@ -229,7 +244,7 @@ public abstract class SecureAdminCommand implements AdminCommand {
     /**
      * Tracks writable config beans for each configuration.
      */
-    static class ConfigLevelContext implements Context {
+    static class ConfigLevelContext extends AbstractContext {
 
         private final Transaction t;
         private final Config config_w;
@@ -240,8 +255,11 @@ public abstract class SecureAdminCommand implements AdminCommand {
                 HashMap<String,Protocol>();
 
 
-        private ConfigLevelContext(final TopLevelContext topLevelContext,
+        private ConfigLevelContext(
+                final AdminCommandContext adminCommandContext,
+                final TopLevelContext topLevelContext,
                 final Config config_w) {
+            super(adminCommandContext);
             this.topLevelContext = topLevelContext;
             this.t = topLevelContext.t;
             this.config_w = config_w;
@@ -349,8 +367,8 @@ public abstract class SecureAdminCommand implements AdminCommand {
                  * The subclass might have overridden updateSecureAdminSettings.
                  * Give it a change to run logic specific to enable or disable.
                  */
-                SecureAdminCommand.this.updateSecureAdminSettings(secureAdmin_w);
-                return true;
+                return SecureAdminCommand.this.updateSecureAdminSettings(secureAdmin_w,
+                        context.adminCommandContext().getActionReport());
             }
         }
         
@@ -620,7 +638,7 @@ public abstract class SecureAdminCommand implements AdminCommand {
             }
             NetworkListener nl = nc.getNetworkListener(listenerName);
             if (nl == null) {
-                throw new IllegalArgumentException();
+                return null;
             } else {
                 nl_w = t.enroll(nl);
             }
@@ -825,14 +843,15 @@ public abstract class SecureAdminCommand implements AdminCommand {
      * 
      * @throws TransactionFailure
      */
-    public void run() throws TransactionFailure {
+    public void run(final AdminCommandContext adminContext) throws TransactionFailure {
         ConfigSupport.apply(new SingleConfigCode<Domain>() {
             @Override
             public Object run(Domain domain_w) throws PropertyVetoException, TransactionFailure {
 
                 // get the transaction
                 final Transaction t = Transaction.getTransaction(domain_w);
-                final TopLevelContext topLevelContext = new TopLevelContext(t, domain_w);
+                final TopLevelContext topLevelContext = 
+                        new TopLevelContext(adminContext, t, domain_w);
                 if (t!=null) {
 
                     try {
@@ -841,7 +860,10 @@ public abstract class SecureAdminCommand implements AdminCommand {
                          */
                         for (Iterator<Work<TopLevelContext>> it = secureAdminSteps(); it.hasNext();) {
                             final Work<TopLevelContext> step = it.next();
-                            step.run(topLevelContext);
+                            if ( ! step.run(topLevelContext) ) {
+                                t.rollback();
+                                return Boolean.FALSE;
+                            }
                         }
 
                         /*
@@ -851,10 +873,14 @@ public abstract class SecureAdminCommand implements AdminCommand {
                         final Configs configs = domain_w.getConfigs();
                         for (Config c : configs.getConfig()) {
                             final Config c_w = t.enroll(c);
-                            ConfigLevelContext configLevelContext = new ConfigLevelContext(topLevelContext, c_w);
+                            ConfigLevelContext configLevelContext = 
+                                    new ConfigLevelContext(adminContext, topLevelContext, c_w);
                             for (Iterator<Work<ConfigLevelContext>> it = perConfigSteps(); it.hasNext();) {
                                 final Work<ConfigLevelContext> step = it.next();
-                                step.run(configLevelContext);
+                                if ( ! step.run(configLevelContext)) {
+                                    t.rollback();
+                                    return Boolean.FALSE;
+                                }
                             }
                         }
 
@@ -877,9 +903,8 @@ public abstract class SecureAdminCommand implements AdminCommand {
         final ActionReport report = context.getActionReport();
 
         try {
-            run();
-//            final MessagePart partForThisConfig = report.getTopMessagePart().addChild();
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
+            run(context);
         } catch (TransactionFailure ex) {
             logger.log(Level.SEVERE, Strings.get(transactionErrorMessageKey()), ex);
             report.failure(context.getLogger(), Strings.get(transactionErrorMessageKey()), ex);

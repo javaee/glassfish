@@ -44,6 +44,7 @@ import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Configs;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
+import com.sun.enterprise.v3.common.PlainTextActionReporter;
 import com.sun.enterprise.security.SecurityUpgradeService;
 import com.sun.grizzly.config.dom.NetworkConfig;
 import com.sun.grizzly.config.dom.NetworkListener;
@@ -53,6 +54,7 @@ import com.sun.grizzly.config.dom.Ssl;
 import java.beans.PropertyVetoException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.config.ConfigurationUpgrade;
 import org.glassfish.config.support.GrizzlyConfigSchemaMigrator;
 import org.jvnet.hk2.annotations.Inject;
@@ -118,8 +120,16 @@ public class SecureAdminConfigUpgrade implements ConfigurationUpgrade, PostConst
             final EnableSecureAdminCommand enableSecureAdminCommand =
                     habitat.getComponent(EnableSecureAdminCommand.class);
             try {
-                enableSecureAdminCommand.run();
-                logger.log(Level.INFO, "Upgraded secure admin set-up");
+                final AdminCommandContext ctx =
+                        new AdminCommandContext(logger, new PlainTextActionReporter());
+                enableSecureAdminCommand.run(ctx);
+                if (ctx.getActionReport().hasFailures()) {
+                    logger.log(Level.INFO,
+                            "Attempt to upgrade secure admin set-up failed: {0}",
+                            ctx.getActionReport().getMessage());
+                } else {
+                    logger.log(Level.INFO, "Upgraded secure admin set-up");
+                }
             } catch (TransactionFailure tf){
                 Logger.getAnonymousLogger().log(Level.SEVERE,
                         "Error upgrading secure admin set-up", tf);
