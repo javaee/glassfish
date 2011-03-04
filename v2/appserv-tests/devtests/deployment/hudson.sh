@@ -27,12 +27,7 @@ fi
 export S1AS_HOME="$ROOT/glassfish3/glassfish"
 export APS_HOME="$ROOT/appserv-tests"
 cd "$APS_HOME"
-(jps |grep Main |cut -f1 -d" " | xargs kill -9  > /dev/null 2>&1) || true
-#
-# Get rid of any previously-running GlassFish instance
-#
-echo "Cleaning any left-over ASMain Java processes"
-for pid in `jps -l | grep "com.sun.enterprise.glassfish.bootstrap.ASMain" | cut -d " "  -f 1 ` ; do echo "PID is $pid"; done
+(jps -l |grep ASMain |cut -f1 -d" " | xargs -t kill -9  > /dev/null 2>&1) || true
 #
 cd "$APS_HOME/devtests/deployment"
 
