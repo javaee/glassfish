@@ -55,7 +55,7 @@
     &testproperties;
     &run;
 
-    <target name="all" depends="build,deploy,runfirst,redeploy,runsecond,undeploy"/>
+    <target name="all" depends="build,deploy,runfirst,redeployKeepSessions,runsecond,redeployKeepState,runthird,undeploy"/>
 
     <target name="clean" depends="init-common">
       <antcall target="clean-common"/>
@@ -83,8 +83,8 @@
         <antcall target="deploy-war-common"/>
     </target>
 
-    <target name="redeploy" depends="init-common">
-        <echo message="Redeploying ${assemble.dir}/${appname}-web.war from ${basedir}."
+    <target name="redeployKeepSessions" depends="init-common">
+        <echo message="Redeploying keepSessions ${assemble.dir}/${appname}-web.war from ${basedir}."
               level="verbose"/>
         <antcall target="asadmin-common-ignore-fail">
             <param name="admin.command" value="redeploy"/>
@@ -92,12 +92,39 @@
         </antcall>
     </target>
     
+    <target name="redeployKeepState" depends="init-common">
+        <echo message="Redeploying keepState ${assemble.dir}/${appname}-web.war from ${basedir}."
+              level="verbose"/>
+        <antcall target="asadmin-common-ignore-fail">
+            <param name="admin.command" value="redeploy"/>
+            <param name="operand.props" value="--keepstate=true --name=${appname}-web ${assemble.dir}/${appname}-web.war"/>
+        </antcall>
+    </target>
+
     <target name="runfirst" depends="init-common">
+        <antcall target="run">
+            <param name="run.name" value="first"/>
+        </antcall>
+    </target>
+
+    <target name="runsecond" depends="init-common">
+        <antcall target="run">
+            <param name="run.name" value="second"/>
+        </antcall>
+    </target>
+
+    <target name="runthird" depends="init-common">
+        <antcall target="run">
+            <param name="run.name" value="third"/>
+        </antcall>
+    </target>
+ 
+    <target name="run" depends="init-common">
         <java classname="WebTest">
           <arg value="${http.host}"/>
           <arg value="${http.port}"/>
           <arg value="${contextroot}"/>
-          <arg value="first"/>
+          <arg value="${run.name}"/>
           <classpath>
            <pathelement location="${env.APS_HOME}/lib/reportbuilder.jar"/>
            <pathelement location="."/>
@@ -105,19 +132,6 @@
         </java>
     </target>
 
-    <target name="runsecond" depends="init-common">
-        <java classname="WebTest">
-          <arg value="${http.host}"/>
-          <arg value="${http.port}"/>
-          <arg value="${contextroot}"/>
-          <arg value="second"/>
-          <classpath>
-           <pathelement location="${env.APS_HOME}/lib/reportbuilder.jar"/>
-           <pathelement location="."/>
-         </classpath>
-        </java>
-    </target>
- 
     <target name="undeploy" depends="init-common">
         <antcall target="undeploy-war-common"/>
     </target>   

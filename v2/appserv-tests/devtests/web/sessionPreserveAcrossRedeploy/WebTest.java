@@ -51,7 +51,7 @@ import com.sun.ejte.ccl.reporter.*;
 public class WebTest {
 
     private static String TEST_NAME;
-    private static final String TEST_ROOT_NAME = "session-preserve-across-redeploy";
+    private static final String TEST_ROOT_NAME = "session-preserve-across-redeploy-";
 
     private static final String EXPECTED_RESPONSE = "Test passed!";
     private static final String JSESSIONID = "JSESSIONID";
@@ -77,12 +77,13 @@ public class WebTest {
         WebTest webTest = new WebTest(args);
 
         try {
+            TEST_NAME = TEST_ROOT_NAME + webTest.run;
             if ("first".equals(webTest.run)) {
-                TEST_NAME = TEST_ROOT_NAME + "-first";
                 webTest.firstRun();
-            } else {
-                TEST_NAME = TEST_ROOT_NAME + "-second";
+            } else if ("second".equals(webTest.run)) {
                 webTest.secondRun();
+            } else {
+                webTest.thirdRun();
             }
         } catch( Exception ex) {
             ex.printStackTrace();
@@ -134,7 +135,6 @@ public class WebTest {
         FileInputStream fis = new FileInputStream(JSESSIONID);
         BufferedReader br = new BufferedReader(new InputStreamReader(fis));
         String jsessionId = br.readLine();
-        new File(JSESSIONID).delete();
 
         Socket sock = new Socket(host, new Integer(port).intValue());
         OutputStream os = sock.getOutputStream();
@@ -164,6 +164,11 @@ public class WebTest {
             throw new Exception("Wrong response. Expected response: "
                                 + EXPECTED_RESPONSE + " not found");
         }
+    }
+
+    public void thirdRun() throws Exception {
+        secondRun();
+        new File(JSESSIONID).delete();
     }
 
     private String getSessionIdFromCookie(String cookie, String field) {
