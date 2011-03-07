@@ -335,6 +335,44 @@ public class CollectLogFiles implements AdminCommand {
                 return;
             }
 
+
+            // code to download server.log file for DAS. Bug fix 16088
+            String logFileDetails = "";
+            try {
+                // getting log file values from logging.propertie file.
+                logFileDetails = loggingConfig.getLoggingFileDetails();
+            } catch (Exception ex) {
+                final String errorMsg = localStrings.getLocalString(
+                        "collectlogfiles.errInstanceDownloading", "Error while downloading log files from {0}.", target);
+            }
+
+            String targetDirPath = tempDirectory.getAbsolutePath() + File.separator + "logs";
+            targetDir = new File(targetDirPath);
+            if (!targetDir.exists())
+                targetDir.mkdir();
+            targetDirPath = tempDirectory.getAbsolutePath() + File.separator + "logs" + File.separator
+                    + SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME;;
+            targetDir = new File(targetDirPath);
+            targetDir.mkdir();
+
+            try {
+
+                String sourceDir = "";
+                if (logFileDetails.contains("${com.sun.aas.instanceRoot}/logs")) {
+                    sourceDir = env.getDomainRoot() + File.separator + "logs";
+                } else {
+                    sourceDir = logFileDetails.substring(0, logFileDetails.lastIndexOf(File.separator));
+                }
+
+                copyLogFilesForLocalhost(sourceDir, targetDir.getAbsolutePath(), report,
+                        SystemPropertyConstants.DEFAULT_SERVER_INSTANCE_NAME);
+            } catch (Exception ex) {
+                final String errorMsg = localStrings.getLocalString(
+                        "collectlogfiles.errInstanceDownloading", "Error while downloading log files from {0}.", target);
+            }
+            /******************************************************/
+
+
             com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
 
             List<Server> instances = cluster.getInstances();
@@ -349,7 +387,7 @@ public class CollectLogFiles implements AdminCommand {
                 boolean errorOccur = false;
                 instanceCount++;
 
-                String logFileDetails = "";
+                logFileDetails = "";
                 try {
                     // getting log file values from logging.propertie file.
                     logFileDetails = getInstanceLogFileDirectory(domain.getServerNamed(instanceName));
@@ -371,10 +409,6 @@ public class CollectLogFiles implements AdminCommand {
                             sourceDir = logFileDetails.substring(0, logFileDetails.lastIndexOf(File.separator));
                         }
 
-                        String targetDirPath = tempDirectory.getAbsolutePath() + File.separator + "logs";
-                        targetDir = new File(targetDirPath);
-                        if (!targetDir.exists())
-                            targetDir.mkdir();
                         targetDirPath = tempDirectory.getAbsolutePath() + File.separator + "logs" + File.separator + instanceName;
                         targetDir = new File(targetDirPath);
                         targetDir.mkdir();
