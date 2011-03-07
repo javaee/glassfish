@@ -338,7 +338,7 @@ public class ChangeableClass {
         <touch file="${s1as.home}/domains/domain1/applications/${testName}/.reload"/>
 
         <!-- Give the server time to see the .reload file and to redeploy the app. -->
-        <sleep seconds="10"/>
+        <sleep seconds="20"/>
 
         <antcall target="run.positive">
             <param name="log.id" value="1.2"/>
