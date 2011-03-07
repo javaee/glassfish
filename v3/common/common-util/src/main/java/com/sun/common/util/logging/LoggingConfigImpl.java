@@ -405,6 +405,7 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct {
       *
       * @throws  IOException
       */
+
     public void removeLoggingProperties(Set<String> properties) throws IOException {
         try {
             openPropFile();
@@ -441,6 +442,7 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct {
       * @param sourceDir Directory underneath zip file should be created.
       *
       */
+
     private String getZipFileName(String sourceDir) {
 
         final String DATE_FORMAT_NOW = "yyyy-MM-dd_HH-mm-ss";
@@ -461,12 +463,12 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct {
       *
       * @throws  IOException
       */
+
     public String createZipFile(String sourceDir) throws IOException {
 
         String zipFile = getZipFileName(sourceDir);
         boolean zipDone = false;
-        try
-        {
+        try {
             //create object of FileOutputStream
             FileOutputStream fout = new FileOutputStream(zipFile);
 
@@ -481,8 +483,7 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct {
             //close the ZipOutputStream
             zout.close();
         }
-        catch (IOException ioe)
-        {
+        catch (IOException ioe) {
             Logger.getAnonymousLogger().log(Level.SEVERE, "Error while creating zip file :", ioe);
             throw ioe;
         }
@@ -498,6 +499,7 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct {
       *
       * @throws  IOException
       */
+
     private boolean addDirectory(ZipOutputStream zout, File fileSource) throws IOException {
 
         boolean zipDone = false;
@@ -505,24 +507,21 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct {
         //get sub-folder/files list
         File[] files = fileSource.listFiles();
 
-        for (int i = 0; i < files.length; i++)
-        {
+        for (int i = 0; i < files.length; i++) {
             //if the file is directory, call the function recursively
-            if (files[i].isDirectory())
-            {
+            if (files[i].isDirectory()) {
                 addDirectory(zout, files[i]);
                 continue;
             }
 
-			if(files[i].getAbsolutePath().contains(".zip")) {
+            if (files[i].getAbsolutePath().contains(".zip")) {
                 continue;
             }
-             /*
-                    * we are here means, its file and not directory, so
-                    * add it to the zip file
-                    */
-            try
-            {
+            /*
+            * we are here means, its file and not directory, so
+            * add it to the zip file
+            */
+            try {
                 //create byte buffer
                 byte[] buffer = new byte[1024];
 
@@ -535,8 +534,7 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct {
                             * write the file.
                             */
                 int length;
-                while ((length = fin.read(buffer)) > 0)
-                {
+                while ((length = fin.read(buffer)) > 0) {
                     zout.write(buffer, 0, length);
                 }
 
@@ -553,12 +551,67 @@ public class LoggingConfigImpl implements LoggingConfig, PostConstruct {
 
                 zipDone = true;
             }
-            catch (IOException ioe)
-            {
+            catch (IOException ioe) {
                 Logger.getAnonymousLogger().log(Level.SEVERE, "Error while creating zip file :", ioe);
                 throw ioe;
             }
         }
         return zipDone;
     }
+
+    /* Return a logging file details  in the logging.properties file.
+      * @throws  IOException
+      */
+
+    public String getLoggingFileDetails() throws IOException {
+        try {
+            if (!openPropFile())
+                return null;
+            Enumeration e = props.propertyNames();
+
+            while (e.hasMoreElements()) {
+                String key = (String) e.nextElement();
+                // convert the name in domain.xml to the name in logging.properties if needed
+                if (LoggingXMLNames.xmltoPropsMap.get(key) != null) {
+                    key = LoggingXMLNames.xmltoPropsMap.get(key);
+                }
+
+                if (key != null && key.equals("com.sun.enterprise.server.logging.GFFileHandler.file")) {
+                    return props.getProperty(key);
+                }
+            }
+        } catch (IOException ex) {
+            throw ex;
+        }
+        return null;
+    }
+
+    /* Return a logging file details  in the logging.properties file for given target.
+      * @throws  IOException
+      */
+
+    public String getLoggingFileDetails(String targetConfigName) throws IOException {
+        try {
+            if (!openPropFile(targetConfigName))
+                return null;
+            Enumeration e = props.propertyNames();
+
+            while (e.hasMoreElements()) {
+                String key = (String) e.nextElement();
+                // convert the name in domain.xml to the name in logging.properties if needed
+                if (LoggingXMLNames.xmltoPropsMap.get(key) != null) {
+                    key = LoggingXMLNames.xmltoPropsMap.get(key);
+                }
+
+                if (key != null && key.equals("com.sun.enterprise.server.logging.GFFileHandler.file")) {
+                    return props.getProperty(key);
+                }
+
+            }
+        } catch (IOException ex) {
+            throw ex;
+        }
+        return null;
+    }
+
 }
