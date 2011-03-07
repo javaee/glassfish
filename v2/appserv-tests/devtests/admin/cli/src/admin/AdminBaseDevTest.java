@@ -242,7 +242,7 @@ public abstract class AdminBaseDevTest extends BaseDevTest {
         return ret.outAndErr.substring(index + what.length() + 1).trim();
     }
 
-    protected final boolean doesGetMatch(String what, String match) {
+    public final boolean doesGetMatch(String what, String match) {
         String ret = get(what);
 
         if (!ok(match) && !ok(ret))
@@ -330,7 +330,7 @@ public abstract class AdminBaseDevTest extends BaseDevTest {
     final boolean ok(String s) {
         return s != null && s.length() > 0;
     }
-    private static final int MAX_LENGTH = 51;
+    private static final int MAX_LENGTH = 101;
     private static final String DASHES =
             "------------------------------------------------------------------------------------------------------------------------------";
 }
