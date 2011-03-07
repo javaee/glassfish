@@ -69,7 +69,7 @@ public class LogFilterForInstance {
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(LogFilterForInstance.class);
 
     public File downloadGivenInstanceLogFile(Habitat habitat, Server targetServer, Domain domain, Logger logger,
-                                             String instanceName, String domainRoot, String logFileName) throws IOException {
+                                             String instanceName, String domainRoot, String logFileName, String instanceLogFileName) throws IOException {
 
         File instanceLogFile = null;
 
@@ -90,24 +90,50 @@ public class LogFilterForInstance {
         if (!logFileDirectoryOnServer.exists())
             logFileDirectoryOnServer.mkdirs();
 
+        String loggingFile = "";
+
+        if (instanceLogFileName.equals("${com.sun.aas.instanceRoot}/logs/server.log")) {
+            // this code is used if no changes made to log file name under logging.properties file
+            loggingFile = node.getInstallDir() + File.separator + "glassfish" + File.separator + "nodes"
+                    + File.separator + sNode + File.separator + instanceName + File.separator + "logs"
+                    + File.separator + logFileName;
+
+            // verifying loggingFile presents or not if not then changing logFileName value to server.log. It means wrong name is coming
+            // from GUI to back end code.
+            if (!sftpClient.exists(loggingFile)) {
+                loggingFile = node.getInstallDir() + File.separator + "glassfish" + File.separator + "nodes"
+                        + File.separator + sNode + File.separator + instanceName + File.separator + "logs"
+                        + File.separator + "server.log";
+            }
+
+        } else {
+            // this code is used when user changes the attributes value(com.sun.enterprise.server.logging.GFFileHandler.file) in
+            // logging.properties file to something else.
+            loggingFile = instanceLogFileName.substring(0, instanceLogFileName.lastIndexOf(File.separator))
+                    + File.separator + logFileName;
+            if (!sftpClient.exists(loggingFile)) {
+                loggingFile = instanceLogFileName;
+            }
+        }
+
+        // creating local file name on DAS
         long instanceLogFileSize = 0;
-        instanceLogFile = new File(logFileDirectoryOnServer.getAbsolutePath() + File.separator + logFileName);
-        if(instanceLogFile.exists())
+        instanceLogFile = new File(logFileDirectoryOnServer.getAbsolutePath() + File.separator
+                + loggingFile.substring(loggingFile.lastIndexOf(File.separator), loggingFile.length()));
+
+        // getting size of the file on DAS
+        if (instanceLogFile.exists())
             instanceLogFileSize = instanceLogFile.length();
 
-        SFTPv3FileAttributes sftPv3FileAttributes = sftpClient._stat(node.getInstallDir() +
-                File.separator + "glassfish" + File.separator + "nodes" +
-                File.separator + sNode + File.separator + instanceName +
-                File.separator + "logs" + File.separator + logFileName);
+        SFTPv3FileAttributes sftPv3FileAttributes = sftpClient._stat(loggingFile);
 
+        // getting size of the file on instance machine
         long fileSizeOnNode = sftPv3FileAttributes.size;
 
+        // if differ both size then downloading
         if (instanceLogFileSize != fileSizeOnNode) {
 
-            InputStream inputStream = sftpClient.read(node.getInstallDir() +
-                    File.separator + "glassfish" + File.separator + "nodes" +
-                    File.separator + sNode + File.separator + instanceName +
-                    File.separator + "logs" + File.separator + logFileName);
+            InputStream inputStream = sftpClient.read(loggingFile);
 
             BufferedInputStream in = new BufferedInputStream(inputStream);
             FileOutputStream file = new FileOutputStream(instanceLogFile);
@@ -126,7 +152,7 @@ public class LogFilterForInstance {
     }
 
     public void downloadAllInstanceLogFiles(Habitat habitat, Server targetServer, Domain domain, Logger logger,
-                                            String instanceName, String tempDirectoryOnServer) throws IOException {
+                                            String instanceName, String tempDirectoryOnServer, String instanceLogFileDirectory) throws IOException {
 
         // method is used from collect-log-files command
         // for Instance it's going through this loop. This will use ssh utility to get file from instance machine(remote machine) and
@@ -139,8 +165,7 @@ public class LogFilterForInstance {
         sshL.init(node, logger);
 
         SCPClient scpClient = sshL.getSCPClient();
-
-        Vector allInstanceLogFileName = getInstanceLogFileNames(habitat, targetServer, domain, logger, instanceName);
+        Vector allInstanceLogFileName = getInstanceLogFileNames(habitat, targetServer, domain, logger, instanceName, instanceLogFileDirectory);
 
         File logFileDirectoryOnServer = new File(tempDirectoryOnServer + File.separator + "logs"
                 + File.separator + instanceName);
@@ -149,21 +174,27 @@ public class LogFilterForInstance {
 
         logFileDirectoryOnServer.mkdirs();
 
-        String[] remoteFileNames = new String[allInstanceLogFileName.size()];
-        for (int i = 0; i < allInstanceLogFileName.size(); i++) {
-            remoteFileNames[i] = node.getInstallDir() + File.separator +
+        String sourceDir = "";
+        if (instanceLogFileDirectory.contains("${com.sun.aas.instanceRoot}/logs")) {
+            sourceDir = node.getInstallDir() + File.separator +
                     "glassfish" + File.separator + "nodes" + File.separator +
                     sNode + File.separator + instanceName + File.separator +
-                    "logs" + File.separator + allInstanceLogFileName.get(i);
+                    "logs" + File.separator;
+        } else {
+            sourceDir = instanceLogFileDirectory.substring(0, instanceLogFileDirectory.lastIndexOf(File.separator));
+        }
+
+        String[] remoteFileNames = new String[allInstanceLogFileName.size()];
+        for (int i = 0; i < allInstanceLogFileName.size(); i++) {
+            remoteFileNames[i] = sourceDir + File.separator + allInstanceLogFileName.get(i);
         }
 
         scpClient.get(remoteFileNames, logFileDirectoryOnServer.getAbsolutePath());
 
-
     }
 
     public Vector getInstanceLogFileNames(Habitat habitat, Server targetServer, Domain domain, Logger logger,
-                                          String instanceName) throws IOException {
+                                          String instanceName, String instanceLogFileDirectory) throws IOException {
 
         // helper method to get all log file names for given instance
         String sNode = targetServer.getNodeRef();
@@ -171,12 +202,22 @@ public class LogFilterForInstance {
         Vector instanceLogFileNames = new Vector();
         Vector instanceLogFileNamesAsString = new Vector();
 
+        // this code is used when DAS and instances are running on the same machine
         if (node.isLocal()) {
-            String sourceDir = System.getProperty("com.sun.aas.instanceRoot") + File.separator + ".." + File.separator + ".."
-                    + File.separator + "nodes" + File.separator + sNode
-                    + File.separator + instanceName + File.separator + "logs";
+            String loggingDir = "";
 
-            File logsDir = new File(sourceDir);
+            if (instanceLogFileDirectory.contains("${com.sun.aas.instanceRoot}/logs/")) {
+                // this code is used if no changes made in logging.properties file
+                loggingDir = System.getProperty("com.sun.aas.instanceRoot") + File.separator + ".." + File.separator + ".."
+                        + File.separator + "nodes" + File.separator + sNode
+                        + File.separator + instanceName + File.separator + "logs";
+            } else {
+                // this code is used when user changes the attributes value(com.sun.enterprise.server.logging.GFFileHandler.file) in
+                // logging.properties file to something else.
+                loggingDir = instanceLogFileDirectory.substring(0, instanceLogFileDirectory.lastIndexOf(File.separator));
+            }
+
+            File logsDir = new File(loggingDir);
             File allLogFileNames[] = logsDir.listFiles();
             if (allLogFileNames != null) {
                 instanceLogFileNames = new Vector(Arrays.asList(allLogFileNames));
@@ -192,16 +233,26 @@ public class LogFilterForInstance {
                 }
             }
         } else {
-
+            // this code is used if DAS and instance are running on different machine
             SSHLauncher sshL = getSSHL(habitat);
             sshL.init(node, logger);
-
             SFTPClient sftpClient = sshL.getSFTPClient();
 
-            instanceLogFileNames = sftpClient.ls(node.getInstallDir() +
-                    File.separator + "glassfish" + File.separator + "nodes" +
-                    File.separator + sNode + File.separator + instanceName +
-                    File.separator + "logs");
+            String loggingDir = "";
+
+            if (instanceLogFileDirectory.contains("${com.sun.aas.instanceRoot}/logs/")) {
+                // this code is used if no changes made in logging.properties file
+                loggingDir = node.getInstallDir() +
+                        File.separator + "glassfish" + File.separator + "nodes" +
+                        File.separator + sNode + File.separator + instanceName +
+                        File.separator + "logs";
+            } else {
+                // this code is used when user changes the attributes value(com.sun.enterprise.server.logging.GFFileHandler.file) in
+                // logging.properties file to something else.
+                loggingDir = instanceLogFileDirectory.substring(0, instanceLogFileDirectory.lastIndexOf(File.separator));
+            }
+
+            instanceLogFileNames = sftpClient.ls(loggingDir);
 
             for (int i = 0; i < instanceLogFileNames.size(); i++) {
                 SFTPv3DirectoryEntry file = (SFTPv3DirectoryEntry) instanceLogFileNames.get(i);

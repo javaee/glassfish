@@ -41,6 +41,7 @@
 package com.sun.enterprise.server.logging.commands;
 
 import com.sun.common.util.logging.LoggingConfigImpl;
+import com.sun.enterprise.config.serverbeans.Cluster;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Node;
 import com.sun.enterprise.config.serverbeans.Server;
@@ -129,8 +130,16 @@ public class CollectLogFiles implements AdminCommand {
 
         if (targetServer != null && targetServer.isDas()) {
 
-            // This loop if target instance is DAS
+            String logFileDetails = "";
+            try {
+                // getting log file values from logging.propertie file.
+                logFileDetails = loggingConfig.getLoggingFileDetails();
+            } catch (Exception ex) {
+                final String errorMsg = localStrings.getLocalString(
+                        "collectlogfiles.errInstanceDownloading", "Error while downloading log files from {0}.", target);
+            }
 
+            // This loop if target instance is DAS
             String zipFile = "";
             File tempDirectory = null;
 
@@ -156,11 +165,18 @@ public class CollectLogFiles implements AdminCommand {
             targetDir.mkdir();
 
             try {
-                copyLogFilesForLocalhost(env.getDomainRoot() + File.separator + "logs",
-                        targetDir.getAbsolutePath(), report, targetServer.getName());
+
+                String sourceDir = "";
+                if (logFileDetails.contains("${com.sun.aas.instanceRoot}/logs")) {
+                    sourceDir = env.getDomainRoot() + File.separator + "logs";
+                } else {
+                    sourceDir = logFileDetails.substring(0, logFileDetails.lastIndexOf(File.separator));
+                }
+
+                copyLogFilesForLocalhost(sourceDir, targetDir.getAbsolutePath(), report, targetServer.getName());
             } catch (Exception ex) {
                 final String errorMsg = localStrings.getLocalString(
-                        "collectlogfiles.errInstanceDownloading", "Error while downloading log files from {0}.",target);
+                        "collectlogfiles.errInstanceDownloading", "Error while downloading log files from {0}.", target);
             }
 
 
@@ -169,7 +185,7 @@ public class CollectLogFiles implements AdminCommand {
                 if (zipFile == null || new File(zipFile) == null) {
                     // Failure during zip
                     final String errorMsg = localStrings.getLocalString(
-                            "collectlogfiles.creatingZip", "Error while creating zip file {0}.",zipFile);
+                            "collectlogfiles.creatingZip", "Error while creating zip file {0}.", zipFile);
                     report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                     report.setMessage(errorMsg);
                     report.setActionExitCode(ActionReport.ExitCode.FAILURE);
@@ -179,7 +195,7 @@ public class CollectLogFiles implements AdminCommand {
             } catch (Exception e) {
                 // Catching Exception if any
                 final String errorMsg = localStrings.getLocalString(
-                        "collectlogfiles.creatingZip", "Error while creating zip file {0}.",zipFile);
+                        "collectlogfiles.creatingZip", "Error while creating zip file {0}.", zipFile);
                 logger.log(Level.SEVERE, errorMsg, e);
                 report.setMessage(errorMsg);
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
@@ -189,10 +205,10 @@ public class CollectLogFiles implements AdminCommand {
             if (this.retrieve) {
                 retrieveFile(zipFile, context, tempDirectory, props, report);
                 report.setMessage(localStrings.getLocalString(
-                        "collectlogfiles.instance.success", "Created Zip file under {0}.",retrieveFilePath + File.separator + new File(zipFile).getName()));
+                        "collectlogfiles.instance.success", "Created Zip file under {0}.", retrieveFilePath + File.separator + new File(zipFile).getName()));
             } else {
                 report.setMessage(localStrings.getLocalString(
-                        "collectlogfiles.instance.success", "Created Zip file under {0}.",zipFile));
+                        "collectlogfiles.instance.success", "Created Zip file under {0}.", zipFile));
             }
 
             if (targetDir != null && targetDir.exists())
@@ -209,6 +225,15 @@ public class CollectLogFiles implements AdminCommand {
             String zipFile = "";
             File targetDir = null;
 
+            String logFileDetails = "";
+            try {
+                // getting log file values from logging.propertie file.
+                logFileDetails = getInstanceLogFileDirectory(targetServer);
+            } catch (Exception ex) {
+                final String errorMsg = localStrings.getLocalString(
+                        "collectlogfiles.errInstanceDownloading", "Error while downloading log files from {0}.", target);
+            }
+
             try {
                 tempDirectory = new File(env.getInstanceRoot(), "collected-logs");
                 if (!tempDirectory.exists())
@@ -224,9 +249,16 @@ public class CollectLogFiles implements AdminCommand {
 
             try {
                 if (node.isLocal()) {
-                    String sourceDir = env.getInstanceRoot().getAbsolutePath() + File.separator + ".." + File.separator + ".."
-                            + File.separator + "nodes" + File.separator + serverNode
-                            + File.separator + instanceName + File.separator + "logs";
+
+                    String sourceDir = "";
+                    if (logFileDetails.contains("${com.sun.aas.instanceRoot}/logs")) {
+                        sourceDir = env.getInstanceRoot().getAbsolutePath() + File.separator + ".." + File.separator + ".."
+                                + File.separator + "nodes" + File.separator + serverNode
+                                + File.separator + instanceName + File.separator + "logs";
+                    } else {
+                        sourceDir = logFileDetails.substring(0, logFileDetails.lastIndexOf(File.separator));
+                    }
+
                     String targetDirPath = tempDirectory.getAbsolutePath() + File.separator + "logs";
                     targetDir = new File(targetDirPath);
                     if (!targetDir.exists())
@@ -238,12 +270,12 @@ public class CollectLogFiles implements AdminCommand {
                     copyLogFilesForLocalhost(sourceDir, targetDir.getAbsolutePath(), report, instanceName);
                 } else {
                     new LogFilterForInstance().downloadAllInstanceLogFiles(habitat, targetServer,
-                            domain, logger, instanceName, tempDirectory.getAbsolutePath());
+                            domain, logger, instanceName, tempDirectory.getAbsolutePath(), logFileDetails);
                 }
             }
             catch (Exception ex) {
                 final String errorMsg = localStrings.getLocalString(
-                        "collectlogfiles.errInstanceDownloading", "Error while downloading log files from {0}.",instanceName);
+                        "collectlogfiles.errInstanceDownloading", "Error while downloading log files from {0}.", instanceName);
                 report.setMessage(errorMsg);
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 return;
@@ -255,7 +287,7 @@ public class CollectLogFiles implements AdminCommand {
                 if (zipFile == null || new File(zipFile) == null) {
                     // Failure during zip
                     final String errorMsg = localStrings.getLocalString(
-                            "collectlogfiles.creatingZip", "Error while creating zip file {0}.",zipFile);
+                            "collectlogfiles.creatingZip", "Error while creating zip file {0}.", zipFile);
                     report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                     report.setMessage(errorMsg);
                     report.setActionExitCode(ActionReport.ExitCode.FAILURE);
@@ -264,7 +296,7 @@ public class CollectLogFiles implements AdminCommand {
             }
             catch (Exception ex) {
                 final String errorMsg = localStrings.getLocalString(
-                        "collectlogfiles.creatingZip", "Error while creating zip file {0}.",zipFile);
+                        "collectlogfiles.creatingZip", "Error while creating zip file {0}.", zipFile);
                 report.setMessage(errorMsg);
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 return;
@@ -273,10 +305,10 @@ public class CollectLogFiles implements AdminCommand {
             if (this.retrieve) {
                 retrieveFile(zipFile, context, tempDirectory, props, report);
                 report.setMessage(localStrings.getLocalString(
-                        "collectlogfiles.instance.success", "Created Zip file under {0}.",retrieveFilePath + File.separator + new File(zipFile).getName()));
+                        "collectlogfiles.instance.success", "Created Zip file under {0}.", retrieveFilePath + File.separator + new File(zipFile).getName()));
             } else {
                 report.setMessage(localStrings.getLocalString(
-                        "collectlogfiles.instance.success", "Created Zip file under {0}.",zipFile));
+                        "collectlogfiles.instance.success", "Created Zip file under {0}.", zipFile));
             }
 
             if (targetDir != null && targetDir.exists())
@@ -304,6 +336,7 @@ public class CollectLogFiles implements AdminCommand {
             }
 
             com.sun.enterprise.config.serverbeans.Cluster cluster = domain.getClusterNamed(target);
+
             List<Server> instances = cluster.getInstances();
 
             int instanceCount = 0;
@@ -315,12 +348,29 @@ public class CollectLogFiles implements AdminCommand {
                 Node node = domain.getNodes().getNode(serverNode);
                 boolean errorOccur = false;
                 instanceCount++;
+
+                String logFileDetails = "";
+                try {
+                    // getting log file values from logging.propertie file.
+                    logFileDetails = getInstanceLogFileDirectory(domain.getServerNamed(instanceName));
+                } catch (Exception ex) {
+                    final String errorMsg = localStrings.getLocalString(
+                            "collectlogfiles.errInstanceDownloading", "Error while downloading log files from {0}.", target);
+                }
+
                 try {
 
                     if (node.isLocal()) {
-                        String sourceDir = env.getInstanceRoot().getAbsolutePath() + File.separator + ".." + File.separator
-                                + ".." + File.separator + "nodes" + File.separator + serverNode
-                                + File.separator + instanceName + File.separator + "logs";
+
+                        String sourceDir = "";
+                        if (logFileDetails.contains("${com.sun.aas.instanceRoot}/logs")) {
+                            sourceDir = env.getInstanceRoot().getAbsolutePath() + File.separator + ".." + File.separator
+                                    + ".." + File.separator + "nodes" + File.separator + serverNode
+                                    + File.separator + instanceName + File.separator + "logs";
+                        } else {
+                            sourceDir = logFileDetails.substring(0, logFileDetails.lastIndexOf(File.separator));
+                        }
+
                         String targetDirPath = tempDirectory.getAbsolutePath() + File.separator + "logs";
                         targetDir = new File(targetDirPath);
                         if (!targetDir.exists())
@@ -332,19 +382,19 @@ public class CollectLogFiles implements AdminCommand {
                         copyLogFilesForLocalhost(sourceDir, targetDir.getAbsolutePath(), report, instanceName);
                     } else {
                         new LogFilterForInstance().downloadAllInstanceLogFiles(habitat, instance,
-                                domain, logger, instanceName, tempDirectory.getAbsolutePath());
+                                domain, logger, instanceName, tempDirectory.getAbsolutePath(), logFileDetails);
                     }
                 }
                 catch (Exception ex) {
                     errorCount++;
                     final String errorMsg = localStrings.getLocalString(
-                            "collectlogfiles.errInstanceDownloading", "Error while downloading log files from {0}.",instanceName);
+                            "collectlogfiles.errInstanceDownloading", "Error while downloading log files from {0}.", instanceName);
                     errorOccur = true;
                     finalMessage += errorMsg + "\n";
                 }
                 if (!errorOccur) {
                     final String successMsg = localStrings.getLocalString(
-                            "collectlogfiles.successInstanceDownloading", "Log files are downloaded for {0}.",instanceName);
+                            "collectlogfiles.successInstanceDownloading", "Log files are downloaded for {0}.", instanceName);
                     finalMessage += successMsg + "\n";
                 }
             }
@@ -357,7 +407,7 @@ public class CollectLogFiles implements AdminCommand {
                     if (zipFile == null || new File(zipFile) == null) {
                         // Failure during zip
                         final String errorMsg = localStrings.getLocalString(
-                                "collectlogfiles.creatingZip", "Error while creating zip file {0}.",zipFile);
+                                "collectlogfiles.creatingZip", "Error while creating zip file {0}.", zipFile);
                         report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                         report.setMessage(errorMsg);
                         report.setActionExitCode(ActionReport.ExitCode.FAILURE);
@@ -366,7 +416,7 @@ public class CollectLogFiles implements AdminCommand {
                 }
                 catch (Exception ex) {
                     final String errorMsg = localStrings.getLocalString(
-                            "collectlogfiles.creatingZip", "Error while creating zip file {0}.",zipFile);
+                            "collectlogfiles.creatingZip", "Error while creating zip file {0}.", zipFile);
                     report.setMessage(errorMsg);
                     report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                     return;
@@ -375,16 +425,16 @@ public class CollectLogFiles implements AdminCommand {
                 if (this.retrieve) {
                     retrieveFile(zipFile, context, tempDirectory, props, report);
                     report.setMessage(localStrings.getLocalString(
-                            "collectlogfiles.cluster.success","{0} Created Zip file under {1}.",finalMessage,retrieveFilePath + File.separator + new File(zipFile).getName()));
+                            "collectlogfiles.cluster.success", "{0} Created Zip file under {1}.", finalMessage, retrieveFilePath + File.separator + new File(zipFile).getName()));
                 } else {
                     report.setMessage(localStrings.getLocalString(
-                            "collectlogfiles.cluster.success","{0} Created Zip file under {1}.",finalMessage,zipFile));
+                            "collectlogfiles.cluster.success", "{0} Created Zip file under {1}.", finalMessage, zipFile));
                 }
 
                 report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-            } else if(instanceCount==0) {
+            } else if (instanceCount == 0) {
                 report.setMessage(localStrings.getLocalString(
-                            "collectlogfiles.noinstance","No instances are defined as part of {0}. So there are no files to zip.",target));
+                        "collectlogfiles.noinstance", "No instances are defined as part of {0}. So there are no files to zip.", target));
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             } else {
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
@@ -423,7 +473,7 @@ public class CollectLogFiles implements AdminCommand {
                 }
                 catch (Exception ex) {
                     final String errorMsg = localStrings.getLocalString(
-                            "collectlogfiles.errInstanceDownloading", "Error while downloading log file from {0}.",instanceName);
+                            "collectlogfiles.errInstanceDownloading", "Error while downloading log file from {0}.", instanceName);
                     logger.log(Level.SEVERE, errorMsg, ex);
                     report.setMessage(errorMsg);
                     report.setActionExitCode(ActionReport.ExitCode.FAILURE);
@@ -433,7 +483,7 @@ public class CollectLogFiles implements AdminCommand {
 
                 if (!toFile.exists()) {
                     final String errorMsg = localStrings.getLocalString(
-                            "collectlogfiles.errInstanceDownloading", "Error while downloading log file from {0}.",instanceName);
+                            "collectlogfiles.errInstanceDownloading", "Error while downloading log file from {0}.", instanceName);
                     report.setMessage(errorMsg);
                     report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                     return;
@@ -467,7 +517,7 @@ public class CollectLogFiles implements AdminCommand {
         }
         catch (Exception ex) {
             final String errorMsg = localStrings.getLocalString(
-                    "collectlogfiles.copyingZip", "Error while copying zip file to {0}.",retrieveFilePath);
+                    "collectlogfiles.copyingZip", "Error while copying zip file to {0}.", retrieveFilePath);
             logger.log(Level.SEVERE, errorMsg, ex);
             report.setMessage(errorMsg);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
@@ -488,5 +538,27 @@ public class CollectLogFiles implements AdminCommand {
         }
         // The directory is now empty so delete it
         return dir.delete();
+    }
+
+    /*
+       This function is used to get log file details from logging.properties file for given target.
+    */
+
+    private String getInstanceLogFileDirectory(Server targetServer) throws IOException {
+
+        String logFileDetailsForServer = "";
+        String targetConfigName = "";
+
+        Cluster clusterForInstance = targetServer.getCluster();
+        if (clusterForInstance != null) {
+            targetConfigName = clusterForInstance.getConfigRef();
+        } else {
+            targetConfigName = targetServer.getConfigRef();
+        }
+
+        logFileDetailsForServer = loggingConfig.getLoggingFileDetails(targetConfigName);
+
+        return logFileDetailsForServer;
+
     }
 }
