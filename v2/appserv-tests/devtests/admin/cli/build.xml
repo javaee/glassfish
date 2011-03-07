@@ -317,8 +317,6 @@
             <fileset dir="${env.APS_HOME}" includes="count.txt"/>
             <fileset dir="." includes="*.output"/>
             <fileset dir="." includes="*.txt"/>
-        </delete>
-        <delete includeemptydirs="true">
             <fileset dir="build" includes="**/*"/>
         </delete>
     </target>
