@@ -317,8 +317,8 @@
             <fileset dir="${env.APS_HOME}" includes="count.txt"/>
             <fileset dir="." includes="*.output"/>
             <fileset dir="." includes="*.txt"/>
-            <fileset dir="build" includes="**/*"/>
         </delete>
+        <delete failonerror="false" includeemptydirs="true" dir="build"/>
     </target>
     <target name="usage">
         <echo>Usage: ant [-Dteststorun=instance|cluster|...] [-Dnum_tests=n] [-Dverbose=true/false] all (Executes the admin tests)</echo>
