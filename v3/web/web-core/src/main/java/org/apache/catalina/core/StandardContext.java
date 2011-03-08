@@ -6956,10 +6956,9 @@ public class StandardContext
         }
         try {
             // Trigger expansion of bundled JAR files
-            URL u = getMetaInfResource(path);
-            String realPath = (u != null ? u.getPath() : null);
-            if (realPath != null) {
-                File[] children = new File(realPath).listFiles();
+            File file = getExtractedMetaInfResourcePath(path);
+            if (file != null) {
+                File[] children = file.listFiles();
                 StringBuilder sb = null;
                 for (File child : children) {
                     sb = new StringBuilder(path);
@@ -7488,7 +7487,7 @@ public class StandardContext
     /**
      * Get resource from META-INF/resources/ in jars.
      */
-    URL getMetaInfResource(String path) {
+    private URL getMetaInfResource(String path) {
 
         path = Globals.META_INF_RESOURCES + path;
 
@@ -7499,5 +7498,19 @@ public class StandardContext
 
         // This probably won't happen
         return cl.getResource(path);
+    }
+
+    /**
+     * Get resource from META-INF/resources/ in jars.
+     */
+    private File getExtractedMetaInfResourcePath(String path) {
+        path = Globals.META_INF_RESOURCES + path;
+
+        ClassLoader cl = getLoader().getClassLoader();
+        if (cl instanceof WebappClassLoader) {
+            return ((WebappClassLoader)cl).getExtractedResourcePath(path);
+        }
+        
+        return null;
     }
 }
