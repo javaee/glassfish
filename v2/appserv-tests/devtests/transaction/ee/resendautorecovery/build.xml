@@ -95,6 +95,7 @@
     </target>
 
     <target name="unsetup-test" depends="init-common">
+        <antcall target="save-logs"/>
         <antcall target="unsetup-cluster"/>
         <antcall target="unsetup-database"/>
     </target>

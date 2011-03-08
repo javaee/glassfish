@@ -69,7 +69,7 @@ cat derby.properties
 
 pushd $APS_HOME/devtests/transaction/ee
 
-ant all |tee log.txt
+ant -Dsave.logs=true all |tee log.txt
 antStatus=$?
 
 ant dev-report
