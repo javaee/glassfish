@@ -212,9 +212,15 @@ public class PipeHelper extends ConfigHelper {
 	Subject s = (Subject) request.invocationProperties.get
 	    (PipeConstants.CLIENT_SUBJECT);
 
-	SecurityContext sC = new SecurityContext(s);
 
-	SecurityContext.setCurrent(sC);
+        if (s == null || (s!= null &&
+                s.getPrincipals().isEmpty() &&
+                s.getPublicCredentials().isEmpty())) {
+            SecurityContext.setUnauthenticatedContext();
+        } else {
+	    SecurityContext sC = new SecurityContext(s);
+            SecurityContext.setCurrent(sC);
+        }
 
 	// we should try to replace this endpoint specific
 	// authorization check with a generic web service message check
