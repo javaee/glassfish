@@ -250,8 +250,14 @@ public class SecurityHandler {
                 putOptional(attrMap, propList, "assign-groups", "fileAsGroups");
             }else
             if(classname.indexOf("LDAPRealm")!= -1){
-                attrMap.put("baseDn", "\"" + attrMap.get("baseDn") + "\"");
-                attrMap.put("directory", "\"" + attrMap.get("directory") + "\"");
+                String baseDn = attrMap.get("baseDn");
+                String directory = attrMap.get("directory");
+                if (!baseDn.contains("\""))
+                    baseDn = "\"" + attrMap.get("baseDn") + "\"";
+                if (!directory.contains("\""))
+                    directory = "\"" + attrMap.get("directory") + "\"";
+                attrMap.put("baseDn", baseDn);
+                attrMap.put("directory", directory);
                 putOptional(attrMap, propList, "jaas-context", "ldapJaax");
                 putOptional(attrMap, propList, "base-dn", "baseDn");
                 putOptional(attrMap, propList, "directory", "directory");
