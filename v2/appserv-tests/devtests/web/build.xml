@@ -232,6 +232,7 @@
         <ant dir="servlet-3.0/defaultErrorPage" target="all"/>
         <ant dir="servlet-3.0/javaxServletContextOrderedLibs" target="all"/>
         <ant dir="servlet-3.0/multiWebFragments" target="all"/>
+        <ant dir="servlet-3.0/multiWebFragmentsResources" target="all"/>
         <ant dir="servlet-3.0/multipart" target="all"/>
         <ant dir="servlet-3.0/relativeOrderingWebFragments" target="all"/>
         <ant dir="servlet-3.0/serveJspAndStaticResourceFromLocalJar" target="all"/>
