@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -71,17 +71,7 @@ public interface NamingServiceMBean {
     // -------------------------------------------------------------- Constants
     
     
-    /**
-     * Status constants.
-     */
-    public static final String[] states = 
-    {"Stopped", "Stopping", "Starting", "Started"};
-    
-    
-    public static final int STOPPED  = 0;
-    public static final int STOPPING = 1;
-    public static final int STARTING = 2;
-    public static final int STARTED  = 3;
+    public enum State { STOPPED, STOPPING, STARTING, STARTED }
     
     
     /**
@@ -108,13 +98,7 @@ public interface NamingServiceMBean {
     /**
      * Returns the state.
      */
-    public int getState();
-    
-    
-    /**
-     * Returns a String representation of the state.
-     */
-    public String getStateString();
+    public State getState();
     
     
     /**
