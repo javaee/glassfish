@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,6 +41,7 @@
 package org.glassfish.webservices;
 
 import com.sun.enterprise.deployment.*;
+import com.sun.enterprise.util.io.FileUtils;
 import com.sun.logging.LogDomains;
 import org.glassfish.ejb.api.EjbEndpointFacade;
 
@@ -175,10 +176,9 @@ public class EjbRuntimeEndpointInfo {
                             wsCtxt = new WebServiceContextImpl();
                         }
                     } catch (Throwable t) {
+                        t.printStackTrace();
                         logger.severe("Cannot initialize endpoint " + endpoint.getName() + " : error is : " + t.getMessage());
                         return null;
-                    } finally {
-                //TODOBM fixme        invManager.postInvoke(invManager.getCurrentInvocation());
                     }
                 }
             }
@@ -206,33 +206,6 @@ public class EjbRuntimeEndpointInfo {
                         Collection docs = null;
                         if(endpoint.getWebService().hasWsdlFile()) {
 
-                            /*
-                                                Code from GF V2
-                                                BaseManager mgr;
-                                                if(endpoint.getBundleDescriptor().getApplication().isVirtual()) {
-                                                    mgr = DeploymentServiceUtils.getInstanceManager(DeployableObjectType.EJB);
-                                                } else {
-                                                    mgr = DeploymentServiceUtils.getInstanceManager(DeployableObjectType.APP);
-                                                }
-                                                String deployedDir =
-                                                    mgr.getLocation(endpoint.getBundleDescriptor().getApplication().getRegistrationName());
-                                                 */
-
-                            /*
-                                                Does not work with directory deployment
-                                                WebServiceContractImpl wscImpl = WebServiceContractImpl.getInstance();
-                                                ServerEnvironment servEnv = wscImpl.getServerEnvironmentImpl();
-                                                String deployedDir = new File(servEnv.getApplicationRepositoryPath().getAbsolutePath(),
-                                                endpoint.getBundleDescriptor().getApplication().getRegistrationName()).getAbsolutePath();
-                                                */
-
-                            /*
-                                                Does not work for EJB web servcies packaged in war, as the WebAppCL does not find resources udner WEB-INF
-                                                URL pkgedWsdl = clazz.getResource('/' + endpoint.getWebService().getWsdlFileUri());
-                                                if (pkgedWsdl == null) {
-                                                    pkgedWsdl = endpoint.getWebService().getWsdlFileUrl();
-                                                }*/
-
                             WebServiceContractImpl wscImpl = WebServiceContractImpl.getInstance();
                             ApplicationRegistry appRegistry = wscImpl.getHabitat().getByType(ApplicationRegistry.class);
                             ApplicationInfo appInfo = appRegistry.get(endpoint.getBundleDescriptor().getApplication().getRegistrationName());
@@ -243,7 +216,12 @@ public class EjbRuntimeEndpointInfo {
                                 if(endpoint.getBundleDescriptor().getApplication().isVirtual()) {
                                     pkgedWsdl = deployedDir.resolve(endpoint.getWebService().getWsdlFileUri()).toURL();
                                 } else {
-                                    String moduleUri = endpoint.getBundleDescriptor().getModuleDescriptor().getArchiveUri().replaceAll("\\.", "_");
+                                    String moduleUri1 = endpoint.getBundleDescriptor().getModuleDescriptor().getArchiveUri();
+                                    
+                                    //Fix for issue 7024099
+                                    //Only replace the last "." with "_" for moduleDescriptor's archive uri
+
+                                    String moduleUri = FileUtils.makeFriendlyFilenameExtension(moduleUri1);
                                     pkgedWsdl = deployedDir.resolve(moduleUri+"/"+endpoint.getWebService().getWsdlFileUri()).toURL();
                                 }
                             } else {
@@ -308,10 +286,7 @@ public class EjbRuntimeEndpointInfo {
 
                         String uri = endpoint.getEndpointAddressUri();
                         String urlPattern = uri.startsWith("/") ? uri : "/" + uri;
-                        /*if(urlPattern.indexOf("/", 1) != -1) {
-                            urlPattern = urlPattern.substring(urlPattern.indexOf("/", 1));
-                        }
-*/
+
                         // All set; Create the adapter
                         if(adapterList == null) {
                             adapterList = new ServletAdapterList();
