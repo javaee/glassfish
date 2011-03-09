@@ -196,9 +196,9 @@ public class AMXConfigImpl extends AMXImplBase
                 info.getNotifications(),
                 info.getDescriptor());
 
-        mInfos.putIfAbsent(intf, newInfo);
+        MBeanInfo oldInfo = mInfos.putIfAbsent(intf, newInfo);
 
-        return newInfo;
+        return oldInfo != null ? oldInfo : newInfo;
     }
 
     public AMXConfigImpl(
