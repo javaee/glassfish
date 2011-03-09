@@ -71,7 +71,7 @@ public interface NamingServiceMBean {
     // -------------------------------------------------------------- Constants
     
     
-    public enum State { STOPPED, STOPPING, STARTING, STARTED }
+    public static enum State { STOPPED, STOPPING, STARTING, STARTED }
     
     
     /**
