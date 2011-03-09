@@ -40,6 +40,7 @@
 
 package com.sun.enterprise.admin.cli;
 
+import com.sun.enterprise.universal.io.SmartFile;
 import java.io.File;
 import java.util.*;
 import java.util.logging.Logger;
@@ -353,6 +354,9 @@ public class ProgramOptions {
             passwordFile = env.getStringOption(PASSWORDFILE);
         if (!ok(passwordFile))
             passwordFile = null;        // no default
+        
+        if(ok(passwordFile))
+                passwordFile = SmartFile.sanitize(passwordFile);
         return passwordFile;
     }
 
