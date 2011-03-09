@@ -48,11 +48,11 @@ Bundle-Activator: com.sun.enterprise.glassfish.bootstrap.GlassFishMainActivator
 # rest of GlassFish bundles. Please contact Sahoo or Bhavani before you make any change in this 
 # bundle's manifest.
 Import-Package: \
-    org.glassfish.embeddable,
+    org.glassfish.embeddable.*,
     org.osgi.*
 
 DynamicImport-Package: *
 
 -exportcontents: \
-    org.glassfish.embeddable; \
+    org.glassfish.embeddable.*; \
     com.sun.enterprise.glassfish.bootstrap; version=${project.osgi.version}
