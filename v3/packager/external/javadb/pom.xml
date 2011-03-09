@@ -72,9 +72,9 @@
 				<unzip src="${javadb.zip}"
 				        dest="target/classes/glassfish/javadb">
                                     <patternset>
-                                        <exclude name="javadb/demo/**"/>
-                                        <exclude name="javadb/docs/**"/>
-                                        <exclude name="javadb/javadoc/**"/>
+                                        <exclude name="demo/**"/>
+                                        <exclude name="docs/**"/>
+                                        <exclude name="javadoc/**"/>
                                     </patternset>
                                 </unzip>
                             </tasks>
