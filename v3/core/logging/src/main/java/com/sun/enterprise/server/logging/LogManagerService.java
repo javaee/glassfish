@@ -242,35 +242,42 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy, org.g
             if (formatterClass.getName().equals("com.sun.enterprise.server.logging.UniformLogFormatter")) {
                 String cname = "com.sun.enterprise.server.logging.GFFileHandler";
                 recordBeginMarker = props.get(cname + ".logFormatBeginMarker");
-                if (recordBeginMarker == null && ("").equals(recordBeginMarker)) {
+                if (recordBeginMarker == null || ("").equals(recordBeginMarker)) {
                     logger.log(Level.WARNING,
                             "Record begin marker is not a proper value so Using default.");
                     recordBeginMarker = RECORD_BEGIN_MARKER;
                 }
 
                 recordEndMarker = props.get(cname + ".logFormatEndMarker");
-                if (recordEndMarker == null && ("").equals(recordEndMarker)) {
+                if (recordEndMarker == null || ("").equals(recordEndMarker)) {
                     logger.log(Level.WARNING,
                             "Record end marker is not a proper value so Using default.");
                     recordEndMarker = RECORD_END_MARKER;
                 }
 
                 recordFieldSeparator = props.get(cname + ".logFormatFieldSeparator");
-                if (recordFieldSeparator.length() > 1) {
+                if (recordFieldSeparator == null || ("").equals(recordFieldSeparator) || recordFieldSeparator.length() > 1) {
                     logger.log(Level.WARNING,
                             "Log Format filed separator is not a character so Using default.");
                     recordFieldSeparator = RECORD_FIELD_SEPARATOR;
                 }
 
                 recordDateFormat = props.get(cname + ".logFormatDateFormat");
-                SimpleDateFormat sdf = new SimpleDateFormat(recordDateFormat);
-                try {
-                    sdf.format(new Date());
-                } catch (Exception e) {
+                if (recordDateFormat != null && !("").equals(recordDateFormat)) {
+                    SimpleDateFormat sdf = new SimpleDateFormat(recordDateFormat);
+                    try {
+                        sdf.format(new Date());
+                    } catch (Exception e) {
+                        logger.log(Level.WARNING,
+                                "Date Format specified is wrong so Using default.");
+                        recordDateFormat = RECORD_DATE_FORMAT;
+                    }
+                } else {
                     logger.log(Level.WARNING,
                             "Date Format specified is wrong so Using default.");
                     recordDateFormat = RECORD_DATE_FORMAT;
                 }
+
 
                 formatter.setRecordBeginMarker(recordBeginMarker);
                 formatter.setRecordEndMarker(recordEndMarker);
