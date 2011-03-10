@@ -1599,7 +1599,7 @@ public class ProxyDirContext implements DirContext {
             && (entry.resource.getContent() == null) 
             && (entry.attributes.getContentLength() >= 0)
             && (entry.attributes.getContentLength() < 
-                (cacheObjectMaxSize * 1024))) {
+                (cacheObjectMaxSize * 1024L))) {
             int length = (int) entry.attributes.getContentLength();
             // The entry size is 1 + the resource size in KB, if it will be 
             // cached
