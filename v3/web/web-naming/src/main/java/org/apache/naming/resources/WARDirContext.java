@@ -833,7 +833,7 @@ public class WARDirContext extends BaseDirContext {
      * Entry tree lookup.
      */
     protected Entry treeLookup(Name name) {
-        if (name.isEmpty())
+        if (name.isEmpty() || entries == null)
             return entries;
         Entry currentEntry = entries;
         for (int i = 0; i < name.size(); i++) {
@@ -881,7 +881,7 @@ public class WARDirContext extends BaseDirContext {
     /**
      * Entries structure.
      */
-    protected class Entry implements Comparable<Object> {
+    protected static class Entry implements Comparable<Object> {
 
 
         // -------------------------------------------------------- Constructor
@@ -907,11 +907,24 @@ public class WARDirContext extends BaseDirContext {
         
         // ----------------------------------------------------- Public Methods
         
-        
+        @Override
         public int compareTo(Object o) {
             if (!(o instanceof Entry))
                 return (+1);
             return (name.compareTo(((Entry) o).getName()));
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (!(obj instanceof Entry)) {
+                return false;
+            }
+            return (name.equals(((Entry)obj).getName()));
+        }
+
+        @Override
+        public int hashCode() {
+            return name.hashCode();
         }
 
         public ZipEntry getEntry() {
