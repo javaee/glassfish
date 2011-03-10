@@ -159,6 +159,15 @@ abstract class MonTest {
         report(doesExist == wantToExist, iname + (doesExist ? " exists" : " doesn't exist"));
     }
 
+    final void startInstances() {
+        verifyInstances(true);
+
+        for (String iname : INSTANCES) {
+            report(asadmin("start-local-instance", iname),
+                    "start-instance " + iname);
+        }
+    }
+
     final void stopInstances() {
         verifyInstances(true);
 

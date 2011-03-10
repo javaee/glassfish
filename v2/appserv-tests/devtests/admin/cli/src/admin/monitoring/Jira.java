@@ -49,6 +49,7 @@ public class Jira extends MonTest {
         setDriver(driver);
         report(true, "Hello from JIRA Tests!");
         test15397();
+        test15054();
     }
 
     private void test15397() {
@@ -65,6 +66,16 @@ public class Jira extends MonTest {
         report(checkForString(
                 asadminWithOutput("get", "-m", "server.applications.webapp2.webapp2webmod1.war*"), MAGIC_NAME_IN_APP),
                 prepend + "check-getm-1");
+    }
+
+    private void test15054() {
+        String prepend = "15054::";
+        report(checkForString(
+                asadminWithOutput("get", "-m", CLUSTERED_INSTANCE_NAME1 + ".network.thread-pool.totalexecutedtasks-count"), CLUSTERED_INSTANCE_NAME1 + ".network.thread-pool.totalexecutedtasks-count"),
+                prepend + "check-getm-1");
+        report(!checkForString(
+                asadminWithOutput("get", "-m", CLUSTERED_INSTANCE_NAME1+ ".server.network.thread-pool.totalexecutedtasks-count"), CLUSTERED_INSTANCE_NAME1 + ".network.thread-pool.totalexecutedtasks-count"),
+                prepend + "check-getm-0");
     }
 
     private boolean checkForString(AsadminReturn r, String s) {

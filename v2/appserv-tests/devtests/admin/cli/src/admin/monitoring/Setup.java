@@ -48,5 +48,6 @@ public class Setup extends MonTest {
         startDomain();
         createCluster();
         createInstances();
+        startInstances();
     }
 }
