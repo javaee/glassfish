@@ -57,6 +57,10 @@
     <version>3.2-SNAPSHOT</version>
     <name>Java EE API modules repackaged as OSGi bundles in GlassFish</name>
 
+    <properties>
+        <findbugs.skip>true</findbugs.skip>
+    </properties>
+
     <build>
         <plugins>
             <plugin>

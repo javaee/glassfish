@@ -61,6 +61,7 @@
 
     <properties>
         <install.dir.name>glassfish3</install.dir.name>
+        <findbugs.skip>true</findbugs.skip>
     </properties>
 
     <modules>

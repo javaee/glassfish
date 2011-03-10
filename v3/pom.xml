@@ -153,7 +153,10 @@
         <gmbal.version>3.1.0-b001</gmbal.version>
         <glassfish-management-api.version>3.1.0-b001</glassfish-management-api.version>
         <mimepull.version>1.5</mimepull.version>
+        <findbugs.skip>false</findbugs.skip>
+        <findbugs.threshold>High</findbugs.threshold>
         <findbugs.exclude></findbugs.exclude>
+        <findbugs.version>2.3.1</findbugs.version>
         <btrace.version>1.0.5</btrace.version>
         <opendmk.version>1.0-b01-ea</opendmk.version>
         <v3-docs.version>3.2-b01</v3-docs.version>
@@ -165,7 +168,7 @@
 
 
     <modules>
-        <!-- Don't add any other module here. Instead add them in debug profile -->
+        <!-- Don't add any other module here. Instead add them in default profile -->
         <!-- To avoid JVM crash while using JDK 6, we are not
              building this module in anonymous profile anymore.
              See bug #6766662 for more details.
@@ -300,6 +303,12 @@
                      See bug #6766662 for more details.
                 -->
                 <module>build</module>
+                <!--
+                    The resource provided by the findbugs module is needed
+                    before running "mvn findbugs:findbugs".  To ensure that,
+                    we build it in in this separate phase.
+                -->
+                <module>findbugs</module>
             </modules>
         </profile>
 
@@ -714,13 +723,23 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>findbugs-maven-plugin</artifactId>
-                <version>2.0.1</version>
+                <version>${findbugs.version}</version>
                 <configuration>
-                    <threshold>High</threshold>
-                    <excludeFilterFile>${findbugs.exclude}</excludeFilterFile>
+                    <skip>${findbugs.skip}</skip>
+                    <threshold>${findbugs.threshold}</threshold>
                     <findbugsXmlOutput>true</findbugsXmlOutput>
                     <findbugsXmlWithMessages>true</findbugsXmlWithMessages>
+                    <excludeFilterFile>
+                        ${findbugs.exclude}
+                    </excludeFilterFile>
                 </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.glassfish</groupId>
+                        <artifactId>findbugs</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>
@@ -730,11 +749,23 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>findbugs-maven-plugin</artifactId>
-                <version>2.0.1</version>
+                <version>${findbugs.version}</version>
                 <configuration>
-                    <threshold>High</threshold>
-                    <excludeFilterFile>${findbugs.exclude}</excludeFilterFile>
+                    <skip>${findbugs.skip}</skip>
+                    <threshold>${findbugs.threshold}</threshold>
+                    <excludeFilterFile>
+                        ${findbugs.exclude}
+                    </excludeFilterFile>
                 </configuration>
+                <!--
+                <dependencies>
+                    <dependency>
+                        <groupId>org.glassfish</groupId>
+                        <artifactId>findbugs</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+                </dependencies>
+                -->
             </plugin>
         </plugins>
     </reporting>
