@@ -38,7 +38,7 @@ package admin;
 
 /**
  * Test restarting a domain.
- * XXX - for now just a regression test for GLASSFISH-9552.
+ * XXX - for now just a few regression tests
  *
  * @author Bill Shannon
  */
@@ -61,18 +61,31 @@ public class RestartDomainTest extends AdminBaseDevTest {
     private void runTests() {
         stopDomain();   // make sure local domain is not running before we start
         testRestartFakeDomain();
+        testRestartForce();
         stopDomain();   // and just in case, make sure it's still not running
         stat.printSummary();
     }
 
     /*
+     * Check that restarting a non-existant remote domain fails
      * This is a regression test for GLASSFISH-9552.
      */
     void testRestartFakeDomain() {
-        // check that restarting a non-existant remote deomain fails
         report("restart-domain",
             !asadmin("--host", "no-such-host", "restart-domain"));
         // check that the local domain is still not running
         report("uptime", !asadmin("uptime"));
+    }
+
+    /*
+     * Check that restarting a stopped domain with --force works.
+     * (--force should be ignored)
+     * This is a regression test for GLASSFISH-16175.
+     */
+    void testRestartForce() {
+        report("restart-domain", asadmin("restart-domain", "--force"));
+        // check that the local domain is running
+        report("uptime", asadmin("uptime"));
+        stopDomain();
     }
 }
