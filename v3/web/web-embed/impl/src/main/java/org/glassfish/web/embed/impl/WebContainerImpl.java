@@ -583,7 +583,7 @@ public class WebContainerImpl implements WebContainer {
     public Context createContext(File docRoot, String contextRoot, 
             ClassLoader classLoader) {
 
-        Context context = createContext(docRoot, null);
+        Context context = createContext(docRoot, classLoader);
 
         try {
             for (VirtualServer vs : getVirtualServers()) {

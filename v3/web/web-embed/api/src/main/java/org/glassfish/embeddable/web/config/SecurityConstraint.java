@@ -72,6 +72,14 @@ public class SecurityConstraint {
     private TransportGuarantee tg;
 
     /**
+     * Create an instance of SecurityConstraint with default values
+     *
+    public SecurityConstraint() {
+        roleNames = new String[0];
+    } */
+
+
+    /**
      * Sets the web resource collection associated with this
      * security constrint
      *
