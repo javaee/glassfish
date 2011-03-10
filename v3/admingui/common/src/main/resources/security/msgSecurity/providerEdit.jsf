@@ -84,7 +84,8 @@
         gf.getEntityAttrs(endpoint="#{sessionScope.REST_URL}/configs/config/#{pageSession.configName}/security-service/message-security-config/#{pageSession.msgSecurityName}.json",
                           valueMap="#{pageSession.msgSecurityMap}");
         mapPut(map="#{pageSession.valueMap}"  key="defaultProvider" value="false");
-        
+        mapPut(map="#{pageSession.valueMap}"  key="defaultClientProvider" value="#{pageSession.msgSecurityMap['defaultClientProvider']}");
+        mapPut(map="#{pageSession.valueMap}"  key="defaultServerProvider" value="#{pageSession.msgSecurityMap['defaultProvider']}");
         if ("#{pageSession.msgSecurityMap['defaultClientProvider']}=#{pageSession.Name}"){
             mapPut(map="#{pageSession.valueMap}"  key="defaultProvider" value="true");
         }

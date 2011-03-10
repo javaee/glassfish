@@ -63,7 +63,7 @@
           in the msg security page itself during edit.
           During creation, the create command takes this option, so we can pass that in.
     -->
-    <sun:property id="DefaultProviderProp"  rendered="#{!edit}" labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.msgSecProvider.defaultProviderLabel}"
+    <sun:property id="DefaultProviderProp"  labelAlign="left" noWrap="#{true}" overlapLabel="#{false}" label="$resource{i18nc.msgSecProvider.defaultProviderLabel}"
                    helpText="$resource{i18nc.msgSecProvider.defaultProviderLabeHelp}">
         <sun:checkbox id="def" selected="#{pageSession.valueMap['defaultProvider']}" selectedValue="true" />
     </sun:property>

@@ -683,7 +683,37 @@ public class SecurityHandler {
                     providerMap.put("className", attrMap.get("ClassName"));
                     providerMap.put("providerType", attrMap.get("ProviderType"));
                     RestUtil.restRequest(providerEndpoint, providerMap, "POST", null, false);
-
+                    Map attrs = new HashMap();
+                    String endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + configName +
+                                    "/security-service/message-security-config/" + attrMap.get("msgSecurityName");
+                    attrs.put("authLayer", attrMap.get("msgSecurityName"));
+                    if (attrMap.get("defaultProvider") != null && attrMap.get("defaultProvider").equals("true")){
+                        if (providerMap.get("providerType").equals("client")) {
+                            attrs.put("defaultClientProvider", providerName);
+                        }
+                        else if (providerMap.get("providerType").equals("server")) {
+                            attrs.put("defaultProvider", providerName);
+                        }
+                        else if (providerMap.get("providerType").equals("client-server")) {
+                            attrs.put("defaultProvider", providerName);
+                            attrs.put("defaultClientProvider", providerName);
+                        }
+                    }
+                    if (attrMap.get("defaultProvider") == null){
+                        if (providerMap.get("providerType").equals("client") && attrMap.get("defaultClientProvider").equals(providerName)) {
+                            attrs.put("defaultClientProvider", "");
+                        }
+                        else if (providerMap.get("providerType").equals("server") && attrMap.get("defaultProvider").equals(providerName)) {
+                            attrs.put("defaultProvider", "");
+                        }
+                        else if (providerMap.get("providerType").equals("client-server")) {
+                            if (attrMap.get("defaultServerProvider").equals(providerName) && attrMap.get("defaultClientProvider").equals(providerName)) {
+                                attrs.put("defaultProvider", "");
+                                attrs.put("defaultClientProvider", "");
+                            }
+                        }
+                    }
+                    RestUtil.sendUpdateRequest(endpoint, attrs, null, null, null);
                 }
             }else{
                 String endpoint = GuiUtil.getSessionValue("REST_URL") + "/configs/config/" + configName +
