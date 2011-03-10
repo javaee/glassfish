@@ -72,6 +72,7 @@ public class RestartDomainCommand extends StopDomainCommand {
 
     @Param(name = "debug", optional = true)
     private Boolean debug;
+
     @Inject
     private Habitat habitat;
     private static final LocalStringsImpl strings =
@@ -118,7 +119,34 @@ public class RestartDomainCommand extends StopDomainCommand {
                 Strings.get("restart.dasNotRunningNoRestart"));
         logger.warning(strings.get("restart.dasNotRunning"));
         CLICommand cmd = habitat.getComponent(CLICommand.class, "start-domain");
-        // XXX - assume start-domain accepts all the same options
-        return cmd.execute(argv);
+        /*
+         * Collect the arguments that also apply to start-domain.
+         * The start-domain CLICommand object will already have the
+         * ProgramOptions injected into it so we don't need to worry
+         * about them here.
+         *
+         * Usage: asadmin [asadmin-utility-options] start-domain
+         *      [-v|--verbose[=<verbose(default:false)>]]
+         *      [--upgrade[=<upgrade(default:false)>]]
+         *      [--debug[=<debug(default:false)>]] [--domaindir <domaindir>]
+         *      [-?|--help[=<help(default:false)>]] [domain_name]
+         *
+         * Only --debug, --domaindir, and the operand apply here.
+         */
+        List<String> opts = new ArrayList<String>();
+        if (debug != null) {
+            opts.add("--debug");
+            opts.add(debug.toString());
+        }
+        if (domainDirParam != null) {
+            opts.add("--domaindir");
+            opts.add(domainDirParam);
+            // XXX - would this be better?
+            //opts.add(getDomainRootDir().toString());
+        }
+        if (getDomainName() != null)
+            opts.add(getDomainName());
+
+        return cmd.execute(opts.toArray(new String[opts.size()]));
     }
 }
