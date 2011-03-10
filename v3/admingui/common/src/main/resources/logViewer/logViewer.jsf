@@ -354,6 +354,7 @@
 		    gf.getMapKeys(Map="#{requestScope.servers.data.extraProperties.childResources}" Keys="#{requestScope.servers}");
 		</ui:event>
 		<ui:event type="command">
+                    setAttribute(key="logFile", value="#{null}");
 		    gf.navigate(page="#{request.contextPath}/common/logViewer/logViewer.jsf");
 		</ui:event>
 	    </sun:dropDown>
