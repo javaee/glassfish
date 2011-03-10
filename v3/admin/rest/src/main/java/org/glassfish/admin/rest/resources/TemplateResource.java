@@ -295,7 +295,7 @@ public class TemplateResource {
             Set<String> ss = m1.keySet();
             for (String fieldName : ss) {
                 FormDataBodyPart n = formData.getField(fieldName);
-                Logger.getLogger(TemplateResource.class.getName()).log(Level.INFO, "fieldName=" + fieldName);
+                Logger.getLogger(TemplateResource.class.getName()).log(Level.INFO, "fieldName={0}", fieldName);
 
 
                 if (n.getContentDisposition().getFileName() != null) {//we have a file
@@ -321,7 +321,7 @@ public class TemplateResource {
 
                 } else {
                     try {
-                        Logger.getLogger(TemplateResource.class.getName()).log(Level.INFO, "Values=" + fieldName + " === " + n.getValue());
+                        Logger.getLogger(TemplateResource.class.getName()).log(Level.INFO, "Values={0} === {1}", new Object[]{fieldName, n.getValue()});
                         data.put(fieldName, n.getValue());
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -422,7 +422,7 @@ public class TemplateResource {
                 if (prefix.length() < 3) {
                     prefix = "glassfish" + prefix;
                 }
-                f = File.createTempFile(prefix, suffix);
+                f = new File(new File(System.getProperty("java.io.tmpdir")), fileName);
             }
 
 
