@@ -151,6 +151,7 @@
                 <artifact:mvn pom="pom.xml" mavenHome="${env.MAVEN_HOME}" fork="true" failonerror="false" resultproperty="test.result">
                     <arg value="-Dhttp.proxyHost=${http.proxyHost}"/>
                     <arg value="-Dhttp.proxyPort=${http.proxyPort}"/>
+                    <arg value="-Dadmin.port=${env.ADMIN_PORT}"/>
                     <arg value="-Prest-devtest"/>
                     <arg value="test"/>
                 </artifact:mvn>
