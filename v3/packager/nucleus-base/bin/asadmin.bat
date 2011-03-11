@@ -54,4 +54,4 @@ goto run
 :UsePath
 set JAVA=java
 :run
-%JAVA% -Xrs -jar "%~dp0..\modules\admin-cli.jar" %*
+%JAVA% -jar "%~dp0..\modules\admin-cli.jar" %*
