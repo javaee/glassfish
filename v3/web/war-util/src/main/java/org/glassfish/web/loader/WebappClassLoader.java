@@ -401,7 +401,7 @@ public class WebappClassLoader
     }
 
 
-    protected final class PrivilegedGetClassLoader
+    protected static final class PrivilegedGetClassLoader
         implements PrivilegedAction<ClassLoader> {
 
         public Class<?> clazz;
@@ -1070,7 +1070,6 @@ public class WebappClassLoader
 
         Vector<URL> result = new Vector<URL>();
 
-        int jarFilesLength = jarFiles.length;
         int repositoriesLength = repositories.length;
 
         int i;
@@ -1830,7 +1829,7 @@ public class WebappClassLoader
                             }
                             if (Modifier.isStatic(mods)) {
                                 try {
-                                    field.setAccessible(true);
+                                    setAccessible(field);
                                     if (Modifier.isFinal(mods)) {
                                         if (!((field.getType().getName().startsWith("java."))
                                                 || (field.getType().getName().startsWith("javax.")))) {
@@ -1879,7 +1878,7 @@ public class WebappClassLoader
                 continue;
             }
             try {
-                field.setAccessible(true);
+                setAccessible(field);
                 if (Modifier.isStatic(mods) && Modifier.isFinal(mods)) {
                     // Doing something recursively is too risky
                     continue;
@@ -2626,17 +2625,7 @@ public class WebappClassLoader
      */
     private void purgeELBeanClasses(final Field fld) {
 
-	SecurityManager sm = System.getSecurityManager();
-	if (sm != null) {
-            AccessController.doPrivileged(new PrivilegedAction<Void>() {
-                    public Void run() {
-                        fld.setAccessible(true);
-                        return null;
-                    }
-            });
-        } else {
-            fld.setAccessible(true);
-        }
+        setAccessible(fld);
 
         Map<Class, ?> m = null;
         try {
@@ -2739,5 +2728,20 @@ public class WebappClassLoader
         return version;
     }
 
+    private void setAccessible(final Field field) {
+
+        SecurityManager sm = System.getSecurityManager();
+        if (sm != null) {
+            AccessController.doPrivileged(new PrivilegedAction<Void>() {
+                    public Void run() {
+                        field.setAccessible(true);
+                        return null;
+                    }
+            });
+        } else {
+            field.setAccessible(true);
+        }
+
+    }
 }
 
