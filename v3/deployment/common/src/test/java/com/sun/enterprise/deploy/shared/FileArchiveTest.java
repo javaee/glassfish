@@ -40,12 +40,15 @@
 
 package com.sun.enterprise.deploy.shared;
 
+import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.api.deployment.archive.WritableArchive;
+import java.io.OutputStream;
+import java.io.InputStream;
 import java.util.Vector;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
-import org.junit.Ignore;
 import com.sun.enterprise.util.OS;
 import java.util.Enumeration;
 import java.util.Arrays;
@@ -53,11 +56,13 @@ import java.util.HashSet;
 import java.util.Set;
 import java.io.File;
 import java.io.IOException;
+import org.glassfish.tests.utils.Utils;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.jvnet.hk2.component.Habitat;
 import static org.junit.Assert.*;
 
 /**
@@ -66,11 +71,22 @@ import static org.junit.Assert.*;
  */
 public class FileArchiveTest {
 
+    private final static String LINE_SEP = System.getProperty("line.separator");
+    private final static String STALE_ENTRY = "oldLower/oldFile.txt";
+    private final static String SUBARCHIVE_NAME = "subarch";
+
     private File archiveDir;
     private final Set<String> usualEntryNames =
             new HashSet<String>(Arrays.asList(new String[] {"sample.txt", "lower/other.txt"}));
 
     private final Set<String> usualExpectedEntryNames = initUsualExpectedEntryNames();
+    private final Set<String> usualExpectedEntryNamesWithOverwrittenStaleEntry =
+            initUsualExpectedEntryNamesWithOverwrittenStaleEntry();
+
+    private final Set<String> usualSubarchiveEntryNames =
+            new HashSet<String>(Arrays.asList(new String[] {"a.txt", "under/b.txt"}));
+
+    private final Set<String> usualExpectedSubarchiveEntryNames = initUsualExpectedSubarchiveEntryNames();
 
     private Set<String> initUsualExpectedEntryNames() {
         final Set<String> expectedEntryNames = new HashSet<String>(usualEntryNames);
@@ -78,11 +94,30 @@ public class FileArchiveTest {
         return expectedEntryNames;
     }
 
+    private Set<String> initUsualExpectedEntryNamesWithOverwrittenStaleEntry() {
+        final Set<String> result = initUsualExpectedEntryNames();
+        result.add(STALE_ENTRY);
+        result.add("oldLower");
+        return result;
+    }
+
+    private  Set<String> initUsualExpectedSubarchiveEntryNames() {
+        final Set<String> result = new HashSet<String>(usualSubarchiveEntryNames);
+        result.add("under");
+        return result;
+    }
+
+    private static Habitat habitat;
+    private static ArchiveFactory archiveFactory;
+
     public FileArchiveTest() {
     }
 
     @BeforeClass
     public static void setUpClass() throws Exception {
+        habitat = Utils.getNewHabitat();
+        archiveFactory = habitat.getComponent(ArchiveFactory.class);
+
     }
 
     @AfterClass
@@ -124,10 +159,10 @@ public class FileArchiveTest {
     }
 
 
-    private FileArchive createAndPopulateArchive(
+    private ReadableArchive createAndPopulateArchive(
             final Set<String> entryNames) throws Exception {
 
-        FileArchive instance = new FileArchive();
+        WritableArchive instance = archiveFactory.createArchive(archiveDir.toURI()); //new FileArchive();
         instance.create(archiveDir.toURI());
 
         /*
@@ -139,18 +174,34 @@ public class FileArchiveTest {
         }
 
         instance.close();
-        return instance;
+
+        return archiveFactory.openArchive(archiveDir);
     }
-    
+
+    private ReadableArchive createAndPopulateSubarchive(
+            final WritableArchive parent,
+            final String subarchiveName,
+            final Set<String> entryNames) throws Exception {
+        final WritableArchive result = parent.createSubArchive(subarchiveName);
+        for (String entryName : entryNames) {
+            result.putNextEntry(entryName);
+            result.closeEntry();
+        }
+        result.close();
+
+        final ReadableArchive readableParent = archiveFactory.openArchive(parent.getURI());
+        return readableParent.getSubArchive(subarchiveName);
+    }
+
     private void createAndPopulateAndCheckArchive(
             final Set<String> entryNames) throws Exception {
-        final FileArchive instance = createAndPopulateArchive(entryNames);
+        final ReadableArchive instance = createAndPopulateArchive(entryNames);
         
         checkArchive(instance, usualExpectedEntryNames);
 
     }
 
-    private void checkArchive(final FileArchive instance,
+    private void checkArchive(final ReadableArchive instance,
             final Set<String> expectedEntryNames) {
 
         final Set<String> foundEntryNames = new HashSet<String>();
@@ -159,7 +210,147 @@ public class FileArchiveTest {
             foundEntryNames.add(e.nextElement());
         }
 
-        assertEquals("Entry names found != expected", usualExpectedEntryNames, foundEntryNames);
+        assertEquals("Missing or unexpected entry names reported", expectedEntryNames, foundEntryNames);
+    }
+
+    private void getListOfFiles(final FileArchive instance,
+            final Set<String> expectedEntryNames,
+            final Logger logger) {
+        final List<String> foundEntryNames = new ArrayList<String>();
+
+        instance.getListOfFiles(archiveDir, foundEntryNames, null, logger);
+
+        assertEquals("Missing or unexpected entry names reported", expectedEntryNames, 
+                new HashSet<String>(foundEntryNames));
+    }
+
+    private void getListOfFilesCheckForLogRecord(FileArchive instance, final Set<String> expectedEntryNames) throws IOException {
+        final RecordingLogger logger = new RecordingLogger();
+        getListOfFiles((FileArchive) instance, expectedEntryNames, logger);
+        if (logger.logRecords().size() != 1) {
+            final StringBuilder sb = new StringBuilder();
+            for (LogRecord record : logger.logRecords()) {
+                sb.append(record.getLevel().getLocalizedName())
+                        .append(": ")
+                        .append(record.getMessage())
+                        .append(LINE_SEP);
+            }
+            fail("Expected 1 log message but received " + logger.logRecords().size() + " as follows:" + LINE_SEP + sb.toString());
+        }
+
+        /*
+         * We have a stale file under a stale directory.  Make sure a direct
+         * request for the stale file fails.  (We know already from above that
+         * getting the entries list triggers a warning about the skipped stale file.)
+         */
+        final InputStream is = instance.getEntry(STALE_ENTRY);
+        assertNull("Incorrectly located stale FileArchive entry " + STALE_ENTRY, is);
+    }
+
+
+
+    /**
+     * Computes the expected entry names for an archive which contains a subarchive.
+     * <p>
+     * The archive's entries method will report all the entries in the main
+     * archive, plus the subarchive name, plus the entries in the subarchive.
+     * @param expectedFromArchive entries from the main archive
+     * @param subarchiveName name of the subarchive
+     * @param expectedFromSubarchive entries in the subarchive
+     * @return entry names that should be returned from the main archive's entries() method
+     */
+    private Set<String> expectedEntryNames(Set<String> expectedFromArchive, final String subarchiveName, Set<String>expectedFromSubarchive) {
+        final Set<String> result = new HashSet<String>(expectedFromArchive);
+        result.add(subarchiveName);
+        for (String expectedSubarchEntryName : expectedFromSubarchive) {
+            final StringBuilder path = new StringBuilder();
+            path.append(subarchiveName).append("/");
+            final String[] segments = expectedSubarchEntryName.split("/");
+            for (int i = 0; i < segments.length; i++) {
+                path.append(segments[i]);
+                result.add(path.toString());
+                if (i < segments.length) {
+                    path.append("/");
+                }
+            }
+        }
+        return result;
+    }
+
+    @Test
+    public void testSubarchive() throws Exception {
+
+        System.out.println("testSubarchive");
+        final ArchiveAndSubarchive archives = createAndPopulateArchiveAndSubarchive();
+        
+
+        checkArchive((FileArchive) archives.parent, archives.fullExpectedEntryNames);
+
+        checkArchive((FileArchive) archives.subarchive, usualExpectedSubarchiveEntryNames);
+    }
+
+    @Test
+    public void testSubArchiveCreateWithStaleEntry() throws Exception {
+        System.out.println("testSubArchiveCreateWithStaleEntry");
+        /*
+         * Subarchives are a little tricky.  The marker file lives only at
+         * the top level (because that's where undeployment puts it).  So
+         * when a subarchive tests to see if an entry is valid it needs to
+         * consult the marker file (if any) in the top-level owning archive.
+         *
+         * This test creates a directory structure containing a stale file
+         * in a lower-level directory, creates the top-level marker file
+         * as undeployment would, then creates an archive for the top level
+         * and a subarchive for the lower-level directory (as the next
+         * deployment would).  The archive and subarchive need to skip the
+         * stale file.
+         */
+
+        /*
+         * Create a file in the directory before creating the archive.
+         */
+        final File oldDir = new File(archiveDir, SUBARCHIVE_NAME);
+        final File oldFile = new File(oldDir, STALE_ENTRY);
+        oldFile.getParentFile().mkdirs();
+        oldFile.createNewFile();
+
+        /*
+         * Mimic what undeployment does by creating a marker file for the
+         * archive recording the pre-existing file.
+         */
+        FileArchive.StaleFileManager.Util.markDeletedArchive(archiveDir);
+
+        /*
+         * Now create the archive and subarchive on top of the directories
+         * which already exist and contain the stale file and directory.
+         */
+        final ArchiveAndSubarchive archives = createAndPopulateArchiveAndSubarchive();
+
+        checkArchive((FileArchive) archives.parent, archives.fullExpectedEntryNames);
+
+        checkArchive((FileArchive) archives.subarchive, usualExpectedSubarchiveEntryNames);
+
+        getListOfFilesCheckForLogRecord((FileArchive) archives.parent, archives.fullExpectedEntryNames);
+        
+    }
+
+    private static class ArchiveAndSubarchive {
+        ReadableArchive parent;
+        ReadableArchive subarchive;
+        Set<String> fullExpectedEntryNames;
+    }
+
+    private ArchiveAndSubarchive createAndPopulateArchiveAndSubarchive() throws Exception {
+        final ArchiveAndSubarchive result = new ArchiveAndSubarchive();
+        result.parent = createAndPopulateArchive(usualEntryNames);
+        result.subarchive = createAndPopulateSubarchive(
+                (FileArchive) result.parent,
+                SUBARCHIVE_NAME,
+                usualSubarchiveEntryNames);
+        result.fullExpectedEntryNames = expectedEntryNames(
+                usualExpectedEntryNames, SUBARCHIVE_NAME, usualSubarchiveEntryNames);
+
+        return result;
     }
 
     /**
@@ -167,36 +358,50 @@ public class FileArchiveTest {
      */
     @Test
     public void testNormalCreate() throws Exception {
-        System.out.println("testNewArchive");
+        System.out.println("testNormalCreate");
 
         createAndPopulateAndCheckArchive(usualEntryNames);
     }
 
-    @Ignore
     @Test
     public void testCreateWithOlderLeftoverEntry() throws Exception {
         System.out.println("testCreateWithOlderLeftoverEntry");
-        final FileArchive instance = createWithOlderLeftoverEntry(usualEntryNames);
-        System.err.println("A WARNING should appear next");
-        checkArchive(instance, usualExpectedEntryNames);
+        final ReadableArchive instance = createWithOlderLeftoverEntry(usualEntryNames);
+
+        getListOfFilesCheckForLogRecord((FileArchive) instance, usualExpectedEntryNames);
+
+        
     }
 
-    private FileArchive createWithOlderLeftoverEntry(final Set<String> entryNames) throws Exception {
+    @Test
+    public void testCreateWithOlderLeftoverEntryWhichIsCreatedAgain() throws Exception {
+        System.out.println("testCreateWithOlderLeftoverEntryWhichIsCreatedAgain");
+        final FileArchive instance = (FileArchive) createWithOlderLeftoverEntry(usualEntryNames);
+
+        /*
+         * Now add the stale entry explicitly which should make it valid.
+         */
+        final OutputStream os = instance.putNextEntry(STALE_ENTRY);
+        os.write("No longer stale!".getBytes());
+        os.close();
+
+        checkArchive(instance, usualExpectedEntryNamesWithOverwrittenStaleEntry);
+    }
+
+    private ReadableArchive createWithOlderLeftoverEntry(final Set<String> entryNames) throws Exception {
 
         /*
          * Create a file in the directory before creating the archive.
          */
-        final File oldFile = new File(archiveDir, "oldFile.txt");
-        oldFile.mkdirs();
+        final File oldFile = new File(archiveDir, STALE_ENTRY);
+        oldFile.getParentFile().mkdirs();
         oldFile.createNewFile();
 
         /*
-         * Because of the time resolution on lastModified can be coarse, set
-         * the time on the just-created "old" file to a couple seconds ago.
-         * We do this just to make sure the old file really looks old to
-         * the FileArchive when it sees it in its directory.
+         * Mimic what undeployment does by creating a marker file for the
+         * archive recording the pre-existing file.
          */
-        oldFile.setLastModified(oldFile.lastModified() - 2000);
+        FileArchive.StaleFileManager.Util.markDeletedArchive(archiveDir);
 
         /*
          * Now create the archive.  The archive should not see the old file.
@@ -204,13 +409,13 @@ public class FileArchiveTest {
         return createAndPopulateArchive(entryNames);
     }
 
-    @Ignore
     @Test
     public void testCreateWithOlderLeftoverEntryAndThenOpen() throws Exception {
-        System.out.println("testCreateWithOlderLeftoverEntryAndThenOpen");
         if (! OS.isWindows()) {
+            System.out.println("Skipping (as successful) testCreateWithOlderLeftoverEntryAndThenOpen because this is not a Windows system");
             return;
         }
+        System.out.println("testCreateWithOlderLeftoverEntryAndThenOpen");
         createWithOlderLeftoverEntry(usualEntryNames);
         final FileArchive openedArchive = new FileArchive();
         openedArchive.open(archiveDir.toURI());
@@ -244,23 +449,9 @@ public class FileArchiveTest {
         final String EXPECTED_LOG_KEY = "enterprise.deployment.nullFileList";
         System.out.println("testInaccessibleDirectoryInFileArchive");
 
-        /*
-         * The test passes its own logger to the FileArchive method so we can
-         * see if FileArchive logged the warning.
-         */
-        final List<LogRecord> logRecords = new ArrayList<LogRecord>();
+        final RecordingLogger myLogger = new RecordingLogger();
 
-        final Logger myLogger = new MyLogger(
-                new MyLogger.LogMonitor() {
-
-            @Override
-            public void log(LogRecord record) {
-                logRecords.add(record);
-            }
-
-        });
-
-        final FileArchive archive = createAndPopulateArchive(usualEntryNames);
+        final FileArchive archive = (FileArchive) createAndPopulateArchive(usualEntryNames);
 
         /*
          * Now make the lower-level directory impossible to execute - therefore
@@ -286,6 +477,8 @@ public class FileArchiveTest {
         final Vector<String> fileList = new Vector<String>();
         archive.getListOfFiles(lower, fileList, null /* embeddedArchives */, myLogger);
 
+        List<LogRecord> logRecords = myLogger.logRecords();
+
         assertTrue("FileArchive did not log expected message (re: being unable to list files); expected " +
                         EXPECTED_LOG_KEY,
                 (! logRecords.isEmpty()) && (logRecords.get(0).getMessage().equals(EXPECTED_LOG_KEY)));
@@ -294,7 +487,7 @@ public class FileArchiveTest {
          */
         lower.setExecutable(true, false);
         lower.setReadable(true, false);
-        logRecords.clear();
+        myLogger.clear();
 
         archive.getListOfFiles(lower, fileList, null, myLogger);
         assertTrue("FileArchive was incorrectly unable to list files; error key in log record:" +
@@ -303,24 +496,27 @@ public class FileArchiveTest {
         
     }
 
-    private static class MyLogger extends Logger {
+    private static class RecordingLogger extends Logger {
 
-        private interface LogMonitor {
-            void log(LogRecord record);
-        }
+        private final List<LogRecord> records = new ArrayList<LogRecord>();
 
-        private final LogMonitor logMonitor;
-
-        private MyLogger(final LogMonitor logMonitor) {
+        private RecordingLogger() {
             super("TestLogger", null);
-            this.logMonitor = logMonitor;
         }
 
         @Override
         public void log(LogRecord record) {
-            logMonitor.log(record);
+            records.add(record);
         }
 
+        void clear() {
+            records.clear();
+        }
+        
+        List<LogRecord> logRecords() {
+            return records;
+        }
 
     }
+
 }

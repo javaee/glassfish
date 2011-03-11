@@ -182,55 +182,20 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
      * @return enumeration of the matching entry names, excluding the manifest
      */
     private Enumeration<String> entries(final boolean topLevelDirectoriesOnly) {
-        /*
-         * We have two decisions to make: 
-         * 
-         * 1. whether the caller wants top-level directory entries or all 
-         * non-directory entries enumerated, and 
-         * 
-         * 2. what URI to use to open a stream to this archive (determined by
-         * whether the archive is a subarchive of another archive or is a 
-         * stand-alone archive).
-         *
-         * The URI is a top-level URI (file:path-to-file.jar) if
-         * this archive has no parent archive, and it's an entry URI
-         * (jar:path-to-file.jar!path-to-inner-archive.jar) format
-         * URI if this archive does in fact have a parent archive - which means 
-         * that this is a subarchive.
-         *
-         * Whichever enumerator we choose to create will open and, eventually,
-         * close the URI once all the entries have been reported.  That's why
-         * we create the URI rather than opening the stream now.
-         */
-        URI uriToReadForEntries = null;
         try {
-            if (parentArchive != null) {
-                uriToReadForEntries = new URI(
-                    "jar",
-                    "file:" + parentArchive.getURI().getSchemeSpecificPart() +
-                        "!/" +
-                        getURI().getSchemeSpecificPart(),
-                    null);
-            } else {
-                try {
-                    if (jarFile == null) {
-                        getJarFile(uri);
-                    }
-                } catch (IOException ioe) {
-                    return Collections.enumeration(Collections.EMPTY_LIST);
-                }
-                if (jarFile == null) {
-                    return Collections.enumeration(Collections.EMPTY_LIST);
-                }
-
-                uriToReadForEntries = new URI("file", getURI().getSchemeSpecificPart(), null);
-            }
-
-            return recordEntryEnumeration(createEntryEnumeration(uriToReadForEntries, topLevelDirectoriesOnly));
-        } catch (IOException ioe) {
-            throw new RuntimeException(ioe);
-        } catch (URISyntaxException use) {
-            throw new RuntimeException(use);
+            /*
+             * We have two decisions to make:
+             *
+             * 1. whether the caller wants top-level directory entries or all
+             * non-directory entries enumerated, and
+             *
+             * 2. how to obtain the sequence of JarEntry objects which we filter
+             * before returning their names.
+             *
+             */
+            return recordEntryEnumeration(createEntryEnumeration(topLevelDirectoriesOnly));
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
         }
     }
 
@@ -336,11 +301,11 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
      * @return a JarFile instance for a file path
      */
     protected JarFile getJarFile(URI uri) throws IOException {
-        jarFile = null;
+        JarFile jf = null;
         try {
             File file = new File(uri);
             if (file.exists()) {
-                jarFile = new JarFile(file);
+                jf = new JarFile(file);
             }
         } catch(IOException e) {
             logger.log(Level.WARNING,
@@ -353,7 +318,7 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
             logger.log(Level.WARNING,
                 e.getLocalizedMessage() + " --  " + additionalInfo);
         }
-        return jarFile;
+        return jf;
     }       
     
     
@@ -474,12 +439,14 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
      * @throws IOException
      */
     private EntryEnumeration createEntryEnumeration(
-            final URI uriToReadForEntries,
             final boolean topLevelDirectoriesOnly) throws FileNotFoundException, IOException {
+        final JarEntrySource source = (parentArchive == null ?
+            new ArchiveJarEntrySource(uri) :
+            new SubarchiveJarEntrySource());
         if (topLevelDirectoriesOnly) {
-            return new TopLevelDirectoryEntryEnumeration(uriToReadForEntries);
+            return new TopLevelDirectoryEntryEnumeration(source);
         } else {
-            return new NonDirectoryEntryEnumeration(uriToReadForEntries);
+            return new NonDirectoryEntryEnumeration(source);
         }
     }
 
@@ -495,7 +462,7 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
      * <p>
      * But, the trade-off is that we need to be careful because we leave a stream
      * opened to the JAR.  So, even though the finalizer is not guaranteed to be
-     * invoked, we still provide one to close up the stream.  This should help
+     * invoked, we still provide one to close up the JarFile.  This should help
      * reduce the chance for locked JARs on Windows due to open streams.
      */
     private abstract class EntryEnumeration implements Enumeration<String> {
@@ -503,15 +470,11 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
         /* look-ahead of one entry */
         private JarEntry nextMatchingEntry;
 
-        /* stream used to read JarEntry objects from the JAR */
-        private JarInputStream jis;
+        /* source of JarEntry objects for building the enumeration values */
+        private final JarEntrySource jarEntrySource;
 
-        /* indicates if we have exhausted the input stream from the JAR */
-        private boolean reachedEndOfStream = false;
-
-    private EntryEnumeration(final URI archiveURI) throws MalformedURLException, IOException {
-            final InputStream is = archiveURI.toURL().openStream();
-            this.jis = new JarInputStream(is);
+        private EntryEnumeration(final JarEntrySource jarEntrySource) {
+            this.jarEntrySource = jarEntrySource;
         }
 
         /**
@@ -537,6 +500,10 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
             return answer;
         }
 
+        protected JarEntry getNextJarEntry() throws IOException {
+            return jarEntrySource.getNextJarEntry();
+        }
+
         /**
          * Returns the next JarEntry available from the archive.
          * <p>
@@ -547,30 +514,11 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
          */
         protected abstract JarEntry skipToNextMatchingEntry();
 
-        protected JarEntry getNextJarEntry() {
-            if (reachedEndOfStream) {
-                return null;
-            }
-            try {
-                final JarEntry result = jis.getNextJarEntry();
-                if (result == null) {
-                    close();
-                }
-                return result;
-            } catch (IOException ioe) {
-                throw new RuntimeException(ioe);
-            }
-        }
-
         private void closeNoRemove() {
-            reachedEndOfStream = true;
-            if (jis != null) {
-                try {
-                    jis.close();
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                }
-                jis = null;
+            try {
+                jarEntrySource.close();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
             }
         }
 
@@ -582,10 +530,82 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
         @Override
         protected void finalize() throws Throwable {
             super.finalize();
-            if ( ! reachedEndOfStream) {
-                close();
-            }
+            close();
         }
+    }
+
+    /**
+     * Defines behavior for sources of JarEntry objects for EntryEnumeration
+     * implementations.
+     * <p>
+     * The implementation must be different for top-level archives vs. 
+     * subarchives.
+     */
+    private interface JarEntrySource {
+
+        /**
+         * Returns the next JarEntry from the raw entries() enumeration
+         * of the archive or subarchive.
+         * @return JarEntry for the next entry in the JarArchive
+         * @throws IOException
+         */
+        JarEntry getNextJarEntry() throws IOException;
+
+        /**
+         * Closes the source of the JarEntry objects.
+         * @throws IOException
+         */
+        void close() throws IOException;
+    }
+
+    /**
+     * Source of JarEntry objects for a top-level archive (as opposed to a
+     * subarchive).
+     */
+    private class ArchiveJarEntrySource implements JarEntrySource {
+
+        private JarFile sourceJarFile;
+
+        private Enumeration<JarEntry> jarEntries;
+
+        private ArchiveJarEntrySource(final URI archiveURI) throws IOException {
+            sourceJarFile = getJarFile(archiveURI);
+            jarEntries = sourceJarFile.entries();
+        }
+
+        @Override
+        public JarEntry getNextJarEntry() {
+            return (jarEntries.hasMoreElements()) ? jarEntries.nextElement() : null;
+        }
+
+        @Override
+        public void close() throws IOException {
+            sourceJarFile.close();
+        }
+    }
+
+    /**
+     * Source of JarEntry objects for a subarchive.
+     */
+    private class SubarchiveJarEntrySource implements JarEntrySource {
+
+        private JarInputStream jis;
+
+        private SubarchiveJarEntrySource() throws IOException {
+            final JarEntry subarchiveJarEntry = parentArchive.jarFile.getJarEntry(uri.getSchemeSpecificPart());
+            jis = new JarInputStream(parentArchive.jarFile.getInputStream(subarchiveJarEntry));
+        }
+
+        @Override
+        public JarEntry getNextJarEntry() throws IOException {
+            return jis.getNextJarEntry();
+        }
+
+        @Override
+        public void close() throws IOException {
+            jis.close();
+        }
+
     }
 
     /**
@@ -596,8 +616,8 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
      */
     private class TopLevelDirectoryEntryEnumeration extends EntryEnumeration {
 
-        private TopLevelDirectoryEntryEnumeration(final URI archiveURI) throws FileNotFoundException, IOException {
-            super(archiveURI);
+        private TopLevelDirectoryEntryEnumeration(final JarEntrySource jarEntrySource) throws FileNotFoundException, IOException {
+            super(jarEntrySource);
             completeInit();
         }
 
@@ -605,23 +625,27 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
         protected JarEntry skipToNextMatchingEntry() {
             JarEntry candidateNextEntry;
 
-            /*
-             * The next entry should be returned (and not skipped) if the entry is a
-             * directory entry and it contains only a single slash at the
-             * end of the entry name.
-             */
-            while ((candidateNextEntry = getNextJarEntry()) != null) {
-                final String candidateNextEntryName = candidateNextEntry.getName();
-                if ( candidateNextEntry.isDirectory() &&
-                       (candidateNextEntryName.indexOf('/') ==
-                            candidateNextEntryName.lastIndexOf('/')) &&
-                       (candidateNextEntryName.indexOf('/') ==
-                            candidateNextEntryName.length() - 1)
-                   ) {
-                    break;
+            try {
+                /*
+                 * The next entry should be returned (and not skipped) if the entry is a
+                 * directory entry and it contains only a single slash at the
+                 * end of the entry name.
+                 */
+                while ((candidateNextEntry = getNextJarEntry()) != null) {
+                    final String candidateNextEntryName = candidateNextEntry.getName();
+                    if ( candidateNextEntry.isDirectory() &&
+                           (candidateNextEntryName.indexOf('/') ==
+                                candidateNextEntryName.lastIndexOf('/')) &&
+                           (candidateNextEntryName.indexOf('/') ==
+                                candidateNextEntryName.length() - 1)
+                       ) {
+                        break;
+                    }
                 }
+                return candidateNextEntry;
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
             }
-            return candidateNextEntry;
         }
     }
 
@@ -630,28 +654,31 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
      */
     private class NonDirectoryEntryEnumeration extends EntryEnumeration {
 
-        private NonDirectoryEntryEnumeration(final URI archiveURI) throws IOException {
-            super(archiveURI);
+        private NonDirectoryEntryEnumeration(final JarEntrySource jarEntrySource) throws IOException {
+            super(jarEntrySource);
             completeInit();
         }
 
         @Override
         protected JarEntry skipToNextMatchingEntry() {
             JarEntry candidateNextEntry;
-
-            /*
-             * The next entry should be returned (and not skipped) if the entry is
-             * not a directory entry and if it also not the manifest.
-             */
-            while ((candidateNextEntry = getNextJarEntry()) != null) {
-                final String candidateNextEntryName = candidateNextEntry.getName();
-                if ( ! candidateNextEntry.isDirectory() &&
-                          ! candidateNextEntryName.equals(JarFile.MANIFEST_NAME)
-                   ) {
-                    break;
+            try {
+                /*
+                 * The next entry should be returned (and not skipped) if the entry is
+                 * not a directory entry and if it also not the manifest.
+                 */
+                while ((candidateNextEntry = getNextJarEntry()) != null) {
+                    final String candidateNextEntryName = candidateNextEntry.getName();
+                    if ( ! candidateNextEntry.isDirectory() &&
+                              ! candidateNextEntryName.equals(JarFile.MANIFEST_NAME)
+                       ) {
+                        break;
+                    }
                 }
+                return candidateNextEntry;
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
             }
-            return candidateNextEntry;
         }
     }
     

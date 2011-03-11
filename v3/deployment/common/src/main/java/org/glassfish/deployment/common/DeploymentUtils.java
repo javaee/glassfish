@@ -41,6 +41,8 @@
 package org.glassfish.deployment.common;
 
 import com.sun.enterprise.config.serverbeans.Application;
+import com.sun.enterprise.deploy.shared.ArchiveFactory;
+import com.sun.enterprise.deploy.shared.FileArchive;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.deployment.archive.ReadableArchive;
@@ -504,6 +506,17 @@ public class DeploymentUtils {
             moduleLibraryURLs = getLibDirectoryJars(archiveFile);
         }
         return moduleLibraryURLs;
+    }
+
+    /**
+     * Opens the specified file as an archive, using the provided archive factory.
+     * @param dir directory to be opened as an archive
+     * @param archiveFactory ArchiveFactory to use to create the archive object
+     * @return FileArchive opened for the directory
+     * @throws IOException
+     */
+    public static FileArchive openAsFileArchive(final File dir, final ArchiveFactory archiveFactory) throws IOException {
+        return (FileArchive) archiveFactory.openArchive(dir);
     }
 
     private static List<URL> getLibDirectoryJars(File moduleLibDirectory) throws Exception {

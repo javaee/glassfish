@@ -393,6 +393,11 @@ public class ApplicationArchivist extends Archivist<Application>
 
                     //Still could not decide between an ejb and a library
                     unknowns.add(subArchive);
+                    
+                    // Prevent this unknown archive from being closed in the
+                    // finally block, because the same object will be used in
+                    // the block below where unknowns are checked one more time.
+                    subArchive = null;
                 } else {
                     //ignored
                 }

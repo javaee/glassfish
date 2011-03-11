@@ -43,6 +43,7 @@ package org.glassfish.deployment.admin;
 import java.net.URISyntaxException;
 import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
+import com.sun.enterprise.deploy.shared.FileArchive;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.io.FileUtils;
 import org.glassfish.api.ActionReport;
@@ -268,7 +269,16 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
 
             // clean up any left over repository files
             if ( ! keepreposdir.booleanValue()) {
-                FileUtils.whack(new File(env.getApplicationRepositoryPath(), VersioningUtils.getRepositoryName(name)));
+                final File reposDir = new File(env.getApplicationRepositoryPath(), VersioningUtils.getRepositoryName(name));
+                if (reposDir.exists()) {
+                    /*
+                     * Delete the repository directory as an archive to allow
+                     * any special processing (such as stale file handling)
+                     * to run.
+                     */
+                    final FileArchive arch = DeploymentUtils.openAsFileArchive(reposDir, archiveFactory);
+                    arch.delete();
+                }
             }
 
             if (!DeploymentUtils.isDomainTarget(target) && enabled) {
@@ -454,7 +464,22 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
                 // to print the same message again
                 report.setFailureCause(null);
                 if (expansionDir!=null) {
-                   FileUtils.whack(expansionDir);
+                    final FileArchive arch;
+                        try {
+                            /*
+                             * Open and then delete the expansion directory as
+                             * a file archive so stale file handling can run.
+                             */
+                            arch = DeploymentUtils.openAsFileArchive(expansionDir, archiveFactory);
+                            arch.delete();
+                        } catch (IOException ex) {
+                            final String msg = localStrings.getLocalString(
+                                    "deploy.errDelRepos",
+                                    "Error deleting repository directory {0}",
+                                    expansionDir.getAbsolutePath());
+                            report.failure(logger, msg, ex);
+                        }
+
                 }
             }
         }

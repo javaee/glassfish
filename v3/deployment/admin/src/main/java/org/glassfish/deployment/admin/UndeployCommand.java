@@ -41,7 +41,6 @@
 package org.glassfish.deployment.admin;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.util.io.FileUtils;
 import org.glassfish.internal.data.ApplicationInfo;
 import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
@@ -353,10 +352,15 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
                 //remove context from generated
                 deploymentContext.clean();
 
-                //if directory deployment then do no remove the directory
+                //if directory deployment then do not remove the directory
                 if (source!=null) {
                     if ( (! keepreposdir) && !isDirectoryDeployed && source.exists()) {
-                        FileUtils.whack(new File(source.getURI()));
+                        /*
+                         * Delete the repository directory as an archive so
+                         * any special handling (such as stale file handling)
+                         * known to the archive can run.
+                         */
+                        source.delete();
                     }
                 }
 

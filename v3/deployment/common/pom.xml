@@ -134,5 +134,11 @@
             <artifactId>asm-all-repackaged</artifactId>
             <version>${hk2.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.tests</groupId>
+            <artifactId>utils</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
    </dependencies>
 </project>
