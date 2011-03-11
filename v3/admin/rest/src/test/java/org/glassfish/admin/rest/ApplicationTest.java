@@ -40,8 +40,13 @@
 
 package org.glassfish.admin.rest;
 
+import java.io.BufferedInputStream;
+import java.io.FileOutputStream;
+import java.io.BufferedOutputStream;
 import com.sun.jersey.api.client.ClientResponse;
 import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
@@ -74,6 +79,29 @@ public class ApplicationTest extends RestTestBase {
 
         undeployApp(newApp);
     }
+    
+//    @Test
+    // Disabled until GLASSFISH-15905 is fixed
+    public void deployCodiApp() throws URISyntaxException, MalformedURLException, IOException {
+//        http://java.net/jira/secure/attachment/44850/GlassfishIssues.war
+        final String appName = "testApp" + generateRandomString();
+        final File file = 
+//                new File (new File(System.getProperty("java.io.tmpdir")), "GlassfishIssues.war");
+                downloadFile(new URL("http://java.net/jira/secure/attachment/44850/GlassfishIssues.war"));
+        Map<String, Object> newApp = new HashMap<String, Object>() {{
+                put("id", file);
+                put("contextroot", appName);
+                put("name", appName);
+        }};
+
+        Map<String, String> deployedApp = deployApp(newApp);
+        assertEquals(appName, deployedApp.get("name"));
+
+        assertEquals("/" + appName, deployedApp.get("contextRoot"));
+
+        undeployApp(newApp);
+        file.delete();
+    }
 
     @Test
     public void testApplicationDisableEnable() throws URISyntaxException {
@@ -90,7 +118,7 @@ public class ApplicationTest extends RestTestBase {
         assertEquals("/" + appName, deployedApp.get("contextRoot"));
 
         try {
-            String appUrl = "http://localhost:" + getParameter("instance.port", "8080") + "/" + appName;
+            String appUrl = "http://localhost:" + instancePort + "/" + appName;
             ClientResponse response = get(appUrl);
             assertEquals ("Test", response.getEntity(String.class).trim());
 
@@ -140,6 +168,23 @@ public class ApplicationTest extends RestTestBase {
     protected File getFile(String fileName) throws URISyntaxException {
         final URL resource = getClass().getResource("/" + fileName);
         return new File(resource.toURI());
+    }
+    
+    protected File downloadFile(URL url) throws IOException {
+        File file = File.createTempFile("test", "");
+        file.deleteOnExit();
+        BufferedInputStream in = new BufferedInputStream(url.openStream());
+        FileOutputStream fos = new FileOutputStream(file);
+        BufferedOutputStream bout = new BufferedOutputStream(fos, 1024);
+        byte data[] = new byte[8192];
+        while (in.read(data, 0, 8192) >= 0) {
+            bout.write(data);
+            data = new byte[8192];
+        }
+        bout.close();
+        in.close();
+        
+        return file;
     }
 
     @Test

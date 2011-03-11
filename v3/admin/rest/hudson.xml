@@ -152,6 +152,7 @@
                     <arg value="-Dhttp.proxyHost=${http.proxyHost}"/>
                     <arg value="-Dhttp.proxyPort=${http.proxyPort}"/>
                     <arg value="-Dadmin.port=${env.ADMIN_PORT}"/>
+                    <arg value="-Dinstance.port=${env.INSTANCE_PORT}"/>
                     <arg value="-Prest-devtest"/>
                     <arg value="test"/>
                 </artifact:mvn>

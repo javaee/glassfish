@@ -68,10 +68,13 @@ public class RestTestBase {
     protected static final String AUTH_PASSWORD = "dummypass";
 
     protected Client client;
+    protected String adminPort;
+    protected String instancePort;
 
     public RestTestBase() {
-        String port = getParameter("admin.port", "4848");
-        baseUrl = "http://localhost:" + port + "/management";
+        adminPort = getParameter("admin.port", "4848");
+        instancePort = getParameter("instance.port", "8080");
+        baseUrl = "http://localhost:" + adminPort + "/management";
     }
 
     @Before
