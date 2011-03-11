@@ -71,7 +71,7 @@ import static javax.xml.stream.XMLStreamConstants.*;
  * @author Jerome Dochez
  */
 @Service(name="war")
-public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler {
+public class WarHandler extends AbstractArchiveHandler {
     private static final String GLASSFISH_WEB_XML = "WEB-INF/glassfish-web.xml";
     private static final String SUN_WEB_XML = "WEB-INF/sun-web.xml";
     private static final String WEBLOGIC_XML = "WEB-INF/weblogic.xml";
@@ -136,7 +136,6 @@ public class WarHandler extends AbstractArchiveHandler implements ArchiveHandler
             }
 
             WebXmlParser webXmlParser = null;
-            File file = null;
             if ((new File(base, GLASSFISH_WEB_XML)).exists()) {
                 webXmlParser = new GlassFishWebXmlParser(base.getAbsolutePath());
             } else if ((new File(base, SUN_WEB_XML)).exists()) {
