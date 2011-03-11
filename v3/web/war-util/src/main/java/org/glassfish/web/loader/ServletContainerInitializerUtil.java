@@ -46,6 +46,8 @@ import org.glassfish.hk2.classmodel.reflect.*;
 
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.annotation.HandlesTypes;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -369,18 +371,21 @@ public class ServletContainerInitializerUtil {
                 String fileName = file.getPath();
                 if (fileName.endsWith(".class")) {
                     try {
-                        byte[] classData = null;
                         InputStream is = null;
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
                         try {
-                            is = new FileInputStream(fileName);
-                            int size = is.available();
-                            classData = new byte[size];
-                            is.read(classData);
-                            classInfo.loadClassData(classData);
+                            is = new BufferedInputStream(new FileInputStream(fileName));
+                            byte[] bs = new byte[2048];
+                            int size = -1;
+                            while ((size = is.read(bs)) >= 0) {
+                                baos.write(bs, 0, size);
+                            } 
+                            classInfo.loadClassData(baos.toByteArray());
                         } finally {
                             if (is != null) {
                                 is.close();
                             }
+                            baos.close();
                         }
                     } catch (Throwable t) {
                         if (log.isLoggable(Level.WARNING)) {
@@ -413,7 +418,10 @@ public class ServletContainerInitializerUtil {
         if (classInfo==null) {
             return initializerList;
         }
-        for (Class c: interestList.keySet()) {
+        for (Map.Entry<Class<?>, List<Class<? extends ServletContainerInitializer>>> e:
+                interestList.entrySet()) {
+
+            Class<?> c = e.getKey();
             Type type = classInfo.getBy(c.getName());
             if (type==null)
                 continue;
@@ -460,7 +468,7 @@ public class ServletContainerInitializerUtil {
             if(initializerList == null) {
                 initializerList = new HashMap<Class<? extends ServletContainerInitializer>, Set<Class<?>>>();
             }
-            List<Class<? extends ServletContainerInitializer>> containerInitializers = interestList.get(c);
+            List<Class<? extends ServletContainerInitializer>> containerInitializers = e.getValue();
             for(Class<? extends ServletContainerInitializer> initializer : containerInitializers) {
                 Set<Class<?>> classSet = initializerList.get(initializer);
                 if(classSet == null) {
@@ -489,7 +497,10 @@ public class ServletContainerInitializerUtil {
                                 Map<Class<?>, List<Class<? extends ServletContainerInitializer>>> interestList,
                                 Map<Class<? extends ServletContainerInitializer>, Set<Class<?>>> initializerList,
                                 ClassLoader cl) {
-        for(Class c : interestList.keySet()) {
+        for(Map.Entry<Class<?>, List<Class<? extends ServletContainerInitializer>>> e :
+                interestList.entrySet()) {
+
+            Class<?> c = e.getKey();
             Set<String> resultFromClassInfo = classInfo.computeResult(c.getName());
             if(resultFromClassInfo.isEmpty()) {
                 continue;
@@ -511,7 +522,7 @@ public class ServletContainerInitializerUtil {
             if(initializerList == null) {
                 initializerList = new HashMap<Class<? extends ServletContainerInitializer>, Set<Class<?>>>();
             }
-            List<Class<? extends ServletContainerInitializer>> containerInitializers = interestList.get(c);
+            List<Class<? extends ServletContainerInitializer>> containerInitializers = e.getValue();
             for(Class<? extends ServletContainerInitializer> initializer : containerInitializers) {
                 Set<Class<?>> classSet = initializerList.get(initializer);
                 if(classSet == null) {
