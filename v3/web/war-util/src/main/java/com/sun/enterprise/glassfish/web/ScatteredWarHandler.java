@@ -60,7 +60,7 @@ import java.util.logging.Logger;
  * @author Jerome Dochez
  */
 @Service
-public class ScatteredWarHandler  extends WarHandler implements ArchiveHandler {
+public class ScatteredWarHandler extends WarHandler {
 
     private static final Logger logger = LogDomains.getLogger(ScatteredWarHandler.class, LogDomains.DPL_LOGGER);
     
