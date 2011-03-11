@@ -107,7 +107,7 @@ public class ServletRegistrationImpl implements ServletRegistration {
     }
 
     public Set<String> addMapping(String... urlPatterns) {
-        if (ctx.isContextInitializedCalled()) {
+        if (!ctx.isEmbedded() && ctx.isContextInitializedCalled()) {
             throw new IllegalStateException(
                 sm.getString("servletRegistration.alreadyInitialized",
                              "mapping", wrapper.getName(), ctx.getName()));

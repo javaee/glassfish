@@ -2257,15 +2257,6 @@ public class WebModule extends PwcWebModule implements Context {
             setRealm(realm);
         }
 
-        try {
-            // todo try to avoid this
-            // restart this context for security constraints
-            stop();
-            start();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
     }
 
     /**

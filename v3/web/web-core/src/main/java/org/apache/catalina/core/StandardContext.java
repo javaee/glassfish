@@ -741,6 +741,9 @@ public class StandardContext
     // The minor Servlet spec version of the web.xml
     private int effectiveMinorVersion = 0;
 
+    // Created via embedded API
+    private boolean isEmbedded = false;
+
     // ----------------------------------------------------- Context Properties
 
     public String getEncodedPath() {
@@ -1837,6 +1840,14 @@ public class StandardContext
         return isReload;
     }
     // END S1AS8PE 4965017
+
+    public void setEmbedded(boolean isEmbedded) {
+        this.isEmbedded = isEmbedded;
+    }
+
+    public boolean isEmbedded() {
+        return isEmbedded;
+    }
 
 
     // ------------------------------------------------------ Public Properties
@@ -3179,7 +3190,8 @@ public class StandardContext
         synchronized (servletMappings) {
             String existing = servletMappings.get(pattern);
             if (existing != null) {
-                if (!existing.equals(Constants.DEFAULT_SERVLET_NAME) &&
+                if (!isEmbedded &&
+                        !existing.equals(Constants.DEFAULT_SERVLET_NAME) &&
                         !existing.equals(Constants.JSP_SERVLET_NAME) &&
                         !name.equals(Constants.DEFAULT_SERVLET_NAME) &&
                         !name.equals(Constants.JSP_SERVLET_NAME)) {

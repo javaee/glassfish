@@ -661,6 +661,7 @@ public class WebContainerImpl implements WebContainer {
                 } else {
                     context.setParentClassLoader(serverContext.getSharedClassLoader());
                 }
+                context.setEmbedded(true);
                 context.setDefaultWebXml(config.getDefaultWebXml().getPath());
                 ((StandardHost)vs).removeChild(context);
             }
