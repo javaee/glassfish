@@ -40,23 +40,30 @@
 
 -->
 
-<!--
-    To use this file, the Maven Ant tasks and Ant Contrib must be added to the local Ant installation
--->
-        
-<project name="GlassFish Admin Console Dev Test Hudson Helper" default="test" basedir="."
+<project name="GlassFish REST Interface Dev Test Hudson Helper" default="test" basedir="."
          xmlns:artifact="antlib:org.apache.maven.artifact.ant">
-    <property name="install.dir" value="binaries"/>
-    <property name="server.dir" value="${install.dir}/glassfish3"/>
 
     <property file="test.properties"/>
-    <property environment="env"/>
+    <property environment=""/>
+    
+    <property name="install.dir" value="binaries"/>
+    <property name="server.dir" value="${install.dir}/glassfish3"/>
 
     <property name="http.proxyHost" value=""/>
     <property name="http.proxyPort" value=""/>
 
-    <property name="GUI_ADMIN_PORT" value="4848"/>
+    <property name="MAVEN_HOME" value="${user.home}/.m2"/>
     <property name="DOMAIN" value="domain1"/>
+    <property name="ADMIN_PORT" value="4848"/>
+    <property name="INSTANCE_PORT" value="8080"/>
+    <property name="JMS_PORT" value="7676"/>
+    <property name="JMX_PORT" value="8686"/>
+    <property name="ORB_PORT" value="3700"/>
+    <property name="SSL_PORT" value="8181"/>
+    <property name="ORB_SSL_PORT" value="3820"/>
+    <property name="ORB_SSL_MUTUALAUTH_PORT" value="3920"/>
+    <property name="OSGI_SHELL" value="6666"/>
+    <property name="DEBUGGER_PORT" value="9009"/>
 
     <property name="ant.contrib.url"
               value="http://mirrors.ibiblio.org/pub/mirrors/maven2/ant-contrib/ant-contrib/1.0b3/ant-contrib-1.0b3.jar"/>
@@ -92,7 +99,44 @@
         </if>
     </target>
 
-    <target name="start-server" depends="shutdown-server">
+    <target name="recreate-domain" depends="shutdown-server">
+        <echo>
+            Port assigments:
+            Admin port: ${ADMIN_PORT}
+            Instance port: ${INSTANCE_PORT}
+            JMS Port: ${JMS_PORT}
+            JMX Port: ${JMX_PORT}
+            ORB Port: ${ORB_PORT}
+            SSL Port: ${SSL_PORT}
+            ORB SSL Port: ${ORB_SSL_PORT}
+            ORB SSL Mutual Auth Port: ${ORB_SSL_MUTUALAUTH_PORT}
+            OSGi Shell: ${OSGI_SHELL}
+            JAVA Debugger Port: ${DEBUGGER_PORT}
+        </echo>
+        
+        <exec executable="${executable}">
+            <arg value="--port"/>
+            <arg value="${ADMIN_PORT}"/>
+            <arg value="delete-domain"/>
+            <arg value="${DOMAIN}"/>
+        </exec>
+
+        <exec executable="${executable}">
+            <arg value="--port"/>
+            <arg value="${ADMIN_PORT}"/>
+            <arg value="create-domain"/>
+            <arg value="--adminport"/>
+            <arg value="${ADMIN_PORT}"/>
+            <arg value="--nopassword=true"/>
+            <arg value="--domainproperties"/>
+            <arg value="jms.port=${JMS_PORT}:domain.jmxPort=${JMX_PORT}:orb.listener.port=${ORB_PORT}:http.ssl.port=${SSL_PORT}:orb.ssl.port=${ORB_SSL_PORT}:orb.mutualauth.port=${ORB_SSL_MUTUALAUTH_PORT}:osgi.shell.telnet.port=${OSGI_SHELL}:java.debugger.port=${DEBUGGER_PORT}"/>
+            <arg value="--instanceport"/>
+            <arg value="${INSTANCE_PORT}"/>
+            <arg value="${DOMAIN}"/>
+        </exec>
+    </target>
+
+    <target name="start-server" depends="recreate-domain">
         <echo message="***** Starting GlassFish"/>
         <exec executable="${executable}">
             <arg value="start-domain"/>
@@ -104,7 +148,7 @@
         <trycatch>
             <try>
                 <antcall target="start-server"/>
-                <artifact:mvn pom="pom.xml" fork="true" mavenHome="${env.MAVEN_HOME}" failonerror="false" resultproperty="test.result">
+                <artifact:mvn pom="pom.xml" mavenHome="${MAVEN_HOME}" fork="true" failonerror="false" resultproperty="test.result">
                     <arg value="-Dhttp.proxyHost=${http.proxyHost}"/>
                     <arg value="-Dhttp.proxyPort=${http.proxyPort}"/>
                     <arg value="-Prest-devtest"/>
@@ -116,12 +160,12 @@
             </finally>
         </trycatch>
         <fail message="The test run failed.  Please see the console output for details.">
-           <condition>
-             <not>
-                <equals arg1="${test.result}" arg2="0"/>
-             </not>
-           </condition>
-         </fail>
+            <condition>
+                <not>
+                    <equals arg1="${test.result}" arg2="0"/>
+                </not>
+            </condition>
+        </fail>
     </target>
 
     <target name="shutdown-server">
