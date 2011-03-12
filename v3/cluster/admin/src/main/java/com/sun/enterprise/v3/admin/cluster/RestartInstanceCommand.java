@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -73,17 +73,28 @@ public class RestartInstanceCommand implements AdminCommand {
             logger = context.getLogger();
             report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
 
+            // Each of the methods below immediately returns if there has been an error
+            // This is just to avoid a ton of error-checking in this top-level method
+            // i.e. it's for readability.
+
             if (!env.isDas())
                 setError(Strings.get("restart.instance.notDas", env.getRuntimeType().toString()));
 
             prepare();
+
+            if(!isInstanceRestartable())
+                setError(Strings.get("restart.notRestartable", instanceName));
+
             setOldPid();
             logger.fine("Restart-instance old-pid = " + oldPid);
             callInstance();
             waitForRestart();
-            String msg = Strings.get("restart.instance.success", instanceName);
-            logger.info(msg);
-            report.setMessage(msg);
+
+            if (!isError()) {
+                String msg = Strings.get("restart.instance.success", instanceName);
+                logger.info(msg);
+                report.setMessage(msg);
+            }
         }
         catch (CommandException ex) {
             setError(Strings.get("restart.instance.racError", instanceName,
@@ -140,6 +151,25 @@ public class RestartInstanceCommand implements AdminCommand {
             map.add("debug", debug);
 
         rac.executeCommand(map);
+    }
+
+    private boolean isInstanceRestartable() throws CommandException {
+        if (isError())
+            return false;
+
+        String cmdName = "_get-runtime-info";
+
+        RemoteAdminCommand rac = createRac(cmdName);
+        rac.executeCommand(new ParameterMap());
+        Map<String, String> atts = rac.getAttributes();
+
+        if (atts != null) {
+            String val = atts.get("restartable_value");
+
+            if (val != null && val.equals("false"))
+                return false;
+        }
+        return true;
     }
 
     private void waitForRestart() {

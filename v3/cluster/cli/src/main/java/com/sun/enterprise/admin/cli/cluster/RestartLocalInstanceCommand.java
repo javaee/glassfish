@@ -72,6 +72,9 @@ public class RestartLocalInstanceCommand extends StopLocalInstanceCommand {
         setLocalPassword();
         programOpts.setInteractive(false);
 
+        if(!isRestartable())
+            throw new CommandException(Strings.get("restart.notRestartable"));
+
         // find out how long the server has been up
         long uptimeOldServer = getUptime();  // may throw CommandException
 

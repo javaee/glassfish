@@ -473,6 +473,26 @@ public abstract class LocalServerCommand extends CLICommand {
         logger.finer("server uptime: " + up_ms);
         return up_ms;
     }
+    /**
+     * See if the server is restartable
+     * As of March 2011 -- this only returns false if a passwordfile argument was given
+     * when the server started -- but it is no longer available - i.e. the user
+     * deleted it or made it unreadable.
+     */
+    protected final boolean isRestartable() throws CommandException {
+        // false negative is worse than false positive.
+        // there is one and only one case where we return false
+        RemoteCommand cmd = new RemoteCommand("_get-runtime-info", programOpts, env);
+        Map<String, String> atts = cmd.executeAndReturnAttributes("_get-runtime-info");
+
+        if (atts != null) {
+            String val = atts.get("restartable_value");
+
+            if (ok(val) && val.equals("false"))
+                return false;
+        }
+        return true;
+    }
 
     ////////////////////////////////////////////////////////////////
     /// Section:  private methods

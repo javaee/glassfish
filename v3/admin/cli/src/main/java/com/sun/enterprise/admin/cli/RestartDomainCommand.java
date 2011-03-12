@@ -83,8 +83,12 @@ public class RestartDomainCommand extends StopDomainCommand {
      */
     @Override
     protected void doCommand()
-            throws CommandException, CommandValidationException {
-        // first, find out how long the server has been up
+            throws CommandException {
+        
+        if(!isRestartable())
+            throw new CommandException(Strings.get("restartDomain.notRestartable"));
+
+        // find out how long the server has been up
         long uptimeOldServer = getUptime();  // may throw CommandException
 
         // run the remote restart-domain command and throw away the output
