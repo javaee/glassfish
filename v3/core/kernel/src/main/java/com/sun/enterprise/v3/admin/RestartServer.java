@@ -205,7 +205,7 @@ public class RestartServer {
         return true;
     }
 
-    private final void handleDebug() {
+    private void handleDebug() {
         if (debug == null) // nothing to do!
             return;
 
