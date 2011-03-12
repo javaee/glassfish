@@ -33,17 +33,20 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package admin;
+
+import java.io.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Test restarting a domain.
  * XXX - for now just a few regression tests
  *
  * @author Bill Shannon
+ * @author Byron Nevins
  */
 public class RestartDomainTest extends AdminBaseDevTest {
-
     @Override
     public String getTestName() {
         return "restart-domain";
@@ -63,6 +66,7 @@ public class RestartDomainTest extends AdminBaseDevTest {
         testRestartFakeDomain();
         testRestartForce();
         stopDomain();   // and just in case, make sure it's still not running
+        jira16197();
         stat.printSummary();
     }
 
@@ -72,7 +76,7 @@ public class RestartDomainTest extends AdminBaseDevTest {
      */
     void testRestartFakeDomain() {
         report("restart-domain",
-            !asadmin("--host", "no-such-host", "restart-domain"));
+                !asadmin("--host", "no-such-host", "restart-domain"));
         // check that the local domain is still not running
         report("uptime", !asadmin("uptime"));
     }
@@ -88,4 +92,137 @@ public class RestartDomainTest extends AdminBaseDevTest {
         report("uptime", asadmin("uptime"));
         stopDomain();
     }
+
+    /**
+     *  The case where user fouled-up his passwordfile after starting.
+     * restart should detect and emit a useful message.  Before the fix it just
+     * would fail to start with a 10minute timeout
+     * 
+     * We need 2 password files with the same passwords inside.  Because we will use 
+     * one of them for the start-domain command (which is stored inside DAS).  Then 
+     * we delete that file and call restart-domain with the second file.  That's
+     * because asadmin needs the passwords to authenticate to DAS...
+     * Complicated test?  YES!!  This test took longer to develop than the bugfix!!
+     */
+    private void jira16197() {
+        report("Regression Test of issue 16197", true);
+        createPasswordFiles();
+        try {
+            setCannedFrameworkArgs("--passwordfile " + pwFile1Name + " --user admin");
+            deletePasswordDomain(true); // OK if it does not exist
+            createPasswordDomain();
+            startAndRestartAndStopPasswordDomain();
+            deletePasswordDomain(false); // report an error if applicable
+        }
+        finally {
+            restoreCannedFrameworkArgs();
+            report("before-delete-pw1-file", pwFile1.canRead());
+            report("verify-delete-pw1-file", pwFile1.delete());
+            pwFile2.delete(); // just in case...
+        }
+    }
+
+    private void deletePasswordDomain(boolean errorOK) {
+        boolean ret = asadmin("delete-domain", PW_DOMAIN_NAME);
+
+        if (errorOK)
+            ret = true;
+
+        report("delete-pw-domain", ret);
+    }
+
+    private void createPasswordFiles() {
+        try {
+            pwFile1 = TestUtils.createPasswordFile();
+            pwFile1Name = pwFile1.getAbsolutePath().replace('\\', '/');
+            pwFile2 = TestUtils.createPasswordFile();
+            pwFile2Name = pwFile2.getAbsolutePath().replace('\\', '/');
+            report("create-password-file", true); // no exception thrown is a passed test!
+            report("verify-password-file-exists", pwFile1.exists());
+            report("verify-password-file-readable", pwFile1.canRead());
+            report("verify-password-file-has-stuff", pwFile1.length() > 10);
+            report("verify-password-file-exists", pwFile2.exists());
+            report("verify-password-file-readable", pwFile2.canRead());
+            report("verify-password-file-has-stuff", pwFile2.length() > 10);
+        }
+        catch (IOException ex) {
+            report("Catastrophic IO Error", false);
+            pwFile1 = null;
+            pwFile2 = null;
+            pwFile1Name = null;
+            pwFile2Name = null;
+        }
+    }
+
+    /**
+     * Create a domain that requires the username/pw via a password file
+     */
+    private void createPasswordDomain() {
+        report("create-passwordfile-domain", asadmin(CREATE_PW_DOMAIN_CMD));
+    }
+
+    /**
+     * Start the domain that requires the username/pw via a password file
+     * IMPORTANT!!!  Use pwfile #2 !!!!
+     */
+    private void startAndRestartAndStopPasswordDomain() {
+        setCannedFrameworkArgs("--passwordfile " + pwFile2Name + " --user admin");
+        report("start-passwordfile-domain", asadmin("start-domain", PW_DOMAIN_NAME));
+        setCannedFrameworkArgs("--passwordfile " + pwFile1Name + " --user admin");
+
+        String renamedFileName = pwFile2Name + "xxx";
+        File renamedFile = new File(renamedFileName);
+
+
+
+        // the running domain will use pwFile2 for all future restarts
+        report("verify-can-restart", asadmin("restart-domain", PW_DOMAIN_NAME));
+        report("verify-renamed-1", !renamedFile.canRead());
+        pwFile2.renameTo(renamedFile);
+        report("verify-renamed-2", !pwFile2.canRead());
+        report("verify-renamed-3", renamedFile.canRead());
+
+        // should not restart
+        report("verify-can-not-restart", !asadmin("restart-domain", PW_DOMAIN_NAME));
+
+        // restore the pw file
+        renamedFile.renameTo(pwFile2);
+        report("verify-restored-pwfile-1", !renamedFile.canRead());
+        report("verify-restored-pwfile-2", pwFile2.canRead());
+        report("verify-can-restart-once-again", asadmin("restart-domain", PW_DOMAIN_NAME));
+
+        report("stop-passwordfile-domain", asadmin("stop-domain", PW_DOMAIN_NAME));
+    }
+
+    private void setCannedFrameworkArgs(String newArgs) {
+        // framework automatically adds its own pw file etc.  By setting as.props
+        // all of the canned args are not used.
+        System.setProperty("as.props", newArgs);
+    }
+
+    private void restoreCannedFrameworkArgs() {
+        if (oldCannedArgs == null)
+            System.getProperties().remove("as.props");
+        else
+            System.setProperty("as.props", oldCannedArgs);
+    }
+
+    private String oldCannedArgs = System.getProperty("as.props");
+    private File pwFile1;
+    private String pwFile1Name;
+    private File pwFile2;
+    private String pwFile2Name;
+    private final static String PW_DOMAIN_NAME = "pwdomain";
+    private static final String[] CREATE_PW_DOMAIN_CMD = new String[]{
+        "create-domain",
+        "--savemasterpassword=true",
+        "--usemasterpassword=true",
+        "--savelogin=false",
+        "--nopassword=false",
+        PW_DOMAIN_NAME
+    };
 }
+
+/*
+ * asadmin --passwordfile d:/password.txt --user admin create-domain --savemasterpassword=true --usemasterpassword=true --savelogin=false --nopassword=false d2
+ */
