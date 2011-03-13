@@ -552,7 +552,7 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
             }
         }
         // delete self
-        return (allDeletesSucceeded &= FileUtils.deleteFile(directory));
+        return (allDeletesSucceeded && FileUtils.deleteFile(directory));
     } 
     
     /**
