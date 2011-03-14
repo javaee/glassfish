@@ -45,6 +45,7 @@
   <absolute-ordering>
     <name>A</name>
     <others/>
+    <name>NoSuchName</name>
     <name>B</name>
   </absolute-ordering>
 </web-app>

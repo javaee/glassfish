@@ -47,6 +47,6 @@
     version="3.0"> 
   <name>A</name>
   <ordering>
-    <before><others/></before>
+    <before><name>NoSuchName</name><others/></before>
   </ordering>
 </web-fragment>
