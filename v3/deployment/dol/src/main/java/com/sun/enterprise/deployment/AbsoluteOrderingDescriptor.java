@@ -117,11 +117,6 @@ public class AbsoluteOrderingDescriptor extends Descriptor {
                     WebFragmentDescriptor wf = map.get((String)obj);
                     if (wf != null) {
                         wfList.add(wf);
-                    } else {
-                        throw new IllegalStateException(localStrings.getLocalString(
-                                "enterprise.deployment.exceptionnamenotdefinedinordering",
-                                "The name [{0}] in ordering is not defined.",
-                                new Object[] { obj }));
                     }
                 } else { // others
                     for (WebFragmentDescriptor wf : othersList) {
