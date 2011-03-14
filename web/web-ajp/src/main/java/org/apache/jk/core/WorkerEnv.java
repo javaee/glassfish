@@ -61,7 +61,7 @@ package org.apache.jk.core;
 import java.util.Hashtable;
 import javax.management.ObjectName;
 import org.glassfish.grizzly.http.server.Request;
-import org.glassfish.grizzly.http.server.Request.Note;
+import org.glassfish.grizzly.http.Note;
 import org.glassfish.grizzly.http.util.MessageBytes;
 
 /**

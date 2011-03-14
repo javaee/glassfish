@@ -74,7 +74,7 @@ import org.glassfish.grizzly.http.HttpResponsePacket;
 import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.Request;
 //import org.glassfish.grizzly.http.server.RequestInfo;
-import org.glassfish.grizzly.http.server.Request.Note;
+import org.glassfish.grizzly.http.Note;
 import org.glassfish.grizzly.http.server.Response;
 
 /**

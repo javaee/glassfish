@@ -147,6 +147,7 @@ import org.glassfish.grizzly.http.util.CharChunk;
 import org.glassfish.grizzly.http.util.DataChunk;
 import org.glassfish.grizzly.http.util.FastHttpDateFormat;
 import org.glassfish.grizzly.http.util.MessageBytes;
+import org.glassfish.grizzly.http.server.util.RequestUtils;
 import org.glassfish.web.valve.GlassFishValve;
 
 /**
@@ -1145,7 +1146,7 @@ public class Request
         // XXX Should move to Globals
         if (Constants.SSL_CERTIFICATE_ATTR.equals(name)) {
             // @TODO Implement SSL rehandshake
-            coyoteRequest.populateCertificateAttribute();
+            RequestUtils.populateCertificateAttribute(coyoteRequest);
             attr = getAttribute(Globals.CERTIFICATES_ATTR);
             if (attr != null) {
                 attributes.put(name, attr);
@@ -1168,7 +1169,7 @@ public class Request
             }
              */
             // START SJSAS 6419950
-            populateSSLAttributes();
+            RequestUtils.populateSSLAttributes(coyoteRequest);
             // END SJSAS 6419950
             attr = attributes.get(name);
         }
@@ -1191,7 +1192,7 @@ public class Request
     @Override
     public Enumeration<String> getAttributeNames() {
         if (isSecure()) {
-            populateSSLAttributes();
+            RequestUtils.populateSSLAttributes(coyoteRequest);
         }
         return new Enumerator<String>(attributes.keySet(), true);
     }
@@ -4284,7 +4285,7 @@ public class Request
 
     // START SJSAS 6419950
     private void populateSSLAttributes() {
-        coyoteRequest.populateSSLAttributes();
+        RequestUtils.populateSSLAttributes(coyoteRequest);
         Object attr = coyoteRequest.getAttribute(Globals.CERTIFICATES_ATTR);
         if (attr != null) {
             attributes.put(Globals.CERTIFICATES_ATTR, attr);
