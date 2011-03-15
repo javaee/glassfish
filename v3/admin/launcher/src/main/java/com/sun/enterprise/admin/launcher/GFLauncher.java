@@ -170,6 +170,7 @@ public abstract class GFLauncher {
             asenvProps.put(JAVA_ROOT_PROPERTY, jhome);
         }
         debugOptions = getDebug();
+        parseDebug();
         parser.setupConfigDir(getInfo().getConfigDir(), getInfo().getInstallDir());
         setLogFilename(parser);
         resolveAllTokens();
@@ -245,27 +246,18 @@ public abstract class GFLauncher {
      * @return the debug port, or -1 if not debugging
      */
     public final int getDebugPort() {
-        // look for an option of this form:
-        // -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9009
-        // and extract the address value
-        for (String opt : debugOptions) {
-            if (!opt.startsWith("-Xrunjdwp:"))
-                continue;
-            String[] attrs = opt.substring(10).split(",");
-            for (String attr : attrs) {
-                if (attr.startsWith("address=")) {
-                    try {
-                        return Integer.parseInt(attr.substring(8));
-                    }
-                    catch (NumberFormatException ex) {
-                        return -1;
-                    }
-                }
-            }
-        }
-        return -1;
+        return debugPort;
+    }
+    /**
+     * Return true if suspend=y AND debugging is on.  otherwise return false.
+     *
+     * @return the debug port, or -1 if not debugging
+     */
+    public final boolean isDebugSuspend() {
+        return debugPort >= 0 && debugSuspend;
     }
 
+    
     /**
      * Does this domain need to be automatically upgraded before it can be started?
      *
@@ -291,7 +283,35 @@ public abstract class GFLauncher {
     ///////////////////////////////////////////////////////////////////////////
     abstract void internalLaunch() throws GFLauncherException;
 
-    private void setLogFilename(MiniXmlParser parser) throws GFLauncherException {
+    private void parseDebug() {
+        // look for an option of this form:
+        // -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9009
+        // and extract the suspend and port values
+        for (String opt : debugOptions) {
+            if (!opt.startsWith("-Xrunjdwp:"))
+                continue;
+            String[] attrs = opt.substring(10).split(",");
+            for (String attr : attrs) {
+                if (attr.startsWith("address=")) {
+                    try {
+                        debugPort = Integer.parseInt(attr.substring(8));
+                    }
+                    catch (NumberFormatException ex) {
+                        debugPort = -1;
+                    }
+                }
+                if (attr.startsWith("suspend=")) {
+                    try {
+                        debugSuspend = attr.substring(8).toLowerCase().equals("y");
+                    }
+                    catch (Exception ex) {
+                        debugSuspend = false;
+                    }
+                }
+            }
+        }
+    }
+private void setLogFilename(MiniXmlParser parser) throws GFLauncherException {
         logFilename = parser.getLogFilename();
 
         if (logFilename == null)
@@ -884,6 +904,8 @@ public abstract class GFLauncher {
     private boolean logFilenameWasFixed = false;
     private boolean needsAutoUpgrade = false;
     private boolean needsManualUpgrade = false;
+    private int debugPort = -1;
+    private boolean debugSuspend = false;
 
     ///////////////////////////////////////////////////////////////////////////
     private static class ProcessWhacker implements Runnable {
