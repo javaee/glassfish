@@ -50,6 +50,8 @@ public class Jira extends MonTest {
         report(true, "Hello from JIRA Tests!");
         test15397();
         test15054();
+        test15923();
+        test15500();
     }
 
     private void test15397() {
@@ -61,10 +63,10 @@ public class Jira extends MonTest {
                 asadminWithOutput("get", "-m", "server.applications.webapp2.*"), MAGIC_NAME_IN_APP),
                 prepend + "check-getm-1");
         report(checkForString(
-                asadminWithOutput("get", "-m", "server.applications.webapp2.webapp2webmod1\\.war*"), MAGIC_NAME_IN_APP),
+                asadminWithOutput("get", "-m", "server.applications.webapp2.webapp2webmod1\\.war*"), "webapp2webmod1"),
                 prepend + "check-getm-1");
         report(checkForString(
-                asadminWithOutput("get", "-m", "server.applications.webapp2.webapp2webmod1.war*"), MAGIC_NAME_IN_APP),
+                asadminWithOutput("get", "-m", "server.applications.webapp2.webapp2webmod1.war*"), "webapp2webmod1"),
                 prepend + "check-getm-1");
     }
 
@@ -80,10 +82,25 @@ public class Jira extends MonTest {
 
     private void test15923() {
         String prepend = "15923::";
-        report(asadmin("enable-monitoring",  "--modules", "deployment=HIGH"), "set-deployment-module-high");
-        report(asadmin("enable-monitoring",  "--modules", "deployment=LOW"), "set-deployment-module-low");
-        report(asadmin("enable-monitoring",  "--modules", "deployment=OFF"), "set-deployment-module-off");
-        report(!asadmin("enable-monitoring",  "--modules", "garbage=HIGH"), "set-deployment-module-garbage");
+        report(asadmin("enable-monitoring",  "--modules", "deployment=HIGH"),
+                prepend + "set-deployment-module-high");
+        report(asadmin("enable-monitoring",  "--modules", "deployment=LOW"),
+                prepend + "set-deployment-module-low");
+        report(asadmin("enable-monitoring",  "--modules", "deployment=OFF"),
+                prepend + "set-deployment-module-off");
+        report(!asadmin("enable-monitoring",  "--modules", "garbage=HIGH"),
+                prepend + "set-deployment-module-garbage");
+    }
+    private void test15500() {
+        String prepend = "15500::";
+        report(checkForString(asadminWithOutput("list-components"), "webapp2"));
+        report(checkForString(
+                asadminWithOutput("get", "-m", "server.applications.webapp2.webapp2webmod1\\.war.*"), MAGIC_NAME_IN_APP),
+                prepend + "check-getm-1bs");
+        report(checkForString(
+                asadminWithOutput("get", "-m", "server.applications.webapp2.webapp2webmod1\\\\.war.*"), MAGIC_NAME_IN_APP),
+                prepend + "check-getm-2bs");
+
     }
 
     private boolean checkForString(AsadminReturn r, String s) {
