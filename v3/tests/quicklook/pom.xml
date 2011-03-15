@@ -159,7 +159,7 @@
                         <version>3.1</version>
                         <scope>compile</scope>
                     </dependency>
-                    <dependency>
+                    <!-- dependency>
                         <groupId>org.glassfish.scripting.bundle</groupId>
                         <artifactId>jruby-all</artifactId>
                         <version>${jruby-all.version}</version>
@@ -167,7 +167,7 @@
                         <scope>test</scope>
                         <type>zip</type>
                     </dependency>
-		     		<!-- dependency>
+		     		<dependency>
  	      				<groupId>org.testng</groupId>
  	      				<artifactId>testng</artifactId>
  	      				<version>5.7</version>
