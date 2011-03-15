@@ -547,11 +547,10 @@ public class FormAuthenticator
             Locale locale = (Locale) locales.nextElement();
             saved.addLocale(locale);
         }
-        Map parameters = hreq.getParameterMap();
-        Iterator paramNames = parameters.keySet().iterator();
-        while (paramNames.hasNext()) {
-            String paramName = (String) paramNames.next();
-            String paramValues[] = (String[]) parameters.get(paramName);
+        Map<String, String[]> parameters = hreq.getParameterMap();
+        for (Map.Entry<String, String[]> e : parameters.entrySet()) {
+            String paramName = e.getKey();
+            String paramValues[] = e.getValue();
             saved.addParameter(paramName, paramValues);
         }
         saved.setMethod(hreq.getMethod());
