@@ -90,7 +90,7 @@ public class ServerFactory {
     /**
      * Return the singleton <code>Server</code> instance for this JVM.
      */
-    public static Server getServer() {
+    public static synchronized Server getServer() {
         if( server==null )
             server=new StandardServer();
         return (server);
@@ -106,7 +106,7 @@ public class ServerFactory {
      *
      * @param theServer The new singleton instance
      */
-    public static void setServer(Server theServer) {
+    public static synchronized void setServer(Server theServer) {
 
         if (server == null)
             server = theServer;
