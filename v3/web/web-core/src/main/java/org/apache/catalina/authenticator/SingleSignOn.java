@@ -454,7 +454,7 @@ public class SingleSignOn
         // see if we are the last session, if so blow away ssoId
         if (sso.isEmpty()) {
             synchronized (cache) {
-                sso = cache.remove(ssoId);
+                cache.remove(ssoId);
             }
         }
     }
