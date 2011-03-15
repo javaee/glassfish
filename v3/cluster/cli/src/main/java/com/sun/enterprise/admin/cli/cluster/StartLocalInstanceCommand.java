@@ -68,10 +68,10 @@ import static com.sun.enterprise.admin.cli.CLIConstants.*;
 @Scoped(PerLookup.class)
 public class StartLocalInstanceCommand extends SynchronizeInstanceCommand
                                         implements StartServerCommand {
-    @Param(optional = true, defaultValue = "false")
+    @Param(optional = true, shortName = "v", defaultValue = "false")
     private boolean verbose;
 
-    @Param(optional = true, defaultValue = "false")
+    @Param(optional = true, shortName = "d", defaultValue = "false")
     private boolean debug;
 
     // handled by superclass

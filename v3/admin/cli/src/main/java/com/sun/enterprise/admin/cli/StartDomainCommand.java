@@ -74,7 +74,7 @@ public class StartDomainCommand extends LocalDomainCommand implements StartServe
     private boolean verbose;
     @Param(optional = true, defaultValue = "false")
     private boolean upgrade;
-    @Param(optional = true, defaultValue = "false")
+    @Param(optional = true, shortName = "d", defaultValue = "false")
     private boolean debug;
     @Param(name = "domain_name", primary = true, optional = true)
     private String domainName0;
