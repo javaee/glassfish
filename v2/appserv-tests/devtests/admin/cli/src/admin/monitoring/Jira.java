@@ -74,8 +74,16 @@ public class Jira extends MonTest {
                 asadminWithOutput("get", "-m", CLUSTERED_INSTANCE_NAME1 + ".network.thread-pool.totalexecutedtasks-count"), CLUSTERED_INSTANCE_NAME1 + ".network.thread-pool.totalexecutedtasks-count"),
                 prepend + "check-getm-1");
         report(!checkForString(
-                asadminWithOutput("get", "-m", CLUSTERED_INSTANCE_NAME1+ ".server.network.thread-pool.totalexecutedtasks-count"), CLUSTERED_INSTANCE_NAME1 + ".network.thread-pool.totalexecutedtasks-count"),
+                asadminWithOutput("get", "-m", CLUSTERED_INSTANCE_NAME1 + ".server.network.thread-pool.totalexecutedtasks-count"), CLUSTERED_INSTANCE_NAME1 + ".network.thread-pool.totalexecutedtasks-count"),
                 prepend + "check-getm-0");
+    }
+
+    private void test15923() {
+        String prepend = "15923::";
+        report(asadmin("enable-monitoring",  "--modules", "deployment=HIGH"), "set-deployment-module-high");
+        report(asadmin("enable-monitoring",  "--modules", "deployment=LOW"), "set-deployment-module-low");
+        report(asadmin("enable-monitoring",  "--modules", "deployment=OFF"), "set-deployment-module-off");
+        report(!asadmin("enable-monitoring",  "--modules", "garbage=HIGH"), "set-deployment-module-garbage");
     }
 
     private boolean checkForString(AsadminReturn r, String s) {
@@ -84,7 +92,6 @@ public class Jira extends MonTest {
 
         return r.outAndErr.indexOf(s) >= 0;
     }
-    
     private static final File earFile = new File("apps/webapp2.ear");
     private static final String MAGIC_NAME_IN_APP = "webapp2webmod1_Servlet2";
 }
