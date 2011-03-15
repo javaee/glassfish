@@ -59,16 +59,16 @@ import java.io.File;
 import java.io.FileReader;
 
 import java.util.logging.*;
-import sun.security.provider.PolicyParser;
-import sun.security.provider.PolicyParser.GrantEntry;
-import sun.security.provider.PolicyParser.PermissionEntry;
-import sun.security.provider.PolicyParser.PrincipalEntry;
 import com.sun.logging.LogDomains;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapper;
 import com.sun.enterprise.deployment.interfaces.SecurityRoleMapperFactory;
 import com.sun.enterprise.security.SecurityRoleMapperFactoryGen;
+import com.sun.enterprise.security.provider.PolicyParser.GrantEntry;
+import com.sun.enterprise.security.provider.PolicyParser.ParsingException;
+import com.sun.enterprise.security.provider.PolicyParser.PermissionEntry;
+import com.sun.enterprise.security.provider.PolicyParser.PrincipalEntry;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 
@@ -1385,7 +1385,7 @@ public class PolicyConfigurationImpl implements PolicyConfiguration {
                        new Object []{name, ioe});
 	    logger.log(Level.SEVERE,msg);
 	    throw new RuntimeException(defMsg);
-	} catch ( sun.security.provider.PolicyParser.ParsingException pe) {
+	} catch ( ParsingException pe) {
             String defMsg="Unable to parse Policy file: "+name;
             String msg=localStrings.getLocalString("pc.policy_parsing_exception",defMsg,
                        new Object []{name,pe});

@@ -50,10 +50,6 @@
 
 package com.sun.enterprise.security.provider;
 
-import java.security.Policy;
-
-import com.sun.enterprise.security.provider.PolicyFile;
-
 /**
  * This class is a wrapper around the default jdk policy file 
  * implementation. PolicyWrapper is installed as the JRE policy object
