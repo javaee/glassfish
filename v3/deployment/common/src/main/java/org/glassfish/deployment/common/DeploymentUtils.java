@@ -523,8 +523,7 @@ public class DeploymentUtils {
         List<URL> libLibraryURLs = new ArrayList<URL>();
         File[] jarFiles = moduleLibDirectory.listFiles(new FileFilter() {
             public boolean accept(File pathname) {
-                return (pathname.isFile() &&
-                        pathname.getAbsolutePath().endsWith(".jar"));
+                return (pathname.getAbsolutePath().endsWith(".jar"));
             }
         });
 

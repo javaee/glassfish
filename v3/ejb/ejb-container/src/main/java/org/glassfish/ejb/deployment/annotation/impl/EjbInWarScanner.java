@@ -96,14 +96,18 @@ public class EjbInWarScanner
         if (lib.exists()) {
             File[] jarFiles = lib.listFiles(new FileFilter() {
                  public boolean accept(File pathname) {
-                     return (pathname.isFile() &&
-                            pathname.getAbsolutePath().endsWith(".jar"));
+                     return (pathname.getAbsolutePath().endsWith(".jar"));
                  }
             });
 
             if (jarFiles != null && jarFiles.length > 0) {
                 for (File jarFile : jarFiles) {
-                    addScanJar(jarFile);
+                    // support exploded jar file
+                    if (jarFile.isDirectory()) {
+                        addScanDirectory(jarFile);
+                    } else {
+                        addScanJar(jarFile);
+                    }
                 }
             }
         }
