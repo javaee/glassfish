@@ -350,7 +350,7 @@ public class LogDomains {
                             record.setResourceBundle(rb);
                         }
                     }
-                    record.setThreadID((int) Thread.currentThread().getId());
+                    //record.setThreadID((int) Thread.currentThread().getId());
                     super.log(record);
                 }
 
