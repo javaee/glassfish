@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <xsd:schema xmlns="http://www.w3.org/2001/XMLSchema"
 	    targetNamespace="http://java.sun.com/xml/ns/j2ee"
 	    xmlns:j2ee="http://java.sun.com/xml/ns/j2ee"
@@ -9,7 +8,7 @@
 	    version="2.4">
   <xsd:annotation>
     <xsd:documentation>
-      @(#)web-app_2_4.xsds	1.60 03/08/26
+      @(#)web-app_2_4.xsds	1.61 04/04/16
     </xsd:documentation>
   </xsd:annotation>
 
@@ -17,9 +16,9 @@
     <xsd:documentation>
 
       DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
-      
-      Copyright 2004-2009 Sun Microsystems, Inc. All rights reserved.
-      
+
+      Copyright 2003-2007 Sun Microsystems, Inc. All rights reserved.
+
       The contents of this file are subject to the terms of either the
       GNU General Public License Version 2 only ("GPL") or the Common
       Development and Distribution License("CDDL") (collectively, the
@@ -29,7 +28,7 @@
       glassfish/bootstrap/legal/LICENSE.txt.  See the License for the
       specific language governing permissions and limitations under the
       License.
-      
+
       When distributing the software, include this License Header
       Notice in each file and include the License file at
       glassfish/bootstrap/legal/LICENSE.txt.  Sun designates this
@@ -39,9 +38,9 @@
       below the License Header, with the fields enclosed by brackets []
       replaced by your own identifying information:
       "Portions Copyrighted [year] [name of copyright owner]"
-      
+
       Contributor(s):
-      
+
       If you wish your version of this file to be governed by only the
       CDDL or only the GPL Version 2, indicate your decision by adding
       "[Contributor] elects to include this software in this
@@ -799,7 +798,7 @@
 
     <xsd:simpleContent>
       <xsd:restriction base="j2ee:string">
-        <xsd:pattern value="[^\p{Cc}^\s]+/[^\p{Cc}^\s]+"/>
+	<xsd:pattern value="[^\p{Cc}^\s]+/[^\p{Cc}^\s]+"/>
       </xsd:restriction>
     </xsd:simpleContent>
   </xsd:complexType>
