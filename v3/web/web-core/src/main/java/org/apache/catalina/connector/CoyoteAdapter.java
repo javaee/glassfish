@@ -366,9 +366,7 @@ public class CoyoteAdapter
                 response.finishResponse();
                 req.action( ActionCode.ACTION_POST_REQUEST , null);
             } else {
-                if (request != null) {
-                    request.onAfterService();
-                }
+                request.onAfterService();
             }
         } catch (Throwable t) {
             log.log(Level.SEVERE, sm.getString("coyoteAdapter.service"), t);
