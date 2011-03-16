@@ -335,10 +335,13 @@ public class ChangeableClass {
             overwrite="true"
             todir="${s1as.home}/domains/domain1/applications/${testName}/WEB-INF/classes/servletonly"/>
 
+        <!-- Make sure the .reload file will have a later timestamp. -->
+        <sleep seconds="2"/>
+
         <touch file="${s1as.home}/domains/domain1/applications/${testName}/.reload"/>
 
         <!-- Give the server time to see the .reload file and to redeploy the app. -->
-        <sleep seconds="20"/>
+        <sleep seconds="5"/>
 
         <antcall target="run.positive">
             <param name="log.id" value="1.2"/>
