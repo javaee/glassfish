@@ -52,6 +52,7 @@ public class Jira extends MonTest {
         test15054();
         test15923();
         test15500();
+        test14389();
     }
 
     private void test15397() {
@@ -101,6 +102,28 @@ public class Jira extends MonTest {
                 asadminWithOutput("get", "-m", "server.applications.webapp2.webapp2webmod1\\\\.war.*"), MAGIC_NAME_IN_APP),
                 prepend + "check-getm-2bs");
 
+    }
+
+    private void test14389() {
+        String prepend = "14389::";
+        AsadminReturn ar = asadminWithOutput("list", "-m", "\"*\"");
+        report(checkForString(ar, "server.applications"), prepend + "check-listm-server-applications");
+        //report(checkForString(ar, CLUSTERED_INSTANCE_NAME1 +".applications"), prepend + "check-listm-"+CLUSTERED_INSTANCE_NAME1);
+        report(checkForString(ar, "server.web.session"), prepend + "check-listm-server-web-session");
+        //report(checkForString(ar, CLUSTERED_INSTANCE_NAME1 +".web.session"), prepend + "check-listm-"+CLUSTERED_INSTANCE_NAME1+"-web-session");
+        report(checkForString(ar, "server.web.request"), prepend + "check-listm-server-web-request");
+        //report(checkForString(ar, CLUSTERED_INSTANCE_NAME1 +".web.request"), prepend + "check-listm-"+CLUSTERED_INSTANCE_NAME1+"-web-request");
+        report(checkForString(ar, "server.web.servlet"), prepend + "check-listm-server-web-servlet");
+        //report(checkForString(ar, CLUSTERED_INSTANCE_NAME1 +".web.servlet"), prepend + "check-listm-"+CLUSTERED_INSTANCE_NAME1+"-web-servlet");
+        AsadminReturn ar2 = asadminWithOutput("get", "-m", "\"*\"");
+        report(checkForString(ar2, "server.applications"), prepend + "check-getm-server");
+        //report(checkForString(ar2, CLUSTERED_INSTANCE_NAME1 +".applications"), prepend + "check-getm-"+CLUSTERED_INSTANCE_NAME1);
+        report(checkForString(ar2, "server.web.session"), prepend + "check-getm-server-web-session");
+        //report(checkForString(ar2, CLUSTERED_INSTANCE_NAME1 +".web.session"), prepend + "check-getm-"+CLUSTERED_INSTANCE_NAME1+"-web-session");
+        report(checkForString(ar2, "server.web.request"), prepend + "check-getm-server-web-request");
+        //report(checkForString(ar2, CLUSTERED_INSTANCE_NAME1 +".web.request"), prepend + "check-getm-"+CLUSTERED_INSTANCE_NAME1+"-web-request");
+        report(checkForString(ar2, "server.web.servlet"), prepend + "check-getm-server-web-servlet");
+        //report(checkForString(ar2, CLUSTERED_INSTANCE_NAME1 +".web.servlet"), prepend + "check-getm-"+CLUSTERED_INSTANCE_NAME1+"-web-servlet");
     }
 
     private boolean checkForString(AsadminReturn r, String s) {
