@@ -86,7 +86,7 @@ public class Jira extends MonTest {
         String prepend = "15923::";
         report(asadmin("enable-monitoring",  "--modules", "deployment=HIGH"),
                 prepend + "set-deployment-module-high");
-        report(asadmin("enable-monitoring",  "--modul   es", "deployment=LOW"),
+        report(asadmin("enable-monitoring",  "--modules", "deployment=LOW"),
                 prepend + "set-deployment-module-low");
         report(asadmin("enable-monitoring",  "--modules", "deployment=OFF"),
                 prepend + "set-deployment-module-off");
