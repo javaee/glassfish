@@ -142,10 +142,12 @@ public class javaURLContextFactory
         }
 
         // If the thread is not bound, return a shared writable context
-        synchronized(javaURLContextFactory.class) {
-            if (initialContext == null) {
-                initialContext = new NamingContext(
-                        castEnvironment(environment), MAIN);
+        if (initialContext == null) {
+            synchronized(javaURLContextFactory.class) {
+                if (initialContext == null) {
+                    initialContext = new NamingContext(
+                            castEnvironment(environment), MAIN);
+                }
             }
         }
         return initialContext;
