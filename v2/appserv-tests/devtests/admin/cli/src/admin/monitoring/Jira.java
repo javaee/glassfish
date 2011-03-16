@@ -52,7 +52,8 @@ public class Jira extends MonTest {
         test15054();
         test15923();
         test15500();
-        test14389();
+        //test14389();
+        //test14748();
     }
 
     private void test15397() {
@@ -85,7 +86,7 @@ public class Jira extends MonTest {
         String prepend = "15923::";
         report(asadmin("enable-monitoring",  "--modules", "deployment=HIGH"),
                 prepend + "set-deployment-module-high");
-        report(asadmin("enable-monitoring",  "--modules", "deployment=LOW"),
+        report(asadmin("enable-monitoring",  "--modul   es", "deployment=LOW"),
                 prepend + "set-deployment-module-low");
         report(asadmin("enable-monitoring",  "--modules", "deployment=OFF"),
                 prepend + "set-deployment-module-off");
@@ -108,22 +109,22 @@ public class Jira extends MonTest {
         String prepend = "14389::";
         AsadminReturn ar = asadminWithOutput("list", "-m", "\"*\"");
         report(checkForString(ar, "server.applications"), prepend + "check-listm-server-applications");
-        //report(checkForString(ar, CLUSTERED_INSTANCE_NAME1 +".applications"), prepend + "check-listm-"+CLUSTERED_INSTANCE_NAME1);
         report(checkForString(ar, "server.web.session"), prepend + "check-listm-server-web-session");
-        //report(checkForString(ar, CLUSTERED_INSTANCE_NAME1 +".web.session"), prepend + "check-listm-"+CLUSTERED_INSTANCE_NAME1+"-web-session");
         report(checkForString(ar, "server.web.request"), prepend + "check-listm-server-web-request");
-        //report(checkForString(ar, CLUSTERED_INSTANCE_NAME1 +".web.request"), prepend + "check-listm-"+CLUSTERED_INSTANCE_NAME1+"-web-request");
         report(checkForString(ar, "server.web.servlet"), prepend + "check-listm-server-web-servlet");
-        //report(checkForString(ar, CLUSTERED_INSTANCE_NAME1 +".web.servlet"), prepend + "check-listm-"+CLUSTERED_INSTANCE_NAME1+"-web-servlet");
         AsadminReturn ar2 = asadminWithOutput("get", "-m", "\"*\"");
         report(checkForString(ar2, "server.applications"), prepend + "check-getm-server");
-        //report(checkForString(ar2, CLUSTERED_INSTANCE_NAME1 +".applications"), prepend + "check-getm-"+CLUSTERED_INSTANCE_NAME1);
         report(checkForString(ar2, "server.web.session"), prepend + "check-getm-server-web-session");
-        //report(checkForString(ar2, CLUSTERED_INSTANCE_NAME1 +".web.session"), prepend + "check-getm-"+CLUSTERED_INSTANCE_NAME1+"-web-session");
         report(checkForString(ar2, "server.web.request"), prepend + "check-getm-server-web-request");
-        //report(checkForString(ar2, CLUSTERED_INSTANCE_NAME1 +".web.request"), prepend + "check-getm-"+CLUSTERED_INSTANCE_NAME1+"-web-request");
         report(checkForString(ar2, "server.web.servlet"), prepend + "check-getm-server-web-servlet");
-        //report(checkForString(ar2, CLUSTERED_INSTANCE_NAME1 +".web.servlet"), prepend + "check-getm-"+CLUSTERED_INSTANCE_NAME1+"-web-servlet");
+    }
+
+    private void test14748() {
+        String prepend = "14748::";
+        report(asadmin("create-jdbc-connection-pool", "--datasourceclassname", "org.apache.derby.jdbc.ClientDataSource", 
+                "--restype", "javax.sql.XADataSource", RESOURCE_NAME_WITH_SLASH));
+        asadmin("ping-jdbc-connection-pool", RESOURCE_NAME_WITH_SLASH);
+
     }
 
     private boolean checkForString(AsadminReturn r, String s) {
@@ -134,4 +135,5 @@ public class Jira extends MonTest {
     }
     private static final File earFile = new File("apps/webapp2.ear");
     private static final String MAGIC_NAME_IN_APP = "webapp2webmod1_Servlet2";
+    private static final String RESOURCE_NAME_WITH_SLASH = "jdbc/test";
 }
