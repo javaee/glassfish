@@ -442,13 +442,22 @@ public class FileArchiveTest {
 
     @Test
     public void testInaccessibleDirectoryInFileArchive() throws Exception {
+        final String vendorURLText = System.getProperty("java.vendor.url");
+        if (vendorURLText != null && vendorURLText.contains("ibm")) {
+            /*
+             * The IBM Java implementation seems not to work correctly with
+             * File.setReadable.  So report this test
+             */
+            System.out.println("Skipping testInaccessibleDirectoryInFileArchive (as successful) because the Java vendor seems to be IBM");
+            return;
+        }
         /*
          * FileArchive will log a warning if it cannot list the files in the
          * directory. Here's the message key it will use.
          */
         final String EXPECTED_LOG_KEY = "enterprise.deployment.nullFileList";
         System.out.println("testInaccessibleDirectoryInFileArchive");
-
+        
         final RecordingLogger myLogger = new RecordingLogger();
 
         final FileArchive archive = (FileArchive) createAndPopulateArchive(usualEntryNames);
@@ -478,10 +487,11 @@ public class FileArchiveTest {
         archive.getListOfFiles(lower, fileList, null /* embeddedArchives */, myLogger);
 
         List<LogRecord> logRecords = myLogger.logRecords();
-
-        assertTrue("FileArchive did not log expected message (re: being unable to list files); expected " +
-                        EXPECTED_LOG_KEY,
-                (! logRecords.isEmpty()) && (logRecords.get(0).getMessage().equals(EXPECTED_LOG_KEY)));
+        if (logRecords.isEmpty()) {
+            fail("FileArchive logged no message about being unable to list files; expected " + EXPECTED_LOG_KEY);
+        }
+        assertEquals("FileArchive did not log expected message (re: being unable to list files)",
+                        EXPECTED_LOG_KEY, logRecords.get(0).getMessage());
         /*
          * Change the protection back.
          */
