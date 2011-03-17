@@ -114,6 +114,7 @@ public class RestartLocalInstanceCommand extends StopLocalInstanceCommand {
          * Only --debug, --nodedir, -node, and the operand apply here.
          */
         List<String> opts = new ArrayList<String>();
+        opts.add("start-local-instance");
         if (debug != null) {
             opts.add("--debug");
             opts.add(debug.toString());

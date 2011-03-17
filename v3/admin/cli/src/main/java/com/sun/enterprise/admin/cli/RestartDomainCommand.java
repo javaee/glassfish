@@ -138,6 +138,7 @@ public class RestartDomainCommand extends StopDomainCommand {
          * Only --debug, --domaindir, and the operand apply here.
          */
         List<String> opts = new ArrayList<String>();
+        opts.add("start-domain");
         if (debug != null) {
             opts.add("--debug");
             opts.add(debug.toString());
