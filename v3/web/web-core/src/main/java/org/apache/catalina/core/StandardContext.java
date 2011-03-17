@@ -1621,8 +1621,7 @@ public class StandardContext
      */
     public ServletContext getServletContext() {
         if (context == null) {
-            context = new ApplicationContext(getBasePath(getDocBase()),
-                                             this);
+            context = new ApplicationContext(this);
             if (altDDName != null
                     && context.getAttribute(Globals.ALT_DD_ATTR) == null){
                 context.setAttribute(Globals.ALT_DD_ATTR,altDDName);

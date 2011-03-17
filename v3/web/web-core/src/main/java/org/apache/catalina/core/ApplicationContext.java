@@ -95,10 +95,9 @@ public class ApplicationContext implements ServletContext {
      *
      * @param context The associated Context instance
      */
-    public ApplicationContext(String basePath, StandardContext context) {
+    public ApplicationContext(StandardContext context) {
         super();
         this.context = context;
-        this.basePath = basePath;
 
         setAttribute("com.sun.faces.useMyFaces",
                      Boolean.valueOf(context.isUseMyFaces()));
@@ -163,11 +162,6 @@ public class ApplicationContext implements ServletContext {
      */
     private static final StringManager sm =
       StringManager.getManager(Constants.Package);
-
-    /**
-     * Base path.
-     */
-    private String basePath = null;
 
     private boolean isRestricted;
 
