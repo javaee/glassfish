@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,17 +40,17 @@
 
 package org.glassfish.javaee.services;
 
-import org.jvnet.hk2.annotations.Service;
+import org.glassfish.grizzly.http.server.AddOn;
+import org.glassfish.grizzly.websockets.WebSocketAddOn;
 import org.jvnet.hk2.annotations.ContractProvided;
+import org.jvnet.hk2.annotations.Service;
 
 /**
- * Websockets service.
+ * Websocket service.
  *
- * @Author Alexey Stashok
+ * @author Alexey Stashok
  */
-@Service(name="websockets")
-//@ContractProvided(AsyncFilter.class)
-public class WebSocketsAsyncFilterProvider {
-//        extends WebSocketAsyncFilter {
-
+@Service(name="websocket")
+@ContractProvided(AddOn.class)
+public class WebSocketAddOnProvider extends WebSocketAddOn {
 }

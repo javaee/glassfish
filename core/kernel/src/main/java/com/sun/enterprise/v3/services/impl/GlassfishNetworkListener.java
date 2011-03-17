@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -59,7 +59,7 @@ import org.glassfish.grizzly.config.dom.NetworkListener;
 import org.glassfish.grizzly.config.dom.Protocol;
 import org.glassfish.grizzly.config.dom.ThreadPool;
 import org.glassfish.grizzly.config.dom.Transport;
-import org.glassfish.grizzly.filterchain.FilterChain;
+import org.glassfish.grizzly.filterchain.FilterChainBuilder;
 import org.glassfish.grizzly.http.KeepAlive;
 import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.StaticHttpHandler;
@@ -105,11 +105,23 @@ public class GlassfishNetworkListener extends GenericGrizzlyListener {
         return super.getAdapter(adapterClass);
     }
 
+    @Override
+    protected void configureTransport(final Habitat habitat,
+            final NetworkListener networkListener,
+            final Transport transportConfig,
+            final FilterChainBuilder filterChainBuilder) {
 
+        super.configureTransport(habitat, networkListener, transportConfig,
+                filterChainBuilder);
+
+        transport.getConnectionMonitoringConfig().addProbes(new ConnectionMonitor(
+                grizzlyService.getMonitoring(), name, transport));
+    }
 
     @Override
-    protected void configureHttpProtocol(Habitat habitat,
-            Http http, FilterChain filterChain) {
+    protected void configureHttpProtocol(final Habitat habitat,
+            final NetworkListener networkListener,
+            final Http http, final FilterChainBuilder filterChainBuilder) {
         registerMonitoringStatsProviders();
 
         final V3Mapper mapper = new V3Mapper(logger);
@@ -165,7 +177,7 @@ public class GlassfishNetworkListener extends GenericGrizzlyListener {
         Inhabitant<Mapper> onePortMapper = new ExistingSingletonInhabitant<Mapper>(mapper);
         grizzlyService.getHabitat().addIndex(onePortMapper, Mapper.class.getName(), address.toString() + port);
 
-        super.configureHttpProtocol(habitat, http, filterChain);
+        super.configureHttpProtocol(habitat, networkListener, http, filterChainBuilder);
         final Protocol protocol = http.getParent();
         for (NetworkListener listener : protocol.findNetworkListeners()) {
             grizzlyService.notifyMapperUpdateListeners(listener, mapper);
@@ -176,15 +188,6 @@ public class GlassfishNetworkListener extends GenericGrizzlyListener {
     protected HttpHandler getHttpHandler(Http http) {
         return httpAdapter.getMapper();
     }
-
-    @Override
-    protected void configureTransport(Habitat habitat, Transport transportConfig) {
-        
-        super.configureTransport(habitat, transportConfig);
-        transport.getConnectionMonitoringConfig().addProbes(new ConnectionMonitor(
-                grizzlyService.getMonitoring(), name, transport));
-    }
-
 
     @Override
     protected KeepAlive configureKeepAlive(Habitat habitat, Http http) {
@@ -206,10 +209,12 @@ public class GlassfishNetworkListener extends GenericGrizzlyListener {
     }
 
     @Override
-    protected ThreadPoolConfig configureThreadPoolConfig(Habitat habitat,
-            ThreadPool threadPool) {
+    protected ThreadPoolConfig configureThreadPoolConfig(final Habitat habitat,
+            final NetworkListener networkListener,
+            final ThreadPool threadPool) {
         
-        final ThreadPoolConfig config = super.configureThreadPoolConfig(habitat, threadPool);
+        final ThreadPoolConfig config = super.configureThreadPoolConfig(habitat,
+                networkListener, threadPool);
         config.getInitialMonitoringConfig().addProbes(new ThreadPoolMonitor(
                 grizzlyService.getMonitoring(), name, config));
         return config;

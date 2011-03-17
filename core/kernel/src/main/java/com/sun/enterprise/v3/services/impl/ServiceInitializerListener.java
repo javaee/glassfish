@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,11 +40,11 @@
 package com.sun.enterprise.v3.services.impl;
 
 import java.util.logging.Logger;
+import org.glassfish.grizzly.config.dom.NetworkListener;
 
 import org.glassfish.grizzly.config.dom.Protocol;
 import org.glassfish.grizzly.config.dom.ThreadPool;
 import org.glassfish.grizzly.config.dom.Transport;
-import org.glassfish.grizzly.filterchain.FilterChain;
 import org.glassfish.grizzly.filterchain.FilterChainBuilder;
 import org.glassfish.grizzly.nio.transport.TCPNIOTransportBuilder;
 import org.glassfish.grizzly.threadpool.GrizzlyExecutorService;
@@ -70,7 +70,9 @@ public class ServiceInitializerListener extends org.glassfish.grizzly.config.Gen
 
     @Override
     protected void configureTransport(final Habitat habitat,
-            Transport transportConfig) {
+            final NetworkListener networkListener,
+            final Transport transportConfig,
+            final FilterChainBuilder filterChainBuilder) {
         
         transport = TCPNIOTransportBuilder.newInstance().build();
 
@@ -82,12 +84,15 @@ public class ServiceInitializerListener extends org.glassfish.grizzly.config.Gen
 
     @Override
     protected void configureProtocol(final Habitat habitat,
-            final Protocol protocol, final FilterChain filterChain) {
-        filterChain.add(new ServiceInitializerFilter(this, grizzlyService.getHabitat(), logger));
+            final NetworkListener networkListener,
+            final Protocol protocol, final FilterChainBuilder filterChainBuilder) {
+        filterChainBuilder.add(new ServiceInitializerFilter(this,
+                grizzlyService.getHabitat(), logger));
     }
 
     @Override
     protected void configureThreadPool(final Habitat habitat,
+            final NetworkListener networkListener,
             final ThreadPool threadPool) {
         transport.setWorkerThreadPool(GrizzlyExecutorService.createInstance(
                 ThreadPoolConfig.defaultConfig()));

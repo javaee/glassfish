@@ -208,9 +208,7 @@ public class CoyoteAdapter extends HttpHandler {
 
             // Create objects
             request = (Request) connector.createRequest();
-            request.setCoyoteRequest(req);
             response = (Response) connector.createResponse();
-            response.setCoyoteResponse(res);
 
             // Link objects
             request.setResponse(response);
@@ -224,6 +222,9 @@ public class CoyoteAdapter extends HttpHandler {
             // Set query string encoding
             req.getRequest().getRequestURIRef().setDefaultURIEncoding(Charset.forName(connector.getURIEncoding()));
         }
+
+        request.setCoyoteRequest(req);
+        response.setCoyoteResponse(res);
 
         if (v3Enabled && !compatWithTomcat) {
             request.setMappingData(md);
