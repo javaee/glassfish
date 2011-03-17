@@ -478,7 +478,6 @@ public class CLIBootstrap {
                 format(commandLine, useQuotes, value);
                 needSep = true;
             }
-            commandLine.append(' ');
             return commandLine;
         }
 
