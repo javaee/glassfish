@@ -1682,8 +1682,7 @@ public class Response
 
         boolean leadingSlash = location.startsWith("/");
 
-        if (leadingSlash 
-            || (!leadingSlash && (location.indexOf("://") == -1))) {
+        if (leadingSlash || (location.indexOf("://") == -1)) {
 
             redirectURLCC.recycle();
 
