@@ -27,8 +27,7 @@ fi
 export S1AS_HOME="$ROOT/glassfish3/glassfish"
 export APS_HOME="$ROOT/appserv-tests"
 cd "$APS_HOME"
-#(jps -l |grep ASMain |cut -f1 -d" " | xargs -t kill -9  > /dev/null 2>&1) || true
-jps -l |grep ASMain |cut -f1 -d" " | xargs -t kill -9
+(jps -l |grep ASMain |cut -f1 -d" " | xargs -t kill -9  > /dev/null 2>&1) || true
 #
 cd "$APS_HOME/devtests/deployment"
 
