@@ -50,12 +50,12 @@ import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.SystemProperty;
 import com.sun.enterprise.config.serverbeans.Server;
-import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.logging.LogDomains;
 
 import java.beans.PropertyChangeEvent;
 import java.util.logging.Logger;
 import java.util.List;
+import org.glassfish.api.Startup;
 
 /** Listens to changes made to the <code>&lt;system-property> </code> elements in domain.xml. All <code>&lt;system-property></code> elements
  *  are implemented to be Java System Properties (available via java.lang.System). Note however that there is a hierarchy
@@ -82,7 +82,7 @@ import java.util.List;
  * @author Kedar Mhaswade (km@dev.java.net)
  */
 @Service
-public class SystemPropertyListener implements ConfigListener, PostConstruct {
+public class SystemPropertyListener implements ConfigListener, PostConstruct, Startup {
 
     /*
     Implementation note: I still think that this kind of code is an unfortunate result of how config system handles
@@ -100,16 +100,30 @@ public class SystemPropertyListener implements ConfigListener, PostConstruct {
     Date: 10/10/2009.
     */
 
-    Logger logger = LogDomains.getLogger(SystemPropertyListener.class, LogDomains.ADMIN_LOGGER);
+    static final Logger logger = LogDomains.getLogger(SystemPropertyListener.class, LogDomains.ADMIN_LOGGER);
 
+    /* The following objects are injected so that this
+     * ConfigListener receives config events related to those objects.
+     */
     @Inject
-    private volatile Domain domain; //note: this should be current, and does contain the already modified values!
+    private Domain domain; //note: this should be current, and does contain the already modified values!
     
-    @Inject(name= ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    @Inject(name=ServerEnvironment.DEFAULT_INSTANCE_NAME, optional=true)
+    private Cluster cluster;
+    
+    @Inject(name=ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    private Config config; // this is the server's Config
+    
+    @Inject(name=ServerEnvironment.DEFAULT_INSTANCE_NAME)
     private Server server;
 
     @Override
     public void postConstruct() {
+    }
+
+    @Override
+    public Lifecycle getLifecycle() {
+        return Startup.Lifecycle.SERVER;
     }
 
     @Override

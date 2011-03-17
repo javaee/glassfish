@@ -48,7 +48,6 @@ import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.common_impl.LogHelper;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.util.net.NetUtils;
 import com.sun.grizzly.tcp.Request;
 import com.sun.logging.LogDomains;
 import java.security.Principal;
@@ -74,8 +73,6 @@ import org.glassfish.server.ServerEnvironmentImpl;
 import java.net.HttpURLConnection;
 import com.sun.enterprise.universal.GFBase64Decoder;
 import com.sun.enterprise.v3.admin.adapter.AdminEndpointDecider;
-import com.sun.enterprise.v3.admin.listener.GenericJavaConfigListener;
-import com.sun.enterprise.v3.admin.listener.SystemPropertyListener;
 import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
 import com.sun.grizzly.tcp.http11.GrizzlyRequest;
 import com.sun.grizzly.tcp.http11.GrizzlyResponse;
@@ -90,8 +87,6 @@ import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.RestrictTo;
 import org.glassfish.internal.api.*;
 import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.config.ObservableBean;
-import org.jvnet.hk2.config.ConfigSupport;
 
 /**
  * Listen to admin commands...
@@ -101,8 +96,8 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
 
     public final static String VS_NAME="__asadmin";
     public final static String PREFIX_URI = "/" + VS_NAME;
-    public final static Logger logger = LogDomains.getLogger(ServerEnvironmentImpl.class, LogDomains.ADMIN_LOGGER);
-    public final static LocalStringManagerImpl adminStrings = new LocalStringManagerImpl(AdminAdapter.class);
+    private final static LocalStringManagerImpl adminStrings = new LocalStringManagerImpl(AdminAdapter.class);
+    private final static Logger aalogger = LogDomains.getLogger(AdminAdapter.class, LogDomains.ADMIN_LOGGER);
     private final static String GET = "GET";
     private final static String POST = "POST";
     private static final GFBase64Decoder decoder = new GFBase64Decoder();
@@ -149,10 +144,7 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
 
     @Inject(name=ServerEnvironment.DEFAULT_INSTANCE_NAME)
     private volatile Server server;
-
-    @Inject
-    GenericJavaConfigListener listener;
-    
+   
     private SecureAdmin secureAdmin;
 
     final Class<? extends Privacy> privacyClass;
@@ -165,11 +157,11 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
         this.privacyClass = privacyClass;
     }
 
+    @Override
     public void postConstruct() {
         events.register(this);
         
-        epd = new AdminEndpointDecider(config, logger);
-        registerDynamicReconfigListeners();
+        epd = new AdminEndpointDecider(config, aalogger);
         this.setHandleStaticResources(true);
         this.addRootFolder(env.getProps().get(SystemPropertyConstants.INSTANCE_ROOT_PROPERTY) + "/asadmindocroot/");
         secureAdmin = habitat.getComponent(SecureAdmin.class);
@@ -190,13 +182,11 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
      *  Tomcat should be able to handle and log any other exception ( including
      *  runtime exceptions )
      */
+    @Override
     public void service(GrizzlyRequest req, GrizzlyResponse res) {
 
-
-
-        LogHelper.getDefaultLogger().finer("Admin adapter !");
-        LogHelper.getDefaultLogger().finer("Received something on " + req.getRequestURI());
-        LogHelper.getDefaultLogger().finer("QueryString = " + req.getQueryString());
+        LogHelper.getDefaultLogger().log(Level.FINER, "Received something on {0}", req.getRequestURI());
+        LogHelper.getDefaultLogger().log(Level.FINER, "QueryString = {0}", req.getQueryString());
 
         String requestURI = req.getRequestURI();
     /*    if (requestURI.startsWith("/__asadmin/ADMINGUI")) {
@@ -441,10 +431,10 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
         try {
             Payload.Inbound inboundPayload = PayloadImpl.Inbound.newInstance(
                     req.getContentType(), req.getInputStream());
-            if (logger.isLoggable(Level.FINE)) {
-                logger.fine("***** AdminAdapter "+req.getMethod()+"  *****");
+            if (aalogger.isLoggable(Level.FINE)) {
+                aalogger.log(Level.FINE, "***** AdminAdapter {0}  *****", req.getMethod());
             }
-            AdminCommand adminCommand = commandRunner.getCommand(command, report, logger);
+            AdminCommand adminCommand = commandRunner.getCommand(command, report, aalogger);
             if (adminCommand==null) {
                 // maybe commandRunner already reported the failure?
                 if (report.getActionExitCode() == ActionReport.ExitCode.FAILURE)
@@ -453,7 +443,7 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
                     adminStrings.getLocalString("adapter.command.notfound",
                         "Command {0} not found", command);
                 // cound't find command, not a big deal
-                logger.log(Level.FINE, message);
+                aalogger.log(Level.FINE, message);
                 report.setMessage(message);
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 return report;
@@ -471,7 +461,7 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
                 catch(Exception e) {
                 }
             } else {
-                report.failure( logger,
+                report.failure( aalogger,
                                 adminStrings.getLocalString("adapter.wrongprivacy",
                                     "Command {0} does not have {1} visibility",
                                     command, privacyClass.getSimpleName().toLowerCase()),
@@ -496,6 +486,7 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
      * Finish the response and recycle the request/response tokens. Base on
      * the connection header, the underlying socket transport will be closed
      */
+    @Override
     public void afterService(GrizzlyRequest req, GrizzlyResponse res) throws Exception {
 
     }
@@ -535,7 +526,7 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
             try {
                 value = URLDecoder.decode(value, "UTF-8");
             } catch (UnsupportedEncodingException e) {
-                logger.log(Level.WARNING, adminStrings.getLocalString("adapter.param.decode",
+                aalogger.log(Level.WARNING, adminStrings.getLocalString("adapter.param.decode",
                         "Cannot decode parameter {0} = {1}"));
             }
 
@@ -552,24 +543,26 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
         }
 
         // Dump parameters...
-        if (logger.isLoggable(Level.FINER)) {
+        if (aalogger.isLoggable(Level.FINER)) {
             for (Map.Entry<String, List<String>> entry : parameters.entrySet()) {
                 for (String v : entry.getValue())
-                    logger.finer("Key " + entry.getKey() + " = " + v);
+                    aalogger.log(Level.FINER, "Key {0} = {1}", new Object[]{entry.getKey(), v});
             }
         }
         return parameters;
     }
 
+    @Override
     public void event(@RestrictTo(EventTypes.SERVER_READY_NAME) Event event) {
         if (event.is(EventTypes.SERVER_READY)) {
             latch.countDown();
-            logger.fine("Ready to receive administrative commands");       
+            aalogger.fine("Ready to receive administrative commands");       
         }
         //the count-down does not start if any other event is received
     }
     
     
+    @Override
     public int getListenPort() {
         return epd.getListenPort();
     }
@@ -579,6 +572,7 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
         return epd.getListenAddress();
     }
 
+    @Override
     public List<String> getVirtualServers() {
         return epd.getAsadminHosts();
     }
@@ -586,6 +580,7 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
     /**
      * Checks whether this adapter has been registered as a network endpoint.
      */
+    @Override
     public boolean isRegistered() {
 	return isRegistered;
     }
@@ -594,20 +589,8 @@ public abstract class AdminAdapter extends GrizzlyAdapter implements Adapter, Po
      * Marks this adapter as having been registered or unregistered as a
      * network endpoint
      */
+    @Override
     public void setRegistered(boolean isRegistered) {
 	this.isRegistered = isRegistered;
-    }
-    
-    private void registerSystemPropertyListener() {
-        ObservableBean ob = (ObservableBean)ConfigSupport.getImpl(domain);
-        SystemPropertyListener ls = habitat.getComponent(SystemPropertyListener.class);
-        ob.addListener(ls); //there should be a better way to do this ...
-        ob = (ObservableBean)ConfigSupport.getImpl(server);
-        ob.addListener(ls);
-        ob = (ObservableBean)ConfigSupport.getImpl(config);
-        ob.addListener(ls);
-    }
-    private void registerDynamicReconfigListeners() {
-        registerSystemPropertyListener();
     }
 }
