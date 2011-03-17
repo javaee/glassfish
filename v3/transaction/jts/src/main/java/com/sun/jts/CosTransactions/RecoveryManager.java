@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -442,6 +442,27 @@ public class RecoveryManager {
     static boolean recover() {
 
         boolean result = false;
+
+        String manualRecovery =
+            Configuration.getPropertyValue(Configuration.MANUAL_RECOVERY);
+
+        // if ManualRecovery property is not set, do not attempt XA recovery.
+        if (manualRecovery == null  ||
+                !(manualRecovery.equalsIgnoreCase("true"/*#Frozen*/))) {
+
+            // Quickly release all locks
+
+            // Post the recovery in progress event so that requests
+            // waiting for recovery to complete may proceed.
+            recoveryInProgress.post();
+
+            // And finish resync
+            try {
+                resyncComplete(false, false);
+            } catch (Throwable ex) { }
+
+            return result;
+        }
 
         // Check the log for transactions.  If there are any outstanding
         // transactions, recover the Coordinator objects and set up the
@@ -896,7 +917,7 @@ public class RecoveryManager {
                  }
              } catch (XAException e) {
 	        _logger.log(Level.WARNING,"jts.xaexception_in_recovery", e.errorCode);
-            _logger.log(Level.WARNING,"",e);
+            _logger.log(Level.WARNING, com.sun.jts.trace.TraceUtil.getXAExceptionInfo(e, _logger), e);
                 break;
              }
 

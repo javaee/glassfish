@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -279,11 +279,18 @@ public class TransactionServiceProperties {
     }
 
     public static void initRecovery(boolean force) {
+        if(_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE,"initRecovery:recoveryInitialized: " + recoveryInitialized);
+        }
+
         if (recoveryInitialized) {
             // Only start initial recovery if it wasn't started before
             return;
         }
 
+        if(_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE,"initRecovery:properties: " + properties);
+        }
         if (properties == null) {
             if (force) {
                 _logger.log(Level.WARNING, "", new IllegalStateException());
@@ -293,6 +300,9 @@ public class TransactionServiceProperties {
 
         // Start if force is true or automatic-recovery is set
         String value = properties.getProperty(Configuration.MANUAL_RECOVERY);
+        if(_logger.isLoggable(Level.FINE)) {
+            _logger.log(Level.FINE,"initRecovery:Configuration.MANUAL_RECOVERY: " + value);
+        }
         if (force || (isValueSet(value) && "true".equals(value))) {
             recoveryInitialized = true;
 

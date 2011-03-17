@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -195,7 +195,11 @@ public class TransactionManagerImpl implements TransactionManager {
                 current = dts.get_current();
             }
 
+            // This will release locks in RecoveryManager which were created
+            // by RecoveryManager.initialize() call in the TransactionFactoryImpl constructor
+            // if startup recovery didn't happen yet.
             TransactionServiceProperties.initRecovery(true);
+
             // V2-commented-out transactionStates = new Hashtable();
         } catch (InvalidName inex) { 
 			_logger.log(Level.SEVERE,
