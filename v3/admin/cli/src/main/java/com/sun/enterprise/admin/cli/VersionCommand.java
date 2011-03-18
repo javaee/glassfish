@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -77,13 +77,6 @@ public class VersionCommand extends CLICommand {
 
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(VersionCommand.class);
-
-    @Override
-    protected void validate() throws CommandException {
-        if (terse && verbose) {
-            throw new CommandValidationException(strings.get("version.optionerror1"));
-        }
-    }
 
     @Override
     protected int executeCommand() throws CommandException {
