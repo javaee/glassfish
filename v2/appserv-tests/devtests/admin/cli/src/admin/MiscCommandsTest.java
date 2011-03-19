@@ -57,6 +57,7 @@ public class MiscCommandsTest extends AdminBaseDevTest {
     }
 
     private void testVersion() {
+
         final String tn = "version-";
         report(tn + "dasdown-norm", asadmin("version"));
         report(tn + "dasdown-local", asadmin("version", "--local"));
