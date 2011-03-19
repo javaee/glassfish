@@ -60,11 +60,11 @@ public class MiscCommandsTest extends AdminBaseDevTest {
         final String tn = "version-";
         report(tn + "dasdown-norm", asadmin("version"));
         report(tn + "dasdown-local", asadmin("version", "--local"));
-        report(tn + "dasup-t-v-l", !asadmin("version", "--local", "--terse", "--verbose"));
+        report(tn + "JIRA15552-das-stopped", asadmin("version", "--local", "--terse", "--verbose"));
         startDomain();
         report(tn + "dasup-norm", asadmin("version"));
         report(tn + "dasup-local", asadmin("version", "--local"));
-        report(tn + "dasup-t-v-l", !asadmin("version", "--local", "--terse", "--verbose"));
+        report(tn + "JIRA15552-das-running", asadmin("version", "--local", "--terse", "--verbose"));
         stopDomain();
     }
 
