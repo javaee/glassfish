@@ -111,8 +111,43 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy, org.g
     PrintStream oStdErrBackup = System.err;
 
     String serverLogFileDetail = "";
+    String handlerDetail = "";
+    String consoleHandlerFormatterDetail = "";
+    String gffileHandlerFormatterDetail = "";
+    String rotationOnTimeLimitInMinutesDetail = "";
+    String flushFrequencyDetail = "";
+    String filterHandlerDetails = "";
+    String logToConsoleDetail = "";
+    String rotationInTimeLimitInBytesDetail = "";
+    String useSystemLoggingDetail = "";
+    String fileHandlerCountDetail = "";
+    String retainErrorsStaticticsDetail = "";
+    String log4jVersionDetail = "";
+    String maxHistoryFilesDetail = "";
+    String rotationOnDateChangeDetail = "";
+    String fileHandlerPatternDetail = "";
+    String fileHandlerFormatterDetail = "";
+    String logFormatDateFormatDetail = "";
 
     private final String SERVER_LOG_FILE_PROPERTY = "com.sun.enterprise.server.logging.GFFileHandler.file";
+    private final String HANDLER_PROPERTY = "handlers";
+    private final String CONSOLEHANDLER_FORMATTER_PROPERTY = "java.util.logging.ConsoleHandler.formatter";
+    private final String GFFILEHANDLER_FORMATTER_PROPERTY = "com.sun.enterprise.server.logging.GFFileHandler.formatter";
+    private final String ROTATIONTIMELIMITINMINUTES_PROPERTY = "com.sun.enterprise.server.logging.GFFileHandler.rotationTimelimitInMinutes";
+    private final String FLUSHFREQUENCY_PROPERTY = "com.sun.enterprise.server.logging.GFFileHandler.flushFrequency";
+    private final String FILEHANDLER_LIMIT_PROPERTY = "java.util.logging.FileHandler.limit";
+    private final String LOGTOCONSOLE_PROPERTY = "com.sun.enterprise.server.logging.GFFileHandler.logtoConsole";
+    private final String ROTATIONLIMITINBYTES_PROPERTY = "com.sun.enterprise.server.logging.GFFileHandler.rotationLimitInBytes";
+    private final String USESYSTEMLOGGING_PROPERTY = "com.sun.enterprise.server.logging.SyslogHandler.useSystemLogging";
+    private final String FILEHANDLER_COUNT_PROPERTY = "java.util.logging.FileHandler.count";
+    private final String RETAINERRORSSTATICTICS_PROPERTY = "com.sun.enterprise.server.logging.GFFileHandler.retainErrorsStasticsForHours";
+    private final String LOG4J_VERSION_PROPERTY = "log4j.logger.org.hibernate.validator.util.Version";
+    private final String MAXHISTORY_FILES_PROPERTY = "com.sun.enterprise.server.logging.GFFileHandler.maxHistoryFiles";
+    private final String ROTATIONONDATECHANGE_PROPERTY = "com.sun.enterprise.server.logging.GFFileHandler.rotationOnDateChange";
+    private final String FILEHANDLER_PATTERN_PROPERTY = "java.util.logging.FileHandler.pattern";
+    private final String FILEHANDLER_FORMATTER_PROPERTY = "java.util.logging.FileHandler.formatter";
+    private final String LOGFORMAT_DATEFORMAT_PROPERTY = "com.sun.enterprise.server.logging.GFFileHandler.logFormatDateFormat";
+
 
     private String RECORD_BEGIN_MARKER = "[#|";
     private String RECORD_END_MARKER = "|#]";
@@ -236,7 +271,8 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy, org.g
         try {
 
             Map<String, String> props = getLoggingProperties();
-            formatterClassname = props.get("java.util.logging.ConsoleHandler.formatter");
+            formatterClassname = props.get(CONSOLEHANDLER_FORMATTER_PROPERTY);
+            consoleHandlerFormatterDetail = formatterClassname;
             Class formatterClass = LogManagerService.class.getClassLoader().loadClass(formatterClassname);
             UniformLogFormatter formatter = (UniformLogFormatter) formatterClass.newInstance();
             if (formatterClass.getName().equals("com.sun.enterprise.server.logging.UniformLogFormatter")) {
@@ -291,8 +327,25 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy, org.g
                 handler.setFormatter(formatter);
             }
 
-            //setting initial server log file name which is used later to initiate PropertyChangeEvent for file name change
+            //setting default attributes value for all properties
             serverLogFileDetail = props.get(SERVER_LOG_FILE_PROPERTY);
+            handlerDetail = props.get(HANDLER_PROPERTY);
+            consoleHandlerFormatterDetail = props.get(CONSOLEHANDLER_FORMATTER_PROPERTY);
+            gffileHandlerFormatterDetail = props.get(GFFILEHANDLER_FORMATTER_PROPERTY);
+            rotationOnTimeLimitInMinutesDetail = props.get(ROTATIONTIMELIMITINMINUTES_PROPERTY);
+            flushFrequencyDetail = props.get(FLUSHFREQUENCY_PROPERTY);
+            filterHandlerDetails = props.get(FILEHANDLER_LIMIT_PROPERTY);
+            logToConsoleDetail = props.get(LOGTOCONSOLE_PROPERTY);
+            rotationInTimeLimitInBytesDetail = props.get(ROTATIONLIMITINBYTES_PROPERTY);
+            useSystemLoggingDetail = props.get(USESYSTEMLOGGING_PROPERTY);
+            fileHandlerCountDetail = props.get(FILEHANDLER_COUNT_PROPERTY);
+            retainErrorsStaticticsDetail = props.get(RETAINERRORSSTATICTICS_PROPERTY);
+            log4jVersionDetail = props.get(LOG4J_VERSION_PROPERTY);
+            maxHistoryFilesDetail = props.get(MAXHISTORY_FILES_PROPERTY);
+            rotationOnDateChangeDetail = props.get(ROTATIONONDATECHANGE_PROPERTY);
+            fileHandlerPatternDetail = props.get(FILEHANDLER_PATTERN_PROPERTY);
+            fileHandlerFormatterDetail = props.get(FILEHANDLER_FORMATTER_PROPERTY);
+            logFormatDateFormatDetail = props.get(LOGFORMAT_DATEFORMAT_PROPERTY);
 
         } catch (java.io.IOException ex) {
             logger.log(Level.SEVERE, "logging.read.error", ex);
@@ -410,8 +463,75 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy, org.g
                                         b.add(ucel);
                                         ucl.unprocessedTransactedEvents(b);
                                     }
+                                } else if (a.equals(HANDLER_PROPERTY)) {
+                                    if (!props.get(a).equals(handlerDetail)) {
+                                        generateAttributeChangeEvent(HANDLER_PROPERTY,handlerDetail,props);
+                                    }
+                                } else if (a.equals(CONSOLEHANDLER_FORMATTER_PROPERTY)) {
+                                    if (!props.get(a).equals(consoleHandlerFormatterDetail)) {
+                                        generateAttributeChangeEvent(CONSOLEHANDLER_FORMATTER_PROPERTY,consoleHandlerFormatterDetail,props);                                        
+                                    }
+                                } else if (a.equals(GFFILEHANDLER_FORMATTER_PROPERTY)) {
+                                    if (!props.get(a).equals(gffileHandlerFormatterDetail)) {
+                                        generateAttributeChangeEvent(GFFILEHANDLER_FORMATTER_PROPERTY,gffileHandlerFormatterDetail,props);
+                                    }
+                                } else if (a.equals(ROTATIONTIMELIMITINMINUTES_PROPERTY)) {
+                                    if (!props.get(a).equals(rotationOnTimeLimitInMinutesDetail)) {
+                                        generateAttributeChangeEvent(ROTATIONTIMELIMITINMINUTES_PROPERTY,rotationOnTimeLimitInMinutesDetail,props);
+                                    }
+                                } else if (a.equals(FLUSHFREQUENCY_PROPERTY)) {
+                                    if (!props.get(a).equals(flushFrequencyDetail)) {
+                                        generateAttributeChangeEvent(FLUSHFREQUENCY_PROPERTY,flushFrequencyDetail,props);
+                                    }
+                                } else if (a.equals(FILEHANDLER_LIMIT_PROPERTY)) {
+                                    if (!props.get(a).equals(filterHandlerDetails)) {
+                                        generateAttributeChangeEvent(FILEHANDLER_LIMIT_PROPERTY,filterHandlerDetails,props);
+                                    }
+                                } else if (a.equals(LOGTOCONSOLE_PROPERTY)) {
+                                    if (!props.get(a).equals(logToConsoleDetail)) {
+                                        generateAttributeChangeEvent(LOGTOCONSOLE_PROPERTY,logToConsoleDetail,props);
+                                    }
+                                } else if (a.equals(ROTATIONLIMITINBYTES_PROPERTY)) {
+                                    if (!props.get(a).equals(rotationInTimeLimitInBytesDetail)) {
+                                        generateAttributeChangeEvent(ROTATIONLIMITINBYTES_PROPERTY,rotationInTimeLimitInBytesDetail,props);
+                                    }
+                                } else if (a.equals(USESYSTEMLOGGING_PROPERTY)) {
+                                    if (!props.get(a).equals(useSystemLoggingDetail)) {
+                                        generateAttributeChangeEvent(USESYSTEMLOGGING_PROPERTY,useSystemLoggingDetail,props);
+                                    }
+                                } else if (a.equals(FILEHANDLER_COUNT_PROPERTY)) {
+                                    if (!props.get(a).equals(fileHandlerCountDetail)) {
+                                        generateAttributeChangeEvent(FILEHANDLER_COUNT_PROPERTY,fileHandlerCountDetail,props);
+                                    }
+                                } else if (a.equals(RETAINERRORSSTATICTICS_PROPERTY)) {
+                                    if (!props.get(a).equals(retainErrorsStaticticsDetail)) {
+                                        generateAttributeChangeEvent(RETAINERRORSSTATICTICS_PROPERTY,retainErrorsStaticticsDetail,props);
+                                    }
+                                } else if (a.equals(LOG4J_VERSION_PROPERTY)) {
+                                    if (!props.get(a).equals(log4jVersionDetail)) {
+                                        generateAttributeChangeEvent(LOG4J_VERSION_PROPERTY,log4jVersionDetail,props);
+                                    }
+                                } else if (a.equals(MAXHISTORY_FILES_PROPERTY)) {
+                                    if (!props.get(a).equals(maxHistoryFilesDetail)) {
+                                        generateAttributeChangeEvent(MAXHISTORY_FILES_PROPERTY,maxHistoryFilesDetail,props);
+                                    }
+                                } else if (a.equals(ROTATIONONDATECHANGE_PROPERTY)) {
+                                    if (!props.get(a).equals(rotationOnDateChangeDetail)) {
+                                        generateAttributeChangeEvent(ROTATIONONDATECHANGE_PROPERTY,rotationOnDateChangeDetail,props);
+                                    }
+                                } else if (a.equals(FILEHANDLER_PATTERN_PROPERTY)) {
+                                    if (!props.get(a).equals(fileHandlerPatternDetail)) {
+                                        generateAttributeChangeEvent(FILEHANDLER_PATTERN_PROPERTY,fileHandlerPatternDetail,props);
+                                    }
+                                } else if (a.equals(FILEHANDLER_FORMATTER_PROPERTY)) {
+                                    if (!props.get(a).equals(fileHandlerFormatterDetail)) {
+                                        generateAttributeChangeEvent(FILEHANDLER_FORMATTER_PROPERTY,fileHandlerFormatterDetail,props);
+                                    }
+                                } else if (a.equals(LOGFORMAT_DATEFORMAT_PROPERTY)) {
+                                    if (!props.get(a).equals(logFormatDateFormatDetail)) {
+                                        generateAttributeChangeEvent(LOGFORMAT_DATEFORMAT_PROPERTY,logFormatDateFormatDetail,props);
+                                    }
                                 }
-
                             }
 
                             logger.log(Level.INFO, "logging.update.levels");
@@ -447,6 +567,14 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy, org.g
             }
         }
 
+    }
+
+    public void generateAttributeChangeEvent(String property, String propertyDetail, Map props) {
+        PropertyChangeEvent pce = new PropertyChangeEvent(this, property, propertyDetail, props.get(property));
+        UnprocessedChangeEvents ucel = new UnprocessedChangeEvents(new UnprocessedChangeEvent(pce, "server log file attribute " + property + " changed."));
+        List<UnprocessedChangeEvents> b = new ArrayList();
+        b.add(ucel);
+        ucl.unprocessedTransactedEvents(b);
     }
 
     public void addHandler(Handler handler) {
