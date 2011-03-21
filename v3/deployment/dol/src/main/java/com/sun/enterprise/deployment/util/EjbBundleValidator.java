@@ -215,6 +215,7 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
         checkDependsOn(ejb);
         
         validateConcurrencyMetadata(ejb);
+        validateStatefulTimeout(ejb);
 
         try {
 
@@ -352,6 +353,23 @@ public class EjbBundleValidator  extends ComponentValidator implements EjbBundle
 
         }
 
+    }
+
+    /**
+     * Validates @StatefulTimeout or <stateful-timeout> values.  Any value less than -1
+     * is invalid.
+     */
+    private void validateStatefulTimeout(EjbDescriptor ejb) {
+        if(ejb instanceof EjbSessionDescriptor) {
+            EjbSessionDescriptor sessionDesc = (EjbSessionDescriptor) ejb;
+            Long statefulTimeoutValue = sessionDesc.getStatefulTimeoutValue();
+            if(statefulTimeoutValue != null && statefulTimeoutValue < -1) {
+                throw new IllegalArgumentException(localStrings.getLocalString(
+                "enterprise.deployment.invalid_stateful_timeout_value",
+                "Invalid value [{0}] for @StatefulTimeout or <stateful-timeout> element in EJB [{1}].  The semantics of this value are as follows:  a value > 0 indicates a timeout value in the units specified by the unit element; a value of 0 means the bean is immediately eligible for removal; a value of -1 means the bean will never be removed due to timeout; and values less than -1 are not valid.",
+                new Object[] {statefulTimeoutValue, sessionDesc.getName()}));
+            }
+        }
     }
 
     private void checkDependsOn(EjbDescriptor ejb) {
