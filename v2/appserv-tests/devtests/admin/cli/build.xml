@@ -53,7 +53,8 @@
     <property name="teststorun" value="cli"/>
     <property name="verbose" value="false"/>
     <property name="javaprops" value="-Dverbose=${verbose}"/>
-   
+    <property name="derbyhome" value="${env.S1AS_HOME}/../javadb"/>
+
     <path id="class.path">
         <pathelement location="${env.APS_HOME}/lib/reportbuilder.jar"/>
         <pathelement location="build"/>
@@ -63,10 +64,10 @@
     <pathconvert refid="class.path" property="test"/>
 
     <target name="debug-windows" depends="instance, cluster"/>
-    <target name="cli" depends="monitoring, zombie, ports, instance, cluster,
+    <target name="cli" depends="setup, monitoring, zombie, ports, instance, cluster,
                         configs, sync, domain, backup, tokens, validation, node,
                         load-balancer, misc-commands, manual-sync, upgrade,
-                        cluster-upgrade, restart-domain"/>
+                        cluster-upgrade, restart-domain, teardown"/>
 
     <target name="cluster" depends="init">
         <java classname="admin.ClusterTest"  fork="true" classpath="${test}">
@@ -285,11 +286,14 @@
         <antcall target="mail-resource"/>
     </target>
 
-    <target name="monitoring" depends="init">
+    <target name="monitoring" depends="init,setup">
         <java classname="admin.monitoring.TestDriver"  fork="true" classpath="${test}">
             <jvmarg value="${javaprops}"/>
             <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9010"/>
         </java>
+    </target>
+
+    <target name="mon" depends="monitoring,teardown">
     </target>
 
 
@@ -308,6 +312,12 @@
                includes="**/*.java"/>
     </target>
 
+    <target name="setup" depends="startdb">
+    </target>
+
+    <target name="teardown" depends="stopdb">
+    </target>
+
     <target name="init" depends="build">
     </target>
 
@@ -320,6 +330,23 @@
         </delete>
         <delete failonerror="false" includeemptydirs="true" dir="build"/>
     </target>
+
+    <target name="startdb">
+        <java jar="${derbyhome}/lib/derbyrun.jar" spawn="true" fork="true">
+		    <arg value="server"/>
+		    <arg value="start"/>
+        </java>
+		<echo message="************   JavaDB Started **********"/>
+    </target>
+
+    <target name="stopdb">
+        <java jar="${derbyhome}/lib/derbyrun.jar" spawn="true" fork="true">
+		    <arg value="server"/>
+		    <arg value="shutdown"/>
+        </java>
+		<echo message="************   JavaDB Stopped **********"/>
+    </target>
+
     <target name="usage">
         <echo>Usage: ant [-Dteststorun=instance|cluster|...] [-Dnum_tests=n] [-Dverbose=true/false] all (Executes the admin tests)</echo>
     </target>
