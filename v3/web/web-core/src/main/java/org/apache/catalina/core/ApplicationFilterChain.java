@@ -166,9 +166,11 @@ final class ApplicationFilterChain implements FilterChain {
      * Static class array used when the SecurityManager is turned on and 
      * <code>service</code is invoked.
      */                                                 
+    /* IASRI 4665318
     private static Class<?>[] classTypeUsedInService = new Class[]{
                                                          ServletRequest.class,
                                                          ServletResponse.class};
+    */
 
     // ---------------------------------------------------- FilterChain Methods
 
@@ -250,8 +252,6 @@ final class ApplicationFilterChain implements FilterChain {
                     filterType[2] = this;
                     SecurityUtil.doAsPrivilege
                         ("doFilter", filter, classType, filterType, principal);
-
-                    filterType = null;
                 } else {  
                     filter.doFilter(request, response, this);
                 }
