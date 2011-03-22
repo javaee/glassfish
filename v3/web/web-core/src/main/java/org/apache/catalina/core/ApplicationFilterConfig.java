@@ -245,8 +245,6 @@ final class ApplicationFilterConfig implements FilterConfig, Serializable {
                 } else {
                     classLoader = context.getLoader().getClassLoader();
                 }
-                ClassLoader oldCtxClassLoader =
-                    Thread.currentThread().getContextClassLoader();
 
                 // Instantiate a new instance of this filter and return it
                 clazz = loadFilterClass(classLoader, filterClassName);
