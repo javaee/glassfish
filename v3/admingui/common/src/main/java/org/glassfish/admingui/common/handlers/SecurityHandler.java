@@ -235,6 +235,7 @@ public class SecurityHandler {
         List<Map<String,String>> propListOrig = (List)handlerCtx.getInputValue("propList");
         List<Map<String,String>> propList = new ArrayList(propListOrig);
         Map<String,String> attrMap = (Map)handlerCtx.getInputValue("attrMap");
+        Boolean edit = (Boolean) handlerCtx.getInputValue("edit");
 
         if (attrMap == null) {
             attrMap = new HashMap();
@@ -250,14 +251,13 @@ public class SecurityHandler {
                 putOptional(attrMap, propList, "assign-groups", "fileAsGroups");
             }else
             if(classname.indexOf("LDAPRealm")!= -1){
-                String baseDn = attrMap.get("baseDn");
-                String directory = attrMap.get("directory");
-                if (!baseDn.contains("\""))
-                    baseDn = "\"" + attrMap.get("baseDn") + "\"";
-                if (!directory.contains("\""))
-                    directory = "\"" + attrMap.get("directory") + "\"";
-                attrMap.put("baseDn", baseDn);
-                attrMap.put("directory", directory);
+                if (!edit) {
+                    attrMap.put("baseDn", "\"" + attrMap.get("baseDn") + "\"");
+                    attrMap.put("directory", "\"" + attrMap.get("directory") + "\"");
+                    for (Map<String,String> m : propList) {
+                        m.put("value", "\"" + m.get("value") + "\"");
+                    }
+                }
                 putOptional(attrMap, propList, "jaas-context", "ldapJaax");
                 putOptional(attrMap, propList, "base-dn", "baseDn");
                 putOptional(attrMap, propList, "directory", "directory");
@@ -293,7 +293,6 @@ public class SecurityHandler {
            classname = attrMap.get("classnameInput");
         }
 
-        Boolean edit = (Boolean) handlerCtx.getInputValue("edit");
         String endpoint = (String) handlerCtx.getInputValue("endpoint");
         //for edit case, only properties will be changed since we don't allow classname change.
         //return the prop list so it can continue processing in the .jsf
