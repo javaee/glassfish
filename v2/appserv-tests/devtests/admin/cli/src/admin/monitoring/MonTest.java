@@ -36,6 +36,8 @@
 package admin.monitoring;
 
 import com.sun.appserv.test.BaseDevTest.AsadminReturn;
+import java.io.*;
+import java.net.*;
 import static admin.monitoring.Constants.*;
 
 /**
@@ -82,7 +84,7 @@ abstract class MonTest {
     final boolean doesGetMatch(String dottedName, String value) {
         return driver.doesGetMatch(dottedName, value);
     }
-    
+
     final void deleteDomain() {
         if (asadminHasString(DOMAIN_NAME, "list-domains")) {
             stopDomain();
@@ -208,10 +210,49 @@ abstract class MonTest {
         // in case you forget the correct order of args
         return (b.indexOf(a) >= 0) || (a.indexOf(b) >= 0);
     }
+    void setupJvmMemory() {
+        report(asadmin("delete-jvm-options", "--target", "server",         "\\-Xmx512m"), "remove-Xmx512m-das");
+        report(asadmin("delete-jvm-options", "--target", "default-config", "\\-Xmx512m"), "remove-Xmx512m-def-cfg");
+        report(asadmin("create-jvm-options", "--target", "server",         "\\-Xmx1024m"), "add-Xmx1024m-das");
+        report(asadmin("create-jvm-options", "--target", "default-config", "\\-Xmx1024m"), "add-Xmx1024m-def-cfg");
+    }
+
 
     static boolean ok(String s) {
         return s != null && s.length() > 0;
     }
+
+    final boolean checkForString(AsadminReturn r, String s) {
+        if (r.outAndErr == null)
+            return false;
+        return r.outAndErr.indexOf(s) >= 0;
+    }
+
+    final void deploy(File f) {
+        deploy("server", f);
+    }
+
+    final void deploy(String target, File f) {
+        String prepend = f.getName() + " "; // if you send in a null pointer -- tough!!
+        report(f.isFile() && f.canRead(), prepend + "exists");
+        report(asadmin("deploy", "--target", target, f.getAbsolutePath()),
+                prepend + "deployed OK to " + target);
+    }
+
+    static boolean wget(int port, String uri) {
+        try {
+            URL url = new URL("http://localhost:" + port + "/" + uri);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setReadTimeout(60000);
+            conn.getInputStream().close();
+            return conn.getResponseCode() == 200;
+        }
+        catch (Exception ex) {
+            System.out.println(ex);
+            return false;
+        }
+    }
+
     ///////////////////////////////////////////////////////////////
     ///   private below
     ///////////////////////////////////////////////////////////////
@@ -223,7 +264,9 @@ abstract class MonTest {
             sb.append(SEP).append(name);
         return sb.toString();
     }
+
     private TestDriver driver;
     private String name;
     private static final String SEP = "::";
+
 }

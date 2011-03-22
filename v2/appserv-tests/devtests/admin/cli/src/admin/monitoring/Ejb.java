@@ -1,0 +1,90 @@
+/*
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ *
+ * Copyright 2011 Sun Microsystems, Inc. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of either the GNU
+ * General Public License Version 2 only ("GPL") or the Common Development
+ * and Distribution License("CDDL") (collectively, the "License").  You
+ * may not use this file except in compliance with the License. You can obtain
+ * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ * language governing permissions and limitations under the License.
+ *
+ * When distributing the software, include this License Header Notice in each
+ * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ * Sun designates this particular file as subject to the "Classpath" exception
+ * as provided by Sun in the GPL Version 2 section of the License file that
+ * accompanied this code.  If applicable, add the following below the License
+ * Header, with the fields enclosed by brackets [] replaced by your own
+ * identifying information: "Portions Copyrighted [year]
+ * [name of copyright owner]"
+ *
+ * Contributor(s):
+ *
+ * If you wish your version of this file to be governed by only the CDDL or
+ * only the GPL Version 2, indicate your decision by adding "[Contributor]
+ * elects to include this software in this distribution under the [CDDL or GPL
+ * Version 2] license."  If you don't indicate a single choice of license, a
+ * recipient has the option to distribute your version of this file under
+ * either the CDDL, the GPL Version 2 or to extend the choice of license to
+ * its licensees as provided above.  However, if you add GPL Version 2 code
+ * and therefore, elected the GPL Version 2 license, then the option applies
+ * only if the new code is made subject to such option by the copyright
+ * holder.
+ */
+package admin.monitoring;
+
+import com.sun.appserv.test.BaseDevTest.AsadminReturn;
+import java.io.*;
+import static admin.monitoring.Constants.*;
+
+/**
+ * Tests ejb monitoring.  Note that this requires a running JavaDB database.
+ * @author Byron Nevins
+ */
+public class Ejb extends MonTest {
+    @Override
+    void runTests(TestDriver driver) {
+        setDriver(driver);
+        report(true, "Hello from EJB Monitoring Tests!");
+        report(!wget(28080, "connapp1webmod1/ConnectorServlet1?sleepTime=25"), "hit conapp1URL");
+        report(!wget(28081, "connapp1webmod1/ConnectorServlet1?sleepTime=25"), "hit conapp1URL");
+        deploy(CLUSTER_NAME, blackBoxRar);
+        createConnectionPool();
+        createConnectionResource();
+        deploy(CLUSTER_NAME, conApp1);
+
+        for (int i = 0; i < 10; i++) {
+            report(wget(28080, "connapp1webmod1/ConnectorServlet1?sleepTime=25"), "hit conapp1URL on 28080-");
+            report(wget(28081, "connapp1webmod1/ConnectorServlet1?sleepTime=25"), "hit conapp1URL on 28081-");
+        }
+        
+        verifyList(CLUSTERED_INSTANCE_NAME1 + ".resources.MConnectorPool.numconnused-name", "NumConnUsed");
+        verifyList(CLUSTERED_INSTANCE_NAME2 + ".resources.MConnectorPool.numconnused-name", "NumConnUsed");
+    }
+
+    private void createConnectionPool() {
+        report(asadmin("create-connector-connection-pool",
+                "--raname", "blackbox-tx",
+                "--connectiondefinition", "javax.sql.DataSource",
+                "--property", "DatabaseName=sun-appserv-samples:PortNumber=1527:serverName=localhost:connectionAttributes=;create\\=true:password=APP:user=APP",
+                "MConnectorPool"),
+                "createMConnectorPool");
+    }
+
+    private void createConnectionResource() {
+        report(asadmin("create-connector-resource", "--poolname", "MConnectorPool", "--target", CLUSTER_NAME, "eis/ConnectorMonitoring"),
+                "createConnectorResource");
+    }
+
+    private void verifyList(String name, String desiredValue) {
+        AsadminReturn ret = asadminWithOutput("list", "-m", name);
+        report(matchString(desiredValue, ret.outAndErr), "verify-list");
+
+        // temp
+        System.out.println("QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ\n" + ret.outAndErr + "\nQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ");
+    }
+    private static final File blackBoxRar = new File("apps/blackbox-tx.rar");
+    private static final File conApp1 = new File("apps/conapp1.ear");
+}

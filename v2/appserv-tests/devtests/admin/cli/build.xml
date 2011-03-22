@@ -54,6 +54,7 @@
     <property name="verbose" value="false"/>
     <property name="javaprops" value="-Dverbose=${verbose}"/>
     <property name="derbyhome" value="${env.S1AS_HOME}/../javadb"/>
+    <property name="databases_dir" value="${env.S1AS_HOME}/databases"/>
 
     <path id="class.path">
         <pathelement location="${env.APS_HOME}/lib/reportbuilder.jar"/>
@@ -332,7 +333,8 @@
     </target>
 
     <target name="startdb">
-        <java jar="${derbyhome}/lib/derbyrun.jar" spawn="true" fork="true">
+		<mkdir dir="${databases_dir}"/>
+        <java jar="${derbyhome}/lib/derbyrun.jar" spawn="true" fork="true" dir="${databases_dir}">
 		    <arg value="server"/>
 		    <arg value="start"/>
         </java>

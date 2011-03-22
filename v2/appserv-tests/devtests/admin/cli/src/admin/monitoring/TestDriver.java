@@ -81,6 +81,7 @@ public final class TestDriver extends AdminBaseDevTest {
     private MonTest tests[] = new MonTest[]{
         new Setup(),
         new Enabler(),
+        new Ejb(),
         new Jira(),
         new TearDown(),
     };

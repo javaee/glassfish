@@ -58,8 +58,7 @@ public class Jira extends MonTest {
 
     private void test15397() {
         String prepend = "15397::";
-        report(earFile.isFile() && earFile.canRead(), prepend + "Ear File exists");
-        report(asadmin("deploy", earFile.getAbsolutePath()), prepend + "deploy earfile with dot");
+        deploy(earFile);
         report(asadminWithOutput("list-components").outAndErr.indexOf("webapp2") >= 0, prepend + "verify-deploy");
         report(checkForString(
                 asadminWithOutput("get", "-m", "server.applications.webapp2.*"), MAGIC_NAME_IN_APP),
@@ -127,12 +126,6 @@ public class Jira extends MonTest {
 
     }
 
-    private boolean checkForString(AsadminReturn r, String s) {
-        if (r.outAndErr == null)
-            return false;
-
-        return r.outAndErr.indexOf(s) >= 0;
-    }
     private static final File earFile = new File("apps/webapp2.ear");
     private static final String MAGIC_NAME_IN_APP = "webapp2webmod1_Servlet2";
     private static final String RESOURCE_NAME_WITH_SLASH = "jdbc/test";

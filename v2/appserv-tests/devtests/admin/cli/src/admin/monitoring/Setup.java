@@ -46,6 +46,9 @@ public class Setup extends MonTest {
         report(true, "Setup here!!!");
         createDomain();
         startDomain();
+        setupJvmMemory();
+        report(asadmin("stop-domain", DOMAIN_NAME), "stop-with-new-jvm-memory");
+        startDomain();
         createCluster();
         createInstances();
         startInstances();
