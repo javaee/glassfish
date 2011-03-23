@@ -988,11 +988,10 @@ public class ApplicationHttpRequest extends HttpServletRequestWrapper {
             }
             // Add any query parameters whose names are not present in the
             // original parameter map
-            keys = queryParameters.keySet().iterator();
-            while (keys.hasNext()) {
-                String key = keys.next();
+            for (Map.Entry<String, String[]> e : queryParameters.entrySet()) {
+                String key = e.getKey();
                 if (parameters.get(key) == null) {
-                    parameters.put(key, queryParameters.get(key));
+                    parameters.put(key, e.getValue());
                 }
             }
         }
