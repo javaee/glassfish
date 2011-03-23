@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,6 +40,9 @@
 
 package com.sun.enterprise.server.logging;
 
+import com.sun.logging.LogDomains;
+import org.glassfish.config.support.TranslatedConfigView;
+import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.annotations.ContractProvided;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
@@ -48,15 +51,10 @@ import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.component.Singleton;
 
-import org.glassfish.server.ServerEnvironmentImpl;
-import org.glassfish.config.support.TranslatedConfigView;
-
-import java.util.logging.*;
 import java.text.SimpleDateFormat;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ArrayBlockingQueue;
-
-import com.sun.logging.LogDomains;
+import java.util.concurrent.BlockingQueue;
+import java.util.logging.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -86,6 +84,9 @@ public class SyslogHandler extends Handler implements PostConstruct, PreDestroy 
         String cname = getClass().getName();
 
         String systemLogging = TranslatedConfigView.getTranslatedValue(manager.getProperty(cname + ".useSystemLogging")).toString();
+        // Added below 2 lines of code to avoid NPE as per the bug http://java.net/jira/browse/GLASSFISH-16162
+        if(systemLogging==null)
+            return;
         if (systemLogging.equals("false"))
             return;
 
