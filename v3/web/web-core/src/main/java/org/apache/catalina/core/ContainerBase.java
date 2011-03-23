@@ -1147,20 +1147,21 @@ public abstract class ContainerBase
             return;
         }
         
+        // Do not register unused tomcat mbeans 
+        /*
         if( logger instanceof LoggerBase ) {
             LoggerBase lb=(LoggerBase)logger;
             if( lb.getObjectName()==null ) {
                 ObjectName lname=lb.createObjectName();
                 try {
-                    // Do not register unused tomcat mbeans 
-                    //Registry.getRegistry(null, null).registerComponent(lb, lname,
-                    //                                         null);
+                    Registry.getRegistry(null, null).registerComponent(lb, lname,
                 } catch( Exception ex ) {
                     log.log(Level.SEVERE, "Can't register logger " + lname,
                             ex);
                 }
             }
         }
+        */
         
         // Notify our interested LifecycleListeners
         lifecycle.fireLifecycleEvent(BEFORE_START_EVENT, null);
