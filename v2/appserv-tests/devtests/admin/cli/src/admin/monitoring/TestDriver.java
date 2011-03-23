@@ -82,6 +82,7 @@ public final class TestDriver extends AdminBaseDevTest {
         new Setup(),
         new Enabler(),
         new Ejb(),
+        new Jdbc(),
         new Jira(),
         new TearDown(),
     };
