@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -97,12 +97,10 @@ public class WebTest {
 
     private String host;
     private String port;
-    private String contextRoot;
 
     public WebTest(String[] args) {
         host = args[0];
         port = args[1];
-        contextRoot = args[2];
     }
     
     public static void main(String[] args) {
