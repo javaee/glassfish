@@ -48,6 +48,11 @@ public class Ejb extends MonTest {
     void runTests(TestDriver driver) {
         setDriver(driver);
         report(true, "Hello from EJB Monitoring Tests!");
+        someTests();
+        moreTests();
+    }
+
+    void someTests() {
         report(!wget(28080, "connapp1webmod1/ConnectorServlet1?sleepTime=25"), "hit conapp1URL");
         report(!wget(28081, "connapp1webmod1/ConnectorServlet1?sleepTime=25"), "hit conapp1URL");
         deploy(CLUSTER_NAME, blackBoxRar);
@@ -55,13 +60,35 @@ public class Ejb extends MonTest {
         createConnectionResource();
         deploy(CLUSTER_NAME, conApp1);
 
-        for (int i = 0; i < 10; i++) {
+        //for (int i = 0; i < 10; i++) {
             report(wget(28080, "connapp1webmod1/ConnectorServlet1?sleepTime=25"), "hit conapp1URL on 28080-");
             report(wget(28081, "connapp1webmod1/ConnectorServlet1?sleepTime=25"), "hit conapp1URL on 28081-");
-        }
-        
+        //}
+
         verifyList(CLUSTERED_INSTANCE_NAME1 + ".resources.MConnectorPool.numconnused-name", "NumConnUsed");
         verifyList(CLUSTERED_INSTANCE_NAME2 + ".resources.MConnectorPool.numconnused-name", "NumConnUsed");
+    }
+
+    void moreTests() {
+        final String uri = "ejbsfapp1/SFApp1Servlet1?sleepTime=12&attribute=cachemisses";
+        final String getmArg = ".applications.ejbsfapp1.ejbsfapp1ejbmod1\\.jar.SFApp1EJB1.bean-cache.*";
+        final String getmKey = ".applications.ejbsfapp1.ejbsfapp1ejbmod1\\.jar.SFApp1EJB1.bean-cache.numpassivations-count";
+
+        report(!wget(28080, uri), "hit ejbsfapp1URL on 28080-");
+        report(!wget(28081, uri), "hit ejbsfapp1URL on 28081-");
+        deploy(CLUSTER_NAME, ejbsfapp1);
+
+        report(wget(28080, uri), "hit ejbsfapp1URL on 28080-");
+        report(wget(28081, uri), "hit ejbsfapp1URL on 28081-");
+        report(verifyGetm(CLUSTERED_INSTANCE_NAME1 + getmArg, getmKey), "ejbbeantest-in1");
+        report(verifyGetm(CLUSTERED_INSTANCE_NAME2 + getmArg, getmKey), "ejbbeantest-in2");
+        //report(verifyGetm(getmKey), "ejbbeantest-getm-ok");
+    }
+
+    private boolean verifyGetm(String arg, String key) {
+        AsadminReturn ret = asadminWithOutput("get", "-m", arg);
+        //AsadminReturn ret = asadminWithOutput("get", "-m", "\"*\"");
+        return matchString(key, ret.outAndErr);
     }
 
     private void createConnectionPool() {
@@ -84,4 +111,5 @@ public class Ejb extends MonTest {
     }
     private static final File blackBoxRar = new File("apps/blackbox-tx.rar");
     private static final File conApp1 = new File("apps/conapp1.ear");
+    private static final File ejbsfapp1 = new File("apps/ejbsfapp1.ear");
 }

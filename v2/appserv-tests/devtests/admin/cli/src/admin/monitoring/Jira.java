@@ -107,12 +107,12 @@ public class Jira extends MonTest {
 
     private void test14389() {
         String prepend = "14389::";
-        AsadminReturn ar = asadminWithOutput("list", "-m", "\"*\"");
+        AsadminReturn ar = asadminWithOutput("list", "-m", "*");
         report(checkForString(ar, "server.applications"), prepend + "check-listm-server-applications");
         report(checkForString(ar, "server.web.session"), prepend + "check-listm-server-web-session");
         report(checkForString(ar, "server.web.request"), prepend + "check-listm-server-web-request");
         report(checkForString(ar, "server.web.servlet"), prepend + "check-listm-server-web-servlet");
-        AsadminReturn ar2 = asadminWithOutput("get", "-m", "\"*\"");
+        AsadminReturn ar2 = asadminWithOutput("get", "-m", "*");
         report(checkForString(ar2, "server.applications"), prepend + "check-getm-server");
         report(checkForString(ar2, "server.web.session"), prepend + "check-getm-server-web-session");
         report(checkForString(ar2, "server.web.request"), prepend + "check-getm-server-web-request");

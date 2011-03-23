@@ -239,6 +239,9 @@ abstract class MonTest {
                 prepend + "deployed OK to " + target);
     }
 
+    /*
+     * this implementaion sucks.  please improve it!
+     */
     static boolean wget(int port, String uri) {
         try {
             URL url = new URL("http://localhost:" + port + "/" + uri);
