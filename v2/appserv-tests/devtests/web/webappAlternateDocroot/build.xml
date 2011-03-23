@@ -82,8 +82,8 @@
     </target>
 
     <target name="copyResources" depends="init-common">
-        <copy todir="/tmp/tmpDir" failonerror="true">
-            <fileset dir="${env.S1AS_HOME}/domains/${admin.domain}"/>
+        <copy todir="/tmp/tmpDir/config" failonerror="true">
+            <fileset dir="${env.S1AS_HOME}/domains/${admin.domain}/config"/>
         </copy>
     </target>
 
