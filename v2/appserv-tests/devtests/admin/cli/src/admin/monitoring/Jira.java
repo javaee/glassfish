@@ -47,12 +47,13 @@ public class Jira extends MonTest {
     @Override
     void runTests(TestDriver driver) {
         setDriver(driver);
+        isWindows = driver.isWindows();
         report(true, "Hello from JIRA Tests!");
         test15397();
         test15054();
         test15923();
         test15500();
-        //test14389();
+        test14389();
         test14748();
     }
 
@@ -107,12 +108,13 @@ public class Jira extends MonTest {
 
     private void test14389() {
         String prepend = "14389::";
-        AsadminReturn ar = asadminWithOutput("list", "-m", "*");
+        String STAR = isWindows ? "\"*\"" : "*";
+        AsadminReturn ar = asadminWithOutput("list", "-m", STAR);
         report(checkForString(ar, "server.applications"), prepend + "check-listm-server-applications");
         report(checkForString(ar, "server.web.session"), prepend + "check-listm-server-web-session");
         report(checkForString(ar, "server.web.request"), prepend + "check-listm-server-web-request");
         report(checkForString(ar, "server.web.servlet"), prepend + "check-listm-server-web-servlet");
-        AsadminReturn ar2 = asadminWithOutput("get", "-m", "*");
+        AsadminReturn ar2 = asadminWithOutput("get", "-m", STAR);
         report(checkForString(ar2, "server.applications"), prepend + "check-getm-server");
         report(checkForString(ar2, "server.web.session"), prepend + "check-getm-server-web-session");
         report(checkForString(ar2, "server.web.request"), prepend + "check-getm-server-web-request");
@@ -129,4 +131,5 @@ public class Jira extends MonTest {
     private static final File earFile = new File("apps/webapp2.ear");
     private static final String MAGIC_NAME_IN_APP = "webapp2webmod1_Servlet2";
     private static final String RESOURCE_NAME_WITH_SLASH = "jdbc/test";
+    private static boolean isWindows;
 }
