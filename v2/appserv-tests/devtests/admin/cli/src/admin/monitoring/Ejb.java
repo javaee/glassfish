@@ -81,9 +81,6 @@ public class Ejb extends MonTest {
     private void verifyList(String name, String desiredValue) {
         AsadminReturn ret = asadminWithOutput("list", "-m", name);
         report(matchString(desiredValue, ret.outAndErr), "verify-list");
-
-        // temp
-        System.out.println("QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ\n" + ret.outAndErr + "\nQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ");
     }
     private static final File blackBoxRar = new File("apps/blackbox-tx.rar");
     private static final File conApp1 = new File("apps/conapp1.ear");

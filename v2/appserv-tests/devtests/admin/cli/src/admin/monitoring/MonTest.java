@@ -248,7 +248,6 @@ abstract class MonTest {
             return conn.getResponseCode() == 200;
         }
         catch (Exception ex) {
-            System.out.println(ex);
             return false;
         }
     }
