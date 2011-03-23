@@ -338,7 +338,7 @@ public abstract class TemplateListOfResource {
                 }
 
                 String errorMessage = getErrorMessage(data, actionReport);
-                Response.status(400).entity(ResourceUtil.getActionReportResult(400, errorMessage, requestHeaders, uriInfo)).build();
+                return Response.status(400).entity(ResourceUtil.getActionReportResult(400, errorMessage, requestHeaders, uriInfo)).build();
             }
             String message = localStrings.getLocalString("rest.resource.post.forbidden",
                     "POST on \"{0}\" is forbidden.", new Object[]{resourceToCreate});
