@@ -47,6 +47,9 @@ class Constants {
     final static String HIGH = "HIGH";
     final static String LOW = "LOW";
     final static String OFF = "OFF";
+    final static boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
+    final static String STAR = isWindows ? "\"*\"" : "*";
+
     final static String[] INSTANCES = new String[]{
         CLUSTERED_INSTANCE_NAME1,
         CLUSTERED_INSTANCE_NAME2,

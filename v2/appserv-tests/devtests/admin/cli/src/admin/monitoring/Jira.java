@@ -47,7 +47,6 @@ public class Jira extends MonTest {
     @Override
     void runTests(TestDriver driver) {
         setDriver(driver);
-        isWindows = driver.isWindows();
         report(true, "Hello from JIRA Tests!");
         test15397();
         test15054();
@@ -108,7 +107,6 @@ public class Jira extends MonTest {
 
     private void test14389() {
         String prepend = "14389::";
-        String STAR = isWindows ? "\"*\"" : "*";
         AsadminReturn ar = asadminWithOutput("list", "-m", STAR);
         report(checkForString(ar, "server.applications"), prepend + "check-listm-server-applications");
         report(checkForString(ar, "server.web.session"), prepend + "check-listm-server-web-session");
@@ -131,5 +129,4 @@ public class Jira extends MonTest {
     private static final File earFile = new File("apps/webapp2.ear");
     private static final String MAGIC_NAME_IN_APP = "webapp2webmod1_Servlet2";
     private static final String RESOURCE_NAME_WITH_SLASH = "jdbc/test";
-    private static boolean isWindows;
 }
