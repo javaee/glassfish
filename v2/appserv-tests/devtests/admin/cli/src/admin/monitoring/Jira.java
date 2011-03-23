@@ -52,9 +52,8 @@ public class Jira extends MonTest {
         test15054();
         test15923();
         test15500();
-        
-        //test14389();
-        //test14748();
+        test14389();
+        test14748();
     }
 
     private void test15397() {
@@ -84,15 +83,16 @@ public class Jira extends MonTest {
 
     private void test15923() {
         String prepend = "15923::";
-        report(asadmin("enable-monitoring",  "--modules", "deployment=HIGH"),
+        report(asadmin("enable-monitoring", "--modules", "deployment=HIGH"),
                 prepend + "set-deployment-module-high");
-        report(asadmin("enable-monitoring",  "--modules", "deployment=LOW"),
+        report(asadmin("enable-monitoring", "--modules", "deployment=LOW"),
                 prepend + "set-deployment-module-low");
-        report(asadmin("enable-monitoring",  "--modules", "deployment=OFF"),
+        report(asadmin("enable-monitoring", "--modules", "deployment=OFF"),
                 prepend + "set-deployment-module-off");
-        report(!asadmin("enable-monitoring",  "--modules", "garbage=HIGH"),
+        report(!asadmin("enable-monitoring", "--modules", "garbage=HIGH"),
                 prepend + "set-deployment-module-garbage");
     }
+
     private void test15500() {
         String prepend = "15500::";
         report(checkForString(asadminWithOutput("list-components"), "webapp2"));
@@ -121,12 +121,11 @@ public class Jira extends MonTest {
 
     private void test14748() {
         String prepend = "14748::";
-        report(asadmin("create-jdbc-connection-pool", "--datasourceclassname", "org.apache.derby.jdbc.ClientDataSource", 
+        report(asadmin("create-jdbc-connection-pool", "--datasourceclassname", "org.apache.derby.jdbc.ClientDataSource",
                 "--restype", "javax.sql.XADataSource", RESOURCE_NAME_WITH_SLASH));
         asadmin("ping-jdbc-connection-pool", RESOURCE_NAME_WITH_SLASH);
 
     }
-
     private static final File earFile = new File("apps/webapp2.ear");
     private static final String MAGIC_NAME_IN_APP = "webapp2webmod1_Servlet2";
     private static final String RESOURCE_NAME_WITH_SLASH = "jdbc/test";
