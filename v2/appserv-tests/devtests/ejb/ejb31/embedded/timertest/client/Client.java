@@ -64,6 +64,13 @@ public class Client {
         } catch (Exception e) {
             e.printStackTrace();
         }
+/** Run the 2nd time **
+        try {
+            t.test(appName);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+** Run the 2nd time **/
         stat.printSummary(appName + "ID");
         System.exit(0);
     }
