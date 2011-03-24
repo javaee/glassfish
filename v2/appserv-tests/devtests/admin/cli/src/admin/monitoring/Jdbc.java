@@ -54,11 +54,28 @@ public class Jdbc extends MonTest {
         createTable();
 
         report(wget(8080, "onlygetconnectionservlet/onlygetconnectionservlet"), "hit 1 onlygetconnectionservlet on 8080-");
+
+        report(checkForString(
+                asadminWithOutput("get", "-m", "server.resources.jdbc-onlygetconnectionservlet-pool.numconncreated-count"),
+                "server.resources.jdbc-onlygetconnectionservlet-pool.numconncreated-count = 8"),
+                "jdbc-check-getm-numconncreated-count");
+        report(checkForString(
+                asadminWithOutput("get", "-m", "server.resources.jdbc-onlygetconnectionservlet-pool.numconnfree-current"),
+                "server.resources.jdbc-onlygetconnectionservlet-pool.numconnfree-current = 8"),
+                "jdbc-check-getm-numconnfree-count");
         
         report(checkForString(
                 asadminWithOutput("get", "-m", "server.resources.jdbc-onlygetconnectionservlet-pool.numconnacquired-count"),
                 "server.resources.jdbc-onlygetconnectionservlet-pool.numconnacquired-count = 1"),
                 "jdbc-check-getm-numconnaquired-count-1");
+        report(checkForString(
+                asadminWithOutput("get", "-m", "server.resources.jdbc-onlygetconnectionservlet-pool.jdbc-onlygetconnection-servletApp.numconnacquired-count"),
+                "server.resources.jdbc-onlygetconnectionservlet-pool.jdbc-onlygetconnection-servletApp.numconnacquired-count = 1"),
+                "jdbc-check-getm-pool-app-numconnaquired-count-1");
+        report(checkForString(
+                asadminWithOutput("get", "-m", "server.resources.jdbc-onlygetconnectionservlet-pool.numconnreleased-count"),
+                "server.resources.jdbc-onlygetconnectionservlet-pool.numconnreleased-count = 1"),
+                "jdbc-check-getm-numconnreleased-count-1");
 
         report(wget(8080, "onlygetconnectionservlet/onlygetconnectionservlet"), "hit 2 onlygetconnectionservlet on 8080-");
 
@@ -66,6 +83,14 @@ public class Jdbc extends MonTest {
                 asadminWithOutput("get", "-m", "server.resources.jdbc-onlygetconnectionservlet-pool.numconnacquired-count"),
                 "server.resources.jdbc-onlygetconnectionservlet-pool.numconnacquired-count = 2"),
                 "jdbc-check-getm-numconnaquired-count-2");
+        report(checkForString(
+                asadminWithOutput("get", "-m", "server.resources.jdbc-onlygetconnectionservlet-pool.jdbc-onlygetconnection-servletApp.numconnacquired-count"),
+                "server.resources.jdbc-onlygetconnectionservlet-pool.jdbc-onlygetconnection-servletApp.numconnacquired-count = 2"),
+                "jdbc-check-getm-pool-app-numconnaquired-count-2");
+        report(checkForString(
+                asadminWithOutput("get", "-m", "server.resources.jdbc-onlygetconnectionservlet-pool.numconnreleased-count"),
+                "server.resources.jdbc-onlygetconnectionservlet-pool.numconnreleased-count = 2"),
+                "jdbc-check-getm-numconnreleased-count-2");
 
         report(wget(8080, "onlygetconnectionservlet/onlygetconnectionservlet"), "hit 3 onlygetconnectionservlet on 8080-");
 
@@ -73,6 +98,76 @@ public class Jdbc extends MonTest {
                 asadminWithOutput("get", "-m", "server.resources.jdbc-onlygetconnectionservlet-pool.numconnacquired-count"),
                 "server.resources.jdbc-onlygetconnectionservlet-pool.numconnacquired-count = 3"),
                 "jdbc-check-getm-numconnaquired-count-3");
+        report(checkForString(
+                asadminWithOutput("get", "-m", "server.resources.jdbc-onlygetconnectionservlet-pool.jdbc-onlygetconnection-servletApp.numconnacquired-count"),
+                "server.resources.jdbc-onlygetconnectionservlet-pool.jdbc-onlygetconnection-servletApp.numconnacquired-count = 3"),
+                "jdbc-check-getm-pool-app-numconnaquired-count-3");
+        report(checkForString(
+                asadminWithOutput("get", "-m", "server.resources.jdbc-onlygetconnectionservlet-pool.numconnreleased-count"),
+                "server.resources.jdbc-onlygetconnectionservlet-pool.numconnreleased-count = 3"),
+                "jdbc-check-getm-numconnreleased-count-3");
+
+        report(asadmin("set", "configs.config.server-config.monitoring-service.module-monitoring-levels.jdbc-connection-pool=OFF"),
+                "jdbc-set-jdbc-connection-pool-OFF");
+        report(checkForString(
+                asadminWithOutput("get", "-m", "server.resources.jdbc-only*"),
+                "No monitoring data to report"),
+                "jdbc-check-getm-no-monitoring-data");
+
+        report(asadmin("set", "configs.config.server-config.monitoring-service.module-monitoring-levels.jdbc-connection-pool=HIGH"),
+                "jdbc-set-jdbc-connection-pool-HIGH");
+
+
+        report(checkForString(
+                asadminWithOutput("get", "-m", "server.resources.jdbc-onlygetconnectionservlet-pool.numconncreated-count"),
+                "server.resources.jdbc-onlygetconnectionservlet-pool.numconncreated-count = 0"),
+                "jdbc-check-getm-numconncreated-count");
+        report(checkForString(
+                asadminWithOutput("get", "-m", "server.resources.jdbc-onlygetconnectionservlet-pool.numconnfree-current"),
+                "server.resources.jdbc-onlygetconnectionservlet-pool.numconnfree-current = 5"),
+                "jdbc-check-getm-numconnfree-count");
+        report(checkForString(
+                asadminWithOutput("get", "-m", "server.resources.jdbc-onlygetconnectionservlet-pool.numconnacquired-count"),
+                "server.resources.jdbc-onlygetconnectionservlet-pool.numconnacquired-count = 0"),
+                "jdbc-check-getm-numconnaquired-count-0-reset");
+        report(checkForString(
+                asadminWithOutput("get", "-m", "server.resources.jdbc-onlygetconnectionservlet-pool.jdbc-onlygetconnection-servletApp.numconnacquired-count"),
+                "server.resources.jdbc-onlygetconnectionservlet-pool.jdbc-onlygetconnection-servletApp.numconnacquired-count = 0"),
+                "jdbc-check-getm-pool-app-numconnaquired-count-0-reset");
+        report(checkForString(
+                asadminWithOutput("get", "-m", "server.resources.jdbc-onlygetconnectionservlet-pool.numconnreleased-count"),
+                "server.resources.jdbc-onlygetconnectionservlet-pool.numconnreleased-count = 0"),
+                "jdbc-check-getm-numconnreleased-count-0-reset");
+        
+        report(wget(8080, "onlygetconnectionservlet/onlygetconnectionservlet"), "hit 4 onlygetconnectionservlet on 8080-");
+
+        report(checkForString(
+                asadminWithOutput("get", "-m", "server.resources.jdbc-onlygetconnectionservlet-pool.numconnacquired-count"),
+                "server.resources.jdbc-onlygetconnectionservlet-pool.numconnacquired-count = 1"),
+                "jdbc-check-getm-numconnaquired-count-1-reset");
+        report(checkForString(
+                asadminWithOutput("get", "-m", "server.resources.jdbc-onlygetconnectionservlet-pool.jdbc-onlygetconnection-servletApp.numconnacquired-count"),
+                "server.resources.jdbc-onlygetconnectionservlet-pool.jdbc-onlygetconnection-servletApp.numconnacquired-count = 1"),
+                "jdbc-check-getm-pool-app-numconnaquired-count-1-reset");
+        report(checkForString(
+                asadminWithOutput("get", "-m", "server.resources.jdbc-onlygetconnectionservlet-pool.numconnreleased-count"),
+                "server.resources.jdbc-onlygetconnectionservlet-pool.numconnreleased-count = 1"),
+                "jdbc-check-getm-numconnreleased-count-1-reset");
+
+        report(wget(8080, "onlygetconnectionservlet/onlygetconnectionservlet"), "hit 5 onlygetconnectionservlet on 8080-");
+
+        report(checkForString(
+                asadminWithOutput("get", "-m", "server.resources.jdbc-onlygetconnectionservlet-pool.numconnacquired-count"),
+                "server.resources.jdbc-onlygetconnectionservlet-pool.numconnacquired-count = 2"),
+                "jdbc-check-getm-numconnaquired-count-2-reset");
+        report(checkForString(
+                asadminWithOutput("get", "-m", "server.resources.jdbc-onlygetconnectionservlet-pool.jdbc-onlygetconnection-servletApp.numconnacquired-count"),
+                "server.resources.jdbc-onlygetconnectionservlet-pool.jdbc-onlygetconnection-servletApp.numconnacquired-count = 2"),
+                "jdbc-check-getm-pool-app-numconnaquired-count-2-reset");
+        report(checkForString(
+                asadminWithOutput("get", "-m", "server.resources.jdbc-onlygetconnectionservlet-pool.numconnreleased-count"),
+                "server.resources.jdbc-onlygetconnectionservlet-pool.numconnreleased-count = 2"),
+                "jdbc-check-getm-numconnreleased-count-2-reset");
 
         dropTable();
     }
