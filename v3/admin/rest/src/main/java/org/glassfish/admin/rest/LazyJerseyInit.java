@@ -311,7 +311,7 @@ public class LazyJerseyInit  implements LazyJerseyInterface{
             DomDocument document = dom.document;
             ConfigModel rootModel = dom.document.getRoot().model;
 
-            ResourcesGenerator resourcesGenerator = new ASMResourcesGenerator();
+            ResourcesGenerator resourcesGenerator = new ASMResourcesGenerator(habitat);
             resourcesGenerator.generateSingle(rootModel, document);
             resourcesGenerator.endGeneration();
         } catch (Exception ex) {

@@ -40,19 +40,21 @@
 
 package org.glassfish.admin.rest.generator;
 
+import org.jvnet.hk2.component.Habitat;
+
 /**
  * @author Ludovic Champenois
  */
 public class ASMResourcesGenerator extends ResourcesGeneratorBase {
 
 
-    public ASMResourcesGenerator() {
-
+    public ASMResourcesGenerator(Habitat habitat) {
+        super (habitat);
     }
     
     @Override
     public ClassWriter getClassWriter(String className, String baseClassName, String resourcePath) {
-        ClassWriter writer = new ASMClassWriter( className, baseClassName, resourcePath);
+        ClassWriter writer = new ASMClassWriter( habitat,className, baseClassName, resourcePath);
         return writer;
     }
 

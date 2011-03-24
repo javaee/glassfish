@@ -54,6 +54,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import org.glassfish.admin.rest.RestService;
+import org.glassfish.api.admin.CommandModel;
+import org.glassfish.api.admin.CommandRunner;
+import org.jvnet.hk2.component.Habitat;
 
 /**
  * @author Mitesh Meswani
@@ -62,7 +66,11 @@ import java.util.Set;
 public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
 
     private Set<String> alreadyGenerated = new HashSet<String>();
+    Habitat habitat;
 
+    public ResourcesGeneratorBase(Habitat habitat) {
+        this.habitat = habitat;
+    }
     @Override
     /**
      * Generate REST resource for a single config model.
@@ -180,11 +188,15 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
 
         if (metaData != null) {
             if (metaData.postCommandName != null) {
+                if (commandIsPresent(metaData.postCommandName)) {//and the command exits
                 classWriter.createGetPostCommandForCollectionLeafResource(metaData.postCommandName);
             }
+            }
 
-            if (metaData.deleteCommandName != null ) {
+            if (metaData.deleteCommandName != null) {
+                if (commandIsPresent(metaData.deleteCommandName)) {//and the command exits
                 classWriter.createGetDeleteCommandForCollectionLeafResource(metaData.deleteCommandName);
+            }
             }
 
             //display name method
@@ -251,8 +263,10 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
     private void generateGetDeleteCommandMethod(String beanName, ClassWriter classWriter) {
         String commandName = configBeanToDELETECommand.get(beanName);
         if (commandName != null) {
+            if (commandIsPresent(commandName)) {//and the command exits
             classWriter.createGetDeleteCommand(commandName);
         }
+    }
     }
 
     private void generateCustomResourceMapping(String beanName, ClassWriter classWriter) {
@@ -263,10 +277,11 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
 
     void generateGetPostCommandMethod(String resourceName, ClassWriter classWriter) {
         String commandName = configBeanToPOSTCommand.get(resourceName);
-        if(commandName != null) {
+        if (commandName != null) {
+            if (commandIsPresent(commandName)) {//and the command exits
             classWriter.createGetPostCommand(commandName);
-
         }
+    }
     }
 
     /**
@@ -278,6 +293,7 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
         List<CommandResourceMetaData> commandMetaData = CommandResourceMetaData.getMetaData(parentBeanName);
         if(commandMetaData.size() > 0) {
             for (CommandResourceMetaData metaData : commandMetaData) {
+                if (commandIsPresent(metaData.command)) { //only if the command really exits
                 String commandResourceName = parentBeanName + getBeanName(metaData.resourcePath);
                 String commandResourceClassName = getClassName(commandResourceName);
 
@@ -286,11 +302,19 @@ public abstract class ResourcesGeneratorBase implements ResourcesGenerator {
 
                 //Generate getCommandResource() method in parent
                 parentWriter.createGetCommandResource(commandResourceClassName, metaData.resourcePath);
+                }
 
             }
             //Generate GetCommandResourcePaths() method in parent 
             parentWriter.createGetCommandResourcePaths(commandMetaData);
         }
+    }
+
+    private boolean commandIsPresent(String commandName){
+        CommandRunner cr = habitat.getComponent(CommandRunner.class);
+        CommandModel cm = cr.getModel(commandName, RestService.logger);
+        return (cm!=null);
+        
     }
 
     /**

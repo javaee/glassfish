@@ -100,7 +100,7 @@ public class StatusGenerator {
             DomDocument document = dom.document;
             ConfigModel rootModel = dom.document.getRoot().model;
 
-            ResourcesGenerator resourcesGenerator = new NOOPResourcesGenerator();
+            ResourcesGenerator resourcesGenerator = new NOOPResourcesGenerator(habitat);
             resourcesGenerator.generateSingle(rootModel, document);
             resourcesGenerator.endGeneration();
         } catch (Exception ex) {
@@ -296,6 +296,10 @@ public class StatusGenerator {
 
     class NOOPResourcesGenerator extends ResourcesGeneratorBase {
 
+        public NOOPResourcesGenerator(Habitat h){
+            super(h);
+            
+        }
         @Override
         public ClassWriter getClassWriter(String className, String baseClassName, String resourcePath) {
             return new NOOPClassWriter(className, baseClassName, resourcePath);

@@ -46,6 +46,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
+import org.glassfish.admin.rest.ResourceUtil;
+import org.jvnet.hk2.component.Habitat;
 
 /**
  * @author Mitesh Meswani
@@ -53,6 +55,7 @@ import java.util.List;
 public class TextClassWriter implements ClassWriter {
 
      Writer writer;
+     Habitat habitat;
 
     /**
      * @param className Name of class to be generated
@@ -60,7 +63,8 @@ public class TextClassWriter implements ClassWriter {
      * @param baseClassName
      * @param resourcePath
      */
-    public TextClassWriter(File generationDir, String className, String baseClassName, String resourcePath) throws IOException {
+    public TextClassWriter(Habitat habitat,File generationDir, String className, String baseClassName, String resourcePath) throws IOException {
+        this.habitat = habitat;
         File file = new File(generationDir, className + ".java");
         file.createNewFile();
         FileWriter fstream = new FileWriter(file);
@@ -206,6 +210,7 @@ public class TextClassWriter implements ClassWriter {
 
             StringBuilder commandResourcesPaths = new StringBuilder();
             for (CommandResourceMetaData metaData : commandMetaData) {
+                if (ResourceUtil.commandIsPresent(habitat, metaData.command)){
                 if (commandResourcesPaths.length() > 0) {
                     commandResourcesPaths = commandResourcesPaths.append(", ");
                 }
@@ -214,6 +219,7 @@ public class TextClassWriter implements ClassWriter {
                    .append('"').append(metaData.resourcePath).append("\", ")
                    .append('"').append(metaData.httpMethod).append("\", ")
                    .append('"').append(metaData.command).append("\"} ");
+            }
             }
 
             writer.write("return new String[][] {" + commandResourcesPaths + "};\n");

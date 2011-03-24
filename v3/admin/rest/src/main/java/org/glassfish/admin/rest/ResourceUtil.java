@@ -436,6 +436,15 @@ public class ResourceUtil {
         }
     }
 
+    /* test if a command really exists in the current runningVM
+     * 
+     */
+    public static boolean commandIsPresent(Habitat habitat , String commandName){
+        CommandRunner cr = habitat.getComponent(CommandRunner.class);
+        CommandModel cm = cr.getModel(commandName, RestService.logger);
+        return (cm!=null);
+        
+    }
     /**
      * Constructs and returns the parameter meta-data.
      *

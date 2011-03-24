@@ -82,7 +82,7 @@ public class GeneratorResource {
             DomDocument document = dom.document;
             ConfigModel rootModel = dom.document.getRoot().model;
             
-            ResourcesGenerator resourcesGenerator = new TextResourcesGenerator(outputDir);
+            ResourcesGenerator resourcesGenerator = new TextResourcesGenerator(outputDir, habitat);
             resourcesGenerator.generateSingle(rootModel, document);
             resourcesGenerator.endGeneration();
         } catch (Exception ex) {

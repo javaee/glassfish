@@ -47,6 +47,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.jvnet.hk2.component.Habitat;
 
 /**
  * @author Mitesh Meswani
@@ -56,7 +57,8 @@ public class TextResourcesGenerator extends ResourcesGeneratorBase {
     /* The absolute path to dir where resources are generated */
     private File generationDir;
 
-    public TextResourcesGenerator(String outputDir) {
+    public TextResourcesGenerator(String outputDir, Habitat habitat) {
+        super(habitat);
         generationDir= new File(outputDir);
         generationDir.mkdirs();
     }
@@ -65,7 +67,7 @@ public class TextResourcesGenerator extends ResourcesGeneratorBase {
     public ClassWriter getClassWriter(String className, String baseClassName, String resourcePath) {
         ClassWriter writer = null;
         try {
-            writer = new TextClassWriter(generationDir, className, baseClassName, resourcePath);
+            writer = new TextClassWriter( habitat ,generationDir, className, baseClassName, resourcePath);
         } catch (IOException e) {
             // Log the root cause. The generation is going to fail with NPE.
             Logger.getLogger(TextResourcesGenerator.class.getName()).log(Level.SEVERE, e.getMessage());
