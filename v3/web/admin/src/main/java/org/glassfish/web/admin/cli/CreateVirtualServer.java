@@ -128,7 +128,9 @@ public class CreateVirtualServer implements AdminCommand {
             return;
         }
         //use the listener parameter provided by the user.
-        networkListeners = networkListeners != null ? networkListeners : httpListeners;
+        if (networkListeners == null) {
+            networkListeners = httpListeners;
+        }
         HttpService httpService = config.getHttpService();
         // ensure we don't already have one of this name
         for (VirtualServer virtualServer : httpService.getVirtualServer()) {
