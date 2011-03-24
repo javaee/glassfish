@@ -1819,7 +1819,6 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
         }
         String j2eeServer = _serverContext.getInstanceName();
         String domain = _serverContext.getDefaultDomainName();
-        String server = domain + ":j2eeType=J2EEServer,name=" + j2eeServer;
         // String[] javaVMs = J2EEModuleUtil.getjavaVMs();
         ctx.setDomain(domain);
 
