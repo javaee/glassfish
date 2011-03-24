@@ -321,6 +321,7 @@
         <ant dir="sessionSetMaxInactiveIntervalToZeroAndInvalidate" target="all"/>
         <ant dir="setMultiValuedResponseHeader" target="all"/>
         <ant dir="standalonewar" target="all"/>  
+        <ant dir="sessionWithoutCookie" target="all"/>  
     </target>
 
     <target name="web-container" depends="init-report">
