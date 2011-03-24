@@ -115,8 +115,10 @@ public class InhabitantsGenerator extends Constants {
     
     inhabitantsClassPath = filterIgnores(inhabitantsClassPath);
     
-    // have caching on all of the time
-    ClassPathAdvisor advisor = new FileCachingClassPathAdvisor();
+    // TODO:
+//    // have caching on all of the time
+//    ClassPathAdvisor advisor = new FileCachingClassPathAdvisor();
+    ClassPathAdvisor advisor = null;
     
     logger.log(Level.FINE, "working classpath: {0}", inhabitantsClassPath);
     this.ipcGen = InhabitantsParsingContextGenerator.
