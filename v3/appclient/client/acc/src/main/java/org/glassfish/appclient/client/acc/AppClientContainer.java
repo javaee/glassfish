@@ -365,6 +365,12 @@ public class AppClientContainer {
          * be skipped.
          */
         cleanup = Cleanup.arrangeForShutdownCleanup(logger, habitat, desc);
+        
+        /*
+         * Allow pre-destroy handling to work on the main class during clean-up.
+         */
+        cleanup.setInjectionManager(injectionManager, 
+                clientMainClassSetting.clientMainClass);
 
         /*
          * If this app client contains persistence unit refs, then initialize
