@@ -50,6 +50,7 @@ public class Ejb extends MonTest {
         report(true, "Hello from EJB Monitoring Tests!");
         someTests();
         moreTests();
+        testMyEjb();
     }
 
     void someTests() {
@@ -60,10 +61,8 @@ public class Ejb extends MonTest {
         createConnectionResource();
         deploy(CLUSTER_NAME, conApp1);
 
-        //for (int i = 0; i < 10; i++) {
-            report(wget(28080, "connapp1webmod1/ConnectorServlet1?sleepTime=25"), "hit conapp1URL on 28080-");
-            report(wget(28081, "connapp1webmod1/ConnectorServlet1?sleepTime=25"), "hit conapp1URL on 28081-");
-        //}
+        report(wget(28080, "connapp1webmod1/ConnectorServlet1?sleepTime=25"), "hit conapp1URL on 28080-");
+        report(wget(28081, "connapp1webmod1/ConnectorServlet1?sleepTime=25"), "hit conapp1URL on 28081-");
 
         verifyList(CLUSTERED_INSTANCE_NAME1 + ".resources.MConnectorPool.numconnused-name", "NumConnUsed");
         verifyList(CLUSTERED_INSTANCE_NAME2 + ".resources.MConnectorPool.numconnused-name", "NumConnUsed");
@@ -85,9 +84,33 @@ public class Ejb extends MonTest {
         //report(verifyGetm(getmKey), "ejbbeantest-getm-ok");
     }
 
+    private void testMyEjb() {
+        final String uri = "MyEjb-war/MyEjbServlet";
+        final String arg = ".applications.MyEjb.MyEjb-ejb\\.jar.MySessionBean.bean-methods.getMessage.methodstatistic-count";
+        final String getmArgInstance1 = CLUSTERED_INSTANCE_NAME1 + arg;
+        final String getmArgInstance2 = CLUSTERED_INSTANCE_NAME2 + arg;
+
+        deploy(CLUSTER_NAME, myejbear);
+
+        // We looking for get -m to return something like this:
+        // clustered-i1.applications.MyEjb.MyEjb-ejb\.jar.MySessionBean.bean-methods.getMessage.methodstatistic-count = 8
+        kludge = true;
+        for (int i = 0; i < 10; i++) {
+            verifyGetm(getmArgInstance1, getmArgInstance1 + " = " + i);
+            verifyGetm(getmArgInstance2, getmArgInstance2 + " = " + i);
+            report(wget(28080, uri), "hit MyEjbServlet on 28080-");
+            report(wget(28081, uri), "hit MyEjbServlet on 28081-");
+        }
+        kludge = false;
+    }
+    private boolean kludge = false;
+
     private boolean verifyGetm(String arg, String key) {
         AsadminReturn ret = asadminWithOutput("get", "-m", arg);
         //AsadminReturn ret = asadminWithOutput("get", "-m", "\"*\"");
+        if (kludge)
+            System.out.println("XXXXXX " + ret.out);
+
         return matchString(key, ret.outAndErr);
     }
 
@@ -112,4 +135,10 @@ public class Ejb extends MonTest {
     private static final File blackBoxRar = new File("apps/blackbox-tx.rar");
     private static final File conApp1 = new File("apps/conapp1.ear");
     private static final File ejbsfapp1 = new File("apps/ejbsfapp1.ear");
+    private static final File myejbear = new File("apps/MyEjb.ear");
 }
+/**
+ * NOTES
+ *
+ * asadmin get -m server.applications.MyEjb.MyEjb-ejb\.jar.MySessionBean.bean-methods.getMessage.methodstatistic-count
+ */
