@@ -171,13 +171,20 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
     }
 
     protected void populateConfig(Habitat habitat) throws BootException {
-    	try {
-	        ConfigParser configParser = new ConfigParser(habitat);
-	        for( Populator p : habitat.getAllByContract(Populator.class) )
-	            p.run(configParser);
-    	} catch (NoClassDefFoundError e) {
+        boolean foundClass = false;
+        try {
+            ConfigParser configParser = new ConfigParser(habitat);
+            foundClass = true;
+            for (Populator p : habitat.getAllByContract(Populator.class)) {
+                p.run(configParser);
+            }
+        } catch (NoClassDefFoundError e) {
+            if (foundClass) {
+                // it must have been a different, unexpected problem
+                throw e;
+            }
             Logger.getAnonymousLogger().fine("config classes not present - skipping config population.");
-    	}
+        }
     }
 
     public abstract void parseInhabitants(Module module,

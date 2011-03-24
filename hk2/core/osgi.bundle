@@ -45,3 +45,5 @@
                             com.sun.enterprise.module.single; \
                             com.sun.enterprise.module.impl; version=${project.osgi.version}
 
+Import-Package: \           org.jvnet.hk2.config;resolution:=optional, \
+                            *
