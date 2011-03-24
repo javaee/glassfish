@@ -43,6 +43,7 @@ package com.sun.enterprise.web.reconfig;
 import com.sun.enterprise.config.serverbeans.AccessLog;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.ManagerProperties;
+import com.sun.enterprise.config.serverbeans.SystemProperty;
 import com.sun.enterprise.config.serverbeans.VirtualServer;
 import com.sun.enterprise.config.serverbeans.WebContainerAvailability;
 import com.sun.enterprise.v3.services.impl.MapperUpdateListener;
@@ -155,6 +156,9 @@ public class WebConfigListener implements ConfigListener, MapperUpdateListener {
                         } else {
                             container.updateHttpService(httpService);
                         }
+                     } else if (t instanceof SystemProperty) {
+                        return new NotProcessed("The system-property, " + ((SystemProperty) t).getName() +
+                                ", that is referenced by the Java configuration, was modified");
                     } else {
                         container.updateHttpService(httpService);
                     }

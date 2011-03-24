@@ -403,7 +403,8 @@ public final class GenericJavaConfigListener implements PostConstruct, ConfigLis
     static private boolean referencesProperty(String pname, Collection<String> values) {
         String ref = "${" + pname + "}";
         for (String v : values) {
-            if (v.contains(ref)) return true;
+            if ((v != null) && (v.contains(ref))) 
+                return true;
         }
         return false;
     }

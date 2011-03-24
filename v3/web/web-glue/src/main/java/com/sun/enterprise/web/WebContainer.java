@@ -190,6 +190,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
     @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
     private Config serverConfig;
 
+    @Inject(name = ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    private Server server;
+
     @Inject(optional = true)
     private DasConfig dasConfig;
 
@@ -518,6 +521,9 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
                     serverConfig.getAvailabilityService());
             bean.addListener(configListener);
         }
+
+        bean = (ObservableBean) ConfigSupport.getImpl(server);
+        bean.addListener(configListener);
 
         // embedded mode does not have manager-propertie in domain.xml
         if (configListener.managerProperties != null) {
