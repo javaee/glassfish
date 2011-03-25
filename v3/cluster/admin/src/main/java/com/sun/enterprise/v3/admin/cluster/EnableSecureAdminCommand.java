@@ -69,26 +69,26 @@ import org.jvnet.hk2.component.PerLookup;
  * <pre>
  * {@code
         ###
-	### onEnable new protocol for secure admin
+	### create new protocol for secure admin
 	###
-	asadmin onEnable-protocol --securityenabled=true sec-admin-listener
-	asadmin onEnable-http --default-virtual-server=__asadmin sec-admin-listener
-	#asadmin onEnable-network-listener --listenerport 4849 --protocol sec-admin-listener sec-admin-listener
-	asadmin onEnable-ssl --type network-listener --certname s1as --ssl2enabled=false --ssl3enabled=false --clientauthenabled=false sec-admin-listener
+	asadmin create-protocol --securityenabled=true sec-admin-listener
+	asadmin create-http --default-virtual-server=__asadmin sec-admin-listener
+	#asadmin create-network-listener --listenerport 4849 --protocol sec-admin-listener sec-admin-listener
+	asadmin create-ssl --type network-listener --certname s1as --ssl2enabled=false --ssl3enabled=false --clientauthenabled=false sec-admin-listener
         asadmin set configs.config.server-config.network-config.protocols.protocol.sec-admin-listener.ssl.client-auth=want
 	asadmin set configs.config.server-config.network-config.protocols.protocol.sec-admin-listener.ssl.classname=com.sun.enterprise.security.ssl.GlassfishSSLImpl
 	asadmin set configs.config.server-config.security-service.message-security-config.HttpServlet.provider-config.GFConsoleAuthModule.property.restAuthURL=https://localhost:4848/management/sessions
 
 
 	###
-	### onEnable the port redirect config
+	### create the port redirect config
 	###
-	asadmin onEnable-protocol --securityenabled=false admin-http-redirect
-	asadmin onEnable-http-redirect --secure-redirect true admin-http-redirect
-	#asadmin onEnable-http-redirect --secure-redirect true --redirect-port 4849 admin-http-redirect
-	asadmin onEnable-protocol --securityenabled=false pu-protocol
-	asadmin onEnable-protocol-finder --protocol pu-protocol --targetprotocol sec-admin-listener --classname com.sun.grizzly.config.HttpProtocolFinder http-finder
-	asadmin onEnable-protocol-finder --protocol pu-protocol --targetprotocol admin-http-redirect --classname com.sun.grizzly.config.HttpProtocolFinder admin-http-redirect
+	asadmin create-protocol --securityenabled=false admin-http-redirect
+	asadmin create-http-redirect --secure-redirect true admin-http-redirect
+	#asadmin create-http-redirect --secure-redirect true --redirect-port 4849 admin-http-redirect
+	asadmin create-protocol --securityenabled=false pu-protocol
+	asadmin create-protocol-finder --protocol pu-protocol --targetprotocol sec-admin-listener --classname com.sun.grizzly.config.HttpProtocolFinder http-finder
+	asadmin create-protocol-finder --protocol pu-protocol --targetprotocol admin-http-redirect --classname com.sun.grizzly.config.HttpProtocolFinder admin-http-redirect
 
 	###
 	### update the admin listener
