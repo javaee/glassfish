@@ -663,7 +663,7 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
                 }
 
                 // now start all containers, by now, they should be all setup...
-                if (!startContainers(containersInfo, logger, context)) {
+                if (containersInfo != null && !startContainers(containersInfo, logger, context)) {
                     final String msg = "Aborting, Failed to start container " + containerName;
                     report.failure(logger, msg, null);
                     throw new Exception(msg);

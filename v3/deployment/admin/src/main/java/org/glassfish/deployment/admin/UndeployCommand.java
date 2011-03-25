@@ -208,24 +208,22 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
             if (info==null) {
                 // disabled application or application failed to be
                 // loaded for some reason
-                if (application!=null) {
-                    URI uri = null;
-                    try {
-                        uri = new URI(application.getLocation());
-                    } catch (URISyntaxException e) {
-                        logger.severe("Cannot determine original location for application : " + e.getMessage());
-                    }
-                    if (uri != null) {
-                        File location = new File(uri);
-                        if (location.exists()) {
-                            try {
-                                source = archiveFactory.openArchive(location);
-                            } catch (IOException e) {
-                                logger.log(Level.INFO, e.getMessage(),e );
-                            }
-                        } else {
-                            logger.warning("Originally deployed application at "+ location + " not found");
+                URI uri = null;
+                try {
+                    uri = new URI(application.getLocation());
+                } catch (URISyntaxException e) {
+                    logger.severe("Cannot determine original location for application : " + e.getMessage());
+                }
+                if (uri != null) {
+                    File location = new File(uri);
+                    if (location.exists()) {
+                        try {
+                            source = archiveFactory.openArchive(location);
+                        } catch (IOException e) {
+                            logger.log(Level.INFO, e.getMessage(),e );
                         }
+                    } else {
+                        logger.warning("Originally deployed application at "+ location + " not found");
                     }
                 }
             } else {
@@ -353,15 +351,13 @@ public class UndeployCommand extends UndeployCommandParameters implements AdminC
                 deploymentContext.clean();
 
                 //if directory deployment then do not remove the directory
-                if (source!=null) {
-                    if ( (! keepreposdir) && !isDirectoryDeployed && source.exists()) {
-                        /*
-                         * Delete the repository directory as an archive so
-                         * any special handling (such as stale file handling)
-                         * known to the archive can run.
-                         */
-                        source.delete();
-                    }
+                if ( (! keepreposdir) && !isDirectoryDeployed && source.exists()) {
+                    /*
+                     * Delete the repository directory as an archive so
+                     * any special handling (such as stale file handling)
+                     * known to the archive can run.
+                     */
+                    source.delete();
                 }
 
             } // else a message should have been provided.

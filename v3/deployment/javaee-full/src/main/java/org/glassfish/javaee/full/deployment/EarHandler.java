@@ -101,9 +101,6 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
     Deployment deployment;
 
     @Inject
-    Habitat habitat;
-
-    @Inject
     ArchiveFactory archiveFactory;
 
     @Inject
