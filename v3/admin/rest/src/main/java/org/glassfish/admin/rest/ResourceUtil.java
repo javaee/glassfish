@@ -543,6 +543,7 @@ public class ResourceUtil {
         return Response.status(status).entity(message).build();
     }
 
+    // FIXME: This should take ActionReport as a param
     public static ActionReportResult getActionReportResult(int status, String message, HttpHeaders requestHeaders, UriInfo uriInfo) {
         if (isBrowser(requestHeaders)) {
             message = getHtml(message, uriInfo, false);
