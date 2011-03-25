@@ -72,8 +72,8 @@ import java.text.DecimalFormat;
  * @version $Revision: 1.4 $, $Date: 2007/05/05 05:32:20 $
  */
 public final class SSIFsize implements SSICommand {
-    protected final static int ONE_KILOBYTE = 1024;
-    protected final static int ONE_MEGABYTE = 1024 * 1024;
+    private final static int ONE_KILOBYTE = 1024;
+    private final static int ONE_MEGABYTE = 1024 * 1024;
 
 
     /**
