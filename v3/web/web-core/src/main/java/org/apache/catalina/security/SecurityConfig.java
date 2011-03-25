@@ -71,7 +71,7 @@ import java.util.logging.Logger;
  * @author Jean-Francois Arcand
  */
 public final class SecurityConfig{
-    private static SecurityConfig singleton = null;
+    private static volatile SecurityConfig singleton = null;
 
     private static Logger log = Logger.getLogger(SecurityConfig.class.getName());
 
