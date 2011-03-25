@@ -113,10 +113,10 @@ public class SSIExec implements SSICommand {
                 ssiMediator.log("Couldn't exec file: " + substitutedValue, e);
                 writer.write(configErrMsg);
             } catch (IOException e) {
-                if (!foundProgram) {
+                //if (!foundProgram) {
                     //apache doesn't output an error message if it can't find
                     // a program
-                }
+                //}
                 ssiMediator.log("Couldn't exec file: " + substitutedValue, e);
             }
         }
