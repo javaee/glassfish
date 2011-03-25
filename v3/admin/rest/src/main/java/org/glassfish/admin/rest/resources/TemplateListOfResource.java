@@ -139,7 +139,11 @@ public abstract class TemplateListOfResource {
 
             if (null != commandName) {
                 ResourceUtil.adjustParameters(data); //adjusting for DEFAULT is required only while executing a CLI command
-                resourceToCreate += data.get("DEFAULT");
+                if (data.containsKey("name")) {
+                    resourceToCreate += data.get("name");
+                } else {
+                    resourceToCreate += data.get("DEFAULT");
+                }
                 String typeOfResult = ResourceUtil.getResultType(requestHeaders);
                 RestActionReporter actionReport = ResourceUtil.runCommand(commandName, data, habitat, typeOfResult);
 

@@ -128,9 +128,9 @@ public class ResourceUtil {
     public static void adjustParameters(Map<String, String> data) {
         if (data != null) {
             if (!(data.containsKey("DEFAULT"))) {
-                boolean isRenamed = renameParameter(data, "name", "DEFAULT");
+                boolean isRenamed = renameParameter(data, "id", "DEFAULT");
                 if (!isRenamed) {
-                    renameParameter(data, "id", "DEFAULT");
+                    renameParameter(data, "name", "DEFAULT");
                 }
             }
         }
