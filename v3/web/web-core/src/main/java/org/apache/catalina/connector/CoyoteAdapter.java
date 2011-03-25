@@ -92,7 +92,7 @@ import java.util.logging.Logger;
 public class CoyoteAdapter
     implements Adapter 
  {
-    private static Logger log = Logger.getLogger(CoyoteAdapter.class.getName());
+    private static final Logger log = Logger.getLogger(CoyoteAdapter.class.getName());
 
     // -------------------------------------------------------------- Constants
 
@@ -499,7 +499,7 @@ public class CoyoteAdapter
             if (semicolon > 0) {
                 localDecodedURI = (MessageBytes)req.getNote(MESSAGE_BYTES);
                 if (localDecodedURI == null) {
-                    localDecodedURI = new MessageBytes();
+                    localDecodedURI = MessageBytes.newInstance();
                     req.setNote(MESSAGE_BYTES, localDecodedURI);
                 }
                 localDecodedURI.duplicate(decodedURI);

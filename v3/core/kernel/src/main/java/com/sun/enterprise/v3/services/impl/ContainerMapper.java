@@ -91,6 +91,10 @@ public class ContainerMapper extends StaticResourcesAdapter  implements FileCach
     protected final static int MAPPING_DATA = 12;
     protected final static int MAPPED_ADAPTER = 13;
             
+    // Make sure this value is always aligned with {@link org.apache.catalina.connector.CoyoteAdapter}
+    // (@see org.apache.catalina.connector.CoyoteAdapter)
+    private final static int MESSAGE_BYTES = 17;
+
     private final HK2Dispatcher hk2Dispatcher = new HK2Dispatcher();
 
     private String version;
@@ -301,14 +305,22 @@ public class ContainerMapper extends StaticResourcesAdapter  implements FileCach
             semicolonPos = decodedURI.indexOf(';');
         }
 
-        if (semicolonPos == -1) {
-            semicolonPos = oldEnd;
+        MessageBytes localDecodedURI = decodedURI;
+        if (semicolonPos >= 0) {
+            charChunk.setEnd(semicolonPos);
+            // duplicate the URI path, because Mapper may corrupt the attributes,
+            // which follow the path
+            localDecodedURI = (MessageBytes) req.getNote(MESSAGE_BYTES);
+            if (localDecodedURI == null) {
+                localDecodedURI = MessageBytes.newInstance();
+                req.setNote(MESSAGE_BYTES, localDecodedURI);
+            }
+            localDecodedURI.duplicate(decodedURI);
         }
 
-        charChunk.setEnd(semicolonPos);
 
         try {
-            return map(req, decodedURI, mappingData);
+            return map(req, localDecodedURI, mappingData);
         } finally {
             charChunk.setEnd(oldEnd);
         }
