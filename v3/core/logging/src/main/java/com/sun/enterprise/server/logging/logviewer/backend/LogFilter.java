@@ -312,7 +312,7 @@ public class LogFilter {
 
             if (node.isLocal()) {
 
-                if (instanceLogFileName.equals("${com.sun.aas.instanceRoot}/logs/server.log")) {
+                if (instanceLogFileName.contains("${com.sun.aas.instanceRoot}/logs")) {
                     // this code is used if no changes made to log file name under logging.properties file
                     loggingDir = env.getInstanceRoot().getAbsolutePath() + File.separator + ".." + File.separator
                             + ".." + File.separator + "nodes" + File.separator + serverNode

@@ -92,7 +92,7 @@ public class LogFilterForInstance {
 
         String loggingFile = "";
 
-        if (instanceLogFileName.equals("${com.sun.aas.instanceRoot}/logs/server.log")) {
+        if (instanceLogFileName.contains("${com.sun.aas.instanceRoot}/logs")) {
             // this code is used if no changes made to log file name under logging.properties file
             loggingFile = node.getInstallDir() + File.separator + "glassfish" + File.separator + "nodes"
                     + File.separator + sNode + File.separator + instanceName + File.separator + "logs"
@@ -206,7 +206,7 @@ public class LogFilterForInstance {
         if (node.isLocal()) {
             String loggingDir = "";
 
-            if (instanceLogFileDirectory.contains("${com.sun.aas.instanceRoot}/logs/")) {
+            if (instanceLogFileDirectory.contains("${com.sun.aas.instanceRoot}/logs")) {
                 // this code is used if no changes made in logging.properties file
                 loggingDir = System.getProperty("com.sun.aas.instanceRoot") + File.separator + ".." + File.separator + ".."
                         + File.separator + "nodes" + File.separator + sNode
@@ -240,7 +240,7 @@ public class LogFilterForInstance {
 
             String loggingDir = "";
 
-            if (instanceLogFileDirectory.contains("${com.sun.aas.instanceRoot}/logs/")) {
+            if (instanceLogFileDirectory.contains("${com.sun.aas.instanceRoot}/logs")) {
                 // this code is used if no changes made in logging.properties file
                 loggingDir = node.getInstallDir() +
                         File.separator + "glassfish" + File.separator + "nodes" +

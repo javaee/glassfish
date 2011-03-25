@@ -119,13 +119,13 @@ public class SetLogAttributes implements AdminCommand {
             "com.sun.enterprise.server.logging.GFFileHandler.retainErrorsStasticsForHours",
             "log4j.logger.org.hibernate.validator.util.Version",
             "com.sun.enterprise.server.logging.GFFileHandler.maxHistoryFiles",
-            "java.util.logging.FileHandler.pattern"};
+            "java.util.logging.FileHandler.pattern",
+            "com.sun.enterprise.server.logging.GFFileHandler.rotationOnDateChange",
+            "com.sun.enterprise.server.logging.GFFileHandler.logFormatDateFormat"};
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(SetLogLevel.class);
 
-
-    public void execute(AdminCommandContext context) {
-
+public void execute(AdminCommandContext context) {
 
         final ActionReport report = context.getActionReport();
         boolean isCluster = false;
