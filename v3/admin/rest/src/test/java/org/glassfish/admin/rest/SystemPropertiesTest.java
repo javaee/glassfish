@@ -86,11 +86,10 @@ public class SystemPropertiesTest extends RestTestBase {
 
         assertEquals(2, testPropsFound);
 
-        // Disabled for now: http://java.net/jira/browse/GLASSFISH-15533
-//        response = delete(URL_SYSTEM_PROPERTIES+"/"+prop1);
-//        checkStatusForSuccess(response);
-//        response = delete(URL_SYSTEM_PROPERTIES+"/"+prop2);
-//        checkStatusForSuccess(response);
+        response = delete(URL_SYSTEM_PROPERTIES+"/"+prop1);
+        checkStatusForSuccess(response);
+        response = delete(URL_SYSTEM_PROPERTIES+"/"+prop2);
+        checkStatusForSuccess(response);
     }
 
     @Test
@@ -115,9 +114,8 @@ public class SystemPropertiesTest extends RestTestBase {
 
         assertEquals(1, testPropsFound);
 
-        // Disabled for now: http://java.net/jira/browse/GLASSFISH-15533
-//        response = delete(URL_SYSTEM_PROPERTIES+"/"+prop1);
-//        checkStatusForSuccess(response);
+        response = delete(URL_SYSTEM_PROPERTIES+"/"+prop1);
+        checkStatusForSuccess(response);
     }
 
     private List<Map<String, Object>> getSystemProperties(Map<String, Object> responseMap) {

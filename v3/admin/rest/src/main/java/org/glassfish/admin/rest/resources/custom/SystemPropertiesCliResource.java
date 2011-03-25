@@ -55,13 +55,13 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.PathSegment;
@@ -78,12 +78,10 @@ import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.config.support.CommandTarget;
 import org.glassfish.config.support.TargetType;
-import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.ConfigBean;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.Dom;
 import org.jvnet.hk2.config.TransactionFailure;
-import org.jvnet.hk2.config.ValidationException;
 import org.jvnet.hk2.config.types.Property;
 
 /**
@@ -181,6 +179,15 @@ public class SystemPropertiesCliResource extends TemplateExecCommand {
         return saveProperties(grandParent, data);
     }
 
+    @Path("{Name}/")
+    @DELETE
+    public Response deleteSystemProperty(@PathParam("Name") String id, HashMap<String, String> data) {
+        List<PathSegment> segments = uriInfo.getPathSegments(true);
+        String grandParent = segments.get(segments.size() - 3).getPath();
+
+        return deleteProperty(grandParent, id);
+    }
+
     protected void getSystemProperties(Map<String, Map<String, String>> properties, SystemPropertyBag spb, boolean getDefaults) {
         try {
             List<SystemProperty> sysProps = spb.getSystemProperty();
@@ -250,6 +257,24 @@ public class SystemPropertiesCliResource extends TemplateExecCommand {
         data.put("target", (parent == null) ? getParent(uriInfo) : parent);
 
         RestActionReporter actionReport = ResourceUtil.runCommand("create-system-properties", data, habitat, "");
+        ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
+        ActionReportResult results = new ActionReportResult(commandName, actionReport, new OptionsResult());
+
+        int status = HttpURLConnection.HTTP_OK; /*200 - ok*/
+        if (exitCode == ActionReport.ExitCode.FAILURE) {
+            status = HttpURLConnection.HTTP_INTERNAL_ERROR;
+        }
+        results.setStatusCode(status);
+
+        return Response.status(status).entity(results).build();
+    }
+
+    protected Response deleteProperty(String parent, String propName) {
+        HashMap<String, String> data = new HashMap<String, String>();
+        data.put("DEFAULT", propName);
+        data.put("target", (parent == null) ? getParent(uriInfo) : parent);
+
+        RestActionReporter actionReport = ResourceUtil.runCommand("delete-system-property", data, habitat, "");
         ActionReport.ExitCode exitCode = actionReport.getActionExitCode();
         ActionReportResult results = new ActionReportResult(commandName, actionReport, new OptionsResult());
 
