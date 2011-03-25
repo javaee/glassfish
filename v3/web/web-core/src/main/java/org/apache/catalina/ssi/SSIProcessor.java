@@ -139,7 +139,6 @@ public class SSIProcessor {
         StringWriter stringWriter = new StringWriter();
         IOTools.flow(reader, stringWriter);
         String fileContents = stringWriter.toString();
-        stringWriter = null;
         int index = 0;
         boolean inside = false;
         StringBuilder command = new StringBuilder();
