@@ -58,6 +58,15 @@
     <description>DataProvider Repackaged as OSGi bundle for GlassFish</description>
 
     <packaging>jar</packaging>
+
+    <properties>
+        <!--
+            Exclude this module because the source code isn't here;
+            it comes from an external project that we don't modify.
+        -->
+        <findbugs.skip>true</findbugs.skip>
+    </properties>
+
     <build>
         <plugins>
             <plugin>
