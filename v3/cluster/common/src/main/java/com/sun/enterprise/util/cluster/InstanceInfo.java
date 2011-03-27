@@ -142,7 +142,6 @@ public final class InstanceInfo {
         return pid;
     }
 
-
     public final String getDisplayState() {
         StringBuilder display = new StringBuilder();
         display.append(isRunning() ?
@@ -236,7 +235,7 @@ public final class InstanceInfo {
                         info.getName(),
                         info.getHost(),
                         info.getPort(),
-                        info.getPid(),
+                        formatPid(info),
                         info.getDisplayCluster(),
                         info.getDisplayState()
                     });
@@ -253,6 +252,12 @@ public final class InstanceInfo {
                     });
         }
         return cf.toString();
+    }
+
+    private static String formatPid(InstanceInfo info) {
+        int pid = info.getPid();
+
+        return pid < 0 ? "--" : "" + pid;
     }
 
     // TODO what about security????
