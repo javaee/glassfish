@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -66,8 +66,8 @@ public class DeploymentFactoryInstaller {
     private static DeploymentFactoryInstaller dfInstaller = null;
     
     private final String J2EE_DEPLOYMENT_MANAGER_REPOSITORY = "lib" + File.separator + "deployment";
-    private final String J2EE_DEPLOYMENT_MANAGER = "J2EE-DeploymentFactory-Implementation-Class";
-    private final String J2EE_HOME = "com.sun.enterprise.home";
+    private static final String J2EE_DEPLOYMENT_MANAGER = "J2EE-DeploymentFactory-Implementation-Class";
+    private static final String J2EE_HOME = "com.sun.enterprise.home";
     
     private static final Logger sLogger=LogDomains.getLogger(DeploymentUtils.class, LogDomains.DPL_LOGGER);
 

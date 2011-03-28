@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -61,8 +61,6 @@ public class DeploymentStatusImplWithError extends DeploymentStatusImpl {
     
     /** Records the error, if any, associated with this status object */
     private Throwable cause = null;
-    
-    private CommandType commandType = null;
     
     /** Creates a new instance of DeploymentStatusImplWithError */
     public DeploymentStatusImplWithError() {
