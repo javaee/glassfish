@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2006-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -127,6 +127,7 @@ public class EngineInfo<T extends Container, U extends ApplicationContainer> {
 
     public void clean(ExtendedDeploymentContext context) throws Exception {
         getDeployer().clean(context);
+        cleanup();
     }
 
     /*
@@ -144,7 +145,7 @@ public class EngineInfo<T extends Container, U extends ApplicationContainer> {
 
         Set<Integer> existingEntries = null;
         for (Map.Entry<WeakReference<Thread>, Set<Integer>> entry : addedThreadLocals.entrySet()) {
-            if (entry.getKey().get()!=null) {
+            if (entry.getKey() != null && entry.getKey().get()!=null) {
                 if (entry.getKey().get().equals(t)) {
                     // found our guy
                     existingEntries = entry.getValue();

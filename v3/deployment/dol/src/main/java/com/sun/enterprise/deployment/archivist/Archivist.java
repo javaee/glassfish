@@ -1594,9 +1594,12 @@ public abstract class Archivist<T extends RootDeploymentDescriptor> {
 
         FileInputStream is = new FileInputStream(new File(filePath));
         OutputStream os = archive.putNextEntry(entryName);
-        ArchivistUtils.copyWithoutClose(is, os);
-        is.close();
-        archive.closeEntry();
+        try {
+            ArchivistUtils.copyWithoutClose(is, os);
+        } finally {
+            is.close();
+            archive.closeEntry();
+        }
     }
 
     /**

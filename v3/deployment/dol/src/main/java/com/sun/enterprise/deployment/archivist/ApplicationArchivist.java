@@ -762,26 +762,22 @@ public class ApplicationArchivist extends Archivist<Application>
             dpEntries.add(e.nextElement());
         }
 
-        if (descriptor instanceof Application) {
-            Application application = (Application) descriptor;
-            
-            //runtime deployment descriptor for the sub modules
-            for (ModuleDescriptor moduleDesc : application.getModules()) {
-                Archivist subArchivist = archivistFactory.get().getPrivateArchivistFor(moduleDesc.getModuleType());
-                String archiveUri = moduleDesc.getArchiveUri();
-                String runtimeDDPath = subArchivist.getRuntimeDeploymentDescriptorPath();
+        //runtime deployment descriptor for the sub modules
+        for (ModuleDescriptor moduleDesc : descriptor.getModules()) {
+            Archivist subArchivist = archivistFactory.get().getPrivateArchivistFor(moduleDesc.getModuleType());
+            String archiveUri = moduleDesc.getArchiveUri();
+            String runtimeDDPath = subArchivist.getRuntimeDeploymentDescriptorPath();
 
-                if (runtimeDDPath!=null) {
-                    String mangledName;
-                    // the runtime deployment descriptor from the deployment file
-                    mangledName = archiveUri + "." 
-                        + runtimeDDPath.substring(runtimeDDPath.lastIndexOf('/')+1);
-                    DOLUtils.getDefaultLogger().fine("mangledName is " + mangledName);
+            if (runtimeDDPath!=null) {
+                String mangledName;
+                // the runtime deployment descriptor from the deployment file
+                mangledName = archiveUri + "." 
+                    + runtimeDDPath.substring(runtimeDDPath.lastIndexOf('/')+1);
+                DOLUtils.getDefaultLogger().fine("mangledName is " + mangledName);
 
-                    if (dpEntries.contains(mangledName)) {
-                        subArchivist.readRuntimeDDFromDeploymentPlan(
-                            mangledName, planArchive, moduleDesc.getDescriptor());
-                    }
+                if (dpEntries.contains(mangledName)) {
+                    subArchivist.readRuntimeDDFromDeploymentPlan(
+                        mangledName, planArchive, moduleDesc.getDescriptor());
                 }
             }
         }
