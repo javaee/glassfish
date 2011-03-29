@@ -35,7 +35,7 @@ public class Client {
     public void doTest() {
 
 	try {
-	    int numHellos = 10;
+	    int numHellos = 8; // 8 is the batch size, so 8 should be guaranteed to be pasivated
 
 	    Hello[] hellos = new Hello[numHellos];
 	    int passivationCount = 0;
@@ -62,7 +62,7 @@ public class Client {
 	    }
 
 	    if( passivationCount != numHellos ) {
-		System.out.println("Passivation failed -- count = " + passivationCount);
+		System.out.println("Passivation failed -- count = " + passivationCount + " instead of expected " + numHellos);
 		throw new EJBException("passivation failed");
 	    }
 
