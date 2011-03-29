@@ -80,6 +80,7 @@ public final class TestDriver extends AdminBaseDevTest {
     }
     private MonTest tests[] = new MonTest[]{
         new Setup(),
+        new EarlyJira(), // these tests want monitoring disabled...
         new Enabler(),
         new Ejb(),
         new Jdbc(),
