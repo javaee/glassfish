@@ -104,7 +104,7 @@
         </java>
     </target>
     <target name="domain" depends="init">
-         <java classname="admin.DomainTest"  fork="true" classpath="${test}">
+        <java classname="admin.DomainTest"  fork="true" classpath="${test}">
             <jvmarg value="${javaprops}"/>
         </java>
     </target>
@@ -115,7 +115,7 @@
         </java>
     </target>
     <target name="tokens" depends="init">
-         <java classname="admin.TokenTest"  fork="true" classpath="${test}">
+        <java classname="admin.TokenTest"  fork="true" classpath="${test}">
             <jvmarg value="${javaprops}"/>
         </java>
     </target>
@@ -169,7 +169,7 @@
         <record name="admin.output" action="start" />
         <java classname="admin.PortTests"  fork="true" classpath="${test}">
             <jvmarg value="${javaprops}"/>
-        </java>            
+        </java>
         <antcall target="ports"/>
         <record name="admin.output" action="stop" />
         <antcall target="dev-report"/>
@@ -190,7 +190,7 @@
         </java>
     </target>
 
-	<target name="logging-command" depends="init">
+    <target name="logging-command" depends="init">
         <java classname="admin.LoggingCommandTest"  fork="true" classpath="${test}">
             <jvmarg value="${javaprops}"/>
             <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9010"/>
@@ -206,52 +206,52 @@
     </target>
 
     <target name="custom-resource" depends="init">
-           <java classname="admin.CustomResourceTest"  fork="true" classpath="${test}">
-               <jvmarg value="${javaprops}"/>
-               <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9010"/>
-           </java>
+        <java classname="admin.CustomResourceTest"  fork="true" classpath="${test}">
+            <jvmarg value="${javaprops}"/>
+            <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9010"/>
+        </java>
     </target>
 
     <target name="jndi-resource" depends="init">
-           <java classname="admin.ExternalJndiResourceTest"  fork="true" classpath="${test}">
-               <jvmarg value="${javaprops}"/>
-               <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9010"/>
-           </java>
+        <java classname="admin.ExternalJndiResourceTest"  fork="true" classpath="${test}">
+            <jvmarg value="${javaprops}"/>
+            <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9010"/>
+        </java>
     </target>
 
     <target name="mail-resource" depends="init">
-           <java classname="admin.JavaMailResourceTest"  fork="true" classpath="${test}">
-               <jvmarg value="${javaprops}"/>
-               <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9010"/>
-           </java>
+        <java classname="admin.JavaMailResourceTest"  fork="true" classpath="${test}">
+            <jvmarg value="${javaprops}"/>
+            <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9010"/>
+        </java>
     </target>
 
     <target name="change-master-broker" depends="init">
-           <java classname="admin.ChangeMasterBrokerTest"  fork="true" classpath="${test}">
-               <jvmarg value="${javaprops}"/>
-               <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9010"/>
-           </java>
+        <java classname="admin.ChangeMasterBrokerTest"  fork="true" classpath="${test}">
+            <jvmarg value="${javaprops}"/>
+            <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9010"/>
+        </java>
     </target>
     
     <target name="configure-jms-cluster" depends="init">
-           <java classname="admin.ConfigureJmsClusterTest"  fork="true" classpath="${test}">
-               <jvmarg value="${javaprops}"/>
-               <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9010"/>
-           </java>
+        <java classname="admin.ConfigureJmsClusterTest"  fork="true" classpath="${test}">
+            <jvmarg value="${javaprops}"/>
+            <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9010"/>
+        </java>
     </target>
     
     <target name="dynamic-sync-broker-list" depends="init">
-           <java classname="admin.DynamicSyncBrokerListTest"  fork="true" classpath="${test}">
-               <jvmarg value="${javaprops}"/>
-               <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9010"/>
-           </java>
+        <java classname="admin.DynamicSyncBrokerListTest"  fork="true" classpath="${test}">
+            <jvmarg value="${javaprops}"/>
+            <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9010"/>
+        </java>
     </target>
 
     <target name="configure-arbitary-broker-props" depends="init">
-           <java classname="admin.ConfigureArbitaryBrokerPropertiesTest"  fork="true" classpath="${test}">
-               <jvmarg value="${javaprops}"/>
-               <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9010"/>
-           </java>
+        <java classname="admin.ConfigureArbitaryBrokerPropertiesTest"  fork="true" classpath="${test}">
+            <jvmarg value="${javaprops}"/>
+            <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9010"/>
+        </java>
     </target>
 
     <target name="upgrade" depends="init">
@@ -273,9 +273,9 @@
     </target>
 
     <target name="restart-domain" depends="init">
-           <java classname="admin.RestartDomainTest"  fork="true" classpath="${test}">
-               <jvmarg value="${javaprops}"/>
-           </java>
+        <java classname="admin.RestartDomainTest"  fork="true" classpath="${test}">
+            <jvmarg value="${javaprops}"/>
+        </java>
     </target>
 
     <target name="all-resources">
@@ -294,62 +294,70 @@
         </java>
     </target>
 
-    <target name="mon" depends="monitoring,teardown">
+<!-- there must be a better way to do this...
+-->
+    <target name="monitoringverbose" depends="init,setup">
+        <java classname="admin.monitoring.TestDriver"  fork="true" classpath="${test}">
+            <jvmarg value="-Dverbose=true"/>
+            <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9010"/>
+        </java>
     </target>
 
-
-    <target name="all" depends="init">
-        <record name="admin.output" action="start" />
-        <antcall target="${teststorun}"/>
-        <record name="admin.output" action="stop" />
-        <antcall target="dev-report"/>
-        <echo message="Detailed results available under ${env.APS_HOME}/test_results.html"/>
+    <target name="mon" depends="monitoringverbose,teardown">
     </target>
 
-    <target name="build">
-        <mkdir dir="build"/>
-        <javac srcdir="src" destdir="build" debug="true"
+<target name="all" depends="init">
+    <record name="admin.output" action="start" />
+    <antcall target="${teststorun}"/>
+    <record name="admin.output" action="stop" />
+    <antcall target="dev-report"/>
+    <echo message="Detailed results available under ${env.APS_HOME}/test_results.html"/>
+</target>
+
+<target name="build">
+    <mkdir dir="build"/>
+    <javac srcdir="src" destdir="build" debug="true"
                classpath="${test}"
                includes="**/*.java"/>
-    </target>
+</target>
 
-    <target name="setup" depends="startdb">
-    </target>
+<target name="setup" depends="startdb">
+</target>
 
-    <target name="teardown" depends="stopdb">
-    </target>
+<target name="teardown" depends="stopdb">
+</target>
 
-    <target name="init" depends="build">
-    </target>
+<target name="init" depends="build">
+</target>
 
-    <target name="clean">
-        <delete>
-            <fileset dir="${env.APS_HOME}" includes="test_results*"/>
-            <fileset dir="${env.APS_HOME}" includes="count.txt"/>
-            <fileset dir="." includes="*.output"/>
-            <fileset dir="." includes="*.txt"/>
-        </delete>
-        <delete failonerror="false" includeemptydirs="true" dir="build"/>
-    </target>
+<target name="clean">
+    <delete>
+        <fileset dir="${env.APS_HOME}" includes="test_results*"/>
+        <fileset dir="${env.APS_HOME}" includes="count.txt"/>
+        <fileset dir="." includes="*.output"/>
+        <fileset dir="." includes="*.txt"/>
+    </delete>
+    <delete failonerror="false" includeemptydirs="true" dir="build"/>
+</target>
 
-    <target name="startdb">
-		<mkdir dir="${databases_dir}"/>
-        <java jar="${derbyhome}/lib/derbyrun.jar" spawn="true" fork="true" dir="${databases_dir}">
-		    <arg value="server"/>
-		    <arg value="start"/>
-        </java>
-		<echo message="************   JavaDB Started **********"/>
-    </target>
+<target name="startdb">
+    <mkdir dir="${databases_dir}"/>
+    <java jar="${derbyhome}/lib/derbyrun.jar" spawn="true" fork="true" dir="${databases_dir}">
+        <arg value="server"/>
+        <arg value="start"/>
+    </java>
+    <echo message="************   JavaDB Started **********"/>
+</target>
 
-    <target name="stopdb">
-        <java jar="${derbyhome}/lib/derbyrun.jar" spawn="true" fork="true">
-		    <arg value="server"/>
-		    <arg value="shutdown"/>
-        </java>
-		<echo message="************   JavaDB Stopped **********"/>
-    </target>
+<target name="stopdb">
+    <java jar="${derbyhome}/lib/derbyrun.jar" spawn="true" fork="true">
+        <arg value="server"/>
+        <arg value="shutdown"/>
+    </java>
+    <echo message="************   JavaDB Stopped **********"/>
+</target>
 
-    <target name="usage">
-        <echo>Usage: ant [-Dteststorun=instance|cluster|...] [-Dnum_tests=n] [-Dverbose=true/false] all (Executes the admin tests)</echo>
-    </target>
+<target name="usage">
+    <echo>Usage: ant [-Dteststorun=instance|cluster|...] [-Dnum_tests=n] [-Dverbose=true/false] all (Executes the admin tests)</echo>
+</target>
 </project>

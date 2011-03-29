@@ -223,9 +223,44 @@ abstract class MonTest {
     }
 
     final boolean checkForString(AsadminReturn r, String s) {
+        return checkForString(r, s, 1);
+    }
+
+    final boolean checkForString(AsadminReturn r, String findme, int howMany) {
         if (r.outAndErr == null)
             return false;
-        return r.outAndErr.indexOf(s) >= 0;
+
+        if(howMany <= 0) {
+            report(false, "Bad arg to checkForString");
+            return false;
+        }
+
+        String output = r.outAndErr;
+
+        if(howMany == 1)
+            return output.indexOf(findme) >= 0;
+
+        final int findmelength = findme.length();
+
+        while(howMany-- > 0) {
+            int index = output.indexOf(findme);
+
+            if(index < 0)
+                return false;
+
+            // got them at least the given number
+            if(howMany == 0)
+                return true;
+
+            index += findmelength;
+
+            // moved past the end of the string -- not a match
+            if(index >= output.length())
+                return false;
+
+            output = output.substring(index);
+        }
+        return false;
     }
 
     final void deploy(File f) {

@@ -44,13 +44,28 @@ import static admin.monitoring.Constants.*;
  * These tests depend on monitoring being disabled
  * @author Byron Nevins
  */
-
 public class EarlyJira extends MonTest {
     @Override
     void runTests(TestDriver driver) {
         setDriver(driver);
         report(true, "Hello from Early JIRA Tests!");
+        verifyMonOff();
         test15203();
+    }
+
+    /*
+     * @author Byron Nevins
+     * Sanity test -- are the levles all OFF ??
+     */
+    private void verifyMonOff() {
+        String prepend = "verifyMonOff::";
+        final String value = OFF;
+
+        for(String cat : MON_CATEGORIES) {
+            report(doesGetMatch(das + cat, value), prepend + "das::" + cat);
+            report(doesGetMatch(cluster + cat, value), prepend + "mon-cluster::" + cat);
+            report(doesGetMatch(standalone + cat, value), prepend + "standalone::" + cat);
+        }
     }
 
     /*
@@ -58,7 +73,25 @@ public class EarlyJira extends MonTest {
      */
     private void test15203() {
         String prepend = "15203::";
+
         AsadminReturn aar = asadminWithOutput("get", "-m", STAR);
-        report(checkForString(aar, "No monitoring data to report."), prepend + "verify special message");
+        report(checkForString(aar, "No monitoring data to report.", 3), prepend + "verify special message all 3 --");
+        report(!checkForString(aar, "No monitoring data to report.", 4), prepend + "verify 3 only");
+
+        for (String iname : INSTANCES) {
+            aar = asadminWithOutput("get", "-m", makestar(iname));
+            report(checkForString(aar, "No monitoring data to report."), prepend + "verify special message " + iname);
+        }
     }
+
+    // what a pain!
+    private String makestar(String iname) {
+        if (isWindows)
+            return "\"" + iname + ".*\"";
+        else
+            return iname + ".*";
+    }
+    String das = "configs.config.server-config.monitoring-service.module-monitoring-levels.";
+    String cluster = "configs.config.mon-cluster-config.monitoring-service.module-monitoring-levels.";
+    String standalone = "configs.config.standalone-i3-config.monitoring-service.module-monitoring-levels.";
 }
