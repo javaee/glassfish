@@ -126,16 +126,12 @@ public class SSHUtil {
      */
     public static boolean isEncryptedKey(String sshkeyfile) throws IOException {
         boolean result = false;
-        try {
-            String f = FileUtils.readSmallFile(sshkeyfile);
-            if (f.startsWith("-----BEGIN ") && f.contains("ENCRYPTED")
-                    && f.endsWith(" PRIVATE KEY-----" + NL)) {
-                result=true;
-            }
-        } catch (Exception ex) {
-            throw new IOException(ex.getMessage());
-        }
 
+        String f = FileUtils.readSmallFile(sshkeyfile);
+        if (f.startsWith("-----BEGIN ") && f.contains("ENCRYPTED")
+                && f.endsWith(" PRIVATE KEY-----" + NL)) {
+            result=true;
+        }
         return result;
     }
 }

@@ -597,14 +597,9 @@ public class SSHLauncher {
         if (passwd == null) {
             throw new IOException("SSH password is required for distributing the public key. You can specify the SSH password in a password file and pass it through --passwordfile option.");
         }
-        try {
-            connection = new Connection(node, port);
-            connection.connect();
-            connected = connection.authenticateWithPassword(userName, passwd);
-        } catch (Exception ex) {
-            //logger.printExceptionStackTrace(ex);
-            throw new IOException("SSH password authentication failed for user " + userName + " on host " + node);
-        }
+        connection = new Connection(node, port);
+        connection.connect();
+        connected = connection.authenticateWithPassword(userName, passwd);
 
         if(!connected) {
             throw new IOException("SSH password authentication failed for user " + userName + " on host " + node);
@@ -834,12 +829,14 @@ public class SSHLauncher {
     /**
       * Create .ssh directory and set the permissions correctly
       */
-    private void setupSSHDir() {
+    private void setupSSHDir() throws IOException {
         File home = new File(System.getProperty("user.home"));
         File f = new File(home,SSH_DIR);
 
         if(!FileUtils.safeIsDirectory(f)) {
-            f.mkdirs();
+            if (!f.mkdirs()) {
+                throw new IOException("Failed to create " + f.getPath());
+            }
             logger.info("Created directory " + f.toString());
         }
         
