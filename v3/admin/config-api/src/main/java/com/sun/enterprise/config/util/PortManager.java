@@ -60,7 +60,7 @@ import org.jvnet.hk2.config.TransactionFailure;
 public final class PortManager {
 
     public PortManager(Cluster cluster, Config config, Domain theDomain,
-            Server theNewServer, Logger theLogger) throws TransactionFailure {
+            Server theNewServer) throws TransactionFailure {
         try {
             if (theNewServer == null || theDomain == null)
                 throw new TransactionFailure(Strings.get("internal.error", "null argument in PortManager constructor"));

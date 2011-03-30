@@ -658,7 +658,7 @@ public interface Server extends ConfigBeanProxy, Injectable, PropertyBag, Named,
             if (checkPorts) {
                 
                 PortManager pm = new PortManager(ourCluster,
-                        ourConfig, domain, instance, logger);
+                        ourConfig, domain, instance);
                 String message = pm.process();      
 
                 if (message != null && !terse) {
