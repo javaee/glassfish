@@ -136,10 +136,10 @@ public class JmsHandlers {
     protected static final String ATTR_DISK_RESERVED = "DiskReserved";
     protected static final String ATTR_DISK_USED = "DiskUsed";
     protected static final String ATTR_DISK_UTILIZATION_RATIO = "DiskUtilizationRatio";
-    protected static final String[] ATTRS_CONFIG = new String[]{ATTR_MAX_NUM_MSGS, ATTR_MAX_BYTES_PER_MSG, ATTR_MAX_TOTAL_MSG_BYTES, ATTR_LIMIT_BEHAVIOR,
+    private static final String[] ATTRS_CONFIG = new String[]{ATTR_MAX_NUM_MSGS, ATTR_MAX_BYTES_PER_MSG, ATTR_MAX_TOTAL_MSG_BYTES, ATTR_LIMIT_BEHAVIOR,
         ATTR_MAX_NUM_PRODUCERS, ATTR_MAX_NUM_ACTIVE_CONSUMERS, ATTR_MAX_NUM_BACKUP_CONSUMERS, ATTR_CONSUMER_FLOW_LIMIT,
         ATTR_LOCAL_DELIVERY_PREFERRED, ATTR_USE_DMQ, ATTR_VALIDATE_XML_SCHEMA_ENABLED, ATTR_XML_SCHEMA_URI_LIST};
-    protected static final String[] ATTRS_MONITOR = new String[]{ATTR_CREATED_BY_ADMIN, ATTR_TEMPORARY, ATTR_CONNECTION_ID, ATTR_STATE, ATTR_STATE_LABEL,
+    private static final String[] ATTRS_MONITOR = new String[]{ATTR_CREATED_BY_ADMIN, ATTR_TEMPORARY, ATTR_CONNECTION_ID, ATTR_STATE, ATTR_STATE_LABEL,
         ATTR_NUM_PRODUCERS, ATTR_NUM_CONSUMERS, ATTR_NUM_WILDCARD_PRODUCERS, ATTR_NUM_WILDCARD_CONSUMERS, ATTR_NUM_WILDCARDS, ATTR_PEAK_NUM_CONSUMERS,
         ATTR_AVG_NUM_CONSUMERS, ATTR_NUM_ACTIVE_CONSUMERS, ATTR_PEAK_NUM_ACTIVE_CONSUMERS, ATTR_AVG_NUM_ACTIVE_CONSUMERS,
         ATTR_NUM_BACKUP_CONSUMERS, ATTR_PEAK_NUM_BACKUP_CONSUMERS, ATTR_AVG_NUM_BACKUP_CONSUMERS, ATTR_NUM_MSGS, ATTR_NUM_MSGS_REMOTE,
@@ -271,7 +271,7 @@ public class JmsHandlers {
             String[] types = new String[]{"java.lang.String", "java.lang.String", "javax.management.AttributeList"};
             Object[] params = new Object[]{type, name, list};
 
-            Object obj = JMXUtil.invoke(OBJECT_DEST_MGR, OP_CREATE, params, types);
+            JMXUtil.invoke(OBJECT_DEST_MGR, OP_CREATE, params, types);
         } catch (Exception ex) {
             GuiUtil.handleException(handlerCtx, ex);
         }
@@ -400,9 +400,8 @@ public class JmsHandlers {
     public static void getDestinations(HandlerContext handlerCtx) {
         //String result = (String)JMXUtil.invoke(JMS_OBJECT_NAME, OP_LIST_DESTINATIONS, null, null);
         MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-        ObjectName[] results = null;
         try {
-            results = (ObjectName[]) mbs.invoke(new ObjectName(OBJECT_DEST_MGR), OP_LIST_DESTINATIONS, new Object[]{}, new String[]{});
+            mbs.invoke(new ObjectName(OBJECT_DEST_MGR), OP_LIST_DESTINATIONS, new Object[]{}, new String[]{});
         } catch (Exception ex) {
             Logger.getLogger(JmsHandlers.class.getName()).log(Level.SEVERE, null, ex);
         }
