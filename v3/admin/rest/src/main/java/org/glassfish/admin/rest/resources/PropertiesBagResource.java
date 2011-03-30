@@ -112,7 +112,6 @@ public class PropertiesBagResource {
             return new GetResultList(new ArrayList(), "", new String[][]{}, new OptionsResult(Util.getResourceName(uriInfo)));//empty dom list
         }
 
-        String resultType = ResourceUtil.getResultType(requestHeaders);
         RestActionReporter ar = new RestActionReporter();
         ar.setActionExitCode(ActionReport.ExitCode.SUCCESS);
         ar.setActionDescription("Property");

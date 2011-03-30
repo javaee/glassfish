@@ -293,6 +293,14 @@ public class ResourceUtil {
     public static void resolveParentParamValue(HashMap<String, String> commandParams, UriInfo uriInfo) {
         String parent = getParentName(uriInfo);
         if (parent != null) {
+            for (String key : commandParams.keySet()) {
+                if (commandParams.get(key).equals(Constants.VAR_PARENT)) {
+                    commandParams.put(key, parent);
+                    break;
+                }
+                
+            }
+            /*
             Set<String> keys = commandParams.keySet();
             Iterator<String> iterator = keys.iterator();
             String key;
@@ -303,6 +311,7 @@ public class ResourceUtil {
                     break;
                 }
             }
+            */
         }
     }
 
