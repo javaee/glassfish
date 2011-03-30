@@ -746,12 +746,12 @@ public final class JavaEETransactionImpl extends TimerTask implements
         return (Set) resourceTable.keySet();
     }
 
-    // somehow javac wont allow this declaration within JavaEEXid
-    private static final byte[] bqual = new byte[]{0};
-
     // Assume that there is only one instance of this class per local tx.
-    private class JavaEEXid implements javax.transaction.xa.Xid {
+    private static class JavaEEXid implements javax.transaction.xa.Xid {
         private static final int formatId = 987654321;
+
+        private static final byte[] bqual = new byte[]{0};
+
         private byte[] gtrId;
     
         // START IASRI 4662745
