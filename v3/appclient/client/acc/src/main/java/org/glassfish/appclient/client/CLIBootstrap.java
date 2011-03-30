@@ -139,7 +139,12 @@ public class CLIBootstrap {
     private final JVMMainOption jvmMainSetting = new JVMMainOption();
 
     /** command line elements from most specific to least specific matching pattern */
-    private final List<CommandLineElement> elements = new ArrayList<CommandLineElement>();
+    private CommandLineElement[] elementsInScanOrder;
+    
+    /** command line elements in the order they should appear on the generated
+     * command line
+     */
+    private CommandLineElement[] elementsInOutputOrder;
 
     /**
      * @param args the command line arguments
@@ -276,27 +281,51 @@ public class CLIBootstrap {
      * from most specific matching pattern to least specific.
      */
     private void initCommandLineElements() {
-        final List<CommandLineElement> result = new ArrayList<CommandLineElement>();
-
         /*
          * Add the elements in this order so the regex patterns will match
          * the correct elements.  In this arrangement, the patterns are from
          * most specific to most general.
          */
-        result.add(extDirs);
-        result.add(endorsedDirs);
-        result.add(accValuedOptions);
-        result.add(accUnvaluedOptions);
-        result.add(jvmValuedOptions);
-        result.add(jvmPropertySettings);
-        result.add(jvmMainSetting);
-        result.add(otherJVMOptions);
-        result.add(arguments);
-        elements.addAll(result);
+        elementsInScanOrder = new CommandLineElement[] {
+            extDirs,
+            endorsedDirs,
+            accValuedOptions,
+            accUnvaluedOptions,
+            jvmValuedOptions,
+            jvmPropertySettings,
+            jvmMainSetting,
+            otherJVMOptions,
+            arguments};
+        
+        /*
+         * Add the elements in this order so they appear in the generated
+         * java command in the correct positions.
+         */
+        elementsInOutputOrder = new CommandLineElement[] {
+            jvmValuedOptions,
+            jvmPropertySettings,
+            otherJVMOptions,
+            extDirs,
+            endorsedDirs,
+            accUnvaluedOptions,
+            accValuedOptions,
+            jvmMainSetting,
+            arguments
+            };
     }
 
+    /**
+     * Places double quote marks around a string if the string is not already
+     * so enclosed.
+     * @param s
+     * @return the string wrapped in double quotes if not already that way; the original string otherwise
+     */
     private static String quote(final String s) {
-        return '\"' + s + '\"';
+        if (s.length() > 2 && s.charAt(0) != '"' && s.charAt(s.length() - 1) != '"' ) {
+            return '\"' + s + '\"';
+        } else {
+            return s;
+        }
     }
 
     /**
@@ -403,7 +432,7 @@ public class CLIBootstrap {
             }
             return slot;
         }
-
+        
         /**
          * Adds the command-line element to the Java agent arguments, if
          * appropriate.
@@ -455,9 +484,10 @@ public class CLIBootstrap {
          * command line.
          *
          * @param commandLine
-         * @return
+         * @return true if any values from this command-line element
+         * was added to the command line, false otherwise
          */
-        StringBuilder format(final StringBuilder commandLine) {
+        boolean format(final StringBuilder commandLine) {
             return format(commandLine, true);
         }
 
@@ -467,9 +497,10 @@ public class CLIBootstrap {
          *
          * @param commandLine
          * @param useQuotes
-         * @return
+         * @return true if any values from this command-line element
+         * were added to the command line; false otherwise
          */
-        StringBuilder format(final StringBuilder commandLine, boolean useQuotes) {
+        boolean format(final StringBuilder commandLine, boolean useQuotes) {
             boolean needSep = false;
             for (String value : values) {
                 if (needSep) {
@@ -478,7 +509,7 @@ public class CLIBootstrap {
                 format(commandLine, useQuotes, value);
                 needSep = true;
             }
-            return commandLine;
+            return ! values.isEmpty();
         }
 
         /**
@@ -579,12 +610,12 @@ public class CLIBootstrap {
         }
 
         @Override
-        StringBuilder format(final StringBuilder commandLine) {
+        boolean format(final StringBuilder commandLine) {
             /*
              * We do not send ACC arguments to the Java command line.  They
              * are placed into the agent argument string instead.
              */
-            return commandLine;
+            return false;
         }
     }
 
@@ -618,12 +649,12 @@ public class CLIBootstrap {
         }
         
         @Override
-        StringBuilder format(final StringBuilder commandLine) {
+        boolean format(final StringBuilder commandLine) {
             for (OptionValue ov : optValues) {
                 format(commandLine, false /* useQuotes */, ov.option);
                 format(commandLine, true /* useQuotes */, ov.value);
             }
-            return commandLine;
+            return ! optValues.isEmpty();
         }
     }
 
@@ -666,12 +697,12 @@ public class CLIBootstrap {
         }
 
         @Override
-        StringBuilder format(final StringBuilder commandLine) {
+        boolean format(final StringBuilder commandLine) {
             /*
              * We do not send ACC arguments to the Java command line.  They
              * are placed into the agent argument string instead.
              */
-            return commandLine;
+            return false;
         }
     }
 
@@ -776,7 +807,7 @@ public class CLIBootstrap {
         }
         
         @Override
-        StringBuilder format(final StringBuilder commandLine) {
+        boolean format(final StringBuilder commandLine) {
             if (introducer != null) {
                 /*
                  * In the generated command we always use "-jar" to indicate
@@ -847,17 +878,12 @@ public class CLIBootstrap {
                 values.clear();
                 hasCommandLineValueAppeared = true;
             }
-            /*
-             * Strip off the introducing (pattern)= to extract the value.
-             */
-            for (String pathElement : args[slot++].substring(introducer.length() + 1).split(java.pathSeparator())) {
-                values.add(pathElement);
-                }
+            values.addAll(Arrays.asList(args[slot++].substring(introducer.length() + 1).split(java.pathSeparator())));
             return slot;
         }
         
         @Override
-        StringBuilder format(final StringBuilder commandLine) {
+        boolean format(final StringBuilder commandLine) {
             final List<String> combinedValues = new ArrayList<String>();
             /*
              *
@@ -886,8 +912,7 @@ public class CLIBootstrap {
                 commandLine.append(quoteSuppressTokenSubst(value));
                 needSep = true;
             }
-            commandLine.append(' ');
-            return commandLine;
+            return true;
         }
     }
 
@@ -920,9 +945,7 @@ public class CLIBootstrap {
         final String[] augmentedArgs = new String[args.length + 2];
         augmentedArgs[0] = "-configxml";
         augmentedArgs[1] = gfInfo.configxml().getAbsolutePath();
-        for (int i = 0; i < args.length; i++) {
-            augmentedArgs[i + 2] = args[i];
-        }
+        System.arraycopy(args, 0, augmentedArgs, 2, args.length);
 
         /*
          * Process each command-line argument by the first CommandLineElement
@@ -930,7 +953,7 @@ public class CLIBootstrap {
          */
         for (int i = 0; i < augmentedArgs.length; ) {
             boolean isMatched = false;
-            for (CommandLineElement cle : elements) {
+            for (CommandLineElement cle : elementsInScanOrder) {
                 if (isMatched = cle.matches(augmentedArgs[i])) {
                     i = cle.processValue(augmentedArgs, i);
                     break;
@@ -945,12 +968,14 @@ public class CLIBootstrap {
 
         addProperties(command);
 
-        jvmValuedOptions.format(command);
-        jvmPropertySettings.format(command);
-        otherJVMOptions.format(command);
-        extDirs.format(command);
-        endorsedDirs.format(command);
-
+        /*
+         * The user does not specify the -javaagent option we need, so we
+         * provide it here.  (It is added to the appropriate command-line 
+         * element object so, when formatted, that command-line element
+         * includes the -javaagent option.)
+         */
+        addAgentOption();
+        
         /*
          * If the user did not specify a client or usage or help then add the -usage option.
          */
@@ -959,17 +984,25 @@ public class CLIBootstrap {
                 ! isUsage()) {
             accUnvaluedOptions.processValue(new String[] {"-usage"}, 0);
         }
-        accUnvaluedOptions.format(command);
-        accValuedOptions.format(command);
         
-        addAgentOption(command);
-
-        jvmMainSetting.format(command);
-        arguments.format(command);
-
+        boolean needSep = true;
+        for (CommandLineElement e : elementsInOutputOrder) {
+            needSep = processCommandElement(command, e, needSep);
+        }
+            
         return command.toString();
     }
-
+    
+    private boolean processCommandElement(
+            final StringBuilder command, 
+            final CommandLineElement e, 
+            final boolean needSep) {
+        if (needSep) {
+            command.append(' ');
+        }
+        return e.format(command);
+    }
+    
     private boolean isHelp() {
         return accUnvaluedOptions.values.contains("-help");
     }
@@ -981,13 +1014,11 @@ public class CLIBootstrap {
     /**
      * Adds the -javaagent option to the command line.
      * 
-     * @param command
      */
-    private void addAgentOption(final StringBuilder command) {
-        command.append(' ')
-                .append("-javaagent:")
-                .append(quote(gfInfo.agentJarPath()))
-                .append(agentArgs.toString());
+    private void addAgentOption() throws UserError {
+        otherJVMOptions.processValue(new String[] {
+            "-javaagent:" + quote(gfInfo.agentJarPath())  + agentArgs.toString()},
+            0);
     }
 
     /**
