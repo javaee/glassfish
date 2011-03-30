@@ -102,9 +102,9 @@ public class AddressingNode extends DisplayableComponentNode{
         String qname = element.getQName();
         Addressing addressing = (Addressing) getDescriptor();
         if (WebServicesTagNames.ADDRESSING_ENABLED.equals(qname)) {
-            addressing.setEnabled(new Boolean(value));
+            addressing.setEnabled(Boolean.valueOf(value));
         } else if (WebServicesTagNames.ADDRESSING_REQUIRED.equals(qname)) {
-            addressing.setRequired(new Boolean(value));
+            addressing.setRequired(Boolean.valueOf(value));
         } else if (WebServicesTagNames.ADDRESSING_RESPONSES.equals(qname)) {
             addressing.setResponses(value);
         } else super.setElementValue(element, value);
@@ -126,10 +126,10 @@ public class AddressingNode extends DisplayableComponentNode{
         writeDisplayableComponentInfo(wshNode, addressing);
         appendTextChild(wshNode,
                 WebServicesTagNames.ADDRESSING_ENABLED,
-                new Boolean(addressing.isEnabled()).toString());
+                Boolean.valueOf(addressing.isEnabled()).toString());
         appendTextChild(wshNode,
                 WebServicesTagNames.ADDRESSING_REQUIRED,
-                new Boolean(addressing.isRequired()).toString());
+                Boolean.valueOf(addressing.isRequired()).toString());
         appendTextChild(wshNode,
                 WebServicesTagNames.ADDRESSING_RESPONSES,
                 addressing.getResponses());

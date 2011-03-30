@@ -113,7 +113,7 @@ public class RespectBindingNode extends DisplayableComponentNode {
         writeDisplayableComponentInfo(wshNode, rb);
         appendTextChild(wshNode,
                 WebServicesTagNames.RESPECT_BINDING_ENABLED,
-                new Boolean(rb.isEnabled()).toString());
+                Boolean.valueOf(rb.isEnabled()).toString());
 
         return wshNode;
     }
