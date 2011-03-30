@@ -1004,7 +1004,7 @@ public class DefaultRunLevelService implements RunLevelService<Void>, Enableable
       
       synchronized (lock) {
         Integer planned = getPlannedRunLevel();
-        if (!isHard && null != planned && planned == runLevel) {
+        if (!isHard && null != planned && planned.equals(runLevel)) {
           return true;  // short circuit
         }
         
