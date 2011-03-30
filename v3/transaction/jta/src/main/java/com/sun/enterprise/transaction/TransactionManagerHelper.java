@@ -128,7 +128,6 @@ public class TransactionManagerHelper implements TransactionManager, Transaction
     }
 
     public void release(Xid xid) {
-        IllegalStateException rethrow = null;
         final JavaEETransactionManager tm = transactionManager;
      
         postInvokeTx(false, true);
@@ -139,9 +138,6 @@ public class TransactionManagerHelper implements TransactionManager, Transaction
         }  finally { 
             if (tm instanceof JavaEETransactionManagerSimplified) {
                 ((JavaEETransactionManagerSimplified) tm).clearThreadTx();
-            }
-            if (rethrow != null) {
-                throw rethrow;
             }
         } 
     }
