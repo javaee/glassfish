@@ -59,16 +59,6 @@ public class SSHUtil {
     private static final String NL = System.getProperty("line.separator");
 
    /**
-       * Closes all the registered connections.
-       */
-      private static synchronized void closeRegisteredConnections() {
-          for (Connection connection : activeConnections) {
-              connection.close();
-          }
-          activeConnections.clear();
-      }
-
-   /**
        * Registers a connection for cleanup when the plugin is stopped.
        *
        * @param connection The connection.
