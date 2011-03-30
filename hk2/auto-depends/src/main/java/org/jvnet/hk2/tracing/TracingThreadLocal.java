@@ -46,7 +46,7 @@ package org.jvnet.hk2.tracing;
  */
 public class TracingThreadLocal {
 
-    public static ThreadLocal<InhabitantTracing> tLocal = new ThreadLocal<InhabitantTracing>() {
+    public static final ThreadLocal<InhabitantTracing> tLocal = new ThreadLocal<InhabitantTracing>() {
         @Override
         protected InhabitantTracing initialValue() {
             return new InhabitantTracing();

@@ -182,7 +182,7 @@ public class DirectoryBasedRepository extends AbstractRepositoryImpl {
             }
         }
         for (ModuleDefinition def : findAll()) {
-            if (!newModuleDefs.containsKey(def.getName())) {
+            if (!newModuleDefs.containsKey(AbstractFactory.getInstance().createModuleId(def))) {
                 remove(def);
                 for (RepositoryChangeListener listener : listeners) {
                     listener.moduleRemoved(def);

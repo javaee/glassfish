@@ -163,7 +163,6 @@ public class DomDocument<T extends Dom> {
         for (Inhabitant<? extends ConfigInjector> i : habitat.getInhabitants(ConfigInjector.class)) {
             buildModel(i);
         }
-        List<ConfigModel> result = new ArrayList<ConfigModel>();
         for (ConfigModel cm : models.values()) {
             Class targetType = cm.classLoaderHolder.get().loadClass(cm.targetTypeName);
             do {

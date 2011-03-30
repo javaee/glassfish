@@ -55,7 +55,7 @@ public class EarlyLogHandler extends Handler {
 
     private static int MAX_MESSAGES = 200;
 
-    public static ArrayBlockingQueue<LogRecord> earlyMessages = new ArrayBlockingQueue<LogRecord>(MAX_MESSAGES);
+    public final static ArrayBlockingQueue<LogRecord> earlyMessages = new ArrayBlockingQueue<LogRecord>(MAX_MESSAGES);
 
 	/*
     * collect the message that are logged before the log service is started
