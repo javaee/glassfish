@@ -194,10 +194,8 @@ public class JavaEETransactionManagerSimplified
             // ignore
         }
 
-        Properties cacheProps = null;
-
         resourceTable = new BaseCache();
-        ((BaseCache)resourceTable).init(maxEntries, loadFactor, cacheProps);
+        ((BaseCache)resourceTable).init(maxEntries, loadFactor, null);
         // END IASRI 4705808 TTT001
 
         if (habitat != null) {
@@ -415,7 +413,7 @@ public class JavaEETransactionManagerSimplified
         TransactionInternal jtsTx = getDelegate().startJTSTx(tx, tx.isAssociatedTimeout());
 
         // The local Transaction was promoted to global Transaction
-        if (tx!=null && monitoringEnabled){
+        if (monitoringEnabled){
             if(activeTransactions.remove(tx)){
                 monitor.transactionDeactivatedEvent();
             }
@@ -578,18 +576,6 @@ public class JavaEETransactionManagerSimplified
         tx.javaEETM = this;
         setCurrentTransaction(tx);
         return tx;
-    }
-
-    private List getExistingResourceList(Object instance) {
-        throw new IllegalStateException("Should not be called");
-/**
-        if (instance == null)
-            return null;
-        Object key = getResourceTableKey(instance);
-        if (key == null)
-            return null;
-        return (List) resourceTable.get(key);
-**/
     }
 
     public List getExistingResourceList(Object instance, ComponentInvocation inv) {
