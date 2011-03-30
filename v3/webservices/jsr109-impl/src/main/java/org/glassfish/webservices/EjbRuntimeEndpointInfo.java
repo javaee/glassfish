@@ -261,7 +261,7 @@ public class EjbRuntimeEndpointInfo {
                         }
                         if (wsFeatures.size()>0){
                             binding = BindingID.parse(givenBinding).createBinding(wsFeatures.toArray
-                                    (new WebServiceFeature[0]));
+                                    (new WebServiceFeature[wsFeatures.size()]));
                         } else {
                             binding = BindingID.parse(givenBinding).createBinding();
                         }
@@ -323,7 +323,7 @@ public class EjbRuntimeEndpointInfo {
                 Iterator<InjectionTarget> iter = r.getInjectionTargets().iterator();
 
                 while(iter.hasNext()) {
-                    InjectionTarget target = iter.next();
+                    
                     try {
                         javax.naming.InitialContext ic = new javax.naming.InitialContext();
                         wsc = (WebServiceContextImpl) ic.lookup("java:comp/env/" + r.getName());
