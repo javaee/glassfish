@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -55,6 +55,7 @@ import com.sun.enterprise.util.OS;
 import com.sun.enterprise.util.ProcessExecutor;
 import com.sun.enterprise.util.ExecException;
 import com.sun.enterprise.util.net.NetUtils;
+import com.sun.logging.LogDomains;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -64,6 +65,8 @@ import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 
@@ -90,6 +93,9 @@ public class KeystoreManager {
             "-J-Dsun.security.internal.keytool.skid";
 
     private static final String INSTANCE_CN_SUFFIX = "-instance";
+    
+    private static Logger logger = LogDomains.getLogger(KeystoreManager.class, 
+            LogDomains.ADMIN_LOGGER);
     
     protected class KeytoolExecutor extends ProcessExecutor {            
                 
@@ -371,12 +377,13 @@ public class KeystoreManager {
             /* commented out till asadmintruststore can be added back */
             //addToAsadminTrustStore(config, certFile);
 
-            //clean up the exported cert file
-            certFile.delete();
-            certFile = null;
         }  finally {
             if (certFile != null) {
-                certFile.delete();
+                final boolean isCertFileDeleted = certFile.delete();
+                if ( ! isCertFileDeleted) {
+                    logger.log(Level.WARNING, "errorDeletingTempCertFile",
+                            certFile.getAbsolutePath());
+                }
             }
         }
     }
