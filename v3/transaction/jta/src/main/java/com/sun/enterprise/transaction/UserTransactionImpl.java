@@ -288,8 +288,8 @@ public class UserTransactionImpl implements UserTransaction, Serializable
         transactionManager.setTransactionTimeout(seconds);
     }
 
-    public void setForTesting(TransactionManager tm, InvocationManager im) {
-        transactionManager = (JavaEETransactionManager)tm;
+    public void setForTesting(JavaEETransactionManager tm, InvocationManager im) {
+        transactionManager = tm;
         invocationManager = im;
         ((JavaEETransactionManagerSimplified)transactionManager).invMgr = im;
     }

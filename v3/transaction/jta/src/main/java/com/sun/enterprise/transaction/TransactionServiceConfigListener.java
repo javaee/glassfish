@@ -118,7 +118,6 @@ public class TransactionServiceConfigListener implements ConfigListener {
 
            if (event.getSource() instanceof ModuleMonitoringLevels) {
                 if (eventName.equals(ServerTags.TRANSACTION_SERVICE)) {
-                    String oldlevel = oldValue.toString();
                     String newlevel = newValue.toString();
                     _logger.log(Level.FINE, "Changing transaction monitoring level"); 
                     if ("OFF".equals(newlevel)) {

@@ -125,7 +125,6 @@ public class TransactionServiceStatsProvider {
     @ManagedAttribute(id="activeids")
     @Description( "List of inflight transactions." )
     public StringStatistic getActiveIds() {
-        StringBuffer strBuf = new StringBuffer(1024);
 
         if (txMgr == null) {
             _logger.warning("transaction.monitor.tm_null");
@@ -134,6 +133,7 @@ public class TransactionServiceStatsProvider {
         }
 
         List aList = txMgr.getActiveTransactions();
+        StringBuffer strBuf = new StringBuffer(1024);
         if (!aList.isEmpty()) {
             //Set the headings for the tabular output
             int componentNameLength = COLUMN_LENGTH;
@@ -182,7 +182,7 @@ public class TransactionServiceStatsProvider {
 
         _logger.fine("Prepared inflightTransactions text: \n" + strBuf);
 
-        inflightTransactions.setCurrent((strBuf == null)? "" : strBuf.toString());
+        inflightTransactions.setCurrent(strBuf.toString());
         return inflightTransactions.getStatistic();
     }
     

@@ -742,8 +742,7 @@ public class AppTest extends TestCase {
     private UserTransaction createUtx() throws javax.naming.NamingException {
         UserTransaction utx = new UserTransactionImpl();
         InvocationManager im = new org.glassfish.api.invocation.InvocationManagerImpl();
-        ((JavaEETransactionManagerSimplified)t).invMgr = im;
-        ((UserTransactionImpl)utx).setForTesting(t, im);
+        ((UserTransactionImpl)utx).setForTesting((JavaEETransactionManager)t, im);
         return utx;
     }
 
