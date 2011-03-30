@@ -249,8 +249,7 @@ public abstract class AbstractEjbHandler extends AbstractHandler {
 
             // create the actual ejb descriptor using annotation info and 
             // the information from dummy ejb descriptor if applicable
-            if (dummyEjbDesc != null && 
-                dummyEjbDesc instanceof DummyEjbDescriptor ) {
+            if (dummyEjbDesc != null) {
                 currentBundle.removeEjb(dummyEjbDesc);
                 ejbDesc.addEjbDescriptor(dummyEjbDesc);
                 // reset ejbClassName on ejbDesc
