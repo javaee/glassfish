@@ -76,7 +76,7 @@ import org.jvnet.hk2.component.PerLookup;
  */
 @Service(name="http")
 @Scoped(PerLookup.class)
-public class HTTPInputArchive extends AbstractReadableArchive implements ReadableArchive {
+public class HTTPInputArchive extends AbstractReadableArchive {
 
     private URI archiveURI = null;
     private URL archiveURL = null;
