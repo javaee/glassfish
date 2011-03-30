@@ -220,9 +220,9 @@ public abstract class DomainXml implements Populator {
             ServerReaderFilter xsr = null;
 
             if (env.getRuntimeType() == RuntimeType.DAS || env.getRuntimeType() == RuntimeType.EMBEDDED)
-                xsr = new DasReaderFilter(habitat, domainXml, xif);
+                xsr = new DasReaderFilter(domainXml, xif);
             else if (env.getRuntimeType() == RuntimeType.INSTANCE)
-                xsr = new InstanceReaderFilter(env.getInstanceName(), habitat, domainXml, xif);
+                xsr = new InstanceReaderFilter(env.getInstanceName(), domainXml, xif);
             else
                 throw new RuntimeException("Internal Error: Unknown server type: "
                         + env.getRuntimeType());

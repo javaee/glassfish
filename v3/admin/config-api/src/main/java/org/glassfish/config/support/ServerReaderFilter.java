@@ -45,21 +45,19 @@ import java.net.*;
 import java.util.*;
 import java.util.logging.*;
 import javax.xml.stream.*;
-import org.jvnet.hk2.component.Habitat;
 
 /**
  * Instances and DAS' are quite different
  * @author Byron Nevins
  */
 abstract class ServerReaderFilter extends XMLStreamReaderFilter {
-    ServerReaderFilter(Habitat theHabitat, URL theDomainXml,
+    ServerReaderFilter(URL theDomainXml,
             XMLInputFactory theXif) throws XMLStreamException {
 
         try {
             domainXml = theDomainXml;
             xif = theXif;
             stream = domainXml.openStream();
-            habitat =  theHabitat;
             setParent(xif.createXMLStreamReader(domainXml.toExternalForm(), stream));
         }
         catch(IOException e) {
@@ -88,5 +86,4 @@ abstract class ServerReaderFilter extends XMLStreamReaderFilter {
     final URL domainXml;
     final XMLInputFactory xif;
     final InputStream stream;
-    final Habitat habitat;
 }
