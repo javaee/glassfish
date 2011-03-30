@@ -65,7 +65,6 @@ public final class PortManager {
             if (theNewServer == null || theDomain == null)
                 throw new TransactionFailure(Strings.get("internal.error", "null argument in PortManager constructor"));
 
-            logger = theLogger;
             newServer = theNewServer;
             domain = theDomain;
             serverName = newServer.getName();
@@ -290,7 +289,5 @@ public final class PortManager {
     private final List<Server> allServers;
     private final List<ServerPorts> serversOnHost;
     private final ServerPorts newServerPorts;
-    private final boolean checkLivePorts = true;
-    private final Logger logger;
     private static final int MAX_PORT_TRIES = 1100;
 }
