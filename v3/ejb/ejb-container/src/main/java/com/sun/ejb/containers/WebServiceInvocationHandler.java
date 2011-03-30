@@ -82,7 +82,6 @@ public final class WebServiceInvocationHandler extends EJBLocalRemoteObject
     private boolean hasHandlers_;
     private Map invocationInfoMap_;
 
-    private Logger logger = LogDomains.getLogger(this.getClass(),LogDomains.WEBSERVICES_LOGGER);
 
     public WebServiceInvocationHandler(Class ejbClass, 
                                        WebServiceEndpoint endpoint,
