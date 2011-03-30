@@ -4,7 +4,6 @@ portUnification
 portUnificationTarget
 wrongTransport
 wrongTransportTarget
-configUpgrades
 ha/ssoFailover
 networkListenerTarget
 asadminDeletesTarget
