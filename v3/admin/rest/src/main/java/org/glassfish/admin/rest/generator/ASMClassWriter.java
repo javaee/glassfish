@@ -433,7 +433,9 @@ public class ASMClassWriter implements ClassWriter, Opcodes {
                 break;
             }
         }
-
+        if (jm==null){//should never happen, makes findbug happy
+            throw new RuntimeException("cannot find method called defineclass...");
+        }
         final java.lang.reflect.Method clM = jm;
         try {
             java.security.AccessController.doPrivileged(
