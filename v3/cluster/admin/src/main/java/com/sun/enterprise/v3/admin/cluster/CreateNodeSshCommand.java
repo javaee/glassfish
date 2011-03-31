@@ -363,7 +363,12 @@ public class CreateNodeSshCommand implements AdminCommand  {
         }
         
         if (f != null) {
-            f.delete();
+            boolean didDelete = f.delete();
+            if(!didDelete) {
+                if(logger.isLoggable(Level.WARNING)) {
+                    logger.log(Level.WARNING, Strings.get("node.ssh.passfile.delete.error", f.getPath()));
+                }
+            }
         }
         return exit;
     }
