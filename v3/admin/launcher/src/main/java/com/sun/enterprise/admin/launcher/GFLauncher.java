@@ -385,7 +385,7 @@ private void setLogFilename(MiniXmlParser parser) throws GFLauncherException {
         return asenvProps;
     }
 
-    final List<String> getCommandLine() {
+    public final List<String> getCommandLine() {
         return commandLine;
     }
 

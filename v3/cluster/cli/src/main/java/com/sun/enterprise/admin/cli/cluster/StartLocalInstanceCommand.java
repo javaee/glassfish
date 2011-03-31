@@ -74,6 +74,10 @@ public class StartLocalInstanceCommand extends SynchronizeInstanceCommand
     @Param(optional = true, shortName = "d", defaultValue = "false")
     private boolean debug;
 
+    @Param(name = "dry-run", shortName = "n", optional = true,
+            defaultValue = "false")
+    private boolean dry_run;
+
     // handled by superclass
     //@Param(name = "instance_name", primary = true, optional = false)
     //private String instanceName0;
@@ -142,6 +146,18 @@ public class StartLocalInstanceCommand extends SynchronizeInstanceCommand
             if(!helper.prepareForLaunch())
                 return ERROR;
 
+            if(dry_run) {
+                logger.fine(Strings.get("dry_run_msg"));
+                List<String> cmd = launcher.getCommandLine();
+                StringBuilder sb = new StringBuilder();
+                for (String s : cmd) {
+                    sb.append(s);
+                    sb.append('\n');
+                }
+                logger.info(sb.toString());
+                return SUCCESS;
+            }
+            
             launcher.launch();
 
             if (verbose) { // we can potentially loop forever here...
