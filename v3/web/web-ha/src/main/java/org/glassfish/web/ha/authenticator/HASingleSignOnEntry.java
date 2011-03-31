@@ -71,7 +71,7 @@ public class HASingleSignOnEntry extends SingleSignOnEntry {
     public HASingleSignOnEntry(Container container, HASingleSignOnEntryMetadata m,
             JavaEEIOUtils ioUtils) {
         this(m.getId(), null, m.getAuthType(),
-                m.getUsername(), m.getRealmName(),
+                m.getUserName(), m.getRealmName(),
                 m.getLastAccessTime(), m.getMaxIdleTime(), m.getVersion(),
                 ioUtils);
 

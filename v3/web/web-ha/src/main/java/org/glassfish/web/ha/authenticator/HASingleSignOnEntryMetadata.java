@@ -56,7 +56,7 @@ public class HASingleSignOnEntryMetadata implements Serializable {
 
     protected Set<HASessionData> sessionDataSet = new HashSet<HASessionData>();
 
-    protected String username = null;
+    protected String userName = null;
 
     protected String realmName = null;
 
@@ -71,13 +71,13 @@ public class HASingleSignOnEntryMetadata implements Serializable {
     }
 
     public HASingleSignOnEntryMetadata(String id, byte[] principalBytes, String authType,
-            String username, String realmName,
+            String userName, String realmName,
             long lastAccessTime, long maxIdleTime, long version) {
         
         this.id = id;
         this.principalBytes = ((principalBytes != null) ? ((byte[])principalBytes.clone()) : null);
         this.authType = authType;
-        this.username = username;;
+        this.userName = userName;;
         this.realmName = realmName;
         this.lastAccessTime = lastAccessTime;
         this.maxIdleTime = maxIdleTime;
@@ -96,8 +96,8 @@ public class HASingleSignOnEntryMetadata implements Serializable {
         return authType;
     }
 
-    public String getUsername() {
-        return username;
+    public String getUserName() {
+        return userName;
     }
 
     public String getRealmName() {
@@ -138,7 +138,7 @@ public class HASingleSignOnEntryMetadata implements Serializable {
                 "id='" + id + '\'' +
                 ", authType='" + authType + '\'' +
                 ", sessionDataSet.size=" + sessionDataSet.size() +
-                ", username='" + username + '\'' +
+                ", userName='" + userName + '\'' +
                 ", realmName='" + realmName + '\'' +
                 ", lastAccessTime=" + lastAccessTime +
                 ", maxIdleTime=" + maxIdleTime +
