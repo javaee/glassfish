@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -178,8 +178,8 @@ public class HASingleSignOnEntry extends SingleSignOnEntry {
         ObjectOutputStream oos = null;
         try {
             baos = new ByteArrayOutputStream();
-            bos = new BufferedOutputStream(bos);
-            oos = ioUtils.createObjectOutputStream(baos, true);
+            bos = new BufferedOutputStream(baos);
+            oos = ioUtils.createObjectOutputStream(bos, true);
             oos.writeObject(obj);
         } catch(Exception ex) {
             throw new IllegalStateException(ex);
