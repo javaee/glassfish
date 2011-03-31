@@ -174,8 +174,7 @@ public class PackageAppClient {
         File outputFile = chooseOutputFile(installDir, args);
         if (outputFile.exists()) {
             if ( ! outputFile.delete()) {
-                System.err.println(strings.get("errDel", outputFile.getAbsolutePath()));
-                System.exit(1);
+                throw new RuntimeException(strings.get("errDel", outputFile.getAbsolutePath()));
             };
             System.out.println(strings.get("replacingFile", outputFile.getAbsolutePath()));
         } else {
@@ -384,14 +383,6 @@ public class PackageAppClient {
         }
     }
 
-    private void addDirEntry(
-            final JarOutputStream os,
-            final URI installDirURI,
-            final URI absoluteDirURIToAdd,
-            final File outputFile) {
-
-    }
-
     /**
      * Copies the contents of a given file to the output stream.
      * @param os
@@ -404,12 +395,17 @@ public class PackageAppClient {
             final URI uriToCopy) throws FileNotFoundException, IOException {
         File fileToCopy = new File(uriToCopy);
         InputStream is = new BufferedInputStream(new FileInputStream(fileToCopy));
-        int bytesRead;
-        byte [] buffer = new byte[4096];
-        while ((bytesRead = is.read(buffer)) != -1) {
-            os.write(buffer, 0, bytesRead);
+        try {
+            int bytesRead;
+            byte [] buffer = new byte[4096];
+            while ((bytesRead = is.read(buffer)) != -1) {
+                os.write(buffer, 0, bytesRead);
+            }
+        } finally {
+            if (is != null) {
+                is.close();
+            }
         }
-        is.close();
     }
 
     /**
