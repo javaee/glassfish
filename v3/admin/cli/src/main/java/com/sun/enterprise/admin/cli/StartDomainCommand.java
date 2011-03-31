@@ -78,7 +78,7 @@ public class StartDomainCommand extends LocalDomainCommand implements StartServe
     private boolean debug;
     @Param(name = "domain_name", primary = true, optional = true)
     private String domainName0;
-    @Param(name = "dry-run", shortName = "n", optional = true,
+    @Param(name = "_dry-run", shortName = "n", optional = true,
             defaultValue = "false")
     private boolean dry_run;
     private static final LocalStringsImpl strings =
