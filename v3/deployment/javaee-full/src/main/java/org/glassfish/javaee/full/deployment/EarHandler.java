@@ -82,6 +82,8 @@ import java.util.logging.Level;
 import java.net.URLClassLoader;
 import java.net.URL;
 import java.text.MessageFormat;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -305,7 +307,7 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
                 || (arch1 instanceof JarArchive && arch2 instanceof JarArchive));
     }
 
-    public ClassLoader getClassLoader(ClassLoader parent, DeploymentContext context) {
+    public ClassLoader getClassLoader(final ClassLoader parent, DeploymentContext context) {
         final ReadableArchive archive  = context.getSource();
 
         ApplicationHolder holder = 
@@ -314,8 +316,8 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
         // the ear classloader hierachy will be 
         // ear lib classloader -> embedded rar classloader -> 
         // ear classloader -> various module classloaders
-        DelegatingClassLoader embeddedConnCl;
-        EarClassLoader cl;
+        final DelegatingClassLoader embeddedConnCl;
+        final EarClassLoader cl;
         // add the libraries packaged in the application library directory
         try {
             String compatProp = context.getAppProps().getProperty(
@@ -342,9 +344,27 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
                         DeploymentProperties.COMPATIBILITY, compatProp);
                 }
             }
-            EarLibClassLoader earLibCl = new EarLibClassLoader(ASClassLoaderUtil.getAppLibDirLibraries(context.getSourceDir(), holder.app.getLibraryDirectory(), compatProp), parent);
-            embeddedConnCl = new DelegatingClassLoader(earLibCl);
-            cl = new EarClassLoader(embeddedConnCl);
+            final URL[] earLibURLs = ASClassLoaderUtil.getAppLibDirLibraries(context.getSourceDir(), holder.app.getLibraryDirectory(), compatProp);
+            final EarLibClassLoader earLibCl = AccessController.doPrivileged(new PrivilegedAction<EarLibClassLoader>() {
+                @Override
+                public EarLibClassLoader run() {
+                    return new EarLibClassLoader(earLibURLs, parent);
+                }
+            });
+
+            embeddedConnCl =  AccessController.doPrivileged(new PrivilegedAction<DelegatingClassLoader>() {
+                @Override
+                public DelegatingClassLoader run() {
+                    return new DelegatingClassLoader(earLibCl);
+                }
+            });
+
+            cl =  AccessController.doPrivileged(new PrivilegedAction<EarClassLoader>() {
+                @Override
+                public EarClassLoader run() {
+                    return new EarClassLoader(embeddedConnCl);
+                }
+            });
 
             // add ear lib to module classloader list so we can 
             // clean it up later
@@ -502,7 +522,7 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
         }
     }
 
-    private class GFApplicationXmlParser {
+    private static class GFApplicationXmlParser {
         private XMLStreamReader parser = null;
         private String compatValue = null;
 
@@ -623,7 +643,7 @@ public class EarHandler extends AbstractArchiveHandler implements CompositeHandl
         }
     }
 
-    private class SunApplicationXmlParser {
+    private static class SunApplicationXmlParser {
         private XMLStreamReader parser = null;
         private String compatValue = null;
 

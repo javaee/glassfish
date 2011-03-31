@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -81,14 +81,14 @@ public abstract class Factory {
         if (skipAnnotationClassList == null) {
             skipAnnotationClassList = new HashSet<String>();
             InputStream is = null;
+            BufferedReader bf = null;
             try {
                 is = AnnotationProcessorImpl.class.getClassLoader().getResourceAsStream(SKIP_ANNOTATION_CLASS_LIST_URL);
                 if (is==null) {
                     AnnotationUtils.getLogger().log(Level.FINE, "no annotation skipping class list found");
                     return;
                 }
-                BufferedReader bf =
-                    new BufferedReader(new InputStreamReader(is));
+                bf = new BufferedReader(new InputStreamReader(is));
                 String className;
                 while ( (className = bf.readLine()) != null ) {
                     skipAnnotationClassList.add(className.trim());
@@ -100,6 +100,13 @@ public abstract class Factory {
                 if (is != null) {
                     try {
                         is.close(); 
+                    } catch (IOException ioe2) {
+                        // ignore
+                    }
+                }
+                if (bf != null) {
+                    try {
+                        bf.close();
                     } catch (IOException ioe2) {
                         // ignore
                     }

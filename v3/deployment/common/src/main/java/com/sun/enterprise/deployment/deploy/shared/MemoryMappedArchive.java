@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2006-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -107,8 +107,15 @@ public class MemoryMappedArchive extends JarArchive implements ReadableArchive {
         if (!in.exists()) {
             throw new FileNotFoundException(uri.getSchemeSpecificPart());
         }
-        FileInputStream is = new FileInputStream(in);
-        read(is);
+        FileInputStream is = null;
+        try {
+            is = new FileInputStream(in);
+            read(is);
+        } finally {
+            if (is != null) {
+                is.close();
+            }
+        }
     }
     
     // copy constructor
