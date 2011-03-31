@@ -269,8 +269,7 @@ public class ClassLoaderUtil {
                                      *could not be closed and add it to the list
                                      *of IOExceptions to be returned to the caller.
                                      */
-                                    String jarFileName = (jarFile == null) ? getMessage("classloaderutil.jarFileNameNotAvailable") : jarFile.getName();
-                                    String msg = getMessage("classloaderutil.errorClosingJar", jarFileName);
+                                    String msg = getMessage("classloaderutil.errorClosingJar", jarFile.getName());
                                     IOException newIOE = new IOException(msg);
                                     newIOE.initCause(ioe);
                                     ioExceptions.add(newIOE);
