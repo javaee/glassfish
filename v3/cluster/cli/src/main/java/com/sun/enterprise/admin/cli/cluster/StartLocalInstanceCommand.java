@@ -74,7 +74,7 @@ public class StartLocalInstanceCommand extends SynchronizeInstanceCommand
     @Param(optional = true, shortName = "d", defaultValue = "false")
     private boolean debug;
 
-    @Param(name = "dry-run", shortName = "n", optional = true,
+    @Param(name = "_dry-run", shortName = "n", optional = true,
             defaultValue = "false")
     private boolean dry_run;
 
