@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -207,7 +207,8 @@ public class UpdateCenterHandlers {
             else
             if (state.equals("addOn"))
                 displayList = getAddOnList(img);
-            
+
+          if (displayList != null){
             for (Fmri fmri : displayList){
                 Map oneRow = new HashMap();
                 try{
@@ -234,6 +235,7 @@ public class UpdateCenterHandlers {
                     }
                 }
             }
+          }
         }catch(Exception ex1){
             GuiUtil.getLogger().info("getUcList(): " +  ex1.getLocalizedMessage());
             if (GuiUtil.getLogger().isLoggable(Level.FINE)){
@@ -426,7 +428,7 @@ public class UpdateCenterHandlers {
             ex.printStackTrace();
             if (countOnly){
                 List tmpL = new ArrayList();
-                tmpL.add(new Integer(-1));
+                tmpL.add(Integer.valueOf(-1));
                 return tmpL;
             }
         }
@@ -527,7 +529,7 @@ public class UpdateCenterHandlers {
 
 
      public static Integer updateCountInSession(Image image){
-	 Integer countInt = new Integer(-1);
+	 Integer countInt = Integer.valueOf(-1);
 	 if (image != null){
 	    List list = getUpdateDisplayList(image, true);
 	    countInt = (Integer) list.get(0);
@@ -576,7 +578,8 @@ public class UpdateCenterHandlers {
             size/MB + GuiUtil.getMessage(BUNDLE, "sizeMB")  ;
         return sizep;
     }
-    
+
+    /* comment out un-used method.
     private static String getPkgDate(Version version){
         //TODO localize the date format
         int begin = version.toString().indexOf(":");
@@ -585,6 +588,8 @@ public class UpdateCenterHandlers {
         String result = dateStr.substring(0,4) + "/" + dateStr.substring(4,6) + "/" + dateStr.substring(6,8);
         return result;
     }
+     *
+     */
 
     
     public static Image getUpdateCenterImage(){
