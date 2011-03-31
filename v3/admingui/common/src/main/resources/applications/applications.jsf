@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -47,7 +47,7 @@
     setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings")
     setResourceBundle(key="help" bundle="org.glassfish.common.admingui.Helplinks")
 />
-<!composition template="/templates/default.layout" 
+<!composition template="/templates/default.layout"
     guiTitle="$resource{i18n.enterpriseApplications.title}"
     guiTemplateOnLoad="admingui.nav.refreshTree('treeForm:tree:applications');">
 <!define name="content">
@@ -73,7 +73,7 @@
         setSessionAttribute(key="gf_application_predefine_target" value="#{null}");
         setSessionAttribute(key="gf_application_extra_args" value="#{null}");
 
-            
+
             <!--
             setPageSessionAttribute(key="viewKey" value="$pageSession{viewKeyValue}");
             setPageSessionAttribute(key="showDetail" value="$boolean{false}");
@@ -97,7 +97,7 @@
             </sun:form>
 <f:verbatim>
     <script type="text/javascript">
-        
+
     </script>
 </f:verbatim>
 </define>

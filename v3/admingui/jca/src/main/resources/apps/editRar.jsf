@@ -48,6 +48,7 @@
     setPageSessionAttribute(key="showVS" value="#{false}")
     setPageSessionAttribute(key="showContextRoot" value="#{false}")
     setPageSessionAttribute(key="showAvailability" value="#{false}")
+    setPageSessionAttribute(key="showOsgiType" value="#{false}")
     setPageSessionAttribute(key="editPage" value="#{request.contextPath}/jca/apps/editRar.jsf")
     setPageSessionAttribute(key="hasPageTitleHelp" value="#{true}")
     setPageSessionAttribute(key="hasPageTitle" value="#{true}")

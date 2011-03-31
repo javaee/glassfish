@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -60,7 +60,7 @@
                     if(#{pageSession.configName}=server-config){
                         listAdd(list="#{pageSession.instanceList}" value="server" index="0");
                     }
-                    EnsureDefaultWebModule(endpoint="#{pageSession.selfUrl}",vsName="#{pageSession.valueMap['id']}",instanceList="#{pageSession.instanceList}");
+                    gf.ensureDefaultWebModule(endpoint="#{pageSession.parentUrl}/#{pageSession.childType}",vsName="#{pageSession.valueMap['id']}",instanceList="#{pageSession.instanceList}");
                     getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                     getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
                     removeEmptyProps(props="#{pageSession.tableList}" modifiedProps="#{pageSession.tableList}");
@@ -95,7 +95,7 @@
                     if(#{pageSession.configName}=server-config){
                         listAdd(list="#{pageSession.instanceList}" value="server" index="0");
                     }
-                    EnsureDefaultWebModule(endpoint="#{pageSession.selfUrl}",vsName="#{pageSession.valueMap['id']}",instanceList="#{pageSession.instanceList}");
+                    gf.ensureDefaultWebModule(endpoint="#{pageSession.selfUrl}",vsName="#{pageSession.valueMap['id']}",instanceList="#{pageSession.instanceList}");
                     getUIComponent(clientId="$pageSession{propertyTableRowGroupId}", component=>$attribute{tableRowGroup});
                     getAllSingleMapRows(TableRowGroup="$attribute{tableRowGroup}",  Rows=>$attribute{newList});
                     removeEmptyProps(props="#{pageSession.tableList}" modifiedProps="#{pageSession.tableList}");

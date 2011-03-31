@@ -77,8 +77,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import org.glassfish.admingui.common.security.AdminConsoleAuthModule;
-import org.glassfish.deployment.client.DeploymentFacility;
-import org.glassfish.deployment.client.ServerConnectionIdentifier;
 
 import org.jvnet.hk2.component.Habitat;
 
@@ -148,19 +146,22 @@ public class GuiUtil {
         }
         ExternalContext externalCtx = FacesContext.getCurrentInstance().getExternalContext();
         Map<String, Object> sessionMap = externalCtx.getSessionMap();
+        if (logger.isLoggable(Level.FINE)){
+            logger.log(Level.INFO, "SessionMap from externalCtx: " + sessionMap.toString());
+        }
 
         Object request = externalCtx.getRequest();
         if (request instanceof javax.servlet.ServletRequest){
             ServletRequest srequest = (ServletRequest) request;
             sessionMap.put("hostName", srequest.getServerName());
             String restServerName = (String) sessionMap.get(AdminConsoleAuthModule.REST_SERVER_NAME);
-	    if (restServerName == null) {
-		throw new IllegalStateException("REST Server Name not set!");
-	    }
+            if (restServerName == null) {
+                throw new IllegalStateException("REST Server Name not set!");
+            }
             int port = (Integer) sessionMap.get(AdminConsoleAuthModule.REST_SERVER_PORT);
-	    sessionMap.put("requestIsSecured", srequest.isSecure());
-	    sessionMap.put("REST_URL", "http" + (srequest.isSecure() ? "s" : "") + "://" + restServerName + ":" + port + "/management/domain");
-	    sessionMap.put("MONITOR_URL", "http" + (srequest.isSecure() ? "s" : "") + "://" + restServerName + ":" + port + "/monitoring/domain");
+            sessionMap.put("requestIsSecured", srequest.isSecure());
+            sessionMap.put("REST_URL", "http" + (srequest.isSecure() ? "s" : "") + "://" + restServerName + ":" + port + "/management/domain");
+            sessionMap.put("MONITOR_URL", "http" + (srequest.isSecure() ? "s" : "") + "://" + restServerName + ":" + port + "/monitoring/domain");
         } else {
             //should never get here.
             sessionMap.put("hostName", "");
@@ -243,32 +244,7 @@ public class GuiUtil {
         return sessionMap.get(key);
     }
 
-    public static DeploymentFacility getDeploymentFacility(){
-        DeploymentFacility df = null;
-        if (df == null){
-            //df= DeploymentFacilityFactory.getDeploymentFacility();
-            df = new LocalDeploymentFacility();
-            String serverName = (String)getSessionValue("serverName");
-            Integer serverPort = (Integer)getSessionValue("serverPort");
-            int port = 4848;
-            if (serverPort == null){
-                getLogger().warning(GuiUtil.getMessage(COMMON_RESOURCE_NAME, "WARNING_NO_ADMIN_LISTENER_PORT"));
-            }else{
-                port = serverPort.intValue();
-            }
-            String userName = (String)getSessionValue("userName");
-            Boolean requestIsSecured = (Boolean)getSessionValue("requestIsSecured");
-
-            ServerConnectionIdentifier sci = new ServerConnectionIdentifier(
-                    serverName, port, userName,
-                    "",     //password    FIXME: how to get password ?
-                    requestIsSecured);
-            df.connect(sci);   //although we pass in sci, it is ignored. refer to issue#6100
-            setSessionValue("_DEPLOYMENT_FACILITY", df);
-        }
-        return df;
-    }
-
+    
     /**
      * <p> This method encodes the given String with the specified type.
      * <p> If type is not specified then it defaults to UTF-8.
@@ -362,21 +338,13 @@ public class GuiUtil {
      */
 
     public static String getMessage(String key) {
-
         try {
-            // Get the Resource Bundle
-            ResourceBundle bundle = (ResourceBundle) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get(I18N_RESOURCE_BUNDLE);
-
-            if (bundle == null) {
-                Locale locale = com.sun.jsftemplating.util.Util.getLocale(FacesContext.getCurrentInstance());
-                bundle = ResourceBundleManager.getInstance().getBundle(RESOURCE_NAME, locale);
-                // Store it in the Request Map
-                FacesContext.getCurrentInstance().getExternalContext().getRequestMap().put(I18N_RESOURCE_BUNDLE, bundle);
-            }
+            Locale locale = com.sun.jsftemplating.util.Util.getLocale(FacesContext.getCurrentInstance());
+            ResourceBundle bundle = ResourceBundleManager.getInstance().getBundle(RESOURCE_NAME, locale);
             String ret = bundle.getString(key);
             return (ret == null) ? key : ret;
         } catch (NullPointerException ex) {
-            return "";
+            return key;
         } catch (Exception ex1) {
             return key;
         }

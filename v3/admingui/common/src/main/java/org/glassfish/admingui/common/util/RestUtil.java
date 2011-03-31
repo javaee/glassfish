@@ -362,6 +362,16 @@ public class RestUtil {
         }
         return null;
     }
+
+
+    public static boolean hasWarning(Map responseMap){
+        if (responseMap.get("data") != null){
+            String exitCodeStr = (String)((Map)responseMap.get("data")).get("exit_code");
+            ExitCode exitCode = (exitCodeStr != null) ? ExitCode.valueOf(exitCodeStr) : ExitCode.SUCCESS;
+            return  (exitCode == ExitCode.WARNING);
+        }
+        return false;
+    }
     
     /**
      * This method will encode append segment to base, encoding it so that a correct URL is returned.

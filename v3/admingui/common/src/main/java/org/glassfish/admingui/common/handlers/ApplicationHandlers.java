@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -68,6 +68,8 @@ import java.util.Map;
 import java.util.Iterator;
 import java.util.Collection;
 import java.util.Collections;
+import java.net.URLDecoder;
+
 
 import java.util.TreeSet;
 import java.util.Set;
@@ -76,9 +78,6 @@ import org.glassfish.admingui.common.util.DeployUtil;
 import org.glassfish.admingui.common.util.RestUtil;
 import org.glassfish.admingui.common.util.TargetUtil;
 import org.glassfish.admingui.common.util.AppUtil;
-import org.glassfish.deployment.client.DFDeploymentProperties;
-
-
 
 
 public class ApplicationHandlers {
@@ -181,7 +180,7 @@ public class ApplicationHandlers {
                 }
 
                 if (snifferList.contains("appclient")){
-                    String jwEnabled = RestUtil.getPropValue(GuiUtil.getSessionValue("REST_URL") + "/applications/application/"+encodedAppName, DFDeploymentProperties.DEPLOY_OPTION_JAVA_WEB_START_ENABLED,  handlerCtx);
+                    String jwEnabled = RestUtil.getPropValue(GuiUtil.getSessionValue("REST_URL") + "/applications/application/"+encodedAppName, "java-web-start-enabled",  handlerCtx);
                     if (!GuiUtil.isEmpty(jwEnabled) && jwEnabled.equals("true") ){
                         List<String> targetList = DeployUtil.getApplicationTarget(appName, "application-ref");
                         oneRow.put("hasAppClientLaunch", (targetList.isEmpty())? false: true);
@@ -405,16 +404,15 @@ public class ApplicationHandlers {
         String Enabled = (String) handlerCtx.getInputValue("Enabled");
         List<Map>  selectedRows = (List) handlerCtx.getInputValue("selectedRows");
         boolean forLB = (Boolean) handlerCtx.getInputValue("forLB");
-        String prefix = (String) GuiUtil.getSessionValue("REST_URL");
         for(Map oneRow : selectedRows){
             Map attrs = new HashMap();
             String endpoint = (String) oneRow.get("endpoint");
             if(forLB){
                 attrs.put("lbEnabled", Enabled);
-                RestUtil.restRequest(prefix+endpoint, attrs, "post", handlerCtx, false);
+                RestUtil.restRequest(endpoint, attrs, "post", handlerCtx, false);
             }else{
-                DeployUtil.enableApp( (String)oneRow.get("name"), (String) oneRow.get("targetName"), handlerCtx,
-                        Boolean.parseBoolean(Enabled));
+                attrs.put("enabled", Enabled);
+                RestUtil.restRequest(endpoint, attrs, "post", handlerCtx, false);
             }
         }
      }
@@ -433,43 +431,23 @@ public class ApplicationHandlers {
 
         List clusters = TargetUtil.getClusters();
         List standalone = TargetUtil.getStandaloneInstances();
-        String clusterEndpoint = GuiUtil.getSessionValue("REST_URL")+"/clusters/cluster/";
-        String serverEndpoint = GuiUtil.getSessionValue("REST_URL")+"/servers/server/";
         standalone.add("server");
 
         Map attrs = new HashMap();
         attrs.put("id", appName);
         List<String> associatedTargets = DeployUtil.getApplicationTarget(appName, "application-ref");
         for(String newTarget :  selectedTargets){
-            String endpoint;
             if (associatedTargets.contains(newTarget)){
                 //no need to add or remove.
                 associatedTargets.remove(newTarget);
                 continue;
             }else{
-                if (clusters.contains(newTarget)){
-                    endpoint = clusterEndpoint + newTarget + "/application-ref" ;
-                }else{
-                    endpoint = serverEndpoint + newTarget + "/application-ref" ;
-                }
-                attrs.put("target", newTarget);
-                if (status != null){
-                    attrs.put("enabled", status);
-                }
-                RestUtil.restRequest(endpoint, attrs, "post", handlerCtx, false);
+                AppUtil.manageAppTarget(appName, newTarget, true, status, clusters, standalone, handlerCtx);
             }
          }
 
          for(String oTarget :  associatedTargets){
-            String endpoint;
-            if (clusters.contains(oTarget)){
-                endpoint = clusterEndpoint + oTarget ;
-            }else{
-                endpoint = serverEndpoint + oTarget ;
-            }
-            Map attrMap = new HashMap();
-            attrMap.put("target", oTarget);
-            RestUtil.restRequest(endpoint + "/application-ref/" + appName, attrMap, "delete", handlerCtx, false);
+            AppUtil.manageAppTarget(appName, oTarget, false, null, clusters, standalone, handlerCtx);
         }
     }
 
@@ -479,10 +457,10 @@ public class ApplicationHandlers {
         })
     public static void reloadApplication(HandlerContext handlerCtx) {
         String appName = (String) handlerCtx.getInputValue("appName");
-        List<String> associatedTargets = DeployUtil.getApplicationTarget(appName, "application-ref");
-        if (DeployUtil.reloadApplication(appName, associatedTargets,  handlerCtx)){
+        List<String> targets = DeployUtil.getApplicationTarget(appName, "application-ref");
+        if (DeployUtil.reloadApplication(appName, targets, handlerCtx)){
             GuiUtil.prepareAlert("success", GuiUtil.getMessage("org.glassfish.web.admingui.Strings", "restart.successPE"), null);
-        }
+       }
     }
 
    @Handler(id = "gf.getTargetEnableInfo",

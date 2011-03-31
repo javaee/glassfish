@@ -124,26 +124,6 @@
                     gf.createEntity(endpoint="#{pageSession.appRefUrl}"
                         attrs="#{pageSession.valueMap2}"
                         convertToFalse="#{pageSession.convertToFalseList2}");
-
-                    <!--
-                       According to Hong, no longer need to reload application when changing the status. backend will take care
-                       of this since user maybe using CLI set to change it.
-
-                    compare(obj1="#{pageSession.status}" obj2="#{valueMap2['enabled']}" objEqual="#{requestScope.noChange}");
-                    if (!#{requestScope.noChange}){
-                        if (#{valueMap2['enabled']}){
-                            gf.reloadApplication(appName="#{pageSession.appName}");
-                        }
-                        if (!#{valueMap2['enabled']}){
-                            createMap(result="#{requestScope.attrsMap}");
-                            mapPut(map="#{requestScope.attrsMap}"  key="target" value="server");
-                            gf.restRequest(
-                                endpoint="#{sessionScope.REST_URL}/applications/application/#{pageSession.encodedAppName}/disable.json" method="POST"
-                                attrs="#{requestScope.attrsMap}"
-                                result="#{pageSession.json}");
-                        }
-                    }
-                    -->
                 }
 
                 if (#{pageSession.showJavaWebStart){

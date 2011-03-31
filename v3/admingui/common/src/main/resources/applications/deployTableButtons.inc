@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -67,7 +67,16 @@
         <!command
                 getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
                 getSelectedSingleMapRows(TableRowGroup="$attribute{tableRowGroup}" selectedRows=>$attribute{selectedRows});
-                gf.changeAppStatus(selectedRows="${selectedRows}" target="server" enabled="#{true}")
+                prepareAlertMsg(type="success" summary="$resource{i18n.msg.enableSuccessfulPE}")
+                foreach (var="row" list="#{requestScope.selectedRows}") {
+                   urlencode(value="#{row['name']}" result="#{requestScope.encodedName}");
+                   createMap(result="#{requestScope.attrMap}");
+                   mapPut(map="#{requestScope.attrMap}" key="target" value="server");
+                   gf.restRequest(
+                        endpoint="#{sessionScope.REST_URL}/applications/application/#{requestScope.encodedName}/enable"
+                        attrs="#{requestScope.attrMap}"
+                        method="POST");
+                }
                 gf.navigate(page="#{listPageLink}");
             />
             </sun:button>
@@ -76,7 +85,16 @@
         <!command
                 getUIComponent(clientId="$pageSession{tableRowGroupId}", component=>$attribute{tableRowGroup});
                 getSelectedSingleMapRows(TableRowGroup="$attribute{tableRowGroup}" selectedRows=>$attribute{selectedRows});
-                gf.changeAppStatus(selectedRows="${selectedRows}" target="server" enabled="#{false}")
+                prepareAlertMsg(type="success" summary="$resource{i18n.msg.disableSuccessfulPE}")
+                foreach (var="row" list="#{requestScope.selectedRows}") {
+                   urlencode(value="#{row['name']}" result="#{requestScope.encodedName}");
+                   createMap(result="#{requestScope.attrMap}");
+                   mapPut(map="#{requestScope.attrMap}" key="target" value="server");
+                   gf.restRequest(
+                        endpoint="#{sessionScope.REST_URL}/applications/application/#{requestScope.encodedName}/disable"
+                        attrs="#{requestScope.attrMap}"
+                        method="POST");
+                }
                 gf.navigate(page="#{listPageLink}");
             />
         </sun:button>

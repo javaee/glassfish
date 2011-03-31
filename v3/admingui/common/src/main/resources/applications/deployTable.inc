@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -84,24 +84,6 @@
         <staticText id="sniffer" value="#{td.value.sniffers}" />
     </sun:tableColumn>
 
-    <!-- TODO-V3-CLUSTER
-        <sun:tableColumn rendered="$pageSession{showDetail}"
-            headerText="$resource{i18n.common.TargetTab}"  
-            rowHeader="$boolean{true}" id="colTarget">
-            <event>
-                <!beforeEncode
-                    getTargetStatus(appName="#{td.value.name}", forApp="$boolean{true}" ,result=>$page{listOfTargets});
-                 />				    
-            </event>
-            <foreach key="target" list="#{listOfTargets}">
-		<staticText id="image" value="#{target.image}" />"&nbsp; 
-                <sun:hyperlink url="#{target.targetURL}" text="#{target.target}" />
-                "<br />
-            </foreach>
-        </sun:tableColumn> 
-      -->
-   
-
     <sun:tableColumn headerText="$resource{i18n.ComponentTable.colAction}" embeddedActions="#{false}" rowHeader="$boolean{true}" id="col4">
             <sun:hyperlink id="link" rendered="#{td.value.hasLaunch}" text="$resource{i18n.deployTable.launch}"
                 onClick="var win=window.open('#{request.contextPath}/common/applications/webApplicationLinks.jsf?appID=#{td.value.name}&contextRoot=#{td.value.contextRoot}','ViewerWindow','width='+.75*screen.width+',height='+.75*screen.height+',top='+.1*screen.height+',left='+.1*screen.width+',toolbar=yes,status=yes,menubar=yes,scrollbars=yes,resizable=yes,directories=yes,location=yes');win.focus(); return false;" />
@@ -114,7 +96,6 @@
 
         <sun:hyperlink id="reloadLink" text="$resource{i18n.deployTable.reload}">
             <!command
-                prepareSuccessfulMsg();
                 gf.reloadApplication(appName="#{td.value.name}");
                 gf.redirect(page="#{request.contextPath}/#{pageSession.listPageLink}?alertType=${alertType}&alertSummary=${alertSummary}&alertDetail=${alertDetail}");
             />
