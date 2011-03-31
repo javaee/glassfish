@@ -417,11 +417,11 @@ public class TemplateResource {
         File f = null;
         try {
             if (fileName.contains(".")) {
-                String prefix = fileName.substring(0, fileName.indexOf("."));
-                String suffix = fileName.substring(fileName.indexOf("."), fileName.length());
-                if (prefix.length() < 3) {
-                    prefix = "glassfish" + prefix;
-                }
+                //String prefix = fileName.substring(0, fileName.indexOf("."));
+                // String suffix = fileName.substring(fileName.indexOf("."), fileName.length());
+                //if (prefix.length() < 3) {
+                //    prefix = "glassfish" + prefix;
+                //}
                 f = new File(new File(System.getProperty("java.io.tmpdir")), fileName);
             }
 
