@@ -181,9 +181,9 @@ public class StructuredLogViewerResource {
         return (List<T>) List.class.cast(list);
     }
 
-    private String quoted(String s) {
+/*    private String quoted(String s) {
         return "\"" + s + "\"";
-    }
+    }*/
 
     private String convertQueryResult(final AttributeList queryResult, String type) {
         // extract field descriptions into a String[]
