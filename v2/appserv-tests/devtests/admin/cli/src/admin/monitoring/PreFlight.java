@@ -35,58 +35,48 @@
  */
 package admin.monitoring;
 
-import admin.AdminBaseDevTest;
+import static admin.monitoring.Constants.*;
 
 /**
- * This is the Lord of the Monitoring Tests -- the Class of Power to drive them all.
- * Keep an eye out for Gollum.
+ * Enforce PreFlight Assumptions
+ * This should never fail on a Hudson build and can easily fail for a developer
+ * environment (e.g. Oops I left a GlassFish server running on port 28080!)
  * @author Byron Nevins
  */
-public final class TestDriver extends AdminBaseDevTest {
-    public TestDriver() {
-    }
-
+public class PreFlight extends MonTest {
     @Override
-    protected String getTestDescription() {
-        return "DevTests for Monitoring - Brought to you by\n"
-                + "Jennifer Chou and Byron Nevins";
-    }
+    void runTests(TestDriver driver) {
+                new String();
 
-    @Override
-    public String getTestName() {
-        return "Monitoring DevTests";
-    }
 
-    public static void main(String[] args) {
-        // top level try here!!
-        TestDriver driver = new TestDriver();
 
-        try {
-            driver.runTests();
+        setDriver(driver);
+        report(true, "PreFlight here!!!");
+        boolean b1 = wget(8080, "");
+        boolean b2 = wget(28080, "");
+        boolean b3 = wget(28081, "");
+        report(!b1, "Port 8080 Clear");
+        report(!b2, "Port 28080 Clear");
+        report(!b3, "Port 28081 Clear");
+        // todo check that DB is **not** running
+
+        if (b1 || b2 || b3) {
+            report(false, "Monitoring Pre-Flight Failed::Aborted All Tests");
+            System.out.println(SCREAMING_LOUD_MESSAGE);
+            throw new RuntimeException("PreFlight");
         }
-        catch (Exception e) {
-            driver.report("GotException-" + e.getClass().getName(), false);
-        }
-        driver.stat.printSummary();
     }
-
-    private void runTests() {
-        report("TestDriver Creation", true);
-
-        for (MonTest mt : tests) {
-            mt.runTests(this);
-        }
-
-    }
-     private MonTest tests[] = new MonTest[]{
-        new PreFlight(),
-        new Setup(),
-        new EarlyJira(), // these tests want monitoring disabled...
-        new Enabler(),
-        new Ejb(),
-        new Jdbc(),
-        new Jira(),
-	new Web(),
-        new TearDown(),
-    };
+    private static final String SCREAMING_LOUD_MESSAGE =
+            "******************************************************\n" +
+            "******************************************************\n" +
+            "******************************************************\n" +
+            "******************************************************\n" +
+            "******************************************************\n" +
+            "******************************************************\n" +
+            "*****FATAL ERROR -- ABORTING MONITORING TESTS !!!!!***\n" +
+            "******************************************************\n" +
+            "******************************************************\n" +
+            "******************************************************\n" +
+            "******************************************************\n" +
+            "******************************************************\n";
 }

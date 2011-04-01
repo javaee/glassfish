@@ -183,10 +183,28 @@ public class Jira extends MonTest {
 
     private final static String[] KEYS14461_GET = new String[] {
       STAND_ALONE_INSTANCE_NAME + ".monitoring-service.monitoring-enabled",
+      CLUSTERED_INSTANCE_NAME1 + ".monitoring-service.monitoring-enabled",
+      CLUSTERED_INSTANCE_NAME2 + ".monitoring-service.monitoring-enabled",
+      CLUSTER_NAME + ".monitoring-service.monitoring-enabled",
+      "server.monitoring-service.monitoring-enabled",
+      STAND_ALONE_INSTANCE_NAME + ".network-config.protocols.protocol.admin-listener.http.adapter",
+      CLUSTERED_INSTANCE_NAME1 + ".network-config.protocols.protocol.admin-listener.http.adapter",
+      CLUSTERED_INSTANCE_NAME2 + ".network-config.protocols.protocol.admin-listener.http.adapter",
+      CLUSTER_NAME + ".network-config.protocols.protocol.admin-listener.http.adapter",
+      "server.network-config.protocols.protocol.admin-listener.http.adapter",
     };
 
     private final static String[] KEYS14461_GET_BAD = new String[] {
       STAND_ALONE_INSTANCE_NAME + ".server.monitoring-service.monitoring-enabled",
+      CLUSTERED_INSTANCE_NAME1 + ".server.monitoring-service.monitoring-enabled",
+      CLUSTERED_INSTANCE_NAME2 + ".server.monitoring-service.monitoring-enabled",
+      CLUSTER_NAME + ".server.monitoring-service.monitoring-enabled",
+      "server.server.monitoring-service.monitoring-enabled",
+      STAND_ALONE_INSTANCE_NAME + ".server.network-config.protocols.protocol.admin-listener.http.adapter",
+      CLUSTERED_INSTANCE_NAME1 + ".server.network-config.protocols.protocol.admin-listener.http.adapter",
+      CLUSTERED_INSTANCE_NAME2 + ".server.network-config.protocols.protocol.admin-listener.http.adapter",
+      CLUSTER_NAME + ".server.network-config.protocols.protocol.admin-listener.http.adapter",
+      "server.server.network-config.protocols.protocol.admin-listener.http.adapter",
     };
     private final static String[] KEYS14461_GET_M = new String[] {
       STAND_ALONE_INSTANCE_NAME + ".jvm.class-loading-system.totalloadedclass-count-count",
