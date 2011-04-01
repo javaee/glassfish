@@ -45,6 +45,7 @@ import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 import com.sun.enterprise.admin.servermgmt.KeystoreManager;
 import com.sun.enterprise.admin.util.CommandModelData.ParamModelData;
 import com.sun.enterprise.security.store.PasswordAdapter;
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import com.sun.enterprise.util.OS;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import org.glassfish.api.I18n;
@@ -63,6 +64,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 
 /**
@@ -77,6 +79,8 @@ import java.util.Map;
 public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesystemCommand {
     private final String CONFIG = "config";
     private final String CLUSTER = "cluster";
+    private static final LocalStringsImpl strings =
+            new LocalStringsImpl(CreateLocalInstanceCommand.class);
 
     @Param(name = CONFIG, optional = true)
     private String configName;
@@ -224,7 +228,10 @@ public final class CreateLocalInstanceCommand extends CreateLocalInstanceFilesys
          */
         final URI domainXMLURI = URI.create("config/domain.xml");
         final File domainXMLFile = new File(instanceDir.toURI().resolve(domainXMLURI));
-        domainXMLFile.setLastModified(0);
+        if ( ! domainXMLFile.setLastModified(0)) {
+            logger.log(Level.WARNING, strings.getString("CreateLocalInstance.errSetLastMod",
+                domainXMLFile.getAbsolutePath()));
+        }
         return result;
     }
 
