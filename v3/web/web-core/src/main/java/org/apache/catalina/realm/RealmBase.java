@@ -451,9 +451,9 @@ public abstract class RealmBase
 
         if (log.isLoggable(Level.FINE)) {
             log.fine("Username:" + username 
-                     + " ClientSigest:" + clientDigest + " nOnce:" + nOnce 
+                     + " ClientSigest:" + Arrays.toString(clientDigest) + " nOnce:" + nOnce 
                      + " nc:" + nc + " cnonce:" + cnonce + " qop:" + qop 
-                     + " realm:" + realm + "md5a2:" + md5a2 
+                     + " realm:" + realm + "md5a2:" + Arrays.toString(md5a2)
                      + " Server digest:" + String.valueOf(serverDigest));
         }
         
@@ -1795,21 +1795,19 @@ public abstract class RealmBase
 
 
     private boolean equalsIgnoreCase(char[] arr1, char[] arr2) {
-        if (arr1 == null && arr2 == null) {
-            return true;
-        }
-        if ((arr1 == null && arr2 != null) ||
-                (arr1 != null && arr2 == null) ||
-                (arr1.length != arr2.length)) {
-            return false;
+        if (arr1 == null) {
+            return (arr2 == null);
+        } else { // arr1 is not null
+            if (arr2 == null || arr1.length != arr2.length) {
+                return false;
+            }
         }
         
         //here, arr1 and arr2 are not null with equal length
         boolean result = true;
         for (int i = 0; i < arr1.length; i++) {
             if (Character.toLowerCase(arr1[i]) != Character.toLowerCase(arr2[i])) {
-                result = false;
-                break;
+                return false;
             }
         }
 
