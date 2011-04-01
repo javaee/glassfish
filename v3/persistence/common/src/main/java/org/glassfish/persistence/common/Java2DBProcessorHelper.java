@@ -565,6 +565,13 @@ public class Java2DBProcessorHelper {
         } catch (IOException e) {
             fileIOError(appRegisteredName, e);
         } finally {
+            if (sql != null) {
+                try {
+                    sql.close();
+                } catch (SQLException e) {
+                    // ignore
+                }
+            }
             closeConn(conn);
         }
         return result;
@@ -653,17 +660,6 @@ public class Java2DBProcessorHelper {
         }
     }
     
-    /**
-     * Provide a generic warning message to the user.
-     */
-    public void logI18NInfoMessage(
-            String errorCode, String regName,
-            String fileName, Throwable ex) {
-        String msg = getI18NMessage(errorCode,
-                regName, fileName, ex);
-        logger.info(msg);
-    }
-
     /**
      * Provide a generic warning message to the user.
      */

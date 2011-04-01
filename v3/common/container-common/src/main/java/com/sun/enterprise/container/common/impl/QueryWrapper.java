@@ -1085,6 +1085,10 @@ public class QueryWrapper implements Query {
                     query.setLockMode(lockMode);
                     break;
 
+             default :
+
+                 assert (false) : "A new value has been added to enum SetterType. Please add a case clause in this method to handle it ";
+                 throw new RuntimeException("A new value has been added to enum SetterType without being coded in apply.");
             }
         }
 
