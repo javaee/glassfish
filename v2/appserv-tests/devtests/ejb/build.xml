@@ -2,10 +2,10 @@
 
 
 <!DOCTYPE project [
-<!ENTITY commonSetup SYSTEM "file:./../../config/properties.xml">
-<!ENTITY commonBuild SYSTEM "file:./../../config/common.xml">
-<!ENTITY commonRun SYSTEM "file:./../../config/run.xml">
-<!ENTITY reporting   SYSTEM "file:./report.xml">
+<!ENTITY commonSetup SYSTEM "../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "../../config/common.xml">
+<!ENTITY commonRun SYSTEM "../../config/run.xml">
+<!ENTITY reporting   SYSTEM "report.xml">
 ]>
 
 <project name="ejb" default="usage" basedir=".">
