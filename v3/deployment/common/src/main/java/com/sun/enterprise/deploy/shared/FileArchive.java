@@ -653,7 +653,9 @@ public class FileArchive extends AbstractReadableArchive implements WritableArch
         File newFile = new File(archive, name);
         if (newFile.exists()) {
             if (!deleteEntry(name, false /* isLogging */)) {
-                // XXX add fine-level logging later
+                logger.log(Level.FINE, 
+                        "Could not delete file {0} in FileArchive {1} during putNextEntry; continuing", 
+                        new Object[]{name, uri.toASCIIString()});
             }
         }
         // if the entry name contains directory structure, we need

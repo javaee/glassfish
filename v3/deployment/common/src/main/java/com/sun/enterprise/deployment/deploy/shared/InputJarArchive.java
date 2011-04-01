@@ -88,7 +88,7 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
     // parent jar file for embedded jar
     private InputJarArchive parentArchive=null;
 
-    private StringManager localStrings = StringManager.getManager(getClass());
+    private static StringManager localStrings = StringManager.getManager(InputJarArchive.class);
 
     // track entry enumerations to close them if needed when the archive is closed
     private final WeakHashMap<EntryEnumeration,Object> entryEnumerations =
@@ -300,7 +300,7 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
     /**
      * @return a JarFile instance for a file path
      */
-    protected JarFile getJarFile(URI uri) throws IOException {
+    protected static JarFile getJarFile(URI uri) throws IOException {
         JarFile jf = null;
         try {
             File file = new File(uri);
@@ -442,7 +442,7 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
             final boolean topLevelDirectoriesOnly) throws FileNotFoundException, IOException {
         final JarEntrySource source = (parentArchive == null ?
             new ArchiveJarEntrySource(uri) :
-            new SubarchiveJarEntrySource());
+            new SubarchiveJarEntrySource(parentArchive.jarFile, uri));
         if (topLevelDirectoriesOnly) {
             return new TopLevelDirectoryEntryEnumeration(source);
         } else {
@@ -562,7 +562,7 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
      * Source of JarEntry objects for a top-level archive (as opposed to a
      * subarchive).
      */
-    private class ArchiveJarEntrySource implements JarEntrySource {
+    private static class ArchiveJarEntrySource implements JarEntrySource {
 
         private JarFile sourceJarFile;
 
@@ -587,13 +587,13 @@ public class InputJarArchive extends JarArchive implements ReadableArchive {
     /**
      * Source of JarEntry objects for a subarchive.
      */
-    private class SubarchiveJarEntrySource implements JarEntrySource {
+    private static class SubarchiveJarEntrySource implements JarEntrySource {
 
         private JarInputStream jis;
 
-        private SubarchiveJarEntrySource() throws IOException {
-            final JarEntry subarchiveJarEntry = parentArchive.jarFile.getJarEntry(uri.getSchemeSpecificPart());
-            jis = new JarInputStream(parentArchive.jarFile.getInputStream(subarchiveJarEntry));
+        private SubarchiveJarEntrySource(final JarFile jf, final URI uri) throws IOException {
+            final JarEntry subarchiveJarEntry = jf.getJarEntry(uri.getSchemeSpecificPart());
+            jis = new JarInputStream(jf.getInputStream(subarchiveJarEntry));
         }
 
         @Override
