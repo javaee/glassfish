@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -60,15 +60,21 @@ public class RestoreManager extends BackupRestoreManager {
 
     public String restore() throws BackupException {
         try {
+            boolean isConfigBackup = IsConfigBackup();
+
             checkDomainName();
             ZipFile zf = new ZipFile(request.backupFile, tempRestoreDir);
 
             zf.explode();
             sanityCheckExplodedFiles();
-            copyBackups();
-            atomicSwap();
+
+            // If we are restoring the whole domain then we need to preserve
+            // the backups directory.
+            if (!isConfigBackup)
+                copyBackups();
+            atomicSwap(request.domainDir, request.domainName, isConfigBackup);
             setPermissions();
-            String mesg = readAndDeletePropsFile();
+            String mesg = readAndDeletePropsFile(isConfigBackup);
             return mesg;
         }
         catch(BackupException be) {
@@ -208,51 +214,91 @@ public class RestoreManager extends BackupRestoreManager {
     
     //////////////////////////////////////////////////////////////////////////
 
-    private void atomicSwap() throws BackupException {
-        // 1 -- rename original domain dir
-        // 2 -- rename new restored dir to domain dir
-        // 3 -- delete original domain dir
+    private void atomicSwap(File domainDir, String domainName,
+                            boolean configOnly) throws BackupException {
 
-        // tempRestoreDir
-        File oldDomain = new File(request.domainsDir, 
-            request.domainName + OLD_DOMAIN_SUFFIX + System.currentTimeMillis());
-        
-        // On Error -- just fail and delete the new files
-        if(!request.domainDir.renameTo(oldDomain)) {
-            FileUtils.whack(tempRestoreDir);
-            throw new BackupException("backup-res.CantRenameOriginalDomain",
-                                      request.domainDir);
+        File oldDir;
+        File configDir = new File (request.domainsDir, domainName + "/" +
+        Constants.CONFIG_DIR);
+
+        // 1 -- rename original dir
+        // 2 -- rename restored dir to domain/config dir
+        // 3 -- delete original dir
+
+        // The current domain will be copied to oldDir.
+        if (configOnly) {
+            oldDir = new File(request.domainsDir, domainName + "/" +
+            Constants.CONFIG_DIR + OLD_DOMAIN_SUFFIX +
+                System.currentTimeMillis());
+        } else {
+            oldDir = new File(request.domainsDir,
+                domainName + OLD_DOMAIN_SUFFIX + System.currentTimeMillis());
         }
         
+        // Move the current domain to the side.
+        // On Error -- just fail and delete the new files
+        if (configOnly) {
+            if (!configDir.renameTo(oldDir)) {
+                FileUtils.whack(tempRestoreDir);
+                throw new BackupException("backup-res.CantRenameOriginalDomain",
+                                          configDir);
+            }
+        } else if (!domainDir.renameTo(oldDir)) {
+            FileUtils.whack(tempRestoreDir);
+            throw new BackupException("backup-res.CantRenameOriginalDomain",
+                                      domainDir);
+        }
+
+        // Move the restored domain from the temp location to the domain dir.
         // On Error -- Delete the new files and undo the rename that was done
         //successfully above
-        if(!tempRestoreDir.renameTo(request.domainDir)) {
-            oldDomain.renameTo(request.domainDir);
+        if (configOnly) {
+            if(!tempRestoreDir.renameTo(configDir)) {
+                oldDir.renameTo(configDir);
+                FileUtils.whack(tempRestoreDir);
+                throw new BackupException("backup-res.CantRenameRestoredDomain");
+            }
+        } else if(!tempRestoreDir.renameTo(domainDir)) {
+            oldDir.renameTo(domainDir);
             FileUtils.whack(tempRestoreDir);
             throw new BackupException("backup-res.CantRenameRestoredDomain");
         }    
         
-        FileUtils.whack(oldDomain);
+        FileUtils.whack(oldDir);
     }
     
     //////////////////////////////////////////////////////////////////////////
 
-    private String readAndDeletePropsFile() {
+    private String readAndDeletePropsFile(boolean isConfigBackup) {
         // The "backup.properties" file from the restored zip should be
         // in the domain dir now.
-        File propsFile = new File(request.domainDir, Constants.PROPS_FILENAME);
-        Status status = new Status();
-        String mesg = new String("");
+        File propsFile;
+        String mesg = "";
 
- 
-        if (request.verbose == true || request.terse != true)
-            mesg = StringHelper.get("backup-res.SuccessfulRestore", 
-                                    request.domainName, request.domainDir );
+        // If this is a config only restore the prop file will be in
+        // the config directory.
+        if (isConfigBackup)
+            propsFile = new File (request.domainDir, Constants.CONFIG_DIR +
+                                  "/" + Constants.PROPS_FILENAME);
+        else
+            propsFile = new File(request.domainDir, Constants.PROPS_FILENAME);
 
-        if(request.verbose == true)
+        if (request.verbose == true || request.terse != true) {
+            if (isConfigBackup) {
+                mesg = StringHelper.get("backup-res.SuccessfulConfigRestore",
+                                        request.domainName, request.domainDir);
+            } else {
+                mesg = StringHelper.get("backup-res.SuccessfulFullRestore",
+                                        request.domainName, request.domainDir);
+            }
+        }
+
+        if (request.verbose == true) {
+            Status status = new Status();
             mesg += "\n" + status.read(propsFile, false);
+        }
         
-        if(!propsFile.delete())
+        if (!propsFile.delete())
             propsFile.deleteOnExit();
         
         return mesg;
@@ -324,6 +370,22 @@ public class RestoreManager extends BackupRestoreManager {
                                      buDomainName, request.domainName));
             }
         }
+    }
+
+    // Return true if the backup contains only configuration (vs a full backup)
+    private boolean IsConfigBackup() {
+        Status status = new Status();
+        status.read(request.backupFile);
+        String backupType = status.getBackupType();
+
+        if (backupType == null || backupType.equals("")) {
+            // Backup from releases prior to 3.1 did not contain a type.
+            // We assume the lack of the type means it is a Full backup.
+            // the only type supported at the time.
+            return false;
+        }
+
+        return backupType.equals(Constants.FULL) ? false : true;
     }
 
     //////////////////////////////////////////////////////////////////////////

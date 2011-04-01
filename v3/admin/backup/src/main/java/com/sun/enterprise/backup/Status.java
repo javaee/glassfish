@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -201,6 +201,13 @@ class Status {
         return props.getProperty(Constants.BACKUP_CONFIG, "");
     }
 
+    String getBackupType(){
+       if(props == null)
+            return new String("");
+
+        return props.getProperty(Constants.PROPS_TYPE, "");
+    }
+
     ///////////////////////////////////////////////////////////////////////////
     //////  PRIVATE METHODS AND DATA    ///////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////
@@ -290,7 +297,7 @@ class Status {
          
         String type = request.configOnly ? Constants.CONFIG_ONLY :
                 Constants.FULL;
-        props.setProperty(Constants.PROPS_TYPE,type);
+        props.setProperty(Constants.PROPS_TYPE, type);
         String bc = (request.backupConfig == null) ? Constants.NO_CONFIG : request.backupConfig;
         props.setProperty(Constants.BACKUP_CONFIG,bc);
     }
