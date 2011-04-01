@@ -294,7 +294,6 @@ public class DeploymentHandler {
 
         Object obj = handlerCtx.getInputValue("selectedRows");
 
-        Properties dProps = new Properties();
         List warningList = new ArrayList();
         //List undeployedAppList = new ArrayList();
         List selectedRows = (List) obj;
