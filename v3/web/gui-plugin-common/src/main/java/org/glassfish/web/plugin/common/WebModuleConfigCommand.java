@@ -231,7 +231,7 @@ public abstract class WebModuleConfigCommand implements AdminCommand {
         if (value != null) {
             return value;
         }
-        return localStrings.getLocalString("notSpecified", value);
+        return localStrings.getLocalString("notSpecified", "(description not specified)");
 
     }
     private ActionReport finish(final ActionReport report,
