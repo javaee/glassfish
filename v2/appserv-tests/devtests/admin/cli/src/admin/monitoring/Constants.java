@@ -44,6 +44,7 @@ class Constants {
     static final String CLUSTERED_INSTANCE_NAME1 = "clustered-i1";
     static final String CLUSTERED_INSTANCE_NAME2 = "clustered-i2";
     static final String STAND_ALONE_INSTANCE_NAME = "standalone-i3";
+    static final String NO_DATA = "No monitoring data to report.";
     final static String HIGH = "HIGH";
     final static String LOW = "LOW";
     final static String OFF = "OFF";

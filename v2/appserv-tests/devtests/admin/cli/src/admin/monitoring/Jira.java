@@ -55,6 +55,7 @@ public class Jira extends MonTest {
         test14389();
         test14748();
         test15895();
+        test14461();
     }
 
     private void test15397() {
@@ -140,4 +141,60 @@ public class Jira extends MonTest {
     private void test15895() {
         report(true, "Issue 15895 already tested in Enabler");
     }
+
+    /* 
+     * Bug:  running "get i1.*" produced different results than "get -m i1.*"
+     * Namely an extra ".server" appeared in the latter's output
+     */
+    private void test14461() {
+        // important.  If you are reading this you should know this factoid:
+        // if there is no such key found you will get output in stderr with the
+        // keyname.  If it suceeeds you will find it in stdout.
+        // that applies only to get -- not to get -m
+
+        final String prepend = "test14461::";
+        AsadminReturn r = null;
+
+        for(int i = 0; i < KEYS14461_GET.length; i++) {
+            String label = prepend + "GET-";
+            String goodkey = KEYS14461_GET[i];
+            String badkey = KEYS14461_GET_BAD[i];
+            r = asadminWithOutput("get", goodkey);
+            report(r.out.indexOf(NO_DATA) < 0, label);
+            r = asadminWithOutput("get", badkey);
+            report(r.err.indexOf(badkey) >= 0, label);
+        }
+
+        for(int i = 0; i < KEYS14461_GET_M.length; i++) {
+            String label = prepend + "GET-M-";
+            String goodkey = KEYS14461_GET_M[i];
+            String badkey = KEYS14461_GET_M_BAD[i];
+            String verybadkey = KEYS14461_GET_M_VERY_BAD[i];
+            r = asadminWithOutput("get", "-m", goodkey);
+            report(r.out.indexOf(NO_DATA) < 0, label);
+            r = asadminWithOutput("get", "-m", badkey);
+            report(r.out.indexOf(NO_DATA) >= 0, label);
+            r = asadminWithOutput("get", "-m", verybadkey);
+            report(r.out.indexOf(NO_DATA) >= 0, label);
+        }
+
+    }
+
+
+    private final static String[] KEYS14461_GET = new String[] {
+      STAND_ALONE_INSTANCE_NAME + ".monitoring-service.monitoring-enabled",
+    };
+
+    private final static String[] KEYS14461_GET_BAD = new String[] {
+      STAND_ALONE_INSTANCE_NAME + ".server.monitoring-service.monitoring-enabled",
+    };
+    private final static String[] KEYS14461_GET_M = new String[] {
+      STAND_ALONE_INSTANCE_NAME + ".jvm.class-loading-system.totalloadedclass-count-count",
+    };
+    private final static String[] KEYS14461_GET_M_BAD = new String[] {
+      STAND_ALONE_INSTANCE_NAME + ".server.jvm.class-loading-system.totalloadedclass-count-count",
+    };
+    private final static String[] KEYS14461_GET_M_VERY_BAD = new String[] {
+      STAND_ALONE_INSTANCE_NAME + ".server.server.jvm.class-loading-system.totalloadedclass-count-count",
+    };
 }
