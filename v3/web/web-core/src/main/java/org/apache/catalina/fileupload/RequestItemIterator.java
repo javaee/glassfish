@@ -495,7 +495,8 @@ class RequestItemIterator {
             if (start == end) {
                 break;
             }
-            String header = headerPart.substring(start, end);
+            StringBuilder header =
+                new StringBuilder(headerPart.substring(start, end));
             start = end + 2;
             while (start < len) {
                 int nonWs = start;
@@ -511,17 +512,17 @@ class RequestItemIterator {
                 }
                 // Continuation line found
                 end = parseEndOfLine(headerPart, nonWs);
-                header += " " + headerPart.substring(nonWs, end);
+                header.append(" ").append(headerPart.substring(nonWs, end));
                 start = end + 2;
             }
-            final int colonOffset = header.indexOf(':');
+            final int colonOffset = header.indexOf(":");
             if (colonOffset == -1) {
                 // This header line is malformed, skip it.
                 continue;
             }
             String headerName = header.substring(0, colonOffset).trim();
             String headerValue =
-                header.substring(header.indexOf(':') + 1).trim();
+                header.substring(header.indexOf(":") + 1).trim();
             headers.addHeader(headerName, headerValue);
         }
         return headers;

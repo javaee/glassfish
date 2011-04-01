@@ -205,14 +205,14 @@ public class MultipartStream {
     /**
      * The default length of the buffer used for processing a request.
      */
-    protected static final int DEFAULT_BUFSIZE = 4096;
+    private static final int DEFAULT_BUFSIZE = 4096;
 
 
     /**
      * A byte sequence that marks the end of <code>header-part</code>
      * (<code>CRLFCRLF</code>).
      */
-    protected static final byte[] HEADER_SEPARATOR = {
+    private static final byte[] HEADER_SEPARATOR = {
         CR, LF, CR, LF };
 
 
@@ -220,7 +220,7 @@ public class MultipartStream {
      * A byte sequence that that follows a delimiter that will be
      * followed by an encapsulation (<code>CRLF</code>).
      */
-    protected static final byte[] FIELD_SEPARATOR = {
+    private static final byte[] FIELD_SEPARATOR = {
         CR, LF};
 
 
@@ -228,14 +228,14 @@ public class MultipartStream {
      * A byte sequence that that follows a delimiter of the last
      * encapsulation in the stream (<code>--</code>).
      */
-    protected static final byte[] STREAM_TERMINATOR = {
+    private static final byte[] STREAM_TERMINATOR = {
         DASH, DASH};
 
 
     /**
      * A byte sequence that precedes a boundary (<code>CRLF--</code>).
      */
-    protected static final byte[] BOUNDARY_PREFIX = {
+    private static final byte[] BOUNDARY_PREFIX = {
         CR, LF, DASH, DASH};
 
 
