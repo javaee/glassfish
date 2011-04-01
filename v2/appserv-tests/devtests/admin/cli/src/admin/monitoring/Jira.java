@@ -54,6 +54,7 @@ public class Jira extends MonTest {
         test15500();
         test14389();
         test14748();
+        test15895();
     }
 
     private void test15397() {
@@ -129,4 +130,14 @@ public class Jira extends MonTest {
     private static final File earFile = new File("apps/webapp2.ear");
     private static final String MAGIC_NAME_IN_APP = "webapp2webmod1_Servlet2";
     private static final String RESOURCE_NAME_WITH_SLASH = "jdbc/test";
+
+    /**
+     * This method is here in case you are looking through these methods and comparing
+     * against a query of issue numbers.  This issue is VERY HEAVILY tested in the 
+     * Enabler class.  This method does nothing.  It's here so you don't waste time
+     * investigating whether it needs tests.  It doesn't!!
+     */
+    private void test15895() {
+        report(true, "Issue 15895 already tested in Enabler");
+    }
 }
