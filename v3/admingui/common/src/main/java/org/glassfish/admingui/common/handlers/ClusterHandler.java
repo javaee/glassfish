@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -146,7 +146,6 @@ public class ClusterHandler {
         String prefix = GuiUtil.getSessionValue("REST_URL") + "/servers/server/";
         for (Map oneRow : rows) {
             String instanceName = (String) oneRow.get("encodedName");
-            String endpoint = GuiUtil.getSessionValue("REST_URL") + "/servers/server/instanceName" ;
             Map attrsMap = new HashMap();
             attrsMap.put("lbWeight", oneRow.get("lbWeight"));
             try{
@@ -257,7 +256,6 @@ public class ClusterHandler {
             nodeInstanceMap=new HashMap();
         }
         List<Map> rows =  (List<Map>) handlerCtx.getInputValue("rows");
-        Map response = null;
         String prefix = GuiUtil.getSessionValue("REST_URL") + "/nodes/node/";
 
         for (Map oneRow : rows) {
@@ -278,7 +276,7 @@ public class ClusterHandler {
                 try{
                     String endpoint = prefix + nodeName + "/" + action;
                     GuiUtil.getLogger().info(endpoint);
-                    response = RestUtil.restRequest(endpoint, null, "post",null, false);
+                    RestUtil.restRequest(endpoint, null, "post",null, false);
                 }catch (Exception ex){
                     GuiUtil.getLogger().severe(
                             GuiUtil.getCommonMessage("LOG_NODE_ACTION_ERROR", new Object[]{prefix + nodeName, action , "null"}));
@@ -441,7 +439,6 @@ public class ClusterHandler {
         try{
             List<String> clusterList = new ArrayList(RestUtil.getChildMap(GuiUtil.getSessionValue("REST_URL")+"/clusters/cluster").keySet());
             for(String oneCluster : clusterList){
-                String encodedClusterName = URLEncoder.encode(oneCluster, "UTF-8");
                 List<String> serverRefs = new ArrayList (RestUtil.getChildMap(GuiUtil.getSessionValue("REST_URL")+ "/clusters/cluster/" +
                         URLEncoder.encode(oneCluster, "UTF-8") + "/server-ref").keySet());
                 if (serverRefs.contains(instanceName)){
