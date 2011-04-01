@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -339,7 +339,7 @@ public class EJBTimerService
 
         TransactionManager tm = ejbContainerUtil.getTransactionManager();
 
-        Set toRestore = new HashSet();
+        Set toRestore = null;
 	int totalTimersMigrated = 0;
 
         try {
@@ -356,9 +356,6 @@ public class EJBTimerService
             // occurred.  This could be the expected result in the case that
             // multiple server instances attempted the migration at the same
             // time.  
-            //FindBugs [Deadstore]: toRestore = new HashSet();
-// XXX There will be no exception but the return value will be 0 (hopefully) XXX
-
             logger.log(Level.FINE, "timer migration error", e);
 
             try {
@@ -1369,7 +1366,7 @@ public class EJBTimerService
                         logger.log(Level.FINE, "@@@ CREATED new schedule: " + ts.getScheduleAsString() + " FOR method: " + key);
                 }
 
-                if (startTimers) {
+                if (startTimers && result != null) {
                     result.put(tpk, (Method)key);
                 }
             }
@@ -1630,7 +1627,7 @@ public class EJBTimerService
         // so always ask the database.  Investigate possible use of
         // timer cache for optimization.
 
-        TimerState timer = getPersistentTimer(timerId);
+        getPersistentTimer(timerId);
         // If we reached here, it means the timer is persistent
         return true;
     }
@@ -1885,11 +1882,11 @@ public class EJBTimerService
                         shutdown();
                     } else if (rescheduleFailedTimer) {
                         logger.log(Level.INFO, "ejb.timer_reschedule_after_max_deliveries",
-                           new Object[] { timerState.toString(), new Integer(numDeliv)});
+                           new Object[] { timerState.toString(), numDeliv});
                         reschedule = true;
                     } else {
                         logger.log(Level.INFO, "ejb.timer_exceeded_max_deliveries",
-                           new Object[] { timerState.toString(), new Integer(numDeliv)});
+                           new Object[] { timerState.toString(), numDeliv});
                         expungeTimer(timerId, true);
                     }
                 } else {
@@ -2148,10 +2145,10 @@ public class EJBTimerService
 
         // @@@ Add cluster ID
 
-        return new String(nextTimerIdCounter_ +
+        return "" + nextTimerIdCounter_ +
                           TIMER_ID_SEP + nextTimerIdMillis_ +
                           TIMER_ID_SEP + ownerIdOfThisServer_ + 
-                          TIMER_ID_SEP + domainName_);
+                          TIMER_ID_SEP + domainName_;
     }
 
     //
@@ -2616,22 +2613,26 @@ public class EJBTimerService
     } //TimerCache{}
 
     private File getTimerServiceShutdownFile() throws Exception {
-        File timerServiceShutdownDirectory;
-        File timerServiceShutdownFile;
+        File timerServiceShutdownFile = null;
 
         String j2eeAppPath = 
                 ConfigBeansUtilities.getLocation(appID);
 
-        timerServiceShutdownDirectory = new File(j2eeAppPath + File.separator);
-        timerServiceShutdownDirectory.mkdirs();
+        File timerServiceShutdownDirectory = new File(j2eeAppPath + File.separator);
+        if (!timerServiceShutdownDirectory.mkdirs()) {
+            if( logger.isLoggable(Level.FINE) ) {
+                logger.log(Level.FINE, "Failed to create timerServiceShutdownDirectory");
+            }
+        }
         timerServiceShutdownFile = new File(j2eeAppPath + File.separator
-                + TIMER_SERVICE_FILE);
+                    + TIMER_SERVICE_FILE);
 
         return timerServiceShutdownFile;
     }
 
     private long getTimerServiceDownAt() {
         long timerServiceWentDownAt = -1;
+        BufferedReader br = null;
         try {
             File timerServiceShutdownFile  = getTimerServiceShutdownFile();
 
@@ -2640,13 +2641,18 @@ public class EJBTimerService
                     new SimpleDateFormat(TIMER_SERVICE_DOWNTIME_FORMAT);
         
                 FileReader fr = new FileReader(timerServiceShutdownFile);
-                BufferedReader br = new BufferedReader(fr, 128);
+                br = new BufferedReader(fr, 128);
                 String line = br.readLine();
 
-                Date myDate = dateFormat.parse(line);
-                timerServiceWentDownAt = myDate.getTime();
-                logger.log(Level.INFO, "ejb.timer_service_last_shutdown",
-                           new Object[] { line });
+                if (line != null) {
+                    Date myDate = dateFormat.parse(line);
+                    timerServiceWentDownAt = myDate.getTime();
+                    logger.log(Level.INFO, "ejb.timer_service_last_shutdown",
+                               new Object[] { line });
+                } else {
+                    logger.log(Level.WARNING, "ejb.timer_service_shutdown_unknown",
+                               new Object[] { timerServiceShutdownFile });
+                }
             } else {
                 logger.log(Level.WARNING, "ejb.timer_service_shutdown_unknown",
                            new Object[] { timerServiceShutdownFile });
@@ -2655,6 +2661,14 @@ public class EJBTimerService
             logger.log(Level.WARNING, "ejb.timer_service_shutdown_unknown",
                        new Object[] { "" });
             logger.log(Level.WARNING, "", th);
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (Exception ex) {
+                    logger.log(Level.FINE, "Error closing timer service shutdown file", ex);
+                }
+            }
         }
         return timerServiceWentDownAt;
     }
@@ -2671,16 +2685,21 @@ public class EJBTimerService
             String downTimeStr = dateFormat.format(new Date());
 
             File timerServiceShutdownFile  = getTimerServiceShutdownFile();
-            FileWriter fw = new FileWriter(timerServiceShutdownFile);
-            PrintWriter pw = new PrintWriter(fw);
+            if (timerServiceShutdownFile.exists()) {
+                FileWriter fw = new FileWriter(timerServiceShutdownFile);
+                PrintWriter pw = new PrintWriter(fw);
 
-            pw.println(downTimeStr);
+                pw.println(downTimeStr);
 
-            pw.flush();
-            pw.close();
-            fw.close();
-            logger.log(Level.INFO, "ejb.timer_service_shutdown_msg",
+                pw.flush();
+                pw.close();
+                fw.close();
+                logger.log(Level.INFO, "ejb.timer_service_shutdown_msg",
                        new Object[] { downTimeStr });
+            } else {
+                logger.log(Level.WARNING, "ejb.timer_service_shutdown_unknown",
+                       new Object[] { TIMER_SERVICE_FILE });
+            } 
         } catch (Throwable th) {
             logger.log(Level.WARNING, "ejb.timer_service_shutdown_unknown",
                        new Object[] { TIMER_SERVICE_FILE });
