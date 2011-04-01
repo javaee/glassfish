@@ -42,6 +42,7 @@ package org.glassfish.loadbalancer.admin.cli;
 
 import java.util.logging.Logger;
 import java.util.Map;
+import java.util.Iterator;
 
 import java.beans.PropertyVetoException;
 
@@ -107,7 +108,10 @@ public final class ConfigureLBWeightCommand extends LBCommandsBase
             return;
         }
 
-        for(String instance:instanceWeights.keySet()) {
+        for (Iterator it = instanceWeights.entrySet().iterator(); it.hasNext();) {
+            Map.Entry entry = (Map.Entry) it.next();
+            String instance = (String)entry.getKey();
+
             try {
                 Server s = domain.getServerNamed(instance);
                 if (s == null) {
@@ -137,7 +141,7 @@ public final class ConfigureLBWeightCommand extends LBCommandsBase
                     report.setMessage(msg);
                     return;
                 }
-                updateLBWeight(s, instanceWeights.get(instance).toString());                
+                updateLBWeight(s, entry.getValue().toString());                
             } catch (TransactionFailure ex) {
                 report.setMessage(ex.getMessage());
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);

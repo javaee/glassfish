@@ -214,7 +214,7 @@ public final class CreateHTTPHealthCheckerCommand implements AdminCommand {
                 return;
             }
 
-            if ( (cRef != null) && (cRef.getHealthChecker() == null) ) {
+            if (cRef.getHealthChecker() == null) {
                 try {
                     addHealthChecker(cRef);
                 } catch (TransactionFailure ex) {
@@ -246,7 +246,7 @@ public final class CreateHTTPHealthCheckerCommand implements AdminCommand {
                 return;
             }
 
-            if ((sRef != null) && (sRef.getHealthChecker() == null) ){
+            if (sRef.getHealthChecker() == null) {
                 try {
                     addHealthChecker(sRef);
                 } catch (TransactionFailure ex) {

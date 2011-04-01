@@ -110,7 +110,7 @@ public final class DeleteHTTPHealthCheckerCommand implements AdminCommand {
             deleteHealthCheckerInternal(lbConfig, target, false);
         } else {
             List<LbConfig> lbConfigs = lbconfigs.getLbConfig();
-            if (lbConfigs.size() == 0) {
+            if (lbConfigs.isEmpty()) {
                 String msg = localStrings.getLocalString("NoLbConfigsElement",
                         "Empty lb-configs");
                 logger.warning(msg);
@@ -206,19 +206,21 @@ public final class DeleteHTTPHealthCheckerCommand implements AdminCommand {
                 return;
             }
 
-            HealthChecker hc  = sRef.getHealthChecker();
-            if (hc != null) {
-                removeHealthCheckerFromServerRef(sRef);
-                String msg = localStrings.getLocalString("http_lb_admin.HealthCheckerDeleted",
-                        "Health checker deleted for target {0}", target);
-                logger.info(msg);
-            } else {
-                if (ignoreFailure == false) {
-                    String msg = localStrings.getLocalString("HealthCheckerDoesNotExist",
-                           "Health checker does not exist for target {0} in LB {1}", target, lbConfigName);
-                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
-                    report.setMessage(msg);
-                    return;
+            if (sRef != null) {
+                HealthChecker hc  = sRef.getHealthChecker();
+                if (hc != null) {
+                    removeHealthCheckerFromServerRef(sRef);
+                    String msg = localStrings.getLocalString("http_lb_admin.HealthCheckerDeleted",
+                            "Health checker deleted for target {0}", target);
+                    logger.info(msg);
+                } else {
+                    if (ignoreFailure == false) {
+                        String msg = localStrings.getLocalString("HealthCheckerDoesNotExist",
+                               "Health checker does not exist for target {0} in LB {1}", target, lbConfigName);
+                        report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                        report.setMessage(msg);
+                        return;
+                    }
                 }
             }
         } else {
