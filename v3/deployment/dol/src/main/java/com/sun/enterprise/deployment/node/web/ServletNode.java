@@ -151,7 +151,7 @@ public class ServletNode extends DisplayableComponentNode {
             descriptor.setWebComponentImplementation(value);
         } else if (WebTagNames.LOAD_ON_STARTUP.equals(element.getQName())) {
             if (value.trim().equals("")) {
-                descriptor.setLoadOnStartUp(new Integer(Integer.MAX_VALUE));
+                descriptor.setLoadOnStartUp(Integer.MAX_VALUE);
             } else {
                 descriptor.setLoadOnStartUp(Integer.valueOf(value));
             }

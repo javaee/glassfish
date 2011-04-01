@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2006-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -55,6 +55,7 @@ import java.util.logging.Level;
 import java.nio.channels.*;
 import java.nio.ByteBuffer;
 import java.util.regex.Pattern;
+import java.util.Locale;
 
 
 public class FileUtils {
@@ -210,7 +211,7 @@ public class FileUtils {
         if (filename == null || filename.length() <= 0)
             return false;
 
-        return filename.toLowerCase().endsWith(ext.toLowerCase());
+        return filename.toLowerCase(Locale.ENGLISH).endsWith(ext.toLowerCase(Locale.ENGLISH));
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -219,7 +220,7 @@ public class FileUtils {
         if (f == null || !f.exists())
             return false;
 
-        return f.getName().toLowerCase().endsWith(ext.toLowerCase());
+        return f.getName().toLowerCase(Locale.ENGLISH).endsWith(ext.toLowerCase(Locale.ENGLISH));
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -519,6 +520,9 @@ public class FileUtils {
     public static FileOutputStream openFileOutputStream(File out) throws IOException {
         FileOutputStreamWork work = new FileOutputStreamWork(out);
         int retries = doWithRetry(work);
+        if (retries > 0) {
+            _utillogger.log(Level.FINE, "Retrying " + retries + " times");
+        }
         if (work.workComplete()) {
             return work.getStream();
         } else {

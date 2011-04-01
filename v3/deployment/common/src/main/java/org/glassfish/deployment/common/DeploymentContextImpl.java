@@ -87,8 +87,6 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext, PreDest
     Map<String, Object> modulesMetaData = new HashMap<String, Object>();
     List<ClassFileTransformer> transformers = new ArrayList<ClassFileTransformer>();
     Phase phase = Phase.UNKNOWN;
-    boolean finalClassLoaderAccessedDuringPrepare = false;
-    boolean tempClassLoaderInvalidated = false;
     ClassLoader sharableTemp = null;
     Map<String, Properties> modulePropsMap = new HashMap<String, Properties>();
     Map<String, Object> transientAppMetaData = new HashMap<String, Object>();
@@ -139,7 +137,7 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext, PreDest
         return logger;
     }
 
-    public void preDestroy() {
+    public synchronized void preDestroy() {
         try {
             PreDestroy.class.cast(sharableTemp).preDestroy();
         } catch (Exception e) {
@@ -253,8 +251,7 @@ public class DeploymentContextImpl implements ExtendedDeploymentContext, PreDest
         File rootScratchDir = env.getApplicationStubPath();
         if (subDirName != null )
             rootScratchDir = new File(rootScratchDir, subDirName);
-        String appDirName = parameters.name();
-        appDirName = VersioningUtils.getRepositoryName(parameters.name());
+        String appDirName = VersioningUtils.getRepositoryName(parameters.name());
         return new File(rootScratchDir, appDirName);
     }
 

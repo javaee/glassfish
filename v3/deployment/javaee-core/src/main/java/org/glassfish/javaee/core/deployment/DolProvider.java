@@ -299,13 +299,17 @@ public class DolProvider implements ApplicationMetaDataProvider<Application>,
         if (application != null) {
             ReadableArchive archive = archiveFactory.openArchive(
                 context.getSourceDir());
-            context.getScratchDir("xml").mkdirs();
-            WritableArchive archive2 = archiveFactory.createArchive(
-                context.getScratchDir("xml"));
-            descriptorArchivist.write(application, archive, archive2);
+            boolean isMkdirs = context.getScratchDir("xml").mkdirs();
+            if (isMkdirs) {
+                WritableArchive archive2 = archiveFactory.createArchive(
+                    context.getScratchDir("xml"));
+                descriptorArchivist.write(application, archive, archive2);
 
-            // copy the additional webservice elements etc
-            applicationArchivist.copyExtraElements(archive, archive2);
+                // copy the additional webservice elements etc
+                applicationArchivist.copyExtraElements(archive, archive2);
+            } else {
+                context.getLogger().log(Level.WARNING, "Error in creating directory " + context.getScratchDir("xml").getAbsolutePath());
+            }
         }
     }
 

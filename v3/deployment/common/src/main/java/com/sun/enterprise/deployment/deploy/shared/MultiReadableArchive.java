@@ -68,7 +68,7 @@ import org.jvnet.hk2.component.PerLookup;
  */
 @Service
 @Scoped(PerLookup.class)
-public class MultiReadableArchive extends AbstractReadableArchive implements ReadableArchive {
+public class MultiReadableArchive extends AbstractReadableArchive {
 
     private ReadableArchive parentArchive = null;
 

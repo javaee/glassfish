@@ -290,10 +290,16 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
                 return deploy(targets, tempSourceFile.toURI(), tempPlanURI, deploymentOptions);
             } finally {
                 if (tempSourceFile != null) {
-                    tempSourceFile.delete();
+                    boolean isDeleted = tempSourceFile.delete();
+                    if (!isDeleted) {
+                        Logger.getAnonymousLogger().log(Level.WARNING, "Error in deleting file " + tempSourceFile.getAbsolutePath());
+                    }
                 }
                 if (tempPlanFile != null) {
-                    tempPlanFile.delete();
+                    boolean isDeleted =tempPlanFile.delete();
+                    if (!isDeleted) {
+                        Logger.getAnonymousLogger().log(Level.WARNING, "Error in deleting file " + tempPlanFile.getAbsolutePath());
+                    }
                 }
             }
         } else {
@@ -313,20 +319,23 @@ public abstract class AbstractDeploymentFacility implements DeploymentFacility, 
         long remaining = mma.getArchiveSize();
         BufferedInputStream bis = new BufferedInputStream(
             new ByteArrayInputStream(mma.getByteArray()));
-        while(remaining != 0) {
-            int actual = (remaining < chunkSize) ? (int) remaining : chunkSize;
-            byte[] bytes = new byte[actual];
-            try {
-                bis.read(bytes);
-                bos.write(bytes);
-            } catch (EOFException eof) {
-                break;
+        try {
+            while(remaining != 0) {
+                int actual = (remaining < chunkSize) ? (int) remaining : chunkSize;
+                byte[] bytes = new byte[actual];
+                try {
+                    bis.read(bytes);
+                    bos.write(bytes);
+                } catch (EOFException eof) {
+                    break;
+                }
+                remaining -= actual;
             }
-            remaining -= actual;
+        } finally {
+            bos.flush();
+            bis.close(); 
+            bos.close();
         }
-        bos.flush();
-        bis.close(); 
-        bos.close();
         return tempFile;
     } 
 

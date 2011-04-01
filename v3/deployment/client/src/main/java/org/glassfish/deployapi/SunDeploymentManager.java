@@ -127,7 +127,7 @@ public class SunDeploymentManager implements DeploymentManager {
 
     private static final String ENABLED_ATTRIBUTE_NAME = "Enabled"; // NOI18N
 
-    private static Habitat habitat;
+    private Habitat habitat;
 
 
     /** Creates a new instance of DeploymentManager */
@@ -139,6 +139,7 @@ public class SunDeploymentManager implements DeploymentManager {
         deploymentFacility = 
             DeploymentFacilityFactory.getDeploymentFacility();
         deploymentFacility.connect(sci);
+        prepareHabitat();
     }
 
     /**     
@@ -1318,20 +1319,17 @@ public class SunDeploymentManager implements DeploymentManager {
     }
     
     private void prepareHabitat() {
-        if ( (habitat == null) ) {
-            // Bootstrap a hk2 environment.
-            ModulesRegistry registry = new StaticModulesRegistry(getClass().getClassLoader());
-            habitat = registry.createHabitat("default");
+        // Bootstrap a hk2 environment.
+        ModulesRegistry registry = new StaticModulesRegistry(getClass().getClassLoader());
+        habitat = registry.createHabitat("default");
 
-            StartupContext startupContext = new StartupContext();
-            habitat.add(new ExistingSingletonInhabitant(startupContext));
+        StartupContext startupContext = new StartupContext();
+        habitat.add(new ExistingSingletonInhabitant(startupContext));
 
-            habitat.addComponent(null, new ProcessEnvironment(ProcessEnvironment.ProcessType.Other));
-        }
+        habitat.addComponent(null, new ProcessEnvironment(ProcessEnvironment.ProcessType.Other));
     }
 
     private ArchiveFactory getArchiveFactory() {
-        prepareHabitat();
         return habitat.getComponent(ArchiveFactory.class);
     }
 
@@ -1355,7 +1353,7 @@ public class SunDeploymentManager implements DeploymentManager {
      *from each work element
      *</ul>
      */
-    protected class TargetModuleIDCollection {
+    protected static class TargetModuleIDCollection {
         /* Maps the module ID to that module's instance of DeploymentFacilityModuleWork. */
         private HashMap moduleIDToInfoMap = new HashMap();
         
@@ -1442,7 +1440,7 @@ public class SunDeploymentManager implements DeploymentManager {
      *single module), a collection of all the targets to be included in the operation on that
      *module, and the progress object resulting from the DF method invocation.
      */
-    protected class DeploymentFacilityModuleWork {
+    protected static class DeploymentFacilityModuleWork {
         
         /** The module ID this work handles */
         private String moduleID = null;

@@ -82,7 +82,7 @@ import org.glassfish.deployment.versioning.VersioningUtils;
  */
 
 public class Application extends BundleDescriptor
-        implements Roles, RoleMappingContainer, WritableJndiNameEnvironment, 
+        implements RoleMappingContainer, WritableJndiNameEnvironment, 
             EjbReferenceContainer, ResourceEnvReferenceContainer,
             ResourceReferenceContainer, ServiceReferenceContainer,
             MessageDestinationReferenceContainer {
@@ -131,7 +131,7 @@ public class Application extends BundleDescriptor
 
     // use a String object as lock so it can be serialized as part
     // of the Application object
-    private String cmpDescriptorsLock = new String("cmp descriptors lock");
+    private String cmpDescriptorsLock = "cmp descriptors lock";
 
     // flag to indicate that the memory representation of this application 
     // is not in sync with the disk representation

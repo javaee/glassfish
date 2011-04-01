@@ -365,7 +365,10 @@ public class UpgradeStartup implements ModuleStartup {
         // get temporary file directory of the system and set targetDir to it
         File tmp = File.createTempFile("upgrade", null);
         String targetParentDir = tmp.getParent();
-        tmp.delete();
+        boolean isDeleted = tmp.delete();
+        if (!isDeleted) {
+            logger.log(Level.WARNING, "Error in deleting file " + tmp.getAbsolutePath());
+        }
 
         if (moduleType.equals(ServerTags.J2EE_APPLICATION)) {
             return repackageApplication(repositoryDir, targetParentDir, suffix);
@@ -383,7 +386,10 @@ public class UpgradeStartup implements ModuleStartup {
         File tempEar = new File(targetParentDir, appName + suffix);
 
         if (tempEar.exists()) {
-            tempEar.delete();
+            boolean isDeleted = tempEar.delete();
+            if (!isDeleted) {
+                logger.log(Level.WARNING, "Error in deleting file " + tempEar.getAbsolutePath());
+            }
         }
 
         WritableArchive target = archiveFactory.createArchive("jar", tempEar);
@@ -490,7 +496,10 @@ public class UpgradeStartup implements ModuleStartup {
         File tempJar = new File(targetParentDir, moduleName + suffix);
 
         if (tempJar.exists()) {
-            tempJar.delete();
+            boolean isDeleted = tempJar.delete();
+            if ( !isDeleted) {
+                logger.log(Level.WARNING, "Error in deleting file " + tempJar.getAbsolutePath());
+            }
         }
 
         WritableArchive target = archiveFactory.createArchive("jar", tempJar);

@@ -417,7 +417,7 @@ public class ProgressObjectSink extends DFProgressObject implements ProgressList
     
     private void reviseStatusAndMessage(DeploymentStatus ds, DFDeploymentStatus newStageStatus) {
         String msgKey = null;
-        Status stageStatus = Status.NOTINITIALIZED;
+        Status stageStatus;
         
         if (ds.isCompleted()) {
             /*

@@ -1039,7 +1039,6 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
         }
         
         appRegistry.remove(appName);
-        info = null;
     }
 
     // prepare application config change for later registering
@@ -1277,8 +1276,15 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
                         targets = domain.getAllReferencedTargetsForApplication(appName);
                     }
 
+                    Domain dmn;
+                    if (param instanceof Domain) {
+                        dmn = (Domain)param;
+                    } else {
+                        return Boolean.FALSE;
+                    }
+
                     for (String target : targets) {
-                        Server servr = ((Domain)param).getServerNamed(target);
+                        Server servr = dmn.getServerNamed(target);
                         if (servr != null) {
                             // remove the application-ref from standalone 
                             // server instance
@@ -1293,7 +1299,7 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
                             }
                         }
               
-                        Cluster cluster = ((Domain)param).getClusterNamed(target);
+                        Cluster cluster = dmn.getClusterNamed(target);
                         if (cluster != null) {
                             // remove the application-ref from cluster
                             ConfigBeanProxy cluster_w = t.enroll(cluster);
@@ -1323,7 +1329,7 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
 
                     if (!appRefOnly) {
                         // remove application element
-                        Applications apps = ((Domain)param).getApplications();
+                        Applications apps = dmn.getApplications();
                         ConfigBeanProxy apps_w = t.enroll(apps);
                         for (ApplicationName module : apps.getModules()) {
                             if (module.getName().equals(appName)) {
@@ -1346,8 +1352,15 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
                 // get the transaction
                 Transaction t = Transaction.getTransaction(param);
                 if (t!=null) {
+                    Domain dmn;
+                    if (param instanceof Domain) {
+                        dmn = (Domain)param;
+                    } else {
+                        return Boolean.FALSE;
+                    }
+
                     if (enabled || DeploymentUtils.isDomainTarget(target)) {
-                        Application app = ((Domain)param).getApplications().getApplication(appName);
+                        Application app = dmn.getApplications().getApplication(appName);
                         ConfigBeanProxy app_w = t.enroll(app);
                        ((Application)app_w).setEnabled(String.valueOf(enabled));
 
@@ -1361,7 +1374,7 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
                     }
 
                     for (String target : targets) {
-                        Server servr = ((Domain)param).getServerNamed(target);
+                        Server servr = dmn.getServerNamed(target);
                         if (servr != null) {
                             // update the application-ref from standalone
                             // server instance
@@ -1375,7 +1388,7 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
                             }
                             updateClusterAppRefWithInstanceUpdate(t, servr, appName, enabled);
                         }
-                        Cluster cluster = ((Domain)param).getClusterNamed(target);
+                        Cluster cluster = dmn.getClusterNamed(target);
                         if (cluster != null) {
                             // update the application-ref from cluster
                             for (ApplicationRef appRef :
@@ -1852,11 +1865,14 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
             final byte[] buffer = new byte[1024];
             final InputStream is = new BufferedInputStream(new FileInputStream(f));
             int bytesRead;
-            while ((bytesRead = is.read(buffer)) != -1) {
-                zipOS.write(buffer, 0, bytesRead);
+            try {
+                while ((bytesRead = is.read(buffer)) != -1) {
+                    zipOS.write(buffer, 0, bytesRead);
+                }
+            } finally {
+                is.close();
+                zipOS.closeEntry();
             }
-            is.close();
-            zipOS.closeEntry();
         } else {
             /*
              * A directory entry has no content itself.
