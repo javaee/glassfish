@@ -262,7 +262,6 @@ public class FormAuthenticator
         String username = hreq.getParameter(Constants.FORM_USERNAME);
         String pwd = hreq.getParameter(Constants.FORM_PASSWORD);
         char[] password = ((pwd != null)? pwd.toCharArray() : null);
-        pwd = null; // unset the reference
 
         if (log.isLoggable(Level.FINE))
             log.fine("Authenticating username '" + username + "'");
