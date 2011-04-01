@@ -2396,6 +2396,13 @@ public class StandardContext
      */
     public FilterRegistration.Dynamic addFilter(
             String filterName, String className) {
+
+        if (isContextInitializedCalled) {
+            throw new IllegalStateException(
+                sm.getString("applicationContext.alreadyInitialized",
+                             "addFilter", getName()));
+        }
+
         synchronized (filterDefs) {
             // Make sure filter name is unique for this context
             if (findFilterDef(filterName) != null) {
@@ -2432,6 +2439,13 @@ public class StandardContext
      */
     public FilterRegistration.Dynamic addFilter(
             String filterName, Filter filter) {
+
+        if (isContextInitializedCalled) {
+            throw new IllegalStateException(
+                sm.getString("applicationContext.alreadyInitialized",
+                             "addFilter", getName()));
+        }
+
         if (filterName == null || filter == null) {
             throw new NullPointerException("Null filter instance or name");
         }
@@ -2507,6 +2521,13 @@ public class StandardContext
      */
     public FilterRegistration.Dynamic addFilter(String filterName,
             Class <? extends Filter> filterClass) {
+
+        if (isContextInitializedCalled) {
+            throw new IllegalStateException(
+                sm.getString("applicationContext.alreadyInitialized",
+                             "addFilter", getName()));
+        }
+
         synchronized (filterDefs) {
             if (findFilterDef(filterName) != null) {
                 return null;
@@ -2836,6 +2857,12 @@ public class StandardContext
     }
 
     public void declareRoles(String... roleNames) {
+        if (isContextInitializedCalled) {
+            throw new IllegalStateException(
+                sm.getString("applicationContext.alreadyInitialized",
+                             "declareRoles", getName()));
+        }
+
         for (String roleName : roleNames) {
             addSecurityRole(roleName);
         }
@@ -3229,6 +3256,12 @@ public class StandardContext
      */
     public ServletRegistration.Dynamic addServlet(
             String servletName, String className) {
+
+        if (isContextInitializedCalled) {
+            throw new IllegalStateException(
+                sm.getString("applicationContext.alreadyInitialized",
+                             "addServlet", getName()));
+        }
         synchronized (children) {
             if (findChild(servletName) == null) {
                 DynamicServletRegistrationImpl regis =
@@ -3271,6 +3304,12 @@ public class StandardContext
      */
     public ServletRegistration.Dynamic addServlet(String servletName,
             Class <? extends Servlet> servletClass) {
+
+        if (isContextInitializedCalled) {
+            throw new IllegalStateException(
+                sm.getString("applicationContext.alreadyInitialized",
+                             "addServlet", getName()));
+        }
         // Make sure servlet name is unique for this context
         synchronized (children) {
             if (findChild(servletName) == null) {
@@ -3336,6 +3375,13 @@ public class StandardContext
     public ServletRegistration.Dynamic addServlet(String servletName,
             Servlet servlet, Map<String, String> initParams,
             String... urlPatterns) {
+
+        if (isContextInitializedCalled) {
+            throw new IllegalStateException(
+                sm.getString("applicationContext.alreadyInitialized",
+                             "addServlet", getName()));
+        }
+
         if (servletName == null || servlet == null) {
             throw new NullPointerException("Null servlet instance or name");
         }
@@ -5376,8 +5422,9 @@ public class StandardContext
         // the condition. Time to call the initializers
         ServletContext ctxt = this.getServletContext();
         try {
-            for (Class<? extends ServletContainerInitializer> initializer :
-                    initializerList.keySet()) {
+            for (Map.Entry<Class<? extends ServletContainerInitializer>, Set<Class<?>>> e :
+                    initializerList.entrySet()) {
+                Class<? extends ServletContainerInitializer> initializer = e.getKey();
                 // See IT 11333
                 if (isUseMyFaces() &&
                         Globals.FACES_INITIALIZER.equals(initializer.getName())) {
@@ -5386,7 +5433,7 @@ public class StandardContext
                 try {
                     if (log.isLoggable(Level.FINE)) {
                         log.fine("Calling ServletContainerInitializer [" + initializer + "] onStartup with classes " +
-                                initializerList.get(initializer));
+                                e.getValue());
                     }
                     ServletContainerInitializer iniInstance =
                         initializer.newInstance();
@@ -6611,6 +6658,11 @@ public class StandardContext
      * context initialization parameter with a matching name
      */
     public boolean setInitParameter(String name, String value) {
+        if (isContextInitializedCalled) {
+            throw new IllegalStateException(
+                sm.getString("applicationContext.alreadyInitialized",
+                             "setInitParameter", getName()));
+        }
         return context.setInitParameter(name, value);
     }    
         
