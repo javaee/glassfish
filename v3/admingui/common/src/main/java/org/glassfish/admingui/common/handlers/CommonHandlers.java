@@ -211,7 +211,7 @@ public class CommonHandlers {
 		if(list != null) {
 			if(selectedIndex == null) {
 				//default to 0
-				selectedIndex = new Integer(INDEX);
+				selectedIndex = Integer.valueOf(INDEX);
 			}
 			listItem = new String[]{list.get(selectedIndex)};
 		}
@@ -434,7 +434,7 @@ public class CommonHandlers {
     public void longAdd(HandlerContext handlerCtx) {
         Long long1 = (Long)handlerCtx.getInputValue("Long1");
         Long long2 = (Long)handlerCtx.getInputValue("Long2");
-        Long result = new Long(0);
+        Long result = Long.valueOf(0);
         try{
             // Add the 2 numbers together
             result = new Long(long1.longValue()+long2.longValue());
@@ -684,11 +684,13 @@ public class CommonHandlers {
             if (attrNames == null) {
                 resultMap = map;
             } else {
-                for (String key : map.keySet()) {
+
+                for(Map.Entry<String,String> e : map.entrySet()){
+                    String key = e.getKey();
                     if (attrNames.contains(key) && keep) {
-                        resultMap.put(key, map.get(key));
+                        resultMap.put(key, e.getValue());
                     } else if ((!attrNames.contains(key)) && (!keep)) {
-                        resultMap.put(key, map.get(key));
+                        resultMap.put(key, e.getValue());
                     }
                 }
             }
