@@ -93,12 +93,9 @@ public class WLWebBundleRuntimeNode extends RuntimeBundleNode<WebBundleDescripto
         return Collections.unmodifiableList(systemIDs);
     }
 
-    WebBundleDescriptor descriptor = null;
-        
     /** Creates new WLWebBundleRuntimeNode */
     public WLWebBundleRuntimeNode(WebBundleDescriptor descriptor) {
         super(descriptor);
-        this.descriptor = descriptor;        
     }
     
     /** Creates new WebBundleRuntimeNode */
