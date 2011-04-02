@@ -109,8 +109,6 @@ public class EmbeddedSetDocRootTest {
             sb.append(inputLine);
         }
         in.close();
-
-        Thread.sleep(100);
         
      }
 

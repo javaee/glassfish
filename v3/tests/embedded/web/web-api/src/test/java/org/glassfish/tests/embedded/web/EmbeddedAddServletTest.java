@@ -69,7 +69,7 @@ public class EmbeddedAddServletTest {
     static WebContainer embedded;
     static File root;
     static String vsname = "test-server";
-    static String contextRoot = "/test";
+    static String contextRoot = "test";
 
     @BeforeClass
     public static void setupServer() throws GlassFishException {
@@ -114,10 +114,10 @@ public class EmbeddedAddServletTest {
         Context context = (Context) embedded.createContext(root);
         //ServletRegistration sr = context.addServlet("NewServlet", new NewServlet());
         //sr.addMapping(new String[] {"/new"});
-        //vs.addContext(context, contextRoot);
-        embedded.addContext(context, contextRoot);
+        vs.addContext(context, contextRoot);
+        //embedded.addContext(context, contextRoot);
 
-        URL servlet = new URL("http://localhost:8080"+contextRoot+"/new");
+        URL servlet = new URL("http://localhost:8080/"+contextRoot+"/new");
         URLConnection yc = servlet.openConnection();
         BufferedReader in = new BufferedReader(
                                 new InputStreamReader(
