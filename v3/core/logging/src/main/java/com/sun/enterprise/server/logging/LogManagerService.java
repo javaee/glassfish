@@ -280,21 +280,21 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy, org.g
                 recordBeginMarker = props.get(cname + ".logFormatBeginMarker");
                 if (recordBeginMarker == null || ("").equals(recordBeginMarker)) {
                     logger.log(Level.WARNING,
-                            "Record begin marker is not a proper value so Using default.");
+                            "Record begin marker is not a proper value so using default.");
                     recordBeginMarker = RECORD_BEGIN_MARKER;
                 }
 
                 recordEndMarker = props.get(cname + ".logFormatEndMarker");
                 if (recordEndMarker == null || ("").equals(recordEndMarker)) {
                     logger.log(Level.WARNING,
-                            "Record end marker is not a proper value so Using default.");
+                            "Record end marker is not a proper value so using default.");
                     recordEndMarker = RECORD_END_MARKER;
                 }
 
                 recordFieldSeparator = props.get(cname + ".logFormatFieldSeparator");
                 if (recordFieldSeparator == null || ("").equals(recordFieldSeparator) || recordFieldSeparator.length() > 1) {
                     logger.log(Level.WARNING,
-                            "Log Format filed separator is not a character so Using default.");
+                            "Log Format field separator is not a character so using default.");
                     recordFieldSeparator = RECORD_FIELD_SEPARATOR;
                 }
 
@@ -305,12 +305,12 @@ public class LogManagerService implements Init, PostConstruct, PreDestroy, org.g
                         sdf.format(new Date());
                     } catch (Exception e) {
                         logger.log(Level.WARNING,
-                                "Date Format specified is wrong so Using default.");
+                                "Date Format specified is wrong so using default.");
                         recordDateFormat = RECORD_DATE_FORMAT;
                     }
                 } else {
                     logger.log(Level.WARNING,
-                            "Date Format specified is wrong so Using default.");
+                            "Date Format specified is wrong so using default.");
                     recordDateFormat = RECORD_DATE_FORMAT;
                 }
 
