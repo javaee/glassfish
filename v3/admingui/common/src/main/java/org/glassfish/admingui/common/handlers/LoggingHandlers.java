@@ -85,10 +85,10 @@ public class LoggingHandlers {
         Map<String, String> loggerLevels = (Map) handlerCtx.getInputValue("loggerLevels");
         List result = new ArrayList();
         if (loggerLevels != null)    {
-            for(String oneLogger:  loggerLevels.keySet()){
-                    Map oneRow = new HashMap();
-                    oneRow.put("loggerName", oneLogger);
-                    oneRow.put("level", loggerLevels.get(oneLogger));
+            for(Map.Entry<String,String> e : loggerLevels.entrySet()){
+                Map oneRow = new HashMap();
+                    oneRow.put("loggerName", e.getKey());
+                    oneRow.put("level", e.getValue());
                     oneRow.put("selected", false);
                     result.add(oneRow);
             }
