@@ -120,5 +120,5 @@ public class Web extends MonTest {
         return matchString(key, ret.outAndErr);
     }
 
-    private static final File hellowar = new File("apps/HelloWeb.war");
+    private static final File hellowar = new File("resources/HelloWeb.war");
 }

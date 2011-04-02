@@ -41,6 +41,7 @@
 package admin;
 
 import com.sun.appserv.test.BaseDevTest;
+import java.io.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -48,17 +49,18 @@ import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.*;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 public abstract class AdminBaseDevTest extends BaseDevTest {
-    
     protected AdminBaseDevTest() {
         boolean verbose = false;
         try {
             verbose = Boolean.parseBoolean(System.getProperty("verbose"));
         }
-        catch (Exception e) {}
+        catch (Exception e) {
+        }
 
         setVerbose(verbose);
         if (!verbose) {
@@ -81,7 +83,7 @@ public abstract class AdminBaseDevTest extends BaseDevTest {
         // and (2) there are tens of thousands of other files in this harness!!!
 
         // another issue is hacking off strings after a space.  Makes no sense to me!!
-
+        writeTimestamp(name, success);
         if (name.length() > MAX_LENGTH - 3)
             name = name.substring(0, MAX_LENGTH - 3);
         String name2 = name.replace(' ', '_');
@@ -108,8 +110,8 @@ public abstract class AdminBaseDevTest extends BaseDevTest {
             name2 += DASHES.substring(0, numpads);
 
         super.report(name2, success);
-        
-        if(!success && !isVerbose())
+
+        if (!success && !isVerbose())
             writeFailure();
     }
 
@@ -214,6 +216,7 @@ public abstract class AdminBaseDevTest extends BaseDevTest {
         s = s.substring(4, 10);
         return "in_" + s;
     }
+
     String generateClusterName() {
         String s = "" + System.currentTimeMillis();
         s = s.substring(4, 10);
@@ -261,12 +264,12 @@ public abstract class AdminBaseDevTest extends BaseDevTest {
     }
 
     /**
-       *
-       * typical output as og 6/6/10
-      C:\glassfishv3\glassfish\nodeagents\vaio>asadmin list-instances
-      in_879669 not running
-      i20 running
-       */
+     *
+     * typical output as og 6/6/10
+    C:\glassfishv3\glassfish\nodeagents\vaio>asadmin list-instances
+    in_879669 not running
+    i20 running
+     */
     public boolean isInstanceRunning(String iname) {
         AsadminReturn ret = asadminWithOutput("list-instances");
         String[] lines = ret.out.split("[\r\n]");
@@ -319,7 +322,8 @@ public abstract class AdminBaseDevTest extends BaseDevTest {
             for (File f : files) {
                 if (f.isDirectory()) {
                     deleteDirectory(f);
-                } else {
+                }
+                else {
                     f.delete();
                 }
             }
@@ -330,7 +334,43 @@ public abstract class AdminBaseDevTest extends BaseDevTest {
     final boolean ok(String s) {
         return s != null && s.length() > 0;
     }
+    private static final File TIMESTAMP_FILE = new File("timestamps.out").getAbsoluteFile();
+    private static long lastReportTime = 0;
     private static final int MAX_LENGTH = 101;
     private static final String DASHES =
             "------------------------------------------------------------------------------------------------------------------------------";
+
+    static {
+    }
+
+    // bnevins - horribly inefficient but we are guaranteeing to see contents when exited abruptly.
+    // It can't possibly take all that long for a few thousand calss - right?
+    // If a problem it can be tuned easily.
+    // this will give a rough idea of the time spent for every report call
+    private static void writeTimestamp(String s, boolean b) {
+        BufferedWriter out = null;
+        long prevTime = lastReportTime;
+        lastReportTime = System.currentTimeMillis();
+
+        long elapsed = prevTime == 0 ? 0 : lastReportTime - prevTime;
+
+        try {
+            out = new BufferedWriter(new FileWriter(TIMESTAMP_FILE, true));
+            out.write("" + elapsed + "ms " + b + "  [" + s + "]");
+        }
+        catch (IOException e) {
+            // It is just a debug file.
+        }
+        finally {
+            if (out != null) {
+                try {
+                    out.write("\n");
+                    out.close();
+                }
+                catch (Exception e) {
+                    // ignore
+                }
+            }
+        }
+    }
 }
